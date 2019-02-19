@@ -28,7 +28,7 @@ import ElectricityMap from './ElectricityMap';
 import MapSearch from './ElectricityMap/MapSearch';
 // 引入样式文件
 import styles from './index.less';
-import { SettingModal, UnitDrawer, AlarmDrawer, BusinessDrawer } from './sections/Components';
+import { SettingModal, UnitDrawer, AlarmDrawer, FireStatisticsDrawer } from './sections/Components';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import { genCardsInfo, genPendingCardsInfo } from './utils';
@@ -57,7 +57,7 @@ export default class Gas extends PureComponent {
       setttingModalVisible: false,
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
-      businessDrawerVisible: false,
+      fireDrawerVisible: false,
       monitorDrawerVisible: false,
       monitorDrawerTitleIndex: 0,
       videoVisible: false,
@@ -582,7 +582,7 @@ export default class Gas extends PureComponent {
       setttingModalVisible,
       unitDrawerVisible,
       alarmDrawerVisible,
-      businessDrawerVisible,
+      fireDrawerVisible,
       selectList,
       searchValue,
       unitDetail,
@@ -663,7 +663,7 @@ export default class Gas extends PureComponent {
           title="历史火警单位统计"
           className={styles.left}
           style={{ top: 'calc(41.184444% + 92px)', height: '18%', cursor: 'pointer' }}
-          onClick={e => this.handleDrawerVisibleChange('business')}
+          onClick={e => this.handleDrawerVisibleChange('fire')}
         >
           <HistoricalFire allGasFire={allGasFire} />
         </NewSection>
@@ -691,9 +691,9 @@ export default class Gas extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleAlarmClick={this.handleAlarmClick}
         />
-        <BusinessDrawer
-          data={{ list: pendingUnitsCardsInfo, graphList: gasChartByMonth }}
-          visible={businessDrawerVisible}
+        <FireStatisticsDrawer
+          data={{ list: importCardsInfo, AccessStatistics, AccessCount }}
+          visible={fireDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <MaintenanceDrawer

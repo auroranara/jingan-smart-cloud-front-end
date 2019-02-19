@@ -16,7 +16,7 @@ import { DotItem } from '../components/Components';
 
 const TYPE = 'unit';
 const NO_DATA = '暂无信息';
-const LABELS = ['报警', '故障', '失联', '正常'];
+const LABELS = ['火警', '故障', '失联', '正常'];
 const COLORS = ['248,51,41', '255,180,0', '159,159,159', '55,164,96'];
 const OPTIONS = ['全部', '未接入', '已接入'].map((d, i) => ({ value: i, desc: d }));
 const RING_COLORS = ['159,159,159', '0,255,255'];
@@ -97,10 +97,10 @@ export default class UnitDrawer extends PureComponent {
 
     const left = (
       <Fragment>
-        <DrawerSection title="接入单位统计图" style={{ marginBottom: 50 }}>
+        <DrawerSection title="接入烟感单位数统计" style={{ marginBottom: 50 }}>
           <ChartRing data={rings} />
         </DrawerSection>
-        <DrawerSection title="接入设备数量的单位排名">
+        <DrawerSection title="单位接入的烟感数排行">
           <ChartBar data={barList} labelRotate={-60} />
         </DrawerSection>
       </Fragment>

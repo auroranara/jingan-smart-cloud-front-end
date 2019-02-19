@@ -45,7 +45,7 @@ export default class RealTimeFire extends PureComponent {
     } = this.props;
 
     return (
-      <NewSection title="实时火警单位统计" className={className} onClick={onClick}>
+      <NewSection title="异常单位统计" className={className} onClick={onClick}>
         <div className={styles.list}>
           {[
             {
@@ -57,11 +57,6 @@ export default class RealTimeFire extends PureComponent {
               border: '2px solid #deaa26',
               name: '故障单位',
               value: faultCompanyNum,
-            },
-            {
-              border: '2px solid #8795ab',
-              name: '失联单位',
-              value: outContacts,
             },
           ].map(({ border, name, value }) => (
             <div className={styles.item} key={name}>

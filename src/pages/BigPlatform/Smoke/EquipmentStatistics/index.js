@@ -1,17 +1,5 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
-// import moment from 'moment';
-
-// import styles from './index.less';
-// const months = Array(6)
-//   .fill(true)
-//   .map((_, index) => {
-//     return (
-//       moment()
-//         .month(index - 5)
-//         .format('M') + '月'
-//     );
-//   });
 
 export default class EquipmentStatistics extends PureComponent {
   getChartOption() {
@@ -36,14 +24,6 @@ export default class EquipmentStatistics extends PureComponent {
         right: '10px',
         bottom: '35px',
       },
-      // toolbox: {
-      //   feature: {
-      //     dataView: { show: true, readOnly: false },
-      //     magicType: { show: true, type: ['line', 'bar'] },
-      //     restore: { show: true },
-      //     saveAsImage: { show: true },
-      //   },
-      // },
       legend: {
         data: ['设备数量', '故障数量'],
         textStyle: {
@@ -65,7 +45,7 @@ export default class EquipmentStatistics extends PureComponent {
         },
         axisLabel: {
           color: '#fff',
-          fontSize: 14,
+          fontSize: 12,
         },
         data: [
           '1月',
@@ -130,34 +110,34 @@ export default class EquipmentStatistics extends PureComponent {
   }
 
   onChartReady = chart => {
-    if (!chart) return;
-    let currentIndex = -1;
-    const chartAnimate = () => {
-      const dataLen = chart.getOption().series[0].data.length;
-      // 取消之前高亮的图形
-      chart.dispatchAction({
-        type: 'downplay',
-        seriesIndex: 0,
-        dataIndex: currentIndex,
-      });
-      currentIndex = (currentIndex + 1) % dataLen;
-      // 高亮当前图形
-      chart.dispatchAction({
-        type: 'highlight',
-        seriesIndex: 0,
-        dataIndex: currentIndex,
-      });
-      // 显示 tooltip
-      chart.dispatchAction({
-        type: 'showTip',
-        seriesIndex: 0,
-        dataIndex: currentIndex,
-      });
-    };
-    // chartAnimate();
-    setInterval(() => {
-      chartAnimate();
-    }, 5000);
+    // if (!chart) return;
+    // let currentIndex = -1;
+    // const chartAnimate = () => {
+    //   const dataLen = chart.getOption().series[0].data.length;
+    //   // 取消之前高亮的图形
+    //   chart.dispatchAction({
+    //     type: 'downplay',
+    //     seriesIndex: 0,
+    //     dataIndex: currentIndex,
+    //   });
+    //   currentIndex = (currentIndex + 1) % dataLen;
+    //   // 高亮当前图形
+    //   chart.dispatchAction({
+    //     type: 'highlight',
+    //     seriesIndex: 0,
+    //     dataIndex: currentIndex,
+    //   });
+    //   // 显示 tooltip
+    //   chart.dispatchAction({
+    //     type: 'showTip',
+    //     seriesIndex: 0,
+    //     dataIndex: currentIndex,
+    //   });
+    // };
+    // // chartAnimate();
+    // setInterval(() => {
+    //   chartAnimate();
+    // }, 5000);
   };
 
   render() {
@@ -167,7 +147,7 @@ export default class EquipmentStatistics extends PureComponent {
           option={this.getChartOption()}
           style={{ height: '100%', width: '100%' }}
           // className="echarts-for-echarts"
-          onChartReady={this.onChartReady}
+          // onChartReady={this.onChartReady}
         />
       </div>
     );
