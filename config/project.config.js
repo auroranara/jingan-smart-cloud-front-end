@@ -6,6 +6,7 @@ import liminLogo from '../src/assets/logo_limin.svg';
 import liminCode from '../src/assets/limin_download_code.jpg';
 import changshuCode from '../src/assets/changshu_download_code.png';
 import shanxiCode from '../src/assets/shanxi_download_code.png';
+import yanshiCode from '../src/assets/yanshi_download_code.png';
 const defaultConfig = {
   logo,
   code,
@@ -147,6 +148,7 @@ const configs = {
     region: '无锡',
     projectKey: 'yanshi_pro',
     projectShortName: '晶安智慧云',
+    code: yanshiCode,
     layer: 'http://data.jingan-china.cn/v2/login/show_download_layer.png',
     ios: "itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/yanshi/official_version/yanshi.plist&ran=",
     android: "http://58.215.178.100:12086/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=",
