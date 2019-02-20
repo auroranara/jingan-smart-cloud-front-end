@@ -73,6 +73,12 @@ export default class MonitorDrawer extends PureComponent {
     this.setState({ labelIndex: 0 });
   };
 
+  handleClose = () => {
+    const { handleClose } = this.props;
+    handleClose();
+    this.setState({ labelIndex: 0 });
+  };
+
   render() {
     const {
       visible,
@@ -100,7 +106,7 @@ export default class MonitorDrawer extends PureComponent {
         cameraList=[],
       },
       // handleSelect,
-      handleClose,
+      // handleClose,
       // handleClickCamera,
     } = this.props;
     const { videoVisible, videoKeyId, labelIndex } = this.state;
@@ -223,7 +229,7 @@ export default class MonitorDrawer extends PureComponent {
         left={left}
         placement="right"
         rowStyle={{ height: 'calc(100% - 70px)' }}
-        onClose={handleClose}
+        onClose={this.handleClose}
       />
     );
   }
