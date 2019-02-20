@@ -6,6 +6,8 @@ import liminLogo from '../src/assets/logo_limin.svg';
 import liminCode from '../src/assets/limin_download_code.jpg';
 import changshuCode from '../src/assets/changshu_download_code.png';
 import shanxiCode from '../src/assets/shanxi_download_code.png';
+import yanshiCode from '../src/assets/yanshi_download_code.png';
+import xiaoyuanCode from '../src/assets/xiaoyuan_download_code.png';
 const defaultConfig = {
   logo,
   code,
@@ -46,10 +48,14 @@ const configs = {
   default: {
     unitName: '无锡晶安智慧科技有限公司',
   },
-  jiangxi: {
+  wuxi: {
     region: '无锡市',
     projectKey: 'jiangxi_pro',
     projectShortName: '无锡晶安智慧云',
+    code,
+    layer: 'http://data.jingan-china.cn/v2/login/wuxi_download_layer.png',
+    ios: "itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/jxjd/official_version/JXJDInterSafe.plist&ran=",
+    android: "http://58.215.178.100:12083/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=",
   },
   xuzhou: {
     region: '徐州市',
@@ -60,6 +66,8 @@ const configs = {
       y: 34.501282,
       zoom: 14,
     },
+    ios: "itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/xz/official_version/XZInterSafe.plist&ran=",
+    android: "http://58.215.178.100:12081/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=",
   },
   limin: {
     region: '徐州市',
@@ -84,6 +92,8 @@ const configs = {
       'http://data.jingan-china.cn/v2/login/limin/2.png',
       'http://data.jingan-china.cn/v2/login/limin/3.png',
     ],
+    ios: "itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/xz/official_version/XZInterSafe.plist&ran=",
+    android: "http://58.215.178.100:12081/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=",
   },
   changshu: {
     region: '常熟市',
@@ -92,12 +102,19 @@ const configs = {
     servicePhone: '400-928-3688',
     serviceSupport: '苏州晶程智慧科技有限公司',
     code: changshuCode,
+    layer: 'http://data.jingan-china.cn/v2/login/changshu_download_layer.png',
+    ios: "itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/cs/official_version/CSInterSafeZ.plist&ran=",
+    android: "http://58.215.178.100:12080/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=",
   },
   eye: {},
-  xuexiao: {
+  xiaoyuan: {
     projectKey: 'v2_test',
     projectShortName: '校园智慧安全云',
     servicePhone: '400-928-5656',
+    layer: 'http://data.jingan-china.cn/v2/login/school_download_layer.png',
+    code: xiaoyuanCode,
+    ios: "itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/campus/official_version/CAMPUSInterSafe.plist&ran=",
+    android: "http://58.215.178.100:12082/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=",
   },
   nanxiao: {
     region: '徐州',
@@ -118,17 +135,26 @@ const configs = {
       'http://data.jingan-china.cn/v2/login/nanxiao/2.png',
       'http://data.jingan-china.cn/v2/login/nanxiao/3.png',
     ],
+    ios: "itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/fire/official_version/FireInterSafe.plist&ran=",
+    android: "http://58.215.178.100:12084/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=",
   },
   shanxi: {
     region: '山西',
     projectKey: 'shanxi',
     projectShortName: '山西晶安智慧云',
     code: shanxiCode,
+    layer: 'http://data.jingan-china.cn/v2/login/shanxi_download_layer.png',
+    ios: "itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/sx/official_version/SXInterSafe.plist&ran=",
+    android: "http://58.215.178.100:12085/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=",
   },
   show: {
     region: '无锡',
     projectKey: 'yanshi_pro',
     projectShortName: '晶安智慧云',
+    code: yanshiCode,
+    layer: 'http://data.jingan-china.cn/v2/login/show_download_layer.png',
+    ios: "itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/yanshi/official_version/yanshi.plist&ran=",
+    android: "http://58.215.178.100:12086/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=",
   },
 };
 
