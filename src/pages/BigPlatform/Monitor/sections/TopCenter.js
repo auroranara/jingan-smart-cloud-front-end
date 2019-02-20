@@ -107,7 +107,7 @@ const smokeColumns = [
     dataIndex: 'status',
     align: 'center',
     render: val => {
-      return +val === -1 ? '失联' : +val === 0 ? '正常' : '火警';
+      return +val === -1 ? '故障' : +val === 0 ? '正常' : '火警';
     },
   },
   {
@@ -553,7 +553,7 @@ export default class TopCenter extends PureComponent {
                     火警 <span className={styles.unusualCount}>{abnormal}</span>
                   </p>
                   <p className={styles.missing} onClick={() => this.handleSmokeModal(LOSS)}>
-                    失联 <span className={styles.missingCount}>{loss}</span>
+                    故障 <span className={styles.missingCount}>{loss}</span>
                   </p>
                 </div>
               </div>
