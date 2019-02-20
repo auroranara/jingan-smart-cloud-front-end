@@ -3,7 +3,7 @@ import ReactEcharts from 'echarts-for-react';
 
 export default class ChartGauge extends PureComponent {
   render() {
-    const { value, max, axisLineColor, labelFontSize=10 } = this.props;
+    const { value, max, axisLineColor } = this.props;
     const val = value || 0;
 
     const option = {
@@ -18,11 +18,11 @@ export default class ChartGauge extends PureComponent {
           axisLabel: {
             distance: 0,
             color: '#FFF',
-            fontSize: labelFontSize,
+            fontSize: max > 99 ? 8 : 10,
           },
           axisLine: {
             lineStyle: {
-              width: 5,
+              width: 4,
               color: axisLineColor,
             },
           },
@@ -30,7 +30,10 @@ export default class ChartGauge extends PureComponent {
             length: 12,
             lineStyle: { color: 'auto' },
           },
-          axisTick: { show: false },
+          axisTick: {
+            // show: false,
+            lineStyle: { color: 'auto' },
+          },
           pointer: { width: 4 },
           itemStyle: {
             // color: '#0FF',

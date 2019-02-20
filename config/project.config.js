@@ -69,6 +69,7 @@ const configs = {
       y: 34.501282,
       zoom: 14,
     },
+    code: xuzhouCode,
     layer: 'http://data.jingan-china.cn/v2/login/xuzhou_download_layer.png',
     ios:
       'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/xz/official_version/XZInterSafe.plist&ran=',
