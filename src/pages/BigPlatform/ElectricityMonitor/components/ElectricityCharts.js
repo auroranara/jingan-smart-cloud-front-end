@@ -25,6 +25,8 @@ const tabList = [
   },
 ];
 
+const defaultTabs = ['temp', 'v1', 'ampere', 'volte'];
+
 const calcItemColor = (item, pieces) => {
   const value = item.value[1];
   if (!pieces || pieces.length <= 0 || value === undefined) return item;
@@ -94,10 +96,11 @@ export default class ElectricityCharts extends PureComponent {
     const {
       data: {
         deviceConfig,
-        chartTabs,
+        chartTabs = defaultTabs,
         // chartParams: { list = [] },
         deviceHistoryData: deviceDataHistory = [],
       },
+      activeTab,
     } = this.props;
 
     const tabs = chartTabs.map(tab => {
@@ -177,7 +180,7 @@ export default class ElectricityCharts extends PureComponent {
       list.filter(item => item.value[1] !== undefined && !isNaN(item.value[1]))
     );
 
-    const { activeTab } = this.state;
+    // const { activeTab } = this.state;
 
     const noData = {
       title: {
@@ -578,7 +581,7 @@ export default class ElectricityCharts extends PureComponent {
 
   renderTabs = () => {
     const {
-      data: { chartTabs },
+      data: { chartTabs = defaultTabs },
     } = this.props;
     const { activeTab } = this.state;
     const tabs = chartTabs.map(tab => {
@@ -607,16 +610,14 @@ export default class ElectricityCharts extends PureComponent {
   };
 
   render() {
-    const {
-      noData,
-    } = this.props;
+    const { noData } = this.props;
 
     return (
       <div
         className={styles.ElectricityCharts}
         style={{ height: '300px', width: '100%', display: 'flex', flexDirection: 'column' }}
       >
-        {this.renderTabs()}
+        {/* {this.renderTabs()} */}
         {noData ? (
           <ReactEcharts
             option={this.getOptions()}

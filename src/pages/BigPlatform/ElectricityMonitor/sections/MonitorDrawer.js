@@ -198,8 +198,9 @@ export default class MonitorDrawer extends PureComponent {
               data={{
                 deviceHistoryData,
                 deviceConfig,
-                chartTabs: ['temp', 'v1'],
+                // chartTabs: ['temp', 'v1'],
               }}
+              activeTab={labelIndex}
             />
           </div>
         </div>
