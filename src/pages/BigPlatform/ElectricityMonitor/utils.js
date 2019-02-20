@@ -96,3 +96,18 @@ export function getChartLabels(list) {
     return length > 2 && i === length - 1 && name.length > 10 ? `${name.slice(0, 10)}...` : name;
   });
 }
+
+// 获取监测信息弹框中的报警标签序号数组
+export function getAlerted(list, labels) {
+  const statusMap = list.reduce((prev, next) => {
+    const { desc, status } = next;
+    prev[desc] = +status;
+    return prev;
+  }, {});
+
+  return labels.reduce((prev, next, i) => {
+    if (next.some(label => statusMap[label] === 1 || statusMap[label] === 2))
+      prev.push(i);
+    return prev;
+  }, []);
+}

@@ -7,8 +7,9 @@ import {
   OvSelect,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
-import { DotItem, Gauge } from '../components/Components';
+import { DotItem, Gauge, GaugeLabels } from '../components/Components';
 import ElectricityCharts from '../components/ElectricityCharts';
+import { getAlerted } from '../utils';
 import styles from './MonitorDrawer.less';
 import locationIcon from '../imgs/location.png';
 import personIcon from '../imgs/person.png';
@@ -16,11 +17,18 @@ import cameraIcon from '../imgs/camera.png';
 import emptyBg from '@/pages/BigPlatform/Monitor/imgs/waterBg.png';
 
 // const TYPE = 'monitor';
-const TEMPERATURE = '温度';
+// const TEMPERATURE = '温度';
 const TITLES = ['单位监测信息', '报警信息'];
 const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
-const CHART_LABELS = ['A相温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
+const GAUGE_LABELS = ['温度', '漏电电流', '电流', '电压'];
+// const CHART_LABELS = ['A相温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
+const CHARTS_LABELS = [
+  ['A相温度', 'B相温度', 'C相温度', '零线温度'],
+  ['漏电电流'],
+  ['A相电流', 'B相电流', 'C相电流'],
+  ['A相电压', 'B相电压', 'C相电压'],
+];
 
 const VIDEO_STYLE = {
   width: '90%',
@@ -40,6 +48,7 @@ export default class MonitorDrawer extends PureComponent {
   state={
     videoVisible: false,
     videoKeyId: '',
+    labelIndex: 0,
   };
 
   handleClickCamera = () => {
@@ -52,6 +61,16 @@ export default class MonitorDrawer extends PureComponent {
 
   handleVideoClose = () => {
     this.setState({ videoVisible: false, videoKeyId: '' });
+  };
+
+  handleLabelClick = i => {
+    this.setState({ labelIndex: i });
+  };
+
+  handleSelectDevice = id => {
+    const { handleSelect } = this.props;
+    handleSelect(id);
+    this.setState({ labelIndex: 0 });
   };
 
   render() {
@@ -80,18 +99,20 @@ export default class MonitorDrawer extends PureComponent {
         deviceHistoryData,
         cameraList=[],
       },
-      handleSelect,
+      // handleSelect,
       handleClose,
       // handleClickCamera,
     } = this.props;
-    const { videoVisible, videoKeyId } = this.state;
+    const { videoVisible, videoKeyId, labelIndex } = this.state;
 
     // console.log(videoKeyId);
 
+    const alerted = getAlerted(deviceDataForAppList, CHARTS_LABELS);
+    // console.log(alerted);
     // 实时数据列表
     const list = [];
     deviceDataForAppList.forEach(({ desc, code, value, unit, status }) => {
-      const index = CHART_LABELS.indexOf(desc);
+      const index = CHARTS_LABELS[labelIndex].indexOf(desc);
       if (index > -1) {
         const limit = [null, null];
         deviceConfig.forEach(({ code: code2, level, limitValue }) => {
@@ -112,7 +133,10 @@ export default class MonitorDrawer extends PureComponent {
     let gauges = <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />;
     if (list.length)
       gauges = list.map((item, i) => (
-        <Gauge key={item.desc} data={item} labelFontSize={item.desc.includes(TEMPERATURE) ? 10 : 8} />
+        <Gauge
+          key={item.desc}
+          data={item}
+        />
       ));
 
     const left = (
@@ -137,7 +161,7 @@ export default class MonitorDrawer extends PureComponent {
                   cssType={1}
                   options={devices.map(({ location, area, deviceId }) => ({ value: deviceId, desc: `${area}${location}` }))}
                   value={deviceId}
-                  handleChange={handleSelect}
+                  handleChange={this.handleSelectDevice}
                 />
               </div>
             )}
@@ -150,6 +174,11 @@ export default class MonitorDrawer extends PureComponent {
               />
             )}
           </h3>
+          <GaugeLabels
+            value={labelIndex}
+            labels={GAUGE_LABELS}
+            alerted={alerted}
+            handleLabelClick={this.handleLabelClick} />
           <div className={styles.section}>
             <h4 className={styles.secTitle}>
               <DoubleRight />
@@ -169,8 +198,9 @@ export default class MonitorDrawer extends PureComponent {
               data={{
                 deviceHistoryData,
                 deviceConfig,
-                chartTabs: ['temp', 'v1'],
+                // chartTabs: ['temp', 'v1'],
               }}
+              activeTab={labelIndex}
             />
           </div>
         </div>
