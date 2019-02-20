@@ -1599,6 +1599,12 @@ module.exports = env => {
                   code: 'personnelPosition.tagManagement.view',
                   component: './PersonnelPosition/TagManagement/TagManagementDetail',
                 },
+                {
+                  name: 'import',
+                  path: '/personnel-position/tag-management/import/:companyId',
+                  code: 'personnelPosition.tagManagement.import',
+                  component: './PersonnelPosition/TagManagement/ImportTag',
+                },
               ],
             },
             // 报警管理
