@@ -13,7 +13,6 @@ import {
 import moment from 'moment';
 import { DotItem, ChartLine } from '../components/Components';
 import unitRedIcon from '../imgs/unitRed.png';
-import unitBlueIconGrey from '../imgs/unitBlueIconGrey.png';
 import unitYellowIcon from '../imgs/unitYellow.png';
 
 const ICON_WIDTH = 42;
@@ -24,12 +23,6 @@ const NO_DATA = '暂无信息';
 // const LABELS = ['报警', '故障', '失联', '正常'];
 // const COLORS = ['248,51,41', '255,180,0', '159,159,159', '55,164,96'];
 const OPTIONS = ['全部', '报警', '故障', '失联'].map((d, i) => ({ value: i, desc: d }));
-
-// const GRAPH_LIST = [...Array(12).keys()].map(i => ({
-//   id: i,
-//   name: (i + 2) % 12 || 12,
-//   value: Math.floor(Math.random() * 100),
-// }));
 
 export default class AlarmDrawer extends PureComponent {
   state = { graph: 0, selected: 0, searchValue: '' };
@@ -158,13 +151,6 @@ export default class AlarmDrawer extends PureComponent {
           barWidth: 5,
           data: newGraphList.map(item => item.faultNum),
         },
-        {
-          name: '失联',
-          color: '#9f9f9f',
-          type: 'bar',
-          barWidth: 5,
-          data: newGraphList.map(item => item.outContact),
-        },
       ],
     };
     return option;
@@ -246,20 +232,6 @@ export default class AlarmDrawer extends PureComponent {
             }}
             // onClick={this.genProgressClick(2)}
           />
-          <OvProgress
-            title="失联单位"
-            percent={outPercent}
-            quantity={outContact}
-            strokeColor="rgb(159,159,159)"
-            // style={{ cursor: 'pointer' }}
-            iconStyle={{
-              backgroundImage: `url(${unitBlueIconGrey})`,
-              width: ICON_WIDTH,
-              height: ICON_HEIGHT,
-              bottom: ICON_BOTTOM,
-            }}
-            // onClick={this.genProgressClick(3)}
-          />
         </DrawerSection>
         <DrawerSection title="异常趋势图" titleInfo="最近12个月" extra={extra}>
           {graph ? (
@@ -327,7 +299,6 @@ export default class AlarmDrawer extends PureComponent {
                     }
                   />
                   <DotItem title="故障" color={`rgb(255,180,0)`} quantity={listFaultNum} />
-                  <DotItem title="失联" color={`rgb(159,159,159)`} quantity={listOutContact} />
                   <DotItem title="正常" color={`rgb(55,164,96)`} quantity={listNormal} />
                 </p>
               }

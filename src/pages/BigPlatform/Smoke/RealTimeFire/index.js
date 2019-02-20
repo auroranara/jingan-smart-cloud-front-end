@@ -33,12 +33,10 @@ export default class RealTimeFire extends PureComponent {
       className,
       // 数据源
       data: {
-        // 报警单位
+        // 火警单位数量
         unnormalCompanyNum = 0,
-        // 故障单位
+        // 故障单位数量
         faultCompanyNum = 0,
-        // 失联单位
-        outContacts = 0,
       },
       // 点击事件
       onClick,

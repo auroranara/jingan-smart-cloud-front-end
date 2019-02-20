@@ -44,6 +44,7 @@ export default class FireStatisticsDrawer extends PureComponent {
         <RangePicker
           format="YYYY-MM-DD"
           className={styles.rangePicker}
+          dropdownClassName={styles.rangePicker}
           placeholder={['开始时间', '结束时间']}
           showTime={{
             defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],

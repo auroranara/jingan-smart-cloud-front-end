@@ -96,10 +96,6 @@ export default class Gas extends PureComponent {
         params: { gridId },
       },
     } = this.props;
-    // // 获取告警信息列表
-    // dispatch({
-    //   type: 'smoke/fetchMessages',
-    // });
 
     // 获取单位数据
     dispatch({
@@ -114,7 +110,13 @@ export default class Gas extends PureComponent {
       },
     });
 
-    // 获取接入单位统计
+    // 获取异常单位统计数据
+    dispatch({
+      type: 'smoke/fetchUnNormalCount',
+      payload: { gridId },
+    });
+
+    // 获取接入单位统计列表
     dispatch({
       type: 'smoke/fetchImportingTotal',
       payload: {
@@ -143,22 +145,6 @@ export default class Gas extends PureComponent {
           gasErrorUnitSet: { errorUnits = [] },
         } = data;
         this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
-      },
-    });
-
-    // 获取待处理业务
-    dispatch({
-      type: 'smoke/fetchPendingMission',
-      payload: {
-        type: status,
-        gridId,
-      },
-      callback: data => {
-        if (!data) return;
-        const {
-          gasPendingUnitSet: { companyList = [] },
-        } = data;
-        this.pendingUnitsCardsInfo = genPendingCardsInfo(companyList);
       },
     });
 
@@ -322,9 +308,6 @@ export default class Gas extends PureComponent {
         this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
       },
     });
-
-    // 获取待处理业务
-    // this.fetchPending()
   };
 
   fetchPending = () => {
@@ -364,7 +347,6 @@ export default class Gas extends PureComponent {
   cardsInfo = [];
   importCardsInfo = [];
   errorUnitsCardsInfo = [];
-  pendingUnitsCardsInfo = [];
 
   /**
    * 1.获取接口数据
@@ -563,13 +545,13 @@ export default class Gas extends PureComponent {
     const {
       smoke: {
         statisticsData,
+        unNormalCount,
         AccessStatistics,
         AccessCount,
         companyStatus,
         AbnormalTrend,
         unitSet,
         allGasFire,
-        gasChartByMonth,
         deviceStatusCount,
         gasForMaintenance = [],
       },
@@ -596,7 +578,6 @@ export default class Gas extends PureComponent {
     } = this.state;
 
     const importCardsInfo = this.importCardsInfo;
-    const pendingUnitsCardsInfo = this.pendingUnitsCardsInfo;
     const errorUnitsCardsInfo = this.errorUnitsCardsInfo;
     const extra = <GridSelect gridId={gridId} urlBase="/big-platform/smoke" />;
     return (
@@ -654,7 +635,7 @@ export default class Gas extends PureComponent {
         />
         {/* 异常单位统计 */}
         <RealTimeFire
-          data={statisticsData}
+          data={unNormalCount}
           className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
           onClick={e => this.handleDrawerVisibleChange('alarm')}
         />
@@ -665,12 +646,12 @@ export default class Gas extends PureComponent {
           style={{ top: 'calc(41.184444% + 92px)', height: '18%', cursor: 'pointer' }}
           onClick={e => this.handleDrawerVisibleChange('fire')}
         >
-          <HistoricalFire allGasFire={allGasFire} />
+          <HistoricalFire data={statisticsData} allGasFire={allGasFire} />
         </NewSection>
         <NewSection
           title="设备故障统计"
           className={styles.left}
-          style={{ top: 'calc(60.184444% + 92px)', height: '25%', cursor: 'pointer' }}
+          style={{ top: 'calc(60.384444% + 92px)', height: '24%', cursor: 'pointer' }}
         >
           <EquipmentStatistics allGasFire={allGasFire} />
         </NewSection>

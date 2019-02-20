@@ -27,21 +27,21 @@ export default class HistoricalFire extends PureComponent {
    * 渲染
    */
   render() {
-    // const {
-    //   // 容器类名
-    //   // className,
-    //   // 数据源
-    //   // data: {
-    //   //   报警单位
-    //   //   unnormalCompanyNum = 0,
-    //   //   // 故障单位
-    //   //   faultCompanyNum = 0,
-    //   //   // 失联单位
-    //   //   outContacts = 0,
-    //   // },
-    //   // 点击事件
-    //   // onClick,
-    // } = this.props;
+    const {
+      // 容器类名
+      className,
+      // 数据源
+      data: {
+        // 本月历史火警
+        fireByMonth = 0,
+        // 本季度历史火警
+        fireByYear = 0,
+        // 本年历史火警
+        fireByQuarter = 0,
+      },
+      // 点击事件
+      onClick,
+    } = this.props;
 
     return (
       <div className={styles.list}>
@@ -49,17 +49,17 @@ export default class HistoricalFire extends PureComponent {
           {
             border: '2px solid #04fdff',
             name: '本月',
-            value: 11,
+            value: fireByMonth,
           },
           {
             border: '2px solid #04fdff',
             name: '本季',
-            value: 11,
+            value: fireByYear,
           },
           {
             border: '2px solid #04fdff',
             name: '本年',
-            value: 11,
+            value: fireByQuarter,
           },
         ].map(({ border, name, value }) => (
           <div className={styles.item} key={name}>

@@ -1,20 +1,15 @@
 import {
-  getMessages,
-  getCompanyId,
-  // getUnitData,
-  getDeviceStatusCount,
-  getDevices,
-  getDeviceRealTimeData,
-  getDeviceConfig,
-  getDeviceHistoryData,
-  getCameraList,
-  // 燃气大屏
   getBigFlatformData, //大屏主页面数据
+  getUnNormalCount, // 异常单位统计数据
   getImportingTotal, // 接入单位统计
   getAbnormalingTotal, // 异常单位统计
   getPendingMission, // 待处理业务
+  getMessages,
+  getCompanyId,
+  getCameraList,
   getGasForMaintenance,
-} from '../services/gas';
+} from '../services/smoke';
+
 // 获取单位集
 const getUnitSet = function(units) {
   // 告警单位
@@ -55,6 +50,26 @@ export default {
   namespace: 'smoke',
 
   state: {
+    // 统计数据
+    statisticsData: {
+      // 管辖单位统计数
+      jurisdictionalUnitStatistics: 0,
+      // 接入单位统计数
+      accessUnitStatistics: 0,
+      // 接入率
+      accessRate: '--',
+      // 本月历史火警
+      fireByMonth: 0,
+      // 本季度历史火警
+      fireByYear: 0,
+      // 本年历史火警
+      fireByQuarter: 0,
+    },
+    // 异常单位统计数据
+    unNormalCount: {
+      unnormalCompanyNum: 0, //火警单位数量
+      faultCompanyNum: 0, //故障单位数量
+    },
     // 告警信息列表
     messages: [],
     // 单位集合
@@ -70,22 +85,6 @@ export default {
     },
     // 单位id列表
     unitIds: [],
-    /** 燃气大屏 */
-    // 统计数据
-    statisticsData: {
-      // 管辖单位统计数
-      jurisdictionalUnitStatistics: 0,
-      // 接入单位统计数
-      accessUnitStatistics: 0,
-      // 接入率
-      accessRate: '--',
-      // 报警单位
-      unnormalCompanyNum: 0,
-      // 故障单位
-      faultCompanyNum: 0,
-      // 失联单位
-      outContacts: 0,
-    },
     // 饼图 --接入单位统计
     AccessStatistics: {
       Importing: 0,
@@ -119,25 +118,6 @@ export default {
     gasPendingUnitSet: {
       companyList: [],
     },
-    deviceStatusCount: {
-      count: 0,
-      normal: 0,
-      earlyWarning: 0,
-      confirmWarning: 0,
-      unconnect: 0,
-    },
-    // 设备列表
-    devices: [],
-    // 设备实时数据
-    deviceRealTimeData: {
-      status: 0,
-      deviceId: undefined,
-      deviceDataForAppList: [],
-    },
-    // 设备配置策略
-    deviceConfig: [],
-    // 历史数据
-    deviceHistoryData: [],
     // 摄像头列表
     cameraList: [],
     // 报警处理流程
@@ -175,7 +155,7 @@ export default {
       }
     },
 
-    // 获取燃气大屏各单位数据
+    // 获取烟感大屏各单位数据
     *fetchUnitData({ payload, callback }, { call, put }) {
       const {
         code,
@@ -183,9 +163,9 @@ export default {
           companys: units,
           companyNum: jurisdictionalUnitStatistics,
           importingCompanyNum: accessUnitStatistics,
-          unnormalCompanyNum,
-          faultCompanyNum,
-          outContacts,
+          fireByMonth,
+          fireByYear,
+          fireByQuarter,
         },
       } = yield call(getBigFlatformData, payload);
       const statisticsData = {
@@ -198,12 +178,12 @@ export default {
           jurisdictionalUnitStatistics > 0
             ? `${Math.round((accessUnitStatistics / jurisdictionalUnitStatistics) * 100)}%`
             : '--',
-        // 报警单位
-        unnormalCompanyNum,
-        // 故障单位
-        faultCompanyNum,
-        // 失联单位
-        outContacts,
+        // 本月历史火警
+        fireByMonth,
+        // 本季度历史火警
+        fireByYear,
+        // 本年历史火警
+        fireByQuarter,
       };
       const pay = {
         unitSet: getUnitSet(units),
@@ -223,15 +203,32 @@ export default {
       }
     },
 
-    // 燃气大屏接入单位统计
+    // 获取异常单位统计数据
+    *fetchUnNormalCount({ payload, success, error }, { call, put }) {
+      const response = yield call(getUnNormalCount, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveUnNormalCount',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response);
+      }
+    },
+
+    // 烟感大屏接入单位统计列表
     *fetchImportingTotal({ payload, callback }, { call, put }) {
       const {
         code,
         data: {
           // 饼图数据
           AccessStatistics: { Importing, unImporting },
-          companys: importingUnits,
+          // 单位接入设备数
           AccessCount,
+          companys: importingUnits,
         },
       } = yield call(getImportingTotal, payload);
       const AccessStatistics = {
@@ -256,7 +253,7 @@ export default {
       }
     },
 
-    // 燃气大屏异常单位统计
+    // 烟感大屏异常单位统计
     *fetchAbnormalingTotal({ payload, callback }, { call, put }) {
       const {
         code,
@@ -290,7 +287,7 @@ export default {
       }
     },
 
-    // 燃气大屏待处理业务
+    // 烟感大屏待处理业务
     *fetchPendingMission({ payload, callback }, { call, put }) {
       const {
         code,
@@ -318,80 +315,6 @@ export default {
       }
     },
 
-    // 获取企业设备统计数
-    *fetchDeviceStatusCount({ payload, success, error }, { call, put }) {
-      const response = yield call(getDeviceStatusCount, payload);
-      if (response.code === 200) {
-        yield put({
-          type: 'deviceStatusCount',
-          payload: response.data,
-        });
-        if (success) {
-          success(response.data);
-        }
-      } else if (error) {
-        error(response);
-      }
-    },
-    // 获取设备列表
-    *fetchDevices({ payload, callback }, { call, put }) {
-      const {
-        code,
-        data: { list },
-      } = yield call(getDevices, payload);
-      if (code === 200) {
-        yield put({
-          type: 'save',
-          payload: { devices: list },
-        });
-        if (callback) {
-          callback(list);
-        }
-      }
-    },
-    // 获取设备实时数据
-    *fetchDeviceRealTimeData({ payload, callback }, { call, put }) {
-      const { code, data } = yield call(getDeviceRealTimeData, payload);
-      if (code === 200) {
-        yield put({
-          type: 'save',
-          payload: { deviceRealTimeData: data },
-        });
-        if (callback) {
-          callback(data);
-        }
-      }
-    },
-    // 获取设备配置策略
-    *fetchDeviceConfig({ payload, callback }, { call, put }) {
-      const {
-        code,
-        data: { list },
-      } = yield call(getDeviceConfig, payload);
-      if (code === 200) {
-        yield put({
-          type: 'save',
-          payload: { deviceConfig: list },
-        });
-        if (callback) {
-          callback(list);
-        }
-      }
-    },
-    // 获取设备历史数据
-    *fetchDeviceHistoryData({ payload, callback }, { call, put }) {
-      const { code, data } = yield call(getDeviceHistoryData, payload);
-      const list = data && data.list ? data.list : [];
-      if (code === 200) {
-        yield put({
-          type: 'save',
-          payload: { deviceHistoryData: list },
-        });
-        if (callback) {
-          callback(list);
-        }
-      }
-    },
     *fetchCameraList({ payload }, { call, put }) {
       const response = yield call(getCameraList, payload);
       const { list } = response;
@@ -429,10 +352,10 @@ export default {
         ...payload,
       };
     },
-    deviceStatusCount(state, { payload }) {
+    saveUnNormalCount(state, { payload }) {
       return {
         ...state,
-        deviceStatusCount: payload,
+        unNormalCount: payload,
       };
     },
     saveCameraList(state, action) {

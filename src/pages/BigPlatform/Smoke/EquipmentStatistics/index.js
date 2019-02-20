@@ -10,9 +10,8 @@ export default class EquipmentStatistics extends PureComponent {
         trigger: 'axis',
         axisPointer: {
           type: 'shadow',
-          shadowStyle: {
-            color: 'rgba(46,78,111,0.5)',
-            opacity: 0.6,
+          lineStyle: {
+            color: '#405f85',
           },
         },
         backgroundColor: 'rgba(46,78,111,0.5)',
@@ -45,22 +44,9 @@ export default class EquipmentStatistics extends PureComponent {
         },
         axisLabel: {
           color: '#fff',
-          fontSize: 12,
+          fontSize: 14,
         },
-        data: [
-          '1月',
-          '2月',
-          '3月',
-          '4月',
-          '5月',
-          '6月',
-          '7月',
-          '8月',
-          '9月',
-          '10月',
-          '11月',
-          '12月',
-        ],
+        data: ['1月', '2月', '3月', '4月', '5月'],
       },
       yAxis: [
         {
@@ -95,14 +81,14 @@ export default class EquipmentStatistics extends PureComponent {
           color: 'rgb(4, 253, 255)',
           type: 'bar',
           barWidth: 5,
-          data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 14, 13, 48.7, 18.8, 6.0, 2.3],
+          data: [0.6, 1.9, 25.0, 0.4, 1.7],
         },
         {
           name: '故障数量',
           type: 'bar',
           color: 'rgb(217, 61, 73)',
           barWidth: 5,
-          data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 11, 12, 48.7, 18.8, 6.0, 2.3],
+          data: [0.6, 1.9, 23.0, 0.4, 61.7],
         },
       ],
     };
