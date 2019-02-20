@@ -62,6 +62,28 @@ const msgInfo = {
     animation: styles.orangeShadow,
   },
 };
+
+const popupVisible = {
+  videoVisible: false, // 重点部位监控视频弹窗
+  riskDrawerVisible: false, // 是否显示对应弹框
+  workOrderDrawerVisible: false,
+  alarmMessageDrawerVisible: false,
+  faultMessageDrawerVisible: false,
+  alarmDynamicDrawerVisible: false,
+  alarmHistoryDrawerVisible: false,
+  maintenanceDrawerVisible: false,
+  checkDrawerVisible: false, // 检查点抽屉是否显示
+  pointDrawerVisible: false, // 点位名称抽屉是否显示
+  faultDrawerVisible: false,
+  currentDrawerVisible: false, // 当前隐患抽屉可见
+  dangerDetailVisible: false, // 隐患详情抽屉可见
+  // 点位巡查抽屉是否显示
+  pointInspectionDrawerVisible: false,
+  maintenanceMsgDrawerVisible: false,
+  alarmDynamicMsgDrawerVisible: false,
+  fireAlarmVisible: false,
+  maintenanceCheckDrawerVisible: false,
+};
 /**
  * description: 新企业消防
  * author:
@@ -136,7 +158,7 @@ export default class App extends PureComponent {
           payload: data,
           success: result => {
             // 显示火警障碍弹窗
-            const { itemId, messageFlag, type, checkResult } = result;
+            const { itemId, messageFlag, type, checkResult, pointId, pointStatus } = result;
 
             if (type === 5 || type === 6) {
               this.showFireMsg(result);
@@ -199,7 +221,14 @@ export default class App extends PureComponent {
               }
             }
 
-            if (type === 13 && checkResult === '无隐患') {
+            if (
+              type === 15 ||
+              type === 16 ||
+              type === 17 ||
+              (type === 13 && checkResult === '无隐患')
+            ) {
+              if (fourColorTips[pointId] === messageFlag)
+                this.removeFourColorTip(pointId, messageFlag);
               // 获取点位
               dispatch({
                 type: 'newUnitFireControl/fetchPointList',
@@ -756,7 +785,7 @@ export default class App extends PureComponent {
     } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchWorkOrder',
-      payload: { companyId, id, status },
+      payload: { companyId, id, status, except: 3 },
     });
   };
 
@@ -823,7 +852,7 @@ export default class App extends PureComponent {
     const {
       monitor: { allCamera },
     } = this.props;
-
+    this.hiddeAllPopup();
     this.handleFetchAlarmHandle(dataId);
     this.setState({ alarmMessageDrawerVisible: true });
     this.handleShowVideo(allCamera.length ? allCamera[0].key_id : '', true);
@@ -851,7 +880,12 @@ export default class App extends PureComponent {
   };
 
   handleFaultClick = data => {
+    this.hiddeAllPopup();
     this.setState({ faultMessage: data, faultMessageDrawerVisible: true });
+  };
+
+  hiddeAllPopup = () => {
+    this.setState({ ...popupVisible });
   };
 
   // 点击当前隐患图表进行筛选

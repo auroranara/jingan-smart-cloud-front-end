@@ -39,11 +39,14 @@ const SMOKE_OPTIONS = [
 export const SPAN_2 = { span: 2 };
 export const SPAN_4 = { span: 4 };
 export const SPAN_6 = { span: 6 };
+export const SPAN_8 = { span: 8 };
 export const SPAN_16 = { span: 16 };
 export const SPAN_18 = { span: 18 };
 export const LABEL_COL_2 = SPAN_2;
 export const LABEL_COL_4 = SPAN_4;
 export const LABEL_COL_6 = SPAN_6;
+export const LABEL_COL_8 = SPAN_8;
+export const WRAPPER_COL_1 = SPAN_16;
 export const WRAPPER_COL = SPAN_18;
 export const INPUT_SPAN = { lg: 6, md: 12, sm: 24 };
 

@@ -102,6 +102,7 @@ export default {
   'menu.systemManagement.pageAuthority.pageAuthority': '页面权限配置',
   'menu.systemManagement.pageAuthority.view': '查看',
   'menu.systemManagement.pageAuthority.edit': '设置',
+  'menu.systemManagement.pageAuthority.sort': '页面权限排序',
   'menu.videoSurveillance': '视频监控',
   'menu.videoSurveillance.map': '地图',
   'menu.videoSurveillance.map.map': '地图',

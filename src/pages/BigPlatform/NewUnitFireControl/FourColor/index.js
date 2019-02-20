@@ -19,7 +19,7 @@ import styles from './index.less';
  * author: sunkai
  * date: 2018年12月03日
  */
-export default class App extends PureComponent {
+export default class FourColor extends PureComponent {
   state = {
     videoVisible: false,
     videoKeyId: '',
@@ -203,6 +203,7 @@ export default class App extends PureComponent {
           onClick={this.handleClickMarker}
           maxBoundsRatio={1.5}
           tips={tips}
+          mapProps={{ scrollWheelZoom: false }}
         />
         {/* {points.map(
           ({

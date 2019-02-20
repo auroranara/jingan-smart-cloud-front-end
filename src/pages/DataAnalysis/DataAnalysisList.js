@@ -9,7 +9,7 @@ import styles from './DataAnalysisList.less';
 import InlineForm from '../BaseInfo/Company/InlineForm';
 import CODES from '@/utils/codes';
 import { AuthIcon } from '@/utils/customAuth';
-import { INPUT_SPAN, LABEL_COL_6, WRAPPER_COL } from './constant';
+import { INPUT_SPAN, LABEL_COL_6, LABEL_COL_8, WRAPPER_COL_1 as WRAPPER_COL } from './constant';
 import { handleListFormVals } from './utils';
 
 import electricityIcon from './imgs/electricity.png';
@@ -73,7 +73,7 @@ const fields = [
   {
     id: 'name',
     label: '单位名称：',
-    labelCol: LABEL_COL_6,
+    labelCol: LABEL_COL_8,
     wrapperCol: WRAPPER_COL,
     inputSpan: INPUT_SPAN,
     render: () => <Input placeholder="请输入单位名称" />,
@@ -82,7 +82,7 @@ const fields = [
   {
     id: 'practicalAddress',
     label: '单位地址：',
-    labelCol: LABEL_COL_6,
+    labelCol: LABEL_COL_8,
     wrapperCol: WRAPPER_COL,
     inputSpan: INPUT_SPAN,
     render: () => <Input placeholder="请输入单位地址" />,
@@ -91,7 +91,7 @@ const fields = [
   {
     id: 'type',
     label: '监测类型：',
-    labelCol: LABEL_COL_6,
+    labelCol: LABEL_COL_8,
     wrapperCol: WRAPPER_COL,
     inputSpan: INPUT_SPAN,
     options: { initialValue: '0' },

@@ -107,7 +107,7 @@ const smokeColumns = [
     dataIndex: 'status',
     align: 'center',
     render: val => {
-      return +val === -1 ? '失联' : +val === 0 ? '正常' : '异常';
+      return +val === -1 ? '失联' : +val === 0 ? '正常' : '火警';
     },
   },
   {
@@ -421,11 +421,13 @@ export default class TopCenter extends PureComponent {
       outContact: loss = 0,
     } = smokeCountData;
 
+    const waveHeight = window.document.body.scrollHeight < 680 ? 65 : 105;
+
     return (
       <Col span={13} style={{ height: '100%' }} className={styles.topCenter}>
         {/* 监测指数 */}
         <Col span={12} style={{ height: '100%', padding: '0 6px' }}>
-          <div className={styles.sectionMain}>
+          <div className={styles.sectionMainMonitor}>
             <div className={styles.shadowIn}>
               <div className={styles.topTitle}>监测指数</div>
               <div className={styles.monitorContent}>
@@ -437,7 +439,7 @@ export default class TopCenter extends PureComponent {
                       percentFontSize="48px"
                       percent={score}
                       isNumber={true}
-                      height={105}
+                      height={waveHeight}
                     />
                   )}
                 </div>

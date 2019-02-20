@@ -43,7 +43,7 @@ export default function EffluentMonitor(props) {
     value: rtData[code],
     isBeyond: unnormalCodes.includes(code),
   }));
-  console.log('handledParams', handledParams);
+  // console.log('handledParams', handledParams);
 
   const sectionStyle = {
     boxShadow: `0 0 1.1em rgba(${
