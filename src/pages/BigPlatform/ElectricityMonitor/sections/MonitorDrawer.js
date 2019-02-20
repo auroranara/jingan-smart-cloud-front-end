@@ -51,6 +51,18 @@ export default class MonitorDrawer extends PureComponent {
     labelIndex: 0,
   };
 
+  componentDidMount() {
+    const { setAlertedLabelIndexFn } = this.props;
+    setAlertedLabelIndexFn(this.setAlertedLabelIndex);
+  }
+
+  setAlertedLabelIndex = () => {
+    console.log('init');
+    const { data: { deviceRealTimeData: { deviceDataForAppList } } } = this.props;
+    const alerted = getAlerted(deviceDataForAppList, CHARTS_LABELS);
+    alerted.length && this.setState({ labelIndex: alerted[0] });
+  };
+
   handleClickCamera = () => {
     const { data: { cameraList=[] } } = this.props;
     this.setState({
