@@ -57,7 +57,6 @@ export default class MonitorDrawer extends PureComponent {
   }
 
   setAlertedLabelIndex = () => {
-    console.log('init');
     const { data: { deviceRealTimeData: { deviceDataForAppList } } } = this.props;
     const alerted = getAlerted(deviceDataForAppList, CHARTS_LABELS);
     alerted.length && this.setState({ labelIndex: alerted[0] });

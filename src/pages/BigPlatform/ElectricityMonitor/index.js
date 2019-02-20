@@ -322,7 +322,7 @@ export default class ElectricityMonitor extends PureComponent {
         callback: ([data]) => {
           if (data) {
             const { deviceId } = data;
-            this.handleSelectDevice(deviceId);
+            this.handleSelectDevice(deviceId, this.setAlertedLabelIndex);
             // 添加定时器
             this.deviceStatusCountTimer = setInterval(() => {
               this.getDeviceStatusCount(companyId);
