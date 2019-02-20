@@ -3,19 +3,25 @@ import React from 'react';
 import styles from './Gauge.less';
 import { ChartGauge } from '../components/Components';
 
-const COLORS = ['#37a460', '#f9b206', '#f73329'];
+// const COLORS = ['#37a460', '#f9b206', '#f73329'];
+const COLORS = ['#37a460', '#f9b206', '#ff4905'];
 const RANGES = {
   'A相温度': [0, 150],
   'B相温度': [0, 150],
   'C相温度': [0, 150],
   '零线温度': [0, 150],
   '漏电电流': [0, 1500],
+  'A相电流': [0, 750],
+  'B相电流': [0, 750],
+  'C相电流': [0, 750],
+  'A相电压': [0, 500],
+  'B相电压': [0, 500],
+  'C相电压': [0, 500],
 };
 
 export default function Gauge(props) {
   const {
-    labelFontSize,
-    data: { desc: title, value, unit, limit, status },
+    data: { desc: title, value, unit, limit=[null, null], status },
   } = props;
   const [start, end] = RANGES[title];
   const [value1, value2] = limit;
@@ -49,7 +55,11 @@ export default function Gauge(props) {
   return (
     <div className={styles.container}>
       <div className={styles.chart}>
-        <ChartGauge value={value} max={end} axisLineColor={axisLineColor} labelFontSize={labelFontSize} />
+        <ChartGauge
+          value={value}
+          max={end}
+          axisLineColor={axisLineColor}
+        />
       </div>
       <div className={styles.desc}>
         <p className={styles.title}>{title}</p>

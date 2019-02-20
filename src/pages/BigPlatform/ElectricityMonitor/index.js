@@ -236,11 +236,12 @@ export default class ElectricityMonitor extends PureComponent {
     });
   };
 
-  getDeviceRealTimeData = deviceId => {
+  getDeviceRealTimeData = (deviceId, callback) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'electricityMonitor/fetchDeviceRealTimeData',
       payload: { deviceId },
+      callback,
     });
   };
 
@@ -258,6 +259,10 @@ export default class ElectricityMonitor extends PureComponent {
       type: 'electricityMonitor/fetchDeviceConfig',
       payload: { deviceId },
     });
+  };
+
+  setAlertedLabelIndexFn = f => {
+    this.setAlertedLabelIndex = f;
   };
 
   /**
@@ -287,7 +292,7 @@ export default class ElectricityMonitor extends PureComponent {
           type: 1,
         },
       });
-      this.handleSelectDevice(deviceId);
+      this.handleSelectDevice(deviceId, this.setAlertedLabelIndex);
       dispatch({
         type: 'electricityMonitor/fetchDeviceConfig',
         payload: { deviceId },
@@ -317,7 +322,7 @@ export default class ElectricityMonitor extends PureComponent {
         callback: ([data]) => {
           if (data) {
             const { deviceId } = data;
-            this.handleSelectDevice(deviceId);
+            this.handleSelectDevice(deviceId, this.setAlertedLabelIndex);
             // 添加定时器
             this.deviceStatusCountTimer = setInterval(() => {
               this.getDeviceStatusCount(companyId);
@@ -497,11 +502,11 @@ export default class ElectricityMonitor extends PureComponent {
     this.handleMapClick(companyId, units.filter(item => item.companyId === companyId)[0]);
   };
 
-  handleSelectDevice = deviceId => {
+  handleSelectDevice = (deviceId, callback) => {
     clearInterval(this.deviceRealTimeDataTimer);
     clearInterval(this.deviceHistoryDataTimer);
     clearInterval(this.deviceConfigTimer);
-    this.getDeviceRealTimeData(deviceId);
+    this.getDeviceRealTimeData(deviceId, callback);
     this.getDeviceHistoryData(deviceId);
     this.getDeviceConfig(deviceId);
   };
@@ -698,6 +703,7 @@ export default class ElectricityMonitor extends PureComponent {
           handleClose={this.hideUnitDetail}
           handleSelect={this.handleSelectDevice}
           handleClickCamera={this.handleClickCamera}
+          setAlertedLabelIndexFn={this.setAlertedLabelIndexFn}
         />
         {/* <VideoPlay
           showList={true}
