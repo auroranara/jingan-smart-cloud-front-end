@@ -1,11 +1,12 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Row, Col, Input, Button, Table, Form, Select, Divider, Modal, message, Popconfirm } from 'antd';
+import { Card, Row, Col, Input, Button, Table, Form, Select, Divider, Modal, message, Popconfirm, Icon, Radio } from 'antd';
 import codes from '@/utils/codes';
 import { hasAuthority, AuthA } from '@/utils/customAuth';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { Map, Marker, ImageOverlay } from 'react-leaflet';
 import L from 'leaflet';
+import styles from './companyBeacon.less';
 
 const Option = Select.Option;
 
@@ -34,6 +35,11 @@ const statusInfo = [
   { label: '在线', value: '1' },
   { label: '离线', value: '0' },
 ]
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
+};
+const itemStyles = { style: { width: 'calc(75%)', marginRight: '10px' } }
 
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 
@@ -54,14 +60,16 @@ export default class CompanyBeacon extends PureComponent {
       mapUrl: '',
       position: {},
       bounds: undefined,
+      selectedMap: {},
+      unitModalVisible: false,   // 选择单位平面图弹窗
+      mapList: [],                // 单位地图列表
     }
     this.map = null
-    this.mapUrl = null
   }
 
   componentDidMount() {
     const {
-      match: { params: { id: companyId } },
+      match: { params: { companyId } },
     } = this.props
     // 获取信标列表
     this.fetchBeacons({
@@ -76,7 +84,9 @@ export default class CompanyBeacon extends PureComponent {
       payload: { companyId, mapHierarchy: '1' },
       callback: (list) => {
         if (list && list.length > 0) {
-          this.mapUrl = JSON.parse(list[0].mapPhoto).url
+          // 处理数据
+          const mapList = list.map(({ mapPhoto, mapName, id }) => ({ ...JSON.parse(mapPhoto), mapName, id }))
+          this.setState({ mapList })
         }
       },
     })
@@ -112,7 +122,7 @@ export default class CompanyBeacon extends PureComponent {
   // 处理翻页、页大小变化
   handlePageChange = (pageNum, pageSize) => {
     const {
-      match: { params: { id: companyId } },
+      match: { params: { companyId } },
     } = this.props
     this.fetchBeacons({
       payload: {
@@ -127,7 +137,7 @@ export default class CompanyBeacon extends PureComponent {
   handleQuery = () => {
     const {
       form: { getFieldsValue },
-      match: { params: { id: companyId } },
+      match: { params: { companyId } },
       personnelPosition: {
         beaconManagement: {
           beaconPagination: { pageSize },
@@ -166,7 +176,7 @@ export default class CompanyBeacon extends PureComponent {
   // 点击打开新增弹窗
   handleToAdd = () => {
     const {
-      match: { params: { id: companyId } },
+      // match: { params: { companyId } },
       form: { resetFields },
     } = this.props
     // 获取当前单位的系统配置
@@ -176,6 +186,7 @@ export default class CompanyBeacon extends PureComponent {
     this.setState({
       modalVisible: true,
       detail: {},
+      selectedMap: {},
     })
     resetFields(['area'])
   }
@@ -213,10 +224,14 @@ export default class CompanyBeacon extends PureComponent {
   }
 
   // 点击打开编辑弹窗
-  handleToEdit = (detail) => {
-    const { form: { setFieldsValue } } = this.props
-    const { xarea, yarea, zarea, beaconCode, sysId } = detail
-    this.setState({ detail, modalVisible: true }, () => {
+  handleToEdit = detail => {
+    const {
+      form: { setFieldsValue },
+    } = this.props
+    const { mapList } = this.state
+    const { xarea, yarea, zarea, beaconCode, sysId, mapId = null } = detail
+    const selectedMap = mapList.find(item => item.id === mapId) || {}
+    this.setState({ detail, modalVisible: true, selectedMap }, () => {
       setFieldsValue({
         sysId,
         beaconCode,
@@ -224,6 +239,7 @@ export default class CompanyBeacon extends PureComponent {
         xarea,
         yarea,
         zarea,
+        mapId,
       })
     })
   }
@@ -250,7 +266,7 @@ export default class CompanyBeacon extends PureComponent {
     const {
       dispatch,
       form: { validateFields },
-      match: { params: { id: companyId } },
+      match: { params: { companyId } },
     } = this.props
     const { detail = {} } = this.state
     const success = () => {
@@ -290,8 +306,10 @@ export default class CompanyBeacon extends PureComponent {
   }
 
   // 点击查看地图
-  handleViewMap = ({ xarea, yarea }) => {
-    const mapUrl = this.mapUrl
+  handleViewMap = ({ xarea, yarea, mapId = null }) => {
+    const { mapList } = this.state
+    const currentMap = mapList.find(item => item.id === mapId) || {}
+    const mapUrl = currentMap.url
     const position = { lat: +yarea, lng: +xarea }
     this.setState({ viewMapVisible: true, position }, () => {
       const image = new Image();
@@ -307,6 +325,12 @@ export default class CompanyBeacon extends PureComponent {
         })
       }
     })
+  }
+
+  handleSelectMap = item => {
+    const { form: { setFieldsValue } } = this.props
+    this.setState({ selectedMap: item })
+    setFieldsValue({ mapId: item.id })
   }
 
   render() {
@@ -328,7 +352,7 @@ export default class CompanyBeacon extends PureComponent {
         },
       },
     } = this.props
-    const { detail = {}, modalVisible, viewMapVisible, mapUrl, position, bounds } = this.state
+    const { detail = {}, modalVisible, viewMapVisible, mapUrl, position, bounds, selectedMap = {}, unitModalVisible, mapList } = this.state
 
     // 添加权限
     const addAuth = hasAuthority(addCode, permissionCodes)
@@ -447,6 +471,7 @@ export default class CompanyBeacon extends PureComponent {
         </Card>
         {/* 添加、编辑信标弹窗 */}
         <Modal
+          width={600}
           title={detail.id ? '编辑信标' : '新增信标'}
           visible={modalVisible}
           onCancel={this.handleCloseModal}
@@ -454,18 +479,18 @@ export default class CompanyBeacon extends PureComponent {
           destroyOnClose
         >
           <Form>
-            <Form.Item label="所属系统">
+            <Form.Item label="所属系统" {...formItemLayout}>
               {getFieldDecorator('sysId', {
                 rules: [{ required: true, message: '请选择所属系统' }],
               })(
-                <Select placeholder="请选择">
+                <Select placeholder="请选择" {...itemStyles}>
                   {systemList.map(({ sysName, id }, i) => (
                     <Select.Option key={i} value={id}>{sysName}</Select.Option>
                   ))}
                 </Select>
               )}
             </Form.Item>
-            <Form.Item label="信标编号">
+            <Form.Item label="信标编号" {...formItemLayout}>
               {getFieldDecorator('beaconCode', {
                 getValueFromEvent: e => e.target.value.trim(),
                 rules: [
@@ -473,17 +498,17 @@ export default class CompanyBeacon extends PureComponent {
                   { pattern: /^\d+$/, message: '请输入数字' },
                 ],
               })(
-                <Input place="请输入" />
+                <Input place="请输入" {...itemStyles} />
               )}
             </Form.Item>
-            <Form.Item label="信标坐标">
+            <Form.Item label="信标坐标" {...formItemLayout}>
               {getFieldDecorator('area', {
                 rules: [
                   { required: true, validator: this.valiteArea },
                 ],
               })(
                 <Fragment>
-                  <Input.Group>
+                  <Input.Group {...itemStyles}>
                     <Col span={8}>
                       {getFieldDecorator('xarea')(
                         <Input placeholder="x坐标" onChange={(e) => this.handleAreaChange(e.target.value, 'xarea')} />
@@ -500,6 +525,23 @@ export default class CompanyBeacon extends PureComponent {
                       )}
                     </Col>
                   </Input.Group>
+                </Fragment>
+              )}
+            </Form.Item>
+            <Form.Item label="所属单位图" {...formItemLayout}>
+              {getFieldDecorator('mapId', {
+                rules: [{ required: true, message: '请选择所属单位' }],
+              })(
+                <Fragment>
+                  {selectedMap && selectedMap.url ? (
+                    <div className={styles.selectMapWithUrl} onClick={() => this.setState({ unitModalVisible: true })}>
+                      <img src={selectedMap.url} alt={selectedMap.name} />
+                    </div>
+                  ) : (
+                      <div className={styles.selectMap} onClick={() => this.setState({ unitModalVisible: true })}>
+                        <Icon type="plus" />
+                      </div>
+                    )}
                 </Fragment>
               )}
             </Form.Item>
@@ -527,6 +569,27 @@ export default class CompanyBeacon extends PureComponent {
             {bounds && <ImageOverlay url={mapUrl} bounds={bounds} />}
             {position && <Marker position={position}></Marker>}
           </Map>
+        </Modal>
+        <Modal
+          title="所属单位平面图"
+          visible={unitModalVisible}
+          width={800}
+          footer={null}
+          onCancel={() => this.setState({ unitModalVisible: false })}
+          destroyOnClose
+        >
+          {mapList.length > 0 ? (
+            <div className={styles.imgItem}>
+              {mapList.map((item, i) => (
+                <Col span={12} key={i} style={{ padding: '5px' }}>
+                  <img className={styles.img} src={item.url} alt={item.name} />
+                  <div style={{ padding: '5px' }}>
+                    <Radio value={item.url} onChange={() => this.handleSelectMap(item)} checked={item.id === selectedMap.id}>{item.mapName}</Radio>
+                  </div>
+                </Col>
+              ))}
+            </div>
+          ) : (<div className={styles.emptyContent}><span>暂无数据</span></div>)}
         </Modal>
       </PageHeaderLayout>
     )

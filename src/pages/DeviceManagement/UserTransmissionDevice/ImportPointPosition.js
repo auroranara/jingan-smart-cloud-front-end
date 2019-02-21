@@ -172,20 +172,10 @@ export default class ImportPointPosition extends PureComponent {
         return (
           <Popover content={content(rows.error, key)} title="错误提示" trigger="hover">
             <Icon style={{ color: 'red', marginRight: 10 }} type="exclamation-circle-o" />
-            <span className={errorStatus(key, rows.error) ? styles.error : ''}>{val}</span>
+            <span className={styles.error}>{val}</span>
           </Popover>
         );
       } else return <span>{val}</span>;
-    };
-
-    // 首列单元格
-    const firstColumn = (val, rows) => {
-      return (
-        <Popover content={firstContent(rows.error)} title="错误提示" trigger="hover">
-          <Icon style={{ color: 'red', marginRight: 10 }} type="exclamation-circle-o" />
-          <span className={styles.error}>{val}</span>
-        </Popover>
-      );
     };
 
     // 主机信息
@@ -222,7 +212,12 @@ export default class ImportPointPosition extends PureComponent {
         fixed: 'left',
         width: 100,
         render(val, rows) {
-          return firstColumn(val, rows);
+          return (
+            <Popover content={firstContent(rows.error)} title="错误提示" trigger="hover">
+              <Icon style={{ color: 'red', marginRight: 10 }} type="exclamation-circle-o" />
+              <span className={styles.error}>{val}</span>
+            </Popover>
+          );
         },
       },
       {
