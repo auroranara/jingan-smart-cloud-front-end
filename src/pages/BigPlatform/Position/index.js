@@ -12,7 +12,7 @@ import { connect } from 'dva';
 import styles from './index.less';
 import sosIcon from './imgs/sos.png';
 import alarmInfoIcon from './imgs/alarmInfo.png';
-import { Map, Info, PersonInfo, AlarmMsg, AlarmHandle, VideoPlay } from './components/Components';
+import { Map, Info, PersonInfo, AlarmMsg, AlarmHandle, Tabs, VideoPlay } from './components/Components';
 import {
   handlePositions,
   handlePosInfo,
@@ -47,6 +47,8 @@ const PHONE = '13270801232';
 @connect(({ personPosition, user }) => ({ personPosition, user }))
 export default class WbTest extends PureComponent {
   state = {
+    labelIndex: 0,
+
     positions: [], // 地图上的显示的所有点的集合
     posInfo: [], // Info组件中传入的值，记录区域变化
     sosCardId: '',
@@ -138,6 +140,10 @@ export default class WbTest extends PureComponent {
   ws = null;
   lastAreaId = ''; // 上次发生警报区域
 
+  handleLabelClick = i => {
+    this.setState({ labelIndex: i });
+  };
+
   showNotification = type => ({ cardId, uptime, userName, phone = PHONE }) => {
     notification.warning({
       key: type,
@@ -221,6 +227,8 @@ export default class WbTest extends PureComponent {
       },
     } = this.props;
     const {
+      labelIndex,
+
       positions,
       posInfo,
       infoCardId,
@@ -283,22 +291,18 @@ export default class WbTest extends PureComponent {
         extra={companyName}
         headerStyle={{ fontSize: 16 }}
         titleStyle={{ fontSize: 46 }}
-        style={{
-          backgroundImage:
-            'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg2.png)',
-        }}
       >
         <div className={styles.container}>
           <div className={styles.left}>
-            {/* 实时监控 */}
-            <RealTimeMonitor data={sectionInfo} className={styles.leftTop} />
-            {/* 报警查看 */}
+            <Tabs value={labelIndex} handleLabelClick={this.handleLabelClick} />
+            <div className={styles.leftSection} />
+            {/* <RealTimeMonitor data={sectionInfo} className={styles.leftTop} />
             <AlarmView
               data={alarmCards}
               className={styles.leftBottom}
               onClick={this.handleAlarmCardClick}
               handleShowVideo={this.handleShowVideo}
-            />
+            /> */}
           </div>
           <div className={styles.right}>
             <Map

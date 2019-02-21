@@ -1,0 +1,21 @@
+.container {
+  width: 520px;
+  height: 35px;
+  position: relative;
+}
+
+.tab {
+  width: 150px;
+  height: 35px;
+  line-height: 35px;
+  text-align: center;
+  background-image: url(../imgs/trapezoid.png);
+  background-size: 100% 100%;
+  position: absolute;
+  top: 0;
+}
+
+.selected:extend(.tab) {
+  color: #0FF;
+  background-image: url(../imgs/trapezoidSelected.png);
+}

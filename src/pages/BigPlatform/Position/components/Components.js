@@ -1,6 +1,17 @@
-export AlarmHandle from './AlarmHandle';
-export AlarmMsg from './AlarmMsg';
-export Map from './Map';
-export Info from './Info';
-export PersonInfo from './PersonInfo';
-export VideoPlay from './VideoPlay';
+import AlarmHandle from './AlarmHandle';
+import AlarmMsg from './AlarmMsg';
+import Map from './Map';
+import Info from './Info';
+import PersonInfo from './PersonInfo';
+import Tabs from './Tabs';
+import VideoPlay from './VideoPlay';
+
+export {
+  AlarmHandle,
+  AlarmMsg,
+  Map,
+  Info,
+  PersonInfo,
+  Tabs,
+  VideoPlay,
+};
