@@ -8,8 +8,9 @@ import {
   getCompanyId,
   getCameraList,
   getGasForMaintenance,
+  getMapList,
+  getCompanySmokeInfo,
 } from '../services/smoke';
-
 // 获取单位集
 const getUnitSet = function(units) {
   // 告警单位
@@ -218,7 +219,29 @@ export default {
         error(response);
       }
     },
-
+    // 烟感地图数据
+    *fetchMapList({ payload, success, error }, { call, put }) {
+      const response = yield call(getMapList, payload);
+      const {
+        code,
+        data: { list: units },
+      } = response;
+      const pay = {
+        unitSet: getUnitSet(units),
+        unitIds: units.map(({ company_id }) => company_id),
+      };
+      if (code === 200) {
+        yield put({
+          type: 'save',
+          payload: pay,
+        });
+        if (success) {
+          success(pay);
+        }
+      } else if (error) {
+        error(response);
+      }
+    },
     // 烟感大屏接入单位统计列表
     *fetchImportingTotal({ payload, callback }, { call, put }) {
       const {

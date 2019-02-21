@@ -13,6 +13,16 @@ export async function getUnNormalCount(params) {
   return request(`${URL_PREFIX}/smoke/unNormalCompanyCount?${stringify(params)}`);
 }
 
+// 烟感地图数据
+export async function getMapList(params) {
+  return request(`${URL_PREFIX}/smoke/mapList?${stringify(params)}`);
+}
+
+// 公司烟感具体监测数据
+export async function getCompanySmokeInfo(params) {
+  return request(`${URL_PREFIX}/smoke/companySmokeInfo?${stringify(params)}`);
+}
+
 // 接入单位统计抽屉
 export async function getImportingTotal(params) {
   return request(`${URL_PREFIX}/smoke/importing?${stringify(params)}`);
