@@ -25,6 +25,8 @@ import styles from './CompanyBeacon.less';
 
 const Option = Select.Option;
 
+console.log('Option');
+
 // 权限代码
 const {
   personnelPosition: {
