@@ -65,7 +65,6 @@ export default class CompanyBeacon extends PureComponent {
       mapList: [],                // 单位地图列表
     }
     this.map = null
-    this.mapUrl = null
   }
 
   componentDidMount() {
@@ -85,11 +84,9 @@ export default class CompanyBeacon extends PureComponent {
       payload: { companyId, mapHierarchy: '1' },
       callback: (list) => {
         if (list && list.length > 0) {
-          this.mapUrl = JSON.parse(list[0].mapPhoto).url
           // 处理数据
           const mapList = list.map(({ mapPhoto, mapName, id }) => ({ ...JSON.parse(mapPhoto), mapName, id }))
           this.setState({ mapList })
-
         }
       },
     })
@@ -309,8 +306,10 @@ export default class CompanyBeacon extends PureComponent {
   }
 
   // 点击查看地图
-  handleViewMap = ({ xarea, yarea }) => {
-    const mapUrl = this.mapUrl
+  handleViewMap = ({ xarea, yarea, mapId = null }) => {
+    const { mapList } = this.state
+    const currentMap = mapList.find(item => item.id === mapId) || {}
+    const mapUrl = currentMap.url
     const position = { lat: +yarea, lng: +xarea }
     this.setState({ viewMapVisible: true, position }, () => {
       const image = new Image();
