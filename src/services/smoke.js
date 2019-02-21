@@ -24,8 +24,8 @@ export async function getAbnormalingTotal(params) {
 }
 
 // 火警统计抽屉
-export async function getPendingMission(params) {
-  return request(`${URL_PREFIX}/shg/getPendingGas?${stringify(params)}`);
+export async function getFireHistory(params) {
+  return request(`${URL_PREFIX}/shs/fireHistory?${stringify(params)}`);
 }
 
 // 获取告警信息列表

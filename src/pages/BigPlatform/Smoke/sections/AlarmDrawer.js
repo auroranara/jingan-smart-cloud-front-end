@@ -20,8 +20,6 @@ const ICON_HEIGHT = 40;
 const ICON_BOTTOM = 5;
 const TYPE = 'alarm';
 const NO_DATA = '暂无信息';
-// const LABELS = ['报警', '故障', '失联', '正常'];
-// const COLORS = ['248,51,41', '255,180,0', '159,159,159', '55,164,96'];
 const OPTIONS = ['全部', '报警', '故障'].map((d, i) => ({ value: i, desc: d }));
 
 export default class AlarmDrawer extends PureComponent {

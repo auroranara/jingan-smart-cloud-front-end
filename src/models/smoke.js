@@ -3,7 +3,7 @@ import {
   getUnNormalCount, // 异常单位统计数据
   getImportingTotal, // 接入单位统计
   getAbnormalingTotal, // 异常单位统计
-  getPendingMission, // 待处理业务
+  getFireHistory, // 火警统计
   getMessages,
   getCompanyId,
   getCameraList,
@@ -70,6 +70,44 @@ export default {
       unnormalCompanyNum: 0, //火警单位数量
       faultCompanyNum: 0, //故障单位数量
     },
+    // 接入单位统计
+    AccessStatistics: {
+      Importing: 0,
+      unImporting: 0,
+    },
+    AccessCount: [],
+    gasUnitSet: {
+      importingUnits: [],
+    },
+    // 异常单位统计
+    companyStatus: {
+      // 报警
+      unnormal: 0,
+      // 故障
+      faultNum: 0,
+      // 失联
+      outContact: 0,
+    },
+    AbnormalTrend: [],
+    gasErrorUnitSet: {
+      errorUnits: [],
+    },
+    data: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageSize: 10,
+        pageNum: 1,
+      },
+    },
+    // 火警统计
+    fireHistoryData: {
+      fireCompanyList: {
+        startDate: '',
+        endDate: '',
+        list: [],
+      },
+    },
     // 告警信息列表
     messages: [],
     // 单位集合
@@ -85,34 +123,6 @@ export default {
     },
     // 单位id列表
     unitIds: [],
-    // 饼图 --接入单位统计
-    AccessStatistics: {
-      Importing: 0,
-      unImporting: 0,
-    },
-    // 树状图 --接入单位统计
-    AccessCount: [],
-    // 单位卡片列表 --接入单位统计
-    gasUnitSet: {
-      importingUnits: [],
-    },
-    // 单位状态统计数据 --异常单位统计
-    companyStatus: {
-      // 报警
-      unnormal: 0,
-      // 故障
-      faultNum: 0,
-      // 失联
-      outContact: 0,
-    },
-    // 报警趋势图数据 --异常单位统计
-    AbnormalTrend: [],
-    // 单位卡片列表 --异常单位统计
-    gasErrorUnitSet: {
-      errorUnits: [],
-    },
-    // 未处理报警
-    allGasFire: 0,
     gasChartByMonth: [],
     // 单位卡片列表 --待处理单位统计
     gasPendingUnitSet: {
@@ -287,31 +297,19 @@ export default {
       }
     },
 
-    // 烟感大屏待处理业务
-    *fetchPendingMission({ payload, callback }, { call, put }) {
-      const {
-        code,
-        data: {
-          allGasFire, // 未处理报警
-          gasChartByMonth = [], // 报警业务处理统计
-          companyList = [], // 单位列表
-        },
-      } = yield call(getPendingMission, payload);
-      const pay = {
-        allGasFire,
-        gasChartByMonth,
-        gasPendingUnitSet: { companyList },
-      };
-      if (code === 200) {
+    // 烟感大屏火警统计
+    *fetchFireHistory({ payload, success, error }, { call, put }) {
+      const response = yield call(getFireHistory, payload);
+      if (response.code === 200) {
         yield put({
-          type: 'saveUnitData',
-          payload: pay,
+          type: 'saveFireHistory',
+          payload: response.data,
         });
-        if (callback) {
-          callback(pay);
+        if (success) {
+          success(response.data);
         }
-      } else if (callback) {
-        callback();
+      } else if (error) {
+        error(response);
       }
     },
 
@@ -352,10 +350,18 @@ export default {
         ...payload,
       };
     },
+    // 获取异常单位统计数据
     saveUnNormalCount(state, { payload }) {
       return {
         ...state,
         unNormalCount: payload,
+      };
+    },
+    // 获取火警统计
+    saveFireHistory(state, { payload }) {
+      return {
+        ...state,
+        fireHistoryData: payload,
       };
     },
     saveCameraList(state, action) {

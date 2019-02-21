@@ -72,6 +72,7 @@ export default class Gas extends PureComponent {
       // drawerType: '', // alarm,fault
       alarmIds: [],
       companyName: '',
+      type: 0,
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -98,56 +99,55 @@ export default class Gas extends PureComponent {
     } = this.props;
 
     // 获取单位数据
-    dispatch({
-      type: 'smoke/fetchUnitData',
-      payload: { gridId },
-      callback: data => {
-        if (!data) return;
-        const {
-          unitSet: { units = [] },
-        } = data;
-        this.cardsInfo = genCardsInfo(units);
-      },
-    });
+    // dispatch({
+    //   type: 'smoke/fetchUnitData',
+    //   payload: { gridId },
+    //   callback: data => {
+    //     if (!data) return;
+    //     const {
+    //       unitSet: { units = [] },
+    //     } = data;
+    //     this.cardsInfo = genCardsInfo(units);
+    //   },
+    // });
 
-    // 获取异常单位统计数据
-    dispatch({
-      type: 'smoke/fetchUnNormalCount',
-      payload: { gridId },
-    });
+    // // 获取异常单位统计数据
+    // dispatch({
+    //   type: 'smoke/fetchUnNormalCount',
+    //   payload: { gridId },
+    // });
 
-    // 获取接入单位统计列表
-    dispatch({
-      type: 'smoke/fetchImportingTotal',
-      payload: {
-        status,
-        gridId,
-      },
-      callback: data => {
-        if (!data) return;
-        const {
-          gasUnitSet: { importingUnits = [] },
-        } = data;
-        this.importCardsInfo = genCardsInfo(importingUnits);
-      },
-    });
+    // // 获取接入单位统计列表
+    // dispatch({
+    //   type: 'smoke/fetchImportingTotal',
+    //   payload: {
+    //     status,
+    //     gridId,
+    //   },
+    //   callback: data => {
+    //     if (!data) return;
+    //     const {
+    //       gasUnitSet: { importingUnits = [] },
+    //     } = data;
+    //     this.importCardsInfo = genCardsInfo(importingUnits);
+    //   },
+    // });
 
-    // 获取异常单位统计
-    dispatch({
-      type: 'smoke/fetchAbnormalingTotal',
-      payload: {
-        status,
-        gridId,
-      },
-      callback: data => {
-        if (!data) return;
-        const {
-          gasErrorUnitSet: { errorUnits = [] },
-        } = data;
-        this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
-      },
-    });
-
+    // // 获取异常单位统计列表
+    // dispatch({
+    //   type: 'smoke/fetchAbnormalingTotal',
+    //   payload: {
+    //     status,
+    //     gridId,
+    //   },
+    //   callback: data => {
+    //     if (!data) return;
+    //     const {
+    //       gasErrorUnitSet: { errorUnits = [] },
+    //     } = data;
+    //     this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
+    //   },
+    // });
     const params = {
       companyId: gridId,
       env,
@@ -318,20 +318,20 @@ export default class Gas extends PureComponent {
       },
     } = this.props;
     // 获取待处理业务
-    dispatch({
-      type: 'smoke/fetchPendingMission',
-      payload: {
-        type: status,
-        gridId,
-      },
-      callback: data => {
-        if (!data) return;
-        const {
-          gasPendingUnitSet: { companyList = [] },
-        } = data;
-        this.pendingUnitsCardsInfo = genPendingCardsInfo(companyList);
-      },
-    });
+    // dispatch({
+    //   type: 'smoke/fetchFireHistory',
+    //   payload: {
+    //     type: status,
+    //     gridId,
+    //   },
+    //   callback: data => {
+    //     if (!data) return;
+    //     const {
+    //       gasPendingUnitSet: { companyList = [] },
+    //     } = data;
+    //     this.pendingUnitsCardsInfo = genPendingCardsInfo(companyList);
+    //   },
+    // });
   };
 
   /**
@@ -517,6 +517,19 @@ export default class Gas extends PureComponent {
     this.setState({ ...newState });
   };
 
+  handleHistoricalFireClick = type => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'smoke/fetchFireHistory',
+      payload: {
+        type,
+      },
+      success: () => {
+        this.handleDrawerVisibleChange('fire');
+      },
+    });
+  };
+
   handleAlarmClick = (id, companyId, companyName, num) => {
     const {
       dispatch,
@@ -575,6 +588,7 @@ export default class Gas extends PureComponent {
       // drawerType,
       alarmIds,
       companyName,
+      type,
     } = this.state;
 
     const importCardsInfo = this.importCardsInfo;
@@ -644,9 +658,8 @@ export default class Gas extends PureComponent {
           title="历史火警单位统计"
           className={styles.left}
           style={{ top: 'calc(41.184444% + 92px)', height: '18%', cursor: 'pointer' }}
-          onClick={e => this.handleDrawerVisibleChange('fire')}
         >
-          <HistoricalFire data={statisticsData} allGasFire={allGasFire} />
+          <HistoricalFire data={statisticsData} onClick={this.handleHistoricalFireClick} />
         </NewSection>
         <NewSection
           title="设备故障统计"
@@ -673,9 +686,9 @@ export default class Gas extends PureComponent {
           handleAlarmClick={this.handleAlarmClick}
         />
         <FireStatisticsDrawer
-          data={{ list: importCardsInfo, AccessStatistics, AccessCount }}
           visible={fireDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          type={type}
         />
         <MaintenanceDrawer
           title="报警处理动态"

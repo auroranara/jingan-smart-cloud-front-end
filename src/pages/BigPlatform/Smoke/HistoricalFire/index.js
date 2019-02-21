@@ -8,9 +8,9 @@ export default class HistoricalFire extends PureComponent {
     this.state = {};
   }
 
-  handleDrawer = type => {
-    console.log(type);
-  };
+  // handleDrawer = type => {
+  //   console.log(type);
+  // };
 
   /**
    * 渲染
@@ -29,7 +29,7 @@ export default class HistoricalFire extends PureComponent {
         fireByQuarter = 0,
       },
       // 点击事件
-      // onClick,
+      onClick,
     } = this.props;
 
     return (
@@ -39,22 +39,22 @@ export default class HistoricalFire extends PureComponent {
             border: '2px solid #04fdff',
             name: '本月',
             value: fireByMonth,
-            type: '1',
+            type: 1,
           },
           {
             border: '2px solid #04fdff',
             name: '本季',
             value: fireByYear,
-            type: '2',
+            type: 2,
           },
           {
             border: '2px solid #04fdff',
             name: '本年',
             value: fireByQuarter,
-            type: '3',
+            type: 3,
           },
         ].map(({ border, name, value, type }) => (
-          <div key={name} className={styles.item} onClick={() => this.handleDrawer(type)}>
+          <div key={name} className={styles.item} onClick={() => onClick(type)}>
             <span className={styles.quantity} style={{ border: border }}>
               {value}
             </span>
