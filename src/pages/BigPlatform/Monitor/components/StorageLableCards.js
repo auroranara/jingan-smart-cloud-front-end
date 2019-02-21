@@ -4,6 +4,20 @@ import { Col } from 'antd';
 import styles from './StorageLableCards.less';
 import Ellipsis from 'components/Ellipsis';
 
+const DEFAULT = '---';
+
+function parseDataNum(n) {
+  const t = typeof n;
+  if (t === 'number')
+    return n;
+  if (t === 'string') {
+    const parsed = Number.parseFloat(n);
+    return Object.is(parsed, NaN) ? DEFAULT : 0;
+  }
+
+  return DEFAULT;
+}
+
 export default function StorageCards(props) {
   const { num, title, dataList } = props;
 
@@ -61,7 +75,8 @@ export default function StorageCards(props) {
         >
           <p className={styles.liquidCount} style={{ color: `${getStatus(dataList[0].status)}` }}>
             {getStatus(dataList[0].status) ? (
-              dataList[0].value || '---'
+              // dataList[0].value || '---'
+              parseDataNum(dataList[0].value)
             ) : (
               <span style={{ color: '#516895' }}>/</span>
             )}
@@ -90,7 +105,8 @@ export default function StorageCards(props) {
         >
           <p className={styles.pressureCount} style={{ color: `${getStatus(dataList[1].status)}` }}>
             {getStatus(dataList[1].status) ? (
-              dataList[1].value || '---'
+              // dataList[1].value || '---'
+              parseDataNum(dataList[1].value)
             ) : (
               <span style={{ color: '#516895' }}>/</span>
             )}
@@ -112,7 +128,8 @@ export default function StorageCards(props) {
         <div className={styles.temp}>
           <p className={styles.tempCount} style={{ color: `${getStatus(dataList[2].status)}` }}>
             {getStatus(dataList[2].status) ? (
-              dataList[2].value || '---'
+              // dataList[2].value || '---'
+              parseDataNum(dataList[2].value)
             ) : (
               <span style={{ color: '#516895' }}>/</span>
             )}

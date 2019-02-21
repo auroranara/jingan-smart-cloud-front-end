@@ -1,36 +1,15 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
-import moment from 'moment';
 
-// import styles from './index.less';
-const months = Array(6)
-  .fill(true)
-  .map((_, index) => {
-    return (
-      moment()
-        .month(index - 5)
-        .format('M') + '月'
-    );
-  });
-
-export default class AlarmChart extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
-  componentDidMount() {}
-
-  componentWillUnmount() {}
-
+export default class EquipmentStatistics extends PureComponent {
   getChartOption() {
-    const { data } = this.props;
+    // const { data = [], xLabels = [] } = this.props;
     const option = {
       color: ['#00ffff'],
       tooltip: {
         trigger: 'axis',
         axisPointer: {
-          type: 'line',
+          type: 'shadow',
           lineStyle: {
             color: '#405f85',
           },
@@ -44,23 +23,18 @@ export default class AlarmChart extends PureComponent {
         right: '10px',
         bottom: '35px',
       },
-      // toolbox: {
-      //   feature: {
-      //     dataView: { show: true, readOnly: false },
-      //     magicType: { show: true, type: ['line', 'bar'] },
-      //     restore: { show: true },
-      //     saveAsImage: { show: true },
-      //   },
-      // },
       legend: {
-        data: ['报警次数'],
+        data: ['设备数量', '故障数量'],
         textStyle: {
           color: '#fff',
         },
+        orient: 'horizontal',
+        left: 'right',
+        icon: 'rect',
       },
       xAxis: {
         type: 'category',
-        axisTick: { show: true, inside: true },
+        axisTick: { show: true },
         axisLine: {
           show: true,
           lineStyle: {
@@ -72,7 +46,7 @@ export default class AlarmChart extends PureComponent {
           color: '#fff',
           fontSize: 14,
         },
-        data: months,
+        data: ['1月', '2月', '3月', '4月', '5月'],
       },
       yAxis: [
         {
@@ -103,10 +77,18 @@ export default class AlarmChart extends PureComponent {
       ],
       series: [
         {
-          name: '报警次数',
-          type: 'line',
-          symbol: 'circle',
-          data: [26, 18, 12, 34, 17, 24],
+          name: '设备数量',
+          color: 'rgb(4, 253, 255)',
+          type: 'bar',
+          barWidth: 5,
+          data: [0.6, 1.9, 25.0, 0.4, 1.7],
+        },
+        {
+          name: '故障数量',
+          type: 'bar',
+          color: 'rgb(217, 61, 73)',
+          barWidth: 5,
+          data: [0.6, 1.9, 23.0, 0.4, 61.7],
         },
       ],
     };
@@ -114,34 +96,34 @@ export default class AlarmChart extends PureComponent {
   }
 
   onChartReady = chart => {
-    if (!chart) return;
-    let currentIndex = -1;
-    const chartAnimate = () => {
-      const dataLen = chart.getOption().series[0].data.length;
-      // 取消之前高亮的图形
-      chart.dispatchAction({
-        type: 'downplay',
-        seriesIndex: 0,
-        dataIndex: currentIndex,
-      });
-      currentIndex = (currentIndex + 1) % dataLen;
-      // 高亮当前图形
-      chart.dispatchAction({
-        type: 'highlight',
-        seriesIndex: 0,
-        dataIndex: currentIndex,
-      });
-      // 显示 tooltip
-      chart.dispatchAction({
-        type: 'showTip',
-        seriesIndex: 0,
-        dataIndex: currentIndex,
-      });
-    };
-    // chartAnimate();
-    setInterval(() => {
-      chartAnimate();
-    }, 5000);
+    // if (!chart) return;
+    // let currentIndex = -1;
+    // const chartAnimate = () => {
+    //   const dataLen = chart.getOption().series[0].data.length;
+    //   // 取消之前高亮的图形
+    //   chart.dispatchAction({
+    //     type: 'downplay',
+    //     seriesIndex: 0,
+    //     dataIndex: currentIndex,
+    //   });
+    //   currentIndex = (currentIndex + 1) % dataLen;
+    //   // 高亮当前图形
+    //   chart.dispatchAction({
+    //     type: 'highlight',
+    //     seriesIndex: 0,
+    //     dataIndex: currentIndex,
+    //   });
+    //   // 显示 tooltip
+    //   chart.dispatchAction({
+    //     type: 'showTip',
+    //     seriesIndex: 0,
+    //     dataIndex: currentIndex,
+    //   });
+    // };
+    // // chartAnimate();
+    // setInterval(() => {
+    //   chartAnimate();
+    // }, 5000);
   };
 
   render() {
@@ -151,7 +133,7 @@ export default class AlarmChart extends PureComponent {
           option={this.getChartOption()}
           style={{ height: '100%', width: '100%' }}
           // className="echarts-for-echarts"
-          onChartReady={this.onChartReady}
+          // onChartReady={this.onChartReady}
         />
       </div>
     );

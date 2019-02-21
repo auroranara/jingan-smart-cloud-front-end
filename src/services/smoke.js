@@ -3,22 +3,27 @@ import { stringify } from 'qs';
 
 const URL_PREFIX = '/acloud_new/v2';
 
-// 燃气--大屏主页面显示
+// 大屏主页面显示
 export async function getBigFlatformData(params) {
-  return request(`${URL_PREFIX}/gasScreen/index?${stringify(params)}`);
+  return request(`${URL_PREFIX}/smoke/index?${stringify(params)}`);
 }
 
-// 燃气--接入单位统计
+// 异常单位统计数据
+export async function getUnNormalCount(params) {
+  return request(`${URL_PREFIX}/smoke/unNormalCompanyCount?${stringify(params)}`);
+}
+
+// 接入单位统计抽屉
 export async function getImportingTotal(params) {
-  return request(`${URL_PREFIX}/gasScreen/Importing?${stringify(params)}`);
+  return request(`${URL_PREFIX}/smoke/importing?${stringify(params)}`);
 }
 
-// 燃气--异常单位统计
+// 异常单位统计抽屉
 export async function getAbnormalingTotal(params) {
-  return request(`${URL_PREFIX}/gasScreen/abnormaling?${stringify(params)}`);
+  return request(`${URL_PREFIX}/smoke/abnormaling?${stringify(params)}`);
 }
 
-// 燃气--待处理业务
+// 火警统计抽屉
 export async function getPendingMission(params) {
   return request(`${URL_PREFIX}/shg/getPendingGas?${stringify(params)}`);
 }
@@ -36,31 +41,6 @@ export async function getCompanyId(params) {
 // 获取单位数据
 export async function getUnitData(params) {
   return request(`${URL_PREFIX}/screen/elecSafe/companyList`);
-}
-
-// 获取企业设备统计数
-export async function getDeviceStatusCount(params) {
-  return request(`${URL_PREFIX}/screen/elecSafe/deviceStatusCount?${stringify(params)}`);
-}
-
-// 获取设备列表
-export async function getDevices(params) {
-  return request(`${URL_PREFIX}/deviceInfo/getCompanyDevicesByType?${stringify(params)}`);
-}
-
-// 获取实时监测数据
-export async function getDeviceRealTimeData(params) {
-  return request(`${URL_PREFIX}/deviceInfo/getDeviceDataNew?${stringify(params)}`);
-}
-
-// 获取设备配置策略
-export async function getDeviceConfig(params) {
-  return request(`${URL_PREFIX}/deviceInfo/getLimitLine?${stringify(params)}`);
-}
-
-// 获取设备历史数据
-export async function getDeviceHistoryData(params) {
-  return request(`${URL_PREFIX}/deviceInfo/getDeviceDataHistory?${stringify(params)}`);
 }
 
 // 视频列表

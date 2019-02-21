@@ -16,14 +16,14 @@ import { DotItem } from '../components/Components';
 
 const TYPE = 'unit';
 const NO_DATA = '暂无信息';
-const LABELS = ['报警', '故障', '失联', '正常'];
-const COLORS = ['248,51,41', '255,180,0', '159,159,159', '55,164,96'];
+// const LABELS = ['火警', '故障', '正常'];
+// const COLORS = ['248,51,41', '255,180,0', '55,164,96'];
 const OPTIONS = ['全部', '未接入', '已接入'].map((d, i) => ({ value: i, desc: d }));
 const RING_COLORS = ['159,159,159', '0,255,255'];
 const RING_LABELS = ['未接入', '已接入'];
 
-@connect(({ gas }) => ({
-  gas,
+@connect(({ smoke }) => ({
+  smoke,
 }))
 export default class UnitDrawer extends PureComponent {
   state = { selected: 0, searchValue: '' };
@@ -31,7 +31,7 @@ export default class UnitDrawer extends PureComponent {
   handleSelectChange = i => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'gas/fetchImportingTotal',
+      type: 'smoke/fetchImportingTotal',
       payload: {
         status: i,
       },
@@ -97,10 +97,10 @@ export default class UnitDrawer extends PureComponent {
 
     const left = (
       <Fragment>
-        <DrawerSection title="接入单位统计图" style={{ marginBottom: 50 }}>
+        <DrawerSection title="接入烟感单位数统计" style={{ marginBottom: 50 }}>
           <ChartRing data={rings} />
         </DrawerSection>
-        <DrawerSection title="接入设备数量的单位排名">
+        <DrawerSection title="单位接入的烟感数排行">
           <ChartBar data={barList} labelRotate={-60} />
         </DrawerSection>
       </Fragment>
@@ -122,7 +122,7 @@ export default class UnitDrawer extends PureComponent {
             principal_phone,
             unnormal,
             faultNum,
-            outContact,
+
             normal,
             count,
           }) => (
@@ -148,18 +148,27 @@ export default class UnitDrawer extends PureComponent {
                 </Fragment>
               }
               more={
-                <p className={styles.more}>
-                  {count
-                    ? [unnormal, faultNum, outContact, normal].map((n, i) => (
-                        <DotItem
-                          key={i}
-                          title={LABELS[i]}
-                          color={`rgb(${COLORS[i]})`}
-                          quantity={n}
-                        />
-                      ))
-                    : ' '}
-                </p>
+                <div>
+                  {count > 0 ? (
+                    <p className={styles.more}>
+                      <DotItem
+                        title="报警"
+                        color={`rgb(248,51,41)`}
+                        quantity={unnormal}
+                        className={unnormal > 0 ? styles.itemActive : ''}
+                        // onClick={() =>
+                        //   unnormal > 0
+                        //     ? handleAlarmClick(undefined, company_id, company_name, unnormal)
+                        //     : ''
+                        // }
+                      />
+                      <DotItem title="故障" color={`rgb(255,180,0)`} quantity={faultNum} />
+                      <DotItem title="正常" color={`rgb(55,164,96)`} quantity={normal} />
+                    </p>
+                  ) : (
+                    ''
+                  )}
+                </div>
               }
             />
           )

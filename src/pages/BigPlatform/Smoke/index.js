@@ -10,10 +10,12 @@ import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
 // 接入单位统计
 import AccessUnitStatistics from './AccessUnitStatistics';
-// 异常单位统计
-import AbnormalUnitStatistics from './AbnormalUnitStatistics';
-// 待处理业务
-import ProcessingBusiness from './ProcessingBusiness';
+// 实时火警
+import RealTimeFire from './RealTimeFire';
+// 历史火警
+import HistoricalFire from './HistoricalFire';
+// 设备故障统计
+import EquipmentStatistics from './EquipmentStatistics';
 
 // 告警信息
 // import WarningMessage from './WarningMessage';
@@ -27,10 +29,10 @@ import BackMap from './BackMap';
 import MapSearch from './BackMap/MapSearch';
 // 引入样式文件
 import styles from './index.less';
-import { SettingModal, UnitDrawer, AlarmDrawer, BusinessDrawer } from './sections/Components';
+import { SettingModal, UnitDrawer, AlarmDrawer, FireStatisticsDrawer } from './sections/Components';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
-import { genCardsInfo, genPendingCardsInfo, getAlarmUnits } from './utils';
+import { genCardsInfo, genPendingCardsInfo } from './utils';
 import { GridSelect } from './components/Components';
 
 // websocket配置
@@ -56,7 +58,7 @@ export default class Smoke extends PureComponent {
       setttingModalVisible: false,
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
-      businessDrawerVisible: false,
+      fireDrawerVisible: false,
       monitorDrawerVisible: false,
       monitorDrawerTitleIndex: 0,
       videoVisible: false,
@@ -95,10 +97,6 @@ export default class Smoke extends PureComponent {
         params: { gridId },
       },
     } = this.props;
-    // // 获取告警信息列表
-    // dispatch({
-    //   type: 'smoke/fetchMessages',
-    // });
 
     // 获取单位数据
     dispatch({
@@ -113,7 +111,13 @@ export default class Smoke extends PureComponent {
       },
     });
 
-    // 获取接入单位统计
+    // 获取异常单位统计数据
+    dispatch({
+      type: 'smoke/fetchUnNormalCount',
+      payload: { gridId },
+    });
+
+    // 获取接入单位统计列表
     dispatch({
       type: 'smoke/fetchImportingTotal',
       payload: {
@@ -145,22 +149,6 @@ export default class Smoke extends PureComponent {
       },
     });
 
-    // 获取待处理业务
-    dispatch({
-      type: 'smoke/fetchPendingMission',
-      payload: {
-        type: status,
-        gridId,
-      },
-      callback: data => {
-        if (!data) return;
-        const {
-          gasPendingUnitSet: { companyList = [] },
-        } = data;
-        this.pendingUnitsCardsInfo = genPendingCardsInfo(companyList);
-      },
-    });
-
     const params = {
       companyId: gridId,
       env,
@@ -187,8 +175,8 @@ export default class Smoke extends PureComponent {
           smoke: {
             // messages,
             unitIds,
-            unitSet,
-            unitSet: { units },
+            // unitSet,
+            // unitSet: { units },
           },
         } = this.props;
         const { alarmIds } = this.state;
@@ -321,9 +309,6 @@ export default class Smoke extends PureComponent {
         this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
       },
     });
-
-    // 获取待处理业务
-    // this.fetchPending()
   };
 
   fetchPending = () => {
@@ -363,7 +348,6 @@ export default class Smoke extends PureComponent {
   cardsInfo = [];
   importCardsInfo = [];
   errorUnitsCardsInfo = [];
-  pendingUnitsCardsInfo = [];
 
   /**
    * 1.获取接口数据
@@ -563,13 +547,13 @@ export default class Smoke extends PureComponent {
     const {
       smoke: {
         statisticsData,
+        unNormalCount,
         AccessStatistics,
         AccessCount,
         companyStatus,
         AbnormalTrend,
         unitSet,
         allGasFire,
-        gasChartByMonth,
         deviceStatusCount,
         gasForMaintenance = [],
         devices,
@@ -587,7 +571,7 @@ export default class Smoke extends PureComponent {
       setttingModalVisible,
       unitDrawerVisible,
       alarmDrawerVisible,
-      businessDrawerVisible,
+      fireDrawerVisible,
       selectList,
       searchValue,
       unitDetail,
@@ -602,7 +586,6 @@ export default class Smoke extends PureComponent {
     } = this.state;
 
     const importCardsInfo = this.importCardsInfo;
-    const pendingUnitsCardsInfo = this.pendingUnitsCardsInfo;
     const errorUnitsCardsInfo = this.errorUnitsCardsInfo;
     const extra = <GridSelect gridId={gridId} urlBase="/big-platform/smoke" />;
     return (
@@ -661,21 +644,27 @@ export default class Smoke extends PureComponent {
           onClick={e => this.handleDrawerVisibleChange('unit')}
         />
         {/* 异常单位统计 */}
-        <AbnormalUnitStatistics
-          data={statisticsData}
+        <RealTimeFire
+          data={unNormalCount}
           className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
           onClick={e => this.handleDrawerVisibleChange('alarm')}
         />
-        {/* 待处理业务 */}
+        {/* 历史火警单位统计 */}
         <NewSection
-          title="待处理业务"
+          title="历史火警单位统计"
           className={styles.left}
-          style={{ top: 'calc(45.184444% + 92px)', height: '23.5926%', cursor: 'pointer' }}
-          onClick={e => this.handleDrawerVisibleChange('business')}
+          style={{ top: 'calc(41.184444% + 92px)', height: '18%', cursor: 'pointer' }}
+          onClick={e => this.handleDrawerVisibleChange('fire')}
         >
-          <ProcessingBusiness allGasFire={allGasFire} />
+          <HistoricalFire data={statisticsData} allGasFire={allGasFire} />
         </NewSection>
-
+        <NewSection
+          title="设备故障统计"
+          className={styles.left}
+          style={{ top: 'calc(60.384444% + 92px)', height: '24%', cursor: 'pointer' }}
+        >
+          <EquipmentStatistics allGasFire={allGasFire} />
+        </NewSection>
         {/* extra info */}
         <SettingModal
           visible={setttingModalVisible}
@@ -693,9 +682,9 @@ export default class Smoke extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleAlarmClick={this.handleAlarmClick}
         />
-        <BusinessDrawer
-          data={{ list: pendingUnitsCardsInfo, graphList: gasChartByMonth }}
-          visible={businessDrawerVisible}
+        <FireStatisticsDrawer
+          data={{ list: importCardsInfo, AccessStatistics, AccessCount }}
+          visible={fireDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <MaintenanceDrawer

@@ -3,7 +3,7 @@ import NewSection from '@/components/NewSection';
 // 引入样式文件
 import styles from './index.less';
 
-export default class AbnormalUnitStatistics extends PureComponent {
+export default class RealTimeFire extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {};
@@ -33,12 +33,10 @@ export default class AbnormalUnitStatistics extends PureComponent {
       className,
       // 数据源
       data: {
-        // 报警单位
+        // 火警单位数量
         unnormalCompanyNum = 0,
-        // 故障单位
+        // 故障单位数量
         faultCompanyNum = 0,
-        // 失联单位
-        outContacts = 0,
       },
       // 点击事件
       onClick,
@@ -50,18 +48,13 @@ export default class AbnormalUnitStatistics extends PureComponent {
           {[
             {
               border: '2px solid #d93d49',
-              name: '报警单位',
+              name: '火警单位',
               value: unnormalCompanyNum,
             },
             {
               border: '2px solid #deaa26',
               name: '故障单位',
               value: faultCompanyNum,
-            },
-            {
-              border: '2px solid #8795ab',
-              name: '失联单位',
-              value: outContacts,
             },
           ].map(({ border, name, value }) => (
             <div className={styles.item} key={name}>

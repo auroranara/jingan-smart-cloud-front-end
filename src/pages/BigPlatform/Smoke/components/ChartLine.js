@@ -97,19 +97,6 @@ export default class ChartLine extends PureComponent {
           },
           data: newList.map(item => item.faultNum),
         },
-        {
-          name: '失联',
-          type: 'line',
-          itemStyle: {
-            color: '#0FF',
-            normal: {
-              lineStyle: {
-                color: '#9f9f9f',
-              },
-            },
-          },
-          data: newList.map(item => item.outContact),
-        },
       ],
     };
 
