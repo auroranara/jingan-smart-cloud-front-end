@@ -18,12 +18,13 @@ import ProcessingBusiness from './ProcessingBusiness';
 // 告警信息
 // import WarningMessage from './WarningMessage';
 import MyTooltip from './components/Tooltip';
-// 故障/报警处理动态
+// 故障/火警处理动态
 import MaintenanceDrawer from './sections/MaintenanceDrawer';
+import MonitorDrawer from './sections/MonitorDrawer';
 
 // import AlarmChart from './AlarmChart';
-import ElectricityMap from './ElectricityMap';
-import MapSearch from './ElectricityMap/MapSearch';
+import BackMap from './BackMap';
+import MapSearch from './BackMap/MapSearch';
 // 引入样式文件
 import styles from './index.less';
 import { SettingModal, UnitDrawer, AlarmDrawer, BusinessDrawer } from './sections/Components';
@@ -41,14 +42,14 @@ const options = {
 };
 
 /**
- * description: 用电监测
+ * description: 智能烟感
  * author:
  * date: 2019年01月08日
  */
 @connect(({ smoke }) => ({
   smoke,
 }))
-export default class Gas extends PureComponent {
+export default class Smoke extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -279,9 +280,9 @@ export default class Gas extends PureComponent {
       console.log('reconnecting...');
     };
 
-    setInterval(() => {
-      this.fetchPending();
-    }, 10000);
+    // setInterval(() => {
+    //   this.fetchPending();
+    // }, 10000);
   }
 
   fetchAbnormal = () => {
@@ -376,6 +377,7 @@ export default class Gas extends PureComponent {
     const { mapInstance } = this.state;
     const { longitude, latitude } = unitDetail;
     mapInstance.setZoomAndCenter(18, [longitude, latitude]);
+    this.setState({ unitDetail });
     this.mapChild.handleMapClick(unitDetail);
     this.hideTooltip();
   };
@@ -385,11 +387,11 @@ export default class Gas extends PureComponent {
    * 2.隐藏弹出框
    */
   hideUnitDetail = () => {
-    clearInterval(this.deviceStatusCountTimer);
-    clearInterval(this.deviceRealTimeDataTimer);
-    clearInterval(this.deviceHistoryDataTimer);
-    clearInterval(this.deviceConfigTimer);
-    this.setState({ unitDetail: undefined, monitorDrawerVisible: false });
+    // clearInterval(this.deviceStatusCountTimer);
+    // clearInterval(this.deviceRealTimeDataTimer);
+    // clearInterval(this.deviceHistoryDataTimer);
+    // clearInterval(this.deviceConfigTimer);
+    this.setState({ monitorDrawerVisible: false });
   };
 
   /**
@@ -430,7 +432,7 @@ export default class Gas extends PureComponent {
           </div>
           <div className={styles.notificationText}>
             <div className={styles.notificationTextFirst}>{`${area}${location}${paramName}`}</div>
-            <div className={styles.notificationTextSecond}>发生报警！</div>
+            <div className={styles.notificationTextSecond}>发生火警！</div>
           </div>
         </div>
       ),
@@ -570,6 +572,11 @@ export default class Gas extends PureComponent {
         gasChartByMonth,
         deviceStatusCount,
         gasForMaintenance = [],
+        devices,
+        deviceRealTimeData,
+        deviceConfig,
+        deviceHistoryData,
+        cameraList,
       },
       match: {
         params: { gridId },
@@ -588,6 +595,7 @@ export default class Gas extends PureComponent {
       tooltipVisible,
       tooltipPosition,
       maintenanceDrawerVisible,
+      monitorDrawerVisible,
       // drawerType,
       alarmIds,
       companyName,
@@ -618,9 +626,10 @@ export default class Gas extends PureComponent {
         onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
-        <ElectricityMap
+        <BackMap
           units={Array.isArray(unitSet.units) ? unitSet.units : []}
           deviceStatusCount={deviceStatusCount}
+          handleMapClick={this.showUnitDetail}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
           unitDetail={unitDetail}
@@ -628,6 +637,7 @@ export default class Gas extends PureComponent {
           handleParentChange={this.handleMapParentChange}
           handleAlarmClick={this.handleAlarmClick}
           onRef={this.onRef}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         {/* 搜索框 */}
         <MapSearch
@@ -689,13 +699,30 @@ export default class Gas extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <MaintenanceDrawer
-          title="报警处理动态"
+          title="火警处理动态"
           // type={drawerType}
           type={'alarm'}
           data={gasForMaintenance}
           visible={maintenanceDrawerVisible}
           companyName={companyName}
           onClose={() => this.handleDrawerVisibleChange('maintenance')}
+        />
+        <MonitorDrawer
+          data={{
+            unitDetail,
+            deviceStatusCount,
+            devices,
+            deviceRealTimeData,
+            deviceConfig,
+            deviceHistoryData,
+            cameraList,
+          }}
+          titleIndex={0}
+          visible={monitorDrawerVisible}
+          // visible={true}
+          handleClose={this.hideUnitDetail}
+          handleSelect={this.handleSelectDevice}
+          handleClickCamera={this.handleClickCamera}
         />
         {/* <VideoPlay
           showList={true}

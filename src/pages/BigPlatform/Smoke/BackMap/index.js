@@ -27,14 +27,14 @@ function MapLegend(props) {
         <div className={styles.legendIcon}>
           <div className={styles.legendColor} style={{ backgroundColor: '#f83329' }} />
         </div>
-        报警单位
+        火警单位
       </div>
-      {/* <div className={styles.legendItem}>
+      <div className={styles.legendItem}>
         <div className={styles.legendIcon}>
           <div className={styles.legendColor} style={{ backgroundColor: '#ffb400' }} />
         </div>
-        预警单位
-      </div> */}
+        故障单位
+      </div>
     </div>
   );
 }
@@ -124,7 +124,7 @@ export default class MapSection extends PureComponent {
           alt=""
           style={{ display: 'block', width: '32px', height: '42px' }}
           onClick={() => {
-            this.handleMapClick(extData);
+            this.props.handleMapClick(extData);
             this.props.hideTooltip();
           }}
           onMouseEnter={e => {
@@ -140,6 +140,7 @@ export default class MapSection extends PureComponent {
 
   handleMapClick = extData => {
     if (extData.companyId === this.state.infoWindow.companyId && this.state.infoWindowShow) return;
+    // const { handleMapClick } = this.props;
     this.setState({
       infoWindowShow: true,
       infoWindow: {
@@ -175,7 +176,7 @@ export default class MapSection extends PureComponent {
           render={() => {
             return (
               <div className={styles.alarmTip}>
-                有一条报警信息！
+                有一条火警信息！
                 <span className={styles.tipMore}>详情>></span>
               </div>
             );
@@ -201,10 +202,9 @@ export default class MapSection extends PureComponent {
         normal,
         unnormal,
         faultNum,
-        outContact,
       },
     } = this.state;
-    const { handleAlarmClick } = this.props;
+    const { handleAlarmClick, handleDrawerVisibleChange } = this.props;
     // const activeStyles = classNames(styles.statusItem, styles.itemActive);
     return (
       <InfoWindow
@@ -216,7 +216,15 @@ export default class MapSection extends PureComponent {
         key={companyId}
       >
         <div className={styles.comapnyWrapper}>
-          <h3 className={styles.comapnyName}>{companyName}</h3>
+          <h3
+            className={styles.comapnyName}
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              handleDrawerVisibleChange('monitor');
+            }}
+          >
+            {companyName}
+          </h3>
           <div className={styles.info}>
             <span
               className={styles.infoIcon}
@@ -257,15 +265,11 @@ export default class MapSection extends PureComponent {
               }}
             >
               <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
-              报警 {unnormal > 0 ? unnormal : 0}
+              火警 {unnormal > 0 ? unnormal : 0}
             </div>
             <div className={+faultNum > 0 ? styles.itemActive : styles.statusItem}>
               <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
               故障 {faultNum}
-            </div>
-            <div className={styles.statusItem}>
-              <span className={styles.statusIcon} style={{ backgroundColor: '#9f9f9f' }} />
-              失联 {outContact}
             </div>
           </div>
         </div>

@@ -145,7 +145,7 @@ module.exports = env => {
           component: './BigPlatform/Gas',
         },
         {
-          path: '/big-platform/smoke',
+          path: '/big-platform/smoke/:gridId',
           component: './BigPlatform/Smoke',
         },
       ],
