@@ -274,7 +274,18 @@ export default class ElectricityMonitor extends PureComponent {
     if (!unitDetail) {
       return;
     }
-    const { dispatch } = this.props;
+
+    const { dispatch, electricityMonitor: { messages, unitSet: { units } } } = this.props;
+    // 如果传的是个companyId
+    if (typeof unitDetail === 'string')
+      unitDetail = units.find(({ companyId }) => companyId === unitDetail);
+    // 如果deviceId不存在，则是点击地图，此时判断当前企业是否有报警，有报警的修正deviceId，没有的不处理
+    if (!deviceId) {
+      const alarmedMsg = messages.find(({ companyId: id }) => id === companyId);
+      if (alarmedMsg && alarmedMsg.type === 32)
+        deviceId = alarmedMsg.messageFlag;
+    }
+
     const { mapInstance } = this.state;
     const { companyId, longitude, latitude } = unitDetail;
     // console.log('unitDetail', unitDetail, deviceId);
@@ -597,6 +608,7 @@ export default class ElectricityMonitor extends PureComponent {
       cardsInfo,
     } = this.state;
 
+    // console.log(messages);
     const extra = <GridSelect gridId={gridId} urlBase="/big-platform/electricity-monitor" />;
 
     return (
@@ -672,7 +684,12 @@ export default class ElectricityMonitor extends PureComponent {
           />
         </NewSection>
         {/* 告警信息 */}
-        <WarningMessage data={messages} className={styles.right} />
+        <WarningMessage
+          className={styles.right}
+          data={messages}
+          units={unitSet ? unitSet.units : []}
+          showUnitDetail={this.showUnitDetail}
+        />
         <SettingModal
           visible={setttingModalVisible}
           handleOk={this.handleSettingOk}
@@ -682,11 +699,13 @@ export default class ElectricityMonitor extends PureComponent {
           data={{ list: cardsInfo, statisticsData }}
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          showUnitDetail={this.showUnitDetail}
         />
         <AlarmDrawer
           data={{ list: cardsInfo, ...getAlarmUnits(unitSet), graphList: warningTrendList }}
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          showUnitDetail={this.showUnitDetail}
         />
         <MonitorDrawer
           data={{

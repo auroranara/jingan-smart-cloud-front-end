@@ -34,8 +34,8 @@ export function genCardsInfo(connectedList=[], allCompanyList=[]) {
   return [...connectedList, ...unconnectedList].map(({ companyId, companyName, address, aqy1Name, aqy1Phone, deviceCount }) => {
     let counts = { equipment: 0 };
     if (deviceCount) {
-      const  { count, normal, confirmWarning, earlyWarning, unconnect } = deviceCount;
-      counts = { common: normal, alarm: confirmWarning, warn: earlyWarning, noAccess: unconnect, equipment: count };
+      const  { count, normal, confirmWarning, earlyWarning, unconnect, list } = deviceCount;
+      counts = { common: normal, alarm: confirmWarning, warn: earlyWarning, noAccess: unconnect, equipment: count, deviceList: list };
     }
 
     return {
@@ -110,4 +110,11 @@ export function getAlerted(list, labels) {
       prev.push(i);
     return prev;
   }, []);
+}
+
+const STATUS_MAP = [0, 2, 1, -1];
+// 获取设备列表中状态对应的第一个设备id
+export function getFirstDeviceId(list=[], index=0) {
+  const target = list.find(({ status }) => +status === STATUS_MAP[index]);
+  return target ? target.deviceId : undefined;
 }
