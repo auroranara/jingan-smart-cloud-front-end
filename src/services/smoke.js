@@ -20,7 +20,7 @@ export async function getImportingTotal(params) {
 
 // 异常单位统计抽屉
 export async function getAbnormalingTotal(params) {
-  return request(`${URL_PREFIX}/gasScreen/abnormaling?${stringify(params)}`);
+  return request(`${URL_PREFIX}/smoke/abnormaling?${stringify(params)}`);
 }
 
 // 火警统计抽屉

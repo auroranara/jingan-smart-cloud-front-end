@@ -22,7 +22,7 @@ const TYPE = 'alarm';
 const NO_DATA = '暂无信息';
 // const LABELS = ['报警', '故障', '失联', '正常'];
 // const COLORS = ['248,51,41', '255,180,0', '159,159,159', '55,164,96'];
-const OPTIONS = ['全部', '报警', '故障', '失联'].map((d, i) => ({ value: i, desc: d }));
+const OPTIONS = ['全部', '报警', '故障'].map((d, i) => ({ value: i, desc: d }));
 
 export default class AlarmDrawer extends PureComponent {
   state = { graph: 0, selected: 0, searchValue: '' };
@@ -160,11 +160,7 @@ export default class AlarmDrawer extends PureComponent {
     const {
       handleAlarmClick,
       visible,
-      data: {
-        list = [],
-        companyStatus: { unnormal = 0, faultNum = 0, outContact = 0 },
-        graphList = [],
-      } = {},
+      data: { list = [], companyStatus: { unnormal = 0, faultNum = 0 }, graphList = [] } = {},
     } = this.props;
 
     const { graph, selected, searchValue } = this.state;
@@ -186,8 +182,8 @@ export default class AlarmDrawer extends PureComponent {
         }
       });
 
-    const total = unnormal + faultNum + outContact;
-    const [alarmPercent, faultPercent, outPercent] = [unnormal, faultNum, outContact].map(
+    const total = unnormal + faultNum;
+    const [alarmPercent, faultPercent] = [unnormal, faultNum].map(
       n => (total ? (n / total) * 100 : 0)
     );
 

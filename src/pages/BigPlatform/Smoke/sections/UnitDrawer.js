@@ -122,7 +122,7 @@ export default class UnitDrawer extends PureComponent {
             principal_phone,
             unnormal,
             faultNum,
-            outContact,
+
             normal,
             count,
           }) => (
@@ -148,21 +148,27 @@ export default class UnitDrawer extends PureComponent {
                 </Fragment>
               }
               more={
-                <p className={styles.more}>
-                  <DotItem
-                    title="报警"
-                    color={`rgb(248,51,41)`}
-                    quantity={unnormal}
-                    className={unnormal > 0 ? styles.itemActive : ''}
-                    // onClick={() =>
-                    //   unnormal > 0
-                    //     ? handleAlarmClick(undefined, company_id, company_name, unnormal)
-                    //     : ''
-                    // }
-                  />
-                  <DotItem title="故障" color={`rgb(255,180,0)`} quantity={faultNum} />
-                  <DotItem title="正常" color={`rgb(55,164,96)`} quantity={normal} />
-                </p>
+                <div>
+                  {count > 0 ? (
+                    <p className={styles.more}>
+                      <DotItem
+                        title="报警"
+                        color={`rgb(248,51,41)`}
+                        quantity={unnormal}
+                        className={unnormal > 0 ? styles.itemActive : ''}
+                        // onClick={() =>
+                        //   unnormal > 0
+                        //     ? handleAlarmClick(undefined, company_id, company_name, unnormal)
+                        //     : ''
+                        // }
+                      />
+                      <DotItem title="故障" color={`rgb(255,180,0)`} quantity={faultNum} />
+                      <DotItem title="正常" color={`rgb(55,164,96)`} quantity={normal} />
+                    </p>
+                  ) : (
+                    ''
+                  )}
+                </div>
               }
             />
           )
