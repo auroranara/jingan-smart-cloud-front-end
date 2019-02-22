@@ -259,3 +259,19 @@ export function isMobile() {
 export function isMobileExcludeIpad() {
   return /Android|iPhone|SymbianOS|Windows Phone|iPod/.test(window.navigator.userAgent);
 }
+
+/**
+ * 是否是ios
+ * @return {Boolean} true是ios，false不是ios
+ */
+export function isIOS() {
+  return /iPhone|iPad|iPod/.test(window.navigator.userAgent);
+}
+
+/**
+ * 是否是android
+ * @return {Boolean} true是android，false不是android
+ */
+export function isAndroid() {
+  return /Android/.test(window.navigator.userAgent);
+}

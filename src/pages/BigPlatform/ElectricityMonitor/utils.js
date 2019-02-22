@@ -34,8 +34,8 @@ export function genCardsInfo(connectedList=[], allCompanyList=[]) {
   return [...connectedList, ...unconnectedList].map(({ companyId, companyName, address, aqy1Name, aqy1Phone, deviceCount }) => {
     let counts = { equipment: 0 };
     if (deviceCount) {
-      const  { count, normal, confirmWarning, earlyWarning, unconnect } = deviceCount;
-      counts = { common: normal, alarm: confirmWarning, warn: earlyWarning, noAccess: unconnect, equipment: count };
+      const  { count, normal, confirmWarning, earlyWarning, unconnect, list } = deviceCount;
+      counts = { common: normal, alarm: confirmWarning, warn: earlyWarning, noAccess: unconnect, equipment: count, deviceList: list };
     }
 
     return {
@@ -95,4 +95,26 @@ export function getChartLabels(list) {
     const name = item.name;
     return length > 2 && i === length - 1 && name.length > 10 ? `${name.slice(0, 10)}...` : name;
   });
+}
+
+// 获取监测信息弹框中的报警标签序号数组
+export function getAlerted(list, labels) {
+  const statusMap = list.reduce((prev, next) => {
+    const { desc, status } = next;
+    prev[desc] = +status;
+    return prev;
+  }, {});
+
+  return labels.reduce((prev, next, i) => {
+    if (next.some(label => statusMap[label] === 1 || statusMap[label] === 2))
+      prev.push(i);
+    return prev;
+  }, []);
+}
+
+const STATUS_MAP = [0, 2, 1, -1];
+// 获取设备列表中状态对应的第一个设备id
+export function getFirstDeviceId(list=[], index=0) {
+  const target = list.find(({ status }) => +status === STATUS_MAP[index]);
+  return target ? target.deviceId : undefined;
 }

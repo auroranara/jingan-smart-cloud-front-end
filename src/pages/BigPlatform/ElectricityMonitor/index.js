@@ -236,11 +236,12 @@ export default class ElectricityMonitor extends PureComponent {
     });
   };
 
-  getDeviceRealTimeData = deviceId => {
+  getDeviceRealTimeData = (deviceId, callback) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'electricityMonitor/fetchDeviceRealTimeData',
       payload: { deviceId },
+      callback,
     });
   };
 
@@ -260,16 +261,31 @@ export default class ElectricityMonitor extends PureComponent {
     });
   };
 
+  setAlertedLabelIndexFn = f => {
+    this.setAlertedLabelIndex = f;
+  };
+
   /**
    * 1.获取接口数据
    * 2.显示弹出框
    * 3.添加定时器
    */
-  showUnitDetail = (unitDetail, deviceId) => {
+  showUnitDetail = (unitDetail, deviceId, monitorDrawerTitleIndex) => {
     if (!unitDetail) {
       return;
     }
-    const { dispatch } = this.props;
+
+    const { dispatch, electricityMonitor: { messages, unitSet: { units } } } = this.props;
+    // 如果传的是个companyId
+    if (typeof unitDetail === 'string')
+      unitDetail = units.find(({ companyId }) => companyId === unitDetail);
+    // 如果deviceId不存在，则是点击地图，此时判断当前企业是否有报警，有报警的修正deviceId，没有的不修正
+    if (!deviceId) {
+      const alarmedMsg = messages.find(({ companyId: id }) => id === companyId);
+      if (alarmedMsg && alarmedMsg.type === 32)
+        deviceId = alarmedMsg.messageFlag;
+    }
+
     const { mapInstance } = this.state;
     const { companyId, longitude, latitude } = unitDetail;
     // console.log('unitDetail', unitDetail, deviceId);
@@ -287,7 +303,7 @@ export default class ElectricityMonitor extends PureComponent {
           type: 1,
         },
       });
-      this.handleSelectDevice(deviceId);
+      this.handleSelectDevice(deviceId, this.setAlertedLabelIndex);
       dispatch({
         type: 'electricityMonitor/fetchDeviceConfig',
         payload: { deviceId },
@@ -317,7 +333,7 @@ export default class ElectricityMonitor extends PureComponent {
         callback: ([data]) => {
           if (data) {
             const { deviceId } = data;
-            this.handleSelectDevice(deviceId);
+            this.handleSelectDevice(deviceId, this.setAlertedLabelIndex);
             // 添加定时器
             this.deviceStatusCountTimer = setInterval(() => {
               this.getDeviceStatusCount(companyId);
@@ -345,7 +361,11 @@ export default class ElectricityMonitor extends PureComponent {
       });
     }
     // 显示弹出框
-    this.setState({ unitDetail, monitorDrawerTitleIndex: +!!deviceId, monitorDrawerVisible: true });
+    this.setState({
+      unitDetail,
+      monitorDrawerTitleIndex: monitorDrawerTitleIndex === undefined ? +!!deviceId : monitorDrawerTitleIndex,
+      monitorDrawerVisible: true,
+    });
   };
 
   /**
@@ -497,11 +517,11 @@ export default class ElectricityMonitor extends PureComponent {
     this.handleMapClick(companyId, units.filter(item => item.companyId === companyId)[0]);
   };
 
-  handleSelectDevice = deviceId => {
+  handleSelectDevice = (deviceId, callback) => {
     clearInterval(this.deviceRealTimeDataTimer);
     clearInterval(this.deviceHistoryDataTimer);
     clearInterval(this.deviceConfigTimer);
-    this.getDeviceRealTimeData(deviceId);
+    this.getDeviceRealTimeData(deviceId, callback);
     this.getDeviceHistoryData(deviceId);
     this.getDeviceConfig(deviceId);
   };
@@ -592,6 +612,7 @@ export default class ElectricityMonitor extends PureComponent {
       cardsInfo,
     } = this.state;
 
+    // console.log(messages);
     const extra = <GridSelect gridId={gridId} urlBase="/big-platform/electricity-monitor" />;
 
     return (
@@ -667,7 +688,12 @@ export default class ElectricityMonitor extends PureComponent {
           />
         </NewSection>
         {/* 告警信息 */}
-        <WarningMessage data={messages} className={styles.right} />
+        <WarningMessage
+          className={styles.right}
+          data={messages}
+          units={unitSet ? unitSet.units : []}
+          showUnitDetail={this.showUnitDetail}
+        />
         <SettingModal
           visible={setttingModalVisible}
           handleOk={this.handleSettingOk}
@@ -677,11 +703,13 @@ export default class ElectricityMonitor extends PureComponent {
           data={{ list: cardsInfo, statisticsData }}
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          showUnitDetail={this.showUnitDetail}
         />
         <AlarmDrawer
           data={{ list: cardsInfo, ...getAlarmUnits(unitSet), graphList: warningTrendList }}
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          showUnitDetail={this.showUnitDetail}
         />
         <MonitorDrawer
           data={{
@@ -698,6 +726,7 @@ export default class ElectricityMonitor extends PureComponent {
           handleClose={this.hideUnitDetail}
           handleSelect={this.handleSelectDevice}
           handleClickCamera={this.handleClickCamera}
+          setAlertedLabelIndexFn={this.setAlertedLabelIndexFn}
         />
         {/* <VideoPlay
           showList={true}

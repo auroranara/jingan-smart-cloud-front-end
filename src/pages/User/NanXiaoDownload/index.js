@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
 import router from 'umi/router';
-import { isMobile } from '@/utils/utils';
+import { isMobile, isIOS, isAndroid } from '@/utils/utils';
 import config from '../config';
 // 引入样式文件
 import styles from './index.less';
@@ -17,7 +17,7 @@ export default function NanXiaoDownload({
     search,
   },
 }) {
-  const { logo, code, layer } = global.PROJECT_CONFIG;
+  const { logo, code, layer, ios, android } = global.PROJECT_CONFIG;
   const { projectName } = config[configType] || global.PROJECT_CONFIG;
   // 是否是手机端访问
   const isFromMobile = isMobile();
@@ -63,7 +63,17 @@ export default function NanXiaoDownload({
           </div>
           {isFromMobile && (
             <div className={styles.buttonWrapper}>
-              <div className={styles.downloadButton} onClick={() => {}}>
+              <div className={styles.downloadButton} onClick={() => {
+                if (isIOS() && ios) {
+                  window.location.href = ios + Math.random();
+                }
+                else if (isAndroid() && android) {
+                  window.location.href = android + Math.random();
+                }
+                else {
+                  // 这里是做个提示还是什么的
+                }
+              }}>
                 APP下载
               </div>
               <div

@@ -421,6 +421,8 @@ export default class TopCenter extends PureComponent {
       outContact: loss = 0,
     } = smokeCountData;
 
+    const waveHeight = window.document.body.scrollHeight < 680 ? 65 : 105;
+
     return (
       <Col span={13} style={{ height: '100%' }} className={styles.topCenter}>
         {/* 监测指数 */}
@@ -437,7 +439,7 @@ export default class TopCenter extends PureComponent {
                       percentFontSize="48px"
                       percent={score}
                       isNumber={true}
-                      height={105}
+                      height={waveHeight}
                     />
                   )}
                 </div>

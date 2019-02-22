@@ -43,7 +43,18 @@ export default class addMap extends PureComponent {
       // 获取地图详情
       this.fetchMapDetail({
         payload: { companyMap: id },
-        callback: ({ mapName, mapHierarchy, companyMapUrl, buildingId, floorId, mapPhoto, jsonMap, actualRange }) => {
+        callback: ({
+          mapName,
+          mapHierarchy,
+          companyMapUrl,
+          buildingId,
+          floorId,
+          mapPhoto,
+          jsonMap,
+          actualRange,
+          imagePx,
+          realDistance,
+        }) => {
           if (mapHierarchy === '1') {
             // 如果是单位图
             this.setState({ mapHierarchy })
@@ -52,6 +63,8 @@ export default class addMap extends PureComponent {
               mapHierarchy,
               unitMap: mapPhoto ? JSON.parse(mapPhoto) : {},
               actualRange,
+              imagePx,
+              realDistance,
             })
           } else {
             const unitMap = companyMapUrl ? JSON.parse(companyMapUrl) : {}
@@ -278,7 +291,7 @@ export default class addMap extends PureComponent {
         message.error(id ? '编辑失败' : '新增失败')
       }
       const { mapHierarchy, unitMap, floorMap, ...others } = values
-      let payload = { mapRange: '1', companyId, mapHierarchy }
+      let payload = { mapRange: 1, companyId, mapHierarchy }
       if (mapHierarchy === '1') {
         // 单位平面图
         payload = { ...payload, ...others, mapPhoto: JSON.stringify(unitMap) }
@@ -325,7 +338,7 @@ export default class addMap extends PureComponent {
         return unitMap.url === item.url
       } else if (mapHierarchy === '2') {
         return unitMap.id === item.id
-      }else return false
+      } else return false
     } else {
       // 判断楼层图已勾选
       return floorMap.url === item.url
@@ -398,6 +411,32 @@ export default class addMap extends PureComponent {
                 </Fragment>
               )}
             </FormItem>
+            {mapHierarchy !== '2' && (
+              <FormItem label="参照像素距离" {...formLayout}>
+                {getFieldDecorator('imagePx', {
+                  getValueFromEvent: e => Number(e.target.value.replace(/\D?/g, '')),
+                  rules: [
+                    { required: true, message: '请输入参照像素距离' },
+                    { min: 1, type: 'number', message: '请输入大于0的数字' },
+                  ],
+                })(
+                  <Input placeholder="请输入" {...itemStyles} />
+                )}
+              </FormItem>
+            )}
+            {mapHierarchy !== '2' && (
+              <FormItem label="真实距离" {...formLayout}>
+                {getFieldDecorator('realDistance', {
+                  getValueFromEvent: e => Number(e.target.value.replace(/\D?/g, '')),
+                  rules: [
+                    { required: true, message: '请输入真实距离' },
+                    { min: 1, type: 'number', message: '请输入大于0的数字' },
+                  ],
+                })(
+                  <Input addonAfter="(m)" placeholder="请输入" {...itemStyles} />
+                )}
+              </FormItem>
+            )}
             <FormItem label="比例尺" {...formLayout}>
               {getFieldDecorator('actualRange', {
                 getValueFromEvent: e => Number(e.target.value.replace(/\D?/g, '')),

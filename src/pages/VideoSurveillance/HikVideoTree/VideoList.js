@@ -55,7 +55,7 @@ function traverse(list, handle) {
 // 防抖函数,不然每次计算,网页太卡
 function debounce(fn, ms) {
   let timer = null;
-  return function (...args) {
+  return function(...args) {
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), ms);
   };
@@ -216,18 +216,20 @@ export default class VideoList extends PureComponent {
 
   // 同步目录
   handleSynchronizeMenu = () => {
-    const { dispatch } = this.props
+    const { dispatch } = this.props;
     dispatch({
       type: 'video/synchronizeDirectory',
       success: () => {
         dispatch({
           type: 'video/fetchFolderTree',
-        })
-        message.success('同步成功！')
+        });
+        message.success('同步成功！');
       },
-      error: () => { message.error('同步失败！') },
-    })
-  }
+      error: () => {
+        message.error('同步失败！');
+      },
+    });
+  };
 
   handleSearch = e => {
     e.preventDefault();
@@ -303,7 +305,7 @@ export default class VideoList extends PureComponent {
           {/* <Col span={7}> */}
           <Col span={12}>
             <FormItem label="视频名称">
-              {getFieldDecorator('folderName')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           {/* <Col span={5}>
@@ -488,7 +490,7 @@ export default class VideoList extends PureComponent {
                 selectedKeys={selectedKeys}
                 handleExpand={this.handleExpand}
                 handleSelect={this.handleSelect}
-              // handleFormReset={folderId => this.handleFormReset(folderId)}
+                // handleFormReset={folderId => this.handleFormReset(folderId)}
               />
             </Card>
           </Col>
