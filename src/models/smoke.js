@@ -123,6 +123,11 @@ export default {
     cameraList: [],
     // 报警处理流程
     gasForMaintenance: [],
+    // 公司烟感具体监测数据
+    companySmokeInfo: {
+      dataByCompany: [],
+      list: [],
+    },
   },
 
   effects: {
@@ -161,7 +166,7 @@ export default {
       const {
         code,
         data: {
-          companys: units,
+          // companys: units,
           companyNum: jurisdictionalUnitStatistics,
           importingCompanyNum: accessUnitStatistics,
           fireByMonth,
@@ -187,9 +192,9 @@ export default {
         fireByQuarter,
       };
       const pay = {
-        unitSet: getUnitSet(units),
+        // unitSet: getUnitSet(units),
         statisticsData,
-        unitIds: units.map(({ company_id }) => company_id),
+        // unitIds: units.map(({ company_id }) => company_id),
       };
       if (code === 200) {
         yield put({
@@ -237,6 +242,21 @@ export default {
         });
         if (success) {
           success(pay);
+        }
+      } else if (error) {
+        error(response);
+      }
+    },
+    // 获取异常单位统计数据
+    *fetchCompanySmokeInfo({ payload, success, error }, { call, put }) {
+      const response = yield call(getCompanySmokeInfo, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'companySmokeInfo',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
         }
       } else if (error) {
         error(response);
@@ -388,6 +408,12 @@ export default {
       return {
         ...state,
         gasForMaintenance: payload,
+      };
+    },
+    companySmokeInfo(state, { payload }) {
+      return {
+        ...state,
+        companySmokeInfo: payload,
       };
     },
   },

@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import styles from './AbnormalChart.less';
-import waterBg from '../imgs/waterBg.png';
 
 class AbnormalChart extends PureComponent {
   constructor(props) {
@@ -16,9 +15,7 @@ class AbnormalChart extends PureComponent {
 
   getOption() {
     const { data } = this.props;
-    const xData = Array(12)
-      .fill(true)
-      .map((data, index) => index + 1);
+    const xData = data.map(item => moment(item.month).format('M') + '月');
     const option = {
       textStyle: {
         color: '#fff',
@@ -26,7 +23,7 @@ class AbnormalChart extends PureComponent {
       color: ['#f83329', '#ffb400'],
       grid: {
         top: '25px',
-        left: '40px',
+        left: '20px',
         right: '10px',
         bottom: '55px',
       },
@@ -101,17 +98,13 @@ class AbnormalChart extends PureComponent {
           name: '火警次数',
           type: 'bar',
           barWidth: 15,
-          data: Array(12)
-            .fill(true)
-            .map(() => Math.random() * 20),
+          data: data.map(item => item.unnormal),
         },
         {
           name: '故障次数',
           type: 'bar',
           barWidth: 15,
-          data: Array(12)
-            .fill(true)
-            .map(() => Math.random() * 20),
+          data: data.map(item => item.faultNum),
         },
       ],
     };
@@ -165,28 +158,31 @@ class AbnormalChart extends PureComponent {
   };
 
   render() {
-    const { chartData = [] } = this.props;
+    const { data = [] } = this.props;
     return (
       <div className={styles.abnormalChart}>
-        {/* {chartData.length ? ( */}
-        {true ? (
+        {data.length ? (
           <ReactEcharts
             option={this.getOption()}
             style={{ flex: 1, width: '100%' }}
             className="echarts-for-echarts"
             notMerge={true}
-            onChartReady={this.onChartReadyCallback}
+            // onChartReady={this.onChartReadyCallback}
           />
         ) : (
           <div
             className={styles.noCards}
             style={{
-              background: `url(${waterBg})`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center center',
-              backgroundSize: 'auto 55%',
+              width: '100%',
+              height: '135px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              color: '#4f678d',
             }}
-          />
+          >
+            暂无相关异常数据
+          </div>
         )}
       </div>
     );

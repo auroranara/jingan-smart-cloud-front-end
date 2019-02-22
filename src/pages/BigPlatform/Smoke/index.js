@@ -102,13 +102,12 @@ export default class Smoke extends PureComponent {
     dispatch({
       type: 'smoke/fetchUnitData',
       payload: { gridId },
-      callback: data => {
-        if (!data) return;
-        const {
-          unitSet: { units = [] },
-        } = data;
-        this.cardsInfo = genCardsInfo(units);
-      },
+    });
+
+    // 烟感地图数据
+    dispatch({
+      type: 'smoke/fetchMapList',
+      payload: { gridId },
     });
 
     // 获取异常单位统计数据
@@ -171,16 +170,16 @@ export default class Smoke extends PureComponent {
       try {
         const data = JSON.parse(e.data).data;
         const { type, companyId, messageFlag } = data;
-        const {
-          smoke: {
-            // messages,
-            unitIds,
-            // unitSet,
-            // unitSet: { units },
-          },
-        } = this.props;
+        // const {
+        //   smoke: {
+        //     // messages,
+        //     unitIds,
+        //     // unitSet,
+        //     // unitSet: { units },
+        //   },
+        // } = this.props;
         const { alarmIds } = this.state;
-        const index = unitIds.indexOf(companyId);
+        // const index = unitIds.indexOf(companyId);
         // 如果数据为告警或恢复，则将数据插入到列表的第一个
         if ([31, 32].includes(type)) {
           // dispatch({
@@ -285,13 +284,6 @@ export default class Smoke extends PureComponent {
     dispatch({
       type: 'smoke/fetchUnitData',
       payload: { gridId },
-      callback: data => {
-        if (!data) return;
-        const {
-          unitSet: { units = [] },
-        } = data;
-        this.cardsInfo = genCardsInfo(units);
-      },
     });
 
     // 获取异常单位统计
@@ -345,7 +337,7 @@ export default class Smoke extends PureComponent {
    */
   componentWillUnmount() {}
 
-  cardsInfo = [];
+  // cardsInfo = [];
   importCardsInfo = [];
   errorUnitsCardsInfo = [];
 
@@ -540,6 +532,17 @@ export default class Smoke extends PureComponent {
     this.mapChild = ref;
   };
 
+  handleCompanyClick = companyId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'smoke/fetchCompanySmokeInfo',
+      payload: { company_id: companyId },
+      success: () => {
+        this.handleDrawerVisibleChange('monitor');
+      },
+    });
+  };
+
   /**
    * 渲染
    */
@@ -556,10 +559,7 @@ export default class Smoke extends PureComponent {
         allGasFire,
         deviceStatusCount,
         gasForMaintenance = [],
-        devices,
-        deviceRealTimeData,
-        deviceConfig,
-        deviceHistoryData,
+        companySmokeInfo: { dataByCompany, list: devList },
         cameraList,
       },
       match: {
@@ -620,7 +620,7 @@ export default class Smoke extends PureComponent {
           handleParentChange={this.handleMapParentChange}
           handleAlarmClick={this.handleAlarmClick}
           onRef={this.onRef}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          handleCompanyClick={this.handleCompanyClick}
         />
         {/* 搜索框 */}
         <MapSearch
@@ -699,14 +699,10 @@ export default class Smoke extends PureComponent {
         <MonitorDrawer
           data={{
             unitDetail,
-            deviceStatusCount,
-            devices,
-            deviceRealTimeData,
-            deviceConfig,
-            deviceHistoryData,
             cameraList,
+            dataByCompany,
+            devList,
           }}
-          titleIndex={0}
           visible={monitorDrawerVisible}
           // visible={true}
           handleClose={this.hideUnitDetail}

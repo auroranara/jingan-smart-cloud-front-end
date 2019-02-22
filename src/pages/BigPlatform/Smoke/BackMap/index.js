@@ -204,7 +204,7 @@ export default class MapSection extends PureComponent {
         faultNum,
       },
     } = this.state;
-    const { handleAlarmClick, handleDrawerVisibleChange } = this.props;
+    const { handleAlarmClick, handleCompanyClick } = this.props;
     // const activeStyles = classNames(styles.statusItem, styles.itemActive);
     return (
       <InfoWindow
@@ -220,7 +220,7 @@ export default class MapSection extends PureComponent {
             className={styles.comapnyName}
             style={{ cursor: 'pointer' }}
             onClick={() => {
-              handleDrawerVisibleChange('monitor');
+              handleCompanyClick(companyId);
             }}
           >
             {companyName}
@@ -284,6 +284,7 @@ export default class MapSection extends PureComponent {
             right: 10,
             top: 10,
             cursor: 'pointer',
+            fontSize: '16px',
           }}
         />
       </InfoWindow>
