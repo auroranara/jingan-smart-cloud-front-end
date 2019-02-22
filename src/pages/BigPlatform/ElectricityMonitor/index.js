@@ -270,7 +270,7 @@ export default class ElectricityMonitor extends PureComponent {
    * 2.显示弹出框
    * 3.添加定时器
    */
-  showUnitDetail = (unitDetail, deviceId, monitorDrawerTitleIndex) => {
+  showUnitDetail = (unitDetail, deviceId, monitorDrawerTitleIndex, paramName) => {
     if (!unitDetail) {
       return;
     }
@@ -286,6 +286,7 @@ export default class ElectricityMonitor extends PureComponent {
         deviceId = alarmedMsg.messageFlag;
     }
 
+    const selectDeviceCallback = () => this.setAlertedLabelIndex(paramName);
     const { mapInstance } = this.state;
     const { companyId, longitude, latitude } = unitDetail;
     // console.log('unitDetail', unitDetail, deviceId);
@@ -303,7 +304,7 @@ export default class ElectricityMonitor extends PureComponent {
           type: 1,
         },
       });
-      this.handleSelectDevice(deviceId, this.setAlertedLabelIndex);
+      this.handleSelectDevice(deviceId, selectDeviceCallback);
       dispatch({
         type: 'electricityMonitor/fetchDeviceConfig',
         payload: { deviceId },
@@ -333,7 +334,7 @@ export default class ElectricityMonitor extends PureComponent {
         callback: ([data]) => {
           if (data) {
             const { deviceId } = data;
-            this.handleSelectDevice(deviceId, this.setAlertedLabelIndex);
+            this.handleSelectDevice(deviceId, selectDeviceCallback);
             // 添加定时器
             this.deviceStatusCountTimer = setInterval(() => {
               this.getDeviceStatusCount(companyId);
@@ -415,7 +416,9 @@ export default class ElectricityMonitor extends PureComponent {
           onClick={() => {
             this.showUnitDetail(
               units.filter(({ companyId: id }) => id === companyId)[0],
-              messageFlag
+              messageFlag,
+              undefined,
+              paramName
             );
           }}
         >
