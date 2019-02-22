@@ -96,7 +96,7 @@ export default class FireStatisticsDrawer extends PureComponent {
             />
           )}
         </FormItem>
-        <DrawerSection title="处理单位统计" style={{ marginBottom: 50 }}>
+        <DrawerSection title="处理状态统计" style={{ marginBottom: 50 }}>
           <ChartRing data={rings} />
         </DrawerSection>
 

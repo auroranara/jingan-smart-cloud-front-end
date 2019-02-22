@@ -153,7 +153,7 @@ export default class UnitDrawer extends PureComponent {
                   {count > 0 ? (
                     <p className={styles.more}>
                       <DotItem
-                        title="报警"
+                        title="火警"
                         color={`rgb(248,51,41)`}
                         quantity={unnormal}
                         className={unnormal > 0 ? styles.itemActive : ''}
