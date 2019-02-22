@@ -270,7 +270,7 @@ export default class ElectricityMonitor extends PureComponent {
    * 2.显示弹出框
    * 3.添加定时器
    */
-  showUnitDetail = (unitDetail, deviceId) => {
+  showUnitDetail = (unitDetail, deviceId, monitorDrawerTitleIndex) => {
     if (!unitDetail) {
       return;
     }
@@ -279,7 +279,7 @@ export default class ElectricityMonitor extends PureComponent {
     // 如果传的是个companyId
     if (typeof unitDetail === 'string')
       unitDetail = units.find(({ companyId }) => companyId === unitDetail);
-    // 如果deviceId不存在，则是点击地图，此时判断当前企业是否有报警，有报警的修正deviceId，没有的不处理
+    // 如果deviceId不存在，则是点击地图，此时判断当前企业是否有报警，有报警的修正deviceId，没有的不修正
     if (!deviceId) {
       const alarmedMsg = messages.find(({ companyId: id }) => id === companyId);
       if (alarmedMsg && alarmedMsg.type === 32)
@@ -361,7 +361,11 @@ export default class ElectricityMonitor extends PureComponent {
       });
     }
     // 显示弹出框
-    this.setState({ unitDetail, monitorDrawerTitleIndex: +!!deviceId, monitorDrawerVisible: true });
+    this.setState({
+      unitDetail,
+      monitorDrawerTitleIndex: monitorDrawerTitleIndex === undefined ? +!!deviceId : monitorDrawerTitleIndex,
+      monitorDrawerVisible: true,
+    });
   };
 
   /**

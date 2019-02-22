@@ -234,6 +234,7 @@ export default class MonitorDrawer extends PureComponent {
 
     return (
       <DrawerContainer
+        isTop
         title={TITLES[titleIndex]}
         width={700}
         visible={visible}

@@ -158,7 +158,7 @@ export default class AlarmDrawer extends PureComponent {
                   showLink
                   title={LABELS[i]}
                   color={`rgb(${COLORS[i]})`} quantity={n}
-                  onClick={e => showUnitDetail(companyId, getFirstDeviceId(deviceList, i))}
+                  onClick={e => showUnitDetail(companyId, getFirstDeviceId(deviceList, i), i === 0 || i === 3 ? 0 : 1)}
                 />
               ))}
             </p>

@@ -112,7 +112,7 @@ export default class UnitDrawer extends PureComponent {
                   title={LABELS[i]}
                   quantity={n}
                   color={`rgb(${COLORS[i]})`}
-                  onClick={e => showUnitDetail(companyId, getFirstDeviceId(deviceList, i))}
+                  onClick={e => showUnitDetail(companyId, getFirstDeviceId(deviceList, i), i === 0 || i === 3 ? 0 : 1)}
                 />
               )) : ' '}
             </p>
