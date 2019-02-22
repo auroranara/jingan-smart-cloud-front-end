@@ -8,8 +8,9 @@ import {
   DrawerContainer,
   DrawerSection,
   ChartRing,
+  ChartBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
-import { ChartBar } from '../components/Components';
+// import { ChartBar } from '../components/Components';
 
 const FormItem = Form.Item;
 const TYPE = 'fire';
@@ -71,6 +72,12 @@ export default class FireStatisticsDrawer extends PureComponent {
       itemStyle: { color: `rgb(${RING_COLORS[i]})` },
     }));
 
+    const newList = list.slice(0, 10).map(({ company_name, num }, i) => {
+      let newName = company_name;
+      if (i === 9 && name.length > 10) newName = `${name.slice(0, 10)}...`;
+      return { id: i, name: newName, value: num };
+    });
+
     const left = (
       <Fragment>
         <FormItem>
@@ -94,7 +101,7 @@ export default class FireStatisticsDrawer extends PureComponent {
         </DrawerSection>
 
         <DrawerSection title="火警单位排行" titleInfo={`共${list.length}家`}>
-          <ChartBar data={list} labelRotate={-60} />
+          <ChartBar data={newList} labelRotate={-60} />
         </DrawerSection>
       </Fragment>
     );
