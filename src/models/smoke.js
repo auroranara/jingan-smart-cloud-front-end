@@ -9,8 +9,9 @@ import {
   getCompanyId,
   getCameraList,
   getGasForMaintenance,
+  getMapList,
+  getCompanySmokeInfo,
 } from '../services/smoke';
-
 // 获取单位集
 const getUnitSet = function(units) {
   // 告警单位
@@ -137,6 +138,11 @@ export default {
     cameraList: [],
     // 报警处理流程
     gasForMaintenance: [],
+    // 公司烟感具体监测数据
+    companySmokeInfo: {
+      dataByCompany: [],
+      list: [],
+    },
   },
 
   effects: {
@@ -175,7 +181,7 @@ export default {
       const {
         code,
         data: {
-          companys: units,
+          // companys: units,
           companyNum: jurisdictionalUnitStatistics,
           importingCompanyNum: accessUnitStatistics,
           fireByMonth,
@@ -201,9 +207,9 @@ export default {
         fireByQuarter,
       };
       const pay = {
-        unitSet: getUnitSet(units),
+        // unitSet: getUnitSet(units),
         statisticsData,
-        unitIds: units.map(({ company_id }) => company_id),
+        // unitIds: units.map(({ company_id }) => company_id),
       };
       if (code === 200) {
         yield put({
@@ -233,7 +239,44 @@ export default {
         error(response);
       }
     },
-
+    // 烟感地图数据
+    *fetchMapList({ payload, success, error }, { call, put }) {
+      const response = yield call(getMapList, payload);
+      const {
+        code,
+        data: { list: units },
+      } = response;
+      const pay = {
+        unitSet: getUnitSet(units),
+        unitIds: units.map(({ company_id }) => company_id),
+      };
+      if (code === 200) {
+        yield put({
+          type: 'save',
+          payload: pay,
+        });
+        if (success) {
+          success(pay);
+        }
+      } else if (error) {
+        error(response);
+      }
+    },
+    // 获取异常单位统计数据
+    *fetchCompanySmokeInfo({ payload, success, error }, { call, put }) {
+      const response = yield call(getCompanySmokeInfo, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'companySmokeInfo',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response);
+      }
+    },
     // 烟感大屏接入单位统计列表
     *fetchImportingTotal({ payload, callback }, { call, put }) {
       const {
@@ -399,6 +442,12 @@ export default {
       return {
         ...state,
         gasForMaintenance: payload,
+      };
+    },
+    companySmokeInfo(state, { payload }) {
+      return {
+        ...state,
+        companySmokeInfo: payload,
       };
     },
   },

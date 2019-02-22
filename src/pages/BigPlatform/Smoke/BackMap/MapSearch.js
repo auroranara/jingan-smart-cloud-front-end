@@ -31,7 +31,6 @@ class MapSearch extends PureComponent {
 
   render() {
     const { selectList, value, style } = this.props;
-    console.log('value', value);
     let options = [];
     if (!value) options = [];
     else {

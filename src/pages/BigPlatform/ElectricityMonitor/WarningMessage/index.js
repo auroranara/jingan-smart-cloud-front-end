@@ -19,7 +19,10 @@ const Message = function({
     condition,
     limitVal,
     oldWarningTime,
+    companyId,
+    messageFlag, // deviceId
   },
+  genHandleClick,
 }) {
   return (
     <div className={styles.message}>
@@ -36,6 +39,10 @@ const Message = function({
             <div>现已恢复正常！</div>
           </Fragment>
         )}
+        <div className={styles.detail} onClick={genHandleClick(companyId, messageFlag)}>
+          详情
+          <Icon type="double-right" />
+        </div>
       </div>
     </div>
   );
@@ -55,26 +62,15 @@ export default class WarningMessage extends PureComponent {
     };
   }
 
-  /**
-   * 挂载后
-   */
-  componentDidMount() {
-
-  }
-
-  /**
-   * 更新后
-   */
-  componentDidUpdate() {
-
-  }
-
-  /**
-   * 销毁前
-   */
-  componentWillUnmount() {
-
-  }
+  genHandleClick = (companyId, deviceId) => {
+    const { units, showUnitDetail } = this.props;
+    return e => {
+      showUnitDetail(
+        units.filter(({ companyId: id }) => id === companyId)[0],
+        deviceId
+      );
+    };
+  };
 
   /**
    * 1.修改state状态
@@ -93,6 +89,8 @@ export default class WarningMessage extends PureComponent {
       // 数据源
       data,
     } = this.props;
+
+    // console.log(data);
     const { isExpanded } = this.state;
     // 收缩显示3个，展开最大显示100个
     const list = isExpanded ? data.slice(0, 100) : data.slice(0, 3);
@@ -109,7 +107,7 @@ export default class WarningMessage extends PureComponent {
         }}
         other={data.length > 3 && <Icon type={isExpanded?'double-left':'double-right'} className={styles.expandButton} onClick={this.handleClickExpandButton} />}
       >
-        {list.length > 0 ? list.map(item => <Message key={item.messageId} data={item} />) : (
+        {list.length > 0 ? list.map(item => <Message key={item.messageId} data={item} genHandleClick={this.genHandleClick} />) : (
           <div className={styles.emptyData}>暂无消息</div>
         )}
       </NewSection>

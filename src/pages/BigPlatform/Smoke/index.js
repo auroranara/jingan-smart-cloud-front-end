@@ -20,16 +20,17 @@ import EquipmentStatistics from './EquipmentStatistics';
 // 告警信息
 // import WarningMessage from './WarningMessage';
 import MyTooltip from './components/Tooltip';
-// 故障/报警处理动态
+// 故障/火警处理动态
 import MaintenanceDrawer from './sections/MaintenanceDrawer';
+import MonitorDrawer from './sections/MonitorDrawer';
 
 // import AlarmChart from './AlarmChart';
-import ElectricityMap from './ElectricityMap';
-import MapSearch from './ElectricityMap/MapSearch';
+import BackMap from './BackMap';
+import MapSearch from './BackMap/MapSearch';
 // 引入样式文件
 import styles from './index.less';
 import { SettingModal, UnitDrawer, AlarmDrawer, FireStatisticsDrawer } from './sections/Components';
-// import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
+import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import { genCardsInfo } from './utils';
 import { GridSelect } from './components/Components';
@@ -43,7 +44,7 @@ const options = {
 };
 
 /**
- * description: 用电监测
+ * description: 智能烟感
  * author:
  * date: 2019年01月08日
  */
@@ -102,13 +103,12 @@ export default class Smoke extends PureComponent {
     dispatch({
       type: 'smoke/fetchUnitData',
       payload: { gridId },
-      callback: data => {
-        if (!data) return;
-        const {
-          unitSet: { units = [] },
-        } = data;
-        this.cardsInfo = genCardsInfo(units);
-      },
+    });
+
+    // 烟感地图数据
+    dispatch({
+      type: 'smoke/fetchMapList',
+      payload: { gridId },
     });
 
     // 获取异常单位统计数据
@@ -179,16 +179,16 @@ export default class Smoke extends PureComponent {
       try {
         const data = JSON.parse(e.data).data;
         const { type, companyId, messageFlag } = data;
-        const {
-          smoke: {
-            // messages,
-            unitIds,
-            // unitSet,
-            // unitSet: { units },
-          },
-        } = this.props;
+        // const {
+        //   smoke: {
+        //     // messages,
+        //     unitIds,
+        //     // unitSet,
+        //     // unitSet: { units },
+        //   },
+        // } = this.props;
         const { alarmIds } = this.state;
-        const index = unitIds.indexOf(companyId);
+        // const index = unitIds.indexOf(companyId);
         // 如果数据为告警或恢复，则将数据插入到列表的第一个
         if ([31, 32].includes(type)) {
           // dispatch({
@@ -275,6 +275,10 @@ export default class Smoke extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
+
+    // setInterval(() => {
+    //   this.fetchPending();
+    // }, 10000);
   }
 
   fetchAbnormal = () => {
@@ -289,13 +293,6 @@ export default class Smoke extends PureComponent {
     dispatch({
       type: 'smoke/fetchUnitData',
       payload: { gridId },
-      callback: data => {
-        if (!data) return;
-        const {
-          unitSet: { units = [] },
-        } = data;
-        this.cardsInfo = genCardsInfo(units);
-      },
     });
 
     // 获取异常单位统计数据
@@ -331,7 +328,7 @@ export default class Smoke extends PureComponent {
    */
   componentWillUnmount() {}
 
-  cardsInfo = [];
+  // cardsInfo = [];
   importCardsInfo = [];
   errorUnitsCardsInfo = [];
 
@@ -344,11 +341,14 @@ export default class Smoke extends PureComponent {
     if (!unitDetail) {
       return;
     }
+    const { dispatch } = this.props;
     const { mapInstance } = this.state;
-    const { longitude, latitude } = unitDetail;
+    const { longitude, latitude, companyId } = unitDetail;
     mapInstance.setZoomAndCenter(18, [longitude, latitude]);
+    this.setState({ unitDetail });
     this.mapChild.handleMapClick(unitDetail);
     this.hideTooltip();
+    dispatch({ type: 'smoke/fetchCameraList', payload: { company_id: companyId } });
   };
 
   /**
@@ -356,11 +356,11 @@ export default class Smoke extends PureComponent {
    * 2.隐藏弹出框
    */
   hideUnitDetail = () => {
-    clearInterval(this.deviceStatusCountTimer);
-    clearInterval(this.deviceRealTimeDataTimer);
-    clearInterval(this.deviceHistoryDataTimer);
-    clearInterval(this.deviceConfigTimer);
-    this.setState({ unitDetail: undefined, monitorDrawerVisible: false });
+    // clearInterval(this.deviceStatusCountTimer);
+    // clearInterval(this.deviceRealTimeDataTimer);
+    // clearInterval(this.deviceHistoryDataTimer);
+    // clearInterval(this.deviceConfigTimer);
+    this.setState({ monitorDrawerVisible: false });
   };
 
   /**
@@ -401,7 +401,7 @@ export default class Smoke extends PureComponent {
           </div>
           <div className={styles.notificationText}>
             <div className={styles.notificationTextFirst}>{`${area}${location}${paramName}`}</div>
-            <div className={styles.notificationTextSecond}>发生报警！</div>
+            <div className={styles.notificationTextSecond}>发生火警！</div>
           </div>
         </div>
       ),
@@ -476,7 +476,13 @@ export default class Smoke extends PureComponent {
   };
 
   handleClickCamera = () => {
-    this.setState({ videoVisible: true });
+    const {
+      smoke: { cameraList },
+    } = this.props;
+    this.setState({
+      videoVisible: true,
+      videoKeyId: cameraList.length ? cameraList[0].key_id : '',
+    });
   };
 
   handleVideoClose = () => {
@@ -539,6 +545,17 @@ export default class Smoke extends PureComponent {
     this.mapChild = ref;
   };
 
+  handleCompanyClick = companyId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'smoke/fetchCompanySmokeInfo',
+      payload: { company_id: companyId },
+      success: () => {
+        this.handleDrawerVisibleChange('monitor');
+      },
+    });
+  };
+
   /**
    * 渲染
    */
@@ -555,6 +572,8 @@ export default class Smoke extends PureComponent {
         unitSet,
         deviceStatusCount,
         gasForMaintenance = [],
+        companySmokeInfo: { dataByCompany, list: devList },
+        cameraList,
       },
       match: {
         params: { gridId },
@@ -573,6 +592,9 @@ export default class Smoke extends PureComponent {
       tooltipVisible,
       tooltipPosition,
       maintenanceDrawerVisible,
+      monitorDrawerVisible,
+      videoVisible,
+      // drawerType,
       alarmIds,
       companyName,
       type,
@@ -602,9 +624,10 @@ export default class Smoke extends PureComponent {
         onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
-        <ElectricityMap
+        <BackMap
           units={Array.isArray(unitSet.units) ? unitSet.units : []}
           deviceStatusCount={deviceStatusCount}
+          handleMapClick={this.showUnitDetail}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
           unitDetail={unitDetail}
@@ -612,6 +635,7 @@ export default class Smoke extends PureComponent {
           handleParentChange={this.handleMapParentChange}
           handleAlarmClick={this.handleAlarmClick}
           onRef={this.onRef}
+          handleCompanyClick={this.handleCompanyClick}
         />
         {/* 搜索框 */}
         <MapSearch
@@ -678,7 +702,7 @@ export default class Smoke extends PureComponent {
           type={type}
         />
         <MaintenanceDrawer
-          title="报警处理动态"
+          title="火警处理动态"
           // type={drawerType}
           type={'alarm'}
           data={gasForMaintenance}
@@ -686,14 +710,27 @@ export default class Smoke extends PureComponent {
           companyName={companyName}
           onClose={() => this.handleDrawerVisibleChange('maintenance')}
         />
-        {/* <VideoPlay
-          showList={true}
+        <MonitorDrawer
+          data={{
+            unitDetail,
+            cameraList,
+            dataByCompany,
+            devList,
+          }}
+          visible={monitorDrawerVisible}
+          // visible={true}
+          handleClose={this.hideUnitDetail}
+          handleSelect={this.handleSelectDevice}
+          handleClickCamera={this.handleClickCamera}
+        />
+        <VideoPlay
+          showList={false}
           videoList={cameraList}
           visible={videoVisible}
           keyId={cameraList.length ? cameraList[0].key_id : ''}
           style={{ position: 'fixed', zIndex: 99999 }}
           handleVideoClose={this.handleVideoClose}
-        /> */}
+        />
         <MyTooltip
           visible={tooltipVisible}
           title={tooltipName}

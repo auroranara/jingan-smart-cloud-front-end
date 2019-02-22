@@ -6,12 +6,13 @@ const URL_PREFIX = '/acloud_new/v2/video';
 
 // 获取单位树
 export async function queryFolderTree(params) {
-  return request(`${URL_PREFIX}/api/folders?${stringify(params)}`);
+  // return request(`${URL_PREFIX}/api/folders?${stringify(params)}`);
+  return request(`${URL_PREFIX}/api/getAllTree?${stringify(params)}`);
 }
 
 // 获取视频列表(列表)
 export async function queryVideoList(params) {
-  return request(`${URL_PREFIX}/api/videosByFolder?${stringify(params)}`);
+  return request(`${URL_PREFIX}/api/getVideo?${stringify(params)}`);
 }
 
 // 获取视频列表(树)
@@ -66,5 +67,5 @@ export async function fetchCompanyOptions(params) {
 
 // 视频列表同步左侧目录
 export async function synchronizeDirectory() {
-  return request('/acloud_new/v2/video/api/manualSync')
+  return request('/acloud_new/v2/video/api/manualSync');
 }
