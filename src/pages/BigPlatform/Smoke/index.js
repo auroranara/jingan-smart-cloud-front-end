@@ -668,14 +668,14 @@ export default class Smoke extends PureComponent {
         <NewSection
           title="历史火警单位统计"
           className={styles.left}
-          style={{ top: 'calc(38.88% + 92px)', height: '16%', cursor: 'pointer' }}
+          style={{ top: 'calc(38.79% + 92px)', height: '16%', cursor: 'pointer' }}
         >
           <HistoricalFire data={statisticsData} onClick={this.handleHistoricalFireClick} />
         </NewSection>
         <NewSection
           title="设备故障统计"
           className={styles.left}
-          style={{ top: 'calc(56% + 92px)', height: '29%', cursor: 'pointer' }}
+          style={{ top: 'calc(55.85% + 92px)', height: '28%', cursor: 'pointer' }}
         >
           <EquipmentStatistics brandData={brandData} />
         </NewSection>
