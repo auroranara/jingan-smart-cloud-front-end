@@ -32,14 +32,14 @@ const Message = function({
       </div>
       <div className={styles.messageContent}>
         {type === 32 ? (
-          <div>{`${area}${location}${paramName}${realtimeVal}${unit}（${condition==='>='?'≥':'≤'}${limitVal}${unit}）`}</div>
+          <div className={styles.msgDetail}>{`${area}${location}${paramName}${realtimeVal}${unit}（${condition==='>='?'≥':'≤'}${limitVal}${unit}）`}</div>
         ) : (
           <Fragment>
             <div>{`${moment(oldWarningTime).format('HH:mm:ss')} ${area}${location}${paramName}告警`}</div>
             <div>现已恢复正常！</div>
           </Fragment>
         )}
-        <div className={styles.detail} onClick={genHandleClick(companyId, messageFlag)}>
+        <div className={styles.detail} onClick={genHandleClick(companyId, messageFlag, paramName)}>
           详情
           <Icon type="double-right" />
         </div>
@@ -62,12 +62,14 @@ export default class WarningMessage extends PureComponent {
     };
   }
 
-  genHandleClick = (companyId, deviceId) => {
+  genHandleClick = (companyId, deviceId, paramName) => {
     const { units, showUnitDetail } = this.props;
     return e => {
       showUnitDetail(
         units.filter(({ companyId: id }) => id === companyId)[0],
-        deviceId
+        deviceId,
+        undefined,
+        paramName
       );
     };
   };

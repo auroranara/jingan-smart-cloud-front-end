@@ -9,7 +9,7 @@ import {
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import { DotItem, Gauge, GaugeLabels } from '../components/Components';
 import ElectricityCharts from '../components/ElectricityCharts';
-import { getAlerted } from '../utils';
+import { getAlerted, getTargetAlerted } from '../utils';
 import styles from './MonitorDrawer.less';
 import locationIcon from '../imgs/location.png';
 import personIcon from '../imgs/person.png';
@@ -56,10 +56,10 @@ export default class MonitorDrawer extends PureComponent {
     setAlertedLabelIndexFn(this.setAlertedLabelIndex);
   }
 
-  setAlertedLabelIndex = () => {
+  setAlertedLabelIndex = (paramName) => {
     const { data: { deviceRealTimeData: { deviceDataForAppList } } } = this.props;
-    const alerted = getAlerted(deviceDataForAppList, CHARTS_LABELS);
-    alerted.length && this.setState({ labelIndex: alerted[0] });
+    const alerted = getTargetAlerted(deviceDataForAppList, CHARTS_LABELS, paramName);
+    alerted && this.setState({ labelIndex: alerted });
   };
 
   handleClickCamera = () => {
