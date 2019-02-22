@@ -431,16 +431,6 @@ export default class TagManagementAdd extends PureComponent {
             ></Table>
           </Fragment>
         </Modal>
-        {/* 选择单位弹窗 */}
-        {/* <CompanyModal
-          title="选择单位"
-          loading={companyLoading}
-          visible={companyVisible}
-          modal={tagCompany}
-          fetch={this.fetchTagCompanies}
-          onSelect={this.handleSelectCompany}
-          onClose={this.handleCompanyModalCLose}
-        /> */}
       </PageHeaderLayout>
     )
   }

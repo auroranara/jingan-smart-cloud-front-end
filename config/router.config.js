@@ -1552,7 +1552,7 @@ module.exports = env => {
                 {
                   name: 'companyBeacon',
                   code: 'personnelPosition.beaconManagement.companyBeacon',
-                  path: '/personnel-position/beacon-management/company/:id',
+                  path: '/personnel-position/beacon-management/company/:companyId',
                   component: './PersonnelPosition/BeaconManagement/CompanyBeacon',
                 },
               ],
@@ -1598,6 +1598,12 @@ module.exports = env => {
                   path: '/personnel-position/tag-management/detail',
                   code: 'personnelPosition.tagManagement.view',
                   component: './PersonnelPosition/TagManagement/TagManagementDetail',
+                },
+                {
+                  name: 'import',
+                  path: '/personnel-position/tag-management/import/:companyId',
+                  code: 'personnelPosition.tagManagement.import',
+                  component: './PersonnelPosition/TagManagement/ImportTag',
                 },
               ],
             },
