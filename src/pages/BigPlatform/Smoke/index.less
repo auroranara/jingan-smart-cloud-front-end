@@ -1,0 +1,121 @@
+/* 容器 */
+.container {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.left {
+  position: absolute;
+  left: 24px;
+  width: 25.46875%;
+  z-index: 9999;
+}
+
+
+/* 接入单位统计 */
+.accessUnitStatistics {
+  top: calc(~'9.62963% + 68px');
+  height: 13.611111%;
+  cursor: pointer;
+}
+
+/* 实时报警统计 */
+.realTimeAlarmStatistics {
+  top: calc(~'22.99% + 80px');
+  height: 16%;
+  cursor: pointer;
+}
+
+.right {
+  position: absolute;
+  top: calc(~'9.62963% + 68px');
+  max-height: calc(~'63.148156% + 24px');
+  // bottom: 24px;
+  right: 24px;
+  width: 19.0625%;
+  z-index: 9999;
+}
+
+/* 通知提醒框 */
+.notification {
+  padding: 0;
+  background-color: rgba(22, 22, 22, 0.902);
+  box-shadow: none;
+  overflow: visible;
+
+  &>div:first-child {
+    animation: redShadow 2s linear infinite;
+  }
+
+  :global {
+
+    .ant-notification-notice-content {
+      padding: 12px 20px;
+      box-shadow: 0 0 20px #f83329;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .ant-notification-notice-close {
+      top: 12px;
+      right: 16px;
+      color: #fff;
+    }
+
+    .ant-notification-close-icon {
+      font-size: 16px;
+    }
+
+    .ant-notification-notice-message {
+      margin-bottom: 6px;
+    }
+  }
+
+  .notificationTitle {
+    color: #f83329;
+    font-size: 16px;
+
+    .notificationIcon {
+      margin-right: 6px;
+      font-size: 18px;
+      vertical-align: middle;
+    }
+  }
+
+  .notificationContent {
+    line-height: 24px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+
+    .notificationText {
+      padding: 3px 0;
+      overflow: hidden;
+
+      .notificationTextFirst {
+        float: left;
+        margin-right: 20px;
+      }
+
+      .notificationTextSecond {
+        float: left;
+        color: #f83329;
+      }
+    }
+  }
+}
+
+@keyframes redShadow {
+  0% {
+    box-shadow: 0px 0px 20px #f83329;
+  }
+
+  50% {
+    box-shadow: 0px 0px 5px #f83329;
+  }
+
+  100% {
+    box-shadow: 0px 0px 20px #f83329;
+  }
+}

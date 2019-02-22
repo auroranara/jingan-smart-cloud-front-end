@@ -1,0 +1,99 @@
+.cardIcon {
+  display: inline-block;
+  width: 18px;
+  height: 17px;
+  margin-right: 6px;
+  position: relative;
+  top: 2px;
+  background-size: 100% 100%;
+}
+
+.more {
+  margin-top: 6px;
+  color: #FFF;
+  position: relative;
+}
+
+.icon {
+  display: inline-block;
+  background-size: 100% 100%;
+  position: relative;
+  top: 3px;
+  margin-right: 5px;
+}
+
+.point:extend(.icon) {
+  width: 18px;
+  height: 18px;
+}
+
+.danger:extend(.icon) {
+  width: 18px;
+  height: 17px;
+}
+
+.dangerDesc {
+  color: #FFF;
+}
+
+.hiddenDanger {
+  color: #0FF;
+  padding: 5px 10px;
+  margin-left: 25px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+}
+
+.hiddenDangerZero:extend(.hiddenDanger) {
+  color: #FFF;
+}
+
+.hiddenDanger:hover {
+  cursor: pointer;
+  border-color: #0FF;
+  background-color: rgb(4, 71, 134);
+}
+
+.normal {
+  padding: 0 13px;
+  border-radius: 15px;
+  border: 1px solid transparent;
+}
+
+.fire:extend(.normal) {
+  cursor: pointer;
+  color: rgb(255, 72, 72);
+  border-color: rgb(255, 72, 72);
+}
+
+.not:extend(.normal) {
+  padding: 0 20px;
+}
+
+.status {
+  position: absolute;
+  right: 0;
+  top: 2px;
+}
+
+.equipment {
+  width: 70px;
+  height: 70px;
+  font-size: 24px;
+  line-height: 64px;
+  border: 2px solid #0FF;
+  border-radius: 50%;
+  margin-bottom: 5px;
+}
+
+.itemActive {
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.itemActive:hover {
+  cursor: pointer;
+  border: 1px solid #04fdff;
+  background-color: rgba(4, 71, 134, 0.5);
+  border-radius: 6px;
+}
