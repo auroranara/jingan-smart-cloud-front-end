@@ -255,7 +255,6 @@ export default class AlarmDrawer extends PureComponent {
             normal: listNormal,
             unnormal: listUnnormal = 0,
             faultNum: listFaultNum,
-            outContact: listOutContact,
             count,
           }) => (
             <DrawerCard

@@ -689,6 +689,7 @@ export default class Smoke extends PureComponent {
           data={{ list: importCardsInfo, AccessStatistics, AccessCount }}
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          handleAlarmClick={this.handleAlarmClick}
         />
         <AlarmDrawer
           data={{ list: errorUnitsCardsInfo, companyStatus, graphList: AbnormalTrend }}
