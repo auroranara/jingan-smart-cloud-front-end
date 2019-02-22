@@ -3,7 +3,7 @@ import { Input, Row, Col, Select, Table, Icon } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import Section from '@/pages/BigPlatform/NewUnitFireControl/Section';
 // 引入样式文件
-import styles from './index.less';
+import styles from './RealTimeMonitor.less';
 
 // const { Search } = Input;
 const { Option } = Select;
@@ -122,27 +122,6 @@ export default class RealTimeMonitor extends PureComponent {
   }
 
   /**
-   * 挂载后
-   */
-  componentDidMount() {
-
-  }
-
-  /**
-   * 更新后
-   */
-  componentDidUpdate() {
-
-  }
-
-  /**
-   * 销毁前
-   */
-  componentWillUnmount() {
-
-  }
-
-  /**
    * change区域名称
    * 说明：
    * 1.修改输入框
@@ -206,24 +185,16 @@ export default class RealTimeMonitor extends PureComponent {
    */
   render() {
     const {
-      // 容器类名
-      className,
-      // 容器样式
-      style,
       // 表格源数据
       data=DATA,
+      ...restProps
     } = this.props;
     const { areaName, status } = this.state;
     // 筛选数据
     const list = filterDataByAreaNameAndStatus(data, areaName, status);
 
     return (
-      <Section
-        className={className?`${styles.container} ${className}`:styles.container}
-        style={style}
-        title="实时监控"
-        contentStyle={{ padding: '16px 0' }}
-      >
+      <div className={styles.container} {...restProps}>
         <Scrollbars style={{ width: '100%', height: '100%' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
           <div style={{ padding: '0 20px' }}>
             <Row gutter={16}>
@@ -268,7 +239,7 @@ export default class RealTimeMonitor extends PureComponent {
             />
           </div>
         </Scrollbars>
-      </Section>
+      </div>
     );
   }
 }

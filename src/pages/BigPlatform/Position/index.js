@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 // import pathToRegexp from 'path-to-regexp';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
-import RealTimeMonitor from './components/RealTimeMonitor';
 import AlarmView from './components/AlarmView';
 import { stringify } from 'qs';
 import moment from 'moment';
@@ -12,7 +11,7 @@ import { connect } from 'dva';
 import styles from './index.less';
 import sosIcon from './imgs/sos.png';
 import alarmInfoIcon from './imgs/alarmInfo.png';
-import { Map, Info, PersonInfo, AlarmMsg, AlarmHandle, Tabs, VideoPlay } from './components/Components';
+import { AlarmHandle, AlarmMsg, Info, Map, PersonInfo, RealTimeMonitor, Tabs, VideoPlay } from './components/Components';
 import {
   handlePositions,
   handlePosInfo,
@@ -29,7 +28,6 @@ const options = {
   reconnectTimeout: 2000,
   pingMsg: 'heartbeat',
 };
-const COMPANY_ID = 'DccBRhlrSiu9gMV7fmvizw';
 // areaId 0 大区域 1 消控室
 const VIDEO_KEY_IDS = ['250ch11', '250ch10'];
 
@@ -295,9 +293,10 @@ export default class WbTest extends PureComponent {
         <div className={styles.container}>
           <div className={styles.left}>
             <Tabs value={labelIndex} handleLabelClick={this.handleLabelClick} />
-            <div className={styles.leftSection} />
-            {/* <RealTimeMonitor data={sectionInfo} className={styles.leftTop} />
-            <AlarmView
+            <div className={styles.leftSection}>
+              <RealTimeMonitor data={sectionInfo} />
+            </div>
+            {/* <AlarmView
               data={alarmCards}
               className={styles.leftBottom}
               onClick={this.handleAlarmCardClick}

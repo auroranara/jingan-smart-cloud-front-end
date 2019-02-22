@@ -17,7 +17,7 @@ export default class Tabs extends PureComponent {
             key={tab}
             className={styles[i === value ? 'selected' : 'tab']}
             style={{ left: `${(leftPercent - 0.5) * i}%`, zIndex: i === value ? 9 : TABS.length - 1 - i }}
-            onClick={e => handleLabelClick(i)}
+            onClick={i === value ? null : e => handleLabelClick(i)}
           >
             {tab}
           </span>
