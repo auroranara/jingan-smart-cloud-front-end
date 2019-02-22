@@ -31,8 +31,8 @@ import { SettingModal, UnitDrawer, AlarmDrawer, BusinessDrawer } from './section
 
 import { genCardsInfo, genPendingCardsInfo, getAlarmUnits } from './utils';
 import { GridSelect } from './components/Components';
-import UnitMonitorDrawer from './Sections/UnitMonitorDrawer';
-import VideoPlay from '../Monitor/Sections/VideoPlay';
+import UnitMonitorDrawer from './sections/UnitMonitorDrawer';
+import VideoPlay from '../Monitor/sections/VideoPlay';
 
 // websocket配置
 const options = {
