@@ -53,13 +53,9 @@ export default class MonitorDrawer extends PureComponent {
     this.setState({ statusIndex: index });
   };
 
-  handleClickCamera = () => {
-    console.log('video');
-  };
-
   renderItems = () => {
     const {
-      data: { devList },
+      data: { devList, cameraList = [] },
     } = this.props;
     const { statusIndex } = this.state;
     const dataList = devList.filter(item => {
@@ -111,11 +107,13 @@ export default class MonitorDrawer extends PureComponent {
                       <div className={styles.position}>{`${area}：${location}`}</div>
                       <div className={styles.infos}>{+status === 0 ? devStatus : occurTime}</div>
                       <div className={styles.extraWrapper}>
-                        <div
-                          className={styles.camraImg}
-                          style={{ backgroundImage: `url(${cameraIcon})` }}
-                          onClick={e => this.handleClickCamera()}
-                        />
+                        {!!cameraList.length && (
+                          <div
+                            className={styles.camraImg}
+                            style={{ backgroundImage: `url(${cameraIcon})` }}
+                            onClick={e => this.handleClickCamera()}
+                          />
+                        )}
                         {+status !== 0 && (
                           <div className={styles.status} style={{ color, borderColor: color }}>
                             {+status > 0 ? '火警' : '故障'}
@@ -163,9 +161,7 @@ export default class MonitorDrawer extends PureComponent {
         dataByCompany,
         devList,
       },
-      // handleSelect,
       handleClose,
-      // handleClickCamera,
     } = this.props;
     const { videoVisible, videoKeyId, statusIndex } = this.state;
 

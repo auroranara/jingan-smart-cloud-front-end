@@ -6,7 +6,7 @@ import MapTypeBar from './MapTypeBar';
 
 import pointNormal from './imgs/point-normal.png';
 import pointAlarm from './imgs/point-alarm.png';
-// import pointPreAlarm from './imgs/point-preAlarm.png';
+import pointPreAlarm from './imgs/point-preAlarm.png';
 import iconAddress from './imgs/icon-address.png';
 import iconMan from './imgs/icon-man.png';
 
@@ -77,7 +77,6 @@ export default class MapSection extends PureComponent {
           latitude: item.latitude,
         },
         zIndex: selectedCompanyId === item.companyId ? 999 : 100,
-        // ...{ zIndex: item.companyId === 'DccBRhlrSiu9gMV7fmvizw' ? 998 : 100 },
       };
     });
 
@@ -103,13 +102,13 @@ export default class MapSection extends PureComponent {
   };
 
   renderMarkerLayout = extData => {
-    const { companyName, companyId, unnormal /* faultNum */ } = extData;
+    const { companyName, companyId, unnormal, faultNum } = extData;
     let imgSrc = pointNormal;
 
     if (+unnormal > 0) {
       imgSrc = pointAlarm;
-      // } else if (+faultNum > 0) {
-      //   imgSrc = pointPreAlarm;
+    } else if (+faultNum > 0) {
+      imgSrc = pointPreAlarm;
     } else {
       imgSrc = pointNormal;
     }
@@ -140,7 +139,6 @@ export default class MapSection extends PureComponent {
 
   handleMapClick = extData => {
     if (extData.companyId === this.state.infoWindow.companyId && this.state.infoWindowShow) return;
-    // const { handleMapClick } = this.props;
     this.setState({
       infoWindowShow: true,
       infoWindow: {
@@ -205,7 +203,6 @@ export default class MapSection extends PureComponent {
       },
     } = this.state;
     const { handleAlarmClick, handleCompanyClick } = this.props;
-    // const activeStyles = classNames(styles.statusItem, styles.itemActive);
     return (
       <InfoWindow
         position={{ longitude, latitude }}

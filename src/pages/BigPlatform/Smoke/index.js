@@ -30,7 +30,7 @@ import MapSearch from './BackMap/MapSearch';
 // 引入样式文件
 import styles from './index.less';
 import { SettingModal, UnitDrawer, AlarmDrawer, FireStatisticsDrawer } from './sections/Components';
-// import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
+import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import { genCardsInfo, genPendingCardsInfo } from './utils';
 import { GridSelect } from './components/Components';
@@ -350,12 +350,14 @@ export default class Smoke extends PureComponent {
     if (!unitDetail) {
       return;
     }
+    const { dispatch } = this.props;
     const { mapInstance } = this.state;
-    const { longitude, latitude } = unitDetail;
+    const { longitude, latitude, companyId } = unitDetail;
     mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     this.setState({ unitDetail });
     this.mapChild.handleMapClick(unitDetail);
     this.hideTooltip();
+    dispatch({ type: 'smoke/fetchCameraList', payload: { company_id: companyId } });
   };
 
   /**
@@ -483,7 +485,13 @@ export default class Smoke extends PureComponent {
   };
 
   handleClickCamera = () => {
-    this.setState({ videoVisible: true });
+    const {
+      smoke: { cameraList },
+    } = this.props;
+    this.setState({
+      videoVisible: true,
+      videoKeyId: cameraList.length ? cameraList[0].key_id : '',
+    });
   };
 
   handleVideoClose = () => {
@@ -580,6 +588,7 @@ export default class Smoke extends PureComponent {
       tooltipPosition,
       maintenanceDrawerVisible,
       monitorDrawerVisible,
+      videoVisible,
       // drawerType,
       alarmIds,
       companyName,
@@ -709,14 +718,14 @@ export default class Smoke extends PureComponent {
           handleSelect={this.handleSelectDevice}
           handleClickCamera={this.handleClickCamera}
         />
-        {/* <VideoPlay
-          showList={true}
+        <VideoPlay
+          showList={false}
           videoList={cameraList}
           visible={videoVisible}
           keyId={cameraList.length ? cameraList[0].key_id : ''}
           style={{ position: 'fixed', zIndex: 99999 }}
           handleVideoClose={this.handleVideoClose}
-        /> */}
+        />
         <MyTooltip
           visible={tooltipVisible}
           title={tooltipName}
