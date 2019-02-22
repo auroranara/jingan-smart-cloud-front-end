@@ -4,6 +4,7 @@ import {
   getImportingTotal, // 接入单位统计
   getAbnormalingTotal, // 异常单位统计
   getFireHistory, // 火警统计
+  getFaultByBrand, // 品牌故障统计
   getMessages,
   getCompanyId,
   getCameraList,
@@ -107,6 +108,10 @@ export default {
         endDate: '',
         list: [],
       },
+    },
+    // 品牌故障统计
+    brandData: {
+      brandList: [],
     },
     // 告警信息列表
     messages: [],
@@ -313,6 +318,22 @@ export default {
       }
     },
 
+    //  品牌故障统计
+    *fetchFaultByBrand({ payload, success, error }, { call, put }) {
+      const response = yield call(getFaultByBrand, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveFaultByBrand',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response);
+      }
+    },
+
     *fetchCameraList({ payload }, { call, put }) {
       const response = yield call(getCameraList, payload);
       const { list } = response;
@@ -362,6 +383,13 @@ export default {
       return {
         ...state,
         fireHistoryData: payload,
+      };
+    },
+    // 获取品牌故障统计
+    saveFaultByBrand(state, { payload }) {
+      return {
+        ...state,
+        brandData: payload,
       };
     },
     saveCameraList(state, action) {

@@ -28,6 +28,11 @@ export async function getFireHistory(params) {
   return request(`${URL_PREFIX}/shs/fireHistory?${stringify(params)}`);
 }
 
+// 传感器品牌故障统计
+export async function getFaultByBrand(params) {
+  return request(`${URL_PREFIX}/shs/countFaultByBrand?${stringify(params)}`);
+}
+
 // 获取告警信息列表
 export async function getMessages(params) {
   return request(`${URL_PREFIX}/screen/screenMessageForGov?screenType=4`);

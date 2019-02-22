@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { DatePicker } from 'antd';
+import { DatePicker, Form } from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
 
@@ -9,9 +9,9 @@ import {
   DrawerSection,
   ChartRing,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
-
 import { ChartBar } from '../components/Components';
-import { createUnparsedSourceFile } from 'typescript';
+
+const FormItem = Form.Item;
 const TYPE = 'fire';
 const { RangePicker } = DatePicker;
 const RING_LABELS = ['处理中', '已处理', '超时结束'];
@@ -20,19 +20,9 @@ const RING_COLORS = ['0,255,255', '0,186,255', '188,188,189'];
 @connect(({ smoke }) => ({
   smoke,
 }))
+@Form.create()
 export default class FireStatisticsDrawer extends PureComponent {
   state = { selected: 0, searchValue: '' };
-
-  // componentDidMount() {
-  //   const { dispatch, type } = this.props;
-  //   // 获取火警统计
-  //   dispatch({
-  //     type: 'smoke/fetchFireHistory',
-  //     payload: {
-  //       type,
-  //     },
-  //   });
-  // }
 
   handleClose = () => {
     const { handleDrawerVisibleChange } = this.props;
@@ -41,12 +31,23 @@ export default class FireStatisticsDrawer extends PureComponent {
   };
 
   handleOk = type => {
-    const { dispatch } = this.props;
-    console.log('this.propsthis.props', this.props);
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props;
+    const data = getFieldsValue();
+    const { checkDate, ...restValues } = data;
+    const startDate = checkDate && checkDate.length > 0 ? checkDate[0] : undefined;
+    const endDate = checkDate && checkDate.length > 0 ? checkDate[1] : undefined;
+    // 修改表单数据
+    this.formData = data;
     // 获取火警统计
     dispatch({
       type: 'smoke/fetchFireHistory',
       payload: {
+        ...restValues,
+        startDate: startDate && startDate.format('YYYY-MM-DD'),
+        endDate: endDate && endDate.format('YYYY-MM-DD'),
         type,
       },
     });
@@ -55,6 +56,7 @@ export default class FireStatisticsDrawer extends PureComponent {
   render() {
     const {
       visible,
+      form: { getFieldDecorator },
       smoke: {
         fireHistoryData: {
           fireCompanyList: { startDate, endDate, list = [] },
@@ -62,8 +64,8 @@ export default class FireStatisticsDrawer extends PureComponent {
       },
       type,
     } = this.props;
-    console.log('12331', this.props);
-    const rings = [2, 11, 22].map((n, i) => ({
+
+    const rings = [0, 0, 0].map((n, i) => ({
       name: RING_LABELS[i],
       value: n,
       itemStyle: { color: `rgb(${RING_COLORS[i]})` },
@@ -71,18 +73,22 @@ export default class FireStatisticsDrawer extends PureComponent {
 
     const left = (
       <Fragment>
-        <div>
-          <RangePicker
-            format="YYYY-MM-DD"
-            className={styles.rangePicker}
-            dropdownClassName={styles.rangePicker}
-            placeholder={['开始时间', '结束时间']}
-            showTime={{
-              defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
-            }}
-            onOk={() => this.handleOk(type)}
-          />
-        </div>
+        <FormItem>
+          {getFieldDecorator('checkDate', {
+            initialValue: [moment(startDate), moment(endDate)],
+          })(
+            <RangePicker
+              format="YYYY-MM-DD"
+              className={styles.rangePicker}
+              dropdownClassName={styles.rangePicker}
+              placeholder={['开始时间', '结束时间']}
+              showTime={{
+                defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+              }}
+              onOk={() => this.handleOk(type)}
+            />
+          )}
+        </FormItem>
         <DrawerSection title="处理单位统计" style={{ marginBottom: 50 }}>
           <ChartRing data={rings} />
         </DrawerSection>

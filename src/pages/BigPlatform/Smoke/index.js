@@ -31,7 +31,7 @@ import styles from './index.less';
 import { SettingModal, UnitDrawer, AlarmDrawer, FireStatisticsDrawer } from './sections/Components';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
-import { genCardsInfo, genPendingCardsInfo } from './utils';
+import { genCardsInfo } from './utils';
 import { GridSelect } from './components/Components';
 
 // websocket配置
@@ -50,7 +50,7 @@ const options = {
 @connect(({ smoke }) => ({
   smoke,
 }))
-export default class Gas extends PureComponent {
+export default class Smoke extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -99,55 +99,64 @@ export default class Gas extends PureComponent {
     } = this.props;
 
     // 获取单位数据
-    // dispatch({
-    //   type: 'smoke/fetchUnitData',
-    //   payload: { gridId },
-    //   callback: data => {
-    //     if (!data) return;
-    //     const {
-    //       unitSet: { units = [] },
-    //     } = data;
-    //     this.cardsInfo = genCardsInfo(units);
-    //   },
-    // });
+    dispatch({
+      type: 'smoke/fetchUnitData',
+      payload: { gridId },
+      callback: data => {
+        if (!data) return;
+        const {
+          unitSet: { units = [] },
+        } = data;
+        this.cardsInfo = genCardsInfo(units);
+      },
+    });
 
-    // // 获取异常单位统计数据
-    // dispatch({
-    //   type: 'smoke/fetchUnNormalCount',
-    //   payload: { gridId },
-    // });
+    // 获取异常单位统计数据
+    dispatch({
+      type: 'smoke/fetchUnNormalCount',
+      payload: { gridId },
+    });
 
     // // 获取接入单位统计列表
-    // dispatch({
-    //   type: 'smoke/fetchImportingTotal',
-    //   payload: {
-    //     status,
-    //     gridId,
-    //   },
-    //   callback: data => {
-    //     if (!data) return;
-    //     const {
-    //       gasUnitSet: { importingUnits = [] },
-    //     } = data;
-    //     this.importCardsInfo = genCardsInfo(importingUnits);
-    //   },
-    // });
+    dispatch({
+      type: 'smoke/fetchImportingTotal',
+      payload: {
+        status,
+        gridId,
+      },
+      callback: data => {
+        if (!data) return;
+        const {
+          gasUnitSet: { importingUnits = [] },
+        } = data;
+        this.importCardsInfo = genCardsInfo(importingUnits);
+      },
+    });
 
     // // 获取异常单位统计列表
-    // dispatch({
-    //   type: 'smoke/fetchAbnormalingTotal',
-    //   payload: {
-    //     status,
-    //     gridId,
-    //   },
-    //   callback: data => {
-    //     if (!data) return;
-    //     const {
-    //       gasErrorUnitSet: { errorUnits = [] },
-    //     } = data;
-    //     this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
-    //   },
-    // });
+    dispatch({
+      type: 'smoke/fetchAbnormalingTotal',
+      payload: {
+        status,
+        gridId,
+      },
+      callback: data => {
+        if (!data) return;
+        const {
+          gasErrorUnitSet: { errorUnits = [] },
+        } = data;
+        this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
+      },
+    });
+
+    // 品牌故障统计
+    dispatch({
+      type: 'smoke/fetchFaultByBrand',
+      payload: {
+        gridId,
+      },
+    });
+
     const params = {
       companyId: gridId,
       env,
@@ -266,10 +275,6 @@ export default class Gas extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
-
-    setInterval(() => {
-      this.fetchPending();
-    }, 10000);
   }
 
   fetchAbnormal = () => {
@@ -293,6 +298,12 @@ export default class Gas extends PureComponent {
       },
     });
 
+    // 获取异常单位统计数据
+    dispatch({
+      type: 'smoke/fetchUnNormalCount',
+      payload: { gridId },
+    });
+
     // 获取异常单位统计
     dispatch({
       type: 'smoke/fetchAbnormalingTotal',
@@ -308,30 +319,6 @@ export default class Gas extends PureComponent {
         this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
       },
     });
-  };
-
-  fetchPending = () => {
-    const {
-      dispatch,
-      match: {
-        params: { gridId },
-      },
-    } = this.props;
-    // 获取待处理业务
-    // dispatch({
-    //   type: 'smoke/fetchFireHistory',
-    //   payload: {
-    //     type: status,
-    //     gridId,
-    //   },
-    //   callback: data => {
-    //     if (!data) return;
-    //     const {
-    //       gasPendingUnitSet: { companyList = [] },
-    //     } = data;
-    //     this.pendingUnitsCardsInfo = genPendingCardsInfo(companyList);
-    //   },
-    // });
   };
 
   /**
@@ -528,6 +515,7 @@ export default class Gas extends PureComponent {
         this.handleDrawerVisibleChange('fire');
       },
     });
+    this.setState({ type: type });
   };
 
   handleAlarmClick = (id, companyId, companyName, num) => {
@@ -563,8 +551,8 @@ export default class Gas extends PureComponent {
         AccessCount,
         companyStatus,
         AbnormalTrend,
+        brandData,
         unitSet,
-        allGasFire,
         deviceStatusCount,
         gasForMaintenance = [],
       },
@@ -585,7 +573,6 @@ export default class Gas extends PureComponent {
       tooltipVisible,
       tooltipPosition,
       maintenanceDrawerVisible,
-      // drawerType,
       alarmIds,
       companyName,
       type,
@@ -657,16 +644,16 @@ export default class Gas extends PureComponent {
         <NewSection
           title="历史火警单位统计"
           className={styles.left}
-          style={{ top: 'calc(41.184444% + 92px)', height: '18%', cursor: 'pointer' }}
+          style={{ top: 'calc(38.88% + 92px)', height: '16%', cursor: 'pointer' }}
         >
           <HistoricalFire data={statisticsData} onClick={this.handleHistoricalFireClick} />
         </NewSection>
         <NewSection
           title="设备故障统计"
           className={styles.left}
-          style={{ top: 'calc(60.384444% + 92px)', height: '24%', cursor: 'pointer' }}
+          style={{ top: 'calc(56% + 92px)', height: '29%', cursor: 'pointer' }}
         >
-          <EquipmentStatistics allGasFire={allGasFire} />
+          <EquipmentStatistics brandData={brandData} />
         </NewSection>
         {/* extra info */}
         <SettingModal

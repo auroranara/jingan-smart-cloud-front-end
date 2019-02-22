@@ -8,10 +8,6 @@ export default class HistoricalFire extends PureComponent {
     this.state = {};
   }
 
-  // handleDrawer = type => {
-  //   console.log(type);
-  // };
-
   /**
    * 渲染
    */

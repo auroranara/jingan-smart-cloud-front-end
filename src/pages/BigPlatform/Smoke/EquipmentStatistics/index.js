@@ -2,8 +2,7 @@ import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 
 export default class EquipmentStatistics extends PureComponent {
-  getChartOption() {
-    // const { data = [], xLabels = [] } = this.props;
+  getChartOption = brandList => {
     const option = {
       color: ['#00ffff'],
       tooltip: {
@@ -46,7 +45,7 @@ export default class EquipmentStatistics extends PureComponent {
           color: '#fff',
           fontSize: 14,
         },
-        data: ['1月', '2月', '3月', '4月', '5月'],
+        data: brandList.map(item => item.optional_desc),
       },
       yAxis: [
         {
@@ -81,19 +80,19 @@ export default class EquipmentStatistics extends PureComponent {
           color: 'rgb(4, 253, 255)',
           type: 'bar',
           barWidth: 5,
-          data: [0.6, 1.9, 25.0, 0.4, 1.7],
+          data: brandList.map(item => item.totalNum),
         },
         {
           name: '故障数量',
           type: 'bar',
           color: 'rgb(217, 61, 73)',
           barWidth: 5,
-          data: [0.6, 1.9, 23.0, 0.4, 61.7],
+          data: brandList.map(item => item.faultNum),
         },
       ],
     };
     return option;
-  }
+  };
 
   onChartReady = chart => {
     // if (!chart) return;
@@ -127,10 +126,13 @@ export default class EquipmentStatistics extends PureComponent {
   };
 
   render() {
+    const {
+      brandData: { brandList = [] },
+    } = this.props;
     return (
       <div style={{ width: '100%', height: '100%' }}>
         <ReactEcharts
-          option={this.getChartOption()}
+          option={this.getChartOption(brandList)}
           style={{ height: '100%', width: '100%' }}
           // className="echarts-for-echarts"
           // onChartReady={this.onChartReady}

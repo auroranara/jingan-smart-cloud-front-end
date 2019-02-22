@@ -10,21 +10,6 @@ export default class RealTimeFire extends PureComponent {
   }
 
   /**
-   * 挂载后
-   */
-  componentDidMount() {}
-
-  /**
-   * 更新后
-   */
-  componentDidUpdate() {}
-
-  /**
-   * 销毁前
-   */
-  componentWillUnmount() {}
-
-  /**
    * 渲染
    */
   render() {
