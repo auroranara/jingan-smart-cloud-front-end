@@ -20,7 +20,7 @@ const ICON_HEIGHT = 40;
 const ICON_BOTTOM = 5;
 const TYPE = 'alarm';
 const NO_DATA = '暂无信息';
-const OPTIONS = ['全部', '报警', '故障'].map((d, i) => ({ value: i, desc: d }));
+const OPTIONS = ['全部', '火警', '故障'].map((d, i) => ({ value: i, desc: d }));
 
 export default class AlarmDrawer extends PureComponent {
   state = { graph: 0, selected: 0, searchValue: '' };
@@ -82,7 +82,7 @@ export default class AlarmDrawer extends PureComponent {
         padding: [5, 15, 5, 15],
       },
       legend: {
-        data: ['报警', '故障', '失联'],
+        data: ['火警', '故障', '失联'],
         textStyle: {
           color: '#fff',
         },
@@ -136,7 +136,7 @@ export default class AlarmDrawer extends PureComponent {
       },
       series: [
         {
-          name: '报警',
+          name: '火警',
           color: '#ff4848',
           type: 'bar',
           barWidth: 5,
@@ -199,7 +199,7 @@ export default class AlarmDrawer extends PureComponent {
       <Fragment>
         <DrawerSection title="单位状态统计">
           <OvProgress
-            title="报警单位"
+            title="火警单位"
             percent={alarmPercent}
             quantity={unnormal}
             strokeColor="rgb(255,72,72)"
@@ -281,7 +281,7 @@ export default class AlarmDrawer extends PureComponent {
               more={
                 <p className={styles.more}>
                   <DotItem
-                    title="报警"
+                    title="火警"
                     color={`rgb(248,51,41)`}
                     quantity={listUnnormal}
                     className={listUnnormal > 0 ? styles.itemActive : ''}
