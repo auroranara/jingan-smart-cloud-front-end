@@ -185,6 +185,13 @@ export default class MapSection extends PureComponent {
     });
   };
 
+  // 点击打开查看单位监测信息弹窗
+  hanldeViewMonitor = () => {
+    const { onInfoTitleClick } = this.props
+    const { infoWindow } = this.state
+    onInfoTitleClick(infoWindow)
+  }
+
   // 弹窗渲染
   renderInfoWindow = () => {
     const {
@@ -216,7 +223,7 @@ export default class MapSection extends PureComponent {
         key={companyId}
       >
         <div className={styles.comapnyWrapper}>
-          <h3 className={styles.comapnyName}>{companyName}</h3>
+          <h3 className={styles.comapnyName} onClick={this.hanldeViewMonitor}>{companyName}</h3>
           <div className={styles.info}>
             <span
               className={styles.infoIcon}
