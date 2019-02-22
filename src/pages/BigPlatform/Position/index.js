@@ -1,6 +1,4 @@
 import React, { PureComponent } from 'react';
-// import pathToRegexp from 'path-to-regexp';
-import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import AlarmView from './components/AlarmView';
 import { stringify } from 'qs';
@@ -8,10 +6,12 @@ import moment from 'moment';
 import { notification } from 'antd';
 import { connect } from 'dva';
 
+import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import styles from './index.less';
 import sosIcon from './imgs/sos.png';
 import alarmInfoIcon from './imgs/alarmInfo.png';
-import { AlarmHandle, AlarmMsg, Info, Map, PersonInfo, RealTimeMonitor, Tabs, VideoPlay } from './components/Components';
+import { AlarmHandle, AlarmMsg, Info, Map, PersonInfo, Tabs, VideoPlay } from './components/Components';
+import { SectionList } from './sections/Components';
 import {
   handlePositions,
   handlePosInfo,
@@ -77,8 +77,6 @@ export default class WbTest extends PureComponent {
       type: 2,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
-    // const url = `ws://192.168.10.19:10028/websocket?${stringify(params)}`;
-    // const url = `ws://47.99.76.214:10028/websocket?${stringify(params)}`;
 
     // 链接webscoket
     const ws = new WebsocketHeartbeatJs({ url, ...options });
@@ -117,7 +115,6 @@ export default class WbTest extends PureComponent {
 
     dispatch({
       type: 'personPosition/fetchInitialPositions',
-      // payload: { companyId: COMPANY_ID },
       payload: { companyId },
       callback: (data = []) => {
         this.setState({ positions: data });
@@ -294,7 +291,10 @@ export default class WbTest extends PureComponent {
           <div className={styles.left}>
             <Tabs value={labelIndex} handleLabelClick={this.handleLabelClick} />
             <div className={styles.leftSection}>
-              <RealTimeMonitor data={sectionInfo} />
+              {!labelIndex && <SectionList data={sectionInfo} />}
+              {labelIndex === 1 && 1}
+              {labelIndex === 2 && 2}
+              {labelIndex === 3 && 3}
             </div>
             {/* <AlarmView
               data={alarmCards}

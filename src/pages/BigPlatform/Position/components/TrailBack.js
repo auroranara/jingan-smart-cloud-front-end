@@ -1,10 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Icon, Tooltip } from 'antd'
 import moment from 'moment';
-import bluePerson from '../../imgs/person.png';
-import redPerson from '../../imgs/personRed.png';
+import bluePerson from '../imgs/person.png';
+import redPerson from '../imgs/personRed.png';
 // 引入样式文件
-import styles from './index.less';
+import styles from './TrailBack.less';
 
 
 /**

@@ -1,9 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Input, Row, Col, Select, Table, Icon } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
-import Section from '@/pages/BigPlatform/NewUnitFireControl/Section';
-// 引入样式文件
-import styles from './RealTimeMonitor.less';
+import styles from './SectionList.less';
 
 // const { Search } = Input;
 const { Option } = Select;

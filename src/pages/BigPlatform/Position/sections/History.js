@@ -3,12 +3,12 @@ import { DatePicker } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import { Scrollbars } from 'react-custom-scrollbars';
+
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
-import TrailBack from './TrailBack';
+import styles from './History.less';
+import { TrailBack } from './components/Components';
 import borderIcon from '../imgs/mapOuter.png';
 import map from '../imgs/map.png';
-/* 引入样式文件 */
-import styles from './index.less';
 
 const { RangePicker } = DatePicker;
 

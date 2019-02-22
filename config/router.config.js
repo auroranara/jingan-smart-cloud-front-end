@@ -132,10 +132,10 @@ module.exports = env => {
           path: '/big-platform/position/:companyId',
           component: './BigPlatform/Position/index',
         },
-        {
-          path: '/big-platform/position/:companyId/history/:id',
-          component: './BigPlatform/Position/History',
-        },
+        // {
+        //   path: '/big-platform/position/:companyId/history/:id',
+        //   component: './BigPlatform/Position/History',
+        // },
         {
           path: '/big-platform/electricity-monitor/:gridId',
           component: './BigPlatform/ElectricityMonitor',
