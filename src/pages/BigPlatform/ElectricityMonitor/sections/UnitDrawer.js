@@ -11,7 +11,7 @@ import {
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import { DotItem } from '../components/Components';
-import { sortCardList, getChartLabels } from '../utils';
+import { sortCardList, getChartLabels, getFirstDeviceId } from '../utils';
 
 const TYPE = 'unit';
 const NO_DATA = '暂无信息';
@@ -42,6 +42,7 @@ export default class UnitDrawer extends PureComponent {
     const {
       visible,
       // handleSearch,
+      showUnitDetail,
       data: { list=[], statisticsData: { accessUnitStatistics=0, jurisdictionalUnitStatistics=0 } }={},
     } = this.props;
     const { selected, searchValue } = this.state;
@@ -87,7 +88,7 @@ export default class UnitDrawer extends PureComponent {
 
     let cards = <p className={styles.empty}>暂无数据</p>;
     if (filteredList.length)
-      cards = filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess, equipment }) => (
+      cards = filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess, equipment, deviceList }) => (
         <DrawerCard
           key={companyId}
           name={name || NO_DATA}
@@ -105,7 +106,14 @@ export default class UnitDrawer extends PureComponent {
           more={
             <p className={styles.more}>
               {equipment ? [common, alarm, warn, noAccess].map((n, i) => (
-                <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
+                <DotItem
+                  key={i}
+                  showLink
+                  title={LABELS[i]}
+                  quantity={n}
+                  color={`rgb(${COLORS[i]})`}
+                  onClick={e => showUnitDetail(companyId, getFirstDeviceId(deviceList, i), i === 0 || i === 3 ? 0 : 1)}
+                />
               )) : ' '}
             </p>
           }

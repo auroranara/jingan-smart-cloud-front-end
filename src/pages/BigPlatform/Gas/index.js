@@ -31,6 +31,8 @@ import { SettingModal, UnitDrawer, AlarmDrawer, BusinessDrawer } from './section
 
 import { genCardsInfo, genPendingCardsInfo, getAlarmUnits } from './utils';
 import { GridSelect } from './components/Components';
+import UnitMonitorDrawer from './sections/UnitMonitorDrawer';
+import VideoPlay from '../Monitor/sections/VideoPlay';
 
 // websocket配置
 const options = {
@@ -45,8 +47,9 @@ const options = {
  * author:
  * date: 2019年01月08日
  */
-@connect(({ gas }) => ({
+@connect(({ gas, monitor }) => ({
   gas,
+  monitor,
 }))
 export default class Gas extends PureComponent {
   constructor(props) {
@@ -70,6 +73,11 @@ export default class Gas extends PureComponent {
       // drawerType: '', // alarm,fault
       alarmIds: [],
       companyName: '',
+      unitMonitorDrawerVisible: false,
+      // 企业信息
+      unitInfo: {},
+      unitAbnormalTrend: [],
+      unitMonitorStatus: null,
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -81,6 +89,7 @@ export default class Gas extends PureComponent {
     // 设备配置策略定时器
     this.deviceConfigTimer = null;
     this.number = 0;
+    this.unitMonitorTimer = null;
   }
 
   /**
@@ -209,10 +218,10 @@ export default class Gas extends PureComponent {
             const newList =
               sameIndex !== undefined
                 ? [
-                    ...alarmIds.slice(0, sameIndex),
-                    { companyId, messageFlag },
-                    ...alarmIds.slice(sameIndex + 1),
-                  ]
+                  ...alarmIds.slice(0, sameIndex),
+                  { companyId, messageFlag },
+                  ...alarmIds.slice(sameIndex + 1),
+                ]
                 : [...alarmIds, { companyId, messageFlag }];
             this.setState({ alarmIds: newList });
             this.showWarningNotification(data);
@@ -352,12 +361,12 @@ export default class Gas extends PureComponent {
   /**
    * 更新后
    */
-  componentDidUpdate() {}
+  componentDidUpdate() { }
 
   /**
    * 销毁前
    */
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   cardsInfo = [];
   importCardsInfo = [];
@@ -421,6 +430,7 @@ export default class Gas extends PureComponent {
           className={styles.notificationContent}
           onClick={() => {
             this.setState({ companyName });
+            this.handleClickNotification(companyId);
             this.handleAlarmClick(messageFlag, companyId, companyName);
           }}
         >
@@ -554,6 +564,68 @@ export default class Gas extends PureComponent {
     this.mapChild = ref;
   };
 
+  handleCloseUnitMonitor = () => {
+    clearInterval(this.unitMonitorTimer)
+    this.setState({ unitMonitorDrawerVisible: false, unitMonitorStatus: null })
+  }
+
+  // 点击打开企业实时监测数据弹窗
+  hanldeViewUnitMonitor = (unitInfo) => {
+    const { companyId } = unitInfo
+    const { dispatch } = this.props
+    const { unitMonitorStatus } = this.state
+    this.setState({ unitInfo, unitMonitorDrawerVisible: true })
+    // 获取单位实时监测数据
+    dispatch({
+      type: 'gas/fetchRealTimeMonitor',
+      payload: { companyId, status: unitMonitorStatus },
+    })
+    // 获取异常趋势图数据
+    dispatch({
+      type: 'gas/fetchAbnormalTrend',
+      payload: { companyId },
+      callback: (list = []) => {
+        const unitAbnormalTrend = list.map(item => {
+          const [{ faultNum, month, outContact, unnormal }] = Object.values(item)
+          return [month, faultNum, unnormal, outContact]
+        })
+        this.setState({ unitAbnormalTrend })
+      },
+    })
+    // 获取视频
+    dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
+    // 设置轮询
+    this.unitMonitorTimer = setInterval(() => { this.fetchRealTimeMonitor() }, 5000);
+  }
+
+  // 获取单位监测数据
+  fetchRealTimeMonitor = () => {
+    const { dispatch } = this.props
+    const { unitInfo, unitMonitorStatus } = this.state
+    dispatch({
+      type: 'gas/fetchRealTimeMonitor',
+      payload: { companyId: unitInfo.companyId, status: unitMonitorStatus },
+    })
+  }
+
+  // 单位监测数据弹窗筛选
+  handleChangeMonitorStatus = unitMonitorStatus => {
+    const { dispatch } = this.props
+    const { unitInfo } = this.state
+    clearInterval(this.unitMonitorTimer)
+    this.setState({ unitMonitorStatus }, () => {
+      dispatch({
+        type: 'gas/fetchRealTimeMonitor',
+        payload: { companyId: unitInfo.companyId, status: unitMonitorStatus },
+      })
+      this.unitMonitorTimer = setInterval(() => { this.fetchRealTimeMonitor() }, 5000);
+    })
+  }
+
+  handleViewVideo = () => {
+    this.setState({ videoVisible: true })
+  }
+
   /**
    * 渲染
    */
@@ -574,6 +646,7 @@ export default class Gas extends PureComponent {
       match: {
         params: { gridId },
       },
+      monitor: { allCamera: cameraList = [] },
     } = this.props;
 
     const {
@@ -591,6 +664,11 @@ export default class Gas extends PureComponent {
       // drawerType,
       alarmIds,
       companyName,
+      unitMonitorDrawerVisible,
+      unitInfo,
+      unitAbnormalTrend,
+      unitMonitorStatus,
+      videoVisible,
     } = this.state;
 
     const importCardsInfo = this.importCardsInfo;
@@ -628,6 +706,7 @@ export default class Gas extends PureComponent {
           handleParentChange={this.handleMapParentChange}
           handleAlarmClick={this.handleAlarmClick}
           onRef={this.onRef}
+          onInfoTitleClick={this.hanldeViewUnitMonitor}
         />
         {/* 搜索框 */}
         <MapSearch
@@ -711,6 +790,17 @@ export default class Gas extends PureComponent {
           position={tooltipPosition}
           offset={[15, 42]}
           style={{ zIndex: 150 }}
+        />
+        <UnitMonitorDrawer
+          title="单位监测信息"
+          visible={unitMonitorDrawerVisible}
+          onClose={this.handleCloseUnitMonitor}
+          unitInfo={unitInfo}
+          unitAbnormalTrend={unitAbnormalTrend}
+          handleChangeStatus={this.handleChangeMonitorStatus}
+          status={unitMonitorStatus}
+          handleViewVideo={this.handleViewVideo}
+          cameraList={cameraList}
         />
       </BigPlatformLayout>
     );

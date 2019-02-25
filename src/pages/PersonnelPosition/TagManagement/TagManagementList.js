@@ -22,12 +22,14 @@ const {
       edit: editCode,
       delete: deleteCode,
       detail: viewCode,
+      import: importCode,
     },
   },
 } = codes
 
 const title = "标签列表"
 const defaultPageSize = 10;
+const templateUrl='http://data.jingan-china.cn/v2/download/%E5%AF%BC%E5%85%A5%E6%A0%87%E7%AD%BE%E5%8D%A1%E6%A8%A1%E6%9D%BF.xlsx'
 const colWrapper = { lg: 12, md: 12, sm: 24, xs: 24 }
 
 const cardStatusInfo = [
@@ -477,6 +479,10 @@ export default class TagManagement extends PureComponent {
     })
   }
 
+  handleToImport = () => {
+    const { match: { params: { companyId } } } = this.props
+    router.push(`/personnel-position/tag-management/import/${companyId}`)
+  }
 
   render() {
 
@@ -523,6 +529,7 @@ export default class TagManagement extends PureComponent {
     // 新增权限
     const addAuth = hasAuthority(addCode, permissionCodes)
     const deleteAuth = hasAuthority(deleteCode, permissionCodes)
+    const importAuth = hasAuthority(importCode, permissionCodes)
     const editAuth = (cardStatus) => hasAuthority(editCode, permissionCodes) && +cardStatus !== 2
     const rowSelection = {
       selectedRowKeys: selectedPersonnerlKeys,
@@ -580,8 +587,10 @@ export default class TagManagement extends PureComponent {
                   <Button type="primary" onClick={() => this.handleQuery(true)}>查询</Button>
                   <Button className={styles.ml10} onClick={this.handleReset}>重置</Button>
                   <Button type="primary" className={styles.ml10} disabled={!addAuth} onClick={this.handleToAdd}>新增</Button>
-                  <Button className={styles.ml10} type="primary">模板下载</Button>
-                  <Button className={styles.ml10} disabled={!addAuth} type="primary">批量导入</Button>
+                  <Button className={styles.ml10} type="primary">
+                    <a href={templateUrl}>模板下载</a>
+                  </Button>
+                  <Button className={styles.ml10} disabled={!importAuth} type="primary" onClick={this.handleToImport}>批量导入</Button>
                 </FormItem>
               </Col>
             </Row>

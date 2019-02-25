@@ -223,6 +223,7 @@ export default {
   'menu.personnelPosition.tagManagement.add': '新增标签',
   'menu.personnelPosition.tagManagement.edit': '编辑标签',
   'menu.personnelPosition.tagManagement.detail': '标签详情',
+  'menu.personnelPosition.tagManagement.import': '批量导入',
   'menu.personnelPosition.map': '地图管理',
   'menu.personnelPosition.map.list': '地图管理',
   'menu.personnelPosition.map.companyMap': '地图列表',

@@ -1,0 +1,276 @@
+@imgUrl: 'http://data.jingan-china.cn/v2/big-platform/safety/gov';
+@luopanImage: 'http://data.jingan-china.cn/v2/big-platform/electricity-monitor/ctb.png';
+
+.mapContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  .allPoint {
+    position: absolute; // top: 100px;
+    top: calc(9.62963% + 24px);
+    right: 185px;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 12px;
+    background-color: #1a6ac2;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+  }
+
+  .allPoint:hover {
+    opacity: 0.85;
+  }
+
+  .allPoint:active {
+    color: #fff;
+  }
+
+  .mapLegend {
+    padding: 0 12px;
+    background-color: rgba(0, 24, 52, 0.9);
+    position: absolute;
+    bottom: 28px;
+    right: 60px;
+    line-height: 30px;
+
+    .legendItem {
+      display: inline-block;
+      position: relative;
+
+      &+.legendItem {
+        margin-left: 15px;
+      }
+
+      .legendIcon {
+        position: relative;
+        top: 4px;
+        margin-right: 5px;
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        padding: 2px;
+        border-radius: 50%;
+        background-color: #fff;
+
+        .legendColor {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+
+  .alarmTip {
+    // position: absolute; // top: -30px;
+    // left: -79px;
+    white-space: nowrap;
+    cursor: pointer;
+    width: 200px;
+    text-align: center;
+    background-color: rgba(22, 22, 22, 0.9);
+    padding: 2px 0px;
+    box-shadow: 0px 0px 20px #f83329; // animation: redShadow 2s linear 0s infinite alternate;
+
+    .tipMore {
+      color: #04fdff;
+      display: inline-block;
+      margin-left: 8px;
+    }
+  }
+
+  @keyframes redShadow {
+    0% {
+      box-shadow: 0px 0px 20px #f83329;
+    }
+
+    50% {
+      box-shadow: 0px 0px 0px #f83329;
+    }
+
+    100% {
+      box-shadow: 0px 0px 20px #f83329;
+    }
+  }
+
+  .comapnyWrapper {
+    .comapnyName {
+      color: #fff;
+    }
+
+    .info {
+      color: #9f9f9f;
+      line-height: 26px;
+
+      .infoIcon {
+        display: inline-block;
+        position: relative;
+        width: 18px;
+        height: 18px;
+        top: 3px;
+        margin-right: 8px;
+      }
+    }
+
+    .statusWrapper {
+      overflow: hidden;
+
+      .statusItem {
+        float: left;
+        width: 24.5%;
+        text-align: center;
+        border: 1px solid transparent;
+
+        .statusIcon {
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          position: relative;
+          margin-right: 5px;
+        }
+      }
+
+      .itemActive {
+        .statusItem;
+      }
+
+      .itemActive:hover {
+        cursor: pointer;
+        border: 1px solid #474747;
+        background-color: rgba(49, 49, 49, 0.5);
+        border-radius: 6px;
+      }
+    }
+  }
+
+  :global {
+
+    .amap-zoom-touch-plus>div,
+    .amap-zoom-touch-minus>div {
+      font-size: 20px;
+    }
+
+    .amap-scalecontrol {
+      left: 24px !important;
+      bottom: 30px;
+    }
+
+    .amap-toolbar.amap-touch-toolbar {
+
+      // 缩放按钮
+      .amap-zoomcontrol {
+        right: 13px;
+
+        &:after {
+          top: 34px;
+          background-color: #fff;
+          width: 70%;
+        }
+
+        border: none;
+        background-color: #1a6ac2;
+        border-radius: 5px;
+        width: 30px;
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+
+        .amap-zoom-touch-minus,
+        .amap-zoom-touch-plus {
+          background: none;
+          height: 30px;
+          font-size: 20px;
+        }
+
+        .amap-zoom-touch-minus>div,
+        .amap-zoom-touch-plus>div {
+          color: #fff;
+          line-height: 30px;
+        }
+      }
+    }
+
+    // 罗盘
+    .amap-controlbar {
+      top: auto !important;
+      right: 13px !important;
+      bottom: -235px !important;
+      transform: scale(0.28);
+
+      .amap-luopan-bg {
+        background: url('@{luopanImage}')-44px -60px no-repeat;
+      }
+
+      .amap-compass {
+        background: url('@{luopanImage}') -462px -52px no-repeat;
+      }
+
+      .amap-controlbar-zoom {
+        background: url('@{luopanImage}') -154px -292px no-repeat;
+      }
+
+      .amap-rotateLeft,
+      .amap-rotateRight {
+        background: url('@{luopanImage}') -603px -154px no-repeat;
+      }
+
+      .amap-rotate-active {
+        background: url('@{luopanImage}') -557px -153px no-repeat;
+      }
+
+      .amap-pitchDown,
+      .amap-pitchUp {
+        background: url('@{luopanImage}') -605px -98px no-repeat;
+      }
+    }
+
+    .amap-info-content.amap-info-outer {
+      background-color: #161616 !important;
+      width: 320px;
+      box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+      border: none;
+    }
+
+    .amap-info-close {
+      display: none;
+    }
+
+    .amap-info-sharp {
+      display: none;
+    }
+
+    .amap_markers_pop_window {
+      // background: rgba(0, 49, 96, 0.9);
+      background-color: #161616;
+      border: none;
+      border-radius: 2%; // transform: translate(70%, 50%);
+      padding: 10px;
+    }
+
+    .amap_markers_pop_window::before,
+    .amap_markers_pop_window::after {
+      display: none;
+    }
+  }
+
+  .imgAnimate {
+    animation: jump 2.5s linear 0s infinite alternate;
+  }
+
+  @keyframes jump {
+    0% {
+      transform: translate(0, 0);
+    }
+
+    50% {
+      transform: translate(0, 20%);
+    }
+
+    100% {
+      transform: translate(0, 0);
+    }
+  }
+
+}

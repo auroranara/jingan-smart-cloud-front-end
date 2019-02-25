@@ -9,7 +9,7 @@ import {
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import { DotItem, Gauge, GaugeLabels } from '../components/Components';
 import ElectricityCharts from '../components/ElectricityCharts';
-import { getAlerted } from '../utils';
+import { getAlerted, getTargetAlerted } from '../utils';
 import styles from './MonitorDrawer.less';
 import locationIcon from '../imgs/location.png';
 import personIcon from '../imgs/person.png';
@@ -51,6 +51,17 @@ export default class MonitorDrawer extends PureComponent {
     labelIndex: 0,
   };
 
+  componentDidMount() {
+    const { setAlertedLabelIndexFn } = this.props;
+    setAlertedLabelIndexFn(this.setAlertedLabelIndex);
+  }
+
+  setAlertedLabelIndex = (paramName) => {
+    const { data: { deviceRealTimeData: { deviceDataForAppList } } } = this.props;
+    const alerted = getTargetAlerted(deviceDataForAppList, CHARTS_LABELS, paramName);
+    alerted && this.setState({ labelIndex: alerted });
+  };
+
   handleClickCamera = () => {
     const { data: { cameraList=[] } } = this.props;
     this.setState({
@@ -70,6 +81,12 @@ export default class MonitorDrawer extends PureComponent {
   handleSelectDevice = id => {
     const { handleSelect } = this.props;
     handleSelect(id);
+    this.setState({ labelIndex: 0 });
+  };
+
+  handleClose = () => {
+    const { handleClose } = this.props;
+    handleClose();
     this.setState({ labelIndex: 0 });
   };
 
@@ -100,7 +117,7 @@ export default class MonitorDrawer extends PureComponent {
         cameraList=[],
       },
       // handleSelect,
-      handleClose,
+      // handleClose,
       // handleClickCamera,
     } = this.props;
     const { videoVisible, videoKeyId, labelIndex } = this.state;
@@ -217,13 +234,14 @@ export default class MonitorDrawer extends PureComponent {
 
     return (
       <DrawerContainer
+        isTop
         title={TITLES[titleIndex]}
         width={700}
         visible={visible}
         left={left}
         placement="right"
         rowStyle={{ height: 'calc(100% - 70px)' }}
-        onClose={handleClose}
+        onClose={this.handleClose}
       />
     );
   }

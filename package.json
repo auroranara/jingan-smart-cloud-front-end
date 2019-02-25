@@ -24,6 +24,7 @@
     "build:shanxi": "cross-env PROJECT_ENV=shanxi ESLINT=none umi build",
     "build:show": "cross-env PROJECT_ENV=show ESLINT=none umi build",
     "build:limin": "cross-env PROJECT_ENV=limin ESLINT=none umi build",
+    "build:czey": "cross-env PROJECT_ENV=czey ESLINT=none umi build",
     "site": "npm run presite && npm run build && firebase deploy",
     "analyze": "cross-env ESLINT=none ANALYZE=1 umi build",
     "lint:style": "stylelint \"src/**/*.less\" --syntax less",

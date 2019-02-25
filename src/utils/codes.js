@@ -6,6 +6,8 @@ export default {
     personnelPosition: 'dashboard.personnelPositioningView',
     electricityMonitor: 'dashboard.electricityMonitorView',
     gas: 'dashboard.gasView',
+    fireMaintenance: 'dashboard.fireMaintenanceView',
+    smoke: 'dashboard.smokeView',
   },
   role: {
     list: 'roleAuthorization.role.listView',
@@ -175,6 +177,7 @@ export default {
       edit: 'personnelPosition.tagManagement.edit',
       delete: 'personnelPosition.tagManagement.delete',
       detail: 'personnelPosition.tagManagement.view',
+      import: 'personnelPosition.tagManagement.import',
     },
     // 地图管理
     map: {

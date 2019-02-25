@@ -52,3 +52,8 @@ export async function getCameraList(params) {
 export async function getWarningTrend(params) {
   return request(`${URL_PREFIX}/screen/elecSafe/warningMap?${stringify(params)}`);
 }
+
+// 传感器品牌故障统计
+export async function getFaultByBrand(params) {
+  return request(`${URL_PREFIX}/shs/countFaultByBrand?${stringify(params)}`);
+}
