@@ -101,9 +101,9 @@ const configs = {
       'http://data.jingan-china.cn/v2/login/limin/3.png',
     ],
     ios:
-      'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/xz/official_version/XZInterSafe.plist&ran=',
+      'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/limin/official_version/XZInterSafe.plist&ran=',
     android:
-      'http://58.215.178.100:12081/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
+      'http://58.215.178.100:12081/acloud_new/v2/mobileVersion/version/getLatest?type=1&version=1&ran=',
   },
   changshu: {
     region: '常熟市',
