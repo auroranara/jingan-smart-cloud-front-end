@@ -9,20 +9,7 @@ import { History, RealTime } from './sections/Components';
 export default class PositionIndex extends PureComponent {
   state = {
     labelIndex: 0,
-    areaId: undefined,
   };
-
-  componentDidMount() {
-    const { dispatch, match: { params: { companyId } } } = this.props;
-    dispatch({
-      type: 'personPosition/fetchSections',
-      payload: { companyId },
-      callback: list => {
-        if (list.length)
-          this.setState({ areaId: list[0].id });
-      },
-    });
-  }
 
   handleLabelClick = i => {
     this.setState({ labelIndex: i });
@@ -39,7 +26,6 @@ export default class PositionIndex extends PureComponent {
     } = this.props;
     const {
       labelIndex,
-      areaId,
     } = this.state;
 
     const { currentUser: { companyName } } = user;
@@ -55,7 +41,8 @@ export default class PositionIndex extends PureComponent {
           <RealTime
             dispatch={dispatch}
             labelIndex={labelIndex}
-            data={{ companyId, areaId, personPosition }}
+            companyId={companyId}
+            personPosition={personPosition}
             handleLabelClick={this.handleLabelClick}
           />
         )}

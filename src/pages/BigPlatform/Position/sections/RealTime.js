@@ -8,15 +8,7 @@ import styles from './RealTime.less';
 import { alarmInfoIcon, sosIcon } from '../imgs/urls';
 import { AlarmHandle, AlarmMsg, PersonInfo, Tabs, VideoPlay } from '../components/Components';
 import { SectionList, LeafletMap } from './Components';
-import {
-  handlePositions,
-  handlePosInfo,
-  getAlarmList,
-  getPersonInfoItem,
-  getOverstepItem,
-  getAlarmCards,
-  getAreaId,
-} from '../utils';
+import { genTreeList } from '../utils';
 
 const options = {
   pingTimeout: 30000,
@@ -38,14 +30,17 @@ const ALARM_DESC = {
 };
 const PHONE = '13270801232';
 
+const LOCATION_MESSAGE_TYPE = "1";
+const AREA_CHANGE_TYPE = "2";
+const WARNING_TYPE = "3";
+const AREA_STATUS_TYPE = "4";
+const RE_WARNING_TYPE = "5";
+
 export default class RealTime extends PureComponent {
   state = {
-    positions: [], // 地图上的显示的所有点的集合
-    posInfo: [], // Info组件中传入的值，记录区域变化
-    sosCardId: '',
-    overstepCardId: '',
-    sosList: [],
-    overstepList: [],
+    areaId: undefined,
+
+    positions: [],
     personInfoVisible: false,
     personInfoSOSVisible: false,
     sosHandleVisible: false,
@@ -56,11 +51,48 @@ export default class RealTime extends PureComponent {
   };
 
   componentDidMount() {
-    const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const {
       dispatch,
-      data: { companyId },
+      companyId,
     } = this.props;
+
+    this.connectWebSocket();
+
+    dispatch({
+      type: 'personPosition/fetchSectionTree',
+      payload: { companyId },
+      callback: list => {
+        if (list.length)
+          this.setState({ areaId: list[0].id });
+      },
+    });
+    dispatch({
+      type: 'personPosition/fetchInitialPositions',
+      payload: { companyId },
+      // callback: (data = []) => {
+      //   this.setState({ positions: data });
+      // },
+    });
+    dispatch({
+      type: 'personPosition/fetchInitialAlarms',
+      payload: { companyId, showStatus: 1 },
+    });
+    // 获取企业信息
+    dispatch({
+      type: 'user/fetchCurrent',
+    });
+  }
+
+  // componentWillUnmount() {
+  //   const ws = this.ws;
+  //   ws && ws.close();
+  // }
+
+  ws = null;
+
+  connectWebSocket = () => {
+    const { companyId } = this.props;
+    const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const params = {
       companyId,
       env: 'dev',
@@ -92,38 +124,75 @@ export default class RealTime extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
-
-    dispatch({
-      type: 'personPosition/fetchInitialPositions',
-      payload: { companyId },
-      callback: (data = []) => {
-        this.setState({ positions: data });
-      },
-    });
-
-    // 获取企业信息
-    dispatch({
-      type: 'user/fetchCurrent',
-    });
-  }
-
-  // componentWillUnmount() {
-  //   const ws = this.ws;
-  //   ws && ws.close();
-  // }
-
-  ws = null;
-
-  handleWbData = data => {
-
   };
 
-  handleAlarms = data => {
-
+  handleWbData = wbData => {
+    const { messageType, data } = wbData;
+    switch(messageType) {
+      case LOCATION_MESSAGE_TYPE:
+        this.handlePositions(data);
+        break;
+      case AREA_CHANGE_TYPE:
+        this.handleAreaChange(data);
+        break;
+      case WARNING_TYPE:
+        this.handleAlarms(data);
+        break;
+      case AREA_STATUS_TYPE:
+        this.handleAreaStatusChange(data);
+        break;
+      case RE_WARNING_TYPE:
+        this.removeAlarms(data);
+        break;
+      default:
+        console.log('no msg type');
+    }
   };
 
   handlePositions = data => {
+    const { dispatch, personPosition: { positions } } = this.props;
+    const cardIds = data.map(({ cardId }) => cardId);
+    const newPositions = positions.filter(({ cardId }) => !cardIds.includes(cardId)).concat(positions);
+    dispatch({ type: 'personPosition/savePositions', payload: newPositions });
+  };
 
+  handleAlarms = data => {
+    const { dispatch, personPosition: { alarms } } = this.props;
+    const newAlarms = alarms.concat(data);
+    dispatch({ type: 'personPosition/saveAlarms', payload: newAlarms });
+  };
+
+  removeAlarms = data => {
+    const { dispatch, personPosition: { alarms } } = this.props;
+    const warningIds = data.map(({ warningId }) => warningId);
+    const newAlarms = alarms.filter(({ id }) => !warningIds.includes(id));
+    dispatch({ type: 'personPosition/saveAlarms', payload: newAlarms });
+  };
+
+  handleAreaChange = data => {
+    const { dispatch, personPosition: { sectionTree } } = this.props;
+    const newSectionTree = genTreeList(sectionTree, item => {
+      const { id, count } = item;
+      const target = data.find(({ areaId }) => areaId === id);
+      if (target)
+        return { ...item, count: +target.type === 1 ? count + 1 : count - 1 };
+      return item;
+    });
+    dispatch({ type: 'personPosition/saveSectionTree', payload: newSectionTree });
+  };
+
+  handleAreaStatusChange = data => {
+    const { dispatch, personPosition: { sectionTree } } = this.props;
+    const newSectionTree = genTreeList(sectionTree, item => {
+      const { id } = item;
+      const target = data.find(({ id: areaId }) => areaId === id);
+      if (target) {
+        const { lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus } = target;
+        return { ...item, status: lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 0 : 1 };
+      }
+      return item;
+    });
+    dispatch({ type: 'personPosition/saveSectionTree', payload: newSectionTree });
   };
 
   showNotification = type => ({ cardId, uptime, userName, phone = PHONE }) => {
@@ -201,14 +270,13 @@ export default class RealTime extends PureComponent {
   render() {
     const {
       labelIndex,
-      data: { companyId, areaId, personPosition: { sections } },
+      companyId,
+      personPosition: { sectionTree },
       handleLabelClick,
     } = this.props;
     const {
+      areaId,
       positions,
-      infoCardId,
-      overstepCardId,
-      overstepList,
       personInfoVisible,
       sosHandleVisible,
       alarmMsgVisible,
@@ -222,7 +290,7 @@ export default class RealTime extends PureComponent {
         <div className={styles.left}>
           <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
           <div className={styles.leftSection}>
-            <SectionList data={sections} />
+            <SectionList data={sectionTree} />
           </div>
           {/* <AlarmView
             data={alarmCards}
@@ -235,14 +303,14 @@ export default class RealTime extends PureComponent {
           <LeafletMap areaId={areaId} />
           <PersonInfo
             visible={personInfoVisible}
-            data={getPersonInfoItem(infoCardId, positions)}
+            // data={getPersonInfoItem(infoCardId, positions)}
             companyId={companyId}
             handleSOS={this.handleSOS}
             handleClose={() => this.handleClose('personInfo')}
           />
           <AlarmMsg
             visible={alarmMsgVisible}
-            data={getOverstepItem(overstepCardId, overstepList)}
+            // data={getOverstepItem(overstepCardId, overstepList)}
             handleAlarm={this.handleAlarm}
             handleClose={() => this.handleClose('alarmMsg')}
           />

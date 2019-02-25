@@ -1,17 +1,19 @@
 import {
   queryInitialPositions,
+  queryInitialAlarms,
   postSOS,
   postOverstep,
-  querySections,
+  querySectionTree,
 } from '../services/bigPlatform/personPosition';
-import { handleSectionTree } from '@/pages/BigPlatform/Position/utils';
+import { handleSectionTree, getSectionTree } from '@/pages/BigPlatform/Position/utils';
 
 export default {
   namespace: 'personPosition',
 
   state: {
     positions: [],
-    sections: [],
+    sectionTree: [],
+    alarms: [],
   },
 
   effects: {
@@ -22,6 +24,15 @@ export default {
         const list = data && Array.isArray(data.list) ? data.list: [];
         callback && callback(list);
         yield put({ type: 'savePositions', payload: list });
+      }
+    },
+    *fetchInitAlarms({ payload, callback }, { call, put }) {
+      const response = yield call(queryInitialAlarms, payload);
+      const { code=500, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list: [];
+        callback && callback(list);
+        yield put({ type: 'saveAlarms', payload: list });
       }
     },
     *quitSOS({ payload, callback }, { call }) {
@@ -36,12 +47,12 @@ export default {
       if (code === 200)
         callback && callback();
     },
-    *fetchSections({ payload, callback }, { call, put }) {
-      const response = yield call(querySections, payload);
+    *fetchSectionTree({ payload, callback }, { call, put }) {
+      const response = yield call(querySectionTree, payload);
       const { code=500, data } = response || {};
       if (code === 200) {
         const list = data && Array.isArray(data.list) ? data.list : [];
-        yield put({ type: 'saveSections', payload: list })
+        yield put({ type: 'saveSectionTree', payload: list })
         callback && callback(list);
       }
     },
@@ -54,10 +65,17 @@ export default {
         positions: action.payload,
       };
     },
-    saveSections(state, action) {
+    saveAlarms(state, action) {
       return {
         ...state,
-        sections: handleSectionTree(action.payload),
+        alarms: action.payload,
+      };
+    },
+    saveSectionTree(state, action) {
+      console.log(getSectionTree(action.payload));
+      return {
+        ...state,
+        sectionTree: getSectionTree(action.payload),
       };
     },
   },

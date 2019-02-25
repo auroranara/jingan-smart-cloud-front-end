@@ -75,6 +75,18 @@ function traverse(list, callback, deep=0) {
   });
 }
 
+// 生成新的树
+export function genTreeList(list, callback, deep=0) {
+  return list.map(item => {
+    const { children, ...restProps } =  item;
+    const newItem = callback(restProps);
+    newItem.indentLevel = deep;
+    if (children.length)
+      newItem.children = genTreeList(children, callback, deep + 1);
+    return newItem;
+  });
+}
+
 export function handleSectionTree(list) {
   traverse(list, (item, deep) => {
     const { name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus } = item;
@@ -82,5 +94,17 @@ export function handleSectionTree(list) {
     item.count = cardCount;
     item.status = lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 0 : 1;
     item.indentLevel = deep;
+  });
+}
+
+export function getSectionTree(list) {
+  return genTreeList(list, item => {
+    const { id, name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus } = item;
+    return {
+      id,
+      areaName: name,
+      count: cardCount,
+      status: lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 0 : 1,
+    };
   });
 }
