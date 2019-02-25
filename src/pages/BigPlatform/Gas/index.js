@@ -430,6 +430,7 @@ export default class Gas extends PureComponent {
           className={styles.notificationContent}
           onClick={() => {
             this.setState({ companyName });
+            this.handleClickNotification(companyId);
             this.handleAlarmClick(messageFlag, companyId, companyName);
           }}
         >
@@ -775,14 +776,14 @@ export default class Gas extends PureComponent {
           companyName={companyName}
           onClose={() => this.handleDrawerVisibleChange('maintenance')}
         />
-        <VideoPlay
+        {/* <VideoPlay
           showList={true}
           videoList={cameraList}
           visible={videoVisible}
           keyId={cameraList.length ? cameraList[0].key_id : ''}
           style={{ position: 'fixed', zIndex: 99999 }}
           handleVideoClose={this.handleVideoClose}
-        />
+        /> */}
         <MyTooltip
           visible={tooltipVisible}
           title={tooltipName}
@@ -799,6 +800,7 @@ export default class Gas extends PureComponent {
           handleChangeStatus={this.handleChangeMonitorStatus}
           status={unitMonitorStatus}
           handleViewVideo={this.handleViewVideo}
+          cameraList={cameraList}
         />
       </BigPlatformLayout>
     );

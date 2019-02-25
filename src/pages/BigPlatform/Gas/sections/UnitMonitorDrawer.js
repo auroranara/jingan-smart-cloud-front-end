@@ -19,6 +19,7 @@ import cameraImg from '../imgs/camera.png';
 // 暂无监测数据
 import noMonitorImg from '../imgs/no-monitor.png'
 import styles from './UnitMonitorDrawer.less';
+import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 const OPTIONS = [
   { value: null, desc: '全部' },
@@ -26,12 +27,33 @@ const OPTIONS = [
   { value: 1, desc: '报警', img: gasAlarmImg, color: '#F83329' },
   { value: -3, desc: '故障', img: gasErrorImg, color: '#FFB400' },
   { value: -1, desc: '失联', img: gasLossImg, color: '#9F9F9F' },
-]
+];
+
+const VIDEO_STYLE = {
+  width: '90%',
+  marginLeft: '-43%',
+};
 
 @connect(({ gas }) => ({
   gas,
 }))
 export default class UnitMonitorDrawer extends PureComponent {
+  state = {
+    videoVisible: false,
+    videoKeyId: '',
+  };
+
+  handleClickCamera = () => {
+    const { cameraList = [] } = this.props;
+    this.setState({
+      videoVisible: true,
+      videoKeyId: cameraList.length ? cameraList[0].key_id : '',
+    });
+  };
+
+  handleVideoClose = () => {
+    this.setState({ videoVisible: false, videoKeyId: '' });
+  };
 
   // 生成卡片左侧图
   generateImg = status => {
@@ -41,8 +63,8 @@ export default class UnitMonitorDrawer extends PureComponent {
 
   renderStatusButton = status => {
     if (!!!status) return null
-    const { color } = OPTIONS.find(item => item.value === status)
-    return (<span className={styles.statusButton} style={{ borderColor: color, color }}>报警</span>)
+    const { color, desc } = OPTIONS.find(item => item.value === status)
+    return (<span className={styles.statusButton} style={{ borderColor: color, color }}>{desc}</span>)
   }
 
   render() {
@@ -56,6 +78,7 @@ export default class UnitMonitorDrawer extends PureComponent {
       status,
       handleViewVideo,
       gas: { unitRealTimeMonitor },
+      cameraList,
     } = this.props
     const {
       companyName, // 企业名称
@@ -67,6 +90,8 @@ export default class UnitMonitorDrawer extends PureComponent {
       faultNum,
       outContact,
     } = unitInfo
+
+    const { videoVisible, videoKeyId } = this.state;
 
     const option = {
       legend: {
@@ -170,7 +195,7 @@ export default class UnitMonitorDrawer extends PureComponent {
                     <Ellipsis className={styles.line} lines={1} tooltip>LEL值：{realtime_data ? `${realtime_data}%` : '暂无数据'}</Ellipsis>
                     <Ellipsis className={styles.line} lines={1} tooltip>参考值范围：{condition && limit_value ? `${condition}${limit_value}` : '暂无数据'}</Ellipsis>
                     <div className={styles.lastLine}>
-                      <div className={styles.camera} onClick={handleViewVideo} style={{
+                      <div className={styles.camera} onClick={this.handleClickCamera} style={{
                         background: `url(${cameraImg}) no-repeat center center`,
                         backgroundSize: '100% 100%',
                       }}></div>
@@ -194,6 +219,14 @@ export default class UnitMonitorDrawer extends PureComponent {
           </div>
           <ReactEcharts className={styles.chartContainer} option={option} />
         </div>
+        <VideoPlay
+          showList={false}
+          videoList={cameraList}
+          visible={videoVisible}
+          keyId={videoKeyId}
+          style={VIDEO_STYLE}
+          handleVideoClose={this.handleVideoClose}
+        />
       </div>
     )
     return (
