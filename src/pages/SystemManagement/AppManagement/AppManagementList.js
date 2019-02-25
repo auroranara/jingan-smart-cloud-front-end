@@ -11,6 +11,8 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const { TextArea } = Input;
 
+const VERSIONS = [{ value: 0, name: '普通版' }, { value: 1, name: '利民版' }];
+
 const CreateForm = Form.create()(props => {
   const {
     fileList,
@@ -100,6 +102,20 @@ const CreateForm = Form.create()(props => {
           initialValue: operationUpdate ? currentRecord.versionCode : '',
           rules: [{ required: true, whitespace: true, message: '请输入版本编号' }],
         })(<Input placeholder="请输入" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 15 }} label="版本">
+        {form.getFieldDecorator('version', {
+          initialValue: operationUpdate ? currentRecord.version : '0',
+          rules: [{ required: true, whitespace: true, message: '请选择版本' }],
+        })(
+          <Select placeholder="请选择版本" style={{ width: 150 }}>
+            {VERSIONS.map(item => (
+              <Option value={item.value.toString()} key={item.value.toString()}>
+                {item.name}
+              </Option>
+            ))}
+          </Select>
+        )}
       </FormItem>
       <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 15 }} label="版本说明">
         {form.getFieldDecorator('versionRemark', {
@@ -395,6 +411,15 @@ export default class AppManagement extends PureComponent {
         dataIndex: 'versionCode',
         key: 'versionCode',
         width: 96,
+      },
+      {
+        title: '版本',
+        dataIndex: 'version',
+        key: 'version',
+        width: 96,
+        render: val => {
+          return +val === 0 ? '普通版' : '利民版';
+        },
       },
       {
         title: '版本说明',
