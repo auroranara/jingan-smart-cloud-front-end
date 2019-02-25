@@ -43,7 +43,7 @@ export default class ChartLine extends PureComponent {
       },
       color: ['#ff4848', '#f6b54e', '#9f9f9f'],
       legend: {
-        data: ['报警', '故障', '失联'],
+        data: ['火警', '故障', '失联'],
         textStyle: {
           color: '#fff',
         },
@@ -72,7 +72,7 @@ export default class ChartLine extends PureComponent {
       },
       series: [
         {
-          name: '报警',
+          name: '火警',
           type: 'line',
           itemStyle: {
             color: '#0FF',

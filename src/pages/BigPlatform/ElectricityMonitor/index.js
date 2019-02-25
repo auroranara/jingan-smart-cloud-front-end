@@ -15,6 +15,8 @@ import RealTimeAlarmStatistics from './RealTimeAlarmStatistics';
 // 告警信息
 import WarningMessage from './WarningMessage';
 import MyTooltip from './components/Tooltip';
+// 设备故障统计
+import EquipmentStatistics from './EquipmentStatistics';
 
 import AlarmChart from './AlarmChart';
 import ElectricityMap from './ElectricityMap';
@@ -113,6 +115,15 @@ export default class ElectricityMonitor extends PureComponent {
         } = data;
         const cardsInfo = genCardsInfo(units, allCompanyList);
         this.setState({ cardsInfo });
+      },
+    });
+
+    // 品牌故障统计
+    dispatch({
+      type: 'electricityMonitor/fetchFaultByBrand',
+      payload: {
+        gridId,
+        classType: 1,
       },
     });
 
@@ -275,15 +286,20 @@ export default class ElectricityMonitor extends PureComponent {
       return;
     }
 
-    const { dispatch, electricityMonitor: { messages, unitSet: { units } } } = this.props;
+    const {
+      dispatch,
+      electricityMonitor: {
+        messages,
+        unitSet: { units },
+      },
+    } = this.props;
     // 如果传的是个companyId
     if (typeof unitDetail === 'string')
       unitDetail = units.find(({ companyId }) => companyId === unitDetail);
     // 如果deviceId不存在，则是点击地图，此时判断当前企业是否有报警，有报警的修正deviceId，没有的不修正
     if (!deviceId) {
       const alarmedMsg = messages.find(({ companyId: id }) => id === companyId);
-      if (alarmedMsg && alarmedMsg.type === 32)
-        deviceId = alarmedMsg.messageFlag;
+      if (alarmedMsg && alarmedMsg.type === 32) deviceId = alarmedMsg.messageFlag;
     }
 
     const selectDeviceCallback = () => this.setAlertedLabelIndex(paramName);
@@ -364,7 +380,8 @@ export default class ElectricityMonitor extends PureComponent {
     // 显示弹出框
     this.setState({
       unitDetail,
-      monitorDrawerTitleIndex: monitorDrawerTitleIndex === undefined ? +!!deviceId : monitorDrawerTitleIndex,
+      monitorDrawerTitleIndex:
+        monitorDrawerTitleIndex === undefined ? +!!deviceId : monitorDrawerTitleIndex,
       monitorDrawerVisible: true,
     });
   };
@@ -595,8 +612,10 @@ export default class ElectricityMonitor extends PureComponent {
         cameraList,
         warningTrendList, // 12个月报警趋势
         warningTrendList1, // 6个月报警趋势
+        brandData,
       },
     } = this.props;
+    console.log('this.props', this.props);
     const {
       setttingModalVisible,
       unitDrawerVisible,
@@ -690,13 +709,24 @@ export default class ElectricityMonitor extends PureComponent {
             xLabels={warningTrendList1.map(({ timeFlag }) => `${moment(timeFlag).format('M')}月`)}
           />
         </NewSection>
-        {/* 告警信息 */}
-        <WarningMessage
-          className={styles.right}
-          data={messages}
-          units={unitSet ? unitSet.units : []}
-          showUnitDetail={this.showUnitDetail}
-        />
+        <div className={styles.right}>
+          {/* 告警信息 */}
+          <WarningMessage
+            className={styles.child}
+            data={messages}
+            units={unitSet ? unitSet.units : []}
+            showUnitDetail={this.showUnitDetail}
+            style={{ maxHeight: 'calc(100% - 265px)' }}
+          />
+          {/* 设备故障统计 */}
+          <NewSection
+            title="设备故障统计"
+            className={styles.child}
+            style={{ height: '250px', cursor: 'pointer', marginTop: 15 }}
+          >
+            <EquipmentStatistics brandData={brandData} />
+          </NewSection>
+        </div>
         <SettingModal
           visible={setttingModalVisible}
           handleOk={this.handleSettingOk}
