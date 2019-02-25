@@ -65,3 +65,22 @@ export function getAreaId(wsData) {
     return alarm.areaId;
   return '';
 }
+
+function traverse(list, callback, deep=0) {
+  list.forEach(item => {
+    const children = item.children;
+    callback(item, deep);
+    if (Array.isArray(children))
+      traverse(children, callback, deep + 1);
+  });
+}
+
+export function handleSectionTree(list) {
+  traverse(list, (item, deep) => {
+    const { name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus } = item;
+    item.areaName = name;
+    item.count = cardCount;
+    item.status = lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 0 : 1;
+    item.indentLevel = deep;
+  });
+}

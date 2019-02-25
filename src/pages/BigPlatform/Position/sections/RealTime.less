@@ -1,0 +1,76 @@
+@red: rgb(248, 51, 41);
+
+/* 容器 */
+.container {
+  display: flex;
+  padding: 24px 12px;
+  height: 100%;
+  position: relative;
+
+  .left, .right {
+    // padding: 0 12px;
+    height: 100%;
+  }
+
+  .left {
+    flex: 3;
+
+    .leftSection {
+      padding: 5px 0 0 0;
+      height: calc(100% - 35px);
+      background-image: url(../imgs/left.png);
+      background-size: 100% 100%;
+    }
+  }
+
+  .right {
+    padding: 15px 25px 25px 20px;
+    flex: 7;
+    position: relative;
+    background-image: url(../imgs/right.png);
+    background-size: 100% 100%;
+  }
+}
+
+.sos {
+  display: inline-block;
+  width: 28px;
+  height: 22px;
+  background-size: 100% 100%;
+  position: relative;
+  top: 5px;
+}
+
+.alarmInfo {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-size: 100% 100%;
+  position: relative;
+  top: 3px;
+}
+
+.note {
+  color: #FFF;
+  border-radius: 2px;
+  background-color: rgba(0, 0, 0, 0.85);
+  box-shadow: 0 0 10px 2px rgba(248, 51, 41, 0.85);
+
+  :global{
+    .ant-notification-notice-message {
+      color: @red;
+    }
+
+    .ant-notification-close-icon {
+      color: #FFF;
+    }
+
+    .ant-notification-notice-icon-warning {
+      color: @red;
+    }
+  }
+
+  .desc {
+    cursor: pointer;
+  }
+}

@@ -2,13 +2,16 @@ import {
   queryInitialPositions,
   postSOS,
   postOverstep,
+  querySections,
 } from '../services/bigPlatform/personPosition';
+import { handleSectionTree } from '@/pages/BigPlatform/Position/utils';
 
 export default {
   namespace: 'personPosition',
 
   state: {
     positions: [],
+    sections: [],
   },
 
   effects: {
@@ -33,6 +36,15 @@ export default {
       if (code === 200)
         callback && callback();
     },
+    *fetchSections({ payload, callback }, { call, put }) {
+      const response = yield call(querySections, payload);
+      const { code=500, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list : [];
+        yield put({ type: 'saveSections', payload: list })
+        callback && callback(list);
+      }
+    },
   },
 
   reducers: {
@@ -40,6 +52,12 @@ export default {
       return {
         ...state,
         positions: action.payload,
+      };
+    },
+    saveSections(state, action) {
+      return {
+        ...state,
+        sections: handleSectionTree(action.payload),
       };
     },
   },

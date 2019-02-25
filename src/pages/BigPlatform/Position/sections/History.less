@@ -11,7 +11,7 @@
   position: relative;
 
   .left, .right {
-    padding: 0 12px;
+    // padding: 0 12px;
     height: 100%;
   }
 
@@ -36,16 +36,20 @@
 }
 
 .wrapper {
-  padding: 24px;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 24px 24px 18px;
+  height: calc(100% - 35px);
   font-size: 14px;
   color: #fff;
   line-height: 1.5;
-  background: no-repeat center center;
+  // background: no-repeat center center;
+  background-image: url(../imgs/left.png);
   background-size: 100% 100%;
 
   div.th {
-    background-color: rgb(0, 18, 37);
+    // background-color: rgb(0, 18, 37);
+    background-color: rgb(14, 79, 159);
   }
 
   .tr:hover {
@@ -78,8 +82,11 @@
   :global {
     .ant-input {
       color: #fff;
-      background-color: rgb(0, 18, 37);
-      border-color: rgb(0, 18, 37);
+      // background-color: rgb(0, 18, 37);
+      // background-color: rgb(14, 79, 159);
+      background-color: transparent;
+      // border-color: rgb(0, 18, 37);
+      border-color: rgb(4, 171, 195);
     }
     .ant-calendar-range-picker-separator {
       color: #fff;

@@ -1,14 +1,11 @@
 import React, { PureComponent } from 'react';
 import { DatePicker } from 'antd';
-import { connect } from 'dva';
 import moment from 'moment';
 import { Scrollbars } from 'react-custom-scrollbars';
 
-import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import styles from './History.less';
-import { TrailBack } from './components/Components';
-import borderIcon from '../imgs/mapOuter.png';
-import map from '../imgs/map.png';
+import { Tabs, TrailBack } from '../components/Components';
+import { borderIcon, map } from '../imgs/urls';
 
 const { RangePicker } = DatePicker;
 
@@ -25,10 +22,6 @@ const defaultRange = [moment().startOf('minute').subtract(5, 'minutes'), moment(
  * author: sunkai
  * date: 2018年12月27日
  */
-@connect(({ position, user }) => ({
-  position,
-  user,
-}))
 export default class History extends PureComponent {
   state = {
     range: defaultRange,
@@ -38,13 +31,11 @@ export default class History extends PureComponent {
   lastRange = defaultRange;
 
   componentDidMount() {
-    const { dispatch, match: { params: { id: cardId } } } = this.props;
+    const { dispatch, cardId } = this.props;
     // 获取最新一条数据
     dispatch({
       type: 'position/fetchLatest',
-      payload: {
-        cardId,
-      },
+      payload: { cardId },
       callback: (data) => {
         if (data) {
           const { intime } = data;
@@ -69,7 +60,7 @@ export default class History extends PureComponent {
    * 获取列表
    */
   getList = (range) => {
-    const { match: { params: { id: cardId } }, dispatch } = this.props;
+    const { dispatch, cardId } = this.props;
     const [queryStartTime, queryEndTime] = range;
     dispatch({
       type: 'position/fetchList',
@@ -129,76 +120,69 @@ export default class History extends PureComponent {
   }
 
   render() {
-    const { position: { list }, user: { currentUser: { companyName } } } = this.props;
+    const { position: { list }, labelIndex, handleLabelClick } = this.props;
     const { range } = this.state;
     const [ startTime, endTime ] = range;
 
     return (
-      <BigPlatformLayout
-        title="晶安人员定位监控系统"
-        extra={companyName}
-        headerStyle={{ fontSize: 16 }}
-        titleStyle={{ fontSize: 46 }}
-        style={{
-          backgroundImage:
-            'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg2.png)',
-        }}
-      >
-        <div className={styles.container}>
-          <div className={styles.left}>
-            <div className={styles.wrapper} style={{ display: 'flex', flexDirection: 'column', backgroundImage: `url(${borderIcon})` }}>
-              <div style={{ flex: 'none', marginBottom: 12 }}>
-                <RangePicker
-                  dropdownClassName={styles.rangePickerDropDown}
-                  className={styles.rangePicker}
-                  style={{ width: '100%' }}
-                  showTime={{ format: 'HH:mm' }}
-                  format={timeFormat}
-                  placeholder={['开始时间', '结束时间']}
-                  value={range}
-                  onChange={this.handleChange}
-                  onOk={this.handleOk}
-                  onOpenChange={this.handleOpenChange}
-                  allowClear={false}
-                />
+      <div className={styles.container}>
+        <div className={styles.left}>
+          <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
+          <div
+            className={styles.wrapper}
+            // style={{ display: 'flex', flexDirection: 'column' }}
+          >
+            <div style={{ flex: 'none', marginBottom: 12 }}>
+              <RangePicker
+                dropdownClassName={styles.rangePickerDropDown}
+                className={styles.rangePicker}
+                style={{ width: '100%' }}
+                showTime={{ format: 'HH:mm' }}
+                format={timeFormat}
+                placeholder={['开始时间', '结束时间']}
+                value={range}
+                onChange={this.handleChange}
+                onOk={this.handleOk}
+                onOpenChange={this.handleOpenChange}
+                allowClear={false}
+              />
+            </div>
+            <div style={{ flex: 'none', marginBottom: 12 }}>
+              <div className={styles.th}>
+                <div className={styles.td}>开始时间</div>
+                <div className={styles.td}>结束时间</div>
+                <div className={styles.td}>区域楼层</div>
               </div>
-              <div style={{ flex: 'none', marginBottom: 12 }}>
-                <div className={styles.th}>
-                  <div className={styles.td}>开始时间</div>
-                  <div className={styles.td}>结束时间</div>
-                  <div className={styles.td}>区域楼层</div>
-                </div>
-                <div className={styles.tr}>
-                  <div className={styles.td}>{startTime.format('HH:mm:ss')}</div>
-                  <div className={styles.td}>{endTime.format('HH:mm:ss')}</div>
-                  <div className={styles.td}>办公区域</div>
-                </div>
-              </div>
-              <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
-                <div className={styles.th} style={{ flex: 'none' }}>
-                  <div className={styles.td}>时间</div>
-                  <div className={styles.td}>X坐标</div>
-                  <div className={styles.td}>Y坐标</div>
-                  <div className={styles.td}>Z坐标</div>
-                </div>
-                <Scrollbars style={{ flex: '1' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
-                  {list && list.length > 0 ? list.map(({ intime: time, xarea: x, yarea: y, zarea: z }) => (
-                    <div className={styles.tr} key={time}>
-                      <div className={styles.td}>{moment(time).format('HH:mm:ss')}</div>
-                      <div className={styles.td}>{x}</div>
-                      <div className={styles.td}>{y}</div>
-                      <div className={styles.td}>{z}</div>
-                    </div>
-                  )) : <div className={styles.placeholder}>暂无数据</div>}
-                </Scrollbars>
+              <div className={styles.tr}>
+                <div className={styles.td}>{startTime.format('HH:mm:ss')}</div>
+                <div className={styles.td}>{endTime.format('HH:mm:ss')}</div>
+                <div className={styles.td}>办公区域</div>
               </div>
             </div>
-          </div>
-          <div className={styles.right}>
-            <TrailBack src={map} data={list} startTime={startTime && +startTime} endTime={endTime && +endTime} style={{ backgroundImage: `url(${borderIcon})` }} topStyle={{ margin: '24px 24px 0' }} />
+            <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
+              <div className={styles.th} style={{ flex: 'none' }}>
+                <div className={styles.td}>时间</div>
+                <div className={styles.td}>X坐标</div>
+                <div className={styles.td}>Y坐标</div>
+                <div className={styles.td}>Z坐标</div>
+              </div>
+              <Scrollbars style={{ flex: '1' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
+                {list && list.length > 0 ? list.map(({ intime: time, xarea: x, yarea: y, zarea: z }) => (
+                  <div className={styles.tr} key={time}>
+                    <div className={styles.td}>{moment(time).format('HH:mm:ss')}</div>
+                    <div className={styles.td}>{x}</div>
+                    <div className={styles.td}>{y}</div>
+                    <div className={styles.td}>{z}</div>
+                  </div>
+                )) : <div className={styles.placeholder}>暂无数据</div>}
+              </Scrollbars>
+            </div>
           </div>
         </div>
-      </BigPlatformLayout>
+        <div className={styles.right}>
+          <TrailBack src={map} data={list} startTime={startTime && +startTime} endTime={endTime && +endTime} style={{ backgroundImage: `url(${borderIcon})` }} topStyle={{ margin: '24px 24px 0' }} />
+        </div>
+      </div>
     );
   }
 }

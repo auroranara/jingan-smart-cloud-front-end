@@ -21,3 +21,8 @@ export async function postOverstep(id) {
     method: 'POST',
   });
 }
+
+// 获取区域树
+export async function querySections(params) {
+  return request(`${URL_PREFIX}/areaInfo/getScreenTree?${stringify(params)}`);
+}
