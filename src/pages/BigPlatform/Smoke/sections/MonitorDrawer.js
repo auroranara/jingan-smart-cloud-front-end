@@ -96,13 +96,9 @@ export default class MonitorDrawer extends PureComponent {
               return (
                 <Col span={12} key={index}>
                   <div className={styles.deviceWrapper}>
-                    <div
-                      className={styles.deviceImg}
-                      style={{
-                        background: `url(${smokeImg}) no-repeat center center`,
-                        backgroundSize: '70% auto',
-                      }}
-                    />
+                    <div className={styles.deviceImg}>
+                      <img src={smokeImg} alt="smokeImg" />
+                    </div>
                     <div className={styles.infoWrapper}>
                       <div className={styles.position}>{`${area}：${location}`}</div>
                       <div className={styles.infos}>{+status === 0 ? devStatus : occurTime}</div>

@@ -112,6 +112,17 @@ export function getAlerted(list, labels) {
   }, []);
 }
 
+// 根据paramCode获取对应的报警参数序号，否则获取报警的第一个参数的序号
+export function getTargetAlerted(list, labels, paramName) {
+  if (paramName) {
+    const index = labels.findIndex(item => item.includes(paramName));
+    return index === -1 ? undefined : index;
+  }
+
+  const alerted = getAlerted(list, labels);
+  return alerted.length ? alerted[0] : undefined;
+}
+
 const STATUS_MAP = [0, 2, 1, -1];
 // 获取设备列表中状态对应的第一个设备id
 export function getFirstDeviceId(list=[], index=0) {

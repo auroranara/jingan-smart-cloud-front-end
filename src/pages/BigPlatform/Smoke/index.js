@@ -30,7 +30,7 @@ import MapSearch from './BackMap/MapSearch';
 // 引入样式文件
 import styles from './index.less';
 import { SettingModal, UnitDrawer, AlarmDrawer, FireStatisticsDrawer } from './sections/Components';
-import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
+// import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import { genCardsInfo } from './utils';
 import { GridSelect } from './components/Components';
@@ -593,7 +593,7 @@ export default class Smoke extends PureComponent {
       tooltipPosition,
       maintenanceDrawerVisible,
       monitorDrawerVisible,
-      videoVisible,
+      // videoVisible,
       // drawerType,
       alarmIds,
       companyName,
@@ -724,14 +724,14 @@ export default class Smoke extends PureComponent {
           handleSelect={this.handleSelectDevice}
           handleClickCamera={this.handleClickCamera}
         />
-        <VideoPlay
+        {/* <VideoPlay
           showList={false}
           videoList={cameraList}
           visible={videoVisible}
           keyId={cameraList.length ? cameraList[0].key_id : ''}
           style={{ position: 'fixed', zIndex: 99999 }}
           handleVideoClose={this.handleVideoClose}
-        />
+        /> */}
         <MyTooltip
           visible={tooltipVisible}
           title={tooltipName}
