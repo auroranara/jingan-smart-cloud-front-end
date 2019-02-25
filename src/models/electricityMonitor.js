@@ -9,6 +9,7 @@ import {
   getDeviceHistoryData,
   getCameraList,
   getWarningTrend,
+  getFaultByBrand,
 } from '../services/electricityMonitor';
 // import { getGrids } from '../services/bigPlatform/fireControl';
 // 获取单位集
@@ -92,6 +93,10 @@ export default {
     warningTrendList: [], // 报警趋势列表(12个月)
     warningTrendList1: [], // 报警趋势列表(6个月)
     grids: [], // 网格点列表
+    // 品牌故障统计
+    brandData: {
+      brandList: [],
+    },
   },
 
   effects: {
@@ -127,7 +132,15 @@ export default {
     // },
     // 获取单位数据
     *fetchUnitData({ payload, callback }, { call, put }) {
-      const { code, data: { companyInfoDtoList: units, countNum: jurisdictionalUnitStatistics, linkNum: accessUnitStatistics, allCompanyInfoDtoList=[] } } = yield call(getUnitData, payload);
+      const {
+        code,
+        data: {
+          companyInfoDtoList: units,
+          countNum: jurisdictionalUnitStatistics,
+          linkNum: accessUnitStatistics,
+          allCompanyInfoDtoList = [],
+        },
+      } = yield call(getUnitData, payload);
       const statisticsData = {
         // 管辖单位统计数
         jurisdictionalUnitStatistics,
@@ -139,7 +152,12 @@ export default {
             ? `${Math.round((accessUnitStatistics / jurisdictionalUnitStatistics) * 100)}%`
             : '--',
       };
-      const pay = { unitSet: getUnitSet(units), statisticsData, unitIds: units.map(({ companyId }) => companyId), allCompanyList: allCompanyInfoDtoList };
+      const pay = {
+        unitSet: getUnitSet(units),
+        statisticsData,
+        unitIds: units.map(({ companyId }) => companyId),
+        allCompanyList: allCompanyInfoDtoList,
+      };
       if (code === 200) {
         yield put({
           type: 'save',
@@ -248,6 +266,21 @@ export default {
     //     callback && callback(response);
     //   }
     // },
+    //  品牌故障统计
+    *fetchFaultByBrand({ payload, success, error }, { call, put }) {
+      const response = yield call(getFaultByBrand, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveFaultByBrand',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response);
+      }
+    },
   },
   reducers: {
     // 保存
@@ -282,5 +315,12 @@ export default {
     // saveGrids(state, action) {
     //   return { ...state, grids: action.payload };
     // },
+    // 获取品牌故障统计
+    saveFaultByBrand(state, { payload }) {
+      return {
+        ...state,
+        brandData: payload,
+      };
+    },
   },
 };

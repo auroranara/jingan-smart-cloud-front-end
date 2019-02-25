@@ -154,6 +154,7 @@ export default class Smoke extends PureComponent {
       type: 'smoke/fetchFaultByBrand',
       payload: {
         gridId,
+        classType: 6,
       },
     });
 
