@@ -199,7 +199,6 @@ export default class RealTime extends PureComponent {
   };
 
   render() {
-    // 注意这里额外引了一个model
     const {
       labelIndex,
       data: { companyId, areaId, personPosition: { sections } },
@@ -207,10 +206,8 @@ export default class RealTime extends PureComponent {
     } = this.props;
     const {
       positions,
-      posInfo,
       infoCardId,
       overstepCardId,
-      sosList,
       overstepList,
       personInfoVisible,
       sosHandleVisible,
@@ -219,48 +216,6 @@ export default class RealTime extends PureComponent {
       videoVisible,
       videoKeyId,
     } = this.state;
-
-    const alarmCards = getAlarmCards([...sosList, ...overstepList]);
-
-    const sectionInfo = [
-      {
-        id: 1,
-        areaName: '演示区域',
-        count: 1,
-        status: alarmCards.length ? 2 : 1,
-        indentLevel: 0,
-        children: [
-          {
-            id: 2,
-            areaName: '消控室',
-            count: 1,
-            status: overstepList.length ? 2 : 1,
-            indentLevel: 1,
-          },
-          {
-            id: 3,
-            areaName: '活动室',
-            count: 0,
-            status: 1,
-            indentLevel: 1,
-          },
-          {
-            id: 4,
-            areaName: '餐厅',
-            count: 0,
-            status: 1,
-            indentLevel: 1,
-          },
-          {
-            id: 5,
-            areaName: '实验室',
-            count: 0,
-            status: 1,
-            indentLevel: 1,
-          },
-        ],
-      },
-    ];
 
     return (
       <div className={styles.container}>
@@ -277,16 +232,7 @@ export default class RealTime extends PureComponent {
           /> */}
         </div>
         <div className={styles.right}>
-          {/* <Map
-            data={positions}
-            overstepSections={overstepList.length ? [1] : []}
-            quantity={{ sos: sosList.length, alarm: overstepList.length }}
-            handleClickPerson={this.handleClickPerson}
-            handleAlarmSectionClick={this.handleShowAlarmMsg}
-            handleShowVideo={this.handleShowVideo}
-          /> */}
           <LeafletMap areaId={areaId} />
-          {/* <Info data={posInfo} /> */}
           <PersonInfo
             visible={personInfoVisible}
             data={getPersonInfoItem(infoCardId, positions)}
