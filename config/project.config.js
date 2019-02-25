@@ -175,6 +175,11 @@ const configs = {
     android:
       'http://58.215.178.100:12086/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
+  czey: {
+    region: '常州',
+    projectKey: 'czey_pro',
+    projectShortName: '常州二院智慧云',
+  },
 };
 
 export default class Config {
