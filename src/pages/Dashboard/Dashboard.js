@@ -91,7 +91,7 @@ export default class Dashboard extends PureComponent {
     // fireItem.url = `${window.publicPath}#/big-platform/fire-control/government/index`
     fireItem.url = `${window.publicPath}#/big-platform/new-fire-control/government/index`;
     gasItem.url = `${window.publicPath}#/big-platform/gas`;
-    smokeItem.url = `${window.publicPath}#/big-platform/smoke/${companyId}`
+    // smokeItem.url = `${window.publicPath}#/big-platform/smoke/${companyId}`
     // electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor` // 移到render里面
     // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
     // 政府根据companyBasicInfo的数据来
@@ -203,6 +203,9 @@ export default class Dashboard extends PureComponent {
       grids.length ? grids[0].value : 'index'
       }`;
     gasItem.url = `${window.publicPath}#/big-platform/gas/${
+      grids.length ? grids[0].value : 'index'
+      }`;
+    smokeItem.url = `${window.publicPath}#/big-platform/smoke/${
       grids.length ? grids[0].value : 'index'
       }`;
 
