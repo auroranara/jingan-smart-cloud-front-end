@@ -612,8 +612,19 @@ class ImageDraw extends PureComponent {
   /**
    * 渲染图标
    */
-  renderMarker = () => {
-    return null;
+  renderDivIcon = (item) => {
+    const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
+    const { latlng, name, iconProps } = item;
+    return (
+      <Marker
+        key={name}
+        data={item}
+        icon={iconProps && L.divIcon(iconProps)}
+        position={{ lat: latlng.lat * height, lng: latlng.lng * width }}
+        onAdd={this.handleAdd}
+        onClick={this.handleClickShape}
+      />
+    );
   }
 
   /**
@@ -718,7 +729,7 @@ class ImageDraw extends PureComponent {
       url,
       hideBackground,
       data=[],
-      markers=[],
+      divIcons=[],
       images,
       color=defaultColor,
       shapes=['polygon', 'rectangle', 'circle'],
@@ -804,7 +815,7 @@ class ImageDraw extends PureComponent {
                   />
                 )}
                 {data && data.map(this.renderShape)}
-                {markers && markers.map(this.renderMarker)}
+                {divIcons && divIcons.map(this.renderDivIcon)}
               </FeatureGroup>
             </ImageOverlay>
           )}
