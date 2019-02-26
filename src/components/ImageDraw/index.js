@@ -7,9 +7,9 @@ import L from 'leaflet';
 import styles from './index.less';
 
 // 边线宽度
-const weight = 1;
+const DEFAULT_WEIGHT = 1;
 // 颜色
-const defaultColor = '#000';
+const DEFAULT_COLOR = '#000';
 // 默认字体大小
 const defaultFontSize = 14;
 // 默认字体颜色
@@ -631,9 +631,8 @@ class ImageDraw extends PureComponent {
    * 渲染图形
    */
   renderShape = (item) => {
-    const { color=defaultColor } = this.props;
     const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
-    const { latlngs, latlng, type, radius, name, render } = item;
+    const { latlngs, latlng, type, radius, name, render, options: { color=DEFAULT_COLOR, weight=DEFAULT_WEIGHT }={} } = item;
     let shape = null;
     switch(type){
       case 'polygon': // 多边形
@@ -700,7 +699,6 @@ class ImageDraw extends PureComponent {
             onClick={this.handleClickShape}
             onAdd={this.handleAdd}
             color={color}
-            // weight={weight}
           />
         );
         break;
@@ -731,7 +729,7 @@ class ImageDraw extends PureComponent {
       data=[],
       divIcons=[],
       images,
-      color=defaultColor,
+      color=DEFAULT_COLOR,
       shapes=['polygon', 'rectangle', 'circle'],
       form: { getFieldDecorator },
     } = this.props;
@@ -781,21 +779,21 @@ class ImageDraw extends PureComponent {
                           message: '<strong>错误<strong>，你不能这么画!',
                         },
                         shapeOptions: {
-                          weight,
+                          weight: DEFAULT_WEIGHT,
                           color,
                         },
                       },
                       rectangle: shapes.includes('rectangle') && {
                         showArea: false,
                         shapeOptions: {
-                          weight,
+                          weight: DEFAULT_WEIGHT,
                           color,
                         },
                       },
                       circle: shapes.includes('circle') && {
                         showRadius: false,
                         shapeOptions: {
-                          weight,
+                          weight: DEFAULT_WEIGHT,
                           color,
                         },
                       },
