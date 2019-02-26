@@ -443,9 +443,6 @@ export default class UnitSafety extends PureComponent {
       riskPointDetail,
     } = unitSafety;
 
-    console.log(videoList);
-    console.log(videoKeyId);
-
     return (
       <BigPlatformLayout
         title={global.PROJECT_CONFIG.projectName}
