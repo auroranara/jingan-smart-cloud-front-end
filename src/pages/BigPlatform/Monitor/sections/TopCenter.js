@@ -456,7 +456,7 @@ export default class TopCenter extends PureComponent {
             <div className={styles.shadowIn}>
               {this.renderDeviceSection({ img: deviceTotalNumber, title: '设备总数', num: count, color: 'blue', isHover: false })}
               {this.renderDeviceSection({ img: abnormalDevice, title: '报警设备', num: unnormal, color: 'red', isHover: true })}
-              {this.renderDeviceSection({ img: missingDevice, title: '失联设备', num: outContact, color: 'yellow', isHover: true })}
+              {this.renderDeviceSection({ img: missingDevice, title: '故障设备', num: outContact, color: 'yellow', isHover: true })}
             </div>
           </div>
         </Col>
@@ -573,6 +573,7 @@ export default class TopCenter extends PureComponent {
                     backgroundSize: '50% 40%',
                   }}
                 >
+                  <div className={styles.total}><span>设备数 {total}</span></div>
                   <div
                     className={styles.dot}
                     style={{ backgroundImage: `url(${redDot})`, backgroundSize: '15% 15%' }}
