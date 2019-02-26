@@ -276,7 +276,7 @@ export default class FourColor extends PureComponent {
                   placement={xNum > 0.5 ? 'left': 'right'}
                   title={info ? (
                     <Fragment>
-                      <div>{info.hdLetterInfo.pointName}</div>
+                      <div>{info.objectTitle}</div>
                       <div>有无隐患：{+info.hdLetterInfo.status === 2 ? <span style={{ color: '#ff4848' }}>有隐患</span> : '无隐患'}</div>
                       <div>检查状态：{getStatusLabel(info.hdLetterInfo.status)}</div>
                       <div>最近巡查：{info.hdLetterInfo.lastCheckName} {info.hdLetterInfo.lastCheckDate && info.hdLetterInfo.lastCheckDate.slice(0, 10)}</div>
