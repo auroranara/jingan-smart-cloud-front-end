@@ -8,7 +8,7 @@ import styles from './RealTime.less';
 import { alarmInfoIcon, sosIcon } from '../imgs/urls';
 import { AlarmHandle, AlarmMsg, PersonInfo, Tabs, VideoPlay } from '../components/Components';
 import { LeafletMap, PersonDrawer, SectionList } from './Components';
-import { genTreeList } from '../utils';
+import { genTreeList, positionsToIcons } from '../utils';
 
 const options = {
   pingTimeout: 30000,
@@ -268,7 +268,7 @@ export default class RealTime extends PureComponent {
     const {
       labelIndex,
       companyId,
-      personPosition: { sectionTree },
+      personPosition: { sectionTree, positionAggregation },
       handleLabelClick,
     } = this.props;
     const {
@@ -300,7 +300,7 @@ export default class RealTime extends PureComponent {
           /> */}
         </div>
         <div className={styles.right}>
-          <LeafletMap url={mapBackgroundUrl} areaId={areaId} sectionTree={sectionTree} />
+          <LeafletMap url={mapBackgroundUrl} areaId={areaId} sectionTree={sectionTree} icons={positionsToIcons(positionAggregation)} />
           <PersonInfo
             visible={personInfoVisible}
             // data={getPersonInfoItem(infoCardId, positions)}

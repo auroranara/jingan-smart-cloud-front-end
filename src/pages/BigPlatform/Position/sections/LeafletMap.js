@@ -4,7 +4,7 @@ import { connect } from 'dva';
 
 import styles from './LeafletMap.less';
 import ImageDraw from '@/components/ImageDraw';
-import { findInTree } from '../utils';
+import { findInTree, parseImage } from '../utils';
 
 @connect(({ zoning, loading }) => ({
   zoning,
@@ -24,14 +24,13 @@ export default class LeafletMap extends PureComponent {
 
   handleMapData = (areaId, sectionTree) => {
     const target = findInTree(areaId, sectionTree);
-    const { id, mapPhoto, range, children } = this.props;
-    const reference = { id };
-    const [images, data] = children.reduce((prev, next) => {
-      const { id, mapPhoto, range } = next;
-      prev[0].push(mapPhoto);
-      prev[1].push(range);
-    }, [[mapPhoto], []]);
-    images
+    const reference = parseImage(target);
+    const [images, data] = target.children.reduce((prev, next) => {
+      const { range } = next;
+      prev[0].push(parseImage(next));
+      prev[1].push(range ? JSON.parse(range) : []);
+    }, [[reference], []]);
+    this.setState({ data, images, reference });
   };
 
   getZoning = id => {
@@ -92,8 +91,10 @@ export default class LeafletMap extends PureComponent {
   };
 
   render() {
-    const { loading, url } = this.props;
+    const { loading, url, icons } = this.props;
     const { data, images, reference } = this.state;
+
+    console.log(icons);
 
     const imgDraw = (
       <Spin spinning={false} style={{ height: '100%' }}>
@@ -103,6 +104,7 @@ export default class LeafletMap extends PureComponent {
           data={data}
           images={images}
           reference={reference}
+          divIcons={icons}
           className={styles.map}
           color='#00a8ff'
           style={{ height: '100%' }}

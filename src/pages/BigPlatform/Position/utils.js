@@ -1,5 +1,7 @@
 import moment from 'moment';
 
+import { personIcon } from './imgs/urls';
+
 export function handlePositions(positions=[], wsData=[]) {
   if (!wsData || !wsData.length)
     return positions;
@@ -143,4 +145,25 @@ export function findInTree(targetValue, list, prop='id') {
     }
 
   return targetItem;
+}
+
+export function positionsToIcons(aggregation) {
+  // console.log('aggregation', aggregation);
+  const result =  aggregation.map(ps => {
+    const { userName, xarea, yarea } = ps[0];
+    return {
+      name: userName,
+      latlng: { lat: yarea, lng: xarea },
+      iconProps: { iconUrl: personIcon, iconSize: [38, 40] },
+    };
+  });
+
+  // console.log('agg', result);
+  return result;
+}
+
+export function parseImage(section) {
+  let { id, mapPhoto, range } = section;
+  range = range || '{}';
+  return { id, url: JSON.parse(mapPhoto).url, ...JSON.parse(range) };
 }
