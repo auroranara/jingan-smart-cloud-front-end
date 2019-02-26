@@ -17,9 +17,18 @@ export default class SettingModal extends PureComponent {
       handleOk,
       handleCancel,
       form: { getFieldDecorator },
-    }  = this.props;
-    const title = <Fragment><span className={styles.rect} />默认选项设置</Fragment>;
-    const btn = <Button type="ghost" style={BTN_STYLE} onClick={handleOk}>保存</Button>;
+    } = this.props;
+    const title = (
+      <Fragment>
+        <span className={styles.rect} />
+        默认选项设置
+      </Fragment>
+    );
+    const btn = (
+      <Button type="ghost" style={BTN_STYLE} onClick={handleOk}>
+        保存
+      </Button>
+    );
 
     return (
       <Modal
@@ -30,61 +39,65 @@ export default class SettingModal extends PureComponent {
         visible={visible}
         onCancel={handleCancel}
         footer={btn}
-        >
-          <Form>
-            <FormItem label="标题名称显示">
-              {getFieldDecorator('title', { initialValue: 0 })(
-                <RadioGroup>
-                  <Radio value={0}>晶安智慧燃气平台</Radio>
-                  <Radio value={1}><Input placeholder="请输入自定义平台名" /></Radio>
-                </RadioGroup>
-              )}
-            </FormItem>
-            <FormItem label="地图类型">
-              {getFieldDecorator('map', { initialValue: 0 })(
-                <RadioGroup>
-                  <Radio value={0}>普通地图</Radio>
-                  <Radio value={1}>卫星地图</Radio>
-                </RadioGroup>
-              )}
-            </FormItem>
-            <FormItem label="地图主题">
-              {getFieldDecorator('theme', { initialValue: 1 })(
-                <RadioGroup>
-                  <Radio value={0}>标准</Radio>
-                  <Radio value={1}>静蓝</Radio>
-                </RadioGroup>
-              )}
-            </FormItem>
-            <FormItem label="地图视角">
-              {getFieldDecorator('angle', { initialValue: 0 })(
-                <RadioGroup>
-                  <Radio value={0}>2D</Radio>
-                  <Radio value={1}>3D(倾斜60°)</Radio>
-                </RadioGroup>
-              )}
-            </FormItem>
-            <FormItem label="消息提醒">
-              {getFieldDecorator('message', { initialValue: [1] })(
-                <CheckboxGroup>
-                  <Checkbox value={0}>预警提示</Checkbox>
-                  <Checkbox value={1}>告警提示</Checkbox>
-                </CheckboxGroup>
-              )}
-            </FormItem>
-            <FormItem label="短信及电话通知规则">
-              {getFieldDecorator('phone', { initialValue: [0] })(
-                <CheckboxGroup>
-                  <Checkbox value={0}>预警时APP消息提醒</Checkbox>
-                  <Checkbox value={1}>告警时短信提醒</Checkbox>
-                  <Checkbox value={2}>告警时系统自动拨打电话提醒</Checkbox>
-                  <Checkbox value={3} style={{ marginLeft: 0 }}>连续报警3次后短信提醒</Checkbox>
-                  <Checkbox value={4}>报警10分钟未处理自动拨打电话</Checkbox>
-                </CheckboxGroup>
-              )}
-            </FormItem>
-          </Form>
+      >
+        <Form>
+          <FormItem label="标题名称显示">
+            {getFieldDecorator('title', { initialValue: 0 })(
+              <RadioGroup>
+                <Radio value={0}>晶安智能烟感平台</Radio>
+                <Radio value={1}>
+                  <Input placeholder="请输入自定义平台名" />
+                </Radio>
+              </RadioGroup>
+            )}
+          </FormItem>
+          <FormItem label="地图类型">
+            {getFieldDecorator('map', { initialValue: 0 })(
+              <RadioGroup>
+                <Radio value={0}>普通地图</Radio>
+                <Radio value={1}>卫星地图</Radio>
+              </RadioGroup>
+            )}
+          </FormItem>
+          <FormItem label="地图主题">
+            {getFieldDecorator('theme', { initialValue: 1 })(
+              <RadioGroup>
+                <Radio value={0}>标准</Radio>
+                <Radio value={1}>静蓝</Radio>
+              </RadioGroup>
+            )}
+          </FormItem>
+          <FormItem label="地图视角">
+            {getFieldDecorator('angle', { initialValue: 0 })(
+              <RadioGroup>
+                <Radio value={0}>2D</Radio>
+                <Radio value={1}>3D(倾斜60°)</Radio>
+              </RadioGroup>
+            )}
+          </FormItem>
+          <FormItem label="消息提醒">
+            {getFieldDecorator('message', { initialValue: [1] })(
+              <CheckboxGroup>
+                <Checkbox value={0}>预警提示</Checkbox>
+                <Checkbox value={1}>告警提示</Checkbox>
+              </CheckboxGroup>
+            )}
+          </FormItem>
+          <FormItem label="短信及电话通知规则">
+            {getFieldDecorator('phone', { initialValue: [0] })(
+              <CheckboxGroup>
+                <Checkbox value={0}>预警时APP消息提醒</Checkbox>
+                <Checkbox value={1}>告警时短信提醒</Checkbox>
+                <Checkbox value={2}>告警时系统自动拨打电话提醒</Checkbox>
+                <Checkbox value={3} style={{ marginLeft: 0 }}>
+                  连续报警3次后短信提醒
+                </Checkbox>
+                <Checkbox value={4}>报警10分钟未处理自动拨打电话</Checkbox>
+              </CheckboxGroup>
+            )}
+          </FormItem>
+        </Form>
       </Modal>
     );
-  };
+  }
 }
