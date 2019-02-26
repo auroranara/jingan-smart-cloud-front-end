@@ -85,51 +85,55 @@ export default class DynamicMonitor extends PureComponent {
     const { zoom } = this.state;
 
     const list = [
-      [
-        {
-          key: '消防主机报警',
-          value: fireEngine ? (fireEngine.warningNum > 0 ? <span className={styles.warning}>{fireEngine.warningNum}</span> : 0) : '--',
-          icon: fireEngineIcon,
-        },
-        {
-          key: '电气火灾报警',
-          value: getValue(electricalFire),
-          icon: electricalFireIcon,
-        },
-        {
-          key: '独立烟感报警',
-          value: getValue(smokeAlarm),
-          icon: smokeAlarmIcon,
-        },
-        {
-          key: '储罐监测报警',
-          value: getValue(storageTank),
-          icon: storageTankIcon,
-        },
-      ],
-      [
-        {
-          key: '可燃有毒气体报警',
-          value: getValue(toxicGas),
-          icon: toxicGasIcon,
-        },
-        {
-          key: '废水监测报警',
-          value: getValue(effluent),
-          icon: effluentIcon,
-        },
-        {
-          key: '废气监测报警',
-          value: getValue(exhaustGas),
-          icon: exhaustGasIcon,
-        },
-        {
-          key: '视频监控设备',
-          value: videoMonitor ? videoMonitor.totalNum : '--',
-          icon: videoMonitorIcon,
-        },
-      ],
-    ];
+      {
+        key: '消防主机报警',
+        value: fireEngine ? (fireEngine.warningNum > 0 ? <span className={styles.warning}>{fireEngine.warningNum}</span> : 0) : '--',
+        icon: fireEngineIcon,
+        originalValue: fireEngine,
+      },
+      {
+        key: '电气火灾报警',
+        value: getValue(electricalFire),
+        icon: electricalFireIcon,
+        originalValue: electricalFire,
+      },
+      {
+        key: '独立烟感报警',
+        value: getValue(smokeAlarm),
+        icon: smokeAlarmIcon,
+        originalValue: smokeAlarm,
+      },
+      {
+        key: '储罐监测报警',
+        value: getValue(storageTank),
+        icon: storageTankIcon,
+        originalValue: storageTank,
+      },
+      {
+        key: '可燃有毒气体报警',
+        value: getValue(toxicGas),
+        icon: toxicGasIcon,
+        originalValue: toxicGas,
+      },
+      {
+        key: '废水监测报警',
+        value: getValue(effluent),
+        icon: effluentIcon,
+        originalValue: effluent,
+      },
+      {
+        key: '废气监测报警',
+        value: getValue(exhaustGas),
+        icon: exhaustGasIcon,
+        originalValue: exhaustGas,
+      },
+      {
+        key: '视频监控设备',
+        value: videoMonitor ? videoMonitor.totalNum : '--',
+        icon: videoMonitorIcon,
+        originalValue: videoMonitor,
+      },
+    ].filter(({ originalValue: { totalNum }={} }) => totalNum);
 
     return (
       <Section
@@ -138,22 +142,32 @@ export default class DynamicMonitor extends PureComponent {
       >
         <div className={styles.container}>
           <Carousel className={styles.carousel} ref={this.refCarousel}>
-            {list.map((list2, index) => {
-              return (
-                <div key={index} className={styles.listWrapper}>
-                  <div className={styles.list} style={{ zoom }}>
-                    {list2.map(({ key, value, icon }) => {
-                      return (
-                        <div className={styles.item} style={{ backgroundImage: `url(${icon})` }} key={key}>
-                          <div className={styles.itemLabel}>{key}</div>
-                          <div className={styles.itemValue}>{value}</div>
-                        </div>
-                      );
-                    })}
-                  </div>
+            <div className={styles.listWrapper}>
+              <div className={styles.list} style={{ zoom }}>
+                {list.slice(0, 4).map(({ key, value, icon }) => {
+                  return (
+                    <div className={styles.item} style={{ backgroundImage: `url(${icon})` }} key={key}>
+                      <div className={styles.itemLabel}>{key}</div>
+                      <div className={styles.itemValue}>{value}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {list.length > 4 && (
+              <div className={styles.listWrapper}>
+                <div className={styles.list} style={{ zoom }}>
+                  {list.slice(4, 8).map(({ key, value, icon }) => {
+                    return (
+                      <div className={styles.item} style={{ backgroundImage: `url(${icon})` }} key={key}>
+                        <div className={styles.itemLabel}>{key}</div>
+                        <div className={styles.itemValue}>{value}</div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+            )}
           </Carousel>
         </div>
       </Section>
