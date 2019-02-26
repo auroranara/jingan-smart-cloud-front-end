@@ -3,7 +3,7 @@ import { Progress } from 'antd';
 
 import styles from './ProgressBar.less';
 
-const STATUS_CN = ['正常', '异常', '失联'];
+const STATUS_CN = ['正常', '报警', '失联'];
 const COLORS = ['rgb(0, 161, 129)', 'rgb(232, 103, 103)', 'rgb(198, 193, 129)'];
 const COLORS_HOVER = ['#00e6b8', '#ff9999', '#fff9a6'];
 
@@ -15,7 +15,7 @@ export default class ProgressBar extends PureComponent {
   };
 
   render() {
-    const { status=0, num=0, percent=0, strokeWidth=10, handleClick } = this.props;
+    const { status = 0, num = 0, percent = 0, strokeWidth = 10, handleClick } = this.props;
     const { hover } = this.state;
 
     const strokeColor = COLORS[status];
