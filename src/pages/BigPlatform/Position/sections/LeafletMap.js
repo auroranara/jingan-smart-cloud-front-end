@@ -4,6 +4,7 @@ import { connect } from 'dva';
 
 import styles from './LeafletMap.less';
 import ImageDraw from '@/components/ImageDraw';
+import { findInTree } from '../utils';
 
 @connect(({ zoning, loading }) => ({
   zoning,
@@ -12,17 +13,26 @@ import ImageDraw from '@/components/ImageDraw';
 export default class LeafletMap extends PureComponent {
   state = {
     data: [],
-    url: undefined,
     images: undefined,
     reference: undefined,
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const { areaId: prevAreaId } = prevProps;
-    const { areaId } = this.props;
-    if (prevAreaId !== areaId && areaId)
-      this.getZoning(areaId);
+    const { areaId, sectionTree } = this.props;
+    // this.handleMapData(areaId, sectionTree);
   }
+
+  handleMapData = (areaId, sectionTree) => {
+    const target = findInTree(areaId, sectionTree);
+    const { id, mapPhoto, range, children } = this.props;
+    const reference = { id };
+    const [images, data] = children.reduce((prev, next) => {
+      const { id, mapPhoto, range } = next;
+      prev[0].push(mapPhoto);
+      prev[1].push(range);
+    }, [[mapPhoto], []]);
+    images
+  };
 
   getZoning = id => {
     const { dispatch } = this.props;
@@ -82,14 +92,13 @@ export default class LeafletMap extends PureComponent {
   };
 
   render() {
-    const { loading } = this.props;
-    const { data, url, images, reference } = this.state;
+    const { loading, url } = this.props;
+    const { data, images, reference } = this.state;
 
     const imgDraw = (
-      <Spin spinning={loading} style={{ height: '100%' }}>
+      <Spin spinning={false} style={{ height: '100%' }}>
         <ImageDraw
           autoZoom
-          hideBackground
           url={url}
           data={data}
           images={images}

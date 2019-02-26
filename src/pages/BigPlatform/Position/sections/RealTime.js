@@ -7,7 +7,7 @@ import { notification } from 'antd';
 import styles from './RealTime.less';
 import { alarmInfoIcon, sosIcon } from '../imgs/urls';
 import { AlarmHandle, AlarmMsg, PersonInfo, Tabs, VideoPlay } from '../components/Components';
-import { SectionList, LeafletMap } from './Components';
+import { LeafletMap, PersonDrawer, SectionList } from './Components';
 import { genTreeList } from '../utils';
 
 const options = {
@@ -16,10 +16,7 @@ const options = {
   reconnectTimeout: 2000,
   pingMsg: 'heartbeat',
 };
-// areaId 0 大区域 1 消控室
-const VIDEO_KEY_IDS = ['250ch11', '250ch10'];
 
-// const TYPES = [1, 2];
 const TYPE_LABELS = {
   1: '越界',
   2: 'SOS求助',
@@ -28,7 +25,6 @@ const ALARM_DESC = {
   1: '越界，请及时处理！',
   2: '发起求救信号，请及时支援！',
 };
-const PHONE = '13270801232';
 
 const LOCATION_MESSAGE_TYPE = "1";
 const AREA_CHANGE_TYPE = "2";
@@ -38,9 +34,9 @@ const RE_WARNING_TYPE = "5";
 
 export default class RealTime extends PureComponent {
   state = {
+    mapBackgroundUrl:undefined,
     areaId: undefined,
-
-    positions: [],
+    personDrawerVisible: false,
     personInfoVisible: false,
     personInfoSOSVisible: false,
     sosHandleVisible: false,
@@ -62,16 +58,15 @@ export default class RealTime extends PureComponent {
       type: 'personPosition/fetchSectionTree',
       payload: { companyId },
       callback: list => {
-        if (list.length)
-          this.setState({ areaId: list[0].id });
+        if (list.length) {
+          const root = list[0];
+          this.setState({ areaId: root.id, mapBackgroundUrl: JSON.parse(root.mapPhoto).url });
+        }
       },
     });
     dispatch({
       type: 'personPosition/fetchInitialPositions',
       payload: { companyId },
-      // callback: (data = []) => {
-      //   this.setState({ positions: data });
-      // },
     });
     dispatch({
       type: 'personPosition/fetchInitialAlarms',
@@ -118,8 +113,6 @@ export default class RealTime extends PureComponent {
       } catch (error) {
         console.log('error', error);
       }
-
-      // console.log(`onmessage: ${e.data}`);
     };
     ws.onreconnect = () => {
       console.log('reconnecting...');
@@ -133,13 +126,13 @@ export default class RealTime extends PureComponent {
         this.handlePositions(data);
         break;
       case AREA_CHANGE_TYPE:
-        this.handleAreaChange(data);
+        // this.handleAreaChange(data);
         break;
       case WARNING_TYPE:
         this.handleAlarms(data);
         break;
       case AREA_STATUS_TYPE:
-        this.handleAreaStatusChange(data);
+        // this.handleAreaStatusChange(data);
         break;
       case RE_WARNING_TYPE:
         this.removeAlarms(data);
@@ -150,10 +143,10 @@ export default class RealTime extends PureComponent {
   };
 
   handlePositions = data => {
-    const { dispatch, personPosition: { positions } } = this.props;
+    const { dispatch, personPosition: { positionList } } = this.props;
     const cardIds = data.map(({ cardId }) => cardId);
-    const newPositions = positions.filter(({ cardId }) => !cardIds.includes(cardId)).concat(positions);
-    dispatch({ type: 'personPosition/savePositions', payload: newPositions });
+    const newPositionList = positionList.filter(({ cardId }) => !cardIds.includes(cardId)).concat(data);
+    dispatch({ type: 'personPosition/savePositions', payload: newPositionList });
   };
 
   handleAlarms = data => {
@@ -195,7 +188,7 @@ export default class RealTime extends PureComponent {
     dispatch({ type: 'personPosition/saveSectionTree', payload: newSectionTree });
   };
 
-  showNotification = type => ({ cardId, uptime, userName, phone = PHONE }) => {
+  showNotification = type => ({ cardId, uptime, userName, phone }) => {
     notification.warning({
       key: type,
       className: styles.note,
@@ -240,7 +233,7 @@ export default class RealTime extends PureComponent {
   handleSOS = id => {
     const { dispatch } = this.props;
     dispatch({ type: 'personPosition/quitSOS', payload: id });
-    this.setState({ personInfoVisible: false, sosHandleVisible: true, sosList: [] });
+    this.setState({ personInfoVisible: false, sosHandleVisible: true});
     notification.close(2);
   };
 
@@ -249,6 +242,10 @@ export default class RealTime extends PureComponent {
     dispatch({ type: 'personPosition/quitOverstep', payload: id });
     this.setState({ alarmMsgVisible: false, alarmHandleVisible: true, overstepList: [] });
     notification.close(1);
+  };
+
+  handleOpen = prop => {
+    this.setState({ [`${prop}Visible`]: true });
   };
 
   handleClose = prop => {
@@ -276,7 +273,8 @@ export default class RealTime extends PureComponent {
     } = this.props;
     const {
       areaId,
-      positions,
+      mapBackgroundUrl,
+      personDrawerVisible,
       personInfoVisible,
       sosHandleVisible,
       alarmMsgVisible,
@@ -284,6 +282,8 @@ export default class RealTime extends PureComponent {
       videoVisible,
       videoKeyId,
     } = this.state;
+
+    console.log(sectionTree);
 
     return (
       <div className={styles.container}>
@@ -300,7 +300,7 @@ export default class RealTime extends PureComponent {
           /> */}
         </div>
         <div className={styles.right}>
-          <LeafletMap areaId={areaId} />
+          <LeafletMap url={mapBackgroundUrl} areaId={areaId} sectionTree={sectionTree} />
           <PersonInfo
             visible={personInfoVisible}
             // data={getPersonInfoItem(infoCardId, positions)}
@@ -337,6 +337,7 @@ export default class RealTime extends PureComponent {
             handleClose={() => this.handleClose('alarmHandle')}
           />
         </div>
+        <PersonDrawer visible={personDrawerVisible} handleClose={this.handleClose} />
         <VideoPlay
           visible={videoVisible}
           showList={false}

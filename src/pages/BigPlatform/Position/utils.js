@@ -81,7 +81,7 @@ export function genTreeList(list, callback, deep=0) {
     const { children, ...restProps } =  item;
     const newItem = callback(restProps);
     newItem.indentLevel = deep;
-    if (children.length)
+    if (children && children.length)
       newItem.children = genTreeList(children, callback, deep + 1);
     return newItem;
   });
@@ -99,12 +99,48 @@ export function handleSectionTree(list) {
 
 export function getSectionTree(list) {
   return genTreeList(list, item => {
-    const { id, name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus } = item;
+    const { id, name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus, mapPhoto, range } = item;
     return {
       id,
       areaName: name,
       count: cardCount,
       status: lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 0 : 1,
+      mapPhoto,
+      range,
     };
   });
+}
+
+// 相同的beconId人员聚合到一个数组中
+export function genAggregation(list) {
+  if (!Array.isArray(list))
+    return [];
+
+  const beconIds = [];
+  return list.reduce((prev, next) => {
+    const { beconId } = next;
+    const index = beconIds.indexOf(beconId);
+    if (index === -1) {
+      beconIds.push(beconId);
+      prev.push([next]);
+    }
+    else
+      prev[index].push(next);
+    return prev;
+  }, []);
+}
+
+export function findInTree(targetValue, list, prop='id') {
+  if (!Array.isArray(list))
+    return;
+
+  let targetItem = list.find(item => item[prop] === targetValue);
+  if (!targetItem)
+    for (const { children } of list) {
+      targetItem = findInTree(targetValue, children, prop);
+      if (targetItem)
+        break;
+    }
+
+  return targetItem;
 }

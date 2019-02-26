@@ -5,13 +5,14 @@ import {
   postOverstep,
   querySectionTree,
 } from '../services/bigPlatform/personPosition';
-import { handleSectionTree, getSectionTree } from '@/pages/BigPlatform/Position/utils';
+import { genAggregation, getSectionTree } from '@/pages/BigPlatform/Position/utils';
 
 export default {
   namespace: 'personPosition',
 
   state: {
-    positions: [],
+    positionList: [],
+    positionAggregation: [],
     sectionTree: [],
     alarms: [],
   },
@@ -60,9 +61,11 @@ export default {
 
   reducers: {
     savePositions(state, action) {
+      const { payload: list } = action;
       return {
         ...state,
-        positions: action.payload,
+        positionList: list,
+        positionAggregation: genAggregation(list),
       };
     },
     saveAlarms(state, action) {
@@ -72,7 +75,6 @@ export default {
       };
     },
     saveSectionTree(state, action) {
-      console.log(getSectionTree(action.payload));
       return {
         ...state,
         sectionTree: getSectionTree(action.payload),
