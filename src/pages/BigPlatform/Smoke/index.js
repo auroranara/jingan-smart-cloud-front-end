@@ -177,6 +177,7 @@ export default class Smoke extends PureComponent {
     };
 
     ws.onmessage = e => {
+      if(true) return;
       // 判断是否是心跳
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
@@ -719,7 +720,7 @@ export default class Smoke extends PureComponent {
         <AlarmDynamicDrawer
           data={[]}
           companyName={companyName}
-          visible={true}
+          // visible={true}
           onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
         />
         {/* 单位监测数据 */}

@@ -70,7 +70,7 @@ export default class MonitorDrawer extends PureComponent {
           if (+status < 0) return true;
           else return false;
         case 3:
-          if (+status === 0) return true;
+          if (+status === 0 || !status) return true;
           else return false;
         default:
           return true;
@@ -88,7 +88,7 @@ export default class MonitorDrawer extends PureComponent {
               let smokeImg;
               if (+status > 0) {
                 smokeImg = smokeAlarm;
-              } else if (+status === 0) {
+              } else if (+status === 0 || !status) {
                 smokeImg = smokeNormal;
               } else {
                 smokeImg = smokeFault;
@@ -110,11 +110,12 @@ export default class MonitorDrawer extends PureComponent {
                             onClick={e => this.handleClickCamera()}
                           />
                         )}
-                        {+status !== 0 && (
-                          <div className={styles.status} style={{ color, borderColor: color }}>
-                            {+status > 0 ? '火警' : '故障'}
-                          </div>
-                        )}
+                        {+status !== 0 &&
+                          !status && (
+                            <div className={styles.status} style={{ color, borderColor: color }}>
+                              {+status > 0 ? '火警' : '故障'}
+                            </div>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -214,7 +215,7 @@ export default class MonitorDrawer extends PureComponent {
           </div>
         </div>
         <VideoPlay
-          showList={false}
+          showList={true}
           videoList={cameraList}
           visible={videoVisible}
           keyId={videoKeyId}
