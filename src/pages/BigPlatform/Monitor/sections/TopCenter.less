@@ -1,25 +1,72 @@
 @monitor-light-white: #dfdbdb;
-
 @keyframes dot {
   from {
     opacity: 1;
   }
-
   to {
     opacity: 0;
   }
 }
 
 .topCenter {
-
   // padding-left: 6px;
   // padding-right: 6px;
+  .deviceStatistics {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 0 1.8em #000;
+    .shadowIn {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      padding: 15px 25px;
+      box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
+      background: rgba(9, 103, 211, 0.06);
+      overflow: hidden;
+      display: flex;
+      justify-content: space-between;
+      .section {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        .leftImg {
+          width: 80px;
+          height: 100%;
+        }
+        .rightContent {
+          width: calc(100% - 80px);
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          .title {
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 0.5em;
+          }
+          .number {
+            font-size: 30px;
+            overflow: hidden;
+            .red {
+              color: #e46867;
+            }
+            .yellow {
+              color: #c6c181;
+            }
+            .blue {
+              color: #00A8FF;
+            }
+          }
+        }
+      }
+    }
+  }
   .sectionMainMonitor {
     position: relative;
     width: 100%;
     height: 100%;
     box-shadow: 0 0 1.8em #000;
-
     /* 为容器添加内阴影 */
     .shadowIn {
       position: relative;
@@ -29,7 +76,6 @@
       box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
       background: rgba(9, 103, 211, 0.06);
       overflow: hidden;
-
       .topTitle {
         display: block;
         width: 100%;
@@ -37,7 +83,6 @@
         line-height: 20px;
         font-size: 16px;
         font-weight: bold;
-
         .sectionTitleIcon {
           display: inline-block;
           margin-right: 12px;
@@ -47,12 +92,10 @@
           vertical-align: top;
         }
       }
-
       .monitorContent {
         width: 100%;
         height: calc(100% - 20px);
         overflow: hidden;
-
         .waterWave {
           width: 100%;
           height: calc(100% - 202px);
@@ -61,7 +104,6 @@
           overflow: hidden;
           padding: 20px;
         }
-
         .totalNum {
           width: 100%;
           height: 100px;
@@ -70,12 +112,10 @@
           padding: 25px 15px;
           justify-content: center;
           align-items: center;
-
           .totalImg {
             width: 50px;
             height: 50px;
           }
-
           .title {
             width: calc(100% - 150px);
             height: 100%;
@@ -83,12 +123,10 @@
             text-align: left;
             padding-left: 15px;
             overflow: hidden;
-
             .text {
               line-height: 50px;
             }
           }
-
           .number {
             width: 100px;
             height: 100%;
@@ -96,20 +134,17 @@
             color: #07a4f9;
             text-align: center;
             overflow: hidden;
-
             .text {
               line-height: 50px;
             }
           }
         }
-
         .errorDevice {
           width: 100%;
           height: 100px;
           display: flex;
           overflow: hidden;
           justify-content: center;
-
           .section {
             width: calc(50% - 0.5px);
             height: 100%;
@@ -117,17 +152,14 @@
             justify-content: center;
             padding: 20px 0;
             cursor: pointer;
-
             .leftImg {
               width: 44%;
               height: 100%;
               margin-right: 2%;
             }
-
             .rightContent {
               width: 54%;
               height: 100%;
-
               .title {
                 width: 100%;
                 height: 25px;
@@ -135,54 +167,45 @@
                 overflow: hidden;
                 white-space: nowrap;
               }
-
               .number {
                 width: 100%;
                 height: 40px;
                 font-size: 33px;
                 overflow: hidden;
-
                 .red {
                   color: #e46867;
                 }
-
                 .yellow {
                   color: #c6c181;
                 }
               }
             }
           }
-
           .missingDevice {
             width: calc(50% - 0.5px);
             height: 100%;
           }
-
           .divider {
             width: 1px;
             height: 100%;
           }
         }
-
         .divider {
           width: 100%;
           height: 1px;
           display: block;
         }
-
         .number {
           font-size: 25px;
         }
       }
     }
   }
-
   .sectionMain {
     position: relative;
     width: 100%;
     height: 100%;
     box-shadow: 0 0 1.8em #000;
-
     /* 为容器添加内阴影 */
     .shadowIn {
       position: relative;
@@ -192,7 +215,6 @@
       box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
       background: rgba(9, 103, 211, 0.06);
       overflow: hidden;
-
       .topTitle {
         display: block;
         width: 100%;
@@ -200,7 +222,6 @@
         line-height: 20px;
         font-size: 16px;
         font-weight: bold;
-
         .sectionTitleIcon {
           display: inline-block;
           margin-right: 12px;
@@ -210,12 +231,10 @@
           vertical-align: top;
         }
       }
-
       .monitorContent {
         width: 100%;
         height: calc(100% - 20px);
         overflow: hidden;
-
         .waterWave {
           width: 100%;
           height: calc(100% - 202px);
@@ -224,7 +243,6 @@
           overflow: hidden;
           padding: 20px;
         }
-
         .totalNum {
           width: 100%;
           height: 100px;
@@ -233,12 +251,10 @@
           padding: 25px 15px;
           justify-content: center;
           align-items: center;
-
           .totalImg {
             width: 50px;
             height: 50px;
           }
-
           .title {
             width: calc(100% - 150px);
             height: 100%;
@@ -246,12 +262,10 @@
             text-align: left;
             padding-left: 15px;
             overflow: hidden;
-
             .text {
               line-height: 50px;
             }
           }
-
           .number {
             width: 100px;
             height: 100%;
@@ -259,20 +273,17 @@
             color: #07a4f9;
             text-align: center;
             overflow: hidden;
-
             .text {
               line-height: 50px;
             }
           }
         }
-
         .errorDevice {
           width: 100%;
           height: 100px;
           display: flex;
           overflow: hidden;
           justify-content: center;
-
           .section {
             width: calc(50% - 0.5px);
             height: 100%;
@@ -280,17 +291,14 @@
             justify-content: center;
             padding: 20px 0;
             cursor: pointer;
-
             .leftImg {
               width: 44%;
               height: 100%;
               margin-right: 2%;
             }
-
             .rightContent {
               width: 54%;
               height: 100%;
-
               .title {
                 width: 100%;
                 height: 25px;
@@ -298,41 +306,34 @@
                 overflow: hidden;
                 white-space: nowrap;
               }
-
               .number {
                 width: 100%;
                 height: 40px;
                 font-size: 33px;
                 overflow: hidden;
-
                 .red {
                   color: #e46867;
                 }
-
                 .yellow {
                   color: #c6c181;
                 }
               }
             }
           }
-
           .missingDevice {
             width: calc(50% - 0.5px);
             height: 100%;
           }
-
           .divider {
             width: 1px;
             height: 100%;
           }
         }
-
         .divider {
           width: 100%;
           height: 1px;
           display: block;
         }
-
         .number {
           font-size: 25px;
         }
@@ -348,116 +349,96 @@
     display: flex;
     justify-content: left;
     align-items: center;
-
     .sectionTitleIcon {
       margin-right: 12px;
       width: 20px;
       height: 20px;
       background-color: #0967d3; // vertical-align: top;
     }
-
     .sectionTotal {
       border-left: 1px solid #0967d3;
       margin-left: 10px;
       padding-left: 9px;
       font-size: 13px;
-
       .red {
         color: #e46867;
         margin: auto 5px;
       }
-
       .yellow {
         color: #c6c181;
         margin: auto 5px;
       }
     }
   }
-
   .footer {
     margin-top: 10px;
     width: 100%;
     display: flex;
     justify-content: space-between;
-
     .pagesText {
       line-height: 32px;
       color: @monitor-light-white;
     }
   }
-
   :global {
     .ant-modal-body {
       padding: 0 24px 24px 24px;
     }
-
     .ant-modal-header {
       background-color: rgb(6, 39, 86);
       border-bottom-width: 0px;
       border-top: 1px solid #0967d3;
     }
-
     .ant-modal-close {
       color: @monitor-light-white;
-
       &:focus,
       &:hover {
         color: #fff;
       }
     }
-
     .ant-modal-title {
       color: #fff;
     }
-
     .ant-modal-content {
       background-color: rgb(6, 39, 86);
       border-left: 1px solid #0967d3;
       border-right: 1px solid #0967d3;
       border-bottom: 1px solid #0967d3; // box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
     }
-
     .ant-table-thead>tr>th {
       border-bottom-color: #0967d3;
       background: rgb(7, 52, 111);
       color: #07a4f9;
       padding: 10px 10px;
     }
-
     .ant-table-tbody>tr>td {
       border-bottom-color: #0967d3;
       color: @monitor-light-white;
       padding: 10px 10px;
     }
-
     .ant-table-tbody>tr:hover {
       & td {
         background: rgb(11, 52, 110);
       }
     }
-
     .ant-table-placeholder {
       background: rgb(7, 52, 111);
       color: @monitor-light-white;
       border-bottom-width: 0;
     }
-
     .ant-pagination-prev a,
     .ant-pagination-next a {
       color: #0967d3;
       background-color: rgb(6, 39, 86);
       border-color: #0967d3;
     }
-
     .ant-pagination-item {
       background-color: rgb(6, 39, 86);
       border-color: #0967d3;
-
       & a {
         color: #0967d3;
       }
     }
-
     .ant-pagination-prev:hover,
     .ant-pagination-next:hover,
     .ant-pagination-item:hover,
@@ -467,11 +448,9 @@
         color: #1890ff;
       }
     }
-
     .ant-pagination-item-active,
     .ant-pagination-item-active:hover {
       background-color: #0967d3;
-
       & a {
         color: @monitor-light-white;
       }
@@ -480,6 +459,7 @@
 }
 
 /** 火灾自动报警*/
+
 .fireMain {
   width: 100%;
   height: calc(100% - 20px);
@@ -493,13 +473,14 @@
   height: 100%;
   background-position: center;
   position: relative;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 .anime {
   position: absolute;
   width: 100%;
-  height: 100%;
-  // margin: -5% 0 0 -19%;
+  height: 100%; // margin: -5% 0 0 -19%;
 }
 
 .arrContainer {
@@ -508,13 +489,25 @@
   font-size: 15px;
   text-align: right;
   padding-right: 4%;
-  padding-top: 12%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  .line {
+    width: 100%;
+    cursor: pointer;
+    margin-bottom: 15px;
+  }
+  .tooltip {
+    display: inline-block;
+  }
 }
 
 .fireCount {
   padding-left: 10%;
   font-size: 20px;
   color: rgb(216, 84, 97);
+  cursor: pointer;
 }
 
 .errorCount {
@@ -524,6 +517,7 @@
 }
 
 /** 独立烟感*/
+
 .smokeMain {
   width: 100%;
   height: calc(100% - 20px);
@@ -555,6 +549,10 @@
   font-size: 15px;
   text-align: right;
   padding-right: 2%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .deviceCount {
@@ -565,6 +563,9 @@
 .normal {
   padding-top: 2%;
   cursor: pointer;
+  margin-bottom: 14px;
+  width: 100%;
+  text-align: center;
 }
 
 // .normal:hover {
@@ -578,6 +579,9 @@
 
 .unusual {
   cursor: pointer;
+  margin-bottom: 14px;
+  width: 100%;
+  text-align: center;
 }
 
 .unusualCount {
@@ -589,6 +593,8 @@
 
 .missing {
   cursor: pointer;
+  width: 100%;
+  text-align: center;
 }
 
 .missingCount {
@@ -605,6 +611,7 @@
 
 .fireHover:hover {
   color: #d85461;
+  cursor: pointer;
 }
 
 .errorHover:hover {
@@ -613,7 +620,6 @@
 
 @media screen and (max-width: 1379px) {
   .topCenter {
-
     // padding-left: 6px;
     // padding-right: 6px;
     .sectionMainMonitor {
@@ -621,7 +627,6 @@
       width: 100%;
       height: 100%;
       box-shadow: 0 0 1.8em #000;
-
       /* 为容器添加内阴影 */
       .shadowIn {
         position: relative;
@@ -631,7 +636,6 @@
         box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
         background: rgba(9, 103, 211, 0.06);
         overflow: hidden;
-
         .topTitle {
           display: block;
           width: 100%;
@@ -639,7 +643,6 @@
           line-height: 20px;
           font-size: 16px;
           font-weight: bold;
-
           .sectionTitleIcon {
             display: inline-block;
             margin-right: 12px;
@@ -649,24 +652,19 @@
             vertical-align: top;
           }
         }
-
         .monitorContent {
-          width: 100%;
-          // height: calc(100% - 20px);
+          width: 100%; // height: calc(100% - 20px);
           overflow: hidden;
           display: flex;
           flex-direction: column;
-
           .waterWave {
-            width: 100%;
-            // height: calc(100% - 150px);
+            width: 100%; // height: calc(100% - 150px);
             flex: 1;
             text-align: center;
             display: block;
             overflow: hidden;
             padding: 10px 20px 0 20px;
           }
-
           .totalNum {
             width: 100%;
             height: 65px;
@@ -675,27 +673,22 @@
             padding: 0 10px;
             justify-content: center;
             align-items: center;
-
             .totalImg {
               width: 40px;
               height: 40px;
             }
-
             .title {
               display: flex;
               align-items: center;
               width: calc(100% - 88px);
               height: 100%;
-              font-size: 14px;
-              // text-align: left;
+              font-size: 14px; // text-align: left;
               // padding-left: 15px;
               overflow: hidden;
-
               .text {
                 line-height: 38px;
               }
             }
-
             .number {
               display: flex;
               align-items: center;
@@ -706,13 +699,11 @@
               color: #07a4f9;
               text-align: center;
               overflow: hidden;
-
               .text {
                 line-height: 33px;
               }
             }
           }
-
           .errorDevice {
             width: 100%;
             height: 30%;
@@ -721,7 +712,6 @@
             justify-content: center;
             align-items: center;
             padding-top: 8px;
-
             .section {
               width: calc(50% - 0.5px);
               height: 100%;
@@ -730,13 +720,11 @@
               align-items: center;
               padding: 0;
               cursor: pointer;
-
               .leftImg {
                 width: 45px;
                 height: 45px;
                 margin-right: 2%;
               }
-
               .rightContent {
                 width: 60%;
                 height: 100%;
@@ -744,7 +732,6 @@
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-
                 .title {
                   width: 100%;
                   height: 18px;
@@ -752,41 +739,34 @@
                   overflow: hidden;
                   white-space: nowrap;
                 }
-
                 .number {
                   width: 100%;
                   height: auto;
                   font-size: 28px;
                   overflow: hidden;
-
                   .red {
                     color: #e46867;
                   }
-
                   .yellow {
                     color: #c6c181;
                   }
                 }
               }
             }
-
             .missingDevice {
               width: calc(50% - 0.5px);
               height: 100%;
             }
-
             .divider {
               width: 1px;
               height: 100%;
             }
           }
-
           .divider {
             width: 100%;
             height: 1px;
             display: block;
           }
-
           .number {
             font-size: 25px;
           }
@@ -794,42 +774,43 @@
       }
     }
   }
-
   .arrContainer {
     width: calc(50% - 0.5px);
     height: 100%;
     font-size: 14px;
     text-align: right;
     padding-right: 4%;
-    padding-top: 12%;
   }
-
   .smokeCount {
     width: 95px;
     height: 100%;
     font-size: 14px;
     text-align: right;
     padding-right: 2%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
   }
-
   .device {
     margin-bottom: 8px;
   }
-
   .normal {
     margin-bottom: 8px;
     cursor: pointer;
+    width: 100%;
+    text-align: center;
   }
-
   .unusual {
     margin-bottom: 8px;
     cursor: pointer;
+    width: 100%;
+    text-align: center;
   }
 }
 
 @media screen and (min-width:1380px) and (max-width: 1440px) {
   .topCenter {
-
     // padding-left: 6px;
     // padding-right: 6px;
     .sectionMainMonitor {
@@ -837,7 +818,6 @@
       width: 100%;
       height: 100%;
       box-shadow: 0 0 1.8em #000;
-
       /* 为容器添加内阴影 */
       .shadowIn {
         position: relative;
@@ -847,7 +827,6 @@
         box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
         background: rgba(9, 103, 211, 0.06);
         overflow: hidden;
-
         .topTitle {
           display: block;
           width: 100%;
@@ -855,7 +834,6 @@
           line-height: 20px;
           font-size: 16px;
           font-weight: bold;
-
           .sectionTitleIcon {
             display: inline-block;
             margin-right: 12px;
@@ -865,12 +843,10 @@
             vertical-align: top;
           }
         }
-
         .monitorContent {
           width: 100%;
           height: calc(100% - 20px);
           overflow: hidden;
-
           .waterWave {
             width: 100%;
             height: calc(100% - 202px);
@@ -879,7 +855,6 @@
             overflow: hidden;
             padding: 20px;
           }
-
           .totalNum {
             width: 100%;
             height: 100px;
@@ -888,12 +863,10 @@
             padding: 25px 15px;
             justify-content: center;
             align-items: center;
-
             .totalImg {
               width: 50px;
               height: 45px;
             }
-
             .title {
               width: calc(100% - 82px);
               height: 100%;
@@ -901,12 +874,10 @@
               text-align: left;
               padding-left: 15px;
               overflow: hidden;
-
               .text {
                 line-height: 50px;
               }
             }
-
             .number {
               width: 100px;
               height: 100%;
@@ -914,20 +885,17 @@
               color: #07a4f9;
               text-align: center;
               overflow: hidden;
-
               .text {
                 line-height: 48px;
               }
             }
           }
-
           .errorDevice {
             width: 100%;
             height: 100px;
             display: flex;
             overflow: hidden;
             justify-content: center;
-
             .section {
               width: calc(50% - 0.5px);
               height: 100%;
@@ -935,17 +903,14 @@
               justify-content: center;
               padding: 20px 0;
               cursor: pointer;
-
               .leftImg {
                 width: 46%;
                 height: 92%;
                 margin-right: 1%;
               }
-
               .rightContent {
                 width: 54%;
                 height: 100%;
-
                 .title {
                   width: 100%;
                   height: 25px;
@@ -953,47 +918,39 @@
                   overflow: hidden;
                   white-space: nowrap;
                 }
-
                 .number {
                   width: 100%;
                   height: 40px;
                   font-size: 33px;
                   overflow: hidden;
-
                   .red {
                     color: #e46867;
                   }
-
                   .yellow {
                     color: #c6c181;
                   }
                 }
               }
             }
-
             .missingDevice {
               width: calc(50% - 0.5px);
               height: 100%;
             }
-
             .divider {
               width: 1px;
               height: 100%;
             }
           }
-
           .divider {
             width: 100%;
             height: 1px;
             display: block;
           }
-
           .number {
             font-size: 25px;
           }
         }
       }
     }
-
   }
 }
