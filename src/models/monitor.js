@@ -72,6 +72,7 @@ export default {
       tankNum: 0,
       alarmSensor: { liquidLevel: 0, temperature: 0, pressure: 0 },
       lostSensor: { liquidLevel: 0, temperature: 0, pressure: 0 },
+      countMap: { normal: 0, outContact: 0, unnormal: 0 },
     },
     tankDataList: {
       list: [],

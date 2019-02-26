@@ -107,7 +107,7 @@ const smokeColumns = [
     dataIndex: 'status',
     align: 'center',
     render: val => {
-      return +val === -1 ? '失联' : +val === 0 ? '正常' : '火警';
+      return +val === -1 ? '故障' : +val === 0 ? '正常' : '火警';
     },
   },
   {
@@ -381,7 +381,7 @@ export default class TopCenter extends PureComponent {
   };
 
   // 渲染报警设备和失联设备
-  renderMonitor = (src, title, number, color) => {
+  /* renderMonitor = (src, title, number, color) => {
     return (
       <div
         className={styles.section}
@@ -406,7 +406,32 @@ export default class TopCenter extends PureComponent {
         </div>
       </div>
     );
-  };
+  }; */
+
+  renderDeviceSection = ({ img, title, num, color, isHover }) => {
+    return (
+      <Col
+        span={8}
+        className={styles.section}
+        style={{ cursor: isHover ? 'pointer' : 'inherit' }}
+        onClick={isHover ? () => { this.handleViewModal(title) } : null}
+      >
+        <div className={styles.leftImg}
+          style={{
+            backgroundImage: `url(${img})`,
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center center',
+            backgroundSize: '50% 40%',
+          }}></div>
+        <div className={styles.rightContent}>
+          <div className={styles.title}>{title}</div>
+          <div className={styles.number}>
+            <span className={styles[color]}>{num}</span>
+          </div>
+        </div>
+      </Col>
+    )
+  }
 
   render() {
     const {
@@ -425,8 +450,19 @@ export default class TopCenter extends PureComponent {
 
     return (
       <Col span={13} style={{ height: '100%' }} className={styles.topCenter}>
+        {/* 设备统计 */}
+        <Col span={24} style={{ height: '35%', padding: '0' }}>
+          <div className={styles.deviceStatistics}>
+            <div className={styles.shadowIn}>
+              {this.renderDeviceSection({ img: deviceTotalNumber, title: '设备总数', num: count, color: 'blue', isHover: false })}
+              {this.renderDeviceSection({ img: abnormalDevice, title: '报警设备', num: unnormal, color: 'red', isHover: true })}
+              {this.renderDeviceSection({ img: missingDevice, title: '失联设备', num: outContact, color: 'yellow', isHover: true })}
+            </div>
+          </div>
+        </Col>
+
         {/* 监测指数 */}
-        <Col span={12} style={{ height: '100%', padding: '0 6px' }}>
+        {/* <Col span={12} style={{ height: '100%', padding: '0 6px' }}>
           <div className={styles.sectionMainMonitor}>
             <div className={styles.shadowIn}>
               <div className={styles.topTitle}>监测指数</div>
@@ -470,10 +506,10 @@ export default class TopCenter extends PureComponent {
               </div>
             </div>
           </div>
-        </Col>
+        </Col> */}
 
         {/* 消防主机监测 */}
-        <Col span={12} style={{ height: '49%', padding: '0px 6px' }}>
+        <Col span={12} style={{ height: '65%', padding: '12px 6px 0 0' }}>
           <div className={styles.sectionMain}>
             <div className={styles.shadowIn}>
               <div className={styles.topTitle}>
@@ -486,7 +522,7 @@ export default class TopCenter extends PureComponent {
                   style={{
                     backgroundImage: `url(${fireHost})`,
                     backgroundRepeat: 'no-repeat',
-                    backgroundSize: '30% 55%',
+                    backgroundSize: '30% 45%',
                   }}
                 >
                   <div className={styles.anime}>
@@ -494,7 +530,7 @@ export default class TopCenter extends PureComponent {
                   </div>
                 </div>
                 <div className={styles.arrContainer}>
-                  <p style={{ cursor: 'pointer' }}>
+                  <div className={styles.line}>
                     <Tooltip
                       placement="right"
                       overlayClassName={styles.tooltip}
@@ -503,8 +539,8 @@ export default class TopCenter extends PureComponent {
                       <span className={styles.fireHover}>火警</span>
                     </Tooltip>
                     <span className={styles.fireCount}>{fire_state}</span>
-                  </p>
-                  <p style={{ cursor: 'pointer' }}>
+                  </div>
+                  <div className={styles.line}>
                     <Tooltip
                       placement="right"
                       overlayClassName={styles.tooltip}
@@ -513,7 +549,7 @@ export default class TopCenter extends PureComponent {
                       <span className={styles.errorHover}>故障</span>
                     </Tooltip>
                     <span className={styles.errorCount}>{fault_state}</span>
-                  </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -521,7 +557,7 @@ export default class TopCenter extends PureComponent {
         </Col>
 
         {/* 独立烟感预报警监测 */}
-        <Col span={12} style={{ height: '49%', margin: '7px 0 0 0', padding: '0px 6px' }}>
+        <Col span={12} style={{ height: '65%', padding: '12px 0 0 6px' }}>
           <div className={styles.sectionMain}>
             <div className={styles.shadowIn}>
               <div className={styles.topTitle}>
@@ -534,7 +570,7 @@ export default class TopCenter extends PureComponent {
                   style={{
                     backgroundImage: `url(${smokeIcon})`,
                     backgroundRepeat: 'no-repeat',
-                    backgroundSize: '60% 65%',
+                    backgroundSize: '50% 40%',
                   }}
                 >
                   <div
@@ -543,18 +579,18 @@ export default class TopCenter extends PureComponent {
                   />
                 </div>
                 <div className={styles.smokeCount}>
-                  <p className={styles.device}>
+                  {/* <p className={styles.device}>
                     设备总数 <span className={styles.deviceCount}>{total}</span>
-                  </p>
-                  <p className={styles.normal} onClick={() => this.handleSmokeModal(NORMAL)}>
+                  </p> */}
+                  <div className={styles.normal} onClick={() => this.handleSmokeModal(NORMAL)}>
                     正常 <span className={styles.normalCount}>{normal}</span>
-                  </p>
-                  <p className={styles.unusual} onClick={() => this.handleSmokeModal(ABNORMAL)}>
+                  </div>
+                  <div className={styles.unusual} onClick={() => this.handleSmokeModal(ABNORMAL)}>
                     火警 <span className={styles.unusualCount}>{abnormal}</span>
-                  </p>
-                  <p className={styles.missing} onClick={() => this.handleSmokeModal(LOSS)}>
-                    失联 <span className={styles.missingCount}>{loss}</span>
-                  </p>
+                  </div>
+                  <div className={styles.missing} onClick={() => this.handleSmokeModal(LOSS)}>
+                    故障 <span className={styles.missingCount}>{loss}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -562,7 +598,7 @@ export default class TopCenter extends PureComponent {
         </Col>
         {this.renderModal()}
         {this.renderSmokeModal()}
-      </Col>
+      </Col >
     );
   }
 }
