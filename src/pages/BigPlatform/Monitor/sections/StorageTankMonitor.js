@@ -61,7 +61,7 @@ export default class StorageTankMonitor extends PureComponent {
                 <span className={styles.text}>储罐总数</span>
               </div>
               <div className={styles.number}>
-                <span className={styles.text} onClick={handleStorageDrawer}>
+                <span className={styles.text} onClick={() => handleStorageDrawer('all')}>
                   {tankNum}
                 </span>
               </div>
@@ -69,21 +69,21 @@ export default class StorageTankMonitor extends PureComponent {
             {this.renderDivider(hDivider)}
             <div className={styles.statusList}>
               <div className={styles.left}>
-                <div className={styles.leftTitle} onClick={handleStorageDrawer}>
+                <div className={styles.leftTitle} onClick={() => handleStorageDrawer(2)}>
                   <span>报警</span>
                   <span className={styles.errorText} style={{ paddingLeft: 15 }}>
                     {liquidLevel + temperature + pressure}
                   </span>
                 </div>
                 <div className={styles.storageCards}>
-                  <StorageCard num={liquidLevel} title="液位" onClick={handleStorageDrawer} />
-                  <StorageCard num={pressure} title="压力" onClick={handleStorageDrawer} />
-                  <StorageCard num={temperature} title="温度" onClick={handleStorageDrawer} />
+                  <StorageCard num={liquidLevel} title="液位" onClick={() => handleStorageDrawer(2)} />
+                  <StorageCard num={pressure} title="压力" onClick={() => handleStorageDrawer(2)} />
+                  <StorageCard num={temperature} title="温度" onClick={() => handleStorageDrawer(2)} />
                 </div>
               </div>
               {this.renderDivider(divider)}
               <div className={styles.right}>
-                <div className={styles.leftTitle} onClick={handleStorageDrawer}>
+                <div className={styles.leftTitle} onClick={() => handleStorageDrawer(-1)}>
                   <span>失联</span>
                   <span className={styles.errorText} style={{ paddingLeft: 15 }}>
                     {lostLiquid + lostTemp + lostPressure}
@@ -95,35 +95,35 @@ export default class StorageTankMonitor extends PureComponent {
                     num={lostLiquid}
                     title="液位"
                     color="rgb(198, 193, 129)"
-                    onClick={handleStorageDrawer}
+                    onClick={() => handleStorageDrawer(-1)}
                   />
                   <StorageCard
                     num={lostPressure}
                     title="压力"
                     color="rgb(198, 193, 129)"
-                    onClick={handleStorageDrawer}
+                    onClick={() => handleStorageDrawer(-1)}
                   />
                   <StorageCard
                     num={lostTemp}
                     title="温度"
                     color="rgb(198, 193, 129)"
-                    onClick={handleStorageDrawer}
+                    onClick={() => handleStorageDrawer(-1)}
                   />
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          <div
-            className={styles.noCards}
-            style={{
-              background: `url(${waterBg})`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center center',
-              backgroundSize: '40% 55%',
-            }}
-          />
-        )}
+            <div
+              className={styles.noCards}
+              style={{
+                background: `url(${waterBg})`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center center',
+                backgroundSize: '40% 55%',
+              }}
+            />
+          )}
       </ExSection>
     );
   }

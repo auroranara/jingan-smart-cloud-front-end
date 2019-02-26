@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import Ellipsis from '@/components/Ellipsis';
 // 引入样式文件
 import styles from './index.less';
 // 默认图片
@@ -154,10 +155,10 @@ export default function HiddenDanger({
               来
               <span style={{ opacity: 0 }}>隐藏</span>
               源：</span>
-            <div>
-              <span className={styles.riskDetailItemTextFirstChild}>
+            <div style={{ paddingRight: 96 }}>
+              <Ellipsis lines={1} tooltip>
                 {report_source_name}
-              </span>
+              </Ellipsis>
             </div>
           </div>
           {showSource && (
@@ -165,10 +166,10 @@ export default function HiddenDanger({
               <span>
                 检查点位：
               </span>
-              <div>
-                <span className={styles.riskDetailItemTextFirstChild}>
+              <div style={{ paddingRight: 96 }}>
+                <Ellipsis lines={1} tooltip>
                   {item_name}
-                </span>
+                </Ellipsis>
               </div>
             </div>
           )}
