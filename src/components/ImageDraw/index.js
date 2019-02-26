@@ -610,6 +610,13 @@ class ImageDraw extends PureComponent {
   }
 
   /**
+   * 渲染图标
+   */
+  renderMarker = () => {
+    return null;
+  }
+
+  /**
    * 渲染图形
    */
   renderShape = (item) => {
@@ -701,7 +708,22 @@ class ImageDraw extends PureComponent {
   }
 
   render() {
-    const { className, style, mapProps, zoomControlProps, editControlProps, drawable, url, hideBackground, data=[], images, color=defaultColor, shapes=['polygon', 'rectangle', 'circle'], form: { getFieldDecorator } } = this.props;
+    const {
+      className,
+      style,
+      mapProps,
+      zoomControlProps,
+      editControlProps,
+      drawable,
+      url,
+      hideBackground,
+      data=[],
+      markers=[],
+      images,
+      color=defaultColor,
+      shapes=['polygon', 'rectangle', 'circle'],
+      form: { getFieldDecorator },
+    } = this.props;
     const { center, bounds, visible, maxBounds, zoom } = this.state;
 
     return (
@@ -782,6 +804,7 @@ class ImageDraw extends PureComponent {
                   />
                 )}
                 {data && data.map(this.renderShape)}
+                {markers && markers.map(this.renderMarker)}
               </FeatureGroup>
             </ImageOverlay>
           )}

@@ -124,7 +124,7 @@ export default class DynamicMonitor extends PureComponent {
           icon: exhaustGasIcon,
         },
         {
-          key: '视频监控报警',
+          key: '视频监控设备',
           value: videoMonitor ? videoMonitor.totalNum : '--',
           icon: videoMonitorIcon,
         },
