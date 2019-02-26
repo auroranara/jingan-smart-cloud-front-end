@@ -220,7 +220,7 @@ export default class UnitMonitorDrawer extends PureComponent {
           <ReactEcharts className={styles.chartContainer} option={option} />
         </div>
         <VideoPlay
-          showList={false}
+          showList={true}
           videoList={cameraList}
           visible={videoVisible}
           keyId={videoKeyId}
