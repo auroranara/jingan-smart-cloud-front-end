@@ -244,7 +244,7 @@ export default class FourColor extends PureComponent {
       <Section title="安全点位图" action={this.renderSelect()}>
         <div className={styles.container}>
           {/* 四色图 */}
-          <div className={styles.fourColorImage} style={{ backgroundImage: `url(${webUrl})` }}>
+          <div className={styles.fourColorImage} style={{ backgroundImage: `url(${webUrl || 'http://data.jingan-china.cn/v2/big-platform/safety/com/default_four_color.png'})` }}>
             {points.map(({ itemId, xNum, yNum, info }) => {
               // 点位是否为异常状态
               const isAbnormal = info && +info.hdLetterInfo.status === 2;
@@ -300,10 +300,12 @@ export default class FourColor extends PureComponent {
             })}
             {videos.map(({ id, name, key_id: keyId, x_num, y_num }) => {
               return (
-                <Tooltip key={keyId} overlayClassName={styles.tooltip} placement="top" title={name}>
+                <Tooltip key={id} overlayClassName={styles.tooltip} placement="top" title={name}>
                   <div
                     className={styles.point}
                     style={{
+                      left: `${x_num * 100}%`,
+                      bottom: `${(1 - y_num) * 100}%`,
                       width: 36,
                       height: 36,
                       backgroundImage: `url(${videoPointIcon})`,

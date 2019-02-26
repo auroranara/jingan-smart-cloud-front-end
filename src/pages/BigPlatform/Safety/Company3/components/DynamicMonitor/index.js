@@ -153,6 +153,7 @@ export default class DynamicMonitor extends PureComponent {
                   );
                 })}
               </div>
+              {list.length === 0 && <div className={styles.default} />}
             </div>
             {list.length > 4 && (
               <div className={styles.listWrapper}>
