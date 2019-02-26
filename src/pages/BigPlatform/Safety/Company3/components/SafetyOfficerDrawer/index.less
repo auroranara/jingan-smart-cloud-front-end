@@ -1,0 +1,79 @@
+.container {
+  padding: 0 16px;
+}
+.countContainer {
+  height: 112px;
+}
+.scrollContainer {
+  height: calc(~'100% - 112px') !important;
+}
+.overflow {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.personWrapper {
+  padding: 16px 0;
+}
+
+.person {
+  display: flex;
+  padding: 12px 0 12px 32px;
+  font-size: 16px;
+  line-height: 1;
+
+  .personName {
+    width: 92px;
+    color: #00ffff;
+    .overflow;
+  }
+  .personValue {
+    flex: 1;
+    .overflow;
+  }
+}
+
+.personList {
+  position: relative;
+  margin-bottom: 14px;
+  padding-left: 26px;
+  padding-right: 90px;
+  border-left: 6px solid #fff;
+  background-color: rgb(4, 64, 125);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .personItem {
+    display: flex;
+    font-size: 16px;
+    line-height: 48px;
+    overflow: hidden;
+
+    .personItemName {
+      flex: 1;
+      .overflow;
+    }
+
+    .personItemPhone {
+      flex: 3;
+      .overflow;
+    }
+  }
+
+  .personLabel {
+    position: absolute;
+    top: 12px;
+    right: 8px;
+    padding: 4px 0;
+    width: 82px;
+    height: 26px;
+    font-size: 14px;
+    line-height: 1;
+    text-align: center;
+    color: #00ffff;
+    border: 1px solid #00ffff;
+    border-radius: 4px;
+  }
+}

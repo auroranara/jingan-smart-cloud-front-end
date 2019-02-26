@@ -102,7 +102,7 @@ module.exports = env => {
         },
         {
           path: '/big-platform/safety/company/:companyId',
-          component: './BigPlatform/Safety/Company2',
+          component: './BigPlatform/Safety/Company3',
         },
         {
           path: '/big-platform/fire-control/government/:gridId',

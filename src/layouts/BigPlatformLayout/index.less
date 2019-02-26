@@ -3,36 +3,43 @@
   position: absolute;
   bottom: 0;
   width: 21.614583%;
-  padding: 18px 0;
+  height: 50%;
   line-height: 1;
   text-align: center;
   white-space: nowrap;
+  z-index: 2;
 }
 
 /* 容器 */
 .container {
+  position: relative;
   width: 100%;
   height: 100%;
+  min-width: 1200px;
+  min-height: 600px;
   font-size: 14px;
   color: #fff;
-  background: no-repeat center center / 100% 100%;
-  overflow: hidden;
+  background: url('http://data.jingan-china.cn/v2/big-platform/fire-control/gov/new_bg.png') no-repeat center;
+  background-size: cover;
 
   /* 头部 */
   .header {
     position: relative;
     height: 9.62963%;
     font-size: 18px;
-    background: no-repeat center bottom / 100% 58px;
+    line-height: 1;
+    background: url('../../assets/header_bg.png') no-repeat center bottom;
+    background-size: 100% 55.76923%;
 
     /* 标题 */
     .headerTitle {
       position: absolute;
-      top: 43.859649%;
+      top: 46.153846%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 48px;
+      font-size: 46px;
       white-space: nowrap;
+      z-index: 1;
     }
 
     /* 右边时间容器 */
@@ -45,6 +52,14 @@
     .headerExtra {
       .mixTimeAndExtra;
       left: 5.989583%;
+    }
+
+    .headerTimeContent,
+    .headerExtraContent {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
   }
 
@@ -61,6 +76,7 @@
     font-size: 26px;
     color: rgb(4, 253, 255);
     transform: translate(-50%, 50%);
+    z-index: 2;
     cursor: pointer;
 
     &:hover {

@@ -1,0 +1,95 @@
+@RiskCardBorderColor: rgba(2, 252, 250, 0.302);
+
+.container {
+  font-size: 16px;
+  line-height: 1;
+  color: #fff;
+  border: 1px solid @RiskCardBorderColor;
+
+  /* 标题容器 */
+  .titleContainer {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    min-height: 48px;
+
+    /* 标题 */
+    .title {
+      flex: 1;
+      display: flex;
+      align-items: center;
+
+      .titleLabel {
+        flex: none;
+      }
+      .titleValue {
+        flex: 1;
+      }
+    }
+
+    /* 风险等级 */
+    .level {
+      flex: none;
+    }
+  }
+
+  /* 内容 */
+  .content {
+    display: flex;
+
+    /* 图片容器 */
+    .avatarContainer {
+      flex: 3;
+      display: flex;
+      padding: 12px;
+      border-top: 1px solid @RiskCardBorderColor;
+      border-right: 1px solid @RiskCardBorderColor;
+      background: no-repeat center center;
+      background-size: 40% auto;
+
+      /* 图片 */
+      .avatar {
+        flex: 1;
+        background: no-repeat center center;
+        background-size: contain;
+      }
+    }
+
+    /* 信息容器 */
+    .infoContainer {
+      flex: 7;
+
+      /* 信息 */
+      .info {
+        display: flex;
+        border-top: 1px solid @RiskCardBorderColor;
+
+        /* 信息名称 */
+        .infoName {
+          flex: none;
+          display: flex;
+          align-items: center;
+          padding: 8px 12px;
+          width: 8.5em;
+          min-height: 48px;
+          color: #00ffff;
+        }
+        .smallInfoName {
+          .infoName;
+          width: 7.5em;
+        }
+
+        /* 信息值 */
+        .infoValue {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          word-break: break-all;
+          padding: 8px 12px;
+          min-height: 48px;
+          border-left: 1px solid @RiskCardBorderColor;
+        }
+      }
+    }
+  }
+}

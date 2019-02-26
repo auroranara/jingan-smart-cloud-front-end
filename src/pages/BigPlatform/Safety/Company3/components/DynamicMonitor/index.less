@@ -1,0 +1,104 @@
+.jumpButton {
+  color: #00ffff;
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+
+    .jumpButtonIcon {
+      background-image: url('../../imgs/dynamic-monitor/arrow_hover.png');
+    }
+  }
+
+  .jumpButtonIcon {
+    display: inline-block;
+    margin-left: 6px;
+    width: 16px;
+    height: 16px;
+    background: url('../../imgs/dynamic-monitor/arrow.png') no-repeat center;
+    background-size: 100% 100%;
+    vertical-align: top;
+  }
+}
+
+.container {
+  height: 100%;
+  overflow: hidden;
+  :global {
+    .ant-carousel {
+      height: 100%;
+
+      .slick-dots {
+        bottom: 9px;
+        height: 6px;
+        li {
+          margin: 0 3px;
+        }
+        li button {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background-color: rgb(4, 64, 125);
+          opacity: 1;
+        }
+        li.slick-active button {
+          width: 6px;
+          background-color: #00ffff;
+        }
+      }
+    }
+    .slick-slider {
+      height: 100%;
+    }
+    .slick-list {
+      height: 100% !important;
+    }
+    .slick-track {
+      height: 100%;
+    }
+    .slick-slide > div {
+      height: 100%;
+    }
+  }
+}
+
+/* 警告 */
+.warning {
+  color: #ff4848 !important;
+}
+
+.listWrapper {
+  display: block !important;
+  margin: 0 auto;
+  padding: 16px;
+  max-width: 420px;
+  height: 100%;
+}
+.list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  height: 100%;
+  color: #00ffff;
+
+  .item {
+    flex: none;
+    padding-left: 64px;
+    background: no-repeat left;
+    background-size: 48px 48px;
+
+    .itemLabel {
+      height: 20px;
+      line-height: 20px;
+      font-size: 16px;
+      color: #fff;
+    }
+    .itemValue {
+      height: 28px;
+      line-height: 28px;
+      font-size: 24px;
+      color: #00ffff;
+    }
+  }
+}

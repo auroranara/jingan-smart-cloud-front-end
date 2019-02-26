@@ -27,6 +27,18 @@ import {
   getMonitorList,
   // 获取安全档案
   getSafeFiles,
+  // 获取动态监测数据
+  getDynamicMonitorData,
+  // 获取风险点的风险告知卡列表
+  getRiskPointCardList,
+  // 获取风险点的隐患列表
+  getRiskPointHiddenDangerList,
+  // 获取风险点的巡查列表
+  getRiskPointInspectionList,
+  // 获取风险点的隐患统计
+  getRiskPointHiddenDangerCount,
+  // 获取风险点的巡查统计
+  getRiskPointInspectionCount,
 } from '../services/unitSafety';
 
 function handleRiskList(response) {
@@ -131,6 +143,42 @@ function handleSafeList(list) {
   return result;
 }
 
+// 格式化动态监测数据
+const formatDynamicMonitorData = (list) => {
+  const data = {};
+  list.forEach((item) => {
+    switch(item.name) {
+      case '消防主机监测':
+        data.fireEngine = item;
+        break;
+      case '电气火灾监测':
+        data.electricalFire = item;
+        break;
+      case '独立烟感报警监测':
+        data.smokeAlarm = item;
+        break;
+      case '储罐监测':
+        data.storageTank = item;
+        break;
+      case '可燃/有毒气体监测':
+        data.toxicGas = item;
+        break;
+      case '废水监测':
+        data.effluent = item;
+        break;
+      case '废气监测':
+        data.exhaustGas = item;
+        break;
+      case '视频监控':
+        data.videoMonitor = item;
+        break;
+      default:
+        break;
+    }
+  });
+  return data;
+};
+
 export default {
   namespace: 'unitSafety',
 
@@ -197,13 +245,27 @@ export default {
     monitorList: [],
     // 安全档案
     safeList: [],
+    // 动态监测数据
+    dynamicMonitorData: {},
+    // 风险点详情
+    riskPointDetail: {
+      // 风险告知卡列表
+      cardList: [],
+      // 隐患列表
+      hiddenDangerList: [],
+      // 巡查列表
+      inspectionList: [],
+      // 隐患统计
+      hiddenDangerCount: {},
+      // 巡查统计
+      inspectionCount: {},
+    },
   },
 
   effects: {
     // 获取企业信息
-    *fetchCompanyMessage({ payload, callback }, { call, put }) {
-      const response = yield call(getCompanyMessage, payload);
-      const { companyLetter } = yield call(getPointInfoList, payload);
+    *fetchCompanyMessage({ payload, callback }, { call, put, all }) {
+      const [response, { companyLetter }] = yield all([call(getCompanyMessage, payload), call(getPointInfoList, payload)]);
       const companyMessage = {
         ...response,
         // 移除坐标不存在的风险点并添加风险告知卡信息
@@ -477,6 +539,54 @@ export default {
       if (code === 200 && data && Array.isArray(data.list))
         yield put({ type: 'saveSafeFiles', payload: handleSafeList(data.list) });
     },
+    // 获取动态监测
+    *fetchDynamicMonitorData({ payload, callback }, { call, put }) {
+      let response = yield call(getDynamicMonitorData, payload);
+      response = response || {}
+      const { code, data } = response;
+      if (code === 200) {
+        yield put({ type: 'save', payload: { dynamicMonitorData: formatDynamicMonitorData(data.list) } });
+      }
+      callback && callback(response);
+    },
+    // 获取风险点的风险告知卡列表
+    *fetchRiskPointCardList({ payload, callback }, { call, put }) {
+      const response = yield call(getRiskPointCardList, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveRiskPointAttr', payload: { cardList: response.data.list } });
+      }
+      callback && callback(response);
+    },
+    *fetchRiskPointHiddenDangerList({ payload, callback }, { call, put }) {
+      const response = yield call(getRiskPointHiddenDangerList, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveRiskPointHiddenDangerList', payload: response.data.list, append: payload.pageNum !== 1 });
+      }
+      callback && callback(response);
+    },
+    *fetchRiskPointInspectionList({ payload, callback }, { call, put }) {
+      const response = yield call(getRiskPointInspectionList, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveRiskPointInspectionList', payload: response.data.list, append: payload.pageNum !== 1 });
+      }
+      callback && callback(response);
+    },
+    // 获取风险点的隐患统计
+    *fetchRiskPointHiddenDangerCount({ payload, callback }, { call, put }) {
+      const response = yield call(getRiskPointHiddenDangerCount, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveRiskPointAttr', payload: { hiddenDangerCount: response.data } });
+      }
+      callback && callback(response);
+    },
+    // 获取风险点的巡查统计
+    *fetchRiskPointInspectionCount({ payload, callback }, { call, put }) {
+      const response = yield call(getRiskPointInspectionCount, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveRiskPointAttr', payload: { inspectionCount: response.data } });
+      }
+      callback && callback(response);
+    },
   },
 
   reducers: {
@@ -501,6 +611,51 @@ export default {
     },
     saveSafeIndexes(state, action) {
       return { ...state, safetyIndexes: action.payload };
+    },
+    saveRiskPointAttr(state, { payload }) {
+      return {
+        ...state,
+        riskPointDetail: {
+          ...state.riskPointDetail,
+          ...payload,
+        },
+      };
+    },
+    saveRiskPointHiddenDangerList(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          riskPointDetail: {
+            ...state.riskPointDetail,
+            hiddenDangerList: state.riskPointDetail.hiddenDangerList.concat(payload),
+          },
+        };
+      }
+      return {
+        ...state,
+        riskPointDetail: {
+          ...state.riskPointDetail,
+          hiddenDangerList: payload,
+        },
+      };
+    },
+    saveRiskPointInspectionList(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          riskPointDetail: {
+            ...state.riskPointDetail,
+            inspectionList: state.riskPointDetail.inspectionList.concat(payload),
+          },
+        };
+      }
+      return {
+        ...state,
+        riskPointDetail: {
+          ...state.riskPointDetail,
+          inspectionList: payload,
+        },
+      };
     },
   },
 }
