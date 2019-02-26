@@ -70,7 +70,7 @@ export default class UnitSafety extends PureComponent {
       // 视频是否显示
       videoVisible: false,
       // 当前播放的视频id
-      videokeyId: null,
+      videoKeyId: null,
       // 当前显示的巡查块索引
       inspectionIndex: 0,
       // 当前选中的人员列表的月份
@@ -426,7 +426,7 @@ export default class UnitSafety extends PureComponent {
       inspectionDetailDrawerVisible,
       indexDrawerVisible,
       videoVisible,
-      videokeyId,
+      videoKeyId,
       inspectionIndex,
       selectedStaffListMonth,
       selectedStaffRecordsMonth,
@@ -442,6 +442,9 @@ export default class UnitSafety extends PureComponent {
       inspectionPointData,
       riskPointDetail,
     } = unitSafety;
+
+    console.log(videoList);
+    console.log(videoKeyId);
 
     return (
       <BigPlatformLayout
@@ -576,7 +579,7 @@ export default class UnitSafety extends PureComponent {
           videoList={videoList}
           visible={videoVisible}
           showList={true}
-          keyId={videokeyId}
+          keyId={videoKeyId}
           handleVideoClose={this.hideVideo}
         />
       </BigPlatformLayout>
