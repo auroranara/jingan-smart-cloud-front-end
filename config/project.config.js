@@ -195,7 +195,7 @@ const configs = {
       'http://data.jingan-china.cn/v2/login/czey/3.png',
     ],
     ios:
-      'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/csey/official_version/Czeysafe.plist&ran=',
+      'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/czey/official_version/Czeysafe.plist&ran=',
     android: 'http://czey.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
 };
