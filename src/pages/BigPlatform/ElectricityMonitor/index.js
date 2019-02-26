@@ -716,13 +716,11 @@ export default class ElectricityMonitor extends PureComponent {
             data={messages}
             units={unitSet ? unitSet.units : []}
             showUnitDetail={this.showUnitDetail}
-            style={{ maxHeight: 'calc(100% - 265px)' }}
           />
           {/* 设备故障统计 */}
           <NewSection
             title="设备故障统计"
-            className={styles.child}
-            style={{ height: '250px', cursor: 'pointer', marginTop: 15 }}
+            style={{ width: '100%', height: '250px', cursor: 'pointer', marginTop: 15 }}
           >
             <EquipmentStatistics brandData={brandData} />
           </NewSection>
