@@ -3,7 +3,7 @@ import { message, Spin } from 'antd';
 import { connect } from 'dva';
 
 import styles from './LeafletMap.less';
-import ImageDraw from '@/components/ImageDraw';
+import ImageDraw, { L } from '@/components/ImageDraw';
 import { findInTree, parseImage } from '../utils';
 
 @connect(({ zoning, loading }) => ({
@@ -17,77 +17,57 @@ export default class LeafletMap extends PureComponent {
     reference: undefined,
   };
 
+  currentSection = null;
+
   componentDidUpdate(prevProps, prevState) {
+    const { areaId: prevAreaId, sectionTree: prevSectionTree } = prevProps;
     const { areaId, sectionTree } = this.props;
-    // this.handleMapData(areaId, sectionTree);
+    if (areaId !== prevAreaId || sectionTree !== prevSectionTree)
+      this.handleMapData(areaId, sectionTree);
   }
 
   handleMapData = (areaId, sectionTree) => {
     const target = findInTree(areaId, sectionTree);
+    this.currentSection = target;
+    // console.log(areaId, sectionTree, target);
+    if (!target)
+      return;
+
     const reference = parseImage(target);
     const [images, data] = target.children.reduce((prev, next) => {
       const { range } = next;
       prev[0].push(parseImage(next));
       prev[1].push(range ? JSON.parse(range) : []);
+      return prev;
     }, [[reference], []]);
+    // console.log(data, images, reference);
     this.setState({ data, images, reference });
   };
 
-  getZoning = id => {
-    const { dispatch } = this.props;
-    // 获取区域信息
-    dispatch({
-      type: 'zoning/fetchZone',
-      payload: { id },
-      callback: (data) => {
-        if (data) {
-          const { areaInfo: { name, range }, companyMap: { id: id1, mapPhoto: image1 }={}, floorMap: { id: id2, mapPhoto: image2, jsonMap }={} } = data;
-          const { url: url1 } = JSON.parse(image1 || '{}');
-          const { url: url2 } = JSON.parse(image2 || '{}');
-          const json = JSON.parse(jsonMap || null);
-          const item = range ? [JSON.parse(range)] : [];
-          if (url1 && url2 && json) {
-            const image = {
-              id: id2,
-              url: url2,
-              ...json,
-            };
-            this.setState({
-              url: url1,
-              images: [image],
-              reference: image,
-              // name,
-              data: item,
-            });
-          }
-          else if (url1) {
-            const image = {
-              id: id1,
-              url: url1,
-              latlngs: [
-                { lat: 0, lng: 0 },
-                { lat: 1, lng: 0 },
-                { lat: 1, lng: 1 },
-                { lat: 0, lng: 1 },
-              ],
-            };
-            this.setState({
-              url: url1,
-              images: [image],
-              reference: image,
-              // name,
-              data: item,
-            });
-          }
-          else {
-            message.error('数据异常，请联系维护人员或稍后重试！');
-          }
-        }
-        else {
-          message.error('获取数据失败，请稍后重试！');
-        }
-      },
-    });
+  handleClick = e => {
+    // console.log(e);
+    const name = e.target.options.data.name;
+    const target = this.currentSection.children.find(item => item.areaName === name);
+    // console.log(target);
+    if (target.children && target.children.length) {
+      const div = this.genDivList(target.children);
+      e.target.bindPopup(div).openPopup();
+    }
+  }
+
+  genDivList = children => {
+    const { setAreaId } = this.props;
+    const container = document.createElement('div');
+    container.className = styles.popContainer;
+    for (const { id, areaName } of children) {
+      const p = document.createElement('p');
+      p.innerHTML = areaName;
+      p.onclick = e => setAreaId(id);
+      p.className = styles.popp;
+      container.appendChild(p);
+    }
+
+    return container;
   };
 
   render() {
@@ -108,6 +88,7 @@ export default class LeafletMap extends PureComponent {
           className={styles.map}
           color='#00a8ff'
           style={{ height: '100%' }}
+          onClick={this.handleClick}
         />
       </Spin>
     );

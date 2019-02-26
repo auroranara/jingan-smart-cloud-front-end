@@ -8,7 +8,7 @@ import styles from './RealTime.less';
 import { alarmInfoIcon, sosIcon } from '../imgs/urls';
 import { AlarmHandle, AlarmMsg, PersonInfo, Tabs, VideoPlay } from '../components/Components';
 import { LeafletMap, PersonDrawer, SectionList } from './Components';
-import { genTreeList, positionsToIcons } from '../utils';
+import { genTreeList } from '../utils';
 
 const options = {
   pingTimeout: 30000,
@@ -31,6 +31,24 @@ const AREA_CHANGE_TYPE = "2";
 const WARNING_TYPE = "3";
 const AREA_STATUS_TYPE = "4";
 const RE_WARNING_TYPE = "5";
+
+function positionsToIcons(aggregation) {
+  // console.log('aggregation', aggregation);
+  const result =  aggregation.map(ps => {
+    const { userName, xarea, yarea } = ps[0];
+    const name = userName || '无名';
+    return {
+      name,
+      latlng: { lat: yarea, lng: xarea },
+      iconProps: {
+        className: styles.personContainer,
+        html: `<div class="${styles.personName}">${name}</div><div class="${styles.person}"></div>`,
+      },
+    };
+  });
+    // console.log('agg', result);
+    return result;
+  }
 
 export default class RealTime extends PureComponent {
   state = {
@@ -108,7 +126,7 @@ export default class RealTime extends PureComponent {
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
         const data = JSON.parse(e.data);
-        console.log(data);
+        // console.log(data);
         this.handleWbData(data);
       } catch (error) {
         console.log('error', error);
@@ -117,6 +135,10 @@ export default class RealTime extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
+  };
+
+  setAreaId = areaId => {
+    this.setState({ areaId });
   };
 
   handleWbData = wbData => {
@@ -283,7 +305,7 @@ export default class RealTime extends PureComponent {
       videoKeyId,
     } = this.state;
 
-    console.log(sectionTree);
+    // console.log(sectionTree);
 
     return (
       <div className={styles.container}>
@@ -300,7 +322,13 @@ export default class RealTime extends PureComponent {
           /> */}
         </div>
         <div className={styles.right}>
-          <LeafletMap url={mapBackgroundUrl} areaId={areaId} sectionTree={sectionTree} icons={positionsToIcons(positionAggregation)} />
+          <LeafletMap
+            url={mapBackgroundUrl}
+            areaId={areaId}
+            sectionTree={sectionTree}
+            icons={positionsToIcons(positionAggregation)}
+            setAreaId={this.setAreaId}
+          />
           <PersonInfo
             visible={personInfoVisible}
             // data={getPersonInfoItem(infoCardId, positions)}
