@@ -139,3 +139,32 @@ export async function getSafeFiles(params) {
   });
 }
 
+// 获取动态监测数据
+export async function getDynamicMonitorData(params) {
+  return request(`/acloud_new/v2/sfc/getMonitorStatistics?${stringify(params)}`);
+}
+
+// 获取风险点的风险告知卡列表
+export async function getRiskPointCardList(params) {
+  return request(`/acloud_new/v2/sfc/fireCheckCardByItemId.json?${stringify(params)}`);
+}
+
+// 获取风险点的隐患列表
+export async function getRiskPointHiddenDangerList(params) {
+  return request(`/acloud_new/v2/sfc/fireCheckDataByItemId.json?${stringify(params)}`);
+}
+
+// 获取风险点的巡查列表
+export async function getRiskPointInspectionList(params) {
+  return request(`/acloud_new/v2/sfc/getItemByIdForPage?${stringify(params)}`);
+}
+
+// 获取风险点的隐患统计
+export async function getRiskPointHiddenDangerCount(params) {
+  return request(`/acloud_new/v2/sfc/fireCheckHiddenDataByItemId.json?${stringify(params)}`);
+}
+
+// 获取风险点的巡查统计
+export async function getRiskPointInspectionCount(params) {
+  return request(`/acloud_new/v2/sfc/getItemCountById?${stringify(params)}`);
+}

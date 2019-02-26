@@ -610,6 +610,24 @@ class ImageDraw extends PureComponent {
   }
 
   /**
+   * 渲染图标
+   */
+  renderDivIcon = (item) => {
+    const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
+    const { latlng, name, iconProps } = item;
+    return (
+      <Marker
+        key={name}
+        data={item}
+        icon={iconProps && L.divIcon(iconProps)}
+        position={{ lat: latlng.lat * height, lng: latlng.lng * width }}
+        onAdd={this.handleAdd}
+        onClick={this.handleClickShape}
+      />
+    );
+  }
+
+  /**
    * 渲染图形
    */
   renderShape = (item) => {
@@ -701,7 +719,22 @@ class ImageDraw extends PureComponent {
   }
 
   render() {
-    const { className, style, mapProps, zoomControlProps, editControlProps, drawable, url, hideBackground, data=[], images, color=defaultColor, shapes=['polygon', 'rectangle', 'circle'], form: { getFieldDecorator } } = this.props;
+    const {
+      className,
+      style,
+      mapProps,
+      zoomControlProps,
+      editControlProps,
+      drawable,
+      url,
+      hideBackground,
+      data=[],
+      divIcons=[],
+      images,
+      color=defaultColor,
+      shapes=['polygon', 'rectangle', 'circle'],
+      form: { getFieldDecorator },
+    } = this.props;
     const { center, bounds, visible, maxBounds, zoom } = this.state;
 
     return (
@@ -782,6 +815,7 @@ class ImageDraw extends PureComponent {
                   />
                 )}
                 {data && data.map(this.renderShape)}
+                {divIcons && divIcons.map(this.renderDivIcon)}
               </FeatureGroup>
             </ImageOverlay>
           )}

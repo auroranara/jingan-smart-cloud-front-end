@@ -1,0 +1,61 @@
+/* 风险点模块 */
+.container {
+  margin: 0 auto;
+  padding: 16px;
+  max-width: 380px;
+  height: 100%;
+  font-size: 16px;
+  line-height: 1;
+}
+.top {
+  position: relative;
+  height: 50%;
+}
+.splitLineWrapper {
+  height: 8%;
+  .splitLine {
+    position: absolute;
+    top: 54%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: no-repeat center;
+    background-size: 100% 100%;
+  }
+}
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  height: 42%;
+
+  & > div {
+    flex: none;
+    padding-left: 68px;
+    background: no-repeat left;
+    background-size: 48px 48px;
+
+    .countLabel {
+      height: 20px;
+      line-height: 20px;
+      font-size: 16px;
+    }
+    .countValue {
+      height: 28px;
+      line-height: 28px;
+      font-size: 24px;
+      color: #00ffff;
+    }
+  }
+  /* 可点击元素 */
+  & > .hoverable {
+    cursor: pointer;
+
+    &:hover {
+      .countValue {
+        color: #fff;
+      }
+    }
+  }
+}

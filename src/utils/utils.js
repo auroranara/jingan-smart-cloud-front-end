@@ -245,6 +245,33 @@ export function isArray(value) {
 }
 
 /**
+ * 是否是对象
+ * @param {Any} value 要判断的变量
+ * @return {Boolean} true是对象，false不是对象
+ */
+export function isObject(value) {
+  return Object.prototype.toString.call(value) === '[object Object]';
+}
+
+/**
+ * 是否是函数
+ * @param {Any} value 要判断的变量
+ * @return {Boolean} true是函数，false不是函数
+ */
+export function isFunction(value) {
+  return Object.prototype.toString.call(value) === '[object Function]';
+}
+
+/**
+ * 是否是字符串
+ * @param {Any} value 要判断的变量
+ * @return {Boolean} true是字符串，false不是字符串
+ */
+export function isString(value) {
+  return Object.prototype.toString.call(value) === '[object String]';
+}
+
+/**
  * 是否是移动端
  * @return {Boolean} true是移动端，false不是移动端
  */
@@ -274,4 +301,35 @@ export function isIOS() {
  */
 export function isAndroid() {
   return /Android/.test(window.navigator.userAgent);
+}
+
+/**
+ * dispatch转换函数
+ */
+export function mapMutations(instance, { namespace, types }) {
+  const { dispatch } = instance.props;
+  if (isObject(types)) {
+    for (const [key, value] of Object.entries(types)) {
+      instance[key] = (payload, callback, ...restProps) => {
+        dispatch({
+          type: `${namespace}/${value}`,
+          payload,
+          callback,
+          ...restProps,
+        });
+      };
+    }
+  }
+  else if (isArray(types)) {
+    for (const type of types) {
+      instance[type] = (payload, callback, ...restProps) => {
+        dispatch({
+          type: `${namespace}/${type}`,
+          payload,
+          callback,
+          ...restProps,
+        });
+      };
+    }
+  }
 }

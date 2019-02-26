@@ -1,0 +1,58 @@
+/* 下拉框 */
+div.fourColorImgSelect {
+  margin-top: -7px;
+  color: #fff;
+
+  :global {
+    .ant-select-selection {
+      background-color: transparent;
+      border-radius: 32px;
+      border-color: #00ffff;
+    }
+    .ant-select-selection__rendered {
+      margin-left: 15px;
+      margin-right: 15px;
+    }
+    .ant-select-arrow {
+      color: #00ffff;
+    }
+    .ant-select-selection-selected-value {
+      padding-right: 16px;
+    }
+  }
+}
+div.fourColorImgSelectDropDown {
+  padding: 4px 0;
+  background-color: rgb(3, 48, 105);
+  border: 1px solid #00ffff;
+
+  :global {
+    .ant-select-dropdown-menu-item {
+      padding-left: 15px;
+      padding-right: 15px;
+      color: #fff;
+      font-weight: normal;
+      border-radius: 0;
+      background-color: rgb(3, 48, 105);
+
+      &:hover {
+        color: #00ffff;
+        background-color: #04407d;
+      }
+    }
+  }
+}
+/* 容器 */
+.container {
+  padding: 0 16px;
+}
+/* 空数据 */
+.empty {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: no-repeat center;
+  background-size: 50% auto;
+}

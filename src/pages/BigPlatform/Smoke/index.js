@@ -22,6 +22,8 @@ import EquipmentStatistics from './EquipmentStatistics';
 import MyTooltip from './components/Tooltip';
 // 故障/火警处理动态
 import MaintenanceDrawer from './sections/MaintenanceDrawer';
+import AlarmDynamicDrawer from './sections/AlarmDynamicDrawer';
+
 import MonitorDrawer from './sections/MonitorDrawer';
 
 // import AlarmChart from './AlarmChart';
@@ -175,6 +177,7 @@ export default class Smoke extends PureComponent {
     };
 
     ws.onmessage = e => {
+      if(true) return;
       // 判断是否是心跳
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
@@ -703,15 +706,24 @@ export default class Smoke extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           type={type}
         />
+        {/* 故障处理动态 */}
         <MaintenanceDrawer
-          title="火警处理动态"
+          title="故障处理动态"
           // type={drawerType}
-          type={'alarm'}
+          type={'fault'}
           data={gasForMaintenance}
           visible={maintenanceDrawerVisible}
           companyName={companyName}
           onClose={() => this.handleDrawerVisibleChange('maintenance')}
         />
+        {/* 灾情事件动态 */}
+        <AlarmDynamicDrawer
+          data={[]}
+          companyName={companyName}
+          // visible={true}
+          onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
+        />
+        {/* 单位监测数据 */}
         <MonitorDrawer
           data={{
             unitDetail,

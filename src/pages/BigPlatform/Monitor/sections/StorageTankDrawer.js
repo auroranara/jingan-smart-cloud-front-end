@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 
 import { connect } from 'dva';
-import { Icon } from 'antd';
+import { Icon, Row, Col } from 'antd';
 import styles from './StorageTankDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
 import StorageLableCards from '../components/StorageLableCards';
@@ -30,6 +30,12 @@ export default class StorageTankDrawer extends PureComponent {
     const {
       visible,
       tankDataList: { list },
+      storageStatus,
+      handleFilter,
+      statistics: {  // 储罐统计
+        tankNum = 0,
+        countMap: { normal = 0, outContact = 0, unnormal = 0 } = {},
+      },
     } = this.props;
     const ICON_STYLE = {
       position: 'absolute',
@@ -40,9 +46,26 @@ export default class StorageTankDrawer extends PureComponent {
       cursor: 'pointer',
     };
 
+    const filterList = [
+      { value: 'all', label: '全部', color: 'rgb(0, 168, 255)', number: tankNum },
+      { value: 0, label: '正常', color: 'rgb(0, 161, 129)', number: normal },
+      { value: 2, label: '报警', color: 'rgb(232, 103, 103)', number: unnormal },
+      { value: -1, label: '失联', color: 'rgb(198, 193, 129)', number: outContact },
+    ]
+
     const left = (
       <div className={styles.content}>
         <Icon type="close" style={ICON_STYLE} onClick={e => this.props.onClose()} />
+        <Row className={styles.sectionFilter}>
+          {filterList.map((item, i) => (
+            <Col span={6} className={styles.filter} key={i}>
+              <div className={storageStatus === item.value ? styles.activeFilter : styles.inActiveFilter}
+                onClick={() => handleFilter(item.value)}>
+                {item.label}（<span style={{ color: item.color }}>{item.number}</span>）
+              </div>
+            </Col>
+          ))}
+        </Row>
         <div className={styles.cardContainer}>
           <div>{this.renderTankList(list)}</div>
         </div>

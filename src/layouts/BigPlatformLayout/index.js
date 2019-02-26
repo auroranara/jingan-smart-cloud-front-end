@@ -3,17 +3,18 @@ import { Icon } from 'antd';
 import classNames from 'classnames';
 import moment from 'moment';
 import styles from './index.less';
-import headerBg from '@/assets/header_bg.png';
 
-const { projectName } = global.PROJECT_CONFIG;
-export default class App extends PureComponent {
-  state={
-    currentTime: '0000-00-00 星期一 00:00:00',
+export default class BigPlatformLayout extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state={
+      currentTime: '0000-00-00 星期一 00:00:00',
+    }
   }
 
   componentDidMount() {
     this.myTimer = setInterval(() => {
-      this.getCurrentTime();
+      this.setCurrentTime();
     }, 1000);
   }
 
@@ -22,9 +23,9 @@ export default class App extends PureComponent {
   }
 
   /**
-   * 获取当前时间
+   * 设置当前时间
    */
-  getCurrentTime = () => {
+  setCurrentTime = () => {
     this.setState({ currentTime: moment().locale('zh-cn').format('YYYY-MM-DD dddd HH:mm:ss') });
   }
 
@@ -35,7 +36,7 @@ export default class App extends PureComponent {
       // 布局容器的style
       style,
       // 标题
-      title=projectName,
+      title=global.PROJECT_CONFIG.projectName,
       // 标题是否添加空格
       autoSpace=true,
       // 头部左边的内容，如企业名称或选择框等
@@ -52,23 +53,23 @@ export default class App extends PureComponent {
       settable,
       // 设置按钮样式
       setStyle,
+      // 设置按钮点击事件
+      onSet,
       // 时间样式
       timeStyle,
       // extra样式
       extraStyle,
-      // 设置按钮点击事件
-      onSet,
     } = this.props;
     const { currentTime } = this.state;
     // 合并以后的容器类名
     const containerClassName = classNames(styles.container, className);
 
     return (
-      <div className={containerClassName} style={{ backgroundImage: `url(http://data.jingan-china.cn/v2/big-platform/fire-control/gov/new_bg.png)`, ...style}}>
-        <div className={styles.header} style={{ backgroundImage: `url(${headerBg})`, ...headerStyle }}>
+      <div className={containerClassName} style={style}>
+        <div className={styles.header} style={headerStyle}>
           <div className={styles.headerTitle} style={titleStyle}>{autoSpace ? title.split('').join(' ') : title}</div>
-          <div className={styles.headerTime} style={timeStyle}>{currentTime}</div>
-          {extra && <div className={styles.headerExtra} style={extraStyle}>{extra}</div>}
+          <div className={styles.headerTime}><div className={styles.headerTimeContent} style={timeStyle}>{currentTime}</div></div>
+          <div className={styles.headerExtra}>{extra && <div className={styles.headerExtraContent} style={extraStyle}>{extra}</div>}</div>
           {settable && <Icon style={setStyle} className={styles.setButton} type="setting" onClick={onSet} />}
         </div>
         <div className={styles.content} style={contentStyle}>

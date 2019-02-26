@@ -33,6 +33,20 @@ const {
 export default class TagManagement extends PureComponent {
 
   componentDidMount() {
+    const { dispatch } = this.props
+    // 清空标签列表
+    dispatch({
+      type: 'personnelPosition/saveTagLst',
+      payload: {
+        list: [],
+        pagination: {
+          pageNum: 1,
+          pageSize: 10,
+          total: 0,
+        },
+      },
+    })
+    // 获取标签企业列表
     this.fetchTagCompanies({ payload: { pageNum: 1, pageSize: defaultPageSize } })
   }
 
@@ -86,7 +100,7 @@ export default class TagManagement extends PureComponent {
       personnelPosition: {
         tag: {
           companyList,// 标签企业列表
-          companyPagination:{total},
+          companyPagination: { total },
           companyIsLast: isLast,
         },
       },

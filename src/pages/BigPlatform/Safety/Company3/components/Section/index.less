@@ -1,0 +1,59 @@
+/**
+ * 容器
+ */
+.container {
+  position: relative;
+  height: 100%;
+  font-size: 14px;
+  color: #fff;
+  line-height: 1;
+  border: 1px solid rgb(2, 252, 250);
+  background-color: rgb(3, 48, 105);
+  box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.75);
+  overflow: hidden;
+}
+.titleWrapper {
+  padding: 17px 19px;
+  font-size: 16px;
+  background-repeat: no-repeat;
+  background-image: linear-gradient(to left, rgb(4,50,109) 0%, rgb(2,81,148) 81%);
+  background-size: 177px 100%;
+
+  .title {
+    .titleIcon {
+      display: inline-block;
+      position: relative;
+      margin-right: 11px;
+      width: 16px;
+      height: 16px;
+      border: 1px solid #00ffff;
+      border-radius: 50%;
+      vertical-align: top;
+
+      &:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        width: 10px;
+        height: 10px;
+        background-color: #00ffff;
+        border-radius: 50%;
+      }
+    }
+  }
+  .action {
+    float: right;
+  }
+}
+.content {
+  position: relative;
+  height: calc(~"100% - 50px");
+
+  .scroll {
+    height: 100%;
+  }
+}
