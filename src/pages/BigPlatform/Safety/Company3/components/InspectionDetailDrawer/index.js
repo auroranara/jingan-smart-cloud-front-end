@@ -17,7 +17,7 @@ export default class InspectionDetailDrawer extends PureComponent {
     const { visible } = this.props;
     if (!prevVisible && visible) {
       this.carousel.goTo(0, true);
-      this.scroll.scrollTop();
+      this.scroll && this.scroll.scrollTop();
     }
   }
 
@@ -25,8 +25,8 @@ export default class InspectionDetailDrawer extends PureComponent {
     this.carousel = carousel;
   }
 
-  setScrollReference = ({ dom: scroll }) => {
-    this.scroll = scroll;
+  setScrollReference = (scroll) => {
+    this.scroll = scroll && scroll.dom;
   }
 
   render() {
