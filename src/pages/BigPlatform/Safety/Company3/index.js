@@ -3,7 +3,7 @@ import { Row, Col } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import { Rotate } from 'react-transform-components';
-// import { mapMutations } from '@/utils/utils';
+import { mapMutations } from '@/utils/utils';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 // 视频播放
 import VideoPlay from '@/pages/BigPlatform/FireControl/section/VideoPlay';
@@ -80,94 +80,88 @@ export default class UnitSafety extends PureComponent {
       // 选中的人员id
       checkUserId: null,
     };
+    // 添加变异函数
+    mapMutations(this, {
+      namespace: 'unitSafety',
+      types: [
+        // 获取企业信息
+        'fetchCompanyMessage',
+        // 获取特种设备数
+        'fetchSpecialEquipmentCount',
+        // 获取隐患列表
+        'fetchHiddenDangerList',
+        // 获取视频列表
+        'fetchVideoList',
+        // 获取监控数据
+        'fetchMonitorData',
+        // 获取四色风险点
+        'fetchCountDangerLocation',
+        // 获取安全人员信息
+        'fetchSafetyOfficer',
+        // 获取安全指数
+        'fetchSafetyIndex',
+        // 获取动态监测数据
+        'fetchDynamicMonitorData',
+        // 获取巡查记录列表
+        'fetchInspectionRecordData',
+        // 获取风险点巡查列表
+        'fetchRiskPointInspectionList',
+        // 获取风险点隐患列表
+        'fetchRiskPointHiddenDangerList',
+        // 获取风险点隐患统计
+        'fetchRiskPointHiddenDangerCount',
+        // 获取风险点巡查统计
+        'fetchRiskPointInspectionCount',
+        // 获取风险告知卡列表
+        'fetchRiskPointCardList',
+        // 获取巡查点位数据
+        'fetchInspectionPointData',
+        // 获取巡查人员列表
+        'fetchStaffList',
+        // 获取巡查记录列表
+        'fetchStaffRecords',
+        // 获取安全档案
+        'fetchSafeFiles',
+        // 获取监测信息
+        'fetchMonitorList',
+      ],
+    });
   }
 
   /**
    * 挂载后
    */
   componentDidMount() {
-    const { dispatch, match: { params: { companyId } } } = this.props;
-
+    const { match: { params: { companyId } } } = this.props;
     // 获取企业信息
-    dispatch({
-      type: 'unitSafety/fetchCompanyMessage',
-      payload: {
-        company_id: companyId,
-      },
-    });
+    this.fetchCompanyMessage({ company_id: companyId });
     // 获取特种设备数
-    dispatch({
-      type: 'unitSafety/fetchSpecialEquipmentCount',
-      payload: {
-        company_id: companyId,
-      },
-    });
+    this.fetchSpecialEquipmentCount({ company_id: companyId });
     // 获取隐患列表
-    dispatch({
-      type: 'unitSafety/fetchHiddenDangerList',
-      payload: {
-        company_id: companyId,
-      },
-    });
+    this.fetchHiddenDangerList({ company_id: companyId });
     // 获取视频列表
-    dispatch({
-      type: 'unitSafety/fetchVideoList',
-      payload: {
-        company_id: companyId,
-      },
-    });
+    this.fetchVideoList({ company_id: companyId });
     // 获取监控数据
-    dispatch({
-      type: 'unitSafety/fetchMonitorData',
-      payload: {
-        companyId,
-      },
-    });
+    this.fetchMonitorData({ companyId });
     // 获取四色风险点
-    dispatch({
-      type: 'unitSafety/fetchCountDangerLocation',
-      payload: {
-        company_id: companyId,
-      },
-    });
+    this.fetchCountDangerLocation({ company_id: companyId });
     // 获取安全人员信息（安全人员信息卡片源数据）
-    dispatch({
-      type: 'unitSafety/fetchSafetyOfficer',
-      payload: {
-        company_id: companyId,
-      },
-    });
+    this.fetchSafetyOfficer({ company_id: companyId });
     // 获取安全指数
-    dispatch({
-      type: 'unitSafety/fetchSafetyIndex',
-      payload: {
-        companyId,
-      },
-    });
+    this.fetchSafetyIndex({ companyId });
     // 获取动态监测数据
-    dispatch({
-      type: 'unitSafety/fetchDynamicMonitorData',
-      payload: {
-        companyId,
-      },
-    });
+    this.fetchDynamicMonitorData({ companyId });
   }
 
+  /* 前往动态监控大屏 */
   goToMonitor = () => {
-    const {
-      match: {
-        params: { companyId },
-      },
-    } = this.props;
+    const { match: { params: { companyId } } } = this.props;
     window.open(`${window.publicPath}#/big-platform/monitor/company/${companyId}`);
   }
 
+  /* 前往1.0统计页面 */
   goToCompanyIndex = () => {
-    const {
-      match: {
-        params: { companyId },
-      },
-    } = this.props;
+    const { match: { params: { companyId } } } = this.props;
     window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`);
   }
 
@@ -175,84 +169,58 @@ export default class UnitSafety extends PureComponent {
    * 获取巡查记录对应的隐患列表
    */
   getInspectionRecordData = (checkId, status, callback) => {
-    const {
-      dispatch,
-      match: {
-        params: { companyId },
-      },
-    } = this.props;
+    const { match: { params: { companyId } } } = this.props;
     const { selectedStaffRecordsMonth: month, checkUserId } = this.state;
-    const payload = {
+    this.fetchInspectionRecordData({
       companyId,
       checkId,
       status,
       month,
       checkUserId,
-    };
-    dispatch({
-      type: 'unitSafety/fetchInspectionRecordData',
-      payload,
-      callback,
-    });
+    }, callback);
   }
 
   /**
    * 获取风险点巡查列表
    */
-  getRiskPointInspectionList = ({ pageNum = 1, itemId = this.itemId, ...restProps }={}) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'unitSafety/fetchRiskPointInspectionList',
-      payload: {
-        itemId,
-        pageNum,
-        pageSize: DEFAULT_PAGE_SIZE,
-        ...restProps,
-      },
+  getRiskPointInspectionList = (restProps) => {
+    this.fetchRiskPointInspectionList({
+      itemId: this.itemId,
+      pageNum: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+      ...restProps,
     });
   }
 
   /**
    * 获取风险点隐患列表
    */
-  getRiskPointHiddenDangerList = ({ pageNum = 1, itemId = this.itemId, ...restProps }={}) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'unitSafety/fetchRiskPointHiddenDangerList',
-      payload: {
-        itemId,
-        pageNum,
-        pageSize: DEFAULT_PAGE_SIZE,
-        ...restProps,
-      },
+  getRiskPointHiddenDangerList = (restProps) => {
+    this.fetchRiskPointHiddenDangerList({
+      itemId: this.itemId,
+      pageNum: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+      ...restProps,
     });
   }
 
   /**
    * 获取风险点的隐患统计
    */
-  getRiskPointHiddenDangerCount = ({ itemId=this.itemId, ...restProps }={}) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'unitSafety/fetchRiskPointHiddenDangerCount',
-      payload: {
-        itemId,
-        ...restProps,
-      },
+  getRiskPointHiddenDangerCount = (restProps) => {
+    this.fetchRiskPointHiddenDangerCount({
+      itemId: this.itemId,
+      ...restProps,
     });
   }
 
   /**
    * 获取风险点的巡查统计
    */
-  getRiskPointInspectionCount = ({ itemId=this.itemId, ...restProps }={}) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'unitSafety/fetchRiskPointInspectionCount',
-      payload: {
-        itemId,
-        ...restProps,
-      },
+  getRiskPointInspectionCount = (restProps) => {
+    this.fetchRiskPointInspectionCount({
+      itemId: this.itemId,
+      ...restProps,
     });
   }
 
@@ -285,18 +253,11 @@ export default class UnitSafety extends PureComponent {
    * 显示风险点详情
    */
   showRiskPointDetailDrawer = (itemId) => {
-    const { dispatch } = this.props;
     // 保存点位id
     this.itemId = itemId;
     // 获取风险告知卡列表
-    dispatch({
-      type: 'unitSafety/fetchRiskPointCardList',
-      payload: {
-        itemId,
-      },
-      callback: () => {
-        this.setState({ riskPointDetailDrawerVisible: true });
-      },
+    this.fetchRiskPointCardList({ itemId }, () => {
+      this.setDrawerVisible('riskPointDetail');
     });
     // 获取隐患列表
     this.getRiskPointHiddenDangerList();
@@ -308,28 +269,16 @@ export default class UnitSafety extends PureComponent {
    * 显示巡查点位详情
    */
   ShowInspectionDetailDrawer = (itemId, status) => {
-    const {
-      dispatch,
-      match: {
-        params: { companyId },
-      },
-    } = this.props;
+    const { match: { params: { companyId } } } = this.props;
     const { selectedStaffRecordsMonth: month, checkUserId } = this.state;
-    const payload = {
+    this.fetchInspectionPointData({
       companyId,
       itemId,
       status,
       month,
       checkUserId,
-    };
-    // 1.获取数据
-    dispatch({
-      type: 'unitSafety/fetchInspectionPointData',
-      payload,
-      callback: () => {
-        // 2.显示抽屉
-        this.setState({ inspectionDetailDrawerVisible: true });
-      },
+    }, () => {
+      this.setDrawerVisible('inspectionDetail');
     });
   };
 
@@ -337,11 +286,10 @@ export default class UnitSafety extends PureComponent {
    * 显示安全指数抽屉
    */
   showIndexDrawer = e => {
-    const { dispatch, match: { params: { companyId } } } = this.props;
-
+    const { match: { params: { companyId } } } = this.props;
     this.setDrawerVisible('index');
-    dispatch({ type: 'unitSafety/fetchSafeFiles', payload: { companyId } });
-    dispatch({ type: 'unitSafety/fetchMonitorList', payload: { companyId } });
+    this.fetchSafeFiles({ companyId });
+    this.fetchMonitorList({ companyId });
   };
 
    /**
@@ -367,45 +315,18 @@ export default class UnitSafety extends PureComponent {
    * 根据月份获取人员列表
    */
   handleSelectStaffList = month => {
-    const {
-      dispatch,
-      match: {
-        params: { companyId },
-      },
-    } = this.props;
-    dispatch({
-      type: 'unitSafety/fetchStaffList',
-      payload: {
-        company_id: companyId,
-        month,
-      },
-    });
-    this.setState({
-      selectedStaffListMonth: month,
-    });
+    const { match: { params: { companyId } } } = this.props;
+    this.fetchStaffList({ company_id: companyId, month });
+    this.setState({ selectedStaffListMonth: month });
   };
 
   /**
    * 根据月份获取人员记录
    */
   handleSelectStaffRecords = (month, checkUserId = this.state.checkUserId) => {
-    const {
-      dispatch,
-      match: {
-        params: { companyId },
-      },
-    } = this.props;
-    dispatch({
-      type: 'unitSafety/fetchStaffRecords',
-      payload: {
-        company_id: companyId,
-        month,
-        checkUserId,
-      },
-    });
-    this.setState({
-      selectedStaffRecordsMonth: month,
-    });
+    const { match: { params: { companyId } } } = this.props;
+    this.fetchStaffRecords({ company_id: companyId, month, checkUserId });
+    this.setState({ selectedStaffRecordsMonth: month });
   };
 
   /**
