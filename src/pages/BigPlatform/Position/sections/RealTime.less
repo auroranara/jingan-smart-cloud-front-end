@@ -82,10 +82,23 @@
   border: none;
 }
 
+.personOuter {
+  width: 38px;
+  transform: translate(-50%, -100%);
+}
+
 .personName {
   color: #000;
   width: 38px;
   text-align: center;
+}
+
+.personNum {
+  color: #FFF;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: rgb(1, 134 ,209);
 }
 
 .person {
@@ -95,6 +108,14 @@
   background-size: 100% 100%;
 }
 
+.personRed:extend(.person) {
+  background-image: url(../imgs/personRed.png);
+}
+
 .people:extend(.person) {
   background-image: url(../imgs/people.png);
+}
+
+.peopleRed:extend(.person) {
+  background-image: url(../imgs/peopleRed.png);
 }

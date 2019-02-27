@@ -35,16 +35,24 @@ const RE_WARNING_TYPE = "5";
 function positionsToIcons(aggregation) {
   // console.log('aggregation', aggregation);
   const result =  aggregation.map(ps => {
-    const { userName, xarea, yarea, beconId } = ps[0];
+    const { userName, xarea, yarea, beconId, sos, tlong, overstep } = ps[0];
+    const isAlarm = sos || tlong || overstep;
     const length = ps.length;
-    const name = length === 1 ? userName || '访客' : length;
+    const isSingle = length === 1;
+    const className = `${isSingle ? 'person' : 'people'}${isAlarm ? 'Red' : ''}`;
+    const name = isSingle ? userName || '访客' : length;
     return {
       id: beconId,
       name: name,
       latlng: { lat: yarea, lng: xarea },
       iconProps: {
+        iconSize: [38, 58],
+        // iconAnchor: [],
         className: styles.personContainer,
-        html: `<div class="${styles.personName}">${name}</div><div class="${styles[length === 1 ? 'person' : 'people']}"></div>`,
+        html: `
+          <div class="${isSingle ? styles.personName : styles.personNum}">${name}</div>
+          <div class="${styles[className]}"></div>
+        `,
       },
     };
   });
@@ -159,7 +167,7 @@ export default class RealTime extends PureComponent {
         this.handleAlarms(data);
         break;
       case AREA_STATUS_TYPE:
-        // this.handleAreaStatusChange(data);
+        this.handleAreaStatusChange(data);
         break;
       case RE_WARNING_TYPE:
         this.removeAlarms(data);
@@ -192,7 +200,7 @@ export default class RealTime extends PureComponent {
   handleAreaChange = data => {
     const { dispatch, personPosition: { sectionTree } } = this.props;
     const areaChangeMap = getAreaChangeMap(data);
-    console.log(areaChangeMap);
+    // console.log(areaChangeMap);
     const newSectionTree = genTreeList(sectionTree, item => {
       const { id, count } = item;
       const delta = areaChangeMap[id];
@@ -211,7 +219,7 @@ export default class RealTime extends PureComponent {
       const target = data.find(({ id: areaId }) => areaId === id);
       if (target) {
         const { lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus } = target;
-        return { ...item, status: lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 0 : 1 };
+        return { ...item, status: lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 2 : 1 };
       }
       return item;
     });

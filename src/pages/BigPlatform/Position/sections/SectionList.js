@@ -44,44 +44,20 @@ const columns = [
   },
 ];
 
-const DATA = [{
-  id: 1,
-  areaName: '东厂区',
-  count: 12,
-  status: 1,
-  indentLevel: 0,
-  children: [
-    {
-      id: 3,
-      areaName: '楼层1',
-      count: 10,
-      status: 1,
-      indentLevel: 1,
-      children: [
-        {
-          id: 5,
-          areaName: '楼层5',
-          count: 10,
-          status: 1,
-          indentLevel: 2,
-        },
-      ],
-    },
-    {
-      id: 4,
-      areaName: '更长的楼层',
-      count: 10,
-      status: 1,
-      indentLevel: 1,
-    },
-  ],
-}, {
-  id: 2,
-  areaName: '西厂区',
-  count: 12,
-  status: 2,
-  indentLevel: 0,
-}];
+// const DATA = [{
+//   id: 1,
+//   areaName: '东厂区',
+//   count: 12,
+//   status: 1,
+//   indentLevel: 0,
+//   children: [...],
+// }, {
+//   id: 2,
+//   areaName: '西厂区',
+//   count: 12,
+//   status: 2,
+//   indentLevel: 0,
+// }];
 
 // 根据areaName和status筛选
 const filterDataByAreaNameAndStatus = function(data, filterAreaName, filterStatus) {
@@ -184,7 +160,7 @@ export default class RealTimeMonitor extends PureComponent {
   render() {
     const {
       // 表格源数据
-      data=DATA,
+      data=[],
       ...restProps
     } = this.props;
     const { areaName, status } = this.state;

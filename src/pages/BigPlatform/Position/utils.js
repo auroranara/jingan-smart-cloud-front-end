@@ -1,7 +1,5 @@
 import moment from 'moment';
 
-import { personIcon } from './imgs/urls';
-
 export function handlePositions(positions=[], wsData=[]) {
   if (!wsData || !wsData.length)
     return positions;
@@ -68,12 +66,14 @@ export function getAreaId(wsData) {
   return '';
 }
 
+const ALARM = 2;
 // 生成新的树
 export function genTreeList(list, callback, deep=0) {
   return list.map(item => {
     const { children, ...restProps } =  item;
     const newItem = callback(restProps);
     newItem.indentLevel = deep;
+    newItem.range.options.color = newItem.status === ALARM ? '#F00' : '#00a8ff';
     if (children && children.length)
       newItem.children = genTreeList(children, callback, deep + 1);
     return newItem;
@@ -93,14 +93,15 @@ export function genTreeList(list, callback, deep=0) {
 export function getSectionTree(list) {
   return genTreeList(list, item => {
     const { id, name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus, mapPhoto, range, ...restProps } = item;
+    const status = lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 2 : 1;
     return {
       id,
       name,
-      mapPhoto,
-      range,
+      mapPhoto: JSON.parse(mapPhoto),
+      range: JSON.parse(range),
       ...restProps,
       count: cardCount,
-      status: lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 0 : 1,
+      status,
     };
   });
 }
@@ -142,7 +143,7 @@ export function findInTree(targetValue, list, prop='id') {
 export function parseImage(section) {
   let { id, mapPhoto, range } = section;
   range = range || '{}';
-  return { id, url: JSON.parse(mapPhoto).url, ...JSON.parse(range) };
+  return { id, url: mapPhoto.url, ...range };
 }
 
 export function getAreaChangeMap(list) {
@@ -153,7 +154,7 @@ export function getAreaChangeMap(list) {
     if (prev[areaId])
       prev[areaId] += delta;
     else
-      prev[areaId] = 0;
+      prev[areaId] = delta;
     return prev;
   }, {});
 }

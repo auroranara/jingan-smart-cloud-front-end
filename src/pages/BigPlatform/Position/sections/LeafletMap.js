@@ -29,7 +29,7 @@ export default class LeafletMap extends PureComponent {
   handleMapData = (areaId, sectionTree) => {
     const target = findInTree(areaId, sectionTree);
     this.currentSection = target;
-    // console.log(areaId, sectionTree, target);
+    // console.log('sectionTree', sectionTree);
     if (!target)
       return;
 
@@ -40,10 +40,11 @@ export default class LeafletMap extends PureComponent {
       // 如果子区域用了父区域的地图，则不显示该地图
       if (mapId !== fatherMapId)
         prev[0].push(parseImage(next));
-      prev[1].push(range ? JSON.parse(range) : []);
+      if (range)
+        prev[1].push(range);
       return prev;
     }, [fatherMapId === companyMap ? [] : [reference], []]);
-    console.log(target, fatherMapId === companyMap, data, images, reference);
+    // console.log('range', data, images, reference);
     this.setState({ data, images, reference });
   };
 
@@ -89,7 +90,7 @@ export default class LeafletMap extends PureComponent {
   }
 
   render() {
-    const { loading, url, icons, areaId, areaInfo, setAreaId } = this.props;
+    const { loading, url, icons, areaId, areaInfo } = this.props;
     const { data, images, reference } = this.state;
 
     // console.log(icons);
