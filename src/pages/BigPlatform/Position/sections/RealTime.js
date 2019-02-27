@@ -8,7 +8,7 @@ import styles from './RealTime.less';
 import { alarmInfoIcon, sosIcon } from '../imgs/urls';
 import { AlarmHandle, AlarmMsg, PersonInfo, Tabs, VideoPlay } from '../components/Components';
 import { LeafletMap, PersonDrawer, SectionList } from './Components';
-import { genTreeList } from '../utils';
+import { genTreeList, getAreaChangeMap, getAreaInfo } from '../utils';
 
 const options = {
   pingTimeout: 30000,
@@ -35,14 +35,16 @@ const RE_WARNING_TYPE = "5";
 function positionsToIcons(aggregation) {
   // console.log('aggregation', aggregation);
   const result =  aggregation.map(ps => {
-    const { userName, xarea, yarea } = ps[0];
-    const name = userName || '无名';
+    const { userName, xarea, yarea, beconId } = ps[0];
+    const length = ps.length;
+    const name = length === 1 ? userName || '访客' : length;
     return {
-      name,
+      id: beconId,
+      name: name,
       latlng: { lat: yarea, lng: xarea },
       iconProps: {
         className: styles.personContainer,
-        html: `<div class="${styles.personName}">${name}</div><div class="${styles.person}"></div>`,
+        html: `<div class="${styles.personName}">${name}</div><div class="${styles[length === 1 ? 'person' : 'people']}"></div>`,
       },
     };
   });
@@ -76,6 +78,8 @@ export default class RealTime extends PureComponent {
       type: 'personPosition/fetchSectionTree',
       payload: { companyId },
       callback: list => {
+        this.areaInfo = getAreaInfo(list);
+        // console.log(this.areaInfo);
         if (list.length) {
           const root = list[0];
           this.setState({ areaId: root.id, mapBackgroundUrl: JSON.parse(root.mapPhoto).url });
@@ -102,6 +106,7 @@ export default class RealTime extends PureComponent {
   // }
 
   ws = null;
+  areaInfo = {};
 
   connectWebSocket = () => {
     const { companyId } = this.props;
@@ -148,7 +153,7 @@ export default class RealTime extends PureComponent {
         this.handlePositions(data);
         break;
       case AREA_CHANGE_TYPE:
-        // this.handleAreaChange(data);
+        this.handleAreaChange(data);
         break;
       case WARNING_TYPE:
         this.handleAlarms(data);
@@ -186,13 +191,16 @@ export default class RealTime extends PureComponent {
 
   handleAreaChange = data => {
     const { dispatch, personPosition: { sectionTree } } = this.props;
+    const areaChangeMap = getAreaChangeMap(data);
+    console.log(areaChangeMap);
     const newSectionTree = genTreeList(sectionTree, item => {
       const { id, count } = item;
-      const target = data.find(({ areaId }) => areaId === id);
-      if (target)
-        return { ...item, count: +target.type === 1 ? count + 1 : count - 1 };
+      const delta = areaChangeMap[id];
+      if (delta)
+        return { ...item, count: count + delta };
       return item;
     });
+    // console.log(newSectionTree);
     dispatch({ type: 'personPosition/saveSectionTree', payload: newSectionTree });
   };
 
@@ -325,6 +333,7 @@ export default class RealTime extends PureComponent {
           <LeafletMap
             url={mapBackgroundUrl}
             areaId={areaId}
+            areaInfo={this.areaInfo}
             sectionTree={sectionTree}
             icons={positionsToIcons(positionAggregation)}
             setAreaId={this.setAreaId}

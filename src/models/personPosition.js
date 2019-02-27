@@ -53,7 +53,7 @@ export default {
       const { code=500, data } = response || {};
       if (code === 200) {
         const list = data && Array.isArray(data.list) ? data.list : [];
-        yield put({ type: 'saveSectionTree', payload: list })
+        yield put({ type: 'saveSectionTree', payload: getSectionTree(list) })
         callback && callback(list);
       }
     },
@@ -62,10 +62,12 @@ export default {
   reducers: {
     savePositions(state, action) {
       const { payload: list } = action;
+      const aggList = genAggregation(list);
+      // console.log('agg', list, aggList);
       return {
         ...state,
         positionList: list,
-        positionAggregation: genAggregation(list),
+        positionAggregation: aggList,
       };
     },
     saveAlarms(state, action) {
@@ -77,7 +79,7 @@ export default {
     saveSectionTree(state, action) {
       return {
         ...state,
-        sectionTree: getSectionTree(action.payload),
+        sectionTree: action.payload,
       };
     },
   },

@@ -28,7 +28,7 @@ const statusLabel = {
 const columns = [
   {
     title: '区域名称',
-    dataIndex: 'areaName',
+    dataIndex: 'name',
     width: '50%',
   },
   {
@@ -90,8 +90,8 @@ const filterDataByAreaNameAndStatus = function(data, filterAreaName, filterStatu
   }
   const list = [];
   data.forEach((item) => {
-    const { areaName, status, children } = item;
-    if (areaName.includes(filterAreaName) && (!filterStatus || status === filterStatus)) {
+    const { name, status, children } = item;
+    if (name.includes(filterAreaName) && (!filterStatus || status === filterStatus)) {
       list.push(item);
     }
     else if (children) {

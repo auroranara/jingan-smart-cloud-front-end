@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { message, Spin } from 'antd';
+import { Icon, Spin } from 'antd';
 import { connect } from 'dva';
 
 import styles from './LeafletMap.less';
@@ -33,35 +33,43 @@ export default class LeafletMap extends PureComponent {
     if (!target)
       return;
 
+    const { children, mapId: fatherMapId, companyMap } = target;
     const reference = parseImage(target);
-    const [images, data] = target.children.reduce((prev, next) => {
-      const { range } = next;
-      prev[0].push(parseImage(next));
+    const [images, data] = children.reduce((prev, next) => {
+      const { range, mapId } = next;
+      // 如果子区域用了父区域的地图，则不显示该地图
+      if (mapId !== fatherMapId)
+        prev[0].push(parseImage(next));
       prev[1].push(range ? JSON.parse(range) : []);
       return prev;
-    }, [[reference], []]);
-    // console.log(data, images, reference);
+    }, [fatherMapId === companyMap ? [] : [reference], []]);
+    console.log(target, fatherMapId === companyMap, data, images, reference);
     this.setState({ data, images, reference });
   };
 
   handleClick = e => {
     // console.log(e);
+    const { areaInfo, setAreaId } = this.props;
     const name = e.target.options.data.name;
-    const target = this.currentSection.children.find(item => item.areaName === name);
+    const target = this.currentSection.children.find(item => item.name === name);
     // console.log(target);
-    if (target.children && target.children.length) {
-      const div = this.genDivList(target.children);
-      e.target.bindPopup(div).openPopup();
-    }
+
+    if (!target || !target.children || !target.children.length)
+      return;
+    const { id, children } = target;
+    if (areaInfo[id].isBuilding)
+      children && children.length && e.target.bindPopup(this.genChoiceList(target.children)).openPopup();
+    else
+      setAreaId(id);
   }
 
-  genDivList = children => {
+  genChoiceList = children => {
     const { setAreaId } = this.props;
     const container = document.createElement('div');
     container.className = styles.popContainer;
-    for (const { id, areaName } of children) {
+    for (const { id, name } of children) {
       const p = document.createElement('p');
-      p.innerHTML = areaName;
+      p.innerHTML = name;
       p.onclick = e => setAreaId(id);
       p.className = styles.popp;
       container.appendChild(p);
@@ -70,11 +78,23 @@ export default class LeafletMap extends PureComponent {
     return container;
   };
 
+  handleBack = e => {
+    const { areaId, areaInfo, setAreaId } = this.props;
+    const { parentId } = areaInfo[areaId];
+    const parent = areaInfo[parentId];
+    if (parent.isBuilding)
+      setAreaId(parent.parentId);
+    else
+      setAreaId(parentId);
+  }
+
   render() {
-    const { loading, url, icons } = this.props;
+    const { loading, url, icons, areaId, areaInfo, setAreaId } = this.props;
     const { data, images, reference } = this.state;
 
-    console.log(icons);
+    // console.log(icons);
+
+    const parentId = areaId ? areaInfo[areaId].parentId : undefined;
 
     const imgDraw = (
       <Spin spinning={false} style={{ height: '100%' }}>
@@ -96,6 +116,7 @@ export default class LeafletMap extends PureComponent {
     return (
       <div className={styles.container}>
         {imgDraw}
+        {parentId && <Icon type="rollback" onClick={this.handleBack} className={styles.back} />}
       </div>
     );
   }

@@ -68,15 +68,6 @@ export function getAreaId(wsData) {
   return '';
 }
 
-function traverse(list, callback, deep=0) {
-  list.forEach(item => {
-    const children = item.children;
-    callback(item, deep);
-    if (Array.isArray(children))
-      traverse(children, callback, deep + 1);
-  });
-}
-
 // 生成新的树
 export function genTreeList(list, callback, deep=0) {
   return list.map(item => {
@@ -89,26 +80,27 @@ export function genTreeList(list, callback, deep=0) {
   });
 }
 
-export function handleSectionTree(list) {
-  traverse(list, (item, deep) => {
-    const { name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus } = item;
-    item.areaName = name;
-    item.count = cardCount;
-    item.status = lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 0 : 1;
-    item.indentLevel = deep;
-  });
-}
+// export function handleSectionTree(list) {
+//   traverse(list, (item, deep) => {
+//     const { name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus } = item;
+//     item.name = name;
+//     item.count = cardCount;
+//     item.status = lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 0 : 1;
+//     item.indentLevel = deep;
+//   });
+// }
 
 export function getSectionTree(list) {
   return genTreeList(list, item => {
-    const { id, name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus, mapPhoto, range } = item;
+    const { id, name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus, mapPhoto, range, ...restProps } = item;
     return {
       id,
-      areaName: name,
-      count: cardCount,
-      status: lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 0 : 1,
+      name,
       mapPhoto,
       range,
+      ...restProps,
+      count: cardCount,
+      status: lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 0 : 1,
     };
   });
 }
@@ -151,4 +143,74 @@ export function parseImage(section) {
   let { id, mapPhoto, range } = section;
   range = range || '{}';
   return { id, url: JSON.parse(mapPhoto).url, ...JSON.parse(range) };
+}
+
+export function getAreaChangeMap(list) {
+  return list.reduce((prev, next) => {
+    const { areaId, type } = next;
+    // 1 进入 2 离开
+    const delta = +type === 1 ? 1 : -1;
+    if (prev[areaId])
+      prev[areaId] += delta;
+    else
+      prev[areaId] = 0;
+    return prev;
+  }, {});
+}
+
+function getChildIds(tree, cache) {
+  const { id, children } = tree;
+  let childIds = cache[id];
+
+  if (!children || !children.length)
+    return [];
+
+  if (childIds)
+    return childIds;
+
+  childIds = children.reduce((prev, next) => {
+    const { id } = next;
+    // console.log(id, next);
+    prev.push(id);
+    return prev.concat(getChildIds(next, cache).filter(id => id));
+  }, []);
+  cache[id] = childIds;
+  return childIds;
+}
+
+function traverse(list, callback, parentId=null) {
+  list.forEach(item => {
+    const { id, children } = item;
+    callback(item, parentId);
+    if (Array.isArray(children))
+      traverse(children, callback, id);
+  });
+}
+
+// 本身用的单位平面图，但是子节点用的是楼层图，则为多层建筑物，此处简化处理，认为平面图就一张，mapId相同的为单位平面图，不同的为楼层平面图
+function isBuilding(mapId, childMapId, companyMapId) {
+  const isCompanyMap = mapId === companyMapId;
+  const isFirstChildFloor = childMapId !== companyMapId;
+  if (isCompanyMap && isFirstChildFloor)
+    return true;
+  return false;
+}
+
+// 将区域树打平成一个Map对象，areaId => { name, parent, childIds }
+export function getAreaInfo(list) {
+  const cache = {};
+  const areaInfo = {};
+  traverse(list, (item, parentId) => {
+    const { id, name, companyMap, mapId, children } = item;
+    const first = children && children.length ? children[0] : {};
+    areaInfo[id] = {
+      id,
+      name,
+      parentId,
+      isBuilding: isBuilding(mapId, first.mapId, companyMap),
+      childIds : getChildIds(item, cache),
+    };
+  });
+
+  return areaInfo;
 }
