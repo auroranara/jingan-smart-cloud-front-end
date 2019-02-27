@@ -229,7 +229,7 @@ export default class UnitMonitorDrawer extends PureComponent {
           videoList={cameraList}
           visible={videoVisible}
           keyId={videoKeyId}
-          style={VIDEO_STYLE}
+          // style={VIDEO_STYLE}
           handleVideoClose={this.handleVideoClose}
         />
       </div>
@@ -243,7 +243,10 @@ export default class UnitMonitorDrawer extends PureComponent {
         left={left}
         visible={visible}
         placement="right"
-        onClose={this.handleCLoseDrawer}
+        onClose={()=>{
+          this.handleCLoseDrawer();
+          this.handleVideoClose();
+        }}
       />
     )
   }
