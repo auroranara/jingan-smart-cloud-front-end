@@ -140,12 +140,14 @@ export default class MapSection extends PureComponent {
 
   handleMapClick = extData => {
     if (extData.companyId === this.state.infoWindow.companyId && this.state.infoWindowShow) return;
+    const { longitude, latitude } = extData;
     this.setState({
       infoWindowShow: true,
       infoWindow: {
         ...extData,
       },
     });
+    this.mapInstance.setZoomAndCenter(18, [longitude, latitude]);
   };
 
   renderTips = () => {
@@ -187,10 +189,10 @@ export default class MapSection extends PureComponent {
 
   // 点击打开查看单位监测信息弹窗
   hanldeViewMonitor = () => {
-    const { onInfoTitleClick } = this.props
-    const { infoWindow } = this.state
-    onInfoTitleClick(infoWindow)
-  }
+    const { onInfoTitleClick } = this.props;
+    const { infoWindow } = this.state;
+    onInfoTitleClick(infoWindow);
+  };
 
   // 弹窗渲染
   renderInfoWindow = () => {
@@ -223,7 +225,9 @@ export default class MapSection extends PureComponent {
         key={companyId}
       >
         <div className={styles.comapnyWrapper}>
-          <h3 className={styles.comapnyName} onClick={this.hanldeViewMonitor}>{companyName}</h3>
+          <h3 className={styles.comapnyName} onClick={this.hanldeViewMonitor}>
+            {companyName}
+          </h3>
           <div className={styles.info}>
             <span
               className={styles.infoIcon}

@@ -241,7 +241,10 @@ export default class MonitorDrawer extends PureComponent {
         left={left}
         placement="right"
         rowStyle={{ height: 'calc(100% - 70px)' }}
-        onClose={this.handleClose}
+        onClose={()=>{
+          this.handleClose();
+          this.handleVideoClose();
+        }}
       />
     );
   }
