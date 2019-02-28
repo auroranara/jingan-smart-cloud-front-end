@@ -520,7 +520,7 @@ export default class Smoke extends PureComponent {
         gridId,
       },
       success: () => {
-        this.handleDrawerVisibleChange('alarmDynamic');
+        this.handleDrawerVisibleChange('fire');
       },
     });
     this.setState({ type: type });
@@ -544,6 +544,7 @@ export default class Smoke extends PureComponent {
   };
 
   handleFaultClick = (id, companyId, companyName, num) => {
+    return null;
     const {
       dispatch,
       match: {
