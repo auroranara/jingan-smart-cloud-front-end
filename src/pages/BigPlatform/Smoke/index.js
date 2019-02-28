@@ -72,6 +72,7 @@ export default class Smoke extends PureComponent {
       tooltipVisible: false,
       tooltipPosition: [0, 0],
       maintenanceDrawerVisible: false,
+      alarmDynamicDrawerVisible: false,
       // drawerType: '', // alarm,fault
       alarmIds: [],
       companyName: '',
@@ -119,7 +120,7 @@ export default class Smoke extends PureComponent {
       payload: { gridId },
     });
 
-    // // 获取接入单位统计列表
+    // 获取接入单位统计列表
     dispatch({
       type: 'smoke/fetchImportingTotal',
       payload: {
@@ -135,7 +136,7 @@ export default class Smoke extends PureComponent {
       },
     });
 
-    // // 获取异常单位统计列表
+    // 获取异常单位统计列表
     dispatch({
       type: 'smoke/fetchAbnormalingTotal',
       payload: {
@@ -163,7 +164,7 @@ export default class Smoke extends PureComponent {
     const params = {
       companyId: gridId,
       env,
-      type: 4,
+      type: 5,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
     // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
@@ -177,7 +178,6 @@ export default class Smoke extends PureComponent {
     };
 
     ws.onmessage = e => {
-      if (true) return;
       // 判断是否是心跳
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
@@ -203,12 +203,9 @@ export default class Smoke extends PureComponent {
           this.fetchAbnormal();
           if (type === 32) {
             // const sameItem = alarmIds.find(item=>item.companyId===companyId);
-            let sameIndex;
-            alarmIds.forEach((item, i) => {
-              if (item.companyId === companyId) sameIndex = i;
-            });
+            const sameIndex = alarmIds.map(item => item.companyId).indexOf(companyId);
             const newList =
-              sameIndex !== undefined
+              sameIndex >= 0
                 ? [
                     ...alarmIds.slice(0, sameIndex),
                     { companyId, messageFlag },
@@ -293,9 +290,9 @@ export default class Smoke extends PureComponent {
       },
     } = this.props;
 
-    // 获取单位数据
+    // 烟感地图数据
     dispatch({
-      type: 'smoke/fetchUnitData',
+      type: 'smoke/fetchMapList',
       payload: { gridId },
     });
 
@@ -305,7 +302,7 @@ export default class Smoke extends PureComponent {
       payload: { gridId },
     });
 
-    // 获取异常单位统计
+    // 历史火警单位统计
     dispatch({
       type: 'smoke/fetchAbnormalingTotal',
       payload: {
@@ -474,11 +471,6 @@ export default class Smoke extends PureComponent {
     this.showUnitDetail(units.filter(item => item.companyId === companyId)[0]);
   };
 
-  getCameraList = id => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'smoke/fetchCameraList', payload: { company_id: id } });
-  };
-
   handleClickCamera = () => {
     const {
       smoke: { cameraList },
@@ -534,13 +526,14 @@ export default class Smoke extends PureComponent {
       },
     } = this.props;
     this.setState({ companyName });
-    dispatch({
-      type: 'smoke/fetchGasForMaintenance',
-      payload: { companyId, id, gridId, num },
-      success: () => {
-        this.handleDrawerVisibleChange('maintenance');
-      },
-    });
+    this.handleDrawerVisibleChange('alarmDynamic');
+    // dispatch({
+    //   type: 'smoke/fetchGasForMaintenance',
+    //   payload: { companyId, id, gridId, num },
+    //   success: () => {
+    //     this.handleDrawerVisibleChange('alarmDynamic');
+    //   },
+    // });
   };
 
   onRef = ref => {
@@ -575,7 +568,7 @@ export default class Smoke extends PureComponent {
         unitSet,
         deviceStatusCount,
         gasForMaintenance = [],
-        companySmokeInfo: { dataByCompany, list: devList },
+        companySmokeInfo: { dataByCompany, map: devMap = { unnormal: [], fault: [], normal: [] } },
         cameraList,
       },
       match: {
@@ -596,6 +589,7 @@ export default class Smoke extends PureComponent {
       tooltipPosition,
       maintenanceDrawerVisible,
       monitorDrawerVisible,
+      alarmDynamicDrawerVisible,
       // videoVisible,
       // drawerType,
       alarmIds,
@@ -719,7 +713,7 @@ export default class Smoke extends PureComponent {
         <AlarmDynamicDrawer
           data={[]}
           companyName={companyName}
-          // visible={true}
+          visible={alarmDynamicDrawerVisible}
           onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
         />
         {/* 单位监测数据 */}
@@ -728,10 +722,9 @@ export default class Smoke extends PureComponent {
             unitDetail,
             cameraList,
             dataByCompany,
-            devList,
+            devList: [...devMap.unnormal, ...devMap.fault, ...devMap.normal],
           }}
           visible={monitorDrawerVisible}
-          // visible={true}
           handleClose={this.hideUnitDetail}
           handleSelect={this.handleSelectDevice}
           handleClickCamera={this.handleClickCamera}
