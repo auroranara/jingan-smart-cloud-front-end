@@ -705,6 +705,7 @@ export default class Smoke extends PureComponent {
           visible={fireDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           type={type}
+          gridId={gridId}
         />
         {/* 故障处理动态 */}
         <MaintenanceDrawer

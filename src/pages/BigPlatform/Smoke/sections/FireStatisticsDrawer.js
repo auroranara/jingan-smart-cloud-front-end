@@ -33,6 +33,7 @@ export default class FireStatisticsDrawer extends PureComponent {
 
   handleOk = type => {
     const {
+      gridId,
       dispatch,
       form: { getFieldsValue },
     } = this.props;
@@ -50,6 +51,7 @@ export default class FireStatisticsDrawer extends PureComponent {
         startDate: startDate && startDate.format('YYYY-MM-DD'),
         endDate: endDate && endDate.format('YYYY-MM-DD'),
         type,
+        gridId,
       },
     });
   };
