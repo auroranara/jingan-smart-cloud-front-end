@@ -506,11 +506,17 @@ export default class Smoke extends PureComponent {
   };
 
   handleHistoricalFireClick = type => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { gridId },
+      },
+    } = this.props;
     dispatch({
       type: 'smoke/fetchFireHistory',
       payload: {
         type,
+        gridId,
       },
       success: () => {
         this.handleDrawerVisibleChange('fire');
