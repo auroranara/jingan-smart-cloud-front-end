@@ -33,7 +33,7 @@ export default function CompanyInfo ({
     // 特种设备统计
     specialEquipmentCount,
     // 隐患列表
-    hiddenDangerList: { ycq = [], wcq = [], dfc = [] },
+    hiddenDangerList: { pagination: { total: hiddenDangerCount=0 }={} }={},
     // 安全指数
     safetyIndex,
   },
@@ -46,8 +46,6 @@ export default function CompanyInfo ({
   // 安全指数是否正在加载中
   loading,
 }) {
-  // 计算当前隐患总数
-  const hiddenDangerCount = ycq.length + wcq.length + dfc.length;
   // 安全指数图颜色
   const color = safetyIndex >= 80 ? "#00a8ff" : '#ff4848';
 

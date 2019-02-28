@@ -3,9 +3,9 @@ import ReactEcharts from 'echarts-for-react';
 import Section from '../Section';
 import RiskPointPieLegend from '../../../Components/RiskPointPieLegend';
 import splitLine from '@/assets/split-line.png';
-import checkingIcon from '@/assets/icon_pending_inspection.png';
+import pendingIcon from '@/assets/icon_pending_inspection.png';
 import abnormalIcon from '@/assets/icon_abnormal.png';
-import overIcon from '@/assets/icon_overtime.png';
+import overtimeIcon from '@/assets/icon_overtime.png';
 import normalIcon from '@/assets/icon_normal.png';
 // 引入样式文件
 import styles from './index.less';
@@ -100,11 +100,17 @@ export default class RiskPoint extends PureComponent {
   render() {
     const {
       // 模型
-      model: {
-        countDangerLocation: {
-          countDangerLocation: { red=0, orange=0, yellow=0, blue=0, not_rated=0, normal=0, checking=0, abnormal=0, over=0 }={},
-        },
-      },
+      data: {
+        red=0,
+        orange=0,
+        yellow=0,
+        blue=0,
+        gray=0,
+        normal=0,
+        abnormal=0,
+        pending=0,
+        overtime=0,
+      }={},
       // 点击事件
       handleClick,
     } = this.props;
@@ -133,12 +139,12 @@ export default class RiskPoint extends PureComponent {
       {
         label: '未评级',
         color: '#4F6793',
-        value: not_rated,
+        value: gray,
       },
     ];
     // 如果四色都为0的话，图标只显示总计即未评级
     if (red === 0 && orange === 0 && yellow === 0 && blue === 0) {
-      data = [{ value: not_rated, name: '总计', itemStyle: { color: '#4F6793' } }];
+      data = [{ value: gray, name: '总计', itemStyle: { color: '#4F6793' } }];
       legendData = legendData.slice(4);
     } else {
       const valuedData = [
@@ -148,11 +154,11 @@ export default class RiskPoint extends PureComponent {
         { value: blue, name: '蓝', itemStyle: { color: '#5EBEFF' } },
       ];
       // 如果四色有值，但未评级为0的话就只显示四色
-      if (not_rated === 0) {
+      if (gray === 0) {
         data = valuedData;
         legendData = legendData.slice(0, 4);
       } else {
-        data = valuedData.concat([{ value: not_rated, name: '未评级', itemStyle: { color: '#4F6793' } }]);
+        data = valuedData.concat([{ value: gray, name: '未评级', itemStyle: { color: '#4F6793' } }]);
       }
     }
     // 图表选项
@@ -226,12 +232,12 @@ export default class RiskPoint extends PureComponent {
             </div>
 
             <div
-              className={checking?styles.hoverable:undefined}
-              style={{ backgroundImage: `url(${checkingIcon})` }}
-              onClick={() => {checking && handleClick('riskPoint', { riskPointType: { key: 'status', value: '待检查' } });}}
+              className={pending?styles.hoverable:undefined}
+              style={{ backgroundImage: `url(${pendingIcon})` }}
+              onClick={() => {pending && handleClick('riskPoint', { riskPointType: { key: 'status', value: '待检查' } });}}
             >
               <div className={styles.countLabel}>待检查<span style={{ opacity: 0 }}>隐</span></div>
-              <div className={styles.countValue}>{checking}</div>
+              <div className={styles.countValue}>{pending}</div>
             </div>
 
             <div
@@ -244,12 +250,12 @@ export default class RiskPoint extends PureComponent {
             </div>
 
             <div
-              className={over?styles.hoverable:undefined}
-              style={{ backgroundImage: `url(${overIcon})` }}
-              onClick={() => {over && handleClick('riskPoint', { riskPointType: { key: 'status', value: '已超时' } });}}
+              className={overtime?styles.hoverable:undefined}
+              style={{ backgroundImage: `url(${overtimeIcon})` }}
+              onClick={() => {overtime && handleClick('riskPoint', { riskPointType: { key: 'status', value: '已超时' } });}}
             >
               <div className={styles.countLabel}>已超时<span style={{ opacity: 0 }}>隐</span></div>
-              <div className={styles.countValue}>{over}</div>
+              <div className={styles.countValue}>{overtime}</div>
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+// import Ellipsis from '@/components/Ellipsis';
 // 引入样式文件
 import styles from './index.less';
 
@@ -32,14 +33,14 @@ export default function Inspection({
           <div className={styles.itemValue}>{check_date && moment(check_date).format('YYYY-MM-DD')}</div>
         </div>
         <div className={styles.itemCol}>
-          <div className={styles.itemLabel}>巡查人：</div>
-          <div className={styles.itemValue}>{check_user_names}</div>
+          <div className={styles.itemLabel}>巡查结果：</div>
+          <div className={styles.itemValue}>{isNormal?'正常':<span className={styles.abnormal}>异常</span>}</div>
         </div>
       </div>
       <div className={`${styles.itemRow} ${styles.itemPadding}`}>
         <div className={styles.itemCol}>
-          <div className={styles.itemLabel}>巡查结果：</div>
-          <div className={styles.itemValue}>{isNormal?'正常':<span className={styles.abnormal}>异常</span>}</div>
+          <div className={styles.itemLabel}><span className={styles.itemLabelSpacing}>巡</span><span className={styles.itemLabelSpacing}>查</span>人：</div>
+          <div className={styles.itemValue}>{check_user_names}</div>
         </div>
       </div>
       <div className={`${styles.itemRow} ${styles.itemPadding}`}>

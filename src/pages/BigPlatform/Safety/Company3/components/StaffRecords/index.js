@@ -69,13 +69,14 @@ export default class StaffList extends PureComponent {
         dataIndex: 'user_name',
         key: 'user_name',
         width: 88,
+        render: (text) => <span className={styles.cellValue}>{text}</span>,
       },
       {
         title: '巡查时间',
         dataIndex: 'check_date',
         key: 'check_date',
-        width: 90,
-        render: (text) => <span>{moment(+text).format('YYYY-MM-DD')}</span>,
+        width: 100,
+        render: (text) => <span className={styles.cellValue}>{moment(+text).format('YYYY-MM-DD')}</span>,
       },
       {
         title: '巡查点位',
@@ -86,17 +87,17 @@ export default class StaffList extends PureComponent {
           const showLabel = +status === 2 || +status === 4;
           return (
             <span
+              className={styles.cellValue}
               style={{
-                display: 'inline-block',
                 position: 'relative',
-                padding: showLabel ? '0 66px' : undefined,
+                padding: showLabel ? '0 60px' : undefined,
                 color: '#00ffff',
                 cursor: 'pointer',
               }}
               onClick={() => {handleShowDetail(item_id, status);}}
             >
-              {value}
-              {showLabel && <div style={{ position: 'absolute', right: 0, top: '50%', transform: 'translate(0, -50%)', width: 58, height: 21, lineHeight: '19px', color: '#ff4848', border: '1px solid #ff4848' }}>{+status === 2 ? '异常' : '已超时'}</div>}
+              <Ellipsis lines={1} tooltip className={styles.ellipsis}>{value}</Ellipsis>
+              {showLabel && <div style={{ position: 'absolute', right: 0, top: 0, width: 58, height: 20, lineHeight: '18px', color: '#ff4848', border: '1px solid #ff4848' }}>{+status === 2 ? '异常' : '已超时'}</div>}
             </span>
           );
         },
@@ -109,7 +110,7 @@ export default class StaffList extends PureComponent {
         render: (text, { check_id, status }) => {
           const isNormal = +text === 1;
           return (
-            <span style={{ color: isNormal ? undefined : '#ff4848', cursor: isNormal ? 'auto' : 'pointer' }} onClick={() => {!isNormal && getInspectionRecordData(check_id, status, () => { this.setState({ visible: true }); });}}>{isNormal ? '正常':'异常'}</span>
+            <span className={styles.cellValue} style={{ color: isNormal ? undefined : '#ff4848', cursor: isNormal ? 'auto' : 'pointer' }} onClick={() => {!isNormal && getInspectionRecordData(check_id, status, () => { this.setState({ visible: true }); });}}>{isNormal ? '正常':'异常'}</span>
           )
         },
       },
@@ -121,7 +122,7 @@ export default class StaffList extends PureComponent {
         render: (value, { check_id, rectification, review, closed, overTime, status }) => {
           const isAlert = rectification + review + closed + overTime > 0;
           return (
-            <div style={{ display: 'inline-block', width: 72, cursor: isAlert ? 'pointer' : 'auto' }} onClick={() => {isAlert && getInspectionRecordData(check_id, status, () => { this.setState({ visible: true }); });}}>{isAlert ? <Ellipsis lines={1} tooltip style={{ height: '1.5em' }}>{this.getResult({ rectification, review, closed, overTime })}</Ellipsis> : '---'}</div>
+            <div className={styles.cellValue} style={{ width: 72, cursor: isAlert ? 'pointer' : 'auto' }} onClick={() => {isAlert && getInspectionRecordData(check_id, status, () => { this.setState({ visible: true }); });}}>{isAlert ? <Ellipsis lines={1} tooltip className={styles.ellipsis}>{this.getResult({ rectification, review, closed, overTime })}</Ellipsis> : '---'}</div>
           );
         },
       },

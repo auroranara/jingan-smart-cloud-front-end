@@ -6,6 +6,7 @@ import CustomCarousel from '@/components/CustomCarousel';
 import SectionDrawer from '../SectionDrawer';
 import HiddenDanger from '../HiddenDanger';
 import Inspection from '../Inspection';
+import LoadMoreButton from '../LoadMoreButton';
 import RiskCard from '../RiskCard';
 // 暂无隐患图片
 import defaultHiddenDanger from '@/assets/default_hidden_danger.png';
@@ -14,6 +15,8 @@ import defaultInspection from '@/assets/default_inspection.png';
 // 引入样式文件
 import styles from './index.less';
 
+const renderThumbHorizontal = ({ style }) => <div style={{ ...style, display: 'none' }} />;
+const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)' };
 // 默认state
 const DEFAULT_STATE = {
   tabKey: 'hiddenDanger',
@@ -93,10 +96,25 @@ export default class RiskPointDetailDrawer extends PureComponent {
   }
 
   /**
+   * 加载更多
+   */
+  handleLoadMore = () => {
+    const { tabKey, subTabKey } = this.state;
+    if (tabKey === 'hiddenDanger') {
+      const { getRiskPointHiddenDangerList, data: { hiddenDangerList: { pagination: { pageNum=1 }={} } } } = this.props;
+      getRiskPointHiddenDangerList({ status: subTabKey, pageNum: pageNum + 1 });
+    }
+    else if (tabKey === 'inspection') {
+      const { getRiskPointInspectionList, data: { inspectionList: { pagination: { pageNum=1 }={} } } } = this.props;
+      getRiskPointInspectionList({ checkStatus: subTabKey, pageNum: pageNum + 1 });
+    }
+  }
+
+  /**
    * 隐患内容
    */
   renderHiddenDangerList() {
-    const { loadingRiskPointHiddenDangerList, data: { hiddenDangerList=[], hiddenDangerCount: { total=0, overTimeRectify=0, review=0, rectify=0 } }={} } = this.props;
+    const { loadingRiskPointHiddenDangerList, data: { hiddenDangerList: { list=[], pagination: { total: all=0, pageSize=0, pageNum=1 }={} }={}, hiddenDangerCount: { total=0, overTimeRectify=0, review=0, rectify=0 } }={} } = this.props;
     const { subTabKey } = this.state;
     return (
       <Fragment>
@@ -128,47 +146,48 @@ export default class RiskPointDetailDrawer extends PureComponent {
         </div>
         <div className={styles.listContainer}>
           <Spin wrapperClassName={styles.spin} spinning={!!loadingRiskPointHiddenDangerList}>
-            <div className={styles.list}>
-              {hiddenDangerList.length > 0 ? (
-                <Scroll ref={this.setHiddenDangerScrollReference} thumbStyle={{ backgroundColor: 'rgb(0, 87, 169)' }}>
-                  <div className={styles.scrollContent}>
-                    {hiddenDangerList.map(({
-                      _id,
-                      _report_user_name,
-                      _report_time,
-                      _rectify_user_name,
-                      _plan_rectify_time,
-                      _review_user_name,
-                      business_type,
-                      _desc,
-                      path,
-                      _real_rectify_time,
-                      _review_time,
-                      hiddenStatus,
-                      report_source_name,
-                    }) => (
-                      <HiddenDanger
-                        key={_id}
-                        data={{
-                          report_user_name: _report_user_name,
-                          report_time: _report_time,
-                          rectify_user_name: _rectify_user_name,
-                          real_rectify_time: _real_rectify_time,
-                          plan_rectify_time: _plan_rectify_time,
-                          review_user_name: _review_user_name,
-                          review_time: _review_time,
-                          desc: _desc,
-                          business_type,
-                          status: hiddenStatus,
-                          hiddenDangerRecordDto: [{ fileWebUrl: path }],
-                          report_source_name,
-                        }}
-                      />
-                    ))}
-                  </div>
-                </Scroll>
-              ) : <div className={styles.defaultHiddenDanger} style={{ backgroundImage: `url(${defaultHiddenDanger})` }} />}
-            </div>
+            {list.length > 0 ? (
+              <Scroll className={styles.scroll} ref={this.setHiddenDangerScrollReference} renderThumbHorizontal={renderThumbHorizontal} thumbStyle={thumbStyle}>
+                <div className={styles.scrollContent}>
+                  {list.map(({
+                    _id,
+                    _report_user_name,
+                    _report_time,
+                    _rectify_user_name,
+                    _plan_rectify_time,
+                    _review_user_name,
+                    business_type,
+                    _desc,
+                    path,
+                    _real_rectify_time,
+                    _review_time,
+                    hiddenStatus,
+                    report_source_name,
+                  }) => (
+                    <HiddenDanger
+                      key={_id}
+                      data={{
+                        report_user_name: _report_user_name,
+                        report_time: _report_time,
+                        rectify_user_name: _rectify_user_name,
+                        real_rectify_time: _real_rectify_time,
+                        plan_rectify_time: _plan_rectify_time,
+                        review_user_name: _review_user_name,
+                        review_time: _review_time,
+                        desc: _desc,
+                        business_type,
+                        status: hiddenStatus,
+                        hiddenDangerRecordDto: [{ fileWebUrl: path }],
+                        report_source_name,
+                      }}
+                    />
+                  ))}
+                  {pageNum * pageSize < all && (
+                    <div className={styles.loadMoreWrapper}><LoadMoreButton onClick={this.handleLoadMore} /></div>
+                  )}
+                </div>
+              </Scroll>
+            ) : <div className={styles.defaultHiddenDanger} style={{ backgroundImage: `url(${defaultHiddenDanger})` }} />}
           </Spin>
         </div>
       </Fragment>
@@ -179,7 +198,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
    * 巡查内容
    */
   renderInspectionList() {
-    const { loadingRiskPointInspectionList, data: { inspectionList=[], inspectionCount: { total=0, normal=0, abnormal=0 } }={} } = this.props;
+    const { loadingRiskPointInspectionList, data: { inspectionList: { list=[], pagination: { total: all=0, pageSize=0, pageNum=1 }={} }={}, inspectionCount: { total=0, normal=0, abnormal=0 } }={} } = this.props;
     const { subTabKey } = this.state;
     return (
       <Fragment>
@@ -205,20 +224,21 @@ export default class RiskPointDetailDrawer extends PureComponent {
         </div>
         <div className={styles.listContainer}>
           <Spin wrapperClassName={styles.spin} spinning={!!loadingRiskPointInspectionList}>
-            <div className={styles.list}>
-              {inspectionList.length > 0 ? (
-                <Scroll ref={this.setInspectionScrollReference} thumbStyle={{ backgroundColor: 'rgb(0, 87, 169)' }}>
-                  <div className={styles.scrollContent}>
-                    {inspectionList.map((data) => (
-                      <Inspection
-                        key={data.check_id}
-                        data={data}
-                      />
-                    ))}
-                  </div>
-                </Scroll>
-              ) : <div className={styles.defaultHiddenDanger} style={{ backgroundImage: `url(${defaultInspection})` }} />}
-            </div>
+            {list.length > 0 ? (
+              <Scroll className={styles.scroll} ref={this.setInspectionScrollReference} renderThumbHorizontal={renderThumbHorizontal} thumbStyle={thumbStyle}>
+                <div className={styles.scrollContent}>
+                  {list.map((data) => (
+                    <Inspection
+                      key={data.check_id}
+                      data={data}
+                    />
+                  ))}
+                  {pageNum * pageSize < all && (
+                    <div className={styles.loadMoreWrapper}><LoadMoreButton onClick={this.handleLoadMore} /></div>
+                  )}
+                </div>
+              </Scroll>
+            ) : <div className={styles.defaultHiddenDanger} style={{ backgroundImage: `url(${defaultInspection})` }} />}
           </Spin>
         </div>
       </Fragment>
@@ -265,7 +285,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
               >
                 {cardList.map(item => (
                   <RiskCard
-                    key={item.id}
+                    key={item.id || item.item_id}
                     data={item}
                   />
                 ))}
