@@ -269,11 +269,11 @@ export default class UnitSafety extends PureComponent {
   /**
    * 显示风险点详情
    */
-  showRiskPointDetailDrawer = (itemId) => {
+  showRiskPointDetailDrawer = (itemId, status) => {
     // 保存点位id
     this.itemId = itemId;
     // 获取风险告知卡列表
-    this.fetchRiskPointCardList({ itemId }, () => {
+    this.fetchRiskPointCardList({ itemId, status }, () => {
       this.setDrawerVisible('riskPointDetail');
     });
     // 获取隐患列表

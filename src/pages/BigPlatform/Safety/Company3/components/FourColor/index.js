@@ -287,7 +287,7 @@ export default class FourColor extends PureComponent {
                       height: 35,
                       backgroundImage: `url(${getIconByColor(info)})`,
                     }}
-                    onClick={() => {handleClickPoint(itemId);}}
+                    onClick={() => {handleClickPoint(itemId, status);}}
                   />
                 </Tooltip>
               );
