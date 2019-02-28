@@ -72,3 +72,13 @@ export async function getCameraList(params) {
 export async function getGasForMaintenance(params) {
   return request(`${URL_PREFIX}/shg/getGasForMaintenance?${stringify(params)}`);
 }
+
+// 单位实时监测数据
+export async function fetchRealTimeMonitor(params) {
+  return request(`${URL_PREFIX}/shg/realTimeMonitor?${stringify(params)}`)
+}
+
+// 异常趋势图数据
+export async function fetchAbnormalTrend(params) {
+  return request(`/acloud_new/v2/shg/abnormalTrend?${stringify(params)}`)
+}

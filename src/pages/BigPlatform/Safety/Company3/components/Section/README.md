@@ -1,0 +1,13 @@
+| 参数 | 说明 | 类型 | 默认值 |
+| -- | -- | -- | -- |
+| className | 容器类名 | string | - |
+| style | 容器样式 | object | - |
+| titleStyle | 标题样式 | object | - |
+| contentStyle | 内容样式 | object | - |
+| title | 标题栏 | ReactNode | - |
+| action | 显示在右上角的内容 | ReactNode | - |
+| extra | 额外的内容，可以用来设置定位元素 | ReactNode | - |
+| fixedContent | 内容区域的固定元素 | ReactNode | - |
+| scrollProps | 滚动条相关设置属性，请查看Scroll组件 | object | - |
+| onClick | 添加在容器上的点击事件 | function | - |
+| refScroll | 对Scroll组件的引用 | function | - |

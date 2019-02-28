@@ -11,7 +11,7 @@ import {
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import { DotItem } from '../components/Components';
-import { sortCardList, getChartLabels } from '../utils';
+import { sortCardList, getChartLabels, getFirstDeviceId } from '../utils';
 
 const TYPE = 'unit';
 const NO_DATA = '暂无信息';
@@ -22,7 +22,7 @@ const RING_COLORS = ['159,159,159', '0,255,255'];
 const RING_LABELS = ['未接入', '已接入'];
 
 export default class UnitDrawer extends PureComponent {
-  state={ selected: 0, searchValue: '' };
+  state = { selected: 0, searchValue: '' };
 
   handleSelectChange = i => {
     this.setState({ selected: i });
@@ -42,12 +42,20 @@ export default class UnitDrawer extends PureComponent {
     const {
       visible,
       // handleSearch,
-      data: { list=[], statisticsData: { accessUnitStatistics=0, jurisdictionalUnitStatistics=0 } }={},
+      showUnitDetail,
+      data: {
+        list = [],
+        statisticsData: { accessUnitStatistics = 0, jurisdictionalUnitStatistics = 0 },
+      } = {},
     } = this.props;
     const { selected, searchValue } = this.state;
 
     const restStatistics = jurisdictionalUnitStatistics - accessUnitStatistics;
-    const rings = [restStatistics, accessUnitStatistics].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
+    const rings = [restStatistics, accessUnitStatistics].map((n, i) => ({
+      name: RING_LABELS[i],
+      value: n,
+      itemStyle: { color: `rgb(${RING_COLORS[i]})` },
+    }));
     const sortedList = sortCardList(list);
     // const barList = sortedList.filter(({ equipment }) => equipment).slice(0, 10).map(({ companyId, name, equipment }, i) => {
     //   let newName = name;
@@ -55,23 +63,33 @@ export default class UnitDrawer extends PureComponent {
     //     newName = `${name.slice(0, 10)}...`;
     //   return { id: companyId, name: newName, value: equipment };
     // });
-    const barList = sortedList.filter(({ equipment }) => equipment).slice(0, 10).map(({ companyId, name, equipment }, i) => ({ id: companyId, name, value: equipment}));
+    const barList = sortedList
+      .filter(({ equipment }) => equipment)
+      .slice(0, 10)
+      .map(({ companyId, name, equipment }, i) => ({ id: companyId, name, value: equipment }));
     const xLabels = getChartLabels(barList);
-    const filteredList = sortedList.filter(({ name }) => name.includes(searchValue)).filter(({ equipment }) => {
-      switch(selected) {
-        case 0:
-          return true;
-        case 1:
-          return !equipment;
-        case 2:
-          return equipment;
-        default:
-          return false;
-      }
-    });
+    const filteredList = sortedList
+      .filter(({ name }) => name.includes(searchValue))
+      .filter(({ equipment }) => {
+        switch (selected) {
+          case 0:
+            return true;
+          case 1:
+            return !equipment;
+          case 2:
+            return equipment;
+          default:
+            return false;
+        }
+      });
 
     const select = (
-      <OvSelect cssType={1} options={OPTIONS} value={selected} handleChange={this.handleSelectChange} />
+      <OvSelect
+        cssType={1}
+        options={OPTIONS}
+        value={selected}
+        handleChange={this.handleSelectChange}
+      />
     );
 
     const left = (
@@ -87,40 +105,85 @@ export default class UnitDrawer extends PureComponent {
 
     let cards = <p className={styles.empty}>暂无数据</p>;
     if (filteredList.length)
-      cards = filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess, equipment }) => (
-        <DrawerCard
-          key={companyId}
-          name={name || NO_DATA}
-          location={address || NO_DATA}
-          person={safetyMan || NO_DATA}
-          phone={safetyPhone || NO_DATA}
-          style={{ cursor: 'auto' }}
-          infoStyle={{ width: 70, textAlign: 'center', color: '#FFF', bottom: '50%', right: 25, transform: 'translateY(50%)' }}
-          info={
-            <Fragment>
-              <div className={styles.equipment}>{equipment || '--'}</div>
-              设备数
-            </Fragment>
-          }
-          more={
-            <p className={styles.more}>
-              {equipment ? [common, alarm, warn, noAccess].map((n, i) => (
-                <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
-              )) : ' '}
-            </p>
-          }
-        />
-      ));
+      cards = filteredList.map(
+        ({
+          companyId,
+          name,
+          address,
+          safetyMan,
+          safetyPhone,
+          common,
+          alarm,
+          warn,
+          noAccess,
+          equipment,
+          deviceList,
+        }) => (
+          <DrawerCard
+            key={companyId}
+            name={name || NO_DATA}
+            location={address || NO_DATA}
+            person={safetyMan || NO_DATA}
+            phone={safetyPhone || NO_DATA}
+            style={{ cursor: 'auto' }}
+            infoStyle={{
+              width: 70,
+              textAlign: 'center',
+              color: '#FFF',
+              bottom: '50%',
+              right: 25,
+              transform: 'translateY(50%)',
+            }}
+            info={
+              <Fragment>
+                {equipment > 0 ? (
+                  <div
+                    className={styles.equipment}
+                    onClick={i => showUnitDetail(companyId, getFirstDeviceId(deviceList, i))}
+                  >
+                    {equipment || '--'}
+                  </div>
+                ) : (
+                  <div className={styles.noEquipment}>{equipment || '--'}</div>
+                )}
+                设备数
+              </Fragment>
+            }
+            more={
+              <p className={styles.more}>
+                {equipment
+                  ? [common, alarm, warn, noAccess].map((n, i) => (
+                      <DotItem
+                        key={i}
+                        showLink
+                        title={LABELS[i]}
+                        quantity={n}
+                        color={`rgb(${COLORS[i]})`}
+                        onClick={e =>
+                          showUnitDetail(
+                            companyId,
+                            getFirstDeviceId(deviceList, i),
+                            i === 0 || i === 3 ? 0 : 1
+                          )
+                        }
+                      />
+                    ))
+                  : ' '}
+              </p>
+            }
+          />
+        )
+      );
 
     const right = (
-        <SearchBar
-          // value={value}
-          onSearch={this.handleSearch}
-          // onChange={this.handleChange}
-          extra={select}
-        >
-          {cards}
-        </SearchBar>
+      <SearchBar
+        // value={value}
+        onSearch={this.handleSearch}
+        // onChange={this.handleChange}
+        extra={select}
+      >
+        {cards}
+      </SearchBar>
     );
 
     return (

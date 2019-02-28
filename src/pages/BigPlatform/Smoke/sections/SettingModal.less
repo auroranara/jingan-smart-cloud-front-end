@@ -1,0 +1,74 @@
+@blue: rgb(3, 48, 105);
+@cyan: #0FF;
+
+.modal {
+  :global {
+    .ant-modal-content {
+      background-color: @blue;
+    }
+
+    .ant-modal-header {
+      border-bottom: none;
+      background-color: transparent;
+    }
+
+    .ant-modal-title {
+      color: #FFF;
+    }
+
+    .ant-modal-close {
+      color: #FFF;
+    }
+
+    .ant-modal-body {
+      padding: 0 0 0 55px;
+    }
+
+    .ant-modal-footer {
+      padding-bottom: 30px;
+      border-top: none;
+      text-align: center;
+    }
+
+    .ant-form-item-label label {
+      color: #FFF;
+    }
+
+    .ant-radio-wrapper, .ant-checkbox-wrapper {
+      color: #FFF;
+    }
+
+    .ant-radio-inner {
+      background-color: @blue;
+      border-color: @cyan;
+    }
+
+    .ant-radio-inner:after {
+      background-color: @cyan;
+    }
+
+    .ant-checkbox-inner {
+      background-color: @blue;
+      border-color: @cyan;
+    }
+
+    .ant-checkbox-checked .ant-checkbox-inner:after {
+      border-color: @cyan;
+    }
+
+    .ant-input {
+      color: #FFF;
+      background-color: rgb(14, 79, 160);
+    }
+  }
+}
+
+.rect {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  background-color: @cyan;
+  position: relative;
+  top: 3px;
+}

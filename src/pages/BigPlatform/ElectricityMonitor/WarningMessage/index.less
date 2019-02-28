@@ -32,8 +32,14 @@
   }
 
   .messageContent {
+    position: relative;
+
     div {
       padding: 3px 0;
+    }
+
+    .msgDetail {
+      padding-right: 50px;
     }
   }
 }
@@ -55,4 +61,13 @@
 .emptyData {
   padding: 12px 0;
   text-align: center;
+}
+
+.detail {
+  padding: 3px 0;
+  color: rgb(4, 253, 255);
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  cursor: pointer;
 }

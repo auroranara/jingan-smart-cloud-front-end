@@ -48,6 +48,7 @@ export default class App extends PureComponent {
     selectedDeviceType: 1,
     smokeStatus: ALL,
     storageDrawerVisible: false,
+    storageStatus: undefined,
   };
 
   componentDidMount() {
@@ -134,10 +135,10 @@ export default class App extends PureComponent {
     });
 
     // 储罐统计下钻
-    dispatch({
-      type: 'monitor/fetchTankMessageList',
-      payload: { companyId },
-    });
+    // dispatch({
+    //   type: 'monitor/fetchTankMessageList',
+    //   payload: { companyId },
+    // });
 
     // 轮询
     this.pollTimer = setInterval(this.polling, DELAY);
@@ -205,10 +206,10 @@ export default class App extends PureComponent {
     });
 
     // 储罐统计下钻
-    dispatch({
-      type: 'monitor/fetchTankMessageList',
-      payload: { companyId },
-    });
+    // dispatch({
+    //   type: 'monitor/fetchTankMessageList',
+    //   payload: { companyId },
+    // });
   };
 
   waterPolling = () => {
@@ -415,9 +416,35 @@ export default class App extends PureComponent {
   };
 
   // 查看储罐监测
-  handleStorageDrawer = () => {
-    this.setState({ storageDrawerVisible: true });
+  handleStorageDrawer = (status = 'all') => {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props
+    this.setState({ storageDrawerVisible: true, storageStatus: status });
+    // 获取储罐下钻数据
+    dispatch({
+      type: 'monitor/fetchTankMessageList',
+      payload: { companyId, status: status === 'all' ? null : status },
+    });
   };
+
+  handleStorageFilter = (status = 'all') => {
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props
+    this.setState({ storageStatus: status });
+    // 获取储罐下钻数据
+    dispatch({
+      type: 'monitor/fetchTankMessageList',
+      payload: { companyId, status: status === 'all' ? null : status },
+    });
+  }
 
   render() {
     // 从props中获取企业名称
@@ -464,6 +491,7 @@ export default class App extends PureComponent {
       chartSelectVal,
       selectedDeviceType,
       storageDrawerVisible,
+      storageStatus,
     } = this.state;
 
     // let companyName = '暂无信息';
@@ -624,6 +652,9 @@ export default class App extends PureComponent {
               storageDrawerVisible: false,
             });
           }}
+          storageStatus={storageStatus}
+          handleFilter={this.handleStorageFilter}
+          statistics={tankData}
         />
       </div>
     );

@@ -1,0 +1,106 @@
+/***************************** 隐患详情单元 *************************/
+.riskDetailItem {
+  position: relative;
+  margin-bottom: 14px;
+  font-size: 16px;
+  line-height: 1;
+  background: rgb(4, 64, 125) no-repeat right bottom;
+  background-size: 96px 96px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  /* 印章 */
+  .riskDetailItemSealWrapper {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 5em;
+    height: 5em;
+    z-index: 9;
+    background: no-repeat center center;
+    background-size: 100% 100%;
+  }
+
+  /* 标题 */
+  .riskDetailItemTitleWrapper {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+
+    .riskDetailItemTitleAvatar {
+      flex: none;
+      width: 1.5em;
+      height: 1.5em;
+      margin: 0 8px 0 12px;
+      background: transparent no-repeat center;
+      background-size: auto 100%;
+    }
+
+    .riskDetailItemTitle {
+      flex: 1;
+      line-height: 1.5;
+    }
+  }
+
+  /* 内容 */
+  .riskDetailItemContentWrapper {
+    display: flex;
+    align-items: center;
+    padding: 0 0 1em 12px;
+
+    .riskDetailItemImageWrapper {
+      flex: none;
+      position: relative;
+      width: 30%;
+      padding: 20% 0;
+      background: rgb(3, 48, 105) no-repeat center;
+      background-size: 50% auto;
+
+      .riskDetailItemImage {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: no-repeat center;
+        background-size: contain;
+      }
+    }
+
+    .riskDetailItemInfoWrapper {
+      flex: 1;
+      padding-left: 1em;
+      min-height: 160px;
+
+      .riskDetailItemTextWrapper {
+        display: flex;
+        padding: 5px 0;
+        line-height: 1.5;
+
+        & > :first-child {
+          flex: none;
+          color: #00ffff;
+        }
+
+        & > :nth-child(2) {
+          flex: 1;
+          color: #fff;
+        }
+
+        .riskDetailItemTextFirstChild {
+          display: inline-block;
+          margin-right: 1em;
+          vertical-align: top;
+        }
+      }
+    }
+  }
+  .ellipsis {
+    height: 1.5em;
+  }
+  .paddingRight {
+    padding-right: 5em;
+  }
+}

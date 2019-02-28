@@ -1,0 +1,80 @@
+.container {
+  position: relative;
+
+  .prevArrow {
+    left: 0;
+  }
+  .nextArrow {
+    right: 0;
+  }
+  .prevArrow,
+  .nextArrow {
+    position: absolute;
+    top: 50%;
+    font-size: 32px;
+    line-height: 1.5;
+    color: #4d4d4d;
+    background: rgba(22, 22, 22, 0.8);
+    transform: translateY(-50%);
+    transition: opacity 0.5s;
+    opacity: 0;
+    cursor: pointer;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+
+  :global {
+    .ant-carousel {
+      .slick-dots {
+        height: auto;
+        font-size: 0;
+
+        li {
+          margin: 0;
+          padding: 0 6px;
+
+          &.slick-active {
+            div {
+              background-color: #00FFFF;
+            }
+          }
+          div {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #04407D;
+            border-radius: 50%;
+            cursor: pointer;
+
+            &:hover {
+              background-color: #00FFFF;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.adaptiveContainer {
+  height: 100%;
+
+  :global {
+    .ant-carousel {
+      height: 100%;
+    }
+    .slick-slider {
+      height: 100%;
+    }
+    .slick-list {
+      height: 100% !important;
+    }
+    .slick-track {
+      height: 100%;
+    }
+    .slick-slide > div {
+      height: 100%;
+    }
+  }
+}

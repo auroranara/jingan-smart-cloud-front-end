@@ -20,16 +20,17 @@ const LABELS = ['安全巡查', '隐患排查', '动态监测', '安全档案'];
 const BAR_COLORS = ['85,134,244', '233,102,108', '244,185,85', '2,252,250'];
 
 // const BAR_LIST = LABELS.map(label => ({ name: label, value: Math.floor(Math.random() * 100) }));
-const DEFAULT_LIST = [...Array(10).keys()].map(i => ({ id: i }));
+// const DEFAULT_LIST = [...Array(10).keys()].map(i => ({ id: i }));
 
-function getDesc(selected, list) {
-  switch(selected) {
+function getDesc(selected, list, hiddenDangerCount) {
+  const { total, ycq } = hiddenDangerCount;
+  switch (selected) {
     case 0:
       const out = list.filter(item => item.status === 4);
       return `共${out.length}个点位超时未查`;
     case 1:
       const out1 = list.filter(item => item.status === '7');
-      return `共${list.length}个隐患，其中已超期${out1.length}个`;
+      return `共${total}个隐患，其中已超期${ycq}个`;
     case 2:
       const loss = list.filter(item => item.status === LOSS_STATUS);
       return `共${list.length - loss.length}个报警设备，${loss.length}个失联设备`;
@@ -41,7 +42,7 @@ function getDesc(selected, list) {
 }
 
 export default class IndexDrawer extends PureComponent {
-  state={ selected: 0 };
+  state = { selected: 0 };
 
   handleClose = () => {
     const { handleDrawerVisibleChange } = this.props;
@@ -53,20 +54,40 @@ export default class IndexDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, data: { safetyIndex, safetyIndexes, riskList, dangerList, monitorList, safeList=DEFAULT_LIST } } = this.props;
+    const {
+      visible,
+      data: {
+        safetyIndex,
+        safetyIndexes,
+        riskList,
+        dangerList,
+        monitorList,
+        safeList,
+        hiddenDangerCount,
+      },
+    } = this.props;
     const { selected } = this.state;
 
-    const titleIcon = <Rect color='#0967d3' />;
+    console.log('riskList', riskList);
+    const titleIcon = <Rect color="#0967d3" />;
     // const barLists = [riskList, dangerList, monitorList, safeList];
     // const barListData = LABELS.map((label, i) => ({ name: label, value: Array.isArray(barLists[i]) ? barLists[i].length : 0 }));
-    const barListData = LABELS.map((label, i) => ({ name: label, value: safetyIndexes[i] })).filter(item => item.value !== null);
+    const barListData = LABELS.map((label, i) => ({ name: label, value: safetyIndexes[i] })).filter(
+      item => item.value !== null
+    );
     const left = (
       <Fragment>
         <DrawerSection title="构成">
           <Solar index={safetyIndex} />
         </DrawerSection>
         <DrawerSection title="分值">
-          <ChartBar barWidth={30} barColors={BAR_COLORS} labelRotate={0} data={barListData} yAxisRange={[0, 100]} />
+          <ChartBar
+            barWidth={30}
+            barColors={BAR_COLORS}
+            labelRotate={0}
+            data={barListData}
+            yAxisRange={[0, 100]}
+          />
         </DrawerSection>
       </Fragment>
     );
@@ -75,9 +96,11 @@ export default class IndexDrawer extends PureComponent {
     const CardComponent = CARD_COMPONENTS[selected];
     let cards = <p className={styles.empty}>暂无信息</p>;
     if (list.length)
-      cards = list.map((item, i) => <CardComponent key={item.id || item.item_id || i} data={item} />);
+      cards = list.map((item, i) => (
+        <CardComponent key={item.id || item.item_id || i} data={item} />
+      ));
 
-    const desc = getDesc(selected, list);
+    const desc = getDesc(selected, list, hiddenDangerCount);
     const right = (
       <div className={styles.right}>
         <div className={styles.labels}>
@@ -92,9 +115,7 @@ export default class IndexDrawer extends PureComponent {
           ))}
         </div>
         <p className={styles.desc}>{desc}</p>
-        <div className={styles.cards}>
-          {cards}
-        </div>
+        <div className={styles.cards}>{cards}</div>
       </div>
     );
 

@@ -1,9 +1,15 @@
-# props属性详解
-* className={styles.xxx} 布局容器的类名
-* style={{ height: '100%' }} 布局容器的样式
-* title="晶安智慧云平台" 默认为global.PROJECT_CONFIG.projectName
-* autoSpace={false} 标题是否添加空格,默认为true
-* extra={companyName} 头部左边的内容，如企业名称或选择框等
-* contentStyle={{}} 内容样式
-* headerStyle={{}} 头部样式
-* titleStyle 标题样式
+| 参数 | 说明 | 类型 | 默认值 |
+| -- | -- | -- | -- |
+| className | 容器类名 | string | - |
+| style | 容器类名 | object | - |
+| title | 标题 | string | global.PROJECT_CONFIG.projectName |
+| autoSpace | 标题文字之间是否添加空格 | boolean | true |
+| titleStyle | 标题容器样式 | object | - |
+| extra | 头部左边的内容，如企业名称或选择框等 | ReactNode | - |
+| extraStyle | 头部左边内容容器样式 | object | - |
+| headerStyle | 头部容器样式 | object | - |
+| contentStyle | 内容容器样式 | object | - |
+| timeStyle | 时间容器样式 | object | - |
+| settable | 是否显示设置按钮 | boolean | - |
+| setStyle | 设置按钮样式 | object | - |
+| onSet | 设置按钮点击事件 | function | - |

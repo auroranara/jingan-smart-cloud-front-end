@@ -1,0 +1,53 @@
+.container {
+  display: table;
+  table-layout:fixed;
+  width: 100%;
+  height: 100%;
+  font-size: 16px;
+  line-height: 1;
+
+  .titleWrapper {
+    padding: 16px;
+
+    .title {
+      padding-left: 10px;
+      border-left: 3px solid #00ffff;
+    }
+  }
+
+  .carouselContainer {
+    padding: 0 16px 16px;
+
+    .carousel {
+      :global {
+        .slick-dots {
+          bottom: -16px;
+        }
+      }
+    }
+  }
+
+  .listContainer {
+    display: table-row;
+    height: 100%;
+
+    .list {
+      position: relative;
+      height: 100%;
+
+      .scrollContent {
+        padding: 0 16px;
+      }
+
+      .defaultHiddenDanger {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: no-repeat center;
+        background-size: 50% auto;
+      }
+    }
+  }
+}

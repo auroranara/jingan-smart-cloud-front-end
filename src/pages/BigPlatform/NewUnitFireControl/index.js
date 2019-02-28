@@ -221,12 +221,16 @@ export default class App extends PureComponent {
               }
             }
 
-            if (
-              type === 15 ||
-              type === 16 ||
-              type === 17 ||
-              (type === 13 && checkResult === '无隐患')
-            ) {
+            if (type === 14) {
+              // 获取点位
+              dispatch({
+                type: 'newUnitFireControl/fetchPointList',
+                payload: {
+                  companyId,
+                },
+              });
+            }
+            if (type === 15 || type === 16 || type === 17) {
               if (fourColorTips[pointId] === messageFlag)
                 this.removeFourColorTip(pointId, messageFlag);
               // 获取点位
@@ -236,6 +240,16 @@ export default class App extends PureComponent {
                   companyId,
                 },
               });
+            }
+            if (type === 13) {
+              // 获取点位
+              dispatch({
+                type: 'newUnitFireControl/fetchPointList',
+                payload: {
+                  companyId,
+                },
+              });
+              if (checkResult === '无隐患') this.removeFourColorTip2(pointId);
             }
           },
         });
@@ -613,6 +627,18 @@ export default class App extends PureComponent {
     this.setState({
       fourColorTips: { ...fourColorTips, [id]: undefined },
       deletedFourColorTips: deletedFourColorTips.concat(hiddenDangerId),
+    });
+  };
+
+  /**
+   * 移除四色图隐患提示
+   */
+  removeFourColorTip2 = id => {
+    const { fourColorTips, deletedFourColorTips } = this.state;
+    // 删除对应的tip，将隐患id存放到删除列表中
+    this.setState({
+      deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[id]),
+      fourColorTips: { ...fourColorTips, [id]: undefined },
     });
   };
 

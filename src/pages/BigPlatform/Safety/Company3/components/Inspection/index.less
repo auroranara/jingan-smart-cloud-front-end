@@ -1,0 +1,56 @@
+.item {
+  margin-bottom: 14px;
+  padding: 10px 20px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #fff;
+  background-color: rgb(4, 64, 125);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .itemRow {
+    display: flex;
+  }
+  .itemCol {
+    flex: 1;
+    display: flex;
+  }
+  .itemPadding {
+    padding: 6px 0;
+  }
+  .itemLabel {
+    color: #00ffff;
+    flex: none;
+    width: 5em;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .itemValue {
+    flex: 1;
+  }
+  .itemPoint {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .itemResult {
+    flex: none;
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+  }
+  .itemResultLabel  {
+    padding: 0 4px;
+  }
+  .abnormal {
+    color: #f83329;
+  }
+  .itemLabelSpacing {
+    display: inline-block;
+    margin-right: 0.5em;
+    vertical-align: top;
+  }
+}

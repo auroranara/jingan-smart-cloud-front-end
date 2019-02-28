@@ -7,9 +7,9 @@ import L from 'leaflet';
 import styles from './index.less';
 
 // 边线宽度
-const weight = 1;
+const DEFAULT_WEIGHT = 1;
 // 颜色
-const defaultColor = '#000';
+const DEFAULT_COLOR = '#000';
 // 默认字体大小
 const defaultFontSize = 14;
 // 默认字体颜色
@@ -610,18 +610,35 @@ class ImageDraw extends PureComponent {
   }
 
   /**
+   * 渲染图标
+   */
+  renderDivIcon = (item) => {
+    const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
+    const { id, latlng, name, iconProps } = item;
+    return (
+      <Marker
+        key={id || name}
+        data={item}
+        icon={iconProps && L.divIcon(iconProps)}
+        position={{ lat: latlng.lat * height, lng: latlng.lng * width }}
+        onAdd={this.handleAdd}
+        onClick={this.handleClickShape}
+      />
+    );
+  }
+
+  /**
    * 渲染图形
    */
   renderShape = (item) => {
-    const { color=defaultColor } = this.props;
     const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
-    const { latlngs, latlng, type, radius, name, render } = item;
+    const { id, latlngs, latlng, type, radius, name, render, options: { color=DEFAULT_COLOR, weight=DEFAULT_WEIGHT }={} } = item;
     let shape = null;
     switch(type){
       case 'polygon': // 多边形
         shape = (
           <Polygon
-            key={name}
+            key={id || name}
             data={item}
             positions={latlngs.map(({ lat, lng }) => ({ lat: lat * height, lng: lng * width }))}
             onClick={this.handleClickShape}
@@ -635,7 +652,7 @@ class ImageDraw extends PureComponent {
       case 'rectangle': // 矩形
         shape = (
           <Rectangle
-            key={name}
+            key={id || name}
             data={item}
             bounds={latlngs.map(({ lat, lng }) => ({ lat: lat * height, lng: lng * width }))}
             onClick={this.handleClickShape}
@@ -649,7 +666,7 @@ class ImageDraw extends PureComponent {
       case 'circle': // 圆
         shape = (
           <Circle
-            key={name}
+            key={id || name}
             data={item}
             center={{ lat: latlng.lat * height, lng: latlng.lng * width }}
             radius={radius * width}
@@ -664,7 +681,7 @@ class ImageDraw extends PureComponent {
       case 'marker': // 标记
         shape = render ? render(item, { position: { lat: latlng.lat * height, lng: latlng.lng * width }, onAdd: this.handleAdd, onClick: this.handleClickShape }) : (
           <Marker
-            key={name}
+            key={id || name}
             data={item}
             position={{ lat: latlng.lat * height, lng: latlng.lng * width }}
             onAdd={this.handleAdd}
@@ -675,14 +692,13 @@ class ImageDraw extends PureComponent {
       case 'circlemarker':
         shape = (
           <CircleMarker
-            key={name}
+            key={id || name}
             data={item}
             center={{ lat: latlng.lat * height, lng: latlng.lng * width }}
             radius={radius * width}
             onClick={this.handleClickShape}
             onAdd={this.handleAdd}
             color={color}
-            // weight={weight}
           />
         );
         break;
@@ -701,7 +717,22 @@ class ImageDraw extends PureComponent {
   }
 
   render() {
-    const { className, style, mapProps, zoomControlProps, editControlProps, drawable, url, hideBackground, data=[], images, color=defaultColor, shapes=['polygon', 'rectangle', 'circle'], form: { getFieldDecorator } } = this.props;
+    const {
+      className,
+      style,
+      mapProps,
+      zoomControlProps,
+      editControlProps,
+      drawable,
+      url,
+      hideBackground,
+      data=[],
+      divIcons=[],
+      images,
+      color=DEFAULT_COLOR,
+      shapes=['polygon', 'rectangle', 'circle'],
+      form: { getFieldDecorator },
+    } = this.props;
     const { center, bounds, visible, maxBounds, zoom } = this.state;
 
     return (
@@ -748,21 +779,21 @@ class ImageDraw extends PureComponent {
                           message: '<strong>错误<strong>，你不能这么画!',
                         },
                         shapeOptions: {
-                          weight,
+                          weight: DEFAULT_WEIGHT,
                           color,
                         },
                       },
                       rectangle: shapes.includes('rectangle') && {
                         showArea: false,
                         shapeOptions: {
-                          weight,
+                          weight: DEFAULT_WEIGHT,
                           color,
                         },
                       },
                       circle: shapes.includes('circle') && {
                         showRadius: false,
                         shapeOptions: {
-                          weight,
+                          weight: DEFAULT_WEIGHT,
                           color,
                         },
                       },
@@ -782,6 +813,7 @@ class ImageDraw extends PureComponent {
                   />
                 )}
                 {data && data.map(this.renderShape)}
+                {divIcons && divIcons.map(this.renderDivIcon)}
               </FeatureGroup>
             </ImageOverlay>
           )}

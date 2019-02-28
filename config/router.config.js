@@ -102,7 +102,7 @@ module.exports = env => {
         },
         {
           path: '/big-platform/safety/company/:companyId',
-          component: './BigPlatform/Safety/Company2',
+          component: './BigPlatform/Safety/Company3',
         },
         {
           path: '/big-platform/fire-control/government/:gridId',
@@ -143,6 +143,10 @@ module.exports = env => {
         {
           path: '/big-platform/gas/:gridId',
           component: './BigPlatform/Gas',
+        },
+        {
+          path: '/big-platform/smoke/:gridId',
+          component: './BigPlatform/Smoke',
         },
       ],
     },
@@ -1552,7 +1556,7 @@ module.exports = env => {
                 {
                   name: 'companyBeacon',
                   code: 'personnelPosition.beaconManagement.companyBeacon',
-                  path: '/personnel-position/beacon-management/company/:id',
+                  path: '/personnel-position/beacon-management/company/:companyId',
                   component: './PersonnelPosition/BeaconManagement/CompanyBeacon',
                 },
               ],
@@ -1598,6 +1602,12 @@ module.exports = env => {
                   path: '/personnel-position/tag-management/detail',
                   code: 'personnelPosition.tagManagement.view',
                   component: './PersonnelPosition/TagManagement/TagManagementDetail',
+                },
+                {
+                  name: 'import',
+                  path: '/personnel-position/tag-management/import/:companyId',
+                  code: 'personnelPosition.tagManagement.import',
+                  component: './PersonnelPosition/TagManagement/ImportTag',
                 },
               ],
             },

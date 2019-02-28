@@ -14,7 +14,7 @@ import {
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import { DotItem } from '../components/Components';
-import { sortList } from '../utils';
+import { sortList, getFirstDeviceId } from '../utils';
 import unitRedIcon from '../imgs/unitRed.png';
 import unitBlueIcon from '../imgs/unitBlue.png';
 import unitYellowIcon from '../imgs/unitYellow.png';
@@ -28,20 +28,6 @@ const LABELS = ['正常', '告警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const OPTIONS = ['全部', '正常', '告警', '预警', '失联'].map((d, i) => ({ value: i, desc: d }));
 const SELECTED_PROPS = ['equipment', 'common', 'alarm', 'warn', 'noAccess'];
-
-// const CARDS = [...Array(10).keys()].map(i => ({
-//   companyId: i,
-//   name: '无锡市新吴区机械制造有限公司',
-//   address: '无锡市新吴区汉江路与龙江路交叉口5号',
-//   safetyMan: '王长江',
-//   safetyPhone: '13288888888',
-//   common: Math.floor(Math.random() * 10),
-//   alarm: Math.floor(Math.random() * 10),
-//   warn: Math.floor(Math.random() * 10),
-//   noAccess: Math.floor(Math.random() * 10),
-// }));
-
-// const GRAPH_LIST = [...Array(12).keys()].map(i => ({ id: i, name: (i + 2) % 12 || 12, value: Math.floor(Math.random() * 100) }));
 
 export default class AlarmDrawer extends PureComponent {
   state={ graph: 0, selected: 0, searchValue: '' };
@@ -74,6 +60,7 @@ export default class AlarmDrawer extends PureComponent {
     const {
       visible,
       // handleSearch,
+      showUnitDetail,
       data: {
         list=[],
         graphList=[],
@@ -155,7 +142,7 @@ export default class AlarmDrawer extends PureComponent {
 
     let cards = <p className={styles.empty}>暂无数据</p>;
     if (filteredList.length)
-      cards = filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess }) => (
+      cards = filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, common, alarm, warn, noAccess, deviceList }) => (
         <DrawerCard
           key={companyId}
           name={name || NO_DATA}
@@ -166,7 +153,13 @@ export default class AlarmDrawer extends PureComponent {
           more={
             <p className={styles.more}>
               {[common, alarm, warn, noAccess].map((n, i) => (
-                <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
+                <DotItem
+                  key={i}
+                  showLink
+                  title={LABELS[i]}
+                  color={`rgb(${COLORS[i]})`} quantity={n}
+                  onClick={e => showUnitDetail(companyId, getFirstDeviceId(deviceList, i), i === 0 || i === 3 ? 0 : 1)}
+                />
               ))}
             </p>
           }
