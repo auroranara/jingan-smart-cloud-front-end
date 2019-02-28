@@ -106,8 +106,8 @@ const smokeColumns = [
     key: 'status',
     dataIndex: 'status',
     align: 'center',
-    render: val => {
-      return +val === -1 ? '故障' : +val === 0 ? '正常' : '火警';
+    render: (val,{deviceStatus=null,workStatus=null,workStatusName=null}) => {
+      return +val === -1 ? (+deviceStatus===-1&&'故障（失联）')||(+workStatus===-3&&`故障（${workStatusName}）`) : +val === 0 ? '正常' : '火警';
     },
   },
   {
