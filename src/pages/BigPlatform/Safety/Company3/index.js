@@ -96,7 +96,7 @@ export default class UnitSafety extends PureComponent {
         // 获取监控数据
         'fetchMonitorData',
         // // 获取四色风险点
-        // 'fetchCountDangerLocation',
+        'fetchCountDangerLocation',
         // 获取安全人员信息
         'fetchSafetyOfficer',
         // 获取安全指数
@@ -137,7 +137,11 @@ export default class UnitSafety extends PureComponent {
    * 挂载后
    */
   componentDidMount() {
-    const { match: { params: { companyId } } } = this.props;
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     // 获取企业信息
     this.fetchCompanyMessage({ company_id: companyId });
     // 获取特种设备数
@@ -151,7 +155,7 @@ export default class UnitSafety extends PureComponent {
     // 获取监控数据
     this.fetchMonitorData({ companyId });
     // // 获取四色风险点
-    // this.fetchCountDangerLocation({ company_id: companyId });
+    this.fetchCountDangerLocation({ company_id: companyId });
     // 获取安全人员信息（安全人员信息卡片源数据）
     this.fetchSafetyOfficer({ company_id: companyId });
     // 获取安全指数
@@ -164,82 +168,107 @@ export default class UnitSafety extends PureComponent {
 
   /* 前往动态监控大屏 */
   goToMonitor = () => {
-    const { match: { params: { companyId } } } = this.props;
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     window.open(`${window.publicPath}#/big-platform/monitor/company/${companyId}`);
-  }
+  };
 
   /* 前往1.0统计页面 */
   goToCompanyIndex = () => {
-    const { match: { params: { companyId } } } = this.props;
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`);
-  }
+  };
 
   /**
    * 获取隐患列表
    */
-  getHiddenDangerList = (restProps) => {
-    const { match: { params: { companyId } } } = this.props;
-    this.fetchHiddenDangerList({ pageNum: 1, pageSize: DEFAULT_PAGE_SIZE, company_id: companyId, status: 5, ...restProps });
-  }
+  getHiddenDangerList = restProps => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    this.fetchHiddenDangerList({
+      pageNum: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+      company_id: companyId,
+      status: 5,
+      ...restProps,
+    });
+  };
 
   /**
    * 获取巡查记录对应的隐患列表
    */
   getInspectionRecordData = (checkId, status, callback) => {
-    const { match: { params: { companyId } } } = this.props;
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     const { selectedStaffRecordsMonth: month, checkUserId } = this.state;
-    this.fetchInspectionRecordData({
-      companyId,
-      checkId,
-      status,
-      month,
-      checkUserId,
-    }, callback);
-  }
+    this.fetchInspectionRecordData(
+      {
+        companyId,
+        checkId,
+        status,
+        month,
+        checkUserId,
+      },
+      callback
+    );
+  };
 
   /**
    * 获取风险点巡查列表
    */
-  getRiskPointInspectionList = (restProps) => {
+  getRiskPointInspectionList = restProps => {
     this.fetchRiskPointInspectionList({
       itemId: this.itemId,
       pageNum: 1,
       pageSize: DEFAULT_PAGE_SIZE,
       ...restProps,
     });
-  }
+  };
 
   /**
    * 获取风险点隐患列表
    */
-  getRiskPointHiddenDangerList = (restProps) => {
+  getRiskPointHiddenDangerList = restProps => {
     this.fetchRiskPointHiddenDangerList({
       itemId: this.itemId,
       pageNum: 1,
       pageSize: DEFAULT_PAGE_SIZE,
       ...restProps,
     });
-  }
+  };
 
   /**
    * 获取风险点的隐患统计
    */
-  getRiskPointHiddenDangerCount = (restProps) => {
+  getRiskPointHiddenDangerCount = restProps => {
     this.fetchRiskPointHiddenDangerCount({
       itemId: this.itemId,
       ...restProps,
     });
-  }
+  };
 
   /**
    * 获取风险点的巡查统计
    */
-  getRiskPointInspectionCount = (restProps) => {
+  getRiskPointInspectionCount = restProps => {
     this.fetchRiskPointInspectionCount({
       itemId: this.itemId,
       ...restProps,
     });
-  }
+  };
 
   /**
    * 设置抽屉是否显示
@@ -250,21 +279,21 @@ export default class UnitSafety extends PureComponent {
     const fullName = `${drawerName}DrawerVisible`;
     this.setState(({ [fullName]: visible }) => ({ [fullName]: !visible, ...props }));
     callback && callback(this.props);
-  }
+  };
 
   /**
    * 显示视频
    */
-  showVideo = (videoKeyId) => {
+  showVideo = videoKeyId => {
     this.setState({ videoVisible: true, videoKeyId });
-  }
+  };
 
   /**
-  * 隐藏视频
-  */
+   * 隐藏视频
+   */
   hideVideo = () => {
     this.setState({ videoVisible: false });
-  }
+  };
 
   /**
    * 显示风险点详情
@@ -280,30 +309,41 @@ export default class UnitSafety extends PureComponent {
     this.getRiskPointHiddenDangerList();
     // 获取隐患统计
     this.getRiskPointHiddenDangerCount();
-  }
+  };
 
   /**
    * 显示巡查点位详情
    */
   ShowInspectionDetailDrawer = (itemId, status) => {
-    const { match: { params: { companyId } } } = this.props;
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     const { selectedStaffRecordsMonth: month, checkUserId } = this.state;
-    this.fetchInspectionPointData({
-      companyId,
-      itemId,
-      status,
-      month,
-      checkUserId,
-    }, () => {
-      this.setDrawerVisible('inspectionDetail');
-    });
+    this.fetchInspectionPointData(
+      {
+        companyId,
+        itemId,
+        status,
+        month,
+        checkUserId,
+      },
+      () => {
+        this.setDrawerVisible('inspectionDetail');
+      }
+    );
   };
 
   /**
    * 显示安全指数抽屉
    */
   showIndexDrawer = e => {
-    const { match: { params: { companyId } } } = this.props;
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     this.setDrawerVisible('index');
     this.fetchSafeFiles({ companyId });
     this.fetchMonitorList({ companyId });
@@ -314,7 +354,7 @@ export default class UnitSafety extends PureComponent {
    */
   showUnitInspection = () => {
     this.setState({ inspectionIndex: 0 });
-  }
+  };
 
   /**
    * 显示巡查人员
@@ -325,22 +365,26 @@ export default class UnitSafety extends PureComponent {
       this.handleSelectStaffList(moment().format('YYYY-MM'));
     }
     this.setState({ inspectionIndex: 1 });
-  }
+  };
 
   /**
    * 显示巡查记录
    */
-  showStaffRecords = (checkUserId) => {
+  showStaffRecords = checkUserId => {
     // 根据当前选中的巡查人员的月份，初始化巡查记录数据
     this.handleSelectStaffRecords(this.state.selectedStaffListMonth, checkUserId);
     this.setState({ inspectionIndex: 2, checkUserId });
-  }
+  };
 
   /**
    * 根据月份获取人员列表
    */
   handleSelectStaffList = month => {
-    const { match: { params: { companyId } } } = this.props;
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     this.fetchStaffList({ company_id: companyId, month });
     this.setState({ selectedStaffListMonth: month });
   };
@@ -349,7 +393,11 @@ export default class UnitSafety extends PureComponent {
    * 根据月份获取人员记录
    */
   handleSelectStaffRecords = (month, checkUserId = this.state.checkUserId) => {
-    const { match: { params: { companyId } } } = this.props;
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     this.fetchStaffRecords({ company_id: companyId, month, checkUserId });
     this.setState({ selectedStaffRecordsMonth: month });
   };
@@ -393,9 +441,7 @@ export default class UnitSafety extends PureComponent {
     } = unitSafety;
 
     return (
-      <BigPlatformLayout
-        title={global.PROJECT_CONFIG.projectName}
-      >
+      <BigPlatformLayout title={global.PROJECT_CONFIG.projectName}>
         <Row gutter={16} className={styles.row}>
           {/* 左边 */}
           <Col span={6} className={styles.col}>
@@ -411,10 +457,7 @@ export default class UnitSafety extends PureComponent {
             </div>
             <div className={styles.leftBottom}>
               {/* 风险点 */}
-              <RiskPoint
-                data={points}
-                handleClick={this.setDrawerVisible}
-              />
+              <RiskPoint data={points} handleClick={this.setDrawerVisible} />
             </div>
           </Col>
 
@@ -429,10 +472,7 @@ export default class UnitSafety extends PureComponent {
               />
             </div>
             <div className={styles.centerBottom}>
-              <Rotate
-                axis="x"
-                frontIndex={inspectionIndex}
-              >
+              <Rotate axis="x" frontIndex={inspectionIndex}>
                 {/* 单位巡查 */}
                 <UnitInspection
                   data={companyMessage}
@@ -472,10 +512,7 @@ export default class UnitSafety extends PureComponent {
               />
             </div>
             <div className={styles.rightBottom}>
-              <DynamicMonitor
-                data={dynamicMonitorData}
-                onClick={this.goToMonitor}
-              />
+              <DynamicMonitor data={dynamicMonitorData} onClick={this.goToMonitor} />
             </div>
           </Col>
         </Row>
