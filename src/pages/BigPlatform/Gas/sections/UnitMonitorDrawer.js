@@ -189,7 +189,7 @@ export default class UnitMonitorDrawer extends PureComponent {
           </div>
           {unitRealTimeMonitor && unitRealTimeMonitor.length > 0 ? (
             <div className={styles.listContainer}>
-              {unitRealTimeMonitor.map(({ area, location, realtime_data, limit_value, condition, status }, i) => (
+              {unitRealTimeMonitor.map(({ area, location, realtimeData, status, normal_upper, unit }, i) => (
                 <div className={styles.card} key={i} style={{ marginTop: i < 2 ? '0' : '10px' }}>
                   <div className={styles.imgContainer} style={{
                     background: `url(${this.generateImg(+status)}) no-repeat center center`,
@@ -197,8 +197,8 @@ export default class UnitMonitorDrawer extends PureComponent {
                   }}></div>
                   <div className={styles.contentContainer}>
                     <Ellipsis className={styles.line} lines={1} tooltip>{area ? (location ? `${area}：${location}` : area) : (location || '暂无位置数据')}</Ellipsis>
-                    <Ellipsis className={styles.line} lines={1} tooltip>LEL值：{realtime_data ? <span style={{ color: +status === 1 ? '#F83329' : 'inherit' }}>{realtime_data}%</span> : '暂无数据'}</Ellipsis>
-                    <Ellipsis className={styles.line} lines={1} tooltip>参考值范围：{condition && limit_value ? `${condition}${limit_value}%` : '暂无数据'}</Ellipsis>
+                    <Ellipsis className={styles.line} lines={1} tooltip>LEL值：{realtimeData && unit ? <span style={{ color: +status === 1 ? '#F83329' : 'inherit' }}>{realtimeData + unit}</span> : '暂无数据'}</Ellipsis>
+                    <Ellipsis className={styles.line} lines={1} tooltip>参考值范围：{normal_upper && unit ? `0${unit}~${normal_upper}${unit}` : '暂无数据'}</Ellipsis>
                     <div className={styles.lastLine}>
                       <div className={styles.camera} onClick={this.handleClickCamera} style={{
                         background: `url(${cameraImg}) no-repeat center center`,
@@ -243,7 +243,7 @@ export default class UnitMonitorDrawer extends PureComponent {
         left={left}
         visible={visible}
         placement="right"
-        onClose={()=>{
+        onClose={() => {
           this.handleCLoseDrawer();
           this.handleVideoClose();
         }}
