@@ -202,7 +202,7 @@ export default class MapSection extends PureComponent {
         faultNum,
       },
     } = this.state;
-    const { handleAlarmClick, handleCompanyClick } = this.props;
+    const { handleAlarmClick, handleCompanyClick, handleFaultClick } = this.props;
     return (
       <InfoWindow
         position={{ longitude, latitude }}
@@ -254,17 +254,26 @@ export default class MapSection extends PureComponent {
             <div
               className={+unnormal > 0 ? styles.itemActive : styles.statusItem}
               onClick={() => {
-                // if (unnormal > 0) {
-                // handleAlarmClick(undefined, companyId, companyName, unnormal);
-                // } else {
-                //   return null;
-                // }
+                if (+unnormal > 0) {
+                  handleAlarmClick(undefined, companyId, companyName, +unnormal);
+                } else {
+                  return null;
+                }
               }}
             >
               <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
               火警 {unnormal > 0 ? unnormal : 0}
             </div>
-            <div className={+faultNum > 0 ? styles.itemActive : styles.statusItem}>
+            <div
+              className={+faultNum > 0 ? styles.itemActive : styles.statusItem}
+              onClick={() => {
+                if (+faultNum > 0) {
+                  handleFaultClick(undefined, companyId, companyName, +faultNum);
+                } else {
+                  return null;
+                }
+              }}
+            >
               <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
               故障 {faultNum}
             </div>

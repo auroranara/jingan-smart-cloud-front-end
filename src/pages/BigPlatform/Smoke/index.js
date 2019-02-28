@@ -23,6 +23,7 @@ import MyTooltip from './components/Tooltip';
 // 故障/火警处理动态
 import MaintenanceDrawer from './sections/MaintenanceDrawer';
 import AlarmDynamicDrawer from './sections/AlarmDynamicDrawer';
+import FireDynamicDrawer from './sections/FireDynamicDrawer';
 
 import MonitorDrawer from './sections/MonitorDrawer';
 
@@ -519,7 +520,7 @@ export default class Smoke extends PureComponent {
         gridId,
       },
       success: () => {
-        this.handleDrawerVisibleChange('fire');
+        this.handleDrawerVisibleChange('alarmDynamic');
       },
     });
     this.setState({ type: type });
@@ -533,14 +534,30 @@ export default class Smoke extends PureComponent {
       },
     } = this.props;
     this.setState({ companyName });
-    this.handleDrawerVisibleChange('alarmDynamic');
-    // dispatch({
-    //   type: 'smoke/fetchGasForMaintenance',
-    //   payload: { companyId, id, gridId, num },
-    //   success: () => {
-    //     this.handleDrawerVisibleChange('alarmDynamic');
-    //   },
-    // });
+    dispatch({
+      type: 'smoke/fetchSmokeForMaintenance',
+      payload: { companyId, id, gridId, num, type: '1' },
+      success: () => {
+        this.handleDrawerVisibleChange('alarmDynamic');
+      },
+    });
+  };
+
+  handleFaultClick = (id, companyId, companyName, num) => {
+    const {
+      dispatch,
+      match: {
+        params: { gridId },
+      },
+    } = this.props;
+    this.setState({ companyName });
+    dispatch({
+      type: 'smoke/fetchSmokeForMaintenance',
+      payload: { companyId, id, gridId, num, type: '2' },
+      success: () => {
+        this.handleDrawerVisibleChange('maintenance');
+      },
+    });
   };
 
   onRef = ref => {
@@ -638,6 +655,7 @@ export default class Smoke extends PureComponent {
           alarmIds={alarmIds}
           handleParentChange={this.handleMapParentChange}
           handleAlarmClick={this.handleAlarmClick}
+          handleFaultClick={this.handleFaultClick}
           onRef={this.onRef}
           handleCompanyClick={this.handleCompanyClick}
         />
@@ -700,6 +718,7 @@ export default class Smoke extends PureComponent {
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleAlarmClick={this.handleAlarmClick}
+          handleFaultClick={this.handleFaultClick}
         />
         <FireStatisticsDrawer
           visible={fireDrawerVisible}
@@ -718,10 +737,19 @@ export default class Smoke extends PureComponent {
           onClose={() => this.handleDrawerVisibleChange('maintenance')}
         />
         {/* 灾情事件动态 */}
-        <AlarmDynamicDrawer
+        {/* <AlarmDynamicDrawer
           data={[]}
           companyName={companyName}
           visible={alarmDynamicDrawerVisible}
+          onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
+        /> */}
+        <FireDynamicDrawer
+          title="灾情事件动态"
+          // type={drawerType}
+          type={'alarm'}
+          data={gasForMaintenance}
+          visible={alarmDynamicDrawerVisible}
+          companyName={companyName}
           onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
         />
         {/* 单位监测数据 */}

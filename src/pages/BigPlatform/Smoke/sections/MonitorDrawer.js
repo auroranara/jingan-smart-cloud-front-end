@@ -111,7 +111,13 @@ export default class MonitorDrawer extends PureComponent {
                           />
                         )}
                         {(+status !== 0 || !status) && (
-                          <div className={styles.status} style={{ color, borderColor: color }}>
+                          <div
+                            className={styles.status}
+                            style={{ color, borderColor: color }}
+                            // onClick={() => {
+                            //     handleAlarmClick(undefined, companyId, companyName, +unnormal);
+                            // }}
+                          >
                             {+status > 0 ? '火警' : '故障'}
                           </div>
                         )}

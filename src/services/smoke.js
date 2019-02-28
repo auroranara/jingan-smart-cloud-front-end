@@ -59,6 +59,6 @@ export async function getCameraList(params) {
 }
 
 // 报警处理流程
-export async function getGasForMaintenance(params) {
-  return request(`${URL_PREFIX}/shg/getGasForMaintenance?${stringify(params)}`);
+export async function getSmokeForMaintenance(params) {
+  return request(`${URL_PREFIX}/shs/getSmokeForMaintenance?${stringify(params)}`);
 }

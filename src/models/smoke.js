@@ -7,7 +7,7 @@ import {
   getFaultByBrand, // 品牌故障统计
   getMessages,
   getCameraList,
-  getGasForMaintenance,
+  getSmokeForMaintenance,
   getMapList,
   getCompanySmokeInfo,
 } from '../services/smoke';
@@ -373,8 +373,8 @@ export default {
       yield put({ type: 'saveCameraList', payload: list });
     },
     // 报警处理流程
-    *fetchGasForMaintenance({ payload, success, error }, { call, put }) {
-      const response = yield call(getGasForMaintenance, payload);
+    *fetchSmokeForMaintenance({ payload, success, error }, { call, put }) {
+      const response = yield call(getSmokeForMaintenance, payload);
       const num = payload.num || 0;
       const list = num ? response.data.list.slice(0, num) : response.data.list;
       if (response.code === 200) {
