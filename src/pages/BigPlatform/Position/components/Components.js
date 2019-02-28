@@ -2,6 +2,7 @@ import AlarmHandle from './AlarmHandle';
 import AlarmMsg from './AlarmMsg';
 import DrawerContainer from './DrawerContainer';
 import Map from './Map';
+import MapInfo from './MapInfo';
 import Info from './Info';
 import PersonInfo from './PersonInfo';
 import Tabs from './Tabs';
@@ -13,6 +14,7 @@ export {
   AlarmMsg,
   DrawerContainer,
   Map,
+  MapInfo,
   Info,
   PersonInfo,
   Tabs,

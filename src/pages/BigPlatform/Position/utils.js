@@ -38,7 +38,7 @@ export function getAlarmList(alarmList, wsData, prop, callback) {
 };
 
 export function getPersonInfoItem(cardId, list) {
-  return list.find(item => item.cardId === cardId);
+  return list.find(item => item.cardId === cardId) || {};
 }
 
 export function getOverstepItem(cardId, list) {
@@ -106,17 +106,17 @@ export function getSectionTree(list) {
   });
 }
 
-// 相同的beconId人员聚合到一个数组中
+// 相同的beaconId人员聚合到一个数组中
 export function genAggregation(list) {
   if (!Array.isArray(list))
     return [];
 
-  const beconIds = [];
+  const beaconIds = [];
   return list.reduce((prev, next) => {
-    const { beconId } = next;
-    const index = beconIds.indexOf(beconId);
+    const { beaconId } = next;
+    const index = beaconIds.indexOf(beaconId);
     if (index === -1) {
-      beconIds.push(beconId);
+      beaconIds.push(beaconId);
       prev.push([next]);
     }
     else
@@ -214,4 +214,43 @@ export function getAreaInfo(list) {
   });
 
   return areaInfo;
+}
+
+export function getAlarmDesc(item) {
+  const { type, typeName, cardType, cardCode, userName, areaName, warningTime } = item;
+
+  const time = moment(warningTime).format('HH:mm');
+  const title = `【${typeName}】 ${time}`;
+
+  let desc = ''
+  const name = `${+cardType ? '访客' : userName}(${cardCode})`;
+
+  // 1 sos 2 越界  3 长时间不动 4 超员 5 缺员
+  switch(+type) {
+    case 1:
+      desc = `${name} 发起求救信号`;
+      break;
+    case 2:
+      desc = `${name} 进入电子围栏`;
+      break;
+    case 3:
+      desc = `${name} 长时间静止`;
+      break;
+    case 4:
+      desc = `${areaName} 区域超员`;
+      break;
+    case 5:
+      desc = `${areaName} 区域缺员`;
+      break;
+    default:
+      desc = '暂无信息';
+  }
+
+  return [title, desc];
+}
+
+// cardType 0 正常 1 访客
+export function getUserName(item) {
+  const { cardType, userName, visitorName } = item;
+  return +cardType ? `访客${visitorName ? `-${visitorName}` : ''}` : userName;
 }

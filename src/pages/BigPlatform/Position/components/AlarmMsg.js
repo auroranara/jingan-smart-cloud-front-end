@@ -18,7 +18,7 @@ export default function AlarmMsg(props) {
     handleClose,
     ...restProps
   } = props;
-  const { cardId, type, areaName: section, uptime: time } = data;
+  const { cardId, areaName: section, uptime: time } = data;
 
   const newStyle = {
     backgroundImage: `url(${bg})`,

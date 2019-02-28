@@ -1,8 +1,7 @@
 import {
   queryInitialPositions,
   queryInitialAlarms,
-  postSOS,
-  postOverstep,
+  putAlarm,
   querySectionTree,
 } from '../services/bigPlatform/personPosition';
 import { genAggregation, getSectionTree } from '@/pages/BigPlatform/Position/utils';
@@ -36,17 +35,10 @@ export default {
         yield put({ type: 'saveAlarms', payload: list });
       }
     },
-    *quitSOS({ payload, callback }, { call }) {
-      const response = yield call(postSOS, payload);
-      const { code=500 } = response || {};
-      if (code === 200)
-        callback && callback();
-    },
-    *quitOverstep({ payload, callback }, { call }) {
-      const response = yield call(postOverstep, payload);
-      const { code=500 } = response || {};
-      if (code === 200)
-        callback && callback();
+    *handleAlarm({ payload, callback }, { call }) {
+      const response = yield call(putAlarm, payload);
+      const { code=500, msg } = response || {};
+      callback && callback(code, msg);
     },
     *fetchSectionTree({ payload, callback }, { call, put }) {
       const response = yield call(querySectionTree, payload);

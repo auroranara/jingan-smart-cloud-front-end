@@ -2,13 +2,13 @@ import React, { PureComponent } from 'react';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { stringify } from 'qs';
 import moment from 'moment';
-import { notification } from 'antd';
+import { message, notification } from 'antd';
 
 import styles from './RealTime.less';
-import { alarmInfoIcon, sosIcon } from '../imgs/urls';
-import { AlarmHandle, AlarmMsg, PersonInfo, Tabs, VideoPlay } from '../components/Components';
-import { LeafletMap, PersonDrawer, SectionList } from './Components';
-import { genTreeList, getAreaChangeMap, getAreaInfo } from '../utils';
+// import { alarmInfoIcon, sosIcon } from '../imgs/urls';
+import { AlarmHandle, MapInfo, PersonInfo, Tabs, VideoPlay } from '../components/Components';
+import { AlarmDrawer, LeafletMap, PersonDrawer, SectionList } from './Components';
+import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem } from '../utils';
 
 const options = {
   pingTimeout: 30000,
@@ -32,43 +32,18 @@ const WARNING_TYPE = "3";
 const AREA_STATUS_TYPE = "4";
 const RE_WARNING_TYPE = "5";
 
-function positionsToIcons(aggregation) {
-  // console.log('aggregation', aggregation);
-  const result =  aggregation.map(ps => {
-    const { userName, xarea, yarea, beconId, sos, tlong, overstep } = ps[0];
-    const isAlarm = sos || tlong || overstep;
-    const length = ps.length;
-    const isSingle = length === 1;
-    const className = `${isSingle ? 'person' : 'people'}${isAlarm ? 'Red' : ''}`;
-    const name = isSingle ? userName || '访客' : length;
-    return {
-      id: beconId,
-      name: name,
-      latlng: { lat: yarea, lng: xarea },
-      iconProps: {
-        iconSize: [38, 58],
-        // iconAnchor: [],
-        className: styles.personContainer,
-        html: `
-          <div class="${isSingle ? styles.personName : styles.personNum}">${name}</div>
-          <div class="${styles[className]}"></div>
-        `,
-      },
-    };
-  });
-    // console.log('agg', result);
-    return result;
-  }
-
 export default class RealTime extends PureComponent {
   state = {
     mapBackgroundUrl:undefined,
-    areaId: undefined,
+    alarmId: undefined, // 警报id
+    areaId: undefined, // 地图选定的areaId
+    beaconId: undefined, // 信标id
+    cardId: undefined, // 选中的人员id
     personDrawerVisible: false,
+    alarmDrawerVisible: false,
     personInfoVisible: false,
-    personInfoSOSVisible: false,
     sosHandleVisible: false,
-    alarmMsgVisible: false,
+    // alarmMsgVisible: false,
     alarmHandleVisible: false,
     videoVisible: false,
     videoKeyId: '',
@@ -99,8 +74,8 @@ export default class RealTime extends PureComponent {
       payload: { companyId },
     });
     dispatch({
-      type: 'personPosition/fetchInitialAlarms',
-      payload: { companyId, showStatus: 1 },
+      type: 'personPosition/fetchInitAlarms',
+      payload: { companyId, showStatus: 1, pageSize: 0, pageNum: 1, executeStatus: 0 },
     });
     // 获取企业信息
     dispatch({
@@ -108,10 +83,10 @@ export default class RealTime extends PureComponent {
     });
   }
 
-  // componentWillUnmount() {
-  //   const ws = this.ws;
-  //   ws && ws.close();
-  // }
+  componentWillUnmount() {
+    const ws = this.ws;
+    ws && ws.close();
+  }
 
   ws = null;
   areaInfo = {};
@@ -127,8 +102,8 @@ export default class RealTime extends PureComponent {
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
 
     // 链接webscoket
-    const ws = new WebsocketHeartbeatJs({ url, ...options });
-    this.ws = ws;
+    const ws = this.ws = new WebsocketHeartbeatJs({ url, ...options });
+
     ws.onopen = () => {
       console.log('connect success');
       ws.send('heartbeat');
@@ -184,6 +159,7 @@ export default class RealTime extends PureComponent {
     dispatch({ type: 'personPosition/savePositions', payload: newPositionList });
   };
 
+  // 根据websocket的推送改变model中的alarms
   handleAlarms = data => {
     const { dispatch, personPosition: { alarms } } = this.props;
     const newAlarms = alarms.concat(data);
@@ -260,26 +236,43 @@ export default class RealTime extends PureComponent {
     }
   };
 
-  handleClickPerson = cardId => {
-    this.setState({ personInfoVisible: true, infoCardId: cardId });
+  handleShowPersonInfo = cardId => {
+    this.setState({ cardId, personInfoVisible: true, personDrawerVisible: false });
   };
 
-  handleShowAlarmMsg = cardId => {
-    this.setState({ alarmMsgVisible: true, overstepCardId: cardId });
+  // handleShowAlarmMsg = alarmId => {
+  //   this.setState({ alarmMsgVisible: true, alarmId });
+  // };
+
+  // handleSOS = id => {
+  //   const { dispatch } = this.props;
+  //   dispatch({ type: 'personPosition/quitSOS', payload: id });
+  //   this.setState({ personInfoVisible: false, sosHandleVisible: true});
+  //   notification.close(2);
+  // };
+
+  handleShowAlarmHandle = alarmId => {
+    this.setState({ alarmHandleVisible: true, alarmId });
   };
 
-  handleSOS = id => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'personPosition/quitSOS', payload: id });
-    this.setState({ personInfoVisible: false, sosHandleVisible: true});
-    notification.close(2);
-  };
-
-  handleAlarm = id => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'personPosition/quitOverstep', payload: id });
-    this.setState({ alarmMsgVisible: false, alarmHandleVisible: true, overstepList: [] });
-    notification.close(1);
+  // 处理报警
+  handleAlarm = (id, executeStatus, executeDesc)=> {
+    const { dispatch, personPosition: { alarms } } = this.props;
+    dispatch({
+      type: 'personPosition/handleAlarm',
+      payload: { id, executeStatus, executeDesc },
+      callback: (code, msg) => {
+        if (code === 200) {
+          message.success(msg);
+          const newAlarms = alarms.filter(({ id: alarmId }) => alarmId !== id);
+          dispatch({ type: 'personPosition/saveAlarms', payload: newAlarms });
+        }
+        else
+          message.warn(msg);
+      },
+    });
+    this.setState({ alarmHandleVisible: false });
+    // notification.close(1);
   };
 
   handleOpen = prop => {
@@ -288,6 +281,14 @@ export default class RealTime extends PureComponent {
 
   handleClose = prop => {
     this.setState({ [`${prop}Visible`]: false });
+  };
+
+  handleShowPersonDrawer = beaconId => {
+    this.setState({ beaconId, personDrawerVisible: true });
+  };
+
+  handleShowAlarmDrawer = () => {
+    this.setState({ alarmDrawerVisible: true });
   };
 
   handleShowVideo = keyId => {
@@ -306,16 +307,20 @@ export default class RealTime extends PureComponent {
     const {
       labelIndex,
       companyId,
-      personPosition: { sectionTree, positionAggregation },
+      personPosition: { sectionTree, positionList, positionAggregation, alarms },
       handleLabelClick,
     } = this.props;
     const {
+      alarmId,
       areaId,
+      beaconId,
+      cardId,
       mapBackgroundUrl,
       personDrawerVisible,
+      alarmDrawerVisible,
       personInfoVisible,
-      sosHandleVisible,
-      alarmMsgVisible,
+      // alarmMsgVisible,
+      // sosHandleVisible,
       alarmHandleVisible,
       videoVisible,
       videoKeyId,
@@ -343,23 +348,31 @@ export default class RealTime extends PureComponent {
             areaId={areaId}
             areaInfo={this.areaInfo}
             sectionTree={sectionTree}
-            icons={positionsToIcons(positionAggregation)}
+            aggregation={positionAggregation}
             setAreaId={this.setAreaId}
+            handleShowPersonInfo={this.handleShowPersonInfo}
+            handleShowPersonDrawer={this.handleShowPersonDrawer}
+          />
+          <MapInfo
+            alarms={alarms}
+            handleShowAlarmHandle={this.handleShowAlarmHandle}
+            handleShowAlarmDrawer={this.handleShowAlarmDrawer}
           />
           <PersonInfo
             visible={personInfoVisible}
-            // data={getPersonInfoItem(infoCardId, positions)}
             companyId={companyId}
-            handleSOS={this.handleSOS}
-            handleClose={() => this.handleClose('personInfo')}
+            alarms={alarms}
+            personItem={getPersonInfoItem(cardId, positionList)}
+            handleShowAlarmHandle={this.handleShowAlarmHandle}
+            handleClose={this.handleClose}
           />
-          <AlarmMsg
+          {/* <AlarmMsg
             visible={alarmMsgVisible}
             // data={getOverstepItem(overstepCardId, overstepList)}
             handleAlarm={this.handleAlarm}
             handleClose={() => this.handleClose('alarmMsg')}
-          />
-          <AlarmHandle
+          /> */}
+          {/* <AlarmHandle
             title="SOS报警处理"
             visible={sosHandleVisible}
             prefix={
@@ -367,22 +380,28 @@ export default class RealTime extends PureComponent {
             }
             handleSubmit={() => this.handleClose('sosHandle')}
             handleClose={() => this.handleClose('sosHandle')}
-          />
+          /> */}
           <AlarmHandle
-            type={1}
-            title="报警处理"
+            alarmId={alarmId}
+            alarms={alarms}
             visible={alarmHandleVisible}
-            prefix={
-              <span
-                className={styles.alarmInfo}
-                style={{ backgroundImage: `url(${alarmInfoIcon})` }}
-              />
-            }
-            handleSubmit={() => this.handleClose('alarmHandle')}
-            handleClose={() => this.handleClose('alarmHandle')}
+            handleAlarm={this.handleAlarm}
+            handleClose={this.handleClose}
           />
         </div>
-        <PersonDrawer visible={personDrawerVisible} handleClose={this.handleClose} />
+        <PersonDrawer
+          visible={personDrawerVisible}
+          beaconId={beaconId}
+          aggregation={positionAggregation}
+          handleShowPersonInfo={this.handleShowPersonInfo}
+          handleClose={this.handleClose}
+        />
+        <AlarmDrawer
+          visible={alarmDrawerVisible}
+          data={alarms}
+          handleShowAlarmHandle={this.handleShowAlarmHandle}
+          handleClose={this.handleClose}
+        />
         <VideoPlay
           visible={videoVisible}
           showList={false}

@@ -1,20 +1,25 @@
 import React, { Fragment, PureComponent } from 'react';
 
 import styles from './PersonDrawer.less';
-import {
-  DrawerContainer,
-} from '../components/Components';
-
-const PERSONS = [...Array(5).keys()].map(i => ({ id: i, name: '张三', phone: '13222228888' }));
+import { DrawerContainer } from '../components/Components';
+import { getUserName } from '../utils';
+import { avatarIcon } from '../imgs/urls';
 
 function PersonCard(props) {
-  const { name, url, phone, ...restProps } = props;
+  const { data, ...restProps } = props;
+  const { cardType, cardCode, phoneNumber, visitorPhone } = data;
+  const name = getUserName(data);
+  const isVisitor = !!+cardType;
+  const phone = isVisitor ? visitorPhone : phoneNumber;
 
   return (
     <div className={styles.cardContainer} {...restProps}>
-      <div className={styles.head} style={{ backgroundImage: `url(${url})` }} />
-      <span>{name}</span>
-      <span>{phone}</span>
+      <div
+        className={styles.head}
+        style={{ backgroundImage: `url(${avatarIcon})`}}
+      />
+      <span>{`${name}(${cardCode})`}</span>
+      <span>{phone || '暂无电话信息'}</span>
     </div>
   );
 }
@@ -26,12 +31,15 @@ export default class PersonDrawer extends PureComponent {
   };
 
   render() {
-    const { visible } = this.props;
-    const left = (
-      <Fragment>
-        {PERSONS.map(({ id, name, url, phone }) => <PersonCard key={id} name={name} url={url} phone={phone} />)}
-      </Fragment>
-    );
+    const { visible, aggregation, beaconId, handleShowPersonInfo } = this.props;
+    const list = aggregation.find(ps => ps[0].beaconId === beaconId) || [];
+    let left = null;
+    if (beaconId)
+      left = (
+        <Fragment>
+          {list.map(item => <PersonCard key={item.cardId} data={item} onClick={e => handleShowPersonInfo(item.cardId)} />)}
+        </Fragment>
+      );
 
     return (
       <DrawerContainer
