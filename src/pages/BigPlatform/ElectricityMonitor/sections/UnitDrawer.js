@@ -136,12 +136,16 @@ export default class UnitDrawer extends PureComponent {
             }}
             info={
               <Fragment>
-                <div
-                  className={styles.equipment}
-                  onClick={e => showUnitDetail(companyId, getFirstDeviceId(deviceList))}
-                >
-                  {equipment || '--'}
-                </div>
+                {equipment > 0 ? (
+                  <div
+                    className={styles.equipment}
+                    onClick={i => showUnitDetail(companyId, getFirstDeviceId(deviceList, i))}
+                  >
+                    {equipment || '--'}
+                  </div>
+                ) : (
+                  <div className={styles.noEquipment}>{equipment || '--'}</div>
+                )}
                 设备数
               </Fragment>
             }
