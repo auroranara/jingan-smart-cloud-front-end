@@ -1,11 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Icon, Input, message, Spin, Col } from 'antd';
-import { Link, routerRedux } from 'dva/router';
+import { Form, List, Card, Button, Input, Spin } from 'antd';
+import { routerRedux } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Ellipsis from '@/components/Ellipsis';
 import styles from './VideoPermissionList.less';
-import VisibilitySensor from 'react-visibility-sensor';
+// import VisibilitySensor from 'react-visibility-sensor';
+import InfiniteScroll from 'react-infinite-scroller';
 // import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import { AuthLink } from '@/utils/customAuth';
@@ -104,7 +105,7 @@ export default class VideoPermissionList extends PureComponent {
   };
 
   // 下拉加载企业列表
-  handleLoadMore = flag => {
+  handleLoadMore = () => {
     const {
       dispatch,
       video: {
@@ -114,7 +115,7 @@ export default class VideoPermissionList extends PureComponent {
         },
       },
     } = this.props;
-    if (!flag || isLast) {
+    if (isLast) {
       return;
     }
     // 请求数据
@@ -179,9 +180,9 @@ export default class VideoPermissionList extends PureComponent {
       video: {
         permission: { list },
       },
-      user: {
-        currentUser: { permissionCodes },
-      },
+      // user: {
+      //   currentUser: { permissionCodes },
+      // },
     } = this.props;
 
     const {
@@ -269,11 +270,12 @@ export default class VideoPermissionList extends PureComponent {
   render() {
     const {
       video: {
-        permission: { list },
+        permission: { isLast },
         companyData: {
           pagination: { total },
         },
       },
+      loading,
     } = this.props;
     return (
       <PageHeaderLayout
@@ -288,14 +290,26 @@ export default class VideoPermissionList extends PureComponent {
         }
       >
         {this.renderQuery()}
-        {this.renderList()}
-        {list &&
-          list.length !== 0 && <VisibilitySensor onChange={this.handleLoadMore} style={{}} />}
-        {/* {loading && (
-          <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-            <Spin />
-          </div>
-        )} */}
+        <InfiniteScroll
+          initialLoad={false}
+          pageStart={0}
+          loadMore={() => {
+            // 防止多次加载
+            !loading && this.handleLoadMore();
+          }}
+          hasMore={!isLast}
+          loader={
+            <div className="loader" key={0}>
+              {loading && (
+                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+                  <Spin />
+                </div>
+              )}
+            </div>
+          }
+        >
+          {this.renderList()}
+        </InfiniteScroll>
       </PageHeaderLayout>
     );
   }
