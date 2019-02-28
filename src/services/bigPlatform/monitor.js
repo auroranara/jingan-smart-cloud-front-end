@@ -14,7 +14,7 @@ export async function getAllCamera(params) {
 }
 
 export async function getGasCount(params) {
-  return request(`${URL_PREFIX}/monitor/countStatus.json?${stringify(params)}`);
+  return request(`${URL_PREFIX}/monitor/countStatusIncludeFault.json?${stringify(params)}`);
 }
 
 export async function getGasList(params) {
