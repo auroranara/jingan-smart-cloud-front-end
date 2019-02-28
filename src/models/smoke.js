@@ -6,7 +6,6 @@ import {
   getFireHistory, // 火警统计
   getFaultByBrand, // 品牌故障统计
   getMessages,
-  getCompanyId,
   getCameraList,
   getGasForMaintenance,
   getMapList,
@@ -164,54 +163,40 @@ export default {
         callback();
       }
     },
-    // 获取网格id
-    *fetchCompanyId({ payload, callback }, { call, put }) {
-      const { code, data } = yield call(getCompanyId, payload);
-      if (code === 200) {
-        if (callback) {
-          callback(data);
-        }
-      } else if (callback) {
-        callback();
-      }
-    },
-
     // 获取烟感大屏各单位数据
     *fetchUnitData({ payload, callback }, { call, put }) {
-      const {
-        code,
-        data: {
-          // companys: units,
-          companyNum: jurisdictionalUnitStatistics,
-          importingCompanyNum: accessUnitStatistics,
-          fireByMonth,
-          fireByYear,
-          fireByQuarter,
-        },
-      } = yield call(getBigFlatformData, payload);
-      const statisticsData = {
-        // 管辖单位统计数
-        jurisdictionalUnitStatistics,
-        // 接入单位统计数
-        accessUnitStatistics,
-        // 接入率
-        accessRate:
-          jurisdictionalUnitStatistics > 0
-            ? `${Math.round((accessUnitStatistics / jurisdictionalUnitStatistics) * 100)}%`
-            : '--',
-        // 本月历史火警
-        fireByMonth,
-        // 本季度历史火警
-        fireByYear,
-        // 本年历史火警
-        fireByQuarter,
-      };
-      const pay = {
-        // unitSet: getUnitSet(units),
-        statisticsData,
-        // unitIds: units.map(({ company_id }) => company_id),
-      };
+      const response = yield call(getBigFlatformData, payload);
+      const { code } = response;
       if (code === 200) {
+        const {
+          data: {
+            companyNum: jurisdictionalUnitStatistics,
+            importingCompanyNum: accessUnitStatistics,
+            fireByMonth,
+            fireByYear,
+            fireByQuarter,
+          },
+        } = response;
+        const statisticsData = {
+          // 管辖单位统计数
+          jurisdictionalUnitStatistics,
+          // 接入单位统计数
+          accessUnitStatistics,
+          // 接入率
+          accessRate:
+            jurisdictionalUnitStatistics > 0
+              ? `${Math.round((accessUnitStatistics / jurisdictionalUnitStatistics) * 100)}%`
+              : '--',
+          // 本月历史火警
+          fireByMonth,
+          // 本季度历史火警
+          fireByYear,
+          // 本年历史火警
+          fireByQuarter,
+        };
+        const pay = {
+          statisticsData,
+        };
         yield put({
           type: 'save',
           payload: pay,
@@ -239,18 +224,19 @@ export default {
         error(response);
       }
     },
+
     // 烟感地图数据
     *fetchMapList({ payload, success, error }, { call, put }) {
       const response = yield call(getMapList, payload);
-      const {
-        code,
-        data: { list: units },
-      } = response;
-      const pay = {
-        unitSet: getUnitSet(units),
-        unitIds: units.map(({ company_id }) => company_id),
-      };
+      const { code } = response;
       if (code === 200) {
+        const {
+          data: { list: units },
+        } = response;
+        const pay = {
+          unitSet: getUnitSet(units),
+          unitIds: units.map(({ company_id }) => company_id),
+        };
         yield put({
           type: 'save',
           payload: pay,
@@ -262,6 +248,7 @@ export default {
         error(response);
       }
     },
+
     // 获取异常单位统计数据
     *fetchCompanySmokeInfo({ payload, success, error }, { call, put }) {
       const response = yield call(getCompanySmokeInfo, payload);
@@ -277,28 +264,30 @@ export default {
         error(response);
       }
     },
+
     // 烟感大屏接入单位统计列表
     *fetchImportingTotal({ payload, callback }, { call, put }) {
-      const {
-        code,
-        data: {
-          // 饼图数据
-          AccessStatistics: { Importing, unImporting },
-          // 单位接入设备数
-          AccessCount,
-          companys: importingUnits,
-        },
-      } = yield call(getImportingTotal, payload);
-      const AccessStatistics = {
-        Importing,
-        unImporting,
-      };
-      const pay = {
-        gasUnitSet: { importingUnits },
-        AccessCount,
-        AccessStatistics,
-      };
+      const response = yield call(getImportingTotal, payload);
+      const { code } = response;
       if (code === 200) {
+        const {
+          data: {
+            // 饼图数据
+            AccessStatistics: { Importing, unImporting },
+            // 单位接入设备数
+            AccessCount,
+            companys: importingUnits,
+          },
+        } = response;
+        const AccessStatistics = {
+          Importing,
+          unImporting,
+        };
+        const pay = {
+          gasUnitSet: { importingUnits },
+          AccessCount,
+          AccessStatistics,
+        };
         yield put({
           type: 'saveUnitData',
           payload: pay,
@@ -313,26 +302,27 @@ export default {
 
     // 烟感大屏异常单位统计
     *fetchAbnormalingTotal({ payload, callback }, { call, put }) {
-      const {
-        code,
-        data: {
-          // 单位状态统计数据
-          companyStatus: { unnormal, faultNum, outContact },
-          AbnormalTrend = [],
-          companys: errorUnits,
-        },
-      } = yield call(getAbnormalingTotal, payload);
-      const companyStatus = {
-        unnormal,
-        faultNum,
-        outContact,
-      };
-      const pay = {
-        companyStatus,
-        gasErrorUnitSet: { errorUnits },
-        AbnormalTrend,
-      };
+      const response = yield call(getAbnormalingTotal, payload);
+      const { code } = response;
       if (code === 200) {
+        const {
+          data: {
+            // 单位状态统计数据
+            companyStatus: { unnormal, faultNum, outContact },
+            AbnormalTrend = [],
+            companys: errorUnits,
+          },
+        } = response;
+        const companyStatus = {
+          unnormal,
+          faultNum,
+          outContact,
+        };
+        const pay = {
+          companyStatus,
+          gasErrorUnitSet: { errorUnits },
+          AbnormalTrend,
+        };
         yield put({
           type: 'saveUnitData',
           payload: pay,

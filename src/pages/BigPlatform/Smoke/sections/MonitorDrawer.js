@@ -110,12 +110,11 @@ export default class MonitorDrawer extends PureComponent {
                             onClick={e => this.handleClickCamera()}
                           />
                         )}
-                        {+status !== 0 &&
-                          !status && (
-                            <div className={styles.status} style={{ color, borderColor: color }}>
-                              {+status > 0 ? '火警' : '故障'}
-                            </div>
-                          )}
+                        {(+status !== 0 || !status) && (
+                          <div className={styles.status} style={{ color, borderColor: color }}>
+                            {+status > 0 ? '火警' : '故障'}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
