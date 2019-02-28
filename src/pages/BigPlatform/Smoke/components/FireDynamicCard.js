@@ -6,7 +6,7 @@ import styles from './MaintenanceCard.less';
 import TimelineItem from './TimelineItem';
 import ImgSlider from './ImgSlider';
 import flowImg from '../imgs/flow_m.png';
-import flowM from '../imgs/flow_fire.png';
+import flowFire from '../imgs/flow_fire.png';
 
 const ID = 'maintenance-drawer';
 
@@ -16,7 +16,7 @@ function switchType(type) {
     case 'alarm':
       config = {
         name: '火警',
-        img: flowM,
+        img: flowFire,
       };
       break;
     case 'fault':

@@ -4,7 +4,7 @@ import styles from './MaintenanceDrawer.less';
 import Slider from '../components/Slider';
 import DrawerContainer from '../components/DrawerContainer';
 import SwitchHead from '../components/SwitchHead';
-import MaintenanceCard from '../components/MaintenanceCard';
+import FireDynamicCard from '../components/FireDynamicCard';
 
 const ID = 'maintenance-drawer';
 
@@ -33,12 +33,12 @@ export default class MaintenanceDrawer extends PureComponent {
     if (length)
       left =
         length === 1 ? (
-          <MaintenanceCard type={type} data={list[0]} />
+          <FireDynamicCard type={type} data={list[0]} />
         ) : (
           <Fragment>
             <SwitchHead
               index={index}
-              title={type === 'fault' ? '故障' : '报警'}
+              title={type === 'fault' ? '故障' : '火警'}
               lastIndex={length - 1}
               handleLeftClick={this.handleLeftClick}
               handleRightClick={this.handleRightClick}
@@ -46,7 +46,7 @@ export default class MaintenanceDrawer extends PureComponent {
             <div className={styles.sliderContainer}>
               <Slider index={index} length={length} size={1}>
                 {list.map((item, i) => (
-                  <MaintenanceCard
+                  <FireDynamicCard
                     key={i}
                     type={type}
                     data={item}
