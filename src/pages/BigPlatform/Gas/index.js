@@ -585,7 +585,7 @@ export default class Gas extends PureComponent {
       callback: (list = []) => {
         const unitAbnormalTrend = list.map(item => {
           const [{ faultNum, month, outContact, unnormal }] = Object.values(item)
-          return [month, faultNum, unnormal, outContact]
+          return [month, unnormal, faultNum, outContact]
         })
         this.setState({ unitAbnormalTrend })
       },
