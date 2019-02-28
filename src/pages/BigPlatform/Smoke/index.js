@@ -435,7 +435,6 @@ export default class Smoke extends PureComponent {
   };
 
   handleDrawerVisibleChange = (name, rest) => {
-    console.log('2123123', name, rest);
     const stateName = `${name}DrawerVisible`;
     this.setState(state => ({
       [stateName]: !state[stateName],
@@ -521,8 +520,10 @@ export default class Smoke extends PureComponent {
       payload: {
         type,
       },
+      success: () => {
+        this.handleDrawerVisibleChange('fire');
+      },
     });
-    this.handleDrawerVisibleChange('fire');
     this.setState({ type: type });
   };
 

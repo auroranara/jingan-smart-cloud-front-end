@@ -82,7 +82,7 @@ export default class FireStatisticsDrawer extends PureComponent {
       <Fragment>
         <FormItem>
           {getFieldDecorator('checkDate', {
-            initialValue: startDate ? [moment(startDate), moment(endDate)] : '',
+            initialValue: [moment(startDate), moment(endDate)],
           })(
             <RangePicker
               format="YYYY-MM-DD"
