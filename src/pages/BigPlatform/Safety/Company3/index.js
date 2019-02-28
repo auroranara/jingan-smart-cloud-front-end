@@ -127,6 +127,8 @@ export default class UnitSafety extends PureComponent {
         'fetchMonitorList',
         // 获取点位
         'fetchPoints',
+        // 获取隐患统计
+        'fetchHiddenDangerCount',
       ],
     });
   }
@@ -142,6 +144,8 @@ export default class UnitSafety extends PureComponent {
     this.fetchSpecialEquipmentCount({ company_id: companyId });
     // 获取隐患列表
     this.getHiddenDangerList();
+    // 获取隐患统计
+    this.fetchHiddenDangerCount({ company_id: companyId });
     // 获取视频列表
     this.fetchVideoList({ company_id: companyId });
     // 获取监控数据
@@ -175,7 +179,7 @@ export default class UnitSafety extends PureComponent {
    */
   getHiddenDangerList = (restProps) => {
     const { match: { params: { companyId } } } = this.props;
-    this.fetchHiddenDangerList({ pageNum: 1, pageSize: DEFAULT_PAGE_SIZE, company_id: companyId, ...restProps });
+    this.fetchHiddenDangerList({ pageNum: 1, pageSize: DEFAULT_PAGE_SIZE, company_id: companyId, status: 5, ...restProps });
   }
 
   /**
@@ -377,6 +381,7 @@ export default class UnitSafety extends PureComponent {
     const {
       videoList,
       hiddenDangerList,
+      hiddenDangerCount,
       dynamicMonitorData,
       companyMessage,
       staffList,
@@ -461,6 +466,7 @@ export default class UnitSafety extends PureComponent {
             <div className={styles.rightTop}>
               <CurrentHiddenDanger
                 data={hiddenDangerList}
+                count={hiddenDangerCount}
                 loading={loadingHiddenDangerList}
                 onClick={this.getHiddenDangerList}
               />

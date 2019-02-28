@@ -9,6 +9,7 @@ import styles from './index.less';
 const { Option } = Select;
 
 const dict = {
+  '全部': 5,
   '未超期': 2,
   '待复查': 3,
   '已超期': 7,
@@ -54,7 +55,7 @@ export default class CurrentHiddenDanger extends PureComponent {
    */
   renderSelect() {
     const {
-      data: { pagination: { total=0, ycq=0, wcq=0, dfc=0 }={} }={},
+      count: { total=0, ycq=0, wcq=0, dfc=0 }={},
     } = this.props;
     const { selectedStatus } = this.state;
     const list = [

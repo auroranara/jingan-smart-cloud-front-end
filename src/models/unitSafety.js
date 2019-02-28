@@ -270,29 +270,16 @@ export default {
       fourColorImgPoints: {},
       // 其他各种点位和统计
     },
+    // 隐患统计
+    hiddenDangerCount: { total: 0, ycq: 0, wcq: 0, dfc: 0 },
   },
 
   effects: {
     // 获取企业信息
-    *fetchCompanyMessage({ payload, callback }, { call, put, all }) {
-      const [response, { companyLetter }] = yield all([call(getCompanyMessage, payload), call(getPointInfoList, payload)]);
+    *fetchCompanyMessage({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanyMessage, payload);
       const companyMessage = {
         ...response,
-        // 移除坐标不存在的风险点并添加风险告知卡信息
-        point:
-          response.point ?
-          response.point.filter(
-            ({ itemId, xNum, yNum }) =>
-              itemId &&
-              (xNum || Number.parseFloat(xNum) === 0) &&
-              (yNum || Number.parseFloat(yNum) === 0)
-          ).map((item) => {
-            const { itemId } = item;
-            return {
-              ...item,
-              info: companyLetter.filter(({ hdLetterInfo: { itemId: id } }) => itemId === id)[0],
-            };
-          }) : [],
         // 移除地址不合法的四色图
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
@@ -664,6 +651,24 @@ export default {
         });
       }
       callback && callback(response);
+    },
+    // 获取隐患统计
+    *fetchHiddenDangerCount({ payload, callback }, { call, put, all }) {
+      const [
+        { data: { pagination: { total } } },
+        { data: { pagination: { total: ycq } } },
+        { data: { pagination: { total: wcq } } },
+        { data: { pagination: { total: dfc } } },
+      ]  = yield all([
+        call(getHiddenDangerList, { status: 5, pageSize: 1, pageNum: 1, ...payload }),
+        call(getHiddenDangerList, { status: 7, pageSize: 1, pageNum: 1, ...payload }),
+        call(getHiddenDangerList, { status: 2, pageSize: 1, pageNum: 1, ...payload }),
+        call(getHiddenDangerList, { status: 3, pageSize: 1, pageNum: 1, ...payload }),
+      ]);
+      yield put({
+        type: 'save',
+        payload: { hiddenDangerCount: { total, ycq, wcq, dfc } },
+      });
     },
   },
 

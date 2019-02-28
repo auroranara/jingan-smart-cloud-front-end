@@ -33,7 +33,7 @@ export default function CompanyInfo ({
     // 特种设备统计
     specialEquipmentCount,
     // 隐患列表
-    hiddenDangerList: { pagination: { total: hiddenDangerCount=0 }={} }={},
+    hiddenDangerCount: { total=0 }={},
     // 安全指数
     safetyIndex,
   },
@@ -123,7 +123,7 @@ export default function CompanyInfo ({
             style={{ backgroundImage: `url(${currentHiddenDangerIcon})` }}
           >
             <div className={styles.countLabel}><div>当前隐患</div></div>
-            <div className={styles.countValue}><div>{hiddenDangerCount}</div></div>
+            <div className={styles.countValue}><div>{total}</div></div>
           </div>
         </div>
       </div>
