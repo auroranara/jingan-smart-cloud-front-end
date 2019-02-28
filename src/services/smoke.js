@@ -48,11 +48,6 @@ export async function getMessages(params) {
   return request(`${URL_PREFIX}/screen/screenMessageForGov?screenType=4`);
 }
 
-// 获取网格id
-export async function getCompanyId(params) {
-  return request(`${URL_PREFIX}/screen/elecSafe/getDefaultGridId`);
-}
-
 // 获取单位数据
 export async function getUnitData(params) {
   return request(`${URL_PREFIX}/screen/elecSafe/companyList`);

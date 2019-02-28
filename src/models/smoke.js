@@ -6,7 +6,6 @@ import {
   getFireHistory, // 火警统计
   getFaultByBrand, // 品牌故障统计
   getMessages,
-  getCompanyId,
   getCameraList,
   getGasForMaintenance,
   getMapList,
@@ -164,19 +163,6 @@ export default {
         callback();
       }
     },
-
-    // 获取网格id
-    *fetchCompanyId({ payload, callback }, { call, put }) {
-      const { code, data } = yield call(getCompanyId, payload);
-      if (code === 200) {
-        if (callback) {
-          callback(data);
-        }
-      } else if (callback) {
-        callback();
-      }
-    },
-
     // 获取烟感大屏各单位数据
     *fetchUnitData({ payload, callback }, { call, put }) {
       const response = yield call(getBigFlatformData, payload);
