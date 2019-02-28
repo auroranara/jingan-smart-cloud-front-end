@@ -113,15 +113,21 @@ export default {
     },
     // 加载视频权限树
     *fetchVideoTree({ payload, success, error }, { call, put }) {
-      const { data, dataRef } = payload
+      const { data, dataRef } = payload;
       const response = yield call(fetchVideoTree, data);
       if (response && response.code === 200) {
-        const list = response.data.list.map((item) => {
-          return dataRef.parentIds ? { ...item, parentIds: `${dataRef.parentIds}','${dataRef.id}` } : { ...item, parentIds: '0' }
+        const list = response.data.list.map(item => {
+          return dataRef.parentIds
+            ? { ...item, parentIds: `${dataRef.parentIds}','${dataRef.id}` }
+            : { ...item, parentIds: '0' };
         });
         // checkedStatus 0不选 1半选 2选中
-        const checked = response.data.list.filter(item => item.checkedStatus === 2).map(item => item.id)
-        const halfChecked = response.data.list.filter(item => item.checkedStatus === 1).map(item => item.id)
+        const checked = response.data.list
+          .filter(item => item.checkedStatus === 2)
+          .map(item => item.id);
+        const halfChecked = response.data.list
+          .filter(item => item.checkedStatus === 1)
+          .map(item => item.id);
         if (success) success({ list, checked, halfChecked });
       } else error(response.msg || '请求失败');
     },
@@ -179,10 +185,10 @@ export default {
     },
     // 视频列表同步目录
     *synchronizeDirectory({ success, error }, { call }) {
-      const response = yield call(synchronizeDirectory)
+      const response = yield call(synchronizeDirectory);
       if (response && response.code === 200) {
-        if (success) success()
-      } else if (error) error()
+        if (success) success();
+      } else if (error) error();
     },
   },
 
