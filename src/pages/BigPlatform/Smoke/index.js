@@ -177,7 +177,7 @@ export default class Smoke extends PureComponent {
     };
 
     ws.onmessage = e => {
-      if(true) return;
+      if (true) return;
       // 判断是否是心跳
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
@@ -345,14 +345,12 @@ export default class Smoke extends PureComponent {
     if (!unitDetail) {
       return;
     }
-    const { dispatch } = this.props;
     const { mapInstance } = this.state;
-    const { longitude, latitude, companyId } = unitDetail;
+    const { longitude, latitude } = unitDetail;
     mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     this.setState({ unitDetail });
     this.mapChild.handleMapClick(unitDetail);
     this.hideTooltip();
-    dispatch({ type: 'smoke/fetchCameraList', payload: { company_id: companyId } });
   };
 
   /**
@@ -396,6 +394,7 @@ export default class Smoke extends PureComponent {
           className={styles.notificationContent}
           onClick={() => {
             this.setState({ companyName });
+            this.handleClickNotification(companyId);
             this.handleAlarmClick(messageFlag, companyId, companyName);
           }}
         >
@@ -436,6 +435,7 @@ export default class Smoke extends PureComponent {
   };
 
   handleDrawerVisibleChange = (name, rest) => {
+    console.log('2123123', name, rest);
     const stateName = `${name}DrawerVisible`;
     this.setState(state => ({
       [stateName]: !state[stateName],
@@ -471,7 +471,7 @@ export default class Smoke extends PureComponent {
         unitSet: { units },
       },
     } = this.props;
-    this.mapChild.handleMapClick(units.filter(item => item.companyId === companyId)[0]);
+    this.showUnitDetail(units.filter(item => item.companyId === companyId)[0]);
   };
 
   getCameraList = id => {
@@ -521,10 +521,8 @@ export default class Smoke extends PureComponent {
       payload: {
         type,
       },
-      success: () => {
-        this.handleDrawerVisibleChange('fire');
-      },
     });
+    this.handleDrawerVisibleChange('fire');
     this.setState({ type: type });
   };
 
@@ -551,6 +549,7 @@ export default class Smoke extends PureComponent {
 
   handleCompanyClick = companyId => {
     const { dispatch } = this.props;
+    dispatch({ type: 'smoke/fetchCameraList', payload: { company_id: companyId } });
     dispatch({
       type: 'smoke/fetchCompanySmokeInfo',
       payload: { company_id: companyId },

@@ -100,7 +100,7 @@ export default class UnitDrawer extends PureComponent {
         <DrawerSection title="接入单位统计图" style={{ marginBottom: 50 }}>
           <ChartRing data={rings} />
         </DrawerSection>
-        <DrawerSection title="接入设备数量的单位排名">
+        <DrawerSection title="单位接入的设备数排名">
           <ChartBar data={barList} labelRotate={-60} />
         </DrawerSection>
       </Fragment>
@@ -126,31 +126,31 @@ export default class UnitDrawer extends PureComponent {
             normal,
             count,
           }) => (
-            <DrawerCard
-              key={company_id}
-              name={company_name || NO_DATA}
-              location={address || NO_DATA}
-              person={principal_name || NO_DATA}
-              phone={principal_phone || NO_DATA}
-              style={{ cursor: 'auto' }}
-              infoStyle={{
-                width: 70,
-                textAlign: 'center',
-                color: '#FFF',
-                bottom: '50%',
-                right: 25,
-                transform: 'translateY(50%)',
-              }}
-              info={
-                <Fragment>
-                  <div className={styles.equipment}>{count || '--'}</div>
-                  设备数
+              <DrawerCard
+                key={company_id}
+                name={company_name || NO_DATA}
+                location={address || NO_DATA}
+                person={principal_name || NO_DATA}
+                phone={principal_phone || NO_DATA}
+                style={{ cursor: 'auto' }}
+                infoStyle={{
+                  width: 70,
+                  textAlign: 'center',
+                  color: '#FFF',
+                  bottom: '50%',
+                  right: 25,
+                  transform: 'translateY(50%)',
+                }}
+                info={
+                  <Fragment>
+                    <div className={styles.equipment}>{count || '--'}</div>
+                    设备数
                 </Fragment>
-              }
-              more={
-                <p className={styles.more}>
-                  {count
-                    ? [unnormal, faultNum, outContact, normal].map((n, i) => (
+                }
+                more={
+                  <p className={styles.more}>
+                    {count
+                      ? [unnormal, faultNum, outContact, normal].map((n, i) => (
                         <DotItem
                           key={i}
                           title={LABELS[i]}
@@ -158,11 +158,11 @@ export default class UnitDrawer extends PureComponent {
                           quantity={n}
                         />
                       ))
-                    : ' '}
-                </p>
-              }
-            />
-          )
+                      : ' '}
+                  </p>
+                }
+              />
+            )
         )}
       </SearchBar>
     );

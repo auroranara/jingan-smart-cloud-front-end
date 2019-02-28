@@ -74,7 +74,7 @@ export default class FireStatisticsDrawer extends PureComponent {
 
     const newList = list.slice(0, 10).map(({ company_name, num }, i) => {
       let newName = company_name;
-      if (i === 9 && name.length > 10) newName = `${name.slice(0, 10)}...`;
+      if (i === 9 && company_name.length > 10) newName = `${company_name.slice(0, 10)}...`;
       return { id: i, name: newName, value: num };
     });
 
@@ -82,17 +82,17 @@ export default class FireStatisticsDrawer extends PureComponent {
       <Fragment>
         <FormItem>
           {getFieldDecorator('checkDate', {
-            initialValue: [moment(startDate), moment(endDate)],
+            initialValue: startDate ? [moment(startDate), moment(endDate)] : '',
           })(
             <RangePicker
               format="YYYY-MM-DD"
               className={styles.rangePicker}
               dropdownClassName={styles.rangePicker}
               placeholder={['开始时间', '结束时间']}
-              // showTime={{
-              //   defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
-              // }}
-              onChange={() => this.handleOk(type)}
+              showTime={{
+                defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+              }}
+              onOk={() => this.handleOk(type)}
             />
           )}
         </FormItem>

@@ -89,7 +89,6 @@ export default class Gas extends PureComponent {
     // 设备配置策略定时器
     this.deviceConfigTimer = null;
     this.number = 0;
-    this.unitMonitorTimer = null;
   }
 
   /**
@@ -565,7 +564,6 @@ export default class Gas extends PureComponent {
   };
 
   handleCloseUnitMonitor = () => {
-    clearInterval(this.unitMonitorTimer)
     this.setState({ unitMonitorDrawerVisible: false, unitMonitorStatus: null })
   }
 
@@ -594,31 +592,17 @@ export default class Gas extends PureComponent {
     })
     // 获取视频
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
-    // 设置轮询
-    this.unitMonitorTimer = setInterval(() => { this.fetchRealTimeMonitor() }, 5000);
-  }
-
-  // 获取单位监测数据
-  fetchRealTimeMonitor = () => {
-    const { dispatch } = this.props
-    const { unitInfo, unitMonitorStatus } = this.state
-    dispatch({
-      type: 'gas/fetchRealTimeMonitor',
-      payload: { companyId: unitInfo.companyId, status: unitMonitorStatus },
-    })
   }
 
   // 单位监测数据弹窗筛选
   handleChangeMonitorStatus = unitMonitorStatus => {
     const { dispatch } = this.props
     const { unitInfo } = this.state
-    clearInterval(this.unitMonitorTimer)
     this.setState({ unitMonitorStatus }, () => {
       dispatch({
         type: 'gas/fetchRealTimeMonitor',
         payload: { companyId: unitInfo.companyId, status: unitMonitorStatus },
       })
-      this.unitMonitorTimer = setInterval(() => { this.fetchRealTimeMonitor() }, 5000);
     })
   }
 

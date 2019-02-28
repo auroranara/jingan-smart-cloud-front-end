@@ -67,11 +67,16 @@ export default class UnitMonitorDrawer extends PureComponent {
     return (<span className={styles.statusButton} style={{ borderColor: color, color }}>{desc}</span>)
   }
 
+  handleCLoseDrawer = () => {
+    const { onClose } = this.props
+    this.setState({ videoVisible: false })
+    onClose()
+  }
+
   render() {
     const {
       visible,
       title,
-      onClose,
       unitInfo,
       unitAbnormalTrend = [],
       handleChangeStatus,
@@ -128,9 +133,9 @@ export default class UnitMonitorDrawer extends PureComponent {
         splitLine: { lineStyle: { color: '#3F618D' } },
       },
       series: [
-        { type: 'bar', barMaxWidth: 14, barGap: '40%' },
-        { type: 'bar', barMaxWidth: 14, barGap: '40%' },
-        { type: 'bar', barMaxWidth: 14, barGap: '40%' },
+        { type: 'bar', barMaxWidth: 14, barGap: '40%', itemStyle: { color: '#F83329' } },
+        { type: 'bar', barMaxWidth: 14, barGap: '40%', itemStyle: { color: '#FFB400' } },
+        { type: 'bar', barMaxWidth: 14, barGap: '40%', itemStyle: { color: '#9F9F9F' } },
       ],
       textStyle: {
         color: '#fff',
@@ -191,9 +196,9 @@ export default class UnitMonitorDrawer extends PureComponent {
                     backgroundSize: '45% 40%',
                   }}></div>
                   <div className={styles.contentContainer}>
-                    <Ellipsis className={styles.line} lines={1} tooltip>{area}：{location}</Ellipsis>
-                    <Ellipsis className={styles.line} lines={1} tooltip>LEL值：{realtime_data ? `${realtime_data}%` : '暂无数据'}</Ellipsis>
-                    <Ellipsis className={styles.line} lines={1} tooltip>参考值范围：{condition && limit_value ? `${condition}${limit_value}` : '暂无数据'}</Ellipsis>
+                    <Ellipsis className={styles.line} lines={1} tooltip>{area ? (location ? `${area}：${location}` : area) : (location || '暂无位置数据')}</Ellipsis>
+                    <Ellipsis className={styles.line} lines={1} tooltip>LEL值：{realtime_data ? <span style={{ color: +status === 1 ? '#F83329' : 'inherit' }}>{realtime_data}%</span> : '暂无数据'}</Ellipsis>
+                    <Ellipsis className={styles.line} lines={1} tooltip>参考值范围：{condition && limit_value ? `${condition}${limit_value}%` : '暂无数据'}</Ellipsis>
                     <div className={styles.lastLine}>
                       <div className={styles.camera} onClick={this.handleClickCamera} style={{
                         background: `url(${cameraImg}) no-repeat center center`,
@@ -224,7 +229,7 @@ export default class UnitMonitorDrawer extends PureComponent {
           videoList={cameraList}
           visible={videoVisible}
           keyId={videoKeyId}
-          style={VIDEO_STYLE}
+          // style={VIDEO_STYLE}
           handleVideoClose={this.handleVideoClose}
         />
       </div>
@@ -238,7 +243,10 @@ export default class UnitMonitorDrawer extends PureComponent {
         left={left}
         visible={visible}
         placement="right"
-        onClose={onClose}
+        onClose={()=>{
+          this.handleCLoseDrawer();
+          this.handleVideoClose();
+        }}
       />
     )
   }

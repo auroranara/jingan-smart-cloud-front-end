@@ -157,13 +157,18 @@ export default class UnitDrawer extends PureComponent {
                         color={`rgb(248,51,41)`}
                         quantity={unnormal}
                         className={unnormal > 0 ? styles.itemActive : ''}
-                        onClick={() =>
-                          unnormal > 0
-                            ? handleAlarmClick(undefined, company_id, company_name, unnormal)
-                            : ''
-                        }
+                        // onClick={() =>
+                        //   unnormal > 0
+                        //     ? handleAlarmClick(undefined, company_id, company_name, unnormal)
+                        //     : ''
+                        // }
                       />
-                      <DotItem title="故障" color={`rgb(255,180,0)`} quantity={faultNum} />
+                      <DotItem
+                        title="故障"
+                        color={`rgb(255,180,0)`}
+                        quantity={faultNum}
+                        className={faultNum > 0 ? styles.itemActive : ''}
+                      />
                       <DotItem title="正常" color={`rgb(55,164,96)`} quantity={normal} />
                     </p>
                   ) : (

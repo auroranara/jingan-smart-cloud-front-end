@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Icon, notification } from 'antd';
 import { connect } from 'dva';
 import { Player } from 'video-react';
@@ -7,7 +7,8 @@ import 'video-react/dist/video-react.css';
 import classNames from 'classnames';
 import styles from './VideoPlay.less';
 import animate from '../../Safety/Animate.less';
-import Draggable from 'react-draggable';
+// import Draggable from 'react-draggable';
+import RenderInPopup from './RenderInPopup';
 
 const LOADING_STYLE = {
   color: '#FFF',
@@ -183,7 +184,8 @@ class VideoPlay extends Component {
     const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in);
 
     return (
-      <div className={wrapperStyles} style={{ ...style }}>
+      // <div className={wrapperStyles} style={{ ...style }}>
+      <Fragment>
         <div
           id="dragBar"
           className={styles.titleBar}
@@ -214,20 +216,30 @@ class VideoPlay extends Component {
             </div>
           )}
         </div>
-      </div>
+      </Fragment>
     );
   };
 
   render() {
-    const { visible, draggable = true } = this.props;
+    const { visible, draggable = true, style } = this.props;
     if (!visible) return null;
-    return draggable ? (
-      <Draggable handle="#dragBar" bounds="parent">
+    // return draggable ? (
+    //   <Draggable handle="#dragBar" bounds="parent">
+    //     {this.renderPan()}
+    //   </Draggable>
+    // ) : (
+    const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in);
+    return (
+      <RenderInPopup
+        className={wrapperStyles}
+        style={{ ...style }}
+        dragHandle={'#dragBar'}
+        draggable={draggable}
+      >
         {this.renderPan()}
-      </Draggable>
-    ) : (
-      this.renderPan()
+      </RenderInPopup>
     );
+    // );
   }
 }
 
