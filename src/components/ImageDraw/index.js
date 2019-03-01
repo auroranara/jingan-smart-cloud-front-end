@@ -729,6 +729,7 @@ class ImageDraw extends PureComponent {
       data=[],
       divIcons=[],
       images,
+      arrows,
       color=DEFAULT_COLOR,
       shapes=['polygon', 'rectangle', 'circle'],
       form: { getFieldDecorator },
@@ -737,25 +738,25 @@ class ImageDraw extends PureComponent {
 
     return (
       <div className={className} style={{ height: 600, ...style }}>
-        <Map
-          id="mapContainer"
-          className={styles.mapContainer}
-          center={center}
-          minZoom={-3}
-          maxZoom={8}
-          zoom={zoom}
-          editable
-          crs={L.CRS.Simple}
-          attributionControl={false}
-          bounds={bounds}
-          maxBounds={maxBounds}
-          ref={this.refMap}
-          zoomControl={false}
-          {...mapProps}
-          // dragging={false}
-        >
-          {bounds && <ZoomControl zoomInTitle="" zoomOutTitle="" className={styles.zoomControl} {...zoomControlProps} />}
-          {bounds && (
+        {bounds && (
+          <Map
+            id="mapContainer"
+            className={styles.mapContainer}
+            center={center}
+            minZoom={-3}
+            maxZoom={8}
+            zoom={zoom}
+            editable
+            crs={L.CRS.Simple}
+            attributionControl={false}
+            bounds={bounds}
+            maxBounds={maxBounds}
+            ref={this.refMap}
+            zoomControl={false}
+            // dragging={false}
+            {...mapProps}
+          >
+            <ZoomControl zoomInTitle="" zoomOutTitle="" className={styles.zoomControl} {...zoomControlProps} />
             <ImageOverlay url={url} bounds={bounds} className={hideBackground?styles.hiddenImageOverlay:styles.imageOverlay}>
               <FeatureGroup ref={this.refFeatureGroup} onLayerRemove={this.handleLayerRemove}>
                 {drawable && (
@@ -816,9 +817,10 @@ class ImageDraw extends PureComponent {
                 {divIcons && divIcons.map(this.renderDivIcon)}
               </FeatureGroup>
             </ImageOverlay>
-          )}
-          {bounds && images && images.length > 0 && images.map(this.renderImageOverlay)}
-        </Map>
+            {images && images.map(this.renderImageOverlay)}
+            {arrows && arrows.map(this.renderImageOverlay)}
+          </Map>
+        )}
         <Modal
           visible={visible}
           onOk={this.handleOk}

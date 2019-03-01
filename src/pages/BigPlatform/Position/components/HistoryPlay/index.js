@@ -270,6 +270,33 @@ export default class HistoryPlay extends Component {
   }
 
   /**
+   * 获取当前时间节点和下个时间节点间的指向性箭头
+   * @param {number} currentIndex 当前时间节点
+   * @return {object} 箭头图片对象
+   */
+  getArrow(currentIndex) {
+    const { data=[] } = this.props;
+    const length = data.length;
+    // 确保两个时间节点都存在，这样箭头才存在
+    if (currentIndex + 1 >= length || currentIndex < 0) {
+      return;
+    }
+    const { xPx: x1, yPx: y1 } = data[currentIndex];
+    const { xPx: x2, yPx: y2, locationStatusHistoryList } = data[currentIndex+1];
+    // 当有警报信息时显示红色
+    const isAlarm = locationStatusHistoryList && locationStatusHistoryList.length > 0;
+    const isXEqual = x1 === x2;
+    const isYEqual = y1 === y2;
+    // return (
+    //   backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    //   <defs><marker id="arrow" markerWidth="10" markerHeight="10" refx="0" refy="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#f00" /></marker></defs>
+    //   <line x1="${x1 > x2 ? '100%' : 0}" y1="${y1 >= y2 ? 0 : '100%'}" x2="${x1 >= x2 ? 0 : '100%'}" y2="${y1 > y2 ? '100%' : 0}" stroke="${isAlarm?'#8A101D' : '#0186D1'}" stroke-width="1" marker-end="url(#arrow)" />
+    // </svg>')`,
+    // );
+    return;
+  }
+
+  /**
    * 播放按钮点击事件
    */
   handlePlay = () => {
@@ -381,57 +408,6 @@ export default class HistoryPlay extends Component {
     if (onLocate) {
       onLocate();
     }
-  }
-
-  /**
-   * 连线
-   */
-  renderLine(index) {
-    const { data } = this.props;
-    const length = data.length;
-    const { currentIndex } = this.state;
-    if (index+1 >= length) {
-      return null;
-    }
-    const { xarea: x1, yarea: y1 } = data[index];
-    const { xarea: x2, yarea: y2, locationStatusHistoryList } = data[index+1] || {};
-    // 当有警报信息时显示红色
-    const isAlarm = locationStatusHistoryList && locationStatusHistoryList.length > 0;
-    const isXEqual = x1 === x2;
-    const isYEqual = y1 === y2;
-    return (
-      <div
-        style={{
-          position: 'absolute',
-          left: `${Math.min(x1, x2)}%`,
-          bottom: `${Math.min(y1, y2)}%`,
-          width: isXEqual ? 20 : `${Math.abs(x1 - x2)}%`,
-          height: isYEqual ? 20 : `${Math.abs(y1 - y2)}%`,
-          transform: `translate(${isXEqual?'-50%' : 0}, ${isYEqual?'50%' : 0})`,
-          // backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-          //   <defs><marker id="arrow" markerWidth="10" markerHeight="10" refx="0" refy="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#f00" /></marker></defs>
-          //   <line x1="${x1 > x2 ? '100%' : 0}" y1="${y1 >= y2 ? 0 : '100%'}" x2="${x1 >= x2 ? 0 : '100%'}" y2="${y1 > y2 ? '100%' : 0}" stroke="${isAlarm?'#8A101D' : '#0186D1'}" stroke-width="1" marker-end="url(#arrow)" />
-          // </svg>')`,
-          zIndex: currentIndex > index ? 1 : length-index,
-         }}
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" style={{ verticalAlign: 'top' }}>
-          <defs>
-            <marker
-              id="arrow"
-              markerWidth="12"
-              markerHeight="12"
-              refX="6"
-              refY="6"
-              orient="auto"
-            >
-              <path d="M2,2 L10,6 L2,10 L6,6 L2,2" style={{ fill: isAlarm?'#8A101D' : '#0186D1' }} />
-            </marker>
-          </defs>
-          <line x1={isXEqual?'50%':(x1 > x2 ? '90%' : '10%')} y1={isYEqual?'50%':(y1 > y2 ? '10%' : '90%')} x2={isXEqual?'50%':(x1 > x2 ? '10%' : '90%')} y2={isYEqual?'50%':(y1 > y2 ? '90%' : '10%')} stroke={isAlarm?'#8A101D' : '#0186D1'} strokeWidth="2" markerEnd="url(#arrow)" />
-        </svg>
-      </div>
-    );
   }
 
   /**
