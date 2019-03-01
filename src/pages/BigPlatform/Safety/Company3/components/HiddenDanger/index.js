@@ -99,7 +99,7 @@ export default function HiddenDanger({
       <div className={styles.riskDetailItemTitleWrapper}>
         <div className={styles.riskDetailItemTitleAvatar} style={{ backgroundImage: `url(${getIconByBusinessType(business_type)})` }} />
         <div className={styles.riskDetailItemTitle} style={{ color: isYCQ ? '#ff4848' : '#fff' }} >
-          {desc || '暂无隐患描述'}
+          <Ellipsis className={styles.ellipsis} lines={1} tooltip>{desc || '暂无隐患描述'}</Ellipsis>
         </div>
       </div>
       <div className={styles.riskDetailItemContentWrapper}>
@@ -110,16 +110,14 @@ export default function HiddenDanger({
         {/* 字段 */}
         <div className={styles.riskDetailItemInfoWrapper}>
           <div className={styles.riskDetailItemTextWrapper}>
-            <span>
-              上
-              <span style={{ opacity: 0 }}>隐藏</span>
-              报：
-            </span>
+            <span>上<span style={{ opacity: 0 }}>隐藏</span>报：</span>
             <div>
-              <span className={styles.riskDetailItemTextFirstChild}>
-                {report_user_name}
-              </span>
-              {moment(report_time).format('YYYY-MM-DD')}
+              <Ellipsis className={styles.ellipsis} lines={1} tooltip>
+                <span className={styles.riskDetailItemTextFirstChild}>
+                  {report_user_name}
+                </span>
+                {report_time && moment(report_time).format('YYYY-MM-DD')}
+              </Ellipsis>
             </div>
           </div>
           <div className={styles.riskDetailItemTextWrapper}>
@@ -127,47 +125,42 @@ export default function HiddenDanger({
               {(isDFC || isYGB)?'实际整改：':'计划整改：'}
             </span>
             <div>
-              <span className={styles.riskDetailItemTextFirstChild}>
-                {rectify_user_name}
-              </span>
-              <span style={{ color: isYCQ?'#ff4848':undefined }}>
-                {(isDFC || isYGB)?moment(real_rectify_time).format('YYYY-MM-DD'):moment(plan_rectify_time).format('YYYY-MM-DD')}
-              </span>
+              <Ellipsis className={styles.ellipsis} lines={1} tooltip>
+                <span className={styles.riskDetailItemTextFirstChild}>
+                  {rectify_user_name}
+                </span>
+                <span style={{ color: isYCQ?'#ff4848':undefined }}>
+                  {(isDFC || isYGB)?(real_rectify_time && moment(real_rectify_time).format('YYYY-MM-DD')):(plan_rectify_time&&moment(plan_rectify_time).format('YYYY-MM-DD'))}
+                </span>
+              </Ellipsis>
             </div>
           </div>
           {(isDFC || isYGB) && (
             <div className={styles.riskDetailItemTextWrapper}>
-              <span>
-                复
-                <span style={{ opacity: 0 }}>隐藏</span>
-                查：
-              </span>
+              <span>复<span style={{ opacity: 0 }}>隐藏</span>查：</span>
               <div>
-                <span className={styles.riskDetailItemTextFirstChild}>
-                  {review_user_name}
-                </span>
-                {isYGB ? moment(review_time).format('YYYY-MM-DD') : undefined}
+                <Ellipsis className={styles.ellipsis} lines={1} tooltip>
+                  <span className={styles.riskDetailItemTextFirstChild}>
+                    {review_user_name}
+                  </span>
+                  {isYGB ? (review_time && moment(review_time).format('YYYY-MM-DD')) : undefined}
+                </Ellipsis>
               </div>
             </div>
           )}
           <div className={styles.riskDetailItemTextWrapper}>
-            <span>
-              来
-              <span style={{ opacity: 0 }}>隐藏</span>
-              源：</span>
-            <div style={{ paddingRight: 96 }}>
-              <Ellipsis lines={1} tooltip>
+            <span>来<span style={{ opacity: 0 }}>隐藏</span>源：</span>
+            <div className={styles.paddingRight}>
+              <Ellipsis className={styles.ellipsis} lines={1} tooltip>
                 {report_source_name}
               </Ellipsis>
             </div>
           </div>
           {showSource && (
             <div className={styles.riskDetailItemTextWrapper}>
-              <span>
-                检查点位：
-              </span>
-              <div style={{ paddingRight: 96 }}>
-                <Ellipsis lines={1} tooltip>
+              <span>检查点位：</span>
+              <div className={styles.paddingRight}>
+                <Ellipsis className={styles.ellipsis} lines={1} tooltip>
                   {item_name}
                 </Ellipsis>
               </div>

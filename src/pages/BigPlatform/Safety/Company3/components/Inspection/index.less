@@ -2,7 +2,7 @@
   margin-bottom: 14px;
   padding: 10px 20px;
   font-size: 16px;
-  line-height: 1;
+  line-height: 1.5;
   color: #fff;
   background-color: rgb(4, 64, 125);
 
@@ -18,11 +18,14 @@
     display: flex;
   }
   .itemPadding {
-    padding: 10px 0;
+    padding: 6px 0;
   }
   .itemLabel {
     color: #00ffff;
     flex: none;
+    width: 5em;
+    white-space: nowrap;
+    overflow: hidden;
   }
   .itemValue {
     flex: 1;
@@ -44,5 +47,10 @@
   }
   .abnormal {
     color: #f83329;
+  }
+  .itemLabelSpacing {
+    display: inline-block;
+    margin-right: 0.5em;
+    vertical-align: top;
   }
 }

@@ -4,7 +4,37 @@ import { connect } from 'dva';
 
 import styles from './LeafletMap.less';
 import ImageDraw, { L } from '@/components/ImageDraw';
-import { findInTree, parseImage } from '../utils';
+import { findInTree, parseImage, getUserName } from '../utils';
+
+function positionsToIcons(aggregation) {
+  // console.log('aggregation', aggregation);
+  const result =  aggregation.map(ps => {
+    const first = ps[0];
+    const length = ps.length;
+    const isSingle = length === 1;
+    const { xarea, yarea, beaconId, sos, tlong, overstep } = first;
+
+    const isAlarm = ps.some(({ sos, overstep, tlong }) => sos || overstep || tlong);
+    const containerClassName = `${isSingle ? 'person' : 'people'}${isAlarm ? 'Red' : ''}`;
+    const firstName = getUserName(first);
+    const name = ps.slice(0, 5).map(getUserName).join(',');
+    const showName = isSingle ? firstName : length;
+    return {
+      id: beaconId,
+      name: length > 5 ? `${name}...` : name, // 若name为数字则会报错
+      latlng: { lat: yarea, lng: xarea },
+      iconProps: {
+        iconSize: [38, 40],
+        // iconAnchor: [],
+        className: styles.personContainer,
+        html: `<div class="${styles[containerClassName]}"><div class="${isSingle ? styles.personTitle : styles.personNum}">${showName}</div></div>`,
+      },
+    };
+  });
+
+  // console.log('agg', result);
+  return result;
+}
 
 @connect(({ zoning, loading }) => ({
   zoning,
@@ -50,13 +80,35 @@ export default class LeafletMap extends PureComponent {
 
   handleClick = e => {
     // console.log(e);
+    const origin = e.target.options.data; // 获取传入的原始数据
+    const { id, name } = origin; // 若点击的是人，原始数据中有id及name，若点击区域，原始数据中无id，只有name
+    const isPerson = !!id;
+
+    // console.log(e, origin);
+    if (isPerson)
+      this.handleClickPerson(id);
+    else
+      this.handleClickSection(name, e);
+  }
+
+  handleClickPerson = beaconId => {
+    const { aggregation, handleShowPersonInfo, handleShowPersonDrawer } = this.props;
+    // 对应信标上只有一个人时，直接个人信息，多个人时，展示列表
+    const ps = aggregation.find(item => item[0].beaconId === beaconId);
+    if (ps.length === 1)
+      handleShowPersonInfo(ps[0].cardId);
+    else
+      handleShowPersonDrawer(beaconId);
+  }
+
+  handleClickSection = (name, e) => {
+    // console.log('section');
     const { areaInfo, setAreaId } = this.props;
-    const name = e.target.options.data.name;
     const target = this.currentSection.children.find(item => item.name === name);
-    // console.log(target);
 
     if (!target || !target.children || !target.children.length)
       return;
+
     const { id, children } = target;
     if (areaInfo[id].isBuilding)
       children && children.length && e.target.bindPopup(this.genChoiceList(target.children)).openPopup();
@@ -90,12 +142,13 @@ export default class LeafletMap extends PureComponent {
   }
 
   render() {
-    const { loading, url, icons, areaId, areaInfo } = this.props;
+    const { loading, url, aggregation, areaId, areaInfo } = this.props;
     const { data, images, reference } = this.state;
 
     // console.log(icons);
 
     const parentId = areaId ? areaInfo[areaId].parentId : undefined;
+    const icons = positionsToIcons(aggregation);
 
     const imgDraw = (
       <Spin spinning={false} style={{ height: '100%' }}>

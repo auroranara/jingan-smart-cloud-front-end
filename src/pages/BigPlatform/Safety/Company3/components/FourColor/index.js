@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Select, Tooltip } from 'antd';
+import moment from 'moment';
 import Section from '../Section';
 import videoPointIcon from '@/assets/videoPoint.png';
 import gray from '@/assets/gray_new.png';
@@ -32,7 +33,39 @@ const getStatusLabel = status => {
     case 4:
     return <span style={{ color: '#FF4848' }}>已超时</span>;
     default:
-    return <span style={{ color: '#fff' }}></span>;
+    return '';
+  }
+};
+/**
+ * 根据颜色筛选图片
+ */
+const getIconByColor = ({ risk_level, originalStatus }={}) => {
+  if (+originalStatus === 2) {
+    switch (+risk_level) {
+      case 1:
+        return exceptionRed;
+      case 2:
+        return exceptionOrange;
+      case 3:
+        return exceptionYellow;
+      case 4:
+        return exceptionBlue;
+      default:
+        return exceptionGray;
+    }
+  } else {
+    switch (+risk_level) {
+      case 1:
+        return red;
+      case 2:
+        return orange;
+      case 3:
+        return yellow;
+      case 4:
+        return blue;
+      default:
+        return gray;
+    }
   }
 };
 
@@ -69,52 +102,17 @@ export default class FourColor extends PureComponent {
     }
     const {
       model: {
-        companyMessage: {
-          point=[],
-        },
+        points: { fourColorImgPoints },
         videoList=[],
       },
     } = this.props;
     // 更新选中的四色图和对应视频列表
     this.setState({
       videos: videoList.filter(({ fix_img_id }) => fix_img_id === id),
-      points: point.filter(({ fixImgId }) => fixImgId === id),
+      points: fourColorImgPoints[id] || [],
       selectedFourColorImg,
     });
   }
-
-  /**
-   * 根据颜色筛选图片
-   */
-  getIconByColor = (color, isException) => {
-    if (!isException) {
-      switch (color) {
-        case '红':
-          return red;
-        case '橙':
-          return orange;
-        case '黄':
-          return yellow;
-        case '蓝':
-          return blue;
-        default:
-          return gray;
-      }
-    } else {
-      switch (color) {
-        case '红':
-          return exceptionRed;
-        case '橙':
-          return exceptionOrange;
-        case '黄':
-          return exceptionYellow;
-        case '蓝':
-          return exceptionBlue;
-        default:
-          return exceptionGray;
-      }
-    }
-  };
 
   /**
    * 下拉框选择事件
@@ -246,29 +244,25 @@ export default class FourColor extends PureComponent {
           {/* 四色图 */}
           <div className={styles.fourColorImage} style={{ backgroundImage: `url(${webUrl || 'http://data.jingan-china.cn/v2/big-platform/safety/com/default_four_color.png'})` }}>
             {points.map(({ itemId, xNum, yNum, info }) => {
-              // 点位是否为异常状态
-              const isAbnormal = info && +info.hdLetterInfo.status === 2;
-              // 点位颜色
-              const color = info && info.hdLetterInfo.riskLevelName.desc;
+              const { object_title, originalStatus, status, risk_level, user_name, last_check_date } = info || {};
               // 如果风险告知卡存在，则判断颜色并统计数量，否则默认为灰色
-              switch (color) {
-                case '红':
+              switch (+risk_level) {
+                case 1:
                   red++;
                   break;
-                case '橙':
+                case 2:
                   orange++;
                   break;
-                case '黄':
+                case 3:
                   yellow++;
                   break;
-                case '蓝':
+                case 4:
                   blue++;
                   break;
                 default:
                   gray++;
                   break;
               }
-
               return (
                 <Tooltip
                   key={itemId}
@@ -276,10 +270,10 @@ export default class FourColor extends PureComponent {
                   placement={xNum > 0.5 ? 'left': 'right'}
                   title={info ? (
                     <Fragment>
-                      <div>{info.objectTitle}</div>
-                      <div>有无隐患：{+info.hdLetterInfo.status === 2 ? <span style={{ color: '#ff4848' }}>有隐患</span> : '无隐患'}</div>
-                      <div>检查状态：{getStatusLabel(info.hdLetterInfo.status)}</div>
-                      <div>最近巡查：{info.hdLetterInfo.lastCheckName} {info.hdLetterInfo.lastCheckDate && info.hdLetterInfo.lastCheckDate.slice(0, 10)}</div>
+                      <div>{object_title}</div>
+                      <div>有无隐患：{+originalStatus === 2 ? <span style={{ color: '#ff4848' }}>有隐患</span> : '无隐患'}</div>
+                      <div>检查状态：{getStatusLabel(status)}</div>
+                      <div>最近巡查：{user_name} {last_check_date && moment(last_check_date).format('YYYY-MM-DD')}</div>
                     </Fragment>
                   ) : <div style={{ textAlign: 'center' }}>暂无信息</div>}
                 >
@@ -291,9 +285,9 @@ export default class FourColor extends PureComponent {
                       bottom: `${(1 - yNum) * 100}%`,
                       width: 32,
                       height: 35,
-                      backgroundImage: `url(${this.getIconByColor(color, isAbnormal)})`,
+                      backgroundImage: `url(${getIconByColor(info)})`,
                     }}
-                    onClick={() => {handleClickPoint(itemId);}}
+                    onClick={() => {handleClickPoint(itemId, status);}}
                   />
                 </Tooltip>
               );

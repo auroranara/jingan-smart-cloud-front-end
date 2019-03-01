@@ -614,10 +614,10 @@ class ImageDraw extends PureComponent {
    */
   renderDivIcon = (item) => {
     const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
-    const { latlng, name, iconProps } = item;
+    const { id, latlng, name, iconProps } = item;
     return (
       <Marker
-        key={name}
+        key={id || name}
         data={item}
         icon={iconProps && L.divIcon(iconProps)}
         position={{ lat: latlng.lat * height, lng: latlng.lng * width }}
@@ -632,13 +632,13 @@ class ImageDraw extends PureComponent {
    */
   renderShape = (item) => {
     const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
-    const { latlngs, latlng, type, radius, name, render, options: { color=DEFAULT_COLOR, weight=DEFAULT_WEIGHT }={} } = item;
+    const { id, latlngs, latlng, type, radius, name, render, options: { color=DEFAULT_COLOR, weight=DEFAULT_WEIGHT }={} } = item;
     let shape = null;
     switch(type){
       case 'polygon': // 多边形
         shape = (
           <Polygon
-            key={name}
+            key={id || name}
             data={item}
             positions={latlngs.map(({ lat, lng }) => ({ lat: lat * height, lng: lng * width }))}
             onClick={this.handleClickShape}
@@ -652,7 +652,7 @@ class ImageDraw extends PureComponent {
       case 'rectangle': // 矩形
         shape = (
           <Rectangle
-            key={name}
+            key={id || name}
             data={item}
             bounds={latlngs.map(({ lat, lng }) => ({ lat: lat * height, lng: lng * width }))}
             onClick={this.handleClickShape}
@@ -666,7 +666,7 @@ class ImageDraw extends PureComponent {
       case 'circle': // 圆
         shape = (
           <Circle
-            key={name}
+            key={id || name}
             data={item}
             center={{ lat: latlng.lat * height, lng: latlng.lng * width }}
             radius={radius * width}
@@ -681,7 +681,7 @@ class ImageDraw extends PureComponent {
       case 'marker': // 标记
         shape = render ? render(item, { position: { lat: latlng.lat * height, lng: latlng.lng * width }, onAdd: this.handleAdd, onClick: this.handleClickShape }) : (
           <Marker
-            key={name}
+            key={id || name}
             data={item}
             position={{ lat: latlng.lat * height, lng: latlng.lng * width }}
             onAdd={this.handleAdd}
@@ -692,7 +692,7 @@ class ImageDraw extends PureComponent {
       case 'circlemarker':
         shape = (
           <CircleMarker
-            key={name}
+            key={id || name}
             data={item}
             center={{ lat: latlng.lat * height, lng: latlng.lng * width }}
             radius={radius * width}

@@ -14,7 +14,7 @@ export async function getAllCamera(params) {
 }
 
 export async function getGasCount(params) {
-  return request(`${URL_PREFIX}/monitor/countStatus.json?${stringify(params)}`);
+  return request(`${URL_PREFIX}/monitor/countStatusIncludeFault.json?${stringify(params)}`);
 }
 
 export async function getGasList(params) {
@@ -75,7 +75,7 @@ export async function fetchAlarmInfoTypes() {
 
 // 获取独立烟感列表
 export async function querySmokeList(params) {
-  return request(`/acloud_new/v2/monitor/getDevicesByType?${stringify(params)}`);
+  return request(`/acloud_new/v2/monitor/getDevicesByType2?${stringify(params)}`);
 }
 
 // 获取传感器历史数据

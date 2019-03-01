@@ -13,17 +13,11 @@ export async function queryInitialAlarms(params) {
   return request(`${URL_PREFIX}/location/locationWarningForPage?${stringify(params)}`);
 }
 
-// 取消sos
-export async function postSOS(id) {
-  return request(`${URL_PREFIX}/location/command/delSos/${id}`, {
-    method: 'POST',
-  });
-}
-
-// 取消越界
-export async function postOverstep(id) {
-  return request(`${URL_PREFIX}/accessCard/ignoreOverstep/${id}`, {
-    method: 'POST',
+// 处理警报
+export async function putAlarm(params) {
+  return request(`${URL_PREFIX}/location/locationWarning`, {
+    method: 'PUT',
+    body: params,
   });
 }
 

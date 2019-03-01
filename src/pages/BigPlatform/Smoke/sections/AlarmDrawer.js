@@ -157,6 +157,7 @@ export default class AlarmDrawer extends PureComponent {
   render() {
     const {
       handleAlarmClick,
+      handleFaultClick,
       visible,
       data: { list = [], companyStatus: { unnormal = 0, faultNum = 0 }, graphList = [] } = {},
     } = this.props;
@@ -286,12 +287,18 @@ export default class AlarmDrawer extends PureComponent {
                     quantity={listUnnormal}
                     className={listUnnormal > 0 ? styles.itemActive : ''}
                     onClick={() =>
-                      listUnnormal > 0
-                        ? handleAlarmClick(undefined, company_id, company_name, listUnnormal)
-                        : ''
+                      listUnnormal > 0 && handleAlarmClick(undefined, company_id, company_name, listUnnormal)
                     }
                   />
-                  <DotItem title="故障" color={`rgb(255,180,0)`} quantity={listFaultNum} />
+                  <DotItem
+                    title="故障"
+                    color={`rgb(255,180,0)`}
+                    className={listFaultNum > 0 ? styles.itemActive : ''}
+                    quantity={listFaultNum}
+                    onClick={() =>
+                      listFaultNum > 0 && handleFaultClick(undefined, company_id, company_name, listFaultNum)
+                    }
+                  />
                   <DotItem title="正常" color={`rgb(55,164,96)`} quantity={listNormal} />
                 </p>
               }

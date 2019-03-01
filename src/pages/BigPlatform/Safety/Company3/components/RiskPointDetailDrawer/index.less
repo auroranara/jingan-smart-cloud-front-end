@@ -109,23 +109,37 @@
       }
     }
 
-    .list {
-      position: relative;
+    .scroll {
       height: 100%;
 
-      .scrollContent {
-        padding: 0 16px;
+      & > div {
+        &::-webkit-scrollbar {
+          background-color: transparent;
+        }
+        &::-webkit-scrollbar-thumb {
+          background-color: transparent;
+        }
+        &::-webkit-scrollbar-track {
+          background-color: transparent;
+        }
       }
+    }
 
-      .defaultHiddenDanger {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        background: no-repeat center;
-        background-size: 50% auto;
-      }
+    .scrollContent {
+      padding: 0 16px;
+    }
+
+    .defaultHiddenDanger {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: no-repeat center;
+      background-size: 50% auto;
+    }
+    .loadMoreWrapper {
+      text-align: center;
     }
   }
 }

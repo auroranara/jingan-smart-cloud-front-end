@@ -39,6 +39,8 @@ import {
   getRiskPointHiddenDangerCount,
   // 获取风险点的巡查统计
   getRiskPointInspectionCount,
+  // 获取点位
+  getPoints,
 } from '../services/unitSafety';
 
 function handleRiskList(response) {
@@ -214,7 +216,7 @@ export default {
     // 风险点信息列表（风险告知卡列表）
     // pointInfoList: [],
     // 隐患列表
-    hiddenDangerList: { ycq: [], wcq: [], dfc: [] },
+    hiddenDangerList: {},
     // 视频列表
     videoList: [],
     // 监控球数据
@@ -252,37 +254,32 @@ export default {
       // 风险告知卡列表
       cardList: [],
       // 隐患列表
-      hiddenDangerList: [],
+      hiddenDangerList: {},
       // 巡查列表
-      inspectionList: [],
+      inspectionList: {},
       // 隐患统计
       hiddenDangerCount: {},
       // 巡查统计
       inspectionCount: {},
     },
+    // 点位
+    points: {
+      // 所有点位
+      pointList: [],
+      // 四色图点位
+      fourColorImgPoints: {},
+      // 其他各种点位和统计
+    },
+    // 隐患统计
+    hiddenDangerCount: { total: 0, ycq: 0, wcq: 0, dfc: 0 },
   },
 
   effects: {
     // 获取企业信息
-    *fetchCompanyMessage({ payload, callback }, { call, put, all }) {
-      const [response, { companyLetter }] = yield all([call(getCompanyMessage, payload), call(getPointInfoList, payload)]);
+    *fetchCompanyMessage({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanyMessage, payload);
       const companyMessage = {
         ...response,
-        // 移除坐标不存在的风险点并添加风险告知卡信息
-        point:
-          response.point ?
-          response.point.filter(
-            ({ itemId, xNum, yNum }) =>
-              itemId &&
-              (xNum || Number.parseFloat(xNum) === 0) &&
-              (yNum || Number.parseFloat(yNum) === 0)
-          ).map((item) => {
-            const { itemId } = item;
-            return {
-              ...item,
-              info: companyLetter.filter(({ hdLetterInfo: { itemId: id } }) => itemId === id)[0],
-            };
-          }) : [],
         // 移除地址不合法的四色图
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
@@ -324,32 +321,15 @@ export default {
     // 获取隐患列表
     *fetchHiddenDangerList({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerList, payload);
-      // 筛选已超期的隐患列表并根据计划整改时间排序
-      const ycq = response.hiddenDangers
-        .filter(({ status }) => +status === 7)
-        // .sort((a, b) => {
-        //   return +b.plan_rectify_time - a.plan_rectify_time;
-        // });
-      // 筛选未超期的隐患列表并根据计划整改时间排序
-      const wcq = response.hiddenDangers
-        .filter(({ status }) => +status === 1 || +status === 2)
-        // .sort((a, b) => {
-        //   return +b.plan_rectify_time - a.plan_rectify_time;
-        // });
-      // 筛选待复查的隐患列表并根据计划整改时间排序
-      const dfc = response.hiddenDangers
-        .filter(({ status }) => +status === 3)
-        // .sort((a, b) => {
-        //   return +b.real_rectify_time - a.real_rectify_time;
-        // });
-      yield put({ type: 'save', payload:  { hiddenDangerList : { ycq, wcq, dfc } } });
-      yield put({
-        type: 'saveDangerList',
-        payload: response && Array.isArray(response.hiddenDangers) ? handleDangerList(response.hiddenDangers) : [],
-      });
-      if (callback) {
-        callback();
+      const { code, data: { list, pagination } } = response;
+      if (code === 200) {
+        yield put({ type: 'saveHiddenDangerList', payload: { list, pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize }  }, append: payload.pageNum !== 1 });
+        yield put({
+          type: 'saveDangerList',
+          payload: list,
+        });
       }
+      callback && callback(response);
     },
     // 获取视频列表
     *fetchVideoList({ payload, callback }, { call, put }) {
@@ -557,17 +537,25 @@ export default {
       }
       callback && callback(response);
     },
+    // 获取风险点的隐患列表
     *fetchRiskPointHiddenDangerList({ payload, callback }, { call, put }) {
       const response = yield call(getRiskPointHiddenDangerList, payload);
       if (response.code === 200) {
-        yield put({ type: 'saveRiskPointHiddenDangerList', payload: response.data.list, append: payload.pageNum !== 1 });
+        yield put({ type: 'saveRiskPointHiddenDangerList', payload: {
+          list: response.data.list,
+          pagination: { total: response.data.total, pageNum: payload.pageNum, pageSize: payload.pageSize },
+        }, append: payload.pageNum !== 1 });
       }
       callback && callback(response);
     },
+    // 获取风险点的巡查列表
     *fetchRiskPointInspectionList({ payload, callback }, { call, put }) {
       const response = yield call(getRiskPointInspectionList, payload);
       if (response.code === 200) {
-        yield put({ type: 'saveRiskPointInspectionList', payload: response.data.list, append: payload.pageNum !== 1 });
+        yield put({ type: 'saveRiskPointInspectionList', payload: {
+          list: response.data.list,
+          pagination: { total: response.data.total, pageNum: payload.pageNum, pageSize: payload.pageSize },
+        }, append: payload.pageNum !== 1 });
       }
       callback && callback(response);
     },
@@ -586,6 +574,101 @@ export default {
         yield put({ type: 'saveRiskPointAttr', payload: { inspectionCount: response.data } });
       }
       callback && callback(response);
+    },
+    // 获取点位
+    *fetchPoints({ payload, callback }, { call, put }) {
+      const response = yield call(getPoints, payload);
+      const { code, data: { points, pointInfo } } = response;
+      if (code === 200) {
+        const pointInfoMap = pointInfo.reduce((o, c) => {
+          o[c.item_id] = c;
+          return o;
+        }, {});
+        const levelDict = ['gray', 'red', 'orange', 'yellow', 'blue'];
+        const statusDict = ['normal', 'normal', 'abnormal', 'pending', 'overtime'];
+        const capitalStatusDict = ['Normal', 'Normal', 'Abnormal', 'Pending', 'Overtime'];
+        const result = points.reduce((obj, { itemId, xNum, yNum, fixImgId }) => {
+          const info = pointInfoMap[itemId];
+          const point = {
+            itemId,
+            xNum,
+            yNum,
+            fixImgId,
+            info,
+          };
+          const { status, risk_level } = info || {};
+          // 四色图相关点位，排除没有坐标的点位
+          if (xNum && yNum) {
+            if (fixImgId in obj.fourColorImgPoints) {
+              obj.fourColorImgPoints[fixImgId].push(point);
+            }
+            else {
+              obj.fourColorImgPoints[fixImgId] = [point];
+            }
+          }
+          obj.pointList.push(point);
+          obj[statusDict[+status]]++;
+          obj[levelDict[+risk_level]]++;
+          obj[`${levelDict[+risk_level]}${capitalStatusDict[+status]}PointList`].push(point);
+          return obj;
+        }, {
+          pointList: [],
+          red: 0,
+          orange: 0,
+          yellow: 0,
+          blue: 0,
+          gray: 0,
+          normal: 0,
+          abnormal: 0,
+          pending: 0,
+          overtime: 0,
+          redNormalPointList: [],
+          redAbnormalPointList: [],
+          redPendingPointList: [],
+          redOvertimePointList: [],
+          orangeNormalPointList: [],
+          orangeAbnormalPointList: [],
+          orangePendingPointList: [],
+          orangeOvertimePointList: [],
+          yellowNormalPointList: [],
+          yellowAbnormalPointList: [],
+          yellowPendingPointList: [],
+          yellowOvertimePointList: [],
+          blueNormalPointList: [],
+          blueAbnormalPointList: [],
+          bluePendingPointList: [],
+          blueOvertimePointList: [],
+          grayNormalPointList: [],
+          grayAbnormalPointList: [],
+          grayPendingPointList: [],
+          grayOvertimePointList: [],
+          fourColorImgPoints: {},
+        });
+
+        yield put({
+          type: 'save',
+          payload: { points: result },
+        });
+      }
+      callback && callback(response);
+    },
+    // 获取隐患统计
+    *fetchHiddenDangerCount({ payload, callback }, { call, put, all }) {
+      const [
+        { data: { pagination: { total } } },
+        { data: { pagination: { total: ycq } } },
+        { data: { pagination: { total: wcq } } },
+        { data: { pagination: { total: dfc } } },
+      ]  = yield all([
+        call(getHiddenDangerList, { status: 5, pageSize: 1, pageNum: 1, ...payload }),
+        call(getHiddenDangerList, { status: 7, pageSize: 1, pageNum: 1, ...payload }),
+        call(getHiddenDangerList, { status: 2, pageSize: 1, pageNum: 1, ...payload }),
+        call(getHiddenDangerList, { status: 3, pageSize: 1, pageNum: 1, ...payload }),
+      ]);
+      yield put({
+        type: 'save',
+        payload: { hiddenDangerCount: { total, ycq, wcq, dfc } },
+      });
     },
   },
 
@@ -627,7 +710,10 @@ export default {
           ...state,
           riskPointDetail: {
             ...state.riskPointDetail,
-            hiddenDangerList: state.riskPointDetail.hiddenDangerList.concat(payload),
+            hiddenDangerList: {
+              pagination: payload.pagination,
+              list: state.riskPointDetail.hiddenDangerList.list.concat(payload.list),
+            },
           },
         };
       }
@@ -645,7 +731,10 @@ export default {
           ...state,
           riskPointDetail: {
             ...state.riskPointDetail,
-            inspectionList: state.riskPointDetail.inspectionList.concat(payload),
+            inspectionList: {
+              pagination: payload.pagination,
+              list: state.riskPointDetail.inspectionList.list.concat(payload.list),
+            },
           },
         };
       }
@@ -655,6 +744,22 @@ export default {
           ...state.riskPointDetail,
           inspectionList: payload,
         },
+      };
+    },
+    // 保存隐患列表
+    saveHiddenDangerList(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          hiddenDangerList: {
+            pagination: payload.pagination,
+            list: state.hiddenDangerList.list.concat(payload.list),
+          },
+        };
+      }
+      return {
+        ...state,
+        hiddenDangerList: payload,
       };
     },
   },

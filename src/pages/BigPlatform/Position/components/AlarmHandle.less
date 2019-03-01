@@ -4,7 +4,9 @@
   padding: 10px 15px 25px;
   position: absolute;
   right: 20px;
+  background-image: url(../imgs/handleCard.png);
   background-size: 100% 100%;
+  z-index: 999;
 
   :global(.ant-input) {
     color: #FFF;
@@ -30,8 +32,35 @@
   margin-left: 10px;
 }
 
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+}
+
 .btn {
   margin-top: 25px;
   display: flex;
   justify-content: space-around;
+}
+
+.sos {
+  display: inline-block;
+  width: 28px;
+  height: 22px;
+  position: relative;
+  top: 5px;
+  background-image: url(../imgs/sos.png);
+  background-size: 100% 100%;
+}
+
+.alarmInfo {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  position: relative;
+  top: 3px;
+  background-image: url(../imgs/alarmInfo.png);
+  background-size: 100% 100%;
 }
