@@ -49,6 +49,7 @@ const DEFAULT_PAGE_SIZE = 10;
   loadingRiskPointInspectionList: loading.effects['unitSafety/fetchRiskPointInspectionList'],
   loadingRiskPointHiddenDangerList: loading.effects['unitSafety/fetchRiskPointHiddenDangerList'],
   loadingHiddenDangerList: loading.effects['unitSafety/fetchHiddenDangerList'],
+  loadingDangerList: loading.effects['unitSafety/fetchDangerList'],
 }))
 export default class UnitSafety extends PureComponent {
   constructor(props) {
@@ -95,7 +96,7 @@ export default class UnitSafety extends PureComponent {
         'fetchVideoList',
         // 获取监控数据
         'fetchMonitorData',
-        // // 获取四色风险点
+        // 获取四色风险点
         'fetchCountDangerLocation',
         // 获取安全人员信息
         'fetchSafetyOfficer',
@@ -129,6 +130,8 @@ export default class UnitSafety extends PureComponent {
         'fetchPoints',
         // 获取隐患统计
         'fetchHiddenDangerCount',
+        // 获取弹窗的隐患列表
+        'fetchDangerList',
       ],
     });
   }
@@ -185,6 +188,24 @@ export default class UnitSafety extends PureComponent {
     } = this.props;
     window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`);
   };
+
+  /**
+   * 获取弹窗的隐患列表
+   */
+  getDangerList = (restProps) => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    this.fetchDangerList({
+      pageNum: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+      company_id: companyId,
+      status: 5,
+      ...restProps,
+    });
+  }
 
   /**
    * 获取隐患列表
@@ -412,6 +433,7 @@ export default class UnitSafety extends PureComponent {
       loadingRiskPointInspectionList,
       loadingRiskPointHiddenDangerList,
       loadingHiddenDangerList,
+      loadingDangerList,
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -550,6 +572,8 @@ export default class UnitSafety extends PureComponent {
         {/* 安全指数抽屉 */}
         <IndexDrawer
           data={unitSafety}
+          getDangerList={this.getDangerList}
+          loading={loadingDangerList}
           visible={indexDrawerVisible}
           handleDrawerVisibleChange={this.setDrawerVisible}
         />

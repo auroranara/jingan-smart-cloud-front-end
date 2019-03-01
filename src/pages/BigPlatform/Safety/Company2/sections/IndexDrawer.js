@@ -1,5 +1,6 @@
 import React, { Fragment, PureComponent } from 'react';
-
+import { Spin } from 'antd';
+import LoadMoreButton from '../../Company3/components/LoadMoreButton';
 import styles from './IndexDrawer.less';
 import {
   ChartBar,
@@ -29,7 +30,6 @@ function getDesc(selected, list, hiddenDangerCount) {
       const out = list.filter(item => item.status === 4);
       return `共${out.length}个点位超时未查`;
     case 1:
-      const out1 = list.filter(item => item.status === '7');
       return `共${total}个隐患，其中已超期${ycq}个`;
     case 2:
       const loss = list.filter(item => item.status === LOSS_STATUS);
@@ -51,7 +51,17 @@ export default class IndexDrawer extends PureComponent {
 
   handleLabelChange = i => {
     this.setState({ selected: i });
+    // 如果点击隐患列表，则进行初始化操作
+    if (i === 1) {
+      const { getDangerList } = this.props;
+      getDangerList();
+    }
   };
+
+  handleLoadMore = () => {
+    const { getDangerList, data: { dangerList: { pagination: { pageNum=1 }={} }={} } } = this.props;
+    getDangerList({ pageNum: pageNum + 1 });
+  }
 
   render() {
     const {
@@ -60,15 +70,22 @@ export default class IndexDrawer extends PureComponent {
         safetyIndex,
         safetyIndexes,
         riskList,
-        dangerList,
+        dangerList: {
+          list: hiddenDangerList=[],
+          pagination: {
+            total=0,
+            pageNum=0,
+            pageSize=0,
+          }={},
+        }={},
         monitorList,
         safeList,
         hiddenDangerCount,
       },
+      loading,
     } = this.props;
     const { selected } = this.state;
 
-    console.log('riskList', riskList);
     const titleIcon = <Rect color="#0967d3" />;
     // const barLists = [riskList, dangerList, monitorList, safeList];
     // const barListData = LABELS.map((label, i) => ({ name: label, value: Array.isArray(barLists[i]) ? barLists[i].length : 0 }));
@@ -92,7 +109,7 @@ export default class IndexDrawer extends PureComponent {
       </Fragment>
     );
 
-    const list = [riskList, dangerList, monitorList, safeList][selected];
+    const list = [riskList, hiddenDangerList, monitorList, safeList][selected];
     const CardComponent = CARD_COMPONENTS[selected];
     let cards = <p className={styles.empty}>暂无信息</p>;
     if (list.length)
@@ -103,19 +120,26 @@ export default class IndexDrawer extends PureComponent {
     const desc = getDesc(selected, list, hiddenDangerCount);
     const right = (
       <div className={styles.right}>
-        <div className={styles.labels}>
-          {LABELS.map((label, i) => (
-            <span
-              key={label}
-              className={i === selected ? styles.labelSelected : styles.label}
-              onClick={e => this.handleLabelChange(i)}
-            >
-              {label}
-            </span>
-          ))}
-        </div>
-        <p className={styles.desc}>{desc}</p>
-        <div className={styles.cards}>{cards}</div>
+        <Spin wrapperClassName={styles.spin} spinning={!!loading}>
+          <div className={styles.labels}>
+            {LABELS.map((label, i) => (
+              <span
+                key={label}
+                className={i === selected ? styles.labelSelected : styles.label}
+                onClick={e => this.handleLabelChange(i)}
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+          <p className={styles.desc}>{desc}</p>
+          <div className={styles.cards}>
+              {cards}
+              {selected === 1 && pageNum * pageSize < total && (
+                <div style={{ textAlign: 'center' }}><LoadMoreButton onClick={this.handleLoadMore} /></div>
+              )}
+          </div>
+        </Spin>
       </div>
     );
 
