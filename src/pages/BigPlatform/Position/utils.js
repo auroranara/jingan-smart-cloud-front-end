@@ -41,8 +41,8 @@ export function getPersonInfoItem(cardId, list) {
   return list.find(item => item.cardId === cardId) || {};
 }
 
-export function getOverstepItem(cardId, list) {
-  return list.find(item => item.cardId === cardId);
+export function getAlarmItem(alarmId, list) {
+  return list.find(({ id }) => id === alarmId) || {};
 }
 
 export function getAlarmCards(list) {

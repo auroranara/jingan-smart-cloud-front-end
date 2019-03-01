@@ -5,10 +5,9 @@ import moment from 'moment';
 import { message, notification } from 'antd';
 
 import styles from './RealTime.less';
-// import { alarmInfoIcon, sosIcon } from '../imgs/urls';
-import { AlarmHandle, MapInfo, PersonInfo, Tabs, VideoPlay } from '../components/Components';
+import { AlarmHandle, AlarmMsg, MapInfo, PersonInfo, Tabs, VideoPlay } from '../components/Components';
 import { AlarmDrawer, LeafletMap, LowPowerDrawer, PersonDrawer, SectionList } from './Components';
-import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem } from '../utils';
+import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem, getAlarmItem, getUserName } from '../utils';
 
 const options = {
   pingTimeout: 30000,
@@ -17,14 +16,7 @@ const options = {
   pingMsg: 'heartbeat',
 };
 
-const TYPE_LABELS = {
-  1: '越界',
-  2: 'SOS求助',
-};
-const ALARM_DESC = {
-  1: '越界，请及时处理！',
-  2: '发起求救信号，请及时支援！',
-};
+const SOS_TYPE = 1;
 
 const LOCATION_MESSAGE_TYPE = "1";
 const AREA_CHANGE_TYPE = "2";
@@ -34,20 +26,20 @@ const RE_WARNING_TYPE = "5";
 
 export default class RealTime extends PureComponent {
   state = {
-    mapBackgroundUrl:undefined,
     alarmId: undefined, // 警报id
     areaId: undefined, // 地图选定的areaId
     beaconId: undefined, // 信标id
     cardId: undefined, // 选中的人员id
-    alarmDrawerVisible: false,
-    lowPowerDrawerVisible: true,
-    personDrawerVisible: false,
-    personInfoVisible: false,
-    sosHandleVisible: false,
-    // alarmMsgVisible: false,
-    alarmHandleVisible: false,
-    videoVisible: false,
+    mapBackgroundUrl:undefined,
+    alarmMsgVisible: false, // 报警信息小弹框
+    alarmHandleVisible: false, // 报警处理弹框
+    personInfoVisible: false, // 人员信息小弹框
+    videoVisible: false, // 视频弹框
     videoKeyId: '',
+    alarmDrawerVisible: false, // 报警列表抽屉
+    lowPowerDrawerVisible: false, // 低电量报警抽屉
+    personDrawerVisible: false, // 人员列表抽屉
+    useCardIdHandleAlarm: undefined, // 当sos存在时，又在报警列表找不到时，标记为sos对应的cardId，使用另外一个接口
   };
 
   componentDidMount() {
@@ -92,6 +84,13 @@ export default class RealTime extends PureComponent {
   ws = null;
   areaInfo = {};
 
+  // 判定当前页面是否是目标追踪
+  isTargetTrack = () => {
+    // labelIndex 0 实时监控 1 目标追踪
+    const { labelIndex } = this.props;
+    return !!labelIndex;
+  };
+
   connectWebSocket = () => {
     const { companyId } = this.props;
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
@@ -131,22 +130,30 @@ export default class RealTime extends PureComponent {
   };
 
   handleWbData = wbData => {
+    const { selectedCardId } = this.props;
     const { messageType, data } = wbData;
+    const isTrack = this.isTargetTrack();
+    // console.log(isTrack, selectedCardId);
     switch(messageType) {
       case LOCATION_MESSAGE_TYPE:
         this.handlePositions(data);
+        // 当处于目标跟踪标签且选定目标时
+        if (isTrack && selectedCardId)
+          this.handleAreaAutoChange(data);
         break;
       case AREA_CHANGE_TYPE:
         this.handleAreaChange(data);
         break;
       case WARNING_TYPE:
         this.handleAlarms(data);
+        this.showNotifications(data);
         break;
       case AREA_STATUS_TYPE:
         this.handleAreaStatusChange(data);
         break;
       case RE_WARNING_TYPE:
         this.removeAlarms(data);
+        data.forEach(({ warningId }) => notification.close(warningId));
         break;
       default:
         console.log('no msg type');
@@ -158,6 +165,14 @@ export default class RealTime extends PureComponent {
     const cardIds = data.map(({ cardId }) => cardId);
     const newPositionList = positionList.filter(({ cardId }) => !cardIds.includes(cardId)).concat(data);
     dispatch({ type: 'personPosition/savePositions', payload: newPositionList });
+  };
+
+  handleAreaAutoChange = data => {
+    const { selectedCardId } = this.props;
+    const changed = data.find(({ cardId }) => cardId === selectedCardId);
+    console.log(changed.areaId);
+    if (changed)
+      this.setAreaId(changed.areaId);
   };
 
   // 根据websocket的推送改变model中的alarms
@@ -203,59 +218,6 @@ export default class RealTime extends PureComponent {
     dispatch({ type: 'personPosition/saveSectionTree', payload: newSectionTree });
   };
 
-  showNotification = type => ({ cardId, uptime, userName, phone }) => {
-    notification.warning({
-      key: type,
-      className: styles.note,
-      placement: 'bottomLeft',
-      message: `报警提示 ${TYPE_LABELS[type]}`,
-      description: (
-        <span
-          className={styles.desc}
-          onClick={e => {
-            this.handleAlarmCardClick(type, cardId);
-            notification.close(type);
-          }}
-        >
-          {`${moment(uptime).format('HH:mm:ss')} ${userName}【${phone}】${ALARM_DESC[type]}`}
-        </span>
-      ),
-      duration: null,
-    });
-  };
-
-  handleAlarmCardClick = (type, cardId) => {
-    switch (type) {
-      case 1:
-        this.handleShowAlarmMsg(cardId);
-        break;
-      case 2:
-        this.handleClickPerson(cardId, true);
-        break;
-      default:
-        return;
-    }
-  };
-
-  handleShowPersonInfo = cardId => {
-    this.setState({ cardId, personInfoVisible: true });
-  };
-
-  // handleShowAlarmMsg = alarmId => {
-  //   this.setState({ alarmMsgVisible: true, alarmId });
-  // };
-
-  // handleSOS = id => {
-  //   const { dispatch } = this.props;
-  //   dispatch({ type: 'personPosition/quitSOS', payload: id });
-  //   this.setState({ personInfoVisible: false, sosHandleVisible: true});
-  //   notification.close(2);
-  // };
-
-  handleShowAlarmHandle = alarmId => {
-    this.setState({ alarmHandleVisible: true, alarmId });
-  };
-
   // 处理报警
   handleAlarm = (id, executeStatus, executeDesc)=> {
     const { dispatch, personPosition: { alarms } } = this.props;
@@ -267,13 +229,66 @@ export default class RealTime extends PureComponent {
           message.success(msg);
           const newAlarms = alarms.filter(({ id: alarmId }) => alarmId !== id);
           dispatch({ type: 'personPosition/saveAlarms', payload: newAlarms });
+          this.setState({ alarmHandleVisible: false });
+          notification.close(id);
         }
         else
           message.warn(msg);
       },
     });
-    this.setState({ alarmHandleVisible: false });
-    // notification.close(1);
+  };
+
+  // 警报列表中没有sos时，调用当前函数处理
+  handleSOS = cardId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'personPosition/handleSOS',
+      payload: cardId,
+      callback(code, msg) {
+        message[code === 200 ? 'success' : 'warn'](msg);
+      },
+    });
+  };
+
+  showNotifications = data => {
+    data.forEach((alarm, i) => {
+      setTimeout(() => {
+        this.showNotification(alarm);
+      }, i * 100);
+    });
+  };
+
+  showNotification = alarm => {
+    const { id, cardId, type, typeName, cardType, phoneNumber, visitorPhone, warningTime } = alarm;
+    const name = getUserName(alarm);
+    const phone = +cardType ? visitorPhone : phoneNumber;
+    notification.warning({
+      key: id,
+      className: styles.note,
+      placement: 'bottomLeft',
+      message: `报警提示 ${typeName}`,
+      description: (
+        <span
+          className={styles.desc}
+          onClick={e => {
+            this.showPersonInfoOrAlarmMsg(type, id, cardId);
+            notification.close(id);
+          }}
+        >
+          {`${moment(warningTime).format('HH:mm')} ${name}【${phone}】越界`}
+        </span>
+      ),
+      duration: null,
+    });
+  };
+
+  // 点击警报详情时判断是显示人员sos，还是其他报警信息
+  showPersonInfoOrAlarmMsg = (type, alarmId, cardId) => {
+    const isSOS = +type === SOS_TYPE;
+    if (isSOS)
+      this.handleShowPersonInfo(cardId);
+    else
+      this.handleShowAlarmMsg(alarmId);
   };
 
   handleOpen = prop => {
@@ -282,6 +297,32 @@ export default class RealTime extends PureComponent {
 
   handleClose = prop => {
     this.setState({ [`${prop}Visible`]: false });
+  };
+
+  handleShowPersonInfo = cardId => {
+    this.setState({ cardId, personInfoVisible: true });
+  };
+
+  handleShowAlarmMsg = alarmId => {
+    this.setState({ alarmMsgVisible: true, alarmId });
+  };
+
+  handleShowAlarmHandle = (alarmId, cardId) => {
+    // alarmId不存在时，使用cardId处理，针对的是sos存在于person，而报警列表中没有
+    if (!alarmId)
+      this.setState({ alarmHandleVisible: true, useCardIdHandleAlarm: cardId });
+    else
+      this.setState({ alarmHandleVisible: true, alarmId });
+  };
+
+  handleHideAlarmHandle = () => {
+    this.setState({
+      alarmId: undefined,
+      useCardIdHandleAlarm: undefined,
+      alarmMsgVisible: false,
+      personInfoVisible: false,
+      alarmHandleVisible: false,
+    });
   };
 
   handleShowPersonDrawer = beaconId => {
@@ -304,10 +345,17 @@ export default class RealTime extends PureComponent {
     });
   };
 
+  handleTrack = cardId => {
+    const { setSelectedCard, handleLabelClick } = this.props;
+    setSelectedCard(cardId);
+    handleLabelClick(1);
+  };
+
   render() {
     const {
       labelIndex,
       companyId,
+      selectedCardId,
       personPosition: { sectionTree, positionList, positionAggregation, alarms },
       handleLabelClick,
     } = this.props;
@@ -317,39 +365,39 @@ export default class RealTime extends PureComponent {
       beaconId,
       cardId,
       mapBackgroundUrl,
+      alarmMsgVisible,
+      alarmHandleVisible,
+      personInfoVisible,
+      videoVisible,
+      videoKeyId,
       alarmDrawerVisible,
       lowPowerDrawerVisible,
       personDrawerVisible,
-      personInfoVisible,
-      // alarmMsgVisible,
-      // sosHandleVisible,
-      alarmHandleVisible,
-      videoVisible,
-      videoKeyId,
+      useCardIdHandleAlarm,
     } = this.state;
 
     // console.log(sectionTree);
+
+    const isTrack = this.isTargetTrack();
 
     return (
       <div className={styles.container}>
         <div className={styles.left}>
           <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
           <div className={styles.leftSection}>
-            <SectionList data={sectionTree} />
+            {!labelIndex && <SectionList data={sectionTree} />}
+            {!!labelIndex && 'Track'}
           </div>
-          {/* <AlarmView
-            data={alarmCards}
-            className={styles.leftBottom}
-            onClick={this.handleAlarmCardClick}
-            handleShowVideo={this.handleShowVideo}
-          /> */}
         </div>
         <div className={styles.right}>
           <LeafletMap
             url={mapBackgroundUrl}
+            isTrack={isTrack}
+            selectedCardId={selectedCardId}
             areaId={areaId}
             areaInfo={this.areaInfo}
             sectionTree={sectionTree}
+            positions={positionList}
             aggregation={positionAggregation}
             setAreaId={this.setAreaId}
             handleShowPersonInfo={this.handleShowPersonInfo}
@@ -358,7 +406,7 @@ export default class RealTime extends PureComponent {
           <MapInfo
             alarms={alarms}
             positionList={positionList}
-            handleShowAlarmHandle={this.handleShowAlarmHandle}
+            showPersonInfoOrAlarmMsg={this.showPersonInfoOrAlarmMsg}
             handleShowAlarmDrawer={this.handleShowAlarmDrawer}
           />
           <PersonInfo
@@ -366,36 +414,30 @@ export default class RealTime extends PureComponent {
             companyId={companyId}
             alarms={alarms}
             personItem={getPersonInfoItem(cardId, positionList)}
+            handleTrack={this.handleTrack}
             handleShowAlarmHandle={this.handleShowAlarmHandle}
             handleClose={this.handleClose}
           />
-          {/* <AlarmMsg
+          <AlarmMsg
             visible={alarmMsgVisible}
-            // data={getOverstepItem(overstepCardId, overstepList)}
-            handleAlarm={this.handleAlarm}
-            handleClose={() => this.handleClose('alarmMsg')}
-          /> */}
-          {/* <AlarmHandle
-            title="SOS报警处理"
-            visible={sosHandleVisible}
-            prefix={
-              <span className={styles.sos} style={{ backgroundImage: `url(${sosIcon})` }} />
-            }
-            handleSubmit={() => this.handleClose('sosHandle')}
-            handleClose={() => this.handleClose('sosHandle')}
-          /> */}
+            data={getAlarmItem(alarmId, alarms)}
+            handleShowAlarmHandle={this.handleShowAlarmHandle}
+            handleClose={this.handleClose}
+          />
           <AlarmHandle
+            cardId={useCardIdHandleAlarm}
             alarmId={alarmId}
             alarms={alarms}
             visible={alarmHandleVisible}
             handleAlarm={this.handleAlarm}
-            handleClose={this.handleClose}
+            handleSOS={this.handleSOS}
+            handleClose={this.handleHideAlarmHandle}
           />
         </div>
         <AlarmDrawer
           visible={alarmDrawerVisible}
           data={alarms}
-          handleShowAlarmHandle={this.handleShowAlarmHandle}
+          showPersonInfoOrAlarmMsg={this.showPersonInfoOrAlarmMsg}
           handleClose={this.handleClose}
         />
         <LowPowerDrawer

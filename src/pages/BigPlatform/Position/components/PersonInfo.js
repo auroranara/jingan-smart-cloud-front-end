@@ -21,16 +21,15 @@ export default class PersonInfo extends PureComponent {
       handleShowAlarmHandle,
     } = this.props;
 
-    const alarmItem = alarms.find(({ cardId: id }) => id === cardId);
+    // 根据cardId在alarms列表中寻找对应的sos报警信息
+    const alarmItem = alarms.find(({ cardId: id, type }) => id === cardId && +type === 1);
     const alarmId = alarmItem ? alarmItem.id : undefined;
+    handleShowAlarmHandle(alarmId, cardId);
+  };
 
-    // 若还报警，但在报警列表里没有该cardId对应的报警，则为已处理，但还显示报警
-    if (!alarmId) {
-      message.warn('该条报警信息已处理，请勿重复处理！');
-      return;
-    }
-
-    handleShowAlarmHandle(alarmId);
+  handleTrackClick = e => {
+    const { personItem: { cardId }, handleTrack } = this.props;
+    handleTrack(cardId);
     this.onClose();
   };
 
@@ -41,12 +40,13 @@ export default class PersonInfo extends PureComponent {
       alarms,
       personItem,
       style,
+      handleTrack,
       handleShowAlarmHandle,
       handleClose,
       ...restProps
     } = this.props;
 
-    const { sos: isSOS, cardId, cardType, phoneNumber, visitorPhone, cardCode, areaName, departmentName } = personItem;
+    const { sos: isSOS, cardType, phoneNumber, visitorPhone, cardCode, areaName, departmentName } = personItem;
     const name = getUserName(personItem);
     const phone = +cardType ? visitorPhone : phoneNumber;
 
@@ -65,7 +65,7 @@ export default class PersonInfo extends PureComponent {
         />
         {isSOS
           ? <Button ghost style={BTN_STYLE} onClick={this.handleAlarmClick}>处理</Button>
-          : <Button ghost style={BTN_STYLE} onClick={e => console.log('target')}>目标跟踪</Button>
+          : <Button ghost style={BTN_STYLE} onClick={this.handleTrackClick}>目标跟踪</Button>
         }
         <h3 className={styles.name}>
           {name || '暂无名字'}

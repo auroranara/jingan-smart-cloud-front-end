@@ -1,6 +1,7 @@
 import {
   queryInitialPositions,
   queryInitialAlarms,
+  quitSOS,
   putAlarm,
   querySectionTree,
 } from '../services/bigPlatform/personPosition';
@@ -34,6 +35,11 @@ export default {
         callback && callback(list);
         yield put({ type: 'saveAlarms', payload: list });
       }
+    },
+    *handleSOS({ payload, callback }, { call }) {
+      const response = yield call(quitSOS, payload);
+      const { code=500, msg } = response || {};
+      callback && callback(code, msg);
     },
     *handleAlarm({ payload, callback }, { call }) {
       const response = yield call(putAlarm, payload);
