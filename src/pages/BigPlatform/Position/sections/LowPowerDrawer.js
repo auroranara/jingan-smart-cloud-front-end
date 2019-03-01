@@ -1,11 +1,10 @@
 import React, { Fragment, PureComponent } from 'react';
 
-import styles from './PersonDrawer.less';
+import styles from './LowPowerDrawer.less';
 import { DrawerContainer } from '../components/Components';
 import { getUserName } from '../utils';
-import { avatarIcon } from '../imgs/urls';
 
-function PersonCard(props) {
+function PowerCard(props) {
   const { data, ...restProps } = props;
   const { cardType, cardCode, phoneNumber, visitorPhone } = data;
   const name = getUserName(data);
@@ -14,20 +13,19 @@ function PersonCard(props) {
 
   return (
     <div className={styles.cardContainer} {...restProps}>
-      <div
-        className={styles.head}
-        // style={{ backgroundImage: `url(${avatarIcon})`}}
-      />
-      <span>{`${name}(${cardCode})`}</span>
-      <span>{phone || '暂无电话信息'}</span>
+      <div className={styles.head} />
+      <p className={styles.info}>
+        <span>{name}</span>{phone || '暂无电话'}</p>
+      <p className={styles.id}><span>标签卡号：</span>{cardCode}</p>
+      <span className={styles.power}>电量：20%</span>
     </div>
   );
 }
 
-export default class PersonDrawer extends PureComponent {
+export default class PowerDrawer extends PureComponent {
   handleCloseDrawer = () => {
     const { handleClose } = this.props;
-    handleClose('personDrawer');
+    handleClose('lowPowerDrawer');
   };
 
   genCardClick = id => e => {
@@ -37,20 +35,21 @@ export default class PersonDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, aggregation, beaconId, handleShowPersonInfo } = this.props;
-    const list = aggregation.find(ps => ps[0].beaconId === beaconId) || [];
+    const { visible, positionList } = this.props;
+    // const list = positionList.filter(({ lowPower }) => lowPower);
+    const list = [...Array(3).keys()].map(i => ({ cardId: i.toString(), cardType: 1, cardCode: 276, phoneNumber: 13222228888, userName: '张三' }));
     let left = null;
-    if (beaconId)
+    if (list.length)
       left = (
         <Fragment>
-          {list.map(item => <PersonCard key={item.cardId} data={item} onClick={this.genCardClick(item.cardId)} />)}
+          {list.map(item => <PowerCard key={item.cardId} data={item} onClick={this.genCardClick(item.cardId)} />)}
         </Fragment>
       );
 
     return (
       <DrawerContainer
         width={500}
-        title="人员列表"
+        title="低电量报警"
         visible={visible}
         left={left}
         placement="right"

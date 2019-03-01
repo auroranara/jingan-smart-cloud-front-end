@@ -4,13 +4,12 @@ import { Icon } from 'antd';
 import styles from './MapInfo.less';
 import { getAlarmDesc } from '../utils';
 
+const PROPS = ['sos', 'lowPower'];
+
 export default function MapInfo(props) {
-  const { alarms, handleShowAlarmHandle, handleShowAlarmDrawer } = props;
+  const { alarms, positionList, handleShowAlarmHandle, handleShowAlarmDrawer } = props;
   const length = alarms.length;
-  const [sos, low] = alarms.reduce((counts, current) => {
-    const { sos, lowPower } = current;
-    return [counts[0] + (sos ? 1 : 0), counts[1] + (lowPower ? 1 : 0)]
-  }, [0, 0]);
+  const [sos, low] = [alarms, positionList].map((list, i) => list.reduce((count, current) => +current[PROPS[i]] + count, 0));
 
   const latest = alarms[alarms.length - 1];
 

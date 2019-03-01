@@ -7,7 +7,7 @@ import { message, notification } from 'antd';
 import styles from './RealTime.less';
 // import { alarmInfoIcon, sosIcon } from '../imgs/urls';
 import { AlarmHandle, MapInfo, PersonInfo, Tabs, VideoPlay } from '../components/Components';
-import { AlarmDrawer, LeafletMap, PersonDrawer, SectionList } from './Components';
+import { AlarmDrawer, LeafletMap, LowPowerDrawer, PersonDrawer, SectionList } from './Components';
 import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem } from '../utils';
 
 const options = {
@@ -39,8 +39,9 @@ export default class RealTime extends PureComponent {
     areaId: undefined, // 地图选定的areaId
     beaconId: undefined, // 信标id
     cardId: undefined, // 选中的人员id
-    personDrawerVisible: false,
     alarmDrawerVisible: false,
+    lowPowerDrawerVisible: true,
+    personDrawerVisible: false,
     personInfoVisible: false,
     sosHandleVisible: false,
     // alarmMsgVisible: false,
@@ -237,7 +238,7 @@ export default class RealTime extends PureComponent {
   };
 
   handleShowPersonInfo = cardId => {
-    this.setState({ cardId, personInfoVisible: true, personDrawerVisible: false });
+    this.setState({ cardId, personInfoVisible: true });
   };
 
   // handleShowAlarmMsg = alarmId => {
@@ -316,8 +317,9 @@ export default class RealTime extends PureComponent {
       beaconId,
       cardId,
       mapBackgroundUrl,
-      personDrawerVisible,
       alarmDrawerVisible,
+      lowPowerDrawerVisible,
+      personDrawerVisible,
       personInfoVisible,
       // alarmMsgVisible,
       // sosHandleVisible,
@@ -355,6 +357,7 @@ export default class RealTime extends PureComponent {
           />
           <MapInfo
             alarms={alarms}
+            positionList={positionList}
             handleShowAlarmHandle={this.handleShowAlarmHandle}
             handleShowAlarmDrawer={this.handleShowAlarmDrawer}
           />
@@ -389,17 +392,23 @@ export default class RealTime extends PureComponent {
             handleClose={this.handleClose}
           />
         </div>
+        <AlarmDrawer
+          visible={alarmDrawerVisible}
+          data={alarms}
+          handleShowAlarmHandle={this.handleShowAlarmHandle}
+          handleClose={this.handleClose}
+        />
+        <LowPowerDrawer
+          visible={lowPowerDrawerVisible}
+          positionList={positionList}
+          handleShowPersonInfo={this.handleShowPersonInfo}
+          handleClose={this.handleClose}
+        />
         <PersonDrawer
           visible={personDrawerVisible}
           beaconId={beaconId}
           aggregation={positionAggregation}
           handleShowPersonInfo={this.handleShowPersonInfo}
-          handleClose={this.handleClose}
-        />
-        <AlarmDrawer
-          visible={alarmDrawerVisible}
-          data={alarms}
-          handleShowAlarmHandle={this.handleShowAlarmHandle}
           handleClose={this.handleClose}
         />
         <VideoPlay
