@@ -47,6 +47,29 @@ const alarmStatus = {
   '2': '越界',
 };
 
+// function getDivIcon(data) {
+//   const { userName, xarea, yarea, beconId, sos, tlong, overstep } = data;
+//   const isAlarm = sos || tlong || overstep;
+//   const length = ps.length;
+//   const isSingle = length === 1;
+//   const className = `${isSingle ? 'person' : 'people'}${isAlarm ? 'Red' : ''}`;
+//   const name = isSingle ? userName || '访客' : length;
+//   return {
+//     id: beconId,
+//     name: name,
+//     latlng: { lat: yarea, lng: xarea },
+//     iconProps: {
+//       iconSize: [38, 58],
+//       // iconAnchor: [],
+//       className: styles.personContainer,
+//       html: `
+//         <div class="${isSingle ? styles.personName : styles.personNum}">${name}</div>
+//         <div class="${styles[className]}"></div>
+//       `,
+//     },
+//   };
+// }
+
 /**
  * description: 模板
  * author: sunkai
