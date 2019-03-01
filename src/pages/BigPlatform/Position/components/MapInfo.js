@@ -4,12 +4,11 @@ import { Icon } from 'antd';
 import styles from './MapInfo.less';
 import { getAlarmDesc } from '../utils';
 
-const PROPS = ['sos', 'lowPower'];
-
 export default function MapInfo(props) {
-  const { alarms, positionList, handleShowAlarmHandle, handleShowAlarmDrawer } = props;
+  const { alarms, positionList, showPersonInfoOrAlarmMsg, handleShowAlarmDrawer } = props;
   const length = alarms.length;
-  const [sos, low] = [alarms, positionList].map((list, i) => list.reduce((count, current) => +current[PROPS[i]] + count, 0));
+  const sos = alarms.reduce((count, current) => count + (+current.type === 1), 0);
+  const low = positionList.reduce((count, current) => +current.lowPower + count, 0);
 
   const latest = alarms[alarms.length - 1];
 
@@ -28,7 +27,7 @@ export default function MapInfo(props) {
       {latest && (
         <div
           className={styles.first}
-          onClick={e => handleShowAlarmHandle(latest.id)}
+          onClick={e => showPersonInfoOrAlarmMsg(latest.type, latest.id, latest.cardId)}
         >
           {getAlarmDesc(latest).join(' ')}，请及时支援！
         </div>

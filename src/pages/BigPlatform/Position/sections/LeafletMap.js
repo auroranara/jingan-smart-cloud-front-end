@@ -6,36 +6,6 @@ import styles from './LeafletMap.less';
 import ImageDraw, { L } from '@/components/ImageDraw';
 import { findInTree, parseImage, getUserName } from '../utils';
 
-function positionsToIcons(aggregation) {
-  // console.log('aggregation', aggregation);
-  const result =  aggregation.map(ps => {
-    const first = ps[0];
-    const length = ps.length;
-    const isSingle = length === 1;
-    const { xarea, yarea, beaconId, sos, tlong, overstep } = first;
-
-    const isAlarm = ps.some(({ sos, overstep, tlong }) => sos || overstep || tlong);
-    const containerClassName = `${isSingle ? 'person' : 'people'}${isAlarm ? 'Red' : ''}`;
-    const firstName = getUserName(first);
-    const name = ps.slice(0, 5).map(getUserName).join(',');
-    const showName = isSingle ? firstName : length;
-    return {
-      id: beaconId,
-      name: length > 5 ? `${name}...` : name, // 若name为数字则会报错
-      latlng: { lat: yarea, lng: xarea },
-      iconProps: {
-        iconSize: [38, 40],
-        // iconAnchor: [],
-        className: styles.personContainer,
-        html: `<div class="${styles[containerClassName]}"><div class="${isSingle ? styles.personTitle : styles.personNum}">${showName}</div></div>`,
-      },
-    };
-  });
-
-  // console.log('agg', result);
-  return result;
-}
-
 @connect(({ zoning, loading }) => ({
   zoning,
   loading: loading.models.zoning,
@@ -52,6 +22,7 @@ export default class LeafletMap extends PureComponent {
   componentDidUpdate(prevProps, prevState) {
     const { areaId: prevAreaId, sectionTree: prevSectionTree } = prevProps;
     const { areaId, sectionTree } = this.props;
+
     if (areaId !== prevAreaId || sectionTree !== prevSectionTree)
       this.handleMapData(areaId, sectionTree);
   }
@@ -60,7 +31,8 @@ export default class LeafletMap extends PureComponent {
     const target = findInTree(areaId, sectionTree);
     this.currentSection = target;
     // console.log('sectionTree', sectionTree);
-    if (!target)
+    // 如果目标区域不存在，或者为多层建筑，则保持不动
+    if (!target || target.isBuilding)
       return;
 
     const { children, mapId: fatherMapId, companyMap } = target;
@@ -139,16 +111,62 @@ export default class LeafletMap extends PureComponent {
       setAreaId(parent.parentId);
     else
       setAreaId(parentId);
+  };
+
+  positionsToIcons = () => {
+    const { areaId, areaInfo, aggregation, isTrack, selectedCardId, positions } = this.props;
+    if (!areaId || !Object.keys(areaInfo).length || !aggregation.length)
+      return [];
+
+    let targetAgg = [];
+    const childAreas = areaInfo[areaId].childIds;
+    const currentAreas = [areaId, ...childAreas]; // 当前及当前区域所有子区域的集合
+    // console.log(areaId, currentAreas);
+
+    // 如果处于目标追踪标签且选定了追踪目标，则只渲染当前追踪的目标
+    if (isTrack && selectedCardId) {
+      const target = positions.find(({ cardId }) => cardId === selectedCardId);
+      targetAgg = target && currentAreas.includes(target.areaId) ? [[target]] : []; // 最后处理的是个聚合点，即二维数组
+    }
+    else
+      targetAgg = aggregation.map(ps => ps.filter(p => currentAreas.includes(p.areaId))).filter(ps => ps.length);
+
+    const points =  targetAgg.map(ps => {
+      const first = ps[0];
+      const length = ps.length;
+      const isSingle = length === 1;
+      const { xarea, yarea, beaconId } = first;
+
+      const isAlarm = ps.some(({ sos, overstep, tlong }) => sos || overstep || tlong);
+      const containerClassName = `${isSingle ? 'person' : 'people'}${isAlarm ? 'Red' : ''}`;
+      const firstName = getUserName(first);
+      const name = ps.slice(0, 5).map(getUserName).join(',');
+      const showName = isSingle ? firstName : length;
+      return {
+        id: beaconId,
+        name: length > 5 ? `${name}...` : name, // 若name为数字则会报错
+        latlng: { lat: yarea, lng: xarea },
+        iconProps: {
+          iconSize: [38, 40],
+          // iconAnchor: [],
+          className: styles.personContainer,
+          html: `<div class="${styles[containerClassName]}"><div class="${isSingle ? styles.personTitle : styles.personNum}">${showName}</div></div>`,
+        },
+      };
+    });
+
+    // console.log('agg', points);
+    return points;
   }
 
   render() {
-    const { loading, url, aggregation, areaId, areaInfo } = this.props;
+    const { loading, url, areaId, areaInfo } = this.props;
     const { data, images, reference } = this.state;
 
     // console.log(icons);
 
     const parentId = areaId ? areaInfo[areaId].parentId : undefined;
-    const icons = positionsToIcons(aggregation);
+    const icons = this.positionsToIcons();
 
     const imgDraw = (
       <Spin spinning={false} style={{ height: '100%' }}>

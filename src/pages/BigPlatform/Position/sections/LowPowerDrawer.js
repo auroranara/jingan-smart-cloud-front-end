@@ -15,7 +15,7 @@ function PowerCard(props) {
     <div className={styles.cardContainer} {...restProps}>
       <div className={styles.head} />
       <p className={styles.info}>
-        <span>{name}</span>{phone || '暂无电话'}</p>
+        <span className={styles.name}>{name}</span>{phone || '暂无电话'}</p>
       <p className={styles.id}><span>标签卡号：</span>{cardCode}</p>
       <span className={styles.power}>电量：20%</span>
     </div>
@@ -36,8 +36,8 @@ export default class PowerDrawer extends PureComponent {
 
   render() {
     const { visible, positionList } = this.props;
-    // const list = positionList.filter(({ lowPower }) => lowPower);
-    const list = [...Array(3).keys()].map(i => ({ cardId: i.toString(), cardType: 1, cardCode: 276, phoneNumber: 13222228888, userName: '张三' }));
+    const list = positionList.filter(({ lowPower }) => lowPower);
+    // const list = [...Array(3).keys()].map(i => ({ cardId: i.toString(), cardType: 1, cardCode: 276, phoneNumber: 13222228888, userName: '张三' }));
     let left = null;
     if (list.length)
       left = (

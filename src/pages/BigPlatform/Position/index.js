@@ -9,10 +9,15 @@ import { History, RealTime } from './sections/Components';
 export default class PositionIndex extends PureComponent {
   state = {
     labelIndex: 0,
+    selectedCardId: undefined,
   };
 
   handleLabelClick = i => {
     this.setState({ labelIndex: i });
+  };
+
+  setSelectedCard = cardId => {
+    this.setState({ selectedCardId: cardId });
   };
 
   render() {
@@ -26,6 +31,7 @@ export default class PositionIndex extends PureComponent {
     } = this.props;
     const {
       labelIndex,
+      selectedCardId,
     } = this.state;
 
     const { currentUser: { companyName } } = user;
@@ -37,13 +43,15 @@ export default class PositionIndex extends PureComponent {
         headerStyle={{ fontSize: 16 }}
         titleStyle={{ fontSize: 46 }}
       >
-        {!labelIndex && (
+        {(!labelIndex || labelIndex === 1) && (
           <RealTime
             dispatch={dispatch}
             labelIndex={labelIndex}
             companyId={companyId}
+            selectedCardId={selectedCardId}
             personPosition={personPosition}
             handleLabelClick={this.handleLabelClick}
+            setSelectedCard={this.setSelectedCard}
           />
         )}
         {labelIndex === 2 && (
