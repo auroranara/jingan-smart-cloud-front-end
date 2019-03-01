@@ -55,14 +55,7 @@ export default class MonitorDrawer extends PureComponent {
 
   renderItems = () => {
     const {
-      data: {
-        devList,
-        cameraList = [],
-        unitDetail: {
-          companyName,
-          companyId,
-        } = {},
-      },
+      data: { devList, cameraList = [], unitDetail: { companyName, companyId } = {} },
       handleAlarmClick,
       handleFaultClick,
     } = this.props;
@@ -122,12 +115,12 @@ export default class MonitorDrawer extends PureComponent {
                         {(+status !== 0 || !status) && (
                           <div
                             className={styles.status}
-                            style={{ color, borderColor: color, cursor: 'pointer' }}
-                            onClick={() => {
-                              +status > 0
-                                ? handleAlarmClick(undefined, companyId, companyName, undefined, device_id)
-                                : handleFaultClick(undefined, companyId, companyName, undefined, device_id);
-                            }}
+                            style={{ color, borderColor: color /* cursor: 'pointer' */ }}
+                            // onClick={() => {
+                            //   +status > 0
+                            //     ? handleAlarmClick(undefined, companyId, companyName, undefined, device_id)
+                            //     : handleFaultClick(undefined, companyId, companyName, undefined, device_id);
+                            // }}
                           >
                             {+status > 0 ? '火警' : '故障'}
                           </div>
