@@ -738,25 +738,25 @@ class ImageDraw extends PureComponent {
 
     return (
       <div className={className} style={{ height: 600, ...style }}>
-        {bounds && (
-          <Map
-            id="mapContainer"
-            className={styles.mapContainer}
-            center={center}
-            minZoom={-3}
-            maxZoom={8}
-            zoom={zoom}
-            editable
-            crs={L.CRS.Simple}
-            attributionControl={false}
-            bounds={bounds}
-            maxBounds={maxBounds}
-            ref={this.refMap}
-            zoomControl={false}
-            // dragging={false}
-            {...mapProps}
-          >
-            <ZoomControl zoomInTitle="" zoomOutTitle="" className={styles.zoomControl} {...zoomControlProps} />
+        <Map
+          id="mapContainer"
+          className={styles.mapContainer}
+          center={center}
+          minZoom={-3}
+          maxZoom={8}
+          zoom={zoom}
+          editable
+          crs={L.CRS.Simple}
+          attributionControl={false}
+          bounds={bounds}
+          maxBounds={maxBounds}
+          ref={this.refMap}
+          zoomControl={false}
+          // dragging={false}
+          {...mapProps}
+        >
+          {bounds && <ZoomControl zoomInTitle="" zoomOutTitle="" className={styles.zoomControl} {...zoomControlProps} />}
+          {bounds && (
             <ImageOverlay url={url} bounds={bounds} className={hideBackground?styles.hiddenImageOverlay:styles.imageOverlay}>
               <FeatureGroup ref={this.refFeatureGroup} onLayerRemove={this.handleLayerRemove}>
                 {drawable && (
@@ -817,10 +817,10 @@ class ImageDraw extends PureComponent {
                 {divIcons && divIcons.map(this.renderDivIcon)}
               </FeatureGroup>
             </ImageOverlay>
-            {images && images.map(this.renderImageOverlay)}
-            {arrows && arrows.map(this.renderImageOverlay)}
-          </Map>
-        )}
+          )}
+          {bounds && images && images.map(this.renderImageOverlay)}
+          {bounds && arrows && arrows.map(this.renderImageOverlay)}
+        </Map>
         <Modal
           visible={visible}
           onOk={this.handleOk}

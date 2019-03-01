@@ -2,10 +2,9 @@ import React, { PureComponent } from 'react';
 import { DatePicker } from 'antd';
 import moment from 'moment';
 import { Scrollbars } from 'react-custom-scrollbars';
-
+// 引入样式文件
 import styles from './History.less';
-import { Tabs, TrailBack } from '../components/Components';
-import { borderIcon, map } from '../imgs/urls';
+import { Tabs, HistoryPlay } from '../components/Components';
 
 const { RangePicker } = DatePicker;
 
@@ -180,7 +179,7 @@ export default class History extends PureComponent {
           </div>
         </div>
         <div className={styles.right}>
-          <TrailBack src={map} data={list} startTime={startTime && +startTime} endTime={endTime && +endTime} style={{ backgroundImage: `url(${borderIcon})` }} topStyle={{ margin: '24px 24px 0' }} />
+          <HistoryPlay data={list} startTime={startTime && +startTime} endTime={endTime && +endTime} />
         </div>
       </div>
     );

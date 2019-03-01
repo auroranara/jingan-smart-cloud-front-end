@@ -1,5 +1,5 @@
-import React, { Component, Fragment } from 'react';
-import { Icon, Tooltip } from 'antd'
+import React, { PureComponent } from 'react';
+import { Icon } from 'antd'
 import moment from 'moment';
 // 引入样式文件
 import styles from './TrailBack.less';
@@ -19,9 +19,9 @@ import styles from './TrailBack.less';
 // 时间转换格式
 const DEFAULT_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 // 最小速率
-const minSpeed = 1;
+const MIN_SPEED = 1;
 // 最大速率
-const maxSpeed = 16;
+const MAX_SPEED = 16;
 // 默认state
 const defaultState = {
   // 是否正在播放
@@ -71,7 +71,7 @@ function getDivIcon(data) {
 /**
  * description: 历史轨迹播放
  */
-export default class HistoryPlay extends Component {
+export default class HistoryPlay extends PureComponent {
   // 组件内仓库
   state = {
     ...defaultState,
@@ -281,19 +281,33 @@ export default class HistoryPlay extends Component {
     if (currentIndex + 1 >= length || currentIndex < 0) {
       return;
     }
-    const { xPx: x1, yPx: y1 } = data[currentIndex];
+    const { xPx: x1, yPx: y1, id } = data[currentIndex];
     const { xPx: x2, yPx: y2, locationStatusHistoryList } = data[currentIndex+1];
+    const tX1 = x1 + (x2 - x1) * 0.1;
+    const tY1 = y1 + (y2 - y1) * 0.1;
+    const tX2 = x2 + (x1 - x2) * 0.1;
+    const tY2 = y2 + (y1 - y2) * 0.1;
     // 当有警报信息时显示红色
-    const isAlarm = locationStatusHistoryList && locationStatusHistoryList.length > 0;
-    const isXEqual = x1 === x2;
-    const isYEqual = y1 === y2;
-    // return (
-    //   backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-    //   <defs><marker id="arrow" markerWidth="10" markerHeight="10" refx="0" refy="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#f00" /></marker></defs>
-    //   <line x1="${x1 > x2 ? '100%' : 0}" y1="${y1 >= y2 ? 0 : '100%'}" x2="${x1 >= x2 ? 0 : '100%'}" y2="${y1 > y2 ? '100%' : 0}" stroke="${isAlarm?'#8A101D' : '#0186D1'}" stroke-width="1" marker-end="url(#arrow)" />
-    // </svg>')`,
-    // );
-    return;
+    const color = locationStatusHistoryList && locationStatusHistoryList.length > 0 ? '#ff4848' : '#00a8ff';
+    // 计算起点和终点坐标
+    const lng1 = Math.min(x1, x2) - 0.1; // 左下角的横坐标
+    const lat1 = Math.min(y1, y2) - 0.1; // 左下角的纵坐标
+    const lng2 = Math.max(x1, x2) + 0.1; // 右上角的横坐标
+    const lat2 = Math.max(y1, y2) + 0.1; // 右上角的纵坐标
+    const pX1 = `${(tX1 - lng1) / (lng2 - lng1) * 100}%25`; // x1在图上转换以后的坐标
+    const pY1 = `${(1 - (tY1 - lat1) / (lat2 - lat1)) * 100}%25`; // y1在图上转换以后的坐标
+    const pX2 = `${(tX2 - lng1) / (lng2 - lng1) * 100}%25`; // x2在图上转换以后的坐标
+    const pY2 = `${(1- (tY2 - lat1) / (lat2 - lat1)) * 100}%25`; // y2在图上转换以后的坐标
+    return {
+      id,
+      url: `data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='100%25'%20height='100%25'%3E%3Cdefs%3E%3Cmarker%20id='arrow'%20markerWidth='9'%20markerHeight='6'%20refX='0'%20refY='3'%20orient='auto'%20markerUnits='strokeWidth'%3E%3Cpath%20d='M0,0%20L0,6%20L9,3%20z'%20fill='${color}'%20/%3E%3C/marker%3E%3C/defs%3E%3Cline%20x1='${pX1}'%20y1='${pY1}'%20x2='${pX2}'%20y2='${pY2}'%20stroke='${color}'%20stroke-width='1'%20marker-end='url(#arrow)'%20/%3E%3C/svg%3E`,
+      latlngs: [
+        { lat: lat1, lng: lng1 },
+        { lat: lat2, lng: lng1 },
+        { lat: lat2, lng: lng2 },
+        { lat: lat1, lng: lng2 },
+      ],
+    };
   }
 
   /**
@@ -411,16 +425,17 @@ export default class HistoryPlay extends Component {
   }
 
   /**
+   * 点击人员
+   */
+  handleClickPerson = () => {
+
+  }
+
+  /**
    * 渲染
    */
   render() {
     const {
-      // 样式
-      style,
-      // 顶部样式
-      topStyle,
-      // 背景图地址
-      src,
       // 点位数据
       data=[],
       // // 点击播放按钮回调事件
@@ -435,8 +450,8 @@ export default class HistoryPlay extends Component {
       // onLocate,
       // // 时间移动事件
       // onPass,
-      // 点位点击事件
-      onClick=(item)=>console.log(item),
+      // // 点位点击事件
+      // onClick,
       // 起始时间
       startTime,
       // 结束时间
@@ -445,32 +460,15 @@ export default class HistoryPlay extends Component {
     const { playing, currentTimeStamp, currentIndex, speed, tooltip: { visible, left: tooltipLeft, top: tooltipTop, content } } = this.state;
     // 获取当前点位位置
     const currentData = this.getCurrentPosition(currentTimeStamp, data[currentIndex], data[currentIndex+1]);
-    // 获取当前点位的属性
-    const { xarea: currentX, yarea: currentY, locationStatusHistoryList: currentLocationStatusHistoryList } = currentData || {};
-    // 当前点位是否为警报状态
-    const isAlarm = currentLocationStatusHistoryList && currentLocationStatusHistoryList.length > 0 || false;
     // 当前时间轴宽度
     const width = currentTimeStamp ? `${(currentTimeStamp - startTime) / (endTime - startTime) * 100}%` : 0;
     // 是否已经减速到最小速率
-    const isMinSpeed = speed === minSpeed;
+    const isMinSpeed = speed === MIN_SPEED;
     // 是否已经加速大最大速率
-    const isMaxSpeed = speed === maxSpeed;
+    const isMaxSpeed = speed === MAX_SPEED;
 
     return (
-      <div className={styles.container} style={style}>
-        {/* canvas容器 */}
-        <div className={styles.canvasWrapper} style={{ ...topStyle, backgroundImage: `url(${src})` }}>
-          {data.map((item, index) => {
-            const { xarea: x, yarea: y, intime: time, locationStatusHistoryList } = item;
-            return (
-              <Fragment key={time}>
-                <div key={time} style={{ display: currentX === x && currentY === y ? 'none': undefined, position: 'absolute', left: `${x}%`, bottom: `${y}%`, /* width: 39, height: 13, border: '3px solid #0186D1', */width: 13, height: 13, backgroundColor: locationStatusHistoryList && locationStatusHistoryList.length > 0 ? '#8A101D' : '#0186D1', borderRadius: '50%', cursor: 'pointer', transform: 'translate(-50%, 50%)', zIndex: data.length + 1 }} onClick={() => {onClick(item);}} />
-                {/* index < data.length - 1 */index === currentIndex && this.renderLine(index)}
-              </Fragment>
-            );
-          })}
-          {/* {currentData && <Tooltip overlayClassName={styles.alarmTooltip} placement="top" title={isAlarm ? currentLocationStatusHistoryList.map(({ status }) => alarmStatus[status]).join('，') : ''} visible={isAlarm}><div style={{ position: 'absolute', left: `${currentX}%`, bottom: `${currentY}%`, width: 39, height: 40, background: `url(${isAlarm? redPerson : bluePerson}) no-repeat center center / 100% 100%`, cursor: 'pointer', transform: 'translate(-50%, 6px)', zIndex: data.length + 2 }} onClick={() => {onClick(currentData);}} /></Tooltip>} */}
-        </div>
+      <div className={styles.container}>
         {/* 控件容器 */}
         <div className={styles.controlWrapper}>
           {/* 时间轴 */}
