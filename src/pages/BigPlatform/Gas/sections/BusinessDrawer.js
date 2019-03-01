@@ -60,11 +60,6 @@ export default class BusinessDrawer extends PureComponent {
 
     const faultList = [
       {
-        date: '2018-03',
-        finishGas: 0,
-        untreatedGas: 0,
-      },
-      {
         date: '2018-04',
         finishGas: 0,
         untreatedGas: 0,
@@ -110,12 +105,17 @@ export default class BusinessDrawer extends PureComponent {
         untreatedGas: 0,
       },
       {
-        date: '2019-01',
+        date: '2018-01',
         finishGas: 0,
         untreatedGas: 0,
       },
       {
         date: '2019-02',
+        finishGas: 0,
+        untreatedGas: 0,
+      },
+      {
+        date: '2019-03',
         finishGas: 0,
         untreatedGas: 0,
       },
