@@ -17,7 +17,7 @@ import styles from './TrailBack.less';
  */
 
 // 时间转换格式
-const timeFormat = 'YYYY-MM-DD HH:mm:ss';
+const DEFAULT_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 // 最小速率
 const minSpeed = 1;
 // 最大速率
@@ -36,6 +36,12 @@ const defaultState = {
   currentIndex: -1,
   // 数据源
   divIcons: [],
+};
+// 报警状态字典
+const alarmStatusDict = {
+  1: 'SOS',
+  2: '越界',
+  3: '长时间不动',
 };
 
 /**
@@ -82,16 +88,19 @@ export default class HistoryPlay extends Component {
 
   /**
    * 更新后
-   * 说明：
-   * 1.判断源数据发生变化
-   *  1.1.重置播放设置
-   *  1.2.保留播放播放速率
-   *  1.3.设置初始时间节点
    */
   componentDidUpdate({ data: prevData }) {
     const { data, startTime } = this.props;
+    // 判断源数据是否发生变化
     if (data !== prevData) {
-      this.setState(({ speed }) => ({ ...defaultState, speed, currentIndex: data[0] && data[0].intime === startTime ? 0 : -1 }));
+      this.setState(({ speed }) => ({
+        // 重置播放设置
+        ...defaultState,
+        // 保留播放播放速率
+        speed,
+        // 设置初始时间节点
+        currentIndex: this.getCurrentIndex(startTime),
+      }));
     }
   }
 
@@ -131,12 +140,12 @@ export default class HistoryPlay extends Component {
     const { currentTimeStamp, currentIndex, speed } = this.state;
     if (!this.frameStart) {
       this.frameStart = timestamp;
-      this.playingStart = currentTimeStamp;
+      this.playingStart = currentTimeStamp || startTime;
       this.setFrameTimer();
       return;
     }
     // 获取当前时间戳
-    const nextCurrentTimeStamp = (this.playingStart || startTime) + (timestamp - this.frameStart) * speed;
+    const nextCurrentTimeStamp = this.playingStart + (timestamp - this.frameStart) * speed;
     if (nextCurrentTimeStamp >= endTime) {
       this.unsetFrameTimer();
       this.setState({
@@ -154,19 +163,18 @@ export default class HistoryPlay extends Component {
     }
   }
 
-
-
   /**
-   * 显示提示框
+   * 时间条专用修改提示框
+   * @param {event} e 鼠标事件对象
    */
-  showTooltip = (content, e) => {
-    const { left, top } = e.target.getBoundingClientRect();
+  showTooltip = (e) => {
+    const currentTime = moment(this.getCurrentTimeStamp(e)).format(DEFAULT_TIME_FORMAT);
     this.setState({
       tooltip: {
         visible: true,
-        content,
-        left,
-        top,
+        content: currentTime,
+        left: e.clientX,
+        top: e.clientY,
       },
     });
   }
@@ -181,36 +189,28 @@ export default class HistoryPlay extends Component {
   }
 
   /**
-   * 时间条专用修改提示框
-   */
-  changeTooltip = (e) => {
-    const currentTime = moment(this.getCurrentTimeStamp(e)).format(timeFormat);
-    this.setState({
-      tooltip: {
-        visible: true,
-        content: currentTime,
-        left: e.clientX,
-        top: e.clientY,
-      },
-    });
-  }
-
-  /**
    * 获取鼠标所在位置对应的时间戳
+   * @param {event} e 鼠标事件对象
+   * @return {number} 时间戳
    */
   getCurrentTimeStamp = (e) => {
     const { startTime, endTime } = this.props;
     const { left, width } = e.currentTarget.getBoundingClientRect();
     const rate = (e.clientX - left) / width;
-    return startTime + rate * (endTime-startTime);
+    return startTime + rate * (endTime - startTime);
   }
 
   /**
-   * 获取当前点位索引
+   * 获取当前时间节点(-1或者data.length代表不在时间节点上)
+   * @param {number} currentTimeStamp 当期时间戳
+   * @param {number} prevIndex 之前计算的时间节点
+   * @return {number} 根据当前时间戳计算得到的时间节点
    */
-  getCurrentIndex = (currentTimeStamp, currentIndex=-1) => {
+  getCurrentIndex = (currentTimeStamp, prevIndex=-1) => {
     const { data=[] } = this.props;
-    for(let i=currentIndex+1; i<data.length; i++) {
+    let currentIndex = prevIndex;
+    // 循环数组找出已经经过的进入时间离当前时间戳最近的时间节点
+    for(let i=prevIndex+1; i<data.length; i++) {
       if (data[i].intime <= currentTimeStamp) {
         currentIndex = i;
       }
@@ -218,71 +218,89 @@ export default class HistoryPlay extends Component {
         break;
       }
     }
-    // 保证最后一个点存在至少1秒
-    if (currentIndex === data.length - 1 && data[currentIndex] && data[currentIndex].uptime <= currentTimeStamp && data[currentIndex].intime <= currentTimeStamp - 1000) {
+    if (
+      // 如果当前时间节点为最后一个时间节点，
+      currentIndex === data.length - 1
+      // 并且最后一个时间节点存在（即data的长度大于0），
+      && data[currentIndex]
+      // 并且最后一个时间节点的离开时间小于等于当前时间戳（即人员已经离开最后一个时间节点），
+      && data[currentIndex].uptime <= currentTimeStamp
+      // // 保证人员在最后一个时间节点至少1秒
+      // && data[currentIndex].intime <= currentTimeStamp - 1000
+    ) {
+      // 则将当前时间节点设置为data.length（即不显示人员）
       currentIndex = data.length;
     }
     return currentIndex;
   }
 
   /**
-   * 根据当前时间戳获取点位位置
+   * 获取人员当前位置（不显示，在时间节点上，在两个时间节点之间）
+   * @param {number} currentTimeStamp 当期时间戳
+   * @param {object} currentData 当前时间节点对应的数据
+   * @param {object} nextData 下个时间节点对应的数据
+   * @return {object} { lat: 垂直方向百分比, lng: 水平方向百分比 }
    */
   getCurrentPosition = (currentTimeStamp, currentData, nextData) => {
+    // 如果当前时间节点对应的数据不存在，则不返回位置，从而不显示人员
     if (!currentData) {
       return;
     }
-    const { xarea: x1, yarea: y1, uptime: out1 } = currentData;
+    // 如果下个时间节点对应的数据不存在（即当前为最后一个时间节点），
+    // 或者当前时间戳小于当前时间节点的离开时间（即人员还没有从当前时间节点离开），
+    // 则返回当前时间节点的位置，从而使人员显示在当前时间节点的位置
+    const { xPx: x1, yPx: y1, uptime: out1 } = currentData;
     if (!nextData || currentTimeStamp < out1) {
-      return currentData;
+      return {
+        lat: y1,
+        lng: x1,
+      };
     }
+    // 如果下个时间节点对应的数据存在，
+    // 并且当前时间戳大于当前时间节点的离开时间（即人员已经离开当前时间节点，在去往下个时间节点的路上），
+    // 则假设人员的移动速度是固定的，从而计算出当前位置
     else {
-      const { xarea: x2, yarea: y2, intime: in2 } = nextData;
+      const { xPx: x2, yPx: y2, intime: in2 } = nextData;
       const percent = (currentTimeStamp - out1) / (in2 - out1);
       return {
-        ...nextData,
-        xarea: x1 + (x2-x1)*percent,
-        yarea: y1 + (y2-y1)*percent,
+        lat: x1 + (x2-x1)*percent,
+        lng: y1 + (y2-y1)*percent,
       };
     }
   }
 
   /**
    * 播放按钮点击事件
-   * 说明：
-   * 1.显示暂停按钮
-   * 2.继续之前的播放
-   * 3.若有onPlay传参则调用
-   * 4.如果之前的时间节点已经是结束时间，则重新开始播放
    */
   handlePlay = () => {
-    const { onPlay, endTime, data, startTime } = this.props;
-    const { currentTimeStamp } = this.state;
-    const extra = currentTimeStamp === endTime ? { currentTimeStamp: undefined, currentIndex: data[0] && data[0].intime <= startTime ? 0 : -1 } : undefined;
-    /* 第一步 */
-    this.setState(({ tooltip }) => ({ playing: true, ...extra, tooltip: { ...tooltip, content: '暂停' } }));
-    /* 第二步 */
-    this.setFrameTimer();
-    /* 第三步 */
-    if (onPlay) {
-      onPlay();
+    const { onPlay, startTime, endTime } = this.props;
+    if (startTime && endTime) {
+      const { currentTimeStamp } = this.state;
+      this.setState({
+        // 显示暂停按钮
+        playing: true,
+        // 如果当前时间戳已经是结束时间，则重新开始播放
+        ...(currentTimeStamp === endTime && { currentTimeStamp: startTime, currentIndex: this.getCurrentIndex(startTime) }),
+      });
+      // 继续之前的播放
+      this.setFrameTimer();
+      // 若有onPlay传参则调用
+      if (onPlay) {
+        onPlay();
+      }
     }
   }
 
   /**
    * 暂停按钮点击事件
-   * 说明：
-   * 1.修改按钮状态
-   * 2.移除播放定时器
-   * 3.若有onPause传参则调用
    */
   handlePause = () => {
     const { onPause } = this.props;
-    /* 第一步 */
-    this.setState(({ tooltip }) => ({ playing: false, tooltip: { ...tooltip, content: '播放' } }));
-    /* 第二步 */
+    // 显示播放按钮
+    this.setState({ playing: false });
+    // 暂停播放
     this.unsetFrameTimer();
-    /* 第三步 */
+    // 若有onPause传参则调用
     if (onPause) {
       onPause();
     }
@@ -290,23 +308,24 @@ export default class HistoryPlay extends Component {
 
   /**
    * 加速按钮点击事件
-   * 说明：
-   * 1.重置速率
-   * 2.若有onAccelerate传参则调用
-   * 3.根据是否在播放决定是否重置定时器
    */
   handleAccelerate = () => {
     const { onAccelerate } = this.props;
     const { playing } = this.state;
+    // 清除变量以方便按照新的速率重新计算
     this.unsetFrameTimer();
-    /* 第一步 */
-    this.setState(({ speed, tooltip }) => ({ speed: speed * 2, tooltip: { ...tooltip, content: `加速，当前${speed * 2}x` } }), () => {
-      /* 第三步 */
+    this.setState(({ speed, tooltip }) => ({
+      // 重置播放速率
+      speed: speed * 2,
+      // 重置速率提示
+      tooltip: { ...tooltip, content: `加速，当前${speed * 2}x` },
+    }), () => {
+      // 根据是否在播放决定是否重置定时器
       if (playing) {
         this.setFrameTimer();
       }
     });
-    /* 第二步 */
+    // 若有onAccelerate传参则调用
     if (onAccelerate) {
       onAccelerate();
     }
@@ -314,51 +333,51 @@ export default class HistoryPlay extends Component {
 
   /**
    * 减速按钮点击事件
-   * 说明：
-   * 1.重置速率
-   * 2.若有onDecelerate传参则调用
-   * 3.根据是否在播放决定是否重置定时器
    */
   handleDecelerate = () => {
     const { onDecelerate } = this.props;
     const { playing } = this.state;
+    // 清除变量以方便按照新的速率重新计算
     this.unsetFrameTimer();
-    /* 第一步 */
-    this.setState(({ speed, tooltip }) => ({ speed: speed / 2, tooltip: { ...tooltip, content: `减速，当前${speed / 2}x` } }), () => {
-      /* 第三步 */
+    this.setState(({ speed, tooltip }) => ({
+      // 重置播放速率
+      speed: speed / 2,
+      // 重置速率提示
+      tooltip: { ...tooltip, content: `减速，当前${speed / 2}x` },
+    }), () => {
+      // 根据是否在播放决定是否重置定时器
       if (playing) {
         this.setFrameTimer();
       }
     });
-    /* 第二步 */
+    // 若有onDecelerate传参则调用
     if (onDecelerate) {
       onDecelerate();
     }
   }
 
-
   /**
-   * 点击时间条
-   * 说明：
-   * 1.重置时间条
-   * 2.重置点位
-   * 3.根据是否在播放决定是否重置定时器
-   * 4.若有onLocate传参则调用
+   * 点击时间轴快速跳转
    */
   handleLocate = (e) => {
     const { onLocate } = this.props;
     const { playing } = this.state;
     const currentTimeStamp = this.getCurrentTimeStamp(e);
     const currentIndex = this.getCurrentIndex(currentTimeStamp);
+    // 清除变量以方便重新计算
     this.unsetFrameTimer();
-    /* 第一步，第二步 */
-    this.setState({ currentTimeStamp, currentIndex }, () => {
-      /* 第三步 */
+    this.setState({
+      // 重置当前时间戳（即重置时间轴进度）
+      currentTimeStamp,
+      // 重置当前时间节点（即重置人员位置）
+      currentIndex,
+    }, () => {
+      // 根据是否在播放决定是否重置定时器
       if (playing) {
         this.setFrameTimer();
       }
     });
-    /* 第四步 */
+    // 若有onLocate传参则调用
     if (onLocate) {
       onLocate();
     }
@@ -479,16 +498,16 @@ export default class HistoryPlay extends Component {
         {/* 控件容器 */}
         <div className={styles.controlWrapper}>
           {/* 时间轴 */}
-          <div className={styles.timeBar} onClick={this.handleLocate} onMouseMove={(e) => {this.changeTooltip(e);}} onMouseLeave={this.hideTooltip}>
+          <div className={styles.timeBar} onClick={this.handleLocate} onMouseMove={this.showTooltip} onMouseLeave={this.hideTooltip}>
             {/* 当前时间轴 */}
             <div className={styles.currentTimeBar} style={{ width }} /* ref={currentTimeBar => this.currentTimeBar = currentTimeBar} */ />
           </div>
           {/* 按钮栏 */}
           <div className={styles.buttonBar}>
             {/* 起始时间 */}
-            <div className={styles.startTime}>{startTime && moment(startTime).format(timeFormat)}</div>
+            <div className={styles.startTime}>{startTime && moment(startTime).format(DEFAULT_TIME_FORMAT)}</div>
             {/* 结束时间 */}
-            <div className={styles.endTime}>{endTime && moment(endTime).format(timeFormat)}</div>
+            <div className={styles.endTime}>{endTime && moment(endTime).format(DEFAULT_TIME_FORMAT)}</div>
             {/* 减速按钮 */}
             <Icon
               type="step-backward"
@@ -504,16 +523,12 @@ export default class HistoryPlay extends Component {
                 type="pause"
                 className={styles.button}
                 onClick={this.handlePause}
-                onMouseEnter={(e) => {this.showTooltip('暂停', e);}}
-                onMouseLeave={this.hideTooltip}
               />
             ) : (
               <Icon
                 type="caret-right"
                 className={styles.button}
                 onClick={this.handlePlay}
-                onMouseEnter={(e) => {this.showTooltip('播放', e);}}
-                onMouseLeave={this.hideTooltip}
               />
             )}
             {/* 加速按钮 */}
