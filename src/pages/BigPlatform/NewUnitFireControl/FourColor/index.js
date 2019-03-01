@@ -59,35 +59,35 @@ export default class FourColor extends PureComponent {
     }
   }
 
-  handleAddPoint = ({ target: layer }) => {
-    const { options: { data: { object_title, checkName, check_date, dangerCount, status } } } = layer;
-    // 是否为异常状态
-    const isAbnormal = status === 2;
-    // 是否已检查
-    const isChecked = !!status;
-    layer.bindTooltip(`
-      <div>
-        <div>
-          点位名称：${object_title}
-        </div>
-        ${isChecked ? `
-          <div>
-            状<span style="opacity: 0;">隐藏</span>态：${isAbnormal ? '<span style="color: #ff4848">异常</span>' : '正常'}
-          </div>
-        ` : ''}
-        ${isChecked ? `
-          <div>
-            最近检查：${checkName ? checkName : '暂无数据'} ${check_date ? moment(check_date).format('YYYY-MM-DD') : ''}
-          </div>
-        ` : ''}
-        ${isAbnormal ? `
-          <div>
-            隐患数量：${dangerCount ? dangerCount : 0}
-          </div>
-        ` : ''}
-      </div>
-    `, { direction: 'right', offset: [24, 0] });
-  }
+  // handleAddPoint = ({ target: layer }) => {
+  //   const { options: { data: { object_title, checkName, check_date, dangerCount, status } } } = layer;
+  //   // 是否为异常状态
+  //   const isAbnormal = status === 2;
+  //   // 是否已检查
+  //   const isChecked = !!status;
+  //   layer.bindTooltip(`
+  //     <div>
+  //       <div>
+  //         点位名称：${object_title}
+  //       </div>
+  //       ${isChecked ? `
+  //         <div>
+  //           状<span style="opacity: 0;">隐藏</span>态：${isAbnormal ? '<span style="color: #ff4848">异常</span>' : '正常'}
+  //         </div>
+  //       ` : ''}
+  //       ${isChecked ? `
+  //         <div>
+  //           最近检查：${checkName ? checkName : '暂无数据'} ${check_date ? moment(check_date).format('YYYY-MM-DD') : ''}
+  //         </div>
+  //       ` : ''}
+  //       ${isAbnormal ? `
+  //         <div>
+  //           隐患数量：${dangerCount ? dangerCount : 0}
+  //         </div>
+  //       ` : ''}
+  //     </div>
+  //   `, { direction: 'right', offset: [24, 0] });
+  // }
 
   handleAddVideo = ({ target: layer }) => {
     const { options: { data: { name } } } = layer;
@@ -107,11 +107,11 @@ export default class FourColor extends PureComponent {
 
   handlePointMouseOver = ({ target: layer }) => {
     const { options: { data: { item_id: prevItemId } } } = layer;
-    const { object_title, checkName, check_date, dangerCount, status } = this.state.points.find(({ item_id }) => prevItemId === item_id) || {};
+    const { object_title, checkName, check_date, dangerCount, originalStatus } = this.state.points.find(({ item_id }) => prevItemId === item_id) || {};
     // 是否为异常状态
-    const isAbnormal = status === 2;
+    const isAbnormal = +originalStatus === 2;
     // 是否已检查
-    const isChecked = !!status;
+    const isChecked = !!originalStatus;
     layer.bindTooltip(`
       <div>
         <div>
@@ -143,11 +143,11 @@ export default class FourColor extends PureComponent {
   renderPoint = (item, other) => {
     const {
       item_id,
-      status,
+      originalStatus,
     } = item;
     const { position } = other;
     const { tips={} } = this.props;
-    const isAbnormal = status === 2;
+    const isAbnormal = +originalStatus === 2;
     const showTip = !!tips[item_id];
     return (
       <Fragment key={item_id}>
