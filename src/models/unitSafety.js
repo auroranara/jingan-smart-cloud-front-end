@@ -321,12 +321,12 @@ export default {
     // 获取隐患列表
     *fetchHiddenDangerList({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerList, payload);
-      const { code, data } = response;
+      const { code, data: { list, pagination } } = response;
       if (code === 200) {
-        yield put({ type: 'saveHiddenDangerList', payload: data, append: payload.pageNum !== 1 });
+        yield put({ type: 'saveHiddenDangerList', payload: { list, pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize }  }, append: payload.pageNum !== 1 });
         yield put({
           type: 'saveDangerList',
-          payload: data.list,
+          payload: list,
         });
       }
       callback && callback(response);
