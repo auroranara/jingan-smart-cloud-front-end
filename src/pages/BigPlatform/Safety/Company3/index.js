@@ -32,6 +32,8 @@ import {
   RiskPointDetailDrawer,
   // 巡查点位详情抽屉
   InspectionDetailDrawer,
+  // 特种设备抽屉
+  SpecialEquipmentDrawer,
 } from './components';
 import IndexDrawer from '../Company2/sections/IndexDrawer';
 // 引入样式文件
@@ -65,6 +67,8 @@ export default class UnitSafety extends PureComponent {
       riskPointType: {},
       // 风险点详情抽屉是否显示
       riskPointDetailDrawerVisible: false,
+      //  特种设备抽屉是否显示
+      specialEquipmentDrawerVisible: false,
       // 巡查点位详情抽屉是否显示
       inspectionDetailDrawerVisible: false,
       // 安全指数抽屉是否显示
@@ -192,7 +196,7 @@ export default class UnitSafety extends PureComponent {
   /**
    * 获取弹窗的隐患列表
    */
-  getDangerList = (restProps) => {
+  getDangerList = restProps => {
     const {
       match: {
         params: { companyId },
@@ -205,7 +209,7 @@ export default class UnitSafety extends PureComponent {
       status: 5,
       ...restProps,
     });
-  }
+  };
 
   /**
    * 获取隐患列表
@@ -439,6 +443,7 @@ export default class UnitSafety extends PureComponent {
       riskPointDrawerVisible,
       riskPointType,
       safetyOfficerDrawerVisible,
+      specialEquipmentDrawerVisible,
       riskPointDetailDrawerVisible,
       inspectionDetailDrawerVisible,
       indexDrawerVisible,
@@ -550,6 +555,11 @@ export default class UnitSafety extends PureComponent {
           visible={safetyOfficerDrawerVisible}
           onClose={this.setDrawerVisible}
           model={unitSafety}
+        />
+        {/* 特种设备抽屉 */}
+        <SpecialEquipmentDrawer
+          visible={specialEquipmentDrawerVisible}
+          onClose={this.setDrawerVisible}
         />
         {/* 风险点详情抽屉 */}
         <RiskPointDetailDrawer

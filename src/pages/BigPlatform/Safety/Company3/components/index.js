@@ -22,6 +22,8 @@ import SafetyOfficerDrawer from './SafetyOfficerDrawer';
 import RiskPointDetailDrawer from './RiskPointDetailDrawer';
 // 巡查点位详情抽屉
 import InspectionDetailDrawer from './InspectionDetailDrawer';
+// 特种设备抽屉
+import SpecialEquipmentDrawer from './SpecialEquipmentDrawer';
 
 export {
   // 企业信息
@@ -48,4 +50,5 @@ export {
   RiskPointDetailDrawer,
   // 巡查点位详情抽屉
   InspectionDetailDrawer,
+  SpecialEquipmentDrawer,
 };
