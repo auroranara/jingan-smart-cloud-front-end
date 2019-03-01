@@ -567,20 +567,20 @@ export default class Smoke extends PureComponent {
 
   handleFaultClick = (id, companyId, companyName, num, deviceId) => {
     return null;
-    const {
-      dispatch,
-      match: {
-        params: { gridId },
-      },
-    } = this.props;
-    this.setState({ companyName });
-    dispatch({
-      type: 'smoke/fetchSmokeForMaintenance',
-      payload: { companyId, id, gridId, num, type: '2', deviceId },
-      success: () => {
-        this.handleDrawerVisibleChange('maintenance');
-      },
-    });
+    // const {
+    //   dispatch,
+    //   match: {
+    //     params: { gridId },
+    //   },
+    // } = this.props;
+    // this.setState({ companyName });
+    // dispatch({
+    //   type: 'smoke/fetchSmokeForMaintenance',
+    //   payload: { companyId, id, gridId, num, type: '2', deviceId },
+    //   success: () => {
+    //     this.handleDrawerVisibleChange('maintenance');
+    //   },
+    // });
   };
 
   onRef = ref => {
