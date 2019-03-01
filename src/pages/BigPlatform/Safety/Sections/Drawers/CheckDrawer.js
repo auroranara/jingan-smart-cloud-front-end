@@ -8,7 +8,7 @@ import noChecks from '../../img/noChecks.png';
 const { Option } = Select;
 const months = [...Array(6).keys()].map(month => ({
   value: moment()
-    .month(-month)
+    .subtract(month, 'months')
     .format('YYYY-MM'),
 }));
 class CheckDrawer extends PureComponent {

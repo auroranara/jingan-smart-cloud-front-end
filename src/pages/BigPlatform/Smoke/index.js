@@ -78,6 +78,8 @@ export default class Smoke extends PureComponent {
       alarmIds: [],
       companyName: '',
       type: 0,
+      errorUnitsCardsInfo: [],
+      unitDetail: {},
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -150,6 +152,7 @@ export default class Smoke extends PureComponent {
           gasErrorUnitSet: { errorUnits = [] },
         } = data;
         this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
+        this.setState({errorUnitsCardsInfo:this.errorUnitsCardsInfo});
       },
     });
 
@@ -290,7 +293,26 @@ export default class Smoke extends PureComponent {
         params: { gridId },
       },
     } = this.props;
-
+     // 获取单位数据
+     dispatch({
+      type: 'smoke/fetchUnitData',
+      payload: { gridId },
+    });
+    // 获取接入单位统计列表
+    dispatch({
+      type: 'smoke/fetchImportingTotal',
+      payload: {
+        status,
+        gridId,
+      },
+      callback: data => {
+        if (!data) return;
+        const {
+          gasUnitSet: { importingUnits = [] },
+        } = data;
+        this.importCardsInfo = genCardsInfo(importingUnits);
+      },
+    });
     // 烟感地图数据
     dispatch({
       type: 'smoke/fetchMapList',
@@ -303,7 +325,6 @@ export default class Smoke extends PureComponent {
       payload: { gridId },
     });
 
-    // 历史火警单位统计
     dispatch({
       type: 'smoke/fetchAbnormalingTotal',
       payload: {
@@ -316,6 +337,7 @@ export default class Smoke extends PureComponent {
           gasErrorUnitSet: { errorUnits = [] },
         } = data;
         this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
+        this.setState({errorUnitsCardsInfo:this.errorUnitsCardsInfo});
       },
     });
   };
@@ -526,7 +548,7 @@ export default class Smoke extends PureComponent {
     this.setState({ type: type });
   };
 
-  handleAlarmClick = (id, companyId, companyName, num) => {
+  handleAlarmClick = (id, companyId, companyName, num, deviceId) => {
     const {
       dispatch,
       match: {
@@ -536,14 +558,14 @@ export default class Smoke extends PureComponent {
     this.setState({ companyName });
     dispatch({
       type: 'smoke/fetchSmokeForMaintenance',
-      payload: { companyId, id, gridId, num, type: '1' },
+      payload: { companyId, id, gridId, num, type: '1', deviceId },
       success: () => {
         this.handleDrawerVisibleChange('alarmDynamic');
       },
     });
   };
 
-  handleFaultClick = (id, companyId, companyName, num) => {
+  handleFaultClick = (id, companyId, companyName, num, deviceId) => {
     return null;
     const {
       dispatch,
@@ -554,7 +576,7 @@ export default class Smoke extends PureComponent {
     this.setState({ companyName });
     dispatch({
       type: 'smoke/fetchSmokeForMaintenance',
-      payload: { companyId, id, gridId, num, type: '2' },
+      payload: { companyId, id, gridId, num, type: '2', deviceId },
       success: () => {
         this.handleDrawerVisibleChange('maintenance');
       },
@@ -620,10 +642,11 @@ export default class Smoke extends PureComponent {
       alarmIds,
       companyName,
       type,
+      errorUnitsCardsInfo,
     } = this.state;
 
     const importCardsInfo = this.importCardsInfo;
-    const errorUnitsCardsInfo = this.errorUnitsCardsInfo;
+    // const errorUnitsCardsInfo = this.errorUnitsCardsInfo;
     const extra = <GridSelect gridId={gridId} urlBase="/big-platform/smoke" />;
     return (
       <BigPlatformLayout
@@ -765,6 +788,8 @@ export default class Smoke extends PureComponent {
           handleClose={this.hideUnitDetail}
           handleSelect={this.handleSelectDevice}
           handleClickCamera={this.handleClickCamera}
+          handleFaultClick={this.handleFaultClick}
+          handleAlarmClick={this.handleAlarmClick}
         />
         {/* <VideoPlay
           showList={false}
