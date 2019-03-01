@@ -281,19 +281,20 @@ export default class HistoryPlay extends Component {
     if (currentIndex + 1 >= length || currentIndex < 0) {
       return;
     }
-    const { xPx: x1, yPx: y1 } = data[currentIndex];
+    const { xPx: x1, yPx: y1, id } = data[currentIndex];
     const { xPx: x2, yPx: y2, locationStatusHistoryList } = data[currentIndex+1];
     // 当有警报信息时显示红色
     const isAlarm = locationStatusHistoryList && locationStatusHistoryList.length > 0;
     const isXEqual = x1 === x2;
     const isYEqual = y1 === y2;
-    // return (
-    //   backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-    //   <defs><marker id="arrow" markerWidth="10" markerHeight="10" refx="0" refy="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#f00" /></marker></defs>
-    //   <line x1="${x1 > x2 ? '100%' : 0}" y1="${y1 >= y2 ? 0 : '100%'}" x2="${x1 >= x2 ? 0 : '100%'}" y2="${y1 > y2 ? '100%' : 0}" stroke="${isAlarm?'#8A101D' : '#0186D1'}" stroke-width="1" marker-end="url(#arrow)" />
-    // </svg>')`,
-    // );
-    return;
+    return {
+      id,
+      url: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+        <defs><marker id="arrow" markerWidth="10" markerHeight="10" refx="0" refy="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#f00" /></marker></defs>
+        <line x1="${x1 > x2 ? '100%' : 0}" y1="${y1 >= y2 ? 0 : '100%'}" x2="${x1 >= x2 ? 0 : '100%'}" y2="${y1 > y2 ? '100%' : 0}" stroke="${isAlarm?'#8A101D' : '#0186D1'}" stroke-width="1" marker-end="url(#arrow)" />
+      </svg>')`,
+      latlngs: [],
+    };
   }
 
   /**
