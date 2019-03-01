@@ -324,7 +324,7 @@ class MapSection extends PureComponent {
             [styles.notActive]: legendActive !== index && legendActive !== null,
           });
           return (
-            <Col span={5} key={level} style={{ width: '20%' }}>
+            <Col span={5} key={index} style={{ width: '20%' }}>
               <span
                 className={legendStyles}
                 onClick={() => {

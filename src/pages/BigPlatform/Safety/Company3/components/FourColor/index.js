@@ -25,21 +25,21 @@ const exceptionBlue = `${iconPrefix}exception_blue.png`;
 const getStatusLabel = status => {
   switch (+status) {
     case 1:
-    return <span style={{ color: '#fff' }}>正常</span>;
+      return <span style={{ color: '#fff' }}>正常</span>;
     case 2:
-    return <span style={{ color: '#FF4848' }}>异常</span>;
+      return <span style={{ color: '#FF4848' }}>异常</span>;
     case 3:
-    return <span style={{ color: '#fff' }}>待检查</span>;
+      return <span style={{ color: '#fff' }}>待检查</span>;
     case 4:
-    return <span style={{ color: '#FF4848' }}>已超时</span>;
+      return <span style={{ color: '#FF4848' }}>已超时</span>;
     default:
-    return '';
+      return '';
   }
 };
 /**
  * 根据颜色筛选图片
  */
-const getIconByColor = ({ risk_level, originalStatus }={}) => {
+const getIconByColor = ({ risk_level, originalStatus } = {}) => {
   if (+originalStatus === 2) {
     switch (+risk_level) {
       case 1:
@@ -80,10 +80,18 @@ export default class FourColor extends PureComponent {
     points: [],
     // 当前四色图上的视频列表
     videos: [],
-  }
+  };
 
-  componentDidUpdate({ model: { companyMessage: { fourColorImg: prevFourColorImg } } }) {
-    const { model: { companyMessage: { fourColorImg } } } = this.props;
+  componentDidUpdate({
+    model: {
+      companyMessage: { fourColorImg: prevFourColorImg },
+    },
+  }) {
+    const {
+      model: {
+        companyMessage: { fourColorImg },
+      },
+    } = this.props;
     // 当四色图源数据更新后，默认获取第一个四色图作为初始值
     if (fourColorImg !== prevFourColorImg) {
       this.changeSelectedFourColorImg(fourColorImg[0] || {});
@@ -93,9 +101,11 @@ export default class FourColor extends PureComponent {
   /**
    * 设置选中的四色图并筛选出对应的点位和视频
    */
-  changeSelectedFourColorImg = (selectedFourColorImg) => {
+  changeSelectedFourColorImg = selectedFourColorImg => {
     const { id } = selectedFourColorImg;
-    const { selectedFourColorImg: { id: selectedFourColorImgId } } = this.state;
+    const {
+      selectedFourColorImg: { id: selectedFourColorImgId },
+    } = this.state;
     // 如果新选中的四色图与原来的一致，则不做任何操作
     if (selectedFourColorImgId === id) {
       return;
@@ -103,7 +113,7 @@ export default class FourColor extends PureComponent {
     const {
       model: {
         points: { fourColorImgPoints },
-        videoList=[],
+        videoList = [],
       },
     } = this.props;
     // 更新选中的四色图和对应视频列表
@@ -112,14 +122,14 @@ export default class FourColor extends PureComponent {
       points: fourColorImgPoints[id] || [],
       selectedFourColorImg,
     });
-  }
+  };
 
   /**
    * 下拉框选择事件
    */
   handleSelect = (id, { props: { data } }) => {
     this.changeSelectedFourColorImg(data);
-  }
+  };
 
   /**
    * 下拉框
@@ -128,11 +138,13 @@ export default class FourColor extends PureComponent {
     const {
       model: {
         // 企业信息中获取四色图
-        companyMessage: { fourColorImg = [] }={},
+        companyMessage: { fourColorImg = [] } = {},
       },
     } = this.props;
     //  从state中获取当前选中的四色图id
-    const { selectedFourColorImg: { id: selectedFourColorImgId } } = this.state;
+    const {
+      selectedFourColorImg: { id: selectedFourColorImgId },
+    } = this.state;
     // 当四色图的数量大于1时才显示下拉框
     return fourColorImg.length > 1 ? (
       <Select
@@ -145,12 +157,7 @@ export default class FourColor extends PureComponent {
           const { id, fileName = '未命名' } = item;
           const isSelected = selectedFourColorImgId === id;
           return (
-            <Option
-              key={id}
-              value={id}
-              data={item}
-              style={{ color: isSelected && '#00ffff' }}
-            >
+            <Option key={id} value={id} data={item} style={{ color: isSelected && '#00ffff' }}>
               {fileName.split('.')[0]}
             </Option>
           );
@@ -167,46 +174,31 @@ export default class FourColor extends PureComponent {
       <div className={styles.legendContainer}>
         {red > 0 && (
           <div className={styles.legend}>
-            <span
-              className={styles.legendIcon}
-              style={{ backgroundColor: '#FC1F02' }}
-            />
+            <span className={styles.legendIcon} style={{ backgroundColor: '#FC1F02' }} />
             <span>重大风险</span>
           </div>
         )}
         {orange > 0 && (
           <div className={styles.legend}>
-            <span
-              className={styles.legendIcon}
-              style={{ backgroundColor: '#F17A0A' }}
-            />
+            <span className={styles.legendIcon} style={{ backgroundColor: '#F17A0A' }} />
             <span>较大风险</span>
           </div>
         )}
         {yellow > 0 && (
           <div className={styles.legend}>
-            <span
-              className={styles.legendIcon}
-              style={{ backgroundColor: '#FBF719' }}
-            />
+            <span className={styles.legendIcon} style={{ backgroundColor: '#FBF719' }} />
             <span>一般风险</span>
           </div>
         )}
         {blue > 0 && (
           <div className={styles.legend}>
-            <span
-              className={styles.legendIcon}
-              style={{ backgroundColor: '#1E60FF' }}
-            />
+            <span className={styles.legendIcon} style={{ backgroundColor: '#1E60FF' }} />
             <span>低风险</span>
           </div>
         )}
         {gray > 0 && (
           <div className={styles.legend}>
-            <span
-              className={styles.legendIcon}
-              style={{ backgroundColor: '#4E6693' }}
-            />
+            <span className={styles.legendIcon} style={{ backgroundColor: '#4E6693' }} />
             <span>风险点</span>
           </div>
         )}
@@ -227,6 +219,12 @@ export default class FourColor extends PureComponent {
     );
   }
 
+  renderLastCheckInfo(user_name, last_check_date) {
+    return user_name && last_check_date
+      ? `${user_name} ${moment(last_check_date).format('YYYY-MM-DD')}`
+      : '暂无数据';
+  }
+
   render() {
     const {
       // 点击视频
@@ -234,17 +232,38 @@ export default class FourColor extends PureComponent {
       // 点击点位
       handleClickPoint,
     } = this.props;
-    const { points, videos, selectedFourColorImg: { webUrl } } = this.state;
+    const {
+      points,
+      videos,
+      selectedFourColorImg: { webUrl },
+    } = this.state;
     // 红，橙，黄，蓝，未评级，视频计数
-    let red = 0, orange = 0, yellow = 0, blue = 0, gray = 0;
+    let red = 0,
+      orange = 0,
+      yellow = 0,
+      blue = 0,
+      gray = 0;
 
     return (
       <Section title="安全点位图" action={this.renderSelect()}>
         <div className={styles.container}>
           {/* 四色图 */}
-          <div className={styles.fourColorImage} style={{ backgroundImage: `url(${webUrl || 'http://data.jingan-china.cn/v2/big-platform/safety/com/default_four_color.png'})` }}>
+          <div
+            className={styles.fourColorImage}
+            style={{
+              backgroundImage: `url(${webUrl ||
+                'http://data.jingan-china.cn/v2/big-platform/safety/com/default_four_color.png'})`,
+            }}
+          >
             {points.map(({ itemId, xNum, yNum, info }) => {
-              const { object_title, originalStatus, status, risk_level, user_name, last_check_date } = info || {};
+              const {
+                object_title,
+                originalStatus,
+                status,
+                risk_level,
+                user_name,
+                last_check_date,
+              } = info || {};
               // 如果风险告知卡存在，则判断颜色并统计数量，否则默认为灰色
               switch (+risk_level) {
                 case 1:
@@ -267,15 +286,34 @@ export default class FourColor extends PureComponent {
                 <Tooltip
                   key={itemId}
                   overlayClassName={styles.tooltip}
-                  placement={xNum > 0.5 ? 'left': 'right'}
-                  title={info ? (
-                    <Fragment>
-                      <div>{object_title}</div>
-                      <div>有无隐患：{+originalStatus === 2 ? <span style={{ color: '#ff4848' }}>有隐患</span> : '无隐患'}</div>
-                      <div>检查状态：{getStatusLabel(status)}</div>
-                      <div>最近巡查：{user_name} {last_check_date && moment(last_check_date).format('YYYY-MM-DD')}</div>
-                    </Fragment>
-                  ) : <div style={{ textAlign: 'center' }}>暂无信息</div>}
+                  placement={xNum > 0.5 ? 'left' : 'right'}
+                  title={
+                    info ? (
+                      <Fragment>
+                        <div>{object_title}</div>
+                        <div>
+                          有无隐患：
+                          {+originalStatus === 2 ? (
+                            <span style={{ color: '#ff4848' }}>有隐患</span>
+                          ) : (
+                            '无隐患'
+                          )}
+                        </div>
+                        <div>
+                          检查状态：
+                          {getStatusLabel(status)}
+                        </div>
+                        <div>
+                          最近巡查：
+                          {user_name && last_check_date
+                            ? `${user_name} ${moment(last_check_date).format('YYYY-MM-DD')}`
+                            : '暂无数据'}
+                        </div>
+                      </Fragment>
+                    ) : (
+                      <div style={{ textAlign: 'center' }}>暂无信息</div>
+                    )
+                  }
                 >
                   <div
                     key={itemId}
@@ -287,7 +325,9 @@ export default class FourColor extends PureComponent {
                       height: 35,
                       backgroundImage: `url(${getIconByColor(info)})`,
                     }}
-                    onClick={() => {handleClickPoint(itemId, status);}}
+                    onClick={() => {
+                      handleClickPoint(itemId, status);
+                    }}
                   />
                 </Tooltip>
               );
@@ -306,7 +346,9 @@ export default class FourColor extends PureComponent {
                       borderRadius: '50%',
                       boxShadow: '0px 1px 5px 0px rgba(0, 0, 0, 0.35)',
                     }}
-                    onClick={() => {handleClickVideo(keyId);}}
+                    onClick={() => {
+                      handleClickVideo(keyId);
+                    }}
                   />
                 </Tooltip>
               );
