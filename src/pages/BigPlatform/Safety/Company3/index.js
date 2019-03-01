@@ -3,7 +3,7 @@ import { Row, Col } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import { Rotate } from 'react-transform-components';
-// import { mapMutations } from '@/utils/utils';
+import { mapMutations } from '@/utils/utils';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 // 视频播放
 import VideoPlay from '@/pages/BigPlatform/FireControl/section/VideoPlay';
@@ -38,7 +38,7 @@ import IndexDrawer from '../Company2/sections/IndexDrawer';
 import styles from './index.less';
 
 // 默认分页显示数量
-const DEFAULT_PAGE_SIZE = 50;
+const DEFAULT_PAGE_SIZE = 10;
 
 /**
  * description: 模板
@@ -48,6 +48,7 @@ const DEFAULT_PAGE_SIZE = 50;
   loadingSafetyIndex: loading.effects['unitSafety/fetchSafetyIndex'],
   loadingRiskPointInspectionList: loading.effects['unitSafety/fetchRiskPointInspectionList'],
   loadingRiskPointHiddenDangerList: loading.effects['unitSafety/fetchRiskPointHiddenDangerList'],
+  loadingHiddenDangerList: loading.effects['unitSafety/fetchHiddenDangerList'],
 }))
 export default class UnitSafety extends PureComponent {
   constructor(props) {
@@ -74,85 +75,98 @@ export default class UnitSafety extends PureComponent {
       // 当前显示的巡查块索引
       inspectionIndex: 0,
       // 当前选中的人员列表的月份
-      selectedStaffListMonth: '2019-2',
+      selectedStaffListMonth: '2019-02',
       // 当前选中的人员记录的月份
-      selectedStaffRecordsMonth: '2019-2',
+      selectedStaffRecordsMonth: '2019-02',
       // 选中的人员id
       checkUserId: null,
     };
+    // 添加变异函数
+    mapMutations(this, {
+      namespace: 'unitSafety',
+      types: [
+        // 获取企业信息
+        'fetchCompanyMessage',
+        // 获取特种设备数
+        'fetchSpecialEquipmentCount',
+        // 获取隐患列表
+        'fetchHiddenDangerList',
+        // 获取视频列表
+        'fetchVideoList',
+        // 获取监控数据
+        'fetchMonitorData',
+        // // 获取四色风险点
+        'fetchCountDangerLocation',
+        // 获取安全人员信息
+        'fetchSafetyOfficer',
+        // 获取安全指数
+        'fetchSafetyIndex',
+        // 获取动态监测数据
+        'fetchDynamicMonitorData',
+        // 获取巡查记录列表
+        'fetchInspectionRecordData',
+        // 获取风险点巡查列表
+        'fetchRiskPointInspectionList',
+        // 获取风险点隐患列表
+        'fetchRiskPointHiddenDangerList',
+        // 获取风险点隐患统计
+        'fetchRiskPointHiddenDangerCount',
+        // 获取风险点巡查统计
+        'fetchRiskPointInspectionCount',
+        // 获取风险告知卡列表
+        'fetchRiskPointCardList',
+        // 获取巡查点位数据
+        'fetchInspectionPointData',
+        // 获取巡查人员列表
+        'fetchStaffList',
+        // 获取巡查记录列表
+        'fetchStaffRecords',
+        // 获取安全档案
+        'fetchSafeFiles',
+        // 获取监测信息
+        'fetchMonitorList',
+        // 获取点位
+        'fetchPoints',
+        // 获取隐患统计
+        'fetchHiddenDangerCount',
+      ],
+    });
   }
 
   /**
    * 挂载后
    */
   componentDidMount() {
-    const { dispatch, match: { params: { companyId } } } = this.props;
-
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     // 获取企业信息
-    dispatch({
-      type: 'unitSafety/fetchCompanyMessage',
-      payload: {
-        company_id: companyId,
-      },
-    });
+    this.fetchCompanyMessage({ company_id: companyId });
     // 获取特种设备数
-    dispatch({
-      type: 'unitSafety/fetchSpecialEquipmentCount',
-      payload: {
-        company_id: companyId,
-      },
-    });
+    this.fetchSpecialEquipmentCount({ company_id: companyId });
     // 获取隐患列表
-    dispatch({
-      type: 'unitSafety/fetchHiddenDangerList',
-      payload: {
-        company_id: companyId,
-      },
-    });
+    this.getHiddenDangerList();
+    // 获取隐患统计
+    this.fetchHiddenDangerCount({ company_id: companyId });
     // 获取视频列表
-    dispatch({
-      type: 'unitSafety/fetchVideoList',
-      payload: {
-        company_id: companyId,
-      },
-    });
+    this.fetchVideoList({ company_id: companyId });
     // 获取监控数据
-    dispatch({
-      type: 'unitSafety/fetchMonitorData',
-      payload: {
-        companyId,
-      },
-    });
-    // 获取四色风险点
-    dispatch({
-      type: 'unitSafety/fetchCountDangerLocation',
-      payload: {
-        company_id: companyId,
-      },
-    });
+    this.fetchMonitorData({ companyId });
+    // // 获取四色风险点
+    this.fetchCountDangerLocation({ company_id: companyId });
     // 获取安全人员信息（安全人员信息卡片源数据）
-    dispatch({
-      type: 'unitSafety/fetchSafetyOfficer',
-      payload: {
-        company_id: companyId,
-      },
-    });
+    this.fetchSafetyOfficer({ company_id: companyId });
     // 获取安全指数
-    dispatch({
-      type: 'unitSafety/fetchSafetyIndex',
-      payload: {
-        companyId,
-      },
-    });
+    this.fetchSafetyIndex({ companyId });
     // 获取动态监测数据
-    dispatch({
-      type: 'unitSafety/fetchDynamicMonitorData',
-      payload: {
-        companyId,
-      },
-    });
+    this.fetchDynamicMonitorData({ companyId });
+    // 获取点位
+    this.fetchPoints({ companyId });
   }
 
+  /* 前往动态监控大屏 */
   goToMonitor = () => {
     const {
       match: {
@@ -160,8 +174,9 @@ export default class UnitSafety extends PureComponent {
       },
     } = this.props;
     window.open(`${window.publicPath}#/big-platform/monitor/company/${companyId}`);
-  }
+  };
 
+  /* 前往1.0统计页面 */
   goToCompanyIndex = () => {
     const {
       match: {
@@ -169,92 +184,91 @@ export default class UnitSafety extends PureComponent {
       },
     } = this.props;
     window.open(`/acloud_new/companyIndex.htm?company_id=${companyId}`);
-  }
+  };
+
+  /**
+   * 获取隐患列表
+   */
+  getHiddenDangerList = restProps => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    this.fetchHiddenDangerList({
+      pageNum: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+      company_id: companyId,
+      status: 5,
+      ...restProps,
+    });
+  };
 
   /**
    * 获取巡查记录对应的隐患列表
    */
   getInspectionRecordData = (checkId, status, callback) => {
     const {
-      dispatch,
       match: {
         params: { companyId },
       },
     } = this.props;
     const { selectedStaffRecordsMonth: month, checkUserId } = this.state;
-    const payload = {
-      companyId,
-      checkId,
-      status,
-      month,
-      checkUserId,
-    };
-    dispatch({
-      type: 'unitSafety/fetchInspectionRecordData',
-      payload,
-      callback,
-    });
-  }
+    this.fetchInspectionRecordData(
+      {
+        companyId,
+        checkId,
+        status,
+        month,
+        checkUserId,
+      },
+      callback
+    );
+  };
 
   /**
    * 获取风险点巡查列表
    */
-  getRiskPointInspectionList = ({ pageNum = 1, itemId = this.itemId, ...restProps }={}) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'unitSafety/fetchRiskPointInspectionList',
-      payload: {
-        itemId,
-        pageNum,
-        pageSize: DEFAULT_PAGE_SIZE,
-        ...restProps,
-      },
+  getRiskPointInspectionList = restProps => {
+    this.fetchRiskPointInspectionList({
+      itemId: this.itemId,
+      pageNum: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+      ...restProps,
     });
-  }
+  };
 
   /**
    * 获取风险点隐患列表
    */
-  getRiskPointHiddenDangerList = ({ pageNum = 1, itemId = this.itemId, ...restProps }={}) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'unitSafety/fetchRiskPointHiddenDangerList',
-      payload: {
-        itemId,
-        pageNum,
-        pageSize: DEFAULT_PAGE_SIZE,
-        ...restProps,
-      },
+  getRiskPointHiddenDangerList = restProps => {
+    this.fetchRiskPointHiddenDangerList({
+      itemId: this.itemId,
+      pageNum: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+      ...restProps,
     });
-  }
+  };
 
   /**
    * 获取风险点的隐患统计
    */
-  getRiskPointHiddenDangerCount = ({ itemId=this.itemId, ...restProps }={}) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'unitSafety/fetchRiskPointHiddenDangerCount',
-      payload: {
-        itemId,
-        ...restProps,
-      },
+  getRiskPointHiddenDangerCount = restProps => {
+    this.fetchRiskPointHiddenDangerCount({
+      itemId: this.itemId,
+      ...restProps,
     });
-  }
+  };
 
   /**
    * 获取风险点的巡查统计
    */
-  getRiskPointInspectionCount = ({ itemId=this.itemId, ...restProps }={}) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'unitSafety/fetchRiskPointInspectionCount',
-      payload: {
-        itemId,
-        ...restProps,
-      },
+  getRiskPointInspectionCount = restProps => {
+    this.fetchRiskPointInspectionCount({
+      itemId: this.itemId,
+      ...restProps,
     });
-  }
+  };
 
   /**
    * 设置抽屉是否显示
@@ -265,124 +279,114 @@ export default class UnitSafety extends PureComponent {
     const fullName = `${drawerName}DrawerVisible`;
     this.setState(({ [fullName]: visible }) => ({ [fullName]: !visible, ...props }));
     callback && callback(this.props);
-  }
+  };
 
   /**
    * 显示视频
    */
-  showVideo = (videoKeyId) => {
+  showVideo = videoKeyId => {
     this.setState({ videoVisible: true, videoKeyId });
-  }
+  };
 
   /**
-  * 隐藏视频
-  */
+   * 隐藏视频
+   */
   hideVideo = () => {
     this.setState({ videoVisible: false });
-  }
+  };
 
   /**
    * 显示风险点详情
    */
-  showRiskPointDetailDrawer = (itemId) => {
-    const { dispatch } = this.props;
+  showRiskPointDetailDrawer = (itemId, status) => {
     // 保存点位id
     this.itemId = itemId;
     // 获取风险告知卡列表
-    dispatch({
-      type: 'unitSafety/fetchRiskPointCardList',
-      payload: {
-        itemId,
-      },
-      callback: () => {
-        this.setState({ riskPointDetailDrawerVisible: true });
-      },
+    this.fetchRiskPointCardList({ itemId, status }, () => {
+      this.setDrawerVisible('riskPointDetail');
     });
     // 获取隐患列表
     this.getRiskPointHiddenDangerList();
     // 获取隐患统计
     this.getRiskPointHiddenDangerCount();
-  }
+  };
 
   /**
    * 显示巡查点位详情
    */
   ShowInspectionDetailDrawer = (itemId, status) => {
     const {
-      dispatch,
       match: {
         params: { companyId },
       },
     } = this.props;
     const { selectedStaffRecordsMonth: month, checkUserId } = this.state;
-    const payload = {
-      companyId,
-      itemId,
-      status,
-      month,
-      checkUserId,
-    };
-    // 1.获取数据
-    dispatch({
-      type: 'unitSafety/fetchInspectionPointData',
-      payload,
-      callback: () => {
-        // 2.显示抽屉
-        this.setState({ inspectionDetailDrawerVisible: true });
+    this.fetchInspectionPointData(
+      {
+        companyId,
+        itemId,
+        status,
+        month,
+        checkUserId,
       },
-    });
+      () => {
+        this.setDrawerVisible('inspectionDetail');
+      }
+    );
   };
 
   /**
    * 显示安全指数抽屉
    */
   showIndexDrawer = e => {
-    const { dispatch, match: { params: { companyId } } } = this.props;
-
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     this.setDrawerVisible('index');
-    dispatch({ type: 'unitSafety/fetchSafeFiles', payload: { companyId } });
-    dispatch({ type: 'unitSafety/fetchMonitorList', payload: { companyId } });
+    this.fetchSafeFiles({ companyId });
+    this.fetchMonitorList({ companyId });
   };
 
-   /**
-   * 修改单位巡查索引
+  /**
+   * 显示单位巡查
    */
-  setInspectionIndex = (index, checkUserId) => {
-    const { inspectionIndex, selectedStaffListMonth } = this.state;
-    // 从单位巡查切换到人员列表
-    if (index === 1 && inspectionIndex === 0) {
+  showUnitInspection = () => {
+    this.setState({ inspectionIndex: 0 });
+  };
+
+  /**
+   * 显示巡查人员
+   */
+  showStaffList = () => {
+    // 如果是从单位巡查切换，则初始化巡查人员数据
+    if (this.state.inspectionIndex === 0) {
       this.handleSelectStaffList(moment().format('YYYY-MM'));
     }
-    // 切换到人员记录
-    else if (index === 2) {
-      this.handleSelectStaffRecords(selectedStaffListMonth, checkUserId);
-    }
-    this.setState({
-      inspectionIndex: index,
-      checkUserId,
-    });
-  }
+    this.setState({ inspectionIndex: 1 });
+  };
+
+  /**
+   * 显示巡查记录
+   */
+  showStaffRecords = checkUserId => {
+    // 根据当前选中的巡查人员的月份，初始化巡查记录数据
+    this.handleSelectStaffRecords(this.state.selectedStaffListMonth, checkUserId);
+    this.setState({ inspectionIndex: 2, checkUserId });
+  };
 
   /**
    * 根据月份获取人员列表
    */
   handleSelectStaffList = month => {
     const {
-      dispatch,
       match: {
         params: { companyId },
       },
     } = this.props;
-    dispatch({
-      type: 'unitSafety/fetchStaffList',
-      payload: {
-        company_id: companyId,
-        month,
-      },
-    });
-    this.setState({
-      selectedStaffListMonth: month,
-    });
+    this.fetchStaffList({ company_id: companyId, month });
+    this.setState({ selectedStaffListMonth: month });
   };
 
   /**
@@ -390,22 +394,12 @@ export default class UnitSafety extends PureComponent {
    */
   handleSelectStaffRecords = (month, checkUserId = this.state.checkUserId) => {
     const {
-      dispatch,
       match: {
         params: { companyId },
       },
     } = this.props;
-    dispatch({
-      type: 'unitSafety/fetchStaffRecords',
-      payload: {
-        company_id: companyId,
-        month,
-        checkUserId,
-      },
-    });
-    this.setState({
-      selectedStaffRecordsMonth: month,
-    });
+    this.fetchStaffRecords({ company_id: companyId, month, checkUserId });
+    this.setState({ selectedStaffRecordsMonth: month });
   };
 
   /**
@@ -417,6 +411,7 @@ export default class UnitSafety extends PureComponent {
       loadingSafetyIndex,
       loadingRiskPointInspectionList,
       loadingRiskPointHiddenDangerList,
+      loadingHiddenDangerList,
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -434,6 +429,7 @@ export default class UnitSafety extends PureComponent {
     const {
       videoList,
       hiddenDangerList,
+      hiddenDangerCount,
       dynamicMonitorData,
       companyMessage,
       staffList,
@@ -441,13 +437,12 @@ export default class UnitSafety extends PureComponent {
       inspectionRecordData,
       inspectionPointData,
       riskPointDetail,
+      points,
     } = unitSafety;
 
     return (
-      <BigPlatformLayout
-        title={global.PROJECT_CONFIG.projectName}
-      >
-        <Row gutter={16} className={styles.row} style={{ margin: 0, padding: '16px 8px' }}>
+      <BigPlatformLayout title={global.PROJECT_CONFIG.projectName}>
+        <Row gutter={16} className={styles.row}>
           {/* 左边 */}
           <Col span={6} className={styles.col}>
             <div className={styles.leftTop}>
@@ -462,10 +457,7 @@ export default class UnitSafety extends PureComponent {
             </div>
             <div className={styles.leftBottom}>
               {/* 风险点 */}
-              <RiskPoint
-                model={unitSafety}
-                handleClick={this.setDrawerVisible}
-              />
+              <RiskPoint data={points} handleClick={this.setDrawerVisible} />
             </div>
           </Col>
 
@@ -480,26 +472,19 @@ export default class UnitSafety extends PureComponent {
               />
             </div>
             <div className={styles.centerBottom}>
-              <Rotate
-                axis="x"
-                frontIndex={inspectionIndex}
-              >
+              <Rotate axis="x" frontIndex={inspectionIndex}>
                 {/* 单位巡查 */}
                 <UnitInspection
                   data={companyMessage}
                   inspectionIndex={inspectionIndex}
-                  onClick={() => {this.setInspectionIndex(1)}}
+                  onClick={this.showStaffList}
                 />
                 {/* 人员列表 */}
                 <StaffList
                   data={staffList}
                   month={selectedStaffListMonth}
-                  onBack={() => {
-                    this.setInspectionIndex(0);
-                  }}
-                  onClick={checkUserId => {
-                    this.setInspectionIndex(2, checkUserId);
-                  }}
+                  onBack={this.showUnitInspection}
+                  onClick={this.showStaffRecords}
                   onSelect={this.handleSelectStaffList}
                 />
                 {/* 人员记录 */}
@@ -507,9 +492,7 @@ export default class UnitSafety extends PureComponent {
                   data={staffRecords}
                   inspectionRecordData={inspectionRecordData}
                   month={selectedStaffRecordsMonth}
-                  onBack={() => {
-                    this.setInspectionIndex(1);
-                  }}
+                  onBack={this.showStaffList}
                   onSelect={this.handleSelectStaffRecords}
                   handleShowDetail={this.ShowInspectionDetailDrawer}
                   getInspectionRecordData={this.getInspectionRecordData}
@@ -523,13 +506,13 @@ export default class UnitSafety extends PureComponent {
             <div className={styles.rightTop}>
               <CurrentHiddenDanger
                 data={hiddenDangerList}
+                count={hiddenDangerCount}
+                loading={loadingHiddenDangerList}
+                onClick={this.getHiddenDangerList}
               />
             </div>
             <div className={styles.rightBottom}>
-              <DynamicMonitor
-                data={dynamicMonitorData}
-                onClick={this.goToMonitor}
-              />
+              <DynamicMonitor data={dynamicMonitorData} onClick={this.goToMonitor} />
             </div>
           </Col>
         </Row>
@@ -537,7 +520,7 @@ export default class UnitSafety extends PureComponent {
         <RiskPointDrawer
           visible={riskPointDrawerVisible}
           onClose={this.setDrawerVisible}
-          model={unitSafety}
+          data={points}
           riskPointType={riskPointType}
         />
         {/* 安全人员抽屉 */}

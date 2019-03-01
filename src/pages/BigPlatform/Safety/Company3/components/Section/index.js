@@ -1,8 +1,12 @@
 import React from 'react';
+import { Spin } from 'antd';
 import classNames from 'classnames';
 import { Scroll } from 'react-transform-components';
 // 引入样式文件
 import styles from './index.less';
+
+const renderThumbHorizontal = ({ style }) => <div style={{ ...style, display: 'none' }} />;
+const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)' };
 
 /**
  * description: 容器
@@ -28,7 +32,7 @@ export default function Section ({
   fixedContent,
   // 滚动条相关设置属性，请查看Scroll组件
   scrollProps: {
-    scrollClassName,
+    className: scrollClassName,
     ...scrollProps
   }={},
   // 点击事件
@@ -37,6 +41,14 @@ export default function Section ({
   children,
   // scroll的引用
   refScroll,
+  // spin组件相关参数
+  spinProps: {
+    // 是否在加载中
+    loading,
+    // 类名
+    wrapperClassName: spinClassName,
+    ...spinProps
+  }={},
 }) {
   return (
     <div className={classNames(styles.container, className)} style={style} onClick={onClick}>
@@ -49,11 +61,19 @@ export default function Section ({
           </div>
         </div>
       )}
-      <div style={{ height: title || '100%', ...contentStyle }} className={styles.content}>
+      <div style={{ height: title ? undefined : '100%', ...contentStyle }} className={styles.content}>
         {fixedContent}
-        <Scroll ref={refScroll} className={classNames(styles.scroll, scrollClassName)} thumbStyle={{ backgroundColor: 'rgb(0, 87, 169)' }} {...scrollProps}>
-          {children}
-        </Scroll>
+        <Spin wrapperClassName={classNames(styles.spin, spinClassName)} spinning={!!loading} {...spinProps}>
+          <Scroll
+            ref={refScroll}
+            className={classNames(styles.scroll, scrollClassName)}
+            thumbStyle={thumbStyle}
+            renderThumbHorizontal={renderThumbHorizontal}
+            {...scrollProps}
+          >
+            {children}
+          </Scroll>
+        </Spin>
       </div>
       {extra}
     </div>

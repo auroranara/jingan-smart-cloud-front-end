@@ -34,7 +34,8 @@ export default class FourColor extends PureComponent {
       const points = firePoint.filter(({ fix_fire_id }) => fix_fire_id && fix_fire_id === id).map(item => ({ ...item, type: 'marker', name: item.object_title, latlng: { lat: 1 - item.y_fire, lng: +item.x_fire }, render: this.renderPoint }));
       const videos = videoFireList.filter(({ fix_fire_id }) => fix_fire_id && fix_fire_id === id).map(item => ({ ...item, type: 'marker', name: item.name, latlng: { lat: 1 - item.y_fire, lng: +item.x_fire }, render: this.renderVideo }));
       this.setState({
-        data: points.concat(videos),
+        points,
+        data: [...points,...videos],
       });
     }
   }
@@ -104,6 +105,41 @@ export default class FourColor extends PureComponent {
     map.panTo(latlng);
   }
 
+  handlePointMouseOver = ({ target: layer }) => {
+    const { options: { data: { item_id: prevItemId } } } = layer;
+    const { object_title, checkName, check_date, dangerCount, status } = this.state.points.find(({ item_id }) => prevItemId === item_id) || {};
+    // 是否为异常状态
+    const isAbnormal = status === 2;
+    // 是否已检查
+    const isChecked = !!status;
+    layer.bindTooltip(`
+      <div>
+        <div>
+          点位名称：${object_title}
+        </div>
+        ${isChecked ? `
+          <div>
+            状<span style="opacity: 0;">隐藏</span>态：${isAbnormal ? '<span style="color: #ff4848">异常</span>' : '正常'}
+          </div>
+        ` : ''}
+        ${isChecked ? `
+          <div>
+            最近检查：${checkName ? checkName : '暂无数据'} ${check_date ? moment(check_date).format('YYYY-MM-DD') : ''}
+          </div>
+        ` : ''}
+        ${isAbnormal ? `
+          <div>
+            隐患数量：${dangerCount ? dangerCount : 0}
+          </div>
+        ` : ''}
+      </div>
+    `, { direction: 'right', offset: [24, 0] }).openTooltip();
+  }
+
+  handlePointMouseLeave = ({ target: layer }) => {
+    layer.unbindTooltip();
+  }
+
   renderPoint = (item, other) => {
     const {
       item_id,
@@ -139,7 +175,9 @@ export default class FourColor extends PureComponent {
           })}
           {...other}
           /* 下面的不能换位置，为了覆盖other中的同名函数 */
-          onAdd={this.handleAddPoint}
+          onAdd={undefined}
+          onmouseover={this.handlePointMouseOver}
+          onmouseout={this.handlePointMouseLeave}
         />
         {showTip && (
           <Marker

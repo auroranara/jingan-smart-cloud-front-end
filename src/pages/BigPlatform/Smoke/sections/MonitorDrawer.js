@@ -23,10 +23,10 @@ const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 
 const OPTIONS = ['全部', '火警', '故障', '正常'].map((d, i) => ({ value: i, desc: d }));
 
-const VIDEO_STYLE = {
-  width: '90%',
-  marginLeft: '-43%',
-};
+// const VIDEO_STYLE = {
+//   width: '90%',
+//   marginLeft: '-43%',
+// };
 
 export default class MonitorDrawer extends PureComponent {
   state = {
@@ -110,12 +110,17 @@ export default class MonitorDrawer extends PureComponent {
                             onClick={e => this.handleClickCamera()}
                           />
                         )}
-                        {+status !== 0 &&
-                          !status && (
-                            <div className={styles.status} style={{ color, borderColor: color }}>
-                              {+status > 0 ? '火警' : '故障'}
-                            </div>
-                          )}
+                        {(+status !== 0 || !status) && (
+                          <div
+                            className={styles.status}
+                            style={{ color, borderColor: color }}
+                            // onClick={() => {
+                            //     handleAlarmClick(undefined, companyId, companyName, +unnormal);
+                            // }}
+                          >
+                            {+status > 0 ? '火警' : '故障'}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -219,7 +224,7 @@ export default class MonitorDrawer extends PureComponent {
           videoList={cameraList}
           visible={videoVisible}
           keyId={videoKeyId}
-          style={VIDEO_STYLE}
+          // style={VIDEO_STYLE}
           handleVideoClose={this.handleVideoClose}
         />
       </Fragment>
@@ -236,6 +241,7 @@ export default class MonitorDrawer extends PureComponent {
         onClose={() => {
           handleClose();
           this.setState({ statusIndex: 0 });
+          this.handleVideoClose();
         }}
       />
     );

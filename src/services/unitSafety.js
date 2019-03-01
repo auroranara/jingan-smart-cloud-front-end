@@ -18,7 +18,7 @@ export async function getPointInfoList(params) {
 
 // 获取隐患列表
 export async function getHiddenDangerList(params) {
-  return request(`/acloud_new/v2/sfc/hiddenDangerList.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/sfc/hiddenDangerListForPage.json?${stringify(params)}`);
 }
 
 // 获取视频liebiao
@@ -167,4 +167,9 @@ export async function getRiskPointHiddenDangerCount(params) {
 // 获取风险点的巡查统计
 export async function getRiskPointInspectionCount(params) {
   return request(`/acloud_new/v2/sfc/getItemCountById?${stringify(params)}`);
+}
+
+// 获取点位
+export async function getPoints(params) {
+  return request(`/acloud_new/v2/sfc/selectPoints.json?${stringify(params)}`);
 }

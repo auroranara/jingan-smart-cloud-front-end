@@ -23,6 +23,7 @@ import MyTooltip from './components/Tooltip';
 // 故障/火警处理动态
 import MaintenanceDrawer from './sections/MaintenanceDrawer';
 import AlarmDynamicDrawer from './sections/AlarmDynamicDrawer';
+import FireDynamicDrawer from './sections/FireDynamicDrawer';
 
 import MonitorDrawer from './sections/MonitorDrawer';
 
@@ -72,6 +73,7 @@ export default class Smoke extends PureComponent {
       tooltipVisible: false,
       tooltipPosition: [0, 0],
       maintenanceDrawerVisible: false,
+      alarmDynamicDrawerVisible: false,
       // drawerType: '', // alarm,fault
       alarmIds: [],
       companyName: '',
@@ -119,7 +121,7 @@ export default class Smoke extends PureComponent {
       payload: { gridId },
     });
 
-    // // 获取接入单位统计列表
+    // 获取接入单位统计列表
     dispatch({
       type: 'smoke/fetchImportingTotal',
       payload: {
@@ -135,7 +137,7 @@ export default class Smoke extends PureComponent {
       },
     });
 
-    // // 获取异常单位统计列表
+    // 获取异常单位统计列表
     dispatch({
       type: 'smoke/fetchAbnormalingTotal',
       payload: {
@@ -163,7 +165,7 @@ export default class Smoke extends PureComponent {
     const params = {
       companyId: gridId,
       env,
-      type: 4,
+      type: 5,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
     // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
@@ -177,7 +179,6 @@ export default class Smoke extends PureComponent {
     };
 
     ws.onmessage = e => {
-      if(true) return;
       // 判断是否是心跳
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
@@ -203,12 +204,9 @@ export default class Smoke extends PureComponent {
           this.fetchAbnormal();
           if (type === 32) {
             // const sameItem = alarmIds.find(item=>item.companyId===companyId);
-            let sameIndex;
-            alarmIds.forEach((item, i) => {
-              if (item.companyId === companyId) sameIndex = i;
-            });
+            const sameIndex = alarmIds.map(item => item.companyId).indexOf(companyId);
             const newList =
-              sameIndex !== undefined
+              sameIndex >= 0
                 ? [
                     ...alarmIds.slice(0, sameIndex),
                     { companyId, messageFlag },
@@ -293,9 +291,9 @@ export default class Smoke extends PureComponent {
       },
     } = this.props;
 
-    // 获取单位数据
+    // 烟感地图数据
     dispatch({
-      type: 'smoke/fetchUnitData',
+      type: 'smoke/fetchMapList',
       payload: { gridId },
     });
 
@@ -305,7 +303,7 @@ export default class Smoke extends PureComponent {
       payload: { gridId },
     });
 
-    // 获取异常单位统计
+    // 历史火警单位统计
     dispatch({
       type: 'smoke/fetchAbnormalingTotal',
       payload: {
@@ -345,14 +343,12 @@ export default class Smoke extends PureComponent {
     if (!unitDetail) {
       return;
     }
-    const { dispatch } = this.props;
     const { mapInstance } = this.state;
-    const { longitude, latitude, companyId } = unitDetail;
+    const { longitude, latitude } = unitDetail;
     mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     this.setState({ unitDetail });
     this.mapChild.handleMapClick(unitDetail);
     this.hideTooltip();
-    dispatch({ type: 'smoke/fetchCameraList', payload: { company_id: companyId } });
   };
 
   /**
@@ -396,6 +392,7 @@ export default class Smoke extends PureComponent {
           className={styles.notificationContent}
           onClick={() => {
             this.setState({ companyName });
+            this.handleClickNotification(companyId);
             this.handleAlarmClick(messageFlag, companyId, companyName);
           }}
         >
@@ -471,12 +468,7 @@ export default class Smoke extends PureComponent {
         unitSet: { units },
       },
     } = this.props;
-    this.mapChild.handleMapClick(units.filter(item => item.companyId === companyId)[0]);
-  };
-
-  getCameraList = id => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'smoke/fetchCameraList', payload: { company_id: id } });
+    this.showUnitDetail(units.filter(item => item.companyId === companyId)[0]);
   };
 
   handleClickCamera = () => {
@@ -515,11 +507,17 @@ export default class Smoke extends PureComponent {
   };
 
   handleHistoricalFireClick = type => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { gridId },
+      },
+    } = this.props;
     dispatch({
       type: 'smoke/fetchFireHistory',
       payload: {
         type,
+        gridId,
       },
       success: () => {
         this.handleDrawerVisibleChange('fire');
@@ -537,8 +535,26 @@ export default class Smoke extends PureComponent {
     } = this.props;
     this.setState({ companyName });
     dispatch({
-      type: 'smoke/fetchGasForMaintenance',
-      payload: { companyId, id, gridId, num },
+      type: 'smoke/fetchSmokeForMaintenance',
+      payload: { companyId, id, gridId, num, type: '1' },
+      success: () => {
+        this.handleDrawerVisibleChange('alarmDynamic');
+      },
+    });
+  };
+
+  handleFaultClick = (id, companyId, companyName, num) => {
+    return null;
+    const {
+      dispatch,
+      match: {
+        params: { gridId },
+      },
+    } = this.props;
+    this.setState({ companyName });
+    dispatch({
+      type: 'smoke/fetchSmokeForMaintenance',
+      payload: { companyId, id, gridId, num, type: '2' },
       success: () => {
         this.handleDrawerVisibleChange('maintenance');
       },
@@ -551,6 +567,7 @@ export default class Smoke extends PureComponent {
 
   handleCompanyClick = companyId => {
     const { dispatch } = this.props;
+    dispatch({ type: 'smoke/fetchCameraList', payload: { company_id: companyId } });
     dispatch({
       type: 'smoke/fetchCompanySmokeInfo',
       payload: { company_id: companyId },
@@ -576,7 +593,7 @@ export default class Smoke extends PureComponent {
         unitSet,
         deviceStatusCount,
         gasForMaintenance = [],
-        companySmokeInfo: { dataByCompany, list: devList },
+        companySmokeInfo: { dataByCompany, map: devMap = { unnormal: [], fault: [], normal: [] } },
         cameraList,
       },
       match: {
@@ -597,6 +614,7 @@ export default class Smoke extends PureComponent {
       tooltipPosition,
       maintenanceDrawerVisible,
       monitorDrawerVisible,
+      alarmDynamicDrawerVisible,
       // videoVisible,
       // drawerType,
       alarmIds,
@@ -638,6 +656,7 @@ export default class Smoke extends PureComponent {
           alarmIds={alarmIds}
           handleParentChange={this.handleMapParentChange}
           handleAlarmClick={this.handleAlarmClick}
+          handleFaultClick={this.handleFaultClick}
           onRef={this.onRef}
           handleCompanyClick={this.handleCompanyClick}
         />
@@ -700,11 +719,13 @@ export default class Smoke extends PureComponent {
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleAlarmClick={this.handleAlarmClick}
+          handleFaultClick={this.handleFaultClick}
         />
         <FireStatisticsDrawer
           visible={fireDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           type={type}
+          gridId={gridId}
         />
         {/* 故障处理动态 */}
         <MaintenanceDrawer
@@ -717,10 +738,19 @@ export default class Smoke extends PureComponent {
           onClose={() => this.handleDrawerVisibleChange('maintenance')}
         />
         {/* 灾情事件动态 */}
-        <AlarmDynamicDrawer
+        {/* <AlarmDynamicDrawer
           data={[]}
           companyName={companyName}
-          // visible={true}
+          visible={alarmDynamicDrawerVisible}
+          onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
+        /> */}
+        <FireDynamicDrawer
+          title="灾情事件动态"
+          // type={drawerType}
+          type={'alarm'}
+          data={gasForMaintenance}
+          visible={alarmDynamicDrawerVisible}
+          companyName={companyName}
           onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
         />
         {/* 单位监测数据 */}
@@ -729,10 +759,9 @@ export default class Smoke extends PureComponent {
             unitDetail,
             cameraList,
             dataByCompany,
-            devList,
+            devList: [...devMap.unnormal, ...devMap.fault, ...devMap.normal],
           }}
           visible={monitorDrawerVisible}
-          // visible={true}
           handleClose={this.hideUnitDetail}
           handleSelect={this.handleSelectDevice}
           handleClickCamera={this.handleClickCamera}
