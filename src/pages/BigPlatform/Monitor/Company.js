@@ -422,7 +422,7 @@ export default class App extends PureComponent {
       match: {
         params: { companyId },
       },
-    } = this.props
+    } = this.props;
     this.setState({ storageDrawerVisible: true, storageStatus: status });
     // 获取储罐下钻数据
     dispatch({
@@ -437,14 +437,14 @@ export default class App extends PureComponent {
       match: {
         params: { companyId },
       },
-    } = this.props
+    } = this.props;
     this.setState({ storageStatus: status });
     // 获取储罐下钻数据
     dispatch({
       type: 'monitor/fetchTankMessageList',
       payload: { companyId, status: status === 'all' ? null : status },
     });
-  }
+  };
 
   render() {
     // 从props中获取企业名称
