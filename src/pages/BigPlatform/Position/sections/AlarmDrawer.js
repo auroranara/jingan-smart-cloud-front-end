@@ -30,9 +30,9 @@ export default class AlarmDrawer extends PureComponent {
     handleClose('alarmDrawer');
   };
 
-  genClickCard = id => e => {
-    const { handleShowAlarmHandle } = this.props;
-    handleShowAlarmHandle(id);
+  genClickCard = ({ id, type, cardId }) => e => {
+    const { showPersonInfoOrAlarmMsg } = this.props;
+    showPersonInfoOrAlarmMsg(type, id, cardId);
     this.handleCloseDrawer();
   };
 
@@ -46,7 +46,7 @@ export default class AlarmDrawer extends PureComponent {
           <AlarmCard
             key={item.id}
             data={item}
-            onClick={this.genClickCard(item.id)}
+            onClick={this.genClickCard(item)}
           />
         ))}
       </div>

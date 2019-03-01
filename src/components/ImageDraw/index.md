@@ -17,6 +17,7 @@
 | shapes | 可以绘制的图形类型,['polygon', 'rectangle', 'circle', 'marker', 'circlemarker'] | array | ['polygon', 'rectangle', 'circle'] |
 | color | 图形颜色 | string | #000 |
 | hideBackground | 是否隐藏背景图片 | boolean | - |
-| images | 额外的图片 | array | - |
+| images | 区域图片，格式为[{ id, url, latlngs }] | array | - |
+| arrows | 箭头图片，格式为[{ id, url, latlngs }] | array | - |
 | reference | 根据哪一个图形定位 | object | - |
 | autoZoom | 是否根据图片大小自动设置最佳的zoom等级 | boolean | - |

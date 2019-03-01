@@ -13,6 +13,13 @@ export async function queryInitialAlarms(params) {
   return request(`${URL_PREFIX}/location/locationWarningForPage?${stringify(params)}`);
 }
 
+// 取消sos
+export async function quitSOS(cardId) {
+  return request(`${URL_PREFIX}/location/command/delSos/${cardId}`, {
+    method: 'POST',
+  });
+}
+
 // 处理警报
 export async function putAlarm(params) {
   return request(`${URL_PREFIX}/location/locationWarning`, {

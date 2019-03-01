@@ -10,16 +10,19 @@ const BTN_STYLE = { color: 'rgb(4, 253, 255)', borderColor: 'rgb(4, 253, 255)' }
 export default class AlarmHandle extends PureComponent {
   value = '';
 
-  genHandleAlarm = status => e => {
-    const { alarmId, handleAlarm } = this.props;
-    handleAlarm(alarmId, status, this.value);
+  genHandleAlarm = (status) => e => {
+    const { alarmId, cardId, handleAlarm, handleSOS } = this.props;
+    if (cardId)
+      status === 2 && handleSOS(cardId);
+    else
+      handleAlarm(alarmId, status, this.value);
     this.onClose();
   };
 
   onClose = () => {
     const { handleClose } = this.props;
     this.value = '';
-    handleClose('alarmHandle');
+    handleClose();
   }
 
   handleTextChange = e => {
@@ -28,7 +31,7 @@ export default class AlarmHandle extends PureComponent {
   };
 
   render() {
-    const { visible, alarmId, alarms, style, handleAlarm, handleClose, ...restProps } = this.props;
+    const { visible, cardId, positionList, alarmId, alarms, style, handleAlarm, handleSOS, handleClose, ...restProps } = this.props;
     const newStyle = {
       ...style,
       display: visible ? 'block' : 'none',
