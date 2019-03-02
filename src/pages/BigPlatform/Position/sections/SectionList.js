@@ -29,18 +29,26 @@ const columns = [
   {
     title: '区域名称',
     dataIndex: 'name',
-    width: '50%',
+    // width: '50%',
   },
   {
     title: '当前人数',
     dataIndex: 'count',
-    width: '30%',
+    // width: '30%',
+  },
+  {
+    title: '进入人次',
+    dataIndex: 'inCardCount',
+  },
+  {
+    title: '出去人次',
+    dataIndex: 'outCardCount',
   },
   {
     title: '状态',
     dataIndex: 'status',
     render: (status) => <span style={+status === 2 ? { color: '#ff4848' } : undefined}>{statusLabel[status] || '安全'}</span>,
-    width: '20%',
+    // width: '20%',
   },
 ];
 

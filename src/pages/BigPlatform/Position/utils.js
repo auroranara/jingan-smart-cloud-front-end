@@ -150,11 +150,20 @@ export function getAreaChangeMap(list) {
   return list.reduce((prev, next) => {
     const { areaId, type } = next;
     // 1 进入 2 离开
-    const delta = +type === 1 ? 1 : -1;
-    if (prev[areaId])
-      prev[areaId] += delta;
-    else
-      prev[areaId] = delta;
+    // const delta = +type === 1 ? 1 : -1;
+    const isEnter = +type === 1;
+    if (prev[areaId]) {
+      if (isEnter)
+        prev[areaId].enterDelta += 1;
+      else
+        prev[areaId].exitDelta += 1;
+    }
+    else {
+      if (isEnter)
+        prev[areaId] = { enterDelta: 1, exitDelta: 0 };
+      else
+        prev[areaId] = { enterDelta: 0, exitDelta: 1 };
+    }
     return prev;
   }, {});
 }
@@ -268,25 +277,26 @@ function getMapImages(list) {
   return images;
 }
 
-export function getAlarmDesc(item) {
-  const { type, typeName, cardType, cardCode, userName, areaName, warningTime } = item;
+export function getAlarmDesc(item, areaInfo) {
+  const { areaId, type, typeName, cardType, cardCode, userName, warningTime } = item;
 
   const time = moment(warningTime).format('HH:mm');
   const title = `【${typeName}】 ${time}`;
 
   let desc = ''
   const name = `${+cardType ? '访客' : userName}(${cardCode})`;
+  const areaName = areaId ? areaInfo[areaId].fullName : '外围区域';
 
   // 1 sos 2 越界  3 长时间不动 4 超员 5 缺员
   switch(+type) {
     case 1:
-      desc = `${name} 发起求救信号`;
+      desc = `${name}在${areaName}发起求救信号`;
       break;
     case 2:
-      desc = `${name} 进入电子围栏`;
+      desc = `${name}进入${areaName}`;
       break;
     case 3:
-      desc = `${name} 长时间静止`;
+      desc = `${name}在${areaName}长时间静止`;
       break;
     case 4:
       desc = `${areaName} 区域超员`;

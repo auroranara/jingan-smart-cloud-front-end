@@ -6,7 +6,7 @@ import { message, notification } from 'antd';
 
 import styles from './RealTime.less';
 import { AlarmHandle, AlarmMsg, MapInfo, PersonInfo, Tabs, VideoPlay } from '../components/Components';
-import { AlarmDrawer, LeafletMap, LowPowerDrawer, PersonDrawer, SectionList } from './Components';
+import { AlarmDrawer, CardList, CardSelected, LeafletMap, LowPowerDrawer, PersonDrawer, SectionList } from './Components';
 import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem, getAlarmItem, getUserName } from '../utils';
 
 const options = {
@@ -194,10 +194,17 @@ export default class RealTime extends PureComponent {
     const areaChangeMap = getAreaChangeMap(data);
     // console.log(areaChangeMap);
     const newSectionTree = genTreeList(sectionTree, item => {
-      const { id, count } = item;
-      const delta = areaChangeMap[id];
-      if (delta)
-        return { ...item, count: count + delta };
+      const { id, count, inCardCount, outCardCount } = item;
+      const  delta= areaChangeMap[id];
+      if (delta) {
+        const { enterDelta, exitDelta } = delta;
+        return {
+          ...item,
+          count: count + enterDelta - exitDelta,
+          inCardCount: inCardCount + enterDelta,
+          outCardCount: outCardCount + exitDelta,
+        };
+      }
       return item;
     });
     // console.log(newSectionTree);
@@ -358,6 +365,7 @@ export default class RealTime extends PureComponent {
       selectedCardId,
       personPosition: { sectionTree, positionList, positionAggregation, alarms },
       handleLabelClick,
+      setSelectedCard,
     } = this.props;
     const {
       alarmId,
@@ -379,14 +387,31 @@ export default class RealTime extends PureComponent {
     // console.log(sectionTree);
 
     const isTrack = this.isTargetTrack();
+    const areaInfo = this.areaInfo;
 
     return (
       <div className={styles.container}>
         <div className={styles.left}>
           <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
           <div className={styles.leftSection}>
-            {!labelIndex && <SectionList data={sectionTree} />}
-            {!!labelIndex && 'Track'}
+            {!labelIndex && (
+              <SectionList data={sectionTree} />
+            )}
+            {!!labelIndex && !selectedCardId && (
+              <CardList
+                areaInfo={areaInfo}
+                positions={positionList}
+                setSelectedCard={setSelectedCard}
+              />
+            )}
+            {!!labelIndex && selectedCardId && (
+              <CardSelected
+                cardId={selectedCardId}
+                areaInfo={areaInfo}
+                positions={positionList}
+                setSelectedCard={setSelectedCard}
+              />
+            )}
           </div>
         </div>
         <div className={styles.right}>
@@ -395,7 +420,7 @@ export default class RealTime extends PureComponent {
             isTrack={isTrack}
             selectedCardId={selectedCardId}
             areaId={areaId}
-            areaInfo={this.areaInfo}
+            areaInfo={areaInfo}
             sectionTree={sectionTree}
             positions={positionList}
             aggregation={positionAggregation}
@@ -404,6 +429,7 @@ export default class RealTime extends PureComponent {
             handleShowPersonDrawer={this.handleShowPersonDrawer}
           />
           <MapInfo
+            areaInfo={areaInfo}
             alarms={alarms}
             sectionTree={sectionTree}
             positionList={positionList}
@@ -436,6 +462,7 @@ export default class RealTime extends PureComponent {
           />
         </div>
         <AlarmDrawer
+          areaInfo={areaInfo}
           visible={alarmDrawerVisible}
           data={alarms}
           showPersonInfoOrAlarmMsg={this.showPersonInfoOrAlarmMsg}

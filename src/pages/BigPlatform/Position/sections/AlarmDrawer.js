@@ -7,12 +7,13 @@ import { getAlarmDesc } from '../utils';
 
 function AlarmCard(props) {
   const {
+    areaInfo,
     data,
     onClick,
     ...restProps
   } = props;
 
-  const [title, desc] = getAlarmDesc(data);
+  const [title, desc] = getAlarmDesc(data, areaInfo);
 
 
   return (

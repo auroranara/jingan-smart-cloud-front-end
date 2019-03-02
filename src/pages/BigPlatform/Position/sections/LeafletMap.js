@@ -143,6 +143,7 @@ export default class LeafletMap extends PureComponent {
       const isSingle = length === 1;
       const { xarea, yarea, beaconId } = first;
 
+      const isSOS = ps.some(({ sos }) => sos);
       const isAlarm = ps.some(({ sos, overstep, tlong }) => sos || overstep || tlong);
       const containerClassName = `${isSingle ? 'person' : 'people'}${isAlarm ? 'Red' : ''}`;
       const firstName = getUserName(first);
@@ -156,7 +157,11 @@ export default class LeafletMap extends PureComponent {
           iconSize: [38, 40],
           // iconAnchor: [],
           className: styles.personContainer,
-          html: `<div class="${styles[containerClassName]}"><div class="${isSingle ? styles.personTitle : styles.personNum}">${showName}</div></div>`,
+          html: `
+            <div class="${styles[containerClassName]}">
+              <div class="${isSingle ? styles.personTitle : styles.personNum}">${showName}</div>
+              <div class="${styles[isSOS ? 'sos' : 'normal']}">SOS</div>
+            </div>`,
         },
       };
     });

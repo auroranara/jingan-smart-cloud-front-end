@@ -51,9 +51,9 @@ export default {
       const { code=500, data } = response || {};
       if (code === 200) {
         const list = data && Array.isArray(data.list) ? data.list : [];
-        console.log('list', list);
+        // console.log('list', list);
         const treeList = getSectionTree(list);
-        console.log('treeList', treeList);
+        // console.log('treeList', treeList);
         yield put({ type: 'saveSectionTree', payload: treeList });
         callback && callback(treeList);
       }

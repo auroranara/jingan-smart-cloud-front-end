@@ -5,8 +5,6 @@ import styles from './PersonInfo.less';
 import { getUserName } from '../utils';
 
 const NO_DATA = '暂无信息';
-const ICON_STYLE = { color: '#FFF', fontSize: 16, position: 'absolute', top: 10, right: 15, cursor: 'pointer' };
-const BTN_STYLE = { color: 'rgb(4, 253, 255)', borderColor: 'rgb(4, 253, 255)', position: 'absolute', left: '50%', bottom: 25, transform: 'translateX(-50%)' };
 
 export default class PersonInfo extends PureComponent {
   onClose = e => {
@@ -58,23 +56,22 @@ export default class PersonInfo extends PureComponent {
 
     return (
       <div className={styles.container} style={newStyle} {...restProps}>
-        <Icon type="close" style={ICON_STYLE} onClick={this.onClose} />
-        <div
-          className={styles.img}
-          // style={{ backgroundImage: `url(${zhangIcon})`}}
-        />
-        {isSOS
-          ? <Button ghost style={BTN_STYLE} onClick={this.handleAlarmClick}>处理</Button>
-          : <Button ghost style={BTN_STYLE} onClick={this.handleTrackClick}>目标跟踪</Button>
-        }
-        <h3 className={styles.name}>
-          {name || '暂无名字'}
-          {isSOS && <span className={styles.sos} />}
-        </h3>
-        <p>电话：{phone || NO_DATA}</p>
-        <p>卡号：{cardCode || NO_DATA}</p>
-        <p>部门：{departmentName || '产品部'}</p>
-        <p>区域：{areaName || NO_DATA}</p>
+        <Icon type="close" className={styles.close} onClick={this.onClose} />
+        <div className={styles.info}>
+          <div className={styles.img} />
+          <h3 className={styles.name}>
+            {name}
+            {isSOS && <span className={styles.sos} />}
+          </h3>
+          <p>电话：{phone || NO_DATA}</p>
+          <p>卡号：{cardCode || NO_DATA}</p>
+          <p>部门：{departmentName || '产品部'}</p>
+          <p>区域：{areaName || NO_DATA}</p>
+        </div>
+        <div className={styles.btns}>
+          {isSOS && <Button ghost className={styles.btn} onClick={this.handleAlarmClick}>处理</Button>}
+          <Button ghost className={styles.btn} onClick={this.handleTrackClick}>目标追踪</Button>
+        </div>
       </div>
     );
   }
