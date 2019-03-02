@@ -58,7 +58,7 @@ export default class RealTime extends PureComponent {
         // console.log(this.areaInfo);
         if (list.length) {
           const root = list[0];
-          this.setState({ areaId: root.id, mapBackgroundUrl: JSON.parse(root.mapPhoto).url });
+          this.setState({ areaId: root.id, mapBackgroundUrl: root.mapPhoto.url });
         }
       },
     });
@@ -170,7 +170,7 @@ export default class RealTime extends PureComponent {
   handleAreaAutoChange = data => {
     const { selectedCardId } = this.props;
     const changed = data.find(({ cardId }) => cardId === selectedCardId);
-    console.log(changed.areaId);
+    // console.log(changed.areaId);
     if (changed)
       this.setAreaId(changed.areaId);
   };
@@ -405,6 +405,7 @@ export default class RealTime extends PureComponent {
           />
           <MapInfo
             alarms={alarms}
+            sectionTree={sectionTree}
             positionList={positionList}
             showPersonInfoOrAlarmMsg={this.showPersonInfoOrAlarmMsg}
             handleShowAlarmDrawer={this.handleShowAlarmDrawer}

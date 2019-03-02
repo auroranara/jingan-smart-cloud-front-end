@@ -28,26 +28,31 @@ export default class LeafletMap extends PureComponent {
   }
 
   handleMapData = (areaId, sectionTree) => {
+    const { areaInfo } = this.props;
     const target = findInTree(areaId, sectionTree);
     this.currentSection = target;
-    // console.log('sectionTree', sectionTree);
-    // 如果目标区域不存在，或者为多层建筑，则保持不动
-    if (!target || target.isBuilding)
+    // console.log('areaInfo', this.props.areaInfo, target);
+    if (!target)
       return;
 
-    const { children, mapId: fatherMapId, companyMap } = target;
+    const { children, mapId: fatherMapId, companyMap, range } = target;
+    const sectionChildren = children || [];
+    const currentRange = { ...range, options: { ...range.options, color: 'rgba(0, 0, 0, 0.5)' } };
     const reference = parseImage(target);
-    const [images, data] = children.reduce((prev, next) => {
-      const { range, mapId } = next;
-      // 如果子区域用了父区域的地图，则不显示该地图
-      if (mapId !== fatherMapId)
-        prev[0].push(parseImage(next));
-      if (range)
-        prev[1].push(range);
-      return prev;
-    }, [fatherMapId === companyMap ? [] : [reference], []]);
+    // const [images, data] = sectionChildren.reduce((prev, next) => {
+    //   const { range, mapId } = next;
+    //   // 如果子区域用了父区域的地图，则不显示该地图
+    //   if (mapId !== fatherMapId)
+    //     prev[0].push(parseImage(next));
+    //   if (range)
+    //     prev[1].push(range);
+    //   return prev;
+    // }, [fatherMapId === companyMap ? [] : [reference], [currentRange]]);
+
+    // data会变红，所以不能使用一开始存好的值，但是图片是固定的，所以可以用一开始处理好的值
+    const data = sectionChildren.reduce((prev, { range }) => range ? [...prev, range] : prev, [currentRange]);
     // console.log('range', data, images, reference);
-    this.setState({ data, images, reference });
+    this.setState({ data, images: areaInfo[areaId].images, reference });
   };
 
   handleClick = e => {
@@ -77,8 +82,9 @@ export default class LeafletMap extends PureComponent {
     // console.log('section');
     const { areaInfo, setAreaId } = this.props;
     const target = this.currentSection.children.find(item => item.name === name);
+    // console.log(target);
 
-    if (!target || !target.children || !target.children.length)
+    if (!target)
       return;
 
     const { id, children } = target;
