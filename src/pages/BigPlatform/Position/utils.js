@@ -316,3 +316,12 @@ export function getUserName(item) {
   const { cardType, userName, visitorName } = item;
   return +cardType ? `访客${visitorName ? `-${visitorName}` : ''}` : userName;
 }
+
+// 0 区域 1 视频 2 人
+export function getMapClickedType(id) {
+  if (!id)
+    return 0;
+  if (id.includes('_@@video'))
+    return 1;
+  return 2;
+}

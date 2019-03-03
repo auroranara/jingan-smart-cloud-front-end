@@ -1,10 +1,13 @@
 import React, { PureComponent } from 'react';
 import { Button } from 'antd';
 
+import { VideoPlay } from '../components/Components';
 import styles from './CardSelected.less';
 import { getUserName } from '../utils';
 
+const VIDEO_STYLE = { position: 'relative', margin: 0, width: '100%', height: '100%', top: 0, right: 0 };
 const rect = <span className={styles.rect} />;
+function emptyFn() {}
 
 export default class CardSelected extends PureComponent {
   handleQuitTrack = e => {
@@ -15,10 +18,11 @@ export default class CardSelected extends PureComponent {
   render() {
     const { areaInfo, cardId, positions } = this.props;
     const card = positions.find(({ cardId: id }) => id === cardId) || {};
-    const { areaId, cardType, phoneNumber, visitorPhone, cardCode, departmentName } = card;
+    const { areaId, cardType, phoneNumber, visitorPhone, cardCode, departmentName, videoList } = card;
     const isVisitor = !!+cardType;
     const name = getUserName(card);
     const phone = isVisitor ? visitorPhone : phoneNumber;
+    const videoKeyId = videoList.length ? videoList[0].keyId : '';
 
     return (
       <div className={styles.container}>
@@ -45,6 +49,18 @@ export default class CardSelected extends PureComponent {
             {rect}
             视频监控
           </h3>
+          <div className={styles.video}>
+            <VideoPlay
+              hideHead
+              visible={true}
+              style={VIDEO_STYLE}
+              showList={false}
+              videoList={[]}
+              keyId={videoKeyId}
+              draggable={false}
+              handleVideoClose={emptyFn}
+            />
+          </div>
         </div>
       </div>
     )

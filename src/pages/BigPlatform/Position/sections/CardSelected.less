@@ -2,6 +2,7 @@
 
 .container {
   padding: 0 2.5% 0 1.5%;
+  height: 100%;
 }
 
 .up {
@@ -23,6 +24,7 @@
   height: 50px;
   line-height: 50px;
   padding-left: 20px;
+  margin-bottom: 0;
   background-image: url(../imgs/titleBg.png);
   background-size: 33% 100%;
   background-repeat: no-repeat;
@@ -76,5 +78,10 @@
 }
 
 .down {
+  height: calc(100% - 312px);
   border-top: 1px solid @cyan;
+}
+
+.video {
+  height: calc(100% - 80px);
 }

@@ -4,7 +4,7 @@ import { connect } from 'dva';
 
 import styles from './LeafletMap.less';
 import ImageDraw, { L } from '@/components/ImageDraw';
-import { findInTree, parseImage, getUserName } from '../utils';
+import { findInTree, parseImage, getUserName, getMapClickedType } from '../utils';
 
 @connect(({ zoning, loading }) => ({
   zoning,
@@ -61,17 +61,32 @@ export default class LeafletMap extends PureComponent {
   };
 
   handleClick = e => {
-    // console.log(e);
     const origin = e.target.options.data; // 获取传入的原始数据
     const { id, name } = origin; // 若点击的是人，原始数据中有id及name，若点击区域，原始数据中无id，只有name
-    const isPerson = !!id;
-
+    const clickedType = getMapClickedType(id);
     // console.log(e, origin);
-    if (isPerson)
-      this.handleClickPerson(id);
-    else
-      this.handleClickSection(name, e);
+
+    // 0 区域 1 视频 2 人
+    switch(clickedType) {
+      case 0:
+        this.handleClickSection(name, e);
+        break;
+      case 1:
+        this.handleClickVideo(id);
+        break;
+      case 2:
+        this.handleClickPerson(id);
+        break;
+      default:
+        console.log('wrong clicked type');
+    }
   }
+
+  handleClickVideo = id => {
+    const { handleShowVideo } = this.props;
+    const keyId = id.split('_@@')[0];
+    handleShowVideo(keyId);
+  };
 
   handleClickPerson = beaconId => {
     const { aggregation, handleShowPersonInfo, handleShowPersonDrawer } = this.props;
@@ -175,8 +190,27 @@ export default class LeafletMap extends PureComponent {
       };
     });
 
+    const videos = targetAgg.reduce((prev, next) => {
+      const vIds = prev.map(({ vId }) => vId);
+      const vList = next.reduce((p, n) => Array.isArray(n.videoList) ? p.concat(n.videoList) : p, []);
+      const vs = vList.filter(({ id }) => !vIds.includes(id)).map(({ id, keyId, name, xNum, yNum }) => ({
+        id: `${keyId}_@@video${Math.random()}`, // id中加入video来区别是否是视频点
+        vId: id,
+        name,
+        latlng: { lat: xNum, lng: yNum },
+        iconProps: {
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          className: styles.cameraContainer,
+          html: `<div class="${styles.camera}"></div>`,
+        },
+      }));
+
+      return vs.length ? [...prev, ...vs] : prev;
+    }, []);
+
     // console.log('agg', points);
-    return points;
+    return [...points, ...videos];
   }
 
   render() {

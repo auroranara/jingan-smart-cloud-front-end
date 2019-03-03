@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { stringify } from 'qs';
-import moment from 'moment';
 import { message, notification } from 'antd';
 
 import styles from './RealTime.less';
@@ -439,6 +438,7 @@ export default class RealTime extends PureComponent {
             positions={positionList}
             aggregation={positionAggregation}
             setAreaId={this.setAreaId}
+            handleShowVideo={this.handleShowVideo}
             handleShowPersonInfo={this.handleShowPersonInfo}
             handleShowPersonDrawer={this.handleShowPersonDrawer}
           />

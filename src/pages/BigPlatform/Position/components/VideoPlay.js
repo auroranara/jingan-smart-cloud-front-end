@@ -79,7 +79,7 @@ class VideoPlay extends Component {
         key_id: videoId,
       },
       success: response => {
-        console.log('response', response);
+        // console.log('response', response);
         if (videoId) {
           let index = videoList.findIndex(item => {
             return item.key_id === videoId;
@@ -178,23 +178,25 @@ class VideoPlay extends Component {
   };
 
   renderPan = () => {
-    const { loading, style = {}, videoList = [], draggable = true, showList = true } = this.props;
+    const { loading, style = {}, videoList = [], draggable = true, showList = true, hideHead } = this.props;
     const { videoSrc, activeIndex } = this.state;
     const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in);
 
     return (
       <div className={wrapperStyles} style={{ ...style }}>
-        <div
-          id="dragBar"
-          className={styles.titleBar}
-          style={{ cursor: draggable ? 'move' : 'default' }}
-        >
-          <span style={{ cursor: 'default' }}>
-            视频监控
-            {/*videoList.length > 0 ? videoList[activeIndex].name : ''*/}
-          </span>
-          <Icon type="close" className={styles.iconClose} onClick={this.handleClose} />
-        </div>
+        {!hideHead && (
+          <div
+            id="dragBar"
+            className={styles.titleBar}
+            style={{ cursor: draggable ? 'move' : 'default' }}
+          >
+            <span style={{ cursor: 'default' }}>
+              视频监控
+              {/*videoList.length > 0 ? videoList[activeIndex].name : ''*/}
+            </span>
+            <Icon type="close" className={styles.iconClose} onClick={this.handleClose} />
+          </div>
+        )}
         <div className={styles.videoMain}>
           <div className={styles.videoContent} style={{ paddingRight: showList ? 0 : '5px' }}>
             {loading ? (
