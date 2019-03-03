@@ -251,7 +251,7 @@ export function getAreaInfo(list) {
     areaInfo[id] = {
       id,
       name,
-      fullName: nodeList.map(({ name }) => name).join(''),
+      fullName: nodeList.map(({ name }) => name).join('-'),
       parentId: parent.id || null,
       isBuilding: isBuilding(mapId, firstChild.mapId, companyMap),
       childIds : getChildIds(item, cache),
@@ -285,7 +285,7 @@ export function getAlarmDesc(item, areaInfo) {
 
   let desc = ''
   const name = `${+cardType ? '访客' : userName}(${cardCode})`;
-  const areaName = areaId ? areaInfo[areaId].fullName : '外围区域';
+  const areaName = areaId && areaInfo[areaId] ? areaInfo[areaId].fullName : '外围区域';
 
   // 1 sos 2 越界  3 长时间不动 4 超员 5 缺员
   switch(+type) {

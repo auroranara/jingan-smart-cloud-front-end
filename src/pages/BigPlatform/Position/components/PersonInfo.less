@@ -44,7 +44,7 @@
   background-size: 100% 100%;
 }
 
-.img {
+.avatar {
   width: 120px;
   height: 150px;
   position: absolute;
@@ -52,6 +52,13 @@
   top: 20px;
   background-image: url(../imgs/zhang.png);
   background-size: 100% 100%;
+}
+
+.visitorAvatar:extend(.avatar) {
+  background-image: url(../imgs/visitorAvatar.png);
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
 .btns {

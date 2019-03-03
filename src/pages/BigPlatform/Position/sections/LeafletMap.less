@@ -27,8 +27,12 @@
     cursor: pointer;
   }
 
+  .poppAlarm:extend(.popp) {
+    color: #F00;
+  }
+
   .popp:hover {
-    color: #ccc;
+    color: #0FF;
   }
 }
 
@@ -106,10 +110,40 @@
   background-image: url(../imgs/personRed.png);
 }
 
+.visitor:extend(.person) {
+  background-image: url(../imgs/visitorAvatar.png);
+}
+
+.visitorRed:extend(.person) {
+  background-image: url(../imgs/visitorAvatar.png);
+}
+
 .people:extend(.person) {
   background-image: url(../imgs/people.png);
 }
 
 .peopleRed:extend(.person) {
   background-image: url(../imgs/peopleRed.png);
+}
+
+.mapInfo {
+  padding: 8px 15px;
+  border-radius: 5px;
+  position: absolute;
+  left: 50px;
+  top: 5px;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+}
+
+.area {
+  margin-right: 15px;
+}
+
+.enter {
+  margin: 0 15px 0 8px;
+}
+
+.exit {
+  margin-right: 15px;
 }

@@ -3,7 +3,6 @@ import React, { Fragment, PureComponent } from 'react';
 import styles from './PersonDrawer.less';
 import { DrawerContainer } from '../components/Components';
 import { getUserName } from '../utils';
-import { avatarIcon } from '../imgs/urls';
 
 function PersonCard(props) {
   const { data, ...restProps } = props;
@@ -14,10 +13,7 @@ function PersonCard(props) {
 
   return (
     <div className={styles.cardContainer} {...restProps}>
-      <div
-        className={styles.head}
-        // style={{ backgroundImage: `url(${avatarIcon})`}}
-      />
+      <div className={styles[isVisitor ? 'visitorAvatar' : 'avatar']} />
       <span>{`${name}(${cardCode})`}</span>
       <span>{phone || '暂无电话信息'}</span>
     </div>

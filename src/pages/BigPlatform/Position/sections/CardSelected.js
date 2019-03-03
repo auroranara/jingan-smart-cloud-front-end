@@ -16,8 +16,9 @@ export default class CardSelected extends PureComponent {
     const { areaInfo, cardId, positions } = this.props;
     const card = positions.find(({ cardId: id }) => id === cardId) || {};
     const { areaId, cardType, phoneNumber, visitorPhone, cardCode, departmentName } = card;
+    const isVisitor = !!+cardType;
     const name = getUserName(card);
-    const phone = +cardType ? visitorPhone : phoneNumber;
+    const phone = isVisitor ? visitorPhone : phoneNumber;
 
     return (
       <div className={styles.container}>
@@ -27,7 +28,7 @@ export default class CardSelected extends PureComponent {
             人员信息
           </h3>
           <div className={styles.info}>
-            <div className={styles.avatar} />
+            <div className={styles[isVisitor ? 'visitorAvatar' : 'avatar']} />
             <p className={styles.name}>{name}</p>
             <p>电话：{phone}</p>
             <p>编号：{cardCode}</p>

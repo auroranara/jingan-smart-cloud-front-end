@@ -16,7 +16,7 @@ export default class CardList extends PureComponent {
   };
 
   render() {
-    const { areaInfo, positions, setSelectedCard } = this.props;
+    const { areaInfo, positions, handleTrack } = this.props;
     const { value } = this.state;
 
     const columns = [{
@@ -38,7 +38,7 @@ export default class CardList extends PureComponent {
       title: '操作',
       key: 'operation',
       render: (text, record) => {
-        return <span className={styles.track} onClick={e => setSelectedCard(record.id)}>追踪</span>
+        return <span className={styles.track} onClick={e => handleTrack(record.areaId, record.id)}>追踪</span>
       },
     }];
 
@@ -48,6 +48,7 @@ export default class CardList extends PureComponent {
       const name = getUserName(p);
       return {
         id: cardId,
+        areaId,
         name,
         fullName: areaInfo[areaId].fullName,
         code: cardCode,

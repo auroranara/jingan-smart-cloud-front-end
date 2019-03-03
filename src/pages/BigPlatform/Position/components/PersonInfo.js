@@ -26,8 +26,8 @@ export default class PersonInfo extends PureComponent {
   };
 
   handleTrackClick = e => {
-    const { personItem: { cardId }, handleTrack } = this.props;
-    handleTrack(cardId);
+    const { personItem: { areaId, cardId }, handleTrack } = this.props;
+    handleTrack(areaId, cardId);
     this.onClose();
   };
 
@@ -45,8 +45,9 @@ export default class PersonInfo extends PureComponent {
     } = this.props;
 
     const { sos: isSOS, cardType, phoneNumber, visitorPhone, cardCode, areaName, departmentName } = personItem;
+    const isVisitor = !!+cardType;
     const name = getUserName(personItem);
-    const phone = +cardType ? visitorPhone : phoneNumber;
+    const phone = isVisitor ? visitorPhone : phoneNumber;
 
     const newStyle = {
       // paddingBottom: isSOS ? 70 : 15,
@@ -58,7 +59,7 @@ export default class PersonInfo extends PureComponent {
       <div className={styles.container} style={newStyle} {...restProps}>
         <Icon type="close" className={styles.close} onClick={this.onClose} />
         <div className={styles.info}>
-          <div className={styles.img} />
+          <div className={styles[isVisitor ? 'visitorAvatar' : 'avatar']} />
           <h3 className={styles.name}>
             {name}
             {isSOS && <span className={styles.sos} />}

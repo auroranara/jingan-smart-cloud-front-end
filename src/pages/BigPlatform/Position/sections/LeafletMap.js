@@ -17,20 +17,25 @@ export default class LeafletMap extends PureComponent {
     reference: undefined,
   };
 
-  currentSection = null;
+  currentTrueSection = {};
+  currentShowSection = {};
 
   componentDidUpdate(prevProps, prevState) {
-    const { areaId: prevAreaId, sectionTree: prevSectionTree } = prevProps;
-    const { areaId, sectionTree } = this.props;
+    const { areaId: prevAreaId, trueAreaId: prevTrueAreaId, sectionTree: prevSectionTree } = prevProps;
+    const { areaId, trueAreaId, sectionTree } = this.props;
 
-    if (areaId !== prevAreaId || sectionTree !== prevSectionTree)
-      this.handleMapData(areaId, sectionTree);
+    if (areaId !== prevAreaId || trueAreaId !== prevTrueAreaId || sectionTree !== prevSectionTree)
+      this.handleMapData(areaId, trueAreaId, sectionTree);
   }
 
-  handleMapData = (areaId, sectionTree) => {
+  handleMapData = (areaId, trueAreaId, sectionTree) => {
     const { areaInfo } = this.props;
-    const target = findInTree(areaId, sectionTree);
-    this.currentSection = target;
+    const target = this.currentShowSection = findInTree(areaId, sectionTree);
+    // 当trueAreaId为多层建筑时，地图上展示其父级areaId，即areaId是trueAreaId的父节点，当不是多层建筑时，两个值一致
+    if (areaId !== trueAreaId)
+      this.currentTrueSection = target.children.find(({ id }) => id === trueAreaId) || {};
+    else
+      this.currentTrueSection = target;
     // console.log('areaInfo', this.props.areaInfo, target);
     if (!target)
       return;
@@ -81,7 +86,7 @@ export default class LeafletMap extends PureComponent {
   handleClickSection = (name, e) => {
     // console.log('section');
     const { areaInfo, setAreaId } = this.props;
-    const target = this.currentSection.children.find(item => item.name === name);
+    const target = this.currentShowSection.children.find(item => item.name === name);
     // console.log(target);
 
     if (!target)
@@ -98,11 +103,12 @@ export default class LeafletMap extends PureComponent {
     const { setAreaId } = this.props;
     const container = document.createElement('div');
     container.className = styles.popContainer;
-    for (const { id, name } of children) {
+    for (const { id, name, status } of children) {
+      const isAlarm = status === 2;
       const p = document.createElement('p');
-      p.innerHTML = name;
+      p.innerHTML = `${name} ${isAlarm ? '报警' : '正常'}`;
       p.onclick = e => setAreaId(id);
-      p.className = styles.popp;
+      p.className = styles[isAlarm ? 'poppAlarm' : 'popp'];
       container.appendChild(p);
     }
 
@@ -112,11 +118,13 @@ export default class LeafletMap extends PureComponent {
   handleBack = e => {
     const { areaId, areaInfo, setAreaId } = this.props;
     const { parentId } = areaInfo[areaId];
-    const parent = areaInfo[parentId];
-    if (parent.isBuilding)
-      setAreaId(parent.parentId);
-    else
-      setAreaId(parentId);
+    setAreaId(parentId);
+
+    // const parent = areaInfo[parentId];
+    // if (parent.isBuilding)
+    //   setAreaId(parent.parentId);
+    // else
+    //   setAreaId(parentId);
   };
 
   positionsToIcons = () => {
@@ -140,12 +148,13 @@ export default class LeafletMap extends PureComponent {
     const points =  targetAgg.map(ps => {
       const first = ps[0];
       const length = ps.length;
+      const { xarea, yarea, beaconId, cardType } = first;
       const isSingle = length === 1;
-      const { xarea, yarea, beaconId } = first;
+      const isVisitor = !!+cardType;
 
       const isSOS = ps.some(({ sos }) => sos);
       const isAlarm = ps.some(({ sos, overstep, tlong }) => sos || overstep || tlong);
-      const containerClassName = `${isSingle ? 'person' : 'people'}${isAlarm ? 'Red' : ''}`;
+      const containerClassName = `${isSingle ? (isVisitor ? 'visitor' : 'person') : 'people'}${isAlarm ? 'Red' : ''}`;
       const firstName = getUserName(first);
       const name = ps.slice(0, 5).map(getUserName).join(',');
       const showName = isSingle ? firstName : length;
@@ -155,7 +164,7 @@ export default class LeafletMap extends PureComponent {
         latlng: { lat: yarea, lng: xarea },
         iconProps: {
           iconSize: [38, 40],
-          // iconAnchor: [],
+          iconAnchor: [19, 35],
           className: styles.personContainer,
           html: `
             <div class="${styles[containerClassName]}">
@@ -171,12 +180,15 @@ export default class LeafletMap extends PureComponent {
   }
 
   render() {
-    const { loading, url, areaId, areaInfo } = this.props;
+    const { loading, url, areaId, trueAreaId, areaInfo } = this.props;
     const { data, images, reference } = this.state;
+    const { count, inCardCount, outCardCount } = this.currentTrueSection || {};
 
     // console.log(icons);
 
-    const parentId = areaId ? areaInfo[areaId].parentId : undefined;
+    const currentAreaInfo = areaId && areaInfo[areaId] || {};
+    const parentId =  currentAreaInfo.parentId;
+    const currentTrueAreaInfo = trueAreaId && areaInfo[trueAreaId] || {}
     const icons = this.positionsToIcons();
 
     const imgDraw = (
@@ -200,6 +212,13 @@ export default class LeafletMap extends PureComponent {
       <div className={styles.container}>
         {imgDraw}
         {parentId && <Icon type="rollback" onClick={this.handleBack} className={styles.back} />}
+        <div className={styles.mapInfo}>
+          <span className={styles.area}>当前区域: {currentTrueAreaInfo.fullName}</span>
+          今日
+          <span className={styles.enter}>进入: {inCardCount}人次</span>
+          <span className={styles.exit}>出去: {outCardCount}人次</span>
+          当前人数: {count}
+        </div>
       </div>
     );
   }

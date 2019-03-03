@@ -7,7 +7,7 @@ import { message, notification } from 'antd';
 import styles from './RealTime.less';
 import { AlarmHandle, AlarmMsg, MapInfo, PersonInfo, Tabs, VideoPlay } from '../components/Components';
 import { AlarmDrawer, CardList, CardSelected, LeafletMap, LowPowerDrawer, PersonDrawer, SectionList } from './Components';
-import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem, getAlarmItem, getUserName } from '../utils';
+import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem, getAlarmItem, getUserName, getAlarmDesc } from '../utils';
 
 const options = {
   pingTimeout: 30000,
@@ -27,7 +27,8 @@ const RE_WARNING_TYPE = "5";
 export default class RealTime extends PureComponent {
   state = {
     alarmId: undefined, // 警报id
-    areaId: undefined, // 地图选定的areaId
+    trueAreaId: undefined, // 实际选定的areaId，展示数据用的
+    areaId: undefined, // 地图显示的areaId，即当前真实areaId为多层建筑时，areaId设置为其父节点
     beaconId: undefined, // 信标id
     cardId: undefined, // 选中的人员id
     mapBackgroundUrl:undefined,
@@ -58,7 +59,8 @@ export default class RealTime extends PureComponent {
         // console.log(this.areaInfo);
         if (list.length) {
           const root = list[0];
-          this.setState({ areaId: root.id, mapBackgroundUrl: root.mapPhoto.url });
+          const { id } = root;
+          this.setState({ areaId: id, trueAreaId: id, mapBackgroundUrl: root.mapPhoto.url });
         }
       },
     });
@@ -126,7 +128,14 @@ export default class RealTime extends PureComponent {
   };
 
   setAreaId = areaId => {
-    this.setState({ areaId });
+    // this.setState({ areaId });
+
+    const current = this.areaInfo[areaId];
+    // 若当前区域为多层建筑，则显示其父区域，非多层建筑显示当前区域
+    if (current.isBuilding)
+      this.setState({ areaId: current.parentId, trueAreaId: areaId });
+    else
+      this.setState({ areaId, trueAreaId: areaId });
   };
 
   handleWbData = wbData => {
@@ -269,11 +278,13 @@ export default class RealTime extends PureComponent {
     const { id, cardId, type, typeName, cardType, phoneNumber, visitorPhone, warningTime } = alarm;
     const name = getUserName(alarm);
     const phone = +cardType ? visitorPhone : phoneNumber;
+
+    const [title, desc] = getAlarmDesc(alarm, this.areaInfo);
     notification.warning({
       key: id,
       className: styles.note,
       placement: 'bottomLeft',
-      message: `报警提示 ${typeName}`,
+      message: `报警提示 ${title}`,
       description: (
         <span
           className={styles.desc}
@@ -282,7 +293,7 @@ export default class RealTime extends PureComponent {
             notification.close(id);
           }}
         >
-          {`${moment(warningTime).format('HH:mm')} ${name}【${phone}】越界`}
+          {desc}
         </span>
       ),
       duration: null,
@@ -352,8 +363,9 @@ export default class RealTime extends PureComponent {
     });
   };
 
-  handleTrack = cardId => {
+  handleTrack = (areaId, cardId) => {
     const { setSelectedCard, handleLabelClick } = this.props;
+    this.setAreaId(areaId);
     setSelectedCard(cardId);
     handleLabelClick(1);
   };
@@ -369,6 +381,7 @@ export default class RealTime extends PureComponent {
     } = this.props;
     const {
       alarmId,
+      trueAreaId,
       areaId,
       beaconId,
       cardId,
@@ -401,7 +414,7 @@ export default class RealTime extends PureComponent {
               <CardList
                 areaInfo={areaInfo}
                 positions={positionList}
-                setSelectedCard={setSelectedCard}
+                handleTrack={this.handleTrack}
               />
             )}
             {!!labelIndex && selectedCardId && (
@@ -419,6 +432,7 @@ export default class RealTime extends PureComponent {
             url={mapBackgroundUrl}
             isTrack={isTrack}
             selectedCardId={selectedCardId}
+            trueAreaId={trueAreaId}
             areaId={areaId}
             areaInfo={areaInfo}
             sectionTree={sectionTree}
@@ -447,6 +461,7 @@ export default class RealTime extends PureComponent {
           />
           <AlarmMsg
             visible={alarmMsgVisible}
+            areaInfo={areaInfo}
             data={getAlarmItem(alarmId, alarms)}
             handleShowAlarmHandle={this.handleShowAlarmHandle}
             handleClose={this.handleClose}
