@@ -134,8 +134,8 @@ export default class LeafletMap extends PureComponent {
   };
 
   handleBack = e => {
-    const { areaId, areaInfo, setAreaId } = this.props;
-    const { parentId } = areaInfo[areaId];
+    const { areaId, trueAreaId, areaInfo, setAreaId } = this.props;
+    const { parentId } = areaInfo[trueAreaId];
     setAreaId(parentId);
 
     // const parent = areaInfo[parentId];
@@ -223,11 +223,8 @@ export default class LeafletMap extends PureComponent {
     const { data, images, reference } = this.state;
     const { count, inCardCount, outCardCount } = this.currentTrueSection || {};
 
-    // console.log(icons);
-
-    const currentAreaInfo = areaId && areaInfo[areaId] || {};
-    const parentId =  currentAreaInfo.parentId;
-    const currentTrueAreaInfo = trueAreaId && areaInfo[trueAreaId] || {}
+    const currentTrueAreaInfo = trueAreaId && areaInfo[trueAreaId] || {};
+    const { parentId, fullName }=  currentTrueAreaInfo;
     const icons = this.positionsToIcons();
 
     const imgDraw = (
@@ -252,7 +249,7 @@ export default class LeafletMap extends PureComponent {
         {imgDraw}
         {parentId && <Icon type="rollback" onClick={this.handleBack} className={styles.back} />}
         <div className={styles.mapInfo}>
-          <span className={styles.area}>当前区域: {currentTrueAreaInfo.fullName}</span>
+          <span className={styles.area}>当前区域: {fullName}</span>
           今日
           <span className={styles.enter}>进入: {inCardCount}人次</span>
           <span className={styles.exit}>出去: {outCardCount}人次</span>

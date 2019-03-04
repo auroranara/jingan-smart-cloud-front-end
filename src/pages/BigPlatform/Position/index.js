@@ -10,6 +10,11 @@ export default class PositionIndex extends PureComponent {
   state = {
     labelIndex: 0,
     selectedCardId: undefined,
+    areaInfoCache: {}, // 缓存RealTime组件中的areaInfo对象，以防切换tab时，areaInfo为空对象的问题
+  };
+
+  setAreaInfoCache = areaInfo => {
+    this.setState({ areaInfoCache: areaInfo });
   };
 
   handleLabelClick = i => {
@@ -31,6 +36,7 @@ export default class PositionIndex extends PureComponent {
     const {
       labelIndex,
       selectedCardId,
+      areaInfoCache,
     } = this.state;
 
     const { currentUser: { companyName } } = user;
@@ -47,6 +53,8 @@ export default class PositionIndex extends PureComponent {
             dispatch={dispatch}
             labelIndex={labelIndex}
             companyId={companyId}
+            areaInfoCache={areaInfoCache}
+            setAreaInfoCache={this.setAreaInfoCache}
             selectedCardId={selectedCardId}
             personPosition={personPosition}
             handleLabelClick={this.handleLabelClick}
@@ -55,7 +63,7 @@ export default class PositionIndex extends PureComponent {
         )}
         {labelIndex === 2 && (
           <History
-            cardId={1}
+            cardId={selectedCardId}
             companyId={companyId}
             labelIndex={labelIndex}
             handleLabelClick={this.handleLabelClick}

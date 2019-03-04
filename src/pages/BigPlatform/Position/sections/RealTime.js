@@ -44,10 +44,7 @@ export default class RealTime extends PureComponent {
   };
 
   componentDidMount() {
-    const {
-      dispatch,
-      companyId,
-    } = this.props;
+    const { dispatch, companyId, setAreaInfoCache } = this.props;
 
     this.connectWebSocket();
 
@@ -55,8 +52,9 @@ export default class RealTime extends PureComponent {
       type: 'personPosition/fetchSectionTree',
       payload: { companyId },
       callback: list => {
-        this.areaInfo = getAreaInfo(list);
-        console.log(this.areaInfo);
+        const areaInfo = this.areaInfo = getAreaInfo(list);
+        setAreaInfoCache(areaInfo);
+        // console.log(this.areaInfo);
         if (list.length) {
           const root = list[0];
           const { id } = root;
@@ -402,6 +400,7 @@ export default class RealTime extends PureComponent {
       labelIndex,
       companyId,
       selectedCardId,
+      areaInfoCache,
       personPosition: { sectionTree, positionList, positionAggregation, alarms },
       handleLabelClick,
       setSelectedCard,
@@ -428,7 +427,8 @@ export default class RealTime extends PureComponent {
     // console.log(sectionTree);
 
     const isTrack = this.isTargetTrack();
-    const areaInfo = this.areaInfo;
+    // const areaInfo = this.areaInfo;
+    const areaInfo = areaInfoCache;
 
     return (
       <div className={styles.container}>
@@ -454,6 +454,7 @@ export default class RealTime extends PureComponent {
                 areaInfo={areaInfo}
                 positions={positionList}
                 setSelectedCard={setSelectedCard}
+                handleLabelClick={handleLabelClick}
               />
             )}
           </div>
