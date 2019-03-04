@@ -122,7 +122,7 @@ export default class SpecialEquipmentDrawer extends PureComponent {
                     value: factory_number,
                   },
                   {
-                    label: <span style={{ letterSpacing: 4 }}>负责人</span>,
+                    label: <span style={{ letterSpacing: 4.5 }}>负责人</span>,
                     value: linkman,
                   },
                   {
