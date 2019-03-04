@@ -165,9 +165,10 @@ export default class History extends PureComponent {
               </div>
               {areaDataHistories && areaDataHistories.length > 0 ? areaDataHistories.map(area => {
                 const { startTime: startTimeStamp, endTime: endTimeStamp, areaName, id } = area;
+                const changedStartTime = Math.max(startTimeStamp, startTime);
                 return (
-                  <div className={styles.tr} key={id} intime={startTimeStamp} onClick={this.handleClickTableRow}>
-                    <div className={styles.td}>{moment(Math.max(startTimeStamp, startTime)).format('HH:mm:ss')}</div>
+                  <div className={styles.tr} key={id} intime={changedStartTime} onClick={this.handleClickTableRow}>
+                    <div className={styles.td}>{moment(changedStartTime).format('HH:mm:ss')}</div>
                     <div className={styles.td}>{moment(Math.min(endTimeStamp, endTime)).format('HH:mm:ss')}</div>
                     <div className={styles.td}>{areaName}</div>
                   </div>
@@ -184,9 +185,10 @@ export default class History extends PureComponent {
               <Scrollbars style={{ flex: '1' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
                 {locationDataHistories && locationDataHistories.length > 0 ? locationDataHistories.map(location => {
                   const { xarea, yarea, zarea, intime, id } = location;
+                  const changedInTime = Math.max(intime, startTime);
                   return (
-                    <div className={styles.tr} key={id} intime={intime} onClick={this.handleClickTableRow}>
-                      <div className={styles.td}>{moment(Math.max(intime, startTime)).format('HH:mm:ss')}</div>
+                    <div className={styles.tr} key={id} intime={changedInTime} onClick={this.handleClickTableRow}>
+                      <div className={styles.td}>{moment(changedInTime).format('HH:mm:ss')}</div>
                       <div className={styles.td}>{xarea}</div>
                       <div className={styles.td}>{yarea}</div>
                       <div className={styles.td}>{zarea}</div>
