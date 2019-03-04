@@ -433,7 +433,7 @@ export default class RealTime extends PureComponent {
       useCardIdHandleAlarm,
     } = this.state;
 
-    console.log(sectionTree);
+    // console.log(sectionTree);
 
     const isTrack = this.isTargetTrack();
     // const areaInfo = this.areaInfo;
