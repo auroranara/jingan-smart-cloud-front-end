@@ -406,6 +406,7 @@ export default class RealTime extends PureComponent {
       personPosition: { sectionTree, positionList, positionAggregation, alarms },
       handleLabelClick,
       setSelectedCard,
+      setHistoryCard,
     } = this.props;
     const {
       alarmId,
@@ -457,6 +458,7 @@ export default class RealTime extends PureComponent {
                 areaInfo={areaInfo}
                 positions={positionList}
                 setSelectedCard={setSelectedCard}
+                setHistoryCard={setHistoryCard}
                 handleLabelClick={handleLabelClick}
               />
             )}

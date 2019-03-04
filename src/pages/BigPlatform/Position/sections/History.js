@@ -51,11 +51,11 @@ export default class History extends PureComponent {
       payload: { companyId },
     });
 
-    if (!cardId)
-      return;
-    this.init(cardId);
     // 获取区域树
     this.fetchTree({ companyId });
+
+    if (cardId)
+      this.init(cardId);
   }
 
   init = cardId => {
@@ -149,6 +149,11 @@ export default class History extends PureComponent {
     this.init(value);
   };
 
+  cardFilter = (inputValue, option) => {
+    // console.log(inputValue, option);
+    return option.props.children.includes(inputValue);
+  };
+
   render() {
     const {
       labelIndex,
@@ -166,9 +171,12 @@ export default class History extends PureComponent {
           <div className={styles.wrapper}>
             <div style={{ flex: 'none', marginBottom: 12 }}>
               <Select
+                showSearch
                 className={styles.cardSelect}
+                dropdownClassName={styles.dropdown}
                 value={cardId}
                 placeholder="请选择人员"
+                filterOption={this.cardFilter}
                 onChange={this.handleCardChange}
               >
                 {cards.map(card => <Option key={card.cardId} value={card.cardId}>{`${getUserName(card)}(${card.cardCode})`}</Option>)}

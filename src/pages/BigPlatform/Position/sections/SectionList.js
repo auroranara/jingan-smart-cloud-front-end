@@ -41,13 +41,16 @@ const statusLabel = {
 
 // 根据areaName和status筛选
 const filterDataByAreaNameAndStatus = function(data, filterAreaName, filterStatus) {
+  // console.log(filterStatus);
+  // console.log(data);
+  // console.log(filterAreaName);
   if (!filterAreaName && !filterStatus) {
     return data;
   }
   const list = [];
   data.forEach((item) => {
     const { name, status, children } = item;
-    if (name.includes(filterAreaName) && (!filterStatus || status === filterStatus)) {
+    if (!filterAreaName || name.includes(filterAreaName) && (!filterStatus || status === +filterStatus)) {
       list.push(item);
     }
     else if (children) {

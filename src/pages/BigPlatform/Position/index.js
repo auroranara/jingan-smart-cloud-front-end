@@ -10,6 +10,7 @@ export default class PositionIndex extends PureComponent {
   state = {
     labelIndex: 0,
     selectedCardId: undefined,
+    historyCardId: undefined,
     areaInfoCache: {}, // 缓存RealTime组件中的areaInfo对象，以防切换tab时，areaInfo为空对象的问题
   };
 
@@ -25,6 +26,10 @@ export default class PositionIndex extends PureComponent {
     this.setState({ selectedCardId: cardId });
   };
 
+  setHistoryCard = cardId => {
+    this.setState({ historyCardId: cardId });
+  };
+
   render() {
     // 注意这里额外引了一个model
     const {
@@ -36,6 +41,7 @@ export default class PositionIndex extends PureComponent {
     const {
       labelIndex,
       selectedCardId,
+      historyCardId,
       areaInfoCache,
     } = this.state;
 
@@ -59,14 +65,15 @@ export default class PositionIndex extends PureComponent {
             personPosition={personPosition}
             handleLabelClick={this.handleLabelClick}
             setSelectedCard={this.setSelectedCard}
+            setHistoryCard={this.setHistoryCard}
           />
         )}
         {labelIndex === 2 && (
           <History
-            cardId={selectedCardId}
+            cardId={historyCardId}
             companyId={companyId}
             labelIndex={labelIndex}
-            setCardId={this.setSelectedCard}
+            setCardId={this.setHistoryCard}
             handleLabelClick={this.handleLabelClick}
           />
         )}

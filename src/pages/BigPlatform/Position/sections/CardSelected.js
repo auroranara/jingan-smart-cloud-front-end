@@ -11,21 +11,21 @@ function emptyFn() {}
 
 export default class CardSelected extends PureComponent {
   handleToHistory = e => {
-    const { cardId, setSelectedCard, handleLabelClick } = this.props;
-    setSelectedCard(cardId);
+    const { cardId, setHistoryCard, handleLabelClick } = this.props;
+    setHistoryCard(cardId);
     handleLabelClick(2);
   };
 
   handleQuitTrack = e => {
     const { setSelectedCard } = this.props;
     setSelectedCard();
-    this.clearHistoryModel();
+    // this.clearHistoryModel();
   };
 
-  clearHistoryModel = () => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'position/save', payload: { data: {}, tree: {} } });
-  };
+  // clearHistoryModel = () => {
+  //   const { dispatch } = this.props;
+  //   dispatch({ type: 'position/save', payload: { data: {}, tree: {} } });
+  // };
 
   render() {
     const { areaInfo, cardId, positions } = this.props;
