@@ -407,7 +407,10 @@ export default class RealTime extends PureComponent {
           <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
           <div className={styles.leftSection}>
             {!labelIndex && (
-              <SectionList data={sectionTree} />
+              <SectionList
+                data={sectionTree}
+                setAreaId={this.setAreaId}
+              />
             )}
             {!!labelIndex && !selectedCardId && (
               <CardList
