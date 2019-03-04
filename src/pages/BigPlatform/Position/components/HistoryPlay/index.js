@@ -25,7 +25,7 @@ import styles from './index.less';
 const DEFAULT_MAP_PROPS = {
   boxZoom: false,
   doubleClickZoom: false,
-  // dragging: false,
+  dragging: false,
   scrollWheelZoom: false,
 };
 // 时间转换格式
