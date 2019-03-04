@@ -1,0 +1,59 @@
+.card {
+  width: 100%;
+  background-color: #04407d;
+  position: relative;
+  margin-bottom: 0.5em;
+}
+
+.contentContainer {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+
+  .content {
+    flex: 1;
+    height: 100%;
+    padding: 1em 0 0 1em;
+    color: #fff;
+
+    .line {
+      & span {
+        font-size: 14px;
+      }
+
+      overflow: hidden;
+      line-height: 15px;
+      display: flex;
+
+      .label {
+        text-align: left;
+        width: 5em;
+        float: left;
+        color: #04fdff;
+      }
+
+      .label::after {
+        content: '';
+        width: 100%;
+        display: inline-block;
+        overflow: hidden;
+        height: 0;
+      }
+
+      .value {
+        display: inline-block;
+        text-indent: 0.8em;
+        white-space: nowrap;
+        flex: 1;
+      }
+    }
+  }
+}
+
+.statusLogo {
+  position: absolute;
+  width: 100px;
+  height: 85px;
+  right: 2%;
+  bottom: 6%;
+}
