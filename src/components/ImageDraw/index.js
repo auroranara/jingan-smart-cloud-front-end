@@ -542,9 +542,9 @@ class ImageDraw extends PureComponent {
    * 数据源图形渲染以后
    */
   handleAdd = ({ target: layer }) => {
-    const { options: { data: { type, name } }, _point: point } = layer;
+    const { options: { data: { type, name, showTooltip } }, _point: point } = layer;
     // 绑定tooltip
-    layer.bindTooltip(name, { sticky: true });
+    showTooltip && layer.bindTooltip(name, { sticky: true });
     // 绑定文字
     if (['polygon', 'rectangle', 'circle'].includes(type)) {
       const center = type === 'circle' ? point : layer._map.latLngToLayerPoint(layer.getCenter());
@@ -607,6 +607,23 @@ class ImageDraw extends PureComponent {
 
   handleDrawStop = () => {
     this.drawing = false;
+  }
+
+  /**
+   * 渲染圆形标记
+   */
+  renderCircleMarker = (item) => {
+    const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
+    const { id, latlng, name, options: { color=DEFAULT_COLOR }={} } = item;
+    return (
+      <CircleMarker
+        key={id || name}
+        data={item}
+        center={{ lat: latlng.lat * height, lng: latlng.lng * width }}
+        color={color}
+        onClick={this.handleClickShape}
+      />
+    );
   }
 
   /**
@@ -708,11 +725,11 @@ class ImageDraw extends PureComponent {
     return shape;
   }
 
-  renderImageOverlay = ({ id, url, latlngs }) => {
+  renderImageOverlay = ({ id, url, latlngs, zIndex }) => {
     const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
     const bounds = L.latLngBounds(latlngs.map(({ lat, lng }) => ({ lat: lat * height, lng: lng * width })));
     return (
-      <ImageOverlay key={id} url={url} bounds={bounds} className={styles.imageOverlay} />
+      <ImageOverlay key={id} url={url} bounds={bounds} className={styles.imageOverlay} zIndex={zIndex} />
     );
   }
 
@@ -722,13 +739,16 @@ class ImageDraw extends PureComponent {
       style,
       mapProps,
       zoomControlProps,
+      zoomControl=true,
       editControlProps,
       drawable,
       url,
       hideBackground,
       data=[],
       divIcons=[],
+      circleMarkers,
       images,
+      arrows,
       color=DEFAULT_COLOR,
       shapes=['polygon', 'rectangle', 'circle'],
       form: { getFieldDecorator },
@@ -751,10 +771,10 @@ class ImageDraw extends PureComponent {
           maxBounds={maxBounds}
           ref={this.refMap}
           zoomControl={false}
-          {...mapProps}
           // dragging={false}
+          {...mapProps}
         >
-          {bounds && <ZoomControl zoomInTitle="" zoomOutTitle="" className={styles.zoomControl} {...zoomControlProps} />}
+          {bounds && zoomControl && <ZoomControl zoomInTitle="" zoomOutTitle="" className={styles.zoomControl} {...zoomControlProps} />}
           {bounds && (
             <ImageOverlay url={url} bounds={bounds} className={hideBackground?styles.hiddenImageOverlay:styles.imageOverlay}>
               <FeatureGroup ref={this.refFeatureGroup} onLayerRemove={this.handleLayerRemove}>
@@ -814,10 +834,12 @@ class ImageDraw extends PureComponent {
                 )}
                 {data && data.map(this.renderShape)}
                 {divIcons && divIcons.map(this.renderDivIcon)}
+                {circleMarkers && circleMarkers.map(this.renderCircleMarker)}
               </FeatureGroup>
             </ImageOverlay>
           )}
-          {bounds && images && images.length > 0 && images.map(this.renderImageOverlay)}
+          {bounds && images && images.map(this.renderImageOverlay)}
+          {bounds && arrows && arrows.map(this.renderImageOverlay)}
         </Map>
         <Modal
           visible={visible}
