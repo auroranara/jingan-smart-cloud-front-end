@@ -99,6 +99,14 @@ export default class AddAssociate extends Component {
     this.fetchVideoBeaconsAvailable({ payload: { id, companyId, pageNum: 1, pageSize: defaultPageSize } })
   }
 
+  handleToBack = () => {
+    const {
+      match: { params: { id } },
+      location: { query: { companyId } },
+    } = this.props
+    router.push(`/device-management/video-monitor/associate/${id}?name=${name}&&companyId=${companyId}`)
+  }
+
   render() {
     const {
       match: { params: { id } },
@@ -231,7 +239,7 @@ export default class AddAssociate extends Component {
             />
           </Card>
           <div style={{ textAlign: 'center', marginTop: '24px' }}>
-            <Button style={{ marginRight: '24px' }}>取消</Button>
+            <Button style={{ marginRight: '24px' }} onClick={this.handleToBack}>取消</Button>
             <Button type="primary" onClick={this.handleSave}>保存</Button>
           </div>
         </div>
