@@ -118,7 +118,7 @@ export default class History extends PureComponent {
    * 点击表格行
    */
   handleClickTableRow = (e) => {
-    this.historyPlay.handleLocate({ currentTimeStamp: e.currentTarget.getAttribute('intime') });
+    this.historyPlay.handleLocate({ currentTimeStamp: +e.currentTarget.getAttribute('intime') });
   }
 
   /**
