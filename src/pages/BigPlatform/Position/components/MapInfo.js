@@ -19,9 +19,9 @@ export default function MapInfo(props) {
         全厂：
         <span className={styles.total}>{total}人</span>
         报警：
-        <span className={length ? styles.alarmRed : styles.alarm}>{length}起</span>
+        <span className={length ? styles.alarmRed : styles.alarm} onClick={e => handleShowAlarmDrawer()}>{length}起</span>
         SOS求救：
-        <span className={sos ? styles.sosRed : styles.sos}>{sos}起</span>
+        <span className={sos ? styles.sosRed : styles.sos} onClick={e => handleShowAlarmDrawer(true)}>{sos}起</span>
         低电量：
         <span className={low ? styles.lowPower : null}>{low}</span>
       </div>
@@ -33,7 +33,7 @@ export default function MapInfo(props) {
           {getAlarmDesc(latest, areaInfo).join(' ')}，请及时支援！
         </div>
       )}
-      {latest && <span className={styles.more} onClick={handleShowAlarmDrawer}>更多<Icon type="double-right" /></span>}
+      {latest && <span className={styles.more} onClick={e => handleShowAlarmDrawer()}>更多<Icon type="double-right" /></span>}
     </div>
   )
 }

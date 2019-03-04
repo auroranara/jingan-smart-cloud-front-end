@@ -37,6 +37,7 @@ export default class RealTime extends PureComponent {
     videoVisible: false, // 视频弹框
     videoKeyId: '',
     videoKeyList: [],
+    showSOSAlarm: false, // 报警列表中显示sos的报警
     alarmDrawerVisible: false, // 报警列表抽屉
     lowPowerDrawerVisible: false, // 低电量报警抽屉
     personDrawerVisible: false, // 人员列表抽屉
@@ -355,8 +356,12 @@ export default class RealTime extends PureComponent {
     this.setState({ beaconId, personDrawerVisible: true });
   };
 
-  handleShowAlarmDrawer = () => {
-    this.setState({ alarmDrawerVisible: true });
+  handleShowAlarmDrawer = (showSOS) => {
+    this.setState({ alarmDrawerVisible: true, showSOSAlarm: !!showSOS });
+  };
+
+  handleCloseAlarmDrawer = e => {
+    this.setState({ alarmDrawerVisible: false, showSOSAlarm: false });
   };
 
   handleShowVideo = keyId => {
@@ -421,6 +426,7 @@ export default class RealTime extends PureComponent {
       videoVisible,
       videoKeyId,
       videoKeyList,
+      showSOSAlarm,
       alarmDrawerVisible,
       lowPowerDrawerVisible,
       personDrawerVisible,
@@ -519,9 +525,10 @@ export default class RealTime extends PureComponent {
         <AlarmDrawer
           areaInfo={areaInfo}
           visible={alarmDrawerVisible}
+          showSOSAlarm={showSOSAlarm}
           data={alarms}
           showPersonInfoOrAlarmMsg={this.showPersonInfoOrAlarmMsg}
-          handleClose={this.handleClose}
+          handleClose={this.handleCloseAlarmDrawer}
         />
         <LowPowerDrawer
           visible={lowPowerDrawerVisible}
