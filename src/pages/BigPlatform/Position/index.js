@@ -66,6 +66,7 @@ export default class PositionIndex extends PureComponent {
             cardId={selectedCardId}
             companyId={companyId}
             labelIndex={labelIndex}
+            setCardId={this.setSelectedCard}
             handleLabelClick={this.handleLabelClick}
           />
         )}

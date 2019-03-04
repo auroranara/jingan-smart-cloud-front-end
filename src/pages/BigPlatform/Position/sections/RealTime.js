@@ -162,7 +162,8 @@ export default class RealTime extends PureComponent {
       case WARNING_TYPE:
         this.handleAlarms(data);
         this.showNotifications(data);
-        this.handleAutoShowVideo(data);
+        if (!isTrack)
+          this.handleAutoShowVideo(data);
         break;
       case AREA_STATUS_TYPE:
         this.handleAreaStatusChange(data);

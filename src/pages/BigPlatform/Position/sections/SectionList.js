@@ -173,7 +173,7 @@ export default class RealTimeMonitor extends PureComponent {
         dataIndex: 'status',
         render: (status, record) => (
           <span
-            className={styles[+status === 2 ? 'tableRed' : 'tableSafe']}
+            className={styles[+status === 2 ? 'tableAlarm' : 'tableSafe']}
             onClick={e => setAreaId(record.id)}
           >
             {statusLabel[status] || '安全'}

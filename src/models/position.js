@@ -1,4 +1,6 @@
 import { getList, getLatest, getTree } from '../services/position';
+import { queryInitialPositions } from '../services/bigPlatform/personPosition';
+
 // 格式化树
 function formatTree(list) {
   return list.reduce((result, {
@@ -75,6 +77,7 @@ export default {
       locationDataHistories: [],
     },
     tree: {},
+    cards: [],
   },
 
   effects: {
@@ -104,11 +107,24 @@ export default {
         callback(response);
       }
     },
+    // 获取所有的卡
+    *fetchAllCards({ payload, callback }, { call, put }) {
+      const response = yield call(queryInitialPositions, payload);
+      const { code=500, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list: [];
+        callback && callback(list);
+        yield put({ type: 'saveCards', payload: list });
+      }
+    },
   },
 
   reducers: {
     save(state, { payload }) {
       return { ...state, ...payload };
+    },
+    saveCards(state, action) {
+      return { ...state, cards: action.payload };
     },
   },
 };

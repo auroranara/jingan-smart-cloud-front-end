@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { DatePicker } from 'antd';
+import { DatePicker, Select } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import { mapMutations } from 'utils/utils';
@@ -7,8 +7,10 @@ import { Scrollbars } from 'react-custom-scrollbars';
 // 引入样式文件
 import styles from './History.less';
 import { Tabs, HistoryPlay } from '../components/Components';
+import { getUserName } from '../utils';
 
 const { RangePicker } = DatePicker;
+const { Option } = Select;
 
 // 时间格式
 const timeFormat = 'YYYY-MM-DD HH:mm';
@@ -43,9 +45,20 @@ export default class History extends PureComponent {
   lastRange = defaultRange;
 
   componentDidMount() {
-    const { cardId, companyId } = this.props;
+    const { dispatch, cardId, companyId } = this.props;
+    dispatch({
+      type: 'position/fetchAllCards',
+      payload: { companyId },
+    });
+
     if (!cardId)
       return;
+    this.init(cardId);
+    // 获取区域树
+    this.fetchTree({ companyId });
+  }
+
+  init = cardId => {
     // 获取最新一条数据
     this.fetchLatest({ cardId }, (response) => {
       if (response && response.code === 200 && response.data) {
@@ -60,9 +73,7 @@ export default class History extends PureComponent {
         this.getData(range);
       }
     });
-    // 获取区域树
-    this.fetchTree({ companyId });
-  }
+  };
 
   setHistoryPlayReference = (historyPlay) => {
     this.historyPlay = historyPlay;
@@ -132,8 +143,19 @@ export default class History extends PureComponent {
     return <div style={{ ...style, ...thumbStyle }} />;
   }
 
+  handleCardChange = value => {
+    const { setCardId } = this.props;
+    setCardId(value);
+    this.init(value);
+  };
+
   render() {
-    const { position: { data: { areaDataHistories=[], locationDataHistories=[] }={}, tree={} }, labelIndex, handleLabelClick } = this.props;
+    const {
+      labelIndex,
+      cardId,
+      position: { data: { areaDataHistories=[], locationDataHistories=[] }={}, tree={}, cards },
+      handleLabelClick,
+    } = this.props;
     const { range } = this.state;
     const [ startTime, endTime ] = range;
 
@@ -143,6 +165,14 @@ export default class History extends PureComponent {
           <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
           <div className={styles.wrapper}>
             <div style={{ flex: 'none', marginBottom: 12 }}>
+              <Select
+                className={styles.cardSelect}
+                value={cardId}
+                placeholder="请选择人员"
+                onChange={this.handleCardChange}
+              >
+                {cards.map(card => <Option key={card.cardId} value={card.cardId}>{`${getUserName(card)}(${card.cardCode})`}</Option>)}
+              </Select>
               <RangePicker
                 dropdownClassName={styles.rangePickerDropDown}
                 className={styles.rangePicker}
