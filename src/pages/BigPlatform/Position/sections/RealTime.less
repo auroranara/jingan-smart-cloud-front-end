@@ -3,12 +3,12 @@
 /* 容器 */
 .container {
   display: flex;
-  padding: 24px 12px;
+  padding: 16px 8px;
   height: 100%;
   position: relative;
 
   .left, .right {
-    // padding: 0 12px;
+    padding: 0 8px;
     height: 100%;
   }
 
@@ -18,17 +18,26 @@
     .leftSection {
       padding: 5px 0 0 0;
       height: calc(100% - 35px);
-      background-image: url(../imgs/left.png);
-      background-size: 100% 100%;
+      background-color: rgb(3, 48, 105);
+      border: 1px solid rgb(4, 253, 255);
+      border-radius: 1em;
+      border-top-left-radius: 0;
+      box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.75);
     }
   }
 
   .right {
-    padding: 50px 25px 25px 20px;
     flex: 7;
-    position: relative;
-    background-image: url(../imgs/right.png);
-    background-size: 100% 100%;
+    .rightSection {
+      padding: 50px 25px 25px 20px;
+      position: relative;
+      height: 100%;
+      background-color: rgb(3, 48, 105);
+      border: 1px solid rgb(4, 253, 255);
+      border-radius: 1em;
+      border-top-left-radius: 0;
+      box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.75);
+    }
   }
 }
 

@@ -397,6 +397,7 @@ export default class RealTime extends PureComponent {
 
   render() {
     const {
+      dispatch,
       labelIndex,
       companyId,
       selectedCardId,
@@ -450,6 +451,7 @@ export default class RealTime extends PureComponent {
             )}
             {!!labelIndex && selectedCardId && (
               <CardSelected
+                dispatch={dispatch}
                 cardId={selectedCardId}
                 areaInfo={areaInfo}
                 positions={positionList}
@@ -460,54 +462,56 @@ export default class RealTime extends PureComponent {
           </div>
         </div>
         <div className={styles.right}>
-          <LeafletMap
-            url={mapBackgroundUrl}
-            isTrack={isTrack}
-            selectedCardId={selectedCardId}
-            trueAreaId={trueAreaId}
-            areaId={areaId}
-            areaInfo={areaInfo}
-            sectionTree={sectionTree}
-            positions={positionList}
-            aggregation={positionAggregation}
-            setAreaId={this.setAreaId}
-            handleShowVideo={this.handleShowVideo}
-            handleShowPersonInfo={this.handleShowPersonInfo}
-            handleShowPersonDrawer={this.handleShowPersonDrawer}
-          />
-          <MapInfo
-            areaInfo={areaInfo}
-            alarms={alarms}
-            sectionTree={sectionTree}
-            positionList={positionList}
-            showPersonInfoOrAlarmMsg={this.showPersonInfoOrAlarmMsg}
-            handleShowAlarmDrawer={this.handleShowAlarmDrawer}
-          />
-          <PersonInfo
-            visible={personInfoVisible}
-            companyId={companyId}
-            alarms={alarms}
-            personItem={getPersonInfoItem(cardId, positionList)}
-            handleTrack={this.handleTrack}
-            handleShowAlarmHandle={this.handleShowAlarmHandle}
-            handleClose={this.handleClose}
-          />
-          <AlarmMsg
-            visible={alarmMsgVisible}
-            areaInfo={areaInfo}
-            data={getAlarmItem(alarmId, alarms)}
-            handleShowAlarmHandle={this.handleShowAlarmHandle}
-            handleClose={this.handleClose}
-          />
-          <AlarmHandle
-            cardId={useCardIdHandleAlarm}
-            alarmId={alarmId}
-            alarms={alarms}
-            visible={alarmHandleVisible}
-            handleAlarm={this.handleAlarm}
-            handleSOS={this.handleSOS}
-            handleClose={this.handleHideAlarmHandle}
-          />
+          <div className={styles.rightSection}>
+            <LeafletMap
+              url={mapBackgroundUrl}
+              isTrack={isTrack}
+              selectedCardId={selectedCardId}
+              trueAreaId={trueAreaId}
+              areaId={areaId}
+              areaInfo={areaInfo}
+              sectionTree={sectionTree}
+              positions={positionList}
+              aggregation={positionAggregation}
+              setAreaId={this.setAreaId}
+              handleShowVideo={this.handleShowVideo}
+              handleShowPersonInfo={this.handleShowPersonInfo}
+              handleShowPersonDrawer={this.handleShowPersonDrawer}
+            />
+            <MapInfo
+              areaInfo={areaInfo}
+              alarms={alarms}
+              sectionTree={sectionTree}
+              positionList={positionList}
+              showPersonInfoOrAlarmMsg={this.showPersonInfoOrAlarmMsg}
+              handleShowAlarmDrawer={this.handleShowAlarmDrawer}
+            />
+            <PersonInfo
+              visible={personInfoVisible}
+              companyId={companyId}
+              alarms={alarms}
+              personItem={getPersonInfoItem(cardId, positionList)}
+              handleTrack={this.handleTrack}
+              handleShowAlarmHandle={this.handleShowAlarmHandle}
+              handleClose={this.handleClose}
+            />
+            <AlarmMsg
+              visible={alarmMsgVisible}
+              areaInfo={areaInfo}
+              data={getAlarmItem(alarmId, alarms)}
+              handleShowAlarmHandle={this.handleShowAlarmHandle}
+              handleClose={this.handleClose}
+            />
+            <AlarmHandle
+              cardId={useCardIdHandleAlarm}
+              alarmId={alarmId}
+              alarms={alarms}
+              visible={alarmHandleVisible}
+              handleAlarm={this.handleAlarm}
+              handleSOS={this.handleSOS}
+              handleClose={this.handleHideAlarmHandle}
+            />
+          </div>
         </div>
         <AlarmDrawer
           areaInfo={areaInfo}

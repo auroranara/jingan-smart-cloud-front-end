@@ -19,6 +19,12 @@ export default class CardSelected extends PureComponent {
   handleQuitTrack = e => {
     const { setSelectedCard } = this.props;
     setSelectedCard();
+    this.clearHistoryModel();
+  };
+
+  clearHistoryModel = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'position/save', payload: { data: {}, tree: {} } });
   };
 
   render() {

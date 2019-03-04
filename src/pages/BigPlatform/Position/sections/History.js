@@ -44,6 +44,8 @@ export default class History extends PureComponent {
 
   componentDidMount() {
     const { cardId, companyId } = this.props;
+    if (!cardId)
+      return;
     // 获取最新一条数据
     this.fetchLatest({ cardId }, (response) => {
       if (response && response.code === 200 && response.data) {
@@ -71,6 +73,8 @@ export default class History extends PureComponent {
    */
   getData = (range) => {
     const { cardId } = this.props;
+    if (!cardId)
+      return;
     const [queryStartTime, queryEndTime] = range;
     this.fetchData({
       cardId,
