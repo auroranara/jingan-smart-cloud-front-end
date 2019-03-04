@@ -316,9 +316,13 @@ export function getAlarmDesc(item, areaInfo) {
 }
 
 // cardType 0 正常 1 访客
-export function getUserName(item) {
+export function getUserName(item, hidePrefix) {
   const { cardType, userName, visitorName } = item;
-  return +cardType ? `访客${visitorName ? `-${visitorName}` : ''}` : userName;
+  const isVisitor = !!+cardType;
+  if (hidePrefix && isVisitor && !visitorName)
+    return '访客';
+
+  return isVisitor ? `${hidePrefix ? '' : '访客'}${visitorName ? `-${visitorName}` : ''}` : userName;
 }
 
 // 0 区域 1 视频 2 人
