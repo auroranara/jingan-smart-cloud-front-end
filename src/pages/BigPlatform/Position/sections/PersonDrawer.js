@@ -14,7 +14,7 @@ function PersonCard(props) {
 
   return (
     <div className={styles[isAlarm ? 'cardRedContainer' : 'cardContainer']} {...restProps}>
-      <div className={styles.sos} />
+      {sos && <div className={styles.sos} />}
       <div className={styles[isVisitor ? 'visitorAvatar' : 'avatar']} />
       <span>{`${name}(${cardCode})`}</span>
       <span>{phone || '暂无电话信息'}</span>
