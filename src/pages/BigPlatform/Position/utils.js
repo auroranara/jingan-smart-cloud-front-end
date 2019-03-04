@@ -259,6 +259,9 @@ export function getAreaInfo(list) {
     };
   });
 
+  // areaId === null时，在厂区外
+  areaInfo[null] = { id: 'null', name: '外围区域', fullName: '外围区域', isBuilding: false };
+
   return areaInfo;
 }
 

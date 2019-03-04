@@ -23,6 +23,7 @@ export default class CardSelected extends PureComponent {
     const name = getUserName(card);
     const phone = isVisitor ? visitorPhone : phoneNumber;
     const videoKeyId = videoList.length ? videoList[0].keyId : '';
+    const sectionName = areaInfo && areaInfo[areaId] ? areaInfo[areaId].fullName : '厂区外';
 
     return (
       <div className={styles.container}>
@@ -37,7 +38,7 @@ export default class CardSelected extends PureComponent {
             <p>电话：{phone}</p>
             <p>编号：{cardCode}</p>
             {departmentName && <p>部门：{departmentName}</p>}
-            <p>区域：{areaInfo[areaId].fullName}</p>
+            <p>区域：{sectionName}</p>
           </div>
           <div className={styles.btns}>
             <Button ghost className={styles.btn}>历史轨迹</Button>
