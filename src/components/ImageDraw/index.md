@@ -11,6 +11,7 @@
 | onClick | 图片上的标记的点击事件 | function | - |
 | mapProps | 地图参数 | object | - |
 | zoomControlProps | 缩放控制器参数 | object | - |
+| zoomControl | 是否显示缩放控制器 | boolean | true |
 | editControlProps | 绘制控件参数 | object | - |
 | filled | 是否按照容器比例拉伸图片 | boolean | - |
 | maxBoundsRatio | 最大边界比例 | number | 1 |

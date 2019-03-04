@@ -1,54 +1,47 @@
 /* 容器 */
 .container {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  height: 100%;
-  color: #fff;
-  background: no-repeat center center;
-  background-size: 100% 100%;
+  display: table;
+  table-layout:fixed;
+	width: 100%;
+	height: 100%;
   overflow: hidden;
+  font-size: 16px;
+  line-height: 1;
 }
-/* canvas容器 */
-.canvasWrapper {
-  flex: 1;
-  position: relative;
-  background: no-repeat center center;
-  background-size: 100% 100%;
+/* 内容容器 */
+.contentWrapper {
+	display: table-row;
+  height: 100%;
 }
 /* 控制器容器 */
 .controlWrapper {
-  flex: none;
   margin: 0 auto;
-  padding: 24px 0 12px;
-  width: 50%;
+  padding: 1em 4.5em 0;
+  width: 80%;
 
   /* 时间条 */
   .timeBar {
-    position: relative;
+    margin-bottom: 1.5em;
     width: 100%;
-    height: 10px;
-    border-radius: 10px;
+    height: 6px;
+    border-radius: 6px;
     background-color: #fff;
     cursor: pointer;
 
     /* 当前时间条 */
     .currentTimeBar {
       width: 0;
-      height: 10px;
-      border-radius: 10px;
-      background-color: #00a8ff;
+      height: 6px;
+      border-radius: 6px;
+      background-color: rgb(9, 103, 211);
     }
-
   }
 
   /* 按钮栏 */
   .buttonBar {
     position: relative;
-    padding: 12px 0;
-    height: 48px;
-    line-height: 24px;
-    font-size: 14px;
+    padding-bottom: 1em;
+    height: 2em;
     text-align: center;
 
     /* 起始时间 */
@@ -56,10 +49,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      height: 48px;
-      line-height: 48px;
       transform: translateX(-50%);
-      cursor: auto;
     }
 
     /* 结束时间 */
@@ -67,24 +57,58 @@
       position: absolute;
       top: 0;
       right: 0;
-      height: 48px;
-      line-height: 48px;
       transform: translateX(50%);
-      cursor: auto;
     }
 
-    .button {
-      font-size: 24px;
-      cursor: pointer;
+    /* 播放按钮包装 */
+    .playButtonWrapper {
+      position: absolute;
+      top: -1em;
+      left: -1.25em;
+      width: 0.5em;
+      height: 0.5em;
+      font-size: 36px;
+      background-color: #fff;
+      /* 播放按钮 */
+      .playButton {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        color: rgb(9, 103, 211);
 
-      &:not(:last-child) {
-        margin-right: 24px;
+        &:hover {
+          color: #00a8ff;
+        }
+        &:active {
+          color: #00a8ff;
+        }
       }
+      /* 禁止的按钮 */
+      .disabledPlayButton {
+        color: rgb(137, 137, 137);
+        cursor: not-allowed;
 
-      &:hover {
-        color: #00a8ff;
+        &:hover {
+          color: rgb(137, 137, 137);
+        }
+        &:active {
+          color: rgb(137, 137, 137);
+        }
       }
     }
+
+    // .button {
+    //   font-size: 24px;
+    //   cursor: pointer;
+
+    //   &:not(:last-child) {
+    //     margin-right: 24px;
+    //   }
+
+    //   &:hover {
+    //     color: #00a8ff;
+    //   }
+    // }
   }
 }
 /* 提示框 */
@@ -93,8 +117,6 @@
   top: 0;
   left: 0;
   padding: 6px 8px;
-  font-size: 14px;
-  line-height: 1;
   color: #fff;
   white-space: nowrap;
   background-color: rgba(0, 0, 0, 0.85);
@@ -104,15 +126,36 @@
   user-select: none;
 }
 /* 警报tooltip */
-.alarmTooltip {
-  :global {
-    .ant-tooltip-inner {
-      box-shadow: 0 0 1em red;
-    }
+.alarm {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  padding: 6px 12px;
+  font-size: 16px;
+  color: #fff;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  background-color: #ff4848;
+  border-radius: 2em;
+  transform: translateX(-50%);
+
+  &:after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    margin-left: -5px;
+    border-width: 5px 5px 0;
+    border-style: solid;
+    border-color: transparent;
+    border-top-color: #ff4848;
   }
 }
 
 .person() {
+  position: relative;
+  height: 100%;
   background: no-repeat center;
   background-size: 100% 100%;
 }
@@ -130,13 +173,20 @@
 }
 /* 报警状态的人员 */
 .redPerson {
-  background-image: url('../../imgs/peopleRed.png');
+  .person;
+  background-image: url('../../imgs/personRed.png');
 }
 /* 普通的工作人员 */
 .bluePerson {
+  .person;
   background-image: url('../../imgs/person1.png');
 }
 /* 访客 */
-.greenPerson {
-  background-image: url('../../imgs/person.png');
+.redVistor {
+  .person;
+  background-image: url('../../imgs/visitorRed.png');
+}
+.blueVistor {
+  .person;
+  background-image: url('../../imgs/visitor.png');
 }
