@@ -41,3 +41,34 @@ export async function queryVideoDetail(videoId) {
 export async function queryModelList(params) {
   return request(`/acloud_new/v2/baseInfo/companies?${stringify(params)}`);
 }
+
+// 当前摄像头绑定的标签
+export async function fetchVideoBeacons(params) {
+  return request(`/acloud_new/v2/video/bind/selectBeanconForVideo?${stringify(params)}`)
+}
+
+// 当前摄像头可绑定的标签
+export async function fetchVideoBeaconsAvailable(params) {
+  return request(`/acloud_new/v2/video/bind/selectBeaconNotBind?${stringify(params)}`)
+}
+
+// 绑定信标（可批量）
+export async function bindBeacon({ videoId, beaconIds, ...others }) {
+  return request('/acloud_new/v2/video/bind/bindBeacon', {
+    method: 'POST',
+    body: { videoId, beaconIds, ...others },
+  })
+}
+
+// 解绑标签
+export async function unBindBeacon({ videoId, beaconIds, ...others }) {
+  return request('/acloud_new/v2/video/bind/unbindBeacon', {
+    method: 'POST',
+    body: { videoId, beaconIds, ...others },
+  })
+}
+
+// 获取系统列表
+export async function fetchSystemList(params) {
+  return request(`/acloud_new/v2/video/bind/locationSysList?${stringify(params)}`)
+}

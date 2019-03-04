@@ -1,6 +1,25 @@
-export AlarmHandle from './AlarmHandle';
-export AlarmMsg from './AlarmMsg';
-export Map from './Map';
-export Info from './Info';
-export PersonInfo from './PersonInfo';
-export VideoPlay from './VideoPlay';
+import AlarmHandle from './AlarmHandle';
+import AlarmMsg from './AlarmMsg';
+import DrawerContainer from './DrawerContainer';
+import Map from './Map';
+import MapInfo from './MapInfo';
+import Info from './Info';
+import PersonInfo from './PersonInfo';
+import Tabs from './Tabs';
+import TrailBack from './TrailBack';
+import VideoPlay from './VideoPlay';
+import HistoryPlay from './HistoryPlay';
+
+export {
+  AlarmHandle,
+  AlarmMsg,
+  DrawerContainer,
+  Map,
+  MapInfo,
+  Info,
+  PersonInfo,
+  Tabs,
+  TrailBack,
+  VideoPlay,
+  HistoryPlay,
+};

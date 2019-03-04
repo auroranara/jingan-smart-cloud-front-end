@@ -32,7 +32,8 @@ export default class StorageTankDrawer extends PureComponent {
       tankDataList: { list },
       storageStatus,
       handleFilter,
-      statistics: {  // 储罐统计
+      statistics: {
+        // 储罐统计
         tankNum = 0,
         countMap: { normal = 0, outContact = 0, unnormal = 0 } = {},
       },
@@ -51,7 +52,7 @@ export default class StorageTankDrawer extends PureComponent {
       { value: 0, label: '正常', color: 'rgb(0, 161, 129)', number: normal },
       { value: 2, label: '报警', color: 'rgb(232, 103, 103)', number: unnormal },
       { value: -1, label: '失联', color: 'rgb(198, 193, 129)', number: outContact },
-    ]
+    ];
 
     const left = (
       <div className={styles.content}>
@@ -59,29 +60,33 @@ export default class StorageTankDrawer extends PureComponent {
         <Row className={styles.sectionFilter}>
           {filterList.map((item, i) => (
             <Col span={6} className={styles.filter} key={i}>
-              <div className={storageStatus === item.value ? styles.activeFilter : styles.inActiveFilter}
-                onClick={() => handleFilter(item.value)}>
+              <div
+                className={
+                  storageStatus === item.value ? styles.activeFilter : styles.inActiveFilter
+                }
+                onClick={() => handleFilter(item.value)}
+              >
                 {item.label}（<span style={{ color: item.color }}>{item.number}</span>）
               </div>
             </Col>
           ))}
         </Row>
         <div className={styles.cardContainer}>
-          <div>{this.renderTankList(list)}</div>
+          {list.length > 0 ? (
+            <div>{this.renderTankList(list)}</div>
+          ) : (
+            <div
+              className={styles.noCards}
+              style={{
+                background: `url(${waterBg})`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center center',
+                backgroundSize: '40% 25%',
+              }}
+            />
+          )}
         </div>
       </div>
-    );
-
-    const noListLeft = (
-      <div
-        className={styles.noCards}
-        style={{
-          background: `url(${waterBg})`,
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center center',
-          backgroundSize: '40% 25%',
-        }}
-      />
     );
     return (
       <DrawerContainer
@@ -91,7 +96,7 @@ export default class StorageTankDrawer extends PureComponent {
         title="储罐监测"
         width={485}
         visible={visible}
-        left={list && list.length > 0 ? left : noListLeft}
+        left={left}
         placement="left"
         onClose={() => {
           this.props.onClose();

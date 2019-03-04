@@ -1,32 +1,60 @@
-import React from 'react';
-import { Button, Input } from 'antd';
+import React, { PureComponent } from 'react';
+import { Button, Icon, Input } from 'antd';
 
 import styles from './AlarmHandle.less';
-import bg from '../imgs/handleCard.png';
 
 const { TextArea } = Input;
 const BTN_STYLE = { color: 'rgb(4, 253, 255)', borderColor: 'rgb(4, 253, 255)' };
 
-export default function AlarmHandle(props) {
-  // type 0 sos 1 越界
-  const { visible, prefix, title, type=0, style, handleSubmit, handleClose, ...restProps } = props;
-  const newStyle = {
-    backgroundImage: `url(${bg})`,
-    ...style,
-    display: visible ? 'block' : 'none',
+// 1 sos 2 越界  3 长时间不动 4 超员 5 缺员
+export default class AlarmHandle extends PureComponent {
+  value = '';
+
+  genHandleAlarm = (status) => e => {
+    const { alarmId, cardId, handleAlarm, handleSOS } = this.props;
+    if (cardId)
+      status === 2 && handleSOS(cardId);
+    else
+      handleAlarm(alarmId, status, this.value);
+    this.onClose();
   };
 
-  return (
-    <div className={type ? styles.container1 : styles.container} style={newStyle} {...restProps}>
-      <h3 className={styles.title}>
-        {prefix}
-        <span className={styles.titleText}>{title}</span>
-      </h3>
-      <TextArea rows={4} placeholder="填写处理信息（30字以内）" />
-      <div className={styles.btn}>
-        <Button ghost style={BTN_STYLE} onClick={e => handleSubmit()}>提交</Button>
-        <Button ghost style={BTN_STYLE} onClick={e => handleClose()}>取消</Button>
+  onClose = () => {
+    const { handleClose } = this.props;
+    this.value = '';
+    handleClose();
+  }
+
+  handleTextChange = e => {
+    // console.log(e.target.value);
+    this.value = e.target.value;
+  };
+
+  render() {
+    const { visible, cardId, positionList, alarmId, alarms, style, handleAlarm, handleSOS, handleClose, ...restProps } = this.props;
+    const newStyle = {
+      ...style,
+      display: visible ? 'block' : 'none',
+    };
+
+    const alarmItem = alarms.find(({ id }) => id === alarmId);
+    const isSOS = alarmItem && +alarmItem.type === 1 ? true : false;
+    const title = `${isSOS ? 'SOS' : ''}报警处理`;
+    const prefix = isSOS ? <span className={styles.sos} /> : <span className={styles.alarmInfo} />;
+
+    return (
+      <div className={styles.container} style={newStyle} {...restProps}>
+        <h3 className={styles.title}>
+          {prefix}
+          <span className={styles.titleText}>{title}</span>
+        </h3>
+        <Icon type="close" className={styles.close} onClick={this.onClose} />
+        <TextArea rows={4} placeholder="填写处理信息（30字以内）" onChange={this.handleTextChange} />
+        <div className={styles.btn}>
+          <Button ghost style={BTN_STYLE} onClick={this.genHandleAlarm(1)}>忽略</Button>
+          <Button ghost style={BTN_STYLE} onClick={this.genHandleAlarm(2)}>提交</Button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }

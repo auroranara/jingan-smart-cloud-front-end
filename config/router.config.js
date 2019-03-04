@@ -130,12 +130,12 @@ module.exports = env => {
         },
         {
           path: '/big-platform/position/:companyId',
-          component: './BigPlatform/Position/RealTime',
+          component: './BigPlatform/Position/index',
         },
-        {
-          path: '/big-platform/position/:companyId/history/:id',
-          component: './BigPlatform/Position/History',
-        },
+        // {
+        //   path: '/big-platform/position/:companyId/history/:id',
+        //   component: './BigPlatform/Position/History',
+        // },
         {
           path: '/big-platform/electricity-monitor/:gridId',
           component: './BigPlatform/ElectricityMonitor',
@@ -845,6 +845,18 @@ module.exports = env => {
                   code: 'deviceManagement.videoMonitor.view',
                   name: 'detail',
                   component: './DeviceManagement/VideoMonitor/VideoMonitorDetail',
+                },
+                {
+                  path: '/device-management/video-monitor/associate/:id',
+                  code: 'deviceManagement.videoMonitor.associate',
+                  name: 'associate',
+                  component: './DeviceManagement/VideoMonitor/AssociateDevice',
+                },
+                {
+                  path: '/device-management/video-monitor/associate/:id/add',
+                  code: 'deviceManagement.videoMonitor.addAssociate',
+                  name: 'addAssociate',
+                  component: './DeviceManagement/VideoMonitor/AddAssociate',
                 },
                 // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
               ],
