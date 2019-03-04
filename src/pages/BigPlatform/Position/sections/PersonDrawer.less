@@ -2,7 +2,7 @@
   font-size: 16px;
   color: #FFF;
   height: 80px;
-  padding: 0 20px;
+  padding: 0 20px 0 60px;
   margin: 0 2px 8px 0;
   display: flex;
   justify-content: space-between;
@@ -10,6 +10,22 @@
   background-color: rgb(4, 64, 125);
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
   cursor: pointer;
+  position: relative;
+}
+
+.sos {
+  width: 34px;
+  height: 27px;
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-image: url(../imgs/sos.png);
+  background-size: 100% 100%;
+}
+
+.cardRedContainer:extend(.cardContainer) {
+  background-color: rgba(255, 0, 0, 0.25);
 }
 
 .avatar {
