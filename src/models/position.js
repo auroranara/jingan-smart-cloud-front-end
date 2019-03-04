@@ -1,46 +1,119 @@
-import { getList, getLatest, getCompany } from '../services/position';
+import { getList, getLatest, getTree } from '../services/position';
+// 格式化树
+function formatTree(list) {
+  return list.reduce((result, {
+    companyMapPhoto,
+    mapPhoto,
+    range,
+    id,
+    name,
+    parentId,
+    companyMap,
+    mapId,
+    children,
+  }) => {
+    return {
+      url: !result.url && JSON.parse(companyMapPhoto).url,
+      ...result,
+      [id]: {
+        ...(JSON.parse(range)),
+        url: JSON.parse(mapPhoto).url,
+        id,
+        name,
+        parentId,
+        companyMap,
+        mapId,
+        children: children ? children.map(({ id }) => id) : [],
+      },
+      ...(children && formatTree(children)),
+    };
+  }, {});
+};
+// 格式化位置数据
+function formatData(list) {
+  return list.map(({
+    id,
+    xarea,
+    yarea,
+    zarea,
+    intime,
+    uptime,
+    areaId,
+    xpx: lng,
+    ypx: lat,
+    locationStatusHistoryList,
+  }, index) => {
+    const { sos, over, long } = locationStatusHistoryList ? locationStatusHistoryList.reduce((result, { status }) => {
+      if (!result.sos && +status === 1) {
+        result.sos = true;
+      }
+      else if (!result.over && +status === 2) {
+        result.over = true;
+      }
+      else if (!result.long && +status === 3) {
+        result.long = true;
+      }
+      return result;
+    }, {}) : {};
+    const isAlarm = sos || over || long;
+    return {
+      id,
+      xarea,
+      yarea,
+      zarea,
+      intime,
+      // 当前时间节点的离开时间和下个时间节点的进入时间相等时，就将当前时间节点的离开时间提前1s
+      uptime: list[index+1] && list[index+1].intime === uptime? Math.max(uptime-1000, intime) : uptime,
+      areaId,
+      latlng: { lng, lat },
+      isAlarm,
+      options: { color: isAlarm ? '#ff4848' : '#00a8ff' },
+      sos,
+      over,
+      long,
+    };
+  });
+}
+
 
 export default {
   namespace: 'position',
 
   state: {
-    list: [],
-    company: {},
+    data: {
+      // 当前选中时间段内涉及的区域
+      areaDataHistories: [],
+      // 当前选中时间段内涉及的人员位置
+      locationDataHistories: [],
+    },
+    tree: {},
   },
 
   effects: {
+    // 获取最新的一条数据
     *fetchLatest({ payload, callback }, { call, put }) {
-      const { code, data } = yield call(getLatest, payload);
-      if (code === 200 && callback) {
-        callback(data);
-      }
-      else if (callback) {
-        callback();
-      }
+      const response = yield call(getLatest, payload);
+      callback && callback(response);
     },
-    *fetchList({ payload, callback }, { call, put }) {
+    // 获取选中数据
+    *fetchData({ payload, callback }, { call, put }) {
       const response = yield call(getList, payload);
-      const list = response.data.list.filter(({ xarea, yarea }) => xarea <= 100 && yarea <= 100);
       if (response.code === 200) {
-        yield put({ type: 'save', payload: { list }});
-        if (callback) {
-          callback(list);
-        }
+        const { areaDataHistories, locationDataHistories } = response.data;
+        yield put({ type: 'save', payload: { data: { areaDataHistories, locationDataHistories: formatData(locationDataHistories) } }});
       }
-      else if (callback) {
-        callback();
+      if (callback) {
+        callback(response);
       }
     },
-    *fetchCompany({ payload, callback }, { call, put }) {
-      const { code, data } = yield call(getCompany, payload);
-      if (code === 200) {
-        yield put({ type: 'save', payload: { company: data }});
-        if (callback) {
-          callback(data);
-        }
+    // 获取区域树
+    *fetchTree({ payload, callback }, { call, put }) {
+      const response = yield call(getTree, payload);
+      if (response.code === 200) {
+        yield put({ type: 'save', payload: { tree: formatTree(response.data.list) }});
       }
-      else if (callback) {
-        callback();
+      if (callback) {
+        callback(response);
       }
     },
   },

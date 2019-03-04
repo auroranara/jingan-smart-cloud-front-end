@@ -11,7 +11,7 @@ export async function getLatest({ cardId }) {
   return request(`/acloud_new/v2/location/getRecentlyTrack/${cardId}`);
 }
 
-// 获取企业名称
-export async function getCompany({ companyId }) {
-  return request(`/acloud_new/v2/baseInfo/company/${companyId}`);
+// 获取区域树
+export async function getTree(params) {
+  return request(`/acloud_new/v2/areaInfo/getScreenTree?${stringify(params)}`);
 }

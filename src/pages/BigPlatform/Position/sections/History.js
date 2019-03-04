@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { DatePicker } from 'antd';
+import { connect } from 'dva';
 import moment from 'moment';
+import { mapMutations } from 'utils/utils';
 import { Scrollbars } from 'react-custom-scrollbars';
 // 引入样式文件
 import styles from './History.less';
@@ -12,62 +14,68 @@ const { RangePicker } = DatePicker;
 const timeFormat = 'YYYY-MM-DD HH:mm';
 // 默认范围
 const defaultRange = [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')];
-// const defaultRange = [moment('2018-12-29 14:23'), moment('2018-12-29 14:25')];
-// const defaultRange = [moment('2018-12-29 14:27'), moment('2018-12-29 14:29')];
 
 
 /**
  * description: 历史轨迹
- * author: sunkai
- * date: 2018年12月27日
  */
+@connect(({ position }) => ({ position }))
 export default class History extends PureComponent {
-  state = {
-    range: defaultRange,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      range: defaultRange,
+    };
+    mapMutations(this, {
+      namespace: 'position',
+      types: [
+        // 获取最新一条数据
+        'fetchLatest',
+        // 获取选中时间段数据
+        'fetchData',
+        // 获取区域树
+        'fetchTree',
+      ],
+    });
+  }
 
   // 上次选择的范围
   lastRange = defaultRange;
 
   componentDidMount() {
-    const { dispatch, cardId } = this.props;
+    const { cardId, companyId } = this.props;
     // 获取最新一条数据
-    dispatch({
-      type: 'position/fetchLatest',
-      payload: { cardId },
-      callback: (data) => {
-        if (data) {
-          const { intime } = data;
-          const minute = 60 * 1000;
-          const queryEndTime = intime%minute === 0 ? intime : Math.ceil(intime/minute)*minute;
-          const queryStartTime = queryEndTime - minute * 2;
-          const range = [moment(queryStartTime), moment(queryEndTime)];
-          this.setState({ range });
-          this.lastRange = range;
-          // 获取列表
-          this.getList(range);
-        }
-      },
+    this.fetchLatest({ cardId }, (response) => {
+      if (response && response.code === 200 && response.data) {
+        const { intime } = response.data;
+        const minute = 60 * 1000;
+        const queryEndTime = Math.ceil((intime) / minute) * minute;
+        const queryStartTime = queryEndTime - minute * 5;
+        const range = [moment(queryStartTime), moment(queryEndTime)];
+        this.setState({ range });
+        this.lastRange = range;
+        // 获取列表
+        this.getData(range);
+      }
     });
-    // 获取企业信息
-    dispatch({
-      type: 'user/fetchCurrent',
-    });
+    // 获取区域树
+    this.fetchTree({ companyId });
+  }
+
+  setHistoryPlayReference = (historyPlay) => {
+    this.historyPlay = historyPlay;
   }
 
   /**
    * 获取列表
    */
-  getList = (range) => {
-    const { dispatch, cardId } = this.props;
+  getData = (range) => {
+    const { cardId } = this.props;
     const [queryStartTime, queryEndTime] = range;
-    dispatch({
-      type: 'position/fetchList',
-      payload: {
-        cardId,
-        queryStartTime: queryStartTime && +queryStartTime,
-        queryEndTime: queryEndTime && +queryEndTime,
-      },
+    this.fetchData({
+      cardId,
+      queryStartTime: queryStartTime && +queryStartTime,
+      queryEndTime: queryEndTime && +queryEndTime,
     });
   }
 
@@ -84,7 +92,7 @@ export default class History extends PureComponent {
   handleOk = (range) => {
     this.isOk = true;
     this.lastRange = range;
-    this.getList(range);
+    this.getData(range);
     this.setState({ range });
   }
 
@@ -103,23 +111,25 @@ export default class History extends PureComponent {
   }
 
   /**
+   * 点击表格行
+   */
+  handleClickTableRow = (e) => {
+    this.historyPlay.handleLocate({ currentTimeStamp: e.currentTarget.getAttribute('intime') });
+  }
+
+  /**
    * 修改滚动条颜色
    */
-  renderThumb({ style, ...props }) {
+  renderThumb({ style }) {
     const thumbStyle = {
       backgroundColor: `rgba(9, 103, 211, 0.5)`,
       borderRadius: '10px',
     };
-    return (
-      <div
-        style={{ ...style, ...thumbStyle }}
-        {...props}
-      />
-    );
+    return <div style={{ ...style, ...thumbStyle }} />;
   }
 
   render() {
-    const { position: { list }, labelIndex, handleLabelClick } = this.props;
+    const { position: { data: { areaDataHistories=[], locationDataHistories=[] }={}, tree={} }, labelIndex, handleLabelClick } = this.props;
     const { range } = this.state;
     const [ startTime, endTime ] = range;
 
@@ -127,10 +137,7 @@ export default class History extends PureComponent {
       <div className={styles.container}>
         <div className={styles.left}>
           <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
-          <div
-            className={styles.wrapper}
-            // style={{ display: 'flex', flexDirection: 'column' }}
-          >
+          <div className={styles.wrapper}>
             <div style={{ flex: 'none', marginBottom: 12 }}>
               <RangePicker
                 dropdownClassName={styles.rangePickerDropDown}
@@ -152,11 +159,16 @@ export default class History extends PureComponent {
                 <div className={styles.td}>结束时间</div>
                 <div className={styles.td}>区域楼层</div>
               </div>
-              <div className={styles.tr}>
-                <div className={styles.td}>{startTime.format('HH:mm:ss')}</div>
-                <div className={styles.td}>{endTime.format('HH:mm:ss')}</div>
-                <div className={styles.td}>办公区域</div>
-              </div>
+              {areaDataHistories && areaDataHistories.length > 0 ? areaDataHistories.map(area => {
+                const { startTime: startTimeStamp, endTime: endTimeStamp, areaName, id } = area;
+                return (
+                  <div className={styles.tr} key={id} intime={startTimeStamp} onClick={this.handleClickTableRow}>
+                    <div className={styles.td}>{moment(Math.max(startTimeStamp, startTime)).format('HH:mm:ss')}</div>
+                    <div className={styles.td}>{moment(Math.min(endTimeStamp, endTime)).format('HH:mm:ss')}</div>
+                    <div className={styles.td}>{areaName}</div>
+                  </div>
+                );
+              }) : <div className={styles.emptyTr}><div className={styles.td}>暂无数据</div></div>}
             </div>
             <div style={{ flex: '1', display: 'flex', flexDirection: 'column' }}>
               <div className={styles.th} style={{ flex: 'none' }}>
@@ -166,20 +178,29 @@ export default class History extends PureComponent {
                 <div className={styles.td}>Z坐标</div>
               </div>
               <Scrollbars style={{ flex: '1' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
-                {list && list.length > 0 ? list.map(({ intime: time, xarea: x, yarea: y, zarea: z }) => (
-                  <div className={styles.tr} key={time}>
-                    <div className={styles.td}>{moment(time).format('HH:mm:ss')}</div>
-                    <div className={styles.td}>{x}</div>
-                    <div className={styles.td}>{y}</div>
-                    <div className={styles.td}>{z}</div>
-                  </div>
-                )) : <div className={styles.placeholder}>暂无数据</div>}
+                {locationDataHistories && locationDataHistories.length > 0 ? locationDataHistories.map(location => {
+                  const { xarea, yarea, zarea, intime, id } = location;
+                  return (
+                    <div className={styles.tr} key={id} intime={intime} onClick={this.handleClickTableRow}>
+                      <div className={styles.td}>{moment(Math.max(intime, startTime)).format('HH:mm:ss')}</div>
+                      <div className={styles.td}>{xarea}</div>
+                      <div className={styles.td}>{yarea}</div>
+                      <div className={styles.td}>{zarea}</div>
+                    </div>
+                  );
+                }) : <div className={styles.emptyTr}><div className={styles.td}>暂无数据</div></div>}
               </Scrollbars>
             </div>
           </div>
         </div>
         <div className={styles.right}>
-          <HistoryPlay data={list} startTime={startTime && +startTime} endTime={endTime && +endTime} />
+          <HistoryPlay
+            ref={this.setHistoryPlayReference}
+            tree={tree}
+            data={locationDataHistories}
+            startTime={startTime && +startTime}
+            endTime={endTime && +endTime}
+          />
         </div>
       </div>
     );

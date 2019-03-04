@@ -5,7 +5,7 @@ import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 // import styles from './index.less';
 import { History, RealTime } from './sections/Components';
 
-@connect(({ personPosition, position, user }) => ({ personPosition, position, user }))
+@connect(({ personPosition, user }) => ({ personPosition, user }))
 export default class PositionIndex extends PureComponent {
   state = {
     labelIndex: 0,
@@ -26,7 +26,6 @@ export default class PositionIndex extends PureComponent {
       dispatch,
       match: { params: { companyId } },
       personPosition,
-      position,
       user,
     } = this.props;
     const {
@@ -56,11 +55,9 @@ export default class PositionIndex extends PureComponent {
         )}
         {labelIndex === 2 && (
           <History
-            dispatch={dispatch}
             cardId={1}
             companyId={companyId}
             labelIndex={labelIndex}
-            position={position}
             handleLabelClick={this.handleLabelClick}
           />
         )}
