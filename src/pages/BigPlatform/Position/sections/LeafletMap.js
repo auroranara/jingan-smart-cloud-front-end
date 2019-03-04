@@ -55,7 +55,10 @@ export default class LeafletMap extends PureComponent {
     // }, [fatherMapId === companyMap ? [] : [reference], [currentRange]]);
 
     // data会变红，所以不能使用一开始存好的值，但是图片是固定的，所以可以用一开始处理好的值
-    const data = sectionChildren.reduce((prev, { range }) => range ? [...prev, range] : prev, [currentRange]);
+    // 显示当前区域即其所有子区域
+    // const data = sectionChildren.reduce((prev, { range }) => range ? [...prev, range] : prev, [currentRange]);
+    // 由于返回时图层顺序会乱，所以当前区域有子区域时先不渲染当前区域，当前区域没有子区域时渲染当前区域
+    const data = sectionChildren.length ? sectionChildren.reduce((prev, { range }) => range ? [...prev, range] : prev, []) : [currentRange];
     // console.log('range', data, images, reference);
     this.setState({ data, images: areaInfo[areaId].images, reference });
   };
@@ -131,8 +134,8 @@ export default class LeafletMap extends PureComponent {
   };
 
   handleBack = e => {
-    const { areaId, areaInfo, setAreaId } = this.props;
-    const { parentId } = areaInfo[areaId];
+    const { areaId, trueAreaId, areaInfo, setAreaId } = this.props;
+    const { parentId } = areaInfo[trueAreaId];
     setAreaId(parentId);
 
     // const parent = areaInfo[parentId];
@@ -179,7 +182,7 @@ export default class LeafletMap extends PureComponent {
         latlng: { lat: yarea, lng: xarea },
         iconProps: {
           iconSize: [38, 40],
-          iconAnchor: [19, 35],
+          iconAnchor: [19, 40],
           className: styles.personContainer,
           html: `
             <div class="${styles[containerClassName]}">
@@ -190,27 +193,29 @@ export default class LeafletMap extends PureComponent {
       };
     });
 
-    const videos = targetAgg.reduce((prev, next) => {
-      const vIds = prev.map(({ vId }) => vId);
-      const vList = next.reduce((p, n) => Array.isArray(n.videoList) ? p.concat(n.videoList) : p, []);
-      const vs = vList.filter(({ id }) => !vIds.includes(id)).map(({ id, keyId, name, xNum, yNum }) => ({
-        id: `${keyId}_@@video${Math.random()}`, // id中加入video来区别是否是视频点
-        vId: id,
-        name,
-        latlng: { lat: xNum, lng: yNum },
-        iconProps: {
-          iconSize: [32, 32],
-          iconAnchor: [16, 32],
-          className: styles.cameraContainer,
-          html: `<div class="${styles.camera}"></div>`,
-        },
-      }));
+    // 摄像头位置，暂时先不显示
+    // const videos = targetAgg.reduce((prev, next) => {
+    //   const vIds = prev.map(({ vId }) => vId);
+    //   const vList = next.reduce((p, n) => Array.isArray(n.videoList) ? p.concat(n.videoList) : p, []);
+    //   const vs = vList.filter(({ id }) => !vIds.includes(id)).map(({ id, keyId, name, xNum, yNum }) => ({
+    //     id: `${keyId}_@@video${Math.random()}`, // id中加入video来区别是否是视频点
+    //     vId: id,
+    //     name,
+    //     latlng: { lat: xNum, lng: yNum },
+    //     iconProps: {
+    //       iconSize: [32, 32],
+    //       iconAnchor: [16, 32],
+    //       className: styles.cameraContainer,
+    //       html: `<div class="${styles.camera}"></div>`,
+    //     },
+    //   }));
 
-      return vs.length ? [...prev, ...vs] : prev;
-    }, []);
+    //   return vs.length ? [...prev, ...vs] : prev;
+    // }, []);
 
     // console.log('agg', points);
-    return [...points, ...videos];
+    return points;
+    // return [...points, ...videos];
   }
 
   render() {
@@ -218,11 +223,8 @@ export default class LeafletMap extends PureComponent {
     const { data, images, reference } = this.state;
     const { count, inCardCount, outCardCount } = this.currentTrueSection || {};
 
-    // console.log(icons);
-
-    const currentAreaInfo = areaId && areaInfo[areaId] || {};
-    const parentId =  currentAreaInfo.parentId;
-    const currentTrueAreaInfo = trueAreaId && areaInfo[trueAreaId] || {}
+    const currentTrueAreaInfo = trueAreaId && areaInfo[trueAreaId] || {};
+    const { parentId, fullName }=  currentTrueAreaInfo;
     const icons = this.positionsToIcons();
 
     const imgDraw = (
@@ -247,7 +249,7 @@ export default class LeafletMap extends PureComponent {
         {imgDraw}
         {parentId && <Icon type="rollback" onClick={this.handleBack} className={styles.back} />}
         <div className={styles.mapInfo}>
-          <span className={styles.area}>当前区域: {currentTrueAreaInfo.fullName}</span>
+          <span className={styles.area}>当前区域: {fullName}</span>
           今日
           <span className={styles.enter}>进入: {inCardCount}人次</span>
           <span className={styles.exit}>出去: {outCardCount}人次</span>

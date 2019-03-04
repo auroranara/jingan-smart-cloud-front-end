@@ -36,6 +36,7 @@ export default class RealTime extends PureComponent {
     personInfoVisible: false, // 人员信息小弹框
     videoVisible: false, // 视频弹框
     videoKeyId: '',
+    videoKeyList: [],
     alarmDrawerVisible: false, // 报警列表抽屉
     lowPowerDrawerVisible: false, // 低电量报警抽屉
     personDrawerVisible: false, // 人员列表抽屉
@@ -43,10 +44,7 @@ export default class RealTime extends PureComponent {
   };
 
   componentDidMount() {
-    const {
-      dispatch,
-      companyId,
-    } = this.props;
+    const { dispatch, companyId, setAreaInfoCache } = this.props;
 
     this.connectWebSocket();
 
@@ -54,7 +52,8 @@ export default class RealTime extends PureComponent {
       type: 'personPosition/fetchSectionTree',
       payload: { companyId },
       callback: list => {
-        this.areaInfo = getAreaInfo(list);
+        const areaInfo = this.areaInfo = getAreaInfo(list);
+        setAreaInfoCache(areaInfo);
         // console.log(this.areaInfo);
         if (list.length) {
           const root = list[0];
@@ -128,6 +127,14 @@ export default class RealTime extends PureComponent {
 
   setAreaId = areaId => {
     // this.setState({ areaId });
+    const { personPosition: { sectionTree } } = this.props;
+
+    // areaId为null时则在厂区外，不属于任何区域
+    if (areaId === null)
+      areaId = sectionTree.length ? sectionTree[0].id : '';
+
+    if (!areaId)
+      return;
 
     const current = this.areaInfo[areaId];
     // 若当前区域为多层建筑，则显示其父区域，非多层建筑显示当前区域
@@ -155,6 +162,7 @@ export default class RealTime extends PureComponent {
       case WARNING_TYPE:
         this.handleAlarms(data);
         this.showNotifications(data);
+        this.handleAutoShowVideo(data);
         break;
       case AREA_STATUS_TYPE:
         this.handleAreaStatusChange(data);
@@ -275,8 +283,6 @@ export default class RealTime extends PureComponent {
 
   showNotification = alarm => {
     const { id, cardId, type, typeName, cardType, phoneNumber, visitorPhone, warningTime } = alarm;
-    const name = getUserName(alarm);
-    const phone = +cardType ? visitorPhone : phoneNumber;
 
     const [title, desc] = getAlarmDesc(alarm, this.areaInfo);
     notification.warning({
@@ -288,7 +294,9 @@ export default class RealTime extends PureComponent {
         <span
           className={styles.desc}
           onClick={e => {
+            console.log(alarm);
             this.showPersonInfoOrAlarmMsg(type, id, cardId);
+            this.handleAutoShowVideo(alarm);
             notification.close(id);
           }}
         >
@@ -355,6 +363,24 @@ export default class RealTime extends PureComponent {
     this.setState({ videoVisible: true, videoKeyId: keyId });
   };
 
+  handleAutoShowVideo = data => {
+    const { personPosition: { positionList } } = this.props;
+
+    // 如果data不是数组，则直接传入的就是alarm对象，如果不是数组，则传入的是alarm数组
+    let alarm = data;
+    if (Array.isArray(data))
+      alarm = data.find(({ cardId }) => cardId);
+    if (!alarm || !alarm.cardId)
+      return;
+
+    const card = positionList.find(({ cardId: id }) => id === alarm.cardId);
+    if (card) {
+      const { videoList } = card;
+      this.setState({ videoKeyList: videoList });
+      this.handleShowVideo(videoList.length ? videoList[0].keyId : '');
+    }
+  };
+
   handleHideVideo = () => {
     this.setState({
       videoVisible: false,
@@ -374,6 +400,7 @@ export default class RealTime extends PureComponent {
       labelIndex,
       companyId,
       selectedCardId,
+      areaInfoCache,
       personPosition: { sectionTree, positionList, positionAggregation, alarms },
       handleLabelClick,
       setSelectedCard,
@@ -390,6 +417,7 @@ export default class RealTime extends PureComponent {
       personInfoVisible,
       videoVisible,
       videoKeyId,
+      videoKeyList,
       alarmDrawerVisible,
       lowPowerDrawerVisible,
       personDrawerVisible,
@@ -399,7 +427,8 @@ export default class RealTime extends PureComponent {
     // console.log(sectionTree);
 
     const isTrack = this.isTargetTrack();
-    const areaInfo = this.areaInfo;
+    // const areaInfo = this.areaInfo;
+    const areaInfo = areaInfoCache;
 
     return (
       <div className={styles.container}>
@@ -425,6 +454,7 @@ export default class RealTime extends PureComponent {
                 areaInfo={areaInfo}
                 positions={positionList}
                 setSelectedCard={setSelectedCard}
+                handleLabelClick={handleLabelClick}
               />
             )}
           </div>
@@ -500,10 +530,10 @@ export default class RealTime extends PureComponent {
           handleClose={this.handleClose}
         />
         <VideoPlay
+          showList
           visible={videoVisible}
-          showList={false}
-          videoList={[]}
           keyId={videoKeyId}
+          videoList={videoKeyList}
           handleVideoClose={this.handleHideVideo}
         />
       </div>
