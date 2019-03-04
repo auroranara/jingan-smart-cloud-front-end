@@ -242,7 +242,7 @@ export default {
     // 风险点数组
     riskList: [],
     // 隐患排查数组
-    dangerList: [],
+    dangerList: {},
     // 动态监测
     monitorList: [],
     // 安全档案
@@ -321,13 +321,18 @@ export default {
     // 获取隐患列表
     *fetchHiddenDangerList({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerList, payload);
-      const { code, data } = response;
+      const { code, data: { list, pagination } } = response;
       if (code === 200) {
-        yield put({ type: 'saveHiddenDangerList', payload: data, append: payload.pageNum !== 1 });
-        yield put({
-          type: 'saveDangerList',
-          payload: data.list,
-        });
+        yield put({ type: 'saveHiddenDangerList', payload: { list, pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize }  }, append: payload.pageNum !== 1 });
+      }
+      callback && callback(response);
+    },
+    // 获取隐患列表
+    *fetchDangerList({ payload, callback }, { call, put }) {
+      const response = yield call(getHiddenDangerList, payload);
+      const { code, data: { list, pagination } } = response;
+      if (code === 200) {
+        yield put({ type: 'saveDangerList', payload: { list, pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize }  }, append: payload.pageNum !== 1 });
       }
       callback && callback(response);
     },
@@ -683,8 +688,20 @@ export default {
     saveRiskList(state, action) {
       return { ...state, riskList: action.payload };
     },
-    saveDangerList(state, action) {
-      return { ...state, dangerList: action.payload };
+    saveDangerList(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          dangerList: {
+            pagination: payload.pagination,
+            list: state.dangerList.list.concat(payload.list),
+          },
+        };
+      }
+      return {
+        ...state,
+        dangerList: payload,
+      };
     },
     saveMonitorList(state, action) {
       return { ...state, monitorList: handleMonitorList(action.payload) };
