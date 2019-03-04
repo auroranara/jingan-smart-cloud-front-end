@@ -66,7 +66,7 @@ export default class PersonInfo extends PureComponent {
           </h3>
           <p>电话：{phone || NO_DATA}</p>
           <p>卡号：{cardCode || NO_DATA}</p>
-          {departmentName && <p>部门：{departmentName}</p>}
+          {!isVisitor && <p>部门：{departmentName || '暂无信息'}</p>}
           <p>区域：{areaName || NO_DATA}</p>
         </div>
         <div className={styles.btns}>
