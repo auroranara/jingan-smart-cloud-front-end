@@ -68,14 +68,15 @@ export function getAreaId(wsData) {
 
 const ALARM = 2;
 // 生成新的树
-export function genTreeList(list, callback, deep=0) {
+export function genTreeList(list, callback, deep=0, parent=null) {
   return list.map(item => {
     const { children, ...restProps } =  item;
     const newItem = callback(restProps);
     newItem.indentLevel = deep;
+    newItem.parent = parent;
     newItem.range.options.color = newItem.status === ALARM ? '#F00' : '#00a8ff';
     if (children && children.length)
-      newItem.children = genTreeList(children, callback, deep + 1);
+      newItem.children = genTreeList(children, callback, deep + 1, newItem);
     return newItem;
   });
 }
