@@ -41,21 +41,10 @@ function formatData(list) {
     areaId,
     xpx: lng,
     ypx: lat,
+    cardType,
     locationStatusHistoryList,
   }, index) => {
-    const { sos, over, long } = locationStatusHistoryList ? locationStatusHistoryList.reduce((result, { status }) => {
-      if (!result.sos && +status === 1) {
-        result.sos = true;
-      }
-      else if (!result.over && +status === 2) {
-        result.over = true;
-      }
-      else if (!result.long && +status === 3) {
-        result.long = true;
-      }
-      return result;
-    }, {}) : {};
-    const isAlarm = sos || over || long;
+    const isAlarm = locationStatusHistoryList && locationStatusHistoryList.length > 0;
     return {
       id,
       xarea,
@@ -66,11 +55,10 @@ function formatData(list) {
       uptime: list[index+1] && list[index+1].intime === uptime? Math.max(uptime-1000, intime) : uptime,
       areaId,
       latlng: { lng, lat },
+      isVistor: +cardType === 1,
       isAlarm,
       options: { color: isAlarm ? '#ff4848' : '#00a8ff' },
-      sos,
-      over,
-      long,
+      locationStatusHistoryList,
     };
   });
 }

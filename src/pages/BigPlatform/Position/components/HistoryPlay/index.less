@@ -126,15 +126,35 @@
   user-select: none;
 }
 /* 警报tooltip */
-.alarmTooltip {
-  :global {
-    .ant-tooltip-inner {
-      box-shadow: 0 0 1em red;
-    }
+.alarm {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  padding: 6px 12px;
+  font-size: 16px;
+  color: #fff;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  background-color: #ff4848;
+  border-radius: 2em;
+  transform: translateX(-50%);
+
+  &:after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    margin-left: -5px;
+    border-width: 5px 5px 0;
+    border-style: solid;
+    border-color: transparent;
+    border-top-color: #ff4848;
   }
 }
 
 .person() {
+  position: relative;
   height: 100%;
   background: no-repeat center;
   background-size: 100% 100%;
@@ -162,7 +182,11 @@
   background-image: url('../../imgs/person1.png');
 }
 /* 访客 */
-.greenPerson {
+.redVistor {
   .person;
-  background-image: url('../../imgs/person.png');
+  background-image: url('../../imgs/visitorRed.png');
+}
+.blueVistor {
+  .person;
+  background-image: url('../../imgs/visitor.png');
 }

@@ -346,16 +346,23 @@ export default class HistoryPlay extends PureComponent {
     if (currentData) {
       // 获取位置
       const latlng = this.getCurrentPosition(currentIndex, currentTimeStamp);
-      const { id, cardType=0, isAlarm } = currentData;
+      const { id, isAlarm, isVistor, locationStatusHistoryList } = currentData;
+      const alarm = isAlarm && locationStatusHistoryList.reduce((result, { status }) => {
+        const label = alarmStatusDict[status];
+        label && result.push(label);
+        return result;
+      }, []).join('，');
       return [{
         id,
         latlng,
         iconProps: {
-          iconSize: [38, 40],
-          iconAnchor: [19, 35],
+          iconSize: [37, 37],
+          iconAnchor: isVistor ? [18.5, 32] : [18.5, 37],
           className: styles.personContainer,
           html: `
-            <div class="${styles[`${isAlarm?'red':(+cardType === 0?'blue':'green')}Person`]}"></div>
+            <div class="${styles[isVistor?(isAlarm?'redVistor':'blueVistor'):(isAlarm?'redPerson':'bluePerson')]}">
+              ${isAlarm ? `<div class="${styles.alarm}">${alarm}</div>` : ''}
+            </div>
           `,
         },
       }];
@@ -580,10 +587,13 @@ export default class HistoryPlay extends PureComponent {
   }
 
   /**
-   * 点击人员
+   * 点击
    */
-  handleClickPerson = () => {
-
+  handleClick = (e) => {
+    const { target: { options: { data: { intime }={} }={} } } = e;
+    if (intime) {
+      this.handleLocate({ currentTimeStamp: intime });
+    }
   }
 
   /**
@@ -616,6 +626,7 @@ export default class HistoryPlay extends PureComponent {
             zoomControl={false}
             mapProps={DEFAULT_MAP_PROPS}
             autoZoom
+            onClick={this.handleClick}
             {...drawProps}
           />
         </div>
