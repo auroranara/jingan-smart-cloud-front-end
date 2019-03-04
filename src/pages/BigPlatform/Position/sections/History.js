@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import moment from 'moment';
 import { mapMutations } from 'utils/utils';
 import { Scrollbars } from 'react-custom-scrollbars';
+import Ellipsis from '@/components/Ellipsis';
 // 引入样式文件
 import styles from './History.less';
 import { Tabs, HistoryPlay } from '../components/Components';
@@ -136,6 +137,7 @@ export default class History extends PureComponent {
     const { position: { data: { areaDataHistories=[], locationDataHistories=[] }={}, tree={} }, labelIndex, handleLabelClick } = this.props;
     const { range } = this.state;
     const [ startTime, endTime ] = range;
+    console.log(tree);
 
     return (
       <div className={styles.container}>
@@ -164,13 +166,13 @@ export default class History extends PureComponent {
                 <div className={styles.td}>区域楼层</div>
               </div>
               {areaDataHistories && areaDataHistories.length > 0 ? areaDataHistories.map(area => {
-                const { startTime: startTimeStamp, endTime: endTimeStamp, areaName, id } = area;
+                const { startTime: startTimeStamp, endTime: endTimeStamp, areaId, id } = area;
                 const changedStartTime = Math.max(startTimeStamp, startTime);
                 return (
                   <div className={styles.tr} key={id} intime={changedStartTime} onClick={this.handleClickTableRow}>
                     <div className={styles.td}>{moment(changedStartTime).format('HH:mm:ss')}</div>
                     <div className={styles.td}>{moment(Math.min(endTimeStamp, endTime)).format('HH:mm:ss')}</div>
-                    <div className={styles.td}>{areaName}</div>
+                    <div className={styles.td}><Ellipsis lines={1} tooltip className={styles.ellipsis}>{tree[areaId].fullName}</Ellipsis></div>
                   </div>
                 );
               }) : <div className={styles.emptyTr}><div className={styles.td}>暂无数据</div></div>}
