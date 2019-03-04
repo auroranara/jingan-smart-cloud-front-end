@@ -2,7 +2,7 @@ import { getList, getLatest, getTree } from '../services/position';
 import { queryInitialPositions } from '../services/bigPlatform/personPosition';
 
 // 格式化树
-function formatTree(list) {
+function formatTree(list, parentName) {
   return list.reduce((result, {
     companyMapPhoto,
     mapPhoto,
@@ -14,6 +14,7 @@ function formatTree(list) {
     mapId,
     children,
   }) => {
+    const fullName = parentName ? `${parentName}${name}` : name;
     return {
       url: !result.url && JSON.parse(companyMapPhoto).url,
       ...result,
@@ -22,12 +23,13 @@ function formatTree(list) {
         url: JSON.parse(mapPhoto).url,
         id,
         name,
+        fullName,
         parentId,
         companyMap,
         mapId,
         children: children ? children.map(({ id }) => id) : [],
       },
-      ...(children && formatTree(children)),
+      ...(children && formatTree(children, fullName)),
     };
   }, {});
 };
