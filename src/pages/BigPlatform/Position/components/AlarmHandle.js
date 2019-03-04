@@ -43,7 +43,7 @@ export default class AlarmHandle extends PureComponent {
     const prefix = isSOS ? <span className={styles.sos} /> : <span className={styles.alarmInfo} />;
 
     return (
-      <div className={isSOS ? styles.container : styles.container1} style={newStyle} {...restProps}>
+      <div className={styles.container} style={newStyle} {...restProps}>
         <h3 className={styles.title}>
           {prefix}
           <span className={styles.titleText}>{title}</span>

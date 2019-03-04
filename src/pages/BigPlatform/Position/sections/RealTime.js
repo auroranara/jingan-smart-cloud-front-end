@@ -1,13 +1,12 @@
 import React, { PureComponent } from 'react';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { stringify } from 'qs';
-import moment from 'moment';
 import { message, notification } from 'antd';
 
 import styles from './RealTime.less';
 import { AlarmHandle, AlarmMsg, MapInfo, PersonInfo, Tabs, VideoPlay } from '../components/Components';
-import { AlarmDrawer, LeafletMap, LowPowerDrawer, PersonDrawer, SectionList } from './Components';
-import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem, getAlarmItem, getUserName } from '../utils';
+import { AlarmDrawer, CardList, CardSelected, LeafletMap, LowPowerDrawer, PersonDrawer, SectionList } from './Components';
+import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem, getAlarmItem, getUserName, getAlarmDesc } from '../utils';
 
 const options = {
   pingTimeout: 30000,
@@ -27,7 +26,8 @@ const RE_WARNING_TYPE = "5";
 export default class RealTime extends PureComponent {
   state = {
     alarmId: undefined, // 警报id
-    areaId: undefined, // 地图选定的areaId
+    trueAreaId: undefined, // 实际选定的areaId，展示数据用的
+    areaId: undefined, // 地图显示的areaId，即当前真实areaId为多层建筑时，areaId设置为其父节点
     beaconId: undefined, // 信标id
     cardId: undefined, // 选中的人员id
     mapBackgroundUrl:undefined,
@@ -58,7 +58,8 @@ export default class RealTime extends PureComponent {
         // console.log(this.areaInfo);
         if (list.length) {
           const root = list[0];
-          this.setState({ areaId: root.id, mapBackgroundUrl: JSON.parse(root.mapPhoto).url });
+          const { id } = root;
+          this.setState({ areaId: id, trueAreaId: id, mapBackgroundUrl: root.mapPhoto.url });
         }
       },
     });
@@ -126,7 +127,14 @@ export default class RealTime extends PureComponent {
   };
 
   setAreaId = areaId => {
-    this.setState({ areaId });
+    // this.setState({ areaId });
+
+    const current = this.areaInfo[areaId];
+    // 若当前区域为多层建筑，则显示其父区域，非多层建筑显示当前区域
+    if (current.isBuilding)
+      this.setState({ areaId: current.parentId, trueAreaId: areaId });
+    else
+      this.setState({ areaId, trueAreaId: areaId });
   };
 
   handleWbData = wbData => {
@@ -170,7 +178,7 @@ export default class RealTime extends PureComponent {
   handleAreaAutoChange = data => {
     const { selectedCardId } = this.props;
     const changed = data.find(({ cardId }) => cardId === selectedCardId);
-    console.log(changed.areaId);
+    // console.log(changed.areaId);
     if (changed)
       this.setAreaId(changed.areaId);
   };
@@ -194,10 +202,17 @@ export default class RealTime extends PureComponent {
     const areaChangeMap = getAreaChangeMap(data);
     // console.log(areaChangeMap);
     const newSectionTree = genTreeList(sectionTree, item => {
-      const { id, count } = item;
-      const delta = areaChangeMap[id];
-      if (delta)
-        return { ...item, count: count + delta };
+      const { id, count, inCardCount, outCardCount } = item;
+      const  delta= areaChangeMap[id];
+      if (delta) {
+        const { enterDelta, exitDelta } = delta;
+        return {
+          ...item,
+          count: count + enterDelta - exitDelta,
+          inCardCount: inCardCount + enterDelta,
+          outCardCount: outCardCount + exitDelta,
+        };
+      }
       return item;
     });
     // console.log(newSectionTree);
@@ -262,11 +277,13 @@ export default class RealTime extends PureComponent {
     const { id, cardId, type, typeName, cardType, phoneNumber, visitorPhone, warningTime } = alarm;
     const name = getUserName(alarm);
     const phone = +cardType ? visitorPhone : phoneNumber;
+
+    const [title, desc] = getAlarmDesc(alarm, this.areaInfo);
     notification.warning({
       key: id,
       className: styles.note,
       placement: 'bottomLeft',
-      message: `报警提示 ${typeName}`,
+      message: `报警提示 ${title}`,
       description: (
         <span
           className={styles.desc}
@@ -275,7 +292,7 @@ export default class RealTime extends PureComponent {
             notification.close(id);
           }}
         >
-          {`${moment(warningTime).format('HH:mm')} ${name}【${phone}】越界`}
+          {desc}
         </span>
       ),
       duration: null,
@@ -345,8 +362,9 @@ export default class RealTime extends PureComponent {
     });
   };
 
-  handleTrack = cardId => {
+  handleTrack = (areaId, cardId) => {
     const { setSelectedCard, handleLabelClick } = this.props;
+    this.setAreaId(areaId);
     setSelectedCard(cardId);
     handleLabelClick(1);
   };
@@ -358,9 +376,11 @@ export default class RealTime extends PureComponent {
       selectedCardId,
       personPosition: { sectionTree, positionList, positionAggregation, alarms },
       handleLabelClick,
+      setSelectedCard,
     } = this.props;
     const {
       alarmId,
+      trueAreaId,
       areaId,
       beaconId,
       cardId,
@@ -379,14 +399,34 @@ export default class RealTime extends PureComponent {
     // console.log(sectionTree);
 
     const isTrack = this.isTargetTrack();
+    const areaInfo = this.areaInfo;
 
     return (
       <div className={styles.container}>
         <div className={styles.left}>
           <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
           <div className={styles.leftSection}>
-            {!labelIndex && <SectionList data={sectionTree} />}
-            {!!labelIndex && 'Track'}
+            {!labelIndex && (
+              <SectionList
+                data={sectionTree}
+                setAreaId={this.setAreaId}
+              />
+            )}
+            {!!labelIndex && !selectedCardId && (
+              <CardList
+                areaInfo={areaInfo}
+                positions={positionList}
+                handleTrack={this.handleTrack}
+              />
+            )}
+            {!!labelIndex && selectedCardId && (
+              <CardSelected
+                cardId={selectedCardId}
+                areaInfo={areaInfo}
+                positions={positionList}
+                setSelectedCard={setSelectedCard}
+              />
+            )}
           </div>
         </div>
         <div className={styles.right}>
@@ -394,17 +434,21 @@ export default class RealTime extends PureComponent {
             url={mapBackgroundUrl}
             isTrack={isTrack}
             selectedCardId={selectedCardId}
+            trueAreaId={trueAreaId}
             areaId={areaId}
-            areaInfo={this.areaInfo}
+            areaInfo={areaInfo}
             sectionTree={sectionTree}
             positions={positionList}
             aggregation={positionAggregation}
             setAreaId={this.setAreaId}
+            handleShowVideo={this.handleShowVideo}
             handleShowPersonInfo={this.handleShowPersonInfo}
             handleShowPersonDrawer={this.handleShowPersonDrawer}
           />
           <MapInfo
+            areaInfo={areaInfo}
             alarms={alarms}
+            sectionTree={sectionTree}
             positionList={positionList}
             showPersonInfoOrAlarmMsg={this.showPersonInfoOrAlarmMsg}
             handleShowAlarmDrawer={this.handleShowAlarmDrawer}
@@ -420,6 +464,7 @@ export default class RealTime extends PureComponent {
           />
           <AlarmMsg
             visible={alarmMsgVisible}
+            areaInfo={areaInfo}
             data={getAlarmItem(alarmId, alarms)}
             handleShowAlarmHandle={this.handleShowAlarmHandle}
             handleClose={this.handleClose}
@@ -435,6 +480,7 @@ export default class RealTime extends PureComponent {
           />
         </div>
         <AlarmDrawer
+          areaInfo={areaInfo}
           visible={alarmDrawerVisible}
           data={alarms}
           showPersonInfoOrAlarmMsg={this.showPersonInfoOrAlarmMsg}

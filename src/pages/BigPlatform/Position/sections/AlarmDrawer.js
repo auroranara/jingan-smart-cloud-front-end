@@ -7,19 +7,20 @@ import { getAlarmDesc } from '../utils';
 
 function AlarmCard(props) {
   const {
+    areaInfo,
     data,
     onClick,
     ...restProps
   } = props;
 
-  const [title, desc] = getAlarmDesc(data);
+  const [title, desc] = getAlarmDesc(data, areaInfo);
 
 
   return (
     <div className={styles.cardContainer} {...restProps}>
       <p className={styles.title}>{title}</p>
       <p>{desc}，请及时处理。</p>
-      <span className={styles.detail} onClick={onClick}>处理<Icon type="double-right" /></span>
+      <span className={styles.detail} onClick={onClick}>详情<Icon type="double-right" /></span>
     </div>
   );
 }
@@ -37,7 +38,7 @@ export default class AlarmDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, data } = this.props;
+    const { visible, areaInfo, data } = this.props;
     const list = Array.from(data);
     list.reverse();
     const left = (
@@ -45,6 +46,7 @@ export default class AlarmDrawer extends PureComponent {
         {list.map(item => (
           <AlarmCard
             key={item.id}
+            areaInfo={areaInfo}
             data={item}
             onClick={this.genClickCard(item)}
           />

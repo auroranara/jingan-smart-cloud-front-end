@@ -1,0 +1,87 @@
+@cyan: #0FF;
+
+.container {
+  padding: 0 2.5% 0 1.5%;
+  height: 100%;
+}
+
+.up {
+  padding-bottom: 20px;
+}
+
+.rect {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+  position: relative;
+  top: 2px;
+  background-color: @cyan;
+}
+
+.title {
+  color: #FFF;
+  height: 50px;
+  line-height: 50px;
+  padding-left: 20px;
+  margin-bottom: 0;
+  background-image: url(../imgs/titleBg.png);
+  background-size: 33% 100%;
+  background-repeat: no-repeat;
+}
+
+.info {
+  padding: 20px 0 0 45%;
+  height: 210px;
+  position: relative;
+
+  .name {
+    font-size: 20px;
+  }
+
+  p {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  p:last-child {
+    margin-bottom: 20px;
+  }
+}
+
+.avatar {
+  width: 128px;
+  height: 160px;
+  position: absolute;
+  top: 23px;
+  left: 10%;
+  background-image: url(../imgs/zhang.png);
+  background-size: 100% 100%;
+}
+
+.visitorAvatar:extend(.avatar) {
+  background-image: url(../imgs/visitorAvatar.png);
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.btns {
+  padding: 0 10%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.btn {
+  color: @cyan;
+  border-color: @cyan;
+}
+
+.down {
+  height: calc(100% - 312px);
+  border-top: 1px solid @cyan;
+}
+
+.video {
+  height: calc(100% - 80px);
+}

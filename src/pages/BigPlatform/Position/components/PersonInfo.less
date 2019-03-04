@@ -1,13 +1,25 @@
 .container {
   color: #FFF;
-  // padding:10px 50px 15px 170px;
-  padding:10px 50px 70px 170px;
+  padding: 10px 50px 25px 0;
   position: absolute;
   top: 20px;
   right: 20px;
   background-image: url(../imgs/personCard.png);
   background-size: 100% 100%;
   z-index: 999;
+}
+
+.close {
+  color: #FFF;
+  font-size: 16;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+}
+
+.info {
+  padding: 0 0 10px 170px;
 
   p {
     margin-bottom: 10px;
@@ -32,7 +44,7 @@
   background-size: 100% 100%;
 }
 
-.img {
+.avatar {
   width: 120px;
   height: 150px;
   position: absolute;
@@ -40,4 +52,22 @@
   top: 20px;
   background-image: url(../imgs/zhang.png);
   background-size: 100% 100%;
+}
+
+.visitorAvatar:extend(.avatar) {
+  background-image: url(../imgs/visitorAvatar.png);
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.btns {
+  display: flex;
+  padding-left: 50px;
+  justify-content: space-around;
+}
+
+.btn {
+  color: rgb(4, 253, 255);
+  border-color: rgb(4, 253, 255);
 }

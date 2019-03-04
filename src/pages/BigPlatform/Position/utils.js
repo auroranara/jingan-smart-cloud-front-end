@@ -142,7 +142,7 @@ export function findInTree(targetValue, list, prop='id') {
 
 export function parseImage(section) {
   let { id, mapPhoto, range } = section;
-  range = range || '{}';
+  range = range || {};
   return { id, url: mapPhoto.url, ...range };
 }
 
@@ -150,11 +150,20 @@ export function getAreaChangeMap(list) {
   return list.reduce((prev, next) => {
     const { areaId, type } = next;
     // 1 进入 2 离开
-    const delta = +type === 1 ? 1 : -1;
-    if (prev[areaId])
-      prev[areaId] += delta;
-    else
-      prev[areaId] = delta;
+    // const delta = +type === 1 ? 1 : -1;
+    const isEnter = +type === 1;
+    if (prev[areaId]) {
+      if (isEnter)
+        prev[areaId].enterDelta += 1;
+      else
+        prev[areaId].exitDelta += 1;
+    }
+    else {
+      if (isEnter)
+        prev[areaId] = { enterDelta: 1, exitDelta: 0 };
+      else
+        prev[areaId] = { enterDelta: 0, exitDelta: 1 };
+    }
     return prev;
   }, {});
 }
@@ -179,17 +188,31 @@ function getChildIds(tree, cache) {
   return childIds;
 }
 
-function traverse(list, callback, parentId=null) {
+// function traverse(list, callback, parentId=null) {
+//   list.forEach(item => {
+//     const { id, children } = item;
+//     callback(item, parentId);
+//     if (Array.isArray(children))
+//       traverse(children, callback, id);
+//   });
+// }
+
+function traverse(list, callback, parents=[]) {
   list.forEach(item => {
-    const { id, children } = item;
-    callback(item, parentId);
-    if (Array.isArray(children))
-      traverse(children, callback, id);
+    const { children } = item;
+    callback(item, parents);
+    if (Array.isArray(children)) {
+      const nextParents = [...parents, item];
+      traverse(children, callback, nextParents);
+    }
   });
 }
 
 // 本身用的单位平面图，但是子节点用的是楼层图，则为多层建筑物，此处简化处理，认为平面图就一张，mapId相同的为单位平面图，不同的为楼层平面图
 function isBuilding(mapId, childMapId, companyMapId) {
+  // 没有子节点则肯定为最底层的，必然为区域
+  if (!childMapId)
+    return false;
   const isCompanyMap = mapId === companyMapId;
   const isFirstChildFloor = childMapId !== companyMapId;
   if (isCompanyMap && isFirstChildFloor)
@@ -198,43 +221,82 @@ function isBuilding(mapId, childMapId, companyMapId) {
 }
 
 // 将区域树打平成一个Map对象，areaId => { name, parent, childIds }
+// export function getAreaInfo(list) {
+//   const cache = {};
+//   const areaInfo = {};
+//   traverse(list, (item, parentId) => {
+//     const { id, name, companyMap, mapId, children } = item;
+//     const first = children && children.length ? children[0] : {};
+//     areaInfo[id] = {
+//       id,
+//       name,
+//       parentId,
+//       isBuilding: isBuilding(mapId, first.mapId, companyMap),
+//       childIds : getChildIds(item, cache),
+//     };
+//   });
+
+//   return areaInfo;
+// }
+
 export function getAreaInfo(list) {
   const cache = {};
   const areaInfo = {};
-  traverse(list, (item, parentId) => {
+  traverse(list, (item, parents) => {
     const { id, name, companyMap, mapId, children } = item;
-    const first = children && children.length ? children[0] : {};
+    const length = parents.length;
+    const parent = length ? parents[length - 1] : {};
+    const firstChild = children && children.length ? children[0] : {};
+    const nodeList = [...parents, item]; // 从父节点到当前节点走过的路径的所有节点的数组
     areaInfo[id] = {
       id,
       name,
-      parentId,
-      isBuilding: isBuilding(mapId, first.mapId, companyMap),
+      fullName: nodeList.map(({ name }) => name).join('-'),
+      parentId: parent.id || null,
+      isBuilding: isBuilding(mapId, firstChild.mapId, companyMap),
       childIds : getChildIds(item, cache),
+      images: getMapImages(nodeList),
     };
   });
 
   return areaInfo;
 }
 
-export function getAlarmDesc(item) {
-  const { type, typeName, cardType, cardCode, userName, areaName, warningTime } = item;
+// 生成从顶层到当前节点的所有不同mapId的图
+function getMapImages(list) {
+  // console.log(list);
+  const { companyMap } = list[0];
+  const [images, lastMapId] = list.reduce((prev, next) => {
+    const { mapId } = next;
+    if (mapId !== prev[1])
+      prev[0].push(parseImage(next));
+      prev[1] = mapId;
+    return prev;
+  }, [[], companyMap]);
+
+  return images;
+}
+
+export function getAlarmDesc(item, areaInfo) {
+  const { areaId, type, typeName, cardType, cardCode, userName, warningTime } = item;
 
   const time = moment(warningTime).format('HH:mm');
   const title = `【${typeName}】 ${time}`;
 
   let desc = ''
   const name = `${+cardType ? '访客' : userName}(${cardCode})`;
+  const areaName = areaId && areaInfo[areaId] ? areaInfo[areaId].fullName : '外围区域';
 
   // 1 sos 2 越界  3 长时间不动 4 超员 5 缺员
   switch(+type) {
     case 1:
-      desc = `${name} 发起求救信号`;
+      desc = `${name}在${areaName}发起求救信号`;
       break;
     case 2:
-      desc = `${name} 进入电子围栏`;
+      desc = `${name}进入${areaName}`;
       break;
     case 3:
-      desc = `${name} 长时间静止`;
+      desc = `${name}在${areaName}长时间静止`;
       break;
     case 4:
       desc = `${areaName} 区域超员`;
@@ -253,4 +315,13 @@ export function getAlarmDesc(item) {
 export function getUserName(item) {
   const { cardType, userName, visitorName } = item;
   return +cardType ? `访客${visitorName ? `-${visitorName}` : ''}` : userName;
+}
+
+// 0 区域 1 视频 2 人
+export function getMapClickedType(id) {
+  if (!id)
+    return 0;
+  if (id.includes('_@@video'))
+    return 1;
+  return 2;
 }

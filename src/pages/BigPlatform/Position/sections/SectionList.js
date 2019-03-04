@@ -24,26 +24,6 @@ const statusLabel = {
   '2': '报警',
 };
 
-// 表格列
-const columns = [
-  {
-    title: '区域名称',
-    dataIndex: 'name',
-    width: '50%',
-  },
-  {
-    title: '当前人数',
-    dataIndex: 'count',
-    width: '30%',
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    render: (status) => <span style={+status === 2 ? { color: '#ff4848' } : undefined}>{statusLabel[status] || '安全'}</span>,
-    width: '20%',
-  },
-];
-
 // const DATA = [{
 //   id: 1,
 //   areaName: '东厂区',
@@ -161,11 +141,47 @@ export default class RealTimeMonitor extends PureComponent {
     const {
       // 表格源数据
       data=[],
+      setAreaId,
       ...restProps
     } = this.props;
     const { areaName, status } = this.state;
     // 筛选数据
     const list = filterDataByAreaNameAndStatus(data, areaName, status);
+
+    // 表格列
+    const columns = [
+      {
+        title: '区域名称',
+        dataIndex: 'name',
+        // width: '50%',
+      },
+      {
+        title: '当前人数',
+        dataIndex: 'count',
+        // width: '30%',
+      },
+      {
+        title: '进入人次',
+        dataIndex: 'inCardCount',
+      },
+      {
+        title: '出去人次',
+        dataIndex: 'outCardCount',
+      },
+      {
+        title: '状态',
+        dataIndex: 'status',
+        render: (status, record) => (
+          <span
+            className={styles[+status === 2 ? 'tableRed' : 'tableSafe']}
+            onClick={e => setAreaId(record.id)}
+          >
+            {statusLabel[status] || '安全'}
+          </span>
+        ),
+        // width: '20%',
+      },
+    ];
 
     return (
       <div className={styles.container} {...restProps}>
