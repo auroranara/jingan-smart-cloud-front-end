@@ -846,6 +846,18 @@ module.exports = env => {
                   name: 'detail',
                   component: './DeviceManagement/VideoMonitor/VideoMonitorDetail',
                 },
+                {
+                  path: '/device-management/video-monitor/associate/:id',
+                  code: 'deviceManagement.videoMonitor.associate',
+                  name: 'associate',
+                  component: './DeviceManagement/VideoMonitor/AssociateDevice',
+                },
+                {
+                  path: '/device-management/video-monitor/associate/:id/add',
+                  code: 'deviceManagement.videoMonitor.addAssociate',
+                  name: 'addAssociate',
+                  component: './DeviceManagement/VideoMonitor/AddAssociate',
+                },
                 // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
               ],
             },

@@ -264,6 +264,13 @@ export default class VideoEquipmentList extends PureComponent {
                     >
                       编辑
                     </AuthLink>,
+                    <AuthLink
+                    code={codesMap.deviceManagement.videoMonitor.associate}
+                    codes={codes}
+                    to={`/device-management/video-monitor/associate/${id}?name=${equipmentListName}&&companyId=${companyId}`}
+                  >
+                    关联设备
+                  </AuthLink>,
                   ]}
                 >
                   <Row>
@@ -349,8 +356,8 @@ export default class VideoEquipmentList extends PureComponent {
           {total}
         </span>
       ) : (
-        <span>视频总数：0</span>
-      );
+          <span>视频总数：0</span>
+        );
 
     return (
       <PageHeaderLayout title={equipmentListName} breadcrumbList={breadcrumbList} content={content}>
