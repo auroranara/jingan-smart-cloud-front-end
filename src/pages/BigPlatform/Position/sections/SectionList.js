@@ -191,7 +191,7 @@ export default class RealTimeMonitor extends PureComponent {
         <Scrollbars style={{ width: '100%', height: '100%' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
           <div style={{ padding: '0 20px' }}>
             <Row gutter={16}>
-              <Col span={14} style={{ marginBottom: 12 }}>
+              {/* <Col span={14} style={{ marginBottom: 12 }}> */}
                 {/* 搜索区域名称 */}
                 {/* <Search
                   className={styles.search}
@@ -201,20 +201,28 @@ export default class RealTimeMonitor extends PureComponent {
                   onChange={this.handleChangeAreaName}
                   onSearch={this.handleSearchByAreaName}
                 /> */}
+                {/* <Input
+                  className={styles.search}
+                  placeholder="搜索区域名称"
+                  value={areaName}
+                  onChange={this.handleChangeAreaName}
+                />
+              </Col> */}
+              {/* <Col span={10} style={{ marginBottom: 12 }}> */}
+                {/* 状态下拉框 */}
+                {/* <Select suffixIcon={<Icon type="caret-down" style={{ color: '#b5b7ba' }} />} className={styles.select} dropdownClassName={styles.dropdown} placeholder="请选择状态" value={status} style={{ width: '100%' }} onChange={this.handleChangeStatus} allowClear>
+                  {statuses.map(({ id, label }) => (
+                    <Option value={id} key={id}>{label}</Option>
+                  ))}
+                </Select>
+              </Col> */}
+              <Col span={24} style={{ marginBottom: 12 }}>
                 <Input
                   className={styles.search}
                   placeholder="搜索区域名称"
                   value={areaName}
                   onChange={this.handleChangeAreaName}
                 />
-              </Col>
-              <Col span={10} style={{ marginBottom: 12 }}>
-                {/* 状态下拉框 */}
-                <Select suffixIcon={<Icon type="caret-down" style={{ color: '#b5b7ba' }} />} className={styles.select} dropdownClassName={styles.dropdown} placeholder="请选择状态" value={status} style={{ width: '100%' }} onChange={this.handleChangeStatus} allowClear>
-                  {statuses.map(({ id, label }) => (
-                    <Option value={id} key={id}>{label}</Option>
-                  ))}
-                </Select>
               </Col>
             </Row>
             <Table
