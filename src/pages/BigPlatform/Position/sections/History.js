@@ -164,7 +164,6 @@ export default class History extends PureComponent {
     } = this.props;
     const { range } = this.state;
     const [ startTime, endTime ] = range;
-    console.log(tree);
 
     return (
       <div className={styles.container}>
