@@ -97,7 +97,8 @@ export default class RealTime extends PureComponent {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const params = {
       companyId,
-      env: 'dev',
+      env,
+      // env: 'dev',
       type: 2,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
@@ -361,7 +362,7 @@ export default class RealTime extends PureComponent {
   };
 
   handleCloseAlarmDrawer = e => {
-    this.setState({ alarmDrawerVisible: false, showSOSAlarm: false });
+    this.setState({ alarmDrawerVisible: false });
   };
 
   handleShowVideo = keyId => {
@@ -380,10 +381,10 @@ export default class RealTime extends PureComponent {
       return;
 
     const card = positionList.find(({ cardId: id }) => id === alarm.cardId);
-    if (card) {
+    if (card && card.videoList && card.videoList.length) {
       const { videoList } = card;
       this.setState({ videoKeyList: videoList });
-      this.handleShowVideo(videoList.length ? videoList[0].keyId : '');
+      this.handleShowVideo(videoList[0].keyId);
     }
   };
 
@@ -498,6 +499,7 @@ export default class RealTime extends PureComponent {
             <PersonInfo
               visible={personInfoVisible}
               companyId={companyId}
+              areaInfo={areaInfo}
               alarms={alarms}
               personItem={getPersonInfoItem(cardId, positionList)}
               handleTrack={this.handleTrack}

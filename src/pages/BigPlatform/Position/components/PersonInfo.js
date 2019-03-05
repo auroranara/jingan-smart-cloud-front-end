@@ -35,6 +35,7 @@ export default class PersonInfo extends PureComponent {
     const {
       visible,
       companyId,
+      areaInfo,
       alarms,
       personItem,
       style,
@@ -44,10 +45,11 @@ export default class PersonInfo extends PureComponent {
       ...restProps
     } = this.props;
 
-    const { sos: isSOS, cardType, phoneNumber, visitorPhone, cardCode, areaName, departmentName } = personItem;
+    const { sos: isSOS, cardType, phoneNumber, visitorPhone, cardCode, areaId, departmentName } = personItem;
     const isVisitor = !!+cardType;
     const name = getUserName(personItem);
     const phone = isVisitor ? visitorPhone : phoneNumber;
+    const areaName = areaInfo[areaId] ? areaInfo[areaId].fullName : NO_DATA;
 
     const newStyle = {
       // paddingBottom: isSOS ? 70 : 15,
@@ -66,8 +68,8 @@ export default class PersonInfo extends PureComponent {
           </h3>
           <p>电话：{phone || NO_DATA}</p>
           <p>卡号：{cardCode || NO_DATA}</p>
-          {!isVisitor && <p>部门：{departmentName || '暂无信息'}</p>}
-          <p>区域：{areaName || NO_DATA}</p>
+          {!isVisitor && <p>部门：{departmentName || NO_DATA}</p>}
+          <p>区域：{areaName}</p>
         </div>
         <div className={styles.btns}>
           {isSOS && <Button ghost className={styles.btn} onClick={this.handleAlarmClick}>处理</Button>}

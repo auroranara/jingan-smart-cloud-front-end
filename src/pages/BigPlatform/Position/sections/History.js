@@ -181,7 +181,7 @@ export default class History extends PureComponent {
                 filterOption={this.cardFilter}
                 onChange={this.handleCardChange}
               >
-                {cards.map(card => <Option key={card.cardId} value={card.cardId}>{`${getUserName(card)}(${card.cardCode})`}</Option>)}
+                {cards.map(card => <Option key={card.cardId} value={card.cardId}>{`${getUserName(card, true)}(${card.cardCode})`}</Option>)}
               </Select>
               <RangePicker
                 dropdownClassName={styles.rangePickerDropDown}
