@@ -251,11 +251,11 @@ export default class HistoryPlay extends PureComponent {
    */
   getImages = (currentIndex) => {
     const { tree, data } = this.props;
+    const currentData = data[currentIndex];
     // 如果对应数据不存在，则不做任何操作
-    if (data[currentIndex]) {
-      const { areaId } = data[currentIndex];
+    if (currentData && currentData.areaId) {
       // 根据当前时间节点所在的区域id获取到区域对象
-      let image = tree[areaId];
+      let image = tree[currentData.areaId];
       const images = [];
       // 循环获取父区域直到最顶层，通过比较父子区域的图片，将不同的图片插入数组
       while (image) {
@@ -314,12 +314,12 @@ export default class HistoryPlay extends PureComponent {
    */
   getAreas = (currentIndex) => {
     const { tree, data } = this.props;
-    if (data[currentIndex]) {
+    const currentData = data[currentIndex];
+    if (currentData && currentData.areaId) {
       // 没办法根据区域有没有图片来判断它是不是楼层
       // 关键在于判断当前区域是否为建筑？？？
       // 当前区域肯定要渲染，关键是渲染成黑（即作为当前选中区域）还是蓝（即作为子区域）的
-      const { areaId } = data[currentIndex];
-      const currentArea = tree[areaId];
+      const currentArea = tree[currentData.areaId];
       // 暂时先根据children都有图片来判断它是建筑，即list的长度为0
       const list = currentArea.children.reduce((arr, id) => {
         const item = tree[id];
@@ -410,8 +410,9 @@ export default class HistoryPlay extends PureComponent {
    */
   getReference = (currentIndex) => {
     const { data, tree } = this.props;
-    if (data[currentIndex]) {
-      return tree[data[currentIndex].areaId];
+    const currentData = data[currentIndex];
+    if (currentData) {
+      return tree[currentData.areaId];
     }
   }
 
