@@ -258,8 +258,8 @@ export default class LeafletMap extends PureComponent {
           当前人数: {count}
         </div>
         <div className={styles.legends}>
-          <span className={styles.visitorLgd}>访客</span>
-          <span className={styles.generalLgd}>普通人员</span>
+          <div className={styles.visitorLgd}>访客</div>
+          <div className={styles.generalLgd}>普通人员</div>
         </div>
       </div>
     );

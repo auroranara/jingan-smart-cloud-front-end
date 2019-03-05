@@ -185,10 +185,10 @@
 }
 
 .legends {
-  width: 390px;
-  height: 50px;
+  width: 200px;
+  height: 40px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 5px;
@@ -202,21 +202,18 @@
 }
 
 .visitorLgd, .generalLgd {
-  color: #FFF;
-}
-
-.visitorLgd::before, .generalLgd::before {
-  width: 22px;
   height: 22px;
-  background-size: 100% 100%;
+  line-height: 22px;
+  color: #FFF;
+  padding-left: 30px;
+  background: no-repeat left;
+  background-size: 22px 22px;
 }
 
-.visitorLgd::before {
+.visitorLgd {
   background-image: url(../imgs/visitorAvatar.png);
 }
 
-.generalLgd::before {
+.generalLgd {
   background-image: url(../imgs/person1.png);
 }
-
-
