@@ -297,7 +297,7 @@ export default class RealTime extends PureComponent {
         <span
           className={styles.desc}
           onClick={e => {
-            console.log(alarm);
+            // console.log(alarm);
             this.showPersonInfoOrAlarmMsg(type, id, cardId);
             this.handleAutoShowVideo(alarm);
             notification.close(id);

@@ -189,7 +189,7 @@ export default class RealTimeMonitor extends PureComponent {
     return (
       <div className={styles.container} {...restProps}>
         <Scrollbars style={{ width: '100%', height: '100%' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
-          <div style={{ padding: '0 20px' }}>
+          <div className={styles.inner}>
             <Row gutter={16}>
               {/* <Col span={14} style={{ marginBottom: 12 }}> */}
                 {/* 搜索区域名称 */}
@@ -225,19 +225,21 @@ export default class RealTimeMonitor extends PureComponent {
                 />
               </Col>
             </Row>
-            <Table
-              className={styles.table}
-              size="small"
-              columns={columns}
-              dataSource={list}
-              pagination={false}
-              bordered={false}
-              rowKey={'id'}
-              defaultExpandAllRows
-              rowClassName={styles.tableRow}
-              expandIcon={this.renderExpandIcon}
-              indentSize={20}
-            />
+            <div className={styles.tableContainer}>
+              <Table
+                className={styles.table}
+                size="small"
+                columns={columns}
+                dataSource={list}
+                pagination={false}
+                bordered={false}
+                rowKey={'id'}
+                defaultExpandAllRows
+                rowClassName={styles.tableRow}
+                expandIcon={this.renderExpandIcon}
+                indentSize={20}
+              />
+            </div>
           </div>
         </Scrollbars>
       </div>
