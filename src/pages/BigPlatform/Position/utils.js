@@ -93,8 +93,8 @@ export function genTreeList(list, callback, deep=0, parent=null) {
 
 export function getSectionTree(list) {
   return genTreeList(list, item => {
-    const { id, name, cardCount, lackStatus, outstripStatus, overstepStatus, tLongStatus, mapPhoto, range, ...restProps } = item;
-    const status = lackStatus || outstripStatus || overstepStatus || tLongStatus ? 2 : 1;
+    const { id, name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, mapPhoto, range, ...restProps } = item;
+    const status = lackStatus || outstripStatus || overstepStatus || tlongStatus ? 2 : 1;
     return {
       id,
       name,
