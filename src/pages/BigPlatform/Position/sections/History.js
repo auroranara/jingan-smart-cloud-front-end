@@ -209,7 +209,7 @@ export default class History extends PureComponent {
                   <div className={styles.tr} key={id} intime={changedStartTime} onClick={this.handleClickTableRow}>
                     <div className={styles.td}>{moment(changedStartTime).format('HH:mm:ss')}</div>
                     <div className={styles.td}>{moment(Math.min(endTimeStamp, endTime)).format('HH:mm:ss')}</div>
-                    <div className={styles.td}><Ellipsis lines={1} tooltip className={styles.ellipsis}>{tree[areaId].fullName}</Ellipsis></div>
+                    <div className={styles.td}><Ellipsis lines={1} tooltip className={styles.ellipsis}>{tree[areaId] ? tree[areaId].fullName : '厂外'}</Ellipsis></div>
                   </div>
                 );
               }) : <div className={styles.emptyTr}><div className={styles.td}>暂无数据</div></div>}
