@@ -349,7 +349,7 @@ const PERSON_ALARM_TYPES = ['SOS', '越界', '长时间不动'];
 export function getPersonAlarmTypes(ps) {
   const types = [0, 0, 0];
   for (const p of ps) {
-    ['sos', 'overstep', 'tLong'].forEach((prop, i) => {
+    ['sos', 'overstep', 'tlong'].forEach((prop, i) => {
       if (p[prop])
         types[i] = 1;
     })

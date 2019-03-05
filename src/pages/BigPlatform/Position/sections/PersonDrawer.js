@@ -6,12 +6,12 @@ import { getUserName } from '../utils';
 
 function PersonCard(props) {
   const { data, ...restProps } = props;
-  const { cardType, cardCode, phoneNumber, visitorPhone, sos, lowPower, tlong, tLong, overstep, onlineStatus } = data;
+  const { cardType, cardCode, phoneNumber, visitorPhone, sos, lowPower, tlong, overstep, onlineStatus } = data;
   const name = getUserName(data);
   const isVisitor = !!+cardType;
   const isOnline = !!+onlineStatus;
   const phone = isVisitor ? visitorPhone : phoneNumber;
-  const isAlarm = sos || lowPower || tlong || tLong || overstep;
+  const isAlarm = sos || lowPower || tlong || overstep;
   const avatarClass = `${isVisitor ? 'visitorAvatar' : 'avatar'}${isOnline ? '' : 'Off'}`;
 
   return (
