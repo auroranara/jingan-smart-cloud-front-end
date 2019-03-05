@@ -47,7 +47,7 @@ export default class CardList extends PureComponent {
       list = positions.filter(({ userName, visitorName, cardCode }) => [userName, visitorName, cardCode.toString()].some(s => s && s.includes(value)));
 
     const dataSource = list.map(p => {
-      const { areaId, cardId, cardCode, sos, tlong, overstep, onlineStatus } = p;
+      const { areaId, cardId, cardCode, sos, tLong, overstep, onlineStatus } = p;
       const name = getUserName(p, true);
       return {
         id: cardId,
@@ -55,7 +55,7 @@ export default class CardList extends PureComponent {
         name,
         fullName: areaInfo[areaId].fullName,
         code: cardCode,
-        status: sos || tlong || overstep, // true 火警 false 正常
+        status: sos || tLong || overstep, // true 火警 false 正常
         online: +onlineStatus === ONLINE,
       };
     });

@@ -83,10 +83,10 @@ export function genTreeList(list, callback, deep=0, parent=null) {
 
 // export function handleSectionTree(list) {
 //   traverse(list, (item, deep) => {
-//     const { name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus } = item;
+//     const { name, cardCount, lackStatus, outstripStatus, overstepStatus, tLongStatus } = item;
 //     item.name = name;
 //     item.count = cardCount;
-//     item.status = lackStatus || outstripStatus || overstepStatus || tlongStatus ? 0 : 1;
+//     item.status = lackStatus || outstripStatus || overstepStatus || tLongStatus ? 0 : 1;
 //     item.indentLevel = deep;
 //   });
 // }
@@ -349,7 +349,7 @@ const PERSON_ALARM_TYPES = ['SOS', '越界', '长时间不动'];
 export function getPersonAlarmTypes(ps) {
   const types = [0, 0, 0];
   for (const p of ps) {
-    ['sos', 'overstep', 'tlong'].forEach((prop, i) => {
+    ['sos', 'overstep', 'tLong'].forEach((prop, i) => {
       if (p[prop])
         types[i] = 1;
     })
