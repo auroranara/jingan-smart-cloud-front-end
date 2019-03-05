@@ -73,6 +73,8 @@ export default {
       };
     },
     saveAlarms(state, action) {
+      const list = action.payload;
+      list.sort((a1, a2) => a2.warningTime - a1.warningTime);
       return {
         ...state,
         alarms: action.payload,
