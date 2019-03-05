@@ -63,7 +63,7 @@ export default {
   reducers: {
     savePositions(state, action) {
       let { payload: list } = action;
-      list = list.filter(({ onlineStatus }) => +onlineStatus); // 过滤掉不在线的人，onlineStatus 1 在线  0 离线
+      // list = list.filter(({ onlineStatus }) => +onlineStatus); // 过滤掉不在线的人，onlineStatus 1 在线  0 离线
       const aggList = genAggregation(list);
       // console.log('agg', list, aggList);
       return {

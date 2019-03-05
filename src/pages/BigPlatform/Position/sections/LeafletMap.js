@@ -4,7 +4,7 @@ import { connect } from 'dva';
 
 import styles from './LeafletMap.less';
 import ImageDraw, { L } from '@/components/ImageDraw';
-import { findInTree, parseImage, getUserName, getMapClickedType, getPersonAlarmTypes } from '../utils';
+import { findInTree, parseImage, getUserName, getMapClickedType, getPersonAlarmTypes, getIconClassName } from '../utils';
 
 @connect(({ zoning, loading }) => ({
   zoning,
@@ -166,15 +166,16 @@ export default class LeafletMap extends PureComponent {
     const points =  targetAgg.map(ps => {
       const first = ps[0];
       const length = ps.length;
-      const { xarea, yarea, beaconId, cardType } = first;
+      const { xarea, yarea, beaconId, cardType, onlineStatus } = first;
       const isSingle = length === 1;
       const isVisitor = !!+cardType;
+      const isOnline = !!+onlineStatus;
 
       // const isSOS = ps.some(({ sos }) => sos);
       // const isAlarm = ps.some(({ sos, overstep, tlong }) => sos || overstep || tlong);
       const alarmTypes = getPersonAlarmTypes(ps);
       const isAlarm = !!alarmTypes;
-      const containerClassName = `${isSingle ? (isVisitor ? 'visitor' : 'person') : 'people'}${isAlarm ? 'Red' : ''}`;
+      const containerClassName = getIconClassName(isSingle, isVisitor, isOnline, isAlarm);
       const firstName = getUserName(first);
       const name = ps.slice(0, 5).map(getUserName).join(',');
       const showName = isSingle ? firstName : length;
