@@ -83,18 +83,18 @@ export function genTreeList(list, callback, deep=0, parent=null) {
 
 // export function handleSectionTree(list) {
 //   traverse(list, (item, deep) => {
-//     const { name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus } = item;
+//     const { name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus } = item;
 //     item.name = name;
 //     item.count = cardCount;
-//     item.status = lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 0 : 1;
+//     item.status = lackStatus || outstripStatus || overstepStatus || tlongStatus ? 0 : 1;
 //     item.indentLevel = deep;
 //   });
 // }
 
 export function getSectionTree(list) {
   return genTreeList(list, item => {
-    const { id, name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus, mapPhoto, range, ...restProps } = item;
-    const status = lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 2 : 1;
+    const { id, name, cardCount, lackStatus, outstripStatus, overstepStatus, tlongStatus, mapPhoto, range, ...restProps } = item;
+    const status = lackStatus || outstripStatus || overstepStatus || tlongStatus ? 2 : 1;
     return {
       id,
       name,
@@ -358,4 +358,18 @@ export function getPersonAlarmTypes(ps) {
   }
 
   return types.map((n, i) => n ? PERSON_ALARM_TYPES[i] : '').filter(s => s).join(',');
+}
+
+export function getIconClassName(isSingle, isVisitor, isOnline, isAlarm) {
+  let suffix = isAlarm ? 'Red' : '';
+  // 多人报警
+  if (!isSingle)
+    return `people${suffix}`;
+
+  suffix = isOnline ? (isAlarm ? 'Red' : '') : 'Off';
+  // 其余均为单人情况
+  // 单人 && 访客
+  if (isVisitor)
+    return `visitor${suffix}`;
+  return `person${suffix}`;
 }

@@ -236,8 +236,8 @@ export default class RealTime extends PureComponent {
       const { id } = item;
       const target = data.find(({ id: areaId }) => areaId === id);
       if (target) {
-        const { lackStatus, outstripStatus, overstepStatus, tlongStatus, waitLackStatus } = target;
-        return { ...item, status: lackStatus || outstripStatus || overstepStatus || tlongStatus || waitLackStatus ? 2 : 1 };
+        const { lackStatus, outstripStatus, overstepStatus, tlongStatus } = target;
+        return { ...item, status: lackStatus || outstripStatus || overstepStatus || tlongStatus ? 2 : 1 };
       }
       return item;
     });
