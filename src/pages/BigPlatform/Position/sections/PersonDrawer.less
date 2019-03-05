@@ -1,0 +1,60 @@
+.cardContainer {
+  font-size: 16px;
+  color: #FFF;
+  height: 80px;
+  padding: 0 20px 0 60px;
+  margin: 0 2px 8px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgb(4, 64, 125);
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  position: relative;
+}
+
+.sos {
+  width: 34px;
+  height: 27px;
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-image: url(../imgs/sos.png);
+  background-size: 100% 100%;
+}
+
+.cardRedContainer:extend(.cardContainer) {
+  background-color: rgba(255, 0, 0, 0.25);
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  // background-image: url(../imgs/avatar.png);
+  // background-size: 100% 100%;
+  background-image: url(../imgs/person1.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.avatarOff:extend(.avatar) {
+  background-image: url(../imgs/personOff.png);
+}
+
+.visitorAvatar:extend(.avatar) {
+  background-image: url(../imgs/visitor.png);
+  // background-size: contain;
+  // background-position: center center;
+  // background-repeat: no-repeat;
+}
+
+.visitorAvatarOff:extend(.avatar) {
+  background-image: url(../imgs/visitorAvatar.png);
+}
+
+.cards {
+  height: 100%;
+  overflow: auto;
+}

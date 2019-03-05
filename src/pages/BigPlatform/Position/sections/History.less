@@ -6,53 +6,92 @@
 /* 容器 */
 .container {
   display: flex;
-  padding: 24px 12px;
+  padding: 16px 8px;
   height: 100%;
   position: relative;
 
   .left, .right {
-    padding: 0 12px;
+    padding: 0 8px;
     height: 100%;
   }
 
   .left {
     flex: 3;
-
-    .leftTop {
-      padding-bottom: 12px;
-      height: 50%;
-    }
-
-    .leftBottom {
-      padding-top: 12px;
-      height: 50%;
-    }
   }
 
   .right {
     flex: 7;
     position: relative;
+
+    & > div {
+      background-color: rgb(3, 48, 105);
+      border: 1px solid rgb(4, 253, 255);
+      border-radius: 1em;
+      border-top-left-radius: 0;
+      box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.75);
+    }
   }
 }
 
 .wrapper {
-  padding: 24px;
-  height: 100%;
+  padding: 24px 24px 12px 18px;
+  height: calc(100% - 35px);
   font-size: 14px;
   color: #fff;
   line-height: 1.5;
-  background: no-repeat center center;
-  background-size: 100% 100%;
+  background-color: rgb(3, 48, 105);
+  border: 1px solid rgb(4, 253, 255);
+  border-radius: 1em;
+  border-top-left-radius: 0;
+  box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.75);
+
+  .inner {
+    position: relative;
+    padding-top: 88px;
+    height: 100%;
+
+    .leftTop {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+    .leftMiddle, .leftBottom {
+      padding-bottom: 12px;
+	    height: 50%;
+    }
+  }
+
+
+  .table {
+    display: table;
+    table-layout:fixed;
+    width: 100%;
+    height: 100%;
+    .tbody {
+      display: table-row;
+      height: 100%;
+    }
+  }
 
   div.th {
-    background-color: rgb(0, 18, 37);
+    // background-color: rgb(0, 18, 37);
+    background-color: rgb(14, 79, 159);
+  }
+
+  .emptyTr {
+    display: flex;
+  }
+
+  .tr {
+    cursor: pointer;
   }
 
   .tr:hover {
     background-color: rgba(9, 103, 211, 0.2);
   }
 
-  .tr, .th {
+  .tr, .th, .emptyTr {
     display: flex;
     border-bottom: 1px solid rgb(0, 186, 255);
 
@@ -63,13 +102,12 @@
     }
   }
 
-  .tr:last-child {
+  .tr:last-child,
+  .emptyTr:last-child {
     border-bottom: none;
   }
-
-  .placeholder {
-    padding: 16px;
-    text-align: center;
+  .ellipsis {
+    height: 1.5em;
   }
 }
 
@@ -78,8 +116,11 @@
   :global {
     .ant-input {
       color: #fff;
-      background-color: rgb(0, 18, 37);
-      border-color: rgb(0, 18, 37);
+      // background-color: rgb(0, 18, 37);
+      // background-color: rgb(14, 79, 159);
+      background-color: transparent;
+      // border-color: rgb(0, 18, 37);
+      border-color: rgb(4, 171, 195);
     }
     .ant-calendar-range-picker-separator {
       color: #fff;
@@ -337,6 +378,76 @@
         color: @history-disabled-color;
         background-color: transparent;
       }
+    }
+  }
+}
+
+.cardSelect {
+  color: #FFF;
+  width: 100%;
+  margin-bottom: 12px;
+  background-color: transparent;
+
+  :global {
+    .ant-select-selection {
+      background-color: transparent;
+      border-color: rgb(4, 171, 195);
+    }
+
+    .ant-select-arrow {
+      color: #FFF;
+    }
+  }
+}
+
+.dropdown {
+  :global {
+    .ant-select-dropdown {
+      background-color: rgb(3, 48, 105);
+    }
+
+    .ant-select-dropdown-menu-item {
+      color: #FFF;
+      background-color: #033069;
+    }
+
+    .ant-select-dropdown-menu-item:hover {
+      background-color: #063b6f;
+    }
+
+    .ant-select-dropdown-menu-item-selected, .ant-select-dropdown-menu-item-selected:hover {
+      color: rgb(4, 253, 255);
+      background-color: #063b6f;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: rgba(0, 87, 169, 1);
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 4px;
+    background: rgba(2, 28, 64, 0.6);
+  }
+}
+
+.scroll {
+  height: 100%;
+
+  & > div {
+    &::-webkit-scrollbar {
+      background-color: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: transparent;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
     }
   }
 }

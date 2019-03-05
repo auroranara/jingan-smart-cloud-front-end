@@ -8,16 +8,27 @@ export async function queryInitialPositions(params) {
   return request(`${URL_PREFIX}/accessCard/getAllCardLocation?${stringify(params)}`);
 }
 
+// 初始化报警列表
+export async function queryInitialAlarms(params) {
+  return request(`${URL_PREFIX}/location/locationWarningForPage?${stringify(params)}`);
+}
+
 // 取消sos
-export async function postSOS(id) {
-  return request(`${URL_PREFIX}/location/command/delSos/${id}`, {
+export async function quitSOS(cardId) {
+  return request(`${URL_PREFIX}/location/command/delSos/${cardId}`, {
     method: 'POST',
   });
 }
 
-// 取消越界
-export async function postOverstep(id) {
-  return request(`${URL_PREFIX}/accessCard/ignoreOverstep/${id}`, {
-    method: 'POST',
+// 处理警报
+export async function putAlarm(params) {
+  return request(`${URL_PREFIX}/location/locationWarning`, {
+    method: 'PUT',
+    body: params,
   });
+}
+
+// 获取区域树
+export async function querySectionTree(params) {
+  return request(`${URL_PREFIX}/areaInfo/getScreenTree?${stringify(params)}`);
 }

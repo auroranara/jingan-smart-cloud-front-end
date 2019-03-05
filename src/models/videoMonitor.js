@@ -5,6 +5,11 @@ import {
   queryVideoList,
   queryVideoDetail,
   queryModelList,
+  fetchVideoBeacons,
+  fetchVideoBeaconsAvailable,
+  bindBeacon,
+  unBindBeacon,
+  fetchSystemList,
 } from '../services/videoMonitor';
 
 export default {
@@ -51,6 +56,22 @@ export default {
     videoData: {
       list: [],
     },
+    // 关联设备
+    videoBeacon: {
+      list: [],
+      pagination: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      availableList: [],
+      availablePagination: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+    },
+    systemList: [],
   },
 
   effects: {
@@ -135,6 +156,50 @@ export default {
           type: 'saveModelList',
           payload: response.data,
         });
+      }
+    },
+    // 获取视频绑定的信标
+    *fetchVideoBeacons({ payload }, { call, put }) {
+      const response = yield call(fetchVideoBeacons, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveVideoBeacons',
+          payload: response.data,
+        })
+      }
+    },
+    // 获取未绑定视频的信标
+    *fetchVideoBeaconsAvailable({ payload }, { call, put }) {
+      const response = yield call(fetchVideoBeaconsAvailable, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveAvailableVideoBeacons',
+          payload: response.data,
+        })
+      }
+    },
+    // 绑定信标
+    *bindBeacon({ payload, success, error }, { call, put }) {
+      const response = yield call(bindBeacon, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error()
+    },
+    // 取消关联信标
+    *unBindBeacon({ payload, success, error }, { call, put }) {
+      const response = yield call(unBindBeacon, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error()
+    },
+    // 获取系统列表（全部）
+    *fetchSystemList({ payload }, { call, put }) {
+      const response = yield call(fetchSystemList, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveSystemList',
+          payload: response.data.list,
+        })
       }
     },
   },
@@ -232,6 +297,38 @@ export default {
         list,
         modal: payload,
       };
+    },
+    saveVideoBeacons(state, { payload: {
+      list = [],
+      pagination = { pageNum: 1, pageSize: 10, total: 0 },
+    } = {} }) {
+      return {
+        ...state,
+        videoBeacon: {
+          ...state.videoBeacon,
+          list,
+          pagination,
+        },
+      }
+    },
+    saveAvailableVideoBeacons(state, { payload: {
+      list = [],
+      pagination = { pageNum: 1, pageSize: 10, total: 0 },
+    } = {} }) {
+      return {
+        ...state,
+        videoBeacon: {
+          ...state.videoBeacon,
+          availableList: list,
+          availablePagination: pagination,
+        },
+      }
+    },
+    saveSystemList(state, { payload = [] }) {
+      return {
+        ...state,
+        systemList: payload,
+      }
     },
   },
 };

@@ -3,40 +3,39 @@ import moment from 'moment';
 import { Button, Icon } from 'antd';
 
 import styles from './AlarmMsg.less';
-import bg from '../imgs/alarmCard.png';
-import infoIcon from '../imgs/alarmInfo.png';
-
-const ICON_STYLE = { color: '#FFF', fontSize: 16, position: 'absolute', top: 10, right: 15, cursor: 'pointer' };
-const BTN_STYLE = { color: 'rgb(4, 253, 255)', borderColor: 'rgb(4, 253, 255)', position: 'absolute', left: '50%', bottom: 25, transform: 'translateX(-50%)' };
+import { getAlarmDesc } from '../utils';
 
 export default function AlarmMsg(props) {
   const {
     visible,
     style,
+    areaInfo,
     data={},
-    handleAlarm,
+    handleShowAlarmHandle,
     handleClose,
     ...restProps
   } = props;
-  const { cardId, type, areaName: section, uptime: time } = data;
+  const { id, areaId, typeName, warningTime } = data;
+  const [title, desc] = getAlarmDesc(data, areaInfo);
+  const areaName = areaInfo[areaId] ? areaInfo[areaId].fullName : '暂无信息';
 
   const newStyle = {
-    backgroundImage: `url(${bg})`,
     ...style,
     display: visible ? 'block' : 'none',
   };
 
   return (
     <div className={styles.container} style={newStyle} {...restProps}>
-      <Icon type="close" style={ICON_STYLE} onClick={e => handleClose()} />
-      <Button ghost style={BTN_STYLE} onClick={e => handleAlarm(cardId)}>处理</Button>
+      <Icon type="close" className={styles.close} onClick={e => handleClose('alarmMsg')} />
+      <Button ghost className={styles.btn} onClick={e => handleShowAlarmHandle(id)}>处理</Button>
       <h5 className={styles.title}>
-        <span className={styles.info} style={{ backgroundImage: `url(${infoIcon})` }} />
+        <span className={styles.info} />
         报警信息
       </h5>
-      <p>区域名称：{section}</p>
-      <p>报警类型：越界</p>
-      <p>报警时间：{moment(time).format('YYYY-MM-DD HH:mm:ss')}</p>
+      <p>区域名称：{areaName}</p>
+      <p>报警类型：{typeName}</p>
+      <p>报警时间：{moment(warningTime).format('YYYY-MM-DD HH:mm:ss')}</p>
+      <p>报警内容：{desc}</p>
     </div>
   );
 }

@@ -1,0 +1,192 @@
+/* 容器 */
+.container {
+  display: table;
+  table-layout:fixed;
+	width: 100%;
+	height: 100%;
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 1;
+}
+/* 内容容器 */
+.contentWrapper {
+	display: table-row;
+  height: 100%;
+}
+/* 控制器容器 */
+.controlWrapper {
+  margin: 0 auto;
+  padding: 1em 4.5em 0;
+  width: 80%;
+
+  /* 时间条 */
+  .timeBar {
+    margin-bottom: 1.5em;
+    width: 100%;
+    height: 6px;
+    border-radius: 6px;
+    background-color: #fff;
+    cursor: pointer;
+
+    /* 当前时间条 */
+    .currentTimeBar {
+      width: 0;
+      height: 6px;
+      border-radius: 6px;
+      background-color: rgb(9, 103, 211);
+    }
+  }
+
+  /* 按钮栏 */
+  .buttonBar {
+    position: relative;
+    padding-bottom: 1em;
+    height: 2em;
+    text-align: center;
+
+    /* 起始时间 */
+    .startTime {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: translateX(-50%);
+    }
+
+    /* 结束时间 */
+    .endTime {
+      position: absolute;
+      top: 0;
+      right: 0;
+      transform: translateX(50%);
+    }
+
+    /* 播放按钮包装 */
+    .playButtonWrapper {
+      position: absolute;
+      top: -1em;
+      left: -1.25em;
+      width: 0.5em;
+      height: 0.5em;
+      font-size: 36px;
+      background-color: #fff;
+      /* 播放按钮 */
+      .playButton {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        color: rgb(9, 103, 211);
+
+        &:hover {
+          color: #00a8ff;
+        }
+        &:active {
+          color: #00a8ff;
+        }
+      }
+      /* 禁止的按钮 */
+      .disabledPlayButton {
+        color: rgb(137, 137, 137);
+        cursor: not-allowed;
+
+        &:hover {
+          color: rgb(137, 137, 137);
+        }
+        &:active {
+          color: rgb(137, 137, 137);
+        }
+      }
+    }
+
+    // .button {
+    //   font-size: 24px;
+    //   cursor: pointer;
+
+    //   &:not(:last-child) {
+    //     margin-right: 24px;
+    //   }
+
+    //   &:hover {
+    //     color: #00a8ff;
+    //   }
+    // }
+  }
+}
+/* 提示框 */
+.tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 6px 8px;
+  color: #fff;
+  white-space: nowrap;
+  background-color: rgba(0, 0, 0, 0.85);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transform: translate(0, -120%);
+  user-select: none;
+}
+/* 警报tooltip */
+.alarm {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  padding: 6px 12px;
+  font-size: 16px;
+  color: #fff;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  background-color: #ff4848;
+  border-radius: 2em;
+  transform: translateX(-50%);
+
+  &:after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    margin-left: -5px;
+    border-width: 5px 5px 0;
+    border-style: solid;
+    border-color: transparent;
+    border-top-color: #ff4848;
+  }
+}
+
+.person() {
+  position: relative;
+  height: 100%;
+  background: no-repeat center;
+  background-size: 100% 100%;
+}
+// 人员容器
+.personContainer {
+  // width: 38px;
+  // height: 40px;
+  background-color: transparent;
+  border: none;
+}
+/* 人员名称 */
+.personName  {
+  color: #fff;
+  text-align: center;
+}
+/* 报警状态的人员 */
+.redPerson {
+  .person;
+  background-image: url('../../imgs/personRed.png');
+}
+/* 普通的工作人员 */
+.bluePerson {
+  .person;
+  background-image: url('../../imgs/person1.png');
+}
+/* 访客 */
+.redVistor {
+  .person;
+  background-image: url('../../imgs/visitorRed.png');
+}
+.blueVistor {
+  .person;
+  background-image: url('../../imgs/visitor.png');
+}

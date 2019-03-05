@@ -43,6 +43,9 @@ export default {
       add: 'deviceManagement.videoMonitor.add',
       edit: 'deviceManagement.videoMonitor.edit',
       view: 'deviceManagement.videoMonitor.view',
+      associate: 'deviceManagement.videoMonitor.associate',
+      addAssociate: 'deviceManagement.videoMonitor.addAssociate',
+      unBindBeacon: 'deviceManagement.videoMonitor.unBindBeacon',
     },
   },
   videoSurveillance: {
