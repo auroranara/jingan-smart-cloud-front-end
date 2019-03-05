@@ -8,7 +8,7 @@ const BTN_STYLE = { color: 'rgb(4, 253, 255)', borderColor: 'rgb(4, 253, 255)' }
 
 // 1 sos 2 越界  3 长时间不动 4 超员 5 缺员
 export default class AlarmHandle extends PureComponent {
-  value = '';
+  state = { value: '' };
 
   genHandleAlarm = (status) => e => {
     const { alarmId, cardId, handleAlarm, handleSOS } = this.props;
@@ -21,17 +21,17 @@ export default class AlarmHandle extends PureComponent {
 
   onClose = () => {
     const { handleClose } = this.props;
-    this.value = '';
+    this.setState({ value: '' });
     handleClose();
   }
 
   handleTextChange = e => {
-    // console.log(e.target.value);
-    this.value = e.target.value;
+    this.setState({ value: e.target.value });
   };
 
   render() {
     const { visible, cardId, positionList, alarmId, alarms, style, handleAlarm, handleSOS, handleClose, ...restProps } = this.props;
+    const { value } = this.state;
     const newStyle = {
       ...style,
       display: visible ? 'block' : 'none',
@@ -49,7 +49,7 @@ export default class AlarmHandle extends PureComponent {
           <span className={styles.titleText}>{title}</span>
         </h3>
         <Icon type="close" className={styles.close} onClick={this.onClose} />
-        <TextArea rows={4} placeholder="填写处理信息（30字以内）" onChange={this.handleTextChange} />
+        <TextArea rows={4} placeholder="填写处理信息（30字以内）" value={value} onChange={this.handleTextChange} />
         <div className={styles.btn}>
           <Button ghost style={BTN_STYLE} onClick={this.genHandleAlarm(1)}>忽略</Button>
           <Button ghost style={BTN_STYLE} onClick={this.genHandleAlarm(2)}>提交</Button>

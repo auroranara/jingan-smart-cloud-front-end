@@ -37,6 +37,8 @@ export default class CardSelected extends PureComponent {
     const videoKeyId = videoList.length ? videoList[0].keyId : '';
     const sectionName = areaInfo && areaInfo[areaId] ? areaInfo[areaId].fullName : '外围区域';
 
+    // console.log(videoKeyId);
+
     return (
       <div className={styles.container}>
         <div className={styles.up}>
