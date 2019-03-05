@@ -236,8 +236,8 @@ export default class RealTime extends PureComponent {
       const { id } = item;
       const target = data.find(({ id: areaId }) => areaId === id);
       if (target) {
-        const { lackStatus, outstripStatus, overstepStatus, tlongStatus } = target;
-        return { ...item, status: lackStatus || outstripStatus || overstepStatus || tlongStatus ? 2 : 1 };
+        const { lackStatus, outstripStatus, overstepStatus, tLongStatus } = target;
+        return { ...item, status: lackStatus || outstripStatus || overstepStatus || tLongStatus ? 2 : 1 };
       }
       return item;
     });
@@ -285,7 +285,7 @@ export default class RealTime extends PureComponent {
   };
 
   showNotification = alarm => {
-    const { id, cardId, type, typeName, cardType, phoneNumber, visitorPhone, warningTime } = alarm;
+    const { id, cardId, type } = alarm;
 
     const [title, desc] = getAlarmDesc(alarm, this.areaInfo);
     notification.warning({

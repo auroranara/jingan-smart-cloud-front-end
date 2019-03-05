@@ -101,8 +101,11 @@
   position: relative;
 }
 
-.personOff {
+.personOff:extend(.person) {
   background-image: url(../imgs/personOff.png);
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
 .personRed:extend(.person) {
