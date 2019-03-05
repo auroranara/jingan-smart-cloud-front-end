@@ -10,7 +10,7 @@ export default function MapInfo(props) {
   const sos = alarms.reduce((count, current) => count + (+current.type === 1), 0);
   const low = positionList.reduce((count, current) => +current.lowPower + count, 0);
 
-  const latest = alarms[alarms.length - 1];
+  const latest = alarms[0];
   const total = sectionTree.reduce((prev, next) => prev + next.count, 0);
 
   return (

@@ -62,7 +62,8 @@ export default {
 
   reducers: {
     savePositions(state, action) {
-      const { payload: list } = action;
+      let { payload: list } = action;
+      list = list.filter(({ onlineStatus }) => +onlineStatus); // 过滤掉不在线的人，onlineStatus 1 在线  0 离线
       const aggList = genAggregation(list);
       // console.log('agg', list, aggList);
       return {
@@ -72,6 +73,8 @@ export default {
       };
     },
     saveAlarms(state, action) {
+      const list = action.payload;
+      list.sort((a1, a2) => a2.warningTime - a1.warningTime);
       return {
         ...state,
         alarms: action.payload,

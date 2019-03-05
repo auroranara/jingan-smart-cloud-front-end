@@ -35,7 +35,7 @@ export function getAlarmList(alarmList, wsData, prop, callback) {
   if (newAlarms.length)
     callback(newAlarms[0]);
   return [...alarmList, ...newAlarms];
-};
+}
 
 export function getPersonInfoItem(cardId, list) {
   return list.find(item => item.cardId === cardId) || {};
@@ -281,8 +281,15 @@ function getMapImages(list) {
   return images;
 }
 
+function getTimeDesc(t) {
+  const ms = +t;
+  const minutes = Math.floor(ms / 60000);
+  const hours = Math.floor(ms / 3600000);
+  return `${hours ? `${hours}小时` : ''}${minutes ? `${minutes}分钟` : ''}`;
+}
+
 export function getAlarmDesc(item, areaInfo) {
-  const { areaId, type, typeName, cardType, cardCode, userName, warningTime } = item;
+  const { areaId, type, typeName, cardCode, warningTime, tLongTime } = item;
 
   const time = moment(warningTime).format('HH:mm');
   const title = `【${typeName}】 ${time}`;
@@ -300,7 +307,7 @@ export function getAlarmDesc(item, areaInfo) {
       desc = `${name}进入${areaName}`;
       break;
     case 3:
-      desc = `${name}在${areaName}长时间静止`;
+      desc = `${name}在${areaName}长时间静止${getTimeDesc(tLongTime)}`;
       break;
     case 4:
       desc = `${areaName} 区域超员`;
