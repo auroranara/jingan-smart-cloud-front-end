@@ -26,24 +26,22 @@ function AlarmCard(props) {
 }
 
 export default class AlarmDrawer extends PureComponent {
-  handleCloseDrawer = () => {
-    const { handleClose } = this.props;
-    handleClose('alarmDrawer');
-  };
-
   genClickCard = ({ id, type, cardId }) => e => {
-    const { showPersonInfoOrAlarmMsg } = this.props;
+    const { showPersonInfoOrAlarmMsg, handleClose } = this.props;
     showPersonInfoOrAlarmMsg(type, id, cardId);
-    this.handleCloseDrawer();
+    handleClose();
   };
 
   render() {
-    const { visible, areaInfo, data } = this.props;
+    const { visible, areaInfo, data, handleClose, showSOSAlarm } = this.props;
     const list = Array.from(data);
     list.reverse();
+    let filtered = list;
+    if (showSOSAlarm)
+      filtered = list.filter(({ type }) => +type === 1);
     const left = (
       <div className={styles.cards}>
-        {list.map(item => (
+        {filtered.map(item => (
           <AlarmCard
             key={item.id}
             areaInfo={areaInfo}
@@ -61,7 +59,7 @@ export default class AlarmDrawer extends PureComponent {
         visible={visible}
         left={left}
         placement="right"
-        onClose={this.handleCloseDrawer}
+        onClose={handleClose}
       />
     );
   }

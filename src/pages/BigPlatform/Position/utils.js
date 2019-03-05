@@ -68,14 +68,15 @@ export function getAreaId(wsData) {
 
 const ALARM = 2;
 // 生成新的树
-export function genTreeList(list, callback, deep=0) {
+export function genTreeList(list, callback, deep=0, parent=null) {
   return list.map(item => {
     const { children, ...restProps } =  item;
     const newItem = callback(restProps);
     newItem.indentLevel = deep;
+    newItem.parent = parent;
     newItem.range.options.color = newItem.status === ALARM ? '#F00' : '#00a8ff';
     if (children && children.length)
-      newItem.children = genTreeList(children, callback, deep + 1);
+      newItem.children = genTreeList(children, callback, deep + 1, newItem);
     return newItem;
   });
 }
@@ -287,8 +288,8 @@ export function getAlarmDesc(item, areaInfo) {
   const title = `【${typeName}】 ${time}`;
 
   let desc = ''
-  const name = `${+cardType ? '访客' : userName}(${cardCode})`;
-  const areaName = areaId && areaInfo[areaId] ? areaInfo[areaId].fullName : '外围区域';
+  const name = `${getUserName(item, true)}(${cardCode})`;
+  const areaName = areaInfo[areaId] ? areaInfo[areaId].fullName : '外围区域';
 
   // 1 sos 2 越界  3 长时间不动 4 超员 5 缺员
   switch(+type) {
@@ -315,9 +316,17 @@ export function getAlarmDesc(item, areaInfo) {
 }
 
 // cardType 0 正常 1 访客
-export function getUserName(item) {
+export function getUserName(item, showPrefix) {
   const { cardType, userName, visitorName } = item;
-  return +cardType ? `访客${visitorName ? `-${visitorName}` : ''}` : userName;
+  const isVisitor = !!+cardType;
+
+  if (!isVisitor)
+    return userName;
+  else if (showPrefix && visitorName)
+    return `访客-${visitorName}`;
+  else if (!showPrefix && visitorName)
+    return visitorName;
+  return '访客';
 }
 
 // 0 区域 1 视频 2 人
@@ -327,4 +336,19 @@ export function getMapClickedType(id) {
   if (id.includes('_@@video'))
     return 1;
   return 2;
+}
+
+const PERSON_ALARM_TYPES = ['SOS', '越界', '长时间不动'];
+export function getPersonAlarmTypes(ps) {
+  const types = [0, 0, 0];
+  for (const p of ps) {
+    ['sos', 'overstep', 'tlong'].forEach((prop, i) => {
+      if (p[prop])
+        types[i] = 1;
+    })
+    if (types.every(n => n))
+      break;
+  }
+
+  return types.map((n, i) => n ? PERSON_ALARM_TYPES[i] : '').filter(s => s).join(',');
 }

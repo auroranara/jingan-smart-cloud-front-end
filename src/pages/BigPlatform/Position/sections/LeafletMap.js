@@ -4,7 +4,7 @@ import { connect } from 'dva';
 
 import styles from './LeafletMap.less';
 import ImageDraw, { L } from '@/components/ImageDraw';
-import { findInTree, parseImage, getUserName, getMapClickedType } from '../utils';
+import { findInTree, parseImage, getUserName, getMapClickedType, getPersonAlarmTypes } from '../utils';
 
 @connect(({ zoning, loading }) => ({
   zoning,
@@ -124,7 +124,7 @@ export default class LeafletMap extends PureComponent {
     for (const { id, name, status } of children) {
       const isAlarm = status === 2;
       const p = document.createElement('p');
-      p.innerHTML = `${name} ${isAlarm ? '报警' : '正常'}`;
+      p.innerHTML = `${name} ${isAlarm ? '报警' : '安全'}`;
       p.onclick = e => setAreaId(id);
       p.className = styles[isAlarm ? 'poppAlarm' : 'popp'];
       container.appendChild(p);
@@ -170,8 +170,10 @@ export default class LeafletMap extends PureComponent {
       const isSingle = length === 1;
       const isVisitor = !!+cardType;
 
-      const isSOS = ps.some(({ sos }) => sos);
-      const isAlarm = ps.some(({ sos, overstep, tlong }) => sos || overstep || tlong);
+      // const isSOS = ps.some(({ sos }) => sos);
+      // const isAlarm = ps.some(({ sos, overstep, tlong }) => sos || overstep || tlong);
+      const alarmTypes = getPersonAlarmTypes(ps);
+      const isAlarm = !!alarmTypes;
       const containerClassName = `${isSingle ? (isVisitor ? 'visitor' : 'person') : 'people'}${isAlarm ? 'Red' : ''}`;
       const firstName = getUserName(first);
       const name = ps.slice(0, 5).map(getUserName).join(',');
@@ -186,8 +188,8 @@ export default class LeafletMap extends PureComponent {
           className: styles.personContainer,
           html: `
             <div class="${styles[containerClassName]}">
-              <div class="${isSingle ? styles.personTitle : styles.personNum}">${showName}</div>
-              <div class="${styles[isSOS ? 'sos' : 'normal']}">SOS</div>
+              <div class="${styles[isSingle ? 'personTitle' : (isAlarm ? 'nodisplay' : 'personNum')]}">${showName}</div>
+              <div class="${styles[isAlarm ? 'alarms' : 'nodisplay']}">${alarmTypes}</div>
             </div>`,
         },
       };
@@ -254,6 +256,10 @@ export default class LeafletMap extends PureComponent {
           <span className={styles.enter}>进入: {inCardCount}人次</span>
           <span className={styles.exit}>出去: {outCardCount}人次</span>
           当前人数: {count}
+        </div>
+        <div className={styles.legends}>
+          <div className={styles.visitorLgd}>访客</div>
+          <div className={styles.generalLgd}>普通人员</div>
         </div>
       </div>
     );

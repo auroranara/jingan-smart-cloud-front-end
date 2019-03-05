@@ -11,31 +11,33 @@ function emptyFn() {}
 
 export default class CardSelected extends PureComponent {
   handleToHistory = e => {
-    const { cardId, setSelectedCard, handleLabelClick } = this.props;
-    setSelectedCard(cardId);
+    const { cardId, setHistoryCard, handleLabelClick } = this.props;
+    setHistoryCard(cardId);
     handleLabelClick(2);
   };
 
   handleQuitTrack = e => {
     const { setSelectedCard } = this.props;
     setSelectedCard();
-    this.clearHistoryModel();
+    // this.clearHistoryModel();
   };
 
-  clearHistoryModel = () => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'position/save', payload: { data: {}, tree: {} } });
-  };
+  // clearHistoryModel = () => {
+  //   const { dispatch } = this.props;
+  //   dispatch({ type: 'position/save', payload: { data: {}, tree: {} } });
+  // };
 
   render() {
     const { areaInfo, cardId, positions } = this.props;
     const card = positions.find(({ cardId: id }) => id === cardId) || {};
     const { areaId, cardType, phoneNumber, visitorPhone, cardCode, departmentName, videoList } = card;
     const isVisitor = !!+cardType;
-    const name = getUserName(card);
+    const name = getUserName(card, true);
     const phone = isVisitor ? visitorPhone : phoneNumber;
     const videoKeyId = videoList.length ? videoList[0].keyId : '';
     const sectionName = areaInfo && areaInfo[areaId] ? areaInfo[areaId].fullName : '外围区域';
+
+    // console.log(videoKeyId);
 
     return (
       <div className={styles.container}>

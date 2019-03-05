@@ -68,19 +68,19 @@
   text-align: center;
 }
 
-.sos {
-  width: 60px;
-  height: 40px;
-  line-height: 34px;
-  position: absolute;
-  top: -40px;
-  left: 0;
-  text-align: center;
-  background-image: url(../imgs/msg.png);
-  background-size: 100% 100%;
-}
+// .sos {
+//   width: 60px;
+//   height: 40px;
+//   line-height: 34px;
+//   position: absolute;
+//   top: -40px;
+//   left: 0;
+//   text-align: center;
+//   background-image: url(../imgs/msg.png);
+//   background-size: 100% 100%;
+// }
 
-.normal {
+.nodisplay {
   display: none;
 }
 
@@ -121,6 +121,33 @@
   background-image: url(../imgs/peopleRed.png);
 }
 
+.alarms {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  padding: 6px 12px;
+  // font-size: 16px;
+  color: #fff;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  background-color: #ff4848;
+  border-radius: 2em;
+  transform: translateX(-50%);
+
+  &:after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    margin-left: -5px;
+    border-width: 5px 5px 0;
+    border-style: solid;
+    border-color: transparent;
+    border-top-color: #ff4848;
+  }
+}
+
 .cameraContainer {
   width: 32px;
   height: 32px;
@@ -155,4 +182,38 @@
 
 .exit {
   margin-right: 15px;
+}
+
+.legends {
+  width: 200px;
+  height: 40px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  // background-image: url(../imgs/legendBg.png);
+  // background-size: 100% 100%;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 998;
+}
+
+.visitorLgd, .generalLgd {
+  height: 22px;
+  line-height: 22px;
+  color: #FFF;
+  padding-left: 30px;
+  background: no-repeat left;
+  background-size: 22px 22px;
+}
+
+.visitorLgd {
+  background-image: url(../imgs/visitorAvatar.png);
+}
+
+.generalLgd {
+  background-image: url(../imgs/person1.png);
 }

@@ -48,7 +48,7 @@ export default class CardList extends PureComponent {
 
     const dataSource = list.map(p => {
       const { areaId, cardId, cardCode, sos, tlong, overstep, onlineStatus } = p;
-      const name = getUserName(p);
+      const name = getUserName(p, true);
       return {
         id: cardId,
         areaId,

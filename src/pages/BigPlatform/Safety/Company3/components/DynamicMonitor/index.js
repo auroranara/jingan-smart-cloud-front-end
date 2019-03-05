@@ -23,7 +23,7 @@ import styles from './index.less';
 
 // 获取转换之后的数据
 const getValue = (data) => {
-  return data ? (data.warningNum > 0 ? <span><span className={styles.warning}>{data.warningNum}</span>/{data.totalNum}</span> : `0/${data.totalNum}`) : '--';
+  return data ? (data.warningNum > 0 ? <span className={styles.warning}>{data.warningNum}</span> : `0`) : '--';
 };
 
 /**
@@ -87,7 +87,7 @@ export default class DynamicMonitor extends PureComponent {
     const list = [
       {
         key: '消防主机报警',
-        value: fireEngine ? (fireEngine.warningNum > 0 ? <span className={styles.warning}>{fireEngine.warningNum}</span> : 0) : '--',
+        value: getValue(fireEngine),
         icon: fireEngineIcon,
         originalValue: fireEngine,
       },

@@ -6,13 +6,15 @@ import { getUserName } from '../utils';
 
 function PersonCard(props) {
   const { data, ...restProps } = props;
-  const { cardType, cardCode, phoneNumber, visitorPhone } = data;
+  const { cardType, cardCode, phoneNumber, visitorPhone, sos, lowPower, tlong, overstep } = data;
   const name = getUserName(data);
   const isVisitor = !!+cardType;
   const phone = isVisitor ? visitorPhone : phoneNumber;
+  const isAlarm = sos || lowPower || tlong || overstep;
 
   return (
-    <div className={styles.cardContainer} {...restProps}>
+    <div className={styles[isAlarm ? 'cardRedContainer' : 'cardContainer']} {...restProps}>
+      {sos && <div className={styles.sos} />}
       <div className={styles[isVisitor ? 'visitorAvatar' : 'avatar']} />
       <span>{`${name}(${cardCode})`}</span>
       <span>{phone || '暂无电话信息'}</span>

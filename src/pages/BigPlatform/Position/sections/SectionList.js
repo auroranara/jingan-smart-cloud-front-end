@@ -41,13 +41,16 @@ const statusLabel = {
 
 // 根据areaName和status筛选
 const filterDataByAreaNameAndStatus = function(data, filterAreaName, filterStatus) {
+  // console.log(filterStatus);
+  // console.log(data);
+  // console.log(filterAreaName);
   if (!filterAreaName && !filterStatus) {
     return data;
   }
   const list = [];
   data.forEach((item) => {
     const { name, status, children } = item;
-    if (name.includes(filterAreaName) && (!filterStatus || status === filterStatus)) {
+    if (!filterAreaName || name.includes(filterAreaName) && (!filterStatus || status === +filterStatus)) {
       list.push(item);
     }
     else if (children) {
@@ -173,7 +176,7 @@ export default class RealTimeMonitor extends PureComponent {
         dataIndex: 'status',
         render: (status, record) => (
           <span
-            className={styles[+status === 2 ? 'tableRed' : 'tableSafe']}
+            className={styles[+status === 2 ? 'tableAlarm' : 'tableSafe']}
             onClick={e => setAreaId(record.id)}
           >
             {statusLabel[status] || '安全'}

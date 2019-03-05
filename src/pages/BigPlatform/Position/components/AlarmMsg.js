@@ -15,8 +15,9 @@ export default function AlarmMsg(props) {
     handleClose,
     ...restProps
   } = props;
-  const { id, typeName, areaName, warningTime } = data;
+  const { id, areaId, typeName, warningTime } = data;
   const [title, desc] = getAlarmDesc(data, areaInfo);
+  const areaName = areaInfo[areaId] ? areaInfo[areaId].fullName : '暂无信息';
 
   const newStyle = {
     ...style,

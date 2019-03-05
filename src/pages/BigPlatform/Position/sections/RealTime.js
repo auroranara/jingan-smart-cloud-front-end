@@ -37,6 +37,7 @@ export default class RealTime extends PureComponent {
     videoVisible: false, // 视频弹框
     videoKeyId: '',
     videoKeyList: [],
+    showSOSAlarm: false, // 报警列表中显示sos的报警
     alarmDrawerVisible: false, // 报警列表抽屉
     lowPowerDrawerVisible: false, // 低电量报警抽屉
     personDrawerVisible: false, // 人员列表抽屉
@@ -96,7 +97,8 @@ export default class RealTime extends PureComponent {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const params = {
       companyId,
-      env: 'dev',
+      env,
+      // env: 'dev',
       type: 2,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
@@ -162,7 +164,8 @@ export default class RealTime extends PureComponent {
       case WARNING_TYPE:
         this.handleAlarms(data);
         this.showNotifications(data);
-        this.handleAutoShowVideo(data);
+        if (!isTrack)
+          this.handleAutoShowVideo(data);
         break;
       case AREA_STATUS_TYPE:
         this.handleAreaStatusChange(data);
@@ -354,8 +357,12 @@ export default class RealTime extends PureComponent {
     this.setState({ beaconId, personDrawerVisible: true });
   };
 
-  handleShowAlarmDrawer = () => {
-    this.setState({ alarmDrawerVisible: true });
+  handleShowAlarmDrawer = (showSOS) => {
+    this.setState({ alarmDrawerVisible: true, showSOSAlarm: !!showSOS });
+  };
+
+  handleCloseAlarmDrawer = e => {
+    this.setState({ alarmDrawerVisible: false });
   };
 
   handleShowVideo = keyId => {
@@ -374,10 +381,10 @@ export default class RealTime extends PureComponent {
       return;
 
     const card = positionList.find(({ cardId: id }) => id === alarm.cardId);
-    if (card) {
+    if (card && card.videoList && card.videoList.length) {
       const { videoList } = card;
       this.setState({ videoKeyList: videoList });
-      this.handleShowVideo(videoList.length ? videoList[0].keyId : '');
+      this.handleShowVideo(videoList[0].keyId);
     }
   };
 
@@ -405,6 +412,7 @@ export default class RealTime extends PureComponent {
       personPosition: { sectionTree, positionList, positionAggregation, alarms },
       handleLabelClick,
       setSelectedCard,
+      setHistoryCard,
     } = this.props;
     const {
       alarmId,
@@ -419,6 +427,7 @@ export default class RealTime extends PureComponent {
       videoVisible,
       videoKeyId,
       videoKeyList,
+      showSOSAlarm,
       alarmDrawerVisible,
       lowPowerDrawerVisible,
       personDrawerVisible,
@@ -456,6 +465,7 @@ export default class RealTime extends PureComponent {
                 areaInfo={areaInfo}
                 positions={positionList}
                 setSelectedCard={setSelectedCard}
+                setHistoryCard={setHistoryCard}
                 handleLabelClick={handleLabelClick}
               />
             )}
@@ -489,6 +499,7 @@ export default class RealTime extends PureComponent {
             <PersonInfo
               visible={personInfoVisible}
               companyId={companyId}
+              areaInfo={areaInfo}
               alarms={alarms}
               personItem={getPersonInfoItem(cardId, positionList)}
               handleTrack={this.handleTrack}
@@ -516,9 +527,10 @@ export default class RealTime extends PureComponent {
         <AlarmDrawer
           areaInfo={areaInfo}
           visible={alarmDrawerVisible}
+          showSOSAlarm={showSOSAlarm}
           data={alarms}
           showPersonInfoOrAlarmMsg={this.showPersonInfoOrAlarmMsg}
-          handleClose={this.handleClose}
+          handleClose={this.handleCloseAlarmDrawer}
         />
         <LowPowerDrawer
           visible={lowPowerDrawerVisible}
