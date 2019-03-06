@@ -54,7 +54,7 @@ export default class CardList extends PureComponent {
         id: cardId,
         areaId,
         name: name || '无名',
-        fullName: areaInfo[areaId || null].fullName,
+        fullName: areaInfo[areaId || null] ? areaInfo[areaId || null].fullName : '火星',
         code: cardCode,
         status: sos || tlong || overstep, // true 火警 false 正常
         online: +onlineStatus === ONLINE,
