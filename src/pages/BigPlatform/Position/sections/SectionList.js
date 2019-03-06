@@ -159,9 +159,9 @@ export default class SectionList extends PureComponent {
     }
   };
 
-  onTableExpand = (expanded, record) => {
-    console.log(expanded, record);
-  };
+  // onTableExpand = (expanded, record) => {
+  //   console.log(expanded, record);
+  // };
 
   onExpandedRowsChange = expandedRows => {
     // console.log(expandedRows);
