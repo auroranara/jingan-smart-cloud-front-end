@@ -180,7 +180,7 @@ export default class SectionList extends PureComponent {
     } = this.props;
     const { areaName, status } = this.state;
 
-    console.log(expandedRowKeys);
+    // console.log(expandedRowKeys);
     // 筛选数据
     const list = filterDataByAreaNameAndStatus(data, areaName, status);
 
