@@ -44,9 +44,9 @@ export default class PersonDrawer extends PureComponent {
     let left = null;
     if (beaconId)
       left = (
-        <Fragment>
+        <div className={styles.cards}>
           {list.map(item => <PersonCard key={item.cardId} data={item} onClick={this.genCardClick(item.cardId)} />)}
-        </Fragment>
+        </div>
       );
 
     return (

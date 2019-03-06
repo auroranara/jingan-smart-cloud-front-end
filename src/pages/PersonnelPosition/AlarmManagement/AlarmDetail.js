@@ -12,7 +12,10 @@ const { Group: CheckboxGroup } = Checkbox;
 
 const NO_DATA = '暂无信息';
 const CK_VALUES = [2, 3, 4, 5];
-const CK_OPTIONS = ['越界', '长时间不动', '超员', '缺员'].map((label, i) => ({ label, value: CK_VALUES[i] }));
+const CK_OPTIONS = ['越界', '长时间逗留', '超员', '缺员'].map((label, i) => ({
+  label,
+  value: CK_VALUES[i],
+}));
 const FORMITEM_LAYOUT1 = {
   labelCol: {
     xs: { span: 24 },
@@ -37,7 +40,8 @@ const FORMITEM_LAYOUT = {
 @connect(({ personPositionAlarm, zoning, loading }) => ({
   personPositionAlarm,
   zoning,
-  loading: loading.effects['zoning/fetchZone'] || loading.effects['personPositionAlarm/getAlarmStrategy'],
+  loading:
+    loading.effects['zoning/fetchZone'] || loading.effects['personPositionAlarm/getAlarmStrategy'],
 }))
 export default class AlarmDetail extends PureComponent {
   state = {
@@ -48,7 +52,12 @@ export default class AlarmDetail extends PureComponent {
   };
 
   componentDidMount() {
-    const { dispatch, match: { params: { alarmId } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { alarmId },
+      },
+    } = this.props;
     dispatch({
       type: 'personPositionAlarm/getAlarmStrategy',
       payload: alarmId,
@@ -64,9 +73,13 @@ export default class AlarmDetail extends PureComponent {
     dispatch({
       type: 'zoning/fetchZone',
       payload: { id },
-      callback: (data) => {
+      callback: data => {
         if (data) {
-          const { areaInfo: { name, range }, companyMap: { id: id1, mapPhoto: image1 }={}, floorMap: { id: id2, mapPhoto: image2, jsonMap }={} } = data;
+          const {
+            areaInfo: { name, range },
+            companyMap: { id: id1, mapPhoto: image1 } = {},
+            floorMap: { id: id2, mapPhoto: image2, jsonMap } = {},
+          } = data;
           const { url: url1 } = JSON.parse(image1 || '{}');
           const { url: url2 } = JSON.parse(image2 || '{}');
           const json = JSON.parse(jsonMap || null);
@@ -84,8 +97,7 @@ export default class AlarmDetail extends PureComponent {
               // name,
               data: item,
             });
-          }
-          else if (url1) {
+          } else if (url1) {
             const image = {
               id: id1,
               url: url1,
@@ -103,12 +115,10 @@ export default class AlarmDetail extends PureComponent {
               // name,
               data: item,
             });
-          }
-          else {
+          } else {
             message.error('数据异常，请联系维护人员或稍后重试！');
           }
-        }
-        else {
+        } else {
           message.error('获取数据失败，请稍后重试！');
         }
       },
@@ -118,7 +128,9 @@ export default class AlarmDetail extends PureComponent {
   render() {
     const {
       loading,
-      match: { params: { companyId } },
+      match: {
+        params: { companyId },
+      },
       personPositionAlarm: {
         detail: {
           areaCode,
@@ -130,7 +142,7 @@ export default class AlarmDetail extends PureComponent {
           lackNumLimit,
           lackTimeLimit,
           mapPhoto,
-          typeList=[],
+          typeList = [],
         },
       },
     } = this.props;
@@ -144,7 +156,11 @@ export default class AlarmDetail extends PureComponent {
       { title: '首页', name: '首页', href: '/' },
       { title: '人员定位', name: '人员定位' },
       { title: '报警管理', name: '报警管理', href: '/personnel-position/alarm-management/index' },
-      { title: '报警策略列表', name: '报警策略列表', href: `/personnel-position/alarm-management/list/${companyId}` },
+      {
+        title: '报警策略列表',
+        name: '报警策略列表',
+        href: `/personnel-position/alarm-management/list/${companyId}`,
+      },
       { title, name: title },
     ];
 
@@ -170,21 +186,27 @@ export default class AlarmDetail extends PureComponent {
           images={images}
           reference={reference}
           className={styles.img1}
-          color='#00a8ff'
+          color="#00a8ff"
           style={{ backgroundColor: '#ccc' }}
         />
       </Spin>
     );
 
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
-        <Card title="区域信息">
-          <p>区域编号：{areaCode}</p>
-          <p>区域名称：{areaName || NO_DATA}</p>
-          <p>所属地图：{mapName || NO_DATA}</p>
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+        <Card title="区域信息" className={styles.mapContainer}>
+          <p>
+            区域编号：
+            {areaCode}
+          </p>
+          <p>
+            区域名称：
+            {areaName || NO_DATA}
+          </p>
+          <p>
+            所属地图：
+            {mapName || NO_DATA}
+          </p>
           {/* {mapPhotoUrl && <img className={styles.img} src={mapPhotoUrl} alt="map" />} */}
           {imgDraw}
         </Card>
@@ -192,15 +214,21 @@ export default class AlarmDetail extends PureComponent {
           <Form onSubmit={this.handleSubmit}>
             {types.includes(CK_VALUES[0]) && (
               <Fragment>
-                <FormItem label="报警类型" {...FORMITEM_LAYOUT}>越界</FormItem>
+                <FormItem label="报警类型" {...FORMITEM_LAYOUT}>
+                  越界
+                </FormItem>
                 <FormItem label="允许进入人员" {...FORMITEM_LAYOUT1}>
-                  {canEnterUsers.map(({ cardId, cardCode, userName }) => `${cardCode}(${userName})`).join('，')}
+                  {canEnterUsers
+                    .map(({ cardId, cardCode, userName }) => `${cardCode}(${userName})`)
+                    .join('，')}
                 </FormItem>
               </Fragment>
             )}
             {types.includes(CK_VALUES[1]) && (
               <Fragment>
-                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>长时间不动</FormItem>
+                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>
+                  长时间逗留
+                </FormItem>
                 <FormItem label="不动时长" {...FORMITEM_LAYOUT}>
                   {fixedlyTimeLimit}
                   <span className={styles.hour}>小时</span>
@@ -209,7 +237,9 @@ export default class AlarmDetail extends PureComponent {
             )}
             {types.includes(CK_VALUES[2]) && (
               <Fragment>
-                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>超员</FormItem>
+                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>
+                  超员
+                </FormItem>
                 <FormItem label="超员人数" {...FORMITEM_LAYOUT}>
                   {outstripNumLimit}
                 </FormItem>
@@ -217,7 +247,9 @@ export default class AlarmDetail extends PureComponent {
             )}
             {types.includes(CK_VALUES[3]) && (
               <Fragment>
-                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>缺员</FormItem>
+                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>
+                  缺员
+                </FormItem>
                 <FormItem label="缺员人数" {...FORMITEM_LAYOUT}>
                   {lackNumLimit}
                 </FormItem>
