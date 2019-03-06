@@ -303,7 +303,7 @@ export default class AlarmAddOrEdit extends PureComponent {
     } = this.props;
     const { checkedValues, mapId, areaId, mapPhoto, url, data, images, reference } = this.state;
 
-    const mapPhotoUrl = getJSONProp(mapPhoto, 'url');
+    // const mapPhotoUrl = getJSONProp(mapPhoto, 'url');
     const isAdd = this.isAdd();
     const title = isAdd ? '新增' : '编辑';
     const breadcrumbList = [
@@ -350,7 +350,7 @@ export default class AlarmAddOrEdit extends PureComponent {
         title={title}
         breadcrumbList={breadcrumbList}
       >
-        <Card title="区域信息">
+        <Card title="区域信息" className={styles.mapContainer}>
           {isAdd
             ? (
               <Fragment>

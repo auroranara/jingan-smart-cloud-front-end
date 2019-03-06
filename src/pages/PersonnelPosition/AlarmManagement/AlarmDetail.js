@@ -181,7 +181,7 @@ export default class AlarmDetail extends PureComponent {
         title={title}
         breadcrumbList={breadcrumbList}
       >
-        <Card title="区域信息">
+        <Card title="区域信息" className={styles.mapContainer}>
           <p>区域编号：{areaCode}</p>
           <p>区域名称：{areaName || NO_DATA}</p>
           <p>所属地图：{mapName || NO_DATA}</p>
