@@ -1,5 +1,6 @@
 import logo from '../src/assets/logo_jingan.svg';
 import code from '../src/assets/jingan_download_code.png';
+import czeyLogo from '../src/assets/logo_czey.svg';
 import nanxiaoLogo from '../src/assets/logo_nanxiao.svg';
 import nanxiaoCode from '../src/assets/nanxiao_download_code.png';
 import liminLogo from '../src/assets/logo_limin.svg';
@@ -9,6 +10,7 @@ import shanxiCode from '../src/assets/shanxi_download_code.png';
 import yanshiCode from '../src/assets/yanshi_download_code.png';
 import xiaoyuanCode from '../src/assets/xiaoyuan_download_code.png';
 import xuzhouCode from '../src/assets/xuzhou_download_code.png';
+import czeyCode from '../src/assets/czey_download_code.png';
 const defaultConfig = {
   logo,
   code,
@@ -100,9 +102,9 @@ const configs = {
       'http://data.jingan-china.cn/v2/login/limin/3.png',
     ],
     ios:
-      'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/xz/official_version/XZInterSafe.plist&ran=',
+      'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/limin/official_version/XZInterSafe.plist&ran=',
     android:
-      'http://58.215.178.100:12081/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
+      'http://58.215.178.100:12081/acloud_new/v2/mobileVersion/version/getLatest?type=1&version=1&ran=',
   },
   changshu: {
     region: '常熟市',
@@ -179,6 +181,22 @@ const configs = {
     region: '常州',
     projectKey: 'czey_pro',
     projectShortName: '常州二院智慧云',
+    logo: czeyLogo,
+    code: czeyCode,
+    layer: 'http://data.jingan-china.cn/v2/login/czey_download_layer.png',
+    blur: [
+      'http://data.jingan-china.cn/v2/login/czey/1_blur.png',
+      'http://data.jingan-china.cn/v2/login/czey/2_blur.png',
+      'http://data.jingan-china.cn/v2/login/czey/3_blur.png',
+    ],
+    focus: [
+      'http://data.jingan-china.cn/v2/login/czey/1.png',
+      'http://data.jingan-china.cn/v2/login/czey/2.png',
+      'http://data.jingan-china.cn/v2/login/czey/3.png',
+    ],
+    ios:
+      'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/czey/official_version/Czeysafe.plist&ran=',
+    android: 'http://czey.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
 };
 
