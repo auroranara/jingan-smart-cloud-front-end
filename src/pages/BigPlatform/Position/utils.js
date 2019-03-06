@@ -328,7 +328,7 @@ export function getUserName(item, showPrefix) {
   const isVisitor = !!+cardType;
 
   if (!isVisitor)
-    return userName;
+    return userName || '未领';
   else if (showPrefix && visitorName)
     return `访客-${visitorName}`;
   else if (!showPrefix && visitorName)

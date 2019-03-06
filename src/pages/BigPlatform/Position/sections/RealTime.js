@@ -6,7 +6,7 @@ import { message, notification } from 'antd';
 import styles from './RealTime.less';
 import { AlarmHandle, AlarmMsg, MapInfo, PersonInfo, Tabs, VideoPlay } from '../components/Components';
 import { AlarmDrawer, CardList, CardSelected, LeafletMap, LowPowerDrawer, PersonDrawer, SectionList } from './Components';
-import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem, getAlarmItem, getUserName, getAlarmDesc } from '../utils';
+import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem, getAlarmItem, getAlarmDesc } from '../utils';
 
 const options = {
   pingTimeout: 30000,
@@ -26,8 +26,9 @@ const RE_WARNING_TYPE = "5";
 export default class RealTime extends PureComponent {
   state = {
     alarmId: undefined, // 警报id
-    trueAreaId: undefined, // 实际选定的areaId，展示数据用的
     areaId: undefined, // 地图显示的areaId，即当前真实areaId为多层建筑时，areaId设置为其父节点
+    trueAreaId: undefined, // 实际选定的areaId，展示数据用的
+    highlightedAreaId: undefined, // 高亮的区域
     beaconId: undefined, // 信标id
     cardId: undefined, // 选中的人员id
     mapBackgroundUrl:undefined,
@@ -42,6 +43,7 @@ export default class RealTime extends PureComponent {
     lowPowerDrawerVisible: false, // 低电量报警抽屉
     personDrawerVisible: false, // 人员列表抽屉
     useCardIdHandleAlarm: undefined, // 当sos存在时，又在报警列表找不到时，标记为sos对应的cardId，使用另外一个接口
+    expandedRowKeys: [], // SectionList组件中的展开的树节点
   };
 
   componentDidMount() {
@@ -55,6 +57,7 @@ export default class RealTime extends PureComponent {
       callback: list => {
         const areaInfo = this.areaInfo = getAreaInfo(list);
         setAreaInfoCache(areaInfo);
+        this.setTableExpandedRowKeys(Object.keys(areaInfo).filter(prop => prop !== 'null' && prop !== 'undefined'));
         // console.log(this.areaInfo);
         if (list.length) {
           const root = list[0];
@@ -125,6 +128,10 @@ export default class RealTime extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
+  };
+
+  setHighlightedAreaId = areaId => {
+    this.setState({ highlightedAreaId: areaId });
   };
 
   setAreaId = areaId => {
@@ -412,6 +419,10 @@ export default class RealTime extends PureComponent {
     handleLabelClick(1);
   };
 
+  setTableExpandedRowKeys = expandedRowKeys => {
+    this.setState({ expandedRowKeys });
+  };
+
   render() {
     const {
       dispatch,
@@ -426,8 +437,9 @@ export default class RealTime extends PureComponent {
     } = this.props;
     const {
       alarmId,
-      trueAreaId,
       areaId,
+      trueAreaId,
+      highlightedAreaId,
       beaconId,
       cardId,
       mapBackgroundUrl,
@@ -442,6 +454,7 @@ export default class RealTime extends PureComponent {
       lowPowerDrawerVisible,
       personDrawerVisible,
       useCardIdHandleAlarm,
+      expandedRowKeys,
     } = this.state;
 
     // console.log(sectionTree);
@@ -459,6 +472,9 @@ export default class RealTime extends PureComponent {
               <SectionList
                 data={sectionTree}
                 setAreaId={this.setAreaId}
+                expandedRowKeys={expandedRowKeys}
+                setHighlightedAreaId={this.setHighlightedAreaId}
+                setExpandedRowKeys={this.setTableExpandedRowKeys}
               />
             )}
             {!!labelIndex && !selectedCardId && (
@@ -487,13 +503,15 @@ export default class RealTime extends PureComponent {
               url={mapBackgroundUrl}
               isTrack={isTrack}
               selectedCardId={selectedCardId}
-              trueAreaId={trueAreaId}
               areaId={areaId}
+              trueAreaId={trueAreaId}
+              highlightedAreaId={highlightedAreaId}
               areaInfo={areaInfo}
               sectionTree={sectionTree}
               positions={positionList}
               aggregation={positionAggregation}
               setAreaId={this.setAreaId}
+              setHighlightedAreaId={this.setHighlightedAreaId}
               handleShowVideo={this.handleShowVideo}
               handleShowPersonInfo={this.handleShowPersonInfo}
               handleShowPersonDrawer={this.handleShowPersonDrawer}

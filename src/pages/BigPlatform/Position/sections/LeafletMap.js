@@ -21,15 +21,17 @@ export default class LeafletMap extends PureComponent {
   currentShowSection = {};
 
   componentDidUpdate(prevProps, prevState) {
-    const { areaId: prevAreaId, trueAreaId: prevTrueAreaId, sectionTree: prevSectionTree } = prevProps;
-    const { areaId, trueAreaId, sectionTree } = this.props;
+    const { areaId: prevAreaId, trueAreaId: prevTrueAreaId, highlightedAreaId: prevHighlightedAreaId, sectionTree: prevSectionTree } = prevProps;
+    const { areaId, trueAreaId, highlightedAreaId, sectionTree } = this.props;
 
-    if (areaId !== prevAreaId || trueAreaId !== prevTrueAreaId || sectionTree !== prevSectionTree)
-      this.handleMapData(areaId, trueAreaId, sectionTree);
+    if (areaId !== prevAreaId || trueAreaId !== prevTrueAreaId || sectionTree !== prevSectionTree || highlightedAreaId !== prevHighlightedAreaId)
+      // this.handleMapData(areaId, trueAreaId, highlightedAreaId, sectionTree);
+      this.handleMapData();
   }
 
-  handleMapData = (areaId, trueAreaId, sectionTree) => {
-    const { areaInfo } = this.props;
+  // handleMapData = (areaId, trueAreaId, sectionTree) => {
+  handleMapData = () => {
+    const { areaInfo, areaId, trueAreaId, highlightedAreaId, sectionTree } = this.props;
     const target = this.currentShowSection = findInTree(areaId, sectionTree);
     // 当trueAreaId为多层建筑时，地图上展示其父级areaId，即areaId是trueAreaId的父节点，当不是多层建筑时，两个值一致
     if (areaId !== trueAreaId)
@@ -58,7 +60,16 @@ export default class LeafletMap extends PureComponent {
     // 显示当前区域即其所有子区域
     // const data = sectionChildren.reduce((prev, { range }) => range ? [...prev, range] : prev, [currentRange]);
     // 由于返回时图层顺序会乱，所以当前区域有子区域时先不渲染当前区域，当前区域没有子区域时渲染当前区域
-    const data = sectionChildren.length ? sectionChildren.reduce((prev, { range }) => range ? [...prev, range] : prev, []) : [currentRange];
+    const data = sectionChildren.length ? sectionChildren.reduce((prev, { id, range }) => {
+      if (range) {
+        let newRange = range;
+        // 如果不为红色且不是高亮的区域，则颜色变为透明
+        if (newRange.options.color !== '#F00' && id !== highlightedAreaId)
+          newRange = { ...range, options: { ...range.options, color: 'transparent' } };
+        prev.push(newRange);
+      }
+      return prev;
+    }, []) : [currentRange];
     // console.log('range', data, images, reference);
     this.setState({ data, images: areaInfo[areaId].images, reference });
   };

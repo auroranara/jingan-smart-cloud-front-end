@@ -183,7 +183,7 @@ export default class History extends PureComponent {
                   className={styles.cardSelect}
                   dropdownClassName={styles.dropdown}
                   value={cardId}
-                  placeholder="请选择人员"
+                  placeholder="请选择或搜索人员"
                   filterOption={this.cardFilter}
                   onChange={this.handleCardChange}
                 >
