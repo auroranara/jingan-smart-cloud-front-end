@@ -104,6 +104,10 @@ export default class LeafletMap extends PureComponent {
   handleClickSection = (name, e) => {
     // console.log('section');
     const { areaInfo, setAreaId } = this.props;
+
+    if (!this.currentShowSection.children)
+      return;
+
     const target = this.currentShowSection.children.find(item => item.name === name);
     // console.log(target);
 
