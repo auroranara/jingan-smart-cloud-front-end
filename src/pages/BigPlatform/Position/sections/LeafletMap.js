@@ -238,6 +238,7 @@ export default class LeafletMap extends PureComponent {
       <Spin spinning={false} style={{ height: '100%' }}>
         <ImageDraw
           autoZoom
+          // mapProps={{ scrollWheelZoom: false }}
           url={url}
           data={data}
           images={images}
@@ -256,11 +257,11 @@ export default class LeafletMap extends PureComponent {
         {imgDraw}
         {parentId && <Icon type="rollback" onClick={this.handleBack} className={styles.back} />}
         <div className={styles.mapInfo}>
-          <span className={styles.area}>当前区域: {fullName}</span>
+          <span className={styles.area}>当前区域: {fullName || '暂无'}</span>
           今日
-          <span className={styles.enter}>进入: {inCardCount}人次</span>
-          <span className={styles.exit}>出去: {outCardCount}人次</span>
-          当前人数: {count}
+          <span className={styles.enter}>进入: {inCardCount || 0}人次</span>
+          <span className={styles.exit}>出去: {outCardCount || 0}人次</span>
+          当前人数: {count || 0}
         </div>
         <div className={styles.legends}>
           <div className={styles.visitorLgd}>访客</div>

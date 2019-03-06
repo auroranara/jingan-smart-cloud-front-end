@@ -172,7 +172,7 @@ export default class RealTime extends PureComponent {
         break;
       case RE_WARNING_TYPE:
         this.removeAlarms(data);
-        data.forEach(({ warningId }) => notification.close(warningId));
+        this.autoCloseNotification(data);
         break;
       default:
         console.log('no msg type');
@@ -307,6 +307,16 @@ export default class RealTime extends PureComponent {
         </span>
       ),
       duration: null,
+    });
+  };
+
+  autoCloseNotification = data => {
+    const { alarmId } = this.state;
+    data.forEach(({ warningId }) => {
+      notification.close(warningId);
+      // 如果当前在显示和处理的alarm与关闭的alarm相同，则自动关闭当前alarmMsg及alarmHandle弹框
+      if (alarmId === warningId)
+        this.setState({ alarmMsgVisible: false, alarmHandleVisible: false });
     });
   };
 

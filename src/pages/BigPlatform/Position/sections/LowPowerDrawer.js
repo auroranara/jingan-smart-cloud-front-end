@@ -42,9 +42,9 @@ export default class PowerDrawer extends PureComponent {
     let left = null;
     if (list.length)
       left = (
-        <Fragment>
+        <div className={styles.cards}>
           {list.map(item => <PowerCard key={item.cardId} data={item} onClick={this.genCardClick(item.cardId)} />)}
-        </Fragment>
+        </div>
       );
 
     return (
