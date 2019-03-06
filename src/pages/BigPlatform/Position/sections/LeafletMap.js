@@ -4,7 +4,7 @@ import { connect } from 'dva';
 
 import styles from './LeafletMap.less';
 import ImageDraw, { L } from '@/components/ImageDraw';
-import { findInTree, parseImage, getUserName, getMapClickedType, getPersonAlarmTypes, getIconClassName } from '../utils';
+import { findInTree, parseImage, getUserName, getMapClickedType, getPersonAlarmTypes, getIconClassName, isCompanyMap } from '../utils';
 
 @connect(({ zoning, loading }) => ({
   zoning,
@@ -244,11 +244,14 @@ export default class LeafletMap extends PureComponent {
     const currentTrueAreaInfo = trueAreaId && areaInfo[trueAreaId] || {};
     const { parentId, fullName }=  currentTrueAreaInfo;
     const icons = this.positionsToIcons();
+    // const hideBackground = !isCompanyMap(this.currentShowSection);
+    // console.log(hideBackground);
 
     const imgDraw = (
       <Spin spinning={false} style={{ height: '100%' }}>
         <ImageDraw
           autoZoom
+          // hideBackground={true}
           // mapProps={{ scrollWheelZoom: false }}
           url={url}
           data={data}
