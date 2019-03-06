@@ -79,6 +79,7 @@ export default {
       locationDataHistories: [],
     },
     tree: {},
+    originalTree: [],
     cards: [],
   },
 
@@ -103,7 +104,7 @@ export default {
     *fetchTree({ payload, callback }, { call, put }) {
       const response = yield call(getTree, payload);
       if (response.code === 200) {
-        yield put({ type: 'save', payload: { tree: formatTree(response.data.list) }});
+        yield put({ type: 'save', payload: { tree: formatTree(response.data.list), originalTree: response.data.list }});
       }
       if (callback) {
         callback(response);

@@ -165,7 +165,7 @@ export default class History extends PureComponent {
     const {
       labelIndex,
       cardId,
-      position: { data: { areaDataHistories=[], locationDataHistories=[] }={}, tree={}, cards },
+      position: { data: { areaDataHistories=[], locationDataHistories=[] }={}, tree={}, originalTree=[], cards },
       handleLabelClick,
     } = this.props;
     const { range } = this.state;
@@ -270,6 +270,7 @@ export default class History extends PureComponent {
           <HistoryPlay
             ref={this.setHistoryPlayReference}
             tree={tree}
+            originalTree={originalTree}
             data={locationDataHistories}
             startTime={startTime && +startTime}
             endTime={endTime && +endTime}
