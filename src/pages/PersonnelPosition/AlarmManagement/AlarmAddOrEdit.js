@@ -6,7 +6,14 @@ import { Button, Card, Checkbox, Form, Input, Select, Spin, message } from 'antd
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import ImageDraw from '@/components/ImageDraw';
 import styles from './AlarmAddOrEdit.less';
-import { CK_VALUES, CK_OPTIONS, msgCallback, handleInitFormValues, getRangeMsg, getJSONProp } from './utils';
+import {
+  CK_VALUES,
+  CK_OPTIONS,
+  msgCallback,
+  handleInitFormValues,
+  getRangeMsg,
+  getJSONProp,
+} from './utils';
 
 const { Option } = Select;
 const { Item: FormItem } = Form;
@@ -44,7 +51,10 @@ const FORM_PROPS = {
   zoning,
   personPositionAlarm,
   loading: loading.models.personPositionAlarm,
-  zoningLoading: loading.effects['zoning/fetchZone'] || loading.effects['personPositionAlarm/fetchMapList'] || loading.effects['personPositionAlarm/fetchAreaList'],
+  zoningLoading:
+    loading.effects['zoning/fetchZone'] ||
+    loading.effects['personPositionAlarm/fetchMapList'] ||
+    loading.effects['personPositionAlarm/fetchAreaList'],
 }))
 @Form.create()
 export default class AlarmAddOrEdit extends PureComponent {
@@ -60,23 +70,29 @@ export default class AlarmAddOrEdit extends PureComponent {
   };
 
   componentDidMount() {
-    const { dispatch, match: { params: { companyId, alarmId } }, form: { setFieldsValue } } = this.props;
-    const isAdd = this.isAdd();
-    isAdd && dispatch({
-      type: 'personPositionAlarm/fetchMapList',
-      payload: { companyId, pageSize: 0 },
-      callback: maps => {
-        const mapId = maps.length ? maps[0].id : undefined;
-        this.setState({ mapId });
-        this.getAreaList(mapId);
+    const {
+      dispatch,
+      match: {
+        params: { companyId, alarmId },
       },
-    });
+      form: { setFieldsValue },
+    } = this.props;
+    const isAdd = this.isAdd();
+    isAdd &&
+      dispatch({
+        type: 'personPositionAlarm/fetchMapList',
+        payload: { companyId, pageSize: 0 },
+        callback: maps => {
+          const mapId = maps.length ? maps[0].id : undefined;
+          this.setState({ mapId });
+          this.getAreaList(mapId);
+        },
+      });
     dispatch({
       type: 'personPositionAlarm/fetchAllCards',
       payload: { companyId, pageSize: 0 },
       callback: () => {
-        if (isAdd)
-          return;
+        if (isAdd) return;
 
         dispatch({
           type: 'personPositionAlarm/getAlarmStrategy',
@@ -85,13 +101,16 @@ export default class AlarmAddOrEdit extends PureComponent {
             const { typeList, areaId, mapPhoto } = detail;
             dispatch({ type: 'personPositionAlarm/fetchAreaLimits', payload: areaId });
             areaId && this.getZoning(areaId);
-            this.setState({
-              areaId,
-              mapPhoto,
-              checkedValues: typeList.map(n => Number(n)),
-            }, () => {
-              setFieldsValue(handleInitFormValues(detail, typeList, FORM_PROPS));
-            });
+            this.setState(
+              {
+                areaId,
+                mapPhoto,
+                checkedValues: typeList.map(n => Number(n)),
+              },
+              () => {
+                setFieldsValue(handleInitFormValues(detail, typeList, FORM_PROPS));
+              }
+            );
           },
         });
       },
@@ -99,7 +118,11 @@ export default class AlarmAddOrEdit extends PureComponent {
   }
 
   isAdd = () => {
-    const { match: { params: { alarmId } } } = this.props;
+    const {
+      match: {
+        params: { alarmId },
+      },
+    } = this.props;
     return !alarmId;
   };
 
@@ -108,7 +131,10 @@ export default class AlarmAddOrEdit extends PureComponent {
   };
 
   handleMapChange = value => {
-    const { dispatch, personPositionAlarm: { mapList } } = this.props;
+    const {
+      dispatch,
+      personPositionAlarm: { mapList },
+    } = this.props;
     this.setState({ mapId: value });
     this.getAreaList(value);
 
@@ -124,21 +150,26 @@ export default class AlarmAddOrEdit extends PureComponent {
       callback: areas => {
         const areaId = areas.length ? areas[0].id : undefined;
         this.setState({ areaId });
-        if (areaId)
-          this.handleAreaChange(areaId);
+        if (areaId) this.handleAreaChange(areaId);
       },
     });
   };
 
   handleAreaChange = value => {
-    const { dispatch, form: { setFieldsValue }, personPositionAlarm } = this.props;
+    const {
+      dispatch,
+      form: { setFieldsValue },
+      personPositionAlarm,
+    } = this.props;
     this.setState({ areaId: value });
     dispatch({
       type: 'personPositionAlarm/fetchAreaLimits',
       payload: value,
       callback: ({ minCanEnterUsers }) => {
         // console.log(minCanEnterUsers);
-        const canEnterUsers = Array.isArray(minCanEnterUsers) ? minCanEnterUsers.map(({ cardId }) => cardId) : [];
+        const canEnterUsers = Array.isArray(minCanEnterUsers)
+          ? minCanEnterUsers.map(({ cardId }) => cardId)
+          : [];
         setFieldsValue({ canEnterUsers });
       },
     });
@@ -151,9 +182,13 @@ export default class AlarmAddOrEdit extends PureComponent {
     dispatch({
       type: 'zoning/fetchZone',
       payload: { id },
-      callback: (data) => {
+      callback: data => {
         if (data) {
-          const { areaInfo: { name, range }, companyMap: { id: id1, mapPhoto: image1 }={}, floorMap: { id: id2, mapPhoto: image2, jsonMap }={} } = data;
+          const {
+            areaInfo: { name, range },
+            companyMap: { id: id1, mapPhoto: image1 } = {},
+            floorMap: { id: id2, mapPhoto: image2, jsonMap } = {},
+          } = data;
           const { url: url1 } = JSON.parse(image1 || '{}');
           const { url: url2 } = JSON.parse(image2 || '{}');
           const json = JSON.parse(jsonMap || null);
@@ -171,8 +206,7 @@ export default class AlarmAddOrEdit extends PureComponent {
               // name,
               data: item,
             });
-          }
-          else if (url1) {
+          } else if (url1) {
             const image = {
               id: id1,
               url: url1,
@@ -190,12 +224,10 @@ export default class AlarmAddOrEdit extends PureComponent {
               // name,
               data: item,
             });
-          }
-          else {
+          } else {
             message.error('数据异常，请联系维护人员或稍后重试！');
           }
-        }
-        else {
+        } else {
           message.error('获取数据失败，请稍后重试！');
         }
       },
@@ -204,7 +236,11 @@ export default class AlarmAddOrEdit extends PureComponent {
 
   handleCardsChange = values => {
     // console.log(values);
-    const { personPositionAlarm: { areaLimits: { minCanEnterUsers } } } = this.props;
+    const {
+      personPositionAlarm: {
+        areaLimits: { minCanEnterUsers },
+      },
+    } = this.props;
     const min = Array.isArray(minCanEnterUsers) ? minCanEnterUsers.map(({ cardId }) => cardId) : [];
     return Array.from(new Set([...min, ...values]));
   };
@@ -216,14 +252,19 @@ export default class AlarmAddOrEdit extends PureComponent {
   // };
 
   genTimeLimitCheck = (min, max) => {
-    return function (rule, value, callback) {
+    return function(rule, value, callback) {
       const val = value && Number(value.trim());
       if (!val || val < 0) {
         callback('值必须为一个大于0的数字');
         return;
       }
 
-      if (min && !max && val >= min || !min && max && val <= max || min && max && val >=min && val <= max || !min && !max) {
+      if (
+        (min && !max && val >= min) ||
+        (!min && max && val <= max) ||
+        (min && max && val >= min && val <= max) ||
+        (!min && !max)
+      ) {
         callback();
         return;
       }
@@ -234,17 +275,17 @@ export default class AlarmAddOrEdit extends PureComponent {
 
   checkTimeLimit = (rule, value, callback) => {
     const val = value && Number(value.trim());
-    if (!val || val < 0)
-      callback('值必须为一个大于0的数字');
-    else
-      callback();
+    if (!val || val < 0) callback('值必须为一个大于0的数字');
+    else callback();
   };
 
   handleSubmit = e => {
     const {
       dispatch,
       form: { validateFields, getFieldsValue },
-      match: { params: { companyId, alarmId } },
+      match: {
+        params: { companyId, alarmId },
+      },
     } = this.props;
     const { checkedValues, areaId } = this.state;
     const isAdd = this.isAdd();
@@ -255,16 +296,14 @@ export default class AlarmAddOrEdit extends PureComponent {
     // console.log(areaId);
     validateFields((err, values) => {
       // console.log(err, values);
-      if (err)
-        return;
+      if (err) return;
 
       const newValues = { ...values };
       newValues.areaId = areaId;
       newValues.typeList = checkedValues;
       if (values.canEnterUsers)
-        newValues.canEnterUsers = values.canEnterUsers.map((cardId) => ({ cardId }));
-      if (!isAdd)
-        newValues.id = alarmId;
+        newValues.canEnterUsers = values.canEnterUsers.map(cardId => ({ cardId }));
+      if (!isAdd) newValues.id = alarmId;
 
       // console.log(newValues);
       dispatch({
@@ -272,8 +311,7 @@ export default class AlarmAddOrEdit extends PureComponent {
         payload: newValues,
         callback: (code, msg) => {
           msgCallback(code, msg);
-          if (code === 200)
-            router.push(`/personnel-position/alarm-management/list/${companyId}`);
+          if (code === 200) router.push(`/personnel-position/alarm-management/list/${companyId}`);
         },
       });
     });
@@ -282,7 +320,9 @@ export default class AlarmAddOrEdit extends PureComponent {
   render() {
     const {
       loading,
-      match: { params: { companyId } },
+      match: {
+        params: { companyId },
+      },
       form: { getFieldDecorator },
       personPositionAlarm: {
         mapList,
@@ -310,7 +350,11 @@ export default class AlarmAddOrEdit extends PureComponent {
       { title: '首页', name: '首页', href: '/' },
       { title: '人员定位', name: '人员定位' },
       { title: '报警管理', name: '报警管理', href: '/personnel-position/alarm-management/index' },
-      { title: '报警策略列表', name: '报警策略列表', href: `/personnel-position/alarm-management/list/${companyId}` },
+      {
+        title: '报警策略列表',
+        name: '报警策略列表',
+        href: `/personnel-position/alarm-management/list/${companyId}`,
+      },
       { title, name: title },
     ];
 
@@ -339,59 +383,87 @@ export default class AlarmAddOrEdit extends PureComponent {
           images={images}
           reference={reference}
           className={styles.img1}
-          color='#00a8ff'
+          color="#00a8ff"
           style={{ backgroundColor: '#ccc' }}
         />
       </Spin>
     );
 
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Card title="区域信息" className={styles.mapContainer}>
-          {isAdd
-            ? (
-              <Fragment>
-                <div className={styles.map}>
-                  所属地图：
-                  <Select placeholder="请选择地图" style={{ width: 200 }} onChange={this.handleMapChange} value={mapId}>
-                    {mapList.map(({ id, mapName }) => <Option value={id} key={id}>{mapName}</Option>)}
-                  </Select>
-                </div>
-                <div>
-                  区域名称：
-                  <Select placeholder="请选择区域" style={{ width: 200 }} onChange={this.handleAreaChange} value={areaId}>
-                    {areaList.map(({ id, name }) => <Option value={id} key={id}>{name}</Option>)}
-                  </Select>
-                </div>
-                {/* {mapPhotoUrl && <img src={mapPhotoUrl} className={styles.img1} alt="map" />} */}
-                {imgDraw}
-              </Fragment>
-            ): (
-              <Fragment>
-                <p>区域编号：{areaCode}</p>
-                <p>区域名称：{areaName || NO_DATA}</p>
-                <p>所属地图：{mapName || NO_DATA}</p>
-                {/* {mapPhotoUrl && <img className={styles.img} src={mapPhotoUrl} alt="map" />} */}
-                {imgDraw}
-              </Fragment>
-            )
-          }
+          {isAdd ? (
+            <Fragment>
+              <div className={styles.map}>
+                所属地图：
+                <Select
+                  placeholder="请选择地图"
+                  style={{ width: 200 }}
+                  onChange={this.handleMapChange}
+                  value={mapId}
+                >
+                  {mapList.map(({ id, mapName }) => (
+                    <Option value={id} key={id}>
+                      {mapName}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+              <div>
+                区域名称：
+                <Select
+                  placeholder="请选择区域"
+                  style={{ width: 200 }}
+                  onChange={this.handleAreaChange}
+                  value={areaId}
+                >
+                  {areaList.map(({ id, name }) => (
+                    <Option value={id} key={id}>
+                      {name}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+              {/* {mapPhotoUrl && <img src={mapPhotoUrl} className={styles.img1} alt="map" />} */}
+              {imgDraw}
+            </Fragment>
+          ) : (
+            <Fragment>
+              <p>
+                区域编号：
+                {areaCode}
+              </p>
+              <p>
+                区域名称：
+                {areaName || NO_DATA}
+              </p>
+              <p>
+                所属地图：
+                {mapName || NO_DATA}
+              </p>
+              {/* {mapPhotoUrl && <img className={styles.img} src={mapPhotoUrl} alt="map" />} */}
+              {imgDraw}
+            </Fragment>
+          )}
         </Card>
         <Card title={infoTitle} className={styles.card}>
           <Form onSubmit={this.handleSubmit}>
             {checkedValues.includes(CK_VALUES[0]) && (
               <Fragment>
-                <FormItem label="报警类型" {...FORMITEM_LAYOUT}>越界</FormItem>
+                <FormItem label="报警类型" {...FORMITEM_LAYOUT}>
+                  越界
+                </FormItem>
                 <FormItem label="允许进入人员" {...FORMITEM_LAYOUT1}>
                   {getFieldDecorator('canEnterUsers', {
                     rules: [{ required: true, message: '请选择允许进入人员' }],
                     getValueFromEvent: this.handleCardsChange,
                   })(
                     <Select mode="multiple" placeholder="请选择允许进入人员">
-                      {cardList.map(({ cardId, cardCode, userName }) => <Option value={cardId} key={cardId}>{cardCode}({userName})</Option>)}
+                      {cardList.map(({ cardId, cardCode, userName }) => (
+                        <Option value={cardId} key={cardId}>
+                          {cardCode}({userName})
+                        </Option>
+                      ))}
                     </Select>
                   )}
                 </FormItem>
@@ -399,7 +471,9 @@ export default class AlarmAddOrEdit extends PureComponent {
             )}
             {checkedValues.includes(CK_VALUES[1]) && (
               <Fragment>
-                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>长时间不动</FormItem>
+                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>
+                  长时间逗留
+                </FormItem>
                 <FormItem label="不动时长" {...FORMITEM_LAYOUT}>
                   {getFieldDecorator('fixedlyTimeLimit', {
                     validateFirst: true,
@@ -407,33 +481,35 @@ export default class AlarmAddOrEdit extends PureComponent {
                       { required: true, message: '请设置不动时长' },
                       { validator: this.genTimeLimitCheck(minTLongLimitTime, maxTLongLimitTime) },
                     ],
-                  })(
-                    <Input style={{ width: 150 }} placeholder="请输入不动时长" />
-                  )}
+                  })(<Input style={{ width: 150 }} placeholder="请输入不动时长" />)}
                   <span className={styles.hour}>小时</span>
                 </FormItem>
               </Fragment>
             )}
             {checkedValues.includes(CK_VALUES[2]) && (
               <Fragment>
-                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>超员</FormItem>
+                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>
+                  超员
+                </FormItem>
                 <FormItem label="超员人数" {...FORMITEM_LAYOUT}>
                   {getFieldDecorator('outstripNumLimit', {
                     validateFirst: true,
                     rules: [
                       { required: true, message: '请设置超员人数' },
                       { pattern: /^\d+$/, message: '设置的值必须为正整数' },
-                      { validator: this.genTimeLimitCheck(minLimitOutstripNum, maxLimitOutstripNum) },
+                      {
+                        validator: this.genTimeLimitCheck(minLimitOutstripNum, maxLimitOutstripNum),
+                      },
                     ],
-                  })(
-                    <Input style={{ width: 150 }} placeholder="大于该人数时报警" />
-                  )}
+                  })(<Input style={{ width: 150 }} placeholder="大于该人数时报警" />)}
                 </FormItem>
               </Fragment>
             )}
             {checkedValues.includes(CK_VALUES[3]) && (
               <Fragment>
-                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>缺员</FormItem>
+                <FormItem label="报警类型" {...FORMITEM_LAYOUT} style={{ marginTop: 24 }}>
+                  缺员
+                </FormItem>
                 <FormItem label="缺员人数" {...FORMITEM_LAYOUT}>
                   {getFieldDecorator('lackNumLimit', {
                     validateFirst: true,
@@ -442,9 +518,7 @@ export default class AlarmAddOrEdit extends PureComponent {
                       { pattern: /^\d+$/, message: '设置的值必须为正整数' },
                       { validator: this.genTimeLimitCheck(minLimitLackNum, maxLimitLackNum) },
                     ],
-                  })(
-                    <Input style={{ width: 150 }} placeholder="小于该人数时报警" />
-                  )}
+                  })(<Input style={{ width: 150 }} placeholder="小于该人数时报警" />)}
                 </FormItem>
                 <FormItem label="缺员时长" {...FORMITEM_LAYOUT}>
                   {getFieldDecorator('lackTimeLimit', {
@@ -453,9 +527,7 @@ export default class AlarmAddOrEdit extends PureComponent {
                       { required: true, message: '请设置缺员时长' },
                       { validator: this.checkTimeLimit },
                     ],
-                  })(
-                    <Input style={{ width: 150 }} placeholder="请输入缺员时长" />
-                  )}
+                  })(<Input style={{ width: 150 }} placeholder="请输入缺员时长" />)}
                   <span className={styles.hour}>小时</span>
                 </FormItem>
               </Fragment>
