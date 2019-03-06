@@ -267,6 +267,7 @@ export default class LeafletMap extends PureComponent {
     const imgDraw = (
       <Spin spinning={false} style={{ height: '100%' }}>
         <ImageDraw
+          maxBoundsRatio={1.5}
           autoZoom
           filled
           mapProps={{ scrollWheelZoom: false }}
