@@ -1,0 +1,102 @@
+.modalContainer {
+  .modalTitle {
+    width: auto;
+    height: 100%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    .sectionTitleIcon {
+      margin-right: 12px;
+      width: 20px;
+      height: 20px;
+      background-color: #0967D3; // vertical-align: top;
+    }
+  }
+  @monitor-light-white: #dfdbdb;
+  & * {
+    border-color: #0967D3;
+  }
+  :global {
+    .ant-modal-body {
+      padding: 0 24px 24px 24px;
+      & * {
+        border-color: #0967D3 !important;
+      }
+    }
+    .ant-modal-header {
+      background-color: #033069;
+      border-bottom-width: 0px;
+      border-top: 1px solid #0967D3;
+    }
+    .ant-modal-close {
+      color: @monitor-light-white;
+      &:focus,
+      &:hover {
+        color: #fff;
+      }
+    }
+    .ant-modal-title {
+      color: #fff;
+    }
+    .ant-table-bordered .ant-table-body>table {
+      border-color: #0967D3;
+    }
+    .ant-modal-content {
+      background-color: #033069;
+      border-left: 1px solid #0967D3;
+      border-right: 1px solid #0967D3;
+      border-bottom: 1px solid #0967D3; // box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
+    }
+    .ant-table-thead>tr>th {
+      border-color: #0967D3;
+      background: rgb(7, 52, 111);
+      color: #07A4F9;
+      padding: 10px 10px;
+    }
+    .ant-table-tbody>tr>td {
+      background: #062756;
+      border-color: #0967D3;
+      color: @monitor-light-white;
+      padding: 10px 10px;
+    }
+    .ant-table-tbody>tr:hover {
+      & td {
+        background: rgb(11, 52, 110);
+      }
+    }
+    .ant-table-placeholder {
+      background: rgb(7, 52, 111);
+      color: @monitor-light-white;
+      border-bottom-width: 0;
+    }
+    .ant-pagination-prev a,
+    .ant-pagination-next a {
+      color: #0967D3;
+      background-color: rgb(6, 39, 86);
+      border-color: #0967D3;
+    }
+    .ant-pagination-item {
+      background-color: rgb(6, 39, 86);
+      border-color: #0967D3;
+      & a {
+        color: #0967D3;
+      }
+    }
+    .ant-pagination-prev:hover,
+    .ant-pagination-next:hover,
+    .ant-pagination-item:hover,
+    .ant-pagination-item-disabled:hover {
+      & a {
+        border-color: #1890FF;
+        color: #1890FF;
+      }
+    }
+    .ant-pagination-item-active,
+    .ant-pagination-item-active:hover {
+      background-color: #0967D3;
+      & a {
+        color: @monitor-light-white;
+      }
+    }
+  }
+}
