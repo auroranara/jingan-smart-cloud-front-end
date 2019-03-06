@@ -276,9 +276,9 @@ class ImageDraw extends PureComponent {
    * @param {number} height reference图片的高度
    */
   getFitZoom = (width, height) => {
-    const { filled, autoZoom } = this.props;
+    const { autoZoom } = this.props;
     let zoom = 0;
-    if (autoZoom && !filled) {
+    if (autoZoom) {
       const { clientWidth, clientHeight } =  this.map.container;
       zoom = Math.floor(Math.log2(Math.min(clientWidth/width, clientHeight/height)));
     }
@@ -291,10 +291,10 @@ class ImageDraw extends PureComponent {
    */
   dynamicInitMap = (url) => {
     const { filled } = this.props;
+    const { clientWidth, clientHeight } =  this.map.container;
     // 如果使用填充效果
     if (filled) {
       // 按照容器的比例
-      const { clientWidth, clientHeight } =  this.map.container;
       this.initMap(clientWidth, clientHeight);
     }
     else {
@@ -303,7 +303,9 @@ class ImageDraw extends PureComponent {
       image.src = url;
       image.onload = (e) => {
         const { width, height } = e.path[0];
-        this.initMap(width, height);
+        // 计算适应容器的最大缩放比例
+        const ratio = Math.min(clientWidth/width, clientHeight/height);
+        this.initMap(width * ratio, height * ratio);
       }
     }
   }

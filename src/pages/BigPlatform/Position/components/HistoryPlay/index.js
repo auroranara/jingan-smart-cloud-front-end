@@ -99,37 +99,30 @@ export default class HistoryPlay extends PureComponent {
           speed,
           // 设置初始时间节点
           currentIndex,
-          drawProps: this.treeUpdated
-            ? {
-                // 根据树是否发生变化决定是否保留参数
-                ...drawProps,
-                ...this.getDrawProps(currentIndex, startTime, true),
-                circleMarkers: data,
-              }
-            : undefined,
+          // 设置绘图参数
+          drawProps: this.treeUpdated ? {
+            ...drawProps,
+            ...this.getDrawProps({ currentIndex, currentTimeStamp: startTime }),
+          } : undefined,
         };
       });
       this.dataUpdated = true;
     }
     if (tree !== prevTree) {
-      this.setState(
-        {
-          drawProps: {
-            url: tree.url,
-          },
+      this.setState({
+        drawProps: {
+          url: tree.url,
         },
-        () => {
-          if (this.dataUpdated) {
-            this.setState(({ drawProps, currentIndex }) => ({
-              drawProps: {
-                ...drawProps,
-                ...this.getDrawProps(currentIndex, startTime, true),
-                circleMarkers: data,
-              },
-            }));
-          }
+      }, () => {
+        if (this.dataUpdated) {
+          this.setState(({ drawProps, currentIndex }) => ({
+            drawProps: {
+              ...drawProps,
+              ...this.getDrawProps({ currentIndex, currentTimeStamp: startTime }),
+            },
+          }));
         }
-      );
+      });
       this.treeUpdated = true;
     }
   }
@@ -167,46 +160,42 @@ export default class HistoryPlay extends PureComponent {
    */
   frameCallback = timestamp => {
     const { startTime, endTime } = this.props;
-    const { currentTimeStamp, currentIndex, speed, drawProps } = this.state;
+    const { currentTimeStamp: prevTimeStamp, currentIndex: prevIndex, speed, drawProps } = this.state;
     if (!this.frameStart) {
       this.frameStart = timestamp;
-      this.playingStart = currentTimeStamp || startTime;
+      this.playingStart = prevTimeStamp || startTime;
       this.setFrameTimer();
       return;
     }
     // 获取当前时间戳
-    const nextCurrentTimeStamp = this.playingStart + (timestamp - this.frameStart) * speed;
-    if (nextCurrentTimeStamp >= endTime) {
+    const currentTimeStamp = this.playingStart + (timestamp - this.frameStart) * speed;
+    if (currentTimeStamp >= endTime) {
       this.unsetFrameTimer();
-      const nextIndex = this.getCurrentIndex(endTime, currentIndex);
+      const currentIndex = this.getCurrentIndex(endTime, prevIndex);
       this.setState({
         playing: false,
         currentTimeStamp: endTime,
-        currentIndex: nextIndex,
-        drawProps: {
-          ...drawProps,
-          ...this.getDrawProps(nextIndex, endTime, currentIndex !== nextIndex),
-        },
+        currentIndex,
+        drawProps: { ...drawProps, ...this.getDrawProps({ currentIndex, currentTimeStamp: endTime, indexChanged: prevIndex !== currentIndex }) },
       });
-    } else {
-      const nextIndex = this.getCurrentIndex(nextCurrentTimeStamp, currentIndex);
+    }
+    else {
+      const currentIndex = this.getCurrentIndex(currentTimeStamp, prevIndex);
       this.setFrameTimer();
       this.setState({
-        currentTimeStamp: nextCurrentTimeStamp,
-        currentIndex: nextIndex,
-        drawProps: {
-          ...drawProps,
-          ...this.getDrawProps(nextIndex, nextCurrentTimeStamp, currentIndex !== nextIndex),
-        },
+        currentTimeStamp,
+        currentIndex,
+        drawProps: { ...drawProps, ...this.getDrawProps({ currentIndex, currentTimeStamp, indexChanged: prevIndex !== currentIndex }) },
       });
     }
   };
 
   /**
-   * 时间条专用修改提示框
+   * 显示提示框
    * @param {event} e 鼠标事件对象
    */
-  showTooltip = e => {
+  showTooltip = (e) => {
+    // 根据鼠标在时间轴上的位置获取对应的时间戳
     const currentTime = moment(this.getCurrentTimeStamp(e)).format(DEFAULT_TIME_FORMAT);
     this.setState({
       tooltip: {
@@ -228,42 +217,47 @@ export default class HistoryPlay extends PureComponent {
   };
 
   /**
-   * 获取绘图组件参数（images, divIcons, arrows, data, reference)
+   * 获取绘图组件参数
    * @param {number} currentIndex 当前时间节点
    * @param {number} currentTimeStamp 当前时间戳
-   * @param {boolean} currentIndexChanged 当前时间节点是否发生变化
+   * @param {number} indexChanged 时间节点是否发生变化
    * @return {object} 需要改变的组件参数对象
    */
-  getDrawProps = (currentIndex, currentTimeStamp, currentIndexChanged) => {
+  getDrawProps = ({ currentIndex, currentTimeStamp, indexChanged=true }) => {
+    // 不管当前区域是否发生变化，人员位置始终改变
     const divIcons = this.getDivIcons(currentIndex, currentTimeStamp);
-    // 如果当前时间节点发生变化，修改drawProps的所有参数
-    if (currentIndexChanged) {
-      return {
-        // 楼层
-        images: this.getImages(currentIndex), // 注意必须显示声明为undefined
-        // 区域
-        data: this.getAreas(currentIndex),
-        // 人员
-        divIcons,
-        // 箭头
-        arrows: this.getArrows(currentIndex),
-        // 居中
-        reference: this.getReference(currentIndex),
-      };
+    // 如果时间节点没有发生变化，则只修改人员位置
+    if (!indexChanged) {
+      return { divIcons };
     }
-    return { divIcons };
-  };
+    // 否则修改drawProps所有参数
+    return {
+      // 楼层
+      images: this.getImages(currentIndex),
+      // 区域
+      data: this.getAreas(currentIndex),
+      // 人员
+      divIcons,
+      // 箭头
+      arrows: this.getArrows(currentIndex),
+      // 居中
+      reference: this.getReference(currentIndex),
+      // 信标点
+      circleMarkers: this.getCircleMarkers(currentIndex),
+    };
+  }
 
   /**
    * 获取楼层图片数组
-   * @param {object} currentIndex 当前时间节点
-   * @return {array} 从当前时间节点往上遍历得到的不同楼层图片数组
+   * @param {number} currentIndex 当前时间节点
+   * @return {array} 从当前时间节点往上遍历得到的不同楼层图片数组，不包括单位图
    */
-  getImages = currentIndex => {
-    const { tree, data } = this.props;
+  getImages = (currentIndex) => {
+    const { tree={}, data=[] } = this.props;
+    // 当前时间节点对应的数据
     const currentData = data[currentIndex];
-    // 如果对应数据不存在，则不做任何操作
-    if (currentData && currentData.areaId) {
+    // 当前区域存在时，才进行遍历操作
+    if (currentData && currentData.areaId && tree[currentData.areaId]) {
       // 根据当前时间节点所在的区域id获取到区域对象
       let image = tree[currentData.areaId];
       const images = [];
@@ -271,6 +265,7 @@ export default class HistoryPlay extends PureComponent {
       while (image) {
         const { parentId, mapId, companyMap } = image;
         const parent = tree[parentId];
+        // 父区域存在，则和父区域比较图片是否相等，父区域不存在，则和单位图比较图片是否相等，不相等则插入数组
         if ((parent && mapId !== parent.mapId) || (!parent && mapId !== companyMap)) {
           images.unshift(image);
         }
@@ -332,10 +327,12 @@ export default class HistoryPlay extends PureComponent {
    * @param {number} currentIndex 当前时间节点
    * @return {array} 当前时间节点所在区域及其非楼层子区域组成的区域数组
    */
-  getAreas = currentIndex => {
-    const { tree, data } = this.props;
+  getAreas = (currentIndex) => {
+    const { tree={}, data=[], originalTree=[] } = this.props;
+    // 当前时间节点对应的数据
     const currentData = data[currentIndex];
-    if (currentData && currentData.areaId) {
+    // 当前区域存在时，则返回当前区域及其非楼层子区域组成的区域数组
+    if (currentData && currentData.areaId && tree[currentData.areaId]) {
       // 没办法根据区域有没有图片来判断它是不是楼层
       // 关键在于判断当前区域是否为建筑？？？
       // 当前区域肯定要渲染，关键是渲染成黑（即作为当前选中区域）还是蓝（即作为子区域）的
@@ -355,16 +352,38 @@ export default class HistoryPlay extends PureComponent {
         },
       ].concat(list);
     }
-  };
+    // 否则返回单位图直属的区域
+    return originalTree.map(({ id }) => tree[id]);
+  }
+
+  /**
+   * 获取信标点
+   * @param {number} currentIndex 当前时间节点
+   * @return {array} 当前时间节点所属区域中的信标数组
+   */
+  getCircleMarkers = (currentIndex) => {
+    const { tree, data=[] } = this.props;
+    // 当前时间节点对应的数据
+    const currentData = data[currentIndex];
+    // 当前区域存在时，返回当前区域中的信标
+    if (currentData && currentData.areaId && tree[currentData.areaId]) {
+      return data.filter(({ areaId }) => areaId === currentData.areaId);
+    }
+    // 否则返回单位图所属信标
+    return data.filter(({ areaId }) => !tree[areaId]);
+  }
 
   /**
    * 获取人员数组
    * @param {number} currentIndex 当前时间节点
+   * @param {number} currentTimeStamp 当前时间戳
    * @return {array} 人员数据
    */
   getDivIcons = (currentIndex, currentTimeStamp) => {
     const { data } = this.props;
+    // 当前时间节点对应的数据
     const currentData = data[currentIndex];
+    // 如果当前时间节点对应的数据存在，则返回当前时间戳对应的位置
     if (currentData) {
       // 获取位置
       const latlng = this.getCurrentPosition(currentIndex, currentTimeStamp);
@@ -511,15 +530,15 @@ export default class HistoryPlay extends PureComponent {
   handlePlay = () => {
     const { onPlay, startTime, endTime } = this.props;
     if (startTime && endTime) {
-      const { currentTimeStamp, drawProps } = this.state;
+      const { currentTimeStamp: prevTimeStamp, currentIndex: prevIndex, drawProps } = this.state;
       let extra;
       // 如果当前时间戳已经是结束时间，则重新开始播放
-      if (currentTimeStamp === endTime) {
+      if (prevTimeStamp === endTime) {
         const currentIndex = this.getCurrentIndex(startTime);
         extra = {
           currentTimeStamp: startTime,
           currentIndex,
-          drawProps: { ...drawProps, ...this.getDrawProps(currentIndex, startTime, true) },
+          drawProps: { ...drawProps, ...this.getDrawProps({ currentIndex, currentTimeStamp: startTime, indexChanged: prevIndex !== currentIndex }) },
         };
       }
       this.setState({
@@ -609,33 +628,28 @@ export default class HistoryPlay extends PureComponent {
 
   /**
    * 点击时间轴快速跳转
+   * @param {event} e 鼠标事件对象
    */
   handleLocate = e => {
     const { onLocate } = this.props;
-    const { playing, currentIndex, drawProps } = this.state;
+    const { playing, currentIndex: prevIndex, drawProps } = this.state;
     const currentTimeStamp = e.currentTimeStamp || this.getCurrentTimeStamp(e);
-    const nextIndex = this.getCurrentIndex(currentTimeStamp);
+    const currentIndex = this.getCurrentIndex(currentTimeStamp);
     // 清除变量以方便重新计算
     this.unsetFrameTimer();
-    this.setState(
-      {
-        // 重置当前时间戳（即重置时间轴进度）
-        currentTimeStamp,
-        // 重置当前时间节点（即重置人员位置）
-        currentIndex: nextIndex,
-        // 重置绘图参数
-        drawProps: {
-          ...drawProps,
-          ...this.getDrawProps(nextIndex, currentTimeStamp, currentIndex !== nextIndex),
-        },
-      },
-      () => {
-        // 根据是否在播放决定是否重置定时器
-        if (playing) {
-          this.setFrameTimer();
-        }
+    this.setState({
+      // 重置当前时间戳（即重置时间轴进度）
+      currentTimeStamp,
+      // 重置当前时间节点（即重置人员位置）
+      currentIndex,
+      // 重置绘图参数
+      drawProps: { ...drawProps, ...this.getDrawProps({ currentIndex, currentTimeStamp, indexChanged: prevIndex !== currentIndex }) },
+    }, () => {
+      // 根据是否在播放决定是否重置定时器
+      if (playing) {
+        this.setFrameTimer();
       }
-    );
+    });
     // 若有onLocate传参则调用
     if (onLocate) {
       onLocate();
