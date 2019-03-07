@@ -24,12 +24,11 @@ export default class ImageSelect extends PureComponent {
 
   // 确定选择图片
   handleImageModalOk = () => {
-    const { onChange } = this.props;
+    const { onChange, onSelect, value } = this.props;
     const { currentMapId } = this.state;
     this.setState({ visible: false });
-    if (onChange) {
-      onChange(currentMapId);
-    }
+    onSelect && onSelect(currentMapId, value !== currentMapId);
+    onChange && onChange(currentMapId);
   }
 
   // 取消选择图片

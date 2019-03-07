@@ -6,13 +6,13 @@ import {
   Button,
   Form,
   Select,
-  message,
   Spin,
 } from 'antd';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { mapMutations } from '@/utils/utils';
 import ImageSelect from './ImageSelect';
+import BeaconCoordinate from './BeaconCoordinate';
 // 引入样式文件
 import styles from './index.less';
 
@@ -56,13 +56,16 @@ export default class BeaconHandler extends PureComponent {
     const { form: { validateFieldsAndScroll } } = this.props;
     validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log(values);
         this.setState({ submitting: true });
-        const { match: { props: { companyId, id } } } = this.props;
+        const { match: { params: { companyId, id } } } = this.props;
+        const { coordinate: { xarea, yarea, zarea }, ...restProps } = values;
         const payload = {
           companyId,
           id,
-          ...values,
+          xarea,
+          yarea,
+          zarea,
+          ...restProps,
         };
         const callback = (success) => {
           if (success) {
@@ -84,6 +87,13 @@ export default class BeaconHandler extends PureComponent {
     });
   }
 
+  handleSelectImage = (mapId, isMapIdChanged) => {
+    if (isMapIdChanged) {
+      const { /* beacon: { imagesMap }, */ form: { setFieldsValue } } = this.props;
+      setFieldsValue({ coordinate: undefined });
+    }
+  }
+
   render() {
     const {
       beacon: {
@@ -93,6 +103,7 @@ export default class BeaconHandler extends PureComponent {
           mapId,
           xarea,
           yarea,
+          zarea,
         }={},
         systems=[],
         images=[],
@@ -104,7 +115,7 @@ export default class BeaconHandler extends PureComponent {
           id,
         },
       },
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
       loading,
     } = this.props;
     const { submitting } = this.state;
@@ -118,6 +129,8 @@ export default class BeaconHandler extends PureComponent {
       { title: '信标列表', name: '信标列表', href: `/personnel-position/beacon-management/company/${companyId}` },
       { title, name: title },
     ];
+    // 新的mapId
+    const newMapId = getFieldValue('mapId');
     return (
       <PageHeaderLayout
         breadcrumbList={breadcrumbList}
@@ -148,7 +161,7 @@ export default class BeaconHandler extends PureComponent {
                     { required: true, whitespace: true, message: '请输入信标编号' },
                   ],
                 })(
-                  <Input place="请输入信标编号" className={styles.beaconCodeInput} />
+                  <Input placeholder="请输入信标编号" className={styles.beaconCodeInput} />
                 )}
               </Form.Item>
               <Form.Item label="所属地图">
@@ -159,6 +172,17 @@ export default class BeaconHandler extends PureComponent {
                   <ImageSelect
                     images={images}
                     imagesMap={imagesMap}
+                    onSelect={this.handleSelectImage}
+                  />
+                )}
+              </Form.Item>
+              <Form.Item label="信标位置">
+                {getFieldDecorator('coordinate', {
+                  initialValue: xarea && yarea && zarea ? { xarea: +xarea, yarea: +yarea, zarea: +zarea } : undefined,
+                  rules: [{ required: true, message: '请选择信标位置' }],
+                })(
+                  <BeaconCoordinate
+                    image={imagesMap[newMapId]}
                   />
                 )}
               </Form.Item>

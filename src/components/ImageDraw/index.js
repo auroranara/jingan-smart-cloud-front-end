@@ -437,8 +437,9 @@ class ImageDraw extends PureComponent {
    */
   pushData = (layerType, layer, name="") => {
     const { data, onUpdate, limit=Infinity } = this.props;
-    if (data && onUpdate && data.length < limit) {
-      onUpdate(data.concat({
+    const list = data || [];
+    if (onUpdate && list.length < limit) {
+      onUpdate(list.concat({
         type: layerType,
         options: layer.options,
         name,
@@ -714,7 +715,7 @@ class ImageDraw extends PureComponent {
             key={id || name}
             data={item}
             center={{ lat: latlng.lat * height, lng: latlng.lng * width }}
-            radius={radius * width}
+            // radius={radius * width}
             onClick={this.handleClickShape}
             onAdd={this.handleAdd}
             color={color}

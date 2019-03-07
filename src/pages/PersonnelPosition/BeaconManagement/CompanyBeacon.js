@@ -419,10 +419,10 @@ export default class CompanyBeacon extends PureComponent {
         width: 200,
       },
       {
-        title: '信标坐标',
-        key: '坐标',
+        title: '所属区域',
+        dataIndex: 'areaName',
         align: 'center',
-        render: (val, row) => <span>{`(${row.xarea},${row.yarea},${row.zarea})`}</span>,
+        render: (areaName) => areaName || '厂外',
         width: 170,
       },
       {

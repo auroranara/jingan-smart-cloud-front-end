@@ -112,12 +112,12 @@ export default {
     *addBeacon({ payload, callback }, { call, put }) {
       const response = yield call(insertBeacon, payload);
       if (response && response.code === 200) {
-        message.success('新增成功！', () => {
+        message.success('新增成功！', 1.5, () => {
           callback && callback(true);
         });
       }
       else {
-        message.error('新增失败，请联系负责人！', () => {
+        message.error('新增失败，请联系负责人！', 1.5, () => {
           callback && callback(false);
         });
       }
@@ -126,12 +126,12 @@ export default {
     *editBeacon({ payload, callback }, { call, put }) {
       const response = yield call(updateBeacon, payload);
       if (response && response.code === 200) {
-        message.success('编辑成功！', () => {
+        message.success('编辑成功！', 1.5, () => {
           callback && callback(true);
         });
       }
       else {
-        message.error('编辑失败，请联系负责人！', () => {
+        message.error('编辑失败，请联系负责人！', 1.5, () => {
           callback && callback(false);
         });
       }
