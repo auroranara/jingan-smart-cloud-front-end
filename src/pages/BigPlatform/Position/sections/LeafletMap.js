@@ -61,10 +61,10 @@ export default class LeafletMap extends PureComponent {
     // console.log('areaInfo', this.props.areaInfo, target);
     if (!target) return;
 
-    const { children, mapId: fatherMapId, companyMap, range } = target;
+    const { id, children, mapId: fatherMapId, companyMap, range } = target;
+    const { parentId } = areaInfo[id];
     const sectionChildren = children || [];
-    // const currentRange = { ...range, options: { ...range.options, color: 'rgba(0, 0, 0, 0.5)' } };
-    const currentRange = range;
+    const currentRange =  { ...range, options: { ...range.options, fill: false } };
     const reference = parseImage(target);
     // const [images, data] = sectionChildren.reduce((prev, next) => {
     //   const { range, mapId } = next;
@@ -101,7 +101,8 @@ export default class LeafletMap extends PureComponent {
                 prev.push(newRange);
             }
             return prev;
-            }, [])
+            // }, [])
+            }, parentId ? [currentRange] : []) // 最顶层的外框不显示
         : [currentRange];
     // console.log('range', data, images, reference);
     this.setState({ data, images: areaInfo[areaId].images, reference });
