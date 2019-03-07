@@ -1,18 +1,19 @@
 import React, { PureComponent } from 'react';
-import { Tabs } from 'antd';
+import { Radio, Row } from 'antd';
 import ReactEcharts from 'echarts-for-react';
 
 import WaterCards from '../components/waterCards';
 import Section from '../Section';
 import styles from './FireDevice.less';
 
-function callback(key) {
-  console.log(key);
-}
-
-const TabPane = Tabs.TabPane;
-
 export default class FireDevice extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      type: '0',
+    };
+  }
+
   getOption = () => {
     const option = {
       tooltip: {
@@ -81,15 +82,35 @@ export default class FireDevice extends PureComponent {
     };
     return option;
   };
-  render() {
-    // const {
-    //   // onClick,
-    // } = this.props;
 
+  // 切换状态
+  handelRadioChange = item => {
+    const {
+      target: { value },
+    } = item;
+    this.setState({ type: value });
+  };
+
+  renderHydrant = () => {};
+
+  render() {
+    const {} = this.props;
+    const { type } = this.state;
     return (
       <Section title="水系统">
         <div className={styles.container}>
-          <Tabs defaultActiveKey="1" onChange={callback}>
+          <div className={styles.tabsWrapper}>
+            <Radio.Group value={type} buttonStyle="solid" onChange={this.handelRadioChange}>
+              <Radio.Button value="0">消火栓系统</Radio.Button>
+              <Radio.Button value="1">自动喷淋系统</Radio.Button>
+              <Radio.Button value="2">水池/水箱</Radio.Button>
+            </Radio.Group>
+          </div>
+          <Row className={styles.itemsWrapper}>
+            {type !== '2' && this.renderHydrant()}
+            {type === '2' && this.renderPond()}
+          </Row>
+          {/* <Tabs defaultActiveKey="1" onChange={callback}>
             <TabPane tab="消火栓系统" key="1">
               <div className={styles.gaugeContainer}>
                 {[1, 2, 3, 4, 5].map(() => (
@@ -123,7 +144,7 @@ export default class FireDevice extends PureComponent {
                 <WaterCards />
               </div>
             </TabPane>
-          </Tabs>
+          </Tabs> */}
         </div>
       </Section>
     );
