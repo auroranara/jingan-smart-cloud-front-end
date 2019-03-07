@@ -739,6 +739,7 @@ export default class Gas extends PureComponent {
           data={{ list: importCardsInfo, AccessStatistics, AccessCount }}
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          handleClickUnitStatistics={this.hanldeViewUnitMonitor}
         />
         <AlarmDrawer
           data={{ list: errorUnitsCardsInfo, companyStatus, graphList: AbnormalTrend }}
