@@ -1,34 +1,51 @@
-// //滚动条整体部分
-// .pieMain::-webkit-scrollbar {
-//   width: 12px;
-//   background-color: rgb(2, 36, 80);
-//   border-radius: 25px;
-// }
-// // 滚动条的轨道（里面装有Thumb）
-// .pieMain::-webkit-scrollbar-track {
-//   background-color: rgb(2, 36, 80);
-//   border-radius: 25px;
-// }
-// //  滚动条里面的小方块，能向上向下移动（或向左向右移动）
-// .pieMain::-webkit-scrollbar-thumb {
-//   background-color: rgb(3, 82, 175);
-//   border-radius: 25px;
-// }
 .container {
   height: 100%;
+  overflow: auto;
 
   :global {
     .ant-tabs {
       color: #fff;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     .ant-tabs-bar {
-      margin: 0 10px 8px 9px;
+      margin: 0 10px 0px 9px;
       border-bottom: 2px solid #0967d3;
     }
 
     .ant-tabs-nav-container-scrolling {
       padding: 0;
+    }
+
+    .ant-tabs .ant-tabs-top-content.ant-tabs-content-animated {
+      margin-left: 0%;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+
+
+      //滚动条整体部分
+      &:-webkit-scrollbar {
+        width: 12px;
+        background-color: rgb(2, 36, 80);
+        border-radius: 25px;
+      }
+
+      // 滚动条的轨道（里面装有Thumb）
+      &:-webkit-scrollbar-track {
+        background-color: rgb(2, 36, 80);
+        border-radius: 25px;
+      }
+
+      //  滚动条里面的小方块，能向上向下移动（或向左向右移动）
+      &::-webkit-scrollbar-thumb {
+        background-color: rgb(3, 82, 175);
+        border-radius: 25px;
+      }
+
     }
 
     .ant-tabs-nav .ant-tabs-tab {
@@ -48,6 +65,14 @@
 }
 
 .gauge {
-  display: flex;
-  justify-content: space-around;
+  display: inline-block;
+  width: 50%;
+  height: 32%;
+  vertical-align: middle;
+  text-align: -webkit-center;
+  cursor: pointer;
+}
+
+.waterContainer {
+  margin: 2% 2% 0 2%;
 }

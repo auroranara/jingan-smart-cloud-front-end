@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Tabs } from 'antd';
 import ReactEcharts from 'echarts-for-react';
 
+import WaterCards from '../components/waterCards';
 import Section from '../Section';
 import styles from './FireDevice.less';
 
@@ -23,10 +24,9 @@ export default class FireDevice extends PureComponent {
           type: 'gauge',
           min: '',
           max: '',
-          splitNumber: 5,
-          radius: '100%',
+          radius: '85%',
           axisLine: {
-            // 坐标轴线
+            // 仪表盘轴线(轮廓线)
             lineStyle: {
               // 属性lineStyle控制线条样式
               color: [[0.09, '#ff4400'], [0.82, '#1e90fe'], [1, '#ff4400']],
@@ -34,47 +34,48 @@ export default class FireDevice extends PureComponent {
             },
           },
           axisLabel: {
-            // 坐标轴小标记
-            textStyle: {
-              // 属性lineStyle控制线条样式
-              color: '#fff',
-            },
+            // 坐标轴小标记数字
+            show: false,
           },
           axisTick: {
-            // 坐标轴小标记
-            length: 8, // 属性length控制线长
+            // 刻度(线)样式
+            length: 3,
             lineStyle: {
-              // 属性lineStyle控制线条样式
               color: 'auto',
             },
           },
           splitLine: {
             // 分隔线
-            length: 2, // 属性length控制线长
+            length: 8,
             lineStyle: {
-              // 属性lineStyle（详见lineStyle）控制线条样式
               width: 1,
               color: '#fff',
             },
           },
           pointer: {
-            // 分隔线
-            shadowColor: '#fff', //默认透明
-            shadowBlur: 2,
+            // 指针
+            width: 5,
+            length: '70%',
+          },
+          title: {
+            // 仪表盘标题
+            offsetCenter: [0, '95%'],
+            textStyle: {
+              fontSize: 12,
+              color: '#fff',
+            },
           },
           detail: {
-            borderColor: '#fff',
-            shadowColor: '#fff', //默认透明
-            shadowBlur: 2,
+            // 仪表盘详情，用于显示数据
             offsetCenter: [0, '50%'], // x, y，单位px
             textStyle: {
               // 其余属性默认使用全局文本样式，详见TEXTSTYLE
               fontWeight: 'bolder',
               color: '#fff',
-              fontSize: 16,
+              fontSize: 12,
             },
           },
-          data: [{ value: 40 }],
+          data: [{ value: 40, name: '点位名称' }],
         },
       ],
     };
@@ -90,24 +91,37 @@ export default class FireDevice extends PureComponent {
         <div className={styles.container}>
           <Tabs defaultActiveKey="1" onChange={callback}>
             <TabPane tab="消火栓系统" key="1">
-              <div className={styles.gauge}>
-                <ReactEcharts
-                  option={this.getOption()}
-                  style={{ width: '100px', height: '100px' }}
-                  className="echarts-for-echarts"
-                />
-                <ReactEcharts
-                  option={this.getOption()}
-                  style={{ width: '100px', height: '100px' }}
-                  className="echarts-for-echarts"
-                />
+              <div className={styles.gaugeContainer}>
+                {[1, 2, 3, 4, 5].map(() => (
+                  <div className={styles.gauge}>
+                    <ReactEcharts
+                      option={this.getOption()}
+                      style={{ width: '90px', height: '90px' }}
+                      className="echarts-for-echarts"
+                    />
+                  </div>
+                ))}
               </div>
             </TabPane>
             <TabPane tab="自动喷淋系统" key="2">
-              2
+              <div className={styles.gaugeContainer}>
+                {[1, 2, 3, 4, 5, 6].map(() => (
+                  <div className={styles.gauge}>
+                    <ReactEcharts
+                      option={this.getOption()}
+                      style={{ width: '90px', height: '90px' }}
+                      className="echarts-for-echarts"
+                    />
+                  </div>
+                ))}
+              </div>
             </TabPane>
             <TabPane tab="水池/水箱" key="3">
-              3
+              <div className={styles.waterContainer}>
+                <WaterCards />
+                <WaterCards />
+                <WaterCards />
+              </div>
             </TabPane>
           </Tabs>
         </div>
