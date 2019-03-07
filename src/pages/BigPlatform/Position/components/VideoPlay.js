@@ -34,6 +34,12 @@ class VideoPlay extends Component {
     activeIndex: 0,
   };
 
+  componentDidMount() {
+    const { keyId, visible } = this.props;
+    if (keyId && visible)
+      this.handleInit();
+  }
+
   // VideoList的值发生改变或者keyId发生改变时，重新获取对应视频
   getSnapshotBeforeUpdate(prevProps, prevState) {
     return (

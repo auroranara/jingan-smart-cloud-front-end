@@ -4,7 +4,7 @@ import { connect } from 'dva';
 
 import styles from './LeafletMap.less';
 import ImageDraw, { L } from '@/components/ImageDraw';
-import { findInTree, parseImage, getUserName, getMapClickedType, getPersonAlarmTypes } from '../utils';
+import { findInTree, parseImage, getUserName, getMapClickedType, getPersonAlarmTypes, getIconClassName } from '../utils';
 
 @connect(({ zoning, loading }) => ({
   zoning,
@@ -21,15 +21,17 @@ export default class LeafletMap extends PureComponent {
   currentShowSection = {};
 
   componentDidUpdate(prevProps, prevState) {
-    const { areaId: prevAreaId, trueAreaId: prevTrueAreaId, sectionTree: prevSectionTree } = prevProps;
-    const { areaId, trueAreaId, sectionTree } = this.props;
+    const { areaId: prevAreaId, trueAreaId: prevTrueAreaId, highlightedAreaId: prevHighlightedAreaId, sectionTree: prevSectionTree } = prevProps;
+    const { areaId, trueAreaId, highlightedAreaId, sectionTree } = this.props;
 
-    if (areaId !== prevAreaId || trueAreaId !== prevTrueAreaId || sectionTree !== prevSectionTree)
-      this.handleMapData(areaId, trueAreaId, sectionTree);
+    if (areaId !== prevAreaId || trueAreaId !== prevTrueAreaId || sectionTree !== prevSectionTree || highlightedAreaId !== prevHighlightedAreaId)
+      // this.handleMapData(areaId, trueAreaId, highlightedAreaId, sectionTree);
+      this.handleMapData();
   }
 
-  handleMapData = (areaId, trueAreaId, sectionTree) => {
-    const { areaInfo } = this.props;
+  // handleMapData = (areaId, trueAreaId, sectionTree) => {
+  handleMapData = () => {
+    const { areaInfo, areaId, trueAreaId, highlightedAreaId, sectionTree } = this.props;
     const target = this.currentShowSection = findInTree(areaId, sectionTree);
     // 当trueAreaId为多层建筑时，地图上展示其父级areaId，即areaId是trueAreaId的父节点，当不是多层建筑时，两个值一致
     if (areaId !== trueAreaId)
@@ -58,7 +60,16 @@ export default class LeafletMap extends PureComponent {
     // 显示当前区域即其所有子区域
     // const data = sectionChildren.reduce((prev, { range }) => range ? [...prev, range] : prev, [currentRange]);
     // 由于返回时图层顺序会乱，所以当前区域有子区域时先不渲染当前区域，当前区域没有子区域时渲染当前区域
-    const data = sectionChildren.length ? sectionChildren.reduce((prev, { range }) => range ? [...prev, range] : prev, []) : [currentRange];
+    const data = sectionChildren.length ? sectionChildren.reduce((prev, { id, range }) => {
+      if (range) {
+        let newRange = range;
+        // 如果不为红色且不是高亮的区域，则颜色变为透明
+        if (newRange.options.color !== '#F00' && id !== highlightedAreaId)
+          newRange = { ...range, options: { ...range.options, color: 'transparent' } };
+        prev.push(newRange);
+      }
+      return prev;
+    }, []) : [currentRange];
     // console.log('range', data, images, reference);
     this.setState({ data, images: areaInfo[areaId].images, reference });
   };
@@ -104,6 +115,10 @@ export default class LeafletMap extends PureComponent {
   handleClickSection = (name, e) => {
     // console.log('section');
     const { areaInfo, setAreaId } = this.props;
+
+    if (!this.currentShowSection.children)
+      return;
+
     const target = this.currentShowSection.children.find(item => item.name === name);
     // console.log(target);
 
@@ -166,15 +181,16 @@ export default class LeafletMap extends PureComponent {
     const points =  targetAgg.map(ps => {
       const first = ps[0];
       const length = ps.length;
-      const { xarea, yarea, beaconId, cardType } = first;
+      const { xarea, yarea, beaconId, cardType, onlineStatus } = first;
       const isSingle = length === 1;
       const isVisitor = !!+cardType;
+      const isOnline = !!+onlineStatus;
 
       // const isSOS = ps.some(({ sos }) => sos);
       // const isAlarm = ps.some(({ sos, overstep, tlong }) => sos || overstep || tlong);
       const alarmTypes = getPersonAlarmTypes(ps);
       const isAlarm = !!alarmTypes;
-      const containerClassName = `${isSingle ? (isVisitor ? 'visitor' : 'person') : 'people'}${isAlarm ? 'Red' : ''}`;
+      const containerClassName = getIconClassName(isSingle, isVisitor, isOnline, isAlarm);
       const firstName = getUserName(first);
       const name = ps.slice(0, 5).map(getUserName).join(',');
       const showName = isSingle ? firstName : length;
@@ -233,6 +249,7 @@ export default class LeafletMap extends PureComponent {
       <Spin spinning={false} style={{ height: '100%' }}>
         <ImageDraw
           autoZoom
+          // mapProps={{ scrollWheelZoom: false }}
           url={url}
           data={data}
           images={images}
@@ -251,11 +268,11 @@ export default class LeafletMap extends PureComponent {
         {imgDraw}
         {parentId && <Icon type="rollback" onClick={this.handleBack} className={styles.back} />}
         <div className={styles.mapInfo}>
-          <span className={styles.area}>当前区域: {fullName}</span>
+          <span className={styles.area}>当前区域: {fullName || '暂无'}</span>
           今日
-          <span className={styles.enter}>进入: {inCardCount}人次</span>
-          <span className={styles.exit}>出去: {outCardCount}人次</span>
-          当前人数: {count}
+          <span className={styles.enter}>进入: {inCardCount || 0}人次</span>
+          <span className={styles.exit}>出去: {outCardCount || 0}人次</span>
+          当前人数: {count || 0}
         </div>
         <div className={styles.legends}>
           <div className={styles.visitorLgd}>访客</div>

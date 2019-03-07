@@ -46,14 +46,15 @@ export default class CardList extends PureComponent {
     if (positions.length && Object.keys(areaInfo).length)
       list = positions.filter(({ userName, visitorName, cardCode }) => [userName, visitorName, cardCode.toString()].some(s => s && s.includes(value)));
 
+    // console.log(list, areaInfo);
     const dataSource = list.map(p => {
       const { areaId, cardId, cardCode, sos, tlong, overstep, onlineStatus } = p;
       const name = getUserName(p, true);
       return {
         id: cardId,
         areaId,
-        name,
-        fullName: areaInfo[areaId].fullName,
+        name: name || '无名',
+        fullName: areaInfo[areaId || null] ? areaInfo[areaId || null].fullName : '火星',
         code: cardCode,
         status: sos || tlong || overstep, // true 火警 false 正常
         online: +onlineStatus === ONLINE,
@@ -68,14 +69,16 @@ export default class CardList extends PureComponent {
           onChange={this.handleChange}
           placeholder="请输入人员姓名或编号"
         />
-        <Table
-          size="small"
-          rowKey="id"
-          className={styles.table}
-          dataSource={dataSource}
-          columns={columns}
-          pagination={false}
-        />
+        <div className={styles.cardListTable}>
+          <Table
+            size="small"
+            rowKey="id"
+            className={styles.table}
+            dataSource={dataSource}
+            columns={columns}
+            pagination={false}
+          />
+        </div>
       </div>
     );
   }

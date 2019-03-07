@@ -71,12 +71,12 @@ const filterDataByAreaNameAndStatus = function(data, filterAreaName, filterStatu
  * author: sunkai
  * date: 2018年12月26日
  */
-export default class RealTimeMonitor extends PureComponent {
+export default class SectionList extends PureComponent {
   // 组件内仓库
   state = {
     areaName: '',
     status: undefined,
-  }
+  };
 
   /**
    * change区域名称
@@ -89,7 +89,7 @@ export default class RealTimeMonitor extends PureComponent {
     /* 第一步 */
     this.setState({ areaName });
     /* 第二步 */
-  }
+  };
 
   // /**
   //  * 根据区域名称搜索
@@ -108,7 +108,7 @@ export default class RealTimeMonitor extends PureComponent {
     /* 第一步 */
     this.setState({ status });
     /* 第二步 */
-  }
+  };
 
   /**
    * 修改滚动条颜色
@@ -135,7 +135,35 @@ export default class RealTimeMonitor extends PureComponent {
       <Icon type="caret-down" style={{ marginLeft: record.indentLevel*8, marginRight: 6, cursor: 'pointer' }} onClick={(e) => {onExpand(record, e);}} /> :
       <Icon type="caret-right" style={{ marginLeft: record.indentLevel*8, marginRight: 6, cursor: 'pointer' }} onClick={(e) => {onExpand(record, e);}} />
     ) : <span style={{ marginLeft: 20+record.indentLevel*8 }} />;
-  }
+  };
+
+  onRow = record => {
+    const { setAreaId, setHighlightedAreaId } = this.props;
+    const { id } = record;
+    return {
+      onClick: e => {
+        setAreaId(id);
+      },
+      onMouseEnter: e => {
+        // console.log('in', id);
+        setHighlightedAreaId(id);
+      },
+      onMouseLeave: e => {
+        // console.log('out', id);
+        setHighlightedAreaId();
+      },
+    }
+  };
+
+  onTableExpand = (expanded, record) => {
+    console.log(expanded, record);
+  };
+
+  onExpandedRowsChange = expandedRows => {
+    // console.log(expandedRows);
+    const { setExpandedRowKeys } = this.props;
+    setExpandedRowKeys(expandedRows);
+  };
 
   /**
    * 渲染
@@ -145,9 +173,14 @@ export default class RealTimeMonitor extends PureComponent {
       // 表格源数据
       data=[],
       setAreaId,
+      setHighlightedAreaId,
+      expandedRowKeys,
+      setExpandedRowKeys,
       ...restProps
     } = this.props;
     const { areaName, status } = this.state;
+
+    // console.log(expandedRowKeys);
     // 筛选数据
     const list = filterDataByAreaNameAndStatus(data, areaName, status);
 
@@ -177,7 +210,7 @@ export default class RealTimeMonitor extends PureComponent {
         render: (status, record) => (
           <span
             className={styles[+status === 2 ? 'tableAlarm' : 'tableSafe']}
-            onClick={e => setAreaId(record.id)}
+            // onClick={e => setAreaId(record.id)}
           >
             {statusLabel[status] || '安全'}
           </span>
@@ -189,9 +222,9 @@ export default class RealTimeMonitor extends PureComponent {
     return (
       <div className={styles.container} {...restProps}>
         <Scrollbars style={{ width: '100%', height: '100%' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
-          <div style={{ padding: '0 20px' }}>
+          <div className={styles.inner}>
             <Row gutter={16}>
-              <Col span={14} style={{ marginBottom: 12 }}>
+              {/* <Col span={14} style={{ marginBottom: 12 }}> */}
                 {/* 搜索区域名称 */}
                 {/* <Search
                   className={styles.search}
@@ -201,6 +234,22 @@ export default class RealTimeMonitor extends PureComponent {
                   onChange={this.handleChangeAreaName}
                   onSearch={this.handleSearchByAreaName}
                 /> */}
+                {/* <Input
+                  className={styles.search}
+                  placeholder="搜索区域名称"
+                  value={areaName}
+                  onChange={this.handleChangeAreaName}
+                />
+              </Col> */}
+              {/* <Col span={10} style={{ marginBottom: 12 }}> */}
+                {/* 状态下拉框 */}
+                {/* <Select suffixIcon={<Icon type="caret-down" style={{ color: '#b5b7ba' }} />} className={styles.select} dropdownClassName={styles.dropdown} placeholder="请选择状态" value={status} style={{ width: '100%' }} onChange={this.handleChangeStatus} allowClear>
+                  {statuses.map(({ id, label }) => (
+                    <Option value={id} key={id}>{label}</Option>
+                  ))}
+                </Select>
+              </Col> */}
+              <Col span={24} style={{ marginBottom: 12 }}>
                 <Input
                   className={styles.search}
                   placeholder="搜索区域名称"
@@ -208,28 +257,26 @@ export default class RealTimeMonitor extends PureComponent {
                   onChange={this.handleChangeAreaName}
                 />
               </Col>
-              <Col span={10} style={{ marginBottom: 12 }}>
-                {/* 状态下拉框 */}
-                <Select suffixIcon={<Icon type="caret-down" style={{ color: '#b5b7ba' }} />} className={styles.select} dropdownClassName={styles.dropdown} placeholder="请选择状态" value={status} style={{ width: '100%' }} onChange={this.handleChangeStatus} allowClear>
-                  {statuses.map(({ id, label }) => (
-                    <Option value={id} key={id}>{label}</Option>
-                  ))}
-                </Select>
-              </Col>
             </Row>
-            <Table
-              className={styles.table}
-              size="small"
-              columns={columns}
-              dataSource={list}
-              pagination={false}
-              bordered={false}
-              rowKey={'id'}
-              defaultExpandAllRows
-              rowClassName={styles.tableRow}
-              expandIcon={this.renderExpandIcon}
-              indentSize={20}
-            />
+            <div className={styles.tableContainer}>
+              <Table
+                className={styles.table}
+                size="small"
+                columns={columns}
+                dataSource={list}
+                pagination={false}
+                bordered={false}
+                rowKey={'id'}
+                defaultExpandAllRows
+                rowClassName={styles.tableRow}
+                expandIcon={this.renderExpandIcon}
+                indentSize={20}
+                onRow={this.onRow}
+                expandedRowKeys={expandedRowKeys}
+                // onExpand={this.onTableExpand}
+                onExpandedRowsChange={this.onExpandedRowsChange}
+              />
+            </div>
           </div>
         </Scrollbars>
       </div>

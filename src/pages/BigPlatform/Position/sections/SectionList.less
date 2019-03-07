@@ -7,7 +7,14 @@
   overflow: hidden;
 }
 
+.inner {
+  padding: 0 20px;
+  height: 100%;
+  overflow: hidden;
+}
+
 .cards {
+  height: 100%;
   padding: 20px 25px 20px 20px;
 }
 
@@ -150,4 +157,14 @@ input.search {
 
 .tableAlarm:extend(.tableSafe) {
   color: #ff4848;
+}
+
+.tableContainer {
+  height: calc(100% - 44px);
+  overflow: auto;
+}
+
+.cardListTable {
+  height: calc(100% - 42px);
+  overflow: auto;
 }
