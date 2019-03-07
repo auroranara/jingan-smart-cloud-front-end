@@ -11,7 +11,10 @@ import {
   getMapClickedType,
   getPersonAlarmTypes,
   getIconClassName,
+  OPTIONS_BLUE,
 } from '../utils';
+
+const ALARM = 2;
 
 @connect(({ zoning, loading }) => ({
   zoning,
@@ -51,7 +54,8 @@ export default class LeafletMap extends PureComponent {
     const { areaInfo, areaId, trueAreaId, highlightedAreaId, sectionTree } = this.props;
     const target = (this.currentShowSection = findInTree(areaId, sectionTree));
     // 当trueAreaId为多层建筑时，地图上展示其父级areaId，即areaId是trueAreaId的父节点，当不是多层建筑时，两个值一致
-    if (areaId !== trueAreaId)
+    const isCurrentMultiFloor = areaId !== trueAreaId;
+    if (isCurrentMultiFloor)
       this.currentTrueSection = target.children.find(({ id }) => id === trueAreaId) || {};
     else this.currentTrueSection = target;
     // console.log('areaInfo', this.props.areaInfo, target);
@@ -59,7 +63,8 @@ export default class LeafletMap extends PureComponent {
 
     const { children, mapId: fatherMapId, companyMap, range } = target;
     const sectionChildren = children || [];
-    const currentRange = { ...range, options: { ...range.options, color: 'rgba(0, 0, 0, 0.5)' } };
+    // const currentRange = { ...range, options: { ...range.options, color: 'rgba(0, 0, 0, 0.5)' } };
+    const currentRange = range;
     const reference = parseImage(target);
     // const [images, data] = sectionChildren.reduce((prev, next) => {
     //   const { range, mapId } = next;
@@ -75,18 +80,29 @@ export default class LeafletMap extends PureComponent {
     // 显示当前区域即其所有子区域
     // const data = sectionChildren.reduce((prev, { range }) => range ? [...prev, range] : prev, [currentRange]);
     // 由于返回时图层顺序会乱，所以当前区域有子区域时先不渲染当前区域，当前区域没有子区域时渲染当前区域
-    const data = sectionChildren.length
-      ? sectionChildren.reduce((prev, { id, range }) => {
-          if (range) {
-            let newRange = range;
-            // 如果不为红色且不是高亮的区域，则颜色变为透明
-            if (newRange.options.color !== '#F00' && id !== highlightedAreaId)
-              newRange = { ...range, options: { ...range.options, color: 'transparent' } };
-            prev.push(newRange);
-          }
-          return prev;
-        }, [])
-      : [currentRange];
+    let data;
+    // 若当前区域为多层建筑，真正的区域为当前显示区域的子区域，则只渲染该子区域
+    if (isCurrentMultiFloor) {
+        const { range } = this.currentTrueSection;
+        data = range ? [range] : [];
+    }
+    // 当前区域不是多层建筑，若有子节点，则渲染所有子节点(高亮的变蓝，报警的变红，其余变透明)，若没有，则只渲染当前区域
+    else
+        data = sectionChildren.length
+        ? sectionChildren.reduce((prev, { id, range, status }) => {
+            if (range) {
+                let newRange;
+                if (id === highlightedAreaId) // 高亮的变蓝，包括已经变红的，高亮的时候也变蓝
+                    newRange = { ...range, options: { ...range.options, color: OPTIONS_BLUE } };
+                else if (+status === ALARM) // 报警的本身已经改成红色了，保持不变
+                    newRange = range;
+                else // 不高亮及报警的都变成透明不可见，但可以点
+                    newRange = { ...range, options: { ...range.options, color: 'transparent' } };
+                prev.push(newRange);
+            }
+            return prev;
+            }, [])
+        : [currentRange];
     // console.log('range', data, images, reference);
     this.setState({ data, images: areaInfo[areaId].images, reference });
   };

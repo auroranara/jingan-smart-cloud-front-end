@@ -29,7 +29,6 @@ export default class RealTime extends PureComponent {
     areaId: undefined, // 地图显示的areaId，即当前真实areaId为多层建筑时，areaId设置为其父节点
     trueAreaId: undefined, // 实际选定的areaId，展示数据用的
     highlightedAreaId: undefined, // 高亮的区域
-    rowMouseType: undefined, // 点击还是鼠标滑过
     beaconId: undefined, // 信标id
     cardId: undefined, // 选中的人员id
     mapBackgroundUrl:undefined,
@@ -131,8 +130,8 @@ export default class RealTime extends PureComponent {
     };
   };
 
-  setHighlightedAreaId = (areaId, rowMouseType) => {
-    this.setState({ highlightedAreaId: areaId, rowMouseType });
+  setHighlightedAreaId = (areaId) => {
+    this.setState({ highlightedAreaId: areaId });
   };
 
   setAreaId = areaId => {
@@ -442,7 +441,6 @@ export default class RealTime extends PureComponent {
       areaId,
       trueAreaId,
       highlightedAreaId,
-      rowMouseType,
       beaconId,
       cardId,
       mapBackgroundUrl,

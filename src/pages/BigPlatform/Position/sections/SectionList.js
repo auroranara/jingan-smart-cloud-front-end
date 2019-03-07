@@ -143,14 +143,10 @@ export default class SectionList extends PureComponent {
     return {
       onClick: e => {
         setAreaId(id);
-        // 当前建筑为多层时，由于显示的是父级区域，所以要高亮子区域，由于鼠标滑过时也要高亮，
-        // 所以得判断其是否报警，若报警鼠标滑过时变为蓝色，点击时显示为
-        // if (areaInfo[id].isBuilding)
-        //   setHighlightedAreaId(id, 'click');
       },
       onMouseEnter: e => {
         // console.log('in', id);
-        setHighlightedAreaId(id, 'hover');
+        setHighlightedAreaId(id);
       },
       onMouseLeave: e => {
         // console.log('out', id);

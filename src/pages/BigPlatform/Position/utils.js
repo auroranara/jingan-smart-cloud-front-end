@@ -1,5 +1,8 @@
 import moment from 'moment';
 
+export const OPTIONS_RED = '#FF0019';
+export const OPTIONS_BLUE = '#0FF';
+
 export function handlePositions(positions = [], wsData = []) {
   if (!wsData || !wsData.length) return positions;
 
@@ -85,7 +88,7 @@ export function genTreeList(list, callback, deep = 0, parent = null) {
     const newItem = callback(restProps);
     newItem.indentLevel = deep;
     newItem.parent = parent;
-    newItem.range.options.color = newItem.status === ALARM ? '#F00' : '#00a8ff';
+    newItem.range.options.color = newItem.status === ALARM ? OPTIONS_RED : OPTIONS_BLUE;
     if (children && children.length)
       newItem.children = genTreeList(children, callback, deep + 1, newItem);
     return newItem;
@@ -117,11 +120,13 @@ export function getSectionTree(list) {
       ...restProps
     } = item;
     const status = lackStatus || outstripStatus || overstepStatus || tlongStatus ? 2 : 1;
+    const parsedRange = JSON.parse(range);
+    parsedRange.options.fill = false;
     return {
       id,
       name,
       mapPhoto: JSON.parse(mapPhoto),
-      range: JSON.parse(range),
+      range: parsedRange,
       ...restProps,
       count: cardCount,
       status,
@@ -323,7 +328,7 @@ export function getAlarmDesc(item, areaInfo) {
       desc = `${name}进入${areaName}`;
       break;
     case 3:
-      desc = `${name}在${areaName}长时间静止${getTimeDesc(tLongTime)}`;
+      desc = `${name}在${areaName}长时间停留${getTimeDesc(tLongTime)}`;
       break;
     case 4:
       desc = `${areaName} 区域超员`;
@@ -400,4 +405,28 @@ export function isCompanyMap(current) {
   }
 
   return mapId === companyMap;
+}
+
+const INTERVAL = 1000;
+export function animate(posInfo, move, callback) {
+  const { id, origin, target } = posInfo;
+  const { x, y } = origin;
+  const { x1, y1 } = target;
+  const deltaX = x1 - x;
+  const deltaY = y1 - y;
+  let start = null;
+  function step(timestamp) {
+    if (!start)
+      start = timestamp;
+    const progress = timestamp - start;
+    if (progress < INTERVAL) {
+      const percent = progress / INTERVAL;
+      move(id, origin + deltaX * percent, progress + deltaY * percent);
+      window.requestAnimationFrame(step);
+    }
+    else
+      callback(id);
+  }
+
+  window.requestAnimationFrame(step);
 }
