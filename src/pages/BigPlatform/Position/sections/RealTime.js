@@ -6,7 +6,7 @@ import { message, notification } from 'antd';
 import styles from './RealTime.less';
 import { AlarmHandle, AlarmMsg, MapInfo, PersonInfo, Tabs, VideoPlay } from '../components/Components';
 import { AlarmDrawer, CardList, CardSelected, LeafletMap, LowPowerDrawer, PersonDrawer, SectionList } from './Components';
-import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem, getAlarmItem, getAlarmDesc } from '../utils';
+import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem, getAlarmItem, getAlarmDesc, handleOriginMovingCards } from '../utils';
 
 const options = {
   pingTimeout: 30000,
@@ -44,7 +44,10 @@ export default class RealTime extends PureComponent {
     personDrawerVisible: false, // 人员列表抽屉
     useCardIdHandleAlarm: undefined, // 当sos存在时，又在报警列表找不到时，标记为sos对应的cardId，使用另外一个接口
     expandedRowKeys: [], // SectionList组件中的展开的树节点
+    movingCards: [], // 带有不断变化的x，y的卡片
   };
+
+  originMovingCards = []; // 缓存所有卡片的初始位置，并实时更新状态
 
   componentDidMount() {
     const { dispatch, companyId, setAreaInfoCache } = this.props;
@@ -189,8 +192,34 @@ export default class RealTime extends PureComponent {
   handlePositions = data => {
     const { dispatch, personPosition: { positionList } } = this.props;
     const cardIds = data.map(({ cardId }) => cardId);
+    handleOriginMovingCards(data, positionList, this.originMovingCards, this.moveCard, this.removeMovingCard);
     const newPositionList = positionList.filter(({ cardId }) => !cardIds.includes(cardId)).concat(data);
     dispatch({ type: 'personPosition/savePositions', payload: newPositionList });
+  };
+
+  moveCard = (id, x, y) => {
+    // console.log(x, y);
+    const originMovingCards = this.originMovingCards;
+    this.setState(({ movingCards }) => {
+      const newMovingCards = Array.from(movingCards);
+      const index = newMovingCards.findIndex(({ cardId }) => cardId === id);
+      const card = originMovingCards.find(({ cardId }) => cardId === id);
+      const newCard = { ...card, xarea: x, yarea: y };
+      if (index === -1)
+        newMovingCards.push(newCard);
+      else
+        newMovingCards[index] = newCard;
+      return { movingCards: newMovingCards };
+    });
+  };
+
+  removeMovingCard = cardId => {
+    // console.log(cardId);
+    const originMovingCards = this.originMovingCards;
+    const index = originMovingCards.findIndex(({ cardId: id }) => id === cardId);
+    this.originMovingCards.splice(index, 1);
+    // console.log(this.originMovingCards, this.state.movingCards.filter(({ cardId: id }) => id !== cardId));
+    this.setState(({ movingCards }) => ({ movingCards: movingCards.filter(({ cardId: id }) => id !== cardId) }));
   };
 
   handleAreaAutoChange = data => {
@@ -456,6 +485,7 @@ export default class RealTime extends PureComponent {
       personDrawerVisible,
       useCardIdHandleAlarm,
       expandedRowKeys,
+      movingCards,
     } = this.state;
 
     // console.log(sectionTree);
@@ -512,6 +542,8 @@ export default class RealTime extends PureComponent {
               sectionTree={sectionTree}
               positions={positionList}
               aggregation={positionAggregation}
+              movingCards={movingCards}
+              removeMovingCard={this.removeMovingCard}
               setAreaId={this.setAreaId}
               setHighlightedAreaId={this.setHighlightedAreaId}
               handleShowVideo={this.handleShowVideo}

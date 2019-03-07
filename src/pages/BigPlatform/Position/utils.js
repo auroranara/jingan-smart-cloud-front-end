@@ -121,6 +121,7 @@ export function getSectionTree(list) {
     } = item;
     const status = lackStatus || outstripStatus || overstepStatus || tlongStatus ? 2 : 1;
     const parsedRange = JSON.parse(range);
+    parsedRange.id = `${id}_@@section`;
     // parsedRange.options.fill = false; // 无法点击
     parsedRange.options.fillOpacity = 0;
     parsedRange.options.weight = 3;
@@ -359,11 +360,12 @@ export function getUserName(item, showPrefix) {
   return '访客';
 }
 
-// 0 区域 1 视频 2 人
+// 0 区域 1 视频 2 移动的人 3 聚合/单人
 export function getMapClickedType(id) {
-  if (!id) return 0;
+  if (id.includes('_@@section')) return 0;
   if (id.includes('_@@video')) return 1;
-  return 2;
+  if (id.includes('_@@moving')) return 2;
+  return 3;
 }
 
 const PERSON_ALARM_TYPES = ['SOS', '越界', '长时间逗留'];
@@ -410,10 +412,9 @@ export function isCompanyMap(current) {
 }
 
 const INTERVAL = 1000;
-export function animate(posInfo, move, callback) {
-  const { id, origin, target } = posInfo;
-  const { x, y } = origin;
-  const { x1, y1 } = target;
+function animate(id, origin, target, move, callback) {
+  const [x, y] = origin.map(n => parseFloat(n));
+  const [x1, y1] = target.map(n => parseFloat(n));
   const deltaX = x1 - x;
   const deltaY = y1 - y;
   let start = null;
@@ -423,7 +424,7 @@ export function animate(posInfo, move, callback) {
     const progress = timestamp - start;
     if (progress < INTERVAL) {
       const percent = progress / INTERVAL;
-      move(id, origin + deltaX * percent, progress + deltaY * percent);
+      move(id, x + deltaX * percent, y + deltaY * percent);
       window.requestAnimationFrame(step);
     }
     else
@@ -431,4 +432,32 @@ export function animate(posInfo, move, callback) {
   }
 
   window.requestAnimationFrame(step);
+}
+
+const MAX_PAIR_NUM = 100;
+const DELTA = 0.000000001;
+export function handleOriginMovingCards(changedCards, prevCardList, originMovingCards, move, callback) {
+  const movingCardIds = originMovingCards.map(({ cardId }) => cardId);
+  for (const card of changedCards) {
+    const { cardId, xarea, yarea } = card;
+    // 移动的卡片超过一定数目时，忽略更多的卡片
+    if (originMovingCards.length >= MAX_PAIR_NUM)
+      break;
+    // 当前移动的卡片位置或报警状态变化了，更新，忽略位置的变化，只保留状态的变化，位置使用当前moving的位置
+    if (movingCardIds.includes(cardId)) {
+      const index = originMovingCards.findIndex(({ cardId: id }) => id === cardId);
+      const mCard = originMovingCards[index];
+      originMovingCards[index] = { ...card, xarea: mCard.xarea, yarea: mCard.yarea };
+    }
+    const org = prevCardList.find(({ cardId: id }) => id === cardId);
+    // 卡片新出现，之前列表中没有，忽略
+    if (!org)
+      continue;
+    const { xarea: xarea1, yarea: yarea1 } = org;
+    // 新旧两个点之间的值大于一定距离时，才有动画效果
+    if (Math.abs(xarea - xarea1) > DELTA || Math.abs(yarea - yarea1) > DELTA) {
+      originMovingCards.push(org);
+      animate(cardId, [xarea1, yarea1], [xarea, yarea], move, callback);
+    }
+  }
 }

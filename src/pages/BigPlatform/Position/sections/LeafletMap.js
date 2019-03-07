@@ -110,24 +110,47 @@ export default class LeafletMap extends PureComponent {
 
   handleClick = e => {
     const origin = e.target.options.data; // 获取传入的原始数据
-    const { id, name } = origin; // 若点击的是人，原始数据中有id及name，若点击区域，原始数据中无id，只有name
+    const { id } = origin; // 若点击的是人，原始数据中有id及name，若点击区域，原始数据中无id，只有name
     const clickedType = getMapClickedType(id);
     // console.log(e, origin);
 
     // 0 区域 1 视频 2 人
     switch (clickedType) {
       case 0:
-        this.handleClickSection(name, e);
+        this.handleClickSection(id, e);
         break;
       case 1:
         this.handleClickVideo(id);
         break;
       case 2:
+        this.handleClickMovingPerson(id);
+        break;
+      case 3:
         this.handleClickPerson(id);
         break;
       default:
         console.log('wrong clicked type');
     }
+  };
+
+  handleClickSection = (id, e) => {
+    // console.log('section');
+    const { areaInfo, setAreaId } = this.props;
+
+    if (!this.currentShowSection.children) return;
+
+    const aId = id.split('_@@')[0];
+    const target = this.currentShowSection.children.find(item => item.id === aId);
+    // console.log(target);
+
+    if (!target) return;
+
+    const { children } = target;
+    if (areaInfo[aId].isBuilding)
+      children &&
+        children.length &&
+        e.target.bindPopup(this.genChoiceList(target.children)).openPopup();
+    else setAreaId(aId);
   };
 
   handleClickVideo = id => {
@@ -136,31 +159,18 @@ export default class LeafletMap extends PureComponent {
     handleShowVideo(keyId);
   };
 
+  handleClickMovingPerson = id => {
+    const { handleShowPersonInfo } = this.props;
+    const cardId = id.split('_@@')[0];
+    handleShowPersonInfo(cardId);
+  };
+
   handleClickPerson = beaconId => {
     const { aggregation, handleShowPersonInfo, handleShowPersonDrawer } = this.props;
     // 对应信标上只有一个人时，直接个人信息，多个人时，展示列表
     const ps = aggregation.find(item => item[0].beaconId === beaconId);
     if (ps.length === 1) handleShowPersonInfo(ps[0].cardId);
     else handleShowPersonDrawer(beaconId);
-  };
-
-  handleClickSection = (name, e) => {
-    // console.log('section');
-    const { areaInfo, setAreaId } = this.props;
-
-    if (!this.currentShowSection.children) return;
-
-    const target = this.currentShowSection.children.find(item => item.name === name);
-    // console.log(target);
-
-    if (!target) return;
-
-    const { id, children } = target;
-    if (areaInfo[id].isBuilding)
-      children &&
-        children.length &&
-        e.target.bindPopup(this.genChoiceList(target.children)).openPopup();
-    else setAreaId(id);
   };
 
   genChoiceList = children => {
@@ -191,14 +201,57 @@ export default class LeafletMap extends PureComponent {
     //   setAreaId(parentId);
   };
 
+  movingCardsToIcons = () => {
+    const { movingCards, areaId, areaInfo, isTrack, selectedCardId } = this.props;
+    if (!areaId || !Object.keys(areaInfo).length || !movingCards.length) return [];
+
+    let cards = [];
+    const childAreas = areaInfo[areaId].childIds;
+    const currentAreas = [areaId, ...childAreas]; // 当前及当前区域所有子区域的集合
+
+    if (isTrack && selectedCardId) {
+      const target = movingCards.find(({ cardId }) => cardId === selectedCardId);
+      cards = target && currentAreas.includes(target.areaId) ? [target] : []; // 最后处理的是个聚合点，即二维数组
+    } else
+      cards = movingCards.filter(p => currentAreas.includes(p.areaId));
+
+    const icons = cards.map(p => {
+      const { cardId, xarea, yarea, beaconId, cardType, onlineStatus } = p;
+      const name = getUserName(p);
+      const alarmTypes = getPersonAlarmTypes([p]);
+      const isAlarm = !!alarmTypes;
+      const isVisitor = !!+cardType;
+      const isOnline = !!+onlineStatus;
+      const containerClassName = getIconClassName(true, isVisitor, isOnline, isAlarm);
+      return {
+        id: `${cardId}_@@moving`,
+        name,
+        latlng: { lat: yarea, lng: xarea },
+        iconProps: {
+          iconSize: [38, 40],
+          iconAnchor: [19, 40],
+          className: styles.personContainer,
+          html: `
+            <div class="${styles[containerClassName]}">
+              <div class="${styles.personTitle}">${name}</div>
+              <div class="${styles[isAlarm ? 'alarms' : 'nodisplay']}">${alarmTypes}</div>
+            </div>`,
+        },
+      };
+    });
+
+    return icons;
+  };
+
   positionsToIcons = () => {
-    const { areaId, areaInfo, aggregation, isTrack, selectedCardId, positions } = this.props;
+    const { areaId, areaInfo, aggregation, isTrack, selectedCardId, positions, movingCards } = this.props;
     if (!areaId || !Object.keys(areaInfo).length || !aggregation.length) return [];
 
     let targetAgg = [];
     const childAreas = areaInfo[areaId].childIds;
     const currentAreas = [areaId, ...childAreas]; // 当前及当前区域所有子区域的集合
     // console.log(areaId, currentAreas);
+    const movingCardIds = movingCards.map(({ cardId }) => cardId);
 
     // 如果处于目标追踪标签且选定了追踪目标，则只渲染当前追踪的目标
     if (isTrack && selectedCardId) {
@@ -206,7 +259,7 @@ export default class LeafletMap extends PureComponent {
       targetAgg = target && currentAreas.includes(target.areaId) ? [[target]] : []; // 最后处理的是个聚合点，即二维数组
     } else
       targetAgg = aggregation
-        .map(ps => ps.filter(p => currentAreas.includes(p.areaId)))
+        .map(ps => ps.filter(p => currentAreas.includes(p.areaId) && !movingCardIds.includes(p.cardId)))
         .filter(ps => ps.length);
 
     const points = targetAgg.map(ps => {
@@ -268,8 +321,10 @@ export default class LeafletMap extends PureComponent {
     // }, []);
 
     // console.log('agg', points);
-    return points;
-    // return [...points, ...videos];
+    const movingIcons = this.movingCardsToIcons();
+    // console.log(movingIcons);
+    // return points;
+    return [...points, ...movingIcons];
   };
 
   render() {
