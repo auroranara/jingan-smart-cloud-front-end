@@ -1,27 +1,32 @@
 import React from 'react';
+import { Row, Col } from 'antd';
 
 import styles from './waterCards.less';
-import waterNormal from '../imgs/waterNormal.png';
-import waterError from '../imgs/waterError.png';
-// import waterUnnormal from '../imgs/waterUnnormal.png';
+import waterNormal from '../imgs/pond-abnormal.png';
+import waterError from '../imgs/pond-normal.png';
 
 export default function waterCards(props) {
-  // const { status = 1, num = 0, selected = false, ...restProps } = props;
+  const { name, status, value, unit, range } = props;
   return (
-    <div className={styles.container}>
-      <div className={styles.img}>
-        <img src={`${waterNormal}`} width="65%" height="55%" alt="" />
+    <Col span={24} className={styles.container}>
+      {status === 0 && <div className={styles.status}>异常</div>}
+      <img src={status === 0 ? waterError : waterNormal} alt="pond" />
+      <div className={styles.itemContainer}>
+        <div className={styles.name}>{name}</div>
+        <Row>
+          <Col span={12}>
+            当前水位：
+            <span style={{ color: status === 0 ? '#f83329' : '#fff' }}>
+              {value}
+              {unit}
+            </span>
+          </Col>
+          <Col span={12}>
+            参考范围：
+            {`${range[0]}~${range[1]}${unit}`}
+          </Col>
+        </Row>
       </div>
-      <div className={styles.titleArea}>
-        <div className={styles.title}>2号楼水箱</div>
-        <div className={styles.detail}>
-          <span>当前水位：4.5m</span>
-          <span style={{ paddingLeft: 10 }}>参考范围：2~4m</span>
-        </div>
-      </div>
-      <div className={styles.statusPic}>
-        {/* <img src={`${waterError}`} width="80%" height="80%" alt="" /> */}
-      </div>
-    </div>
+    </Col>
   );
 }

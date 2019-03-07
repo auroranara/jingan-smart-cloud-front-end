@@ -29,7 +29,7 @@ import MaintenanceCheckDrawer from './Section/MaintenanceCheckDrawer';
 import FaultMessageDrawer from './Section/FaultMessageDrawer';
 import MaintenanceMsgDrawer from './Section/MaintenanceMsgDrawer';
 import AlarmDynamicMsgDrawer from './Section/AlarmDynamicMsgDrawer';
-
+import WaterSystemDrawer from './Section/WaterSystemDrawer';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import headerBg from '@/assets/new-header-bg.png';
@@ -136,6 +136,8 @@ export default class App extends PureComponent {
     maintenanceTitle: '维保处理动态',
     processIds: [],
     fireProcessIds: [],
+    waterSystemDrawerVisible: false, //水系统抽屉是否可见
+    waterTabItem: '',
   };
 
   componentDidMount() {
@@ -970,6 +972,19 @@ export default class App extends PureComponent {
     });
   };
 
+  handleViewWater = i => {
+    this.setState({
+      waterSystemDrawerVisible: true,
+      waterTabItem: i,
+    });
+  };
+
+  handleCloseWater = () => {
+    this.setState({
+      waterSystemDrawerVisible: false,
+    });
+  };
+
   render() {
     // 从props中获取数据
     const {
@@ -986,7 +1001,7 @@ export default class App extends PureComponent {
           shield_state = 0,
           feedback_state = 0,
         },
-        systemScore,
+        // systemScore,
         currentHiddenDanger,
         currentHiddenDanger: { timestampList },
         checkCount,
@@ -1036,6 +1051,8 @@ export default class App extends PureComponent {
       processIds,
       fireProcessIds,
       alarmDynamicMsgDrawerVisible,
+      waterSystemDrawerVisible,
+      waterTabItem,
     } = this.state;
 
     return (
@@ -1125,8 +1142,9 @@ export default class App extends PureComponent {
             </div>
             <div className={styles.item}>
               <div className={styles.inner}>
-                {/* 消防设施情况 */}
-                <FireDevice systemScore={systemScore} onClick={this.handleViewFireAlarm} />
+                {/* 水系统 */}
+                <FireDevice onClick={waterTabItem => this.handleViewWater(waterTabItem)} />
+                {/* <FireDevice systemScore={systemScore} onClick={this.handleViewFireAlarm} /> */}
               </div>
             </div>
             <div className={styles.item}>
@@ -1297,6 +1315,11 @@ export default class App extends PureComponent {
           model={this.props.newUnitFireControl}
           visible={maintenanceCheckDrawerVisible}
           onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
+        />
+        <WaterSystemDrawer
+          visible={waterSystemDrawerVisible}
+          waterTabItem={waterTabItem}
+          onClose={this.handleCloseWater}
         />
       </BigPlatformLayout>
     );
