@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Radio, Row, Col } from 'antd';
 
-import WaterCards from '../components/waterCards';
+import WaterCards from '../components/WaterCards';
 import ChartGauge from '../components/ChartGauge';
 import Section from '../Section';
 import styles from './FireDevice.less';
@@ -54,6 +54,7 @@ export default class FireDevice extends PureComponent {
   };
 
   renderPond = () => {
+    const { onClick } = this.props;
     const list = Array(7)
       .fill(true)
       .map((item, index) => {
@@ -69,7 +70,16 @@ export default class FireDevice extends PureComponent {
       });
     return list.map(item => {
       const { name, value, status, unit, range } = item;
-      return <WaterCards name={name} value={value} status={status} unit={unit} range={range} />;
+      return (
+        <WaterCards
+          name={name}
+          value={value}
+          status={status}
+          unit={unit}
+          range={range}
+          onClick={() => onClick(2)}
+        />
+      );
     });
   };
 

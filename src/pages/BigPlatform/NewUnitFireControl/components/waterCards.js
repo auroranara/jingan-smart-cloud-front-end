@@ -6,9 +6,9 @@ import waterNormal from '../imgs/pond-abnormal.png';
 import waterError from '../imgs/pond-normal.png';
 
 export default function waterCards(props) {
-  const { name, status, value, unit, range } = props;
+  const { name, status, value, unit, range, onClick } = props;
   return (
-    <Col span={24} className={styles.container}>
+    <Col span={24} className={styles.container} onClick={onClick}>
       {status === 0 && <div className={styles.status}>异常</div>}
       <img src={status === 0 ? waterError : waterNormal} alt="pond" />
       <div className={styles.itemContainer}>

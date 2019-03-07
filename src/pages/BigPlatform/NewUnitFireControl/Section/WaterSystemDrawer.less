@@ -1,23 +1,29 @@
 .content {
   .totalInfo {
-    padding: 0 10px 10px 10px;
+    padding: 0 10px 10px 0;
     color: #fff;
     position: relative;
-  }
-}
 
-.divider {
-  width: 107%;
-  height: 1px;
-  background-color: #0967D3;
-  position: absolute;
-  bottom: 0;
-  left: -5%;
+    .title {
+      height: 1.2em;
+      line-height: 1.2em;
+      padding-left: 0.5em;
+      border-left: 3px solid #00FBFC;
+      font-size: 1.2em;
+    }
+
+    .progress {
+      overflow-y: auto;
+      width: 100%;
+      margin-top: 30px;
+    }
+  }
 }
 
 .realTimeMonitor {
   width: 100%;
   padding-top: 16px;
+  height: 300px;
   color: #fff;
 
   .titleLine {
@@ -39,8 +45,21 @@
   .listContainer {
     overflow-y: auto;
     width: 100%;
-    height: 300px;
-    margin-top: 20px;
+    margin-top: 15px;
+
+    .status {
+      position: relative;
+      right: 0;
+      top: 0;
+      width: 100%;
+      text-align: center;
+      transform: translate(50%, 0) translate(-10px, 10px) rotate(45deg);
+      transform-origin: 50% 0;
+      color: #fff;
+      background-color: #ff4848;
+      font-size: 12px;
+      line-height: 16px;
+    }
 
     .card {
       display: inline-block;
@@ -53,13 +72,8 @@
       overflow: hidden;
       position: relative;
 
-      .imgContainer {
-        position: absolute;
-        left: 0;
-        top: 5px;
+      .chartGauge {
         width: 80px;
-        height: 110px;
-        background-size: 45% 40% !important;
       }
 
       .contentContainer {
