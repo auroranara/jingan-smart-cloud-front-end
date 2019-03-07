@@ -27,83 +27,63 @@ export default class LeafletMap extends PureComponent {
     reference: undefined,
   };
 
-  currentTrueSection = {};
-  currentShowSection = {};
+  currentSection = {};
 
   componentDidUpdate(prevProps, prevState) {
     const {
       areaId: prevAreaId,
-      trueAreaId: prevTrueAreaId,
       highlightedAreaId: prevHighlightedAreaId,
       sectionTree: prevSectionTree,
     } = prevProps;
-    const { areaId, trueAreaId, highlightedAreaId, sectionTree } = this.props;
+    const { areaId, highlightedAreaId, sectionTree } = this.props;
 
     if (
       areaId !== prevAreaId ||
-      trueAreaId !== prevTrueAreaId ||
       sectionTree !== prevSectionTree ||
       highlightedAreaId !== prevHighlightedAreaId
     )
-      // this.handleMapData(areaId, trueAreaId, highlightedAreaId, sectionTree);
       this.handleMapData();
   }
 
-  // handleMapData = (areaId, trueAreaId, sectionTree) => {
   handleMapData = () => {
-    const { areaInfo, areaId, trueAreaId, highlightedAreaId, sectionTree } = this.props;
-    const target = (this.currentShowSection = findInTree(areaId, sectionTree));
-    // 当trueAreaId为多层建筑时，地图上展示其父级areaId，即areaId是trueAreaId的父节点，当不是多层建筑时，两个值一致
-    const isCurrentMultiFloor = areaId !== trueAreaId;
-    if (isCurrentMultiFloor)
-      this.currentTrueSection = target.children.find(({ id }) => id === trueAreaId) || {};
-    else this.currentTrueSection = target;
-    // console.log('areaInfo', this.props.areaInfo, target);
-    if (!target) return;
+    const { areaInfo, areaId, highlightedAreaId, sectionTree } = this.props;
+    const current = this.currentSection = findInTree(areaId, sectionTree);
+    if (!current) return;
 
-    const { id, children, mapId: fatherMapId, companyMap, range } = target;
-    const { parentId } = areaInfo[id];
+    const currentInfo = areaInfo[areaId];
+    const { isBuilding, parentId } = currentInfo;
+
+    const { children, range } = current;
     const sectionChildren = children || [];
-    const currentRange =  { ...range, options: { ...range.options, fill: false } };
-    const reference = parseImage(target);
-    // const [images, data] = sectionChildren.reduce((prev, next) => {
-    //   const { range, mapId } = next;
-    //   // 如果子区域用了父区域的地图，则不显示该地图
-    //   if (mapId !== fatherMapId)
-    //     prev[0].push(parseImage(next));
-    //   if (range)
-    //     prev[1].push(range);
-    //   return prev;
-    // }, [fatherMapId === companyMap ? [] : [reference], [currentRange]]);
+    let currentRange;
+    // 多层建筑时，需要点击当前的框，所以需要填充，透明度变为0，普通区域时，由于返回图层覆盖的问题，所以fill改为false
+    if (isBuilding)
+      currentRange = { ...range, options: { ...range.options, fillOpacity: 0 } };
+    else
+      currentRange = { ...range, options: { ...range.options, fill: false } }
+    const reference = parseImage(current);
 
     // data会变红，所以不能使用一开始存好的值，但是图片是固定的，所以可以用一开始处理好的值
-    // 显示当前区域即其所有子区域
-    // const data = sectionChildren.reduce((prev, { range }) => range ? [...prev, range] : prev, [currentRange]);
-    // 由于返回时图层顺序会乱，所以当前区域有子区域时先不渲染当前区域，当前区域没有子区域时渲染当前区域
     let data;
-    // 若当前区域为多层建筑，真正的区域为当前显示区域的子区域，则只渲染该子区域
-    if (isCurrentMultiFloor) {
-        const { range } = this.currentTrueSection;
-        data = range ? [range] : [];
-    }
-    // 当前区域不是多层建筑，若有子节点，则渲染所有子节点(高亮的变蓝，报警的变红，其余变透明)，若没有，则只渲染当前区域
+    // 若当前区域为多层建筑或没有子区域，则只渲染当前区域
+    if (isBuilding || !sectionChildren.length)
+      data = [currentRange];
+    // 当前区域不是多层建筑，若有子节点，则渲染所有子节点(高亮的变蓝，报警的变红，其余变透明)
     else
-        data = sectionChildren.length
-        ? sectionChildren.reduce((prev, { id, range, status }) => {
-            if (range) {
-                let newRange;
-                if (id === highlightedAreaId) // 高亮的变蓝，包括已经变红的，高亮的时候也变蓝
-                    newRange = { ...range, options: { ...range.options, color: OPTIONS_BLUE } };
-                else if (+status === ALARM) // 报警的本身已经改成红色了，保持不变
-                    newRange = range;
-                else // 不高亮及报警的都变成透明不可见，但可以点
-                    newRange = { ...range, options: { ...range.options, color: 'transparent' } };
-                prev.push(newRange);
-            }
-            return prev;
-            // }, [])
-            }, parentId ? [currentRange] : []) // 最顶层的外框不显示
-        : [currentRange];
+      data = sectionChildren.reduce((prev, { id, range, status }) => {
+        if (range) {
+            let newRange;
+            if (id === highlightedAreaId) // 高亮的变蓝，包括已经变红的，高亮的时候也变蓝
+                newRange = { ...range, options: { ...range.options, color: OPTIONS_BLUE } };
+            else if (+status === ALARM) // 报警的本身已经改成红色了，保持不变
+                newRange = range;
+            else // 不高亮及报警的都变成透明不可见，但可以点
+                newRange = { ...range, options: { ...range.options, color: 'transparent' } };
+            prev.push(newRange);
+        }
+        return prev;
+      }, parentId ? [currentRange] : []) // 最顶层的外框不显示
+
     // console.log('range', data, images, reference);
     this.setState({ data, images: areaInfo[areaId].images, reference });
   };
@@ -134,23 +114,24 @@ export default class LeafletMap extends PureComponent {
   };
 
   handleClickSection = (id, e) => {
-    // console.log('section');
-    const { areaInfo, setAreaId } = this.props;
-
-    if (!this.currentShowSection.children) return;
-
+    const { areaInfo, areaId, setAreaId } = this.props;
     const aId = id.split('_@@')[0];
-    const target = this.currentShowSection.children.find(item => item.id === aId);
-    // console.log(target);
+    const currentInfo = areaInfo[areaId];
+    const { isBuilding } = currentInfo;
 
-    if (!target) return;
+    const current = this.currentSection;
+    const { children } = current;
 
-    const { children } = target;
-    if (areaInfo[aId].isBuilding)
-      children &&
-        children.length &&
-        e.target.bindPopup(this.genChoiceList(target.children)).openPopup();
-    else setAreaId(aId);
+    // 无子区域则不做处理
+    if (!children) return;
+
+    // 有子区域
+    // 如果当前所在区域为多层建筑，则跳出菜单选择楼层
+    if (isBuilding)
+      e.target.bindPopup(this.genChoiceList(children)).openPopup();
+    // 不是多层建筑，则进入该区域
+    else
+      setAreaId(aId);
   };
 
   handleClickVideo = id => {
@@ -190,15 +171,9 @@ export default class LeafletMap extends PureComponent {
   };
 
   handleBack = e => {
-    const { areaId, trueAreaId, areaInfo, setAreaId } = this.props;
-    const { parentId } = areaInfo[trueAreaId];
+    const { areaId, areaInfo, setAreaId } = this.props;
+    const { parentId } = areaInfo[areaId];
     setAreaId(parentId);
-
-    // const parent = areaInfo[parentId];
-    // if (parent.isBuilding)
-    //   setAreaId(parent.parentId);
-    // else
-    //   setAreaId(parentId);
   };
 
   handleHome = e => {
@@ -333,15 +308,13 @@ export default class LeafletMap extends PureComponent {
   };
 
   render() {
-    const { loading, url, areaId, trueAreaId, areaInfo } = this.props;
+    const { url, areaId, areaInfo } = this.props;
     const { data, images, reference } = this.state;
-    const { count, inCardCount, outCardCount } = this.currentTrueSection || {};
+    // const { count, inCardCount, outCardCount } = this.currentTrueSection || {};
 
-    const currentTrueAreaInfo = (trueAreaId && areaInfo[trueAreaId]) || {};
-    const { parentId, fullName } = currentTrueAreaInfo;
+    const currentAreaInfo = areaId && areaInfo[areaId] || {};
+    const { parentId, fullName } = currentAreaInfo;
     const icons = this.positionsToIcons();
-    // const hideBackground = !isCompanyMap(this.currentShowSection);
-    // console.log(hideBackground);
 
     const imgDraw = (
       <Spin spinning={false} style={{ height: '100%' }}>

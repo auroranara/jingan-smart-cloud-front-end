@@ -28,7 +28,6 @@ export default class RealTime extends PureComponent {
   state = {
     alarmId: undefined, // 警报id
     areaId: undefined, // 地图显示的areaId，即当前真实areaId为多层建筑时，areaId设置为其父节点
-    trueAreaId: undefined, // 实际选定的areaId，展示数据用的
     highlightedAreaId: undefined, // 高亮的区域
     beaconId: undefined, // 信标id
     cardId: undefined, // 选中的人员id
@@ -63,7 +62,7 @@ export default class RealTime extends PureComponent {
       if (list.length) {
         const root = list[0];
         const { id } = root;
-        this.setState({ areaId: id, trueAreaId: id, mapBackgroundUrl: root.mapPhoto.url });
+        this.setState({ areaId: id, mapBackgroundUrl: root.mapPhoto.url });
       }
     });
     dispatch({
@@ -115,8 +114,8 @@ export default class RealTime extends PureComponent {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const params = {
       companyId,
-      env,
-      // env: 'dev',
+      // env,
+      env: 'dev',
       type: 2,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
@@ -150,22 +149,7 @@ export default class RealTime extends PureComponent {
   };
 
   setAreaId = areaId => {
-    // this.setState({ areaId });
-    const { personPosition: { sectionTree } } = this.props;
-
-    // areaId为null时则在厂区外，不属于任何区域
-    if (areaId === null)
-      areaId = sectionTree.length ? sectionTree[0].id : '';
-
-    if (!areaId)
-      return;
-
-    const current = this.areaInfo[areaId];
-    // 若当前区域为多层建筑，则显示其父区域，非多层建筑显示当前区域
-    if (current.isBuilding)
-      this.setState({ areaId: current.parentId, trueAreaId: areaId });
-    else
-      this.setState({ areaId, trueAreaId: areaId });
+    this.setState({ areaId });
   };
 
   handleWbData = wbData => {
@@ -480,7 +464,6 @@ export default class RealTime extends PureComponent {
     const {
       alarmId,
       areaId,
-      trueAreaId,
       highlightedAreaId,
       beaconId,
       cardId,
@@ -515,7 +498,7 @@ export default class RealTime extends PureComponent {
               <SectionList
                 data={sectionTree}
                 areaInfo={areaInfo}
-                trueAreaId={trueAreaId}
+                areaId={areaId}
                 setAreaId={this.setAreaId}
                 expandedRowKeys={expandedRowKeys}
                 setHighlightedAreaId={this.setHighlightedAreaId}
@@ -549,7 +532,6 @@ export default class RealTime extends PureComponent {
               isTrack={isTrack}
               selectedCardId={selectedCardId}
               areaId={areaId}
-              trueAreaId={trueAreaId}
               highlightedAreaId={highlightedAreaId}
               areaInfo={areaInfo}
               sectionTree={sectionTree}
