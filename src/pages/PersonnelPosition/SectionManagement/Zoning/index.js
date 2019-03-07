@@ -35,7 +35,7 @@ export default class Zoning extends PureComponent {
           const { url: url1 } = JSON.parse(image1 || '{}');
           const { url: url2 } = JSON.parse(image2 || '{}');
           const json = JSON.parse(jsonMap || null);
-          const item = range ? [JSON.parse(range)] : [];
+          const item = JSON.parse(range || {});
           if (url1 && url2 && json) {
             const image = {
               id: id2,
@@ -47,7 +47,7 @@ export default class Zoning extends PureComponent {
               images: [image],
               reference: image,
               name,
-              data: item,
+              data: item?[{...item,name}]:undefined,
             });
           }
           else if (url1) {
@@ -66,7 +66,7 @@ export default class Zoning extends PureComponent {
               images: [image],
               reference: image,
               name,
-              data: item,
+              data: item?[{...item,name}]:undefined,
             });
           }
           else {
