@@ -57,6 +57,7 @@ export default class UnitDrawer extends PureComponent {
         AccessCount = [],
         AccessStatistics: { Importing = 0, unImporting = 0 },
       } = {},
+      handleClickUnitStatistics,
     } = this.props;
     const { selected, searchValue } = this.state;
 
@@ -143,7 +144,22 @@ export default class UnitDrawer extends PureComponent {
                 }}
                 info={
                   <Fragment>
-                    <div className={styles.equipment}>{count || '--'}</div>
+                    <div
+                      onClick={() => handleClickUnitStatistics({
+                        companyId: company_id,
+                        companyName: company_name,
+                        address,
+                        principalName: principal_name,
+                        principalPhone: principal_phone,
+                        normal,
+                        unnormal,
+                        faultNum,
+                        outContact,
+                      })}
+                      className={styles.equipment}
+                    >
+                      {count || '--'}
+                    </div>
                     设备数
                 </Fragment>
                 }
