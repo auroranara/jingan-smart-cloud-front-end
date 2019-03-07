@@ -121,7 +121,9 @@ export function getSectionTree(list) {
     } = item;
     const status = lackStatus || outstripStatus || overstepStatus || tlongStatus ? 2 : 1;
     const parsedRange = JSON.parse(range);
-    parsedRange.options.fill = false;
+    // parsedRange.options.fill = false; // 无法点击
+    parsedRange.options.fillOpacity = 0;
+    parsedRange.options.weight = 3;
     return {
       id,
       name,
