@@ -138,11 +138,16 @@ export default class SectionList extends PureComponent {
   };
 
   onRow = record => {
-    const { areaInfo, setAreaId, setHighlightedAreaId } = this.props;
+    const { setAreaId, setHighlightedAreaId } = this.props;
     const { id } = record;
     return {
       onClick: e => {
         setAreaId(id);
+        // const rows = document.querySelector('.ant-table table tbody').children;
+        // for (let row of rows) {
+        //   if (row.dataset.rowKey === id)
+        //     row.classList.add(styles.cyan);
+        // }
       },
       onMouseEnter: e => {
         // console.log('in', id);
@@ -165,6 +170,13 @@ export default class SectionList extends PureComponent {
     setExpandedRowKeys(expandedRows);
   };
 
+  getTableRowClassName = (record, index) => {
+    const { trueAreaId } = this.props;
+    // console.log(record.id, trueAreaId);
+    if (record.id === trueAreaId)
+      return styles.rowSelected;
+  };
+
   /**
    * 渲染
    */
@@ -173,6 +185,7 @@ export default class SectionList extends PureComponent {
       areaInfo,
       // 表格源数据
       data=[],
+      trueAreaId,
       setAreaId,
       setHighlightedAreaId,
       expandedRowKeys,
@@ -262,6 +275,7 @@ export default class SectionList extends PureComponent {
             <div className={styles.tableContainer}>
               <Table
                 className={styles.table}
+                rowClassName={this.getTableRowClassName}
                 size="small"
                 columns={columns}
                 dataSource={list}
@@ -269,7 +283,6 @@ export default class SectionList extends PureComponent {
                 bordered={false}
                 rowKey={'id'}
                 defaultExpandAllRows
-                rowClassName={styles.tableRow}
                 expandIcon={this.renderExpandIcon}
                 // indentSize={20}
                 indentSize={0}

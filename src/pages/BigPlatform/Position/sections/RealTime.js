@@ -16,6 +16,7 @@ const options = {
 };
 
 const SOS_TYPE = 1;
+const DELAY = 6000;
 
 const LOCATION_MESSAGE_TYPE = "1";
 const AREA_CHANGE_TYPE = "2";
@@ -54,20 +55,16 @@ export default class RealTime extends PureComponent {
 
     this.connectWebSocket();
 
-    dispatch({
-      type: 'personPosition/fetchSectionTree',
-      payload: { companyId },
-      callback: list => {
-        const areaInfo = this.areaInfo = getAreaInfo(list);
-        setAreaInfoCache(areaInfo);
-        this.setTableExpandedRowKeys(Object.keys(areaInfo).filter(prop => prop !== 'null' && prop !== 'undefined'));
-        // console.log(this.areaInfo);
-        if (list.length) {
-          const root = list[0];
-          const { id } = root;
-          this.setState({ areaId: id, trueAreaId: id, mapBackgroundUrl: root.mapPhoto.url });
-        }
-      },
+    this.fetchSectionTree(list => {
+      const areaInfo = this.areaInfo = getAreaInfo(list);
+      setAreaInfoCache(areaInfo);
+      this.setTableExpandedRowKeys(Object.keys(areaInfo).filter(prop => prop !== 'null' && prop !== 'undefined'));
+      // console.log(this.areaInfo);
+      if (list.length) {
+        const root = list[0];
+        const { id } = root;
+        this.setState({ areaId: id, trueAreaId: id, mapBackgroundUrl: root.mapPhoto.url });
+      }
     });
     dispatch({
       type: 'personPosition/fetchInitialPositions',
@@ -81,15 +78,21 @@ export default class RealTime extends PureComponent {
     dispatch({
       type: 'user/fetchCurrent',
     });
+
+    this.treeTimer = setInterval(() => {
+      this.fetchSectionTree();
+    }, DELAY);
   }
 
   componentWillUnmount() {
     const ws = this.ws;
     ws && ws.close();
+    clearInterval(this.treeTimer);
   }
 
   ws = null;
   areaInfo = {};
+  treeTimer = null;
 
   // 判定当前页面是否是目标追踪
   isTargetTrack = () => {
@@ -97,6 +100,15 @@ export default class RealTime extends PureComponent {
     const { labelIndex } = this.props;
     return !!labelIndex;
   };
+
+  fetchSectionTree = callback => {
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'personPosition/fetchSectionTree',
+      payload: { companyId },
+      callback,
+    });
+  }
 
   connectWebSocket = () => {
     const { companyId } = this.props;
@@ -503,6 +515,7 @@ export default class RealTime extends PureComponent {
               <SectionList
                 data={sectionTree}
                 areaInfo={areaInfo}
+                trueAreaId={trueAreaId}
                 setAreaId={this.setAreaId}
                 expandedRowKeys={expandedRowKeys}
                 setHighlightedAreaId={this.setHighlightedAreaId}

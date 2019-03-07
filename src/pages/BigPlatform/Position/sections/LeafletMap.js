@@ -256,7 +256,7 @@ export default class LeafletMap extends PureComponent {
     // 如果处于目标追踪标签且选定了追踪目标，则只渲染当前追踪的目标
     if (isTrack && selectedCardId) {
       const target = positions.find(({ cardId }) => cardId === selectedCardId);
-      targetAgg = target && currentAreas.includes(target.areaId) ? [[target]] : []; // 最后处理的是个聚合点，即二维数组
+      targetAgg = target && !movingCardIds.includes(selectedCardId) && currentAreas.includes(target.areaId) ? [[target]] : []; // 最后处理的是个聚合点，即二维数组
     } else
       targetAgg = aggregation
         .map(ps => ps.filter(p => currentAreas.includes(p.areaId) && !movingCardIds.includes(p.cardId)))
@@ -362,7 +362,7 @@ export default class LeafletMap extends PureComponent {
       <div className={styles.container}>
         {imgDraw}
         {parentId && <Icon type="rollback" onClick={this.handleBack} className={styles.back} />}
-        <div className={styles.mapInfo}>
+        {/* <div className={styles.mapInfo}>
           <span className={styles.area}>当前区域: {fullName || '暂无'}</span>
           今日
           <span className={styles.enter}>
@@ -374,7 +374,7 @@ export default class LeafletMap extends PureComponent {
             人次
           </span>
           当前人数: {count || 0}
-        </div>
+        </div> */}
         <div className={styles.legends}>
           <div className={styles.visitorLgd}>访客</div>
           <div className={styles.generalLgd}>普通人员</div>

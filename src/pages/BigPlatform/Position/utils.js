@@ -435,7 +435,7 @@ function animate(id, origin, target, move, callback) {
 }
 
 const MAX_PAIR_NUM = 100;
-const DELTA = 0.000000001;
+const DELTA = 0.0000001;
 export function handleOriginMovingCards(changedCards, prevCardList, originMovingCards, move, callback) {
   const movingCardIds = originMovingCards.map(({ cardId }) => cardId);
   for (const card of changedCards) {
