@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon, Tooltip } from 'antd';
 import moment from 'moment';
 import classNames from 'classnames';
 import ImageDraw from '@/components/ImageDraw';
@@ -239,7 +239,7 @@ export default class HistoryPlay extends PureComponent {
       // 人员
       divIcons,
       // 箭头
-      arrows: this.getArrows(currentIndex),
+      // arrows: this.getArrows(currentIndex),
       // 居中
       reference: this.getReference(currentIndex),
       // 信标点
@@ -575,19 +575,16 @@ export default class HistoryPlay extends PureComponent {
    */
   handleAccelerate = () => {
     const { onAccelerate } = this.props;
-    const { playing } = this.state;
     // 清除变量以方便按照新的速率重新计算
     this.unsetFrameTimer();
     this.setState(
-      ({ speed, tooltip }) => ({
+      ({ speed }) => ({
         // 重置播放速率
         speed: speed * 2,
-        // 重置速率提示
-        tooltip: { ...tooltip, content: `加速，当前${speed * 2}x` },
       }),
       () => {
         // 根据是否在播放决定是否重置定时器
-        if (playing) {
+        if (this.state.playing) {
           this.setFrameTimer();
         }
       }
@@ -603,19 +600,16 @@ export default class HistoryPlay extends PureComponent {
    */
   handleDecelerate = () => {
     const { onDecelerate } = this.props;
-    const { playing } = this.state;
     // 清除变量以方便按照新的速率重新计算
     this.unsetFrameTimer();
     this.setState(
-      ({ speed, tooltip }) => ({
+      ({ speed }) => ({
         // 重置播放速率
         speed: speed / 2,
-        // 重置速率提示
-        tooltip: { ...tooltip, content: `减速，当前${speed / 2}x` },
       }),
       () => {
         // 根据是否在播放决定是否重置定时器
-        if (playing) {
+        if (this.state.playing) {
           this.setFrameTimer();
         }
       }
@@ -692,12 +686,12 @@ export default class HistoryPlay extends PureComponent {
     // 播放按钮类名
     const playButtonClassName = classNames(
       styles.playButton,
-      startTime && endTime ? undefined : styles.disabledPlayButton
+      startTime && endTime ? undefined : styles.disabled
     );
-    // // 是否已经减速到最小速率
-    // const isMinSpeed = speed === MIN_SPEED;
-    // // 是否已经加速大最大速率
-    // const isMaxSpeed = speed === MAX_SPEED;
+    // 是否已经减速到最小速率
+    const isMinSpeed = speed === MIN_SPEED;
+    // 是否已经加速大最大速率
+    const isMaxSpeed = speed === MAX_SPEED;
     // console.log(drawProps);
 
     return (
@@ -735,6 +729,14 @@ export default class HistoryPlay extends PureComponent {
             <div className={styles.endTime}>
               {endTime && moment(endTime).format(DEFAULT_TIME_FORMAT)}
             </div>
+            {/* 减速按钮 */}
+            <Tooltip title={`减速，当前${speed}x`}>
+              <Icon
+                type="step-backward"
+                className={classNames(styles.button, isMinSpeed?styles.disabled:undefined)}
+                onClick={isMinSpeed ? undefined: this.handleDecelerate}
+              />
+            </Tooltip>
             <div className={styles.playButtonWrapper}>
               {/* 正在播放时显示暂停按钮，否则显示播放按钮 */}
               {playing ? (
@@ -753,24 +755,14 @@ export default class HistoryPlay extends PureComponent {
                 />
               )}
             </div>
-            {/* 减速按钮 */}
-            {/* <Icon
-              type="step-backward"
-              className={styles.button}
-              style={isMinSpeed ? { color: '#999', cursor: 'not-allowed' } : undefined}
-              onClick={isMinSpeed ? undefined: this.handleDecelerate}
-              onMouseEnter={(e) => {this.showTooltip(`减速，当前${speed}x`, e);}}
-              onMouseLeave={this.hideTooltip}
-            /> */}
             {/* 加速按钮 */}
-            {/* <Icon
-              type="step-forward"
-              className={styles.button}
-              style={isMaxSpeed ? { color: '#999', cursor: 'not-allowed' } : undefined}
-              onClick={isMaxSpeed ? undefined: this.handleAccelerate}
-              onMouseEnter={(e) => {this.showTooltip(`加速，当前${speed}x`, e);}}
-              onMouseLeave={this.hideTooltip}
-            /> */}
+            <Tooltip title={`加速，当前${speed}x`}>
+              <Icon
+                type="step-forward"
+                className={classNames(styles.button, isMaxSpeed?styles.disabled:undefined)}
+                onClick={isMaxSpeed ? undefined: this.handleAccelerate}
+              />
+            </Tooltip>
           </div>
         </div>
         {/* tooltip */}
