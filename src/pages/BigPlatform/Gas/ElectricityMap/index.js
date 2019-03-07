@@ -319,6 +319,7 @@ export default class MapSection extends PureComponent {
             keyboardEnable: false,
           }}
           useAMapUI
+          pitch={60}
           mapStyle="amap://styles/b9d9da96da6ba2487d60019876b26fc5"
           expandZoomRange
           zooms={zooms}
