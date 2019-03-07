@@ -201,6 +201,11 @@ export default class LeafletMap extends PureComponent {
     //   setAreaId(parentId);
   };
 
+  handleHome = e => {
+    const { sectionTree, setAreaId } = this.props;
+    setAreaId(sectionTree[0].id);
+  };
+
   movingCardsToIcons = () => {
     const { movingCards, areaId, areaInfo, isTrack, selectedCardId } = this.props;
     if (!areaId || !Object.keys(areaInfo).length || !movingCards.length) return [];
@@ -361,6 +366,7 @@ export default class LeafletMap extends PureComponent {
     return (
       <div className={styles.container}>
         {imgDraw}
+        <Icon type="home" onClick={this.handleHome} className={styles.home} />
         {parentId && <Icon type="rollback" onClick={this.handleBack} className={styles.back} />}
         {/* <div className={styles.mapInfo}>
           <span className={styles.area}>当前区域: {fullName || '暂无'}</span>

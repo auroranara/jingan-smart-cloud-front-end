@@ -38,12 +38,13 @@
   }
 }
 
-.back {
+.home {
+  display: inline-block;
   width: 30px;
   height: 30px;
-  line-height: 30px;
+  line-height: 34px;
   color: #FFF;
-  font-size: 24px;
+  font-size: 20px;
   position: absolute;
   // top: 125px;
   top: 85px;
@@ -51,6 +52,10 @@
   border-radius: 3px;
   background-color: #0259a4;
   z-index: 999;
+}
+
+.back:extend(.home) {
+  top: 125px;
 }
 
 .personContainer {
