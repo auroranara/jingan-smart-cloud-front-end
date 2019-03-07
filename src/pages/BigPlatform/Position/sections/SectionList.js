@@ -171,9 +171,8 @@ export default class SectionList extends PureComponent {
   };
 
   getTableRowClassName = (record, index) => {
-    const { trueAreaId } = this.props;
-    // console.log(record.id, trueAreaId);
-    if (record.id === trueAreaId)
+    const { areaId } = this.props;
+    if (record.id === areaId)
       return styles.rowSelected;
   };
 
@@ -185,7 +184,7 @@ export default class SectionList extends PureComponent {
       areaInfo,
       // 表格源数据
       data=[],
-      trueAreaId,
+      areaId,
       setAreaId,
       setHighlightedAreaId,
       expandedRowKeys,
