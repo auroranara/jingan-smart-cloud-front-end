@@ -4,7 +4,6 @@ import { connect } from 'dva';
 import moment from 'moment';
 import { mapMutations } from 'utils/utils';
 import { Scroll } from 'react-transform-components';
-import { Scrollbars } from 'react-custom-scrollbars';
 import Ellipsis from '@/components/Ellipsis';
 // 引入样式文件
 import styles from './History.less';
@@ -19,7 +18,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm';
 // 默认范围
 const defaultRange = [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')];
 const renderThumbHorizontal = ({ style }) => <div style={{ ...style, display: 'none' }} />;
-const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)' };
+const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)', right: -2 };
 
 /**
  * description: 历史轨迹

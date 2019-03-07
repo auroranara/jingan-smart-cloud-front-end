@@ -651,7 +651,7 @@ class ImageDraw extends PureComponent {
    */
   renderShape = (item) => {
     const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
-    const { id, latlngs, latlng, type, radius, name, render, options: { color=DEFAULT_COLOR, weight=DEFAULT_WEIGHT }={} } = item;
+    const { id, latlngs, latlng, type, radius, name, render, options: { color=DEFAULT_COLOR, weight=DEFAULT_WEIGHT, fill=true, fillOpacity=0.2 }={} } = item;
     let shape = null;
     switch(type){
       case 'polygon': // 多边形
@@ -665,6 +665,8 @@ class ImageDraw extends PureComponent {
             onRemove={this.handleRemove}
             color={color}
             weight={weight}
+            fill={fill}
+            fillOpacity={fillOpacity}
           />
         );
         break;
@@ -679,6 +681,8 @@ class ImageDraw extends PureComponent {
             onRemove={this.handleRemove}
             color={color}
             weight={weight}
+            fill={fill}
+            fillOpacity={fillOpacity}
           />
         );
         break;
@@ -694,6 +698,8 @@ class ImageDraw extends PureComponent {
             onRemove={this.handleRemove}
             color={color}
             weight={weight}
+            fill={fill}
+            fillOpacity={fillOpacity}
           />
         );
         break;
