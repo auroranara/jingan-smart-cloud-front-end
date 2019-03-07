@@ -138,15 +138,19 @@ export default class SectionList extends PureComponent {
   };
 
   onRow = record => {
-    const { setAreaId, setHighlightedAreaId } = this.props;
+    const { areaInfo, setAreaId, setHighlightedAreaId } = this.props;
     const { id } = record;
     return {
       onClick: e => {
         setAreaId(id);
+        // 当前建筑为多层时，由于显示的是父级区域，所以要高亮子区域，由于鼠标滑过时也要高亮，
+        // 所以得判断其是否报警，若报警鼠标滑过时变为蓝色，点击时显示为
+        // if (areaInfo[id].isBuilding)
+        //   setHighlightedAreaId(id, 'click');
       },
       onMouseEnter: e => {
         // console.log('in', id);
-        setHighlightedAreaId(id);
+        setHighlightedAreaId(id, 'hover');
       },
       onMouseLeave: e => {
         // console.log('out', id);
@@ -155,9 +159,9 @@ export default class SectionList extends PureComponent {
     }
   };
 
-  onTableExpand = (expanded, record) => {
-    console.log(expanded, record);
-  };
+  // onTableExpand = (expanded, record) => {
+  //   console.log(expanded, record);
+  // };
 
   onExpandedRowsChange = expandedRows => {
     // console.log(expandedRows);
@@ -170,6 +174,7 @@ export default class SectionList extends PureComponent {
    */
   render() {
     const {
+      areaInfo,
       // 表格源数据
       data=[],
       setAreaId,
@@ -196,14 +201,14 @@ export default class SectionList extends PureComponent {
         dataIndex: 'count',
         // width: '30%',
       },
-      {
-        title: '进入人次',
-        dataIndex: 'inCardCount',
-      },
-      {
-        title: '出去人次',
-        dataIndex: 'outCardCount',
-      },
+      // {
+      //   title: '进入人次',
+      //   dataIndex: 'inCardCount',
+      // },
+      // {
+      //   title: '出去人次',
+      //   dataIndex: 'outCardCount',
+      // },
       {
         title: '状态',
         dataIndex: 'status',
@@ -270,7 +275,8 @@ export default class SectionList extends PureComponent {
                 defaultExpandAllRows
                 rowClassName={styles.tableRow}
                 expandIcon={this.renderExpandIcon}
-                indentSize={20}
+                // indentSize={20}
+                indentSize={0}
                 onRow={this.onRow}
                 expandedRowKeys={expandedRowKeys}
                 // onExpand={this.onTableExpand}

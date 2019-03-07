@@ -263,10 +263,13 @@ export default class LeafletMap extends PureComponent {
     const currentTrueAreaInfo = (trueAreaId && areaInfo[trueAreaId]) || {};
     const { parentId, fullName } = currentTrueAreaInfo;
     const icons = this.positionsToIcons();
+    // const hideBackground = !isCompanyMap(this.currentShowSection);
+    // console.log(hideBackground);
 
     const imgDraw = (
       <Spin spinning={false} style={{ height: '100%' }}>
         <ImageDraw
+          maxBoundsRatio={1.5}
           autoZoom
           filled
           mapProps={{ scrollWheelZoom: false }}

@@ -283,6 +283,7 @@ export function getAreaInfo(list) {
 function getMapImages(list) {
   // console.log(list);
   const { companyMap } = list[0];
+  // const current = list[list.length - 1];
   const [images, lastMapId] = list.reduce(
     (prev, next) => {
       const { mapId } = next;
@@ -384,4 +385,19 @@ export function getIconClassName(isSingle, isVisitor, isOnline, isAlarm) {
   // 单人 && 访客
   if (isVisitor) return `visitor${suffix}`;
   return `person${suffix}`;
+}
+
+export function isCompanyMap(current) {
+  if (!current || !Object.keys(current).length)
+    return;
+
+
+  let { mapId, companyMap, parent } = current;
+  // mapId不存在时，找到离其最近的父元素的mapId
+  while(!mapId && parent) {
+    mapId = parent.mapId;
+    parent = parent.parent;
+  }
+
+  return mapId === companyMap;
 }
