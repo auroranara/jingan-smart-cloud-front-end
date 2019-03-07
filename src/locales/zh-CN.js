@@ -219,6 +219,8 @@ export default {
   'menu.personnelPosition.beaconManagement': '信标管理',
   'menu.personnelPosition.beaconManagement.companies': '信标管理',
   'menu.personnelPosition.beaconManagement.companyBeacon': '列表信标',
+  'menu.personnelPosition.beaconManagement.add': '新增信标',
+  'menu.personnelPosition.beaconManagement.edit': '编辑信标',
   'menu.personnelPosition.tagManagement': '标签管理',
   'menu.personnelPosition.tagManagement.companyList': '标签管理',
   'menu.personnelPosition.tagManagement.list': '标签列表',
