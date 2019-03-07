@@ -27,7 +27,7 @@ export default class ImageSelect extends PureComponent {
     const { onChange, onSelect, value } = this.props;
     const { currentMapId } = this.state;
     this.setState({ visible: false });
-    onSelect && onSelect(currentMapId, value !== currentMapId);
+    onSelect && onSelect(value !== currentMapId);
     onChange && onChange(currentMapId);
   }
 

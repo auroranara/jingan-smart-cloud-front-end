@@ -87,9 +87,9 @@ export default class BeaconHandler extends PureComponent {
     });
   }
 
-  handleSelectImage = (mapId, isMapIdChanged) => {
+  handleSelectImage = (isMapIdChanged) => {
     if (isMapIdChanged) {
-      const { /* beacon: { imagesMap }, */ form: { setFieldsValue } } = this.props;
+      const { form: { setFieldsValue } } = this.props;
       setFieldsValue({ coordinate: undefined });
     }
   }
