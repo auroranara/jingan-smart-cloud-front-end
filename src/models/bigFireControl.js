@@ -242,6 +242,8 @@ export default {
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
       if (code === 200) {
         yield put({ type: 'saveLookUp', payload: data });
+        if (data && data.createTime)
+          yield put({ type: 'saveCreateTime', payload: data.createTime });
         const { flag, recordsId } = data;
         callback && callback(flag, recordsId);
       }
