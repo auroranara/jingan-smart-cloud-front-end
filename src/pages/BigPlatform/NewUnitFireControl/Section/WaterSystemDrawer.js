@@ -138,6 +138,7 @@ export default class WaterSystemDrawer extends PureComponent {
                         <ChartGauge
                           showName
                           showValue
+                          radius="95%"
                           name=""
                           value={2}
                           range={[0, 2]}

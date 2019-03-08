@@ -43,6 +43,7 @@ export default class FireDevice extends PureComponent {
           <ChartGauge
             showName
             showValue
+            radius="75%"
             name={name}
             value={value}
             range={[0, 2]}
@@ -77,6 +78,7 @@ export default class FireDevice extends PureComponent {
             name={name}
             value={value}
             range={[0, 2]}
+            radius="75%"
             normalRange={[0.4, 1.2]}
           />
         </Col>

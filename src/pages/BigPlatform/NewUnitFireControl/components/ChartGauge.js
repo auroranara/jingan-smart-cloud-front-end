@@ -8,6 +8,7 @@ export default class ChartGauge extends PureComponent {
       showName,
       showValue,
       name,
+      radius,
       range: [min, max] = [0, 2],
       normalRange: [normalMin, normalMax] = [0.4, 1.2],
     } = this.props;
@@ -22,7 +23,7 @@ export default class ChartGauge extends PureComponent {
         {
           name: '水系统监测',
           type: 'gauge',
-          radius: '75%',
+          radius: radius,
           title: {
             show: !!showName,
             offsetCenter: [0, '95%'],
