@@ -7,11 +7,16 @@ export async function getList(params) {
 }
 
 // 获取最近一次历史轨迹数据
-export async function getLatest({ cardId }) {
-  return request(`/acloud_new/v2/location/getRecentlyTrack/${cardId}`);
+export async function getLatest(params) {
+  return request(`/acloud_new/v2/location/getRecentlyTrack?${stringify(params)}`);
 }
 
 // 获取区域树
 export async function getTree(params) {
   return request(`/acloud_new/v2/areaInfo/getScreenTree?${stringify(params)}`);
+}
+
+// 获取人员列表
+export async function getPeople(params) {
+  return request(`/acloud_new/v2/rolePermission/getAllCompanyUsers?${stringify(params)}`);
 }

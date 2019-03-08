@@ -89,6 +89,7 @@ export default class HistoryPlay extends PureComponent {
     const { data, tree, startTime } = this.props;
     // 判断源数据是否发生变化
     if (data !== prevData) {
+      this.unsetFrameTimer();
       // 获取初始时间节点
       const currentIndex = this.getCurrentIndex(startTime);
       this.setState(({ speed, drawProps }) => {

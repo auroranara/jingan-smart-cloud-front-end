@@ -438,10 +438,10 @@ export default class RealTime extends PureComponent {
     });
   };
 
-  handleTrack = (areaId, cardId) => {
+  handleTrack = (areaId, cardId, userId) => {
     const { setSelectedCard, handleLabelClick } = this.props;
     this.setAreaId(areaId);
-    setSelectedCard(cardId);
+    setSelectedCard(cardId, userId);
     handleLabelClick(1);
   };
 
@@ -455,11 +455,12 @@ export default class RealTime extends PureComponent {
       labelIndex,
       companyId,
       selectedCardId,
+      selectedUserId,
       areaInfoCache,
       personPosition: { sectionTree, positionList, positionAggregation, alarms },
       handleLabelClick,
       setSelectedCard,
-      setHistoryCard,
+      setHistoryRecord,
     } = this.props;
     const {
       alarmId,
@@ -516,10 +517,11 @@ export default class RealTime extends PureComponent {
               <CardSelected
                 dispatch={dispatch}
                 cardId={selectedCardId}
+                userId={selectedUserId}
                 areaInfo={areaInfo}
                 positions={positionList}
                 setSelectedCard={setSelectedCard}
-                setHistoryCard={setHistoryCard}
+                setHistoryRecord={setHistoryRecord}
                 handleLabelClick={handleLabelClick}
               />
             )}
