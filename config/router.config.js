@@ -1571,6 +1571,18 @@ module.exports = env => {
                   path: '/personnel-position/beacon-management/company/:companyId',
                   component: './PersonnelPosition/BeaconManagement/CompanyBeacon',
                 },
+                {
+                  name: 'add',
+                  code: 'personnelPosition.beaconManagement.add',
+                  path: '/personnel-position/beacon-management/company/:companyId/beacon/add',
+                  component: './PersonnelPosition/BeaconManagement/BeaconHandler',
+                },
+                {
+                  name: 'edit',
+                  code: 'personnelPosition.beaconManagement.edit',
+                  path: '/personnel-position/beacon-management/company/:companyId/beacon/edit/:id',
+                  component: './PersonnelPosition/BeaconManagement/BeaconHandler',
+                },
               ],
             },
             /* 标签管理 */
