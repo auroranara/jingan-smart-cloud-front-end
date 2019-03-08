@@ -209,14 +209,14 @@ export default class SectionList extends PureComponent {
         dataIndex: 'count',
         // width: '30%',
       },
-      // {
-      //   title: '进入人次',
-      //   dataIndex: 'inCardCount',
-      // },
-      // {
-      //   title: '出去人次',
-      //   dataIndex: 'outCardCount',
-      // },
+      {
+        title: '进入人次',
+        dataIndex: 'inCardCount',
+      },
+      {
+        title: '出去人次',
+        dataIndex: 'outCardCount',
+      },
       {
         title: '状态',
         dataIndex: 'status',
