@@ -18,7 +18,7 @@ export default class BeaconCoordinate extends PureComponent {
     }
   }
 
-  resetData =  () => {
+  resetData = () => {
     const { value } = this.props;
     let data;
     if (value) {
@@ -31,7 +31,7 @@ export default class BeaconCoordinate extends PureComponent {
         data,
       },
     }));
-  }
+  };
 
   resetDrawProps = () => {
     const { image } = this.props;
@@ -42,15 +42,9 @@ export default class BeaconCoordinate extends PureComponent {
       if (+mapHierarchy === 1) {
         companyUrl = floorUrl;
         range = {
-          latlngs: [
-            { lat: 0, lng: 0 },
-            { lat: 1, lng: 0 },
-            { lat: 1, lng: 1 },
-            { lat: 0, lng: 1 },
-          ],
+          latlngs: [{ lat: 0, lng: 0 }, { lat: 1, lng: 0 }, { lat: 1, lng: 1 }, { lat: 0, lng: 1 }],
         };
-      }
-      else {
+      } else {
         companyUrl = JSON.parse(companyMapUrl).url;
         range = JSON.parse(jsonMap);
       }
@@ -66,31 +60,33 @@ export default class BeaconCoordinate extends PureComponent {
           reference: item,
         },
       });
-    }
-    else {
+    } else {
       this.setState({ drawProps: {} });
     }
-  }
+  };
 
   handleUpdate = ([item]) => {
     const { onChange } = this.props;
     if (onChange) {
       if (item) {
-        const { latlng: { lat: yarea, lng: xarea } } = item;
-        const { image: { floorNumber: zarea } } = this.props;
+        const {
+          latlng: { lat: yarea, lng: xarea },
+        } = item;
+        const {
+          image: { floorNumber: zarea },
+        } = this.props;
         onChange({ yarea, xarea, zarea });
-      }
-      else {
+      } else {
         onChange(undefined);
       }
     }
-  }
+  };
 
   render() {
     const { image } = this.props;
     const { drawProps } = this.state;
     return (
-      <div style={{ height: image?'auto':32, overflow: 'hidden' }}>
+      <div style={{ height: image ? 'auto' : 32, overflow: 'hidden' }}>
         {!image && <div>请先选择所属地图</div>}
         <ImageDraw
           style={{ backgroundColor: '#ccc', height: 400 }}
