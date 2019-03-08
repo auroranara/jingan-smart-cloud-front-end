@@ -22,7 +22,9 @@ import DrawerOfHiddenDanger from './Sections/DrawerOfHiddenDanger';
 import ModalOfFireHost from './Sections/ModalOfFireHost';
 import ModalOfInspectionStatistics from './Sections/ModalOfInspectionStatistics';
 import WaterMonitor from './Sections/WaterMonitor';
-
+import HydrantDrawer from './Sections/HydrantDrawer';
+import PistolDrawer from './Sections/PistolDrawer';
+import PondDrawer from './Sections/PondDrawer';
 import styles from './UnitFireControl.less';
 const { projectName } = global.PROJECT_CONFIG;
 /**
@@ -107,11 +109,13 @@ export default class App extends PureComponent {
       dangerCardVisible: false, // 巡查统计数据下钻显示的隐患卡片
       hiddenDangerLabel: '', // 点击隐患统计时保存类型（已超期、待复查、未超期）
       pendingInfoLoading: true, // 待办事项是否加载
+      hydrantDrawerVisible: false,
+      pistolDrawerVisible: false,
+      pondDrawerVisible: false,
     };
     // 轮询定时器
     this.pollingTimer = null;
   }
-
   /**
    * 挂载后声明周期函数
    */
@@ -1143,6 +1147,14 @@ export default class App extends PureComponent {
     );
   };
 
+  handleDrawerVisibleChange = (name, rest) => {
+    const stateName = `${name}DrawerVisible`;
+    this.setState(state => ({
+      [stateName]: !state[stateName],
+      ...rest,
+    }));
+  };
+
   /**
    * 渲染函数
    */
@@ -1176,8 +1188,10 @@ export default class App extends PureComponent {
       inspectionCurrentList,
       dangerCardVisible,
       hiddenDangerLabel,
+      hydrantDrawerVisible,
+      pistolDrawerVisible,
+      pondDrawerVisible,
     } = this.state;
-
     return (
       <BigPlatformLayout extra={companyName} className={styles.root}>
         <div className={styles.unitFileControl}>
@@ -1196,7 +1210,7 @@ export default class App extends PureComponent {
                   </div>
                   <div style={{ height: '51.08%' }}>
                     {/* 水系统监测 */}
-                    <WaterMonitor />
+                    <WaterMonitor handleDrawerVisibleChange={this.handleDrawerVisibleChange} />
                   </div>
                 </div>
                 {/* 历史信息 */}
@@ -1280,6 +1294,21 @@ export default class App extends PureComponent {
             cardVisible={dangerCardVisible}
             handleChangeDangerCardVisible={this.handleChangeDangerCardVisible}
             moreLoading={inspectionMoreLoading}
+          />
+          {/* 消火栓系统 */}
+          <HydrantDrawer
+            visible={hydrantDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('hydrant')}
+          />
+          {/* 自动喷淋系统 */}
+          <PistolDrawer
+            visible={pistolDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('pistol')}
+          />
+          {/* 水池/水箱 */}
+          <PondDrawer
+            visible={pondDrawerVisible}
+            onClose={() => this.handleDrawerVisibleChange('pond')}
           />
         </div>
       </BigPlatformLayout>

@@ -43,6 +43,7 @@ export default class ChartGauge extends PureComponent {
           axisLine: {
             lineStyle: {
               width: 2,
+              length: 10,
               color: [
                 [(normalMin - min) / max, '#ff4905'],
                 [(normalMax - min) / max, '#1e90ff'],
@@ -51,10 +52,11 @@ export default class ChartGauge extends PureComponent {
             },
           },
           splitLine: {
-            length: 12,
+            length: 8,
             lineStyle: { color: '#fff' },
           },
           axisTick: {
+            length: 5,
             lineStyle: { color: 'auto' },
           },
           pointer: { width: 4 },

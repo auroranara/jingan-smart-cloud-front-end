@@ -106,13 +106,20 @@ export default class FireHostMonitoring extends PureComponent {
   };
 
   render() {
-    const {} = this.props;
+    const { handleDrawerVisibleChange } = this.props;
     const { type } = this.state;
     return (
       <Section title="水系统监测">
         <div className={styles.WaterMonitor}>
           {this.renderTabs()}
-          <Row className={styles.itemsWrapper}>
+          <Row
+            className={styles.itemsWrapper}
+            onClick={() => {
+              if (type === '0') handleDrawerVisibleChange('hydrant');
+              if (type === '1') handleDrawerVisibleChange('pistol');
+              if (type === '2') handleDrawerVisibleChange('pond');
+            }}
+          >
             {type !== '2' && this.renderHydrant()}
             {type === '2' && this.renderPond()}
           </Row>
