@@ -1,5 +1,4 @@
-import { getList, getLatest, getTree } from '../services/position';
-import { queryInitialPositions } from '../services/bigPlatform/personPosition';
+import { getList, getLatest, getTree, getPeople } from '../services/position';
 
 // 格式化树
 function formatTree(list, parentName) {
@@ -80,7 +79,7 @@ export default {
     },
     tree: {},
     originalTree: [],
-    cards: [],
+    people: [],
   },
 
   effects: {
@@ -110,14 +109,15 @@ export default {
         callback(response);
       }
     },
-    // 获取所有的卡
-    *fetchAllCards({ payload, callback }, { call, put }) {
-      const response = yield call(queryInitialPositions, payload);
-      const { code=500, data } = response || {};
+    // 获取人员列表
+    *fetchPeople({ payload, callback }, { call, put }) {
+      const response = yield call(getPeople, payload);
+      const { code, data={} } = response || {};
       if (code === 200) {
-        const list = data && Array.isArray(data.list) ? data.list: [];
-        callback && callback(list);
-        yield put({ type: 'saveCards', payload: list });
+        const { list } = data || {};
+        const people = list || [];
+        yield put({ type: 'save', payload: { people } });
+        callback && callback(people);
       }
     },
   },
@@ -125,9 +125,6 @@ export default {
   reducers: {
     save(state, { payload }) {
       return { ...state, ...payload };
-    },
-    saveCards(state, action) {
-      return { ...state, cards: action.payload };
     },
   },
 };
