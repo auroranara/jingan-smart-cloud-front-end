@@ -48,12 +48,13 @@ export default {
       }
       if (result.every(item => item && item.code === 200)) {
         const [{ data: { list: images } }, { data: { list: systems } }, { data: detail={} }={}] = result;
+        const payload = { detail, images, systems, imagesMap: formatImages(images) };
         yield put({
           type: 'save',
-          payload: { detail, images, systems, imagesMap: formatImages(images) },
+          payload,
         });
         if (callback) {
-          callback(true);
+          callback(payload);
         }
       }
       else if (callback) {

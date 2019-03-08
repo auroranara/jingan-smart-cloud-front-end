@@ -24,10 +24,10 @@ export default class ImageSelect extends PureComponent {
 
   // 确定选择图片
   handleImageModalOk = () => {
-    const { onChange, onSelect, value } = this.props;
+    const { onChange, onSelect, value, imagesMap } = this.props;
     const { currentMapId } = this.state;
     this.setState({ visible: false });
-    onSelect && onSelect(value !== currentMapId);
+    onSelect && onSelect(imagesMap[currentMapId], value !== currentMapId);
     onChange && onChange(currentMapId);
   }
 
@@ -37,15 +37,15 @@ export default class ImageSelect extends PureComponent {
   }
 
   render() {
-    const { value, images=[], imagesMap={} } = this.props;
+    const { images=[], image } = this.props;
     const { currentMapId, visible } = this.state;
-    const image = imagesMap[value] && JSON.parse(imagesMap[value].mapPhoto);
+    const imageUrl = image && JSON.parse(image.mapPhoto).url;
 
     return (
       <Fragment>
         <div
           className={styles.imageSelect}
-          style={{ background: image?`url(${image.url}) no-repeat center / contain`:`url('data:image/svg+xml;charset=utf8,${encodeURI('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" t="1551947157327" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" p-id="1105" width="48" height="48"><defs><style type="text/css"/></defs><path d="M469.333333 469.333333V170.666667h85.333334v298.666666h298.666666v85.333334h-298.666666v298.666666h-85.333334v-298.666666H170.666667v-85.333334h298.666666z" fill="#999999" p-id="1106"/></svg>')}') no-repeat center / 36px` }}
+          style={{ background: imageUrl?`url(${imageUrl}) no-repeat center / contain`:`url('data:image/svg+xml;charset=utf8,${encodeURI('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" t="1551947157327" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" p-id="1105" width="48" height="48"><defs><style type="text/css"/></defs><path d="M469.333333 469.333333V170.666667h85.333334v298.666666h298.666666v85.333334h-298.666666v298.666666h-85.333334v-298.666666H170.666667v-85.333334h298.666666z" fill="#999999" p-id="1106"/></svg>')}') no-repeat center / 36px` }}
           onClick={this.handleShowImageModal}
         />
         <Modal

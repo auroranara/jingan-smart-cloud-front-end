@@ -27,6 +27,8 @@ export default class BeaconHandler extends PureComponent {
     this.state = {
       // 是否正在提交
       submitting: false,
+      // 当前选中的图片
+      image: undefined,
     };
     mapMutations(this, {
       namespace: 'beacon',
@@ -40,7 +42,12 @@ export default class BeaconHandler extends PureComponent {
 
   componentDidMount() {
     const { match: { params } } = this.props;
-    this.init(params);
+    this.init(params, (payload) => {
+      if (payload) {
+        const { detail: { mapId }={}, imagesMap={} } = payload;
+        this.handleSelectImage(imagesMap[mapId], mapId !== undefined);
+      }
+    });
   }
 
   // 返回上一页
@@ -87,9 +94,15 @@ export default class BeaconHandler extends PureComponent {
     });
   }
 
-  handleSelectImage = (isMapIdChanged) => {
+  /**
+   * 图片选择确认的钩子函数
+   * @param {object} image 当前选中的图片
+   * @param {boolean} isMapIdChanged 选中的图片是否发生变化
+   */
+  handleSelectImage = (image, isMapIdChanged) => {
     if (isMapIdChanged) {
       const { form: { setFieldsValue } } = this.props;
+      this.setState({ image });
       setFieldsValue({ coordinate: undefined });
     }
   }
@@ -115,10 +128,10 @@ export default class BeaconHandler extends PureComponent {
           id,
         },
       },
-      form: { getFieldDecorator, getFieldValue },
+      form: { getFieldDecorator },
       loading,
     } = this.props;
-    const { submitting } = this.state;
+    const { submitting, image } = this.state;
     // 标题
     const title = id ? '编辑信标' : '新增信标';
     // 面包屑
@@ -129,8 +142,6 @@ export default class BeaconHandler extends PureComponent {
       { title: '信标列表', name: '信标列表', href: `/personnel-position/beacon-management/company/${companyId}` },
       { title, name: title },
     ];
-    // 新的mapId
-    const newMapId = getFieldValue('mapId');
     return (
       <PageHeaderLayout
         breadcrumbList={breadcrumbList}
@@ -170,6 +181,7 @@ export default class BeaconHandler extends PureComponent {
                   rules: [{ required: true, message: '请选择所属单位' }],
                 })(
                   <ImageSelect
+                    image={image}
                     images={images}
                     imagesMap={imagesMap}
                     onSelect={this.handleSelectImage}
@@ -182,7 +194,7 @@ export default class BeaconHandler extends PureComponent {
                   rules: [{ required: true, message: '请选择信标位置' }],
                 })(
                   <BeaconCoordinate
-                    image={imagesMap[newMapId]}
+                    image={image}
                   />
                 )}
               </Form.Item>
