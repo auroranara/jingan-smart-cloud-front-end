@@ -239,7 +239,7 @@ export default class FireControlBigPlatform extends PureComponent {
     this.handleAlarmClick(alarmDetail);
   };
 
-  fetchInitLookUp = () => {
+  fetchInitLookUp = (isCountdownBack) => {
     const {
       dispatch,
       // match: { params: { gridId } },
@@ -251,8 +251,9 @@ export default class FireControlBigPlatform extends PureComponent {
       type: 'bigFireControl/fetchInitLookUp',
       payload: { gridId },
       callback: (flag, recordsId) => {
-        // flag用来判断状态，为2时，是有人正在查岗，自动跳转到正在查岗页面
-        if (myParseInt(flag) === AUTO_LOOKUP_ROTATE) {
+        // 倒计时结束翻过来时，不自动跳转到正在查岗，当初始化页面时，要根据flag用来判断状态，为2时，是有人正在查岗，自动跳转到正在查岗页面
+        // 所以当不是倒计时翻回来且有人正在查岗时才自动跳转到正在查岗
+        if (!isCountdownBack && myParseInt(flag) === AUTO_LOOKUP_ROTATE) {
           this.handleClickLookUp(true);
         }
 
@@ -348,7 +349,7 @@ export default class FireControlBigPlatform extends PureComponent {
     // 状态改为正在查岗
     this.setState({ isLookingUp: true });
 
-    // 开始轮询正在查岗数据(倒计时时候的数据)，可能会提早结束，所以轮询时判断返回的值，若提早结束，则直接赚回来
+    // 开始轮询正在查岗数据(倒计时时候的数据)，可能会提早结束，所以轮询时判断返回的值，若提早结束，则直接转回来
     this.lookingUpTimer = setInterval(() => {
       dispatch({
         type: 'bigFireControl/fetchCountdown',
@@ -371,6 +372,12 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState({ lookUpShow: OFF_GUARD, isLookUpRotated: true });
   };
 
+  // 正在查岗时从该页面点击返回按钮手动返回正面的单位查岗页面
+  handleLookingUpRotateBack = () => {
+    this.setState({ isLookUpRotated: false });
+    this.fetchInitLookUp(true);
+  };
+
   // 不传，默认false，则只是翻回来，传true，则是倒计时结束后，自动翻回来，清除轮询正在查岗数据的定时器，正在查岗状态改为false，并重新获取查岗历史记录
   handleLookUpRotateBack = (isCountdownBack = false) => {
     const {
@@ -389,8 +396,8 @@ export default class FireControlBigPlatform extends PureComponent {
     if (isCountdownBack) {
       this.setState({ isLookingUp: false });
       clearInterval(this.lookingUpTimer);
-      // 为了防止后台没有处理完，延迟一点发送请求
-      setTimeout(() => this.fetchInitLookUp(), 1000);
+      // 为了防止后台没有处理完，延迟一点发送请求，从倒计时页面翻回正面时，初始化正在查岗页面的数据时，不需要再自动翻转
+      setTimeout(() => this.fetchInitLookUp(isCountdownBack), 1000);
     }
   };
 
@@ -944,6 +951,7 @@ export default class FireControlBigPlatform extends PureComponent {
                     fetchLookUpVideo={this.fetchLookUpVideo}
                     handleVideoShow={this.handleVideoShow}
                     handleRotateBack={this.handleLookUpRotateBack}
+                    handleLookingUpRotateBack={this.handleLookingUpRotateBack}
                     handleVideoLookUpRotate={this.handleVideoLookUpRotate}
                   />
                 }
