@@ -132,6 +132,7 @@ export default {
       picture: [],
     },
     lookUp: {},
+    createTime: 0, // 倒计时开始时间
     countdown: {},
     offGuard: {},
     allCamera: [],
@@ -404,8 +405,11 @@ export default {
     saveLookUp(state, action) {
       return { ...state, lookUp: action.payload };
     },
+    // saveCreateTime(state, action) {
+    //   return { ...state, lookUp: { ...state.lookUp, createTime: action.payload } };
+    // },
     saveCreateTime(state, action) {
-      return { ...state, lookUp: { ...state.lookUp, createTime: action.payload } };
+      return { ...state, createTime: action.payload };
     },
     saveCountdown(state, action) {
       return { ...state, countdown: action.payload };

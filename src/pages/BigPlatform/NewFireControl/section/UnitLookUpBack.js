@@ -26,7 +26,7 @@ export default function(props) {
     lookUpShow,
     startLookUp,
     offGuardWarnLoading,
-    data: { lookUp: { createTime }, countdown, offGuard, videoLookUp },
+    data: { createTime, countdown, offGuard, videoLookUp },
     fetchLookUpVideo,
     handleRotateBack,
     handleLookingUpRotateBack, // 正在查岗时，点击右上角返回按钮时的返回

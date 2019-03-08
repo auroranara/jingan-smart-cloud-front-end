@@ -375,7 +375,7 @@ export default class FireControlBigPlatform extends PureComponent {
   // 正在查岗时从该页面点击返回按钮手动返回正面的单位查岗页面
   handleLookingUpRotateBack = () => {
     this.setState({ isLookUpRotated: false });
-    this.fetchInitLookUp(true);
+    // this.fetchInitLookUp(true);
   };
 
   // 不传，默认false，则只是翻回来，传true，则是倒计时结束后，自动翻回来，清除轮询正在查岗数据的定时器，正在查岗状态改为false，并重新获取查岗历史记录
@@ -729,6 +729,7 @@ export default class FireControlBigPlatform extends PureComponent {
         companyDanger,
         map,
         lookUp,
+        createTime, // 倒计时开始时间
         countdown,
         offGuard,
         alarmProcess,
@@ -944,7 +945,7 @@ export default class FireControlBigPlatform extends PureComponent {
                     gridId={gridId}
                     dispatch={dispatch}
                     videoVisible={videoVisible}
-                    data={{ lookUp, countdown, offGuard: newOffGuard, videoLookUp }}
+                    data={{ createTime, countdown, offGuard: newOffGuard, videoLookUp }}
                     lookUpShow={lookUpShow}
                     startLookUp={startLookUp}
                     offGuardWarnLoading={offGuardWarnLoading}
