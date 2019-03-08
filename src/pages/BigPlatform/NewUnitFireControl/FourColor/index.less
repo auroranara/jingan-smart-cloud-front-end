@@ -1,3 +1,50 @@
+/* 下拉框 */
+div.fourColorImgSelect {
+  position: absolute;
+  top: 11.2963%;
+  left: 22%;
+  color: #fff;
+  z-index: 999;
+
+  :global {
+    .ant-select-selection {
+      background-color: transparent;
+      border-radius: 32px;
+      border-color: #00ffff;
+    }
+    .ant-select-selection__rendered {
+      margin-left: 15px;
+      margin-right: 15px;
+    }
+    .ant-select-arrow {
+      color: #00ffff;
+    }
+    .ant-select-selection-selected-value {
+      padding-right: 16px;
+    }
+  }
+}
+div.fourColorImgSelectDropDown {
+  padding: 4px 0;
+  background-color: rgb(3, 48, 105);
+  border: 1px solid #00ffff;
+
+  :global {
+    .ant-select-dropdown-menu-item {
+      padding-left: 15px;
+      padding-right: 15px;
+      color: #fff;
+      font-weight: normal;
+      border-radius: 0;
+      background-color: rgb(3, 48, 105);
+
+      &:hover {
+        color: #00ffff;
+        background-color: #04407d;
+      }
+    }
+  }
+}
 .container {
   position: relative;
   // padding: 0 15%;

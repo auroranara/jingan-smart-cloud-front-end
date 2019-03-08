@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
-// import { Tooltip } from 'antd';
+import { Select } from 'antd';
 import moment from 'moment';
-import { Marker, Popup } from 'react-leaflet';
+import { Marker } from 'react-leaflet';
 import ImageDraw, { L } from '@/components/ImageDraw';
 import VideoPlay from '../../FireControl/section/VideoPlay.js';
 
@@ -14,6 +14,8 @@ import newLegendAbnormal from '@/assets/new-legend-abnormal.png';
 
 import styles from './index.less';
 
+const { Option } = Select;
+
 /**
  * description: 点位巡查统计
  * author: sunkai
@@ -24,21 +26,56 @@ export default class FourColor extends PureComponent {
     videoVisible: false,
     videoKeyId: '',
     data: [],
+    // 当前选中的四色图
+    selectedFourColorImg: {},
+    // 当前图上的points源数据
+    points: [],
   };
 
-  componentDidUpdate({ model: { companyMessage: prevCompanyMessage, firePoint: prevFirePoint, videoFireList: prevVideoFireList } }) {
-    const { model: { companyMessage, firePoint, videoFireList } } = this.props;
+  componentDidUpdate({ model: { companyMessage: prevCompanyMessage, firePoint: prevFirePoint, videoFireList: prevVideoFireList }, latestHiddenDangerId: prevLatestHiddenDangerId }) {
+    const { model: { companyMessage, firePoint, videoFireList }, latestHiddenDangerId } = this.props;
     // 当四色图或数据源发生变化，重置state中的data
     if (companyMessage !== prevCompanyMessage || firePoint !== prevFirePoint || videoFireList !== prevVideoFireList) {
-      const { fireIchnographyUrl: [{ id } = {}] = [] } = companyMessage;
-      const points = firePoint.filter(({ fix_fire_id }) => fix_fire_id && fix_fire_id === id).map(item => ({ ...item, type: 'marker', name: item.object_title, latlng: { lat: 1 - item.y_fire, lng: +item.x_fire }, render: this.renderPoint }));
-      const videos = videoFireList.filter(({ fix_fire_id }) => fix_fire_id && fix_fire_id === id).map(item => ({ ...item, type: 'marker', name: item.name, latlng: { lat: 1 - item.y_fire, lng: +item.x_fire }, render: this.renderVideo }));
-      this.setState({
-        points,
-        data: [...points,...videos],
-      });
+      // 初始化选中第一张图
+      const { fireIchnographyUrl=[] } = companyMessage;
+      this.setSelectedFourColorImg(fireIchnographyUrl[0]);
+    }
+    if (latestHiddenDangerId !== prevLatestHiddenDangerId) {
+      // 找到对应的点位
+      const point = firePoint.find(({ item_id }) => item_id === latestHiddenDangerId);
+      if (point) {
+        // 找到对应的图片
+        const { fix_fire_id } = point;
+        const { fireIchnographyUrl=[] } = companyMessage;
+        const image = fireIchnographyUrl.find(({ id }) => id === fix_fire_id);
+        const { selectedFourColorImg } = this.state;
+        if (image !== selectedFourColorImg) {
+          this.setSelectedFourColorImg(image);
+        }
+      }
     }
   }
+
+  /**
+   * 设置选中的四色图并筛选出对应的点位和视频
+   */
+  setSelectedFourColorImg = (selectedFourColorImg={}) => {
+    const { id } = selectedFourColorImg;
+    const {
+      model: {
+        firePoint=[],
+        videoFireList=[],
+      },
+    } = this.props;
+    // 更新选中的四色图和对应视频列表
+    const points = firePoint.filter(({ fix_fire_id }) => fix_fire_id && fix_fire_id === id).map(item => ({ ...item, type: 'marker', name: item.object_title, latlng: { lat: 1 - item.y_fire, lng: +item.x_fire }, render: this.renderPoint }));
+    const videos = videoFireList.filter(({ fix_fire_id }) => fix_fire_id && fix_fire_id === id).map(item => ({ ...item, type: 'marker', name: item.name, latlng: { lat: 1 - item.y_fire, lng: +item.x_fire }, render: this.renderVideo }));
+    this.setState({
+      points,
+      data: [...points,...videos],
+      selectedFourColorImg,
+    });
+  };
 
   handleShowVideo = videoKeyId => {
     this.setState({ videoVisible: true, videoKeyId });
@@ -59,36 +96,6 @@ export default class FourColor extends PureComponent {
     }
   }
 
-  // handleAddPoint = ({ target: layer }) => {
-  //   const { options: { data: { object_title, checkName, check_date, dangerCount, status } } } = layer;
-  //   // 是否为异常状态
-  //   const isAbnormal = status === 2;
-  //   // 是否已检查
-  //   const isChecked = !!status;
-  //   layer.bindTooltip(`
-  //     <div>
-  //       <div>
-  //         点位名称：${object_title}
-  //       </div>
-  //       ${isChecked ? `
-  //         <div>
-  //           状<span style="opacity: 0;">隐藏</span>态：${isAbnormal ? '<span style="color: #ff4848">异常</span>' : '正常'}
-  //         </div>
-  //       ` : ''}
-  //       ${isChecked ? `
-  //         <div>
-  //           最近检查：${checkName ? checkName : '暂无数据'} ${check_date ? moment(check_date).format('YYYY-MM-DD') : ''}
-  //         </div>
-  //       ` : ''}
-  //       ${isAbnormal ? `
-  //         <div>
-  //           隐患数量：${dangerCount ? dangerCount : 0}
-  //         </div>
-  //       ` : ''}
-  //     </div>
-  //   `, { direction: 'right', offset: [24, 0] });
-  // }
-
   handleAddVideo = ({ target: layer }) => {
     const { options: { data: { name } } } = layer;
     layer.bindTooltip(name, { direction: 'top', offset: [0, -48]/* , permanent: true */ });
@@ -101,8 +108,14 @@ export default class FourColor extends PureComponent {
     }
   }
 
-  handleAddMarkerTooltip = ({ target: { _map: map, _latlng: latlng } }) => {
-    map.panTo(latlng);
+  /**
+   * 自动移动到有隐患的点位
+   */
+  handleAddMarkerTooltip = ({ target: { _map: map, _latlng: latlng, options: { data: { item_id } } } }) => {
+    const { latestHiddenDangerId } = this.props;
+    if (item_id === latestHiddenDangerId) {
+      map.panTo(latlng);
+    }
   }
 
   handlePointMouseOver = ({ target: layer }) => {
@@ -138,6 +151,48 @@ export default class FourColor extends PureComponent {
 
   handlePointMouseLeave = ({ target: layer }) => {
     layer.unbindTooltip();
+  }
+
+  /**
+   * 下拉框选择事件
+   */
+  handleSelect = (id, { props: { data } }) => {
+    this.setSelectedFourColorImg(data);
+  };
+
+  /**
+   * 下拉框
+   */
+  renderSelect() {
+    const {
+      model: {
+        // 企业信息中获取四色图
+        companyMessage: { fireIchnographyUrl = [] } = {},
+      },
+    } = this.props;
+    //  从state中获取当前选中的四色图id
+    const {
+      selectedFourColorImg: { id: selectedFourColorImgId },
+    } = this.state;
+    // 当四色图的数量大于1时才显示下拉框
+    return fireIchnographyUrl.length > 1 ? (
+      <Select
+        value={selectedFourColorImgId}
+        onSelect={this.handleSelect}
+        className={styles.fourColorImgSelect}
+        dropdownClassName={styles.fourColorImgSelectDropDown}
+      >
+        {fireIchnographyUrl.map(item => {
+          const { id, fileName = '未命名' } = item;
+          const isSelected = selectedFourColorImgId === id;
+          return (
+            <Option key={id} value={id} data={item} style={{ color: isSelected && '#00ffff' }}>
+              {fileName.split('.')[0]}
+            </Option>
+          );
+        })}
+      </Select>
+    ) : null;
   }
 
   renderPoint = (item, other) => {
@@ -215,21 +270,12 @@ export default class FourColor extends PureComponent {
   render() {
     const {
       model: {
-        companyMessage: { fireIchnographyUrl: [{ id, webUrl } = {}] = [] },
-        // pointList = [],
-        // firePoint = [],
         // 视频列表
-        // videoList = [],
         videoFireList = [],
       },
       tips = {},
-      // // 显示点位信息
-      // handleShowPointDetail,
-      // // 显示点位隐患
-      // handleShowHiddenDanger,
     } = this.props;
-
-    const { videoVisible, videoKeyId, data } = this.state;
+    const { videoVisible, videoKeyId, data, selectedFourColorImg: { webUrl }={} } = this.state;
 
     return (
       <div className={styles.container}>
@@ -243,123 +289,7 @@ export default class FourColor extends PureComponent {
           tips={tips}
           mapProps={{ scrollWheelZoom: false }}
         />
-        {/* {points.map(
-          ({
-            item_id,
-            x_fire,
-            y_fire,
-            object_title,
-            status,
-            checkName,
-            check_date,
-            dangerCount,
-          }) => {
-            const isAbnormal = status === 2;
-            const isChecked = !!status;
-            const showTip = !!tips[item_id];
-            // const showTip = true;
-            return (
-              <Tooltip
-                overlayClassName={showTip ? styles.alarmTooltip : undefined}
-                placement="top"
-                title={
-                  <div>
-                    有一条新的隐患！
-                    <span
-                      className={styles.alarm}
-                      onClick={() => {
-                        handleShowHiddenDanger(item_id, tips[item_id]);
-                      }}
-                    >
-                      详情>>
-                    </span>
-                  </div>
-                }
-                key={item_id}
-                visible={showTip}
-              >
-                <Tooltip
-                  placement="rightTop"
-                  title={
-                    <div>
-                      <div>
-                        点位名称：
-                        {object_title}
-                      </div>
-                      {isChecked && (
-                        <div>
-                          状<span style={{ opacity: '0' }}>隐藏</span>
-                          态：
-                          {isAbnormal ? <span style={{ color: '#ff4848' }}>异常</span> : '正常'}
-                        </div>
-                      )}
-                      {isChecked && (
-                        <div>
-                          最近检查：
-                          {checkName} {moment(check_date).format('YYYY-MM-DD')}
-                        </div>
-                      )}
-                      {isAbnormal && (
-                        <div>
-                          隐患数量：
-                          {dangerCount}
-                        </div>
-                      )}
-                    </div>
-                  }
-                  key={item_id}
-                >
-                  <div
-                    key={item_id}
-                    style={{
-                      position: 'absolute',
-                      left: `${x_fire * 100}%`,
-                      bottom: `${(1 - y_fire) * 100}%`,
-                      width: 33,
-                      height: 43,
-                      transform: 'translateX(-50%)',
-                      // background: `url(${isAbnormal?newPointAbnormal:newPointNormal}) no-repeat center center / auto 100%`,
-                      // borderRadius: '50%',
-                      cursor: 'pointer',
-                      zIndex: isAbnormal ? 2 : 1,
-                    }}
-                    onClick={() => {
-                      handleShowPointDetail(item_id, status, object_title);
-                    }}
-                  >
-                    <img
-                      src={isAbnormal || showTip ? newPointAbnormal : newPointNormal}
-                      alt=""
-                      style={{ width: '100%', height: '100%', verticalAlign: 'top' }}
-                    />
-                    <div className={showTip ? styles.animated : undefined} />
-                    <div className={showTip ? `${styles.animated} ${styles.delay}` : undefined} />
-                  </div>
-                </Tooltip>
-              </Tooltip>
-            );
-          }
-        )}
-        {videos.map(({ id, key_id, x_fire, y_fire, name }) => (
-          <Tooltip placement="top" title={name} key={id}>
-            <div
-              key={id}
-              style={{
-                position: 'absolute',
-                left: `${x_fire * 100}%`,
-                bottom: `${(1 - y_fire) * 100}%`,
-                width: 33,
-                height: 43,
-                transform: 'translateX(-50%)',
-                background: `url(${newVideo}) no-repeat center center / auto 100%`,
-                cursor: 'pointer',
-              }}
-              onClick={() => {
-                this.handleShowVideo(key_id);
-              }}
-            />
-          </Tooltip>
-        ))} */}
+        {this.renderSelect()}
         <div className={styles.legendWrapper}>
           <div className={styles.legend}>
             <div className={styles.legendItem}>

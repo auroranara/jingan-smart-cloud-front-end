@@ -136,6 +136,8 @@ export default class App extends PureComponent {
     maintenanceTitle: '维保处理动态',
     processIds: [],
     fireProcessIds: [],
+    // 最新一条隐患id
+    latestHiddenDangerId: undefined,
   };
 
   componentDidMount() {
@@ -212,11 +214,13 @@ export default class App extends PureComponent {
               } else if (fourColorTips[itemId]) {
                 this.setState({
                   fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+                  latestHiddenDangerId: itemId,
                   deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
                 });
               } else {
                 this.setState({
                   fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+                  latestHiddenDangerId: itemId,
                 });
               }
             }
@@ -351,17 +355,21 @@ export default class App extends PureComponent {
         const { fourColorTips, deletedFourColorTips } = this.state;
         // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
         if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
-          // 如果前一条隐患还没消失，则移除前一条隐患
           if (fourColorTips[itemId] === messageFlag) {
             return;
-          } else if (fourColorTips[itemId]) {
+          }
+          // 如果前一条隐患还没消失，则移除前一条隐患
+          else if (fourColorTips[itemId]) {
             this.setState({
               fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+              latestHiddenDangerId: itemId,
               deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
             });
-          } else {
+          }
+          else {
             this.setState({
               fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+              latestHiddenDangerId: itemId,
             });
           }
         }
@@ -1036,6 +1044,7 @@ export default class App extends PureComponent {
       processIds,
       fireProcessIds,
       alarmDynamicMsgDrawerVisible,
+      latestHiddenDangerId,
     } = this.state;
 
     return (
@@ -1074,6 +1083,7 @@ export default class App extends PureComponent {
             this.removeFourColorTip(id, hiddenDangerId);
           }}
           tips={fourColorTips}
+          latestHiddenDangerId={latestHiddenDangerId}
         />
         <div className={styles.companyInfo}>
           <div className={styles.inner}>
