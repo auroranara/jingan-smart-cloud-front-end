@@ -1,7 +1,11 @@
 .content {
+  height: 100%;
+  overflow: hidden;
+
   .totalInfo {
     padding: 0 10px 10px 0;
     color: #fff;
+    height: 220px;
     position: relative;
 
     .title {
@@ -23,7 +27,7 @@
 .realTimeMonitor {
   width: 100%;
   padding-top: 16px;
-  height: 300px;
+  height: calc(100% - 220px);
   color: #fff;
 
   .titleLine {
@@ -43,80 +47,72 @@
   }
 
   .listContainer {
+    height: calc(100% - 52px);
+    margin-top: 20px;
     overflow-y: auto;
-    width: 100%;
-    margin-top: 15px;
+  }
 
-    .status {
-      position: relative;
-      right: 0;
-      top: 0;
-      width: 100%;
-      text-align: center;
-      transform: translate(50%, 0) translate(-10px, 10px) rotate(45deg);
-      transform-origin: 50% 0;
-      color: #fff;
-      background-color: #ff4848;
-      font-size: 12px;
-      line-height: 16px;
+  .card {
+    width: 98%;
+    display: flex;
+    border: 1px solid #04fdff;
+    color: #fff;
+    padding: 10px;
+
+    .picArea {
+      width: 100px;
+      height: 100%;
+      margin-top: 20px;
     }
 
-    .card {
-      display: inline-block;
-      width: calc(50% - 10px);
-      padding: 8px 5px 5px 0;
-      margin-left: 5px;
-      margin-right: 5px;
-      border: 1px solid #00FFFF;
-      line-height: 0;
-      overflow: hidden;
-      position: relative;
+    .pondBg {
+      width: 90px;
+      height: 90px;
+      margin-top: 3px;
+    }
 
-      .chartGauge {
-        width: 80px;
+    .itemContainer {
+      width: calc(100% - 100px);
+      flex: 1;
+      justify-content: space-around;
+      display: flex;
+      flex-direction: column;
+
+
+      .line {
+        display: block;
+        width: 100%;
+        font-size: 15px;
+        line-height: 1.7em;
+        height: 1.7em;
       }
 
-      .contentContainer {
-        margin-left: 80px;
-        width: calc(100% - 80px);
-        min-height: 110px;
-        line-height: 1em;
+      .lastLine {
+        margin: 5px 0;
+        // display: block;
+        width: 100%;
+        text-align: right;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
 
-        .line {
-          display: block;
-          width: 100%;
-          font-size: 15px;
-          line-height: 1.7em;
-          height: 1.7em;
+        .statusButton {
+          margin-right: 5px;
+          display: inline-block;
+          width: 54px;
+          height: 28px;
+          line-height: 26px;
+          border-radius: 5px;
+          border-width: 1px;
+          border-style: solid;
+          text-align: center;
         }
 
-        .lastLine {
-          margin: 5px 0;
-          // display: block;
-          width: 100%;
-          text-align: right;
-          position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-
-          .statusButton {
-            margin-right: 5px;
-            display: inline-block;
-            width: 54px;
-            height: 28px;
-            line-height: 26px;
-            border-radius: 5px;
-            border-width: 1px;
-            border-style: solid;
-            text-align: center;
-          }
-
-          .camera {
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-          }
+        .camera {
+          width: 30px;
+          height: 30px;
+          cursor: pointer;
         }
       }
     }
@@ -128,39 +124,4 @@
     margin-top: 20px;
     position: relative;
   }
-}
-
-.abnormalTrend {
-  width: 100%;
-
-  .titleLine {
-    height: 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-
-    &>div {
-      color: #fff;
-      height: 1.2em;
-      line-height: 1.2em;
-      padding-left: 0.5em;
-      border-left: 3px solid #00FBFC;
-      font-size: 1.2em;
-
-      span {
-        color: #4F6793;
-        font-size: 15.9px;
-      }
-    }
-  }
-
-  .chartContainer {
-    width: 100%;
-    height: 300px;
-  }
-}
-
-.ml10 {
-  margin-left: 10px;
 }

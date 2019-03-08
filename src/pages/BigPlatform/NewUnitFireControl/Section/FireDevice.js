@@ -53,6 +53,37 @@ export default class FireDevice extends PureComponent {
     });
   };
 
+  rendeAuto = () => {
+    const { onClick } = this.props;
+    const list = Array(7)
+      .fill(true)
+      .map((item, index) => {
+        return {
+          name: `点位名称${index + 1}`,
+          id: Math.floor(Math.random() * 666666666).toString(),
+          location: '1号楼',
+          value: 2 * Math.random().toFixed(2),
+          unit: 'MPa',
+          range: '0.02~0.09',
+        };
+      });
+    return list.map(item => {
+      const { name, value } = item;
+      return (
+        <Col span={12} className={styles.gaugeCol} onClick={() => onClick(1)}>
+          <ChartGauge
+            showName
+            showValue
+            name={name}
+            value={value}
+            range={[0, 2]}
+            normalRange={[0.4, 1.2]}
+          />
+        </Col>
+      );
+    });
+  };
+
   renderPond = () => {
     const { onClick } = this.props;
     const list = Array(7)
@@ -98,7 +129,7 @@ export default class FireDevice extends PureComponent {
           </div>
           <Row className={styles.itemsWrapper}>
             {type === '0' && this.renderHydrant()}
-            {type === '1' && this.renderHydrant()}
+            {type === '1' && this.rendeAuto()}
             {type === '2' && this.renderPond()}
           </Row>
         </div>
