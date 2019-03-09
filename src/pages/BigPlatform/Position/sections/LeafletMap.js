@@ -47,7 +47,7 @@ export default class LeafletMap extends PureComponent {
 
   handleMapData = () => {
     const { areaInfo, areaId, highlightedAreaId, sectionTree } = this.props;
-    const current = this.currentSection = findInTree(areaId, sectionTree);
+    const current = (this.currentSection = findInTree(areaId, sectionTree));
     if (!current) return;
 
     const currentInfo = areaInfo[areaId];
@@ -57,34 +57,33 @@ export default class LeafletMap extends PureComponent {
     const sectionChildren = children || [];
     let currentRange;
     // 多层建筑时，需要点击当前的框，所以需要填充，透明度变为0，普通区域时，由于返回图层覆盖的问题，所以fill改为false
-    if (isBuilding)
-      currentRange = { ...range, options: { ...range.options, fillOpacity: 0 } };
-    else
-      currentRange = { ...range, options: { ...range.options, fill: false } }
+    if (isBuilding) currentRange = { ...range, options: { ...range.options, fillOpacity: 0 } };
+    else currentRange = { ...range, options: { ...range.options, fill: false } };
+
     const reference = parseImage(current);
 
     // data会变红，所以不能使用一开始存好的值，但是图片是固定的，所以可以用一开始处理好的值
     let data;
     // 若当前区域为多层建筑或没有子区域，则只渲染当前区域
-    if (isBuilding || !sectionChildren.length)
-      data = [currentRange];
+    if (isBuilding || !sectionChildren.length) data = [currentRange];
     // 当前区域不是多层建筑，若有子节点，则渲染所有子节点(高亮的变蓝，报警的变红，其余变透明)
     else
       data = sectionChildren.reduce((prev, { id, range, status }) => {
         if (range) {
-            let newRange;
-            if (id === highlightedAreaId) // 高亮的变蓝，包括已经变红的，高亮的时候也变蓝
-                newRange = { ...range, options: { ...range.options, color: OPTIONS_BLUE } };
-            else if (+status === ALARM) // 报警的本身已经改成红色了，保持不变
-                newRange = range;
-            else // 不高亮及报警的都变成透明不可见，但可以点
-                newRange = { ...range, options: { ...range.options, color: 'transparent' } };
-            prev.push(newRange);
+          let newRange;
+          if (id === highlightedAreaId)
+            // 高亮的变蓝，包括已经变红的，高亮的时候也变蓝
+            newRange = { ...range, options: { ...range.options, color: OPTIONS_BLUE } };
+          else if (+status === ALARM)
+            // 报警的本身已经改成红色了，保持不变
+            newRange = range;
+          // 不高亮及报警的都变成透明不可见，但可以点
+          else newRange = { ...range, options: { ...range.options, color: 'transparent' } };
+          prev.push(newRange);
         }
         return prev;
-      }, parentId ? [currentRange] : []) // 最顶层的外框不显示
+      }, parentId ? [currentRange] : []); // 最顶层的外框不显示
 
-    // console.log('range', data, images, reference);
     this.setState({ data, images: areaInfo[areaId].images, reference });
   };
 
@@ -92,7 +91,6 @@ export default class LeafletMap extends PureComponent {
     const origin = e.target.options.data; // 获取传入的原始数据
     const { id } = origin; // 若点击的是人，原始数据中有id及name，若点击区域，原始数据中无id，只有name
     const clickedType = getMapClickedType(id);
-    // console.log(e, origin);
 
     // 0 区域 1 视频 2 人
     switch (clickedType) {
@@ -127,11 +125,9 @@ export default class LeafletMap extends PureComponent {
 
     // 有子区域
     // 如果当前所在区域为多层建筑，则跳出菜单选择楼层
-    if (isBuilding)
-      e.target.bindPopup(this.genChoiceList(children)).openPopup();
+    if (isBuilding) e.target.bindPopup(this.genChoiceList(children)).openPopup();
     // 不是多层建筑，则进入该区域
-    else
-      setAreaId(aId);
+    else setAreaId(aId);
   };
 
   handleClickVideo = id => {
@@ -192,8 +188,7 @@ export default class LeafletMap extends PureComponent {
     if (isTrack && selectedCardId) {
       const target = movingCards.find(({ cardId }) => cardId === selectedCardId);
       cards = target && currentAreas.includes(target.areaId) ? [target] : []; // 最后处理的是个聚合点，即二维数组
-    } else
-      cards = movingCards.filter(p => currentAreas.includes(p.areaId));
+    } else cards = movingCards.filter(p => currentAreas.includes(p.areaId));
 
     const icons = cards.map(p => {
       const { cardId, xarea, yarea, beaconId, cardType, onlineStatus } = p;
@@ -224,7 +219,15 @@ export default class LeafletMap extends PureComponent {
   };
 
   positionsToIcons = () => {
-    const { areaId, areaInfo, aggregation, isTrack, selectedCardId, positions, movingCards } = this.props;
+    const {
+      areaId,
+      areaInfo,
+      aggregation,
+      isTrack,
+      selectedCardId,
+      positions,
+      movingCards,
+    } = this.props;
     if (!areaId || !Object.keys(areaInfo).length || !aggregation.length) return [];
 
     let targetAgg = [];
@@ -236,10 +239,15 @@ export default class LeafletMap extends PureComponent {
     // 如果处于目标追踪标签且选定了追踪目标，则只渲染当前追踪的目标
     if (isTrack && selectedCardId) {
       const target = positions.find(({ cardId }) => cardId === selectedCardId);
-      targetAgg = target && !movingCardIds.includes(selectedCardId) && currentAreas.includes(target.areaId) ? [[target]] : []; // 最后处理的是个聚合点，即二维数组
+      targetAgg =
+        target && !movingCardIds.includes(selectedCardId) && currentAreas.includes(target.areaId)
+          ? [[target]]
+          : []; // 最后处理的是个聚合点，即二维数组
     } else
       targetAgg = aggregation
-        .map(ps => ps.filter(p => currentAreas.includes(p.areaId) && !movingCardIds.includes(p.cardId)))
+        .map(ps =>
+          ps.filter(p => currentAreas.includes(p.areaId) && !movingCardIds.includes(p.cardId))
+        )
         .filter(ps => ps.length);
 
     const points = targetAgg.map(ps => {
@@ -300,9 +308,8 @@ export default class LeafletMap extends PureComponent {
     //   return vs.length ? [...prev, ...vs] : prev;
     // }, []);
 
-    // console.log('agg', points);
     const movingIcons = this.movingCardsToIcons();
-    // console.log(movingIcons);
+
     // return points;
     return [...points, ...movingIcons];
   };
@@ -312,7 +319,7 @@ export default class LeafletMap extends PureComponent {
     const { data, images, reference } = this.state;
     // const { count, inCardCount, outCardCount } = this.currentTrueSection || {};
 
-    const currentAreaInfo = areaId && areaInfo[areaId] || {};
+    const currentAreaInfo = (areaId && areaInfo[areaId]) || {};
     const { parentId, fullName } = currentAreaInfo;
     const icons = this.positionsToIcons();
 
@@ -321,7 +328,6 @@ export default class LeafletMap extends PureComponent {
         <ImageDraw
           maxBoundsRatio={1.5}
           autoZoom
-          filled
           mapProps={{ scrollWheelZoom: false }}
           url={url}
           data={data}

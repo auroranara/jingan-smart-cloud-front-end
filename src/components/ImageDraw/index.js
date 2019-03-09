@@ -1,7 +1,17 @@
 import React, { PureComponent } from 'react';
 import { Modal, Input, Form } from 'antd';
-import { Map, FeatureGroup, ImageOverlay, Polygon, Circle, Rectangle, Marker, CircleMarker, ZoomControl } from 'react-leaflet';
-import { EditControl } from "react-leaflet-draw"
+import {
+  Map,
+  FeatureGroup,
+  ImageOverlay,
+  Polygon,
+  Circle,
+  Rectangle,
+  Marker,
+  CircleMarker,
+  ZoomControl,
+} from 'react-leaflet';
+import { EditControl } from 'react-leaflet-draw';
 import L from 'leaflet';
 
 import styles from './index.less';
@@ -127,11 +137,11 @@ const defaultFontColor = '#fff';
   /* eslint-disable */
   const originalUpdatePathRectangle = L.Rectangle.prototype._updatePath;
   L.Rectangle.include({
-    _updatePath: function () {
+    _updatePath: function() {
       if (this._path.parentNode && this.options.data && this.options.data.name) {
         const center = this._map.latLngToLayerPoint(this.getCenter());
         if (this._textNode && this._textNode.parentNode) {
-            this._path.parentNode.removeChild(this._textNode);
+          this._path.parentNode.removeChild(this._textNode);
         }
         // const zoom = this._map.getZoom();
         const textNode = L.SVG.create('text');
@@ -150,11 +160,11 @@ const defaultFontColor = '#fff';
   });
   const originalUpdatePathPolygon = L.Polygon.prototype._updatePath;
   L.Polygon.include({
-    _updatePath: function () {
+    _updatePath: function() {
       if (this._path.parentNode && this.options.data && this.options.data.name) {
         const center = this._map.latLngToLayerPoint(this.getCenter());
         if (this._textNode && this._textNode.parentNode) {
-            this._path.parentNode.removeChild(this._textNode);
+          this._path.parentNode.removeChild(this._textNode);
         }
         // const zoom = this._map.getZoom();
         const textNode = L.SVG.create('text');
@@ -169,15 +179,15 @@ const defaultFontColor = '#fff';
         this._textNode = textNode;
       }
       return originalUpdatePathPolygon.call(this);
-    }
+    },
   });
   const originalUpdatePathCircle = L.Circle.prototype._updatePath;
   L.Circle.include({
-    _updatePath: function () {
+    _updatePath: function() {
       if (this._path.parentNode && this.options.data && this.options.data.name) {
         const center = this._point;
         if (this._textNode && this._textNode.parentNode) {
-            this._path.parentNode.removeChild(this._textNode);
+          this._path.parentNode.removeChild(this._textNode);
         }
         // const zoom = this._map.getZoom();
         const textNode = L.SVG.create('text');
@@ -192,7 +202,7 @@ const defaultFontColor = '#fff';
         this._textNode = textNode;
       }
       return originalUpdatePathCircle.call(this);
-    }
+    },
   });
   /* eslint-enable */
 })();
@@ -220,7 +230,7 @@ class ImageDraw extends PureComponent {
     //   { name: '矩形', type: 'rectangle', latlngs: [{lat: 349, lng: 78}, {lat: 428, lng: 78},{lat: 428, lng: 140},{lat: 349, lng: 140}]},
     //   { name: '多边形', type: 'polygon', latlngs: [{lat: 0, lng: 0}, {lat: 100, lng: 100},{lat: 0, lng: 100}]},
     // ],
-  }
+  };
 
   // 暂时存放的图形对象
   layer = null;
@@ -249,26 +259,24 @@ class ImageDraw extends PureComponent {
     if (url !== prevUrl) {
       if (url) {
         this.dynamicInitMap(url);
-      }
-      else {
+      } else {
         // 当url不存在时，通过清除bounds来清除所有元素
         this.setState({ bounds: undefined });
       }
-    }
-    else if (reference !== prevReference) {
+    } else if (reference !== prevReference) {
       this.initReference();
     }
   }
 
   // 图形容器
-  refFeatureGroup = (drawnItems) => {
+  refFeatureGroup = drawnItems => {
     this.drawnItems = drawnItems;
-  }
+  };
 
   // 地图实例
-  refMap = (map) => {
+  refMap = map => {
     this.map = map;
-  }
+  };
 
   /**
    * 获取合适的zoom
@@ -279,36 +287,46 @@ class ImageDraw extends PureComponent {
     const { autoZoom } = this.props;
     let zoom = 0;
     if (autoZoom) {
-      const { clientWidth, clientHeight } =  this.map.container;
-      zoom = Math.floor(Math.log2(Math.min(clientWidth/width, clientHeight/height)));
+      const { clientWidth, clientHeight } = this.map.container;
+      zoom = Math.floor(Math.log2(Math.min(clientWidth / width, clientHeight / height)));
     }
     return zoom;
-  }
+  };
 
   /**
    * 动态初始化地图
    * @param {string} url 背景图片地址
    */
-  dynamicInitMap = (url) => {
+  dynamicInitMap = url => {
     const { filled } = this.props;
-    const { clientWidth, clientHeight } =  this.map.container;
+    const { clientWidth, clientHeight } = this.map.container;
+    console.log(clientWidth, clientHeight);
+
     // 如果使用填充效果
     if (filled) {
       // 按照容器的比例
       this.initMap(clientWidth, clientHeight);
-    }
-    else {
+    } else {
       // 按照图片本身的比例
       const image = new Image();
       image.src = url;
-      image.onload = (e) => {
+      image.onload = e => {
         const { width, height } = e.path[0];
+        console.log(width, height);
+
         // 计算适应容器的最大缩放比例
-        const ratio = Math.min(clientWidth/width, clientHeight/height);
-        this.initMap(width * ratio, height * ratio);
-      }
+        const widthRatio = clientWidth / width;
+        const heightRatio = clientHeight / height;
+        const ratio = Math.min(clientWidth / width, clientHeight / height);
+        console.log('ratio', ratio);
+
+        this.initMap(
+          widthRatio > heightRatio ? width * heightRatio : clientWidth,
+          widthRatio > heightRatio ? clientHeight : height * widthRatio
+        );
+      };
     }
-  }
+  };
 
   /**
    * 初始化地图
@@ -316,17 +334,22 @@ class ImageDraw extends PureComponent {
    * @param {number} height 坐标参考图片的高度
    */
   initMap = (width, height) => {
+    console.log('zoom', width, height);
+
     const { maxBounds, center, zoom } = this.getReferenceParams(width, height);
-    this.setState({
-      bounds: L.latLngBounds([0, 0], [height, width]),
-      maxBounds,
-    }, () => {
-      this.setState({
-        center,
-        zoom,
-      });
-    });
-  }
+    this.setState(
+      {
+        bounds: L.latLngBounds([0, 0], [height, width]),
+        maxBounds,
+      },
+      () => {
+        this.setState({
+          center,
+          zoom,
+        });
+      }
+    );
+  };
 
   /**
    * 初始化引用
@@ -334,18 +357,23 @@ class ImageDraw extends PureComponent {
   initReference = () => {
     const { bounds } = this.state;
     if (bounds) {
-      const { _northEast: { lat: height, lng: width } } = bounds;
+      const {
+        _northEast: { lat: height, lng: width },
+      } = bounds;
       const { maxBounds, center, zoom } = this.getReferenceParams(width, height);
-      this.setState({
-        maxBounds,
-      }, () => {
-        this.setState({
-          center,
-          zoom,
-        });
-      });
+      this.setState(
+        {
+          maxBounds,
+        },
+        () => {
+          this.setState({
+            center,
+            zoom,
+          });
+        }
+      );
     }
-  }
+  };
 
   /**
    * 获取引用相关参数，包括maxBounds，zoom，center
@@ -353,45 +381,58 @@ class ImageDraw extends PureComponent {
    * @param {number} height 坐标参考图片的高度
    */
   getReferenceParams = (width, height) => {
-    const { maxBoundsRatio=1, reference } = this.props;
+    const { maxBoundsRatio = 1, reference } = this.props;
     let center;
     let maxBounds;
     let zoom;
     // 如果reference存在，则使用reference数据计算最大边界及设置缩放等级以适应容器
     if (reference) {
       const { latlngs, radius, latLng } = reference;
+      console.log('latlngs', latlngs);
       if (radius) {
         center = latLng;
-        maxBounds = L.circle({ lat: latLng.lat*height, lng: latLng.lng*width }, radius*width).getBounds();
-      }
-      else {
-        maxBounds = L.latLngBounds(latlngs.map(({ lat, lng }) => ({ lat: lat * height, lng: lng * width })));
+        maxBounds = L.circle(
+          { lat: latLng.lat * height, lng: latLng.lng * width },
+          radius * width
+        ).getBounds();
+      } else {
+        maxBounds = L.latLngBounds(
+          latlngs.map(({ lat, lng }) => ({ lat: lat * height, lng: lng * width }))
+        );
         center = maxBounds.getCenter();
         center = { lat: center.lat / height, lng: center.lng / width };
       }
-      const { _southWest: { lat: lat1, lng: lng1 }, _northEast: { lat: lat2, lng: lng2 } } = maxBounds;
+      const {
+        _southWest: { lat: lat1, lng: lng1 },
+        _northEast: { lat: lat2, lng: lng2 },
+      } = maxBounds;
       const boundWidth = lng2 - lng1;
       const boundHeight = lat2 - lat1;
+      console.log('boundWidth', boundWidth);
+      console.log('boundHeight', boundHeight);
       zoom = this.getFitZoom(boundWidth, boundHeight);
       if (maxBoundsRatio !== 1) {
         maxBounds = L.latLngBounds(
-          [lat1 - boundHeight * (maxBoundsRatio-1), lng1 - boundWidth * (maxBoundsRatio-1)],
-          [lat2 + boundHeight * (maxBoundsRatio-1), lng2 + boundWidth * (maxBoundsRatio-1)]
+          [lat1 - boundHeight * (maxBoundsRatio - 1), lng1 - boundWidth * (maxBoundsRatio - 1)],
+          [lat2 + boundHeight * (maxBoundsRatio - 1), lng2 + boundWidth * (maxBoundsRatio - 1)]
         );
       }
     }
     // 否则使用url图片计算最大边界及设置缩放等级以适应容器
     else {
       center = { lat: 0.5, lng: 0.5 };
-      maxBounds = L.latLngBounds([-height * (maxBoundsRatio-1), -width * (maxBoundsRatio-1)], [height * maxBoundsRatio, width * maxBoundsRatio]);
+      maxBounds = L.latLngBounds(
+        [-height * (maxBoundsRatio - 1), -width * (maxBoundsRatio - 1)],
+        [height * maxBoundsRatio, width * maxBoundsRatio]
+      );
       zoom = this.getFitZoom(width, height);
     }
     return {
-      center: L.latLng(height*center.lat, width*center.lng),
+      center: L.latLng(height * center.lat, width * center.lng),
       maxBounds,
       zoom,
     };
-  }
+  };
 
   /**
    * 获取图形特征
@@ -399,19 +440,28 @@ class ImageDraw extends PureComponent {
    * @param {object} layer 图形对象
    */
   getShapeFeature = (type, layer) => {
-    const { bounds: { _northEast: { lat: height, lng: width }  } } = this.state;
+    const {
+      bounds: {
+        _northEast: { lat: height, lng: width },
+      },
+    } = this.state;
     const { _latlngs: latlngs, _latlng: latlng, _mRadius: radius } = layer;
-    switch(type) {
+    switch (type) {
       case 'polygon':
       case 'rectangle':
-      return { latlngs: latlngs[0].map(({ lat, lng }) => ({ lat: lat / height, lng: lng / width })) };
+        return {
+          latlngs: latlngs[0].map(({ lat, lng }) => ({ lat: lat / height, lng: lng / width })),
+        };
       case 'marker':
-      return { latlng: { lat: latlng.lat / height, lng: latlng.lng / width } };
+        return { latlng: { lat: latlng.lat / height, lng: latlng.lng / width } };
       case 'circle':
       case 'circlemarker':
-      return { latlng: { lat: latlng.lat / height, lng: latlng.lng / width }, radius: radius / width };
+        return {
+          latlng: { lat: latlng.lat / height, lng: latlng.lng / width },
+          radius: radius / width,
+        };
       default:
-      return undefined;
+        return undefined;
     }
   };
 
@@ -419,15 +469,14 @@ class ImageDraw extends PureComponent {
    * 验证名称是否重复
    */
   validateName = (rule, value, callback) => {
-    const { data=[] } = this.props;
+    const { data = [] } = this.props;
     const isExist = data.filter(({ name }) => name === value).length > 0;
     if (isExist) {
       callback('区域名称已存在');
-    }
-    else {
+    } else {
       callback();
     }
-  }
+  };
 
   /**
    * 插入新数据
@@ -435,19 +484,21 @@ class ImageDraw extends PureComponent {
    * @param {object} layer 图形对象
    * @param {string} name 图形名称
    */
-  pushData = (layerType, layer, name="") => {
-    const { data, onUpdate, limit=Infinity } = this.props;
+  pushData = (layerType, layer, name = '') => {
+    const { data, onUpdate, limit = Infinity } = this.props;
     const list = data || [];
     if (onUpdate && list.length < limit) {
-      onUpdate(list.concat({
-        type: layerType,
-        options: layer.options,
-        name,
-        ...this.getShapeFeature(layerType, layer),
-      }));
+      onUpdate(
+        list.concat({
+          type: layerType,
+          options: layer.options,
+          name,
+          ...this.getShapeFeature(layerType, layer),
+        })
+      );
     }
     this.handleCancel();
-  }
+  };
 
   /**
    * 点击绘制图形完成按钮
@@ -460,11 +511,10 @@ class ImageDraw extends PureComponent {
     if (namable) {
       // 显示设置区域名称弹出框
       this.setState({ visible: true });
-    }
-    else {
+    } else {
       this.pushData(layerType, layer);
     }
-  }
+  };
 
   /**
    * 点击修改图形完成按钮
@@ -475,19 +525,21 @@ class ImageDraw extends PureComponent {
       const editedList = Object.values(editedObj);
       if (editedList.length > 0) {
         const editedDataList = editedList.map(({ options: { data } }) => data);
-        onUpdate(data.map(item => {
-          const index = editedDataList.indexOf(item);
-          if (index > -1) {
-            return {
-              ...item,
-              ...this.getShapeFeature(item.type, editedList[index]),
-            };
-          }
-          return item;
-        }));
+        onUpdate(
+          data.map(item => {
+            const index = editedDataList.indexOf(item);
+            if (index > -1) {
+              return {
+                ...item,
+                ...this.getShapeFeature(item.type, editedList[index]),
+              };
+            }
+            return item;
+          })
+        );
       }
     }
-  }
+  };
 
   /**
    * 点击删除图形完成按钮或清空图形按钮
@@ -498,27 +550,29 @@ class ImageDraw extends PureComponent {
       const deletedList = Object.values(deletedObj);
       if (deletedList.length > 0) {
         const deletedDataList = deletedList.map(({ options: { data } }) => data);
-        onUpdate(data.filter((item) => deletedDataList.indexOf(item) === -1));
+        onUpdate(data.filter(item => deletedDataList.indexOf(item) === -1));
       }
     }
-  }
+  };
 
   /**
    * 点击图形
    */
-  handleClickShape = (e) => {
+  handleClickShape = e => {
     // 当图形处于正常状态时才触发点击事件
     if (!this.editing && !this.deleting && !this.drawing) {
       const { onClick } = this.props;
       onClick && onClick(e);
     }
-  }
+  };
 
   /**
    * 弹出框确定事件
    */
   handleOk = () => {
-    const { form: { validateFields } } = this.props;
+    const {
+      form: { validateFields },
+    } = this.props;
     validateFields(['name'], (errors, values) => {
       if (!errors) {
         const { name } = values;
@@ -526,26 +580,33 @@ class ImageDraw extends PureComponent {
         this.pushData(this.layerType, this.layer, name);
       }
     });
-  }
+  };
 
   /**
    * 弹出框取消事件
    */
   handleCancel = () => {
-    const { form: { setFieldsValue } } = this.props;
+    const {
+      form: { setFieldsValue },
+    } = this.props;
     // 清除绘制的图形
     this.drawnItems.leafletElement.removeLayer(this.layer);
     // 清除输入框内容
     setFieldsValue({ name: undefined });
     // 隐藏弹出框
     this.setState({ visible: false });
-  }
+  };
 
   /**
    * 数据源图形渲染以后
    */
   handleAdd = ({ target: layer }) => {
-    const { options: { data: { type, name, showTooltip } }, _point: point } = layer;
+    const {
+      options: {
+        data: { type, name, showTooltip },
+      },
+      _point: point,
+    } = layer;
     // 绑定tooltip
     showTooltip && layer.bindTooltip(name, { sticky: true });
     // 绑定文字
@@ -566,7 +627,7 @@ class ImageDraw extends PureComponent {
       layer._path.parentNode.appendChild(textNode);
       layer._textNode = textNode;
     }
-  }
+  };
 
   // /**
   //  * 删除状态下点击图形删除或点击清空按钮触发
@@ -586,38 +647,42 @@ class ImageDraw extends PureComponent {
     if (layer._textNode) {
       layer._textNode.parentNode.removeChild(layer._textNode);
     }
-  }
+  };
 
   handleEditStart = () => {
     this.editing = true;
-  }
+  };
 
   handleEditStop = () => {
     this.editing = false;
-  }
+  };
 
   handleDeleteStart = () => {
     this.deleting = true;
-  }
+  };
 
   handleDeleteStop = () => {
     this.deleting = false;
-  }
+  };
 
   handleDrawStart = () => {
     this.drawing = true;
-  }
+  };
 
   handleDrawStop = () => {
     this.drawing = false;
-  }
+  };
 
   /**
    * 渲染圆形标记
    */
-  renderCircleMarker = (item) => {
-    const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
-    const { id, latlng, name, options: { color=DEFAULT_COLOR }={} } = item;
+  renderCircleMarker = item => {
+    const {
+      bounds: {
+        _northEast: { lat: height, lng: width },
+      },
+    } = this.state;
+    const { id, latlng, name, options: { color = DEFAULT_COLOR } = {} } = item;
     return (
       <CircleMarker
         key={id || name}
@@ -627,13 +692,17 @@ class ImageDraw extends PureComponent {
         onClick={this.handleClickShape}
       />
     );
-  }
+  };
 
   /**
    * 渲染图标
    */
-  renderDivIcon = (item) => {
-    const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
+  renderDivIcon = item => {
+    const {
+      bounds: {
+        _northEast: { lat: height, lng: width },
+      },
+    } = this.state;
     const { id, latlng, name, iconProps } = item;
     return (
       <Marker
@@ -645,16 +714,34 @@ class ImageDraw extends PureComponent {
         onClick={this.handleClickShape}
       />
     );
-  }
+  };
 
   /**
    * 渲染图形
    */
-  renderShape = (item) => {
-    const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
-    const { id, latlngs, latlng, type, radius, name, render, options: { color=DEFAULT_COLOR, weight=DEFAULT_WEIGHT, fill=true, fillOpacity=0.2 }={} } = item;
+  renderShape = item => {
+    const {
+      bounds: {
+        _northEast: { lat: height, lng: width },
+      },
+    } = this.state;
+    const {
+      id,
+      latlngs,
+      latlng,
+      type,
+      radius,
+      name,
+      render,
+      options: {
+        color = DEFAULT_COLOR,
+        weight = DEFAULT_WEIGHT,
+        fill = true,
+        fillOpacity = 0.2,
+      } = {},
+    } = item;
     let shape = null;
-    switch(type){
+    switch (type) {
       case 'polygon': // 多边形
         shape = (
           <Polygon
@@ -705,7 +792,13 @@ class ImageDraw extends PureComponent {
         );
         break;
       case 'marker': // 标记
-        shape = render ? render(item, { position: { lat: latlng.lat * height, lng: latlng.lng * width }, onAdd: this.handleAdd, onClick: this.handleClickShape }) : (
+        shape = render ? (
+          render(item, {
+            position: { lat: latlng.lat * height, lng: latlng.lng * width },
+            onAdd: this.handleAdd,
+            onClick: this.handleClickShape,
+          })
+        ) : (
           <Marker
             key={id || name}
             data={item}
@@ -732,15 +825,27 @@ class ImageDraw extends PureComponent {
         break;
     }
     return shape;
-  }
+  };
 
   renderImageOverlay = ({ id, url, latlngs, zIndex }) => {
-    const { bounds: { _northEast: { lat: height, lng: width } } } = this.state;
-    const bounds = L.latLngBounds(latlngs.map(({ lat, lng }) => ({ lat: lat * height, lng: lng * width })));
-    return (
-      <ImageOverlay key={id} url={url} bounds={bounds} className={styles.imageOverlay} zIndex={zIndex} />
+    const {
+      bounds: {
+        _northEast: { lat: height, lng: width },
+      },
+    } = this.state;
+    const bounds = L.latLngBounds(
+      latlngs.map(({ lat, lng }) => ({ lat: lat * height, lng: lng * width }))
     );
-  }
+    return (
+      <ImageOverlay
+        key={id}
+        url={url}
+        bounds={bounds}
+        className={styles.imageOverlay}
+        zIndex={zIndex}
+      />
+    );
+  };
 
   render() {
     const {
@@ -748,18 +853,18 @@ class ImageDraw extends PureComponent {
       style,
       mapProps,
       zoomControlProps,
-      zoomControl=true,
+      zoomControl = true,
       editControlProps,
       drawable,
       url,
       hideBackground,
-      data=[],
-      divIcons=[],
+      data = [],
+      divIcons = [],
       circleMarkers,
       images,
       arrows,
-      color=DEFAULT_COLOR,
-      shapes=['polygon', 'rectangle', 'circle'],
+      color = DEFAULT_COLOR,
+      shapes = ['polygon', 'rectangle', 'circle'],
       form: { getFieldDecorator },
     } = this.props;
     const { center, bounds, visible, maxBounds, zoom } = this.state;
@@ -783,9 +888,21 @@ class ImageDraw extends PureComponent {
           // dragging={false}
           {...mapProps}
         >
-          {bounds && zoomControl && <ZoomControl zoomInTitle="" zoomOutTitle="" className={styles.zoomControl} {...zoomControlProps} />}
+          {bounds &&
+            zoomControl && (
+              <ZoomControl
+                zoomInTitle=""
+                zoomOutTitle=""
+                className={styles.zoomControl}
+                {...zoomControlProps}
+              />
+            )}
           {bounds && (
-            <ImageOverlay url={url} bounds={bounds} className={hideBackground?styles.hiddenImageOverlay:styles.imageOverlay}>
+            <ImageOverlay
+              url={url}
+              bounds={bounds}
+              className={hideBackground ? styles.hiddenImageOverlay : styles.imageOverlay}
+            >
               <FeatureGroup ref={this.refFeatureGroup} onLayerRemove={this.handleLayerRemove}>
                 {drawable && (
                   <EditControl
@@ -861,21 +978,22 @@ class ImageDraw extends PureComponent {
           <Form>
             <Form.Item label="请输入区域名称">
               {getFieldDecorator('name', {
-                rules: [{
-                  required: true,
-                  message: '区域名称不能为空',
-                }, {
-                  validator: this.validateName,
-                  message: '区域名称已存在',
-                }],
-              })(
-                <Input placeholder="请输入区域名称，名称不能重复" onPressEnter={this.handleOk} />
-              )}
+                rules: [
+                  {
+                    required: true,
+                    message: '区域名称不能为空',
+                  },
+                  {
+                    validator: this.validateName,
+                    message: '区域名称已存在',
+                  },
+                ],
+              })(<Input placeholder="请输入区域名称，名称不能重复" onPressEnter={this.handleOk} />)}
             </Form.Item>
           </Form>
         </Modal>
       </div>
-    )
+    );
   }
 }
 

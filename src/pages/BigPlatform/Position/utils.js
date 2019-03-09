@@ -167,8 +167,29 @@ export function findInTree(targetValue, list, prop = 'id') {
 }
 
 export function parseImage(section) {
-  let { id, mapPhoto, range } = section;
+  let { id, mapPhoto, range, parentId } = section;
   range = range || {};
+  if (parentId === '0') {
+    range.latlngs = [
+      {
+        lat: 0,
+        lng: 0,
+      },
+      {
+        lat: 1,
+        lng: 0,
+      },
+      {
+        lat: 1,
+        lng: 1,
+      },
+      {
+        lat: 0,
+        lng: 1,
+      },
+    ];
+  }
+
   return { id, url: mapPhoto.url, ...range };
 }
 
@@ -351,12 +372,9 @@ export function getUserName(item, showPrefix) {
   const { cardType, userName, visitorName } = item;
   const isVisitor = !!+cardType;
 
-  if (!isVisitor)
-    return userName || '未领';
-  if (showPrefix && visitorName)
-    return `访客-${visitorName}`;
-  if (!showPrefix && visitorName)
-    return visitorName;
+  if (!isVisitor) return userName || '未领';
+  if (showPrefix && visitorName) return `访客-${visitorName}`;
+  if (!showPrefix && visitorName) return visitorName;
   return '访客';
 }
 
@@ -397,13 +415,11 @@ export function getIconClassName(isSingle, isVisitor, isOnline, isAlarm) {
 }
 
 export function isCompanyMap(current) {
-  if (!current || !Object.keys(current).length)
-    return;
-
+  if (!current || !Object.keys(current).length) return;
 
   let { mapId, companyMap, parent } = current;
   // mapId不存在时，找到离其最近的父元素的mapId
-  while(!mapId && parent) {
+  while (!mapId && parent) {
     mapId = parent.mapId;
     parent = parent.parent;
   }
@@ -419,16 +435,13 @@ function animate(id, origin, target, move, callback) {
   const deltaY = y1 - y;
   let start = null;
   function step(timestamp) {
-    if (!start)
-      start = timestamp;
+    if (!start) start = timestamp;
     const progress = timestamp - start;
     if (progress < INTERVAL) {
       const percent = progress / INTERVAL;
       move(id, x + deltaX * percent, y + deltaY * percent);
       window.requestAnimationFrame(step);
-    }
-    else
-      callback(id);
+    } else callback(id);
   }
 
   window.requestAnimationFrame(step);
@@ -436,13 +449,18 @@ function animate(id, origin, target, move, callback) {
 
 const MAX_PAIR_NUM = 100;
 const DELTA = 0.0000001;
-export function handleOriginMovingCards(changedCards, prevCardList, originMovingCards, move, callback) {
+export function handleOriginMovingCards(
+  changedCards,
+  prevCardList,
+  originMovingCards,
+  move,
+  callback
+) {
   const movingCardIds = originMovingCards.map(({ cardId }) => cardId);
   for (const card of changedCards) {
     const { cardId, xarea, yarea } = card;
     // 移动的卡片超过一定数目时，忽略更多的卡片
-    if (originMovingCards.length >= MAX_PAIR_NUM)
-      break;
+    if (originMovingCards.length >= MAX_PAIR_NUM) break;
     // 当前移动的卡片位置或报警状态变化了，更新，忽略位置的变化，只保留状态的变化，位置使用当前moving的位置
     if (movingCardIds.includes(cardId)) {
       const index = originMovingCards.findIndex(({ cardId: id }) => id === cardId);
@@ -451,8 +469,7 @@ export function handleOriginMovingCards(changedCards, prevCardList, originMoving
     }
     const org = prevCardList.find(({ cardId: id }) => id === cardId);
     // 卡片新出现，之前列表中没有，忽略
-    if (!org)
-      continue;
+    if (!org) continue;
     const { xarea: xarea1, yarea: yarea1 } = org;
     // 新旧两个点之间的值大于一定距离时，才有动画效果
     if (Math.abs(xarea - xarea1) > DELTA || Math.abs(yarea - yarea1) > DELTA) {
