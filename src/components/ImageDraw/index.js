@@ -300,7 +300,7 @@ class ImageDraw extends PureComponent {
   dynamicInitMap = url => {
     const { filled } = this.props;
     const { clientWidth, clientHeight } = this.map.container;
-    console.log(clientWidth, clientHeight);
+    // console.log(clientWidth, clientHeight);
 
     // 如果使用填充效果
     if (filled) {
@@ -312,13 +312,13 @@ class ImageDraw extends PureComponent {
       image.src = url;
       image.onload = e => {
         const { width, height } = e.path[0];
-        console.log(width, height);
+        // console.log(width, height);
 
         // 计算适应容器的最大缩放比例
         const widthRatio = clientWidth / width;
         const heightRatio = clientHeight / height;
         const ratio = Math.min(clientWidth / width, clientHeight / height);
-        console.log('ratio', ratio);
+        // console.log('ratio', ratio);
 
         this.initMap(
           widthRatio > heightRatio ? width * heightRatio : clientWidth,
@@ -334,7 +334,7 @@ class ImageDraw extends PureComponent {
    * @param {number} height 坐标参考图片的高度
    */
   initMap = (width, height) => {
-    console.log('zoom', width, height);
+    // console.log('zoom', width, height);
 
     const { maxBounds, center, zoom } = this.getReferenceParams(width, height);
     this.setState(
@@ -388,7 +388,7 @@ class ImageDraw extends PureComponent {
     // 如果reference存在，则使用reference数据计算最大边界及设置缩放等级以适应容器
     if (reference) {
       const { latlngs, radius, latLng } = reference;
-      console.log('latlngs', latlngs);
+      // console.log('latlngs', latlngs);
       if (radius) {
         center = latLng;
         maxBounds = L.circle(
@@ -408,8 +408,8 @@ class ImageDraw extends PureComponent {
       } = maxBounds;
       const boundWidth = lng2 - lng1;
       const boundHeight = lat2 - lat1;
-      console.log('boundWidth', boundWidth);
-      console.log('boundHeight', boundHeight);
+      // console.log('boundWidth', boundWidth);
+      // console.log('boundHeight', boundHeight);
       zoom = this.getFitZoom(boundWidth, boundHeight);
       if (maxBoundsRatio !== 1) {
         maxBounds = L.latLngBounds(

@@ -104,6 +104,8 @@ export default class LeafletMap extends PureComponent {
         this.handleClickMovingPerson(id);
         break;
       case 3:
+        break;
+      case 4:
         this.handleClickPerson(id);
         break;
       default:
@@ -177,6 +179,26 @@ export default class LeafletMap extends PureComponent {
     setAreaId(sectionTree[0].id);
   };
 
+  beaconListToIcons = (aggregation) => {
+    const { beaconList, areaId } = this.props;
+    const aggBeacons = aggregation.map(ps => ps[0].beaconId);
+    // 只显示当前区域且上面没有人的信标
+    return beaconList.filter(({ id, areaId: beaconAreaId }) => !aggBeacons.includes(id) && beaconAreaId === areaId).map(({ id, beaconCode, xarea, yarea, status }) => ({
+      id: `${id}_@@beacon`,
+      name: beaconCode,
+      latlng: { lat: yarea, lng: xarea },
+      iconProps: {
+        iconSize: [20, 20],
+        // iconAnchor: [10, 10],
+        className: styles.beaconContainer,
+        html: `
+          <div class="${styles[+status ? 'beacon' : 'beaconOff']}">
+            <div class="${styles.personTitle}">${beaconCode}</div>
+          </div>`,
+      },
+    }));
+  };
+
   movingCardsToIcons = () => {
     const { movingCards, areaId, areaInfo, isTrack, selectedCardId } = this.props;
     if (!areaId || !Object.keys(areaInfo).length || !movingCards.length) return [];
@@ -228,7 +250,8 @@ export default class LeafletMap extends PureComponent {
       positions,
       movingCards,
     } = this.props;
-    if (!areaId || !Object.keys(areaInfo).length || !aggregation.length) return [];
+    // console.log(areaId, areaInfo, aggregation);
+    if (!areaId || !Object.keys(areaInfo).length || !aggregation.length) return this.beaconListToIcons([]);
 
     let targetAgg = [];
     const childAreas = areaInfo[areaId].childIds;
@@ -308,10 +331,12 @@ export default class LeafletMap extends PureComponent {
     //   return vs.length ? [...prev, ...vs] : prev;
     // }, []);
 
+    const beaconIcons = this.beaconListToIcons(targetAgg);
     const movingIcons = this.movingCardsToIcons();
 
     // return points;
-    return [...points, ...movingIcons];
+    // console.log('points', points, beaconIcons);
+    return [...points, ...movingIcons, ...beaconIcons];
   };
 
   render() {
@@ -322,6 +347,7 @@ export default class LeafletMap extends PureComponent {
     const currentAreaInfo = (areaId && areaInfo[areaId]) || {};
     const { parentId, fullName } = currentAreaInfo;
     const icons = this.positionsToIcons();
+    // console.log('render icons', Date(), icons);
 
     const imgDraw = (
       <Spin spinning={false} style={{ height: '100%' }}>

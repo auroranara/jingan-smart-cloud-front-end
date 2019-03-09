@@ -383,7 +383,8 @@ export function getMapClickedType(id) {
   if (id.includes('_@@section')) return 0;
   if (id.includes('_@@video')) return 1;
   if (id.includes('_@@moving')) return 2;
-  return 3;
+  if (id.includes('_@@beacon')) return 3;
+  return 4;
 }
 
 const PERSON_ALARM_TYPES = ['SOS', '越界', '长时间逗留'];

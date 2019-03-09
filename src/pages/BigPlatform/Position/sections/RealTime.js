@@ -73,6 +73,7 @@ export default class RealTime extends PureComponent {
       type: 'personPosition/fetchInitAlarms',
       payload: { companyId, showStatus: 1, pageSize: 0, pageNum: 1, executeStatus: 0 },
     });
+    dispatch({ type: 'personPosition/fetchBeacons', payload: { companyId, pageSize: 0, pageNum: 1 } });
     // 获取企业信息
     dispatch({
       type: 'user/fetchCurrent',
@@ -457,7 +458,7 @@ export default class RealTime extends PureComponent {
       selectedCardId,
       selectedUserId,
       areaInfoCache,
-      personPosition: { sectionTree, positionList, positionAggregation, alarms },
+      personPosition: { sectionTree, positionList, positionAggregation, alarms, beaconList },
       handleLabelClick,
       setSelectedCard,
       setHistoryRecord,
@@ -541,6 +542,7 @@ export default class RealTime extends PureComponent {
               aggregation={positionAggregation}
               movingCards={movingCards}
               removeMovingCard={this.removeMovingCard}
+              beaconList={beaconList}
               setAreaId={this.setAreaId}
               setHighlightedAreaId={this.setHighlightedAreaId}
               handleShowVideo={this.handleShowVideo}
