@@ -45,7 +45,7 @@ export default class BeaconHandler extends PureComponent {
     this.init(params, (payload) => {
       if (payload) {
         const { detail: { mapId }={}, imagesMap={} } = payload;
-        this.handleSelectImage(imagesMap[mapId], mapId !== undefined);
+        this.setState({ image: imagesMap[mapId] });
       }
     });
   }
@@ -110,14 +110,7 @@ export default class BeaconHandler extends PureComponent {
   render() {
     const {
       beacon: {
-        detail: {
-          sysId,
-          beaconCode,
-          mapId,
-          xarea,
-          yarea,
-          zarea,
-        }={},
+        detail={},
         systems=[],
         images=[],
         imagesMap={},
@@ -131,6 +124,14 @@ export default class BeaconHandler extends PureComponent {
       form: { getFieldDecorator },
       loading,
     } = this.props;
+    const {
+      sysId,
+      beaconCode,
+      mapId,
+      xarea,
+      yarea,
+      zarea,
+    } = detail;
     const { submitting, image } = this.state;
     // 标题
     const title = id ? '编辑信标' : '新增信标';
@@ -190,7 +191,7 @@ export default class BeaconHandler extends PureComponent {
               </Form.Item>
               <Form.Item label="信标位置">
                 {getFieldDecorator('coordinate', {
-                  initialValue: xarea && yarea && zarea ? { xarea: +xarea, yarea: +yarea, zarea: +zarea } : undefined,
+                  initialValue: xarea && yarea && zarea ? detail : undefined,
                   rules: [{ required: true, message: '请选择信标位置' }],
                 })(
                   <BeaconCoordinate

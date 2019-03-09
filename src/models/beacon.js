@@ -49,13 +49,13 @@ export default {
       if (result.every(item => item && item.code === 200)) {
         const [{ data: { list: images } }, { data: { list: systems } }, { data: detail={} }={}] = result;
         const payload = { detail, images, systems, imagesMap: formatImages(images) };
+        if (callback) {
+          callback(payload); // 注意callback必须在put之前执行
+        }
         yield put({
           type: 'save',
           payload,
         });
-        if (callback) {
-          callback(payload);
-        }
       }
       else if (callback) {
         callback(false);
