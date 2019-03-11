@@ -147,7 +147,6 @@ export default class App extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
-
     const { NanXiaoWebsocket: ws } = global;
     if (!ws) return;
     ws.onmessage = e => {
@@ -365,8 +364,7 @@ export default class App extends PureComponent {
               latestHiddenDangerId: itemId,
               deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
             });
-          }
-          else {
+          } else {
             this.setState({
               fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
               latestHiddenDangerId: itemId,
@@ -502,6 +500,7 @@ export default class App extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
+    const { checkItemId } = this.state;
     // 获取消防主机监测
     dispatch({
       type: 'newUnitFireControl/fetchFireAlarmSystem',
@@ -545,6 +544,24 @@ export default class App extends PureComponent {
       type: 'newUnitFireControl/fetchPointList',
       payload: {
         companyId,
+      },
+    });
+
+    // 获取当前隐患列表
+    dispatch({
+      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      payload: {
+        company_id: companyId,
+        businessType: 2,
+      },
+    });
+
+    //获取巡查记录
+    dispatch({
+      type: 'newUnitFireControl/fetchPointRecord',
+      payload: {
+        itemId: checkItemId,
+        item_type: 2,
       },
     });
   };
@@ -1011,7 +1028,7 @@ export default class App extends PureComponent {
         faultList,
       },
     } = this.props;
-
+    console.log('currentHiddenDanger', this.props);
     const {
       videoVisible,
       showVideoList,
