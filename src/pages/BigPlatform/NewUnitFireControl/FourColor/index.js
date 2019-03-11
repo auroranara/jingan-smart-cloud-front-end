@@ -5,12 +5,13 @@ import { Marker } from 'react-leaflet';
 import ImageDraw, { L } from '@/components/ImageDraw';
 import VideoPlay from '../../FireControl/section/VideoPlay.js';
 
-import newPointNormal from '@/assets/new-point-normal.png';
-import newPointAbnormal from '@/assets/new-point-abnormal.png';
+// import newPointNormal from '@/assets/new-point-normal.png';
+// import newPointAbnormal from '@/assets/new-point-abnormal.png';
 import newVideo from '@/assets/new-video2.png';
 import newLegendVideo from '@/assets/new-legend-video2.png';
 import newLegendPoint from '@/assets/new-legend-point.png';
 import newLegendAbnormal from '@/assets/new-legend-abnormal.png';
+import ponit from '../imgs/ponit.png';
 
 import styles from './index.less';
 
@@ -32,12 +33,26 @@ export default class FourColor extends PureComponent {
     points: [],
   };
 
-  componentDidUpdate({ model: { companyMessage: prevCompanyMessage, firePoint: prevFirePoint, videoFireList: prevVideoFireList }, latestHiddenDangerId: prevLatestHiddenDangerId }) {
-    const { model: { companyMessage, firePoint, videoFireList }, latestHiddenDangerId } = this.props;
+  componentDidUpdate({
+    model: {
+      companyMessage: prevCompanyMessage,
+      firePoint: prevFirePoint,
+      videoFireList: prevVideoFireList,
+    },
+    latestHiddenDangerId: prevLatestHiddenDangerId,
+  }) {
+    const {
+      model: { companyMessage, firePoint, videoFireList },
+      latestHiddenDangerId,
+    } = this.props;
     // 当四色图或数据源发生变化，重置state中的data
-    if (companyMessage !== prevCompanyMessage || firePoint !== prevFirePoint || videoFireList !== prevVideoFireList) {
+    if (
+      companyMessage !== prevCompanyMessage ||
+      firePoint !== prevFirePoint ||
+      videoFireList !== prevVideoFireList
+    ) {
       // 初始化选中第一张图
-      const { fireIchnographyUrl=[] } = companyMessage;
+      const { fireIchnographyUrl = [] } = companyMessage;
       this.setSelectedFourColorImg(fireIchnographyUrl[0]);
     }
     if (latestHiddenDangerId !== prevLatestHiddenDangerId) {
@@ -46,7 +61,7 @@ export default class FourColor extends PureComponent {
       if (point) {
         // 找到对应的图片
         const { fix_fire_id } = point;
-        const { fireIchnographyUrl=[] } = companyMessage;
+        const { fireIchnographyUrl = [] } = companyMessage;
         const image = fireIchnographyUrl.find(({ id }) => id === fix_fire_id);
         const { selectedFourColorImg } = this.state;
         if (image !== selectedFourColorImg) {
@@ -59,20 +74,33 @@ export default class FourColor extends PureComponent {
   /**
    * 设置选中的四色图并筛选出对应的点位和视频
    */
-  setSelectedFourColorImg = (selectedFourColorImg={}) => {
+  setSelectedFourColorImg = (selectedFourColorImg = {}) => {
     const { id } = selectedFourColorImg;
     const {
-      model: {
-        firePoint=[],
-        videoFireList=[],
-      },
+      model: { firePoint = [], videoFireList = [] },
     } = this.props;
     // 更新选中的四色图和对应视频列表
-    const points = firePoint.filter(({ fix_fire_id }) => fix_fire_id && fix_fire_id === id).map(item => ({ ...item, type: 'marker', name: item.object_title, latlng: { lat: 1 - item.y_fire, lng: +item.x_fire }, render: this.renderPoint }));
-    const videos = videoFireList.filter(({ fix_fire_id }) => fix_fire_id && fix_fire_id === id).map(item => ({ ...item, type: 'marker', name: item.name, latlng: { lat: 1 - item.y_fire, lng: +item.x_fire }, render: this.renderVideo }));
+    const points = firePoint
+      .filter(({ fix_fire_id }) => fix_fire_id && fix_fire_id === id)
+      .map(item => ({
+        ...item,
+        type: 'marker',
+        name: item.object_title,
+        latlng: { lat: 1 - item.y_fire, lng: +item.x_fire },
+        render: this.renderPoint,
+      }));
+    const videos = videoFireList
+      .filter(({ fix_fire_id }) => fix_fire_id && fix_fire_id === id)
+      .map(item => ({
+        ...item,
+        type: 'marker',
+        name: item.name,
+        latlng: { lat: 1 - item.y_fire, lng: +item.x_fire },
+        render: this.renderVideo,
+      }));
     this.setState({
       points,
-      data: [...points,...videos],
+      data: [...points, ...videos],
       selectedFourColorImg,
     });
   };
@@ -125,12 +153,20 @@ export default class FourColor extends PureComponent {
   /**
    * 自动移动到有隐患的点位
    */
-  handleAddMarkerTooltip = ({ target: { _map: map, _latlng: latlng, options: { data: { item_id } } } }) => {
+  handleAddMarkerTooltip = ({
+    target: {
+      _map: map,
+      _latlng: latlng,
+      options: {
+        data: { item_id },
+      },
+    },
+  }) => {
     const { latestHiddenDangerId } = this.props;
     if (item_id === latestHiddenDangerId) {
       map.panTo(latlng);
     }
-  }
+  };
 
   handlePointMouseOver = ({ target: layer }) => {
     const {
@@ -246,7 +282,7 @@ export default class FourColor extends PureComponent {
           key={item_id}
           data={item}
           icon={L.icon({
-            iconUrl: isAbnormal || showTip ? newPointAbnormal : newPointNormal,
+            iconUrl: ponit,
             iconSize: [33, 43],
             iconAnchor: [16.5, 43],
             shadowUrl: showTip
@@ -322,7 +358,7 @@ export default class FourColor extends PureComponent {
       },
       tips = {},
     } = this.props;
-    const { videoVisible, videoKeyId, data, selectedFourColorImg: { webUrl }={} } = this.state;
+    const { videoVisible, videoKeyId, data, selectedFourColorImg: { webUrl } = {} } = this.state;
 
     return (
       <div className={styles.container}>
