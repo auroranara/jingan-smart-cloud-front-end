@@ -39,7 +39,7 @@ export default class FireDevice extends PureComponent {
     return list.map(item => {
       const { name, value } = item;
       return (
-        <Col span={12} className={styles.gaugeCol} onClick={() => onClick(0)}>
+        <Col span={12} className={styles.gaugeCol}>
           <ChartGauge
             showName
             showValue
@@ -47,38 +47,6 @@ export default class FireDevice extends PureComponent {
             name={name}
             value={value}
             range={[0, 2]}
-            normalRange={[0.4, 1.2]}
-          />
-        </Col>
-      );
-    });
-  };
-
-  rendeAuto = () => {
-    const { onClick } = this.props;
-    const list = Array(7)
-      .fill(true)
-      .map((item, index) => {
-        return {
-          name: `点位名称${index + 1}`,
-          id: Math.floor(Math.random() * 666666666).toString(),
-          location: '1号楼',
-          value: 2 * Math.random().toFixed(2),
-          unit: 'MPa',
-          range: '0.02~0.09',
-        };
-      });
-    return list.map(item => {
-      const { name, value } = item;
-      return (
-        <Col span={12} className={styles.gaugeCol} onClick={() => onClick(1)}>
-          <ChartGauge
-            showName
-            showValue
-            name={name}
-            value={value}
-            range={[0, 2]}
-            radius="75%"
             normalRange={[0.4, 1.2]}
           />
         </Col>
@@ -103,21 +71,12 @@ export default class FireDevice extends PureComponent {
       });
     return list.map(item => {
       const { name, value, status, unit, range } = item;
-      return (
-        <WaterCards
-          name={name}
-          value={value}
-          status={status}
-          unit={unit}
-          range={range}
-          onClick={() => onClick(2)}
-        />
-      );
+      return <WaterCards name={name} value={value} status={status} unit={unit} range={range} />;
     });
   };
 
   render() {
-    const {} = this.props;
+    const { onClick } = this.props;
     const { type } = this.state;
     return (
       <Section title="水系统">
@@ -129,9 +88,16 @@ export default class FireDevice extends PureComponent {
               <Radio.Button value="2">水池/水箱</Radio.Button>
             </Radio.Group>
           </div>
-          <Row className={styles.itemsWrapper}>
+          <Row
+            className={styles.itemsWrapper}
+            onClick={() => {
+              if (type === '0') onClick(0);
+              if (type === '1') onClick(1);
+              if (type === '2') onClick(2);
+            }}
+          >
             {type === '0' && this.renderHydrant()}
-            {type === '1' && this.rendeAuto()}
+            {type === '1' && this.renderHydrant()}
             {type === '2' && this.renderPond()}
           </Row>
         </div>
