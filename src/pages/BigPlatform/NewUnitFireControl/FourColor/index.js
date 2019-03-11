@@ -8,10 +8,12 @@ import VideoPlay from '../../FireControl/section/VideoPlay.js';
 // import newPointNormal from '@/assets/new-point-normal.png';
 // import newPointAbnormal from '@/assets/new-point-abnormal.png';
 import newVideo from '@/assets/new-video2.png';
-import newLegendVideo from '@/assets/new-legend-video2.png';
-import newLegendPoint from '@/assets/new-legend-point.png';
-import newLegendAbnormal from '@/assets/new-legend-abnormal.png';
+// import newLegendVideo from '@/assets/new-legend-video2.png';
+// import newLegendPoint from '@/assets/new-legend-point.png';
+// import newLegendAbnormal from '@/assets/new-legend-abnormal.png';
 import ponit from '../imgs/ponit.png';
+import pointDot from '../imgs/pointDot.png';
+import videoDot from '../imgs/videoDot.png';
 
 import styles from './index.less';
 
@@ -378,24 +380,24 @@ export default class FourColor extends PureComponent {
             <div className={styles.legendItem}>
               <div
                 className={styles.legendItemIcon}
-                style={{ backgroundImage: `url(${newLegendVideo})` }}
+                style={{ backgroundImage: `url(${videoDot})` }}
               />
               <div>视频监控点</div>
             </div>
             <div className={styles.legendItem}>
               <div
                 className={styles.legendItemIcon}
-                style={{ backgroundImage: `url(${newLegendPoint})` }}
+                style={{ backgroundImage: `url(${pointDot})` }}
               />
-              <div>正常检查点</div>
+              <div>检查点</div>
             </div>
-            <div className={styles.legendItem}>
+            {/* <div className={styles.legendItem}>
               <div
                 className={styles.legendItemIcon}
                 style={{ backgroundImage: `url(${newLegendAbnormal})` }}
               />
               <div>异常检查点</div>
-            </div>
+            </div> */}
           </div>
         </div>
         <VideoPlay
