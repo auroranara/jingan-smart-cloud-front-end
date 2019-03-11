@@ -83,7 +83,7 @@ export default class WaterSystemDrawer extends PureComponent {
             {waterTabItem === 0 ? (
               <span>消火栓统计数据</span>
             ) : waterTabItem === 1 ? (
-              <span>自动喷淋统计 数据</span>
+              <span>自动喷淋统计数据</span>
             ) : (
               <span>水池/水箱统计数据</span>
             )}
@@ -129,12 +129,10 @@ export default class WaterSystemDrawer extends PureComponent {
             <div className={styles.listContainer}>
               {list.map(({ area, location, status, press, normal_upper }, i) => (
                 <Col span={12}>
-                  <div className={styles.card} key={i} style={{ marginTop: i < 2 ? '0' : '10px' }}>
+                  <div className={styles.card} key={i}>
+                    {+status === 1 && <div className={styles.status}>异常</div>}
                     <div className={styles.picArea}>
-                      {/* {waterTabItem === 2 && (
-                        <img className={styles.pondBg} src={pondAbnormal} alt="pond" />
-                      )} */}
-                      {waterTabItem !== 2 && (
+                      {waterTabItem !== 2 ? (
                         <ChartGauge
                           showName
                           showValue
@@ -143,7 +141,10 @@ export default class WaterSystemDrawer extends PureComponent {
                           value={2}
                           range={[0, 2]}
                           normalRange={[0.4, 1.2]}
+                          style={{ width: '110px', height: '110px' }}
                         />
+                      ) : (
+                        <img className={styles.pondBg} src={pondAbnormal} alt="pond" />
                       )}
                     </div>
                     <div className={styles.itemContainer}>

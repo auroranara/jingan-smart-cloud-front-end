@@ -58,6 +58,23 @@
     border: 1px solid #04fdff;
     color: #fff;
     padding: 10px;
+    position: relative;
+    overflow: hidden;
+    align-items: center;
+
+    .status {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 100%;
+      text-align: center;
+      transform: translate(50%, 0) translate(-10px, 10px) rotate(45deg);
+      transform-origin: 50% 0;
+      color: #fff;
+      background-color: #ff4848;
+      font-size: 12px;
+      line-height: 16px;
+    }
 
     .picArea {
       width: 100px;
@@ -66,9 +83,10 @@
     }
 
     .pondBg {
-      width: 90px;
-      height: 90px;
-      margin-top: 3px;
+      width: 80px;
+      height: 80px;
+      margin-left: 8px;
+      margin-top: -16px;
     }
 
     .itemContainer {
