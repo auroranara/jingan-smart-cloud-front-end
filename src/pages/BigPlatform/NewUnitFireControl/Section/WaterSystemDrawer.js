@@ -1,6 +1,6 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Col, Row } from 'antd';
+import { Col } from 'antd';
 import Ellipsis from 'components/Ellipsis';
 
 import { OvProgress, SearchBar } from '@/pages/BigPlatform/NewFireControl/components/Components';
@@ -18,20 +18,32 @@ import pondNormal from '../imgs/pond-normal.png';
 import cameralogo from '../imgs/cameralogo.png';
 import noMonitorImg from '../imgs/no-monitor.png';
 
+function title(i) {
+  switch (+i) {
+    case 0:
+      return '消火栓系统';
+    case 1:
+      return '自动喷淋系统';
+    case 2:
+      return '水池/水箱';
+    default:
+      return;
+  }
+}
+
 @connect(({ newUnitFireControl }) => ({
   newUnitFireControl,
 }))
 export default class WaterSystemDrawer extends PureComponent {
   state = {
     status: '',
-    isSelected: true,
     visible: true,
   };
 
   componentDidMount() {}
 
   getImageError = i => {
-    switch (+i) {
+    switch (i) {
       case 0:
         return fireError;
       case 1:
@@ -56,9 +68,7 @@ export default class WaterSystemDrawer extends PureComponent {
     }
   };
 
-  render() {
-    const { visible, waterTabItem } = this.props;
-
+  renderFireCards = () => {
     const list = Array(7)
       .fill(true)
       .map((item, index) => {
@@ -69,25 +79,143 @@ export default class WaterSystemDrawer extends PureComponent {
           location: `${index + 1}号楼`,
           normal_upper: 5,
           realtimeData: 0,
-          status: '1',
+          status: Math.floor(2 * Math.random()),
           statusName: '正常',
           press: '0,1MPa',
         };
       });
 
+    return list.map(({ area, location, status, press, normal_upper }, i) => (
+      <Col span={12}>
+        <div className={styles.card} key={i}>
+          {+status === 1 && <div className={styles.status}>异常</div>}
+          <div className={styles.picArea}>
+            <ChartGauge
+              showName
+              showValue
+              radius="95%"
+              name=""
+              value={2}
+              range={[0, 2]}
+              normalRange={[0.4, 1.2]}
+            />
+          </div>
+          <div className={styles.itemContainer}>
+            <Ellipsis className={styles.line} lines={1} tooltip>
+              {area}
+            </Ellipsis>
+            <Ellipsis className={styles.line} lines={1} tooltip>
+              位置：
+              {location}
+            </Ellipsis>
+            <Ellipsis className={styles.line} lines={1} tooltip>
+              当前压力：
+              {press}
+            </Ellipsis>
+            <Ellipsis className={styles.line} lines={1} tooltip>
+              参考范围：
+              {normal_upper}
+            </Ellipsis>
+            <div className={styles.lastLine}>
+              <div
+                className={styles.camera}
+                // onClick={this.handleClickCamera}
+                style={{
+                  background: `url(${cameralogo}) no-repeat center center`,
+                  backgroundSize: '100% 100%',
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </Col>
+    ));
+  };
+
+  renderPondCards = () => {
+    const list = Array(7)
+      .fill(true)
+      .map((item, index) => {
+        return {
+          add_time: 1536657042933,
+          area: `${index + 1}号楼水箱`,
+          id: `${index + 1}`,
+          location: `${index + 1}号楼`,
+          normal_upper: 5,
+          realtimeData: 0,
+          status: Math.floor(2 * Math.random()),
+          statusName: '正常',
+          press: '0,1MPa',
+        };
+      });
+
+    return list.map(({ area, location, status, press, normal_upper }, i) => (
+      <Col span={12}>
+        <div className={styles.card} key={i}>
+          {status === 1 && <div className={styles.status}>异常</div>}
+          <div className={styles.picAreaPond}>
+            <img
+              className={styles.pondBg}
+              src={status === 1 ? pondAbnormal : pondNormal}
+              alt="pond"
+            />
+          </div>
+          <div className={styles.itemContainer}>
+            <Ellipsis className={styles.line} lines={1} tooltip>
+              {area}
+            </Ellipsis>
+            <Ellipsis className={styles.line} lines={1} tooltip>
+              位置：
+              {location}
+            </Ellipsis>
+            <p style={{ marginBottom: 0 }}>
+              当前水位：
+              {press}
+              <span style={{ marginLeft: 15 }}>
+                参考范围：
+                {normal_upper}
+              </span>
+            </p>
+
+            <div className={styles.lastLine}>
+              <div
+                className={styles.camera}
+                // onClick={this.handleClickCamera}
+                style={{
+                  background: `url(${cameralogo}) no-repeat center center`,
+                  backgroundSize: '100% 100%',
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </Col>
+    ));
+  };
+
+  handleSearch = v => {};
+
+  render() {
+    const { visible, waterTabItem } = this.props;
+    const list = Array(7).map((item, index) => {
+      return {
+        add_time: 1536657042933,
+        area: `${index + 1}号楼`,
+        id: `${index + 1}`,
+        location: `${index + 1}号楼`,
+        normal_upper: 5,
+        realtimeData: 0,
+        status: '1',
+        statusName: '正常',
+        press: '0,1MPa',
+      };
+    });
+
     const left = (
       <div className={styles.content}>
         {/* 统计数据 */}
         <div className={styles.totalInfo}>
-          <div className={styles.title}>
-            {waterTabItem === 0 ? (
-              <span>消火栓统计数据</span>
-            ) : waterTabItem === 1 ? (
-              <span>自动喷淋统计数据</span>
-            ) : (
-              <span>水池/水箱统计数据</span>
-            )}
-          </div>
+          <div className={styles.title}>{title(waterTabItem) + '数据'}</div>
           <div className={styles.progress}>
             <Col span={16}>
               <OvProgress
@@ -127,56 +255,8 @@ export default class WaterSystemDrawer extends PureComponent {
           </div>
           {list && list.length > 0 ? (
             <div className={styles.listContainer}>
-              {list.map(({ area, location, status, press, normal_upper }, i) => (
-                <Col span={12}>
-                  <div className={styles.card} key={i}>
-                    {+status === 1 && <div className={styles.status}>异常</div>}
-                    <div className={styles.picArea}>
-                      {waterTabItem !== 2 ? (
-                        <ChartGauge
-                          showName
-                          showValue
-                          radius="95%"
-                          name=""
-                          value={2}
-                          range={[0, 2]}
-                          normalRange={[0.4, 1.2]}
-                          style={{ width: '110px', height: '110px' }}
-                        />
-                      ) : (
-                        <img className={styles.pondBg} src={pondAbnormal} alt="pond" />
-                      )}
-                    </div>
-                    <div className={styles.itemContainer}>
-                      <Ellipsis className={styles.line} lines={1} tooltip>
-                        {area}
-                      </Ellipsis>
-                      <Ellipsis className={styles.line} lines={1} tooltip>
-                        位置：
-                        {location}
-                      </Ellipsis>
-                      <Ellipsis className={styles.line} lines={1} tooltip>
-                        当前压力：
-                        {press}
-                      </Ellipsis>
-                      <Ellipsis className={styles.line} lines={1} tooltip>
-                        参考范围：
-                        {normal_upper}
-                      </Ellipsis>
-                      <div className={styles.lastLine}>
-                        <div
-                          className={styles.camera}
-                          // onClick={this.handleClickCamera}
-                          style={{
-                            background: `url(${cameralogo}) no-repeat center center`,
-                            backgroundSize: '100% 100%',
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-              ))}
+              {waterTabItem !== 2 && this.renderFireCards()}
+              {waterTabItem === 2 && this.renderPondCards()}
             </div>
           ) : (
             <div
@@ -202,9 +282,7 @@ export default class WaterSystemDrawer extends PureComponent {
       <DrawerContainer
         style={{ overflow: 'hidden' }}
         destroyOnClose={true}
-        title={
-          waterTabItem === 0 ? '消火栓系统' : waterTabItem === 1 ? '自动喷淋系统' : '水池/水箱'
-        }
+        title={title(waterTabItem)}
         width={700}
         visible={visible}
         left={left}
