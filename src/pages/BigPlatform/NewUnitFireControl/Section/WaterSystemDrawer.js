@@ -6,6 +6,7 @@ import Ellipsis from 'components/Ellipsis';
 import { OvProgress, SearchBar } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import DrawerContainer from '../components/DrawerContainer';
 import ChartGauge from '../components/ChartGauge';
+import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import styles from './WaterSystemDrawer.less';
 
@@ -31,44 +32,62 @@ function title(i) {
   }
 }
 
-@connect(({ newUnitFireControl }) => ({
-  newUnitFireControl,
-}))
+function getImageError(i) {
+  switch (i) {
+    case 0:
+      return fireError;
+    case 1:
+      return autoError;
+    case 2:
+      return pondAbnormal;
+    default:
+      return;
+  }
+}
+
+function getImageNormal(i) {
+  switch (i) {
+    case 0:
+      return fireNormal;
+    case 1:
+      return autoNormal;
+    case 2:
+      return pondNormal;
+    default:
+      return;
+  }
+}
+
 export default class WaterSystemDrawer extends PureComponent {
   state = {
     status: '',
     visible: true,
+    searchValue: '',
+    videoVisible: false,
+    videoKeyId: '',
   };
 
   componentDidMount() {}
 
-  getImageError = i => {
-    switch (i) {
-      case 0:
-        return fireError;
-      case 1:
-        return autoError;
-      case 2:
-        return pondAbnormal;
-      default:
-        return;
-    }
+  handleSearch = v => {
+    // this.setState({ searchValue: v });
   };
 
-  getImageNormal = i => {
-    switch (+i) {
-      case 0:
-        return fireNormal;
-      case 1:
-        return autoNormal;
-      case 2:
-        return pondNormal;
-      default:
-        return;
-    }
+  handleClickCamera = i => {
+    const { cameraList = [] } = this.props;
+    this.setState({
+      videoVisible: true,
+      videoKeyId: cameraList.length ? cameraList[0].key_id : '',
+    });
+  };
+
+  handleVideoClose = () => {
+    this.setState({ videoVisible: false, videoKeyId: '' });
   };
 
   renderFireCards = () => {
+    // const { searchValue } = this.state;
+
     const list = Array(7)
       .fill(true)
       .map((item, index) => {
@@ -119,7 +138,7 @@ export default class WaterSystemDrawer extends PureComponent {
             <div className={styles.lastLine}>
               <div
                 className={styles.camera}
-                // onClick={this.handleClickCamera}
+                onClick={this.handleClickCamera}
                 style={{
                   background: `url(${cameralogo}) no-repeat center center`,
                   backgroundSize: '100% 100%',
@@ -180,7 +199,7 @@ export default class WaterSystemDrawer extends PureComponent {
             <div className={styles.lastLine}>
               <div
                 className={styles.camera}
-                // onClick={this.handleClickCamera}
+                onClick={this.handleClickCamera}
                 style={{
                   background: `url(${cameralogo}) no-repeat center center`,
                   backgroundSize: '100% 100%',
@@ -193,10 +212,9 @@ export default class WaterSystemDrawer extends PureComponent {
     ));
   };
 
-  handleSearch = v => {};
-
   render() {
-    const { visible, waterTabItem } = this.props;
+    const { visible, waterTabItem, cameraList = [], videoVisible, videoKeyId } = this.props;
+
     const list = Array(7).map((item, index) => {
       return {
         add_time: 1536657042933,
@@ -225,7 +243,7 @@ export default class WaterSystemDrawer extends PureComponent {
                 strokeColor="rgb(255,72,72)"
                 // style={{ marginTop: 40 }}
                 iconStyle={{
-                  backgroundImage: `url(${this.getImageError(waterTabItem)})`,
+                  backgroundImage: `url(${getImageError(waterTabItem)})`,
                   width: 55,
                   height: 55,
                 }}
@@ -237,7 +255,7 @@ export default class WaterSystemDrawer extends PureComponent {
                 strokeColor="rgb(0,251,252)"
                 // style={{ cursor: 'pointer' }}
                 iconStyle={{
-                  backgroundImage: `url(${this.getImageNormal(waterTabItem)})`,
+                  backgroundImage: `url(${getImageNormal(waterTabItem)})`,
                   width: 55,
                   height: 55,
                 }}
@@ -268,14 +286,14 @@ export default class WaterSystemDrawer extends PureComponent {
             />
           )}
         </div>
-        {/* <VideoPlay
+        <VideoPlay
           showList={true}
           videoList={cameraList}
           visible={videoVisible}
           keyId={videoKeyId}
           // style={VIDEO_STYLE}
           handleVideoClose={this.handleVideoClose}
-        /> */}
+        />
       </div>
     );
     return (
@@ -291,6 +309,7 @@ export default class WaterSystemDrawer extends PureComponent {
           this.props.onClose();
           this.setState({
             visible: false,
+            videoVisible: false,
           });
         }}
       />
