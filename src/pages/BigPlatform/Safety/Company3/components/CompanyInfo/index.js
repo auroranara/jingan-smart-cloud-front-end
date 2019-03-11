@@ -11,7 +11,7 @@ import styles from './index.less';
 /**
  * description: 企业信息
  */
-export default function CompanyInfo ({
+export default function CompanyInfo({
   // 模型
   model: {
     companyMessage: {
@@ -33,7 +33,7 @@ export default function CompanyInfo ({
     // 特种设备统计
     specialEquipmentCount,
     // 隐患列表
-    hiddenDangerCount: { total=0 }={},
+    hiddenDangerCount: { total = 0 } = {},
     // 安全指数
     safetyIndex,
   },
@@ -47,22 +47,16 @@ export default function CompanyInfo ({
   loading,
 }) {
   // 安全指数图颜色
-  const color = safetyIndex >= 80 ? "#00a8ff" : '#ff4848';
+  const color = safetyIndex >= 80 ? '#00a8ff' : '#ff4848';
 
   return (
-    <Section
-      extra={isImportant && (
-        <div className={styles.importantUnit}>重点单位</div>
-      )}
-    >
+    <Section extra={isImportant && <div className={styles.importantUnit}>重点单位</div>}>
       <div className={styles.container}>
         {/* 企业基本信息 */}
         <div className={styles.top}>
           <div className={styles.table}>
             <div className={styles.unitName} onClick={handleClickUnitName} title={companyName}>
-              <div className={styles.cell}>
-                {companyName}
-              </div>
+              <div className={styles.cell}>{companyName}</div>
             </div>
             <div className={styles.unitContact} title={`安全负责人：${headOfSecurity}`}>
               <div className={styles.cell}>
@@ -72,14 +66,16 @@ export default function CompanyInfo ({
             </div>
             <div className={styles.unitContact} title={`联系方式：${headOfSecurityPhone}`}>
               <div className={styles.cell}>
-                <span className={styles.fieldName} style={{ letterSpacing: 4 }}>联系方式：</span>
+                <span className={styles.fieldName} style={{ letterSpacing: 4 }}>
+                  联系方式：
+                </span>
                 {headOfSecurityPhone}
               </div>
             </div>
             <div className={styles.emptyRow} />
           </div>
           {/* 安全指数 */}
-          {(safetyIndex || safetyIndex === 0 ) && !loading ? (
+          {(safetyIndex || safetyIndex === 0) && !loading ? (
             <MonitorBall
               className={styles.safetyIndex}
               style={{ boxShadow: `0 0 2em ${color}` }}
@@ -97,33 +93,60 @@ export default function CompanyInfo ({
         {/* 统计信息 */}
         <div className={styles.bottom}>
           <div
-            className={countCompanyUser?styles.hoverable:undefined}
+            className={countCompanyUser ? styles.hoverable : undefined}
             style={{ backgroundImage: `url(${safetyOfficerIcon})` }}
-            onClick={() => {countCompanyUser && handleClickCount('safetyOfficer');}}
+            onClick={() => {
+              countCompanyUser && handleClickCount('safetyOfficer');
+            }}
           >
-            <div className={styles.countLabel}><div>安全人员</div></div>
-            <div className={styles.countValue}><div>{countCompanyUser}</div></div>
+            <div className={styles.countLabel}>
+              <div>安全人员</div>
+            </div>
+            <div className={styles.countValue}>
+              <div>{countCompanyUser}</div>
+            </div>
           </div>
 
           <div
-            className={countCheckItem?styles.hoverable:undefined}
+            className={countCheckItem ? styles.hoverable : undefined}
             style={{ backgroundImage: `url(${riskPointIcon})` }}
-            onClick={() => {countCheckItem && handleClickCount('riskPoint', { riskPointType: { key: 'status' } });}}
+            onClick={() => {
+              countCheckItem && handleClickCount('riskPoint', { riskPointType: { key: 'status' } });
+            }}
           >
-            <div className={styles.countLabel}><div>风险点<span style={{ opacity: 0 }}>隐</span></div></div>
-            <div className={styles.countValue}><div>{countCheckItem}</div></div>
-          </div>
-
-          <div style={{ backgroundImage: `url(${specialEquipmentIcon})` }}>
-            <div className={styles.countLabel}><div>特种设备</div></div>
-            <div className={styles.countValue}><div>{specialEquipmentCount}</div></div>
+            <div className={styles.countLabel}>
+              <div>
+                风险点
+                <span style={{ opacity: 0 }}>隐</span>
+              </div>
+            </div>
+            <div className={styles.countValue}>
+              <div>{countCheckItem}</div>
+            </div>
           </div>
 
           <div
-            style={{ backgroundImage: `url(${currentHiddenDangerIcon})` }}
+            className={specialEquipmentCount ? styles.hoverable : undefined}
+            style={{ backgroundImage: `url(${specialEquipmentIcon})` }}
+            onClick={() => {
+              specialEquipmentCount && handleClickCount('specialEquipment');
+            }}
           >
-            <div className={styles.countLabel}><div>当前隐患</div></div>
-            <div className={styles.countValue}><div>{total}</div></div>
+            <div className={styles.countLabel}>
+              <div>特种设备</div>
+            </div>
+            <div className={styles.countValue}>
+              <div>{specialEquipmentCount}</div>
+            </div>
+          </div>
+
+          <div style={{ backgroundImage: `url(${currentHiddenDangerIcon})` }}>
+            <div className={styles.countLabel}>
+              <div>当前隐患</div>
+            </div>
+            <div className={styles.countValue}>
+              <div>{total}</div>
+            </div>
           </div>
         </div>
       </div>
