@@ -1,14 +1,13 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Row, Col } from 'antd';
-
-import { DrawerContainer } from '@/pages/BigPlatform/NewFireControl/components/Components';
+import { Row, Col, Input, Icon } from 'antd';
+import DrawerContainer from '../DrawerContainer';
+// import { DrawerContainer } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import ChartGauge from '../../components/ChartGauge';
 import styles from './index.less';
-// import hydrantAbnormal from '../images/hydrant-abnormal.png';
-// import hydrantNormal from '../images/hydrant-normal.png';
 import cameraIcon from '../../images/camera.png';
 
+const Search = Input.Search;
 export default class WaterDrawer extends PureComponent {
   state = {
     videoVisible: false,
@@ -17,9 +16,7 @@ export default class WaterDrawer extends PureComponent {
   };
 
   handleClickCamera = () => {
-    const {
-      data: { cameraList = [] },
-    } = this.props;
+    const { cameraList } = this.props;
     this.setState({
       videoVisible: true,
       videoKeyId: cameraList.length ? cameraList[0].key_id : '',
@@ -33,7 +30,7 @@ export default class WaterDrawer extends PureComponent {
   handleSelectChange = index => {
     this.setState({ statusIndex: index });
   };
-  // <div className={styles.deviceWrapper}></div>
+
   renderItems = () => {
     const {
       cameraList = [],
@@ -46,19 +43,6 @@ export default class WaterDrawer extends PureComponent {
         normalImg,
       },
     } = this.props;
-    // const dataList = Array(7)
-    //   .fill(true)
-    //   .map((item, index) => {
-    //     return {
-    //       name: `水箱${index + 1}`,
-    //       id: Math.floor(Math.random() * 666666666).toString(),
-    //       location: `${index + 1}号楼`,
-    //       value: 2 * Math.random().toFixed(2),
-    //       unit: 'm',
-    //       range: [2, 4],
-    //       status: Math.floor(2 * Math.random()),
-    //     };
-    //   });
     return (
       <div className={styles.devScroll}>
         <Row gutter={16}>
@@ -73,7 +57,6 @@ export default class WaterDrawer extends PureComponent {
                       className={styles.deviceImg}
                       style={{ width: useGauge ? '120px' : '80px' }}
                     >
-                      {/* <img src={hydrantNormal} alt="" /> */}
                       {useGauge ? (
                         <ChartGauge
                           showName={false}
@@ -101,16 +84,14 @@ export default class WaterDrawer extends PureComponent {
                           range[1]
                         }${unit}`}</Col>
                       </Row>
-                      {/* <div className={styles.value}>{`当前${valName}：${value+unit}`}</div>
-                      <div className={styles.range}>{`参考范围：${range[0]}~${range[1]}${unit}`}</div> */}
                       <div className={styles.extraWrapper}>
-                        {/* {!!cameraList.length && ( */}
-                        <div
-                          className={styles.camraImg}
-                          style={{ backgroundImage: `url(${cameraIcon})` }}
-                          onClick={e => this.handleClickCamera()}
-                        />
-                        {/* )} */}
+                        {!!cameraList.length && (
+                          <div
+                            className={styles.camraImg}
+                            style={{ backgroundImage: `url(${cameraIcon})` }}
+                            onClick={e => this.handleClickCamera()}
+                          />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -139,10 +120,11 @@ export default class WaterDrawer extends PureComponent {
   render() {
     const {
       visible,
-      dataSet: { subTitle, abnormal, normal, abnormalImg, normalImg },
+      dataSet: { subTitle, abnormal, normal, abnormalImg, normalImg, dataList },
       onClose,
+      cameraList,
     } = this.props;
-    const { videoVisible, videoKeyId, statusIndex } = this.state;
+    const { videoVisible, videoKeyId } = this.state;
 
     const left = (
       <Fragment>
@@ -201,18 +183,27 @@ export default class WaterDrawer extends PureComponent {
             <h3 className={styles.chartTitle}>
               <span className={styles.rectIcon} />
               实时监测数据
+              {dataList.length && (
+                <div className={styles.search}>
+                  <Search
+                    placeholder="搜索点位名称"
+                    onSearch={value => console.log('value', value)}
+                    style={{ width: 200 }}
+                  />
+                </div>
+              )}
             </h3>
             <div className={styles.section} style={{ flex: 1, overflow: 'hidden' }}>
               {this.renderItems()}
             </div>
           </div>
-          {/* <VideoPlay
-          showList={true}
-          videoList={cameraList}
-          visible={videoVisible}
-          keyId={videoKeyId}
-          handleVideoClose={this.handleVideoClose}
-        /> */}
+          <VideoPlay
+            showList={true}
+            videoList={cameraList}
+            visible={videoVisible}
+            keyId={videoKeyId}
+            handleVideoClose={this.handleVideoClose}
+          />
         </div>
       </Fragment>
     );

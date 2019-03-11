@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Row, Col, Radio, Spin } from 'antd';
+import { Row, Col, Radio } from 'antd';
 import Section from '../components/Section/Section.js';
 import ChartGauge from '../components/ChartGauge';
 import styles from './WaterMonitor.less';

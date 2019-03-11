@@ -5,7 +5,7 @@ import pistolNormal from '../images/pistol-normal.png';
 
 export default class PistolDrawer extends PureComponent {
   render() {
-    const { visible, onClose } = this.props;
+    const { visible, onClose, cameraList } = this.props;
     const dataList = Array(7)
       .fill(true)
       .map((item, index) => {
@@ -33,6 +33,7 @@ export default class PistolDrawer extends PureComponent {
           dataList,
           useGauge: true,
         }}
+        cameraList={cameraList}
         onClose={() => {
           onClose();
         }}

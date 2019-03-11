@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import DrawerContainer from '../components/DrawerContainer';
 import styles from './InformationHistory.less';
 import { Icon, Row, Col, Spin } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
@@ -16,7 +17,7 @@ export default class InformationHistory extends PureComponent {
       list: PropTypes.array.isRequired, // 列表数组
       alarmTypes: PropTypes.array, // 筛选栏所需数组
     }),
-    handleClose: PropTypes.func.isRequired, // 点击右上角关闭历史记录
+    // handleClose: PropTypes.func.isRequired, // 点击右上角关闭历史记录
     loading: PropTypes.bool.isRequired, // 是否正在加载数据
     handleLoadMore: PropTypes.func.isRequired, // 加载更多数据
   };
@@ -182,74 +183,88 @@ export default class InformationHistory extends PureComponent {
   render() {
     const {
       data: { list, alarmTypes = [] },
-      handleClose,
+      // handleClose,
       loading,
       selectedDeviceType,
       title,
+      onClose,
+      visible,
     } = this.props;
-    return (
+    const left = (
       <div className={styles.AlarmHistory}>
         <div className={styles.sectionMain}>
-          <div className={styles.shadowIn}>
+          {/* <div className={styles.shadowIn}>
             <div className={styles.sectionTitle}>
               <div className={styles.sectionTitleIcon} />
               {title}
               <div className={styles.iconClose}>
                 <Icon onClick={handleClose} className={styles.icon} type="close" theme="outlined" />
               </div>
+            </div> */}
+          <Row className={styles.sectionFilter}>
+            {alarmTypes &&
+              alarmTypes.map(item => (
+                <Col span={8} className={styles.filter} key={item.deviceType}>
+                  <div
+                    className={
+                      selectedDeviceType === item.deviceType
+                        ? styles.activeFilter
+                        : styles.inActiveFilter
+                    }
+                    onClick={() => this.handleFilter({ selectedDeviceType: item.deviceType })}
+                  >
+                    {item.typeName.length > 9 ? `${item.typeName.slice(0, 9)}...` : item.typeName}
+                  </div>
+                </Col>
+              ))}
+          </Row>
+          {list && list.length > 0 ? (
+            <div
+              className={styles.historyContent}
+              ref={historyList => {
+                this.historyList = historyList;
+              }}
+              onScroll={this.handleOnScroll}
+            >
+              {this.renderAlarmHistory(list)}
+              {loading && (
+                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+                  <Spin />
+                </div>
+              )}
             </div>
-            <Row className={styles.sectionFilter}>
-              {alarmTypes &&
-                alarmTypes.map(item => (
-                  <Col span={8} className={styles.filter} key={item.deviceType}>
-                    <div
-                      className={
-                        selectedDeviceType === item.deviceType
-                          ? styles.activeFilter
-                          : styles.inActiveFilter
-                      }
-                      onClick={() => this.handleFilter({ selectedDeviceType: item.deviceType })}
-                    >
-                      {item.typeName.length > 9 ? `${item.typeName.slice(0, 9)}...` : item.typeName}
-                    </div>
-                  </Col>
-                ))}
-            </Row>
-            {list && list.length > 0 ? (
+          ) : (
+            <div className={styles.noAlarmContainer}>
               <div
-                className={styles.historyContent}
-                ref={historyList => {
-                  this.historyList = historyList;
+                className={styles.image}
+                style={{
+                  background: `url(${noPendingInfo})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center center',
+                  backgroundSize: '100% 100%',
                 }}
-                onScroll={this.handleOnScroll}
               >
-                {this.renderAlarmHistory(list)}
-                {loading && (
-                  <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-                    <Spin />
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className={styles.noAlarmContainer}>
-                <div
-                  className={styles.image}
-                  style={{
-                    background: `url(${noPendingInfo})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center center',
-                    backgroundSize: '100% 100%',
-                  }}
-                >
-                  <div className={styles.text}>
-                    <span>暂无消息</span>
-                  </div>
+                <div className={styles.text}>
+                  <span>暂无消息</span>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
+          {/* </div> */}
         </div>
       </div>
+    );
+    return (
+      <DrawerContainer
+        title={title}
+        visible={visible}
+        placement="right"
+        destroyOnClose
+        onClose={onClose}
+        closable={true}
+        width={530}
+        left={left}
+      />
     );
   }
 }

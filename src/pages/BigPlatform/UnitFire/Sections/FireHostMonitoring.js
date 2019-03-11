@@ -5,7 +5,7 @@ import SignalAnime from '../../Monitor/Components/SignalAnime';
 import logoFireHost from '../images/fire-host.png';
 import dashedArrow from '../images/dashed-arrow.png';
 import styles from './FireHostMonitoring.less';
-import { rest } from 'lodash-decorators';
+// import { rest } from 'lodash-decorators';
 
 export default class FireHostMonitoring extends PureComponent {
   render() {

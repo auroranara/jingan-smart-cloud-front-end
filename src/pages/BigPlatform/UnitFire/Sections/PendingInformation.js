@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import styles from './PendingInformation.less';
 import classNames from 'classnames';
-import { Row, Col, Icon, Radio, Spin } from 'antd';
+import { Col, Icon, Radio, Spin } from 'antd';
 import PropTypes from 'prop-types';
 import Ellipsis from '@/components/Ellipsis';
 

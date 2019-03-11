@@ -112,6 +112,7 @@ export default class App extends PureComponent {
       hydrantDrawerVisible: false,
       pistolDrawerVisible: false,
       pondDrawerVisible: false,
+      infoHistoryDrawerVisible: false,
     };
     // 轮询定时器
     this.pollingTimer = null;
@@ -517,8 +518,9 @@ export default class App extends PureComponent {
       type: 'unitFireControl/fetchInformationHistory',
       payload: { companyId, pageSize, pageNum: 1, status: '1' },
       callback: () => {
-        this.leftSections.style.opacity = 0;
-        this.InformationHistory.style.right = 0;
+        // this.leftSections.style.opacity = 0;
+        // this.InformationHistory.style.right = 0;
+        this.handleDrawerVisibleChange('infoHistory');
       },
     });
     // this.setState({pendingInfoStatus:'历史报警'})
@@ -1031,6 +1033,7 @@ export default class App extends PureComponent {
         informationHistory: { list },
       },
     } = this.props;
+    const { infoHistoryDrawerVisible } = this.state;
     return (
       <div
         ref={InformationHistory => {
@@ -1051,6 +1054,8 @@ export default class App extends PureComponent {
           loading={pendingHistoryLoading}
           handleLoadMore={this.handleMorePendingInfo}
           handleClose={() => this.handleCloseInfoHistory()}
+          onClose={() => this.handleDrawerVisibleChange('infoHistory')}
+          visible={infoHistoryDrawerVisible}
         />
       </div>
     );
@@ -1171,8 +1176,10 @@ export default class App extends PureComponent {
         // 视频列表
         videoList,
         fireAlarmSystem,
+        informationHistory: { list },
       },
       monitor: { chartDeviceList, gsmsHstData, electricityPieces, chartParams, deviceDataHistory },
+      pendingHistoryLoading,
     } = this.props;
     const {
       videoVisible,
@@ -1185,12 +1192,13 @@ export default class App extends PureComponent {
       currentFireHosts,
       inspectionModalVisible,
       InspectionModalType,
-      inspectionCurrentList,
+      // inspectionCurrentList,
       dangerCardVisible,
       hiddenDangerLabel,
       hydrantDrawerVisible,
       pistolDrawerVisible,
       pondDrawerVisible,
+      infoHistoryDrawerVisible,
     } = this.state;
     return (
       <BigPlatformLayout extra={companyName} className={styles.root}>
@@ -1205,7 +1213,7 @@ export default class App extends PureComponent {
                   style={{ width: '100%', height: '100%', transition: 'opacity 0.5s' }}
                 >
                   <div style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
-                    {/* 待处理信息 */}
+                    {/* 告警信息 */}
                     {this.renderPendingInfo()}
                   </div>
                   <div style={{ height: '51.08%' }}>
@@ -1214,7 +1222,7 @@ export default class App extends PureComponent {
                   </div>
                 </div>
                 {/* 历史信息 */}
-                {this.renderHistoryInfo()}
+                {/* {this.renderHistoryInfo()} */}
               </Col>
               <Col span={18} style={{ height: '100%' }}>
                 <Row gutter={16} style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
@@ -1259,12 +1267,12 @@ export default class App extends PureComponent {
               </Col>
             </Row>
           </div>
-          {/* <VideoPlay
+          <VideoPlay
             showList={true}
             videoList={videoList}
             visible={videoVisible}
             handleVideoClose={this.handleVideoClose}
-          /> */}
+          />
           {/* 隐患统计数据下钻抽屉 */}
           <DrawerOfHiddenDanger
             title={hiddenDangerLabel}
@@ -1298,17 +1306,29 @@ export default class App extends PureComponent {
           {/* 消火栓系统 */}
           <HydrantDrawer
             visible={hydrantDrawerVisible}
+            cameraList={videoList}
             onClose={() => this.handleDrawerVisibleChange('hydrant')}
           />
           {/* 自动喷淋系统 */}
           <PistolDrawer
             visible={pistolDrawerVisible}
+            cameraList={videoList}
             onClose={() => this.handleDrawerVisibleChange('pistol')}
           />
           {/* 水池/水箱 */}
           <PondDrawer
             visible={pondDrawerVisible}
+            cameraList={videoList}
             onClose={() => this.handleDrawerVisibleChange('pond')}
+          />
+          {/* 历史消息 */}
+          <InformationHistory
+            title="历史消息"
+            data={{ list, alarmTypes: [] }}
+            loading={pendingHistoryLoading}
+            handleLoadMore={this.handleMorePendingInfo}
+            onClose={() => this.handleDrawerVisibleChange('infoHistory')}
+            visible={infoHistoryDrawerVisible}
           />
         </div>
       </BigPlatformLayout>

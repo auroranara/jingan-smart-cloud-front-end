@@ -29,6 +29,36 @@
   top: -10px;
 }
 
+.search {
+  height: 32px;
+  position: relative;
+  align-self: flex-start;
+  flex-grow: 1;
+  top: -10px;
+  :global {
+    .ant-input-search {
+      position: absolute;
+      right: 17px;
+      top: 5px;
+      color: #04fdff;
+      .ant-input {
+        background-color: transparent;
+        border-color: #04fdff;
+        color: #fff;
+        &::-webkit-input-placeholder {
+          color: rgba(255, 255, 255, 0.8);
+        }
+      }
+      // .ant-input-affix-wrapper:hover .ant-input:not(.ant-input-disabled) {
+  //   border-color: #04fdff;
+  // }
+      .ant-input-suffix i {
+        color: #04fdff;
+      }
+    }
+  }
+}
+
 .camera {
   width: 36px;
   height: 36px;

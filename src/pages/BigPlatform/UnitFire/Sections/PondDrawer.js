@@ -5,7 +5,7 @@ import pondNormal from '../images/pond-normal.png';
 
 export default class PondDrawer extends PureComponent {
   render() {
-    const { visible, onClose } = this.props;
+    const { visible, onClose, cameraList } = this.props;
     const dataList = Array(7)
       .fill(true)
       .map((item, index) => {
@@ -33,6 +33,7 @@ export default class PondDrawer extends PureComponent {
           dataList,
           useGauge: false,
         }}
+        cameraList={cameraList}
         onClose={() => {
           onClose();
         }}
