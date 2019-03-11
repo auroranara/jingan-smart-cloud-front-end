@@ -32,3 +32,8 @@ export async function putAlarm(params) {
 export async function querySectionTree(params) {
   return request(`${URL_PREFIX}/areaInfo/getScreenTree?${stringify(params)}`);
 }
+
+// 获取信标列表
+export async function queryBeacons(params) {
+  return request(`${URL_PREFIX}/beaconPoint/beaconPointForPage?${stringify(params)}`);
+}

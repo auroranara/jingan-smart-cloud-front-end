@@ -376,6 +376,7 @@ class MapSection extends PureComponent {
                 mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
                 center={center}
                 zoom={zoom}
+                pitch={60}
                 expandZoomRange
                 zooms={zooms}
                 events={{

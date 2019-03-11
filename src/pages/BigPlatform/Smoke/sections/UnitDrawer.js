@@ -58,6 +58,7 @@ export default class UnitDrawer extends PureComponent {
         AccessStatistics: { Importing = 0, unImporting = 0 },
       } = {},
       handleAlarmClick,
+      handleClickUnitStatistics,
     } = this.props;
     const { selected, searchValue } = this.state;
 
@@ -123,61 +124,74 @@ export default class UnitDrawer extends PureComponent {
             principal_phone,
             unnormal,
             faultNum,
-
             normal,
             count,
           }) => (
-            <DrawerCard
-              key={company_id}
-              name={company_name || NO_DATA}
-              location={address || NO_DATA}
-              person={principal_name || NO_DATA}
-              phone={principal_phone || NO_DATA}
-              style={{ cursor: 'auto' }}
-              infoStyle={{
-                width: 70,
-                textAlign: 'center',
-                color: '#FFF',
-                bottom: '50%',
-                right: 25,
-                transform: 'translateY(50%)',
-              }}
-              info={
-                <Fragment>
-                  <div className={styles.equipment}>{count || '--'}</div>
-                  设备数
+              <DrawerCard
+                key={company_id}
+                name={company_name || NO_DATA}
+                location={address || NO_DATA}
+                person={principal_name || NO_DATA}
+                phone={principal_phone || NO_DATA}
+                style={{ cursor: 'auto' }}
+                infoStyle={{
+                  width: 70,
+                  textAlign: 'center',
+                  color: '#FFF',
+                  bottom: '50%',
+                  right: 25,
+                  transform: 'translateY(50%)',
+                }}
+                info={
+                  <Fragment>
+                    <div
+                      onClick={() => handleClickUnitStatistics({
+                        companyId: company_id,
+                        companyName: company_name,
+                        address,
+                        principalName: principal_name,
+                        principalPhone: principal_phone,
+                        normal,
+                        unnormal,
+                        faultNum,
+                      })}
+                      className={styles.equipment}
+                    >
+                      {count || '--'}
+                    </div>
+                    设备数
                 </Fragment>
-              }
-              more={
-                <div>
-                  {count > 0 ? (
-                    <p className={styles.more}>
-                      <DotItem
-                        title="火警"
-                        color={`rgb(248,51,41)`}
-                        quantity={unnormal}
-                        className={unnormal > 0 ? styles.itemActive : ''}
+                }
+                more={
+                  <div>
+                    {count > 0 ? (
+                      <p className={styles.more}>
+                        <DotItem
+                          title="火警"
+                          color={`rgb(248,51,41)`}
+                          quantity={unnormal}
+                          className={unnormal > 0 ? styles.itemActive : ''}
                         // onClick={() =>
                         //   unnormal > 0
                         //     ? handleAlarmClick(undefined, company_id, company_name, unnormal)
                         //     : ''
                         // }
-                      />
-                      <DotItem
-                        title="故障"
-                        color={`rgb(255,180,0)`}
-                        quantity={faultNum}
-                        className={faultNum > 0 ? styles.itemActive : ''}
-                      />
-                      <DotItem title="正常" color={`rgb(55,164,96)`} quantity={normal} />
-                    </p>
-                  ) : (
-                    ''
-                  )}
-                </div>
-              }
-            />
-          )
+                        />
+                        <DotItem
+                          title="故障"
+                          color={`rgb(255,180,0)`}
+                          quantity={faultNum}
+                          className={faultNum > 0 ? styles.itemActive : ''}
+                        />
+                        <DotItem title="正常" color={`rgb(55,164,96)`} quantity={normal} />
+                      </p>
+                    ) : (
+                        ''
+                      )}
+                  </div>
+                }
+              />
+            )
         )}
       </SearchBar>
     );

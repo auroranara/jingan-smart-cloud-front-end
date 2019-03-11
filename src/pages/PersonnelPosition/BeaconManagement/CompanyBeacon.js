@@ -16,6 +16,7 @@ import {
   Icon,
   Radio,
 } from 'antd';
+import router from 'umi/router';
 import codes from '@/utils/codes';
 import { hasAuthority, AuthA } from '@/utils/customAuth';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -130,6 +131,26 @@ export default class CompanyBeacon extends PureComponent {
       ...actions,
     });
   };
+
+  // 前往新增信标页面
+  goToAdd = () => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    router.push(`/personnel-position/beacon-management/company/${companyId}/beacon/add`);
+  }
+
+  // 前往编辑信标页面
+  goToEdit = ({ id }) => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    router.push(`/personnel-position/beacon-management/company/${companyId}/beacon/edit/${id}`);
+  }
 
   // 处理翻页、页大小变化
   handlePageChange = (pageNum, pageSize) => {
@@ -398,10 +419,10 @@ export default class CompanyBeacon extends PureComponent {
         width: 200,
       },
       {
-        title: '信标坐标',
-        key: '坐标',
+        title: '所属区域',
+        dataIndex: 'areaName',
         align: 'center',
-        render: (val, row) => <span>{`(${row.xarea},${row.yarea},${row.zarea})`}</span>,
+        render: (areaName) => areaName || '厂外',
         width: 170,
       },
       {
@@ -438,13 +459,13 @@ export default class CompanyBeacon extends PureComponent {
               <a style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</a>
             )}
             <Divider type="vertical" />
-            <AuthA code={editCode} onClick={() => this.handleToEdit(row)}>
+            <AuthA code={editCode} onClick={() => this.goToEdit(row)}>
               编辑
             </AuthA>
-            <Divider type="vertical" />
+            {/* <Divider type="vertical" />
             <AuthA code={viewMapCode} onClick={() => this.handleViewMap(row)}>
               查看地图
-            </AuthA>
+            </AuthA> */}
           </Fragment>
         ),
       },
@@ -483,7 +504,7 @@ export default class CompanyBeacon extends PureComponent {
               <Button
                 type="primary"
                 style={{ marginRight: '10px' }}
-                onClick={this.handleToAdd}
+                onClick={this.goToAdd}
                 disabled={!addAuth}
               >
                 新增

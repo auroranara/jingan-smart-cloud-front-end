@@ -21,7 +21,6 @@
 
   /* 时间条 */
   .timeBar {
-    margin-bottom: 1.5em;
     width: 100%;
     height: 6px;
     border-radius: 6px;
@@ -40,14 +39,14 @@
   /* 按钮栏 */
   .buttonBar {
     position: relative;
-    padding-bottom: 1em;
-    height: 2em;
+    padding: 1em 0;
+    height: 3.5em;
     text-align: center;
 
     /* 起始时间 */
     .startTime {
       position: absolute;
-      top: 0;
+      top: 1.25em;
       left: 0;
       transform: translateX(-50%);
     }
@@ -55,25 +54,26 @@
     /* 结束时间 */
     .endTime {
       position: absolute;
-      top: 0;
+      top: 1.25em;
       right: 0;
       transform: translateX(50%);
     }
 
     /* 播放按钮包装 */
     .playButtonWrapper {
-      position: absolute;
-      top: -1em;
-      left: -1.25em;
-      width: 0.5em;
-      height: 0.5em;
+      display: inline-block;
+      position: relative;
+      margin-right: 0.5em;
+      width: 0.666667em;
+      height: 0.666667em;
       font-size: 36px;
       background-color: #fff;
+      vertical-align: top;
       /* 播放按钮 */
       .playButton {
         position: absolute;
-        top: -50%;
-        left: -50%;
+        top: -25%;
+        left: -25%;
         color: rgb(9, 103, 211);
 
         &:hover {
@@ -83,32 +83,36 @@
           color: #00a8ff;
         }
       }
-      /* 禁止的按钮 */
-      .disabledPlayButton {
-        color: rgb(137, 137, 137);
-        cursor: not-allowed;
-
-        &:hover {
-          color: rgb(137, 137, 137);
-        }
-        &:active {
-          color: rgb(137, 137, 137);
-        }
-      }
     }
 
-    // .button {
-    //   font-size: 24px;
-    //   cursor: pointer;
+    .button {
+      font-size: 24px;
+      color: #fff;
+      cursor: pointer;
 
-    //   &:not(:last-child) {
-    //     margin-right: 24px;
-    //   }
+      &:not(:last-child) {
+        margin-right: 0.75em;
+      }
 
-    //   &:hover {
-    //     color: #00a8ff;
-    //   }
-    // }
+      &:hover {
+        color: #00a8ff;
+      }
+      &:active {
+        color: #00a8ff;
+      }
+
+    }
+    .disabled {
+      color: rgb(137, 137, 137) !important;
+      cursor: not-allowed !important;
+
+      &:hover {
+        color: rgb(137, 137, 137) !important;
+      }
+      &:active {
+        color: rgb(137, 137, 137) !important;
+      }
+    }
   }
 }
 /* 提示框 */
@@ -157,7 +161,7 @@
   position: relative;
   height: 100%;
   background: no-repeat center;
-  background-size: 100% 100%;
+  background-size: contain;
 }
 // 人员容器
 .personContainer {
