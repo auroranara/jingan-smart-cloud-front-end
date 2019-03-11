@@ -19,7 +19,7 @@ export default class PointInspectionCount extends PureComponent {
   state = {
     start: 80,
     end: 100,
-  }
+  };
 
   componentDidMount() {
     // 添加曲线图显示文字定时器
@@ -42,7 +42,7 @@ export default class PointInspectionCount extends PureComponent {
       timeAxis.push(time);
     }
     return timeAxis.reverse();
-  }
+  };
 
   /**
    * 显示曲线图的文字
@@ -64,8 +64,11 @@ export default class PointInspectionCount extends PureComponent {
   /**
    * 图标加载完毕
    */
-  handleChartReady = (chart) => {
-    if (document.querySelector('.pointInspectionCountChart').getAttribute('_echarts_instance_') === chart.id) {
+  handleChartReady = chart => {
+    if (
+      document.querySelector('.pointInspectionCountChart').getAttribute('_echarts_instance_') ===
+      chart.id
+    ) {
       this.chart = chart;
       // chart.on('mouseover', (e) => {
       //   clearInterval(this.showTipTimer);
@@ -75,9 +78,12 @@ export default class PointInspectionCount extends PureComponent {
       //   this.currentIndex = e.dataIndex;
       //   this.showTipTimer = setInterval(this.showChartTip, 2000);
       // });
-      chart.on('click', (e) => {
+      chart.on('click', e => {
         const { handleShowDrawer } = this.props;
-        handleShowDrawer && handleShowDrawer('pointInspection', { pointInspectionDrawerSelectedDate: moment(e.name, 'MM-DD').format('YYYY-MM-DD') });
+        handleShowDrawer &&
+          handleShowDrawer('pointInspection', {
+            pointInspectionDrawerSelectedDate: moment(e.name, 'MM-DD').format('YYYY-MM-DD'),
+          });
       });
       chart.on('datazoom', ({ start, end }) => {
         this.setState({
@@ -86,45 +92,47 @@ export default class PointInspectionCount extends PureComponent {
         });
       });
     }
-  }
+  };
 
   render() {
     const {
-      model: {
-        pointInspectionCount=[],
-      },
+      model: { pointInspectionCount = [] },
     } = this.props;
 
     // 获取时间轴
     const timeAxis = this.getTimeAxis();
     // 获取数据
-    const checkPointList=[],
-    unCheckPointList=[],
-    abnormalPointList=[],
-    coverageList=[],
-    unNormalList=[];
-    pointInspectionCount.forEach(({ checkPoint, unCheckPoint, abnormalPoint, coverage, unNormal }) => {
-      checkPointList.push(checkPoint);
-      unCheckPointList.push(unCheckPoint);
-      abnormalPointList.push(abnormalPoint);
-      coverageList.push(coverage);
-      unNormalList.push(unNormal);
-    });
+    const checkPointList = [],
+      unCheckPointList = [],
+      abnormalPointList = [],
+      coverageList = [],
+      unNormalList = [];
+    pointInspectionCount.forEach(
+      ({ checkPoint, unCheckPoint, abnormalPoint, coverage, unNormal }) => {
+        checkPointList.push(checkPoint);
+        unCheckPointList.push(unCheckPoint);
+        abnormalPointList.push(abnormalPoint);
+        coverageList.push(coverage);
+        unNormalList.push(unNormal);
+      }
+    );
     const { start, end } = this.state;
 
     const option = {
       // 时间轴
-      dataZoom: [{
-        type: 'slider',
-        textStyle: { color: '#fff' },
-        // startValue: 23,
-        // endValue: 29,
-        start,
-        end,
-        bottom: 0,
-        top: '90%',
-        // realtime: false,
-      }],
+      dataZoom: [
+        {
+          type: 'slider',
+          textStyle: { color: '#fff' },
+          // startValue: 23,
+          // endValue: 29,
+          start,
+          end,
+          bottom: 0,
+          top: '90%',
+          // realtime: false,
+        },
+      ],
       // 图例
       // legend: {
       //   pageIconColor: '#ddd',
@@ -147,24 +155,27 @@ export default class PointInspectionCount extends PureComponent {
         splitLine: { show: false },
         axisLine: { lineStyle: { color: '#ddd' } },
       },
-      yAxis: [{
-        type: 'value',
-        minInterval: 1,
-        axisLabel: {
-          color: '#fff',
+      yAxis: [
+        {
+          type: 'value',
+          minInterval: 1,
+          axisLabel: {
+            color: '#fff',
+          },
+          splitLine: { show: false },
+          axisLine: { lineStyle: { color: '#ddd' } },
         },
-        splitLine: { show: false },
-        axisLine: { lineStyle: { color: '#ddd' } },
-      }, {
-        type: 'value',
-        min: 0,
-        max: 100,
-        axisLine: { lineStyle: { color: '#ddd' } },
-        splitLine: { show: false },
-        axisLabel: {
-          formatter: (value) => `${value}%`,
+        {
+          type: 'value',
+          min: 0,
+          max: 100,
+          axisLine: { lineStyle: { color: '#ddd' } },
+          splitLine: { show: false },
+          axisLabel: {
+            formatter: value => `${value}%`,
+          },
         },
-      }],
+      ],
       grid: {
         top: 20,
         left: 20,
@@ -202,34 +213,34 @@ export default class PointInspectionCount extends PureComponent {
           data: abnormalPointList,
           itemStyle: { color: '#FF4848' },
         },
-        {
-          name: '覆盖率',
-          data: coverageList,
-          type: 'line',
-          yAxisIndex: 1,
-          itemStyle: {
-            color: '#05D2DA',
-            borderColor: '#05D2DA',
-          },
-          lineStyle: {
-            color: '#05D2DA',
-          },
-          symbol: 'circle',
-        },
-        {
-          name: '异常率',
-          data: unNormalList,
-          type: 'line',
-          yAxisIndex: 1,
-          itemStyle: {
-            color: '#FF4848',
-            borderColor: '#FF4848',
-          },
-          lineStyle: {
-            color: '#FF4848',
-          },
-          symbol: 'circle',
-        },
+        // {
+        //   name: '覆盖率',
+        //   data: coverageList,
+        //   type: 'line',
+        //   yAxisIndex: 1,
+        //   itemStyle: {
+        //     color: '#05D2DA',
+        //     borderColor: '#05D2DA',
+        //   },
+        //   lineStyle: {
+        //     color: '#05D2DA',
+        //   },
+        //   symbol: 'circle',
+        // },
+        // {
+        //   name: '异常率',
+        //   data: unNormalList,
+        //   type: 'line',
+        //   yAxisIndex: 1,
+        //   itemStyle: {
+        //     color: '#FF4848',
+        //     borderColor: '#FF4848',
+        //   },
+        //   lineStyle: {
+        //     color: '#FF4848',
+        //   },
+        //   symbol: 'circle',
+        // },
       ],
       textStyle: {
         color: '#FFF',
@@ -240,25 +251,29 @@ export default class PointInspectionCount extends PureComponent {
       <Section title="点位巡查统计">
         <div className={styles.legendContainer}>
           <div className={styles.legend}>
-            <div className={styles.legendIcon} style={{ backgroundColor: '#05D2DA' }}></div>
+            <div className={styles.legendIcon} style={{ backgroundColor: '#05D2DA' }} />
             <div className={styles.legendLabel}>已检查</div>
           </div>
           <div className={styles.legend}>
-            <div className={styles.legendIcon} style={{ backgroundColor: '#8C8C8C' }}></div>
+            <div className={styles.legendIcon} style={{ backgroundColor: '#8C8C8C' }} />
             <div className={styles.legendLabel}>未检查</div>
           </div>
           <div className={styles.legend}>
-            <div className={styles.legendIcon} style={{ backgroundColor: '#FF4848' }}></div>
+            <div className={styles.legendIcon} style={{ backgroundColor: '#FF4848' }} />
             <div className={styles.legendLabel}>异常点位</div>
           </div>
-          <div className={styles.legend}>
-            <div className={styles.legendIconLine} style={{ backgroundColor: '#05D2DA' }}><div className={styles.legendIconCircle} style={{ backgroundColor: '#05D2DA' }}></div></div>
+          {/* <div className={styles.legend}>
+            <div className={styles.legendIconLine} style={{ backgroundColor: '#05D2DA' }}>
+              <div className={styles.legendIconCircle} style={{ backgroundColor: '#05D2DA' }} />
+            </div>
             <div className={styles.legendLabel}>覆盖率</div>
           </div>
           <div className={styles.legend}>
-            <div className={styles.legendIconLine} style={{ backgroundColor: '#FF4848' }}><div className={styles.legendIconCircle} style={{ backgroundColor: '#FF4848' }}></div></div>
+            <div className={styles.legendIconLine} style={{ backgroundColor: '#FF4848' }}>
+              <div className={styles.legendIconCircle} style={{ backgroundColor: '#FF4848' }} />
+            </div>
             <div className={styles.legendLabel}>异常率</div>
-          </div>
+          </div> */}
         </div>
         <ReactEcharts
           option={option}

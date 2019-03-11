@@ -86,27 +86,41 @@ export default class FourColor extends PureComponent {
   };
 
   handleClickMarker = ({ target: layer }) => {
-    const { options: { data: { render, item_id, status, object_title, key_id } } } = layer
+    const {
+      options: {
+        data: { render, item_id, status, object_title, key_id },
+      },
+    } = layer;
     if (render === this.renderPoint) {
       const { handleShowPointDetail } = this.props;
       handleShowPointDetail(item_id, status, object_title);
-    }
-    else if (render === this.renderVideo){
+    } else if (render === this.renderVideo) {
       this.handleShowVideo(key_id);
     }
-  }
+  };
 
   handleAddVideo = ({ target: layer }) => {
-    const { options: { data: { name } } } = layer;
-    layer.bindTooltip(name, { direction: 'top', offset: [0, -48]/* , permanent: true */ });
-  }
+    const {
+      options: {
+        data: { name },
+      },
+    } = layer;
+    layer.bindTooltip(name, { direction: 'top', offset: [0, -48] /* , permanent: true */ });
+  };
 
-  handleClickMarkerToolTip = ({ originalEvent: { target }, target: { options: { data: { item_id } } } }) => {
+  handleClickMarkerToolTip = ({
+    originalEvent: { target },
+    target: {
+      options: {
+        data: { item_id },
+      },
+    },
+  }) => {
     if (target.tagName === 'SPAN') {
       const { handleShowHiddenDanger, tips } = this.props;
       handleShowHiddenDanger(item_id, tips[item_id]);
     }
-  }
+  };
 
   /**
    * 自动移动到有隐患的点位
@@ -119,39 +133,63 @@ export default class FourColor extends PureComponent {
   }
 
   handlePointMouseOver = ({ target: layer }) => {
-    const { options: { data: { item_id: prevItemId } } } = layer;
-    const { object_title, checkName, check_date, dangerCount, originalStatus } = this.state.points.find(({ item_id }) => prevItemId === item_id) || {};
+    const {
+      options: {
+        data: { item_id: prevItemId },
+      },
+    } = layer;
+    const { object_title, checkName, check_date, dangerCount, originalStatus } =
+      this.state.points.find(({ item_id }) => prevItemId === item_id) || {};
     // 是否为异常状态
     const isAbnormal = +originalStatus === 2;
     // 是否已检查
     const isChecked = !!originalStatus;
-    layer.bindTooltip(`
+    layer
+      .bindTooltip(
+        `
       <div>
         <div>
           点位名称：${object_title}
         </div>
-        ${isChecked ? `
+        ${
+          isChecked
+            ? `
           <div>
-            状<span style="opacity: 0;">隐藏</span>态：${isAbnormal ? '<span style="color: #ff4848">异常</span>' : '正常'}
+            有无隐患：${isAbnormal ? '<span style="color: #ff4848">有隐患</span>' : '无隐患'}
           </div>
-        ` : ''}
-        ${isChecked ? `
+        `
+            : ''
+        }
+        ${
+          isChecked
+            ? `
           <div>
-            最近检查：${checkName ? checkName : '暂无数据'} ${check_date ? moment(check_date).format('YYYY-MM-DD') : ''}
+            最近检查：${checkName ? checkName : '暂无数据'} ${
+                check_date ? moment(check_date).format('YYYY-MM-DD') : ''
+              }
           </div>
-        ` : ''}
-        ${isAbnormal ? `
+        `
+            : ''
+        }
+        ${
+          isAbnormal
+            ? `
           <div>
             隐患数量：${dangerCount ? dangerCount : 0}
           </div>
-        ` : ''}
+        `
+            : ''
+        }
       </div>
-    `, { direction: 'right', offset: [24, 0] }).openTooltip();
-  }
+    `,
+        { direction: 'right', offset: [24, 0] }
+      )
+      .openTooltip();
+  };
 
   handlePointMouseLeave = ({ target: layer }) => {
     layer.unbindTooltip();
-  }
+  };
 
   /**
    * 下拉框选择事件
@@ -196,16 +234,14 @@ export default class FourColor extends PureComponent {
   }
 
   renderPoint = (item, other) => {
-    const {
-      item_id,
-      originalStatus,
-    } = item;
+    const { item_id, originalStatus } = item;
     const { position } = other;
-    const { tips={} } = this.props;
+    const { tips = {} } = this.props;
     const isAbnormal = +originalStatus === 2;
     const showTip = !!tips[item_id];
+
     return (
-      <Fragment key={item_id}>
+      <Fragment key={item_id} style={{ width: 200 }}>
         <Marker
           key={item_id}
           data={item}
@@ -213,7 +249,8 @@ export default class FourColor extends PureComponent {
             iconUrl: isAbnormal || showTip ? newPointAbnormal : newPointNormal,
             iconSize: [33, 43],
             iconAnchor: [16.5, 43],
-            shadowUrl: showTip ? `
+            shadowUrl: showTip
+              ? `
               data:image/svg+xml;utf8,<svg width="120px" height="120px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" preserveAspectRatio="xMidYMid" class="lds-book">
                 <circle cx="60" cy="60" r="0" stroke="red" stroke-width="0" fill="rgba(255,0,0,0.6)">
                   <animate attributeName="r" calcMode="linear" from="0" to="60" dur="2s" repeatCount="indefinite"></animate>
@@ -224,7 +261,8 @@ export default class FourColor extends PureComponent {
                   <animate attributeName="fill" calcMode="linear" from="rgba(255,0,0,0.6)" to="rgba(255,0,0,0.1)" dur="2s" begin="1s" repeatCount="indefinite"></animate>
                 </circle>
               </svg>
-            ` : null,
+            `
+              : null,
             shadowSize: [100, 100],
             shadowAnchor: [50, 76.5],
           })}
@@ -233,6 +271,15 @@ export default class FourColor extends PureComponent {
           onAdd={undefined}
           onmouseover={this.handlePointMouseOver}
           onmouseout={this.handlePointMouseLeave}
+        />
+        <Marker
+          data={item}
+          position={position}
+          icon={L.divIcon({
+            className: isAbnormal || showTip ? styles.iconbg : '',
+            iconSize: [33, 28],
+            iconAnchor: [-10, 20],
+          })}
         />
         {showTip && (
           <Marker
@@ -248,7 +295,7 @@ export default class FourColor extends PureComponent {
         )}
       </Fragment>
     );
-  }
+  };
 
   renderVideo = (item, other) => {
     return (
@@ -265,7 +312,7 @@ export default class FourColor extends PureComponent {
         onAdd={this.handleAddVideo}
       />
     );
-  }
+  };
 
   render() {
     const {

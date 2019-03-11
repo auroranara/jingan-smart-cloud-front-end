@@ -32,6 +32,8 @@ import {
   RiskPointDetailDrawer,
   // 巡查点位详情抽屉
   InspectionDetailDrawer,
+  // 特种设备抽屉
+  SpecialEquipmentDrawer,
 } from './components';
 import IndexDrawer from '../Company2/sections/IndexDrawer';
 // 引入样式文件
@@ -65,6 +67,8 @@ export default class UnitSafety extends PureComponent {
       riskPointType: {},
       // 风险点详情抽屉是否显示
       riskPointDetailDrawerVisible: false,
+      //  特种设备抽屉是否显示
+      specialEquipmentDrawerVisible: false,
       // 巡查点位详情抽屉是否显示
       inspectionDetailDrawerVisible: false,
       // 安全指数抽屉是否显示
@@ -81,6 +85,7 @@ export default class UnitSafety extends PureComponent {
       selectedStaffRecordsMonth: '2019-02',
       // 选中的人员id
       checkUserId: null,
+      // specialStatus: undefined,
     };
     // 添加变异函数
     mapMutations(this, {
@@ -132,6 +137,8 @@ export default class UnitSafety extends PureComponent {
         'fetchHiddenDangerCount',
         // 获取弹窗的隐患列表
         'fetchDangerList',
+        // 获取特种设备列表
+        'fetchSpecialEquipmentInfo',
       ],
     });
   }
@@ -167,6 +174,8 @@ export default class UnitSafety extends PureComponent {
     this.fetchDynamicMonitorData({ companyId });
     // 获取点位
     this.fetchPoints({ companyId });
+    // 获取特种设备列表
+    this.fetchSpecialEquipmentInfo({ companyId });
   }
 
   /* 前往动态监控大屏 */
@@ -192,7 +201,7 @@ export default class UnitSafety extends PureComponent {
   /**
    * 获取弹窗的隐患列表
    */
-  getDangerList = (restProps) => {
+  getDangerList = restProps => {
     const {
       match: {
         params: { companyId },
@@ -205,7 +214,7 @@ export default class UnitSafety extends PureComponent {
       status: 5,
       ...restProps,
     });
-  }
+  };
 
   /**
    * 获取隐患列表
@@ -438,7 +447,9 @@ export default class UnitSafety extends PureComponent {
     const {
       riskPointDrawerVisible,
       riskPointType,
+      // specialStatus,
       safetyOfficerDrawerVisible,
+      specialEquipmentDrawerVisible,
       riskPointDetailDrawerVisible,
       inspectionDetailDrawerVisible,
       indexDrawerVisible,
@@ -460,8 +471,8 @@ export default class UnitSafety extends PureComponent {
       inspectionPointData,
       riskPointDetail,
       points,
+      specialData,
     } = unitSafety;
-
     return (
       <BigPlatformLayout title={global.PROJECT_CONFIG.projectName}>
         <Row gutter={16} className={styles.row}>
@@ -550,6 +561,17 @@ export default class UnitSafety extends PureComponent {
           visible={safetyOfficerDrawerVisible}
           onClose={this.setDrawerVisible}
           model={unitSafety}
+        />
+        {/* 特种设备抽屉 */}
+        <SpecialEquipmentDrawer
+          visible={specialEquipmentDrawerVisible}
+          onClose={() => {
+            this.setState({
+              specialEquipmentDrawerVisible: false,
+            });
+          }}
+          // specialStatus={specialStatus}
+          specialData={specialData}
         />
         {/* 风险点详情抽屉 */}
         <RiskPointDetailDrawer
