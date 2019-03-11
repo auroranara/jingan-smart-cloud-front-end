@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { DatePicker, Select, message } from 'antd';
+import { DatePicker, Select, TreeSelect, message } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import { mapMutations } from 'utils/utils';
@@ -176,7 +176,7 @@ export default class History extends PureComponent {
     const {
       labelIndex,
       historyRecord: { id, isCardId }={},
-      position: { data: { areaDataHistories=[], locationDataHistories=[] }={}, tree={}, originalTree=[], people },
+      position: { data: { areaDataHistories=[], locationDataHistories=[] }={}, tree={}, originalTree=[], sectionTree, people },
       handleLabelClick,
     } = this.props;
     const { range } = this.state;
@@ -190,17 +190,35 @@ export default class History extends PureComponent {
           <div className={styles.wrapper}>
             <div className={styles.inner}>
               <div className={styles.leftTop}>
-                <Select
-                  showSearch
-                  className={styles.cardSelect}
-                  dropdownClassName={styles.dropdown}
-                  value={id && isCardId ? `临时卡` : id}
-                  placeholder="请选择或搜索人员"
-                  filterOption={this.cardFilter}
-                  onChange={this.handleCardChange}
-                >
-                  {people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>)}
-                </Select>
+                <div className={styles.treeContainer}>
+                  <TreeSelect
+                    treeDefaultExpandAll
+                    className={styles.tree}
+                    treeData={sectionTree}
+                  />
+                </div>
+                <div className={styles.selects}>
+                  <Select
+                    defaultValue="0"
+                    className={styles.select1}
+                    dropdownClassName={styles.dropdown}
+                  >
+                    <Option key="0" value="0">人员</Option>
+                    <Option key="1" value="1">卡号</Option>
+                  </Select>
+                  <Select
+                    allowClear
+                    showSearch
+                    className={styles.cardSelect}
+                    dropdownClassName={styles.dropdown}
+                    value={id && isCardId ? `临时卡` : id}
+                    placeholder="请选择或搜索人员/卡号"
+                    filterOption={this.cardFilter}
+                    onChange={this.handleCardChange}
+                  >
+                    {people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>)}
+                  </Select>
+                </div>
                 <RangePicker
                   dropdownClassName={styles.rangePickerDropDown}
                   className={styles.rangePicker}

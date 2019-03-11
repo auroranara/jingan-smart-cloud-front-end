@@ -66,6 +66,18 @@ function formatData(list) {
   });
 }
 
+function cloneTreeList(list) {
+  return list.map(({ id, name, children }) => {
+    const cloned = { title: name, value: id, key: id };
+    if (children && children.length)
+      cloned.children = cloneTreeList(children);
+    return cloned;
+  });
+}
+
+function getSelectTree(list) {
+    return Array.isArray(list) ? cloneTreeList(list) : [];
+}
 
 export default {
   namespace: 'position',
@@ -80,6 +92,7 @@ export default {
     tree: {},
     originalTree: [],
     people: [],
+    sectionTree: [],
   },
 
   effects: {
@@ -103,7 +116,13 @@ export default {
     *fetchTree({ payload, callback }, { call, put }) {
       const response = yield call(getTree, payload);
       if (response.code === 200) {
-        yield put({ type: 'save', payload: { tree: formatTree(response.data.list), originalTree: response.data.list }});
+        yield put({
+          type: 'save',
+          payload: {
+            tree: formatTree(response.data.list),
+            originalTree: response.data.list,
+            sectionTree: getSelectTree(response.data.list),
+          }});
       }
       if (callback) {
         callback(response);
