@@ -1,9 +1,11 @@
 @color: rgb(4, 253, 255);
 @blue: rgb(4, 71, 134);
+
 .container {
   height: 100%;
+
   :global {
-    .ant-input-search.ant-input-search-enter-button > .ant-input {
+    .ant-input-search.ant-input-search-enter-button>.ant-input {
       color: #fff;
       border: 1px solid @color;
       background-color: transparent;
@@ -23,35 +25,39 @@
       background-color: @blue;
     }
 
-    .ant-table-thead > tr > th {
+    .ant-table-thead>tr>th {
       color: #fff;
       background-color: @blue;
       border-bottom: none;
     }
 
-    .ant-table-fixed-header > .ant-table-content > .ant-table-scroll > .ant-table-body {
+    .ant-table-fixed-header>.ant-table-content>.ant-table-scroll>.ant-table-body {
       background-color: rgb(3, 48, 105);
     }
 
-    .ant-table-tbody > tr > td {
+    .ant-table-tbody>tr>td {
       border-color: rgb(5, 65, 135);
     }
 
     .ant-table-tbody tr:hover td {
       background-color: #063b6f;
     }
+
     .ant-table-placeholder {
       background-color: transparent;
       border-bottom: none;
       color: #fff;
     }
+
     .ant-pagination-item-link {
       background-color: #063b6f;
       color: #fff;
     }
+
     .ant-pagination-item {
       background-color: #063b6f;
     }
+
     .ant-pagination-item a {
       color: #fff;
     }
@@ -75,6 +81,7 @@
 .statusIcon {
   height: 100%;
 }
+
 .icon {
   width: 90px;
   height: 90px;
@@ -104,6 +111,7 @@
 .oneCards {
   height: 100%;
 }
+
 .titleP {
   padding-left: 10px;
   color: #fff;
@@ -121,15 +129,31 @@
 .record {
   overflow: auto;
 }
+
 .warningText {
   margin-left: 1em;
   color: red;
   font-weight: 700;
 }
+
 .text {
   margin-left: 1em;
 }
 
 .resultError {
   color: #ff4848;
+}
+
+.hasDangerTitle {
+  color: rgb(255, 72, 72);
+  position: absolute;
+  top: 65%;
+  left: 27%;
+}
+
+.noDangerTitle {
+  color: #0ff;
+  position: absolute;
+  top: 65%;
+  left: 27%;
 }

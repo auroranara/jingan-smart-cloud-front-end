@@ -41,17 +41,20 @@ import {
   getRiskPointInspectionCount,
   // 获取点位
   getPoints,
+  // 获取特种设备列表
+  getSpecialEquipmentInfo,
 } from '../services/unitSafety';
 
 function handleRiskList(response) {
-  if (!response)
-    return [];
+  if (!response) return [];
 
-  const result = ['supervision', 'red', 'orange', 'yellow', 'blue', 'notRated'].reduce((prev, next) => {
-    const value = response[`${next}${next !== 'supervision' ? 'Danger' : ''}Result`];
-    const list = Array.isArray(value) ? value.map(item => ({ ...item, flag: next })) : [];
-    return prev.concat(list);
-  }, []).filter(item => item.status === 4);
+  const result = ['supervision', 'red', 'orange', 'yellow', 'blue', 'notRated']
+    .reduce((prev, next) => {
+      const value = response[`${next}${next !== 'supervision' ? 'Danger' : ''}Result`];
+      const list = Array.isArray(value) ? value.map(item => ({ ...item, flag: next })) : [];
+      return prev.concat(list);
+    }, [])
+    .filter(item => item.status === 4);
 
   result.sort((item, item1) => item.check_date_time - item1.check_date_time);
   return result;
@@ -75,34 +78,40 @@ function handleRiskList(response) {
 // }
 
 function getStatus(params) {
-  if (params === '故障')
-    return 0;
+  if (params === '故障') return 0;
 
-  if (params.includes('火警'))
-    return 1;
+  if (params.includes('火警')) return 1;
 
   return 2;
 }
 
 // 0 消防主机故障 1 消防主机火警 2 其他监测设备报警 3 失联
 function handleMonitorList(list) {
-  const loss = Array.isArray(list.lossDevice) ? list.lossDevice.map(({ deviceId, relationDeviceId, area, location, statusTime, typeName }) => ({
-    id: deviceId,
-    type: typeName,
-    number: relationDeviceId,
-    params: '失联',
-    status: 3,
-    time: statusTime,
-    location: `${area}${location || ''}`,
-  })) : [];
-  const alarm = Array.isArray(list.abnormalDevice) ? list.abnormalDevice.map(({ deviceId, relationDeviceId, area, location, unormalParams, typeName }) => ({
-    id: deviceId,
-    type: typeName,
-    number: relationDeviceId,
-    params: unormalParams,
-    status: getStatus(unormalParams),
-    location: `${area}${location || ''}`,
-  })) : [];
+  const loss = Array.isArray(list.lossDevice)
+    ? list.lossDevice.map(
+        ({ deviceId, relationDeviceId, area, location, statusTime, typeName }) => ({
+          id: deviceId,
+          type: typeName,
+          number: relationDeviceId,
+          params: '失联',
+          status: 3,
+          time: statusTime,
+          location: `${area}${location || ''}`,
+        })
+      )
+    : [];
+  const alarm = Array.isArray(list.abnormalDevice)
+    ? list.abnormalDevice.map(
+        ({ deviceId, relationDeviceId, area, location, unormalParams, typeName }) => ({
+          id: deviceId,
+          type: typeName,
+          number: relationDeviceId,
+          params: unormalParams,
+          status: getStatus(unormalParams),
+          location: `${area}${location || ''}`,
+        })
+      )
+    : [];
 
   loss.sort((item, item1) => item1.time - item.time);
   return [...alarm, ...loss];
@@ -112,17 +121,19 @@ function handleDangerList(list) {
   const outed = list.filter(item => item.status === '7');
   const rectify = list.filter(item => item.status === '1' || item.status === '2');
   const review = list.filter(item => item.status === '3');
-  [outed, rectify, review].forEach(ls => ls.sort((item, item1) => item1.report_time - item.report_time));
+  [outed, rectify, review].forEach(ls =>
+    ls.sort((item, item1) => item1.report_time - item.report_time)
+  );
 
   return [...outed, ...rectify, ...review];
 }
 
 const ITEMS = ['特种设备', '应急物资', '特种作业操作证人员', '企业安全培训信息'];
 const PROPS = {
-  '特种设备': ['recheck_date', 'data_true_name'],
-  '应急物资': ['end_time', 'emergency_equipment_name'],
-  '特种作业操作证人员': ['nextDate', 'name'],
-  '企业安全培训信息': ['nextDate', 'traineeName'],
+  特种设备: ['recheck_date', 'data_true_name'],
+  应急物资: ['end_time', 'emergency_equipment_name'],
+  特种作业操作证人员: ['nextDate', 'name'],
+  企业安全培训信息: ['nextDate', 'traineeName'],
 };
 const DAY_MS = 24 * 3600 * 1000;
 
@@ -130,14 +141,15 @@ function handleSafeList(list) {
   const now = Date.now();
 
   const result = list.reduce((prev, next) => {
-    if (!ITEMS.includes(next.name) || !Array.isArray(next.list))
-      return prev;
+    if (!ITEMS.includes(next.name) || !Array.isArray(next.list)) return prev;
 
-    const ls = next.list.map(({ [PROPS[next.name][0]]: expire, [PROPS[next.name][1]]: name }) => ({
-      type: next.name,
-      name,
-      expire: Math.floor((now - expire) / DAY_MS),
-    })).filter(item => item.expire >= 0);
+    const ls = next.list
+      .map(({ [PROPS[next.name][0]]: expire, [PROPS[next.name][1]]: name }) => ({
+        type: next.name,
+        name,
+        expire: Math.floor((now - expire) / DAY_MS),
+      }))
+      .filter(item => item.expire >= 0);
     return prev.concat(ls);
   }, []);
 
@@ -146,10 +158,10 @@ function handleSafeList(list) {
 }
 
 // 格式化动态监测数据
-const formatDynamicMonitorData = (list) => {
+const formatDynamicMonitorData = list => {
   const data = {};
-  list.forEach((item) => {
-    switch(item.name) {
+  list.forEach(item => {
+    switch (item.name) {
       case '消防主机监测':
         data.fireEngine = item;
         break;
@@ -230,9 +242,7 @@ export default {
     // 安全人员信息
     safetyOfficer: {},
     // 巡查点位数据
-    inspectionPointData: {
-
-    },
+    inspectionPointData: {},
     // 安全指数
     safetyIndex: undefined,
     // 每个具体的安全指数
@@ -272,6 +282,10 @@ export default {
     },
     // 隐患统计
     hiddenDangerCount: { total: 0, ycq: 0, wcq: 0, dfc: 0 },
+    // 特种设备列表
+    specialData: {
+      list: [],
+    },
   },
 
   effects: {
@@ -321,18 +335,38 @@ export default {
     // 获取隐患列表
     *fetchHiddenDangerList({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerList, payload);
-      const { code, data: { list, pagination } } = response;
+      const {
+        code,
+        data: { list, pagination },
+      } = response;
       if (code === 200) {
-        yield put({ type: 'saveHiddenDangerList', payload: { list, pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize }  }, append: payload.pageNum !== 1 });
+        yield put({
+          type: 'saveHiddenDangerList',
+          payload: {
+            list,
+            pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
+          },
+          append: payload.pageNum !== 1,
+        });
       }
       callback && callback(response);
     },
     // 获取隐患列表
     *fetchDangerList({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerList, payload);
-      const { code, data: { list, pagination } } = response;
+      const {
+        code,
+        data: { list, pagination },
+      } = response;
       if (code === 200) {
-        yield put({ type: 'saveDangerList', payload: { list, pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize }  }, append: payload.pageNum !== 1 });
+        yield put({
+          type: 'saveDangerList',
+          payload: {
+            list,
+            pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
+          },
+          append: payload.pageNum !== 1,
+        });
       }
       callback && callback(response);
     },
@@ -400,12 +434,23 @@ export default {
         over: notRatedDangerResult.filter(({ status }) => +status === 4),
       };
       // 获取各状态统计
-      const getCount = (key) => redList[key].length + orangeList[key].length + yellowList[key].length + blueList[key].length + notRatedList[key].length;
+      const getCount = key =>
+        redList[key].length +
+        orangeList[key].length +
+        yellowList[key].length +
+        blueList[key].length +
+        notRatedList[key].length;
       yield put({
         type: 'save',
         payload: {
           countDangerLocation: {
-            countDangerLocation: { ...count, normal: getCount('normal'), checking: getCount('checking'), abnormal: getCount('abnormal'), over: getCount('over') },
+            countDangerLocation: {
+              ...count,
+              normal: getCount('normal'),
+              checking: getCount('checking'),
+              abnormal: getCount('abnormal'),
+              over: getCount('over'),
+            },
             redDangerResult: redList,
             orangeDangerResult: orangeList,
             yellowDangerResult: yellowList,
@@ -491,7 +536,13 @@ export default {
       const response = yield call(getSafetyIndex, payload);
       if (response && response.code === 200) {
         const allIndex = response.data || {};
-        const { totalScore: safetyIndex=null, safe_point=null, hidden_record_score=null, monitorScore=null, safetyInfoPoint=null } = allIndex;
+        const {
+          totalScore: safetyIndex = null,
+          safe_point = null,
+          hidden_record_score = null,
+          monitorScore = null,
+          safetyInfoPoint = null,
+        } = allIndex;
         const safetyIndexes = [safe_point, hidden_record_score, monitorScore, safetyInfoPoint];
         yield put({
           type: 'save',
@@ -510,27 +561,29 @@ export default {
     *fetchMonitorList({ payload, callback }, { call, put }) {
       let response = yield call(getMonitorList, payload);
       response = response || {};
-      const { code=500, data } = response;
+      const { code = 500, data } = response;
       // if (code === 200 && data && Array.isArray(data.list))
       //   yield put({ type: 'saveMonitorList', payload: data.list });
-      if (code === 200 && data)
-        yield put({ type: 'saveMonitorList', payload: data });
+      if (code === 200 && data) yield put({ type: 'saveMonitorList', payload: data });
     },
     // 获取安全档案
     *fetchSafeFiles({ payload, callback }, { call, put }) {
       let response = yield call(getSafeFiles, payload);
       response = response || {};
-      const { code=500, data } = response;
+      const { code = 500, data } = response;
       if (code === 200 && data && Array.isArray(data.list))
         yield put({ type: 'saveSafeFiles', payload: handleSafeList(data.list) });
     },
     // 获取动态监测
     *fetchDynamicMonitorData({ payload, callback }, { call, put }) {
       let response = yield call(getDynamicMonitorData, payload);
-      response = response || {}
+      response = response || {};
       const { code, data } = response;
       if (code === 200) {
-        yield put({ type: 'save', payload: { dynamicMonitorData: formatDynamicMonitorData(data.list) } });
+        yield put({
+          type: 'save',
+          payload: { dynamicMonitorData: formatDynamicMonitorData(data.list) },
+        });
       }
       callback && callback(response);
     },
@@ -546,10 +599,18 @@ export default {
     *fetchRiskPointHiddenDangerList({ payload, callback }, { call, put }) {
       const response = yield call(getRiskPointHiddenDangerList, payload);
       if (response.code === 200) {
-        yield put({ type: 'saveRiskPointHiddenDangerList', payload: {
-          list: response.data.list,
-          pagination: { total: response.data.total, pageNum: payload.pageNum, pageSize: payload.pageSize },
-        }, append: payload.pageNum !== 1 });
+        yield put({
+          type: 'saveRiskPointHiddenDangerList',
+          payload: {
+            list: response.data.list,
+            pagination: {
+              total: response.data.total,
+              pageNum: payload.pageNum,
+              pageSize: payload.pageSize,
+            },
+          },
+          append: payload.pageNum !== 1,
+        });
       }
       callback && callback(response);
     },
@@ -557,10 +618,18 @@ export default {
     *fetchRiskPointInspectionList({ payload, callback }, { call, put }) {
       const response = yield call(getRiskPointInspectionList, payload);
       if (response.code === 200) {
-        yield put({ type: 'saveRiskPointInspectionList', payload: {
-          list: response.data.list,
-          pagination: { total: response.data.total, pageNum: payload.pageNum, pageSize: payload.pageSize },
-        }, append: payload.pageNum !== 1 });
+        yield put({
+          type: 'saveRiskPointInspectionList',
+          payload: {
+            list: response.data.list,
+            pagination: {
+              total: response.data.total,
+              pageNum: payload.pageNum,
+              pageSize: payload.pageSize,
+            },
+          },
+          append: payload.pageNum !== 1,
+        });
       }
       callback && callback(response);
     },
@@ -583,7 +652,10 @@ export default {
     // 获取点位
     *fetchPoints({ payload, callback }, { call, put }) {
       const response = yield call(getPoints, payload);
-      const { code, data: { points, pointInfo } } = response;
+      const {
+        code,
+        data: { points, pointInfo },
+      } = response;
       if (code === 200) {
         const pointInfoMap = pointInfo.reduce((o, c) => {
           o[c.item_id] = c;
@@ -592,63 +664,65 @@ export default {
         const levelDict = ['gray', 'red', 'orange', 'yellow', 'blue'];
         const statusDict = ['normal', 'normal', 'abnormal', 'pending', 'overtime'];
         const capitalStatusDict = ['Normal', 'Normal', 'Abnormal', 'Pending', 'Overtime'];
-        const result = points.reduce((obj, { itemId, xNum, yNum, fixImgId }) => {
-          const info = pointInfoMap[itemId];
-          const point = {
-            itemId,
-            xNum,
-            yNum,
-            fixImgId,
-            info,
-          };
-          const { status, risk_level } = info || {};
-          // 四色图相关点位，排除没有坐标的点位
-          if (xNum && yNum) {
-            if (fixImgId in obj.fourColorImgPoints) {
-              obj.fourColorImgPoints[fixImgId].push(point);
+        const result = points.reduce(
+          (obj, { itemId, xNum, yNum, fixImgId }) => {
+            const info = pointInfoMap[itemId];
+            const point = {
+              itemId,
+              xNum,
+              yNum,
+              fixImgId,
+              info,
+            };
+            const { status, risk_level } = info || {};
+            // 四色图相关点位，排除没有坐标的点位
+            if (xNum && yNum) {
+              if (fixImgId in obj.fourColorImgPoints) {
+                obj.fourColorImgPoints[fixImgId].push(point);
+              } else {
+                obj.fourColorImgPoints[fixImgId] = [point];
+              }
             }
-            else {
-              obj.fourColorImgPoints[fixImgId] = [point];
-            }
+            obj.pointList.push(point);
+            obj[statusDict[+status]]++;
+            obj[levelDict[+risk_level]]++;
+            obj[`${levelDict[+risk_level]}${capitalStatusDict[+status]}PointList`].push(point);
+            return obj;
+          },
+          {
+            pointList: [],
+            red: 0,
+            orange: 0,
+            yellow: 0,
+            blue: 0,
+            gray: 0,
+            normal: 0,
+            abnormal: 0,
+            pending: 0,
+            overtime: 0,
+            redNormalPointList: [],
+            redAbnormalPointList: [],
+            redPendingPointList: [],
+            redOvertimePointList: [],
+            orangeNormalPointList: [],
+            orangeAbnormalPointList: [],
+            orangePendingPointList: [],
+            orangeOvertimePointList: [],
+            yellowNormalPointList: [],
+            yellowAbnormalPointList: [],
+            yellowPendingPointList: [],
+            yellowOvertimePointList: [],
+            blueNormalPointList: [],
+            blueAbnormalPointList: [],
+            bluePendingPointList: [],
+            blueOvertimePointList: [],
+            grayNormalPointList: [],
+            grayAbnormalPointList: [],
+            grayPendingPointList: [],
+            grayOvertimePointList: [],
+            fourColorImgPoints: {},
           }
-          obj.pointList.push(point);
-          obj[statusDict[+status]]++;
-          obj[levelDict[+risk_level]]++;
-          obj[`${levelDict[+risk_level]}${capitalStatusDict[+status]}PointList`].push(point);
-          return obj;
-        }, {
-          pointList: [],
-          red: 0,
-          orange: 0,
-          yellow: 0,
-          blue: 0,
-          gray: 0,
-          normal: 0,
-          abnormal: 0,
-          pending: 0,
-          overtime: 0,
-          redNormalPointList: [],
-          redAbnormalPointList: [],
-          redPendingPointList: [],
-          redOvertimePointList: [],
-          orangeNormalPointList: [],
-          orangeAbnormalPointList: [],
-          orangePendingPointList: [],
-          orangeOvertimePointList: [],
-          yellowNormalPointList: [],
-          yellowAbnormalPointList: [],
-          yellowPendingPointList: [],
-          yellowOvertimePointList: [],
-          blueNormalPointList: [],
-          blueAbnormalPointList: [],
-          bluePendingPointList: [],
-          blueOvertimePointList: [],
-          grayNormalPointList: [],
-          grayAbnormalPointList: [],
-          grayPendingPointList: [],
-          grayOvertimePointList: [],
-          fourColorImgPoints: {},
-        });
+        );
 
         yield put({
           type: 'save',
@@ -660,11 +734,27 @@ export default {
     // 获取隐患统计
     *fetchHiddenDangerCount({ payload, callback }, { call, put, all }) {
       const [
-        { data: { pagination: { total } } },
-        { data: { pagination: { total: ycq } } },
-        { data: { pagination: { total: wcq } } },
-        { data: { pagination: { total: dfc } } },
-      ]  = yield all([
+        {
+          data: {
+            pagination: { total },
+          },
+        },
+        {
+          data: {
+            pagination: { total: ycq },
+          },
+        },
+        {
+          data: {
+            pagination: { total: wcq },
+          },
+        },
+        {
+          data: {
+            pagination: { total: dfc },
+          },
+        },
+      ] = yield all([
         call(getHiddenDangerList, { status: 5, pageSize: 1, pageNum: 1, ...payload }),
         call(getHiddenDangerList, { status: 7, pageSize: 1, pageNum: 1, ...payload }),
         call(getHiddenDangerList, { status: 2, pageSize: 1, pageNum: 1, ...payload }),
@@ -674,6 +764,22 @@ export default {
         type: 'save',
         payload: { hiddenDangerCount: { total, ycq, wcq, dfc } },
       });
+    },
+
+    // 获取特种设备列表
+    *fetchSpecialEquipmentInfo({ payload, success, error }, { call, put }) {
+      const response = yield call(getSpecialEquipmentInfo, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveSpecialEquipmentInfo',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response);
+      }
     },
   },
 
@@ -779,5 +885,12 @@ export default {
         hiddenDangerList: payload,
       };
     },
+    // 获取特种设备列表
+    saveSpecialEquipmentInfo(state, { payload }) {
+      return {
+        ...state,
+        specialData: payload,
+      };
+    },
   },
-}
+};

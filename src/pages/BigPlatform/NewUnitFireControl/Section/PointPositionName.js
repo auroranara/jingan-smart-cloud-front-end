@@ -6,10 +6,12 @@ import ImageCard from '@/components/ImageCard';
 
 import styles from './PointPositionName.less';
 import DrawerContainer from '../components/DrawerContainer';
-import PointError from '../imgs/pointError.png';
-import lastCheckPoint from '../imgs/lastCheckPoint.png';
-import normalCheckPoint from '../imgs/normalCheckPoint.png';
-import waitCheckPoint from '../imgs/waitCheckPoint.png';
+// import PointError from '../imgs/hasDanger.png';
+// import lastCheckPoint from '../imgs/lastCheckPoint.png';
+// import normalCheckPoint from '../imgs/normalCheckPoint.png';
+// import waitCheckPoint from '../imgs/waitCheckPoint.png';
+import hasDanger from '../imgs/hasDanger.png';
+import noDanger from '../imgs/noDanger.png';
 
 const columns = [
   {
@@ -92,12 +94,13 @@ export default class PointPositionName extends PureComponent {
     } = this.props;
     const dangerList = list.filter(item => item.item_id === checkItemId);
 
-    const currentStatus =
-      (+checkStatus === 2 && PointError) ||
-      (+checkStatus === 1 && normalCheckPoint) ||
-      (+checkStatus === 4 && lastCheckPoint) ||
-      (+checkStatus === 3 && waitCheckPoint) ||
-      null;
+    const currentStatus = dangerList.length > 0 ? hasDanger : noDanger;
+    // const currentStatus =
+    //   (+checkStatus === 2 && hasDanger) ||
+    //   (+checkStatus === 1 && noDanger) ||
+    //   (+checkStatus === 4 && hasDanger) ||
+    //   (+checkStatus === 3 && hasDanger) ||
+    //   null;
 
     const cards = dangerList.map((item, index) => {
       const {
@@ -172,7 +175,13 @@ export default class PointPositionName extends PureComponent {
               style={{
                 backgroundImage: `url(${currentStatus})`,
               }}
-            />
+            >
+              {dangerList.length > 0 ? (
+                <span className={styles.hasDangerTitle}>有隐患</span>
+              ) : (
+                <span className={styles.noDangerTitle}>无隐患</span>
+              )}
+            </div>
           </Col>
         </div>
 
