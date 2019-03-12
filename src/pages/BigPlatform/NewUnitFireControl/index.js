@@ -147,6 +147,9 @@ export default class App extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
+
+    const { checkItemId } = this.state;
+
     const { NanXiaoWebsocket: ws } = global;
     if (!ws) return;
     ws.onmessage = e => {
@@ -232,6 +235,24 @@ export default class App extends PureComponent {
                   companyId,
                 },
               });
+
+              // 获取当前隐患列表
+              dispatch({
+                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+                payload: {
+                  company_id: companyId,
+                  businessType: 2,
+                },
+              });
+
+              //获取巡查记录
+              dispatch({
+                type: 'newUnitFireControl/fetchPointRecord',
+                payload: {
+                  itemId: checkItemId,
+                  item_type: 2,
+                },
+              });
             }
             if (type === 15 || type === 16 || type === 17) {
               if (fourColorTips[pointId] === messageFlag)
@@ -243,6 +264,24 @@ export default class App extends PureComponent {
                   companyId,
                 },
               });
+
+              // 获取当前隐患列表
+              dispatch({
+                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+                payload: {
+                  company_id: companyId,
+                  businessType: 2,
+                },
+              });
+
+              //获取巡查记录
+              dispatch({
+                type: 'newUnitFireControl/fetchPointRecord',
+                payload: {
+                  itemId: checkItemId,
+                  item_type: 2,
+                },
+              });
             }
             if (type === 13) {
               // 获取点位
@@ -250,6 +289,24 @@ export default class App extends PureComponent {
                 type: 'newUnitFireControl/fetchPointList',
                 payload: {
                   companyId,
+                },
+              });
+
+              // 获取当前隐患列表
+              dispatch({
+                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+                payload: {
+                  company_id: companyId,
+                  businessType: 2,
+                },
+              });
+
+              //获取巡查记录
+              dispatch({
+                type: 'newUnitFireControl/fetchPointRecord',
+                payload: {
+                  itemId: checkItemId,
+                  item_type: 2,
                 },
               });
               if (checkResult === '无隐患') this.removeFourColorTip2(pointId);
@@ -392,7 +449,6 @@ export default class App extends PureComponent {
         companyId,
       },
     });
-
     // 获取点位巡查列表
     this.fetchPointInspectionList();
 
@@ -1028,7 +1084,6 @@ export default class App extends PureComponent {
         faultList,
       },
     } = this.props;
-    console.log('currentHiddenDanger', this.props);
     const {
       videoVisible,
       showVideoList,

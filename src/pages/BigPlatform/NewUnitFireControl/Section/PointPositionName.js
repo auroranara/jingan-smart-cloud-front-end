@@ -98,7 +98,6 @@ export default class PointPositionName extends PureComponent {
     const currentStatus = dangerList.length > 0 ? hasDanger : noDanger;
 
     const cards = dangerList.map((item, index) => {
-      console.log('dangerList', dangerList);
       const {
         desc,
         report_user_name,
