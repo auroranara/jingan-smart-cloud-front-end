@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { DatePicker, Select, TreeSelect, message } from 'antd';
+import { Button, DatePicker, Select, TreeSelect, message } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import { mapMutations } from 'utils/utils';
@@ -8,6 +8,7 @@ import Ellipsis from '@/components/Ellipsis';
 // 引入样式文件
 import styles from './History.less';
 import { Tabs, HistoryPlay } from '../components/Components';
+import { getUserName } from '../utils';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -28,6 +29,8 @@ export default class History extends PureComponent {
     super(props);
     this.state = {
       range: defaultRange,
+      selectedArea: undefined,
+      idType: '0', // 0 userId   1 cardId
     };
     mapMutations(this, {
       namespace: 'position',
@@ -108,12 +111,14 @@ export default class History extends PureComponent {
    */
   getData = (range) => {
     const { historyRecord: { id, isCardId }={} } = this.props;
+    const { areaId } = this.state;
     if (id) {
       const [queryStartTime, queryEndTime] = range;
       this.fetchData({
         [isCardId?'cardId':'userId']: id,
         queryStartTime: queryStartTime && +queryStartTime,
         queryEndTime: queryEndTime && +queryEndTime,
+        areaId,
       });
     }
   }
@@ -131,7 +136,7 @@ export default class History extends PureComponent {
   handleOk = (range) => {
     this.isOk = true;
     this.lastRange = range;
-    this.getData(range);
+    // this.getData(range);
     this.setState({ range });
   }
 
@@ -162,7 +167,7 @@ export default class History extends PureComponent {
   handleCardChange = value => {
     const { setHistoryRecord } = this.props;
     setHistoryRecord({ id: value });
-    this.init(value);
+    // this.init(value);
   };
 
   /**
@@ -172,6 +177,19 @@ export default class History extends PureComponent {
     return option.props.children.includes(inputValue);
   };
 
+  handleAreaChange = value => {
+    this.setState({ selectedArea: value });
+  };
+
+  handleIdTypeChange = value => {
+    this.setState({ idType: value });
+  };
+
+  handleSearch = e => {
+    const { range } = this.state;
+    this.getData(range);
+  };
+
   render() {
     const {
       labelIndex,
@@ -179,7 +197,7 @@ export default class History extends PureComponent {
       position: { data: { areaDataHistories=[], locationDataHistories=[] }={}, tree={}, originalTree=[], sectionTree, people },
       handleLabelClick,
     } = this.props;
-    const { range } = this.state;
+    const { range, selectedArea, idType } = this.state;
     const [ startTime, endTime ] = range;
     // console.log(this.props.historyRecord);
 
@@ -192,16 +210,21 @@ export default class History extends PureComponent {
               <div className={styles.leftTop}>
                 <div className={styles.treeContainer}>
                   <TreeSelect
+                    allowClear
                     treeDefaultExpandAll
+                    value={selectedArea}
                     className={styles.tree}
                     treeData={sectionTree}
+                    onChange={this.handleAreaChange}
                   />
                 </div>
                 <div className={styles.selects}>
                   <Select
                     defaultValue="0"
+                    value={idType}
                     className={styles.select1}
                     dropdownClassName={styles.dropdown}
+                    onChange={this.handleIdTypeChange}
                   >
                     <Option key="0" value="0">人员</Option>
                     <Option key="1" value="1">卡号</Option>
@@ -232,10 +255,12 @@ export default class History extends PureComponent {
                   onOpenChange={this.handleOpenChange}
                   allowClear={false}
                 />
+                <Button className={styles.searchBtn} onClick={this.handleSearch}>搜索</Button>
               </div>
               <div className={styles.leftMiddle}>
                 <div className={styles.table}>
                   <div className={styles.th}>
+                    <div className={styles.td}>名字</div>
                     <div className={styles.td}>开始时间</div>
                     <div className={styles.td}>结束时间</div>
                     <div className={styles.td}>区域楼层</div>
@@ -252,8 +277,9 @@ export default class History extends PureComponent {
                         const changedStartTime = Math.max(startTimeStamp, startTime);
                         return (
                           <div className={styles.tr} key={id} intime={changedStartTime} onClick={this.handleClickTableRow}>
-                            <div className={styles.td}>{moment(changedStartTime).format('HH:mm:ss')}</div>
-                            <div className={styles.td}>{moment(Math.min(endTimeStamp, endTime)).format('HH:mm:ss')}</div>
+                            <div className={styles.td}>{getUserName(area)}</div>
+                            <div className={styles.td}>{moment(changedStartTime).format('MM-DD HH:mm')}</div>
+                            <div className={styles.td}>{moment(Math.min(endTimeStamp, endTime)).format('MM-DD HH:mm')}</div>
                             <div className={styles.td}><Ellipsis lines={1} tooltip className={styles.ellipsis}>{tree[areaId] ? tree[areaId].fullName : '厂外'}</Ellipsis></div>
                           </div>
                         );
@@ -262,7 +288,7 @@ export default class History extends PureComponent {
                   </div>
                 </div>
               </div>
-              <div className={styles.leftBottom}>
+              {/* <div className={styles.leftBottom}>
                 <div className={styles.table}>
                   <div className={styles.th}>
                     <div className={styles.td}>时间</div>
@@ -292,7 +318,7 @@ export default class History extends PureComponent {
                     </Scroll>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
