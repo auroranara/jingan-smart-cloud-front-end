@@ -1,18 +1,20 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Row, Col, Input, Icon } from 'antd';
+import { Row, Col, Input, Form } from 'antd';
 import DrawerContainer from '../DrawerContainer';
-// import { DrawerContainer } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import ChartGauge from '../../components/ChartGauge';
 import styles from './index.less';
 import cameraIcon from '../../images/camera.png';
 
 const Search = Input.Search;
+const FormItem = Form.Item;
+@Form.create()
 export default class WaterDrawer extends PureComponent {
   state = {
     videoVisible: false,
     videoKeyId: '',
     statusIndex: 0,
+    filterName: '',
   };
 
   handleClickCamera = () => {
@@ -43,11 +45,13 @@ export default class WaterDrawer extends PureComponent {
         normalImg,
       },
     } = this.props;
+    const { filterName } = this.state;
+    const list = filterName ? dataList.filter(item => item.name.includes(filterName)) : dataList;
     return (
       <div className={styles.devScroll}>
         <Row gutter={16}>
-          {dataList.length ? (
-            dataList.map((item, index) => {
+          {list.length ? (
+            list.map((item, index) => {
               const { name, value, unit, range, location, status } = item;
               return (
                 <Col span={12} key={index}>
@@ -117,14 +121,23 @@ export default class WaterDrawer extends PureComponent {
     );
   };
 
+  handleReset = () => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState({ filterName: '' });
+    setFieldsValue({ searchPoint: '' });
+  };
+
   render() {
     const {
       visible,
       dataSet: { subTitle, abnormal, normal, abnormalImg, normalImg, dataList },
       onClose,
       cameraList,
+      form: { getFieldDecorator },
     } = this.props;
-    const { videoVisible, videoKeyId } = this.state;
+    const { videoVisible, videoKeyId, filterName } = this.state;
 
     const left = (
       <Fragment>
@@ -146,7 +159,10 @@ export default class WaterDrawer extends PureComponent {
                         className={styles.bar}
                         style={{
                           backgroundColor: '#ff4848',
-                          width: (100 * abnormal) / (normal + abnormal) + '%',
+                          width:
+                            normal + abnormal > 0
+                              ? (100 * abnormal) / (normal + abnormal) + '%'
+                              : 0,
                         }}
                       />
                     </div>
@@ -164,7 +180,8 @@ export default class WaterDrawer extends PureComponent {
                         className={styles.bar}
                         style={{
                           backgroundColor: '#00fbfc',
-                          width: (100 * normal) / (normal + abnormal) + '%',
+                          width:
+                            normal + abnormal > 0 ? (100 * normal) / (normal + abnormal) + '%' : 0,
                         }}
                       />
                     </div>
@@ -185,11 +202,24 @@ export default class WaterDrawer extends PureComponent {
               实时监测数据
               {dataList.length && (
                 <div className={styles.search}>
-                  <Search
-                    placeholder="搜索点位名称"
-                    onSearch={value => console.log('value', value)}
-                    style={{ width: 200 }}
-                  />
+                  {filterName && (
+                    <div className={styles.resetBtn} onClick={this.handleReset}>
+                      重置
+                    </div>
+                  )}
+                  <Form style={{ position: 'absolute', right: 0 }}>
+                    <FormItem>
+                      {getFieldDecorator('searchPoint')(
+                        <Search
+                          placeholder="搜索点位名称"
+                          onSearch={value => {
+                            this.setState({ filterName: value });
+                          }}
+                          style={{ width: 200 }}
+                        />
+                      )}
+                    </FormItem>
+                  </Form>
                 </div>
               )}
             </h3>

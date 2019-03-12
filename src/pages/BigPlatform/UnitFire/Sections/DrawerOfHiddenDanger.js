@@ -216,7 +216,7 @@ export default class DrawerOfHiddenDanger extends PureComponent {
       <DrawerContainer
         title={title}
         visible={visible}
-        placement="right"
+        placement="left"
         destroyOnClose
         onClose={onClose}
         closable={true}

@@ -35,6 +35,23 @@
   align-self: flex-start;
   flex-grow: 1;
   top: -10px;
+  .resetBtn {
+    height: 32px;
+    line-height: 30px;
+    border-radius: 6px;
+    padding: 0 8px;
+    position: absolute;
+    right: 227px;
+    top: 5px;
+    color: #04fdff;
+    border: 1px solid #04fdff;
+    background: transparent;
+    cursor: pointer;
+    &:hover {
+      color: #40a9ff;
+      border-color: #40a9ff;
+    }
+  }
   :global {
     .ant-input-search {
       position: absolute;
@@ -48,10 +65,9 @@
         &::-webkit-input-placeholder {
           color: rgba(255, 255, 255, 0.8);
         }
-      }
-      // .ant-input-affix-wrapper:hover .ant-input:not(.ant-input-disabled) {
-  //   border-color: #04fdff;
-  // }
+      } // .ant-input-affix-wrapper:hover .ant-input:not(.ant-input-disabled) {
+      //   border-color: #04fdff;
+      // }
       .ant-input-suffix i {
         color: #04fdff;
       }
@@ -89,7 +105,6 @@
       .infoWrapper {
         flex: 1;
         line-height: 36px;
-        .name {}
         .barWrapper {
           background-color: #dee0eb;
           overflow: hidden;
