@@ -132,6 +132,7 @@ export default {
       picture: [],
     },
     lookUp: {},
+    createTime: 0, // 倒计时开始时间
     countdown: {},
     offGuard: {},
     allCamera: [],
@@ -241,6 +242,8 @@ export default {
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
       if (code === 200) {
         yield put({ type: 'saveLookUp', payload: data });
+        if (data && data.createTime)
+          yield put({ type: 'saveCreateTime', payload: data.createTime });
         const { flag, recordsId } = data;
         callback && callback(flag, recordsId);
       }
@@ -404,8 +407,11 @@ export default {
     saveLookUp(state, action) {
       return { ...state, lookUp: action.payload };
     },
+    // saveCreateTime(state, action) {
+    //   return { ...state, lookUp: { ...state.lookUp, createTime: action.payload } };
+    // },
     saveCreateTime(state, action) {
-      return { ...state, lookUp: { ...state.lookUp, createTime: action.payload } };
+      return { ...state, createTime: action.payload };
     },
     saveCountdown(state, action) {
       return { ...state, countdown: action.payload };

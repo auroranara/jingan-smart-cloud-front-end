@@ -4,6 +4,7 @@ import {
   quitSOS,
   putAlarm,
   querySectionTree,
+  queryBeacons,
 } from '../services/bigPlatform/personPosition';
 import { genAggregation, getSectionTree } from '@/pages/BigPlatform/Position/utils';
 
@@ -15,6 +16,7 @@ export default {
     positionAggregation: [],
     sectionTree: [],
     alarms: [],
+    beaconList: [],
   },
 
   effects: {
@@ -58,6 +60,14 @@ export default {
         callback && callback(treeList);
       }
     },
+    *fetchBeacons({ payload, callback }, { call, put }) {
+      const response = yield call(queryBeacons, payload);
+      const { code=500, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list : [];
+        yield put({ type: 'saveBeacons', payload: list });
+      }
+    },
   },
 
   reducers: {
@@ -85,6 +95,9 @@ export default {
         ...state,
         sectionTree: action.payload,
       };
+    },
+    saveBeacons(state, action) {
+      return { ...state, beaconList: action.payload };
     },
   },
 };

@@ -10,7 +10,10 @@ export default class PositionIndex extends PureComponent {
   state = {
     labelIndex: 0,
     selectedCardId: undefined,
-    historyCardId: undefined,
+    selectedUserId: undefined,
+    // historyCardId: undefined,
+    // 历史记录，为对象，id可能为cardId，也可能为userId，isCardId是否为卡片id
+    historyRecord: undefined,
     areaInfoCache: {}, // 缓存RealTime组件中的areaInfo对象，以防切换tab时，areaInfo为空对象的问题
   };
 
@@ -22,12 +25,12 @@ export default class PositionIndex extends PureComponent {
     this.setState({ labelIndex: i });
   };
 
-  setSelectedCard = cardId => {
-    this.setState({ selectedCardId: cardId });
+  setSelectedCard = (cardId, userId) => {
+    this.setState({ selectedCardId: cardId, selectedUserId: userId });
   };
 
-  setHistoryCard = cardId => {
-    this.setState({ historyCardId: cardId });
+  setHistoryRecord = historyRecord => {
+    this.setState({ historyRecord });
   };
 
   render() {
@@ -41,7 +44,9 @@ export default class PositionIndex extends PureComponent {
     const {
       labelIndex,
       selectedCardId,
-      historyCardId,
+      selectedUserId,
+      // historyCardId,
+      historyRecord,
       areaInfoCache,
     } = this.state;
 
@@ -62,18 +67,19 @@ export default class PositionIndex extends PureComponent {
             areaInfoCache={areaInfoCache}
             setAreaInfoCache={this.setAreaInfoCache}
             selectedCardId={selectedCardId}
+            selectedUserId={selectedUserId}
             personPosition={personPosition}
             handleLabelClick={this.handleLabelClick}
             setSelectedCard={this.setSelectedCard}
-            setHistoryCard={this.setHistoryCard}
+            setHistoryRecord={this.setHistoryRecord}
           />
         )}
         {labelIndex === 2 && (
           <History
-            cardId={historyCardId}
+            historyRecord={historyRecord}
             companyId={companyId}
             labelIndex={labelIndex}
-            setCardId={this.setHistoryCard}
+            setHistoryRecord={this.setHistoryRecord}
             handleLabelClick={this.handleLabelClick}
           />
         )}

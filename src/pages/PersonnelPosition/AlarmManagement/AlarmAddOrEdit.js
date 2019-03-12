@@ -533,7 +533,7 @@ export default class AlarmAddOrEdit extends PureComponent {
               </Fragment>
             )}
             <FormItem style={{ textAlign: 'center', marginTop: 24 }}>
-              {!!checkedValues.length && (
+              {!(isAdd && !checkedValues.length) && (
                 <Button type="primary" htmlType="submit" disabled={isAdd ? !areaId : loading}>
                   提交
                 </Button>

@@ -6,7 +6,7 @@ import { message, notification } from 'antd';
 import styles from './RealTime.less';
 import { AlarmHandle, AlarmMsg, MapInfo, PersonInfo, Tabs, VideoPlay } from '../components/Components';
 import { AlarmDrawer, CardList, CardSelected, LeafletMap, LowPowerDrawer, PersonDrawer, SectionList } from './Components';
-import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem, getAlarmItem, getAlarmDesc } from '../utils';
+import { genTreeList, getAreaChangeMap, getAreaInfo, getPersonInfoItem, getAlarmItem, getAlarmDesc, handleOriginMovingCards } from '../utils';
 
 const options = {
   pingTimeout: 30000,
@@ -16,6 +16,7 @@ const options = {
 };
 
 const SOS_TYPE = 1;
+const DELAY = 6000;
 
 const LOCATION_MESSAGE_TYPE = "1";
 const AREA_CHANGE_TYPE = "2";
@@ -27,7 +28,6 @@ export default class RealTime extends PureComponent {
   state = {
     alarmId: undefined, // 警报id
     areaId: undefined, // 地图显示的areaId，即当前真实areaId为多层建筑时，areaId设置为其父节点
-    trueAreaId: undefined, // 实际选定的areaId，展示数据用的
     highlightedAreaId: undefined, // 高亮的区域
     beaconId: undefined, // 信标id
     cardId: undefined, // 选中的人员id
@@ -44,27 +44,26 @@ export default class RealTime extends PureComponent {
     personDrawerVisible: false, // 人员列表抽屉
     useCardIdHandleAlarm: undefined, // 当sos存在时，又在报警列表找不到时，标记为sos对应的cardId，使用另外一个接口
     expandedRowKeys: [], // SectionList组件中的展开的树节点
+    movingCards: [], // 带有不断变化的x，y的卡片
   };
+
+  originMovingCards = []; // 缓存所有卡片的初始位置，并实时更新状态
 
   componentDidMount() {
     const { dispatch, companyId, setAreaInfoCache } = this.props;
 
     this.connectWebSocket();
 
-    dispatch({
-      type: 'personPosition/fetchSectionTree',
-      payload: { companyId },
-      callback: list => {
-        const areaInfo = this.areaInfo = getAreaInfo(list);
-        setAreaInfoCache(areaInfo);
-        this.setTableExpandedRowKeys(Object.keys(areaInfo).filter(prop => prop !== 'null' && prop !== 'undefined'));
-        // console.log(this.areaInfo);
-        if (list.length) {
-          const root = list[0];
-          const { id } = root;
-          this.setState({ areaId: id, trueAreaId: id, mapBackgroundUrl: root.mapPhoto.url });
-        }
-      },
+    this.fetchSectionTree(list => {
+      const areaInfo = this.areaInfo = getAreaInfo(list);
+      setAreaInfoCache(areaInfo);
+      this.setTableExpandedRowKeys(Object.keys(areaInfo).filter(prop => prop !== 'null' && prop !== 'undefined'));
+      // console.log(this.areaInfo);
+      if (list.length) {
+        const root = list[0];
+        const { id } = root;
+        this.setState({ areaId: id, mapBackgroundUrl: root.mapPhoto.url });
+      }
     });
     dispatch({
       type: 'personPosition/fetchInitialPositions',
@@ -74,19 +73,26 @@ export default class RealTime extends PureComponent {
       type: 'personPosition/fetchInitAlarms',
       payload: { companyId, showStatus: 1, pageSize: 0, pageNum: 1, executeStatus: 0 },
     });
+    dispatch({ type: 'personPosition/fetchBeacons', payload: { companyId, pageSize: 0, pageNum: 1 } });
     // 获取企业信息
     dispatch({
       type: 'user/fetchCurrent',
     });
+
+    this.treeTimer = setInterval(() => {
+      this.fetchSectionTree();
+    }, DELAY);
   }
 
   componentWillUnmount() {
     const ws = this.ws;
     ws && ws.close();
+    clearInterval(this.treeTimer);
   }
 
   ws = null;
   areaInfo = {};
+  treeTimer = null;
 
   // 判定当前页面是否是目标追踪
   isTargetTrack = () => {
@@ -94,6 +100,15 @@ export default class RealTime extends PureComponent {
     const { labelIndex } = this.props;
     return !!labelIndex;
   };
+
+  fetchSectionTree = callback => {
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'personPosition/fetchSectionTree',
+      payload: { companyId },
+      callback,
+    });
+  }
 
   connectWebSocket = () => {
     const { companyId } = this.props;
@@ -130,27 +145,12 @@ export default class RealTime extends PureComponent {
     };
   };
 
-  setHighlightedAreaId = areaId => {
+  setHighlightedAreaId = (areaId) => {
     this.setState({ highlightedAreaId: areaId });
   };
 
   setAreaId = areaId => {
-    // this.setState({ areaId });
-    const { personPosition: { sectionTree } } = this.props;
-
-    // areaId为null时则在厂区外，不属于任何区域
-    if (areaId === null)
-      areaId = sectionTree.length ? sectionTree[0].id : '';
-
-    if (!areaId)
-      return;
-
-    const current = this.areaInfo[areaId];
-    // 若当前区域为多层建筑，则显示其父区域，非多层建筑显示当前区域
-    if (current.isBuilding)
-      this.setState({ areaId: current.parentId, trueAreaId: areaId });
-    else
-      this.setState({ areaId, trueAreaId: areaId });
+    this.setState({ areaId });
   };
 
   handleWbData = wbData => {
@@ -189,8 +189,34 @@ export default class RealTime extends PureComponent {
   handlePositions = data => {
     const { dispatch, personPosition: { positionList } } = this.props;
     const cardIds = data.map(({ cardId }) => cardId);
+    handleOriginMovingCards(data, positionList, this.originMovingCards, this.moveCard, this.removeMovingCard);
     const newPositionList = positionList.filter(({ cardId }) => !cardIds.includes(cardId)).concat(data);
     dispatch({ type: 'personPosition/savePositions', payload: newPositionList });
+  };
+
+  moveCard = (id, x, y) => {
+    // console.log(x, y);
+    const originMovingCards = this.originMovingCards;
+    this.setState(({ movingCards }) => {
+      const newMovingCards = Array.from(movingCards);
+      const index = newMovingCards.findIndex(({ cardId }) => cardId === id);
+      const card = originMovingCards.find(({ cardId }) => cardId === id);
+      const newCard = { ...card, xarea: x, yarea: y };
+      if (index === -1)
+        newMovingCards.push(newCard);
+      else
+        newMovingCards[index] = newCard;
+      return { movingCards: newMovingCards };
+    });
+  };
+
+  removeMovingCard = cardId => {
+    // console.log(cardId);
+    const originMovingCards = this.originMovingCards;
+    const index = originMovingCards.findIndex(({ cardId: id }) => id === cardId);
+    this.originMovingCards.splice(index, 1);
+    // console.log(this.originMovingCards, this.state.movingCards.filter(({ cardId: id }) => id !== cardId));
+    this.setState(({ movingCards }) => ({ movingCards: movingCards.filter(({ cardId: id }) => id !== cardId) }));
   };
 
   handleAreaAutoChange = data => {
@@ -224,9 +250,10 @@ export default class RealTime extends PureComponent {
       const  delta= areaChangeMap[id];
       if (delta) {
         const { enterDelta, exitDelta } = delta;
+        const newCount = count + enterDelta - exitDelta;
         return {
           ...item,
-          count: count + enterDelta - exitDelta,
+          count: newCount < 0 ? 0 : newCount,
           inCardCount: inCardCount + enterDelta,
           outCardCount: outCardCount + exitDelta,
         };
@@ -412,10 +439,10 @@ export default class RealTime extends PureComponent {
     });
   };
 
-  handleTrack = (areaId, cardId) => {
+  handleTrack = (areaId, cardId, userId) => {
     const { setSelectedCard, handleLabelClick } = this.props;
     this.setAreaId(areaId);
-    setSelectedCard(cardId);
+    setSelectedCard(cardId, userId);
     handleLabelClick(1);
   };
 
@@ -429,16 +456,16 @@ export default class RealTime extends PureComponent {
       labelIndex,
       companyId,
       selectedCardId,
+      selectedUserId,
       areaInfoCache,
-      personPosition: { sectionTree, positionList, positionAggregation, alarms },
+      personPosition: { sectionTree, positionList, positionAggregation, alarms, beaconList },
       handleLabelClick,
       setSelectedCard,
-      setHistoryCard,
+      setHistoryRecord,
     } = this.props;
     const {
       alarmId,
       areaId,
-      trueAreaId,
       highlightedAreaId,
       beaconId,
       cardId,
@@ -455,6 +482,7 @@ export default class RealTime extends PureComponent {
       personDrawerVisible,
       useCardIdHandleAlarm,
       expandedRowKeys,
+      movingCards,
     } = this.state;
 
     // console.log(sectionTree);
@@ -471,6 +499,8 @@ export default class RealTime extends PureComponent {
             {!labelIndex && (
               <SectionList
                 data={sectionTree}
+                areaInfo={areaInfo}
+                areaId={areaId}
                 setAreaId={this.setAreaId}
                 expandedRowKeys={expandedRowKeys}
                 setHighlightedAreaId={this.setHighlightedAreaId}
@@ -488,10 +518,11 @@ export default class RealTime extends PureComponent {
               <CardSelected
                 dispatch={dispatch}
                 cardId={selectedCardId}
+                userId={selectedUserId}
                 areaInfo={areaInfo}
                 positions={positionList}
                 setSelectedCard={setSelectedCard}
-                setHistoryCard={setHistoryCard}
+                setHistoryRecord={setHistoryRecord}
                 handleLabelClick={handleLabelClick}
               />
             )}
@@ -504,12 +535,14 @@ export default class RealTime extends PureComponent {
               isTrack={isTrack}
               selectedCardId={selectedCardId}
               areaId={areaId}
-              trueAreaId={trueAreaId}
               highlightedAreaId={highlightedAreaId}
               areaInfo={areaInfo}
               sectionTree={sectionTree}
               positions={positionList}
               aggregation={positionAggregation}
+              movingCards={movingCards}
+              removeMovingCard={this.removeMovingCard}
+              beaconList={beaconList}
               setAreaId={this.setAreaId}
               setHighlightedAreaId={this.setHighlightedAreaId}
               handleShowVideo={this.handleShowVideo}

@@ -143,6 +143,11 @@ export default class SectionList extends PureComponent {
     return {
       onClick: e => {
         setAreaId(id);
+        // const rows = document.querySelector('.ant-table table tbody').children;
+        // for (let row of rows) {
+        //   if (row.dataset.rowKey === id)
+        //     row.classList.add(styles.cyan);
+        // }
       },
       onMouseEnter: e => {
         // console.log('in', id);
@@ -155,9 +160,9 @@ export default class SectionList extends PureComponent {
     }
   };
 
-  onTableExpand = (expanded, record) => {
-    console.log(expanded, record);
-  };
+  // onTableExpand = (expanded, record) => {
+  //   console.log(expanded, record);
+  // };
 
   onExpandedRowsChange = expandedRows => {
     // console.log(expandedRows);
@@ -165,13 +170,21 @@ export default class SectionList extends PureComponent {
     setExpandedRowKeys(expandedRows);
   };
 
+  getTableRowClassName = (record, index) => {
+    const { areaId } = this.props;
+    if (record.id === areaId)
+      return styles.rowSelected;
+  };
+
   /**
    * 渲染
    */
   render() {
     const {
+      areaInfo,
       // 表格源数据
       data=[],
+      areaId,
       setAreaId,
       setHighlightedAreaId,
       expandedRowKeys,
@@ -261,6 +274,7 @@ export default class SectionList extends PureComponent {
             <div className={styles.tableContainer}>
               <Table
                 className={styles.table}
+                rowClassName={this.getTableRowClassName}
                 size="small"
                 columns={columns}
                 dataSource={list}
@@ -268,9 +282,9 @@ export default class SectionList extends PureComponent {
                 bordered={false}
                 rowKey={'id'}
                 defaultExpandAllRows
-                rowClassName={styles.tableRow}
                 expandIcon={this.renderExpandIcon}
-                indentSize={20}
+                // indentSize={20}
+                indentSize={0}
                 onRow={this.onRow}
                 expandedRowKeys={expandedRowKeys}
                 // onExpand={this.onTableExpand}

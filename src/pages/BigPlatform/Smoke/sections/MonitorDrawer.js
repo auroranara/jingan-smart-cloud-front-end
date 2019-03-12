@@ -17,6 +17,7 @@ import emptyBg from '../imgs/waterBg.png';
 import smokeAlarm from '../imgs/smoke-alarm.png';
 import smokeFault from '../imgs/smoke-fault.png';
 import smokeNormal from '../imgs/smoke-normal.png';
+import Ellipsis from '@/components/Ellipsis';
 
 const LABELS = ['正常', '火警', '故障'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
@@ -102,8 +103,8 @@ export default class MonitorDrawer extends PureComponent {
                       <img src={smokeImg} alt="smokeImg" />
                     </div>
                     <div className={styles.infoWrapper}>
-                      <div className={styles.position}>{`${area}：${location}`}</div>
-                      <div className={styles.infos}>{+status === 0 ? devStatus : occurTime}</div>
+                      <div className={styles.position}><Ellipsis lines={1} tooltip>{`${area}：${location}`}</Ellipsis></div>
+                      <div className={styles.infos}><Ellipsis lines={1} tooltip>{+status === 0 ? devStatus : occurTime}</Ellipsis></div>
                       <div className={styles.extraWrapper}>
                         {!!cameraList.length && (
                           <div
@@ -116,11 +117,11 @@ export default class MonitorDrawer extends PureComponent {
                           <div
                             className={styles.status}
                             style={{ color, borderColor: color /* cursor: 'pointer' */ }}
-                            // onClick={() => {
-                            //   +status > 0
-                            //     ? handleAlarmClick(undefined, companyId, companyName, undefined, device_id)
-                            //     : handleFaultClick(undefined, companyId, companyName, undefined, device_id);
-                            // }}
+                          // onClick={() => {
+                          //   +status > 0
+                          //     ? handleAlarmClick(undefined, companyId, companyName, undefined, device_id)
+                          //     : handleFaultClick(undefined, companyId, companyName, undefined, device_id);
+                          // }}
                           >
                             {+status > 0 ? '火警' : '故障'}
                           </div>
@@ -132,19 +133,19 @@ export default class MonitorDrawer extends PureComponent {
               );
             })
           ) : (
-            <div
-              style={{
-                width: '100%',
-                height: '135px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                color: '#4f678d',
-              }}
-            >
-              暂无相关监测数据
+              <div
+                style={{
+                  width: '100%',
+                  height: '135px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  color: '#4f678d',
+                }}
+              >
+                暂无相关监测数据
             </div>
-          )}
+            )}
         </Row>
       </div>
     );
@@ -207,8 +208,8 @@ export default class MonitorDrawer extends PureComponent {
             {devList.length > 0 ? (
               this.renderItems()
             ) : (
-              <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />
-            )}
+                <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />
+              )}
           </div>
         </div>
         <div className={styles.chartContainer}>
