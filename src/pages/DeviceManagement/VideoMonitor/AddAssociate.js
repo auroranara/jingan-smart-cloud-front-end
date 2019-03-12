@@ -103,7 +103,7 @@ export default class AddAssociate extends Component {
     } = this.props
     const { selectedRowKeys } = this.state
     if (!selectedRowKeys || selectedRowKeys.length === 0) {
-      message.warning('请选择信标！')
+      message.warning('请选择设备！')
       return
     }
     const error = () => { message.error('新增关联设备失败！') }
@@ -409,7 +409,7 @@ export default class AddAssociate extends Component {
                     </Col>
                     <Col {...colWrapper}>
                       <FormItem {...formItemStyle}>
-                        {getFieldDecorator('systemType')(
+                        {getFieldDecorator('unitType')(
                           <Select placeholder="设施部件类型" >
                             {dictDataList.map(item => (<Select.Option key={item.id} value={item.value}>{item.label}</Select.Option>))}
                           </Select>

@@ -208,7 +208,7 @@ export default class AssociateFire extends Component {
               </Col>
               <Col {...colWrapper}>
                 <FormItem {...formItemStyle}>
-                  {getFieldDecorator('systemType')(
+                  {getFieldDecorator('unitType')(
                     <Select placeholder="设施部件类型" >
                       {dictDataList.map(item => (<Select.Option key={item.id} value={item.value}>{item.label}</Select.Option>))}
                     </Select>
