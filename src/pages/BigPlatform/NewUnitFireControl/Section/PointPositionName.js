@@ -92,15 +92,10 @@ export default class PointPositionName extends PureComponent {
       handlePointDangerDetail,
       ...restProps
     } = this.props;
+
     const dangerList = list.filter(item => item.item_id === checkItemId);
 
     const currentStatus = dangerList.length > 0 ? hasDanger : noDanger;
-    // const currentStatus =
-    //   (+checkStatus === 2 && hasDanger) ||
-    //   (+checkStatus === 1 && noDanger) ||
-    //   (+checkStatus === 4 && hasDanger) ||
-    //   (+checkStatus === 3 && hasDanger) ||
-    //   null;
 
     const cards = dangerList.map((item, index) => {
       const {
@@ -185,30 +180,26 @@ export default class PointPositionName extends PureComponent {
           </Col>
         </div>
 
-        {+checkStatus !== 1 &&
-          dangerList &&
-          dangerList.length > 0 && (
-            <div className={styles.cardsTitle}>
-              <p className={styles.titleP}>
-                当前隐患
-                <span className={styles.titleSpan}>({dangerList.length})</span>
-              </p>
-            </div>
-          )}
+        {dangerList.length > 0 && (
+          <div className={styles.cardsTitle}>
+            <p className={styles.titleP}>
+              当前隐患
+              <span className={styles.titleSpan}>({dangerList.length})</span>
+            </p>
+          </div>
+        )}
 
-        {+checkStatus !== 1 &&
-          dangerList &&
-          dangerList.length > 0 && (
-            <div className={styles.cards}>
-              <div className={styles.cardsMain}>
-                {dangerList.length ? (
-                  cards
-                ) : (
-                  <div style={{ textAlign: 'center', color: '#fff' }}>{'暂无数据'}</div>
-                )}
-              </div>
+        {dangerList.length > 0 && (
+          <div className={styles.cards}>
+            <div className={styles.cardsMain}>
+              {dangerList.length ? (
+                cards
+              ) : (
+                <div style={{ textAlign: 'center', color: '#fff' }}>{'暂无数据'}</div>
+              )}
             </div>
-          )}
+          </div>
+        )}
 
         <div className={styles.recordTitle}>
           <p className={styles.titleP}>
