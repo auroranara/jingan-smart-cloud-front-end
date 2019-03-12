@@ -111,16 +111,14 @@ export default class History extends PureComponent {
    */
   getData = (range) => {
     const { historyRecord: { id, isCardId }={} } = this.props;
-    const { areaId } = this.state;
-    if (id) {
-      const [queryStartTime, queryEndTime] = range;
-      this.fetchData({
-        [isCardId?'cardId':'userId']: id,
-        queryStartTime: queryStartTime && +queryStartTime,
-        queryEndTime: queryEndTime && +queryEndTime,
-        areaId,
-      });
-    }
+    const { selectedArea } = this.state;
+    const [queryStartTime, queryEndTime] = range;
+    this.fetchData({
+      [isCardId?'cardId':'userId']: id,
+      queryStartTime: queryStartTime && +queryStartTime,
+      queryEndTime: queryEndTime && +queryEndTime,
+      areaId: selectedArea,
+    });
   }
 
   /**
@@ -197,7 +195,7 @@ export default class History extends PureComponent {
       position: { data: { areaDataHistories=[], locationDataHistories=[] }={}, tree={}, originalTree=[], sectionTree, people },
       handleLabelClick,
     } = this.props;
-    const { range, selectedArea, idType } = this.state;
+    const { range, selectedArea, multipleIds, idType } = this.state;
     const [ startTime, endTime ] = range;
     // console.log(this.props.historyRecord);
 
@@ -216,6 +214,7 @@ export default class History extends PureComponent {
                     className={styles.tree}
                     treeData={sectionTree}
                     onChange={this.handleAreaChange}
+                    dropdownClassName={styles.treeDropdown}
                   />
                 </div>
                 <div className={styles.selects}>
@@ -229,18 +228,34 @@ export default class History extends PureComponent {
                     <Option key="0" value="0">人员</Option>
                     <Option key="1" value="1">卡号</Option>
                   </Select>
-                  <Select
-                    allowClear
-                    showSearch
-                    className={styles.cardSelect}
-                    dropdownClassName={styles.dropdown}
-                    value={id && isCardId ? `临时卡` : id}
-                    placeholder="请选择或搜索人员/卡号"
-                    filterOption={this.cardFilter}
-                    onChange={this.handleCardChange}
-                  >
-                    {people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>)}
-                  </Select>
+                  {selectedArea ? (
+                    <Select
+                      allowClear
+                      showSearch
+                      mode="multiple"
+                      className={styles.cardSelect}
+                      dropdownClassName={styles.dropdown}
+                      value={id && isCardId ? `临时卡` : id}
+                      placeholder="请选择或搜索人员/卡号"
+                      filterOption={this.cardFilter}
+                      onChange={this.handleCardChange}
+                    >
+                      {people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>)}
+                    </Select>
+                  ): (
+                    <Select
+                      allowClear
+                      showSearch
+                      className={styles.cardSelect}
+                      dropdownClassName={styles.dropdown}
+                      value={id && isCardId ? `临时卡` : id}
+                      placeholder="请选择或搜索人员/卡号"
+                      filterOption={this.cardFilter}
+                      onChange={this.handleCardChange}
+                    >
+                      {people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>)}
+                    </Select>
+                  )}
                 </div>
                 <RangePicker
                   dropdownClassName={styles.rangePickerDropDown}
