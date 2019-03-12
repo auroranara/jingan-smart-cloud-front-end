@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon, Spin } from 'antd';
+import { Icon, Spin, Switch } from 'antd';
 import { connect } from 'dva';
 
 import styles from './LeafletMap.less';
@@ -25,6 +25,7 @@ export default class LeafletMap extends PureComponent {
     data: [],
     images: undefined,
     reference: undefined,
+    beaconOn: true, // 是否显示信标
   };
 
   currentSection = {};
@@ -179,8 +180,16 @@ export default class LeafletMap extends PureComponent {
     setAreaId(sectionTree[0].id);
   };
 
+  handleBeaconStateChange = checked => {
+    this.setState({ beaconOn: checked });
+  };
+
   beaconListToIcons = (aggregation) => {
     const { beaconList, areaId } = this.props;
+    const { beaconOn } = this.state;
+    if (!beaconOn)
+      return [];
+
     const aggBeacons = aggregation.map(ps => ps[0].beaconId);
     // 只显示当前区域且上面没有人的信标
     return beaconList.filter(({ id, areaId: beaconAreaId }) => !aggBeacons.includes(id) && beaconAreaId === areaId).map(({ id, beaconCode, xarea, yarea, status }) => ({
@@ -341,7 +350,7 @@ export default class LeafletMap extends PureComponent {
 
   render() {
     const { url, areaId, areaInfo } = this.props;
-    const { data, images, reference } = this.state;
+    const { data, images, reference, beaconOn } = this.state;
     // const { count, inCardCount, outCardCount } = this.currentTrueSection || {};
 
     const currentAreaInfo = (areaId && areaInfo[areaId]) || {};
@@ -389,6 +398,10 @@ export default class LeafletMap extends PureComponent {
         <div className={styles.legends}>
           <div className={styles.visitorLgd}>访客</div>
           <div className={styles.generalLgd}>普通人员</div>
+        </div>
+        <div className={styles.beaconSwitch}>
+          <span className={styles.beaconLabel}>信标</span>
+          <Switch size="small" checked={beaconOn} onChange={this.handleBeaconStateChange} />
         </div>
       </div>
     );
