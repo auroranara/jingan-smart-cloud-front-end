@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { DatePicker, Select, message } from 'antd';
+import { Button, DatePicker, Select, TreeSelect, message } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import { mapMutations } from 'utils/utils';
@@ -8,6 +8,7 @@ import Ellipsis from '@/components/Ellipsis';
 // 引入样式文件
 import styles from './History.less';
 import { Tabs, HistoryPlay } from '../components/Components';
+import { getUserName } from '../utils';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -28,6 +29,8 @@ export default class History extends PureComponent {
     super(props);
     this.state = {
       range: defaultRange,
+      selectedArea: undefined,
+      spreads: [],
     };
     mapMutations(this, {
       namespace: 'position',
@@ -50,21 +53,27 @@ export default class History extends PureComponent {
   lastRange = defaultRange;
 
   componentDidMount() {
-    const { historyRecord: { id, isCardId }={}, companyId } = this.props;
+    const {
+      // historyRecord: { id, isCardId }={},
+      companyId,
+    } = this.props;
     // 获取人员列表
     this.fetchPeople({ companyId });
 
     // 获取区域树
     this.fetchTree({ companyId });
 
-    if (id) {
-      this.init(id, isCardId);
-    }
+    this.init();
   }
 
-  init = (id, isCardId) => {
+  init = () => {
+    const { idType, userIds, cardIds } = this.props;
+    if (!userIds.length && !cardIds.length)
+      return;
+
+    const params = +idType ? { cardId: cardIds.join(',') } : { userId: userIds.join(',') };
     // 获取最新一条数据
-    this.fetchLatest({ [isCardId?'cardId':'userId']: id }, (response) => {
+    this.fetchLatest(params, response => {
       if (response && response.code === 200 && response.data) {
         const { intime } = response.data;
         const minute = 60 * 1000;
@@ -107,15 +116,22 @@ export default class History extends PureComponent {
    * 获取列表
    */
   getData = (range) => {
-    const { historyRecord: { id, isCardId }={} } = this.props;
-    if (id) {
-      const [queryStartTime, queryEndTime] = range;
-      this.fetchData({
-        [isCardId?'cardId':'userId']: id,
-        queryStartTime: queryStartTime && +queryStartTime,
-        queryEndTime: queryEndTime && +queryEndTime,
-      });
-    }
+    // const { historyRecord: { id, isCardId }={} } = this.props;
+    const { idType, userIds, cardIds } = this.props;
+    const { selectedArea } = this.state;
+
+    const ids = +idType ? { cardId: cardIds.join(',') } : { userId: userIds.join(',') };
+    const [queryStartTime, queryEndTime] = range;
+    this.fetchData({
+      ...ids,
+      queryStartTime: queryStartTime && +queryStartTime,
+      queryEndTime: queryEndTime && +queryEndTime,
+      areaId: selectedArea,
+      idType,
+    }, (response, areaDataMap) => {
+      if (response.code === 200)
+        this.setState({ spreads: Object.keys(areaDataMap).map((k, i) => !i) });
+    });
   }
 
   /**
@@ -131,7 +147,7 @@ export default class History extends PureComponent {
   handleOk = (range) => {
     this.isOk = true;
     this.lastRange = range;
-    this.getData(range);
+    // this.getData(range);
     this.setState({ range });
   }
 
@@ -159,29 +175,63 @@ export default class History extends PureComponent {
   /**
    * 下拉框change事件
    */
-  handleCardChange = value => {
-    const { setHistoryRecord } = this.props;
-    setHistoryRecord({ id: value });
-    this.init(value);
+  // handleCardChange = value => {
+  //   const { setHistoryRecord } = this.props;
+  //   setHistoryRecord({ id: value });
+  //   // this.init(value);
+  // };
+
+  handleIdsChange = value => {
+    // console.log(value);
+    const { idType, setUserIds, setCardIds } = this.props;
+    +idType ? setCardIds(value) : setUserIds(value);
   };
 
   /**
    * 下拉框筛选
    */
-  cardFilter = (inputValue, option) => {
-    return option.props.children.includes(inputValue);
+  // cardFilter = (inputValue, option) => {
+  //   return option.props.children.includes(inputValue);
+  // };
+
+  handleAreaChange = value => {
+    this.setState({ selectedArea: value });
+  };
+
+  handleIdTypeChange = value => {
+    const { setIdType } = this.props;
+    setIdType(value);
+  };
+
+  handleSearch = e => {
+    const { range } = this.state;
+    this.getData(range);
   };
 
   render() {
     const {
       labelIndex,
-      historyRecord: { id, isCardId }={},
-      position: { data: { areaDataHistories=[], locationDataHistories=[] }={}, tree={}, originalTree=[], people },
+      // historyRecord: { id, isCardId }={},
+      idType,
+      userIds,
+      cardIds,
+      position: {
+        areaDataMap,
+        historyIdMap,
+        data: {
+          areaDataHistories=[],
+          locationDataHistories=[],
+        }={},
+        tree={},
+        originalTree=[],
+        sectionTree,
+        people,
+      },
       handleLabelClick,
     } = this.props;
-    const { range } = this.state;
+    const { range, selectedArea, spreads } = this.state;
     const [ startTime, endTime ] = range;
-    // console.log(this.props.historyRecord);
+    // console.log(historyIdMap);
 
     return (
       <div className={styles.container}>
@@ -190,17 +240,43 @@ export default class History extends PureComponent {
           <div className={styles.wrapper}>
             <div className={styles.inner}>
               <div className={styles.leftTop}>
-                <Select
-                  showSearch
-                  className={styles.cardSelect}
-                  dropdownClassName={styles.dropdown}
-                  value={id && isCardId ? `临时卡` : id}
-                  placeholder="请选择或搜索人员"
-                  filterOption={this.cardFilter}
-                  onChange={this.handleCardChange}
-                >
-                  {people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>)}
-                </Select>
+                <div className={styles.treeContainer}>
+                  <TreeSelect
+                    allowClear
+                    treeDefaultExpandAll
+                    value={selectedArea}
+                    className={styles.tree}
+                    treeData={sectionTree}
+                    onChange={this.handleAreaChange}
+                    dropdownClassName={styles.treeDropdown}
+                  />
+                </div>
+                <div className={styles.selects}>
+                  <Select
+                    defaultValue="0"
+                    value={idType}
+                    className={styles.select1}
+                    dropdownClassName={styles.dropdown}
+                    onChange={this.handleIdTypeChange}
+                  >
+                    <Option key="0" value="0">人员</Option>
+                    <Option key="1" value="1">卡号</Option>
+                  </Select>
+                  <Select
+                    allowClear
+                    showSearch
+                    mode="multiple"
+                    className={styles.cardSelect}
+                    dropdownClassName={styles.dropdown}
+                    // value={id && isCardId ? `临时卡` : id}
+                    value={+idType ? cardIds : userIds}
+                    placeholder="请选择或搜索人员/卡号"
+                    // filterOption={this.cardFilter}
+                    onChange={this.handleIdsChange}
+                  >
+                    {people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>)}
+                  </Select>
+                </div>
                 <RangePicker
                   dropdownClassName={styles.rangePickerDropDown}
                   className={styles.rangePicker}
@@ -214,10 +290,12 @@ export default class History extends PureComponent {
                   onOpenChange={this.handleOpenChange}
                   allowClear={false}
                 />
+                <Button className={styles.searchBtn} onClick={this.handleSearch}>搜索</Button>
               </div>
               <div className={styles.leftMiddle}>
                 <div className={styles.table}>
                   <div className={styles.th}>
+                    <div className={styles.td}>名字</div>
                     <div className={styles.td}>开始时间</div>
                     <div className={styles.td}>结束时间</div>
                     <div className={styles.td}>区域楼层</div>
@@ -230,12 +308,13 @@ export default class History extends PureComponent {
                       renderThumbHorizontal={renderThumbHorizontal}
                     >
                       {areaDataHistories && areaDataHistories.length > 0 ? areaDataHistories.map(area => {
-                        const { startTime: startTimeStamp, endTime: endTimeStamp, areaId, id } = area;
+                        const { startTime: startTimeStamp, endTime: endTimeStamp, areaId, id, hideName } = area;
                         const changedStartTime = Math.max(startTimeStamp, startTime);
                         return (
                           <div className={styles.tr} key={id} intime={changedStartTime} onClick={this.handleClickTableRow}>
-                            <div className={styles.td}>{moment(changedStartTime).format('HH:mm:ss')}</div>
-                            <div className={styles.td}>{moment(Math.min(endTimeStamp, endTime)).format('HH:mm:ss')}</div>
+                            <div className={styles[`td${hideName ? '1' : ''}`]}>{getUserName(area)}</div>
+                            <div className={styles.td}>{moment(changedStartTime).format('MM-DD HH:mm')}</div>
+                            <div className={styles.td}>{moment(Math.min(endTimeStamp, endTime)).format('MM-DD HH:mm')}</div>
                             <div className={styles.td}><Ellipsis lines={1} tooltip className={styles.ellipsis}>{tree[areaId] ? tree[areaId].fullName : '厂外'}</Ellipsis></div>
                           </div>
                         );
@@ -244,7 +323,7 @@ export default class History extends PureComponent {
                   </div>
                 </div>
               </div>
-              <div className={styles.leftBottom}>
+              {/* <div className={styles.leftBottom}>
                 <div className={styles.table}>
                   <div className={styles.th}>
                     <div className={styles.td}>时间</div>
@@ -274,7 +353,7 @@ export default class History extends PureComponent {
                     </Scroll>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

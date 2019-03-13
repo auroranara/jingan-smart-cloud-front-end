@@ -38,7 +38,7 @@ export default class CardList extends PureComponent {
       title: '操作',
       key: 'operation',
       render: (text, record) => {
-        return <span className={styles.track} onClick={e => {handleTrack(record.areaId, record.id, record.userId)}}>追踪</span>
+        return <span className={styles.track} onClick={e => handleTrack(record.areaId, record.id, record.userId)}>追踪</span>
       },
     }];
 

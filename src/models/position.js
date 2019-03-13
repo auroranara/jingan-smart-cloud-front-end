@@ -70,6 +70,31 @@ function formatData(list) {
   });
 }
 
+function cloneTreeList(list) {
+  return list.map(({ id, name, children }) => {
+    const cloned = { title: name, value: id, key: id };
+    if (children && children.length)
+      cloned.children = cloneTreeList(children);
+    return cloned;
+  });
+}
+
+function getSelectTree(list) {
+    return Array.isArray(list) ? cloneTreeList(list) : [];
+}
+
+function getHisotryIdMap(list, idType) {
+  const isCardId = +idType;
+  return list.reduce((prev, next) => {
+    const id = next[isCardId ? 'cardId' : 'userId'];
+    if (id in prev)
+      prev[id].push(next);
+    else
+      prev[id] = [next];
+
+    return prev;
+  }, {});
+}
 
 export default {
   namespace: 'position',
@@ -81,9 +106,12 @@ export default {
       // 当前选中时间段内涉及的人员位置
       locationDataHistories: [],
     },
+    areaDataMap: {},
+    historyIdMap: {},
     tree: {},
     originalTree: [],
     people: [],
+    sectionTree: [],
   },
 
   effects: {
@@ -94,20 +122,46 @@ export default {
     },
     // 获取选中数据
     *fetchData({ payload, callback }, { call, put }) {
+      const idType = payload.idType;
+      delete payload.idType;
       const response = yield call(getList, payload);
+      let areaDataMap = {};
       if (response.code === 200) {
         const { areaDataHistories, locationDataHistories } = response.data;
-        yield put({ type: 'save', payload: { data: { areaDataHistories, locationDataHistories: formatData(locationDataHistories) } }});
+        const originHistoryIdMap = getHisotryIdMap(locationDataHistories, idType);
+        const historyIdMap = Object.entries(originHistoryIdMap).reduce((prev, next) => {
+          const [id, ids] = next;
+          prev[id] = formatData(Array.from(ids));
+          return prev;
+        }, {});
+        areaDataMap = getHisotryIdMap(areaDataHistories, idType);
+        yield put({
+          type: 'save',
+          payload: {
+            data: {
+              areaDataHistories,
+              locationDataHistories: formatData(locationDataHistories),
+            },
+            areaDataMap,
+            historyIdMap,
+          },
+        });
       }
       if (callback) {
-        callback(response);
+        callback(response, areaDataMap);
       }
     },
     // 获取区域树
     *fetchTree({ payload, callback }, { call, put }) {
       const response = yield call(getTree, payload);
       if (response.code === 200) {
-        yield put({ type: 'save', payload: { tree: formatTree(response.data.list), originalTree: response.data.list }});
+        yield put({
+          type: 'save',
+          payload: {
+            tree: formatTree(response.data.list),
+            originalTree: response.data.list,
+            sectionTree: getSelectTree(response.data.list),
+          }});
       }
       if (callback) {
         callback(response);
