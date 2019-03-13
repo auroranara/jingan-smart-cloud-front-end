@@ -66,6 +66,9 @@
 
   .searchBtn {
     width: 100%;
+    color: #FFF;
+    background-color: #0e4f9f;
+    border-color: #0e4f9f;
     margin-top: 12px;
   }
 
@@ -105,6 +108,10 @@
       flex: 1;
       padding: 6px;
       text-align: center;
+    }
+
+    .td1:extend(.td) {
+      opacity: 0;
     }
   }
 
@@ -413,6 +420,11 @@
       border-color: #04abc3;
       background-color: transparent;
     }
+
+    .ant-select-selection__clear {
+      color: #FFF;
+      background: rgb(3, 48, 105);
+    }
   }
 }
 
@@ -436,11 +448,6 @@
       li .ant-select-tree-node-content-wrapper.ant-select-tree-node-selected {
         background-color: rgb(4, 73, 140);
       }
-    }
-
-    .ant-select-selection__clear {
-      color: #FFF;
-      background: rgb(3, 48, 105);
     }
   }
 }
@@ -489,6 +496,16 @@
   :global {
     .ant-select-selection {
       border-radius: 0 4px 4px 0;
+    }
+
+    .ant-select-selection--multiple .ant-select-selection__choice {
+      color: #FFF;
+      background-color: #0e4f9f;
+      border-color: #0e4f9f;
+    }
+
+    .ant-select-selection--multiple .ant-select-selection__choice__remove {
+      color: #FFF;
     }
   }
 }

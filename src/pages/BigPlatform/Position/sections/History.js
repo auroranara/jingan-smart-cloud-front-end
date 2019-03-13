@@ -30,7 +30,7 @@ export default class History extends PureComponent {
     this.state = {
       range: defaultRange,
       selectedArea: undefined,
-      idType: '0', // 0 userId   1 cardId
+      spreads: [],
     };
     mapMutations(this, {
       namespace: 'position',
@@ -53,21 +53,27 @@ export default class History extends PureComponent {
   lastRange = defaultRange;
 
   componentDidMount() {
-    const { historyRecord: { id, isCardId }={}, companyId } = this.props;
+    const {
+      // historyRecord: { id, isCardId }={},
+      companyId,
+    } = this.props;
     // 获取人员列表
     this.fetchPeople({ companyId });
 
     // 获取区域树
     this.fetchTree({ companyId });
 
-    if (id) {
-      this.init(id, isCardId);
-    }
+    this.init();
   }
 
-  init = (id, isCardId) => {
+  init = () => {
+    const { idType, userIds, cardIds } = this.props;
+    if (!userIds.length && !cardIds.length)
+      return;
+
+    const params = +idType ? { cardId: cardIds.join(',') } : { userId: userIds.join(',') };
     // 获取最新一条数据
-    this.fetchLatest({ [isCardId?'cardId':'userId']: id }, (response) => {
+    this.fetchLatest(params, response => {
       if (response && response.code === 200 && response.data) {
         const { intime } = response.data;
         const minute = 60 * 1000;
@@ -110,14 +116,21 @@ export default class History extends PureComponent {
    * 获取列表
    */
   getData = (range) => {
-    const { historyRecord: { id, isCardId }={} } = this.props;
+    // const { historyRecord: { id, isCardId }={} } = this.props;
+    const { idType, userIds, cardIds } = this.props;
     const { selectedArea } = this.state;
+
+    const ids = +idType ? { cardId: cardIds.join(',') } : { userId: userIds.join(',') };
     const [queryStartTime, queryEndTime] = range;
     this.fetchData({
-      [isCardId?'cardId':'userId']: id,
+      ...ids,
       queryStartTime: queryStartTime && +queryStartTime,
       queryEndTime: queryEndTime && +queryEndTime,
       areaId: selectedArea,
+      idType,
+    }, (response, areaDataMap) => {
+      if (response.code === 200)
+        this.setState({ spreads: Object.keys(areaDataMap).map((k, i) => !i) });
     });
   }
 
@@ -162,25 +175,32 @@ export default class History extends PureComponent {
   /**
    * 下拉框change事件
    */
-  handleCardChange = value => {
-    const { setHistoryRecord } = this.props;
-    setHistoryRecord({ id: value });
-    // this.init(value);
+  // handleCardChange = value => {
+  //   const { setHistoryRecord } = this.props;
+  //   setHistoryRecord({ id: value });
+  //   // this.init(value);
+  // };
+
+  handleIdsChange = value => {
+    // console.log(value);
+    const { idType, setUserIds, setCardIds } = this.props;
+    +idType ? setCardIds(value) : setUserIds(value);
   };
 
   /**
    * 下拉框筛选
    */
-  cardFilter = (inputValue, option) => {
-    return option.props.children.includes(inputValue);
-  };
+  // cardFilter = (inputValue, option) => {
+  //   return option.props.children.includes(inputValue);
+  // };
 
   handleAreaChange = value => {
     this.setState({ selectedArea: value });
   };
 
   handleIdTypeChange = value => {
-    this.setState({ idType: value });
+    const { setIdType } = this.props;
+    setIdType(value);
   };
 
   handleSearch = e => {
@@ -191,13 +211,27 @@ export default class History extends PureComponent {
   render() {
     const {
       labelIndex,
-      historyRecord: { id, isCardId }={},
-      position: { data: { areaDataHistories=[], locationDataHistories=[] }={}, tree={}, originalTree=[], sectionTree, people },
+      // historyRecord: { id, isCardId }={},
+      idType,
+      userIds,
+      cardIds,
+      position: {
+        areaDataMap,
+        historyIdMap,
+        data: {
+          areaDataHistories=[],
+          locationDataHistories=[],
+        }={},
+        tree={},
+        originalTree=[],
+        sectionTree,
+        people,
+      },
       handleLabelClick,
     } = this.props;
-    const { range, selectedArea, multipleIds, idType } = this.state;
+    const { range, selectedArea, spreads } = this.state;
     const [ startTime, endTime ] = range;
-    // console.log(this.props.historyRecord);
+    // console.log(historyIdMap);
 
     return (
       <div className={styles.container}>
@@ -228,34 +262,20 @@ export default class History extends PureComponent {
                     <Option key="0" value="0">人员</Option>
                     <Option key="1" value="1">卡号</Option>
                   </Select>
-                  {selectedArea ? (
-                    <Select
-                      allowClear
-                      showSearch
-                      mode="multiple"
-                      className={styles.cardSelect}
-                      dropdownClassName={styles.dropdown}
-                      value={id && isCardId ? `临时卡` : id}
-                      placeholder="请选择或搜索人员/卡号"
-                      filterOption={this.cardFilter}
-                      onChange={this.handleCardChange}
-                    >
-                      {people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>)}
-                    </Select>
-                  ): (
-                    <Select
-                      allowClear
-                      showSearch
-                      className={styles.cardSelect}
-                      dropdownClassName={styles.dropdown}
-                      value={id && isCardId ? `临时卡` : id}
-                      placeholder="请选择或搜索人员/卡号"
-                      filterOption={this.cardFilter}
-                      onChange={this.handleCardChange}
-                    >
-                      {people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>)}
-                    </Select>
-                  )}
+                  <Select
+                    allowClear
+                    showSearch
+                    mode="multiple"
+                    className={styles.cardSelect}
+                    dropdownClassName={styles.dropdown}
+                    // value={id && isCardId ? `临时卡` : id}
+                    value={+idType ? cardIds : userIds}
+                    placeholder="请选择或搜索人员/卡号"
+                    // filterOption={this.cardFilter}
+                    onChange={this.handleIdsChange}
+                  >
+                    {people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>)}
+                  </Select>
                 </div>
                 <RangePicker
                   dropdownClassName={styles.rangePickerDropDown}
@@ -288,11 +308,11 @@ export default class History extends PureComponent {
                       renderThumbHorizontal={renderThumbHorizontal}
                     >
                       {areaDataHistories && areaDataHistories.length > 0 ? areaDataHistories.map(area => {
-                        const { startTime: startTimeStamp, endTime: endTimeStamp, areaId, id } = area;
+                        const { startTime: startTimeStamp, endTime: endTimeStamp, areaId, id, hideName } = area;
                         const changedStartTime = Math.max(startTimeStamp, startTime);
                         return (
                           <div className={styles.tr} key={id} intime={changedStartTime} onClick={this.handleClickTableRow}>
-                            <div className={styles.td}>{getUserName(area)}</div>
+                            <div className={styles[`td${hideName ? '1' : ''}`]}>{getUserName(area)}</div>
                             <div className={styles.td}>{moment(changedStartTime).format('MM-DD HH:mm')}</div>
                             <div className={styles.td}>{moment(Math.min(endTimeStamp, endTime)).format('MM-DD HH:mm')}</div>
                             <div className={styles.td}><Ellipsis lines={1} tooltip className={styles.ellipsis}>{tree[areaId] ? tree[areaId].fullName : '厂外'}</Ellipsis></div>
