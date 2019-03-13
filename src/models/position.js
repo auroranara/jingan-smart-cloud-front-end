@@ -83,6 +83,9 @@ function getHisotryIdMap(list, idType) {
   const isCardId = +idType;
   return list.reduce((prev, next) => {
     const id = next[isCardId ? 'cardId' : 'userId'];
+    if (!id)
+      return prev;
+
     if (id in prev)
       prev[id].push(next);
     else
@@ -103,6 +106,7 @@ export default {
       locationDataHistories: [],
     },
     areaDataMap: {},
+    areaDataList: [],
     historyIdMap: {},
     tree: {},
     originalTree: [],
@@ -121,7 +125,7 @@ export default {
       const idType = payload.idType;
       delete payload.idType;
       const response = yield call(getList, payload);
-      let areaDataMap = {};
+      let areaDataList = [];
       if (response.code === 200) {
         const { areaDataHistories, locationDataHistories } = response.data;
         const originHistoryIdMap = getHisotryIdMap(locationDataHistories, idType);
@@ -130,7 +134,9 @@ export default {
           prev[id] = formatData(Array.from(ids));
           return prev;
         }, {});
-        areaDataMap = getHisotryIdMap(areaDataHistories, idType);
+        const areaDataMap = getHisotryIdMap(areaDataHistories, idType);
+        areaDataList = Object.values(areaDataMap);
+        areaDataList.sort((a, b) => a[0].userName.localeCompare(b[0].userName, 'zh-Hans-CN', {sensitivity: 'accent'}));
         yield put({
           type: 'save',
           payload: {
@@ -139,12 +145,13 @@ export default {
               locationDataHistories: formatData(locationDataHistories),
             },
             areaDataMap,
+            areaDataList,
             historyIdMap,
           },
         });
       }
       if (callback) {
-        callback(response, areaDataMap);
+        callback(response, areaDataList);
       }
     },
     // 获取区域树

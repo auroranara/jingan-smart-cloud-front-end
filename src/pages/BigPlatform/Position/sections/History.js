@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Button, DatePicker, Select, TreeSelect, message } from 'antd';
+import { Button, DatePicker, Icon, Select, TreeSelect, message } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import { mapMutations } from 'utils/utils';
@@ -128,9 +128,9 @@ export default class History extends PureComponent {
       queryEndTime: queryEndTime && +queryEndTime,
       areaId: selectedArea,
       idType,
-    }, (response, areaDataMap) => {
+    }, (response, areaDataList) => {
       if (response.code === 200)
-        this.setState({ spreads: Object.keys(areaDataMap).map((k, i) => !i) });
+        this.setState({ spreads: areaDataList.map((k, i) => !i) });
     });
   }
 
@@ -208,6 +208,36 @@ export default class History extends PureComponent {
     this.getData(range);
   };
 
+  getDataHistory = () => {
+    const { idType, position: { areaDataMap, areaDataList } } = this.props;
+    const { spreads } = this.state;
+
+    return areaDataList.reduce((prev, next, i) => {
+      const prop = +idType ? 'cardId' : 'userId';
+      const first = next[0];
+      // 一条记录直接显示
+      if (next.length === 1)
+        prev.push({ ...first, index: i });
+      // 多条记录聚合
+      else {
+        const id = first[prop];
+        const spreaded = spreads[i];
+        prev.push({ ...first, id, index: i, spreaded });
+        if (spreaded) {
+          for (const record of areaDataMap[id]) {
+            prev.push({ ...record, hideName: true });
+          }
+        }
+      }
+
+      return prev;
+    }, []);
+  };
+
+  genSpreadClick = index => e => {
+    this.setState(({ spreads }) => ({ spreads: spreads.map((b, i) => i === index ? !b : b) }));
+  };
+
   render() {
     const {
       labelIndex,
@@ -217,9 +247,10 @@ export default class History extends PureComponent {
       cardIds,
       position: {
         areaDataMap,
+        areaDataList,
         historyIdMap,
         data: {
-          areaDataHistories=[],
+          // areaDataHistories=[],
           locationDataHistories=[],
         }={},
         tree={},
@@ -231,7 +262,9 @@ export default class History extends PureComponent {
     } = this.props;
     const { range, selectedArea, spreads } = this.state;
     const [ startTime, endTime ] = range;
-    // console.log(historyIdMap);
+
+    const areaDataHistories = this.getDataHistory();
+    // console.log(areaDataHistories);
 
     return (
       <div className={styles.container}>
@@ -308,11 +341,16 @@ export default class History extends PureComponent {
                       renderThumbHorizontal={renderThumbHorizontal}
                     >
                       {areaDataHistories && areaDataHistories.length > 0 ? areaDataHistories.map(area => {
-                        const { startTime: startTimeStamp, endTime: endTimeStamp, areaId, id, hideName } = area;
+                        const { startTime: startTimeStamp, endTime: endTimeStamp, areaId, id, spreaded, index, hideName } = area;
                         const changedStartTime = Math.max(startTimeStamp, startTime);
+                        const canSpread = typeof spreaded !== 'undefined';
+                        const onClick = canSpread ? this.genSpreadClick(index) : this.handleClickTableRow;
                         return (
-                          <div className={styles.tr} key={id} intime={changedStartTime} onClick={this.handleClickTableRow}>
-                            <div className={styles[`td${hideName ? '1' : ''}`]}>{getUserName(area)}</div>
+                          <div className={styles.tr} key={id} intime={changedStartTime} onClick={onClick}>
+                            <div className={styles[`td${hideName ? '1' : ''}`]}>
+                              {canSpread && <Icon type={`${spreaded ? 'minus' : 'plus'}-square`} className={styles.spread} />}
+                              {getUserName(area)}
+                            </div>
                             <div className={styles.td}>{moment(changedStartTime).format('MM-DD HH:mm')}</div>
                             <div className={styles.td}>{moment(Math.min(endTimeStamp, endTime)).format('MM-DD HH:mm')}</div>
                             <div className={styles.td}><Ellipsis lines={1} tooltip className={styles.ellipsis}>{tree[areaId] ? tree[areaId].fullName : '厂外'}</Ellipsis></div>
