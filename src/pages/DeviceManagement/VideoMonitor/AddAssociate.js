@@ -271,7 +271,7 @@ export default class AddAssociate extends Component {
       },
       {
         title: '设备号',
-        dataIndex: 'device_id',
+        dataIndex: 'relation_device_id',
         align: 'center',
       },
     ]
@@ -388,7 +388,7 @@ export default class AddAssociate extends Component {
                     </Col>
                     <Col {...colWrapper}>
                       <FormItem {...formItemStyle}>
-                        {getFieldDecorator('deviceId')(
+                        {getFieldDecorator('relationDeviceId')(
                           <Input placeholder="请输入设备号" />
                         )}
                       </FormItem>

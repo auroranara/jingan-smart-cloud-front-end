@@ -204,7 +204,7 @@ export default class AssociatePersonnelPosition extends Component {
               </Col>
               <Col {...colWrapper}>
                 <FormItem {...formItemStyle}>
-                  {getFieldDecorator('deviceId')(
+                  {getFieldDecorator('relationDeviceId')(
                     <Input placeholder="请输入设备号" />
                   )}
                 </FormItem>
