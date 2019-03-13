@@ -274,6 +274,12 @@ export default class AddAssociate extends Component {
         dataIndex: 'relation_device_id',
         align: 'center',
       },
+      {
+        title: '所在区域位置',
+        dataIndex: 'location',
+        align: 'center',
+        render: (val, { area = null, location = null }) => <span>{area + location}</span>,
+      },
     ]
     const fireColumns = [
       {
