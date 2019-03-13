@@ -61,15 +61,16 @@ function getImageNormal(i) {
 export default class WaterSystemDrawer extends PureComponent {
   state = {
     visible: true, // 抽屉是否可见
-    searchValue: '',
     videoVisible: false, // 视频弹框是否可见
+    searchValue: '',
     videoKeyId: '',
   };
 
   componentDidMount() {}
 
+  // 搜索
   handleSearch = v => {
-    // this.setState({ searchValue: v });
+    this.setState({ searchValue: v });
   };
 
   handleClickCamera = i => {
@@ -84,26 +85,12 @@ export default class WaterSystemDrawer extends PureComponent {
     this.setState({ videoVisible: false, videoKeyId: '' });
   };
 
-  renderFireCards = () => {
-    // const { searchValue } = this.state;
+  renderFireCards = list => {
+    const { searchValue } = this.state;
 
-    const list = Array(7)
-      .fill(true)
-      .map((item, index) => {
-        return {
-          add_time: 1536657042933,
-          area: `${index + 1}号楼`,
-          id: `${index + 1}`,
-          location: `${index + 1}号楼`,
-          normal_upper: 5,
-          realtimeData: 0,
-          status: Math.floor(2 * Math.random()),
-          statusName: '正常',
-          press: '0,1MPa',
-        };
-      });
+    const filterFireList = list.filter(({ area }) => area.includes(searchValue));
 
-    return list.map(({ area, location, status, press, normal_upper }, i) => (
+    return filterFireList.map(({ area, location, status, press, normal_upper }, i) => (
       <Col span={12}>
         <div className={styles.card} key={i}>
           {+status === 1 && <div className={styles.status}>异常</div>}
@@ -150,24 +137,12 @@ export default class WaterSystemDrawer extends PureComponent {
     ));
   };
 
-  renderPondCards = () => {
-    const list = Array(7)
-      .fill(true)
-      .map((item, index) => {
-        return {
-          add_time: 1536657042933,
-          area: `${index + 1}号楼水箱`,
-          id: `${index + 1}`,
-          location: `${index + 1}号楼`,
-          normal_upper: 5,
-          realtimeData: 0,
-          status: Math.floor(2 * Math.random()),
-          statusName: '正常',
-          press: '0,1MPa',
-        };
-      });
+  renderPondCards = list => {
+    const { searchValue } = this.state;
 
-    return list.map(({ area, location, status, press, normal_upper }, i) => (
+    const filterPondList = list.filter(({ area }) => area.includes(searchValue));
+
+    return filterPondList.map(({ area, location, status, press, normal_upper }, i) => (
       <Col span={12}>
         <div className={styles.card} key={i}>
           {status === 1 && <div className={styles.status}>异常</div>}
@@ -212,21 +187,57 @@ export default class WaterSystemDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, waterTabItem, cameraList = [], videoVisible, videoKeyId } = this.props;
+    const { visible, waterTabItem, cameraList = [], videoKeyId } = this.props;
 
-    const list = Array(7).map((item, index) => {
-      return {
-        add_time: 1536657042933,
-        area: `${index + 1}号楼`,
-        id: `${index + 1}`,
-        location: `${index + 1}号楼`,
-        normal_upper: 5,
-        realtimeData: 0,
-        status: '1',
-        statusName: '正常',
-        press: '0,1MPa',
-      };
-    });
+    const { videoVisible } = this.state;
+
+    const fireList = Array(7)
+      .fill(true)
+      .map((item, index) => {
+        return {
+          add_time: 1536657042933,
+          area: `${index + 1}号楼`,
+          id: `${index + 1}`,
+          location: `${index + 1}号楼`,
+          normal_upper: 5,
+          realtimeData: 0,
+          status: Math.floor(2 * Math.random()),
+          statusName: '正常',
+          press: '0,1MPa',
+        };
+      });
+
+    const autoList = Array(7)
+      .fill(true)
+      .map((item, index) => {
+        return {
+          add_time: 1536657042933,
+          area: `${index + 1}号最不利点`,
+          id: `${index + 1}`,
+          location: `${index + 1}号楼`,
+          normal_upper: 5,
+          realtimeData: 0,
+          status: Math.floor(2 * Math.random()),
+          statusName: '正常',
+          press: '0,1MPa',
+        };
+      });
+
+    const pondList = Array(7)
+      .fill(true)
+      .map((item, index) => {
+        return {
+          add_time: 1536657042933,
+          area: `${index + 1}号楼水箱`,
+          id: `${index + 1}`,
+          location: `${index + 1}号楼`,
+          normal_upper: 5,
+          realtimeData: 0,
+          status: Math.floor(2 * Math.random()),
+          statusName: '正常',
+          press: '0,1MPa',
+        };
+      });
 
     const left = (
       <div className={styles.content}>
@@ -270,10 +281,11 @@ export default class WaterSystemDrawer extends PureComponent {
             </div>
             <SearchBar placeholder="搜索点位名称" onSearch={this.handleSearch} />
           </div>
-          {list && list.length > 0 ? (
+          {fireList && fireList.length > 0 ? (
             <div className={styles.listContainer}>
-              {waterTabItem !== 2 && this.renderFireCards()}
-              {waterTabItem === 2 && this.renderPondCards()}
+              {waterTabItem === 0 && this.renderFireCards(fireList)}
+              {waterTabItem === 1 && this.renderFireCards(autoList)}
+              {waterTabItem === 2 && this.renderPondCards(pondList)}
             </div>
           ) : (
             <div
@@ -295,6 +307,7 @@ export default class WaterSystemDrawer extends PureComponent {
         />
       </div>
     );
+
     return (
       <DrawerContainer
         style={{ overflow: 'hidden' }}
