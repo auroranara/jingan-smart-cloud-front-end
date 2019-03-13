@@ -1225,7 +1225,7 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 水系统 */}
-                <FireDevice onClick={waterTabItem => this.handleViewWater(waterTabItem)} />
+                <FireDevice onClick={this.handleViewWater} />
                 {/* <FireDevice systemScore={systemScore} onClick={this.handleViewFireAlarm} /> */}
               </div>
             </div>

@@ -20,7 +20,7 @@ import cameralogo from '../imgs/cameralogo.png';
 import noMonitorImg from '../imgs/no-monitor.png';
 
 function title(i) {
-  switch (+i) {
+  switch (i) {
     case 0:
       return '消火栓系统';
     case 1:
@@ -60,10 +60,9 @@ function getImageNormal(i) {
 
 export default class WaterSystemDrawer extends PureComponent {
   state = {
-    status: '',
-    visible: true,
+    visible: true, // 抽屉是否可见
     searchValue: '',
-    videoVisible: false,
+    videoVisible: false, // 视频弹框是否可见
     videoKeyId: '',
   };
 
