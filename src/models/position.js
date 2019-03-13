@@ -45,6 +45,8 @@ function formatData(list) {
     xpx: lng,
     ypx: lat,
     cardType,
+    userName,
+    vistorName,
     locationStatusHistoryList,
   }, index) => {
     const isAlarm = locationStatusHistoryList && locationStatusHistoryList.length > 0;
@@ -54,11 +56,13 @@ function formatData(list) {
       yarea,
       zarea,
       intime,
-      // 当前时间节点的离开时间和下个时间节点的进入时间相等时，就将当前时间节点的离开时间提前1s
+      // 当前时间节点的离开时间和下个时间节点的进入时间相等时，就将当前时间节点的离开时间提前1s，为了确保两个时间节点之间有1s的移动动画
       uptime: list[index+1] && list[index+1].intime === uptime? Math.max(uptime-1000, intime) : uptime,
       areaId,
       latlng: { lng, lat },
       isVistor: +cardType === 1,
+      userName,
+      vistorName,
       isAlarm,
       options: { color: isAlarm ? '#ff4848' : '#00a8ff' },
       locationStatusHistoryList,
