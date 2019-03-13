@@ -138,7 +138,7 @@ export default class AssociateFire extends Component {
         title: '设施系统类型',
         dataIndex: 'systemType',
         align: 'center',
-        render: (val) => {
+        render: val => {
           const item = facilitySystemList.find(item => +item.value === +val) || { label: '' }
           return <span>{item.label}</span>
         },
@@ -147,7 +147,7 @@ export default class AssociateFire extends Component {
         title: '设施部件类型',
         dataIndex: 'unitType',
         align: 'center',
-        render: (val) => {
+        render: val => {
           const item = dictDataList.find(item => +item.value === +val) || { label: '' }
           return <span>{item.label}</span>
         },

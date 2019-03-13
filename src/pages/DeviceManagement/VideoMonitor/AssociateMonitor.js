@@ -132,6 +132,10 @@ export default class AssociatePersonnelPosition extends Component {
         title: '监测类型',
         dataIndex: 'class_type',
         align: 'center',
+        render: val => {
+          const item = classTypeList.find(item => +item.class_type === +val) || { type_desc: '' }
+          return <span>{item.type_desc}</span>
+        },
       },
       {
         title: '品牌',

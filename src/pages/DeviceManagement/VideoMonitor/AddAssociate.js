@@ -254,7 +254,10 @@ export default class AddAssociate extends Component {
         title: '监测类型',
         dataIndex: 'class_type',
         align: 'center',
-        render: (val) => <span>{classTypeList.length > 0 ? classTypeList.find(item => +item.class_type === +val).type_desc : val}</span>,
+        render: val => {
+          const item = classTypeList.find(item => +item.class_type === +val) || { type_desc: '' }
+          return <span>{item.type_desc}</span>
+        },
       },
       {
         title: '品牌',
@@ -282,13 +285,19 @@ export default class AddAssociate extends Component {
         title: '设施系统类型',
         dataIndex: 'systemType',
         align: 'center',
-        render: (val) => <span>{facilitySystemList.length > 0 ? facilitySystemList.find(item => +item.value === +val).label : val}</span>,
+        render: val => {
+          const item = facilitySystemList.find(item => +item.value === +val) || { label: '' }
+          return <span>{item.label}</span>
+        },
       },
       {
         title: '设施部件类型',
         dataIndex: 'unitType',
         align: 'center',
-        render: (val) => <span>{dictDataList.length > 0 ? dictDataList.find(item => +item.value === +val).label : val}</span>,
+        render: val => {
+          const item = dictDataList.find(item => +item.value === +val) || { label: '' }
+          return <span>{item.label}</span>
+        },
       },
       {
         title: '回路号',
@@ -314,10 +323,9 @@ export default class AddAssociate extends Component {
           selectedRowKeys,
         })
       },
-      getCheckboxProps: record => ({
-        // disabled: record.name === 'Disabled User',
-        name: record.id,
-      }),
+      // getCheckboxProps: record => ({
+      //   name: record.id,
+      // }),
     }
 
     return (
@@ -450,7 +458,7 @@ export default class AddAssociate extends Component {
           </Card>
           <Card style={{ marginTop: '24px' }}>
             <Table
-              rowKey="id"
+              rowKey={type === 'monitor' ? 'device_id' : 'id'}
               dataSource={availableList}
               columns={columns}
               pagination={{
