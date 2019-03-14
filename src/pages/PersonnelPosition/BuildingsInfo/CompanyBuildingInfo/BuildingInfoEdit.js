@@ -23,7 +23,7 @@ const addTitle = '新增建筑';
 const uploadAction = '/acloud_new/v2/uploadFile';
 
 // 上传文件夹
-const folder = 'buildingsInfo';
+const folder = 'buildingsinfo';
 
 const UploadIcon = <Icon type="upload" />;
 
