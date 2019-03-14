@@ -25,7 +25,7 @@ const getRootChild = () => document.querySelector('#root>div');
 const uploadAction = '/acloud_new/v2/uploadFile';
 
 // 上传文件夹
-const folder = 'fireControl';
+const folder = 'firecontrol';
 
 /**
  * 基础信息

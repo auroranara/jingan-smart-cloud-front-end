@@ -44,9 +44,14 @@ export default class AssociateDevice extends Component {
   // 切换标签
   handleTabChange = tabActiveKey => {
     const {
+      dispatch,
       match: { params: { id } },
       location: { query: { name, companyId } },
     } = this.props
+    dispatch({
+      type: 'videoMonitor/saveVideoDevice',
+      payload: { list: [] },
+    })
     router.push(`/device-management/video-monitor/associate/${tabActiveKey}/${id}?name=${name}&&companyId=${companyId}`)
     this.setState({ tabActiveKey })
   }

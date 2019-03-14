@@ -279,7 +279,7 @@ export default class FourColor extends PureComponent {
     const showTip = !!tips[item_id];
 
     return (
-      <Fragment key={item_id} style={{ width: 200 }}>
+      <Fragment key={item_id}>
         <Marker
           key={item_id}
           data={item}

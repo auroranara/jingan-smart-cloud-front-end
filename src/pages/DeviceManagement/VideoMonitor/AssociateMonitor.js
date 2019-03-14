@@ -148,9 +148,15 @@ export default class AssociatePersonnelPosition extends Component {
         align: 'center',
       },
       {
-        title: '所在区域位置',
-        dataIndex: 'location',
+        title: '设备号',
+        dataIndex: 'relation_device_id',
         align: 'center',
+      },
+      {
+        title: '所在区域位置',
+        key: 'area',
+        align: 'center',
+        render: (val, row) => <span>{(row.area || '') + (row.location || '')}</span>,
       },
       {
         title: '操作',

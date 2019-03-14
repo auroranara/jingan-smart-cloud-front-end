@@ -27,7 +27,7 @@ const fieldLabels = {
 const uploadAction = '/acloud_new/v2/uploadFile';
 
 // 上传文件夹
-const folder = 'floorInfo';
+const folder = 'floorinfo';
 const UploadIcon = <Icon type="upload" />;
 
 @connect(({ buildingsInfo, user, loading }) => ({
