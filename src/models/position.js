@@ -123,7 +123,7 @@ export default {
       // 当前选中时间段内涉及的人员位置
       locationDataHistories: [],
     },
-    areaDataMap: {},
+    // areaDataMap: {},
     areaDataList: [],
     historyIdMap: {},
     tree: {},
@@ -153,11 +153,12 @@ export default {
           prev[id] = formatData(Array.from(ids));
           return prev;
         }, {});
-        const areaDataMap = getHisotryIdMap(areaDataHistories, idType);
-        areaDataList = Object.values(areaDataMap);
+        // const areaDataMap = getHisotryIdMap(areaDataHistories, idType);
+        // areaDataList = Object.values(areaDataMap);
+        areaDataList = areaDataHistories;
         const sortFn = +idType
-          ? (a, b) => a[0].cardCode - b[0].cardCode
-          : (a, b) => a[0].userName.localeCompare(b[0].userName, 'zh-Hans-CN', {sensitivity: 'accent'});
+          ? (a, b) => a.cardCode - b.cardCode
+          : (a, b) => a.userName.localeCompare(b.userName, 'zh-Hans-CN', {sensitivity: 'accent'});
         areaDataList.sort(sortFn);
         yield put({
           type: 'save',
@@ -166,7 +167,7 @@ export default {
               areaDataHistories,
               locationDataHistories: formatData(locationDataHistories),
             },
-            areaDataMap,
+            // areaDataMap,
             areaDataList,
             historyIdMap,
           },

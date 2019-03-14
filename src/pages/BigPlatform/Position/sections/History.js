@@ -31,6 +31,7 @@ export default class History extends PureComponent {
       range: defaultRange,
       selectedArea: undefined,
       spreads: [],
+      selectedIds: [],
     };
     mapMutations(this, {
       namespace: 'position',
@@ -62,7 +63,10 @@ export default class History extends PureComponent {
     this.fetchPeople({ companyId });
     this.fetchCards({ companyId, pageNum: 1, pageSize: 0 });
     // 获取区域树
-    this.fetchTree({ companyId });
+    this.fetchTree({ companyId }, response => {
+      if (response && response.data && Array.isArray(response.data.list) && response.data.list.length)
+        this.setState({ selectedArea: response.data.list[0].id });
+    });
 
     this.init();
   }
@@ -128,6 +132,7 @@ export default class History extends PureComponent {
       queryStartTime: queryStartTime && +queryStartTime,
       queryEndTime: queryEndTime && +queryEndTime,
       areaId: selectedArea,
+      searchType: +idType ? 2 : 1,
       idType,
     }, (response, areaDataList) => {
       if (response.code === 200)
@@ -169,7 +174,8 @@ export default class History extends PureComponent {
   /**
    * 点击表格行
    */
-  handleClickTableRow = (e) => {
+  genClickTableRow = ids => e => {
+    this.setState({ selectedIds: ids });
     this.historyPlay.handleLocate({ currentTimeStamp: +e.currentTarget.getAttribute('intime') });
   }
 
@@ -207,7 +213,7 @@ export default class History extends PureComponent {
       spreads: [],
     });
     this.save({
-      areaDataMap: {},
+      // areaDataMap: {},
       areaDataList: [],
     });
     setUserIds([]);
@@ -226,33 +232,62 @@ export default class History extends PureComponent {
   };
 
   getDataHistory = () => {
-    const { idType, position: { areaDataMap, areaDataList } } = this.props;
+    const { idType, userIds, cardIds, position: { areaDataList } } = this.props;
     const { spreads, selectedArea } = this.state;
 
-    const history = areaDataList.reduce((prev, next, i) => {
-      const prop = +idType ? 'cardId' : 'userId';
-      const first = next[0];
-      // 一条记录直接显示
-      if (next.length === 1)
-        prev.push({ ...first, index: i });
-      // 多条记录聚合
-      else {
-        const id = first[prop];
-        const spreaded = spreads[i];
-        prev.push({ ...first, id, index: i, spreaded, areaShowId: selectedArea || 'no' });
-        const list = areaDataMap[id];
-        if (spreaded) {
-          for (const record of list) {
-            prev.push({ ...record, hideName: true });
+    // const history = areaDataList.reduce((prev, next, i) => {
+    //   const prop = +idType ? 'cardId' : 'userId';
+    //   const first = next[0];
+    //   // 一条记录直接显示
+    //   if (next.length === 1)
+    //     prev.push({ ...first, index: i });
+    //   // 多条记录聚合
+    //   else {
+    //     const id = first[prop];
+    //     const spreaded = spreads[i];
+    //     prev.push({ ...first, id, index: i, spreaded, areaShowId: selectedArea || 'no' });
+    //     const list = areaDataMap[id];
+    //     if (spreaded) {
+    //       for (const record of list) {
+    //         prev.push({ ...record, hideName: true });
+    //       }
+    //     }
+    //   }
+
+      const history = areaDataList.reduce((prev, next, i) => {
+        // const prop = +idType ? 'cardId' : 'userId';
+        const { children } = next;
+        // 只有一条记录时，只显示当前记录的那条记录，不需要折叠
+        // 只有一条记录且其只在当前区域活动，则children为null
+        if (!children || !children.length)
+          prev.push({ ...next, index: i });
+        // 在当前子区域中只有一条记录，则children长度为1
+        else if (children.length === 1)
+          prev.push({ ...children[0], index: i });
+        // 多条记录折叠
+        else {
+          const spreaded = spreads[i];
+          prev.push({ ...next, index: i, spreaded, areaShowId: selectedArea || 'no' });
+          if (spreaded) {
+            for (const record of children) {
+              prev.push({ ...record, hideName: true });
+            }
           }
         }
-      }
 
       return prev;
     }, []);
 
-    // if (areaDataList.length > 1)
-    //   history.unshift({ id: 'all', areaShowId: selectedArea || 'no' });
+    if (areaDataList.length > 1)
+      history.unshift({
+        id: 'all',
+        ids: +idType ? cardIds : userIds,
+        userName: '所有人',
+        cardCode: '所有卡',
+        startTime: Math.min(...areaDataList.map(({ startTime }) => startTime)),
+        endTime: Math.max(...areaDataList.map(({ endTime }) => endTime)),
+        areaShowId: selectedArea || 'no',
+      });
     return history;
   };
 
@@ -274,8 +309,8 @@ export default class History extends PureComponent {
       userIds,
       cardIds,
       position: {
-        areaDataMap,
-        areaDataList,
+        // areaDataMap,
+        // areaDataList,
         historyIdMap,
         data: {
           // areaDataHistories=[],
@@ -308,7 +343,7 @@ export default class History extends PureComponent {
               <div className={styles.leftTop}>
                 <div className={styles.treeContainer}>
                   <TreeSelect
-                    allowClear
+                    // allowClear
                     treeDefaultExpandAll
                     value={selectedArea}
                     className={styles.tree}
@@ -375,10 +410,10 @@ export default class History extends PureComponent {
                       renderThumbHorizontal={renderThumbHorizontal}
                     >
                       {areaDataHistories && areaDataHistories.length > 0 ? areaDataHistories.map(area => {
-                        const { startTime: startTimeStamp, endTime: endTimeStamp, areaId, id, spreaded, index, cardCode, hideName, areaShowId } = area;
+                        const { startTime: startTimeStamp, endTime: endTimeStamp, areaId, id, ids, spreaded, index, cardCode, hideName, areaShowId } = area;
                         const changedStartTime = Math.max(startTimeStamp, startTime);
                         const canSpread = typeof spreaded !== 'undefined';
-                        const onClick = canSpread ? this.genSpreadClick(index) : this.handleClickTableRow;
+                        const onClick = canSpread ? this.genSpreadClick(index) :  this.genClickTableRow(ids || [id]);
                         const areaName = areaShowId ? (areaShowId === 'no' ? '-' : this.getFullAreaName(areaShowId)) : this.getFullAreaName(areaId);
                         return (
                           <div className={styles.tr} key={id} intime={changedStartTime} onClick={onClick}>
