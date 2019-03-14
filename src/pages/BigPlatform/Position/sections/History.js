@@ -7,7 +7,7 @@ import { Scroll } from 'react-transform-components';
 import Ellipsis from '@/components/Ellipsis';
 // 引入样式文件
 import styles from './History.less';
-import { Tabs, HistoryPlay } from '../components/Components';
+import { Tabs, MultipleHistoryPlay } from '../components/Components';
 import { getUserName } from '../utils';
 
 const { RangePicker } = DatePicker;
@@ -358,11 +358,12 @@ export default class History extends PureComponent {
           </div>
         </div>
         <div className={styles.right}>
-          <HistoryPlay
+          <MultipleHistoryPlay
             ref={this.setHistoryPlayReference}
             tree={tree}
             originalTree={originalTree}
-            data={locationDataHistories}
+            idMap={historyIdMap}
+            ids={userIds}
             startTime={startTime && +startTime}
             endTime={endTime && +endTime}
           />

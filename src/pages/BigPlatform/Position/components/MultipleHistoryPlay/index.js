@@ -37,7 +37,15 @@ const defaultState = {
   // 当前时间戳
   currentTimeStamp: undefined,
   // 播放速率
-  speed: 1,
+  speed: MIN_SPEED,
+  // 是否是最小速率
+  isMinSpeed: true,
+  // 是否是最大速率
+  isMaxSpeed: false,
+  // 是否为第一条数据
+  isFirst: true,
+  // 是否为最后一条数据
+  isLast: true,
   // 提示框
   tooltip: {},
   // 当前的时间节点
@@ -87,12 +95,14 @@ export default class MultipleHistoryPlay extends PureComponent {
       const currentTimeStamp = startTime;
       // 获取初始时间节点
       const currentIndexes = this.getCurrentIndexes(currentTimeStamp);
-      this.setState(({ speed, drawProps }) => {
+      this.setState(({ speed, isMinSpeed, isMaxSpeed, drawProps }) => {
         return {
           // 重置播放设置
           ...defaultState,
           // 保留播放播放速率
           speed,
+          isMinSpeed,
+          isMaxSpeed,
           // 设置初始时间戳
           currentTimeStamp,
           // 设置初始时间节点
@@ -102,6 +112,8 @@ export default class MultipleHistoryPlay extends PureComponent {
             ...drawProps,
             ...this.getDrawProps({ currentIndexes, currentTimeStamp }),
           } : undefined,
+          // 设置跳转状态
+          ...this.getStepStatus(currentIndexes),
         };
       });
       this.dataUpdated = true;
@@ -176,6 +188,8 @@ export default class MultipleHistoryPlay extends PureComponent {
         playing: false,
         currentTimeStamp,
         currentIndexes,
+        // 设置跳转状态
+        ...this.getStepStatus(currentIndexes),
         drawProps: { ...drawProps, ...this.getDrawProps({ currentIndexes, currentTimeStamp, reset: ids.length === 1 && prevIndexes[0] !== currentIndexes[0] }) },
       });
     }
@@ -184,6 +198,8 @@ export default class MultipleHistoryPlay extends PureComponent {
       this.setState({
         currentTimeStamp,
         currentIndexes,
+        // 设置跳转状态
+        ...this.getStepStatus(currentIndexes),
         drawProps: { ...drawProps, ...this.getDrawProps({ currentIndexes, currentTimeStamp, reset: ids.length === 1 && prevIndexes[0] !== currentIndexes[0] }) },
       });
       this.setFrameTimer();
@@ -525,7 +541,9 @@ export default class MultipleHistoryPlay extends PureComponent {
   getCurrentIndexes = (currentTimeStamp, prevIndexes = []) => {
     const { ids=[], idMap={} } = this.props;
     return ids.map((id, index) => {
+      // 获取当前人员的数据列表
       const list = idMap[id] || [];
+      // 获取初始时间节点
       let currentIndex = prevIndexes[index] === undefined ? -1 : prevIndexes[index];
       // 循环数组找出已经经过的进入时间离当前时间戳最近的时间节点
       for (let i = currentIndex + 1; i < list.length; i++) {
@@ -552,6 +570,30 @@ export default class MultipleHistoryPlay extends PureComponent {
   };
 
   /**
+   * 获取跳转状态
+   * @param {number} currentIndexes 当前时间节点
+   * @return {object}
+   */
+  getStepStatus = (currentIndexes) => {
+    const { ids=[], idMap={} } = this.props;
+    return ids.reduce((result, id, index) => {
+      // 获取当前人员的数据列表
+      const list = idMap[id] || [];
+      // 获取初始时间节点
+      let currentIndex = currentIndexes[index];
+      if (list.length > 0) {
+        if (currentIndex > 0) {
+          result.isFirst = false;
+        }
+        if (!(currentIndex >= list.length - 1)) {
+          result.isLast = false;
+        }
+      }
+      return result;
+    }, { isFirst: true, isLast: true });
+  }
+
+  /**
    * 播放按钮点击事件
    */
   handlePlay = () => {
@@ -566,6 +608,8 @@ export default class MultipleHistoryPlay extends PureComponent {
         extra = {
           currentTimeStamp,
           currentIndexes,
+          // 设置跳转状态
+          ...this.getStepStatus(currentIndexes),
           drawProps: { ...drawProps, ...this.getDrawProps({ currentIndexes, currentTimeStamp, reset: ids.length === 1 && prevIndexes[0] !== currentIndexes[0] }) },
         };
       }
@@ -606,10 +650,15 @@ export default class MultipleHistoryPlay extends PureComponent {
     // 清除变量以方便按照新的速率重新计算
     this.unsetFrameTimer();
     this.setState(
-      ({ speed }) => ({
-        // 重置播放速率
-        speed: speed * 2,
-      }),
+      ({ speed: prevSpeed }) => {
+        const speed = prevSpeed * 2;
+        return {
+          // 重置播放速率
+          speed,
+          isMinSpeed: speed === MIN_SPEED,
+          isMaxSpeed: speed === MAX_SPEED,
+        };
+      },
       () => {
         // 根据是否在播放决定是否重置定时器
         if (this.state.playing) {
@@ -631,10 +680,15 @@ export default class MultipleHistoryPlay extends PureComponent {
     // 清除变量以方便按照新的速率重新计算
     this.unsetFrameTimer();
     this.setState(
-      ({ speed }) => ({
-        // 重置播放速率
-        speed: speed / 2,
-      }),
+      ({ speed: prevSpeed }) => {
+        const speed = prevSpeed / 2;
+        return {
+          // 重置播放速率
+          speed,
+          isMinSpeed: speed === MIN_SPEED,
+          isMaxSpeed: speed === MAX_SPEED,
+        };
+      },
       () => {
         // 根据是否在播放决定是否重置定时器
         if (this.state.playing) {
@@ -664,6 +718,8 @@ export default class MultipleHistoryPlay extends PureComponent {
       currentTimeStamp,
       // 重置当前时间节点（即重置人员位置）
       currentIndexes,
+      // 设置跳转状态
+      ...this.getStepStatus(currentIndexes),
       // 重置绘图参数
       drawProps: { ...drawProps, ...this.getDrawProps({ currentIndexes, currentTimeStamp, reset: ids.length === 1 && prevIndexes[0] !== currentIndexes[0] }) },
     }, () => {
@@ -679,16 +735,71 @@ export default class MultipleHistoryPlay extends PureComponent {
   };
 
   /**
-   * 点击
+   * 跳转到上一个点
    */
-  handleClick = e => {
-    const {
-      target: { options: { data: { intime } = {} } = {} },
-    } = e;
-    if (intime) {
-      this.handleLocate({ currentTimeStamp: intime });
+  handlePrev = () => {
+    const { ids=[], idMap={} } = this.props;
+    const { currentIndexes=[], currentTimeStamp: prevTimeStamp } = this.state;
+    // 遍历当前时间节点获取离当前时间戳最近的进入时间
+    const currentTimeStamp = ids.reduce((currentTimeStamp, id, index) => {
+      // 获取当前人员的数据列表
+      const list = idMap[id] || [];
+      // 获取当前时间节点
+      const currentIndex = Math.min(currentIndexes[index], list.length - 1);
+      // 获取当前时间节点对应的数据
+      const currentData = list[currentIndex];
+      if (currentData) {
+        if (currentData.intime === prevTimeStamp) {
+          const prevData = list[currentIndex - 1];
+          if (prevData && (!currentTimeStamp || prevData.intime > currentTimeStamp)) {
+            return prevData.intime;
+          }
+        }
+        else if (!currentTimeStamp || currentData.intime > currentTimeStamp){
+          return currentData.intime;
+        }
+      }
+      // // 获取上个时间节点
+      // const prevIndex = Math.min(currentIndexes[index] - 1, list.length - 2);
+      // // 获取上个时间节点对应的数据
+      // const prevData = list[prevIndex];
+      // // 这里不需要判断intime是否小于等于prevTimeStamp
+      // if (prevData && (!currentTimeStamp || prevData.intime > currentTimeStamp)) {
+      //   return prevData.intime;
+      // }
+      return currentTimeStamp;
+    }, undefined);
+    // console.log(currentTimeStamp);
+    if (currentTimeStamp) {
+      this.handleLocate({ currentTimeStamp });
     }
-  };
+  }
+
+  /**
+   * 跳转到下一个点
+   */
+  handleNext = () => {
+    const { ids=[], idMap={} } = this.props;
+    const { currentIndexes=[] } = this.state;
+    // 遍历下个时间节点获取离当前时间戳最近的进入时间
+    const currentTimeStamp = ids.reduce((currentTimeStamp, id, index) => {
+      // 获取当前人员对应的数据列表
+      const list = idMap[id] || [];
+      // 获取下个时间节点
+      const nextIndex = currentIndexes[index] + 1;
+      // 获取下个时间节点对应的数据
+      const nextData = list[nextIndex];
+      // 这里不需要判断intime是否大于prevTimeStamp
+      if (nextData && (!currentTimeStamp || nextData.intime < currentTimeStamp)) {
+        return nextData.intime;
+      }
+      return currentTimeStamp;
+    }, undefined);
+    // console.log(currentTimeStamp);
+    if (currentTimeStamp) {
+      this.handleLocate({ currentTimeStamp });
+    }
+  }
 
   /**
    * 渲染
@@ -704,6 +815,10 @@ export default class MultipleHistoryPlay extends PureComponent {
       playing,
       currentTimeStamp,
       speed,
+      isMinSpeed,
+      isMaxSpeed,
+      isFirst,
+      isLast,
       tooltip: { visible, left, top, content },
       drawProps,
     } = this.state;
@@ -716,11 +831,11 @@ export default class MultipleHistoryPlay extends PureComponent {
       styles.playButton,
       startTime && endTime ? undefined : styles.disabled
     );
-    // 是否已经减速到最小速率
-    const isMinSpeed = speed === MIN_SPEED;
-    // 是否已经加速大最大速率
-    const isMaxSpeed = speed === MAX_SPEED;
-    console.log(drawProps);
+
+    // console.log(drawProps);
+    // console.log(idMap);
+    // console.log(ids);
+    // console.log(this.state.currentIndexes);
 
     return (
       <div className={styles.container}>
@@ -731,7 +846,6 @@ export default class MultipleHistoryPlay extends PureComponent {
             zoomControl={false}
             mapProps={DEFAULT_MAP_PROPS}
             autoZoom
-            onClick={this.handleClick}
             {...drawProps}
           />
         </div>
@@ -757,10 +871,18 @@ export default class MultipleHistoryPlay extends PureComponent {
             <div className={styles.endTime}>
               {endTime && moment(endTime).format(DEFAULT_TIME_FORMAT)}
             </div>
+            {/* 下个点跳转按钮 */}
+            <Tooltip title="后退">
+              <Icon
+                type="step-backward"
+                className={classNames(styles.button, isFirst?styles.disabled:undefined)}
+                onClick={isFirst ? undefined: this.handlePrev}
+              />
+            </Tooltip>
             {/* 减速按钮 */}
             <Tooltip title={`减速，当前${speed}x`}>
               <Icon
-                type="step-backward"
+                type="backward"
                 className={classNames(styles.button, isMinSpeed?styles.disabled:undefined)}
                 onClick={isMinSpeed ? undefined: this.handleDecelerate}
               />
@@ -786,9 +908,17 @@ export default class MultipleHistoryPlay extends PureComponent {
             {/* 加速按钮 */}
             <Tooltip title={`加速，当前${speed}x`}>
               <Icon
-                type="step-forward"
+                type="forward"
                 className={classNames(styles.button, isMaxSpeed?styles.disabled:undefined)}
                 onClick={isMaxSpeed ? undefined: this.handleAccelerate}
+              />
+            </Tooltip>
+            {/* 下个点跳转按钮 */}
+            <Tooltip title="前进">
+              <Icon
+                type="step-forward"
+                className={classNames(styles.button, isLast?styles.disabled:undefined)}
+                onClick={isLast ? undefined: this.handleNext}
               />
             </Tooltip>
           </div>
