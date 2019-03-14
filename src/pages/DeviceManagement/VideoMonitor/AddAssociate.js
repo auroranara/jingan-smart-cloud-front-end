@@ -278,7 +278,7 @@ export default class AddAssociate extends Component {
         title: '所在区域位置',
         dataIndex: 'location',
         align: 'center',
-        render: (val, { area = null, location = null }) => <span>{area || '' + location || ''}</span>,
+        render: (val, row) => <span>{(row.area || '') + (row.location || '')}</span>,
       },
     ]
     const fireColumns = [
