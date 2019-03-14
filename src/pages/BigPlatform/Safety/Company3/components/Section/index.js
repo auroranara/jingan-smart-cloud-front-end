@@ -6,6 +6,7 @@ import { Scroll } from 'react-transform-components';
 import styles from './index.less';
 
 const renderThumbHorizontal = ({ style }) => <div style={{ ...style, display: 'none' }} />;
+const renderTrackHorizontal = ({ style }) => <div style={{ ...style, display: 'none' }} />;
 const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)' };
 
 /**
@@ -69,6 +70,7 @@ export default function Section ({
             className={classNames(styles.scroll, scrollClassName)}
             thumbStyle={thumbStyle}
             renderThumbHorizontal={renderThumbHorizontal}
+            renderTrackHorizontal={renderTrackHorizontal}
             {...scrollProps}
           >
             {children}
