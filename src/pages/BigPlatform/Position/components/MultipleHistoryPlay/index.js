@@ -293,7 +293,7 @@ export default class MultipleHistoryPlay extends PureComponent {
         // 如果下个时间节点对应的数据不存在（即当前为最后一个时间节点），
         // 或者当前时间戳小于当前时间节点的离开时间（即人员还没有从当前时间节点离开），
         // 则返回当前时间节点的位置，从而使人员显示在当前时间节点的位置
-        if (!nextData || currentTimeStamp < out1) {
+        if (!nextData || currentTimeStamp <= out1) {
           latlng = { lat: y1, lng: x1 };
         }
         // 如果下个时间节点对应的数据存在，
@@ -557,8 +557,8 @@ export default class MultipleHistoryPlay extends PureComponent {
         currentIndex === list.length - 1 &&
         // 并且最后一个时间节点存在（即list的长度大于0），
         list[currentIndex] &&
-        // 并且最后一个时间节点的离开时间小于等于当前时间戳（即人员已经离开最后一个时间节点），
-        list[currentIndex].uptime <= currentTimeStamp
+        // 并且最后一个时间节点的离开时间小于当前时间戳（即人员已经离开最后一个时间节点），
+        list[currentIndex].uptime < currentTimeStamp
         // // 保证人员在最后一个时间节点至少1秒
         // && list[currentIndex].intime <= currentTimeStamp - 1000
       ) {
@@ -741,7 +741,8 @@ export default class MultipleHistoryPlay extends PureComponent {
     const { ids=[], idMap={} } = this.props;
     const { currentIndexes=[], currentTimeStamp: prevTimeStamp } = this.state;
     // 遍历当前时间节点获取离当前时间戳最近的进入时间
-    const currentTimeStamp = ids.reduce((currentTimeStamp, id, index) => {
+    const { currentTimeStamp } = ids.reduce((result, id, index) => {
+      const { currentTimeStamp, max } = result;
       // 获取当前人员的数据列表
       const list = idMap[id] || [];
       // 获取当前时间节点
@@ -751,25 +752,34 @@ export default class MultipleHistoryPlay extends PureComponent {
       if (currentData) {
         if (currentData.intime === prevTimeStamp) {
           const prevData = list[currentIndex - 1];
-          if (prevData && (!currentTimeStamp || prevData.intime > currentTimeStamp)) {
-            return prevData.intime;
+          if (prevData) {
+            if (!max) {
+              result.max = currentData.intime;
+            }
+            else if (currentData.intime > max) {
+              result.max = currentData.intime;
+              result.currentTimeStamp = max;
+            }
+            if (!result.currentTimeStamp || prevData.intime > result.currentTimeStamp) {
+              result.currentTimeStamp = prevData.intime;
+            }
           }
         }
-        else if (!currentTimeStamp || currentData.intime > currentTimeStamp){
-          return currentData.intime;
+        else {
+          if (!max) {
+            result.max = currentData.intime;
+          }
+          else if (currentData.intime > max){
+            result.max = currentData.intime;
+            result.currentTimeStamp = max;
+          }
+          else if (currentData.intime < max && (!currentTimeStamp || currentData.intime > currentTimeStamp)) {
+            result.currentTimeStamp = currentData.intime;
+          }
         }
       }
-      // // 获取上个时间节点
-      // const prevIndex = Math.min(currentIndexes[index] - 1, list.length - 2);
-      // // 获取上个时间节点对应的数据
-      // const prevData = list[prevIndex];
-      // // 这里不需要判断intime是否小于等于prevTimeStamp
-      // if (prevData && (!currentTimeStamp || prevData.intime > currentTimeStamp)) {
-      //   return prevData.intime;
-      // }
-      return currentTimeStamp;
-    }, undefined);
-    // console.log(currentTimeStamp);
+      return result;
+    }, { currentTimeStamp: undefined, max: undefined });
     if (currentTimeStamp) {
       this.handleLocate({ currentTimeStamp });
     }
@@ -795,7 +805,6 @@ export default class MultipleHistoryPlay extends PureComponent {
       }
       return currentTimeStamp;
     }, undefined);
-    // console.log(currentTimeStamp);
     if (currentTimeStamp) {
       this.handleLocate({ currentTimeStamp });
     }
