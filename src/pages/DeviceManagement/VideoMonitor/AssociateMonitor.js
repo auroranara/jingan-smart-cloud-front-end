@@ -156,7 +156,7 @@ export default class AssociatePersonnelPosition extends Component {
         title: '所在区域位置',
         key: 'area',
         align: 'center',
-        render: (val, { area = null, location = null }) => <span>{area + location}</span>,
+        render: (val, { area = null, location = null }) => <span>{area || '' + location || ''}</span>,
       },
       {
         title: '操作',
