@@ -215,7 +215,7 @@ export default class LeafletMap extends PureComponent {
       name: beaconCode,
       latlng: { lat: yarea, lng: xarea },
       iconProps: {
-        iconSize: [20, 20],
+        iconSize: [15, 15],
         // iconAnchor: [10, 10],
         className: styles.beaconContainer,
         html: `
