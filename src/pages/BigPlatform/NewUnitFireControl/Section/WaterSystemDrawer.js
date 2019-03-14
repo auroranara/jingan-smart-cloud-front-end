@@ -68,7 +68,6 @@ export default class WaterSystemDrawer extends PureComponent {
 
   componentDidMount() {}
 
-  // 搜索
   handleSearch = v => {
     this.setState({ searchValue: v });
   };
