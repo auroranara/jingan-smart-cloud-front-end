@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Button, DatePicker, Select, TreeSelect, message } from 'antd';
+import { Button, DatePicker, Icon, Select, TreeSelect, message } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import { mapMutations } from 'utils/utils';
@@ -23,7 +23,7 @@ const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)', right: -2 };
 /**
  * description: 历史轨迹
  */
-@connect(({ position }) => ({ position }))
+@connect(({ position, loading }) => ({ position, loading: loading.effects['position/fetchData'] }))
 export default class History extends PureComponent {
   constructor(props) {
     super(props);
@@ -31,6 +31,7 @@ export default class History extends PureComponent {
       range: defaultRange,
       selectedArea: undefined,
       spreads: [],
+      selectedIds: [],
     };
     mapMutations(this, {
       namespace: 'position',
@@ -43,6 +44,7 @@ export default class History extends PureComponent {
         'fetchTree',
         // 获取人员列表
         'fetchPeople',
+        'fetchCards',
         // 保存
         'save',
       ],
@@ -59,9 +61,12 @@ export default class History extends PureComponent {
     } = this.props;
     // 获取人员列表
     this.fetchPeople({ companyId });
-
+    this.fetchCards({ companyId, pageNum: 1, pageSize: 0 });
     // 获取区域树
-    this.fetchTree({ companyId });
+    this.fetchTree({ companyId }, response => {
+      if (response && response.data && Array.isArray(response.data.list) && response.data.list.length)
+        this.setState({ selectedArea: response.data.list[0].id });
+    });
 
     this.init();
   }
@@ -120,17 +125,18 @@ export default class History extends PureComponent {
     const { idType, userIds, cardIds } = this.props;
     const { selectedArea } = this.state;
 
-    const ids = +idType ? { cardId: cardIds.join(',') } : { userId: userIds.join(',') };
+    const ids = +idType ? { cardId: cardIds.length ? cardIds.join(',') : undefined } : { userId: userIds.length ? userIds.join(',') : undefined };
     const [queryStartTime, queryEndTime] = range;
     this.fetchData({
       ...ids,
       queryStartTime: queryStartTime && +queryStartTime,
       queryEndTime: queryEndTime && +queryEndTime,
       areaId: selectedArea,
+      searchType: +idType ? 2 : 1,
       idType,
-    }, (response, areaDataMap) => {
+    }, (response, areaDataList) => {
       if (response.code === 200)
-        this.setState({ spreads: Object.keys(areaDataMap).map((k, i) => !i) });
+        this.setState({ spreads: areaDataList.map((k, i) => !i) });
     });
   }
 
@@ -168,7 +174,8 @@ export default class History extends PureComponent {
   /**
    * 点击表格行
    */
-  handleClickTableRow = (e) => {
+  genClickTableRow = ids => e => {
+    this.setState({ selectedIds: ids });
     this.historyPlay.handleLocate({ currentTimeStamp: +e.currentTarget.getAttribute('intime') });
   }
 
@@ -198,9 +205,25 @@ export default class History extends PureComponent {
     this.setState({ selectedArea: value });
   };
 
+  clear = () => {
+    const { setUserIds, setCardIds } = this.props;
+    this.setState({
+      // range: defaultRange,
+      // selectedArea: undefined,
+      spreads: [],
+    });
+    this.save({
+      // areaDataMap: {},
+      areaDataList: [],
+    });
+    setUserIds([]);
+    setCardIds([]);
+  };
+
   handleIdTypeChange = value => {
     const { setIdType } = this.props;
     setIdType(value);
+    this.clear();
   };
 
   handleSearch = e => {
@@ -208,30 +231,108 @@ export default class History extends PureComponent {
     this.getData(range);
   };
 
+  getDataHistory = () => {
+    const { idType, userIds, cardIds, position: { areaDataList } } = this.props;
+    const { spreads, selectedArea } = this.state;
+
+    // const history = areaDataList.reduce((prev, next, i) => {
+    //   const prop = +idType ? 'cardId' : 'userId';
+    //   const first = next[0];
+    //   // 一条记录直接显示
+    //   if (next.length === 1)
+    //     prev.push({ ...first, index: i });
+    //   // 多条记录聚合
+    //   else {
+    //     const id = first[prop];
+    //     const spreaded = spreads[i];
+    //     prev.push({ ...first, id, index: i, spreaded, areaShowId: selectedArea || 'no' });
+    //     const list = areaDataMap[id];
+    //     if (spreaded) {
+    //       for (const record of list) {
+    //         prev.push({ ...record, hideName: true });
+    //       }
+    //     }
+    //   }
+
+      const history = areaDataList.reduce((prev, next, i) => {
+        // const prop = +idType ? 'cardId' : 'userId';
+        const { children } = next;
+        // 只有一条记录时，只显示当前记录的那条记录，不需要折叠
+        // 只有一条记录且其只在当前区域活动，则children为null
+        if (!children || !children.length)
+          prev.push({ ...next, index: i });
+        // 在当前子区域中只有一条记录，则children长度为1
+        else if (children.length === 1)
+          prev.push({ ...children[0], index: i });
+        // 多条记录折叠
+        else {
+          const spreaded = spreads[i];
+          prev.push({ ...next, index: i, spreaded, areaShowId: selectedArea || 'no' });
+          if (spreaded) {
+            for (const record of children) {
+              prev.push({ ...record, hideName: true });
+            }
+          }
+        }
+
+      return prev;
+    }, []);
+
+    if (areaDataList.length > 1)
+      history.unshift({
+        id: 'all',
+        ids: +idType ? cardIds : userIds,
+        userName: '所有人',
+        cardCode: '所有卡',
+        startTime: Math.min(...areaDataList.map(({ startTime }) => startTime)),
+        endTime: Math.max(...areaDataList.map(({ endTime }) => endTime)),
+        areaShowId: selectedArea || 'no',
+      });
+    return history;
+  };
+
+  genSpreadClick = index => e => {
+    this.setState(({ spreads }) => ({ spreads: spreads.map((b, i) => i === index ? !b : b) }));
+  };
+
+  getFullAreaName = areaId => {
+    const { position: { tree } } = this.props;
+    return tree[areaId] ? tree[areaId].fullName : '厂外';
+  };
+
   render() {
     const {
+      loading,
       labelIndex,
       // historyRecord: { id, isCardId }={},
       idType,
       userIds,
       cardIds,
       position: {
-        areaDataMap,
+        // areaDataMap,
+        // areaDataList,
         historyIdMap,
         data: {
-          areaDataHistories=[],
+          // areaDataHistories=[],
           locationDataHistories=[],
         }={},
         tree={},
         originalTree=[],
         sectionTree,
         people,
+        cards,
       },
       handleLabelClick,
     } = this.props;
     const { range, selectedArea, spreads } = this.state;
     const [ startTime, endTime ] = range;
-    // console.log(historyIdMap);
+
+    const areaDataHistories = this.getDataHistory();
+    const isCard = +idType; // 0 人   1 卡
+    const options = isCard
+      ? cards.map(({ id, code }) => <Option key={id} value={id}>{code}</Option>)
+      : people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>);
+    // console.log(areaDataHistories);
 
     return (
       <div className={styles.container}>
@@ -242,7 +343,7 @@ export default class History extends PureComponent {
               <div className={styles.leftTop}>
                 <div className={styles.treeContainer}>
                   <TreeSelect
-                    allowClear
+                    // allowClear
                     treeDefaultExpandAll
                     value={selectedArea}
                     className={styles.tree}
@@ -253,6 +354,7 @@ export default class History extends PureComponent {
                 </div>
                 <div className={styles.selects}>
                   <Select
+                    disabled={loading}
                     defaultValue="0"
                     value={idType}
                     className={styles.select1}
@@ -269,12 +371,12 @@ export default class History extends PureComponent {
                     className={styles.cardSelect}
                     dropdownClassName={styles.dropdown}
                     // value={id && isCardId ? `临时卡` : id}
-                    value={+idType ? cardIds : userIds}
+                    value={isCard ? cardIds : userIds}
                     placeholder="请选择或搜索人员/卡号"
                     // filterOption={this.cardFilter}
                     onChange={this.handleIdsChange}
                   >
-                    {people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>)}
+                    {options}
                   </Select>
                 </div>
                 <RangePicker
@@ -295,7 +397,7 @@ export default class History extends PureComponent {
               <div className={styles.leftMiddle}>
                 <div className={styles.table}>
                   <div className={styles.th}>
-                    <div className={styles.td}>名字</div>
+                    <div className={styles.td}>{isCard ? '卡号' : '名字'}</div>
                     <div className={styles.td}>开始时间</div>
                     <div className={styles.td}>结束时间</div>
                     <div className={styles.td}>区域楼层</div>
@@ -308,14 +410,20 @@ export default class History extends PureComponent {
                       renderThumbHorizontal={renderThumbHorizontal}
                     >
                       {areaDataHistories && areaDataHistories.length > 0 ? areaDataHistories.map(area => {
-                        const { startTime: startTimeStamp, endTime: endTimeStamp, areaId, id, hideName } = area;
+                        const { startTime: startTimeStamp, endTime: endTimeStamp, areaId, id, ids, spreaded, index, cardCode, hideName, areaShowId } = area;
                         const changedStartTime = Math.max(startTimeStamp, startTime);
+                        const canSpread = typeof spreaded !== 'undefined';
+                        const onClick = canSpread ? this.genSpreadClick(index) :  this.genClickTableRow(ids || [id]);
+                        const areaName = areaShowId ? (areaShowId === 'no' ? '-' : this.getFullAreaName(areaShowId)) : this.getFullAreaName(areaId);
                         return (
-                          <div className={styles.tr} key={id} intime={changedStartTime} onClick={this.handleClickTableRow}>
-                            <div className={styles[`td${hideName ? '1' : ''}`]}>{getUserName(area)}</div>
+                          <div className={styles.tr} key={id} intime={changedStartTime} onClick={onClick}>
+                            <div className={styles[`td${hideName ? '1' : ''}`]}>
+                              {canSpread && <Icon type={`${spreaded ? 'minus' : 'plus'}-square`} className={styles.spread} />}
+                              {isCard ? cardCode : getUserName(area)}
+                            </div>
                             <div className={styles.td}>{moment(changedStartTime).format('MM-DD HH:mm')}</div>
                             <div className={styles.td}>{moment(Math.min(endTimeStamp, endTime)).format('MM-DD HH:mm')}</div>
-                            <div className={styles.td}><Ellipsis lines={1} tooltip className={styles.ellipsis}>{tree[areaId] ? tree[areaId].fullName : '厂外'}</Ellipsis></div>
+                            <div className={styles.td}><Ellipsis lines={1} tooltip className={styles.ellipsis}>{areaName}</Ellipsis></div>
                           </div>
                         );
                       }) : <div className={styles.emptyTr}><div className={styles.td}>暂无数据</div></div>}

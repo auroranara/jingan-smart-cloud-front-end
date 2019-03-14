@@ -1,4 +1,4 @@
-import { getList, getLatest, getTree, getPeople } from '../services/position';
+import { getList, getLatest, getTree, getPeople, getCards } from '../services/position';
 
 // 格式化树
 function formatTree(list, parentName) {
@@ -86,7 +86,28 @@ function getSelectTree(list) {
 function getHisotryIdMap(list, idType) {
   const isCardId = +idType;
   return list.reduce((prev, next) => {
-    const id = next[isCardId ? 'cardId' : 'userId'];
+    let id = next[isCardId ? 'cardId' : 'userId'];
+    // 依据cardId，且cardId不存在，直接忽略，实际这种情况不存在
+    if (!id && isCardId)
+      return prev;
+    // 依据userId，未绑定的普通卡和所有临时卡没有userId，根据卡的类型，正式卡都显示为未领，临时卡根据是否有名字，分为名字和访客
+    if (!id && !isCardId) {
+      const isVisitor = +next.cardType;
+      const { visitorName } = next;
+      if (!isVisitor){
+        id = 'not_bound';
+        next = { ...next, userId: 'not_bound', userName: '未领' };
+      // 临时卡添加userName是为了下面按名字排序
+      } else if(visitorName) {
+        id = visitorName;
+        next = { ...next, userId: visitorName, userName: visitorName };
+      }
+      else {
+        id = 'visitor';
+        next = { ...next, userId: 'visitor', visitorName: '访客', userName: '访客' };
+      }
+    }
+
     if (id in prev)
       prev[id].push(next);
     else
@@ -106,11 +127,13 @@ export default {
       // 当前选中时间段内涉及的人员位置
       locationDataHistories: [],
     },
-    areaDataMap: {},
+    // areaDataMap: {},
+    areaDataList: [],
     historyIdMap: {},
     tree: {},
     originalTree: [],
     people: [],
+    cards: [],
     sectionTree: [],
   },
 
@@ -125,7 +148,7 @@ export default {
       const idType = payload.idType;
       delete payload.idType;
       const response = yield call(getList, payload);
-      let areaDataMap = {};
+      let areaDataList = [];
       if (response.code === 200) {
         const { areaDataHistories, locationDataHistories } = response.data;
         const originHistoryIdMap = getHisotryIdMap(locationDataHistories, idType);
@@ -134,7 +157,13 @@ export default {
           prev[id] = formatData(Array.from(ids));
           return prev;
         }, {});
-        areaDataMap = getHisotryIdMap(areaDataHistories, idType);
+        // const areaDataMap = getHisotryIdMap(areaDataHistories, idType);
+        // areaDataList = Object.values(areaDataMap);
+        areaDataList = areaDataHistories;
+        const sortFn = +idType
+          ? (a, b) => a.cardCode - b.cardCode
+          : (a, b) => a.userName.localeCompare(b.userName, 'zh-Hans-CN', {sensitivity: 'accent'});
+        areaDataList.sort(sortFn);
         yield put({
           type: 'save',
           payload: {
@@ -142,13 +171,14 @@ export default {
               areaDataHistories,
               locationDataHistories: formatData(locationDataHistories),
             },
-            areaDataMap,
+            // areaDataMap,
+            areaDataList,
             historyIdMap,
           },
         });
       }
       if (callback) {
-        callback(response, areaDataMap);
+        callback(response, areaDataList);
       }
     },
     // 获取区域树
@@ -174,8 +204,21 @@ export default {
       if (code === 200) {
         const { list } = data || {};
         const people = list || [];
+        people.sort((a, b) => a.user_name.localeCompare(b.user_name, 'zh-Hans-CN', {sensitivity: 'accent'}));
         yield put({ type: 'save', payload: { people } });
         callback && callback(people);
+      }
+    },
+    // 获取卡片列表
+    *fetchCards({ payload, callback }, { call, put }) {
+      const response = yield call(getCards, payload);
+      const { code, data={} } = response || {};
+      if (code === 200) {
+        const { list } = data || {};
+        const cards = list || [];
+        cards.sort((c1, c2) => c1.code - c2.code);
+        yield put({ type: 'save', payload: { cards } });
+        callback && callback(cards);
       }
     },
   },

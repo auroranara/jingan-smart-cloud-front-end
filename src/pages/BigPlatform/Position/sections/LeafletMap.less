@@ -68,17 +68,18 @@
   height: 20px;
 }
 
+@beaconWidth: 15px;
 .beacon {
-  width: 20px;
-  height: 20px;
-  // background-image: url(../imsg/beacon.png);
+  width: @beaconWidth;
+  height: @beaconWidth;
+  background-image: url(../imgs/beacon.png);
   background-size: 100% 100%;
-  background-color: rgba(0, 0, 255, 0.8);
+  // background-color: rgba(0, 0, 255, 0.8);
 }
 
 .beaconOff:extend(.beacon) {
-  // background-image: url(../imsg/beacon.png);
-  background-color: grey;
+  background-image: url(../imgs/beacon.png);
+  // background-color: grey;
 }
 
 .personContainer:extend(.iconContainer) {

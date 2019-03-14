@@ -48,7 +48,7 @@
   .inner {
     position: relative;
     // padding-top: 88px;
-    padding-top: 180px;
+    padding-top: 200px;
     height: 100%;
 
     .leftTop {
@@ -104,13 +104,14 @@
     display: flex;
     border-bottom: 1px solid rgb(0, 186, 255);
 
-    .td {
+    .td, .td1 {
       flex: 1;
       padding: 6px;
       text-align: center;
+      position: relative;
     }
 
-    .td1:extend(.td) {
+    .td1 {
       opacity: 0;
     }
   }
@@ -122,6 +123,13 @@
   .ellipsis {
     height: 1.5em;
   }
+}
+
+.spread {
+  position: absolute;
+  left: 15%;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .rangePicker {
