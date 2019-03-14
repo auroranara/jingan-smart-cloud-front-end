@@ -215,6 +215,7 @@ export default class History extends PureComponent {
     this.save({
       // areaDataMap: {},
       areaDataList: [],
+      selectedIds: [],
     });
     setUserIds([]);
     setCardIds([]);
@@ -232,7 +233,7 @@ export default class History extends PureComponent {
   };
 
   getDataHistory = () => {
-    const { idType, userIds, cardIds, position: { areaDataList } } = this.props;
+    const { idType, userIds, cardIds, position: { areaDataList, people, cards } } = this.props;
     const { spreads, selectedArea } = this.state;
 
     // const history = areaDataList.reduce((prev, next, i) => {
@@ -281,7 +282,7 @@ export default class History extends PureComponent {
     if (areaDataList.length > 1)
       history.unshift({
         id: 'all',
-        ids: +idType ? cardIds : userIds,
+        ids: +idType ? (cardIds.length ? cardIds : cards.map(({ id }) => id)) : (userIds.length ? userIds : people.map(({ user_id }) => user_id)),
         userName: '所有人',
         cardCode: '所有卡',
         startTime: Math.min(...areaDataList.map(({ startTime }) => startTime)),
