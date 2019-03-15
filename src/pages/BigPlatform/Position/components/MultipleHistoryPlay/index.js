@@ -50,6 +50,8 @@ const defaultState = {
   tooltip: {},
   // 当前的时间节点
   currentIndexes: [],
+  // 是否空数据
+  isEmpty: true,
 };
 // 报警状态字典
 const alarmStatusDict = {
@@ -118,6 +120,8 @@ export default class MultipleHistoryPlay extends PureComponent {
           } : undefined,
           // 设置跳转状态
           ...this.getStepStatus(currentIndexes),
+          // 设置是否为空数据
+          isEmpty: ids.some((id) => !idMap[id] || idMap[id].length === 0),
         };
       });
       this.dataUpdated = true;
@@ -602,32 +606,30 @@ export default class MultipleHistoryPlay extends PureComponent {
    */
   handlePlay = () => {
     const { onPlay, startTime, endTime, ids=[] } = this.props;
-    if (startTime && endTime) {
-      const { currentTimeStamp: prevTimeStamp, currentIndexes: prevIndexes, drawProps } = this.state;
-      let extra;
-      // 如果当前时间戳已经是结束时间，则重新开始播放
-      if (prevTimeStamp === endTime) {
-        const currentTimeStamp = startTime;
-        const currentIndexes = this.getCurrentIndexes(currentTimeStamp);
-        extra = {
-          currentTimeStamp,
-          currentIndexes,
-          // 设置跳转状态
-          ...this.getStepStatus(currentIndexes),
-          drawProps: { ...drawProps, ...this.getDrawProps({ currentIndexes, currentTimeStamp, reset: ids.length === 1 && prevIndexes[0] !== currentIndexes[0] }) },
-        };
-      }
-      this.setState({
-        // 显示暂停按钮
-        playing: true,
-        ...extra,
-      });
-      // 继续之前的播放
-      this.setFrameTimer();
-      // 若有onPlay传参则调用
-      if (onPlay) {
-        onPlay();
-      }
+    const { currentTimeStamp: prevTimeStamp, currentIndexes: prevIndexes, drawProps } = this.state;
+    let extra;
+    // 如果当前时间戳已经是结束时间，则重新开始播放
+    if (prevTimeStamp === endTime) {
+      const currentTimeStamp = startTime;
+      const currentIndexes = this.getCurrentIndexes(currentTimeStamp);
+      extra = {
+        currentTimeStamp,
+        currentIndexes,
+        // 设置跳转状态
+        ...this.getStepStatus(currentIndexes),
+        drawProps: { ...drawProps, ...this.getDrawProps({ currentIndexes, currentTimeStamp, reset: ids.length === 1 && prevIndexes[0] !== currentIndexes[0] }) },
+      };
+    }
+    this.setState({
+      // 显示暂停按钮
+      playing: true,
+      ...extra,
+    });
+    // 继续之前的播放
+    this.setFrameTimer();
+    // 若有onPlay传参则调用
+    if (onPlay) {
+      onPlay();
     }
   };
 
@@ -834,6 +836,7 @@ export default class MultipleHistoryPlay extends PureComponent {
       isLast,
       tooltip: { visible, left, top, content },
       drawProps,
+      isEmpty,
     } = this.state;
     // 当前时间轴宽度
     const width = currentTimeStamp
@@ -842,7 +845,7 @@ export default class MultipleHistoryPlay extends PureComponent {
     // 播放按钮类名
     const playButtonClassName = classNames(
       styles.playButton,
-      startTime && endTime ? undefined : styles.disabled
+      isEmpty ? styles.disabled : undefined,
     );
 
     // console.log(drawProps);
@@ -867,9 +870,9 @@ export default class MultipleHistoryPlay extends PureComponent {
           {/* 时间轴 */}
           <div
             className={styles.timeBar}
-            onClick={this.handleLocate}
-            onMouseMove={this.showTooltip}
-            onMouseLeave={this.hideTooltip}
+            onClick={isEmpty?undefined:this.handleLocate}
+            onMouseMove={isEmpty?undefined:this.showTooltip}
+            onMouseLeave={isEmpty?undefined:this.hideTooltip}
           >
             {/* 当前时间轴 */}
             <div className={styles.currentTimeBar} style={{ width }} />
@@ -907,14 +910,14 @@ export default class MultipleHistoryPlay extends PureComponent {
                   type="pause-circle"
                   theme="filled"
                   className={playButtonClassName}
-                  onClick={this.handlePause}
+                  onClick={isEmpty?undefined:this.handlePause}
                 />
               ) : (
                 <Icon
                   type="play-circle"
                   theme="filled"
                   className={playButtonClassName}
-                  onClick={this.handlePlay}
+                  onClick={isEmpty?undefined:this.handlePlay}
                 />
               )}
             </div>
