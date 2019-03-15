@@ -211,11 +211,11 @@ export default class History extends PureComponent {
       // range: defaultRange,
       // selectedArea: undefined,
       spreads: [],
+      selectedIds: [],
     });
     this.save({
-      // areaDataMap: {},
       areaDataList: [],
-      selectedIds: [],
+      // historyIdMap: {},
     });
     setUserIds([]);
     setCardIds([]);
@@ -301,6 +301,15 @@ export default class History extends PureComponent {
     return tree[areaId] ? tree[areaId].fullName : '厂外';
   };
 
+  onTabClick = i => {
+    const { handleLabelClick } = this.props;
+    handleLabelClick(i);
+    this.save({
+      areaDataList: [],
+      // historyIdMap: {},
+    });
+  };
+
   render() {
     const {
       loading,
@@ -323,7 +332,7 @@ export default class History extends PureComponent {
         people,
         cards,
       },
-      handleLabelClick,
+      // handleLabelClick,
     } = this.props;
     const { range, selectedArea, spreads } = this.state;
     const [ startTime, endTime ] = range;
@@ -338,7 +347,7 @@ export default class History extends PureComponent {
     return (
       <div className={styles.container}>
         <div className={styles.left}>
-          <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
+          <Tabs value={labelIndex} handleLabelClick={this.onTabClick} />
           <div className={styles.wrapper}>
             <div className={styles.inner}>
               <div className={styles.leftTop}>
