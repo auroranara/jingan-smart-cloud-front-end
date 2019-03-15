@@ -88,9 +88,13 @@ export default class MultipleHistoryPlay extends PureComponent {
    * 更新后
    */
   componentDidUpdate({ ids: prevIds, idMap: prevIdMap, tree: prevTree }) {
-    const { ids, idMap, tree, startTime } = this.props;
+    const { ids, idMap, tree, startTime, endTime } = this.props;
     // 当源数据发生变化时，重置各种播放参数
     if (idMap !== prevIdMap || ids !== prevIds) {
+      console.log(ids);
+      console.log(idMap);
+      console.log(startTime);
+      console.log(endTime);
       this.unsetFrameTimer();
       const currentTimeStamp = startTime;
       // 获取初始时间节点
@@ -844,7 +848,7 @@ export default class MultipleHistoryPlay extends PureComponent {
     // console.log(drawProps);
     // console.log(idMap);
     // console.log(ids);
-    // console.log(this.state.currentIndexes);
+    console.log(this.state.currentIndexes);
 
     return (
       <div className={styles.container}>

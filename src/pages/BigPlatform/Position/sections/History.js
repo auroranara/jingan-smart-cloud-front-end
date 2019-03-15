@@ -32,6 +32,7 @@ export default class History extends PureComponent {
       selectedArea: undefined,
       spreads: [],
       selectedIds: [],
+      selectedRange: [],
     };
     mapMutations(this, {
       namespace: 'position',
@@ -174,8 +175,8 @@ export default class History extends PureComponent {
   /**
    * 点击表格行
    */
-  genClickTableRow = ids => e => {
-    this.setState({ selectedIds: ids });
+  genClickTableRow = (ids, selectedRange) => e => {
+    this.setState({ selectedIds: ids, selectedRange });
     this.historyPlay.handleLocate({ currentTimeStamp: +e.currentTarget.getAttribute('intime') });
   }
 
@@ -324,8 +325,9 @@ export default class History extends PureComponent {
       },
       handleLabelClick,
     } = this.props;
-    const { range, selectedArea, spreads } = this.state;
+    const { range, selectedRange, selectedArea, spreads, selectedIds } = this.state;
     const [ startTime, endTime ] = range;
+    const [ startTimeStamp, endTimeStamp ] = selectedRange;
 
     const areaDataHistories = this.getDataHistory();
     const isCard = +idType; // 0 人   1 卡
@@ -413,7 +415,7 @@ export default class History extends PureComponent {
                         const { startTime: startTimeStamp, endTime: endTimeStamp, areaId, id, ids, spreaded, index, cardCode, hideName, areaShowId } = area;
                         const changedStartTime = Math.max(startTimeStamp, startTime);
                         const canSpread = typeof spreaded !== 'undefined';
-                        const onClick = canSpread ? this.genSpreadClick(index) :  this.genClickTableRow(ids || [id]);
+                        const onClick = canSpread ? this.genSpreadClick(index) :  this.genClickTableRow(ids || [id], [startTimeStamp, endTimeStamp]);
                         const areaName = areaShowId ? (areaShowId === 'no' ? '-' : this.getFullAreaName(areaShowId)) : this.getFullAreaName(areaId);
                         return (
                           <div className={styles.tr} key={id} intime={changedStartTime} onClick={onClick}>
@@ -471,9 +473,9 @@ export default class History extends PureComponent {
             tree={tree}
             originalTree={originalTree}
             idMap={historyIdMap}
-            ids={userIds}
-            startTime={startTime && +startTime}
-            endTime={endTime && +endTime}
+            ids={selectedIds}
+            startTime={startTimeStamp && +startTimeStamp}
+            endTime={endTimeStamp && +endTimeStamp}
           />
         </div>
       </div>
