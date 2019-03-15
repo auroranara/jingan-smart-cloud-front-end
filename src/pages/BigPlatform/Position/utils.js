@@ -258,6 +258,19 @@ function isBuilding(mapId, childMapId, companyMapId) {
   return false;
 }
 
+export function findBuildingId(areaId, areaInfo) {
+  const areaIds = [];
+  while(areaId) {
+    areaIds.unshift(areaId);
+    const current = areaInfo[areaId];
+    if (current.isBuilding)
+      return  areaId;
+    areaId = current.parent && current.parent.id;
+  }
+
+  return;
+}
+
 // 将区域树打平成一个Map对象，areaId => { name, parent, childIds }
 // export function getAreaInfo(list) {
 //   const cache = {};

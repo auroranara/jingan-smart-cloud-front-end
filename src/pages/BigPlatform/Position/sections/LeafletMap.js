@@ -382,6 +382,8 @@ export default class LeafletMap extends PureComponent {
         <ImageDraw
           maxBoundsRatio={1.5}
           autoZoom
+          boxZoom={false}
+          doubleClickZoom={false}
           mapProps={{ scrollWheelZoom: false }}
           url={url}
           data={data}

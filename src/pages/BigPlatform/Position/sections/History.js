@@ -19,6 +19,7 @@ const timeFormat = 'YYYY-MM-DD HH:mm';
 const defaultRange = [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')];
 const renderThumbHorizontal = ({ style }) => <div style={{ ...style, display: 'none' }} />;
 const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)', right: -2 };
+const RANGE_LIMIT = 24 * 3600 * 1000;
 
 /**
  * description: 历史轨迹
@@ -33,6 +34,7 @@ export default class History extends PureComponent {
       spreads: [],
       selectedIds: [],
       selectedRange: [],
+      highlighted: undefined,
     };
     mapMutations(this, {
       namespace: 'position',
@@ -230,6 +232,11 @@ export default class History extends PureComponent {
 
   handleSearch = e => {
     const { range } = this.state;
+    const [start, end] = range.map(m => +m);
+    if (end - start > RANGE_LIMIT) {
+      message.warn('选择的时间范围请限制在24小时以内');
+      return;
+    }
     this.getData(range);
   };
 
