@@ -4,7 +4,7 @@ import { notification } from 'antd';
 import moment from 'moment';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import VideoSurveillance from './VideoSurveillance';
-import VideoPlay from '../FireControl/section/VideoPlay';
+import VideoPlay from '../NewFireControl/section/VideoPlay';
 import PointInspectionCount from './PointInspectionCount';
 import CompanyInfo from './CompanyInfo';
 import Messages from './Messages';
@@ -33,6 +33,7 @@ import AlarmDynamicMsgDrawer from './Section/AlarmDynamicMsgDrawer';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import headerBg from '@/assets/new-header-bg.png';
+import { isArray } from 'util';
 
 const { projectName } = global.PROJECT_CONFIG;
 // const DELAY = 5 * 1000;
@@ -138,6 +139,9 @@ export default class App extends PureComponent {
     fireProcessIds: [],
     // 最新一条隐患id
     latestHiddenDangerId: undefined,
+    videoList: [],
+    fireVideoVisible: false,
+    fireVideoKeyId: '',
   };
 
   componentDidMount() {
@@ -147,6 +151,9 @@ export default class App extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
+
+    const { checkItemId } = this.state;
+
     const { NanXiaoWebsocket: ws } = global;
     if (!ws) return;
     ws.onmessage = e => {
@@ -232,6 +239,24 @@ export default class App extends PureComponent {
                   companyId,
                 },
               });
+
+              // 获取当前隐患列表
+              dispatch({
+                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+                payload: {
+                  company_id: companyId,
+                  businessType: 2,
+                },
+              });
+
+              //获取巡查记录
+              dispatch({
+                type: 'newUnitFireControl/fetchPointRecord',
+                payload: {
+                  itemId: checkItemId,
+                  item_type: 2,
+                },
+              });
             }
             if (type === 15 || type === 16 || type === 17) {
               if (fourColorTips[pointId] === messageFlag)
@@ -243,6 +268,24 @@ export default class App extends PureComponent {
                   companyId,
                 },
               });
+
+              // 获取当前隐患列表
+              dispatch({
+                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+                payload: {
+                  company_id: companyId,
+                  businessType: 2,
+                },
+              });
+
+              //获取巡查记录
+              dispatch({
+                type: 'newUnitFireControl/fetchPointRecord',
+                payload: {
+                  itemId: checkItemId,
+                  item_type: 2,
+                },
+              });
             }
             if (type === 13) {
               // 获取点位
@@ -250,6 +293,24 @@ export default class App extends PureComponent {
                 type: 'newUnitFireControl/fetchPointList',
                 payload: {
                   companyId,
+                },
+              });
+
+              // 获取当前隐患列表
+              dispatch({
+                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+                payload: {
+                  company_id: companyId,
+                  businessType: 2,
+                },
+              });
+
+              //获取巡查记录
+              dispatch({
+                type: 'newUnitFireControl/fetchPointRecord',
+                payload: {
+                  itemId: checkItemId,
+                  item_type: 2,
                 },
               });
               if (checkResult === '无隐患') this.removeFourColorTip2(pointId);
@@ -392,7 +453,6 @@ export default class App extends PureComponent {
         companyId,
       },
     });
-
     // 获取点位巡查列表
     this.fetchPointInspectionList();
 
@@ -465,7 +525,7 @@ export default class App extends PureComponent {
       <div
         className={styles.notificationBody}
         onClick={() => {
-          if (type === 5) this.handleClickMessage(messageFlag);
+          if (type === 5) this.handleClickMessage(messageFlag, item);
           else this.handleFaultClick({ ...item });
         }}
       >
@@ -675,10 +735,25 @@ export default class App extends PureComponent {
   };
 
   /**
+   *  点击播放重点部位监控
+   */
+  handleShowFireVideo = videoList => {
+    if (!Array.isArray(videoList) || videoList.length === 0) return null;
+    this.setState({ fireVideoVisible: true, videoList });
+  };
+
+  /**
    *  关闭重点部位监控
    */
   handleVideoClose = () => {
     this.setState({ videoVisible: false, videoKeyId: undefined });
+  };
+
+  /**
+   *  关闭视频监控
+   */
+  handleFireVideoClose = () => {
+    this.setState({ fireVideoVisible: false, fireVideoKeyId: undefined, videoList: [] });
   };
 
   /**
@@ -812,7 +887,7 @@ export default class App extends PureComponent {
     this.fetchPointInspectionList(date);
   };
 
-  handleFetchAlarmHandle = (dataId, historyType) => {
+  handleFetchAlarmHandle = (dataId, historyType, callback) => {
     const {
       dispatch,
       match: {
@@ -823,6 +898,7 @@ export default class App extends PureComponent {
     dispatch({
       type: 'newUnitFireControl/fetchAlarmHandle',
       payload: { companyId, dataId, historyType },
+      callback,
     });
   };
 
@@ -873,13 +949,16 @@ export default class App extends PureComponent {
   };
 
   handleShowAlarm = e => {
-    const {
-      monitor: { allCamera },
-    } = this.props;
-
-    this.handleFetchAlarmHandle(0, 0);
+    this.handleFetchAlarmHandle(0, 0, res => {
+      const {
+        data: {
+          list: [{ cameraMessage }, ...rest],
+        },
+      } = res;
+      this.handleShowFireVideo(cameraMessage);
+    });
     this.setState({ alarmDynamicDrawerVisible: true });
-    this.handleShowVideo(allCamera.length ? allCamera[0].key_id : '', true);
+    // this.handleShowVideo(allCamera.length ? allCamera[0].key_id : '', true);
   };
 
   handleShowAlarmHistory = e => {
@@ -895,18 +974,31 @@ export default class App extends PureComponent {
       },
     } = this.props;
 
-    dispatch({ type: 'newUnitFireControl/fetchFault', payload: { companyId } });
+    dispatch({
+      type: 'newUnitFireControl/fetchFault',
+      payload: { companyId },
+      callback: res => {
+        const {
+          data: {
+            list: [{ cameraMessage }, ...rest],
+          },
+        } = res;
+        this.handleShowFireVideo(cameraMessage);
+      },
+    });
     this.handleDrawerVisibleChange('fault');
   };
 
-  handleClickMessage = dataId => {
-    const {
-      monitor: { allCamera },
-    } = this.props;
+  handleClickMessage = (dataId, msg) => {
+    // const {
+    //   monitor: { allCamera },
+    // } = this.props;
+    const { cameraMessage } = msg;
     this.hiddeAllPopup();
     this.handleFetchAlarmHandle(dataId);
     this.setState({ alarmMessageDrawerVisible: true });
-    this.handleShowVideo(allCamera.length ? allCamera[0].key_id : '', true);
+    // this.handleShowVideo(allCamera.length ? allCamera[0].key_id : '', true);
+    this.handleShowFireVideo(cameraMessage);
   };
 
   handleFireMessage = processIds => {
@@ -931,8 +1023,10 @@ export default class App extends PureComponent {
   };
 
   handleFaultClick = data => {
+    const { cameraMessage } = data;
     this.hiddeAllPopup();
     this.setState({ faultMessage: data, faultMessageDrawerVisible: true });
+    this.handleShowFireVideo(cameraMessage);
   };
 
   hiddeAllPopup = () => {
@@ -995,6 +1089,10 @@ export default class App extends PureComponent {
     });
   };
 
+  handleParentChange = newState => {
+    this.setState({ ...newState });
+  };
+
   render() {
     // 从props中获取数据
     const {
@@ -1028,7 +1126,6 @@ export default class App extends PureComponent {
         faultList,
       },
     } = this.props;
-    console.log('currentHiddenDanger', this.props);
     const {
       videoVisible,
       showVideoList,
@@ -1062,6 +1159,9 @@ export default class App extends PureComponent {
       fireProcessIds,
       alarmDynamicMsgDrawerVisible,
       latestHiddenDangerId,
+      videoList,
+      fireVideoVisible,
+      fireVideoKeyId,
     } = this.state;
 
     return (
@@ -1116,9 +1216,7 @@ export default class App extends PureComponent {
         <Messages
           className={styles.realTimeMessage}
           model={this.props.newUnitFireControl}
-          handleParentChange={newState => {
-            this.setState({ ...newState });
-          }}
+          handleParentChange={this.handleParentChange}
           handleViewDangerDetail={this.handleViewDangerDetail}
           fetchData={this.fetchMaintenanceCheck}
           handleClickMessage={this.handleClickMessage}
@@ -1186,6 +1284,13 @@ export default class App extends PureComponent {
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
         />
+        <VideoPlay
+          showList={true}
+          videoList={videoList}
+          visible={fireVideoVisible}
+          keyId={videoList[0] ? videoList[0].key_id : undefined} // keyId
+          handleVideoClose={this.handleFireVideoClose}
+        />
         <RiskDrawer
           visible={riskDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
@@ -1234,6 +1339,7 @@ export default class App extends PureComponent {
         <AlarmDynamicDrawer
           data={alarmHandleList}
           visible={alarmDynamicDrawerVisible}
+          handleParentChange={this.handleParentChange}
           onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
         />
         <AlarmDynamicDrawer
@@ -1318,6 +1424,7 @@ export default class App extends PureComponent {
           type={drawerType}
           data={faultList}
           visible={faultDrawerVisible}
+          handleParentChange={this.handleParentChange}
           onClose={() => this.handleDrawerVisibleChange('fault')}
         />
         <MaintenanceCheckDrawer

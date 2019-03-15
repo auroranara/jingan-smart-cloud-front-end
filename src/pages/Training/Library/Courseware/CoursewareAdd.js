@@ -357,7 +357,7 @@ export default class CoursewareAdd extends PureComponent {
                       name="files"
                       accept=".jpg,.png" // 接收的文件格式
                       headers={{ 'JA-Token': getToken() }}
-                      data={{ folder: 'courseWare' }} // 附带的参数
+                      data={{ folder: 'courseware' }} // 附带的参数
                       listType="picture-card"
                       showUploadList={false}
                       action={uploadUrl} // 上传地址

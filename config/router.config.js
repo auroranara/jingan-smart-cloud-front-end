@@ -847,13 +847,13 @@ module.exports = env => {
                   component: './DeviceManagement/VideoMonitor/VideoMonitorDetail',
                 },
                 {
-                  path: '/device-management/video-monitor/associate/:id',
+                  path: '/device-management/video-monitor/associate/:type/:id',
                   code: 'deviceManagement.videoMonitor.associate',
                   name: 'associate',
                   component: './DeviceManagement/VideoMonitor/AssociateDevice',
                 },
                 {
-                  path: '/device-management/video-monitor/associate/:id/add',
+                  path: '/device-management/video-monitor/associate/:id/add/:type',
                   code: 'deviceManagement.videoMonitor.addAssociate',
                   name: 'addAssociate',
                   component: './DeviceManagement/VideoMonitor/AddAssociate',

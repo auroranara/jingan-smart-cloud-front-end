@@ -47,7 +47,7 @@ export default class Messages extends PureComponent {
 
   handleClickExpandButton = () => {
     this.setState(({ isExpanded }) => ({ isExpanded: !isExpanded }));
-  }
+  };
 
   renderMsg = (msg, index) => {
     const {
@@ -116,7 +116,7 @@ export default class Messages extends PureComponent {
           <a
             className={styles.detailBtn}
             onClick={() => {
-              if (type === 5) handleClickMessage(messageFlag);
+              if (type === 5) handleClickMessage(messageFlag, { ...msg });
               else handleFaultClick({ ...msg });
             }}
           >
@@ -462,16 +462,24 @@ export default class Messages extends PureComponent {
         scroll={{
           className: styles.scroll,
         }}
-        other={screenMessage.length > 3 && <Icon type={isExpanded?'double-left':'double-right'} className={styles.expandButton} onClick={this.handleClickExpandButton} />}
+        other={
+          screenMessage.length > 3 && (
+            <Icon
+              type={isExpanded ? 'double-left' : 'double-right'}
+              className={styles.expandButton}
+              onClick={this.handleClickExpandButton}
+            />
+          )
+        }
         planB
       >
-          {list.length > 0 ? (
-            list.map((item, index) => {
-              return this.renderMsg(item, index);
-            })
-          ) : (
-            <div className={styles.emptyData}>暂无消息</div>
-          )}
+        {list.length > 0 ? (
+          list.map((item, index) => {
+            return this.renderMsg(item, index);
+          })
+        ) : (
+          <div className={styles.emptyData}>暂无消息</div>
+        )}
       </NewSection>
     );
   }

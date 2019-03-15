@@ -811,7 +811,7 @@ export default {
       }
     },
     // 火警动态列表或火警消息
-    *fetchAlarmHandle({ payload }, { call, put }) {
+    *fetchAlarmHandle({ payload, callback }, { call, put }) {
       const response = yield call(queryAlarmHandleList, payload);
       if (response && response.code === 200) {
         yield put({
@@ -820,6 +820,7 @@ export default {
           }`,
           payload: response.data ? response.data.list : [],
         });
+        if (callback) callback(response);
       }
     },
     // 维保工单列表或维保处理动态
@@ -842,13 +843,14 @@ export default {
         });
       }
     },
-    *fetchFault({ payload }, { call, put }) {
+    *fetchFault({ payload, callback }, { call, put }) {
       const response = yield call(queryFault, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveFault',
           payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
         });
+        if (callback) callback(response);
       }
     },
     // 维保巡查详情
