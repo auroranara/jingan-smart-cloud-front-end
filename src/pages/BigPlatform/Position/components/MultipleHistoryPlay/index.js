@@ -93,10 +93,10 @@ export default class MultipleHistoryPlay extends PureComponent {
     const { ids, idMap, tree, startTime, endTime } = this.props;
     // 当源数据发生变化时，重置各种播放参数
     if (idMap !== prevIdMap || ids !== prevIds) {
-      console.log(ids);
-      console.log(idMap);
-      console.log(startTime);
-      console.log(endTime);
+      // console.log(ids);
+      // console.log(idMap);
+      // console.log(startTime);
+      // console.log(endTime);
       this.unsetFrameTimer();
       const currentTimeStamp = startTime;
       // 获取初始时间节点
@@ -121,7 +121,7 @@ export default class MultipleHistoryPlay extends PureComponent {
           // 设置跳转状态
           ...this.getStepStatus(currentIndexes),
           // 设置是否为空数据
-          isEmpty: ids.some((id) => !idMap[id] || idMap[id].length === 0),
+          isEmpty: ids.every((id) => !idMap[id] || idMap[id].length === 0),
         };
       });
       this.dataUpdated = true;
@@ -318,7 +318,7 @@ export default class MultipleHistoryPlay extends PureComponent {
             lng: x1 + (x2 - x1) * percent,
           };
         }
-        const key = `${latlng.lat},${latlng.lng}`;
+        const key = `${latlng.lat.toFixed(2)},${latlng.lng.toFixed(2)}`;
         // 如果已经存在相同位置的数据，则进行聚合操作
         const { count=0, alarm=[] } = result[key] || {};
         result[key] = {
@@ -851,7 +851,7 @@ export default class MultipleHistoryPlay extends PureComponent {
     // console.log(drawProps);
     // console.log(idMap);
     // console.log(ids);
-    console.log(this.state.currentIndexes);
+    // console.log(this.state.currentIndexes);
 
     return (
       <div className={styles.container}>
