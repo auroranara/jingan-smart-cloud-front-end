@@ -258,13 +258,14 @@ function isBuilding(mapId, childMapId, companyMapId) {
   return false;
 }
 
+// areaIds数组中，第一个表示建筑id，第二个表示该区域所在楼层id，楼层id不存在时，则当前区域即为建筑
 export function findBuildingId(areaId, areaInfo) {
   const areaIds = [];
   while(areaId) {
     areaIds.unshift(areaId);
     const current = areaInfo[areaId];
     if (current.isBuilding)
-      return  areaId;
+      return  [areaId, areaIds[1]];
     areaId = current.parent && current.parent.id;
   }
 
@@ -491,4 +492,17 @@ export function handleOriginMovingCards(
       animate(cardId, [xarea1, yarea1], [xarea, yarea], move, callback);
     }
   }
+}
+
+// 从当前节点查找其所属的顶层节点下的第一层子节点的id，此处可以保证当前节点至少为顶层节点的子节点层，不会为顶层节点
+export function getAncestorId(currentId, rootId, areaInfo) {
+  let targetId = currentId;
+  while(targetId) {
+    const parentId = areaInfo[targetId].parentId;
+    if (parentId === rootId)
+      return targetId;
+    targetId = parentId;
+  }
+
+  return;
 }

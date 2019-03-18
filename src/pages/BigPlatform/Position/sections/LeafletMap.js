@@ -6,11 +6,13 @@ import styles from './LeafletMap.less';
 import ImageDraw, { L } from '@/components/ImageDraw';
 import {
   findInTree,
+  findBuildingId,
   parseImage,
   getUserName,
   getMapClickedType,
   getPersonAlarmTypes,
   getIconClassName,
+  getAncestorId,
   OPTIONS_BLUE,
 } from '../utils';
 
@@ -25,6 +27,7 @@ export default class LeafletMap extends PureComponent {
     data: [],
     images: undefined,
     reference: undefined,
+    floorIcon: undefined,
     beaconOn: true, // 是否显示信标
   };
 
@@ -68,6 +71,9 @@ export default class LeafletMap extends PureComponent {
     if (!current)
       return;
 
+    const root = sectionTree[0];
+    const rootId = root.id;
+    const isRoot = areaId === rootId;
     const currentInfo = areaInfo[areaId];
     const { isBuilding, parentId } = currentInfo;
 
@@ -102,7 +108,50 @@ export default class LeafletMap extends PureComponent {
         return prev;
       }, parentId ? [currentRange] : []); // 最顶层的外框不显示
 
-    this.setState({ data, images: areaInfo[areaId].images, reference });
+    // 当前区域为顶层节点，则子节点已加入data，当前节点不为顶层节点，则加入除当前节点所在的父节点的顶层节点的子节点，且子节点都隐藏，报警也不变红
+    if (!isRoot) {
+      const { children: rootChildren } = root;
+      const currentAncestorId = getAncestorId(areaId, rootId, areaInfo);
+      const rootRanges = rootChildren.reduce((prev, { id, range }) => {
+        if (id !== currentAncestorId && range) {
+          let newRange;
+          if (id === highlightedAreaId)
+            // 高亮的变蓝，不高亮的隐藏
+            newRange = { ...range, options: { ...range.options, color: OPTIONS_BLUE } };
+          else
+            newRange = { ...range, options: { ...range.options, color: 'transparent' } };
+          prev.push(newRange);
+        }
+        return prev;
+      }, []);
+
+      data.push(...rootRanges);
+    }
+
+    const floorIcon = this.getFloorIcon(areaId);
+    this.setState({ data, images: areaInfo[areaId].images, reference, floorIcon });
+  };
+
+  getFloorIcon = areaId => {
+    const { areaInfo } = this.props;
+    const [buildingId, floorId] = findBuildingId(areaId, areaInfo) || [];
+    if (!buildingId)
+      return;
+
+    return {
+      id: `${buildingId}_@@building`,
+      name: buildingId,
+      latlng: { lat: 0, lng: 0 },
+      iconProps: {
+        iconSize: [15, 15],
+        iconAnchor: [0, 0],
+        className: styles.beaconContainer,
+        html: `
+          <div class="${styles[+status ? 'beacon' : 'beaconOff']}">
+            <div class="${styles.personTitle}"></div>
+          </div>`,
+      },
+    };
   };
 
   handleClick = e => {
@@ -110,6 +159,7 @@ export default class LeafletMap extends PureComponent {
     const { id } = origin; // 若点击的是人，原始数据中有id及name，若点击区域，原始数据中无id，只有name
     const clickedType = getMapClickedType(id);
 
+    // console.log(e);
     // 0 区域 1 视频 2 人
     switch (clickedType) {
       case 0:
