@@ -458,7 +458,7 @@ export default class Messages extends PureComponent {
         className={className}
         style={{ display: 'flex', flexDirection: 'column', height: 'auto' }}
         titleStyle={{ flex: 'none' }}
-        contentStyle={{ flex: '1', display: 'flex', height: 'auto' /* padding: '16px 0' */ }}
+        contentStyle={{ flex: '1', display: 'flex', height: 'auto', backgroundColor: 'rgba(17, 58, 112, 0.9)' /* padding: '16px 0' */ }}
         scroll={{
           className: styles.scroll,
         }}
