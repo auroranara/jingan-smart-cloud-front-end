@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Icon, Spin, Switch } from 'antd';
 import { connect } from 'dva';
+import classNames from 'classnames';
 
 import styles from './LeafletMap.less';
 import ImageDraw, { L } from '@/components/ImageDraw';
@@ -126,30 +127,44 @@ export default class LeafletMap extends PureComponent {
       }, []);
 
       data.push(...rootRanges);
+      data.forEach((r, i) => { if (!i) return; r.className=styles.svg; });
+      console.log(data);
     }
 
-    const floorIcon = this.getFloorIcon(areaId);
+    const floorIcon = this.getFloorIcon(areaId, range);
     this.setState({ data, images: areaInfo[areaId].images, reference, floorIcon });
   };
 
-  getFloorIcon = areaId => {
-    const { areaInfo } = this.props;
+  getFloorIcon = (areaId, currentRange) => {
+    const { areaInfo, sectionTree } = this.props;
     const [buildingId, floorId] = findBuildingId(areaId, areaInfo) || [];
     if (!buildingId)
       return;
 
+    const building = findInTree(buildingId, sectionTree);
+    const { children } = building;
+    // let rng = range;
+    // if (floorId)
+    //   rng = children.find(({ id }) => id === floorId).range;
+    const props = ['lng', 'lat'];
+    const [x, y] = currentRange.latlngs.reduce((prev, next) => prev.map((n, i) => Math.max(n, next[props[i]])), [0, 0]);
+    const length = children.length;
+    const floors = children.reduce((prev, next, i) => {
+      const { id, status } = next;
+      return `${prev}<p class="${classNames(styles.floor, {
+        [styles.red]: +status === 2,
+        [styles.selectedFloor]: id === floorId,
+      })}" data-floor="${id}">F${i + 1}</p>`;
+    }, '');
     return {
       id: `${buildingId}_@@building`,
       name: buildingId,
-      latlng: { lat: 0, lng: 0 },
+      latlng: { lat: y, lng: x },
       iconProps: {
-        iconSize: [15, 15],
-        iconAnchor: [0, 0],
-        className: styles.beaconContainer,
-        html: `
-          <div class="${styles[+status ? 'beacon' : 'beaconOff']}">
-            <div class="${styles.personTitle}"></div>
-          </div>`,
+        iconSize: [40, 20 * length],
+        iconAnchor: [-2, 2],
+        className: styles.iconContainer,
+        html: `<div class="${styles.floors}">${floors}</div>`,
       },
     };
   };
@@ -174,6 +189,9 @@ export default class LeafletMap extends PureComponent {
       case 3:
         break;
       case 4:
+        this.handleClickFloor(id, e);
+        break;
+      case 5:
         this.handleClickPerson(id);
         break;
       default:
@@ -190,12 +208,12 @@ export default class LeafletMap extends PureComponent {
     const current = this.currentSection;
     const { children } = current;
 
-    // 无子区域则不做处理
-    if (!children) return;
+    // 无子区域或为建筑则不做处理
+    if (!children || isBuilding) return;
 
     // 有子区域
     // 如果当前所在区域为多层建筑，则跳出菜单选择楼层
-    if (isBuilding) e.target.bindPopup(this.genChoiceList(children)).openPopup();
+    // if (isBuilding) e.target.bindPopup(this.genChoiceList(children)).openPopup();
     // 不是多层建筑，则进入该区域
     else setAreaId(aId);
   };
@@ -218,6 +236,15 @@ export default class LeafletMap extends PureComponent {
     const ps = aggregation.find(item => item[0].beaconId === beaconId);
     if (ps.length === 1) handleShowPersonInfo(ps[0].cardId);
     else handleShowPersonDrawer(beaconId);
+  };
+
+  handleClickFloor = (id, e) => {
+    const { setAreaId } = this.props;
+    // const buildingId = id.split('_@@')[0];
+    // console.log(e);
+
+    const floorId = e.originalEvent.srcElement.dataset.floor;
+    setAreaId(floorId);
   };
 
   genChoiceList = children => {
@@ -419,12 +446,12 @@ export default class LeafletMap extends PureComponent {
 
   render() {
     const { url, areaId, areaInfo } = this.props;
-    const { data, images, reference, beaconOn } = this.state;
+    const { data, images, reference, beaconOn, floorIcon } = this.state;
     // const { count, inCardCount, outCardCount } = this.currentTrueSection || {};
 
     const currentAreaInfo = (areaId && areaInfo[areaId]) || {};
     const { parentId, fullName } = currentAreaInfo;
-    const icons = this.positionsToIcons();
+    const icons = this.positionsToIcons().concat(floorIcon || []);
     // console.log('render icons', Date(), icons);
 
     const imgDraw = (

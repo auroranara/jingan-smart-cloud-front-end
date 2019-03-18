@@ -266,7 +266,7 @@ export function findBuildingId(areaId, areaInfo) {
     const current = areaInfo[areaId];
     if (current.isBuilding)
       return  [areaId, areaIds[1]];
-    areaId = current.parent && current.parent.id;
+    areaId = current.parentId;
   }
 
   return;
@@ -295,7 +295,7 @@ export function getAreaInfo(list) {
   const cache = {};
   const areaInfo = {};
   traverse(list, (item, parents) => {
-    const { id, name, companyMap, mapId, children } = item;
+    const { id, name, companyMap, mapId, children, range } = item;
     const length = parents.length;
     const parent = length ? parents[length - 1] : {};
     const firstChild = children && children.length ? children[0] : {};
@@ -308,6 +308,7 @@ export function getAreaInfo(list) {
       isBuilding: isBuilding(mapId, firstChild.mapId, companyMap),
       childIds: getChildIds(item, cache),
       images: getMapImages(nodeList),
+      // range: JSON.parse(range),
     };
   });
 
@@ -392,13 +393,14 @@ export function getUserName(item, showPrefix) {
   return '访客';
 }
 
-// 0 区域 1 视频 2 移动的人 3 信标 4 聚合/单人
+// 0 区域 1 视频 2 移动的人 3 信标 4 建筑物 5 聚合/单人
 export function getMapClickedType(id) {
   if (id.includes('_@@section')) return 0;
   if (id.includes('_@@video')) return 1;
   if (id.includes('_@@moving')) return 2;
   if (id.includes('_@@beacon')) return 3;
-  return 4;
+  if (id.includes('_@@building')) return 4;
+  return 5;
 }
 
 const PERSON_ALARM_TYPES = ['SOS', '越界', '长时间逗留'];
