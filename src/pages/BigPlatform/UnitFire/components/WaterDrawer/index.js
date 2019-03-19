@@ -39,6 +39,7 @@ export default class WaterDrawer extends PureComponent {
         useGauge = false,
         abnormalImg,
         normalImg,
+        lostImg,
       },
     } = this.props;
     const { filterName } = this.state;
@@ -98,7 +99,10 @@ export default class WaterDrawer extends PureComponent {
                           style={{ width: '110px', height: '110px' }}
                         />
                       ) : (
-                        <img src={+status !== 0 ? abnormalImg : normalImg} alt="" />
+                        <img
+                          src={!!isLost ? lostImg : +status === 0 ? normalImg : abnormalImg}
+                          alt=""
+                        />
                       )}
                     </div>
                     <div className={styles.infoWrapper}>
@@ -160,6 +164,7 @@ export default class WaterDrawer extends PureComponent {
       dataSet: { subTitle, abnormal, normal, abnormalImg, normalImg, dataList },
       onClose,
       form: { getFieldDecorator },
+      title,
     } = this.props;
     const { videoVisible, videoKeyId, filterName, videoList } = this.state;
 
@@ -264,7 +269,7 @@ export default class WaterDrawer extends PureComponent {
 
     return (
       <DrawerContainer
-        title={'消火栓系统'}
+        title={title}
         width={700}
         visible={visible}
         left={left}

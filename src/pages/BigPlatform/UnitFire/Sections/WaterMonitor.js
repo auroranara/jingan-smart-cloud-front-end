@@ -5,6 +5,7 @@ import ChartGauge from '../components/ChartGauge';
 import styles from './WaterMonitor.less';
 import pondAbnormal from '../images/pond-abnormal.png';
 import pondNormal from '../images/pond-normal.png';
+import pondLost from '../images/pond-lost.png';
 
 const waterSys = {
   '101': {
@@ -39,12 +40,26 @@ export default class FireHostMonitoring extends PureComponent {
 
   renderTabs = () => {
     const { type } = this.state;
+    const { data } = this.props;
     return (
       <div className={styles.tabsWrapper}>
         <Radio.Group value={type} buttonStyle="solid" onChange={this.handelChange}>
-          <Radio.Button value="101">消火栓系统</Radio.Button>
-          <Radio.Button value="102">自动喷淋系统</Radio.Button>
-          <Radio.Button value="103">水池/水箱</Radio.Button>
+          {['101', '102', '103'].map(val => {
+            const isAlarm =
+              Array.isArray(data[val]) &&
+              !!data[val].filter(item => {
+                const { deviceDataList } = item;
+                if (!deviceDataList.length) return false;
+                const [{ status }] = deviceDataList;
+                if (+status === 0) return false;
+                else return true;
+              }).length;
+            return (
+              <Radio.Button value={val} className={isAlarm ? styles.tabAlarm : undefined}>
+                {waterSys[val].name}
+              </Radio.Button>
+            );
+          })}
         </Radio.Group>
       </div>
     );
@@ -145,38 +160,49 @@ export default class FireHostMonitoring extends PureComponent {
   };
 
   renderPond = () => {
-    const list = Array(7)
-      .fill(true)
-      .map((item, index) => {
-        return {
-          name: `水箱${index + 1}`,
-          id: Math.floor(Math.random() * 666666666).toString(),
-          location: `${index + 1}号楼`,
-          value: 2 * Math.random().toFixed(2),
-          unit: 'm',
-          range: [2, 4],
-          status: Math.floor(2 * Math.random()),
-        };
-      });
+    const {
+      data: { '103': list = [] },
+    } = this.props;
     return list.map(item => {
-      const { name, value, status, unit, range } = item;
+      const { deviceDataList } = item;
+      if (!deviceDataList.length) return null;
+      const { deviceId, deviceName } = item;
+      const [
+        {
+          value,
+          status,
+          deviceParamsInfo: { normalUpper, normalLower },
+          unit,
+        },
+      ] = deviceDataList;
+      const rangeStr =
+        (!normalLower && normalLower !== 0) || (!normalUpper && normalUpper !== 0)
+          ? '暂无'
+          : `${normalLower}~${normalUpper}${unit}`;
+      const isLost = +status < 0;
       return (
-        <Col span={24} className={styles.pondWrapper}>
-          {status === 0 && <div className={styles.pondStatus}>异常</div>}
-          <img src={status === 0 ? pondAbnormal : pondNormal} alt="pond" />
+        <Col
+          span={24}
+          className={styles.pondWrapper}
+          key={deviceId}
+          style={{ color: isLost ? '#bbbbbc' : '#fff' }}
+        >
+          {+status !== 0 && <div className={styles.pondStatus}>异常</div>}
+          <img src={+status < 0 ? pondLost : status === 0 ? pondNormal : pondAbnormal} alt="pond" />
           <div className={styles.infoWrapper}>
-            <div className={styles.name}>{name}</div>
+            <div className={styles.name}>{deviceName}</div>
             <Row>
               <Col span={12}>
                 当前水位：
-                <span style={{ color: status === 0 ? '#f83329' : '#fff' }}>
-                  {value}
-                  {unit}
+                <span
+                  style={{ color: +status < 0 ? '#bbbbbc' : +status === 0 ? '#fff' : '#f83329' }}
+                >
+                  {!value && value !== 0 ? '---' : value + unit}
                 </span>
               </Col>
               <Col span={12}>
                 参考范围：
-                {`${range[0]}~${range[1]}${unit}`}
+                {rangeStr}
               </Col>
             </Row>
           </div>
@@ -186,7 +212,7 @@ export default class FireHostMonitoring extends PureComponent {
   };
 
   render() {
-    const { handleDrawerVisibleChange, loading, fetchCompanyDevicesByType } = this.props;
+    const { handleDrawerVisibleChange } = this.props;
     const { type } = this.state;
     return (
       <Section

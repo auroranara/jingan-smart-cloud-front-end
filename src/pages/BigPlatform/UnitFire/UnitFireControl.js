@@ -250,6 +250,9 @@ export default class App extends PureComponent {
       },
     } = this.props;
     const { fireControlType, maintenanceType, pendingInfoStatus } = this.state;
+    this.fetchCompanyDevicesByType('101');
+    this.fetchCompanyDevicesByType('102');
+    this.fetchCompanyDevicesByType('103');
     // 获取待处理信息 1-1
     dispatch({
       type: 'unitFireControl/fetchPendingInfo',
@@ -1334,23 +1337,21 @@ export default class App extends PureComponent {
           {/* 消火栓系统 */}
           <HydrantDrawer
             visible={hydrantDrawerVisible}
-            // cameraList={videoList}
             data={companyDevicesByType}
             onClose={() => this.handleDrawerVisibleChange('hydrant')}
           />
           {/* 自动喷淋系统 */}
           <PistolDrawer
             visible={pistolDrawerVisible}
-            // cameraList={videoList}
             data={companyDevicesByType}
             onClose={() => this.handleDrawerVisibleChange('pistol')}
           />
           {/* 水池/水箱 */}
-          {/* <PondDrawer
+          <PondDrawer
             visible={pondDrawerVisible}
-            cameraList={videoList}
+            data={companyDevicesByType}
             onClose={() => this.handleDrawerVisibleChange('pond')}
-          /> */}
+          />
           {/* 历史消息 */}
           <InformationHistory
             title="历史消息"
