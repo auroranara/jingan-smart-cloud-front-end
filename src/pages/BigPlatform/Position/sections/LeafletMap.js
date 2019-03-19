@@ -127,8 +127,8 @@ export default class LeafletMap extends PureComponent {
       }, []);
 
       data.push(...rootRanges);
-      data.forEach((r, i) => { if (!i) return; r.className=styles.svg; });
-      console.log(data);
+      data.forEach((r, i) => { if(!i) return; r.className=styles.svg; });
+      // console.log(data);
     }
 
     const floorIcon = this.getFloorIcon(areaId, range);
