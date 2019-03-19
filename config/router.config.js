@@ -861,6 +861,32 @@ module.exports = env => {
                 // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
               ],
             },
+            // 设备关联传感
+            {
+              path: '/device-management/associate-sensor',
+              code: 'deviceManagement.associateSensor',
+              name: 'associateSensor',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/associate-sensor',
+                  name: 'associateSensor',
+                  redirect: '/device-management/associate-sensor/list',
+                },
+                {
+                  path: '/device-management/associate-sensor/list',
+                  name: 'listView',
+                  code: 'deviceManagement.associateSensor.listView',
+                  component: './DeviceManagement/AssociateSensor/SensorCompanyList',
+                },
+                {
+                  path: '/device-management/associate-sensor/company/:companyId/water-system',
+                  name: 'waterSystem',
+                  code: 'deviceManagement.associateSensor.waterSystem',
+                  component: './DeviceManagement/AssociateSensor/WaterSystem',
+                },
+              ],
+            },
           ],
         },
 
