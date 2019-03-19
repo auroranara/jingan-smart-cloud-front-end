@@ -12,7 +12,8 @@ function emptyFn() {}
 export default class CardSelected extends PureComponent {
   handleToHistory = e => {
     const { cardId, userId, setHistoryRecord, handleLabelClick } = this.props;
-    setHistoryRecord({ id: userId || cardId, isCardId: !userId });
+    // setHistoryRecord({ id: userId || cardId, isCardId: !userId });
+    setHistoryRecord(cardId, userId);
     handleLabelClick(2);
   };
 

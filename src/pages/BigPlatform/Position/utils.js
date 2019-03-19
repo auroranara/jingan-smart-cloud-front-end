@@ -343,9 +343,10 @@ function getMapImages(list) {
 
 function getTimeDesc(t) {
   const ms = +t;
-  const minutes = Math.floor(ms / 60000);
-  const hours = Math.floor(ms / 3600000);
-  return `${hours ? `${hours}小时` : ''}${minutes ? `${minutes}分钟` : ''}`;
+  // const minutes = Math.floor(ms / 60000);
+  const hours = Math.floor((ms / 3600000) * 10) / 10;
+  // return `${hours ? `${hours}小时` : ''}${minutes ? `${minutes}分钟` : ''}`;
+  return `${hours}小时`;
 }
 
 export function getAlarmDesc(item, areaInfo) {

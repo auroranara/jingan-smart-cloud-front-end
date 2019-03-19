@@ -31,8 +31,14 @@ export default class PositionIndex extends PureComponent {
     this.setState({ selectedCardId: cardId, selectedUserId: userId });
   };
 
-  setHistoryRecord = historyRecord => {
-    this.setState({ historyRecord });
+  setHistoryRecord = (cardId, userId) => {
+    // this.setState({ historyRecord });
+    let state;
+    if (userId)
+      state = { historyIdType: '0', historyUserIds: [userId] };
+    else
+      state = { historyIdType: '1', historyCardIds: [cardId] };
+    this.setState(state);
   };
 
   setHistoryIdType = type => {
