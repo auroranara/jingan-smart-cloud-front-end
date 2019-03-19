@@ -34,6 +34,7 @@ import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import headerBg from '@/assets/new-header-bg.png';
 import { isArray } from 'util';
+import { consoleTestResultHandler } from '_tslint@5.12.1@tslint/lib/test';
 
 const { projectName } = global.PROJECT_CONFIG;
 // const DELAY = 5 * 1000;
@@ -462,6 +463,15 @@ export default class App extends PureComponent {
     // this.pollTimer = setInterval(this.polling, DELAY);
     // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
+
+    // 获取水系统---消火栓系统
+    dispatch({
+      type: 'newUnitFireControl/fetchWaterSystem',
+      payload: {
+        companyId,
+        type: 101,
+      },
+    });
   }
 
   showFireMsg = item => {
@@ -1091,10 +1101,24 @@ export default class App extends PureComponent {
     });
   };
 
-  handleViewWater = i => {
+  handleViewWater = (i, type) => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
     this.setState({
       waterSystemDrawerVisible: true,
       waterTabItem: i,
+    });
+
+    dispatch({
+      type: 'newUnitFireControl/fetchWaterSystem',
+      payload: {
+        companyId,
+        type: type,
+      },
     });
   };
 
@@ -1139,8 +1163,10 @@ export default class App extends PureComponent {
         workOrderDetail, // 只有一个元素的数组
         fireAlarm,
         faultList,
+        waterSystemData: { list },
       },
     } = this.props;
+
     const {
       videoVisible,
       showVideoList,
@@ -1268,7 +1294,7 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 水系统 */}
-                <FireDevice onClick={this.handleViewWater} />
+                <FireDevice companyId={companyId} onClick={this.handleViewWater} waterList={list} />
                 {/* <FireDevice systemScore={systemScore} onClick={this.handleViewFireAlarm} /> */}
               </div>
             </div>
@@ -1454,6 +1480,7 @@ export default class App extends PureComponent {
           visible={waterSystemDrawerVisible}
           waterTabItem={waterTabItem}
           onClose={this.handleCloseWater}
+          waterList={list}
         />
       </BigPlatformLayout>
     );

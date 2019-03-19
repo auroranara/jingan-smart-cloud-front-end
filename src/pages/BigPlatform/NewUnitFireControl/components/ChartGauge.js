@@ -9,9 +9,25 @@ export default class ChartGauge extends PureComponent {
       showValue,
       name,
       radius,
+      isLost,
       range: [min, max] = [0, 2],
       normalRange: [normalMin, normalMax] = [0.4, 1.2],
     } = this.props;
+    let axisLine;
+    if (!normalMin && normalMin !== 0 && !normalMax && normalMax !== 0) {
+      axisLine = [[1, '#1e90ff']];
+    } else if ((normalMin || normalMin === 0) && (!normalMax && normalMax !== 0)) {
+      axisLine = [[(normalMin - min) / max, '#ff4905'], [1, '#1e90ff']];
+    } else if ((normalMax || normalMax === 0) && (!normalMin && normalMin !== 0)) {
+      axisLine = [[(normalMax - min) / max, '#1e90ff'], [1, '#ff4905']];
+    } else {
+      axisLine = [
+        [(normalMin - min) / max, '#ff4905'],
+        [(normalMax - min) / max, '#1e90ff'],
+        [1, '#ff4905'],
+      ];
+    }
+
     return {
       grid: {
         top: 0,
@@ -44,11 +60,7 @@ export default class ChartGauge extends PureComponent {
           axisLine: {
             lineStyle: {
               width: 2,
-              color: [
-                [(normalMin - min) / max, '#ff4000'],
-                [(normalMax - min) / max, '#1e90ff'],
-                [1, '#ff4000'],
-              ],
+              color: !!isLost ? [[1, '#bbbbbc']] : axisLine,
             },
           },
           splitLine: {
@@ -63,11 +75,14 @@ export default class ChartGauge extends PureComponent {
           },
           pointer: { width: 4, length: '70%' },
           itemStyle: {
-            color: 'auto',
+            color: '#1565b2',
           },
           detail: {
             show: !!showValue,
             fontSize: 12,
+            formatter: value => {
+              return !!isLost ? '---' : value;
+            },
           },
           data: [{ value, name }],
         },

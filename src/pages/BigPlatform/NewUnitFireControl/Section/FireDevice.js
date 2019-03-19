@@ -1,53 +1,64 @@
 import React, { PureComponent } from 'react';
 import { Radio, Row, Col } from 'antd';
-
+import { connect } from 'dva';
 import WaterCards from '../components/WaterCards';
 import ChartGauge from '../components/ChartGauge';
 import Section from '../Section';
 import styles from './FireDevice.less';
 
+@connect(({ newUnitFireControl }) => ({
+  newUnitFireControl,
+}))
 export default class FireDevice extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      type: '0',
+      type: '101',
     };
   }
 
   // 切换状态
   handelRadioChange = item => {
+    const { dispatch, companyId } = this.props;
     const {
       target: { value },
     } = item;
     this.setState({ type: value });
+    dispatch({
+      type: 'newUnitFireControl/fetchWaterSystem',
+      payload: {
+        companyId,
+        type: value,
+      },
+    });
   };
 
   renderHydrant = () => {
-    const { onClick } = this.props;
-    const list = Array(7)
-      .fill(true)
-      .map((item, index) => {
-        return {
-          name: `点位名称${index + 1}`,
-          id: Math.floor(Math.random() * 666666666).toString(),
-          location: '1号楼',
-          value: 2 * Math.random().toFixed(2),
-          unit: 'MPa',
-          range: '0.02~0.09',
-        };
-      });
-    return list.map(item => {
-      const { name, value } = item;
+    const { waterList } = this.props;
+
+    return waterList.map(item => {
+      const { deviceDataList } = item;
+      if (!deviceDataList.length) return null;
+      const { deviceId, deviceName } = item;
+      const [
+        {
+          value,
+          status,
+          deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
+        },
+      ] = deviceDataList;
+
       return (
-        <Col span={12} className={styles.gaugeCol}>
+        <Col span={12} className={styles.gaugeCol} key={deviceId}>
           <ChartGauge
             showName
             showValue
             radius="75%"
-            name={name}
-            value={value}
-            range={[0, 2]}
-            normalRange={[0.4, 1.2]}
+            isLost={+status < 0}
+            name={deviceName}
+            value={value || 0}
+            range={[minValue || 0, maxValue || value || 5]}
+            normalRange={[normalLower, normalUpper]}
           />
         </Col>
       );
@@ -55,23 +66,31 @@ export default class FireDevice extends PureComponent {
   };
 
   renderPond = () => {
-    const { onClick } = this.props;
-    const list = Array(7)
-      .fill(true)
-      .map((item, index) => {
-        return {
-          name: `水箱${index + 1}`,
-          id: Math.floor(Math.random() * 666666666).toString(),
-          location: `${index + 1}号楼`,
-          value: 2 * Math.random().toFixed(2),
-          unit: 'm',
-          range: [2, 4],
-          status: Math.floor(2 * Math.random()),
-        };
-      });
-    return list.map(item => {
-      const { name, value, status, unit, range } = item;
-      return <WaterCards name={name} value={value} status={status} unit={unit} range={range} />;
+    const { waterList } = this.props;
+
+    return waterList.map(item => {
+      const { deviceDataList } = item;
+      if (!deviceDataList.length) return null;
+      const { deviceId, deviceName } = item;
+      const [
+        {
+          value,
+          status,
+          unit,
+          deviceParamsInfo: { normalUpper, normalLower },
+        },
+      ] = deviceDataList;
+
+      return (
+        <WaterCards
+          key={deviceId}
+          name={deviceName}
+          value={value}
+          status={status}
+          unit={unit}
+          range={[normalLower, normalUpper]}
+        />
+      );
     });
   };
 
@@ -83,22 +102,22 @@ export default class FireDevice extends PureComponent {
         <div className={styles.container}>
           <div className={styles.tabsWrapper}>
             <Radio.Group value={type} buttonStyle="solid" onChange={this.handelRadioChange}>
-              <Radio.Button value="0">消火栓系统</Radio.Button>
-              <Radio.Button value="1">自动喷淋系统</Radio.Button>
-              <Radio.Button value="2">水池/水箱</Radio.Button>
+              <Radio.Button value="101">消火栓系统</Radio.Button>
+              <Radio.Button value="102">自动喷淋系统</Radio.Button>
+              <Radio.Button value="103">水池/水箱</Radio.Button>
             </Radio.Group>
           </div>
           <Row
             className={styles.itemsWrapper}
             onClick={() => {
-              if (type === '0') onClick(0);
-              if (type === '1') onClick(1);
-              if (type === '2') onClick(2);
+              if (type === '101') onClick(0, type);
+              if (type === '102') onClick(1, type);
+              if (type === '103') onClick(2, type);
             }}
           >
-            {type === '0' && this.renderHydrant()}
-            {type === '1' && this.renderHydrant()}
-            {type === '2' && this.renderPond()}
+            {type === '101' && this.renderHydrant()}
+            {type === '102' && this.renderHydrant()}
+            {type === '103' && this.renderPond()}
           </Row>
         </div>
       </Section>

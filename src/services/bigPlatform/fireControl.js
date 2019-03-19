@@ -414,6 +414,6 @@ export async function queryDataId({ id }) {
 }
 
 // 水系统
-export async function queryWaterSystem({ id }) {
-  // return request(`${URL_PREFIX}/fireManage/fireProcess/${id}`);
+export async function queryWaterSystem(params) {
+  return request(`${URL_PREFIX}/deviceInfo/getCompanyDevicesByType?${stringify(params)}`);
 }
