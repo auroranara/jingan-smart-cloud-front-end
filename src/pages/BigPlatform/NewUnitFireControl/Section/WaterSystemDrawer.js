@@ -106,7 +106,11 @@ export default class WaterSystemDrawer extends PureComponent {
 
       return (
         <Col span={12}>
-          <div className={styles.card} key={deviceId}>
+          <div
+            className={styles.card}
+            key={deviceId}
+            style={{ border: +status !== 0 ? '1px soild #f83329' : '1px soild #04fdff' }}
+          >
             {+status !== 0 && <div className={styles.status}>异常</div>}
             <div className={styles.picArea}>
               <ChartGauge
@@ -320,8 +324,19 @@ export default class WaterSystemDrawer extends PureComponent {
       .filter(item => item.deviceDataList.length > 0)
       .map(item => item.deviceDataList);
 
-    const normal = dataList.filter(item => item && +item.status === 0).length;
-    const abnormal = dataList.filter(item => item).length - normal;
+    const newList = dataList.map(item => {
+      let obj = {};
+      for (const key in item) {
+        if (item.hasOwnProperty(key)) {
+          const element = item[key];
+          obj = { ...element };
+        }
+      }
+      return obj;
+    });
+
+    const normal = newList.filter(item => item && +item.status === 0).length;
+    const abnormal = newList.filter(item => item && +item.status !== 0).length;
 
     const { videoVisible } = this.state;
 
@@ -334,8 +349,8 @@ export default class WaterSystemDrawer extends PureComponent {
             <Col span={16}>
               <OvProgress
                 title="异常"
-                percent={normal + abnormal > 0 ? (normal / (normal + abnormal)) * 100 : 0}
-                quantity={normal}
+                percent={normal + abnormal > 0 ? (abnormal / (normal + abnormal)) * 100 : 0}
+                quantity={abnormal}
                 strokeColor="rgb(255,72,72)"
                 iconStyle={{
                   backgroundImage: `url(${getImageError(waterTabItem)})`,
@@ -345,8 +360,8 @@ export default class WaterSystemDrawer extends PureComponent {
               />
               <OvProgress
                 title="正常"
-                percent={normal + abnormal > 0 ? (abnormal / (normal + abnormal)) * 100 : 0}
-                quantity={abnormal}
+                percent={normal + abnormal > 0 ? (normal / (normal + abnormal)) * 100 : 0}
+                quantity={normal}
                 strokeColor="rgb(0,251,252)"
                 // style={{ cursor: 'pointer' }}
                 iconStyle={{
