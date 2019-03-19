@@ -75,6 +75,7 @@ const defaultPageSize = 10;
 @connect(({ unitFireControl, monitor, loading }) => ({
   unitFireControl,
   monitor,
+  devicesLoading: loading.effects['unitFireControl/fetchCompanyDevicesByType'],
   pendingHistoryLoading: loading.effects['unitFireControl/fetchInformationHistory'],
   hiddenDnagerLoading: loading.effects['unitFireControl/fetchHiddenDangerRecords'],
   inspectionMoreLoading:
@@ -222,6 +223,10 @@ export default class App extends PureComponent {
         company_id: companyId,
       },
     });
+
+    this.fetchCompanyDevicesByType('101');
+    this.fetchCompanyDevicesByType('102');
+    this.fetchCompanyDevicesByType('103');
 
     // 设置轮询
     this.pollingTimer = setInterval(this.polling, 5000);
@@ -390,6 +395,22 @@ export default class App extends PureComponent {
       payload: {
         companyId,
         type: maintenanceType,
+      },
+    });
+  };
+
+  fetchCompanyDevicesByType = type => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'unitFireControl/fetchCompanyDevicesByType',
+      payload: {
+        companyId,
+        type,
       },
     });
   };
@@ -1168,6 +1189,7 @@ export default class App extends PureComponent {
     const {
       hiddenDnagerLoading,
       inspectionMoreLoading,
+      devicesLoading,
       unitFireControl: {
         // 隐患统计
         dangerStatistics: { companyName },
@@ -1177,6 +1199,7 @@ export default class App extends PureComponent {
         videoList,
         fireAlarmSystem,
         informationHistory: { list },
+        companyDevicesByType,
       },
       monitor: { chartDeviceList, gsmsHstData, electricityPieces, chartParams, deviceDataHistory },
       pendingHistoryLoading,
@@ -1218,7 +1241,12 @@ export default class App extends PureComponent {
                   </div>
                   <div style={{ height: '51.08%' }}>
                     {/* 水系统监测 */}
-                    <WaterMonitor handleDrawerVisibleChange={this.handleDrawerVisibleChange} />
+                    <WaterMonitor
+                      handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+                      loading={devicesLoading}
+                      fetchCompanyDevicesByType={this.fetchCompanyDevicesByType}
+                      data={companyDevicesByType}
+                    />
                   </div>
                 </div>
                 {/* 历史信息 */}
@@ -1306,21 +1334,23 @@ export default class App extends PureComponent {
           {/* 消火栓系统 */}
           <HydrantDrawer
             visible={hydrantDrawerVisible}
-            cameraList={videoList}
+            // cameraList={videoList}
+            data={companyDevicesByType}
             onClose={() => this.handleDrawerVisibleChange('hydrant')}
           />
           {/* 自动喷淋系统 */}
           <PistolDrawer
             visible={pistolDrawerVisible}
-            cameraList={videoList}
+            // cameraList={videoList}
+            data={companyDevicesByType}
             onClose={() => this.handleDrawerVisibleChange('pistol')}
           />
           {/* 水池/水箱 */}
-          <PondDrawer
+          {/* <PondDrawer
             visible={pondDrawerVisible}
             cameraList={videoList}
             onClose={() => this.handleDrawerVisibleChange('pond')}
-          />
+          /> */}
           {/* 历史消息 */}
           <InformationHistory
             title="历史消息"

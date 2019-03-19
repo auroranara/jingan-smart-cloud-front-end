@@ -6,18 +6,34 @@ import styles from './WaterMonitor.less';
 import pondAbnormal from '../images/pond-abnormal.png';
 import pondNormal from '../images/pond-normal.png';
 
+const waterSys = {
+  '101': {
+    name: '消火栓系统',
+    code: 'hydrant',
+  },
+  '102': {
+    name: '自动喷淋系统',
+    code: 'pistol',
+  },
+  '103': {
+    name: '水池/水箱',
+    code: 'pond',
+  },
+};
 export default class FireHostMonitoring extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      type: '0',
+      type: '101',
     };
   }
 
   handelChange = item => {
+    const { fetchCompanyDevicesByType } = this.props;
     const {
       target: { value },
     } = item;
+    fetchCompanyDevicesByType(value);
     this.setState({ type: value });
   };
 
@@ -26,38 +42,102 @@ export default class FireHostMonitoring extends PureComponent {
     return (
       <div className={styles.tabsWrapper}>
         <Radio.Group value={type} buttonStyle="solid" onChange={this.handelChange}>
-          <Radio.Button value="0">消火栓系统</Radio.Button>
-          <Radio.Button value="1">自动喷淋系统</Radio.Button>
-          <Radio.Button value="2">水池/水箱</Radio.Button>
+          <Radio.Button value="101">消火栓系统</Radio.Button>
+          <Radio.Button value="102">自动喷淋系统</Radio.Button>
+          <Radio.Button value="103">水池/水箱</Radio.Button>
         </Radio.Group>
       </div>
     );
   };
 
   renderHydrant = () => {
-    const list = Array(7)
-      .fill(true)
-      .map((item, index) => {
-        return {
-          name: `点位名称${index + 1}`,
-          id: Math.floor(Math.random() * 666666666).toString(),
-          location: '1号楼',
-          value: 2 * Math.random().toFixed(2),
-          unit: 'MPa',
-          range: '0.02~0.09',
-        };
-      });
-    return list.map(item => {
-      const { name, value } = item;
+    const {
+      data: { '101': list = [] },
+    } = this.props;
+    if (!list.length) {
       return (
-        <Col span={12}>
+        <div
+          style={{
+            width: '100%',
+            height: '135px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            color: '#4f678d',
+          }}
+        >
+          暂无相关监测数据
+        </div>
+      );
+    }
+    return list.map(item => {
+      const { deviceDataList } = item;
+      if (!deviceDataList.length) return null;
+      const { deviceId, deviceName } = item;
+      const [
+        {
+          value,
+          status,
+          deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
+        },
+      ] = deviceDataList;
+      return (
+        <Col span={12} key={deviceId}>
           <ChartGauge
             showName
             showValue
-            name={name}
-            value={value}
-            range={[0, 2]}
-            normalRange={[0.4, 1.2]}
+            isLost={+status < 0}
+            name={deviceName}
+            value={value || 0}
+            range={[minValue || 0, maxValue || value || 5]}
+            normalRange={[normalLower, normalUpper]}
+          />
+        </Col>
+      );
+    });
+  };
+
+  renderPistol = () => {
+    const {
+      data: { '102': list = [] },
+    } = this.props;
+    if (!list.length) {
+      return (
+        <div
+          style={{
+            width: '100%',
+            height: '135px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            color: '#4f678d',
+          }}
+        >
+          暂无相关监测数据
+        </div>
+      );
+    }
+    return list.map(item => {
+      const { deviceDataList } = item;
+      if (!deviceDataList.length) return null;
+      const { deviceId, deviceName } = item;
+      const [
+        {
+          value,
+          status,
+          deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
+        },
+      ] = deviceDataList;
+      return (
+        <Col span={12} key={deviceId}>
+          <ChartGauge
+            showName
+            showValue
+            isLost={+status < 0}
+            name={deviceName}
+            value={value || 0}
+            range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
+            normalRange={[normalLower, normalUpper]}
           />
         </Col>
       );
@@ -106,22 +186,25 @@ export default class FireHostMonitoring extends PureComponent {
   };
 
   render() {
-    const { handleDrawerVisibleChange } = this.props;
+    const { handleDrawerVisibleChange, loading, fetchCompanyDevicesByType } = this.props;
     const { type } = this.state;
     return (
-      <Section title="水系统监测">
+      <Section
+        title="水系统监测"
+        scrollProps={{ className: styles.waterScroll, autoHide: true }}
+        // spinProps={{ loading }}
+      >
         <div className={styles.WaterMonitor}>
           {this.renderTabs()}
           <Row
             className={styles.itemsWrapper}
             onClick={() => {
-              if (type === '0') handleDrawerVisibleChange('hydrant');
-              if (type === '1') handleDrawerVisibleChange('pistol');
-              if (type === '2') handleDrawerVisibleChange('pond');
+              handleDrawerVisibleChange(waterSys[type].code);
             }}
           >
-            {type !== '2' && this.renderHydrant()}
-            {type === '2' && this.renderPond()}
+            {type === '101' && this.renderHydrant()}
+            {type === '102' && this.renderPistol()}
+            {type === '103' && this.renderPond()}
           </Row>
         </div>
       </Section>

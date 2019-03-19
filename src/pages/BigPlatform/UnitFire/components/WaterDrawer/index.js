@@ -13,15 +13,16 @@ export default class WaterDrawer extends PureComponent {
   state = {
     videoVisible: false,
     videoKeyId: '',
-    statusIndex: 0,
+    videoList: [],
     filterName: '',
   };
 
-  handleClickCamera = () => {
-    const { cameraList } = this.props;
+  handleClickCamera = videoList => {
+    // const { cameraList } = this.props;
     this.setState({
       videoVisible: true,
-      videoKeyId: cameraList.length ? cameraList[0].key_id : '',
+      videoList,
+      videoKeyId: videoList.length ? videoList[0].key_id : '',
     });
   };
 
@@ -29,13 +30,8 @@ export default class WaterDrawer extends PureComponent {
     this.setState({ videoVisible: false, videoKeyId: '' });
   };
 
-  handleSelectChange = index => {
-    this.setState({ statusIndex: index });
-  };
-
   renderItems = () => {
     const {
-      cameraList = [],
       dataSet: {
         valName = '数据',
         newLine = true,
@@ -46,17 +42,46 @@ export default class WaterDrawer extends PureComponent {
       },
     } = this.props;
     const { filterName } = this.state;
-    const list = filterName ? dataList.filter(item => item.name.includes(filterName)) : dataList;
+    const list = filterName
+      ? dataList.filter(item => item && item.name.includes(filterName))
+      : dataList;
     return (
       <div className={styles.devScroll}>
         <Row gutter={16}>
           {list.length ? (
-            list.map((item, index) => {
-              const { name, value, unit, range, location, status } = item;
+            list.map(item => {
+              if (!item) return null;
+              const {
+                name,
+                value,
+                unit,
+                normalRange,
+                range,
+                location,
+                status,
+                id,
+                isLost,
+                videoList,
+              } = item;
+              let valColor;
+              if (!!isLost) valColor = '#bbbbbc';
+              else if (+status !== 0) valColor = '#f83329';
+              else valColor = '#fff';
+              const rangeStr =
+                (!normalRange[0] && normalRange[0] !== 0) ||
+                (!normalRange[1] && normalRange[1] !== 0)
+                  ? '暂无'
+                  : `${normalRange[0]}~${normalRange[1]}${unit}`;
               return (
-                <Col span={12} key={index}>
-                  <div className={styles.deviceWrapper}>
-                    {status === 0 && <div className={styles.status}>异常</div>}
+                <Col span={12} key={id}>
+                  <div
+                    className={styles.deviceWrapper}
+                    style={{
+                      color: !!isLost ? '#bbbbbc' : '#fff',
+                      borderColor: +status !== 0 ? '#ff4848' : '#04fdff',
+                    }}
+                  >
+                    {+status !== 0 && <div className={styles.status}>异常</div>}
                     <div
                       className={styles.deviceImg}
                       style={{ width: useGauge ? '120px' : '80px' }}
@@ -67,12 +92,13 @@ export default class WaterDrawer extends PureComponent {
                           showValue={false}
                           name={name}
                           value={value}
-                          range={[0, 2]}
-                          normalRange={[0.4, 1.2]}
+                          range={range}
+                          isLost={isLost}
+                          normalRange={normalRange}
                           style={{ width: '110px', height: '110px' }}
                         />
                       ) : (
-                        <img src={status === 0 ? abnormalImg : normalImg} alt="" />
+                        <img src={+status !== 0 ? abnormalImg : normalImg} alt="" />
                       )}
                     </div>
                     <div className={styles.infoWrapper}>
@@ -81,19 +107,18 @@ export default class WaterDrawer extends PureComponent {
                       <Row gutter={8}>
                         <Col span={newLine ? 24 : 12}>
                           {`当前${valName}：`}
-                          <span style={{ color: status === 0 ? '#f83329' : '#fff' }}>{`${value +
-                            unit}`}</span>
+                          <span style={{ color: valColor }}>{`${
+                            !value && value !== 0 ? '---' : value + unit
+                          }`}</span>
                         </Col>
-                        <Col span={newLine ? 24 : 12}>{`参考范围：${range[0]}~${
-                          range[1]
-                        }${unit}`}</Col>
+                        <Col span={newLine ? 24 : 12}>{`参考范围：${rangeStr}`}</Col>
                       </Row>
                       <div className={styles.extraWrapper}>
-                        {!!cameraList.length && (
+                        {!!videoList.length && (
                           <div
                             className={styles.camraImg}
                             style={{ backgroundImage: `url(${cameraIcon})` }}
-                            onClick={e => this.handleClickCamera()}
+                            onClick={e => this.handleClickCamera(videoList)}
                           />
                         )}
                       </div>
@@ -134,10 +159,9 @@ export default class WaterDrawer extends PureComponent {
       visible,
       dataSet: { subTitle, abnormal, normal, abnormalImg, normalImg, dataList },
       onClose,
-      cameraList,
       form: { getFieldDecorator },
     } = this.props;
-    const { videoVisible, videoKeyId, filterName } = this.state;
+    const { videoVisible, videoKeyId, filterName, videoList } = this.state;
 
     const left = (
       <Fragment>
@@ -229,7 +253,7 @@ export default class WaterDrawer extends PureComponent {
           </div>
           <VideoPlay
             showList={true}
-            videoList={cameraList}
+            videoList={videoList}
             visible={videoVisible}
             keyId={videoKeyId}
             handleVideoClose={this.handleVideoClose}
