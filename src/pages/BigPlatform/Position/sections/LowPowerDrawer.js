@@ -1,4 +1,4 @@
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 
 import styles from './LowPowerDrawer.less';
 import { DrawerContainer } from '../components/Components';

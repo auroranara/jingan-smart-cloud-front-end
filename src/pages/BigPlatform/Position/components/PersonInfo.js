@@ -79,7 +79,7 @@ export default class PersonInfo extends PureComponent {
       personItem,
       style,
       handleTrack,
-      handleShowAlarmHandle,
+      handleShowAlarmMsgOrHandle,
       handleClose,
       ...restProps
     } = this.props;
@@ -96,9 +96,6 @@ export default class PersonInfo extends PureComponent {
     const SOSItem = sortAlarms.find(({ cardId: id, type }) => id === cardId && +type === 1);
     const alarmExceptSOSItem = sortAlarms.find(({ cardId: id, type }) => id === cardId && +type !== 1);
     const { elem, disabled, alarmId, handleSOS } = getStatusElem(isAlarmExceptSOS, isSOS, isOff, SOSItem, alarmExceptSOSItem);
-    const handleAlarmClick = e => {
-      handleShowAlarmHandle(alarmId, cardId, handleSOS);
-    };
 
     const newStyle = {
       // paddingBottom: isSOS ? 70 : 15,
@@ -126,7 +123,7 @@ export default class PersonInfo extends PureComponent {
               ghost
               disabled={disabled}
               className={styles.btn}
-              onClick={handleAlarmClick}
+              onClick={e => handleShowAlarmMsgOrHandle(alarmId, cardId, handleSOS)}
             >
               {disabled ? '已' : ''}处理
             </Button>

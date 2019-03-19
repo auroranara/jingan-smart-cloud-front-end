@@ -386,6 +386,13 @@ export default class RealTime extends PureComponent {
     this.setState({ alarmMsgVisible: true, alarmId });
   };
 
+  handleShowAlarmMsgOrHandle = (alarmId, cardId, handleSOS) => {
+    if (handleSOS)
+      this.handleShowAlarmHandle(alarmId, cardId);
+    else
+      this.handleShowAlarmMsg(alarmId);
+  };
+
   handleShowAlarmHandle = (alarmId, cardId) => {
     // alarmId不存在时，使用cardId处理，针对的是sos存在于person，而报警列表中没有
     if (!alarmId)
@@ -414,6 +421,10 @@ export default class RealTime extends PureComponent {
 
   handleCloseAlarmDrawer = e => {
     this.setState({ alarmDrawerVisible: false });
+  };
+
+  handleShowLowPowerDrawer = e => {
+    this.setState({ lowPowerDrawerVisible: true });
   };
 
   handleShowVideo = keyId => {
@@ -563,6 +574,7 @@ export default class RealTime extends PureComponent {
               positionList={positionList}
               showPersonInfoOrAlarmMsg={this.showPersonInfoOrAlarmMsg}
               handleShowAlarmDrawer={this.handleShowAlarmDrawer}
+              handleShowLowPowerDrawer={this.handleShowLowPowerDrawer}
             />
             <PersonInfo
               visible={personInfoVisible}
@@ -571,7 +583,7 @@ export default class RealTime extends PureComponent {
               alarms={alarms}
               personItem={getPersonInfoItem(cardId, positionList)}
               handleTrack={this.handleTrack}
-              handleShowAlarmHandle={this.handleShowAlarmHandle}
+              handleShowAlarmMsgOrHandle={this.handleShowAlarmMsgOrHandle}
               handleClose={this.handleClose}
             />
             <AlarmMsg
