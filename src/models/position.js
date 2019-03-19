@@ -1,7 +1,7 @@
 import { getList, getLatest, getTree, getPeople, getCards } from '../services/position';
 
 // 格式化树
-function formatTree(list, parentName) {
+function formatTree(list, parentName='', parentMapId, parentIds=[], result={}) {
   return list.reduce((result, {
     companyMapPhoto,
     mapPhoto,
@@ -13,24 +13,37 @@ function formatTree(list, parentName) {
     mapId,
     children,
   }) => {
-    const fullName = parentName ? `${parentName}${name}` : name;
-    return {
-      url: !result.url && JSON.parse(companyMapPhoto).url,
-      ...result,
-      [id]: {
-        ...(JSON.parse(range)),
-        url: JSON.parse(mapPhoto).url,
-        id,
-        name,
-        fullName,
-        parentId,
-        companyMap,
-        mapId,
-        children: children ? children.map(({ id }) => id) : [],
-      },
-      ...(children && formatTree(children, fullName)),
+    const fullName = `${parentName}${name}`;
+    if (!result.url) {
+      result.url = JSON.parse(companyMapPhoto).url;
+    }
+    const childIds = [];
+    let isBuilding = false;
+    if (children) {
+      formatTree(children, fullName, mapId, parentIds.concat(id), result);
+      children.forEach(({ id, mapId: childMapId }) => {
+        childIds.push(id);
+        if (childMapId !== mapId) {
+          isBuilding = true;
+        }
+      });
+    }
+    result[id] = {
+      ...(JSON.parse(range)),
+      url: JSON.parse(mapPhoto).url,
+      id,
+      name,
+      fullName,
+      parentId,
+      parentIds,
+      companyMap,
+      mapId,
+      children: childIds,
+      isBuilding,
+      isFloor: parentMapId ? parentMapId !== mapId : false,
     };
-  }, {});
+    return result;
+  }, result);
 };
 // 格式化位置数据
 function formatData(list) {
@@ -64,7 +77,7 @@ function formatData(list) {
       userName,
       vistorName,
       isAlarm,
-      options: { color: isAlarm ? '#ff4848' : '#00a8ff' },
+      options: { color: isAlarm ? '#ff4848' : '#00ffff' },
       locationStatusHistoryList,
     };
   });
