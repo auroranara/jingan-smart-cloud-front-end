@@ -11,9 +11,11 @@ export default class PositionIndex extends PureComponent {
     labelIndex: 0,
     selectedCardId: undefined,
     selectedUserId: undefined,
-    // historyCardId: undefined,
     // 历史记录，为对象，id可能为cardId，也可能为userId，isCardId是否为卡片id
-    historyRecord: undefined,
+    // historyRecord: undefined,
+    historyIdType: '0', // 0 userId   1 cardId
+    historyUserIds: [],
+    historyCardIds: [],
     areaInfoCache: {}, // 缓存RealTime组件中的areaInfo对象，以防切换tab时，areaInfo为空对象的问题
   };
 
@@ -33,6 +35,18 @@ export default class PositionIndex extends PureComponent {
     this.setState({ historyRecord });
   };
 
+  setHistoryIdType = type => {
+    this.setState({ historyIdType: type });
+  };
+
+  setHistoryUserIds = userIds => {
+    this.setState({ historyUserIds: userIds });
+  };
+
+  setHistoryCardIds = cardIds => {
+    this.setState({ historyCardIds: cardIds });
+  };
+
   render() {
     // 注意这里额外引了一个model
     const {
@@ -45,8 +59,10 @@ export default class PositionIndex extends PureComponent {
       labelIndex,
       selectedCardId,
       selectedUserId,
-      // historyCardId,
-      historyRecord,
+      // historyRecord,
+      historyIdType,
+      historyUserIds,
+      historyCardIds,
       areaInfoCache,
     } = this.state;
 
@@ -76,10 +92,16 @@ export default class PositionIndex extends PureComponent {
         )}
         {labelIndex === 2 && (
           <History
-            historyRecord={historyRecord}
+            // historyRecord={historyRecord}
+            idType={historyIdType}
+            userIds={historyUserIds}
+            cardIds={historyCardIds}
             companyId={companyId}
             labelIndex={labelIndex}
-            setHistoryRecord={this.setHistoryRecord}
+            // setHistoryRecord={this.setHistoryRecord}
+            setIdType={this.setHistoryIdType}
+            setUserIds={this.setHistoryUserIds}
+            setCardIds={this.setHistoryCardIds}
             handleLabelClick={this.handleLabelClick}
           />
         )}

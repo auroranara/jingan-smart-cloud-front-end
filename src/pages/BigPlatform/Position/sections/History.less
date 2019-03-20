@@ -47,7 +47,8 @@
 
   .inner {
     position: relative;
-    padding-top: 88px;
+    // padding-top: 88px;
+    padding-top: 200px;
     height: 100%;
 
     .leftTop {
@@ -58,10 +59,18 @@
     }
     .leftMiddle, .leftBottom {
       padding-bottom: 12px;
-	    height: 50%;
+      height: 100%;
+	    // height: 50%;
     }
   }
 
+  .searchBtn {
+    width: 100%;
+    color: #FFF;
+    background-color: #0e4f9f;
+    border-color: #0e4f9f;
+    margin-top: 12px;
+  }
 
   .table {
     display: table;
@@ -95,10 +104,15 @@
     display: flex;
     border-bottom: 1px solid rgb(0, 186, 255);
 
-    .td {
+    .td, .td1 {
       flex: 1;
       padding: 6px;
       text-align: center;
+      position: relative;
+    }
+
+    .td1 {
+      opacity: 0;
     }
   }
 
@@ -109,6 +123,13 @@
   .ellipsis {
     height: 1.5em;
   }
+}
+
+.spread {
+  position: absolute;
+  left: 15%;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .rangePicker {
@@ -382,10 +403,73 @@
   }
 }
 
-.cardSelect {
+.treeContainer, .selects {
   color: #FFF;
-  width: 100%;
   margin-bottom: 12px;
+}
+
+@color: rgb(255, 255, 255);
+@size: 18px;
+
+.treeContainer {
+  font-size: @size;
+
+  :global {
+    .ant-select {
+      color: @color;
+    }
+
+    .ant-select-arrow {
+      color: @color;
+    }
+
+    .ant-select-selection {
+      // border: none;
+      border-color: #04abc3;
+      background-color: transparent;
+    }
+
+    .ant-select-selection__clear {
+      color: #FFF;
+      background: rgb(3, 48, 105);
+    }
+  }
+}
+
+.treeDropdown {
+  color: @color;
+  background-color: rgba(1, 29, 67, 0.9);
+  box-shadow: 0 0 10px rgba(9, 103, 211, 0.9);
+
+  :global {
+    .ant-select-tree {
+      color: @color;
+
+      li .ant-select-tree-node-content-wrapper {
+        color: @color;
+      }
+
+      li .ant-select-tree-node-content-wrapper:hover {
+        background-color: rgba(4, 73, 140, 0.5);
+      }
+
+      li .ant-select-tree-node-content-wrapper.ant-select-tree-node-selected {
+        background-color: rgb(4, 73, 140);
+      }
+    }
+  }
+}
+
+.tree {
+  width: 100%;
+}
+
+.selects {
+  display: flex;
+}
+
+.select1, .cardSelect {
+  color: #FFF;
   background-color: transparent;
 
   :global {
@@ -395,6 +479,40 @@
     }
 
     .ant-select-arrow {
+      color: #FFF;
+    }
+
+    .ant-select-selection__clear {
+      color: #FFF;
+      background: rgb(3, 48, 105);
+    }
+  }
+}
+
+.select1 {
+  width: 80px;
+  :global {
+    .ant-select-selection {
+      border-radius: 4px 0 0 4px;
+      border-right: none;
+    }
+  }
+}
+
+.cardSelect {
+  width: calc(100% - 70px);
+  :global {
+    .ant-select-selection {
+      border-radius: 0 4px 4px 0;
+    }
+
+    .ant-select-selection--multiple .ant-select-selection__choice {
+      color: #FFF;
+      background-color: #0e4f9f;
+      border-color: #0e4f9f;
+    }
+
+    .ant-select-selection--multiple .ant-select-selection__choice__remove {
       color: #FFF;
     }
   }

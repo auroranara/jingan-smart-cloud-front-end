@@ -378,7 +378,7 @@ export function getUserName(item, showPrefix) {
   return '访客';
 }
 
-// 0 区域 1 视频 2 移动的人 3 聚合/单人
+// 0 区域 1 视频 2 移动的人 3 信标 4 聚合/单人
 export function getMapClickedType(id) {
   if (id.includes('_@@section')) return 0;
   if (id.includes('_@@video')) return 1;
