@@ -41,6 +41,7 @@ import {
   fetchAbnormalPatrol,
   fetchPatrolDangers,
   getCompanyDevicesByType,
+  deviceWarningMessageForCompany,
 } from '../services/bigPlatform/fireControl';
 
 const prefix = 'http://data.jingan-china.cn/v2/big-platform/fire-control/com/';
@@ -208,6 +209,8 @@ export default {
       },
     },
     companyDevicesByType: {},
+    deviceWarningMessage: [],
+    deviceWarningMsgHistory: [],
   },
 
   effects: {
@@ -544,6 +547,29 @@ export default {
         error();
       }
     },
+    // 获取报警信息
+    *fetchDeviceWarningMessage({ payload, success, error, callback }, { call, put }) {
+      const response = yield call(deviceWarningMessageForCompany, payload);
+      if (response.code === 200) {
+        if (+payload.overFlag === 0) {
+          yield put({
+            type: 'deviceWarningMessage',
+            payload: response.data.list,
+          });
+        } else if (+payload.overFlag === 1) {
+          yield put({
+            type: 'deviceWarningMsgHistory',
+            payload: response.data.list,
+          });
+        }
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+      if (callback) callback();
+    },
   },
 
   reducers: {
@@ -828,6 +854,18 @@ export default {
           ...state.companyDevicesByType,
           [devType]: payload,
         },
+      };
+    },
+    deviceWarningMessage(state, { payload }) {
+      return {
+        ...state,
+        deviceWarningMessage: payload,
+      };
+    },
+    deviceWarningMsgHistory(state, { payload }) {
+      return {
+        ...state,
+        deviceWarningMsgHistory: payload,
       };
     },
   },
