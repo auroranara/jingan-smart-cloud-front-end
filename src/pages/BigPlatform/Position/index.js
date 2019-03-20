@@ -5,7 +5,7 @@ import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 // import styles from './index.less';
 import { History, RealTime } from './sections/Components';
 
-@connect(({ personPosition, user }) => ({ personPosition, user }))
+@connect(({ personPosition, position, user }) => ({ personPosition, position, user }))
 export default class PositionIndex extends PureComponent {
   state = {
     labelIndex: 0,
@@ -18,6 +18,11 @@ export default class PositionIndex extends PureComponent {
     historyCardIds: [],
     areaInfoCache: {}, // 缓存RealTime组件中的areaInfo对象，以防切换tab时，areaInfo为空对象的问题
   };
+
+  componentDidMount() {
+    const { dispatch, match: { params: { companyId } } } = this.props;
+    dispatch({ type: 'position/fetchTree', payload: { companyId } });
+  }
 
   setAreaInfoCache = areaInfo => {
     this.setState({ areaInfoCache: areaInfo });

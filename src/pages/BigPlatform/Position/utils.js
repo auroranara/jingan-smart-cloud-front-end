@@ -342,6 +342,9 @@ function getMapImages(list) {
 }
 
 function getTimeDesc(t) {
+  if (!t)
+    return '';
+
   const ms = +t;
   // const minutes = Math.floor(ms / 60000);
   const hours = Math.floor((ms / 3600000) * 10) / 10;

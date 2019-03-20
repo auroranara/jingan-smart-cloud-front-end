@@ -33,8 +33,8 @@ export default class History extends PureComponent {
       timeRange: defaultRange,
       selectedArea: undefined,
       selectedIds: [],
-      selectedRange: [],
       highlighted: undefined,
+      tableList: [],
     };
     mapMutations(this, {
       namespace: 'position',
@@ -57,6 +57,8 @@ export default class History extends PureComponent {
   // 上次选择的范围
   lastRange = defaultRange;
   areaDataIds = [];
+  lastSectionId = null;
+  currentTime = 0;
 
   componentDidMount() {
     const {
@@ -119,7 +121,6 @@ export default class History extends PureComponent {
     this.bottomScroll = bottomScroll && bottomScroll.dom;
   }
 
-
   /**
    * 获取列表
    */
@@ -151,6 +152,7 @@ export default class History extends PureComponent {
           selectedIds: areaDataIds,
           highlighted: areaDataIds.length > 1 ? ALL : areaDataIds[0],
           timeRange,
+          tableList: this.getDataHistory(areaDataList),
         });
       }
     });
@@ -233,8 +235,8 @@ export default class History extends PureComponent {
     this.getData(range);
   };
 
-  getDataHistory = () => {
-    const { position: { areaDataList } } = this.props;
+  getDataHistory = areaDataList => {
+    // const { position: { areaDataList } } = this.props;
     const history = Array.from(areaDataList);
     if (areaDataList.length > 1)
       history.unshift({
@@ -255,6 +257,32 @@ export default class History extends PureComponent {
     handleLabelClick(i);
     this.save({
       areaDataList: [],
+    });
+  };
+
+  setSectionAndTime = (sectionId, timestamp) => {
+    this.lastSectionId = sectionId;
+    this.lastTimeStamp = timestamp;
+    this.setState({ tableList: this.filterTableList(sectionId, timestamp) });
+  };
+
+  // 筛选出areaDataList中在指定区域指定时间戳的人员
+  filterTableList = (sectionId, timestamp) => {
+    const { position: { tree, areaDataList } } = this.props;
+    // areaDataList数组中的areaId为根节点的id
+    return areaDataList.filter(({ areaId, startTime, endTime, children }) => {
+      // 所选区域为根节点时
+      if (sectionId === areaId && startTime <= timestamp && timestamp <= endTime)
+          return true;
+      // 所选区域为非根节点时，查看其children
+      else if(Array.isArray(children)) {
+        const childIds = tree[sectionId].descendant;
+        for (const { areaId, startTime, endTime } of children) {
+          if (childIds.includes(areaId) && startTime <= timestamp && timestamp <= endTime)
+            return true;
+        }
+      }
+      return false;
     });
   };
 
@@ -281,11 +309,12 @@ export default class History extends PureComponent {
       },
       // handleLabelClick,
     } = this.props;
-    const { range, timeRange, selectedRange, selectedArea, selectedIds, highlighted } = this.state;
-    const [ startTime, endTime ] = timeRange;
-    const [ startTimeStamp, endTimeStamp ] = selectedRange;
+    const { range, timeRange, selectedArea, selectedIds, highlighted, tableList } = this.state;
+    const [ startTimeStamp, endTimeStamp ] = timeRange;
 
-    const areaDataHistories = this.getDataHistory();
+    // const areaDataHistories = this.getDataHistory();
+    const historyTree = originalTree.find(({ id }) => id === selectedArea);
+    const areaDataHistories = tableList;
     const isCard = +idType; // 0 人   1 卡
     const options = isCard
       ? cards.map(({ id, code }) => <Option key={id} value={id}>{code}</Option>)
@@ -390,11 +419,12 @@ export default class History extends PureComponent {
           <MultipleHistoryPlay
             ref={this.setHistoryPlayReference}
             tree={tree}
-            originalTree={originalTree}
+            originalTree={historyTree}
             idMap={historyIdMap}
             ids={selectedIds}
             startTime={startTimeStamp && +startTimeStamp}
             endTime={endTimeStamp && +endTimeStamp}
+            onChange={this.setSectionAndTime}
           />
         </div>
       </div>
