@@ -29,12 +29,12 @@ const formItemLayout = {
 };
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
 const {
-  deviceManagement:{
-    associateSensor:{
-      waterSystem:waterSystemCode,
+  deviceManagement: {
+    associateSensor: {
+      waterSystem: waterSystemCode,
     },
   },
-}=codes
+} = codes
 
 @Form.create()
 @connect(({ sensor, resourceManagement, loading }) => ({
@@ -75,7 +75,7 @@ export default class SensorCompanyList extends Component {
   handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
     const { form: { getFieldsValue } } = this.props
     const { searchCompanyName: companyName } = getFieldsValue()
-    this.fetchSensorCompanies({ companyName, pageNum, pageSize })
+    this.fetchSensorCompanies({ payload: { companyName, pageNum, pageSize } })
   }
 
   handleSelectCompany = company => {
@@ -205,9 +205,10 @@ export default class SensorCompanyList extends Component {
               const {
                 id,
                 name, // 公司名称
-                principalName = null,
-                principalPhone = null,
+                principal_name = null,
+                principal_phone = null,
                 practical_address = null, // 地址
+                industryCategoryLabel = null,
               } = item
               return (
                 <List.Item
@@ -218,18 +219,16 @@ export default class SensorCompanyList extends Component {
                 >
                   <Card title={name} className={styles.card}>
                     <Ellipsis tooltip className={styles.ellipsis} lines={1}>
-                      主要负责人：{principalName || '暂无信息'}
+                      地址：{practical_address || '暂无信息'}
                     </Ellipsis>
                     <Ellipsis tooltip className={styles.ellipsis} lines={1}>
-                      联系电话：{principalPhone || '暂无信息'}
+                      行业类别：{industryCategoryLabel || '暂无信息'}
                     </Ellipsis>
-                    <div className={styles.lsEllipsis}>
-                      <Ellipsis tooltip lines={1}>
-                        地址：{practical_address || '暂无信息'}
-                      </Ellipsis>
-                    </div>
+                    <Ellipsis tooltip className={styles.lsEllipsis} lines={1}>
+                      主要负责人：{`${principal_name} ${principal_phone}`}
+                    </Ellipsis>
                     <div className={styles.iconContainer}>
-                    <AuthIcon
+                      <AuthIcon
                         key={'water'}
                         title={'水系统'}
                         url={iconWater}

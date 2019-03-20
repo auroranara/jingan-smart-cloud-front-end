@@ -81,7 +81,7 @@ export default class SensorCompanyList extends Component {
    * @param {number} [pageNum=1]
    * @param {number} [pageSize=defaultPageSize]
    */
-  queryBindList(pageNum = 1, pageSize = defaultPageSize) {
+  queryBindList = (pageNum = 1, pageSize = defaultPageSize) => {
     const {
       match: { params: { companyId } },
       form: { getFieldsValue },
@@ -192,7 +192,7 @@ export default class SensorCompanyList extends Component {
     })
   }
 
-  handleUnBind = ({deviceId:realDeviceId}) => {
+  handleUnBind = ({ deviceId: realDeviceId }) => {
     const {
       dispatch,
     } = this.props
@@ -204,6 +204,7 @@ export default class SensorCompanyList extends Component {
       success: () => {
         message.success('解绑传感器成功！')
         this.fetchDeviceBindedSensor({ payload: { deviceId: deviceInfo.deviceId } })
+        this.handleQuery()
       },
       error: () => { message.error('解绑传感器失败！') },
     })
@@ -327,6 +328,7 @@ export default class SensorCompanyList extends Component {
             total,
           },
         },
+        deviceTypes = [],
       },
     } = this.props
     const columns = [
@@ -336,9 +338,13 @@ export default class SensorCompanyList extends Component {
         align: 'center',
       },
       {
-        title: '设备型号',
+        title: '设备类型',
         dataIndex: 'deviceType',
         align: 'center',
+        render: (val) => {
+          const item = deviceTypes.find(item => +item.type === +val) || { typeDesc: '' }
+          return <span>{item.typeDesc}</span>
+        },
       },
       {
         title: '所在区域',
@@ -382,7 +388,7 @@ export default class SensorCompanyList extends Component {
             showQuickJumper: true,
             showSizeChanger: true,
             pageSizeOptions: ['5', '10', '15', '20'],
-            onChange: () => this.handleQuery(),
+            onChange: this.handleQuery,
             onShowSizeChange: (num, size) => {
               this.handleQuery(1, size);
             },
@@ -487,7 +493,7 @@ export default class SensorCompanyList extends Component {
             showQuickJumper: true,
             showSizeChanger: true,
             pageSizeOptions: ['5', '10', '15', '20'],
-            onChange: () => this.queryBindList(),
+            onChange: this.queryBindList,
             onShowSizeChange: (num, size) => {
               this.queryBindList(1, size);
             },
@@ -540,6 +546,7 @@ export default class SensorCompanyList extends Component {
         visible={bindedModalVisible}
         destroyOnClose={true}
         onCancel={() => { this.setState({ bindedModalVisible: false }) }}
+        footer={<Button onClick={() => { this.setState({ bindedModalVisible: false }) }}>关闭</Button>}
       >
         <Table
           rowKey="deviceId"
@@ -554,6 +561,11 @@ export default class SensorCompanyList extends Component {
   render() {
     const {
       location: { query: { name } },
+      sensor: {
+        companyDevice: {
+          pagination: { total = 0 },
+        },
+      },
     } = this.props
     return (
       <PageHeaderLayout
@@ -562,7 +574,7 @@ export default class SensorCompanyList extends Component {
         content={(
           <Fragment>
             <p>{name}</p>
-            <p>设备总数：</p>
+            <p>设备总数：{total}</p>
           </Fragment>
         )}
       >
