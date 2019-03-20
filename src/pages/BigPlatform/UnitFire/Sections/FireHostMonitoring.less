@@ -1,0 +1,90 @@
+.fireHostMonitoring {
+  width: 100%;
+  height: 100%;
+  padding-top: 10px;
+  .logoContainer {
+    width: 100%;
+    height: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    overflow: hidden;
+    position: relative;
+    .hostLogo {
+      width: 11%;
+      height: 100%;
+    }
+    .animate {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+    }
+  }
+  .mainContainer {
+    width: 100%;
+    height: 75%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    .innerContent {
+      width: 74%;
+      height: 76%;
+      position: relative;
+      .middleItem {
+        position: absolute;
+        text-align: center;
+        cursor: pointer;
+        & > span {
+          font-size: 26px;
+        }
+        & > div {
+          margin-top: 0.3em;
+          text-align: center;
+          span {
+            font-size: 15px;
+          }
+        }
+      }
+      .bottomItem {
+        position: absolute;
+        text-align: center;
+        cursor: pointer;
+        & > span {
+          font-size: 24px;
+        }
+        & > div {
+          text-align: center;
+          margin-top: 0.3em;
+          span {
+            font-size: 13px;
+            word-break: keep-all;
+          }
+        }
+      }
+    }
+  }
+}
+
+.fireState:hover {
+  color: #f64747;
+}
+
+.faultState:hover {
+  color: #01a8ff;
+}
+
+.startState:hover {
+  color: #00aac5;
+}
+
+.superviseState:hover {
+  color: #f6b547;
+}
+
+.shieldState:hover {
+  color: #837ce5;
+}
+
+.feedbackState:hover {
+  color: #bcbcbb;
+}

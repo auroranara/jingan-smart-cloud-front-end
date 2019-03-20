@@ -117,6 +117,10 @@ module.exports = env => {
           component: './BigPlatform/UnitFireControl/UnitFireControl',
         },
         {
+          path: '/big-platform/fire-control/company2/:unitId',
+          component: './BigPlatform/UnitFire/UnitFireControl',
+        },
+        {
           path: '/big-platform/fire-control/new-company/:unitId',
           component: './BigPlatform/NewUnitFireControl',
         },

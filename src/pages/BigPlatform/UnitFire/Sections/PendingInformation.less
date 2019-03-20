@@ -1,0 +1,207 @@
+.history {
+  float: right;
+  height: 20px;
+  line-height: 20px;
+  font-size: 15px;
+  font-weight: 200;
+  color: #00ffff;
+  cursor: pointer;
+}
+
+.filterContainer {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: left;
+  align-items: flex-end;
+  border-bottom: 2px solid #0967d3;
+  :global {
+    .ant-radio-button-wrapper {
+      border: none;
+      color: white;
+      background: #043b7e;
+      border: 1px solid #043b7e;
+      border-bottom: none;
+      border-radius: 8px;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      &+.ant-radio-button-wrapper {
+        margin-left: 8px;
+      }
+    }
+    .ant-radio-button-wrapper-checked {
+      background: #0967d3;
+      border: 1px solid #0967d3;
+      border-bottom: none;
+    }
+    .ant-radio-button-wrapper:not(:first-child)::before {
+      width: 0;
+      height: 0;
+    }
+  }
+}
+
+.sectionContent {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 50px);
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  .alarmItem {
+    position: relative;
+    padding: 10px 25px 10px 0; // background: #011539;
+    background: #043b7e;
+    overflow: hidden;
+    box-shadow: 8px 3px 2px 2px rgba(0, 0, 0, 0.2);
+    .innerItem {
+      width: 100%;
+      height: 100%;
+      .alarmTitle {
+        padding-left: 18px;
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        .title {
+          width: 55%;
+          height: 30px;
+          position: relative;
+          display: flex;
+          .icon {
+            width: 30px;
+            height: 30px;
+            display: inline-block;
+            flex: none;
+          }
+          .redText {
+            font-size: 17px;
+            font-weight: 500;
+            height: 30px;
+            line-height: 30px;
+            display: inline-block;
+            flex: 1;
+            overflow: hidden;
+            color: #E14848;
+          }
+          .blueText {
+            font-size: 17px;
+            font-weight: 500;
+            height: 30px;
+            line-height: 30px;
+            display: inline-block;
+            flex: 1;
+            overflow: hidden;
+            color: #00a8ff;
+          }
+        }
+      }
+      .alarmDetail {
+        padding-left: 25px;
+        width: 100%;
+        height: 26px;
+        line-height: 26px;
+        position: relative;
+        word-wrap: nowrap;
+        overflow: hidden;
+        color: #D2D7DE;
+        font-size: 15px;
+      }
+      .lastLine {
+        padding-left: 25px;
+        width: 100%;
+        height: 25px;
+        line-height: 25px;
+        position: relative;
+        color: #516895; // display: flex;
+        // justify-content: space-between;
+        word-wrap: nowrap;
+        overflow: hidden;
+        display: flex;
+        justify-content: flex-start;
+        font-size: 14px;
+        .location {
+          width: 50%;
+          padding-right: 1em;
+        }
+        .time {
+          flex: none;
+        }
+      }
+    }
+    .videoPlayButton {
+      position: absolute;
+      right: 17px;
+      bottom: 13px;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .topRightPurpleTag {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      background: #877CE4;
+      font-size: 14px;
+      line-height: 25px;
+      transform: translate(50%, 0) translate(-15px, 15px) rotate(45deg);
+      transform-origin: 50% 0;
+      top: 0;
+      right: 0;
+    }
+    .topRightBlueTag {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      background: #1890FF;
+      font-size: 15px;
+      line-height: 25px;
+      transform: translate(50%, 0) translate(-15px, 15px) rotate(45deg);
+      transform-origin: 50% 0;
+      top: 0;
+      right: 0;
+    }
+  }
+}
+
+.sectionContent::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+  background-color: transparent;
+}
+
+.sectionContent::-webkit-scrollbar {
+  width: 8px;
+  background-color: transparent;
+}
+
+.sectionContent::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #064c9e;
+}
+
+.noAlarmContainer {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 75px);
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &>div {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+.mt10 {
+  margin-top: 10px;
+}

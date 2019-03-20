@@ -29,11 +29,12 @@ import MaintenanceCheckDrawer from './Section/MaintenanceCheckDrawer';
 import FaultMessageDrawer from './Section/FaultMessageDrawer';
 import MaintenanceMsgDrawer from './Section/MaintenanceMsgDrawer';
 import AlarmDynamicMsgDrawer from './Section/AlarmDynamicMsgDrawer';
-
+import WaterSystemDrawer from './Section/WaterSystemDrawer';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import headerBg from '@/assets/new-header-bg.png';
 import { isArray } from 'util';
+import { consoleTestResultHandler } from '_tslint@5.12.1@tslint/lib/test';
 
 const { projectName } = global.PROJECT_CONFIG;
 // const DELAY = 5 * 1000;
@@ -137,6 +138,8 @@ export default class App extends PureComponent {
     maintenanceTitle: '维保处理动态',
     processIds: [],
     fireProcessIds: [],
+    waterSystemDrawerVisible: false, // 水系统抽屉是否显示
+    waterTabItem: '',
     // 最新一条隐患id
     latestHiddenDangerId: undefined,
     videoList: [],
@@ -460,6 +463,8 @@ export default class App extends PureComponent {
     // this.pollTimer = setInterval(this.polling, DELAY);
     // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
+
+    this.fetchWaterSystem('101');
   }
 
   showFireMsg = item => {
@@ -624,8 +629,27 @@ export default class App extends PureComponent {
         item_type: 2,
       },
     });
+
+    // 获取水系统---消火栓系统
+    this.fetchWaterSystem('101');
   };
 
+  // 获取水系统
+  fetchWaterSystem = type => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchWaterSystem',
+      payload: {
+        companyId,
+        type,
+      },
+    });
+  };
   /**
    * 获取点位巡查列表
    */
@@ -1089,6 +1113,33 @@ export default class App extends PureComponent {
     });
   };
 
+  handleViewWater = (i, type) => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    this.setState({
+      waterSystemDrawerVisible: true,
+      waterTabItem: i,
+    });
+
+    dispatch({
+      type: 'newUnitFireControl/fetchWaterSystem',
+      payload: {
+        companyId,
+        type: type,
+      },
+    });
+  };
+
+  handleCloseWater = () => {
+    this.setState({
+      waterSystemDrawerVisible: false,
+    });
+  };
+
   handleParentChange = newState => {
     this.setState({ ...newState });
   };
@@ -1109,7 +1160,7 @@ export default class App extends PureComponent {
           shield_state = 0,
           feedback_state = 0,
         },
-        systemScore,
+        // systemScore,
         currentHiddenDanger,
         currentHiddenDanger: { timestampList },
         checkCount,
@@ -1124,8 +1175,10 @@ export default class App extends PureComponent {
         workOrderDetail, // 只有一个元素的数组
         fireAlarm,
         faultList,
+        waterSystemData: { list },
       },
     } = this.props;
+
     const {
       videoVisible,
       showVideoList,
@@ -1162,6 +1215,8 @@ export default class App extends PureComponent {
       videoList,
       fireVideoVisible,
       fireVideoKeyId,
+      waterSystemDrawerVisible,
+      waterTabItem,
     } = this.state;
 
     return (
@@ -1251,8 +1306,14 @@ export default class App extends PureComponent {
             </div>
             <div className={styles.item}>
               <div className={styles.inner}>
-                {/* 消防设施情况 */}
-                <FireDevice systemScore={systemScore} onClick={this.handleViewFireAlarm} />
+                {/* 水系统 */}
+                <FireDevice
+                  companyId={companyId}
+                  onClick={this.handleViewWater}
+                  waterList={list}
+                  fetchWaterSystem={this.fetchWaterSystem}
+                />
+                {/* <FireDevice systemScore={systemScore} onClick={this.handleViewFireAlarm} /> */}
               </div>
             </div>
             <div className={styles.item}>
@@ -1432,6 +1493,12 @@ export default class App extends PureComponent {
           model={this.props.newUnitFireControl}
           visible={maintenanceCheckDrawerVisible}
           onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
+        />
+        <WaterSystemDrawer
+          visible={waterSystemDrawerVisible}
+          waterTabItem={waterTabItem}
+          onClose={this.handleCloseWater}
+          waterList={list}
         />
       </BigPlatformLayout>
     );

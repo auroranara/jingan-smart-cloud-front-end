@@ -1,93 +1,118 @@
 import React, { PureComponent } from 'react';
-import { Carousel } from 'antd';
-
+import { Radio, Row, Col } from 'antd';
+import { connect } from 'dva';
+import WaterCards from '../components/WaterCards';
+import ChartGauge from '../components/ChartGauge';
 import Section from '../Section';
 import styles from './FireDevice.less';
 
-import normal from '../imgs/normal.png';
-import fine from '../imgs/fine.png';
-import error from '../imgs/error.png';
-
+@connect(({ newUnitFireControl }) => ({
+  newUnitFireControl,
+}))
 export default class FireDevice extends PureComponent {
-
-  getImageByStatus = (status) => {
-    switch (+status) {
-      case 1:
-        return error;
-      case 2:
-        return normal;
-      case 3:
-        return fine;
-      default:
-        return;
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      type: '101',
+    };
   }
 
-  render() {
+  // 切换状态
+  handelRadioChange = item => {
+    const { fetchWaterSystem } = this.props;
     const {
-      systemScore: { list = [] },
-      onClick,
-    } = this.props;
+      target: { value },
+    } = item;
+    this.setState({ type: value });
+    fetchWaterSystem(value);
+  };
 
-    // 移除没有状态的成员
-    const arr = list.filter(({ status }) => status);
-    // 分为4个一组
-    const result = arr.reduce((total, item, index) => {
-      const i = Math.floor(index / 4);
-      if (index % 4 === 0) {
-        total[i] = [item];
-      }
-      else {
-        total[i].push(item);
-      }
-      return total;
-    }, [[]]);
+  renderHydrant = () => {
+    const { waterList } = this.props;
+
+    return waterList.map(item => {
+      const { deviceDataList } = item;
+      if (!deviceDataList.length) return null;
+      const { deviceId, deviceName } = item;
+      const [
+        {
+          value,
+          status,
+          deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
+        },
+      ] = deviceDataList;
+
+      return (
+        <Col span={12} className={styles.gaugeCol} key={deviceId}>
+          <ChartGauge
+            showName
+            showValue
+            radius="75%"
+            isLost={+status < 0}
+            name={deviceName}
+            value={value || 0}
+            range={[minValue || 0, maxValue || value || 5]}
+            normalRange={[normalLower, normalUpper]}
+          />
+        </Col>
+      );
+    });
+  };
+
+  renderPond = () => {
+    const { waterList } = this.props;
+
+    return waterList.map(item => {
+      const { deviceDataList } = item;
+      if (!deviceDataList.length) return null;
+      const { deviceId, deviceName } = item;
+      const [
+        {
+          value,
+          status,
+          unit,
+          deviceParamsInfo: { normalUpper, normalLower },
+        },
+      ] = deviceDataList;
+
+      return (
+        <WaterCards
+          key={deviceId}
+          name={deviceName}
+          value={value}
+          status={status}
+          unit={unit}
+          range={[normalLower, normalUpper]}
+        />
+      );
+    });
+  };
+
+  render() {
+    const { onClick } = this.props;
+    const { type } = this.state;
     return (
-      <Section title="消防设施情况">
+      <Section title="水系统">
         <div className={styles.container}>
-          <Carousel autoplay autoplaySpeed={5000}>
-            {/* {result.map((cols, index) => {
-              const [{ sysName }] = cols;
-              return (
-                <div key={sysName} className={styles.wrapper}>
-                  {cols.map(({ sysId, sysName, status }) => (
-                    <div className={styles.item} key={sysName} onClick={() => { onClick({ sysId, sysName }) }}>
-                      <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
-                      <div className={styles.label}>{sysName}</div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })} */}
-            <div className={styles.wrapper}>
-              {result[0].map(({ sysId, sysName, status }) => (
-                <div className={styles.item} key={sysName} onClick={() => { onClick({ sysId, sysName }) }}>
-                  <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
-                  <div className={styles.label}>{sysName}</div>
-                </div>
-              ))}
-            </div>
-            {result.length > 1 && (
-              <div className={styles.wrapper}>
-                {result[1].map(({ sysId, sysName, status }) => (
-                  <div className={styles.item} key={sysName} onClick={() => { onClick({ sysId, sysName }) }}>
-                    <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
-                    <div className={styles.label}>{sysName}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            {result.length > 2 && (
-              <div className={styles.wrapper}>
-                {result[2].map(({ sysId, sysName, status }) => (
-                  <div className={styles.item} key={sysName} onClick={() => { onClick({ sysId, sysName }) }}>
-                    <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
-                    <div className={styles.label}>{sysName}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Carousel>
+          <div className={styles.tabsWrapper}>
+            <Radio.Group value={type} buttonStyle="solid" onChange={this.handelRadioChange}>
+              <Radio.Button value="101">消火栓系统</Radio.Button>
+              <Radio.Button value="102">自动喷淋系统</Radio.Button>
+              <Radio.Button value="103">水池/水箱</Radio.Button>
+            </Radio.Group>
+          </div>
+          <Row
+            className={styles.itemsWrapper}
+            onClick={() => {
+              if (type === '101') onClick(0, type);
+              if (type === '102') onClick(1, type);
+              if (type === '103') onClick(2, type);
+            }}
+          >
+            {type === '101' && this.renderHydrant()}
+            {type === '102' && this.renderHydrant()}
+            {type === '103' && this.renderPond()}
+          </Row>
         </div>
       </Section>
     );

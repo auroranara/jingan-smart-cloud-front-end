@@ -57,6 +57,7 @@ import {
   fetchHiddenDangerDetail,
   queryWorkOrderMsg,
   queryDataId,
+  queryWaterSystem,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -341,6 +342,10 @@ export default {
     },
     // 故障
     faultList: [],
+    // 水系统列表
+    waterSystemData: {
+      list: [],
+    },
   },
 
   subscriptions: {
@@ -898,6 +903,17 @@ export default {
         error();
       }
     },
+
+    // 水系统
+    *fetchWaterSystem({ payload }, { call, put }) {
+      const response = yield call(queryWaterSystem, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveWaterSystem',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -1091,6 +1107,16 @@ export default {
       return {
         ...state,
         maintenanceCompany: payload,
+      };
+    },
+
+    // 水系统
+    saveWaterSystem(state, { payload }) {
+      const { list } = payload;
+      return {
+        ...state,
+        list,
+        waterSystemData: payload,
       };
     },
   },

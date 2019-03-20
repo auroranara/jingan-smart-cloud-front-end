@@ -101,7 +101,9 @@ export async function getSafeMan(params) {
 
 // 获取最近十二个月主机报警数量
 export async function getHostAlarmTrend(params) {
-  return request(`${URL_PREFIX}/automaticFireAlarmSystem/getEveryMonthFireNum?${stringify(params)}`);
+  return request(
+    `${URL_PREFIX}/automaticFireAlarmSystem/getEveryMonthFireNum?${stringify(params)}`
+  );
 }
 
 /************************************** 单位消防 ************************************************/
@@ -234,56 +236,56 @@ export async function getVideoLookUp(params) {
  * 待处理信息模块-获取未处理信息列表
  */
 export async function fetchUnPendingInfo(params) {
-  return request(`/acloud_new/v2/fireData/dangerMessage.json?${stringify(params)}`)
+  return request(`/acloud_new/v2/fireData/dangerMessage.json?${stringify(params)}`);
 }
 
 /**
  * 待处理信息模块-获取处理中、已处理信息列表
  */
 export async function fetchPendingInfo(params) {
-  return request(`/acloud_new/v2/fireData/dangerMessageAlready.json?${stringify(params)}`)
+  return request(`/acloud_new/v2/fireData/dangerMessageAlready.json?${stringify(params)}`);
 }
 
 /**
  *  获取巡查统计模块的数据
  */
 export async function fetchInspectionStatistics(params) {
-  return request(`/acloud_new/v2/hdf/getFirePatrolStatistics.json?${stringify(params)}`)
+  return request(`/acloud_new/v2/hdf/getFirePatrolStatistics.json?${stringify(params)}`);
 }
 
 /**
  *  获取隐患统计数据
  */
 export async function fetchDangerStatistics(params) {
-  return request(`/acloud_new/v2/hdf/dangerStatistics.json?${stringify(params)}`)
+  return request(`/acloud_new/v2/hdf/dangerStatistics.json?${stringify(params)}`);
 }
 
 /**
  *  获取隐患列表
  */
 export async function fetchHiddenDangerRecords(params) {
-  return request(`/acloud_new/v2/hdf/list_forNew.json?${stringify(params)}`)
+  return request(`/acloud_new/v2/hdf/list_forNew.json?${stringify(params)}`);
 }
 
 /**
  * 获取消防主机列表
  */
 export async function fetchFireHosts(params) {
-  return request(`/acloud_new/v2/fireData/systemMessage.json?${stringify(params)}`)
+  return request(`/acloud_new/v2/fireData/systemMessage.json?${stringify(params)}`);
 }
 
 /**
  * 获取巡查统计-正常
  */
 export async function fetchNormalPatrol(params) {
-  return request(`/acloud_new/v2/hdf/getNormalFirePatrol?${stringify(params)}`)
+  return request(`/acloud_new/v2/hdf/getNormalFirePatrol?${stringify(params)}`);
 }
 
 /**
  * 获取巡查统计-异常
  */
 export async function fetchAbnormalPatrol(params) {
-  return request(`/acloud_new/v2/hdf/getAbnormalFirePatrol?${stringify(params)}`)
+  return request(`/acloud_new/v2/hdf/getAbnormalFirePatrol?${stringify(params)}`);
 }
 // 企业信息(包含人员数量四色图等)
 export async function getCompanyMessage(params) {
@@ -311,7 +313,7 @@ export async function getSystemScore(params) {
  * 获取当前隐患图表数据
  */
 export async function fetchHiddenDangerNum(params) {
-  return request(`/acloud_new/v2/nanxiao/fire/getHiddenDangerNum?${stringify(params)}`)
+  return request(`/acloud_new/v2/nanxiao/fire/getHiddenDangerNum?${stringify(params)}`);
 }
 /**
  * 南消：点位巡查统计
@@ -360,12 +362,13 @@ export async function getPonitRecord(params) {
   return request(`/acloud_new/v2/nanxiao/fire/getItemById?${stringify(params)}`);
 }
 
-
 /* 南消 */
 
 // 动态火警详情列表
 export async function queryAlarmHandleList({ companyId, dataId, ...rest }) {
-  return request(`${URL_PREFIX}/mobileData/fireProcess/${companyId}/proceHistory/${dataId}?${stringify(rest)}`);
+  return request(
+    `${URL_PREFIX}/mobileData/fireProcess/${companyId}/proceHistory/${dataId}?${stringify(rest)}`
+  );
 }
 
 // 维保工单或维保动态详情
@@ -375,7 +378,7 @@ export async function queryWorkOrder(params) {
 
 // 获取火灾报警系统巡检记录
 export async function fetchCheckRecord(params) {
-  return request(`/acloud_new/v2/maintenanceCheck/getCheckRecordByType?${stringify(params)}`)
+  return request(`/acloud_new/v2/maintenanceCheck/getCheckRecordByType?${stringify(params)}`);
 }
 
 // 企业负责人和维保员信息
@@ -385,7 +388,7 @@ export async function queryCheckUsers(params) {
 
 // 故障列表
 export async function queryFault(params) {
-  return request(`${URL_PREFIX}/fireData/systemFaultMessage.json?${stringify(params)}`)
+  return request(`${URL_PREFIX}/fireData/systemFaultMessage.json?${stringify(params)}`);
 }
 
 /**
@@ -397,7 +400,7 @@ export async function fetchHiddenDangerDetail({ id }) {
 
 // 根据巡查记录获取隐患列表
 export async function fetchPatrolDangers(params) {
-  return request(`/acloud_new/v2/hdf/getOncePatrolDangers?${stringify(params)}`)
+  return request(`/acloud_new/v2/hdf/getOncePatrolDangers?${stringify(params)}`);
 }
 
 // 消息故障详情
@@ -408,4 +411,9 @@ export async function queryWorkOrderMsg(params) {
 // 根据processId查dataId
 export async function queryDataId({ id }) {
   return request(`${URL_PREFIX}/fireManage/fireProcess/${id}`);
+}
+
+// 水系统
+export async function queryWaterSystem(params) {
+  return request(`${URL_PREFIX}/deviceInfo/getCompanyDevicesByType?${stringify(params)}`);
 }
