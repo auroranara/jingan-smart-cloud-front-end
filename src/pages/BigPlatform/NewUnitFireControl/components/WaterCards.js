@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Col } from 'antd';
 
-import styles from './waterCards.less';
+import styles from './WaterCards.less';
 import waterNormal from '../imgs/pond-normal.png';
 import waterError from '../imgs/pond-abnormal.png';
 import waterLoss from '../imgs/pond-loss.png';
@@ -19,7 +19,7 @@ function parseDataNum(n) {
   return DEFAULT;
 }
 
-export default function waterCards(props) {
+export default function WaterCards(props) {
   const { name, status, value, unit, range, onClick } = props;
   return (
     <Col span={24} className={styles.container} onClick={onClick}>

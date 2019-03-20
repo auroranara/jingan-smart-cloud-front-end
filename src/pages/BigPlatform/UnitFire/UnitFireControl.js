@@ -76,7 +76,7 @@ const defaultPageSize = 10;
   unitFireControl,
   monitor,
   devicesLoading: loading.effects['unitFireControl/fetchCompanyDevicesByType'],
-  pendingHistoryLoading: loading.effects['unitFireControl/fetchInformationHistory'],
+  pendingHistoryLoading: loading.effects['unitFireControl/fetchDeviceWarningMessage'],
   hiddenDnagerLoading: loading.effects['unitFireControl/fetchHiddenDangerRecords'],
   inspectionMoreLoading:
     loading.effects['unitFireControl/fetchNormalPatrol'] ||
@@ -104,7 +104,7 @@ export default class App extends PureComponent {
         total: 0,
       },
       currentFireHosts: [], // 当前分页展示的消防主机
-      pendingInfoStatus: '待处理', // 待处理信息展示状态 （待处理、处理中）
+      pendingInfoStatus: '实时消息', // 待处理信息展示状态 （待处理、处理中、实时消息）
       inspectionModalVisible: false, // 巡查统计数据下钻可见
       InspectionModalType: 'normal', // 巡查统计数据数据下钻正常正常还是异常数据（normal、abnormal）
       dangerCardVisible: false, // 巡查统计数据下钻显示的隐患卡片
@@ -129,6 +129,16 @@ export default class App extends PureComponent {
       },
     } = this.props;
     const { fireControlType, maintenanceType } = this.state;
+
+    // 获取报警信息
+    dispatch({
+      type: 'unitFireControl/fetchDeviceWarningMessage',
+      payload: {
+        companyId,
+        overFlag: 0,
+        deviceTypeList: '101,102,103',
+      },
+    });
 
     // 获取待处理信息列表 (显示50条)
     dispatch({
@@ -253,6 +263,17 @@ export default class App extends PureComponent {
     this.fetchCompanyDevicesByType('101');
     this.fetchCompanyDevicesByType('102');
     this.fetchCompanyDevicesByType('103');
+
+    // 获取报警信息
+    dispatch({
+      type: 'unitFireControl/fetchDeviceWarningMessage',
+      payload: {
+        companyId,
+        overFlag: 0,
+        deviceTypeList: '101,102,103',
+      },
+    });
+
     // 获取待处理信息 1-1
     dispatch({
       type: 'unitFireControl/fetchPendingInfo',
@@ -537,16 +558,29 @@ export default class App extends PureComponent {
       },
     } = this.props;
 
-    // 获取已处理信息
+    // 获取报警信息
     dispatch({
-      type: 'unitFireControl/fetchInformationHistory',
-      payload: { companyId, pageSize, pageNum: 1, status: '1' },
+      type: 'unitFireControl/fetchDeviceWarningMessage',
+      payload: {
+        companyId,
+        overFlag: 1,
+        deviceTypeList: '101,102,103',
+      },
       callback: () => {
-        // this.leftSections.style.opacity = 0;
-        // this.InformationHistory.style.right = 0;
         this.handleDrawerVisibleChange('infoHistory');
       },
     });
+
+    // 获取已处理信息
+    // dispatch({
+    //   type: 'unitFireControl/fetchInformationHistory',
+    //   payload: { companyId, pageSize, pageNum: 1, status: '1' },
+    //   callback: () => {
+    //     // this.leftSections.style.opacity = 0;
+    //     // this.InformationHistory.style.right = 0;
+    //     this.handleDrawerVisibleChange('infoHistory');
+    //   },
+    // });
     // this.setState({pendingInfoStatus:'历史报警'})
   };
 
@@ -575,6 +609,16 @@ export default class App extends PureComponent {
         payload: { companyId, status: '2', pageNum: 1, pageSize: 50 },
         callback,
       });
+    } else if (value === '实时消息') {
+      dispatch({
+        type: 'unitFireControl/fetchDeviceWarningMessage',
+        payload: {
+          companyId,
+          overFlag: 0,
+          deviceTypeList: '101,102,103',
+        },
+        callback,
+      });
     }
   };
 
@@ -586,6 +630,7 @@ export default class App extends PureComponent {
       unitFireControl: {
         // 待处理信息
         pendingInfo: { list },
+        deviceWarningMessage = [],
       },
     } = this.props;
     const { pendingInfoStatus, pendingInfoLoading } = this.state;
@@ -596,6 +641,7 @@ export default class App extends PureComponent {
         showTotal={false}
         status={pendingInfoStatus}
         list={list}
+        deviceWarningMessage={deviceWarningMessage}
         handleClick={this.handleVideoOpen}
         handleViewHistory={this.handleViewHistory}
         onFilterChange={this.handlePendingFilterChnage}
@@ -1203,6 +1249,7 @@ export default class App extends PureComponent {
         fireAlarmSystem,
         informationHistory: { list },
         companyDevicesByType,
+        deviceWarningMsgHistory,
       },
       monitor: { chartDeviceList, gsmsHstData, electricityPieces, chartParams, deviceDataHistory },
       pendingHistoryLoading,
@@ -1355,7 +1402,7 @@ export default class App extends PureComponent {
           {/* 历史消息 */}
           <InformationHistory
             title="历史消息"
-            data={{ list, alarmTypes: [] }}
+            data={{ list, alarmTypes: [], deviceWarningMsgHistory }}
             loading={pendingHistoryLoading}
             handleLoadMore={this.handleMorePendingInfo}
             onClose={() => this.handleDrawerVisibleChange('infoHistory')}

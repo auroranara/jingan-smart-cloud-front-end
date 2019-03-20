@@ -8,6 +8,46 @@ import PropTypes from 'prop-types';
 
 import noPendingInfo from '../images/emptyLogo.png';
 
+const prefix = 'http://data.jingan-china.cn/v2/big-platform/fire-control/com/';
+const getPendingInfoType = (
+  {
+    report_type = null,
+    fire_state = null,
+    fault_state = null,
+    main_elec_state = null,
+    prepare_elec_state = null,
+    start_state = null,
+    supervise_state = null,
+    shield_state = null,
+    feedback_state = null,
+  },
+  returnType = 'title'
+) => {
+  let value = '';
+  if (+report_type === 2) {
+    value =
+      (returnType === 'title' && '一键报修') ||
+      (returnType === 'icon' && `${prefix}blue-baoxiu.png`);
+  } else if (+fire_state === 1) {
+    value = (returnType === 'title' && '火警') || (returnType === 'icon' && `${prefix}huojing.png`);
+  } else if (+fault_state === 1 || +main_elec_state === 1 || +prepare_elec_state === 1) {
+    value =
+      (returnType === 'title' && '故障') || (returnType === 'icon' && `${prefix}blue-guzhang.png`);
+  } else if (+start_state === 1) {
+    value =
+      (returnType === 'title' && '联动') || (returnType === 'icon' && `${prefix}blue-liandong.png`);
+  } else if (+supervise_state === 1) {
+    value =
+      (returnType === 'title' && '监管') || (returnType === 'icon' && `${prefix}blue-jianguan.png`);
+  } else if (+shield_state === 1) {
+    value =
+      (returnType === 'title' && '屏蔽') || (returnType === 'icon' && `${prefix}blue-pingbi.png`);
+  } else if (+feedback_state === 1) {
+    value =
+      (returnType === 'title' && '反馈') || (returnType === 'icon' && `${prefix}blue-fankui.png`);
+  }
+  return value;
+};
 export default class InformationHistory extends PureComponent {
   static propTypes = {
     title: PropTypes.string.isRequired, // 模块标题
@@ -45,6 +85,182 @@ export default class InformationHistory extends PureComponent {
       return;
     }
     handleLoadMore();
+  };
+
+  renderMsg = () => {
+    const {
+      data: { deviceWarningMsgHistory = [] },
+    } = this.props;
+    return deviceWarningMsgHistory.map(item => {
+      const {
+        id,
+        remarks,
+        messageContent,
+        deviceId,
+        paramCode,
+        overFlag,
+        companyId,
+        deviceType,
+        location,
+        area,
+        virtualId,
+        warningTime,
+        icon,
+        deviceName,
+        componentRegion,
+        componentNo,
+        deviceTypeList,
+        videoList,
+        fireMessage,
+      } = item;
+      if (fireMessage) return this.renderOldMsg(fireMessage);
+      else
+        return (
+          <Col key={id} span={24} className={styles.alarmItem}>
+            <div className={styles.innerItem}>
+              <div className={styles.alarmTitle}>
+                <div className={styles.title}>
+                  <div
+                    className={styles.icon}
+                    style={{
+                      backgroundImage: `url(${icon})`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center center',
+                      backgroundSize: '65% 65%',
+                    }}
+                  />
+                  <div className={styles.redText}>{remarks}</div>
+                </div>
+              </div>
+              <div className={styles.alarmDetail}>
+                <Ellipsis lines={1} tooltip>
+                  <span>{messageContent}</span>
+                </Ellipsis>
+              </div>
+              <div className={styles.lastLine}>
+                <span>
+                  <Icon type="environment" theme="outlined" />
+                </span>
+                <Ellipsis lines={1} tooltip className={styles.location}>
+                  <span>{area + location}</span>
+                </Ellipsis>
+                <div className={styles.time}>
+                  <span>{warningTime}</span>
+                </div>
+              </div>
+            </div>
+          </Col>
+        );
+    });
+  };
+
+  renderOldMsg = item => {
+    const newItem = {
+      ...item,
+      pendingInfoType: item.pendingInfoType || getPendingInfoType(item, 'title'),
+      icon: item.icon || getPendingInfoType(item, 'icon'),
+    };
+    const {
+      id,
+      component_region = null,
+      device_address = null,
+      device_name = null,
+      systemTypeValue = null,
+      component_no = null,
+      label = null,
+      install_address = null,
+      pendingInfoType = null,
+      t,
+      icon,
+      ntype = null,
+      fire_state = null,
+    } = newItem;
+    return pendingInfoType === '一键报修' ? (
+      <Col key={id} span={24} className={styles.alarmItem}>
+        <div className={styles.innerItem}>
+          <div className={styles.alarmTitle}>
+            <div className={styles.title}>
+              <div
+                className={styles.icon}
+                style={{
+                  backgroundImage: `url(${icon})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center center',
+                  backgroundSize: '65% 65%',
+                }}
+              />
+              <div className={styles.blueText}>{pendingInfoType}</div>
+            </div>
+          </div>
+          {systemTypeValue && <div className={styles.alarmDetail}>{systemTypeValue}</div>}
+          <div className={styles.alarmDetail}>
+            <Ellipsis lines={1} tooltip>
+              <span>{device_name}</span>
+            </Ellipsis>
+          </div>
+          <div className={styles.lastLine}>
+            <span>
+              <Icon type="environment" theme="outlined" />
+            </span>
+            <Ellipsis lines={1} tooltip className={styles.location}>
+              <span>{device_address}</span>
+            </Ellipsis>
+            <div className={styles.time}>
+              <span>{t}</span>
+            </div>
+          </div>
+        </div>
+        <div className={styles.topRightPurpleTag}>指派维保</div>
+      </Col>
+    ) : (
+      <Col key={id} span={24} className={styles.alarmItem}>
+        <div className={styles.innerItem}>
+          <div className={styles.alarmTitle}>
+            <div className={styles.title}>
+              <div
+                className={styles.icon}
+                style={{
+                  backgroundImage: `url(${icon})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center center',
+                  backgroundSize: '65% 65%',
+                }}
+              />
+              {+fire_state === 1 ? (
+                <div className={styles.redText}>
+                  {(+ntype === 1 && '误报火警') || (+ntype === 2 && '真实火警')}
+                </div>
+              ) : (
+                <div className={styles.blueText}>{pendingInfoType}</div>
+              )}
+            </div>
+          </div>
+          <div className={styles.alarmDetail}>
+            {component_region}
+            回路
+            {component_no}号
+          </div>
+          <div className={styles.alarmDetail}>
+            <Ellipsis lines={1} tooltip>
+              <span>{label}</span>
+            </Ellipsis>
+          </div>
+          <div className={styles.lastLine}>
+            <span>
+              <Icon type="environment" theme="outlined" />
+            </span>
+            <Ellipsis lines={1} tooltip className={styles.location}>
+              <span>{install_address}</span>
+            </Ellipsis>
+            <div className={styles.time}>
+              <span>{t}</span>
+            </div>
+          </div>
+        </div>
+        {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>指派维保</div>}
+        {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>自处理</div>}
+      </Col>
+    );
   };
 
   renderAlarmHistory = list => {
@@ -218,7 +434,9 @@ export default class InformationHistory extends PureComponent {
                 </Col>
               ))}
           </Row>
-          {list && list.length > 0 ? (
+
+          <Row className={styles.historyContent}>{this.renderMsg()}</Row>
+          {/* {list && list.length > 0 ? (
             <div
               className={styles.historyContent}
               ref={historyList => {
@@ -249,7 +467,7 @@ export default class InformationHistory extends PureComponent {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
           {/* </div> */}
         </div>
       </div>
