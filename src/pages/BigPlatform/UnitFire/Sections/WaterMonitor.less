@@ -40,12 +40,16 @@
         height: 0;
       }
     }
+    .tabAlarm {
+      box-shadow: 0 0 5px 2px rgba(255, 0, 0, 0.5);
+    }
   }
   .itemsWrapper {
     flex: 1;
     overflow-x: hidden;
     overflow-y: auto;
     padding: 0 2px 0 10px;
+    cursor: pointer;
   }
   .itemsWrapper::-webkit-scrollbar-track {
     box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
@@ -94,7 +98,25 @@
     .infoWrapper {
       flex: 1;
       line-height: 32px;
-      .name {}
+    }
+  }
+}
+
+.waterScroll {
+  &:first {
+    z-index: 6;
+  }
+}
+
+@media screen and (max-width: 1470px) {
+  .tabsWrapper {
+    :global {
+      .ant-radio-group {
+        font-size: 12px;
+      }
+      .ant-radio-button-wrapper {
+        padding: 0;
+      }
     }
   }
 }

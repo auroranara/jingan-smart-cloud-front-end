@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
-import DrawerContainer from '../components/DrawerContainer'
+import DrawerContainer from '../components/DrawerContainer';
 import Ellipsis from '@/components/Ellipsis';
 import { Spin } from 'antd';
 import moment from 'moment';
-import styles from './DrawerOfHiddenDanger.less'
+import styles from './DrawerOfHiddenDanger.less';
 
 import dfcIcon from '../images/dfc.png';
 import wcqIcon from '../images/wcq.png';
@@ -48,7 +48,7 @@ const getIconByStatus = status => {
 };
 
 // 根据业务分类获取对应图标
-const getIconByBusinessType = function (businessType) {
+const getIconByBusinessType = function(businessType) {
   switch (+businessType) {
     case 1:
       return safety;
@@ -64,7 +64,7 @@ const getIconByBusinessType = function (businessType) {
 };
 
 // 根据风险等级获取文本
-const getLabelByLevel = function (level) {
+const getLabelByLevel = function(level) {
   switch (+level) {
     case 1:
       return '红色';
@@ -94,13 +94,13 @@ const HiddenDangerRecord = ({ data }) => {
     hiddenDangerRecordDto,
     business_type,
     review_time,
-    name,  // 隐患来源
+    name, // 隐患来源
     source_type_name,
     risk_level_name, // 风险点等级名称
-    source_type,     // 隐患来源 2:监督点
-    risk_level,     // 风险点等级 未评级为null
+    source_type, // 隐患来源 2:监督点
+    risk_level, // 风险点等级 未评级为null
     item_name,
-    report_source_name,  // 来源
+    report_source_name, // 来源
   } = data;
   // TODO:如果hiddenDangerRecordDto第一个元素的web_url不是图片
   let [{ fileWebUrl = '' } = {}] = hiddenDangerRecordDto || [];
@@ -109,7 +109,7 @@ const HiddenDangerRecord = ({ data }) => {
   // 来源
   // const source = source_type_name === '风险点上报' ? `${getLabelByLevel(risk_level)}风险点${name ? `（${name}）` : ''}` : source_type_name;
   const isYCQ = +status === 7; // 已超期
-  const isDFC = +status === 3  // 待复查
+  const isDFC = +status === 3; // 待复查
   const isYGB = +status === 4; // 已关闭
   const rectify_time = isDFC || isYGB ? real_rectify_time : plan_rectify_time;
   return (
@@ -139,7 +139,10 @@ const HiddenDangerRecord = ({ data }) => {
         </div>
       </div>
       <div className={styles.content}>
-        <div className={styles.title} style={{ backgroundImage: `url(${getIconByBusinessType(business_type)})` }}>
+        <div
+          className={styles.title}
+          style={{ backgroundImage: `url(${getIconByBusinessType(business_type)})` }}
+        >
           <Ellipsis lines={2} tooltip>
             <span style={{ color }}>{desc || '暂无隐患描述'}</span>
           </Ellipsis>
@@ -155,7 +158,7 @@ const HiddenDangerRecord = ({ data }) => {
           </Ellipsis>
         </div>
         <div className={styles.line}>
-          <span>{(isDFC || isYGB) ? '实际整改：' : '计划整改：'}</span>
+          <span>{isDFC || isYGB ? '实际整改：' : '计划整改：'}</span>
           <Ellipsis lines={1} tooltip>
             <span style={{ marginRight: '16px' }}>{rectify_user_name}</span>
             <span style={{ color: isYCQ ? '#FF6464' : undefined }}>
@@ -170,7 +173,9 @@ const HiddenDangerRecord = ({ data }) => {
               查：
             </span>
             <Ellipsis lines={1} tooltip>
-              <span style={{ marginRight: '16px' }}>{isYGB ? real_review_user_name : review_user_name}</span>
+              <span style={{ marginRight: '16px' }}>
+                {isYGB ? real_review_user_name : review_user_name}
+              </span>
               {!isDFC && <span>{moment(+review_time).format('YYYY-MM-DD')}</span>}
             </Ellipsis>
           </div>
@@ -189,7 +194,9 @@ const HiddenDangerRecord = ({ data }) => {
         </div>
         <div className={styles.line}>
           <span>检查点位：</span>
-          <Ellipsis lines={1} tooltip><span>{item_name}</span></Ellipsis>
+          <Ellipsis lines={1} tooltip>
+            <span>{item_name}</span>
+          </Ellipsis>
         </div>
       </div>
     </div>
@@ -197,18 +204,14 @@ const HiddenDangerRecord = ({ data }) => {
 };
 
 export default class DrawerOfHiddenDanger extends PureComponent {
-
-
   render() {
     const {
       loading,
       visible,
       onClose,
       title,
-      data: {
-        hiddenDangerRecords,
-      },
-    } = this.props
+      data: { hiddenDangerRecords },
+    } = this.props;
     return (
       <DrawerContainer
         title={title}
@@ -218,7 +221,7 @@ export default class DrawerOfHiddenDanger extends PureComponent {
         onClose={onClose}
         closable={true}
         width={530}
-        left={(
+        left={
           <Spin wrapperClassName={styles.drawerOfHiddenDanger} spinning={loading}>
             {hiddenDangerRecords.length > 0 ? (
               hiddenDangerRecords.map(item => {
@@ -226,22 +229,22 @@ export default class DrawerOfHiddenDanger extends PureComponent {
                 return <HiddenDangerRecord key={id} data={item} />;
               })
             ) : (
-                <div className={styles.exptyContainer}>
-                  <div
-                    style={{
-                      backgroundImage: `url(${isEmptyImg})`,
-                      backgroundSize: '100% 100%',
-                      backgroundPosition: 'center center',
-                      backgroundRepeat: 'noRepeat',
-                      width: '250px',
-                      height: '250px',
-                    }}
-                  ></div>
-                </div>
-              )}
+              <div className={styles.exptyContainer}>
+                <div
+                  style={{
+                    backgroundImage: `url(${isEmptyImg})`,
+                    backgroundSize: '100% 100%',
+                    backgroundPosition: 'center center',
+                    backgroundRepeat: 'noRepeat',
+                    width: '250px',
+                    height: '250px',
+                  }}
+                />
+              </div>
+            )}
           </Spin>
-        )}
+        }
       />
-    )
+    );
   }
 }

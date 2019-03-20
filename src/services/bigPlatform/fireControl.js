@@ -417,3 +417,8 @@ export async function queryDataId({ id }) {
 export async function queryWaterSystem(params) {
   return request(`${URL_PREFIX}/deviceInfo/getCompanyDevicesByType?${stringify(params)}`);
 }
+
+// 新版动态监测app端展开企业下的所有设备
+export async function getCompanyDevicesByType(params) {
+  return request(`/acloud_new/v2/deviceInfo/getCompanyDevicesByType?${stringify(params)}`);
+}
