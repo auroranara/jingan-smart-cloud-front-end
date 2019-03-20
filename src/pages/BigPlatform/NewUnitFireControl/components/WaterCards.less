@@ -1,0 +1,38 @@
+.container {
+  position: relative;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  background-color: #043b7e;
+  overflow: hidden;
+  padding: 5px;
+  padding-right: 0;
+  margin-top: 10px;
+
+  .status {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 24%;
+    text-align: center;
+    transform: translate(50%, 0) translate(-10px, 10px) rotate(45deg);
+    transform-origin: 50% 0;
+    color: #fff;
+    background-color: #ff4848;
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  img {
+    width: 52px;
+    height: auto;
+    margin-right: 5px;
+  }
+
+  .itemContainer {
+    flex: 1;
+    line-height: 22px;
+  }
+}
