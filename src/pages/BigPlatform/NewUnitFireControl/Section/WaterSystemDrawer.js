@@ -109,7 +109,7 @@ export default class WaterSystemDrawer extends PureComponent {
           <div
             className={styles.card}
             key={deviceId}
-            style={{ border: +status !== 0 ? '1px soild #f83329' : '1px soild #04fdff' }}
+            style={{ border: +status !== 0 ? '1px solid #f83329' : '1px solid #04fdff' }}
           >
             {+status !== 0 && <div className={styles.status}>异常</div>}
             <div className={styles.picArea}>
@@ -217,7 +217,7 @@ export default class WaterSystemDrawer extends PureComponent {
           <div
             className={styles.card}
             key={deviceId}
-            style={{ border: +status !== 0 ? '1px soild #f83329' : '1px soild #04fdff' }}
+            style={{ border: +status !== 0 ? '1px solid #f83329' : '1px solid #04fdff' }}
           >
             {status !== 0 && <div className={styles.status}>异常</div>}
             <div className={styles.picAreaPond}>
