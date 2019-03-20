@@ -63,15 +63,17 @@ export default class History extends PureComponent {
   componentDidMount() {
     const {
       companyId,
+      position: { originalTree },
     } = this.props;
     // 获取人员列表
     this.fetchPeople({ companyId });
     this.fetchCards({ companyId, pageNum: 1, pageSize: 0 });
+    this.setState({ selectedArea: originalTree[0].id });
     // 获取区域树
-    this.fetchTree({ companyId }, response => {
-      if (response && response.data && Array.isArray(response.data.list) && response.data.list.length)
-        this.setState({ selectedArea: response.data.list[0].id });
-    });
+    // this.fetchTree({ companyId }, response => {
+    //   if (response && response.data && Array.isArray(response.data.list) && response.data.list.length)
+    //     this.setState({ selectedArea: response.data.list[0].id });
+    // });
 
     this.init();
   }
