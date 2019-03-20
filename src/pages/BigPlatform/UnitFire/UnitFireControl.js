@@ -22,7 +22,9 @@ import DrawerOfHiddenDanger from './Sections/DrawerOfHiddenDanger';
 import ModalOfFireHost from './Sections/ModalOfFireHost';
 import ModalOfInspectionStatistics from './Sections/ModalOfInspectionStatistics';
 import WaterMonitor from './Sections/WaterMonitor';
-
+import HydrantDrawer from './Sections/HydrantDrawer';
+import PistolDrawer from './Sections/PistolDrawer';
+import PondDrawer from './Sections/PondDrawer';
 import styles from './UnitFireControl.less';
 const { projectName } = global.PROJECT_CONFIG;
 /**
@@ -73,6 +75,7 @@ const defaultPageSize = 10;
 @connect(({ unitFireControl, monitor, loading }) => ({
   unitFireControl,
   monitor,
+  devicesLoading: loading.effects['unitFireControl/fetchCompanyDevicesByType'],
   pendingHistoryLoading: loading.effects['unitFireControl/fetchInformationHistory'],
   hiddenDnagerLoading: loading.effects['unitFireControl/fetchHiddenDangerRecords'],
   inspectionMoreLoading:
@@ -107,11 +110,14 @@ export default class App extends PureComponent {
       dangerCardVisible: false, // 巡查统计数据下钻显示的隐患卡片
       hiddenDangerLabel: '', // 点击隐患统计时保存类型（已超期、待复查、未超期）
       pendingInfoLoading: true, // 待办事项是否加载
+      hydrantDrawerVisible: false,
+      pistolDrawerVisible: false,
+      pondDrawerVisible: false,
+      infoHistoryDrawerVisible: false,
     };
     // 轮询定时器
     this.pollingTimer = null;
   }
-
   /**
    * 挂载后声明周期函数
    */
@@ -218,6 +224,10 @@ export default class App extends PureComponent {
       },
     });
 
+    this.fetchCompanyDevicesByType('101');
+    this.fetchCompanyDevicesByType('102');
+    this.fetchCompanyDevicesByType('103');
+
     // 设置轮询
     this.pollingTimer = setInterval(this.polling, 5000);
   }
@@ -240,6 +250,9 @@ export default class App extends PureComponent {
       },
     } = this.props;
     const { fireControlType, maintenanceType, pendingInfoStatus } = this.state;
+    this.fetchCompanyDevicesByType('101');
+    this.fetchCompanyDevicesByType('102');
+    this.fetchCompanyDevicesByType('103');
     // 获取待处理信息 1-1
     dispatch({
       type: 'unitFireControl/fetchPendingInfo',
@@ -389,6 +402,22 @@ export default class App extends PureComponent {
     });
   };
 
+  fetchCompanyDevicesByType = type => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'unitFireControl/fetchCompanyDevicesByType',
+      payload: {
+        companyId,
+        type,
+      },
+    });
+  };
+
   /**
    * 显示一键复位模块
    */
@@ -513,8 +542,9 @@ export default class App extends PureComponent {
       type: 'unitFireControl/fetchInformationHistory',
       payload: { companyId, pageSize, pageNum: 1, status: '1' },
       callback: () => {
-        this.leftSections.style.opacity = 0;
-        this.InformationHistory.style.right = 0;
+        // this.leftSections.style.opacity = 0;
+        // this.InformationHistory.style.right = 0;
+        this.handleDrawerVisibleChange('infoHistory');
       },
     });
     // this.setState({pendingInfoStatus:'历史报警'})
@@ -1027,6 +1057,7 @@ export default class App extends PureComponent {
         informationHistory: { list },
       },
     } = this.props;
+    const { infoHistoryDrawerVisible } = this.state;
     return (
       <div
         ref={InformationHistory => {
@@ -1047,6 +1078,8 @@ export default class App extends PureComponent {
           loading={pendingHistoryLoading}
           handleLoadMore={this.handleMorePendingInfo}
           handleClose={() => this.handleCloseInfoHistory()}
+          onClose={() => this.handleDrawerVisibleChange('infoHistory')}
+          visible={infoHistoryDrawerVisible}
         />
       </div>
     );
@@ -1143,6 +1176,14 @@ export default class App extends PureComponent {
     );
   };
 
+  handleDrawerVisibleChange = (name, rest) => {
+    const stateName = `${name}DrawerVisible`;
+    this.setState(state => ({
+      [stateName]: !state[stateName],
+      ...rest,
+    }));
+  };
+
   /**
    * 渲染函数
    */
@@ -1151,6 +1192,7 @@ export default class App extends PureComponent {
     const {
       hiddenDnagerLoading,
       inspectionMoreLoading,
+      devicesLoading,
       unitFireControl: {
         // 隐患统计
         dangerStatistics: { companyName },
@@ -1159,8 +1201,11 @@ export default class App extends PureComponent {
         // 视频列表
         videoList,
         fireAlarmSystem,
+        informationHistory: { list },
+        companyDevicesByType,
       },
       monitor: { chartDeviceList, gsmsHstData, electricityPieces, chartParams, deviceDataHistory },
+      pendingHistoryLoading,
     } = this.props;
     const {
       videoVisible,
@@ -1173,11 +1218,14 @@ export default class App extends PureComponent {
       currentFireHosts,
       inspectionModalVisible,
       InspectionModalType,
-      inspectionCurrentList,
+      // inspectionCurrentList,
       dangerCardVisible,
       hiddenDangerLabel,
+      hydrantDrawerVisible,
+      pistolDrawerVisible,
+      pondDrawerVisible,
+      infoHistoryDrawerVisible,
     } = this.state;
-
     return (
       <BigPlatformLayout extra={companyName} className={styles.root}>
         <div className={styles.unitFileControl}>
@@ -1191,16 +1239,21 @@ export default class App extends PureComponent {
                   style={{ width: '100%', height: '100%', transition: 'opacity 0.5s' }}
                 >
                   <div style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
-                    {/* 待处理信息 */}
+                    {/* 告警信息 */}
                     {this.renderPendingInfo()}
                   </div>
                   <div style={{ height: '51.08%' }}>
                     {/* 水系统监测 */}
-                    <WaterMonitor />
+                    <WaterMonitor
+                      handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+                      loading={devicesLoading}
+                      fetchCompanyDevicesByType={this.fetchCompanyDevicesByType}
+                      data={companyDevicesByType}
+                    />
                   </div>
                 </div>
                 {/* 历史信息 */}
-                {this.renderHistoryInfo()}
+                {/* {this.renderHistoryInfo()} */}
               </Col>
               <Col span={18} style={{ height: '100%' }}>
                 <Row gutter={16} style={{ marginBottom: 16, height: 'calc(48.92% - 16px)' }}>
@@ -1245,12 +1298,12 @@ export default class App extends PureComponent {
               </Col>
             </Row>
           </div>
-          {/* <VideoPlay
+          <VideoPlay
             showList={true}
             videoList={videoList}
             visible={videoVisible}
             handleVideoClose={this.handleVideoClose}
-          /> */}
+          />
           {/* 隐患统计数据下钻抽屉 */}
           <DrawerOfHiddenDanger
             title={hiddenDangerLabel}
@@ -1280,6 +1333,33 @@ export default class App extends PureComponent {
             cardVisible={dangerCardVisible}
             handleChangeDangerCardVisible={this.handleChangeDangerCardVisible}
             moreLoading={inspectionMoreLoading}
+          />
+          {/* 消火栓系统 */}
+          <HydrantDrawer
+            visible={hydrantDrawerVisible}
+            data={companyDevicesByType}
+            onClose={() => this.handleDrawerVisibleChange('hydrant')}
+          />
+          {/* 自动喷淋系统 */}
+          <PistolDrawer
+            visible={pistolDrawerVisible}
+            data={companyDevicesByType}
+            onClose={() => this.handleDrawerVisibleChange('pistol')}
+          />
+          {/* 水池/水箱 */}
+          <PondDrawer
+            visible={pondDrawerVisible}
+            data={companyDevicesByType}
+            onClose={() => this.handleDrawerVisibleChange('pond')}
+          />
+          {/* 历史消息 */}
+          <InformationHistory
+            title="历史消息"
+            data={{ list, alarmTypes: [] }}
+            loading={pendingHistoryLoading}
+            handleLoadMore={this.handleMorePendingInfo}
+            onClose={() => this.handleDrawerVisibleChange('infoHistory')}
+            visible={infoHistoryDrawerVisible}
           />
         </div>
       </BigPlatformLayout>
