@@ -33,8 +33,6 @@ import WaterSystemDrawer from './Section/WaterSystemDrawer';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import headerBg from '@/assets/new-header-bg.png';
-import { isArray } from 'util';
-import { consoleTestResultHandler } from '_tslint@5.12.1@tslint/lib/test';
 
 const { projectName } = global.PROJECT_CONFIG;
 // const DELAY = 5 * 1000;

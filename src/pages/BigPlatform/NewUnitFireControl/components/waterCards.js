@@ -2,8 +2,8 @@ import React from 'react';
 import { Row, Col } from 'antd';
 
 import styles from './waterCards.less';
-import waterNormal from '../imgs/pond-abnormal.png';
-import waterError from '../imgs/pond-normal.png';
+import waterNormal from '../imgs/pond-normal.png';
+import waterError from '../imgs/pond-abnormal.png';
 import waterLoss from '../imgs/pond-loss.png';
 
 const DEFAULT = '---';

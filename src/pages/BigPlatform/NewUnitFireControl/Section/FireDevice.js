@@ -89,8 +89,11 @@ export default class FireDevice extends PureComponent {
   };
 
   render() {
-    const { onClick } = this.props;
+    const { onClick, waterList } = this.props;
     const { type } = this.state;
+
+    const deviceList = waterList.map(item => item.deviceDataList);
+
     return (
       <Section title="水系统">
         <div className={styles.container}>
@@ -104,9 +107,9 @@ export default class FireDevice extends PureComponent {
           <Row
             className={styles.itemsWrapper}
             onClick={() => {
-              if (type === '101') onClick(0, type);
-              if (type === '102') onClick(1, type);
-              if (type === '103') onClick(2, type);
+              if (type === '101' && deviceList.length > 0) onClick(0, type);
+              if (type === '102' && deviceList.length > 0) onClick(1, type);
+              if (type === '103' && deviceList.length > 0) onClick(2, type);
             }}
           >
             {type === '101' && this.renderHydrant()}
