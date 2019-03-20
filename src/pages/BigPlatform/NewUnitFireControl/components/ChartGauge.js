@@ -75,7 +75,7 @@ export default class ChartGauge extends PureComponent {
           },
           pointer: { width: 4, length: '70%' },
           itemStyle: {
-            color: '#1565b2',
+            color: !!isLost ? '#bbbbbc' : '#1565b2',
           },
           detail: {
             show: !!showValue,
