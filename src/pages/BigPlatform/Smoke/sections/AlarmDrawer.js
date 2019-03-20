@@ -287,7 +287,8 @@ export default class AlarmDrawer extends PureComponent {
                     quantity={listUnnormal}
                     className={listUnnormal > 0 ? styles.itemActive : ''}
                     onClick={() =>
-                      listUnnormal > 0 && handleAlarmClick(undefined, company_id, company_name, listUnnormal)
+                      listUnnormal > 0 &&
+                      handleAlarmClick(undefined, company_id, company_name, listUnnormal)
                     }
                   />
                   <DotItem
@@ -296,7 +297,8 @@ export default class AlarmDrawer extends PureComponent {
                     className={listFaultNum > 0 ? styles.itemActive : ''}
                     quantity={listFaultNum}
                     onClick={() =>
-                      listFaultNum > 0 && handleFaultClick(undefined, company_id, company_name, listFaultNum)
+                      listFaultNum > 0 &&
+                      handleFaultClick(undefined, company_id, company_name, listFaultNum)
                     }
                   />
                   <DotItem title="正常" color={`rgb(55,164,96)`} quantity={listNormal} />

@@ -1,0 +1,84 @@
+// .contaniner {
+//   width: 96%;
+//   height: 96%;
+//   margin: 2%;
+//   display: flex;
+// }
+// .pieMain {
+//   width: 100%;
+//   overflow-x: hidden;
+//   overflow-y: auto;
+// }
+// .icon {
+//   display: inline-block;
+//   width: 90px;
+//   height: 90px;
+//   position: relative;
+//   left: 20%;
+//   background-repeat: no-repeat;
+//   background-size: 100% 100%;
+// }
+// //滚动条整体部分
+// .pieMain::-webkit-scrollbar {
+//   width: 12px;
+//   background-color: rgb(2, 36, 80);
+//   border-radius: 25px;
+// }
+// // 滚动条的轨道（里面装有Thumb）
+// .pieMain::-webkit-scrollbar-track {
+//   background-color: rgb(2, 36, 80);
+//   border-radius: 25px;
+// }
+// //  滚动条里面的小方块，能向上向下移动（或向左向右移动）
+// .pieMain::-webkit-scrollbar-thumb {
+//   background-color: rgb(3, 82, 175);
+//   border-radius: 25px;
+// }
+.container {
+  height: 100%;
+  :global {
+    .ant-carousel {
+      height: 100%;
+      .slick-slider {
+        height: 100%;
+        .slick-list {
+          height: 100%;
+          .slick-track {
+            height: 100%;
+            .slick-slide>div {
+              height: 100%;
+            }
+          }
+        }
+        .slick-dots {
+          bottom: 0;
+        }
+      }
+    }
+  } // overflow: hidden;
+}
+
+.wrapper {
+  height: 100%;
+  overflow: hidden;
+  font-size: 0;
+  .item {
+    display: inline-block;
+    width: 50%;
+    height: 50%;
+    vertical-align: middle;
+    cursor: pointer;
+    .icon {
+      height: calc(~'100% - 34px');
+      background: no-repeat center center;
+      background-size: auto 90%;
+    }
+    .label {
+      padding: 8px 0 12px;
+      font-size: 14px;
+      line-height: 1;
+      text-align: center;
+      color: #fff;
+    }
+  }
+}

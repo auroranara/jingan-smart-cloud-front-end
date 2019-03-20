@@ -61,7 +61,7 @@ const {
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
-const folder = 'fireControl';
+const folder = 'firecontrol';
 /* 表单标签 */
 const fieldLabels = {
   administrativeDivision: '行政区域',

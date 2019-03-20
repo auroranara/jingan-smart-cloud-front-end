@@ -57,6 +57,7 @@ import {
   fetchHiddenDangerDetail,
   queryWorkOrderMsg,
   queryDataId,
+  queryWaterSystem,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -341,6 +342,10 @@ export default {
     },
     // 故障
     faultList: [],
+    // 水系统列表
+    waterSystemData: {
+      list: [],
+    },
   },
 
   subscriptions: {
@@ -811,7 +816,7 @@ export default {
       }
     },
     // 火警动态列表或火警消息
-    *fetchAlarmHandle({ payload }, { call, put }) {
+    *fetchAlarmHandle({ payload, callback }, { call, put }) {
       const response = yield call(queryAlarmHandleList, payload);
       if (response && response.code === 200) {
         yield put({
@@ -820,6 +825,7 @@ export default {
           }`,
           payload: response.data ? response.data.list : [],
         });
+        if (callback) callback(response);
       }
     },
     // 维保工单列表或维保处理动态
@@ -842,13 +848,14 @@ export default {
         });
       }
     },
-    *fetchFault({ payload }, { call, put }) {
+    *fetchFault({ payload, callback }, { call, put }) {
       const response = yield call(queryFault, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveFault',
           payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
         });
+        if (callback) callback(response);
       }
     },
     // 维保巡查详情
@@ -894,6 +901,17 @@ export default {
         if (success) success(response);
       } else if (error) {
         error();
+      }
+    },
+
+    // 水系统
+    *fetchWaterSystem({ payload }, { call, put }) {
+      const response = yield call(queryWaterSystem, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveWaterSystem',
+          payload: response.data,
+        });
       }
     },
   },
@@ -1089,6 +1107,16 @@ export default {
       return {
         ...state,
         maintenanceCompany: payload,
+      };
+    },
+
+    // 水系统
+    saveWaterSystem(state, { payload }) {
+      const { list } = payload;
+      return {
+        ...state,
+        list,
+        waterSystemData: payload,
       };
     },
   },

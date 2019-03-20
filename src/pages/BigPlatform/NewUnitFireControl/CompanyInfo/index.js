@@ -20,7 +20,7 @@ const { Description } = DescriptionList;
 @connect(({ newUnitFireControl }) => ({
   newUnitFireControl,
 }))
-export default class App extends PureComponent {
+export default class CompanyInfo extends PureComponent {
   render() {
     const {
       handleViewCurrentDanger,
@@ -82,9 +82,9 @@ export default class App extends PureComponent {
                   {companyNames.map(data => data.name).join(',')}
                 </Description>
                 <Description term="维保人员">
-                  {newUsers.map(data => {
+                  {newUsers.map((data, index) => {
                     return (
-                      <div className={styles.manWrapper}>
+                      <div className={styles.manWrapper} key={index}>
                         {data.userName}
                         <span className={styles.phone}>{data.phoneNumber}</span>
                       </div>

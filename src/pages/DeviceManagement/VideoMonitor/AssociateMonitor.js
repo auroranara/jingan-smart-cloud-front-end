@@ -132,6 +132,10 @@ export default class AssociatePersonnelPosition extends Component {
         title: '监测类型',
         dataIndex: 'class_type',
         align: 'center',
+        render: val => {
+          const item = classTypeList.find(item => +item.class_type === +val) || { type_desc: '' }
+          return <span>{item.type_desc}</span>
+        },
       },
       {
         title: '品牌',
@@ -144,9 +148,15 @@ export default class AssociatePersonnelPosition extends Component {
         align: 'center',
       },
       {
-        title: '所在区域位置',
-        dataIndex: 'location',
+        title: '设备号',
+        dataIndex: 'relation_device_id',
         align: 'center',
+      },
+      {
+        title: '所在区域位置',
+        key: 'area',
+        align: 'center',
+        render: (val, row) => <span>{(row.area || '') + (row.location || '')}</span>,
       },
       {
         title: '操作',
@@ -200,7 +210,7 @@ export default class AssociatePersonnelPosition extends Component {
               </Col>
               <Col {...colWrapper}>
                 <FormItem {...formItemStyle}>
-                  {getFieldDecorator('deviceId')(
+                  {getFieldDecorator('relationDeviceId')(
                     <Input placeholder="请输入设备号" />
                   )}
                 </FormItem>

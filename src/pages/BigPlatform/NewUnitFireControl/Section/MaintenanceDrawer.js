@@ -12,11 +12,21 @@ export default class MaintenanceDrawer extends PureComponent {
   state = { index: 0 };
 
   handleLeftClick = () => {
+    const { handleParentChange, data } = this.props;
+    const { index } = this.state;
+    const list = Array.isArray(data) ? data : [];
+    const videoList = list[index - 1].cameraMessage || [];
     this.setState(({ index }) => ({ index: index - 1 }));
+    handleParentChange({ videoList });
   };
 
   handleRightClick = () => {
+    const { handleParentChange, data } = this.props;
+    const { index } = this.state;
+    const list = Array.isArray(data) ? data : [];
+    const videoList = list[index + 1].cameraMessage || [];
     this.setState(({ index }) => ({ index: index + 1 }));
+    handleParentChange({ videoList });
   };
 
   render() {
@@ -31,33 +41,33 @@ export default class MaintenanceDrawer extends PureComponent {
     // 维保只有一个，故障可能是一个或多个
     let left = null;
     if (length)
-      left = length === 1 ? (
-        <MaintenanceCard type={type} data={list[0]} />
-      ) : (
-        <Fragment>
-          <SwitchHead
-            index={index}
-            title="故障"
-            lastIndex={length - 1}
-            handleLeftClick={this.handleLeftClick}
-            handleRightClick={this.handleRightClick}
-          />
-          <div className={styles.sliderContainer}>
-            <Slider index={index} length={length} size={1}>
-              {list.map((item, i) => <MaintenanceCard key={i} type={type} data={item} style={{ width: `calc(100% / ${length})` }} />)}
-            </Slider>
-          </div>
-        </Fragment>
-      );
+      left =
+        length === 1 ? (
+          <MaintenanceCard type={type} data={list[0]} />
+        ) : (
+          <Fragment>
+            <SwitchHead
+              index={index}
+              title="故障"
+              lastIndex={length - 1}
+              handleLeftClick={this.handleLeftClick}
+              handleRightClick={this.handleRightClick}
+            />
+            <div className={styles.sliderContainer}>
+              <Slider index={index} length={length} size={1}>
+                {list.map((item, i) => (
+                  <MaintenanceCard
+                    key={i}
+                    type={type}
+                    data={item}
+                    style={{ width: `calc(100% / ${length})` }}
+                  />
+                ))}
+              </Slider>
+            </div>
+          </Fragment>
+        );
 
-    return (
-      <DrawerContainer
-        id={ID}
-        title={title}
-        width={535}
-        left={left}
-        {...restProps}
-      />
-    );
+    return <DrawerContainer id={ID} title={title} width={535} left={left} {...restProps} />;
   }
 }

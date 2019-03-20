@@ -47,6 +47,10 @@ export default {
       addAssociate: 'deviceManagement.videoMonitor.addAssociate',
       unBindBeacon: 'deviceManagement.videoMonitor.unBindBeacon',
     },
+    associateSensor:{
+      listView:'deviceManagement.associateSensor.listView',
+      waterSystem:'deviceManagement.associateSensor.waterSystem',
+    },
   },
   videoSurveillance: {
     hikVideoTree: {

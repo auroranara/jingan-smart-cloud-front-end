@@ -38,7 +38,7 @@ export default class AssociatePersonnelPosition extends Component {
       payload: { companyId },
     })
     // 获取视屏绑定的信标
-    this.fetchVideoBeacons({ payload: { id, pageNum: 1, pageSize: defaultPageSize } })
+    this.fetchVideoBeacons({ payload: { id, companyId, pageNum: 1, pageSize: defaultPageSize } })
   }
 
   // 获取视屏绑定的信标
@@ -80,11 +80,11 @@ export default class AssociatePersonnelPosition extends Component {
   // 点击查询
   handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
     const {
-      data: { id },
+      data: { id, companyId },
       form: { getFieldsValue },
     } = this.props
     const values = getFieldsValue()
-    this.fetchVideoBeacons({ payload: { id, pageNum, pageSize, ...values } })
+    this.fetchVideoBeacons({ payload: { id, companyId, pageNum, pageSize, ...values } })
   }
 
   // 点击重置
