@@ -1,5 +1,5 @@
 import { Component, Fragment } from 'react';
-import { Card, Button, Row, Col, Form, Input, Select, Modal, Table, Popconfirm } from 'antd';
+import { Card, Button, Row, Col, Form, Input, Select, Modal, Table, Popconfirm, Divider } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { message } from 'antd';
@@ -116,17 +116,20 @@ export default class SensorCompanyList extends Component {
       form: { validateFields },
       match: { params: { companyId } },
     } = this.props
+    const { deviceInfo } = this.state
+    const deviceId = deviceInfo.deviceId || null
     validateFields((err, { deviceName, deviceType, area, location }) => {
       if (!err) {
+        const payload = { companyId, deviceName, deviceType, area, location }
         dispatch({
-          type: 'sensor/addSensorCompany',
-          payload: { companyId, deviceName, deviceType, area, location },
+          type: deviceId ? 'sensor/editCompanyDevice' : 'sensor/addSensorCompany',
+          payload: deviceId ? { deviceId, ...payload } : payload,
           success: () => {
-            message.success('新增设备成功！')
-            this.setState({ addModalVisible: false })
+            message.success(deviceId ? '编辑设备成功！' : '新增设备成功！')
+            this.setState({ addModalVisible: false, deviceInfo: {} })
             this.handleQuery()
           },
-          error: () => { message.error('新增设备失败！') },
+          error: () => { message.error(deviceId ? '编辑设备失败！' : '新增设备失败！') },
         })
       }
     })
@@ -173,7 +176,7 @@ export default class SensorCompanyList extends Component {
       },
       success: () => {
         message.success('绑定传感器成功！')
-        this.setState({ bindModalVisible: false })
+        this.setState({ bindModalVisible: false, deviceInfo: {} })
         this.handleQuery()
       },
       error: () => { message.error('绑定传感器失败！') },
@@ -207,6 +210,30 @@ export default class SensorCompanyList extends Component {
         this.handleQuery()
       },
       error: () => { message.error('解绑传感器失败！') },
+    })
+  }
+
+  handleDeleteDevice = ({ deviceId: id }) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/deleteCompanyDevice',
+      payload: { id },
+      success: () => {
+        message.success('删除设备成功！')
+        this.handleQuery()
+      },
+      error: () => { message.error('删除设备失败！') },
+    })
+  }
+
+  // 打开编辑设备弹窗
+  handleEditDevice = (deviceInfo) => {
+    const {
+      form: { setFieldsValue },
+    } = this.props
+    this.setState({ addModalVisible: true, deviceInfo }, () => {
+      const { deviceName, deviceType, area, location } = deviceInfo
+      setFieldsValue({ deviceName, deviceType: +deviceType, area, location })
     })
   }
 
@@ -249,7 +276,7 @@ export default class SensorCompanyList extends Component {
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                <Button type="primary" onClick={() => { this.setState({ addModalVisible: true }) }}>新增设备</Button>
+                <Button type="primary" onClick={() => { this.setState({ addModalVisible: true, deviceInfo: {} }) }}>新增设备</Button>
               </FormItem>
             </Col>
           </Row>
@@ -266,14 +293,14 @@ export default class SensorCompanyList extends Component {
       form: { getFieldDecorator },
       sensor: { deviceTypes = [] },
     } = this.props
-    const { addModalVisible } = this.state
+    const { addModalVisible, deviceInfo } = this.state
     return (
       <Modal
-        title="新增单位"
+        title={deviceInfo && deviceInfo.deviceId ? '编辑设备' : "新增设备"}
         width={700}
         visible={addModalVisible}
         destroyOnClose={true}
-        onCancel={() => { this.setState({ addModalVisible: false }) }}
+        onCancel={() => { this.setState({ addModalVisible: false, deviceInfo: {} }) }}
         onOk={this.addDevice}
       >
         <Form>
@@ -367,10 +394,20 @@ export default class SensorCompanyList extends Component {
         ),
       },
       {
-        title: '绑定传感器',
-        key: '绑定传感器',
+        title: '操作',
+        key: '操作',
         align: 'center',
-        render: (val, row) => <a onClick={() => this.handleToBind(row)}>绑定传感器</a>,
+        render: (val, row) => (
+          <Fragment>
+            <a onClick={() => this.handleToBind(row)}>绑定传感器</a>
+            <Divider type="vertical" />
+            <a onClick={() => this.handleEditDevice(row)}>编辑</a>
+            <Divider type="vertical" />
+            <Popconfirm title="确认要解绑传感器吗？" onConfirm={() => this.handleDeleteDevice(row)}>
+              <a>删除</a>
+            </Popconfirm>
+          </Fragment>
+        ),
       },
     ]
     return (
@@ -451,7 +488,7 @@ export default class SensorCompanyList extends Component {
         width={700}
         visible={bindModalVisible}
         destroyOnClose={true}
-        onCancel={() => { this.setState({ bindModalVisible: false }) }}
+        onCancel={() => { this.setState({ bindModalVisible: false, deviceInfo: {} }) }}
         onOk={this.bindSensor}
       >
         <Form>

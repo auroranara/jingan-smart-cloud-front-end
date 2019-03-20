@@ -8,6 +8,8 @@ import {
   fetchSensorTypes,
   bindDeviceSensor,
   unbindDeviceSensor,
+  editCompanyDevice,
+  deleteCompanyDevice,
 } from '../services/sensor'
 export default {
   namespace: 'sensor',
@@ -132,6 +134,20 @@ export default {
     // 解绑虚拟设备
     *unbindDeviceSensor({ payload, success, error }, { call }) {
       const response = yield call(unbindDeviceSensor, payload)
+      if (response && response.code === 200 && success) {
+        success()
+      } else if (error) error()
+    },
+    // 编辑单位下的设备
+    *editCompanyDevice({ payload, success, error }, { call }) {
+      const response = yield call(editCompanyDevice, payload)
+      if (response && response.code === 200 && success) {
+        success()
+      } else if (error) error()
+    },
+    // 删除单位下的设备
+    *deleteCompanyDevice({ payload, success, error }, { call }) {
+      const response = yield call(deleteCompanyDevice, payload)
       if (response && response.code === 200 && success) {
         success()
       } else if (error) error()

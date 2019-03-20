@@ -48,3 +48,18 @@ export async function bindDeviceSensor(params) {
 export async function unbindDeviceSensor(params) {
   return request(`/acloud_new/v2/virtualDeviceInfo/unbindDevice?${stringify(params)}`)
 }
+
+// 编辑单位下的设备
+export async function editCompanyDevice(params) {
+  return request('/acloud_new/v2/virtualDeviceInfo/virtualDeviceInfo', {
+    method: 'PUT',
+    body: params,
+  })
+}
+
+// 删除单位下的设备
+export async function deleteCompanyDevice({ id }) {
+  return request(`/acloud_new/v2/virtualDeviceInfo/virtualDeviceInfo/${id}`, {
+    method: 'DELETE',
+  })
+}

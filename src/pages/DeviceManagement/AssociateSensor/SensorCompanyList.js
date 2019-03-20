@@ -32,14 +32,16 @@ const {
   deviceManagement: {
     associateSensor: {
       waterSystem: waterSystemCode,
+      addCompany: addCompanyCode,
     },
   },
 } = codes
 
 @Form.create()
-@connect(({ sensor, resourceManagement, loading }) => ({
+@connect(({ sensor, resourceManagement, user, loading }) => ({
   sensor,
   resourceManagement,
+  user,
   loading: false,
   companyLoading: loading.effects['resourceManagement/fetchCompanyList'],
 }))
@@ -128,7 +130,10 @@ export default class SensorCompanyList extends Component {
   renderFilter = () => {
     const {
       form: { getFieldDecorator },
+      user: { currentUser: { permissionCodes } },
     } = this.props
+    const addCompanyAuth = hasAuthority(addCompanyCode, permissionCodes)
+
     return (
       <Card>
         <Form>
@@ -153,7 +158,7 @@ export default class SensorCompanyList extends Component {
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                <Button type="primary" onClick={() => { this.setState({ addModalVisible: true, company: undefined }) }}>新增单位</Button>
+                <Button type="primary" disabled={!addCompanyAuth} onClick={() => { this.setState({ addModalVisible: true, company: undefined }) }}>新增单位</Button>
               </FormItem>
             </Col>
           </Row>
