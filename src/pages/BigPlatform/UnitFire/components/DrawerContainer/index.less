@@ -1,71 +1,68 @@
 @color: rgb(4, 253, 255);
-.drawer {
+.drawer,
+.drawer1 {
   :global {
     // .ant-drawer-content-wrapper {
     //   box-shadow: none;
     // }
     .ant-drawer-content {
       // background-color: transparent;
-      // background-color: rgb(3, 48, 105);
-      background-color: rgb(2, 30, 61);
-    }
-    .ant-drawer-close {
-      color: #FFF;
-    }
+      background-color: rgb(3, 48, 105);
+      border: 1px solid #00ffff;
+      box-shadow: 0 0 1.1em 10px rgba(21, 64, 123, 0.65) inset;
+    } // 关闭按钮被修改到header里面了，为了不显示header，直接将其不显示，但要自定义close按钮
     .ant-drawer-header {
+      display: none;
+    }
+    .ant-drawer-header-no-title {
       display: none;
     }
     .ant-drawer-body {
       padding: 0;
       height: 100%;
     }
-  }
-  .container {
-    padding: 16px;
-    height: 100%; // border: 1px solid @color;
-    // background-color: rgb(3, 48, 105);
-    // box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
-    // border-radius: 10px;
-    position: relative;
-    .content {
-      width: 100%;
-      overflow-y: auto;
-      & * {
-        color: white;
-      }
-      &::-webkit-scrollbar {
-        width: 8px;
-      }
-      &::-webkit-scrollbar-thumb {
-        border-radius: 4px; // background: rgba(9, 103, 211, 0.5);
-        background: rgba(0, 87, 169, 1);
-      }
-      &::-webkit-scrollbar-track {
-        border-radius: 4px; // background: rgba(2, 28, 64, 1);
-        background: rgba(2, 28, 64, 0.6);
-      }
-    }
-    .title {
+    .ant-drawer-close {
       color: #FFF;
-      font-size: 18px;
-      margin-bottom: 24px;
-      .rect {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        background-color: @color;
-        margin-right: 15px;
-        position: relative;
-        top: 3px;
-      }
-    }
-    .closeTag {
-      position: absolute;
-      right: 13px;
-      top: 12px;
-      cursor: pointer;
-      color: white;
-      font-size: 23px;
     }
   }
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px; // background: rgba(9, 103, 211, 0.5);
+    background: rgba(0, 87, 169, 1);
+  }
+  ::-webkit-scrollbar-track {
+    border-radius: 4px; // background: rgba(2, 28, 64, 1);
+    background: rgba(2, 28, 64, 0.6);
+  }
+}
+
+.drawer1 {
+  z-index: 1001;
+}
+
+.container {
+  padding: 16px;
+  height: 100%;
+  position: relative; // border: 1px solid @color;
+  // background-color: rgb(3, 48, 105);
+  // box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  // border-radius: 10px;
+}
+
+.title {
+  color: #FFF;
+  font-size: 18px;
+  margin-bottom: 24px;
+}
+
+.rect {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-color: @color;
+  margin-right: 15px;
+  position: relative;
+  top: 3px;
 }
