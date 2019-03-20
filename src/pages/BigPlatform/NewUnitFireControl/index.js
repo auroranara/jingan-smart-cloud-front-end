@@ -464,14 +464,7 @@ export default class App extends PureComponent {
     // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
 
-    // 获取水系统---消火栓系统
-    dispatch({
-      type: 'newUnitFireControl/fetchWaterSystem',
-      payload: {
-        companyId,
-        type: 101,
-      },
-    });
+    this.fetchWaterSystem('101');
   }
 
   showFireMsg = item => {
@@ -636,8 +629,27 @@ export default class App extends PureComponent {
         item_type: 2,
       },
     });
+
+    // 获取水系统---消火栓系统
+    this.fetchWaterSystem('101');
   };
 
+  // 获取水系统
+  fetchWaterSystem = type => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchWaterSystem',
+      payload: {
+        companyId,
+        type,
+      },
+    });
+  };
   /**
    * 获取点位巡查列表
    */
@@ -1295,7 +1307,12 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 水系统 */}
-                <FireDevice companyId={companyId} onClick={this.handleViewWater} waterList={list} />
+                <FireDevice
+                  companyId={companyId}
+                  onClick={this.handleViewWater}
+                  waterList={list}
+                  fetchWaterSystem={this.fetchWaterSystem}
+                />
                 {/* <FireDevice systemScore={systemScore} onClick={this.handleViewFireAlarm} /> */}
               </div>
             </div>

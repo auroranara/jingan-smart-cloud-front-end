@@ -19,18 +19,12 @@ export default class FireDevice extends PureComponent {
 
   // 切换状态
   handelRadioChange = item => {
-    const { dispatch, companyId } = this.props;
+    const { fetchWaterSystem } = this.props;
     const {
       target: { value },
     } = item;
     this.setState({ type: value });
-    dispatch({
-      type: 'newUnitFireControl/fetchWaterSystem',
-      payload: {
-        companyId,
-        type: value,
-      },
-    });
+    fetchWaterSystem(value);
   };
 
   renderHydrant = () => {
