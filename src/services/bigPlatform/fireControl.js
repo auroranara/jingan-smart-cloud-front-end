@@ -422,3 +422,8 @@ export async function queryWaterSystem(params) {
 export async function getCompanyDevicesByType(params) {
   return request(`/acloud_new/v2/deviceInfo/getCompanyDevicesByType?${stringify(params)}`);
 }
+
+// 获取报警信息
+export async function deviceWarningMessageForCompany(params) {
+  return request(`/acloud_new/v2/deviceInfo/deviceWarningMessageForCompany?${stringify(params)}`);
+}
