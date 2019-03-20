@@ -82,6 +82,8 @@ export default class RealTime extends PureComponent {
     this.treeTimer = setInterval(() => {
       this.fetchSectionTree();
     }, DELAY);
+
+    // setTimeout(() => this.showNotification({}), 3000);
   }
 
   componentWillUnmount() {
@@ -330,17 +332,22 @@ export default class RealTime extends PureComponent {
       description: (
         <span
           className={styles.desc}
-          onClick={e => {
-            // console.log(alarm);
-            this.showPersonInfoOrAlarmMsg(type, id, cardId);
-            this.handleAutoShowVideo(alarm);
-            notification.close(id);
-          }}
+          // onClick={e => {
+          //   // console.log(alarm);
+          //   this.showPersonInfoOrAlarmMsg(type, id, cardId);
+          //   this.handleAutoShowVideo(alarm);
+          //   notification.close(id);
+          // }}
         >
           {desc}
         </span>
       ),
       duration: null,
+      onClick: e => {
+        this.showPersonInfoOrAlarmMsg(type, id, cardId);
+        this.handleAutoShowVideo(alarm);
+        notification.close(id);
+      },
     });
   };
 

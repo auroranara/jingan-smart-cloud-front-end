@@ -46,10 +46,27 @@ export default class LeafletMap extends PureComponent {
       this.handleMapData();
   }
 
+  // 修正areaId，若areaId为null或''，则其在区域外，修正为最顶层节点的id
+  fixAreaId = areaId => {
+    const { sectionTree } = this.props;
+    if (sectionTree.length && (areaId === null || areaId === ''))
+      return sectionTree[0].id;
+    return areaId;
+  };
+
   handleMapData = () => {
     const { areaInfo, areaId, highlightedAreaId, sectionTree } = this.props;
-    const current = (this.currentSection = findInTree(areaId, sectionTree));
-    if (!current) return;
+    let current;
+    // areaId === null 或 ''时，则为区域外，则默认重置为最顶层节点
+    if (areaId === null || areaId === '')
+      current = sectionTree[0];
+    else
+      current = findInTree(areaId, sectionTree);
+
+    this.currentSection = current || {};
+    // console.log(areaId, current);
+    if (!current)
+      return;
 
     const currentInfo = areaInfo[areaId];
     const { isBuilding, parentId } = currentInfo;
@@ -185,11 +202,12 @@ export default class LeafletMap extends PureComponent {
   };
 
   beaconListToIcons = (aggregation) => {
-    const { beaconList, areaId } = this.props;
+    let { beaconList, areaId } = this.props;
     const { beaconOn } = this.state;
     if (!beaconOn)
       return [];
 
+    areaId = this.fixAreaId(areaId);
     const aggBeacons = aggregation.map(ps => ps[0].beaconId);
     // 只显示当前区域且上面没有人的信标
     return beaconList.filter(({ id, areaId: beaconAreaId }) => !aggBeacons.includes(id) && beaconAreaId === areaId).map(({ id, beaconCode, xarea, yarea, status }) => ({
@@ -250,7 +268,7 @@ export default class LeafletMap extends PureComponent {
   };
 
   positionsToIcons = () => {
-    const {
+    let {
       areaId,
       areaInfo,
       aggregation,
@@ -260,8 +278,9 @@ export default class LeafletMap extends PureComponent {
       movingCards,
     } = this.props;
     // console.log(areaId, areaInfo, aggregation);
-    if (!areaId || !Object.keys(areaInfo).length || !aggregation.length) return this.beaconListToIcons([]);
+    if (areaId === undefined || !Object.keys(areaInfo).length || !aggregation.length) return this.beaconListToIcons([]);
 
+    areaId = this.fixAreaId(areaId);
     let targetAgg = [];
     const childAreas = areaInfo[areaId].childIds;
     const currentAreas = [areaId, ...childAreas]; // 当前及当前区域所有子区域的集合

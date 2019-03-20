@@ -9,6 +9,7 @@ import Tabs from './Tabs';
 import TrailBack from './TrailBack';
 import VideoPlay from './VideoPlay';
 import HistoryPlay from './HistoryPlay';
+import MultipleHistoryPlay from './MultipleHistoryPlay';
 
 export {
   AlarmHandle,
@@ -22,4 +23,5 @@ export {
   TrailBack,
   VideoPlay,
   HistoryPlay,
+  MultipleHistoryPlay,
 };

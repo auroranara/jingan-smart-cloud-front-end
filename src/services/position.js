@@ -20,3 +20,8 @@ export async function getTree(params) {
 export async function getPeople(params) {
   return request(`/acloud_new/v2/rolePermission/getAllCompanyUsers?${stringify(params)}`);
 }
+
+// 获取卡片列表
+export async function getCards(params) {
+  return request(`/acloud_new/v2/accessCard/accessCardInfoForPage?${stringify(params)}`)
+}

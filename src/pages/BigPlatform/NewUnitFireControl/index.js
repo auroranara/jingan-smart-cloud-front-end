@@ -1211,8 +1211,9 @@ export default class App extends PureComponent {
       <BigPlatformLayout
         title={projectName}
         style={{
-          backgroundImage:
-            'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg2.png)',
+          // backgroundImage: 'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg2.png)',
+          backgroundImage: 'none',
+          backgroundColor: 'rgb(0, 24, 52)',
         }}
         headerStyle={{
           position: 'absolute',
