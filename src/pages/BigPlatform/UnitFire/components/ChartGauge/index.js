@@ -11,6 +11,7 @@ export default class ChartGauge extends PureComponent {
       isLost,
       range: [min, max] = [0, 2],
       normalRange: [normalMin, normalMax] = [0.4, 1.2],
+      status,
     } = this.props;
     let axisLine;
     if (!normalMin && normalMin !== 0 && !normalMax && normalMax !== 0) {
@@ -75,13 +76,14 @@ export default class ChartGauge extends PureComponent {
             color: 'auto',
           },
           detail: {
-            show: !!isLost || !!showValue,
+            show: !!showValue,
             fontSize: 15,
+            color: status === 0 ? '#fff' : 'auto',
             formatter: value => {
               return !!isLost ? '---' : value;
             },
           },
-          data: [{ value, name }],
+          data: [{ value: isLost ? 0 : value, name }],
         },
       ],
     };
