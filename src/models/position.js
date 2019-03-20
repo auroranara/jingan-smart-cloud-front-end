@@ -88,7 +88,9 @@ function cloneTreeList(list) {
 }
 
 function getSelectTree(list) {
-    return Array.isArray(list) ? cloneTreeList(list) : [];
+    const treeList = Array.isArray(list) ? cloneTreeList(list) : [];
+    // treeList.forEach(ls => delete ls.children);
+    return treeList;
 }
 
 function getHisotryIdMap(list, idType) {
