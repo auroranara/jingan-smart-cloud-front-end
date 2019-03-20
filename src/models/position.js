@@ -1,9 +1,8 @@
 import { getList, getLatest, getTree, getPeople, getCards } from '../services/position';
 
 // 格式化树
-function formatTree(list, parentName='', parentMapId, parentIds=[], result={}) {
-  return list.reduce((result, {
-    companyMapPhoto,
+function formatTree(list, parentName='', parentMapId, parentIds=[]) {
+  return (list || []).reduce((result, {
     mapPhoto,
     range,
     id,
@@ -11,39 +10,35 @@ function formatTree(list, parentName='', parentMapId, parentIds=[], result={}) {
     parentId,
     companyMap,
     mapId,
-    children,
+    children: childList,
   }) => {
     const fullName = `${parentName}${name}`;
-    if (!result.url) {
-      result.url = JSON.parse(companyMapPhoto).url;
-    }
-    const childIds = [];
-    let isBuilding = false;
-    if (children) {
-      formatTree(children, fullName, mapId, parentIds.concat(id), result);
-      children.forEach(({ id, mapId: childMapId }) => {
-        childIds.push(id);
-        if (childMapId !== mapId) {
-          isBuilding = true;
-        }
-      });
-    }
-    result[id] = {
-      ...(JSON.parse(range)),
-      url: JSON.parse(mapPhoto).url,
-      id,
-      name,
-      fullName,
-      parentId,
-      parentIds,
-      companyMap,
-      mapId,
-      children: childIds,
-      isBuilding,
-      isFloor: parentMapId ? parentMapId !== mapId : false,
+    const { children, isBuilding } = (childList || []).reduce((obj, { id, mapId: childMapId }) => {
+      obj.children.push(id);
+      obj.isBuilding = obj.isBuilding || childMapId !== mapId; // 如果当前区域与子区域的图片不同，则认为当前区域是建筑
+      return obj;
+    }, { children: [], isBuilding: false });
+    const childrenResult = formatTree(childList, fullName, mapId, parentIds.concat(id));
+    return {
+      ...result,
+      ...childrenResult,
+      [id]: {
+        ...(JSON.parse(range)),
+        url: JSON.parse(mapPhoto).url,
+        id,
+        name,
+        fullName,
+        parentId,
+        companyMap,
+        mapId,
+        children,
+        descendants: Object.keys(childrenResult),
+        parentIds,
+        isBuilding, // 是否是建筑
+        isFloor: parentMapId ? parentMapId !== mapId : false, // 如果当前区域与父区域的图片不同，则认为当前区域是楼层
+      },
     };
-    return result;
-  }, result);
+  }, {});
 };
 // 格式化位置数据
 function formatData(list) {

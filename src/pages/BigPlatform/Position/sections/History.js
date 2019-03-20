@@ -481,7 +481,7 @@ export default class History extends PureComponent {
           <MultipleHistoryPlay
             ref={this.setHistoryPlayReference}
             tree={tree}
-            originalTree={originalTree}
+            top={originalTree[0]}
             idMap={historyIdMap}
             ids={selectedIds}
             startTime={startTimeStamp && +startTimeStamp}
