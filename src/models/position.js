@@ -81,7 +81,7 @@ function cloneTreeList(list) {
 
 function getSelectTree(list) {
     const treeList = Array.isArray(list) ? cloneTreeList(list) : [];
-    treeList.forEach(ls => delete ls.children);
+    // treeList.forEach(ls => delete ls.children);
     return treeList;
 }
 

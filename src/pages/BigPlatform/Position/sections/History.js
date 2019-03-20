@@ -316,6 +316,7 @@ export default class History extends PureComponent {
 
     // const areaDataHistories = this.getDataHistory();
     const historyTree = originalTree.find(({ id }) => id === selectedArea);
+    const sectionTreeList = sectionTree.map(sec => ({ ...sec, children: [] }));
     const areaDataHistories = tableList;
     const isCard = +idType; // 0 人   1 卡
     const options = isCard
@@ -336,7 +337,7 @@ export default class History extends PureComponent {
                     treeDefaultExpandAll
                     value={selectedArea}
                     className={styles.tree}
-                    treeData={sectionTree}
+                    treeData={sectionTreeList}
                     onChange={this.handleAreaChange}
                     dropdownClassName={styles.treeDropdown}
                   />

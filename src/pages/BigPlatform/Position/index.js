@@ -3,7 +3,7 @@ import { connect } from 'dva';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 // import styles from './index.less';
-import { History, RealTime } from './sections/Components';
+import { AlarmList, History, RealTime } from './sections/Components';
 
 @connect(({ personPosition, position, user }) => ({ personPosition, position, user }))
 export default class PositionIndex extends PureComponent {
@@ -63,6 +63,7 @@ export default class PositionIndex extends PureComponent {
     const {
       dispatch,
       match: { params: { companyId } },
+      position,
       personPosition,
       user,
     } = this.props;
@@ -70,7 +71,6 @@ export default class PositionIndex extends PureComponent {
       labelIndex,
       selectedCardId,
       selectedUserId,
-      // historyRecord,
       historyIdType,
       historyUserIds,
       historyCardIds,
@@ -114,6 +114,11 @@ export default class PositionIndex extends PureComponent {
             setUserIds={this.setHistoryUserIds}
             setCardIds={this.setHistoryCardIds}
             handleLabelClick={this.handleLabelClick}
+          />
+        )}
+        {labelIndex === 3 && (
+          <AlarmList
+            position={position}
           />
         )}
       </BigPlatformLayout>
