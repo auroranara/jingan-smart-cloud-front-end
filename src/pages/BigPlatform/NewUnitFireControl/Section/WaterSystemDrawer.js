@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { connect } from 'dva';
 import { Col } from 'antd';
 import Ellipsis from 'components/Ellipsis';
 
@@ -23,9 +22,9 @@ import noMonitorImg from '../imgs/no-monitor.png';
 function title(i) {
   switch (i) {
     case 0:
-      return '消火栓系统';
+      return '消火栓';
     case 1:
-      return '自动喷淋系统';
+      return '自动喷淋';
     case 2:
       return '水池/水箱';
     default:
@@ -88,12 +87,12 @@ export default class WaterSystemDrawer extends PureComponent {
   renderFireCards = list => {
     const { searchValue } = this.state;
 
-    const filterFireList = list.filter(({ area }) => area.includes(searchValue));
+    const filterFireList = list.filter(({ deviceName }) => deviceName.includes(searchValue));
 
     return filterFireList.map(item => {
-      const { deviceDataList } = item;
+      const { deviceDataList, videoList } = item;
       if (!deviceDataList.length) return null;
-      const { area, deviceId, location } = item;
+      const { area, deviceId, location, deviceName } = item;
       const [
         {
           value,
@@ -130,7 +129,7 @@ export default class WaterSystemDrawer extends PureComponent {
                 tooltip
                 style={{ color: +status === -1 ? '#838383' : '' }}
               >
-                {area}
+                {deviceName}
               </Ellipsis>
               <Ellipsis
                 className={styles.line}
@@ -139,6 +138,7 @@ export default class WaterSystemDrawer extends PureComponent {
                 style={{ color: +status === -1 ? '#838383' : '' }}
               >
                 位置：
+                {area}
                 {location}
               </Ellipsis>
               <Ellipsis className={styles.line} lines={1} tooltip>
@@ -176,16 +176,19 @@ export default class WaterSystemDrawer extends PureComponent {
                   </span>
                 )}
               </Ellipsis>
-              <div className={styles.lastLine}>
-                <div
-                  className={styles.camera}
-                  onClick={this.handleClickCamera}
-                  style={{
-                    background: `url(${cameralogo}) no-repeat center center`,
-                    backgroundSize: '100% 100%',
-                  }}
-                />
-              </div>
+              {videoList &&
+                videoList.length > 0 && (
+                  <div className={styles.lastLine}>
+                    <div
+                      className={styles.camera}
+                      onClick={this.handleClickCamera}
+                      style={{
+                        background: `url(${cameralogo}) no-repeat center center`,
+                        backgroundSize: '100% 100%',
+                      }}
+                    />
+                  </div>
+                )}
             </div>
           </div>
         </Col>
@@ -196,12 +199,12 @@ export default class WaterSystemDrawer extends PureComponent {
   renderPondCards = list => {
     const { searchValue } = this.state;
 
-    const filterPondList = list.filter(({ area }) => area.includes(searchValue));
+    const filterPondList = list.filter(({ deviceName }) => deviceName.includes(searchValue));
 
     return filterPondList.map(item => {
-      const { deviceDataList } = item;
+      const { deviceDataList, videoList } = item;
       if (!deviceDataList.length) return null;
-      const { area, deviceId, location } = item;
+      const { area, deviceId, location, deviceName } = item;
       const [
         {
           value,
@@ -219,7 +222,7 @@ export default class WaterSystemDrawer extends PureComponent {
             key={deviceId}
             style={{ border: +status !== 0 ? '1px solid #f83329' : '1px solid #04fdff' }}
           >
-            {status !== 0 && <div className={styles.status}>异常</div>}
+            {+status !== 0 && <div className={styles.status}>异常</div>}
             <div className={styles.picAreaPond}>
               <img
                 className={styles.pondBg}
@@ -234,7 +237,7 @@ export default class WaterSystemDrawer extends PureComponent {
                 tooltip
                 style={{ color: +status === -1 ? '#838383' : '' }}
               >
-                {area}
+                {deviceName}
               </Ellipsis>
               <Ellipsis
                 className={styles.line}
@@ -243,6 +246,7 @@ export default class WaterSystemDrawer extends PureComponent {
                 style={{ color: +status === -1 ? '#838383' : '' }}
               >
                 位置：
+                {area}
                 {location}
               </Ellipsis>
               <p style={{ marginBottom: 0 }}>
@@ -301,14 +305,17 @@ export default class WaterSystemDrawer extends PureComponent {
               </p>
 
               <div className={styles.lastLine}>
-                <div
-                  className={styles.camera}
-                  onClick={this.handleClickCamera}
-                  style={{
-                    background: `url(${cameralogo}) no-repeat center center`,
-                    backgroundSize: '100% 100%',
-                  }}
-                />
+                {videoList &&
+                  videoList.length > 0 && (
+                    <div
+                      className={styles.camera}
+                      onClick={this.handleClickCamera}
+                      style={{
+                        background: `url(${cameralogo}) no-repeat center center`,
+                        backgroundSize: '100% 100%',
+                      }}
+                    />
+                  )}
               </div>
             </div>
           </div>
@@ -344,7 +351,7 @@ export default class WaterSystemDrawer extends PureComponent {
       <div className={styles.content}>
         {/* 统计数据 */}
         <div className={styles.totalInfo}>
-          <div className={styles.title}>{title(waterTabItem) + '数据'}</div>
+          <div className={styles.title}>{title(waterTabItem) + '统计数据'}</div>
           <div className={styles.progress}>
             <Col span={16}>
               <OvProgress

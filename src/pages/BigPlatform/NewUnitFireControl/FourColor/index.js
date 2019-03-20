@@ -12,8 +12,8 @@ import newVideo from '@/assets/new-video2.png';
 // import newLegendPoint from '@/assets/new-legend-point.png';
 // import newLegendAbnormal from '@/assets/new-legend-abnormal.png';
 import ponit from '../imgs/ponit.png';
-import pointDot from '../imgs/pointDot.png';
-import videoDot from '../imgs/videoDot.png';
+import pointDot from '../imgs/dotPoint.png';
+import videoDot from '../imgs/dotVideo.png';
 
 import styles from './index.less';
 
@@ -193,7 +193,7 @@ export default class FourColor extends PureComponent {
           isChecked
             ? `
           <div>
-            有无隐患：${isAbnormal ? '<span style="color: #ff4848">有隐患</span>' : '无隐患'}
+            有/无隐患：${isAbnormal ? '<span style="color: #ff4848">有隐患</span>' : '无隐患'}
           </div>
         `
             : ''
