@@ -43,7 +43,7 @@ export default class ChartGauge extends PureComponent {
           radius: radius,
           title: {
             show: !!showName,
-            offsetCenter: [0, '95%'],
+            offsetCenter: [0, 39],
             textStyle: {
               fontSize: 14,
               color: '#fff',

@@ -67,7 +67,7 @@ export default class WaterSystemDrawer extends PureComponent {
     videoList: [],
   };
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   handleSearch = v => {
     this.setState({ searchValue: v });
@@ -89,6 +89,22 @@ export default class WaterSystemDrawer extends PureComponent {
     const { searchValue } = this.state;
 
     const filterFireList = list.filter(({ deviceName }) => deviceName.includes(searchValue));
+    if (!filterFireList.filter(item => item.deviceDataList.length).length) {
+      return(
+      <div
+        style={{
+          width: '100%',
+          height: '135px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: '#4f678d',
+        }}
+      >
+        暂无相关监测数据
+    </div>
+      )
+    }
 
     return filterFireList.map(item => {
       const { deviceDataList, videoList } = item;
@@ -149,15 +165,15 @@ export default class WaterSystemDrawer extends PureComponent {
                     {!value && value !== 0 ? '---' : <span>{value + unit}</span>}
                   </span>
                 ) : (
-                  <span>
-                    当前压力：
+                    <span>
+                      当前压力：
                     {!value && value !== 0 ? (
-                      '---'
-                    ) : (
-                      <span style={{ color: +status !== 0 ? '#f83329' : '' }}>{value + unit}</span>
-                    )}
-                  </span>
-                )}
+                        '---'
+                      ) : (
+                          <span style={{ color: +status !== 0 ? '#f83329' : '' }}>{value + unit}</span>
+                        )}
+                    </span>
+                  )}
               </Ellipsis>
               <Ellipsis
                 className={styles.line}
@@ -167,14 +183,14 @@ export default class WaterSystemDrawer extends PureComponent {
               >
                 参考范围：
                 {(!normalRange[0] && normalRange[0] !== 0) ||
-                (!normalRange[1] && normalRange[1] !== 0) ? (
-                  '---'
-                ) : (
-                  <span>
-                    {normalRange[0]}~{normalRange[1]}
-                    {unit}
-                  </span>
-                )}
+                  (!normalRange[1] && normalRange[1] !== 0) ? (
+                    '---'
+                  ) : (
+                    <span>
+                      {normalRange[0]}~{normalRange[1]}
+                      {unit}
+                    </span>
+                  )}
               </Ellipsis>
               {videoList &&
                 videoList.length > 0 && (
@@ -199,7 +215,25 @@ export default class WaterSystemDrawer extends PureComponent {
   renderPondCards = list => {
     const { searchValue } = this.state;
 
-    const filterPondList = list.filter(({ deviceName }) => deviceName.includes(searchValue));
+    const filterPondList = searchValue ? list.filter(({ deviceName }) => deviceName.includes(searchValue)) : list;
+
+    const filterFireList = list.filter(({ deviceName }) => deviceName.includes(searchValue));
+    if (!filterFireList.filter(item => item.deviceDataList.length).length) {
+      return(
+      <div
+        style={{
+          width: '100%',
+          height: '135px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: '#4f678d',
+        }}
+      >
+        暂无相关监测数据
+    </div>
+      )
+    }
 
     return filterPondList.map(item => {
       const { deviceDataList, videoList } = item;
@@ -214,110 +248,109 @@ export default class WaterSystemDrawer extends PureComponent {
         },
       ] = deviceDataList;
       const normalRange = [normalLower, normalUpper];
-
       return (
-        <Col span={12}>
-          <div
-            className={styles.card}
-            key={deviceId}
-            style={{ border: +status !== 0 ? '1px solid #f83329' : '1px solid #04fdff' }}
-          >
-            {+status !== 0 && <div className={styles.status}>异常</div>}
-            <div className={styles.picAreaPond}>
-              <img
-                className={styles.pondBg}
-                src={+status === 0 ? pondNormal : +status === -1 ? pondLoss : pondAbnormal}
-                alt="pond"
-              />
-            </div>
-            <div className={styles.itemContainer}>
-              <Ellipsis
-                className={styles.line}
-                lines={1}
-                tooltip
-                style={{ color: +status === -1 ? '#838383' : '' }}
+        <div>
+          <Col span={12}>
+              <div
+                className={styles.card}
+                key={deviceId}
+                style={{ border: +status !== 0 ? '1px solid #f83329' : '1px solid #04fdff' }}
               >
-                {deviceName}
-              </Ellipsis>
-              <Ellipsis
-                className={styles.line}
-                lines={1}
-                tooltip
-                style={{ color: +status === -1 ? '#838383' : '' }}
-              >
-                位置：
+                {+status !== 0 && <div className={styles.status}>异常</div>}
+                <div className={styles.picAreaPond}>
+                  <img
+                    className={styles.pondBg}
+                    src={+status === 0 ? pondNormal : +status === -1 ? pondLoss : pondAbnormal}
+                    alt="pond"
+                  />
+                </div>
+                <div className={styles.itemContainer}>
+                  <Ellipsis
+                    className={styles.line}
+                    lines={1}
+                    tooltip
+                    style={{ color: +status === -1 ? '#838383' : '' }}
+                  >
+                    {deviceName}
+                  </Ellipsis>
+                  <Ellipsis
+                    className={styles.line}
+                    lines={1}
+                    tooltip
+                    style={{ color: +status === -1 ? '#838383' : '' }}
+                  >
+                    位置：
                 {area}
-                {location}
-              </Ellipsis>
-              <p style={{ marginBottom: 0 }}>
-                {+status === -1 ? (
-                  <span style={{ color: '#838383' }}>
-                    当前水位：
+                    {location}
+                  </Ellipsis>
+                  <p style={{ marginBottom: 0 }}>
+                    {+status === -1 ? (
+                      <span style={{ color: '#838383' }}>
+                        当前水位：
                     <span> {!value && value !== 0 ? '---' : <span>{value + unit}</span>}</span>
-                  </span>
-                ) : (
-                  <span>
-                    当前水位：
+                      </span>
+                    ) : (
+                        <span>
+                          当前水位：
                     <span>
-                      {' '}
-                      {!value && value !== 0 ? (
-                        '---'
-                      ) : (
-                        <span style={{ color: +status !== 0 ? '#f83329' : '' }}>
-                          {value + unit}
+                            {' '}
+                            {!value && value !== 0 ? (
+                              '---'
+                            ) : (
+                                <span style={{ color: +status !== 0 ? '#f83329' : '' }}>
+                                  {value + unit}
+                                </span>
+                              )}
+                          </span>
                         </span>
                       )}
-                    </span>
-                  </span>
-                )}
-              </p>
-
-              <p style={{ marginBottom: 0 }}>
-                {+status === -1 ? (
-                  <span style={{ color: '#838383' }}>
-                    参考范围：
+                  </p>
+                  <p style={{ marginBottom: 0 }}>
+                    {+status === -1 ? (
+                      <span style={{ color: '#838383' }}>
+                        参考范围：
                     {(!normalRange[0] && normalRange[0] !== 0) ||
-                    (!normalRange[1] && normalRange[1] !== 0) ? (
-                      '---'
-                    ) : (
-                      <span>
-                        {normalRange[0]}~{normalRange[1]}
-                        {unit}
+                          (!normalRange[1] && normalRange[1] !== 0) ? (
+                            '暂无'
+                          ) : (
+                            <span>
+                              {normalRange[0]}~{normalRange[1]}
+                              {unit}
+                            </span>
+                          )}
                       </span>
-                    )}
-                  </span>
-                ) : (
-                  <span>
-                    参考范围：
+                    ) : (
+                        <span>
+                          参考范围：
                     {(!normalRange[0] && normalRange[0] !== 0) ||
-                    (!normalRange[1] && normalRange[1] !== 0) ? (
-                      '---'
-                    ) : (
-                      <span>
-                        {normalRange[0]}~{normalRange[1]}
-                        {unit}
-                      </span>
-                    )}
-                  </span>
-                )}
-              </p>
-
-              <div className={styles.lastLine}>
-                {videoList &&
-                  videoList.length > 0 && (
-                    <div
-                      className={styles.camera}
-                      onClick={e => this.handleClickCamera(videoList)}
-                      style={{
-                        background: `url(${cameralogo}) no-repeat center center`,
-                        backgroundSize: '100% 100%',
-                      }}
-                    />
-                  )}
+                            (!normalRange[1] && normalRange[1] !== 0) ? (
+                              '暂无'
+                            ) : (
+                              <span>
+                                {normalRange[0]}~{normalRange[1]}
+                                {unit}
+                              </span>
+                            )}
+                        </span>
+                      )}
+                  </p>
+                  <div className={styles.lastLine}>
+                    {videoList &&
+                      videoList.length > 0 && (
+                        <div
+                          className={styles.camera}
+                          onClick={e => this.handleClickCamera(videoList)}
+                          style={{
+                            background: `url(${cameralogo}) no-repeat center center`,
+                            backgroundSize: '100% 100%',
+                          }}
+                        />
+                      )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </Col>
+            </Col>
+        </div>
       );
     });
   };
@@ -386,21 +419,21 @@ export default class WaterSystemDrawer extends PureComponent {
             </div>
             <SearchBar placeholder="搜索点位名称" onSearch={this.handleSearch} />
           </div>
-          {dataList && dataList.length > 0 ? (
+          {newList && newList.length > 0 ? (
             <div className={styles.listContainer}>
               {waterTabItem === 0 && this.renderFireCards(waterList)}
               {waterTabItem === 1 && this.renderFireCards(waterList)}
               {waterTabItem === 2 && this.renderPondCards(waterList)}
             </div>
           ) : (
-            <div
-              className={styles.emptyContainer}
-              style={{
-                background: `url(${noMonitorImg}) no-repeat center center`,
-                backgroundSize: '35% 80%',
-              }}
-            />
-          )}
+              <div
+                className={styles.emptyContainer}
+                style={{
+                  background: `url(${noMonitorImg}) no-repeat center center`,
+                  backgroundSize: '35% 80%',
+                }}
+              />
+            )}
         </div>
         <VideoPlay
           showList={true}

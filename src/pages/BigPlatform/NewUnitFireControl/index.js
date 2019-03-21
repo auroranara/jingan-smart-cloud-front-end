@@ -208,6 +208,9 @@ export default class App extends PureComponent {
                 },
               });
 
+              // 获取水系统---消火栓系统
+              this.fetchWaterSystem('101');
+
               if (this.state.fireAlarmVisible) this.fetchViewFireAlarm();
             }
 

@@ -1,14 +1,27 @@
 import React, { PureComponent } from 'react';
 import { Radio, Row, Col } from 'antd';
-import { connect } from 'dva';
+
 import WaterCards from '../components/WaterCards';
 import ChartGauge from '../components/ChartGauge';
 import Section from '../Section';
 import styles from './FireDevice.less';
+import waterBg from '../imgs/waterBg.png';
 
-@connect(({ newUnitFireControl }) => ({
-  newUnitFireControl,
-}))
+const waterSys = {
+  '101': {
+    name: '消火栓系统',
+    code: 'hydrant',
+  },
+  '102': {
+    name: '自动喷淋系统',
+    code: 'pistol',
+  },
+  '103': {
+    name: '水池/水箱',
+    code: 'pond',
+  },
+};
+
 export default class FireDevice extends PureComponent {
   constructor(props) {
     super(props);
@@ -27,8 +40,25 @@ export default class FireDevice extends PureComponent {
     fetchWaterSystem(value);
   };
 
+  renderNoCards = () => {
+    return (
+      <div
+        className={styles.noCards}
+        style={{
+          background: `url(${waterBg})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center center',
+          backgroundSize: 'auto 80%',
+        }}
+      />
+    );
+  };
+
   renderHydrant = () => {
     const { waterList } = this.props;
+    if (!waterList.filter(item => item.deviceDataList.length).length) {
+      return this.renderNoCards();
+    }
 
     return waterList.map(item => {
       const { deviceDataList } = item;
@@ -47,7 +77,7 @@ export default class FireDevice extends PureComponent {
           <ChartGauge
             showName
             showValue
-            radius="75%"
+            radius="70%"
             isLost={+status < 0}
             status={+status}
             name={deviceName}
@@ -62,7 +92,9 @@ export default class FireDevice extends PureComponent {
 
   renderPond = () => {
     const { waterList } = this.props;
-
+    if (!waterList.filter(item => item.deviceDataList.length).length) {
+      return this.renderNoCards();
+    }
     return waterList.map(item => {
       const { deviceDataList } = item;
       if (!deviceDataList.length) return null;
@@ -93,16 +125,29 @@ export default class FireDevice extends PureComponent {
     const { onClick, waterList } = this.props;
     const { type } = this.state;
 
-    const deviceList = waterList.map(item => item.deviceDataList);
+    const deviceList = waterList.filter(item => item.deviceDataList.length);
 
     return (
       <Section title="水系统">
         <div className={styles.container}>
           <div className={styles.tabsWrapper}>
             <Radio.Group value={type} buttonStyle="solid" onChange={this.handelRadioChange}>
-              <Radio.Button value="101">消火栓系统</Radio.Button>
-              <Radio.Button value="102">自动喷淋系统</Radio.Button>
-              <Radio.Button value="103">水池/水箱</Radio.Button>
+              {['101', '102', '103'].map(val => {
+                const isAlarm =
+                  Array.isArray(waterList[val]) &&
+                  !!waterList[val].filter(item => {
+                    const { deviceDataList } = item;
+                    if (!deviceDataList.length) return false;
+                    const [{ status }] = deviceDataList;
+                    if (+status === 0) return false;
+                    else return true;
+                  }).length;
+                return (
+                  <Radio.Button value={val} className={isAlarm ? styles.tabAlarm : undefined}>
+                    {waterSys[val].name}
+                  </Radio.Button>
+                );
+              })}
             </Radio.Group>
           </div>
           <Row
