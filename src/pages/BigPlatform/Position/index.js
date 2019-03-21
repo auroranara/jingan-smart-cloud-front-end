@@ -118,8 +118,12 @@ export default class PositionIndex extends PureComponent {
         )}
         {labelIndex === 3 && (
           <AlarmList
+            dispatch={dispatch}
             labelIndex={labelIndex}
+            companyId={companyId}
+            areaInfo={areaInfoCache}
             position={position}
+            personPosition={personPosition}
             handleLabelClick={this.handleLabelClick}
           />
         )}
