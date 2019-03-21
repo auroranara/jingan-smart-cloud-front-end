@@ -114,6 +114,8 @@ export default class UnitFireControl extends PureComponent {
       pistolDrawerVisible: false,
       pondDrawerVisible: false,
       infoHistoryDrawerVisible: false,
+      msgVideoList: [],
+      msgVideoVisible: false,
     };
     // 轮询定时器
     this.pollingTimer = null;
@@ -520,6 +522,14 @@ export default class UnitFireControl extends PureComponent {
     this.setState({ videoVisible: false });
   };
 
+  handleMsgVideoClose = () => {
+    this.setState({ msgVideoVisible: false, msgVideoList: [] });
+  };
+
+  showMsgVideo = list => {
+    this.setState({ msgVideoVisible: true, msgVideoList: list });
+  };
+
   /**
    * 点击加载更多已处理信息
    */
@@ -646,6 +656,9 @@ export default class UnitFireControl extends PureComponent {
         handleViewHistory={this.handleViewHistory}
         onFilterChange={this.handlePendingFilterChnage}
         loading={pendingInfoLoading}
+        handleMsgVideoClose={this.handleMsgVideoClose}
+        handleVideoClose={this.handleVideoClose}
+        showMsgVideo={this.showMsgVideo}
       />
     );
   };
@@ -1272,6 +1285,8 @@ export default class UnitFireControl extends PureComponent {
       pistolDrawerVisible,
       pondDrawerVisible,
       infoHistoryDrawerVisible,
+      msgVideoList,
+      msgVideoVisible,
     } = this.state;
     return (
       <BigPlatformLayout extra={companyName} className={styles.root}>
@@ -1350,6 +1365,12 @@ export default class UnitFireControl extends PureComponent {
             videoList={videoList}
             visible={videoVisible}
             handleVideoClose={this.handleVideoClose}
+          />
+          <VideoPlay
+            showList={true}
+            videoList={msgVideoList}
+            visible={msgVideoVisible}
+            handleVideoClose={this.handleMsgVideoClose}
           />
           {/* 隐患统计数据下钻抽屉 */}
           <DrawerOfHiddenDanger

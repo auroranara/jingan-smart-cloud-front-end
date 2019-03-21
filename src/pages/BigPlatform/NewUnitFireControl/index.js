@@ -1238,7 +1238,7 @@ export default class App extends PureComponent {
           backgroundImage: `url(${headerBg})`,
           backgroundSize: '100% 100%',
         }}
-        titleStyle={{ fontSize: 46 }}
+        titleStyle={{ fontSize: document.body.offsetWidth < 1380 ? 36 : 46 }}
         contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}
       >
         {/* 四色图 */}

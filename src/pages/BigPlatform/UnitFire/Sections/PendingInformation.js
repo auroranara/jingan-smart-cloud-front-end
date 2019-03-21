@@ -64,7 +64,15 @@ export default class PendingInformation extends PureComponent {
   };
 
   renderMsgList = () => {
-    const { list, status, handleClick, deviceWarningMessage } = this.props;
+    const {
+      list,
+      status,
+      handleClick,
+      deviceWarningMessage,
+      showMsgVideo,
+      handleMsgVideoClose,
+      handleVideoClose,
+    } = this.props;
     return deviceWarningMessage.map(item => {
       const {
         id,
@@ -134,16 +142,26 @@ export default class PendingInformation extends PureComponent {
                 </div>
               </div>
             </div>
-            <div className={styles.videoPlayButton} onClick={handleClick}>
-              <img src={videoIcon} alt="" />
-            </div>
+            {Array.isArray(videoList) &&
+              videoList.length > 0 && (
+                <div
+                  className={styles.videoPlayButton}
+                  onClick={() => {
+                    handleVideoClose();
+                    handleMsgVideoClose();
+                    showMsgVideo(videoList);
+                  }}
+                >
+                  <img src={videoIcon} alt="" />
+                </div>
+              )}
           </Col>
         );
     });
   };
 
   renderOldMsg = item => {
-    const { handleClick } = this.props;
+    const { handleClick, handleMsgVideoClose, handleVideoClose } = this.props;
     const newItem = {
       ...item,
       pendingInfoType: item.pendingInfoType || getPendingInfoType(item, 'title'),
@@ -200,7 +218,14 @@ export default class PendingInformation extends PureComponent {
           </div>
         </div>
         <div className={styles.topRightPurpleTag}>指派维保</div>
-        <div className={styles.videoPlayButton} onClick={handleClick}>
+        <div
+          className={styles.videoPlayButton}
+          onClick={() => {
+            handleVideoClose();
+            handleMsgVideoClose();
+            handleClick();
+          }}
+        >
           <img src={videoIcon} alt="" />
         </div>
       </Col>
