@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import Ellipsis from '@/components/Ellipsis';
 
 import Section from '../components/Section/Section.js';
-import noPendingInfo from '../images/noPendingInfo.png';
+import noMsg from '../images/noMsg.png';
 import videoIcon from '@/assets/videoCamera.png';
 
 const prefix = 'http://data.jingan-china.cn/v2/big-platform/fire-control/com/';
@@ -103,8 +103,19 @@ export default class PendingInformation extends PureComponent {
                       backgroundSize: '65% 65%',
                     }}
                   />
-                  <div className={styles.redText}>{remarks}</div>
+                  <div className={styles.redText}>水系统-报警</div>
                 </div>
+              </div>
+              <div className={styles.alarmDetail}>
+                <Ellipsis lines={1} tooltip>
+                  <span>
+                    {+deviceType === 101
+                      ? '消防栓系统'
+                      : +deviceType === 102
+                        ? '自动喷淋系统'
+                        : '水池/水箱'}
+                  </span>
+                </Ellipsis>
               </div>
               <div className={styles.alarmDetail}>
                 <Ellipsis lines={1} tooltip>
@@ -379,6 +390,7 @@ export default class PendingInformation extends PureComponent {
       showTotal,
       onFilterChange,
       status,
+      deviceWarningMessage,
       loading,
     } = this.props;
     const newTitle = (
@@ -405,23 +417,27 @@ export default class PendingInformation extends PureComponent {
             <Radio.Button value="处理中">处理中</Radio.Button>
           </Radio.Group>
         </div>
-        {list && list.length > 0 ? (
-          <Spin wrapperClassName={styles.sectionContent} spinning={loading}>
-            {status !== '实时消息' && this.renderAlarmList()}
-            {status === '实时消息' && this.renderMsgList()}
-          </Spin>
-        ) : (
-          <div className={styles.noAlarmContainer}>
-            <div
-              style={{
-                background: `url(${noPendingInfo})`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center center',
-                backgroundSize: '100% 100%',
-              }}
-            />
-          </div>
-        )}
+
+        <Spin wrapperClassName={styles.sectionContent} spinning={loading}>
+          {(status === '实时消息' && deviceWarningMessage.length > 0) ||
+          (status !== '实时消息' && list && list.length > 0) ? (
+            <div>
+              {status !== '实时消息' && this.renderAlarmList()}
+              {status === '实时消息' && this.renderMsgList()}
+            </div>
+          ) : (
+            <div className={styles.noAlarmContainer}>
+              <div
+                style={{
+                  background: `url(${noMsg})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center center',
+                  backgroundSize: '100% 100%',
+                }}
+              />
+            </div>
+          )}
+        </Spin>
       </Section>
     );
   }
