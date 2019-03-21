@@ -465,7 +465,7 @@ export default class Messages extends PureComponent {
             {virtualName +
               '-' +
               paramName +
-              (condition === '>=' ? '大于等于' : '小于等于') +
+              (condition === '>=' ? '高于等于' : '低于等于') +
               '报警值'}
           </div>
         </div>
