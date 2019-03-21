@@ -191,8 +191,10 @@ export default class RealTime extends PureComponent {
   handlePositions = data => {
     const { dispatch, personPosition: { positionList } } = this.props;
     const cardIds = data.map(({ cardId }) => cardId);
-    handleOriginMovingCards(data, positionList, this.originMovingCards, this.moveCard, this.removeMovingCard);
-    const newPositionList = positionList.filter(({ cardId }) => !cardIds.includes(cardId)).concat(data);
+    // 将禁用的卡从人员列表中剔除
+    const filteredData = data.filter(({ cardStatus }) => +cardStatus !== 2);
+    handleOriginMovingCards(filteredData, positionList, this.originMovingCards, this.moveCard, this.removeMovingCard);
+    const newPositionList = positionList.filter(({ cardId }) => !cardIds.includes(cardId)).concat(filteredData);
     dispatch({ type: 'personPosition/savePositions', payload: newPositionList });
   };
 

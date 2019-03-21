@@ -118,7 +118,9 @@ export default class PositionIndex extends PureComponent {
         )}
         {labelIndex === 3 && (
           <AlarmList
+            labelIndex={labelIndex}
             position={position}
+            handleLabelClick={this.handleLabelClick}
           />
         )}
       </BigPlatformLayout>
