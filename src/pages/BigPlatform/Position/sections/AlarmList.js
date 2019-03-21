@@ -8,6 +8,7 @@ import { AlarmCard, Tabs } from '../components/Components';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 const { Group: ButtonGroup } = Button;
+const { TextArea } = Input;
 
 const timeFormat = 'YYYY-MM-DD HH:mm';
 const defaultRange = [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')];
@@ -26,6 +27,7 @@ export default class AlarmList extends PureComponent {
     alarmType: undefined,
     alarmStatus: undefined,
     selectedCards: [],
+    handleDesc: '',
     modalVisible: false,
   };
 
@@ -81,6 +83,10 @@ export default class AlarmList extends PureComponent {
     this.setState({ batch: true });
   };
 
+  handleTextChange = value => {
+    this.setState({ handleDesc: value });
+  };
+
   handleShowSubmit = (ids) => {
     this.submitId = Array.isArray(ids) ? ids.join(',') : ids;
     this.setState({ modalVisible: true });
@@ -104,8 +110,10 @@ export default class AlarmList extends PureComponent {
       type: 'personPosition/handleAlarm',
       payload: { id: this.submitId, executeDesc: handleDesc, executeStatus: status },
       callback: (code, msg) => {
-        if (code === 200)
+        if (code === 200) {
           this.handleHideSubmit();
+          this.setState({ handleDesc: '' });
+        }
         else
           message.error(msg);
       },
@@ -120,7 +128,7 @@ export default class AlarmList extends PureComponent {
       personPosition: { alarms },
       handleLabelClick,
     } = this.props;
-    const { batch, searchValue, range, selectedArea, alarmType, alarmStatus, selectedCards, modalVisible } = this.state;
+    const { batch, searchValue, range, selectedArea, alarmType, alarmStatus, selectedCards, handleDesc, modalVisible } = this.state;
 
     let cards = '暂无信息';
     if (alarms.length)
@@ -244,7 +252,11 @@ export default class AlarmList extends PureComponent {
           visible={modalVisible}
           onCancel={this.handleHideSubmit}
           footer={footer}
-        />
+        >
+          <TextArea
+            value={handleDesc}
+          />
+        </Modal>
       </div>
     );
   }
