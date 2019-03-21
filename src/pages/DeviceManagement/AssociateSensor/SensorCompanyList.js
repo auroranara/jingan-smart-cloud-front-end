@@ -31,8 +31,10 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
 const {
   deviceManagement: {
     associateSensor: {
-      waterSystem: waterSystemCode,
       addCompany: addCompanyCode,
+      waterSystem: {
+        listView: waterViewmCode,
+      },
     },
   },
 } = codes
@@ -238,7 +240,7 @@ export default class SensorCompanyList extends Component {
                         title={'水系统'}
                         url={iconWater}
                         // darkUrl={ICONS_URL[`${icon}-d`]}
-                        code={waterSystemCode}
+                        code={waterViewmCode}
                         // to={{
                         //   pathname: `/data-analysis/IOT-abnormal-data/${icon}/${id}`,
                         //   num: iconNums[icon],
