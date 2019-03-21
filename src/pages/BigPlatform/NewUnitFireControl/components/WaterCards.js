@@ -23,7 +23,7 @@ export default function WaterCards(props) {
   const { name, status, value, unit, range, onClick } = props;
   return (
     <Col span={24} className={styles.container} onClick={onClick}>
-      {+status !== 0 && +status !== -1 && <div className={styles.status}>异常</div>}
+      {+status !== 0 && <div className={styles.status}>异常</div>}
       <img src={+status === -1 ? waterLoss : +status === 0 ? waterNormal : waterError} alt="pond" />
       {+status === -1 && (
         <div className={styles.itemContainer}>
@@ -42,9 +42,8 @@ export default function WaterCards(props) {
                 '---'
               ) : (
                 <span>
-                  {range[0]}
-                  ~$
-                  {range[1]}${unit}
+                  {range[0]}~{range[1]}
+                  {unit}
                 </span>
               )}
             </Col>
@@ -68,9 +67,8 @@ export default function WaterCards(props) {
                 '---'
               ) : (
                 <span>
-                  {range[0]}
-                  ~$
-                  {range[1]}${unit}
+                  {range[0]}~{range[1]}
+                  {unit}
                 </span>
               )}
             </Col>

@@ -49,9 +49,10 @@ export default class FireDevice extends PureComponent {
             showValue
             radius="75%"
             isLost={+status < 0}
+            status={+status}
             name={deviceName}
             value={value || 0}
-            range={[minValue || 0, maxValue || value || 5]}
+            range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
             normalRange={[normalLower, normalUpper]}
           />
         </Col>

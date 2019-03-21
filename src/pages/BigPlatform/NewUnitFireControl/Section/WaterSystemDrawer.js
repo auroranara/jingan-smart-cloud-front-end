@@ -64,6 +64,7 @@ export default class WaterSystemDrawer extends PureComponent {
     videoVisible: false, // 视频弹框是否可见
     searchValue: '',
     videoKeyId: '',
+    videoList: [],
   };
 
   componentDidMount() {}
@@ -72,11 +73,11 @@ export default class WaterSystemDrawer extends PureComponent {
     this.setState({ searchValue: v });
   };
 
-  handleClickCamera = i => {
-    const { cameraList = [] } = this.props;
+  handleClickCamera = videoList => {
     this.setState({
       videoVisible: true,
-      videoKeyId: cameraList.length ? cameraList[0].key_id : '',
+      videoList,
+      videoKeyId: videoList.length ? videoList[0].key_id : '',
     });
   };
 
@@ -114,11 +115,11 @@ export default class WaterSystemDrawer extends PureComponent {
             <div className={styles.picArea}>
               <ChartGauge
                 showName
-                showValue
                 radius="95%"
                 isLost={+status < 0}
-                value={value || 0}
-                range={[minValue || 0, maxValue || value || 5]}
+                value={value}
+                status={+status}
+                range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
                 normalRange={[normalLower, normalUpper]}
               />
             </div>
@@ -170,9 +171,8 @@ export default class WaterSystemDrawer extends PureComponent {
                   '---'
                 ) : (
                   <span>
-                    {normalRange[0]}
-                    ~$
-                    {normalRange[1]}${unit}
+                    {normalRange[0]}~{normalRange[1]}
+                    {unit}
                   </span>
                 )}
               </Ellipsis>
@@ -181,7 +181,7 @@ export default class WaterSystemDrawer extends PureComponent {
                   <div className={styles.lastLine}>
                     <div
                       className={styles.camera}
-                      onClick={this.handleClickCamera}
+                      onClick={e => this.handleClickCamera(videoList)}
                       style={{
                         background: `url(${cameralogo}) no-repeat center center`,
                         backgroundSize: '100% 100%',
@@ -226,7 +226,7 @@ export default class WaterSystemDrawer extends PureComponent {
             <div className={styles.picAreaPond}>
               <img
                 className={styles.pondBg}
-                src={+status === 0 ? pondNormal : +status === -1 ? pondLoss : pondNormal}
+                src={+status === 0 ? pondNormal : +status === -1 ? pondLoss : pondAbnormal}
                 alt="pond"
               />
             </div>
@@ -270,38 +270,36 @@ export default class WaterSystemDrawer extends PureComponent {
                     </span>
                   </span>
                 )}
+              </p>
 
-                <span style={{ marginLeft: 15 }}>
-                  {+status === -1 ? (
-                    <span style={{ color: '#838383' }}>
-                      参考范围：
-                      {(!normalRange[0] && normalRange[0] !== 0) ||
-                      (!normalRange[1] && normalRange[1] !== 0) ? (
-                        '---'
-                      ) : (
-                        <span>
-                          {normalRange[0]}
-                          ~$
-                          {normalRange[1]}${unit}
-                        </span>
-                      )}
-                    </span>
-                  ) : (
-                    <span>
-                      参考范围：
-                      {(!normalRange[0] && normalRange[0] !== 0) ||
-                      (!normalRange[1] && normalRange[1] !== 0) ? (
-                        '---'
-                      ) : (
-                        <span style={{ color: +status !== 0 ? '#f83329' : '' }}>
-                          {normalRange[0]}
-                          ~$
-                          {normalRange[1]}${unit}
-                        </span>
-                      )}
-                    </span>
-                  )}
-                </span>
+              <p style={{ marginBottom: 0 }}>
+                {+status === -1 ? (
+                  <span style={{ color: '#838383' }}>
+                    参考范围：
+                    {(!normalRange[0] && normalRange[0] !== 0) ||
+                    (!normalRange[1] && normalRange[1] !== 0) ? (
+                      '---'
+                    ) : (
+                      <span>
+                        {normalRange[0]}~{normalRange[1]}
+                        {unit}
+                      </span>
+                    )}
+                  </span>
+                ) : (
+                  <span>
+                    参考范围：
+                    {(!normalRange[0] && normalRange[0] !== 0) ||
+                    (!normalRange[1] && normalRange[1] !== 0) ? (
+                      '---'
+                    ) : (
+                      <span>
+                        {normalRange[0]}~{normalRange[1]}
+                        {unit}
+                      </span>
+                    )}
+                  </span>
+                )}
               </p>
 
               <div className={styles.lastLine}>
@@ -309,7 +307,7 @@ export default class WaterSystemDrawer extends PureComponent {
                   videoList.length > 0 && (
                     <div
                       className={styles.camera}
-                      onClick={this.handleClickCamera}
+                      onClick={e => this.handleClickCamera(videoList)}
                       style={{
                         background: `url(${cameralogo}) no-repeat center center`,
                         backgroundSize: '100% 100%',
@@ -325,7 +323,7 @@ export default class WaterSystemDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, waterTabItem, cameraList = [], videoKeyId, waterList } = this.props;
+    const { visible, waterTabItem, videoKeyId, waterList } = this.props;
 
     const dataList = waterList
       .filter(item => item.deviceDataList.length > 0)
@@ -345,7 +343,7 @@ export default class WaterSystemDrawer extends PureComponent {
     const normal = newList.filter(item => item && +item.status === 0).length;
     const abnormal = newList.filter(item => item && +item.status !== 0).length;
 
-    const { videoVisible } = this.state;
+    const { videoVisible, videoList } = this.state;
 
     const left = (
       <div className={styles.content}>
@@ -388,7 +386,7 @@ export default class WaterSystemDrawer extends PureComponent {
             </div>
             <SearchBar placeholder="搜索点位名称" onSearch={this.handleSearch} />
           </div>
-          {waterList && waterList.length > 0 ? (
+          {dataList && dataList.length > 0 ? (
             <div className={styles.listContainer}>
               {waterTabItem === 0 && this.renderFireCards(waterList)}
               {waterTabItem === 1 && this.renderFireCards(waterList)}
@@ -406,7 +404,7 @@ export default class WaterSystemDrawer extends PureComponent {
         </div>
         <VideoPlay
           showList={true}
-          videoList={cameraList}
+          videoList={videoList}
           visible={videoVisible}
           keyId={videoKeyId}
           handleVideoClose={this.handleVideoClose}
@@ -418,7 +416,7 @@ export default class WaterSystemDrawer extends PureComponent {
       <DrawerContainer
         style={{ overflow: 'hidden' }}
         destroyOnClose={true}
-        title={title(waterTabItem)}
+        title={title(waterTabItem) + '系统'}
         width={700}
         visible={visible}
         left={left}
@@ -428,6 +426,7 @@ export default class WaterSystemDrawer extends PureComponent {
           this.setState({
             visible: false,
             videoVisible: false,
+            searchValue: '',
           });
         }}
       />
