@@ -462,11 +462,7 @@ export default class Messages extends PureComponent {
                 : '水池/水箱'}
           </div>
           <div className={styles.msgBody}>
-            {virtualName +
-              '-' +
-              paramName +
-              (condition === '>=' ? '高于等于' : '低于等于') +
-              '报警值'}
+            {virtualName + '-' + paramName + (condition === '>=' ? '高于' : '低于') + '报警值'}
           </div>
         </div>
       );
