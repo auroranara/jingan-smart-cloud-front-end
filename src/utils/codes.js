@@ -50,7 +50,14 @@ export default {
     associateSensor: {
       listView: 'deviceManagement.associateSensor.listView',
       addCompany: 'deviceManagement.associateSensor.addCompany',
-      waterSystem: 'deviceManagement.associateSensor.waterSystem',
+      waterSystem: {
+        listView: 'deviceManagement.associateSensor.waterSystem.listView',
+        add: 'deviceManagement.associateSensor.waterSystem.add',
+        delete: 'deviceManagement.associateSensor.waterSystem.delete',
+        edit: 'deviceManagement.associateSensor.waterSystem.edit',
+        bindSensor: 'deviceManagement.associateSensor.waterSystem.bindSensor',
+        unbindSensor: 'deviceManagement.associateSensor.waterSystem.unbindSensor',
+      },
     },
   },
   videoSurveillance: {

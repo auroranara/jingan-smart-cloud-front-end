@@ -2,6 +2,8 @@ import { Component, Fragment } from 'react';
 import { Card, Button, Row, Col, Form, Input, Select, Modal, Table, Popconfirm, Divider } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import codes from '@/utils/codes';
+import { hasAuthority, AuthA } from '@/utils/customAuth';
 import { message } from 'antd';
 
 const FormItem = Form.Item;
@@ -20,11 +22,26 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
+const noAuthStyle = { style: { color: 'rgba(0, 0, 0, 0.25)', cursor: 'not-allowed' } }
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
+const {
+  deviceManagement: {
+    associateSensor: {
+      waterSystem: {
+        add: addCode,
+        delete: deleteCode,
+        edit: editCode,
+        bindSensor: bindSensorCode,
+        unbindSensor: unbindSensorCode,
+      },
+    },
+  },
+} = codes
 
 @Form.create()
-@connect(({ sensor, loading }) => ({
+@connect(({ sensor, user, loading }) => ({
   sensor,
+  user,
   loading: loading.effects['sensor/fetchCompanyDevice'],
   bindTableLoading: loading.effects['sensor/fetchCompanySensor'],
 }))
@@ -240,7 +257,7 @@ export default class SensorCompanyList extends Component {
   /**
    * 渲染筛选栏
    */
-  renderForm = () => {
+  renderForm = ({ addAuth }) => {
     const {
       form: { getFieldDecorator },
       sensor: { deviceTypes = [] },
@@ -276,7 +293,7 @@ export default class SensorCompanyList extends Component {
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                <Button type="primary" onClick={() => { this.setState({ addModalVisible: true, deviceInfo: {} }) }}>新增设备</Button>
+                <Button disabled={!addAuth} type="primary" onClick={() => { this.setState({ addModalVisible: true, deviceInfo: {} }) }}>新增设备</Button>
               </FormItem>
             </Col>
           </Row>
@@ -343,7 +360,7 @@ export default class SensorCompanyList extends Component {
   /**
    * 渲染设备表格
    */
-  renderTable = () => {
+  renderTable = ({ deleteAuth }) => {
     const {
       loading,
       sensor: {
@@ -399,13 +416,15 @@ export default class SensorCompanyList extends Component {
         align: 'center',
         render: (val, row) => (
           <Fragment>
-            <a onClick={() => this.handleToBind(row)}>绑定传感器</a>
+            <AuthA code={bindSensorCode} onClick={() => this.handleToBind(row)}>绑定传感器</AuthA>
             <Divider type="vertical" />
-            <a onClick={() => this.handleEditDevice(row)}>编辑</a>
+            <AuthA code={editCode} onClick={() => this.handleEditDevice(row)}>编辑</AuthA>
             <Divider type="vertical" />
-            <Popconfirm title="确认要解绑传感器吗？" onConfirm={() => this.handleDeleteDevice(row)}>
-              <a>删除</a>
-            </Popconfirm>
+            {deleteAuth ? (
+              <Popconfirm title="确认要删除设备吗？" onConfirm={() => this.handleDeleteDevice(row)}>
+                <a>删除</a>
+              </Popconfirm>
+            ) : (<span {...noAuthStyle}>删除</span>)}
           </Fragment>
         ),
       },
@@ -545,7 +564,7 @@ export default class SensorCompanyList extends Component {
   /**
    * 渲染已绑定传感器列表弹窗
    */
-  renderBindedModal = () => {
+  renderBindedModal = ({ unbindSensorAuth }) => {
     const {
       sensor: {
         deviceBindedSensor: {
@@ -570,9 +589,13 @@ export default class SensorCompanyList extends Component {
         key: '操作',
         align: 'center',
         render: (val, row) => (
-          <Popconfirm title="确认要解绑传感器吗？" onConfirm={() => this.handleUnBind(row)}>
-            <a>解绑</a>
-          </Popconfirm>
+          <Fragment>
+            {unbindSensorAuth ? (
+              <Popconfirm title="确认要解绑传感器吗？" onConfirm={() => this.handleUnBind(row)}>
+                <a>解绑</a>
+              </Popconfirm>
+            ) : (<span {...noAuthStyle}>解绑</span>)}
+          </Fragment>
         ),
       },
     ]
@@ -603,7 +626,11 @@ export default class SensorCompanyList extends Component {
           pagination: { total = 0 },
         },
       },
+      user: { currentUser: { permissionCodes } },
     } = this.props
+    const addAuth = hasAuthority(addCode, permissionCodes),
+      deleteAuth = hasAuthority(deleteCode, permissionCodes),
+      unbindSensorAuth = hasAuthority(unbindSensorCode, permissionCodes)
     return (
       <PageHeaderLayout
         title={title}
@@ -615,11 +642,11 @@ export default class SensorCompanyList extends Component {
           </Fragment>
         )}
       >
-        {this.renderForm()}
-        {this.renderTable()}
+        {this.renderForm({ addAuth })}
+        {this.renderTable({ deleteAuth })}
         {this.renderAddModal()}
         {this.renderBindModal()}
-        {this.renderBindedModal()}
+        {this.renderBindedModal({ unbindSensorAuth })}
       </PageHeaderLayout>
     )
   }
