@@ -209,7 +209,7 @@ export default class FireHostMonitoring extends PureComponent {
   };
 
   render() {
-    const { handleDrawerVisibleChange } = this.props;
+    const { handleDrawerVisibleChange, data } = this.props;
     const { type } = this.state;
     return (
       <Section
@@ -222,6 +222,10 @@ export default class FireHostMonitoring extends PureComponent {
           <Row
             className={styles.itemsWrapper}
             onClick={() => {
+              const list = data[type] || [];
+              if (!list.filter(item => item.deviceDataList.length).length) {
+                return null;
+              }
               handleDrawerVisibleChange(waterSys[type].code);
             }}
           >
