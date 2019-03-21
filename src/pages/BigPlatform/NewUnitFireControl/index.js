@@ -211,6 +211,12 @@ export default class App extends PureComponent {
             // 获取水系统---消火栓系统
             if (type === 36 || type === 37) {
               if (+deviceType === +waterTab) this.fetchWaterSystem(deviceType);
+              dispatch({
+                type: 'newUnitFireControl/fetchWaterAlarm',
+                payload: {
+                  companyId,
+                },
+              });
             }
 
             if (type === 18) {
