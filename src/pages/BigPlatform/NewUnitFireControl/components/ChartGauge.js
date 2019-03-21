@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 
+const colors = ['#ff4905', '#1e90ff', '#ff4905'];
 export default class ChartGauge extends PureComponent {
   gaugeOption = () => {
     const {
@@ -14,19 +15,23 @@ export default class ChartGauge extends PureComponent {
       normalRange: [normalMin, normalMax] = [0.4, 1.2],
       status,
     } = this.props;
-    let axisLine;
-    if (!normalMin && normalMin !== 0 && !normalMax && normalMax !== 0) {
-      axisLine = [[1, '#1e90ff']];
-    } else if ((normalMin || normalMin === 0) && (!normalMax && normalMax !== 0)) {
-      axisLine = [[(normalMin - min) / max, '#ff4905'], [1, '#1e90ff']];
-    } else if ((normalMax || normalMax === 0) && (!normalMin && normalMin !== 0)) {
-      axisLine = [[(normalMax - min) / max, '#1e90ff'], [1, '#ff4905']];
+    let axisLine = [];
+    if (normalMin === null || normalMin < min) {
+      if (normalMax === null || normalMax > max) {
+        axisLine.push([1, colors[1]]);
+      } else {
+        axisLine.push([(normalMax - min) / max, colors[1]]);
+        axisLine.push([1, colors[2]]);
+      }
     } else {
-      axisLine = [
-        [(normalMin - min) / max, '#ff4905'],
-        [(normalMax - min) / max, '#1e90ff'],
-        [1, '#ff4905'],
-      ];
+      if (normalMax === null || normalMax > max) {
+        axisLine.push([(normalMin - min) / max, colors[0]]);
+        axisLine.push([1, colors[1]]);
+      } else {
+        axisLine.push([(normalMin - min) / max, colors[0]]);
+        axisLine.push([(normalMax - min) / max, colors[1]]);
+        axisLine.push([1, colors[2]]);
+      }
     }
 
     return {

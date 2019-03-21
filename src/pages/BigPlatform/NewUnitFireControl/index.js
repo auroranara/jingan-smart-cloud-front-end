@@ -143,6 +143,7 @@ export default class App extends PureComponent {
     videoList: [],
     fireVideoVisible: false,
     fireVideoKeyId: '',
+    waterTab: '101',
   };
 
   componentDidMount() {
@@ -153,7 +154,7 @@ export default class App extends PureComponent {
       },
     } = this.props;
 
-    const { checkItemId } = this.state;
+    const { checkItemId, waterTab } = this.state;
 
     const { NanXiaoWebsocket: ws } = global;
     if (!ws) return;
@@ -167,7 +168,15 @@ export default class App extends PureComponent {
           payload: data,
           success: result => {
             // 显示火警障碍弹窗
-            const { itemId, messageFlag, type, checkResult, pointId, pointStatus } = result;
+            const {
+              itemId,
+              messageFlag,
+              type,
+              checkResult,
+              pointId,
+              pointStatus,
+              deviceType,
+            } = result;
 
             if (type === 5 || type === 6) {
               this.showFireMsg(result);
@@ -199,6 +208,11 @@ export default class App extends PureComponent {
               });
             }
 
+            // 获取水系统---消火栓系统
+            if (type === 36 || type === 37) {
+              if (+deviceType === +waterTab) this.fetchWaterSystem(deviceType);
+            }
+
             if (type === 18) {
               // 获取消防设施评分
               dispatch({
@@ -207,10 +221,6 @@ export default class App extends PureComponent {
                   companyId,
                 },
               });
-
-              // 获取水系统---消火栓系统
-              this.fetchWaterSystem('101');
-
               if (this.state.fireAlarmVisible) this.fetchViewFireAlarm();
             }
 
@@ -643,11 +653,18 @@ export default class App extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
+    this.setState({ waterTab: type });
     dispatch({
       type: 'newUnitFireControl/fetchWaterSystem',
       payload: {
         companyId,
         type,
+      },
+    });
+    dispatch({
+      type: 'newUnitFireControl/fetchWaterAlarm',
+      payload: {
+        companyId,
       },
     });
   };
@@ -1177,6 +1194,7 @@ export default class App extends PureComponent {
         fireAlarm,
         faultList,
         waterSystemData: { list },
+        waterAlarm,
       },
     } = this.props;
 
@@ -1314,6 +1332,7 @@ export default class App extends PureComponent {
                   onClick={this.handleViewWater}
                   waterList={list}
                   fetchWaterSystem={this.fetchWaterSystem}
+                  waterAlarm={waterAlarm}
                 />
                 {/* <FireDevice systemScore={systemScore} onClick={this.handleViewFireAlarm} /> */}
               </div>

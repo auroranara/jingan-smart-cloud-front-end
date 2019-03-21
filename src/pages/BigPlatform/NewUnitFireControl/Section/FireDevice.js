@@ -122,7 +122,7 @@ export default class FireDevice extends PureComponent {
   };
 
   render() {
-    const { onClick, waterList } = this.props;
+    const { onClick, waterList, waterAlarm } = this.props;
     const { type } = this.state;
 
     const deviceList = waterList.filter(item => item.deviceDataList.length);
@@ -132,18 +132,21 @@ export default class FireDevice extends PureComponent {
         <div className={styles.container}>
           <div className={styles.tabsWrapper}>
             <Radio.Group value={type} buttonStyle="solid" onChange={this.handelRadioChange}>
-              {['101', '102', '103'].map(val => {
-                const isAlarm =
-                  Array.isArray(waterList[val]) &&
-                  !!waterList[val].filter(item => {
-                    const { deviceDataList } = item;
-                    if (!deviceDataList.length) return false;
-                    const [{ status }] = deviceDataList;
-                    if (+status === 0) return false;
-                    else return true;
-                  }).length;
+              {['101', '102', '103'].map((val, index) => {
+                // const isAlarm =
+                //   Array.isArray(waterList) &&
+                //   !!waterList.filter(item => {
+                //     const { deviceDataList } = item;
+                //     if (!deviceDataList.length) return false;
+                //     const [{ status }] = deviceDataList;
+                //     if (+status === 0) return false;
+                //     else return true;
+                //   }).length;
                 return (
-                  <Radio.Button value={val} className={isAlarm ? styles.tabAlarm : undefined}>
+                  <Radio.Button
+                    value={val}
+                    className={waterAlarm[index] ? styles.tabAlarm : undefined}
+                  >
                     {waterSys[val].name}
                   </Radio.Button>
                 );

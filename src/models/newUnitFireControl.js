@@ -346,6 +346,7 @@ export default {
     waterSystemData: {
       list: [],
     },
+    waterAlarm: [],
   },
 
   subscriptions: {
@@ -914,6 +915,26 @@ export default {
         });
       }
     },
+    // 水系统
+    *fetchWaterAlarm({ payload, callback }, { call, put }) {
+      const response1 = yield call(queryWaterSystem, { ...payload, type: 101 });
+      const response2 = yield call(queryWaterSystem, { ...payload, type: 102 });
+      const response3 = yield call(queryWaterSystem, { ...payload, type: 103 });
+      if (
+        response1 &&
+        response1.code === 200 &&
+        response2 &&
+        response2.code === 200 &&
+        response3 &&
+        response3.code === 200
+      ) {
+        yield put({
+          type: 'waterAlarm',
+          payload: [response1.data.list, response2.data.list, response3.data.list],
+        });
+      }
+      if (callback) callback();
+    },
   },
 
   reducers: {
@@ -1112,11 +1133,24 @@ export default {
 
     // 水系统
     saveWaterSystem(state, { payload }) {
-      const { list } = payload;
       return {
         ...state,
-        list,
         waterSystemData: payload,
+      };
+    },
+    waterAlarm(state, { payload }) {
+      const waterAlarm = payload.map(item => {
+        return !!item.filter(item => {
+          const { deviceDataList } = item;
+          if (!deviceDataList.length) return false;
+          const [{ status }] = deviceDataList;
+          if (+status === 0) return false;
+          else return true;
+        }).length;
+      });
+      return {
+        ...state,
+        waterAlarm,
       };
     },
   },
