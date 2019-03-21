@@ -4,23 +4,21 @@
   align-items: center;
   justify-content: center;
   height: 64%;
-
   .topName {
     position: absolute;
     top: 10%;
     left: 18px;
   }
 }
+
 .bottom {
   display: flex;
   padding: 0 5px;
   height: 36%;
-
   .itemWrapper {
     flex: 1;
     padding: 0 5px;
     height: 90%;
-
     .item {
       display: flex;
       flex-direction: column;
@@ -30,13 +28,20 @@
       border: 1px solid #4ccef0;
       cursor: pointer;
     }
-
     .itemValue {
       font-size: 24px;
     }
+    .itemLabel {}
+  }
+}
 
-    .itemLabel {
-
+@media screen and (max-width: 1380px) {
+  .itemWrapper {
+    .item {
+      font-size: 12px;
+      .itemValue {
+        font-size: 16px;
+      }
     }
   }
 }

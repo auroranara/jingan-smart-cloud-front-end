@@ -93,6 +93,7 @@ export default class Messages extends PureComponent {
       location,
       paramName,
       condition,
+      virtualName,
     } = msg;
     let msgItem = null;
     if (type === 1 || type === 2 || type === 3 || type === 4) {
@@ -461,8 +462,7 @@ export default class Messages extends PureComponent {
                 : '水池/水箱'}
           </div>
           <div className={styles.msgBody}>
-            {area +
-              location +
+            {virtualName +
               '-' +
               paramName +
               (condition === '>=' ? '大于等于' : '小于等于') +
@@ -492,7 +492,7 @@ export default class Messages extends PureComponent {
                 ? '自动喷淋系统'
                 : '水池/水箱'}
           </div>
-          <div className={styles.msgBody}>{area + location}</div>
+          <div className={styles.msgBody}>{virtualName + '恢复正常'}</div>
         </div>
       );
     } else {
