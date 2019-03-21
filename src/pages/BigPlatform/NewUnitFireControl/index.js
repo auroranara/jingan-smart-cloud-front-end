@@ -1277,6 +1277,7 @@ export default class App extends PureComponent {
           handleFaultClick={this.handleFaultClick}
           handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
           handleFireMessage={this.handleFireMessage}
+          handleViewWater={this.handleViewWater}
         />
         <div className={styles.bottom}>
           <div className={styles.bottomInner}>

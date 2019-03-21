@@ -129,8 +129,19 @@ export default class InformationHistory extends PureComponent {
                       backgroundSize: '65% 65%',
                     }}
                   />
-                  <div className={styles.redText}>{remarks}</div>
+                  <div className={styles.redText}>水系统-报警</div>
                 </div>
+              </div>
+              <div className={styles.alarmDetail}>
+                <Ellipsis lines={1} tooltip>
+                  <span>
+                    {+deviceType === 101
+                      ? '消防栓系统'
+                      : +deviceType === 102
+                        ? '自动喷淋系统'
+                        : '水池/水箱'}
+                  </span>
+                </Ellipsis>
               </div>
               <div className={styles.alarmDetail}>
                 <Ellipsis lines={1} tooltip>

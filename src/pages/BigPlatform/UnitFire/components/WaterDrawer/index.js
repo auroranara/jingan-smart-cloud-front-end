@@ -93,6 +93,7 @@ export default class WaterDrawer extends PureComponent {
                           showValue={false}
                           name={name}
                           value={value}
+                          status={+status}
                           range={range}
                           isLost={isLost}
                           normalRange={normalRange}
@@ -106,17 +107,20 @@ export default class WaterDrawer extends PureComponent {
                       )}
                     </div>
                     <div className={styles.infoWrapper}>
-                      <div className={styles.name}>{name}</div>
-                      <div className={styles.position}>{`位置：${location}`}</div>
-                      <Row gutter={8}>
-                        <Col span={newLine ? 24 : 12}>
-                          {`当前${valName}：`}
-                          <span style={{ color: valColor }}>{`${
-                            !value && value !== 0 ? '---' : value + unit
-                          }`}</span>
-                        </Col>
-                        <Col span={newLine ? 24 : 12}>{`参考范围：${rangeStr}`}</Col>
-                      </Row>
+                      <div>
+                        <div className={styles.name}>{name}</div>
+                        <div className={styles.position}>{`位置：${location}`}</div>
+                        <Row gutter={8}>
+                          <Col span={newLine ? 24 : 12}>
+                            {`当前${valName}：`}
+                            <span style={{ color: valColor }}>{`${
+                              !value && value !== 0 ? '---' : value + unit
+                            }`}</span>
+                          </Col>
+                          <Col span={newLine ? 24 : 12}>{`参考范围：${rangeStr}`}</Col>
+                        </Row>
+                      </div>
+
                       <div className={styles.extraWrapper}>
                         {!!videoList.length && (
                           <div
@@ -163,7 +167,7 @@ export default class WaterDrawer extends PureComponent {
       visible,
       dataSet: { subTitle, abnormal, normal, abnormalImg, normalImg, dataList },
       onClose,
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
       title,
     } = this.props;
     const { videoVisible, videoKeyId, filterName, videoList } = this.state;
@@ -231,11 +235,11 @@ export default class WaterDrawer extends PureComponent {
               实时监测数据
               {dataList.length && (
                 <div className={styles.search}>
-                  {filterName && (
+                  {/* {filterName && (
                     <div className={styles.resetBtn} onClick={this.handleReset}>
                       重置
                     </div>
-                  )}
+                  )} */}
                   <Form style={{ position: 'absolute', right: 0 }}>
                     <FormItem>
                       {getFieldDecorator('searchPoint')(
@@ -243,6 +247,13 @@ export default class WaterDrawer extends PureComponent {
                           placeholder="搜索点位名称"
                           onSearch={value => {
                             this.setState({ filterName: value });
+                          }}
+                          onChange={() => {
+                            getFieldValue('searchPoint');
+                            console.log(
+                              `getFieldValue('searchPoint')`,
+                              getFieldValue('searchPoint')
+                            );
                           }}
                           style={{ width: 200 }}
                         />
@@ -278,6 +289,7 @@ export default class WaterDrawer extends PureComponent {
         onClose={() => {
           onClose();
           this.handleVideoClose();
+          this.handleReset();
         }}
       />
     );

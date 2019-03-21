@@ -6,6 +6,7 @@ import styles from './WaterMonitor.less';
 import pondAbnormal from '../images/pond-abnormal.png';
 import pondNormal from '../images/pond-normal.png';
 import pondLost from '../images/pond-lost.png';
+import waterBg from '../images/waterBg.png';
 
 const waterSys = {
   '101': {
@@ -65,25 +66,26 @@ export default class FireHostMonitoring extends PureComponent {
     );
   };
 
+  renderNoCards = () => {
+    return (
+      <div
+        className={styles.noCards}
+        style={{
+          background: `url(${waterBg})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center center',
+          backgroundSize: 'auto 50%',
+        }}
+      />
+    );
+  };
+
   renderHydrant = () => {
     const {
       data: { '101': list = [] },
     } = this.props;
-    if (!list.length) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            height: '135px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: '#4f678d',
-          }}
-        >
-          暂无相关监测数据
-        </div>
-      );
+    if (!list.filter(item => item.deviceDataList.length).length) {
+      return this.renderNoCards();
     }
     return list.map(item => {
       const { deviceDataList } = item;
@@ -102,9 +104,10 @@ export default class FireHostMonitoring extends PureComponent {
             showName
             showValue
             isLost={+status < 0}
+            status={+status}
             name={deviceName}
             value={value || 0}
-            range={[minValue || 0, maxValue || value || 5]}
+            range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
             normalRange={[normalLower, normalUpper]}
           />
         </Col>
@@ -116,21 +119,8 @@ export default class FireHostMonitoring extends PureComponent {
     const {
       data: { '102': list = [] },
     } = this.props;
-    if (!list.length) {
-      return (
-        <div
-          style={{
-            width: '100%',
-            height: '135px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: '#4f678d',
-          }}
-        >
-          暂无相关监测数据
-        </div>
-      );
+    if (!list.filter(item => item.deviceDataList.length).length) {
+      return this.renderNoCards();
     }
     return list.map(item => {
       const { deviceDataList } = item;
@@ -149,6 +139,7 @@ export default class FireHostMonitoring extends PureComponent {
             showName
             showValue
             isLost={+status < 0}
+            status={+status}
             name={deviceName}
             value={value || 0}
             range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
@@ -163,6 +154,9 @@ export default class FireHostMonitoring extends PureComponent {
     const {
       data: { '103': list = [] },
     } = this.props;
+    if (!list.filter(item => item.deviceDataList.length).length) {
+      return this.renderNoCards();
+    }
     return list.map(item => {
       const { deviceDataList } = item;
       if (!deviceDataList.length) return null;
@@ -188,7 +182,10 @@ export default class FireHostMonitoring extends PureComponent {
           style={{ color: isLost ? '#bbbbbc' : '#fff' }}
         >
           {+status !== 0 && <div className={styles.pondStatus}>异常</div>}
-          <img src={+status < 0 ? pondLost : status === 0 ? pondNormal : pondAbnormal} alt="pond" />
+          <img
+            src={+status < 0 ? pondLost : +status === 0 ? pondNormal : pondAbnormal}
+            alt="pond"
+          />
           <div className={styles.infoWrapper}>
             <div className={styles.name}>{deviceName}</div>
             <Row>

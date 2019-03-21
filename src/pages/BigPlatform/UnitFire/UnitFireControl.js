@@ -82,7 +82,7 @@ const defaultPageSize = 10;
     loading.effects['unitFireControl/fetchNormalPatrol'] ||
     loading.effects['unitFireControl/fetchAbnormalPatrol'],
 }))
-export default class App extends PureComponent {
+export default class UnitFireControl extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -239,7 +239,7 @@ export default class App extends PureComponent {
     this.fetchCompanyDevicesByType('103');
 
     // 设置轮询
-    this.pollingTimer = setInterval(this.polling, 5000);
+    // this.pollingTimer = setInterval(this.polling, 5000);
   }
 
   /**
@@ -637,7 +637,7 @@ export default class App extends PureComponent {
 
     return (
       <PendingInformation
-        title="告警信息"
+        title="报警信息"
         showTotal={false}
         status={pendingInfoStatus}
         list={list}
