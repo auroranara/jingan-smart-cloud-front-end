@@ -151,7 +151,7 @@ export default class InformationHistory extends PureComponent {
                   <Icon type="environment" theme="outlined" />
                 </span>
                 <Tooltip placement="bottom" title={area + location}>
-                  <span>{area + location}</span>
+                  <span className={styles.location}>{area + location}</span>
                 </Tooltip>
                 <div className={styles.time}>
                   <span>{warningTime}</span>
@@ -211,8 +211,8 @@ export default class InformationHistory extends PureComponent {
             <span>
               <Icon type="environment" theme="outlined" />
             </span>
-            <Tooltip placement="bottom" title={device_address} className={styles.location}>
-              <span>{device_address}</span>
+            <Tooltip placement="bottom" title={device_address}>
+              <span className={styles.location}>{device_address}</span>
             </Tooltip>
             <div className={styles.time}>
               <span>{t}</span>
@@ -258,8 +258,8 @@ export default class InformationHistory extends PureComponent {
             <span>
               <Icon type="environment" theme="outlined" />
             </span>
-            <Tooltip placement="bottom" title={install_address} className={styles.location}>
-              <span>{install_address}</span>
+            <Tooltip placement="bottom" title={install_address}>
+              <span className={styles.location}>{install_address}</span>
             </Tooltip>
             <div className={styles.time}>
               <span>{t}</span>
