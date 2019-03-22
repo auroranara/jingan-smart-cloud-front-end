@@ -140,20 +140,23 @@ export default class UnitFireControl extends PureComponent {
         overFlag: 0,
         deviceTypeList: '101,102,103',
       },
-    });
-
-    // 获取待处理信息列表 (显示50条)
-    dispatch({
-      type: 'unitFireControl/fetchPendingInfo',
-      payload: {
-        companyId,
-        pageNum: 1,
-        pageSize: 50,
-      },
       callback: () => {
         this.setState({ pendingInfoLoading: false });
       },
     });
+
+    // 获取待处理信息列表 (显示50条)
+    // dispatch({
+    //   type: 'unitFireControl/fetchPendingInfo',
+    //   payload: {
+    //     companyId,
+    //     pageNum: 1,
+    //     pageSize: 50,
+    //   },
+    // callback: () => {
+    //   this.setState({ pendingInfoLoading: false });
+    // },
+    // });
 
     // 获取巡查统计数据 今日、本周、本月、本季度type依次为 1 2 3 4
     dispatch({
@@ -267,25 +270,27 @@ export default class UnitFireControl extends PureComponent {
     this.fetchCompanyDevicesByType('103');
 
     // 获取报警信息
-    dispatch({
-      type: 'unitFireControl/fetchDeviceWarningMessage',
-      payload: {
-        companyId,
-        overFlag: 0,
-        deviceTypeList: '101,102,103',
-      },
-    });
+    pendingInfoStatus === '实时消息' &&
+      dispatch({
+        type: 'unitFireControl/fetchDeviceWarningMessage',
+        payload: {
+          companyId,
+          overFlag: 0,
+          deviceTypeList: '101,102,103',
+        },
+      });
 
     // 获取待处理信息 1-1
-    dispatch({
-      type: 'unitFireControl/fetchPendingInfo',
-      payload: {
-        companyId,
-        status: pendingInfoStatus === '处理中' ? '2' : null,
-        pageNum: 1,
-        pageSize: 50,
-      },
-    });
+    (pendingInfoStatus === '处理中' || pendingInfoStatus === '待处理') &&
+      dispatch({
+        type: 'unitFireControl/fetchPendingInfo',
+        payload: {
+          companyId,
+          status: pendingInfoStatus === '处理中' ? '2' : null,
+          pageNum: 1,
+          pageSize: 50,
+        },
+      });
 
     // 获取消防主机监测数据 1-2
     dispatch({
@@ -1425,7 +1430,7 @@ export default class UnitFireControl extends PureComponent {
             title="历史消息"
             data={{ list, alarmTypes: [], deviceWarningMsgHistory }}
             loading={pendingHistoryLoading}
-            handleLoadMore={this.handleMorePendingInfo}
+            // handleLoadMore={this.handleMorePendingInfo}
             onClose={() => this.handleDrawerVisibleChange('infoHistory')}
             visible={infoHistoryDrawerVisible}
           />
