@@ -83,6 +83,10 @@ export default class MultipleHistoryPlay extends PureComponent {
   // 点击播放时的时间戳
   playingStart = null;
 
+  isAlarmMap = {};
+
+  currentIds = [];
+
   componentDidMount() {
     const { top } = this.props;
     if (top) {
@@ -94,7 +98,7 @@ export default class MultipleHistoryPlay extends PureComponent {
    * 更新后
    */
   componentDidUpdate({ ids: prevIds, idMap: prevIdMap }) {
-    const { ids, idMap, startTime, top } = this.props;
+    const { ids, idMap, startTime, top, selectedTableRow, tree } = this.props;
     // 如果源数据发生变化，则重置所有参数，保留播放速度相关参数
     if (idMap !== prevIdMap) {
       // 移除播放定时器
@@ -105,12 +109,15 @@ export default class MultipleHistoryPlay extends PureComponent {
       const currentIndexes = this.getCurrentIndexes({ currentTimeStamp });
       // 如果只有一个人，则区域跟着人变化
       let currentAreaId = top.id;
-      if (ids.length === 1) {
+      if (selectedTableRow !== 'all') {
         const currentData = idMap[ids[0]][currentIndexes[0]];
         if (currentData) {
           currentAreaId = currentData.areaId || top.id; // 如果在厂内，则取当前区域id，不在厂内，则取最顶层区域id
         }
       }
+      console.log(idMap);
+      console.log(ids);
+      console.log(tree);
       // 重置参数
       this.setState(({ speed, isMinSpeed, isMaxSpeed }) => ({
         // 重置播放状态
@@ -145,7 +152,7 @@ export default class MultipleHistoryPlay extends PureComponent {
         const currentIndexes = this.getCurrentIndexes({ currentTimeStamp });
         // 如果只有一个人，则区域跟着人变化
         let currentAreaId = prevAreaId;
-        if (ids.length === 1) {
+        if (selectedTableRow !== 'all') {
           const currentData = idMap[ids[0]][currentIndexes[0]];
           if (currentData) {
             currentAreaId = currentData.areaId || top.id; // 如果在厂内，则取当前区域id，不在厂内，则取最顶层区域id
@@ -199,7 +206,7 @@ export default class MultipleHistoryPlay extends PureComponent {
    * 4.当前时间为undefined时，默认为起始时间
    */
   frameCallback = timestamp => {
-    const { startTime, endTime, ids, idMap, top } = this.props;
+    const { startTime, endTime, ids, idMap, top, selectedTableRow } = this.props;
     const { currentTimeStamp: prevTimeStamp, currentIndexes: prevIndexes, speed, drawProps, currentAreaId: prevAreaId } = this.state;
     if (!this.frameStart) {
       this.frameStart = timestamp;
@@ -214,7 +221,7 @@ export default class MultipleHistoryPlay extends PureComponent {
     // 获取当前区域id
     let currentAreaId = prevAreaId;
     // 如果只有一个人，则区域跟着人变化
-    if (ids.length === 1) {
+    if (selectedTableRow !== 'all') {
       const currentData = idMap[ids[0]][currentIndexes[0]];
       if (currentData) {
         currentAreaId = currentData.areaId || top.id; // 如果在厂内，则取当前区域id，不在厂内，则取最顶层区域id
@@ -283,15 +290,16 @@ export default class MultipleHistoryPlay extends PureComponent {
     if (!currentArea) {
       return;
     }
-    if (onChange) {
-      onChange(currentAreaId, currentTimeStamp);
-    }
     // 不管当前区域是否发生变化，人员位置始终改变
-    const { locationMap, isAlarmMap } = this.getLocationMap({ currentArea, currentIndexes, currentTimeStamp });
+    const { locationMap, isAlarmMap, currentIds } = this.getLocationMap({ currentArea, currentIndexes, currentTimeStamp });
+    if (currentIds.length !== this.currentIds.length || currentIds.some((id, index) => id !== this.currentIds[index])) {
+      onChange(currentIds);
+    }
     const divIcons = this.getDivIcons(locationMap);
+    let drawProps;
     // 重置所有参数
     if (reset) {
-      return {
+      drawProps = {
         // 楼层
         images: this.getImages(currentArea),
         // 区域
@@ -308,8 +316,15 @@ export default class MultipleHistoryPlay extends PureComponent {
         // arrows: this.getArrows(currentIndex),
       };
     }
-    // 修改人员位置
-    return { divIcons };
+    else if (currentArea.children.some((childId) => isAlarmMap[childId] !== this.isAlarmMap[childId])) {
+      drawProps = { divIcons, data: this.getAreas(currentArea, isAlarmMap), menu: this.getMenu(currentArea, isAlarmMap) };
+    }
+    else {
+      drawProps = { divIcons };
+    }
+    this.isAlarmMap = isAlarmMap;
+    this.currentIds = currentIds;
+    return drawProps;
   }
 
   /**
@@ -329,10 +344,10 @@ export default class MultipleHistoryPlay extends PureComponent {
     const { ids, idMap, tree, top } = this.props;
     const { id: currentAreaId } = currentArea;
     // 遍历人员列表获取在当前区域内的人员的位置
-    return ids.reduce((result, id, index) => {
-      const { locationMap, isAlarmMap } = result;
+    return ids.reduce((result, userId, index) => {
+      const { locationMap, isAlarmMap, currentIds } = result;
       // 获取人员对应的数据列表
-      const list = idMap[id] || [];
+      const list = idMap[userId] || [];
       // 获取人员的当前位置索引
       const currentIndex = currentIndexes[index];
       // 获取人员的当前数据
@@ -400,9 +415,10 @@ export default class MultipleHistoryPlay extends PureComponent {
           if (isAlarm && !isAlarmMap[currentAreaId]) {
             isAlarmMap[currentAreaId] = true;
           }
+          currentIds.push(userId);
         }
         // 如果人员在当前区域子区域内
-        else if (currentAreaIndex > 0) {
+        else if (currentAreaIndex > -1) {
           // 获取人员所属区域树中离当前区域最近的区域id
           const key = area.parentIds[currentAreaIndex + 1] || areaId;
           // 最近区域如果不是楼层才显示
@@ -432,11 +448,22 @@ export default class MultipleHistoryPlay extends PureComponent {
               isAlarmMap[key] = true;
             }
           }
+          currentIds.push(userId);
+        }
+        // 如果当前区域为楼层，则也统计同建筑楼层是否报警
+        else if (currentArea.isFloor){
+          const index = area.parentIds.indexOf(currentArea.parentId);
+          if (index > -1) {
+            const key = area.parentIds[index + 1] || areaId;
+            if (isAlarm && !isAlarmMap[key]) {
+              isAlarmMap[key] = true;
+            }
+          }
         }
         // 否则不显示
       }
       return result;
-    }, { locationMap: {}, isAlarmMap: {} });
+    }, { locationMap: {}, isAlarmMap: {}, currentIds: [] });
   };
 
   /**
@@ -493,12 +520,12 @@ export default class MultipleHistoryPlay extends PureComponent {
       return {
         id,
         latlng: this.getAreaRightTop(selectedArea || currentArea),
-        iconProps: {
+        icon: L.divIcon({
           iconSize: ['auto', 'auto'],
           iconAnchor: [-3, 3],
           className: styles.menuContainer,
           html: `<div class="${styles.menu}">${floors.join('')}</div>`,
-        },
+        }),
         category: 'menu',
       };
     }
@@ -806,7 +833,7 @@ export default class MultipleHistoryPlay extends PureComponent {
    * 播放按钮点击事件
    */
   handlePlay = () => {
-    const { startTime, endTime, ids, idMap, top } = this.props;
+    const { startTime, endTime, ids, idMap, top, selectedTableRow } = this.props;
     const { currentTimeStamp: prevTimeStamp, drawProps, currentAreaId: prevAreaId } = this.state;
     let extra;
     // 如果当前时间戳已经是结束时间，则重新开始播放
@@ -815,7 +842,7 @@ export default class MultipleHistoryPlay extends PureComponent {
       const currentIndexes = this.getCurrentIndexes({ currentTimeStamp });
       // 如果只有一个人，则区域跟着人变化
       let currentAreaId = prevAreaId;
-      if (ids.length === 1) {
+      if (selectedTableRow !== 'all') {
         const currentData = idMap[ids[0]][currentIndexes[0]];
         if (currentData) {
           currentAreaId = currentData.areaId || top.id; // 如果在厂内，则取当前区域id，不在厂内，则取最顶层区域id
@@ -902,7 +929,7 @@ export default class MultipleHistoryPlay extends PureComponent {
    * @param {event} e 鼠标事件对象
    */
   handleLocate = e => {
-    const { ids, idMap, top } = this.props;
+    const { ids, idMap, top, selectedTableRow } = this.props;
     const { playing, currentIndexes: prevIndexes, currentTimeStamp: prevTimeStamp, drawProps, currentAreaId: prevAreaId } = this.state;
     const currentTimeStamp = e.currentTimeStamp || this.getCurrentTimeStamp(e);
     // 如果时间戳没有发生变化，则不做任何操作
@@ -914,7 +941,7 @@ export default class MultipleHistoryPlay extends PureComponent {
     const currentIndexes = this.getCurrentIndexes({ currentTimeStamp, prevTimeStamp, prevIndexes });
     // 如果只有一个人，则区域跟着人变化
     let currentAreaId = prevAreaId;
-    if (ids.length === 1) {
+    if (selectedTableRow !== 'all') {
       const currentData = idMap[ids[0]][currentIndexes[0]];
       if (currentData) {
         currentAreaId = currentData.areaId || top.id; // 如果在厂内，则取当前区域id，不在厂内，则取最顶层区域id
@@ -1047,8 +1074,8 @@ export default class MultipleHistoryPlay extends PureComponent {
    * 点击回到最顶层
    */
   handleClickHome = () => {
-    const { originalTree } = this.props;
-    this.handleClick({ target: { options: { data: { areaId: originalTree[0].id, category: 'area' } } } });
+    const { top } = this.props;
+    this.handleClick({ target: { options: { data: { areaId: top.id, category: 'area' } } } });
   }
 
   /**
@@ -1070,6 +1097,7 @@ export default class MultipleHistoryPlay extends PureComponent {
       // 结束时间
       endTime,
       top: topLevelArea,
+      // selectedTableRow,
     } = this.props;
     const {
       playing,
@@ -1115,8 +1143,8 @@ export default class MultipleHistoryPlay extends PureComponent {
             onClick={this.handleClick}
             {...drawProps}
           />
-          {enable && <Icon type="home" className={styles.homeButton} onClick={this.handleClickHome} />}
-          {topLevelArea && topLevelArea.id !== currentAreaId && <Icon type="rollback" className={styles.backButton} onClick={this.handleClickBack} />}
+          {currentAreaId && <Icon type="home" className={styles.homeButton} onClick={this.handleClickHome} />}
+          {topLevelArea && currentAreaId && topLevelArea.id !== currentAreaId && <Icon type="rollback" className={styles.backButton} onClick={this.handleClickBack} />}
         </div>
         {/* 控件容器 */}
         <div className={styles.controlWrapper}>

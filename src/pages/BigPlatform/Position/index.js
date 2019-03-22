@@ -22,6 +22,8 @@ export default class PositionIndex extends PureComponent {
   componentDidMount() {
     const { dispatch, match: { params: { companyId } } } = this.props;
     dispatch({ type: 'position/fetchTree', payload: { companyId } });
+    dispatch({ type: 'position/fetchPeople', payload: { companyId } });
+    dispatch({ type: 'position/fetchCards', payload: { companyId, pageNum: 1, pageSize: 0 } });
   }
 
   setAreaInfoCache = areaInfo => {

@@ -18,7 +18,8 @@ const timeFormat = 'YYYY-MM-DD HH:mm';
 const defaultRange = [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')];
 const renderThumbHorizontal = ({ style }) => <div style={{ ...style, display: 'none' }} />;
 const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)', right: -2 };
-const RANGE_LIMIT = 24 * 3600 * 1000;
+// 限制1天
+const RANGE_LIMIT = 24 * 60 * 60 * 1000;
 const ALL = 'all';
 
 /**
@@ -30,10 +31,8 @@ export default class History extends PureComponent {
     super(props);
     this.state = {
       range: defaultRange,
-      timeRange: defaultRange,
-      selectedArea: undefined,
-      selectedIds: [],
-      highlighted: undefined,
+      // 区域搜索框当前选中的区域id
+      selectedAreaId: undefined,
       tableList: [],
     };
     mapMutations(this, {
@@ -56,106 +55,80 @@ export default class History extends PureComponent {
 
   // 上次选择的范围
   lastRange = defaultRange;
-  areaDataIds = [];
-  lastSectionId = null;
-  currentTime = 0;
 
   componentDidMount() {
     const {
-      companyId,
       position: { originalTree },
+      idType, // 搜索类型，1是卡片，0是人员
+      userIds,
+      cardIds,
+      setUserIds,
     } = this.props;
-    // 获取人员列表
-    this.fetchPeople({ companyId });
-    this.fetchCards({ companyId, pageNum: 1, pageSize: 0 });
-    this.setState({ selectedArea: originalTree[0].id });
-    // 获取区域树
-    // this.fetchTree({ companyId }, response => {
-    //   if (response && response.data && Array.isArray(response.data.list) && response.data.list.length)
-    //     this.setState({ selectedArea: response.data.list[0].id });
-    // });
-
-    this.init();
+    setUserIds(["cIr_DU6ZQviCe9534YC_fA", "iHd_pzoxSVKd5pxZmeZc4g"]);
+    // 默认选中最顶层的第一个区域
+    this.setState({ selectedAreaId: originalTree[0].id }, () => {
+      // 假数据
+      const range = [moment('2019-03-08 10:01:00'), moment('2019-03-08 10:02:00')];
+      this.setState({ range });
+      this.lastRange = range;
+      this.getData(range);
+    });
+    // 如果是从目标跟踪过来的，则根据跟踪的人员初始化数据
+    if (userIds.length || cardIds.length) {
+      const params = +idType ? { cardId: cardIds[0] } : { userId: userIds[0] };
+      // 获取最新一条数据的进入时间作为结束时间，往前推5分钟作为开始时间
+      this.fetchLatest(params, response => {
+        if (response && response.code === 200 && response.data) {
+          const { intime } = response.data;
+          const minute = 60 * 1000;
+          const queryEndTime = Math.ceil((intime) / minute) * minute;
+          const queryStartTime = queryEndTime - minute * 5;
+          const range = [moment(queryStartTime), moment(queryEndTime)];
+          this.setState({ range });
+          this.lastRange = range;
+          // 获取列表
+          this.getData(range);
+        }
+      });
+    }
   }
 
-  init = () => {
-    const { idType, userIds, cardIds } = this.props;
-    if (!userIds.length && !cardIds.length)
-      return;
-
-    const params = +idType ? { cardId: cardIds.join(',') } : { userId: userIds.join(',') };
-    // 获取最新一条数据
-    this.fetchLatest(params, response => {
-      if (response && response.code === 200 && response.data) {
-        const { intime } = response.data;
-        const minute = 60 * 1000;
-        const queryEndTime = Math.ceil((intime) / minute) * minute;
-        const queryStartTime = queryEndTime - minute * 5;
-        const range = [moment(queryStartTime), moment(queryEndTime)];
-        this.setState({ range });
-        this.lastRange = range;
-        // 获取列表
-        this.getData(range, (response) => {
-          if (response && response.code === 200) {
-            this.topScroll && this.topScroll.scrollTop();
-            this.bottomScroll && this.bottomScroll.scrollTop();
-          }
-        });
-      }
-      else {
-        this.save({
-          data: {},
-        });
-      }
+  componentWillUnmount() {
+    // 组件销毁前清空model中的数据
+    this.save({
+      areaDataList: [],
+      historyIdMap: {},
+      timeRange: [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')],
+      selectedIds: [],
+      selectedTableRow: ALL,
     });
-  };
-
-  setHistoryPlayReference = (historyPlay) => {
-    this.historyPlay = historyPlay;
   }
 
   setTopScrollReference = (topScroll) => {
     this.topScroll = topScroll && topScroll.dom;
   }
 
-
-  setBottomScrollReference = (bottomScroll) => {
-    this.bottomScroll = bottomScroll && bottomScroll.dom;
-  }
-
   /**
    * 获取列表
    */
   getData = (range) => {
-    // const { historyRecord: { id, isCardId }={} } = this.props;
     const { idType, userIds, cardIds } = this.props;
-    const { selectedArea } = this.state;
-
-    const ids = +idType ? { cardId: cardIds.length ? cardIds.join(',') : undefined } : { userId: userIds.length ? userIds.join(',') : undefined };
+    const { selectedAreaId } = this.state;
     const [queryStartTime, queryEndTime] = range;
     this.fetchData({
-      ...ids,
-      queryStartTime: queryStartTime && +queryStartTime,
-      queryEndTime: queryEndTime && +queryEndTime,
-      areaId: selectedArea,
-      searchType: +idType ? 2 : 1,
+      cardId: cardIds.join(',') || undefined, // 搜索的卡片id
+      userId: userIds.join(',') || undefined, // 搜索的人员id
+      queryStartTime: queryStartTime && +queryStartTime, // 开始时间
+      queryEndTime: queryEndTime && +queryEndTime, // 结束时间
+      areaId: selectedAreaId, // 区域id
+      searchType: +idType ? 2 : 1, // 搜索类型，人员或卡片
       idType,
-    }, (response, areaDataList) => {
-      if (response && response.code === 200 && Array.isArray(areaDataList)) {
-        const timeRange = areaDataList.reduce((prev, next) => {
-          const [start, end] = prev;
-          const { startTime, endTime } = next;
-          prev[0] = Math.min(start, startTime);
-          prev[1] = Math.max(end, endTime);
-          return prev;
-        }, [0, 0]);
-        const areaDataIds = this.areaDataIds = areaDataList.map(({ cardId, userId }) => +idType ? cardId : userId);
-        this.setState({
-          selectedIds: areaDataIds,
-          highlighted: areaDataIds.length > 1 ? ALL : areaDataIds[0],
-          timeRange,
-          tableList: this.getDataHistory(areaDataList),
-        });
+    }, (response) => {
+      if (response && response.code === 200) {
+        this.topScroll && this.topScroll.scrollTop();
+      }
+      else {
+        message.error('获取数据失败，请稍后重试！');
       }
     });
   }
@@ -173,7 +146,6 @@ export default class History extends PureComponent {
   handleOk = (range) => {
     this.isOk = true;
     this.lastRange = range;
-    // this.getData(range);
     this.setState({ range });
   }
 
@@ -194,98 +166,71 @@ export default class History extends PureComponent {
   /**
    * 点击表格行
    */
-  genClickTableRow = id => e => {
-    this.setState({ selectedIds: id === ALL ? this.areaDataIds : [id], highlighted: id });
-    // this.historyPlay.handleLocate({ currentTimeStamp: +e.currentTarget.getAttribute('intime') });
+  handleClickTableRow = id => {
+    const { position: { selectedTableRow, historyIdMap } } = this.props;
+    // 如果点击的是同一行，则不做任何操作
+    if (id === selectedTableRow) {
+      return;
+    }
+    this.save({ selectedIds: id === ALL ? Object.keys(historyIdMap) : [id], selectedTableRow: id });
   }
 
-  handleIdsChange = value => {
-    // console.log(value);
+  /**
+   * 修改搜索id
+   */
+  handleIdsChange = ids => {
     const { idType, setUserIds, setCardIds } = this.props;
-    +idType ? setCardIds(value) : setUserIds(value);
+    +idType ? setCardIds(ids) : setUserIds(ids);
   };
 
-  handleAreaChange = value => {
-    this.setState({ selectedArea: value });
+  /**
+   * 修改选中区域
+   */
+  handleAreaChange = selectedAreaId => {
+    this.setState({ selectedAreaId });
   };
 
-  clear = () => {
-    const { setUserIds, setCardIds } = this.props;
-    this.setState({
-      selectedIds: [],
-    });
-    this.save({
-      areaDataList: [],
-    });
+  /**
+   * 修改搜索类型
+   */
+  handleIdTypeChange = idType => {
+    const { setIdType, setUserIds, setCardIds } = this.props;
+    setIdType(idType);
     setUserIds([]);
     setCardIds([]);
   };
 
-  handleIdTypeChange = value => {
-    const { setIdType } = this.props;
-    setIdType(value);
-    this.clear();
-  };
-
+  /**
+   * 搜索按钮点击事件
+   */
   handleSearch = e => {
     const { range } = this.state;
     const [start, end] = range.map(m => +m);
     if (end - start > RANGE_LIMIT) {
       message.warn('选择的时间范围请限制在24小时以内');
-      return;
     }
-    this.getData(range);
+    else {
+      this.getData(range);
+    }
   };
 
-  getDataHistory = areaDataList => {
-    // const { position: { areaDataList } } = this.props;
-    const history = Array.from(areaDataList);
-    if (areaDataList.length > 1)
-      history.unshift({
-        id: ALL,
-        userName: '所有人',
-        cardCode: '-',
-      });
-    return history;
-  };
-
-  getFullAreaName = areaId => {
-    const { position: { tree } } = this.props;
-    return tree[areaId] ? tree[areaId].fullName : '厂外';
-  };
-
+  /**
+   * 切换tab
+   */
   onTabClick = i => {
     const { handleLabelClick } = this.props;
     handleLabelClick(i);
-    this.save({
-      areaDataList: [],
-    });
-  };
-
-  setSectionAndTime = (sectionId, timestamp) => {
-    this.lastSectionId = sectionId;
-    this.lastTimeStamp = timestamp;
-    this.setState({ tableList: this.filterTableList(sectionId, timestamp) });
   };
 
   // 筛选出areaDataList中在指定区域指定时间戳的人员
-  filterTableList = (sectionId, timestamp) => {
-    const { position: { tree, areaDataList } } = this.props;
+  filterTableList = (currentIds) => {
+    const { position: { areaDataList }, idType } = this.props;
+    console.log(areaDataList);
     // areaDataList数组中的areaId为根节点的id
-    return areaDataList.filter(({ areaId, startTime, endTime, children }) => {
-      // 所选区域为根节点时
-      if (sectionId === areaId && startTime <= timestamp && timestamp <= endTime)
-          return true;
-      // 所选区域为非根节点时，查看其children
-      else if(Array.isArray(children)) {
-        const childIds = tree[sectionId].descendant;
-        for (const { areaId, startTime, endTime } of children) {
-          if (childIds.includes(areaId) && startTime <= timestamp && timestamp <= endTime)
-            return true;
-        }
-      }
-      return false;
+    const tableList = areaDataList.filter(({ userId, cardId }) => {
+      return currentIds.includes(+idType ? cardId : userId);
     });
+    this.setState({ tableList });
   };
 
   render() {
@@ -299,30 +244,26 @@ export default class History extends PureComponent {
         // areaDataMap,
         // areaDataList,
         historyIdMap,
-        data: {
-          // areaDataHistories=[],
-          locationDataHistories=[],
-        }={},
         tree={},
         originalTree=[],
         sectionTree,
         people,
         cards,
+        timeRange,
+        selectedIds,
+        selectedTableRow,
       },
       // handleLabelClick,
     } = this.props;
-    const { range, timeRange, selectedArea, selectedIds, highlighted, tableList } = this.state;
+    const { range, selectedAreaId, tableList } = this.state;
     const [ startTimeStamp, endTimeStamp ] = timeRange;
 
-    // const areaDataHistories = this.getDataHistory();
-    const historyTree = originalTree.find(({ id }) => id === selectedArea);
+    const historyTree = originalTree.find(({ id }) => id === selectedAreaId);
     const sectionTreeList = sectionTree.map(sec => ({ ...sec, children: [] }));
-    const areaDataHistories = tableList;
     const isCard = +idType; // 0 人   1 卡
     const options = isCard
       ? cards.map(({ id, code }) => <Option key={id} value={id}>{code}</Option>)
       : people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>);
-    // console.log(areaDataHistories);
 
     return (
       <div className={styles.container}>
@@ -335,7 +276,7 @@ export default class History extends PureComponent {
                   <TreeSelect
                     // allowClear
                     treeDefaultExpandAll
-                    value={selectedArea}
+                    value={selectedAreaId}
                     className={styles.tree}
                     treeData={sectionTreeList}
                     onChange={this.handleAreaChange}
@@ -398,19 +339,28 @@ export default class History extends PureComponent {
                       thumbStyle={thumbStyle}
                       renderThumbHorizontal={renderThumbHorizontal}
                     >
-                      {areaDataHistories && areaDataHistories.length > 0 ? areaDataHistories.map(area => {
-                        const { id, cardCode, department } = area;
-                        const onClick = this.genClickTableRow(id);
+                      {/* tableList && tableList.length > 0 && */ (
+                        <div className={styles[`tr${selectedTableRow === ALL ? 1 : ''}`]} key={ALL} onClick={(e) => {this.handleClickTableRow(ALL, e)}}>
+                          <div className={styles.td}>所有人</div>
+                          <div className={styles.td}>-</div>
+                          <div className={styles.td}>{'phone'}</div>
+                          <div className={styles.td}>-</div>
+                          <div className={styles.td}>-</div>
+                        </div>
+                      )}
+                      {tableList && tableList.length > 0 && tableList.map(area => {
+                        const { cardId, userId, idType, cardCode, department } = area;
+                        const id = +idType ? cardId : userId;
                         return (
-                          <div className={styles[`tr${id === highlighted ? 1 : ''}`]} key={id} onClick={onClick}>
+                          <div className={styles[`tr${selectedTableRow === id ? 1 : ''}`]} key={id} onClick={(e) => {this.handleClickTableRow(id, e)}}>
                             <div className={styles.td}>{getUserName(area)}</div>
                             <div className={styles.td}>{cardCode}</div>
                             <div className={styles.td}>{'phone'}</div>
                             <div className={styles.td}>{department || '-'}</div>
-                            <div className={styles.td}>{id === 'all' ? '-' : '跟踪'}</div>
+                            <div className={styles.td}>跟踪</div>
                           </div>
                         );
-                      }) : <div className={styles.emptyTr}><div className={styles.td}>暂无数据</div></div>}
+                      })/*  : <div className={styles.emptyTr}><div className={styles.td}>暂无数据</div></div> */}
                     </Scroll>
                   </div>
                 </div>
@@ -420,14 +370,14 @@ export default class History extends PureComponent {
         </div>
         <div className={styles.right}>
           <MultipleHistoryPlay
-            ref={this.setHistoryPlayReference}
             tree={tree}
             top={historyTree}
             idMap={historyIdMap}
             ids={selectedIds}
             startTime={startTimeStamp && +startTimeStamp}
             endTime={endTimeStamp && +endTimeStamp}
-            onChange={this.setSectionAndTime}
+            onChange={this.filterTableList}
+            selectedTableRow={selectedTableRow}
           />
         </div>
       </div>

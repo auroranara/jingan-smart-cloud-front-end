@@ -703,12 +703,12 @@ class ImageDraw extends PureComponent {
         _northEast: { lat: height, lng: width },
       },
     } = this.state;
-    const { id, latlng, name, iconProps } = item;
+    const { id, latlng, name, iconProps, icon } = item;
     return (
       <Marker
         key={id || name}
         data={item}
-        icon={iconProps && L.divIcon(iconProps)}
+        icon={iconProps ? L.divIcon(iconProps) : icon}
         position={{ lat: latlng.lat * height, lng: latlng.lng * width }}
         onAdd={this.handleAdd}
         onClick={this.handleClickShape}
