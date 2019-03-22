@@ -22,7 +22,8 @@ export async function quitSOS(cardId) {
 
 // 处理警报
 export async function putAlarm(params) {
-  return request(`${URL_PREFIX}/location/locationWarning`, {
+  // return request(`${URL_PREFIX}/location/locationWarning`, {
+  return request(`${URL_PREFIX}/location/executeWarning`, {
     method: 'PUT',
     body: params,
   });

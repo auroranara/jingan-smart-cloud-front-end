@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { Button, DatePicker, Input, message, Modal, Select, TreeSelect } from 'antd';
 import moment from 'moment';
 
@@ -10,6 +10,7 @@ const { Option } = Select;
 const { Group: ButtonGroup } = Button;
 const { TextArea } = Input;
 
+const rect = <span className={styles.rect} />;
 const timeFormat = 'YYYY-MM-DD HH:mm';
 const defaultRange = [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')];
 // const RANGE_LIMIT = 24 * 3600 * 1000;
@@ -44,19 +45,22 @@ export default class AlarmList extends PureComponent {
     const { dispatch, companyId } = this.props;
     const { searchValue, range, selectedArea, alarmType, alarmStatus } = this.state;
 
-    const [startTime, endTime] = range.map(r => +r);
-    const payload = { startTime, endTime, userName: searchValue, type: alarmType, executeStatus: alarmStatus, areaId: selectedArea, pageSize: 0, pageNum: 1, companyId };
+    // const [startTime, endTime] = range.map(r => +r);
+    const [startTime, endTime] = range.map(r => r.format('YYYY-MM-DD HH:mm:ss'));
+    const payload = { startTime, endTime, type: alarmType, executeStatus: alarmStatus, rootAreaId: selectedArea, pageSize: 0, pageNum: 1, companyId };
+    if (searchValue)
+      payload.userName = searchValue;
     dispatch({
       type: 'personPosition/fetchInitAlarms',
       payload,
       callback: list => {
-        this.setState({ selectedCards: Array(list).fill(false) });
+        this.setState({ selectedCards: Array(list.length).fill(false) });
       },
     });
   };
 
-  handleInputChange = value => {
-    this.setState({ searchValue: value });
+  handleInputChange = e => {
+    this.setState({ searchValue: e.target.value });
   };
 
   handleAlarmTypeChange = value => {
@@ -76,15 +80,19 @@ export default class AlarmList extends PureComponent {
   }
 
   genHandleSelectCard = index => e => {
-    this.setState(({ selectedCards }) => ({ selectedCards: selectedCards.map((b, i) => i === index ? !b :b) }));
+    this.setState(({ selectedCards }) => ({ selectedCards: selectedCards.map((b, i) => i === index ? !b : b) }));
   };
 
   handleBatch = () => {
     this.setState({ batch: true });
   };
 
-  handleTextChange = value => {
-    this.setState({ handleDesc: value });
+  hideBatch = () => {
+    this.setState({ batch: false });
+  }
+
+  handleTextChange = e => {
+    this.setState({ handleDesc: e.target.value });
   };
 
   handleShowSubmit = (ids) => {
@@ -95,7 +103,8 @@ export default class AlarmList extends PureComponent {
   handleShowMultiSubmit = e => {
     const { personPosition: { alarms } } = this.props;
     const { selectedCards } = this.state;
-    const ids = alarms.filter((a, i) => selectedCards[i]);
+    // 将选中的并且是未处理的报警筛选处理
+    const ids = alarms.filter((a, i) => selectedCards[i] && !+a.executeStatus);
     this.handleShowSubmit(ids);
   };
 
@@ -108,11 +117,13 @@ export default class AlarmList extends PureComponent {
     const { handleDesc } = this.state;
     dispatch({
       type: 'personPosition/handleAlarm',
-      payload: { id: this.submitId, executeDesc: handleDesc, executeStatus: status },
+      payload: { ids: this.submitId, executeDesc: handleDesc, executeStatus: status },
       callback: (code, msg) => {
         if (code === 200) {
           this.handleHideSubmit();
           this.setState({ handleDesc: '' });
+          message.success(msg);
+          this.getAlarms();
         }
         else
           message.error(msg);
@@ -135,18 +146,19 @@ export default class AlarmList extends PureComponent {
       cards = alarms.map((item, i) => (
         <AlarmCard
           key={item.id}
+          batch={batch}
           areaInfo={areaInfo}
           checked={selectedCards[i]}
           data={item}
-          onClick={this.genHandleSelectCard(i)}
+          onClick={batch ? this.genHandleSelectCard(i) : null}
           handleShowSubmit={this.handleShowSubmit}
         />
       ));
-    
+
     const footer = (
-      <div>
-        <Button ghost onClick={e => this.hanldeSubmit(1)}>忽略</Button>
-        <Button ghost onClick={e => this.hanldeSubmit(2)}>提交</Button>
+      <div className={styles.footerBtns}>
+        <Button ghost className={styles.footerBtn} onClick={e => this.hanldeSubmit(1)}>忽略</Button>
+        <Button ghost className={styles.footerBtn} onClick={e => this.hanldeSubmit(2)}>提交</Button>
       </div>
     );
 
@@ -156,10 +168,20 @@ export default class AlarmList extends PureComponent {
           <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
           <div className={styles.wrapper1}>
             <div className={styles.leftTop1}>
-              top
+              <div className={styles.redCircle}>
+                <div className={styles.circleNum}>5</div>
+                <p className={styles.circleLabel}>待处理</p>
+              </div>
+              <div className={styles.blueCircle}>
+                <div className={styles.circleNum}>1000</div>
+                <p className={styles.circleLabel}>已处理</p>
+              </div>
             </div>
             <div className={styles.leftMiddle1}>
-              middle
+              <h3 className={styles.chartTitle}>
+                {rect}
+                报警趋势图
+              </h3>
             </div>
           </div>
         </div>
@@ -188,10 +210,16 @@ export default class AlarmList extends PureComponent {
                     placeholder="请选择或搜索人员/卡号"
                     onChange={this.handleIdsChange}
                   ></Select> */}
-                  <Input value={searchValue} onChange={this.handleInputChange}/>
+                  <Input
+                    value={searchValue}
+                    className={styles.searchInput}
+                    placeholder="请输入人员或卡号"
+                    onChange={this.handleInputChange}
+                  />
                 </div>
                 <Select
                   allowClear
+                  mode="multiple"
                   className={styles.cardSelect1}
                   dropdownClassName={styles.dropdown}
                   value={alarmType}
@@ -202,6 +230,7 @@ export default class AlarmList extends PureComponent {
                 </Select>
                 <Select
                   allowClear
+                  mode="multiple"
                   className={styles.cardSelect1}
                   dropdownClassName={styles.dropdown}
                   value={alarmStatus}
@@ -234,10 +263,14 @@ export default class AlarmList extends PureComponent {
                   allowClear={false}
                 />
                 <ButtonGroup className={styles.btns}>
-                  <Button ghost className={styles.searchBtn} onClick={this.getAlarms}>搜索</Button>
+                  <Button ghost className={styles.searchBtn1} onClick={this.getAlarms}>搜索</Button>
                   {batch
-                    ? <Button ghost className={styles.searchBtn} onClick={this.handleShowMultiSubmit}>确定处理</Button>
-                    : <Button ghost className={styles.searchBtn} onClick={this.handleBatch}>批量处理</Button>
+                    ? (
+                    <Fragment>
+                      <Button ghost className={styles.searchBtn1} onClick={this.handleShowMultiSubmit}>确定</Button>
+                      <Button ghost className={styles.searchBtn1} onClick={this.hideBatch}>取消</Button>
+                    </Fragment>
+                    ) : <Button ghost className={styles.searchBtn1} onClick={this.handleBatch}>批量处理</Button>
                   }
                 </ButtonGroup>
               </div>
@@ -249,12 +282,16 @@ export default class AlarmList extends PureComponent {
         </div>
         <Modal
           title="报警处理"
+          centered
           visible={modalVisible}
           onCancel={this.handleHideSubmit}
           footer={footer}
+          wrapClassName={styles.modal}
         >
           <TextArea
+            rows={8}
             value={handleDesc}
+            onChange={this.handleTextChange}
           />
         </Modal>
       </div>

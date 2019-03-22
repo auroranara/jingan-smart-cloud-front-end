@@ -6,33 +6,78 @@
 .inner {
     position: relative;
     overflow: hidden;
+
+    .btn, .btn1 {
+      width: 100%;
+      color: #FFF;
+      background-color: rgb(14, 79, 159);
+      border-color: rgb(14, 79, 159);
+      border-radius: 0 0 4px 4px;
+    }
+
+    .btn1 {
+      color: #ccc;
+      background-color: rgb(4, 71, 134);
+      border-color: rgb(4, 71, 134);
+    }
+
+    .btn:hover {
+      background-color: rgb(14, 79, 159);
+    }
+
+    .btn1:hover {
+      color: #ccc;
+      background-color: rgb(4, 71, 134);
+      border-color: rgb(4, 71, 134);
+    }
 }
 
 .check {
     position: absolute;
-    left: 20px;
-    top: 20px;
-    background-color: #FFF;
-    border: 1px solid #FFF;
+    left: 4px;
+    top: 0px;
 }
 
 .flag {
+    width: 100px;
+    height: 20px;
+    font-size: 12px;
+    text-align: center;
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 14px;
+    right: -25px;
+    transform: rotateZ(45deg);
+    background-color: rgb(255, 72, 72);
 }
+
+.flag1:extend(.flag) {
+  background-color: rgb(59, 167, 197);
+}
+
+@blue: rgb(76, 206, 240);
 
 .type {
-    color: #0FF;
+    color: @blue;
     width: 100px;
+    height: 30px;
+    line-height: 28px;
     position: absolute;
     right: 20px;
-    bottom: 30px;
+    bottom: 10px;
     text-align: center;
-    border: 1px solid #0FF;
-    border-radius: 5px;
+    border: 1px solid @blue;
+    border-radius: 4px;
 }
 
-.handle {
-    width: 100%;
+.info {
+  padding: 20px 20px 0 20px;
+  overflow: hidden;
+  border: 1px solid @blue;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+
+  p {
+    margin-bottom: 6px;
+  }
 }
