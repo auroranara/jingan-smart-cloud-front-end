@@ -50,11 +50,11 @@ const itemLayout1 = {
 };
 
 function generateRules(cName, msg = '输入', ...rules) {
-  return [{ required: true, message: `请${msg}${cName}` }, ...rules];
+  return [{ required: false, message: `请${msg}${cName}` }, ...rules];
 }
 
 function generateRulesSelect(cName, msg = '选择', ...rules) {
-  return [{ required: true, message: `请${msg}${cName}` }, ...rules];
+  return [{ required: false, message: `请${msg}${cName}` }, ...rules];
 }
 
 // function generateRulesInput(cName, msg = '输入', ...rules) {
@@ -498,7 +498,10 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'companyId',
         cName: '单位名称',
-        rules: generateRulesSelect('单位名称'),
+        rules: generateRulesSelect('单位名称', undefined, {
+          required: true,
+          message: `请选择单位名称`,
+        }),
         component: (
           <div>
             <Col span={23}>
@@ -558,7 +561,10 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'buildingName',
         cName: '建筑物名称',
-        rules: generateRules('建筑物名称'),
+        rules: generateRules('建筑物名称', undefined, {
+          required: true,
+          message: `请输入建筑物名称`,
+        }),
         component: (
           <div>
             {getFieldDecorator('buildingName', { initialValue: buildingName })(
