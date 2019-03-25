@@ -95,6 +95,7 @@ export default class FireHostMonitoring extends PureComponent {
         {
           value,
           status,
+          unit,
           deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
         },
       ] = deviceDataList;
@@ -109,6 +110,7 @@ export default class FireHostMonitoring extends PureComponent {
             value={value || 0}
             range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
             normalRange={[normalLower, normalUpper]}
+            unit={unit}
           />
         </Col>
       );
@@ -130,6 +132,7 @@ export default class FireHostMonitoring extends PureComponent {
         {
           value,
           status,
+          unit,
           deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
         },
       ] = deviceDataList;
@@ -144,6 +147,7 @@ export default class FireHostMonitoring extends PureComponent {
             value={value || 0}
             range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
             normalRange={[normalLower, normalUpper]}
+            unit={unit}
           />
         </Col>
       );

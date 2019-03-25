@@ -98,6 +98,7 @@ export default class WaterDrawer extends PureComponent {
                           isLost={isLost}
                           normalRange={normalRange}
                           style={{ width: '110px', height: '110px' }}
+                          unit={unit}
                         />
                       ) : (
                         <img
