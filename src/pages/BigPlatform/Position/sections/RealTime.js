@@ -79,9 +79,9 @@ export default class RealTime extends PureComponent {
       type: 'user/fetchCurrent',
     });
 
-    this.treeTimer = setInterval(() => {
-      this.fetchSectionTree();
-    }, DELAY);
+    // this.treeTimer = setInterval(() => {
+    //   this.fetchSectionTree();
+    // }, DELAY);
 
     // setTimeout(() => this.showNotification({}), 3000);
   }
@@ -117,8 +117,8 @@ export default class RealTime extends PureComponent {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const params = {
       companyId,
-      // env,
-      env: 'dev',
+       env,
+      //env: 'dev',
       type: 2,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
