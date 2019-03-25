@@ -193,7 +193,7 @@ export default class FourColor extends PureComponent {
           isChecked
             ? `
           <div>
-            有/无隐患：${isAbnormal ? '<span style="color: #ff4848">有隐患</span>' : '无隐患'}
+            有无隐患：${isAbnormal ? '<span style="color: #ff4848">有</span>' : '无'}
           </div>
         `
             : ''
