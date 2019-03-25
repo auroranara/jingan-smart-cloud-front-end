@@ -293,7 +293,7 @@ export default class SensorCompanyList extends Component {
               rules: [{ required: true, message: '请选择单位' }],
             })(
               <Fragment>
-                <Input value={company.name} disabled placeholder="请输入" {...itemStyles} />
+                <Input value={company.name} disabled placeholder="请选择" {...itemStyles} />
                 <Button type="primary" onClick={this.handleViewCompanyModal}>选择单位</Button>
               </Fragment>
             )}
@@ -309,7 +309,7 @@ export default class SensorCompanyList extends Component {
             {getFieldDecorator('deviceType', {
               rules: [{ required: true, message: '请选择设备类型' }],
             })(
-              <Select placeholder="请输入" {...itemStyles}>
+              <Select placeholder="请选择" {...itemStyles}>
                 {deviceTypes.map(({ type, typeDesc }, i) => (<Select.Option key={i} value={type}>{typeDesc}</Select.Option>))}
               </Select>
             )}
