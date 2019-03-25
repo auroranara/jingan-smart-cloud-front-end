@@ -245,7 +245,7 @@ export default class SensorCompanyList extends Component {
                         //   pathname: `/data-analysis/IOT-abnormal-data/${icon}/${id}`,
                         //   num: iconNums[icon],
                         // }}
-                        to={`/device-management/associate-sensor/company/${id}/water-system`}
+                        to={`/device-management/associate-sensor/company/${id}/water-system?name=${name}`}
                         style={{
                           width: 30,
                           height: 30,
