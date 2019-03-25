@@ -53,6 +53,11 @@ function formatData(list) {
     areaId,
     xpx: lng,
     ypx: lat,
+    cardId,
+    userId,
+    phoneNumber,
+    departmentName,
+    cardCode,
     cardType,
     userName,
     vistorName,
@@ -75,6 +80,11 @@ function formatData(list) {
       isAlarm,
       options: { color: isAlarm ? '#ff4848' : '#00ffff' },
       locationStatusHistoryList,
+      cardId,
+      userId,
+      phoneNumber,
+      departmentName,
+      cardCode,
     };
   });
 }

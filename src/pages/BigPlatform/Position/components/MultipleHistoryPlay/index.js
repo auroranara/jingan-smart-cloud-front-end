@@ -291,10 +291,8 @@ export default class MultipleHistoryPlay extends PureComponent {
       return;
     }
     // 不管当前区域是否发生变化，人员位置始终改变
-    const { locationMap, isAlarmMap, currentIds } = this.getLocationMap({ currentArea, currentIndexes, currentTimeStamp });
-    if (currentIds.length !== this.currentIds.length || currentIds.some((id, index) => id !== this.currentIds[index])) {
-      onChange(currentIds);
-    }
+    const { locationMap, isAlarmMap, currentDataList } = this.getLocationMap({ currentArea, currentIndexes, currentTimeStamp });
+    onChange(currentDataList);
     const divIcons = this.getDivIcons(locationMap);
     let drawProps;
     // 如果区域发生了变化
@@ -325,7 +323,6 @@ export default class MultipleHistoryPlay extends PureComponent {
       drawProps = { divIcons };
     }
     this.isAlarmMap = isAlarmMap;
-    this.currentIds = currentIds;
     return drawProps;
   }
 
@@ -347,7 +344,7 @@ export default class MultipleHistoryPlay extends PureComponent {
     const { id: currentAreaId } = currentArea;
     // 遍历人员列表获取在当前区域内的人员的位置
     return ids.reduce((result, userId, index) => {
-      const { locationMap, isAlarmMap, currentIds } = result;
+      const { locationMap, isAlarmMap, currentDataList } = result;
       // 获取人员对应的数据列表
       const list = idMap[userId] || [];
       // 获取人员的当前位置索引
@@ -417,7 +414,7 @@ export default class MultipleHistoryPlay extends PureComponent {
           if (isAlarm && !isAlarmMap[currentAreaId]) {
             isAlarmMap[currentAreaId] = true;
           }
-          currentIds.push(userId);
+          currentDataList.push(currentData);
         }
         // 如果人员在当前区域子区域内
         else if (currentAreaIndex > -1) {
@@ -450,7 +447,7 @@ export default class MultipleHistoryPlay extends PureComponent {
               isAlarmMap[key] = true;
             }
           }
-          currentIds.push(userId);
+          currentDataList.push(currentData);
         }
         // 如果当前区域为楼层，则也统计同建筑楼层是否报警
         else if (currentArea.isFloor){
@@ -465,7 +462,7 @@ export default class MultipleHistoryPlay extends PureComponent {
         // 否则不显示
       }
       return result;
-    }, { locationMap: {}, isAlarmMap: {}, currentIds: [] });
+    }, { locationMap: {}, isAlarmMap: {}, currentDataList: [] });
   };
 
   /**

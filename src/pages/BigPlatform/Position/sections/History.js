@@ -220,15 +220,11 @@ export default class History extends PureComponent {
   };
 
   // 筛选出areaDataList中在指定区域指定时间戳的人员
-  filterTableList = (currentIds) => {
-    const { position: { areaDataList, selectedIdType } } = this.props;
-    // console.log(currentIds);
+  filterTableList = (currentDataList) => {
+    // console.log(currentDataList);
     // console.log(areaDataList);
     // areaDataList数组中的areaId为根节点的id
-    const tableList = areaDataList.filter(({ userId, cardId }) => {
-      return currentIds.includes(+selectedIdType ? cardId : userId);
-    });
-    this.setState({ tableList });
+    this.setState({ tableList: currentDataList });
   };
 
   render() {
