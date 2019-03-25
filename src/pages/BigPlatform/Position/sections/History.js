@@ -225,7 +225,6 @@ export default class History extends PureComponent {
   // 筛选出areaDataList中在指定区域指定时间戳的人员
   filterTableList = (currentIds) => {
     const { position: { areaDataList }, idType } = this.props;
-    console.log(areaDataList);
     // areaDataList数组中的areaId为根节点的id
     const tableList = areaDataList.filter(({ userId, cardId }) => {
       return currentIds.includes(+idType ? cardId : userId);
@@ -330,7 +329,7 @@ export default class History extends PureComponent {
                     <div className={styles.td}>卡号</div>
                     <div className={styles.td}>电话</div>
                     <div className={styles.td}>部门</div>
-                    <div className={styles.td}>操作</div>
+                    {/* <div className={styles.td}>操作</div> */}
                   </div>
                   <div className={styles.tbody}>
                     <Scroll
@@ -343,9 +342,9 @@ export default class History extends PureComponent {
                         <div className={styles[`tr${selectedTableRow === ALL ? 1 : ''}`]} key={ALL} onClick={(e) => {this.handleClickTableRow(ALL, e)}}>
                           <div className={styles.td}>所有人</div>
                           <div className={styles.td}>-</div>
-                          <div className={styles.td}>{'phone'}</div>
                           <div className={styles.td}>-</div>
                           <div className={styles.td}>-</div>
+                          {/* <div className={styles.td}>-</div> */}
                         </div>
                       )}
                       {tableList && tableList.length > 0 && tableList.map(area => {
@@ -355,9 +354,9 @@ export default class History extends PureComponent {
                           <div className={styles[`tr${selectedTableRow === id ? 1 : ''}`]} key={id} onClick={(e) => {this.handleClickTableRow(id, e)}}>
                             <div className={styles.td}>{getUserName(area)}</div>
                             <div className={styles.td}>{cardCode}</div>
-                            <div className={styles.td}>{'phone'}</div>
+                            <div className={styles.td}>-</div>
                             <div className={styles.td}>{department || '-'}</div>
-                            <div className={styles.td}>跟踪</div>
+                            {/* <div className={styles.td}>跟踪</div> */}
                           </div>
                         );
                       })/*  : <div className={styles.emptyTr}><div className={styles.td}>暂无数据</div></div> */}

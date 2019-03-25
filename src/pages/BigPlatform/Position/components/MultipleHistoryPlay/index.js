@@ -115,9 +115,9 @@ export default class MultipleHistoryPlay extends PureComponent {
           currentAreaId = currentData.areaId || top.id; // 如果在厂内，则取当前区域id，不在厂内，则取最顶层区域id
         }
       }
-      console.log(idMap);
-      console.log(ids);
-      console.log(tree);
+      // console.log(idMap);
+      // console.log(ids);
+      // console.log(tree);
       // 重置参数
       this.setState(({ speed, isMinSpeed, isMaxSpeed }) => ({
         // 重置播放状态
@@ -297,7 +297,7 @@ export default class MultipleHistoryPlay extends PureComponent {
     }
     const divIcons = this.getDivIcons(locationMap);
     let drawProps;
-    // 重置所有参数
+    // 如果区域发生了变化
     if (reset) {
       drawProps = {
         // 楼层
@@ -316,9 +316,11 @@ export default class MultipleHistoryPlay extends PureComponent {
         // arrows: this.getArrows(currentIndex),
       };
     }
-    else if (currentArea.children.some((childId) => isAlarmMap[childId] !== this.isAlarmMap[childId])) {
+    // 如果区域没有发生变化但是状态发生了变化
+    else if (isAlarmMap[currentAreaId] !== this.isAlarmMap[currentAreaId] || currentArea.children.some((childId) => isAlarmMap[childId] !== this.isAlarmMap[childId])) {
       drawProps = { divIcons, data: this.getAreas(currentArea, isAlarmMap), menu: this.getMenu(currentArea, isAlarmMap) };
     }
+    // 如果区域和状态都没有发生变化
     else {
       drawProps = { divIcons };
     }
@@ -1044,6 +1046,11 @@ export default class MultipleHistoryPlay extends PureComponent {
    * 点击图形
    */
   handleClick = ({ target: { options: { data: { areaId, category }={} } }, originalEvent }) => {
+    const { selectedTableRow } = this.props;
+    // 如果当前在追踪某个人员，则不能点击区域和菜单
+    if (selectedTableRow !== 'all') {
+      return;
+    }
     const { playing, currentAreaId: prevAreaId } = this.state;
     let currentAreaId;
     if (category === 'area' && prevAreaId !== areaId) {
@@ -1097,7 +1104,7 @@ export default class MultipleHistoryPlay extends PureComponent {
       // 结束时间
       endTime,
       top: topLevelArea,
-      // selectedTableRow,
+      selectedTableRow,
     } = this.props;
     const {
       playing,
@@ -1143,8 +1150,8 @@ export default class MultipleHistoryPlay extends PureComponent {
             onClick={this.handleClick}
             {...drawProps}
           />
-          {currentAreaId && <Icon type="home" className={styles.homeButton} onClick={this.handleClickHome} />}
-          {topLevelArea && currentAreaId && topLevelArea.id !== currentAreaId && <Icon type="rollback" className={styles.backButton} onClick={this.handleClickBack} />}
+          {selectedTableRow === 'all' && currentAreaId && <Icon type="home" className={styles.homeButton} onClick={this.handleClickHome} />}
+          {selectedTableRow === 'all' && topLevelArea && currentAreaId && topLevelArea.id !== currentAreaId && <Icon type="rollback" className={styles.backButton} onClick={this.handleClickBack} />}
         </div>
         {/* 控件容器 */}
         <div className={styles.controlWrapper}>
