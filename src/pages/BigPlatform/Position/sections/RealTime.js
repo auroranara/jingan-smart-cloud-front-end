@@ -79,9 +79,9 @@ export default class RealTime extends PureComponent {
       type: 'user/fetchCurrent',
     });
 
-    this.treeTimer = setInterval(() => {
-      this.fetchSectionTree();
-    }, DELAY);
+    // this.treeTimer = setInterval(() => {
+    //   this.fetchSectionTree();
+    // }, DELAY);
 
     // setTimeout(() => this.showNotification({}), 3000);
   }
