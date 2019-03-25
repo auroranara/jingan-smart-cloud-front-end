@@ -82,7 +82,7 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    height: 50%;
+    height: 40%;
   }
 
   .redCircle, .blueCircle {
@@ -118,7 +118,7 @@
   }
 
   .leftMiddle1 {
-    height: 50%;
+    height: 60%;
     border-top: 1px solid #0FF;
   }
 
@@ -141,6 +141,11 @@
     background-image: url(../imgs/titleBg.png);
     background-size: 33% 100%;
     background-repeat: no-repeat;
+    position: relative;
+  }
+
+  .graph {
+    padding-left: 35px;
   }
 
   .searchBtn {
@@ -221,6 +226,8 @@
 
 .rightTop {
   padding-bottom: 10px;
+  border-bottom: 1px solid #0FF;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
 }
 
 .searchInput {
@@ -236,9 +243,9 @@
 .rightBottom {
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-start;
   height: calc(100% - 114px);
   overflow: auto;
-  border-top: 1px solid #0FF;
 }
 
 .selectRow {

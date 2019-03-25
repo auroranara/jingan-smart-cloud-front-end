@@ -5,7 +5,7 @@ import moment from 'moment';
 import styles from './AlarmCard.less';
 
 const TYPES = ['SOS', '越界', '长时间逗留', '超员', '缺员'];
-const STATUS = ['待处理', '已处理', '已处理'];
+const STATUS = ['待处理', '已忽略', '已处理'];
 const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 export default class AlarmCard extends PureComponent {
@@ -33,7 +33,7 @@ export default class AlarmCard extends PureComponent {
                       className={styles[`btn${handled ? 1 : ''}`]}
                       onClick={e => handleShowSubmit(id)}
                     >
-                      {handled ? '已' : ''}处理
+                      {STATUS[executeStatus]}
                     </Button>
                 </div>
             </div>

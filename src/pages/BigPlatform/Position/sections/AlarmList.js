@@ -4,6 +4,7 @@ import moment from 'moment';
 
 import styles from './History.less';
 import { AlarmCard, Tabs } from '../components/Components';
+import { ChartBar, ChartLine, GraphSwitch } from '@/pages/BigPlatform/NewFireControl/components/Components';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -12,15 +13,17 @@ const { TextArea } = Input;
 
 const rect = <span className={styles.rect} />;
 const timeFormat = 'YYYY-MM-DD HH:mm';
-const defaultRange = [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')];
+const defaultRange = [moment().startOf('minute').subtract(24, 'hours'), moment().startOf('minute')];;
 // const RANGE_LIMIT = 24 * 3600 * 1000;
 const TYPES = ['SOS', '越界', '长时间逗留', '超员', '缺员'];
 const TYPE_OPTIONS = TYPES.map((t, i) => <Option key={i} value={i + 1}>{t}</Option>);
-const STATUS = ['待处理', '忽略', '已处理'];
-const STATUS_OPTIONS = STATUS.map((s, i) => <Option key={i} value={i}>{s}</Option>);
+const STATUS = { 0:'待处理', 2:'已处理' };
+const STATUS_OPTIONS = Object.entries(STATUS).map(([n, s]) => <Option key={n} value={n}>{s}</Option>);
+const GRAPH_STYLE = { position: 'absolute', top: 15, right: 15 };
 
 export default class AlarmList extends PureComponent {
   state = {
+    graph: 0,
     batch: false,
     searchValue: '',
     range: defaultRange,
@@ -33,23 +36,32 @@ export default class AlarmList extends PureComponent {
   };
 
   componentDidMount() {
-    const {position: { sectionTree } } = this.props;
+    const { dispatch, companyId, position: { sectionTree } } = this.props;
+    // this.setState({ selectedArea: sectionTree[0].value });
 
-    this.setState({ selectedArea: sectionTree[0].value });
     this.getAlarms();
+    dispatch({ type: 'personPosition/fetchStatusCount', payload: { companyId } });
+    dispatch({ type: 'personPosition/fetchMonthCount', payload: { companyId } });
   }
 
   submitId;
 
+  handleSwitch = i => {
+    this.setState({ graph: i });
+  };
+
   getAlarms = () => {
     const { dispatch, companyId } = this.props;
     const { searchValue, range, selectedArea, alarmType, alarmStatus } = this.state;
+    const typeList = !alarmType || !alarmType.length ? undefined : alarmType.join(',');
 
     // const [startTime, endTime] = range.map(r => +r);
     const [startTime, endTime] = range.map(r => r.format('YYYY-MM-DD HH:mm:ss'));
-    const payload = { startTime, endTime, type: alarmType, executeStatus: alarmStatus, rootAreaId: selectedArea, pageSize: 0, pageNum: 1, companyId };
+    const payload = { startTime, endTime, typeList, executeStatus: alarmStatus, pageSize: 0, pageNum: 1, companyId };
     if (searchValue)
       payload.userName = searchValue;
+    if (selectedArea)
+      payload.rootAreaId = selectedArea;
     dispatch({
       type: 'personPosition/fetchInitAlarms',
       payload,
@@ -96,6 +108,10 @@ export default class AlarmList extends PureComponent {
   };
 
   handleShowSubmit = (ids) => {
+    if (!ids.length) {
+      message.warn('请先选择一个警报');
+      return;
+    }
     this.submitId = Array.isArray(ids) ? ids.join(',') : ids;
     this.setState({ modalVisible: true });
   };
@@ -136,11 +152,13 @@ export default class AlarmList extends PureComponent {
       labelIndex,
       areaInfo,
       position: { sectionTree },
-      personPosition: { alarms },
+      personPosition: { alarms, statusCount, monthCount },
       handleLabelClick,
     } = this.props;
-    const { batch, searchValue, range, selectedArea, alarmType, alarmStatus, selectedCards, handleDesc, modalVisible } = this.state;
+    const { graph, batch, searchValue, range, selectedArea, alarmType, alarmStatus, selectedCards, handleDesc, modalVisible } = this.state;
 
+    const list = monthCount.map(({ warningMonth, warningNum }) => ({ name: warningMonth, value: warningNum }));
+    const { waitExecuteNum, executeNum } = statusCount;
     let cards = '暂无信息';
     if (alarms.length)
       cards = alarms.map((item, i) => (
@@ -169,11 +187,11 @@ export default class AlarmList extends PureComponent {
           <div className={styles.wrapper1}>
             <div className={styles.leftTop1}>
               <div className={styles.redCircle}>
-                <div className={styles.circleNum}>5</div>
+                <div className={styles.circleNum}>{waitExecuteNum}</div>
                 <p className={styles.circleLabel}>待处理</p>
               </div>
               <div className={styles.blueCircle}>
-                <div className={styles.circleNum}>1000</div>
+                <div className={styles.circleNum}>{executeNum}</div>
                 <p className={styles.circleLabel}>已处理</p>
               </div>
             </div>
@@ -181,7 +199,11 @@ export default class AlarmList extends PureComponent {
               <h3 className={styles.chartTitle}>
                 {rect}
                 报警趋势图
+                <GraphSwitch handleSwitch={this.handleSwitch} style={GRAPH_STYLE} />
               </h3>
+              <div className={styles.graph}>
+                {graph ? <ChartBar data={list} /> : <ChartLine data={list} />}
+              </div>
             </div>
           </div>
         </div>
@@ -223,18 +245,19 @@ export default class AlarmList extends PureComponent {
                   className={styles.cardSelect1}
                   dropdownClassName={styles.dropdown}
                   value={alarmType}
-                  placeholder="报警类型"
+                  optionFilterProp="children"
+                  placeholder="请选择报警类型"
                   onChange={this.handleAlarmTypeChange}
                 >
                   {TYPE_OPTIONS}
                 </Select>
                 <Select
                   allowClear
-                  mode="multiple"
                   className={styles.cardSelect1}
                   dropdownClassName={styles.dropdown}
                   value={alarmStatus}
-                  placeholder="报警状态"
+                  optionFilterProp="children"
+                  placeholder="请选择报警状态"
                   onChange={this.handleAlarmStatusChange}
                 >
                   {STATUS_OPTIONS}
@@ -242,10 +265,12 @@ export default class AlarmList extends PureComponent {
               </div>
               <div className={styles.selectRow}>
                 <TreeSelect
+                  allowClear
                   treeDefaultExpandAll
                   value={selectedArea}
                   className={styles.tree1}
                   treeData={sectionTree}
+                  placeholder="请选择区域"
                   onChange={this.handleAreaChange}
                   dropdownClassName={styles.treeDropdown}
                 />
