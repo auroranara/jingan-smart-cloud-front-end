@@ -258,6 +258,20 @@ function isBuilding(mapId, childMapId, companyMapId) {
   return false;
 }
 
+// areaIds数组中，第一个表示建筑id，第二个表示该区域所在楼层id，楼层id不存在时，则当前区域即为建筑
+export function findBuildingId(areaId, areaInfo) {
+  const areaIds = [];
+  while(areaId) {
+    areaIds.unshift(areaId);
+    const current = areaInfo[areaId];
+    if (current.isBuilding)
+      return  [areaId, areaIds[1]];
+    areaId = current.parentId;
+  }
+
+  return;
+}
+
 // 将区域树打平成一个Map对象，areaId => { name, parent, childIds }
 // export function getAreaInfo(list) {
 //   const cache = {};
@@ -281,7 +295,7 @@ export function getAreaInfo(list) {
   const cache = {};
   const areaInfo = {};
   traverse(list, (item, parents) => {
-    const { id, name, companyMap, mapId, children } = item;
+    const { id, name, companyMap, mapId, children, range } = item;
     const length = parents.length;
     const parent = length ? parents[length - 1] : {};
     const firstChild = children && children.length ? children[0] : {};
@@ -294,6 +308,7 @@ export function getAreaInfo(list) {
       isBuilding: isBuilding(mapId, firstChild.mapId, companyMap),
       childIds: getChildIds(item, cache),
       images: getMapImages(nodeList),
+      // range: JSON.parse(range),
     };
   });
 
@@ -327,10 +342,14 @@ function getMapImages(list) {
 }
 
 function getTimeDesc(t) {
+  if (!t)
+    return '';
+
   const ms = +t;
-  const minutes = Math.floor(ms / 60000);
-  const hours = Math.floor(ms / 3600000);
-  return `${hours ? `${hours}小时` : ''}${minutes ? `${minutes}分钟` : ''}`;
+  // const minutes = Math.floor(ms / 60000);
+  const hours = Math.floor((ms / 3600000) * 10) / 10;
+  // return `${hours ? `${hours}小时` : ''}${minutes ? `${minutes}分钟` : ''}`;
+  return `${hours}小时`;
 }
 
 export function getAlarmDesc(item, areaInfo) {
@@ -378,13 +397,14 @@ export function getUserName(item, showPrefix) {
   return '访客';
 }
 
-// 0 区域 1 视频 2 移动的人 3 信标 4 聚合/单人
+// 0 区域 1 视频 2 移动的人 3 信标 4 建筑物 5 聚合/单人
 export function getMapClickedType(id) {
   if (id.includes('_@@section')) return 0;
   if (id.includes('_@@video')) return 1;
   if (id.includes('_@@moving')) return 2;
   if (id.includes('_@@beacon')) return 3;
-  return 4;
+  if (id.includes('_@@building')) return 4;
+  return 5;
 }
 
 const PERSON_ALARM_TYPES = ['SOS', '越界', '长时间逗留'];
@@ -478,4 +498,17 @@ export function handleOriginMovingCards(
       animate(cardId, [xarea1, yarea1], [xarea, yarea], move, callback);
     }
   }
+}
+
+// 从当前节点查找其所属的顶层节点下的第一层子节点的id，此处可以保证当前节点至少为顶层节点的子节点层，不会为顶层节点
+export function getAncestorId(currentId, rootId, areaInfo) {
+  let targetId = currentId;
+  while(targetId) {
+    const parentId = areaInfo[targetId].parentId;
+    if (parentId === rootId)
+      return targetId;
+    targetId = parentId;
+  }
+
+  return;
 }

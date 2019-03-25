@@ -3,9 +3,9 @@ import { connect } from 'dva';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 // import styles from './index.less';
-import { History, RealTime } from './sections/Components';
+import { AlarmList, History, RealTime } from './sections/Components';
 
-@connect(({ personPosition, user }) => ({ personPosition, user }))
+@connect(({ personPosition, position, user }) => ({ personPosition, position, user }))
 export default class PositionIndex extends PureComponent {
   state = {
     labelIndex: 0,
@@ -19,6 +19,13 @@ export default class PositionIndex extends PureComponent {
     areaInfoCache: {}, // 缓存RealTime组件中的areaInfo对象，以防切换tab时，areaInfo为空对象的问题
   };
 
+  componentDidMount() {
+    const { dispatch, match: { params: { companyId } } } = this.props;
+    dispatch({ type: 'position/fetchTree', payload: { companyId } });
+    dispatch({ type: 'position/fetchPeople', payload: { companyId } });
+    dispatch({ type: 'position/fetchCards', payload: { companyId, pageNum: 1, pageSize: 0 } });
+  }
+
   setAreaInfoCache = areaInfo => {
     this.setState({ areaInfoCache: areaInfo });
   };
@@ -31,8 +38,14 @@ export default class PositionIndex extends PureComponent {
     this.setState({ selectedCardId: cardId, selectedUserId: userId });
   };
 
-  setHistoryRecord = historyRecord => {
-    this.setState({ historyRecord });
+  setHistoryRecord = (cardId, userId) => {
+    // this.setState({ historyRecord });
+    let state;
+    if (userId)
+      state = { historyIdType: '0', historyUserIds: [userId] };
+    else
+      state = { historyIdType: '1', historyCardIds: [cardId] };
+    this.setState(state);
   };
 
   setHistoryIdType = type => {
@@ -52,6 +65,7 @@ export default class PositionIndex extends PureComponent {
     const {
       dispatch,
       match: { params: { companyId } },
+      position,
       personPosition,
       user,
     } = this.props;
@@ -59,7 +73,6 @@ export default class PositionIndex extends PureComponent {
       labelIndex,
       selectedCardId,
       selectedUserId,
-      // historyRecord,
       historyIdType,
       historyUserIds,
       historyCardIds,
@@ -103,6 +116,11 @@ export default class PositionIndex extends PureComponent {
             setUserIds={this.setHistoryUserIds}
             setCardIds={this.setHistoryCardIds}
             handleLabelClick={this.handleLabelClick}
+          />
+        )}
+        {labelIndex === 3 && (
+          <AlarmList
+            position={position}
           />
         )}
       </BigPlatformLayout>

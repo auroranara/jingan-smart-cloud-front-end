@@ -1,16 +1,19 @@
 import React, { PureComponent } from 'react';
 import { Icon, Spin, Switch } from 'antd';
 import { connect } from 'dva';
+import classNames from 'classnames';
 
 import styles from './LeafletMap.less';
 import ImageDraw, { L } from '@/components/ImageDraw';
 import {
   findInTree,
+  findBuildingId,
   parseImage,
   getUserName,
   getMapClickedType,
   getPersonAlarmTypes,
   getIconClassName,
+  getAncestorId,
   OPTIONS_BLUE,
 } from '../utils';
 
@@ -25,6 +28,7 @@ export default class LeafletMap extends PureComponent {
     data: [],
     images: undefined,
     reference: undefined,
+    floorIcon: undefined,
     beaconOn: true, // 是否显示信标
   };
 
@@ -68,6 +72,9 @@ export default class LeafletMap extends PureComponent {
     if (!current)
       return;
 
+    const root = sectionTree[0];
+    const rootId = root.id;
+    const isRoot = areaId === rootId;
     const currentInfo = areaInfo[areaId];
     const { isBuilding, parentId } = currentInfo;
 
@@ -102,7 +109,64 @@ export default class LeafletMap extends PureComponent {
         return prev;
       }, parentId ? [currentRange] : []); // 最顶层的外框不显示
 
-    this.setState({ data, images: areaInfo[areaId].images, reference });
+    // 当前区域为顶层节点，则子节点已加入data，当前节点不为顶层节点，则加入除当前节点所在的父节点的顶层节点的子节点，且子节点都隐藏，报警也不变红
+    if (!isRoot) {
+      const { children: rootChildren } = root;
+      const currentAncestorId = getAncestorId(areaId, rootId, areaInfo);
+      const rootRanges = rootChildren.reduce((prev, { id, range }) => {
+        if (id !== currentAncestorId && range) {
+          let newRange;
+          if (id === highlightedAreaId)
+            // 高亮的变蓝，不高亮的隐藏
+            newRange = { ...range, options: { ...range.options, color: OPTIONS_BLUE } };
+          else
+            newRange = { ...range, options: { ...range.options, color: 'transparent' } };
+          prev.push(newRange);
+        }
+        return prev;
+      }, []);
+
+      data.push(...rootRanges);
+      data.forEach((r, i) => { if(!i) return; r.className=styles.svg; });
+      // console.log(data);
+    }
+
+    const floorIcon = this.getFloorIcon(areaId, range);
+    this.setState({ data, images: areaInfo[areaId].images, reference, floorIcon });
+  };
+
+  getFloorIcon = (areaId, currentRange) => {
+    const { areaInfo, sectionTree } = this.props;
+    const [buildingId, floorId] = findBuildingId(areaId, areaInfo) || [];
+    if (!buildingId)
+      return;
+
+    const building = findInTree(buildingId, sectionTree);
+    const { children } = building;
+    // let rng = range;
+    // if (floorId)
+    //   rng = children.find(({ id }) => id === floorId).range;
+    const props = ['lng', 'lat'];
+    const [x, y] = currentRange.latlngs.reduce((prev, next) => prev.map((n, i) => Math.max(n, next[props[i]])), [0, 0]);
+    const length = children.length;
+    const floors = children.reduce((prev, next, i) => {
+      const { id, status } = next;
+      return `${prev}<p class="${classNames(styles.floor, {
+        [styles.red]: +status === 2,
+        [styles.selectedFloor]: id === floorId,
+      })}" data-floor="${id}">F${i + 1}</p>`;
+    }, '');
+    return {
+      id: `${buildingId}_@@building`,
+      name: buildingId,
+      latlng: { lat: y, lng: x },
+      iconProps: {
+        iconSize: [40, 20 * length],
+        iconAnchor: [-2, 2],
+        className: styles.iconContainer,
+        html: `<div class="${styles.floors}">${floors}</div>`,
+      },
+    };
   };
 
   handleClick = e => {
@@ -110,6 +174,7 @@ export default class LeafletMap extends PureComponent {
     const { id } = origin; // 若点击的是人，原始数据中有id及name，若点击区域，原始数据中无id，只有name
     const clickedType = getMapClickedType(id);
 
+    // console.log(e);
     // 0 区域 1 视频 2 人
     switch (clickedType) {
       case 0:
@@ -124,6 +189,9 @@ export default class LeafletMap extends PureComponent {
       case 3:
         break;
       case 4:
+        this.handleClickFloor(id, e);
+        break;
+      case 5:
         this.handleClickPerson(id);
         break;
       default:
@@ -140,12 +208,12 @@ export default class LeafletMap extends PureComponent {
     const current = this.currentSection;
     const { children } = current;
 
-    // 无子区域则不做处理
-    if (!children) return;
+    // 无子区域或为建筑则不做处理
+    if (!children || isBuilding) return;
 
     // 有子区域
     // 如果当前所在区域为多层建筑，则跳出菜单选择楼层
-    if (isBuilding) e.target.bindPopup(this.genChoiceList(children)).openPopup();
+    // if (isBuilding) e.target.bindPopup(this.genChoiceList(children)).openPopup();
     // 不是多层建筑，则进入该区域
     else setAreaId(aId);
   };
@@ -168,6 +236,15 @@ export default class LeafletMap extends PureComponent {
     const ps = aggregation.find(item => item[0].beaconId === beaconId);
     if (ps.length === 1) handleShowPersonInfo(ps[0].cardId);
     else handleShowPersonDrawer(beaconId);
+  };
+
+  handleClickFloor = (id, e) => {
+    const { setAreaId } = this.props;
+    // const buildingId = id.split('_@@')[0];
+    // console.log(e);
+
+    const floorId = e.originalEvent.srcElement.dataset.floor;
+    setAreaId(floorId);
   };
 
   genChoiceList = children => {
@@ -369,12 +446,12 @@ export default class LeafletMap extends PureComponent {
 
   render() {
     const { url, areaId, areaInfo } = this.props;
-    const { data, images, reference, beaconOn } = this.state;
+    const { data, images, reference, beaconOn, floorIcon } = this.state;
     // const { count, inCardCount, outCardCount } = this.currentTrueSection || {};
 
     const currentAreaInfo = (areaId && areaInfo[areaId]) || {};
     const { parentId, fullName } = currentAreaInfo;
-    const icons = this.positionsToIcons();
+    const icons = this.positionsToIcons().concat(floorIcon || []);
     // console.log('render icons', Date(), icons);
 
     const imgDraw = (
@@ -382,6 +459,8 @@ export default class LeafletMap extends PureComponent {
         <ImageDraw
           maxBoundsRatio={1.5}
           autoZoom
+          boxZoom={false}
+          doubleClickZoom={false}
           mapProps={{ scrollWheelZoom: false }}
           url={url}
           data={data}

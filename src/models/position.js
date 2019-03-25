@@ -1,9 +1,9 @@
 import { getList, getLatest, getTree, getPeople, getCards } from '../services/position';
+import moment from 'moment';
 
 // 格式化树
-function formatTree(list, parentName) {
-  return list.reduce((result, {
-    companyMapPhoto,
+function formatTree(list, parentName='', parentMapId, parentIds=[]) {
+  return (list || []).reduce((result, {
     mapPhoto,
     range,
     id,
@@ -11,12 +11,18 @@ function formatTree(list, parentName) {
     parentId,
     companyMap,
     mapId,
-    children,
+    children: childList,
   }) => {
-    const fullName = parentName ? `${parentName}${name}` : name;
+    const fullName = `${parentName}${name}`;
+    const { children, isBuilding } = (childList || []).reduce((obj, { id, mapId: childMapId }) => {
+      obj.children.push(id);
+      obj.isBuilding = obj.isBuilding || childMapId !== mapId; // 如果当前区域与子区域的图片不同，则认为当前区域是建筑
+      return obj;
+    }, { children: [], isBuilding: false });
+    const childrenResult = formatTree(childList, fullName, mapId, parentIds.concat(id));
     return {
-      url: !result.url && JSON.parse(companyMapPhoto).url,
       ...result,
+      ...childrenResult,
       [id]: {
         ...(JSON.parse(range)),
         url: JSON.parse(mapPhoto).url,
@@ -26,9 +32,12 @@ function formatTree(list, parentName) {
         parentId,
         companyMap,
         mapId,
-        children: children ? children.map(({ id }) => id) : [],
+        children,
+        descendants: Object.keys(childrenResult),
+        parentIds,
+        isBuilding, // 是否是建筑
+        isFloor: parentMapId ? parentMapId !== mapId : false, // 如果当前区域与父区域的图片不同，则认为当前区域是楼层
       },
-      ...(children && formatTree(children, fullName)),
     };
   }, {});
 };
@@ -64,7 +73,7 @@ function formatData(list) {
       userName,
       vistorName,
       isAlarm,
-      options: { color: isAlarm ? '#ff4848' : '#00a8ff' },
+      options: { color: isAlarm ? '#ff4848' : '#00ffff' },
       locationStatusHistoryList,
     };
   });
@@ -80,40 +89,22 @@ function cloneTreeList(list) {
 }
 
 function getSelectTree(list) {
-    return Array.isArray(list) ? cloneTreeList(list) : [];
+    const treeList = Array.isArray(list) ? cloneTreeList(list) : [];
+    // treeList.forEach(ls => delete ls.children);
+    return treeList;
 }
 
-function getHisotryIdMap(list, idType) {
+function getHistoryIdMap(list, idType) {
   const isCardId = +idType;
-  return list.reduce((prev, next) => {
-    let id = next[isCardId ? 'cardId' : 'userId'];
-    // 依据cardId，且cardId不存在，直接忽略，实际这种情况不存在
-    if (!id && isCardId)
-      return prev;
-    // 依据userId，未绑定的普通卡和所有临时卡没有userId，根据卡的类型，正式卡都显示为未领，临时卡根据是否有名字，分为名字和访客
-    if (!id && !isCardId) {
-      const isVisitor = +next.cardType;
-      const { visitorName } = next;
-      if (!isVisitor){
-        id = 'not_bound';
-        next = { ...next, userId: 'not_bound', userName: '未领' };
-      // 临时卡添加userName是为了下面按名字排序
-      } else if(visitorName) {
-        id = visitorName;
-        next = { ...next, userId: visitorName, userName: visitorName };
-      }
-      else {
-        id = 'visitor';
-        next = { ...next, userId: 'visitor', visitorName: '访客', userName: '访客' };
-      }
+  return list.reduce((result, item) => {
+    let id = item[isCardId ? 'cardId' : 'userId'];
+    if (id in result) {
+      result[id].push(item);
     }
-
-    if (id in prev)
-      prev[id].push(next);
-    else
-      prev[id] = [next];
-
-    return prev;
+    else {
+      result[id] = [item];
+    }
+    return result;
   }, {});
 }
 
@@ -121,19 +112,25 @@ export default {
   namespace: 'position',
 
   state: {
-    data: {
-      // 当前选中时间段内涉及的区域
-      areaDataHistories: [],
-      // 当前选中时间段内涉及的人员位置
-      locationDataHistories: [],
-    },
-    // areaDataMap: {},
+    // 时间段内的人员数组
     areaDataList: [],
+    // 轨迹数据对象
     historyIdMap: {},
+    // 选中的时间范围
+    timeRange: [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')],
+    // 表格中当前选中的人员或卡片id
+    selectedIds: [],
+    // 当前选中的表格行
+    selectedTableRow: 'all',
+    // 区域树对象
     tree: {},
+    // 区域树数组
     originalTree: [],
+    // 人员列表
     people: [],
+    // 卡片列表
     cards: [],
+    // 搜索框支持格式的区域树
     sectionTree: [],
   },
 
@@ -148,37 +145,44 @@ export default {
       const idType = payload.idType;
       delete payload.idType;
       const response = yield call(getList, payload);
-      let areaDataList = [];
       if (response.code === 200) {
         const { areaDataHistories, locationDataHistories } = response.data;
-        const originHistoryIdMap = getHisotryIdMap(locationDataHistories, idType);
+        // 轨迹数据
+        const originHistoryIdMap = getHistoryIdMap(locationDataHistories, idType);
         const historyIdMap = Object.entries(originHistoryIdMap).reduce((prev, next) => {
-          const [id, ids] = next;
-          prev[id] = formatData(Array.from(ids));
+          const [id, list] = next;
+          prev[id] = formatData(list);
           return prev;
         }, {});
-        // const areaDataMap = getHisotryIdMap(areaDataHistories, idType);
-        // areaDataList = Object.values(areaDataMap);
-        areaDataList = areaDataHistories;
+        // 时间段内的人员或卡片列表
+        const areaDataList = areaDataHistories;
         const sortFn = +idType
           ? (a, b) => a.cardCode - b.cardCode
           : (a, b) => a.userName.localeCompare(b.userName, 'zh-Hans-CN', {sensitivity: 'accent'});
         areaDataList.sort(sortFn);
+        // 时间范围
+        const timeRange = areaDataList.reduce((prev, next) => {
+          const [start, end] = prev;
+          const { startTime, endTime } = next;
+          prev[0] = Math.min(start, startTime);
+          prev[1] = Math.max(end, endTime);
+          return prev;
+        }, [Infinity, 0]);
+        // 选中的人员或卡片id
+        const selectedIds = Object.keys(historyIdMap);
         yield put({
           type: 'save',
           payload: {
-            data: {
-              areaDataHistories,
-              locationDataHistories: formatData(locationDataHistories),
-            },
-            // areaDataMap,
             areaDataList,
             historyIdMap,
+            timeRange,
+            selectedIds,
+            selectedTableRow: 'all',
           },
         });
       }
       if (callback) {
-        callback(response, areaDataList);
+        callback(response);
       }
     },
     // 获取区域树

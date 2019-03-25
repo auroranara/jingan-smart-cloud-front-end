@@ -703,12 +703,12 @@ class ImageDraw extends PureComponent {
         _northEast: { lat: height, lng: width },
       },
     } = this.state;
-    const { id, latlng, name, iconProps } = item;
+    const { id, latlng, name, iconProps, icon } = item;
     return (
       <Marker
         key={id || name}
         data={item}
-        icon={iconProps && L.divIcon(iconProps)}
+        icon={iconProps ? L.divIcon(iconProps) : icon}
         position={{ lat: latlng.lat * height, lng: latlng.lng * width }}
         onAdd={this.handleAdd}
         onClick={this.handleClickShape}
@@ -739,6 +739,7 @@ class ImageDraw extends PureComponent {
         fill = true,
         fillOpacity = 0.2,
       } = {},
+      className,
     } = item;
     let shape = null;
     switch (type) {
@@ -755,6 +756,7 @@ class ImageDraw extends PureComponent {
             weight={weight}
             fill={fill}
             fillOpacity={fillOpacity}
+            className={className}
           />
         );
         break;
@@ -771,6 +773,7 @@ class ImageDraw extends PureComponent {
             weight={weight}
             fill={fill}
             fillOpacity={fillOpacity}
+            className={className}
           />
         );
         break;
@@ -788,6 +791,7 @@ class ImageDraw extends PureComponent {
             weight={weight}
             fill={fill}
             fillOpacity={fillOpacity}
+            className={className}
           />
         );
         break;
@@ -860,6 +864,7 @@ class ImageDraw extends PureComponent {
       hideBackground,
       data = [],
       divIcons = [],
+      menu,
       circleMarkers,
       images,
       arrows,
@@ -961,6 +966,7 @@ class ImageDraw extends PureComponent {
                 {data && data.map(this.renderShape)}
                 {divIcons && divIcons.map(this.renderDivIcon)}
                 {circleMarkers && circleMarkers.map(this.renderCircleMarker)}
+                {menu && this.renderDivIcon(menu)}
               </FeatureGroup>
             </ImageOverlay>
           )}
