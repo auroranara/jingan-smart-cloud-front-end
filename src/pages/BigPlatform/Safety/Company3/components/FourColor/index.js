@@ -294,9 +294,9 @@ export default class FourColor extends PureComponent {
                         <div>
                           有无隐患：
                           {+originalStatus === 2 ? (
-                            <span style={{ color: '#ff4848' }}>有隐患</span>
+                            <span style={{ color: '#ff4848' }}>有</span>
                           ) : (
-                            '无隐患'
+                            '无'
                           )}
                         </div>
                         <div>
