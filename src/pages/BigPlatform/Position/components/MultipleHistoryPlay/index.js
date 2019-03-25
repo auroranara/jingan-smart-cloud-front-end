@@ -1047,11 +1047,11 @@ export default class MultipleHistoryPlay extends PureComponent {
    */
   handleClick = ({ target: { options: { data: { areaId, category }={} } }, originalEvent }) => {
     const { selectedTableRow } = this.props;
+    const { playing, currentAreaId: prevAreaId } = this.state;
     // 如果当前在追踪某个人员，则不能点击区域和菜单
-    if (selectedTableRow !== 'all') {
+    if (selectedTableRow !== 'all' && playing) {
       return;
     }
-    const { playing, currentAreaId: prevAreaId } = this.state;
     let currentAreaId;
     if (category === 'area' && prevAreaId !== areaId) {
       currentAreaId = areaId;
@@ -1150,8 +1150,8 @@ export default class MultipleHistoryPlay extends PureComponent {
             onClick={this.handleClick}
             {...drawProps}
           />
-          {selectedTableRow === 'all' && currentAreaId && <Icon type="home" className={styles.homeButton} onClick={this.handleClickHome} />}
-          {selectedTableRow === 'all' && topLevelArea && currentAreaId && topLevelArea.id !== currentAreaId && <Icon type="rollback" className={styles.backButton} onClick={this.handleClickBack} />}
+          {(selectedTableRow === 'all' || !playing) && currentAreaId && <Icon type="home" className={styles.homeButton} onClick={this.handleClickHome} />}
+          {(selectedTableRow === 'all' || !playing) && topLevelArea && currentAreaId && topLevelArea.id !== currentAreaId && <Icon type="rollback" className={styles.backButton} onClick={this.handleClickBack} />}
         </div>
         {/* 控件容器 */}
         <div className={styles.controlWrapper}>

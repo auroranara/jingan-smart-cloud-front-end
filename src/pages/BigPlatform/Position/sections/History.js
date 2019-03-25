@@ -15,7 +15,7 @@ const { Option } = Select;
 // 时间格式
 const timeFormat = 'YYYY-MM-DD HH:mm';
 // 默认范围
-const defaultRange = [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')];
+const defaultRange = [moment().startOf('minute').subtract(24, 'hours'), moment().startOf('minute')];
 const renderThumbHorizontal = ({ style }) => <div style={{ ...style, display: 'none' }} />;
 const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)', right: -2 };
 // 限制1天
@@ -59,38 +59,34 @@ export default class History extends PureComponent {
   componentDidMount() {
     const {
       position: { originalTree },
-      idType, // 搜索类型，1是卡片，0是人员
-      userIds,
-      cardIds,
+      // idType, // 搜索类型，1是卡片，0是人员
+      // userIds,
+      // cardIds,
       // setUserIds,
     } = this.props;
-    // setUserIds(["cIr_DU6ZQviCe9534YC_fA", "iHd_pzoxSVKd5pxZmeZc4g"]);
     // 默认选中最顶层的第一个区域
-    this.setState({ selectedAreaId: originalTree[0].id }/* , () => {
-      // 假数据
-      const range = [moment('2019-03-08 10:01:00'), moment('2019-03-08 10:02:00')];
-      this.setState({ range });
-      this.lastRange = range;
+    this.setState({ selectedAreaId: originalTree[0].id }, () => {
+      const { range } = this.state;
       this.getData(range);
-    } */);
+    });
     // 如果是从目标跟踪过来的，则根据跟踪的人员初始化数据
-    if (userIds.length || cardIds.length) {
-      const params = +idType ? { cardId: cardIds[0] } : { userId: userIds[0] };
-      // 获取最新一条数据的进入时间作为结束时间，往前推5分钟作为开始时间
-      this.fetchLatest(params, response => {
-        if (response && response.code === 200 && response.data) {
-          const { intime } = response.data;
-          const minute = 60 * 1000;
-          const queryEndTime = Math.ceil((intime) / minute) * minute;
-          const queryStartTime = queryEndTime - minute * 5;
-          const range = [moment(queryStartTime), moment(queryEndTime)];
-          this.setState({ range });
-          this.lastRange = range;
-          // 获取列表
-          this.getData(range);
-        }
-      });
-    }
+    // if (userIds.length || cardIds.length) {
+    //   const params = +idType ? { cardId: cardIds[0] } : { userId: userIds[0] };
+    //   // 获取最新一条数据的进入时间作为结束时间，往前推5分钟作为开始时间
+    //   this.fetchLatest(params, response => {
+    //     if (response && response.code === 200 && response.data) {
+    //       const { intime } = response.data;
+    //       const minute = 60 * 1000;
+    //       const queryEndTime = Math.ceil((intime) / minute) * minute;
+    //       const queryStartTime = queryEndTime - minute * 5;
+    //       const range = [moment(queryStartTime), moment(queryEndTime)];
+    //       this.setState({ range });
+    //       this.lastRange = range;
+    //       // 获取列表
+    //       this.getData(range);
+    //     }
+    //   });
+    // }
   }
 
   componentWillUnmount() {
@@ -225,6 +221,8 @@ export default class History extends PureComponent {
   // 筛选出areaDataList中在指定区域指定时间戳的人员
   filterTableList = (currentIds) => {
     const { position: { areaDataList }, idType } = this.props;
+    // console.log(currentIds);
+    // console.log(areaDataList);
     // areaDataList数组中的areaId为根节点的id
     const tableList = areaDataList.filter(({ userId, cardId }) => {
       return currentIds.includes(+idType ? cardId : userId);
