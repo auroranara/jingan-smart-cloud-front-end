@@ -97,6 +97,7 @@ export default class History extends PureComponent {
       timeRange: [moment().startOf('minute').subtract(24, 'hours'), moment().startOf('minute')],
       selectedIds: [],
       selectedTableRow: ALL,
+      selectedIdType: 0,
     });
   }
 
@@ -220,12 +221,12 @@ export default class History extends PureComponent {
 
   // 筛选出areaDataList中在指定区域指定时间戳的人员
   filterTableList = (currentIds) => {
-    const { position: { areaDataList }, idType } = this.props;
+    const { position: { areaDataList, selectedIdType } } = this.props;
     // console.log(currentIds);
     // console.log(areaDataList);
     // areaDataList数组中的areaId为根节点的id
     const tableList = areaDataList.filter(({ userId, cardId }) => {
-      return currentIds.includes(+idType ? cardId : userId);
+      return currentIds.includes(+selectedIdType ? cardId : userId);
     });
     this.setState({ tableList });
   };
@@ -249,6 +250,7 @@ export default class History extends PureComponent {
         timeRange,
         selectedIds,
         selectedTableRow,
+        selectedIdType,
       },
       // handleLabelClick,
     } = this.props;
@@ -282,7 +284,7 @@ export default class History extends PureComponent {
                 </div>
                 <div className={styles.selects}>
                   <Select
-                    disabled={loading}
+                    // disabled={loading}
                     defaultValue="0"
                     value={idType}
                     className={styles.select1}
@@ -348,7 +350,7 @@ export default class History extends PureComponent {
                       )}
                       {tableList && tableList.length > 0 && tableList.map(area => {
                         const { cardId, userId, cardCode, phoneNumber, departmentName } = area;
-                        const id = isCard ? cardId : userId;
+                        const id = +selectedIdType ? cardId : userId;
                         return (
                           <div className={styles[`tr${selectedTableRow === id ? 1 : ''}`]} key={id} onClick={(e) => {this.handleClickTableRow(id, e)}}>
                             <div className={styles.td}>{getUserName(area)}</div>

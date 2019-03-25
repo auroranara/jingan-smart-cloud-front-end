@@ -132,6 +132,7 @@ export default {
     cards: [],
     // 搜索框支持格式的区域树
     sectionTree: [],
+    selectedIdType: 0,
   },
 
   effects: {
@@ -142,8 +143,8 @@ export default {
     },
     // 获取选中数据
     *fetchData({ payload, callback }, { call, put }) {
-      const idType = payload.idType;
-      delete payload.idType;
+      const idType = +payload.idType;
+      // delete payload.idType;
       const response = yield call(getList, payload);
       if (response.code === 200) {
         const { areaDataHistories, locationDataHistories } = response.data;
@@ -156,7 +157,7 @@ export default {
         }, {});
         // 时间段内的人员或卡片列表
         const areaDataList = areaDataHistories;
-        const sortFn = +idType
+        const sortFn = idType
           ? (a, b) => a.cardCode - b.cardCode
           : (a, b) => a.userName.localeCompare(b.userName, 'zh-Hans-CN', {sensitivity: 'accent'});
         areaDataList.sort(sortFn);
@@ -176,6 +177,7 @@ export default {
             timeRange,
             selectedIds,
             selectedTableRow: 'all',
+            selectedIdType: idType,
           },
         });
       }
