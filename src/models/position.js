@@ -161,10 +161,10 @@ export default {
           : (a, b) => a.userName.localeCompare(b.userName, 'zh-Hans-CN', {sensitivity: 'accent'});
         areaDataList.sort(sortFn);
         // 时间范围
-        const { startTime=payload.queryStartTime, endTime=payload.queryEndTime } = areaDataList.reduce((prev, next) => ({
+        const { startTime=payload.queryStartTime, endTime=payload.queryEndTime } = areaDataList.length > 0 ? areaDataList.reduce((prev, next) => ({
           startTime: Math.min(prev.startTime, next.startTime),
           endTime: Math.max(prev.endTime, next.endTime),
-        }));
+        })) : {};
         const timeRange = [Math.max(startTime, payload.queryStartTime), Math.min(endTime, payload.queryEndTime)];
         // 选中的人员或卡片id
         const selectedIds = Object.keys(historyIdMap);

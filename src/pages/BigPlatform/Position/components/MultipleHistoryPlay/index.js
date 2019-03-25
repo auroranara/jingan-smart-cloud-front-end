@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { Icon, Tooltip } from 'antd';
 import moment from 'moment';
 import classNames from 'classnames';
@@ -1151,8 +1151,12 @@ export default class MultipleHistoryPlay extends PureComponent {
             onClick={this.handleClick}
             {...drawProps}
           />
-          {selectedTableRow === 'all' && currentAreaId && <Icon type="home" className={styles.homeButton} onClick={this.handleClickHome} />}
-          {selectedTableRow === 'all' && topLevelArea && currentAreaId && topLevelArea.id !== currentAreaId && <Icon type="rollback" className={styles.backButton} onClick={this.handleClickBack} />}
+          {selectedTableRow === 'all' && topLevelArea && currentAreaId && topLevelArea.id !== currentAreaId && (
+            <Fragment>
+              <Icon type="home" className={styles.homeButton} onClick={this.handleClickHome} />
+              <Icon type="rollback" className={styles.backButton} onClick={this.handleClickBack} />
+            </Fragment>
+          )}
         </div>
         {/* 控件容器 */}
         <div className={styles.controlWrapper}>
