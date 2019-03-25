@@ -758,6 +758,7 @@ export default class Smoke extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleAlarmClick={this.handleAlarmClick}
           handleFaultClick={this.handleFaultClick}
+          handleClickDeviceNumber={this.handleClickUnitStatistics}
         />
         <FireStatisticsDrawer
           visible={fireDrawerVisible}

@@ -746,6 +746,7 @@ export default class Gas extends PureComponent {
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleAlarmClick={this.handleAlarmClick}
+          handleClickDeviceNumber={this.hanldeViewUnitMonitor}
         />
         <BusinessDrawer
           data={{ list: pendingUnitsCardsInfo, graphList: gasChartByMonth }}
