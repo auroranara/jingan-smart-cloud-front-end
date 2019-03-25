@@ -94,7 +94,7 @@ export default class History extends PureComponent {
     this.save({
       areaDataList: [],
       historyIdMap: {},
-      timeRange: [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')],
+      timeRange: [moment().startOf('minute').subtract(24, 'hours'), moment().startOf('minute')],
       selectedIds: [],
       selectedTableRow: ALL,
     });
@@ -301,6 +301,7 @@ export default class History extends PureComponent {
                     value={isCard ? cardIds : userIds}
                     placeholder="请选择或搜索人员/卡号"
                     onChange={this.handleIdsChange}
+                    optionFilterProp="children"
                   >
                     {options}
                   </Select>
@@ -346,14 +347,14 @@ export default class History extends PureComponent {
                         </div>
                       )}
                       {tableList && tableList.length > 0 && tableList.map(area => {
-                        const { cardId, userId, idType, cardCode, department } = area;
-                        const id = +idType ? cardId : userId;
+                        const { cardId, userId, cardCode, phoneNumber, departmentName } = area;
+                        const id = isCard ? cardId : userId;
                         return (
                           <div className={styles[`tr${selectedTableRow === id ? 1 : ''}`]} key={id} onClick={(e) => {this.handleClickTableRow(id, e)}}>
                             <div className={styles.td}>{getUserName(area)}</div>
                             <div className={styles.td}>{cardCode}</div>
-                            <div className={styles.td}>-</div>
-                            <div className={styles.td}>{department || '-'}</div>
+                            <div className={styles.td}>{phoneNumber || '-'}</div>
+                            <div className={styles.td}>{departmentName || '-'}</div>
                             {/* <div className={styles.td}>跟踪</div> */}
                           </div>
                         );

@@ -117,7 +117,7 @@ export default {
     // 轨迹数据对象
     historyIdMap: {},
     // 选中的时间范围
-    timeRange: [moment().startOf('minute').subtract(5, 'minutes'), moment().startOf('minute')],
+    timeRange: [moment().startOf('minute').subtract(24, 'hours'), moment().startOf('minute')],
     // 表格中当前选中的人员或卡片id
     selectedIds: [],
     // 当前选中的表格行
@@ -161,13 +161,11 @@ export default {
           : (a, b) => a.userName.localeCompare(b.userName, 'zh-Hans-CN', {sensitivity: 'accent'});
         areaDataList.sort(sortFn);
         // 时间范围
-        const timeRange = areaDataList.reduce((prev, next) => {
-          const [start, end] = prev;
-          const { startTime, endTime } = next;
-          prev[0] = Math.min(start, startTime);
-          prev[1] = Math.max(end, endTime);
-          return prev;
-        }, [Infinity, 0]);
+        const { startTime=payload.queryStartTime, endTime=payload.queryEndTime } = areaDataList.reduce((prev, next) => ({
+          startTime: Math.min(prev.startTime, next.startTime),
+          endTime: Math.max(prev.endTime, next.endTime),
+        }));
+        const timeRange = [Math.max(startTime, payload.queryStartTime), Math.min(endTime, payload.queryEndTime)];
         // 选中的人员或卡片id
         const selectedIds = Object.keys(historyIdMap);
         yield put({

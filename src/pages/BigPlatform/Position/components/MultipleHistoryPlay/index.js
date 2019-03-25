@@ -99,6 +99,8 @@ export default class MultipleHistoryPlay extends PureComponent {
    */
   componentDidUpdate({ ids: prevIds, idMap: prevIdMap }) {
     const { ids, idMap, startTime, top, selectedTableRow, tree } = this.props;
+    // console.log(idMap);
+    // console.log(ids);
     // 如果源数据发生变化，则重置所有参数，保留播放速度相关参数
     if (idMap !== prevIdMap) {
       // 移除播放定时器
@@ -115,8 +117,6 @@ export default class MultipleHistoryPlay extends PureComponent {
           currentAreaId = currentData.areaId || top.id; // 如果在厂内，则取当前区域id，不在厂内，则取最顶层区域id
         }
       }
-      // console.log(idMap);
-      // console.log(ids);
       // console.log(tree);
       // 重置参数
       this.setState(({ speed, isMinSpeed, isMaxSpeed }) => ({
@@ -163,7 +163,7 @@ export default class MultipleHistoryPlay extends PureComponent {
           currentIndexes,
           drawProps: {
             ...drawProps,
-            ...this.getDrawProps({ currentAreaId, currentIndexes, currentTimeStamp, reset: currentAreaId !== prevAreaId }),
+            ...this.getDrawProps({ currentAreaId, currentIndexes, currentTimeStamp, reset: true/* currentAreaId !== prevAreaId */ }),
           },
         };
       }, () => {
@@ -503,7 +503,7 @@ export default class MultipleHistoryPlay extends PureComponent {
    * @return {object} 菜单对象
    */
   getMenu = (currentArea, isAlarmMap, selectedArea) => {
-    const { tree } = this.props;
+    const { tree, selectedTableRow } = this.props;
     const { id, isBuilding, isFloor, children, parentId } = currentArea;
     // 如果当前区域为建筑，则获取楼层子区域生成菜单对象
     if (isBuilding) {
@@ -513,6 +513,7 @@ export default class MultipleHistoryPlay extends PureComponent {
         if (isFloor) {
           floors.push(`<div class="${classNames({
             [styles.floor]: true,
+            [styles.hoverableFloor]: selectedTableRow === 'all',
             [styles.alarmFloor]: isAlarmMap[id],
             [styles.selectedFloor]: selectedArea && selectedArea.id === id,
           })}" data-id="${id}">${name}</div>`);
@@ -623,7 +624,7 @@ export default class MultipleHistoryPlay extends PureComponent {
    * @return {array} 如果当前所在区域为顶层区域，则只显示报警的直属子区域，否则显示当前区域的边框，并显示报警的直属子区域
    */
   getAreas = (currentArea, isAlarmMap) => {
-    const { tree } = this.props;
+    const { tree, selectedTableRow } = this.props;
     // 获取非楼层的直属子区域
     const list = currentArea.children.reduce((arr, id) => {
       const item = tree[id];
@@ -633,7 +634,7 @@ export default class MultipleHistoryPlay extends PureComponent {
           ...item,
           id: `${id}${Math.random()}`,
           areaId: id,
-          className: styles.hoverable,
+          className: selectedTableRow === 'all' ? styles.hoverable : undefined,
           options: { ...DEFAULT_AREA_OPTIONS, color: isAlarm ? '#ff4848' : 'transparent', fill: true },
           category: 'area',
         });
@@ -1047,11 +1048,11 @@ export default class MultipleHistoryPlay extends PureComponent {
    */
   handleClick = ({ target: { options: { data: { areaId, category }={} } }, originalEvent }) => {
     const { selectedTableRow } = this.props;
-    const { playing, currentAreaId: prevAreaId } = this.state;
     // 如果当前在追踪某个人员，则不能点击区域和菜单
-    if (selectedTableRow !== 'all' && playing) {
+    if (selectedTableRow !== 'all') {
       return;
     }
+    const { playing, currentAreaId: prevAreaId } = this.state;
     let currentAreaId;
     if (category === 'area' && prevAreaId !== areaId) {
       currentAreaId = areaId;
@@ -1150,8 +1151,8 @@ export default class MultipleHistoryPlay extends PureComponent {
             onClick={this.handleClick}
             {...drawProps}
           />
-          {(selectedTableRow === 'all' || !playing) && currentAreaId && <Icon type="home" className={styles.homeButton} onClick={this.handleClickHome} />}
-          {(selectedTableRow === 'all' || !playing) && topLevelArea && currentAreaId && topLevelArea.id !== currentAreaId && <Icon type="rollback" className={styles.backButton} onClick={this.handleClickBack} />}
+          {selectedTableRow === 'all' && currentAreaId && <Icon type="home" className={styles.homeButton} onClick={this.handleClickHome} />}
+          {selectedTableRow === 'all' && topLevelArea && currentAreaId && topLevelArea.id !== currentAreaId && <Icon type="rollback" className={styles.backButton} onClick={this.handleClickBack} />}
         </div>
         {/* 控件容器 */}
         <div className={styles.controlWrapper}>
