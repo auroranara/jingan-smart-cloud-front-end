@@ -54,6 +54,7 @@ export default class RealTime extends PureComponent {
 
     this.connectWebSocket();
     this.fetchSectionTree(list => {
+      const { areaId } = this.state;
       const areaInfo = this.areaInfo = getAreaInfo(list);
       setAreaInfoCache(areaInfo);
       this.setTableExpandedRowKeys(Object.keys(areaInfo).filter(prop => prop !== 'null' && prop !== 'undefined'));
@@ -61,23 +62,30 @@ export default class RealTime extends PureComponent {
       if (list.length) {
         const root = list[0];
         const { id } = root;
-        this.setState({ areaId: id, mapBackgroundUrl: root.mapPhoto.url });
+        const state = { areaId: id, mapBackgroundUrl: root.mapPhoto.url };
+        // 如果从历史轨迹里点追踪进入当前组件，则areaId可能已存在，若存在，则用，不存在则使用根节点
+        if (areaId)
+          state.areaId = areaId;
+        this.setState(state);
       }
     });
     dispatch({
       type: 'personPosition/fetchInitialPositions',
       payload: { companyId },
       callback: list => {
-        // selectedCardId进入时已经存在则为从历史轨迹中点击跟踪时进入
-        const { selectedCardId, setSelectedCard } = this.props;
-        if (!selectedCardId)
+        // 初始化时，selectedCardId或selectedUserId某一个已经存在则为从历史轨迹中点击跟踪时进入
+        const { selectedCardId, selectedUserId, setSelectedCard } = this.props;
+        if (!selectedCardId && !selectedUserId)
           return;
-        const person = list.find(({ cardId }) => cardId === selectedCardId);
+        // 从历史轨迹中进入时，只会传一个值，哪个有，就根据哪个判断
+        const isUserId = !!selectedUserId;
+        const person = list.find(({ cardId, userId }) => isUserId ? userId === selectedUserId : cardId === selectedCardId);
         if (!person)
           return;
-        const { userId, areaId } = person;
+        const { cardId, userId, areaId } = person;
+        // console.log(person);
         this.setAreaId(areaId);
-        setSelectedCard(selectedCardId, userId);
+        setSelectedCard(cardId, userId);
       },
     });
     dispatch({

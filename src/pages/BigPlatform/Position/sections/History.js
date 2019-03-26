@@ -215,8 +215,35 @@ export default class History extends PureComponent {
    * 切换tab
    */
   onTabClick = i => {
-    const { handleLabelClick } = this.props;
+    const { handleLabelClick, setSelectedCard } = this.props;
+    // 标签页切换时，将目标追踪中的选中的卡片设为undefined
+    setSelectedCard();
     handleLabelClick(i);
+  };
+
+  genHandleTrack = (cardId, userId) => e => {
+    e.stopPropagation();
+    const { dispatch, companyId, handleLabelClick, setSelectedCard, selectedIdType } = this.props;
+    const isCardId = +selectedIdType;
+    const prop = isCardId ? 'cardId' : 'userId';
+    const id = isCardId ? cardId : userId;
+    // 先查看跟踪的目标是否可以跟踪
+    dispatch({
+      type: 'personPosition/fetchInitialPositions',
+      payload: { companyId },
+      callback: list => {
+        const person = list.find(({ [prop]: pId }) => pId === id);
+        if (!person || !person.areaId) {
+          message.warn('跟踪目标无法找到');
+          return;
+        }
+        const { cardId, userId } = person;
+        const cId = isCardId ? cardId : undefined;
+        const uId = isCardId ? undefined : userId;
+        setSelectedCard(cId, uId);
+        handleLabelClick(1);
+      },
+    });
   };
 
   // 筛选出areaDataList中在指定区域指定时间戳的人员
@@ -326,7 +353,7 @@ export default class History extends PureComponent {
                     <div className={styles.td}>卡号</div>
                     <div className={styles.td}>电话</div>
                     <div className={styles.td}>部门</div>
-                    {/* <div className={styles.td}>操作</div> */}
+                    <div className={styles.td}>操作</div>
                   </div>
                   <div className={styles.tbody}>
                     <Scroll
@@ -341,7 +368,7 @@ export default class History extends PureComponent {
                           <div className={styles.td}>-</div>
                           <div className={styles.td}>-</div>
                           <div className={styles.td}>-</div>
-                          {/* <div className={styles.td}>-</div> */}
+                          <div className={styles.td}>-</div>
                         </div>
                       )}
                       {tableList && tableList.length > 0 && tableList.map(area => {
@@ -353,7 +380,7 @@ export default class History extends PureComponent {
                             <div className={styles.td}>{cardCode}</div>
                             <div className={styles.td}>{phoneNumber || '-'}</div>
                             <div className={styles.td}>{departmentName || '-'}</div>
-                            {/* <div className={styles.td}>跟踪</div> */}
+                            <div className={styles.td2} onClick={this.genHandleTrack(cardId, userId)}>跟踪</div>
                           </div>
                         );
                       })/*  : <div className={styles.emptyTr}><div className={styles.td}>暂无数据</div></div> */}
