@@ -53,7 +53,6 @@ export default class RealTime extends PureComponent {
     const { dispatch, companyId, setAreaInfoCache } = this.props;
 
     this.connectWebSocket();
-
     this.fetchSectionTree(list => {
       const areaInfo = this.areaInfo = getAreaInfo(list);
       setAreaInfoCache(areaInfo);
@@ -68,6 +67,18 @@ export default class RealTime extends PureComponent {
     dispatch({
       type: 'personPosition/fetchInitialPositions',
       payload: { companyId },
+      callback: list => {
+        // selectedCardId进入时已经存在则为从历史轨迹中点击跟踪时进入
+        const { selectedCardId, setSelectedCard } = this.props;
+        if (!selectedCardId)
+          return;
+        const person = list.find(({ cardId }) => cardId === selectedCardId);
+        if (!person)
+          return;
+        const { userId, areaId } = person;
+        this.setAreaId(areaId);
+        setSelectedCard(selectedCardId, userId);
+      },
     });
     dispatch({
       type: 'personPosition/fetchInitAlarms',
@@ -117,8 +128,8 @@ export default class RealTime extends PureComponent {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const params = {
       companyId,
-      // env,
-      env: 'dev',
+       env,
+      //env: 'dev',
       type: 2,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;

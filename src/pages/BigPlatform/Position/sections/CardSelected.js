@@ -35,7 +35,7 @@ export default class CardSelected extends PureComponent {
     const isVisitor = !!+cardType;
     const name = getUserName(card, true);
     const phone = isVisitor ? visitorPhone : phoneNumber;
-    const videoKeyId = videoList.length ? videoList[0].keyId : '';
+    const videoKeyId = videoList && videoList.length ? videoList[0].keyId : '';
     const sectionName = areaInfo && areaInfo[areaId] ? areaInfo[areaId].fullName : '外围区域';
 
     // console.log(videoKeyId);

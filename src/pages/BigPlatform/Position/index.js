@@ -22,6 +22,8 @@ export default class PositionIndex extends PureComponent {
   componentDidMount() {
     const { dispatch, match: { params: { companyId } } } = this.props;
     dispatch({ type: 'position/fetchTree', payload: { companyId } });
+    dispatch({ type: 'position/fetchPeople', payload: { companyId } });
+    dispatch({ type: 'position/fetchCards', payload: { companyId, pageNum: 1, pageSize: 0 } });
   }
 
   setAreaInfoCache = areaInfo => {
@@ -103,13 +105,12 @@ export default class PositionIndex extends PureComponent {
         )}
         {labelIndex === 2 && (
           <History
-            // historyRecord={historyRecord}
             idType={historyIdType}
             userIds={historyUserIds}
             cardIds={historyCardIds}
             companyId={companyId}
             labelIndex={labelIndex}
-            // setHistoryRecord={this.setHistoryRecord}
+            setSelectedCard={this.setSelectedCard}
             setIdType={this.setHistoryIdType}
             setUserIds={this.setHistoryUserIds}
             setCardIds={this.setHistoryCardIds}
