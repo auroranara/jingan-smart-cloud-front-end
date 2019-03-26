@@ -36,7 +36,9 @@ export default class CardSelected extends PureComponent {
     const isVisitor = !!+cardType;
     const name = getUserName(card, true);
     const phone = isVisitor ? visitorPhone : phoneNumber;
-    const videoKeyId = videoList && videoList.length ? videoList[0].keyId : '';
+    const showVideo = videoList && videoList.length;
+    const videoKeyId = showVideo ? videoList[0].keyId : '';
+    const showList = videoList && videoList.length > 1 ? true : false;
     const sectionName = areaInfo && areaInfo[areaId] ? areaInfo[areaId].fullName : '外围区域';
 
     // console.log(videoKeyId);
@@ -71,8 +73,8 @@ export default class CardSelected extends PureComponent {
               hideHead
               visible={true}
               style={VIDEO_STYLE}
-              showList={false}
-              videoList={[]}
+              showList={showList}
+              videoList={ showList ? videoList : []}
               keyId={videoKeyId}
               draggable={false}
               handleVideoClose={emptyFn}
