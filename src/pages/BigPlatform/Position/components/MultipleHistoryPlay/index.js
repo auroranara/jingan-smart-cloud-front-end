@@ -504,7 +504,7 @@ export default class MultipleHistoryPlay extends PureComponent {
     const { id, isBuilding, isFloor, children, parentId } = currentArea;
     // 如果当前区域为建筑，则获取楼层子区域生成菜单对象
     if (isBuilding) {
-      const floors = children.reduce((floors, id) => {
+      const floors = children.reduce((floors, id, index) => {
         const area = tree[id];
         const { isFloor, name } = area;
         if (isFloor) {
@@ -513,7 +513,7 @@ export default class MultipleHistoryPlay extends PureComponent {
             [styles.hoverableFloor]: selectedTableRow === 'all',
             [styles.alarmFloor]: isAlarmMap[id],
             [styles.selectedFloor]: selectedArea && selectedArea.id === id,
-          })}" data-id="${id}">${name}</div>`);
+          })}" data-id="${id}">F${index+1}</div>`);
         }
         return floors;
       }, []);
