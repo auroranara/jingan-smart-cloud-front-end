@@ -75,6 +75,7 @@ function formatData(list) {
       areaId,
       latlng: { lng, lat },
       isVistor: +cardType === 1,
+      cardType,
       userName,
       vistorName,
       isAlarm,
