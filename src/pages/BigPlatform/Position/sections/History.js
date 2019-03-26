@@ -234,7 +234,7 @@ export default class History extends PureComponent {
       callback: list => {
         const person = list.find(({ [prop]: pId }) => pId === id);
         if (!person || !person.areaId) {
-          message.warn('跟踪目标无法找到');
+          message.warn('追踪目标无法找到');
           return;
         }
         const { cardId, userId } = person;
@@ -380,7 +380,7 @@ export default class History extends PureComponent {
                             <div className={styles.td}>{cardCode}</div>
                             <div className={styles.td}>{phoneNumber || '-'}</div>
                             <div className={styles.td}>{departmentName || '-'}</div>
-                            <div className={styles.td2} onClick={this.genHandleTrack(cardId, userId)}>跟踪</div>
+                            <div className={styles.td2} onClick={this.genHandleTrack(cardId, userId)}>追踪</div>
                           </div>
                         );
                       })/*  : <div className={styles.emptyTr}><div className={styles.td}>暂无数据</div></div> */}
