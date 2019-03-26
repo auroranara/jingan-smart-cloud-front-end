@@ -228,6 +228,12 @@ export default class FloorManagementList extends PureComponent {
               pageNum: 1,
             },
           });
+          dispatch({
+            type: 'buildingsInfo/fetchFloorNumber',
+            payload: {
+              building_id: buildingId,
+            },
+          });
           message.success('删除成功！');
         } else message.warning('删除失败！');
       },
