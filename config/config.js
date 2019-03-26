@@ -2,6 +2,7 @@
 
 // https://umijs.org/config/
 
+import os from 'os';
 const path = require('path');
 const initRouters = require('./router.config');
 const webpackplugin = require('./plugin.config');
@@ -60,13 +61,16 @@ export default {
           default: 'zh-CN', // default zh-CN
           baseNavigator: true, // default true, when it is true, will use `navigator.language` overwrite default
         },
-        polyfills: ['ie9'],
         dynamicImport: true,
-        dll: {
-          include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-          exclude: ['@babel/runtime'],
-        },
-        hardSource: false,
+        ...(os.platform() === 'darwin'
+          ? {
+              dll: {
+                include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+                exclude: ['@babel/runtime'],
+              },
+              hardSource: false,
+            }
+          : {}),
       },
     ],
   ],
@@ -75,6 +79,9 @@ export default {
   routes: initRouters(process.env.PROJECT_ENV),
   history: 'hash',
   hash: true,
+  targets: {
+    ie: 11,
+  },
   // 如果是演示环境 publicPath目录为xshow
   publicPath: process.env.PROJECT_ENV === 'show' ? '/xshow/' : '/',
   // publicPath: '/acloud_new/',
