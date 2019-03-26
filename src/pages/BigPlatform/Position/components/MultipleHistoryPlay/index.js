@@ -734,6 +734,12 @@ export default class MultipleHistoryPlay extends PureComponent {
    */
   getCurrentIndexes = ({ currentTimeStamp, prevTimeStamp, prevIndexes = [] }) => {
     const { ids=[], idMap={}, startTime, endTime } = this.props;
+    console.log('ids:',ids);
+    console.log('idMap:',idMap);
+    console.log('startTime:',startTime);
+    console.log('prevTimeStamp:',prevTimeStamp);
+    console.log('endTime:',endTime);
+    console.log('prevIndexes:',prevIndexes);
     // 遍历人员列表，获取人员在当前时间戳的位置索引
     return ids.map((id, index) => {
       // 获取当前人员的数据列表
@@ -769,7 +775,7 @@ export default class MultipleHistoryPlay extends PureComponent {
         if ((prevTimeStamp - currentTimeStamp) < (currentTimeStamp - startTime)) {
           // 从之前的往前找，如果找不到，就取-1
           for (let i = currentIndex; i >= 0; i--) {
-            if (list[i].intime <= currentTimeStamp) {
+            if (list[i] && list[i].intime <= currentTimeStamp) {
               currentIndex = i;
               break;
             }
