@@ -235,7 +235,7 @@ export default class History extends PureComponent {
         const person = list.find(({ [prop]: pId }) => pId === id);
         // console.log(selectedIdType, isCardId, id, person);
         if (!person || !person.areaId) {
-          message.warn('追踪目标无法找到');
+          message.warn('目标不在厂区内，无法追踪！');
           return;
         }
         const { cardId, userId } = person;
