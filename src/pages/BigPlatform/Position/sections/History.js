@@ -373,13 +373,14 @@ export default class History extends PureComponent {
                         </div>
                       )}
                       {tableList && tableList.length > 0 && tableList.map(area => {
-                        const { cardId, userId, cardCode, phoneNumber, departmentName } = area;
+                        const { cardId, cardType, userId, cardCode, phoneNumber, visitorPhone, departmentName } = area;
                         const id = +selectedIdType ? cardId : userId;
+                        const phone = +cardType ? visitorPhone : phoneNumber;
                         return (
                           <div className={styles[`tr${selectedTableRow === id ? 1 : ''}`]} key={id} onClick={(e) => {this.handleClickTableRow(id, e)}}>
                             <div className={styles.td}>{getUserName(area)}</div>
                             <div className={styles.td}>{cardCode}</div>
-                            <div className={styles.td}>{phoneNumber || '-'}</div>
+                            <div className={styles.td}>{phone || '-'}</div>
                             <div className={styles.td}>{departmentName || '-'}</div>
                             <div className={styles.td2} onClick={this.genHandleTrack(cardId, userId)}>追踪</div>
                           </div>

@@ -60,7 +60,8 @@ function formatData(list) {
     cardCode,
     cardType,
     userName,
-    vistorName,
+    visitorName,
+    visitorPhone,
     locationStatusHistoryList,
   }, index) => {
     const isAlarm = locationStatusHistoryList && locationStatusHistoryList.length > 0;
@@ -77,7 +78,8 @@ function formatData(list) {
       isVistor: +cardType === 1,
       cardType,
       userName,
-      vistorName,
+      visitorName,
+      visitorPhone,
       isAlarm,
       options: { color: isAlarm ? '#ff4848' : '#00ffff' },
       locationStatusHistoryList,

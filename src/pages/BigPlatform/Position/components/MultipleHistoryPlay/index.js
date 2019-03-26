@@ -361,7 +361,7 @@ export default class MultipleHistoryPlay extends PureComponent {
           isAlarm,
           isVistor,
           userName,
-          vistorName,
+          visitorName,
           locationStatusHistoryList,
         } = currentData;
         // 获取人员所属区域id
@@ -409,7 +409,7 @@ export default class MultipleHistoryPlay extends PureComponent {
             }, alarm) : alarm,
             isVistor,
             userName,
-            vistorName,
+            visitorName,
           };
           if (isAlarm && !isAlarmMap[currentAreaId]) {
             isAlarmMap[currentAreaId] = true;
@@ -436,7 +436,7 @@ export default class MultipleHistoryPlay extends PureComponent {
               }, alarm) : alarm,
               isVistor,
               userName,
-              vistorName,
+              visitorName,
             };
           }
           if (isAlarm) {
@@ -542,7 +542,7 @@ export default class MultipleHistoryPlay extends PureComponent {
    */
   getDivIcons = (locationMap) => {
     // 遍历人员位置
-    return Object.values(locationMap).map(({ id, count, latlng, alarm, isVistor, userName, vistorName }) => {
+    return Object.values(locationMap).map(({ id, count, latlng, alarm, isVistor, userName, visitorName }) => {
       // 是否为报警状态
       const isAlarm = alarm.length > 0;
       // 人员元素类名
@@ -566,7 +566,7 @@ export default class MultipleHistoryPlay extends PureComponent {
             className = styles.bluePerson;
           }
         }
-        personTitle = `<div class="${styles.personName}">${isVistor?vistorName||'访客':userName||'未领'}</div>`;
+        personTitle = `<div class="${styles.personName}">${isVistor?visitorName||'访客':userName||'未领'}</div>`;
       }
       else {
         if (isAlarm) {
