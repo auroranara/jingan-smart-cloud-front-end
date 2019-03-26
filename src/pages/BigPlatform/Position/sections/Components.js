@@ -1,4 +1,5 @@
 import AlarmDrawer from './AlarmDrawer';
+import AlarmList from './AlarmList';
 import CardList from './CardList';
 import CardSelected from './CardSelected';
 import History from './History';
@@ -10,6 +11,7 @@ import SectionList from './SectionList';
 
 export {
   AlarmDrawer,
+  AlarmList,
   CardList,
   CardSelected,
   History,

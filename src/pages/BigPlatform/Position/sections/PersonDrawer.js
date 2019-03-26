@@ -4,6 +4,8 @@ import styles from './PersonDrawer.less';
 import { DrawerContainer } from '../components/Components';
 import { getUserName } from '../utils';
 
+const ALARMS_CN = ['SOS', '长时间逗留', '越界'];
+
 function PersonCard(props) {
   const { data, ...restProps } = props;
   const { cardType, cardCode, phoneNumber, visitorPhone, sos, lowPower, tlong, overstep, onlineStatus } = data;
@@ -11,14 +13,19 @@ function PersonCard(props) {
   const isVisitor = !!+cardType;
   const isOnline = !!+onlineStatus;
   const phone = isVisitor ? visitorPhone : phoneNumber;
-  const isAlarm = sos || lowPower || tlong || overstep;
+  // const isAlarm = sos || lowPower || tlong || overstep;
+  const alarms = [sos, tlong, overstep];
+  const alarmInfo = alarms.map((a, i) => a ? ALARMS_CN[i] : '').filter(d => d).join('，');
   const avatarClass = `${isVisitor ? 'visitorAvatar' : 'avatar'}${isOnline ? '' : 'Off'}`;
 
   return (
-    <div className={styles[isAlarm ? 'cardRedContainer' : 'cardContainer']} {...restProps}>
-      {sos && <div className={styles.sos} />}
+    <div className={styles.cardContainer} {...restProps}>
+      {/* {sos && <div className={styles.sos} />} */}
       <div className={styles[avatarClass]} />
-      <span>{`${name}(${cardCode})`}</span>
+      <div className={styles.avatarName}>
+        <p>{`${name}(${cardCode})`}</p>
+        <p className={styles.info}>{alarmInfo}</p>
+      </div>
       <span>{phone || '暂无电话信息'}</span>
     </div>
   );

@@ -22,7 +22,8 @@ export async function quitSOS(cardId) {
 
 // 处理警报
 export async function putAlarm(params) {
-  return request(`${URL_PREFIX}/location/locationWarning`, {
+  // return request(`${URL_PREFIX}/location/locationWarning`, {
+  return request(`${URL_PREFIX}/location/executeWarning`, {
     method: 'PUT',
     body: params,
   });
@@ -36,4 +37,14 @@ export async function querySectionTree(params) {
 // 获取信标列表
 export async function queryBeacons(params) {
   return request(`${URL_PREFIX}/beaconPoint/beaconPointForPage?${stringify(params)}`);
+}
+
+// 获取报警状态数量统计
+export async function getStatusCount(params) {
+  return request(`${URL_PREFIX}/location/warningStatusCount?${stringify(params)}`);
+}
+
+// 获取最近十二个月报警统计
+export async function getMonthCount(params) {
+  return request(`${URL_PREFIX}/location/warningMonthCount?${stringify(params)}`);
 }

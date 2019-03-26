@@ -42,7 +42,7 @@ export default class RealTime extends PureComponent {
     alarmDrawerVisible: false, // 报警列表抽屉
     lowPowerDrawerVisible: false, // 低电量报警抽屉
     personDrawerVisible: false, // 人员列表抽屉
-    useCardIdHandleAlarm: undefined, // 当sos存在时，又在报警列表找不到时，标记为sos对应的cardId，使用另外一个接口
+    // useCardIdHandleAlarm: undefined, // 当sos存在时，又在报警列表找不到时，标记为sos对应的cardId，使用另外一个接口
     expandedRowKeys: [], // SectionList组件中的展开的树节点
     movingCards: [], // 带有不断变化的x，y的卡片
   };
@@ -53,7 +53,6 @@ export default class RealTime extends PureComponent {
     const { dispatch, companyId, setAreaInfoCache } = this.props;
 
     this.connectWebSocket();
-
     this.fetchSectionTree(list => {
       const areaInfo = this.areaInfo = getAreaInfo(list);
       setAreaInfoCache(areaInfo);
@@ -68,6 +67,18 @@ export default class RealTime extends PureComponent {
     dispatch({
       type: 'personPosition/fetchInitialPositions',
       payload: { companyId },
+      callback: list => {
+        // selectedCardId进入时已经存在则为从历史轨迹中点击跟踪时进入
+        const { selectedCardId, setSelectedCard } = this.props;
+        if (!selectedCardId)
+          return;
+        const person = list.find(({ cardId }) => cardId === selectedCardId);
+        if (!person)
+          return;
+        const { userId, areaId } = person;
+        this.setAreaId(areaId);
+        setSelectedCard(selectedCardId, userId);
+      },
     });
     dispatch({
       type: 'personPosition/fetchInitAlarms',
@@ -191,8 +202,10 @@ export default class RealTime extends PureComponent {
   handlePositions = data => {
     const { dispatch, personPosition: { positionList } } = this.props;
     const cardIds = data.map(({ cardId }) => cardId);
-    handleOriginMovingCards(data, positionList, this.originMovingCards, this.moveCard, this.removeMovingCard);
-    const newPositionList = positionList.filter(({ cardId }) => !cardIds.includes(cardId)).concat(data);
+    // 将禁用的卡从人员列表中剔除
+    const filteredData = data.filter(({ cardStatus }) => +cardStatus !== 2);
+    handleOriginMovingCards(filteredData, positionList, this.originMovingCards, this.moveCard, this.removeMovingCard);
+    const newPositionList = positionList.filter(({ cardId }) => !cardIds.includes(cardId)).concat(filteredData);
     dispatch({ type: 'personPosition/savePositions', payload: newPositionList });
   };
 
@@ -281,18 +294,19 @@ export default class RealTime extends PureComponent {
   };
 
   // 处理报警
-  handleAlarm = (id, executeStatus, executeDesc)=> {
+  handleAlarm = (ids, executeStatus, executeDesc)=> {
     const { dispatch, personPosition: { alarms } } = this.props;
     dispatch({
       type: 'personPosition/handleAlarm',
-      payload: { id, executeStatus, executeDesc },
+      payload: { ids, executeStatus, executeDesc },
       callback: (code, msg) => {
         if (code === 200) {
           message.success(msg);
-          const newAlarms = alarms.filter(({ id: alarmId }) => alarmId !== id);
+          const alarmIds = ids.split(',');
+          const newAlarms = alarms.filter(({ id }) => !alarmIds.includes(id));
           dispatch({ type: 'personPosition/saveAlarms', payload: newAlarms });
           this.setState({ alarmHandleVisible: false });
-          notification.close(id);
+          alarmIds.forEach(id => notification.close(id));
         }
         else
           message.warn(msg);
@@ -386,25 +400,26 @@ export default class RealTime extends PureComponent {
     this.setState({ alarmMsgVisible: true, alarmId });
   };
 
-  handleShowAlarmMsgOrHandle = (alarmId, cardId, handleSOS) => {
-    if (handleSOS)
-      this.handleShowAlarmHandle(alarmId, cardId);
-    else
-      this.handleShowAlarmMsg(alarmId);
-  };
+  // handleShowAlarmMsgOrHandle = (alarmId, cardId, handleSOS) => {
+  //   if (handleSOS)
+  //     this.handleShowAlarmHandle(alarmId, cardId);
+  //   else
+  //     this.handleShowAlarmMsg(alarmId);
+  // };
 
   handleShowAlarmHandle = (alarmId, cardId) => {
     // alarmId不存在时，使用cardId处理，针对的是sos存在于person，而报警列表中没有
-    if (!alarmId)
-      this.setState({ alarmHandleVisible: true, useCardIdHandleAlarm: cardId });
-    else
-      this.setState({ alarmHandleVisible: true, alarmId });
+    // if (!alarmId)
+    //   this.setState({ alarmHandleVisible: true, useCardIdHandleAlarm: cardId });
+    // else
+    //   this.setState({ alarmHandleVisible: true, alarmId });
+    this.setState({ alarmHandleVisible: true, alarmId });
   };
 
   handleHideAlarmHandle = () => {
     this.setState({
       alarmId: undefined,
-      useCardIdHandleAlarm: undefined,
+      // useCardIdHandleAlarm: undefined,
       alarmMsgVisible: false,
       personInfoVisible: false,
       alarmHandleVisible: false,
@@ -498,7 +513,7 @@ export default class RealTime extends PureComponent {
       alarmDrawerVisible,
       lowPowerDrawerVisible,
       personDrawerVisible,
-      useCardIdHandleAlarm,
+      // useCardIdHandleAlarm,
       expandedRowKeys,
       movingCards,
     } = this.state;
@@ -583,7 +598,8 @@ export default class RealTime extends PureComponent {
               alarms={alarms}
               personItem={getPersonInfoItem(cardId, positionList)}
               handleTrack={this.handleTrack}
-              handleShowAlarmMsgOrHandle={this.handleShowAlarmMsgOrHandle}
+              // handleShowAlarmMsgOrHandle={this.handleShowAlarmMsgOrHandle}
+              handleShowAlarmHandle={this.handleShowAlarmHandle}
               handleClose={this.handleClose}
             />
             <AlarmMsg
@@ -594,7 +610,7 @@ export default class RealTime extends PureComponent {
               handleClose={this.handleClose}
             />
             <AlarmHandle
-              cardId={useCardIdHandleAlarm}
+              // cardId={useCardIdHandleAlarm}
               alarmId={alarmId}
               alarms={alarms}
               visible={alarmHandleVisible}
