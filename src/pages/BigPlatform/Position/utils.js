@@ -389,8 +389,10 @@ export function getAlarmDesc(item, areaInfo) {
 // cardType 0 正常 1 访客
 export function getUserName(item, showPrefix) {
   const { cardType, userName, visitorName } = item;
-  const isVisitor = !!+cardType;
+  if (cardType === null || cardType === undefined)
+    return '';
 
+  const isVisitor = !!+cardType;
   if (!isVisitor) return userName || '未领';
   if (showPrefix && visitorName) return `访客-${visitorName}`;
   if (!showPrefix && visitorName) return visitorName;
