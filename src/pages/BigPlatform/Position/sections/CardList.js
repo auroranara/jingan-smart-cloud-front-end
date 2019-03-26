@@ -47,7 +47,7 @@ export default class CardList extends PureComponent {
       list = positions.filter(({ userName, visitorName, cardCode }) => [userName, visitorName, cardCode.toString()].some(s => s && s.includes(value)));
 
     // console.log(list, areaInfo);
-    const dataSource = list.map(p => {
+    const dataSource = list.filter(({ areaId }) => areaId).map(p => {
       const { areaId, cardId, cardCode, sos, tlong, overstep, onlineStatus, userId } = p;
       const name = getUserName(p, true);
       return {

@@ -105,13 +105,12 @@ export default class PositionIndex extends PureComponent {
         )}
         {labelIndex === 2 && (
           <History
-            // historyRecord={historyRecord}
             idType={historyIdType}
             userIds={historyUserIds}
             cardIds={historyCardIds}
             companyId={companyId}
             labelIndex={labelIndex}
-            // setHistoryRecord={this.setHistoryRecord}
+            setSelectedCard={this.setSelectedCard}
             setIdType={this.setHistoryIdType}
             setUserIds={this.setHistoryUserIds}
             setCardIds={this.setHistoryCardIds}
@@ -120,7 +119,13 @@ export default class PositionIndex extends PureComponent {
         )}
         {labelIndex === 3 && (
           <AlarmList
+            dispatch={dispatch}
+            labelIndex={labelIndex}
+            companyId={companyId}
+            areaInfo={areaInfoCache}
             position={position}
+            personPosition={personPosition}
+            handleLabelClick={this.handleLabelClick}
           />
         )}
       </BigPlatformLayout>
