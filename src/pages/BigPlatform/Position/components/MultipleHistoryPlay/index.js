@@ -734,12 +734,6 @@ export default class MultipleHistoryPlay extends PureComponent {
    */
   getCurrentIndexes = ({ currentTimeStamp, prevTimeStamp, prevIndexes = [] }) => {
     const { ids=[], idMap={}, startTime, endTime } = this.props;
-    console.log('ids:',ids);
-    console.log('idMap:',idMap);
-    console.log('startTime:',startTime);
-    console.log('prevTimeStamp:',prevTimeStamp);
-    console.log('endTime:',endTime);
-    console.log('prevIndexes:',prevIndexes);
     // 遍历人员列表，获取人员在当前时间戳的位置索引
     return ids.map((id, index) => {
       // 获取当前人员的数据列表
