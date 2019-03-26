@@ -562,6 +562,7 @@ export default class BuildingInfoEdit extends PureComponent {
         name: 'buildingName',
         cName: '建筑物名称',
         rules: generateRules('建筑物名称', undefined, {
+          required: true,
           validator: (rule, value, callback) => {
             if (!value) {
               callback('请输入建筑物名称!');
