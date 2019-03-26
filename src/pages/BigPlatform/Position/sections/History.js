@@ -223,7 +223,7 @@ export default class History extends PureComponent {
 
   genHandleTrack = (cardId, userId) => e => {
     e.stopPropagation();
-    const { dispatch, companyId, handleLabelClick, setSelectedCard, selectedIdType } = this.props;
+    const { dispatch, companyId, handleLabelClick, setSelectedCard, position: { selectedIdType } } = this.props;
     const isCardId = +selectedIdType;
     const prop = isCardId ? 'cardId' : 'userId';
     const id = isCardId ? cardId : userId;
@@ -233,6 +233,7 @@ export default class History extends PureComponent {
       payload: { companyId },
       callback: list => {
         const person = list.find(({ [prop]: pId }) => pId === id);
+        // console.log(selectedIdType, isCardId, id, person);
         if (!person || !person.areaId) {
           message.warn('追踪目标无法找到');
           return;
