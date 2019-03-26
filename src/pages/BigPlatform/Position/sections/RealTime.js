@@ -503,6 +503,7 @@ export default class RealTime extends PureComponent {
       selectedUserId,
       areaInfoCache,
       personPosition: { sectionTree, positionList, positionAggregation, alarms, beaconList },
+      showBoard,
       handleLabelClick,
       setSelectedCard,
       setHistoryRecord,
@@ -589,6 +590,7 @@ export default class RealTime extends PureComponent {
               beaconList={beaconList}
               setAreaId={this.setAreaId}
               setHighlightedAreaId={this.setHighlightedAreaId}
+              showBoard={showBoard}
               handleShowVideo={this.handleShowVideo}
               handleShowPersonInfo={this.handleShowPersonInfo}
               handleShowPersonDrawer={this.handleShowPersonDrawer}

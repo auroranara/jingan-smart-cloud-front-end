@@ -3,7 +3,7 @@ import { connect } from 'dva';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 // import styles from './index.less';
-import { AlarmList, History, RealTime } from './sections/Components';
+import { AlarmList, CountBoard, History, RealTime } from './sections/Components';
 
 @connect(({ personPosition, position, user }) => ({ personPosition, position, user }))
 export default class PositionIndex extends PureComponent {
@@ -17,6 +17,7 @@ export default class PositionIndex extends PureComponent {
     historyUserIds: [],
     historyCardIds: [],
     areaInfoCache: {}, // 缓存RealTime组件中的areaInfo对象，以防切换tab时，areaInfo为空对象的问题
+    boardVisible: false,
   };
 
   componentDidMount() {
@@ -60,6 +61,14 @@ export default class PositionIndex extends PureComponent {
     this.setState({ historyCardIds: cardIds });
   };
 
+  showBoard = () => {
+    this.setState({ boardVisible: true });
+  };
+
+  hideBoard = () => {
+    this.setState({ boardVisible: false });
+  };
+
   render() {
     // 注意这里额外引了一个model
     const {
@@ -77,6 +86,7 @@ export default class PositionIndex extends PureComponent {
       historyUserIds,
       historyCardIds,
       areaInfoCache,
+      boardVisible,
     } = this.state;
 
     const { currentUser: { companyName } } = user;
@@ -98,6 +108,7 @@ export default class PositionIndex extends PureComponent {
             selectedCardId={selectedCardId}
             selectedUserId={selectedUserId}
             personPosition={personPosition}
+            showBoard={this.showBoard}
             handleLabelClick={this.handleLabelClick}
             setSelectedCard={this.setSelectedCard}
             setHistoryRecord={this.setHistoryRecord}
@@ -128,6 +139,7 @@ export default class PositionIndex extends PureComponent {
             handleLabelClick={this.handleLabelClick}
           />
         )}
+        {boardVisible ? <CountBoard hideBoard={this.hideBoard} /> : null}
       </BigPlatformLayout>
     );
   }
