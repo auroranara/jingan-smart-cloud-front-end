@@ -514,3 +514,14 @@ export function getAncestorId(currentId, rootId, areaInfo) {
 
   return;
 }
+
+export function isArraySame(a1, a2) {
+  if (!Array.isArray(a1) || !Array.isArray(a2))
+    return a1 === a2;
+  if (a1.length !== a2.length)
+    return false;
+  for (let i = 0; i < a1.length; i++)
+    if (a1[i] !== a2[i])
+      return false;
+  return true;
+}

@@ -613,11 +613,11 @@ export default class RealTime extends PureComponent {
               highlightedAreaId={highlightedAreaId}
               areaInfo={areaInfo}
               sectionTree={sectionTree}
+              beaconList={beaconList}
               positions={positionList}
               aggregation={positionAggregation}
               movingCards={movingCards}
               removeMovingCard={this.removeMovingCard}
-              beaconList={beaconList}
               setAreaId={this.setAreaId}
               setHighlightedAreaId={this.setHighlightedAreaId}
               showBoard={showBoard}
