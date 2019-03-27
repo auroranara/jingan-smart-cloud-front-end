@@ -58,6 +58,7 @@ export default class UnitDrawer extends PureComponent {
         AccessStatistics: { Importing = 0, unImporting = 0 },
       } = {},
       handleClickUnitStatistics,
+      handleAlarmClick,
     } = this.props;
     const { selected, searchValue } = this.state;
 
@@ -134,6 +135,17 @@ export default class UnitDrawer extends PureComponent {
                 person={principal_name || NO_DATA}
                 phone={principal_phone || NO_DATA}
                 style={{ cursor: 'auto' }}
+                clickName={() => handleClickUnitStatistics({
+                  companyId: company_id,
+                  companyName: company_name,
+                  address,
+                  principalName: principal_name,
+                  principalPhone: principal_phone,
+                  normal,
+                  unnormal,
+                  faultNum,
+                  outContact,
+                })}
                 infoStyle={{
                   width: 70,
                   textAlign: 'center',
@@ -165,7 +177,7 @@ export default class UnitDrawer extends PureComponent {
                 }
                 more={
                   <p className={styles.more}>
-                    {count
+                    {/* {count
                       ? [unnormal, faultNum, outContact, normal].map((n, i) => (
                         <DotItem
                           key={i}
@@ -174,7 +186,21 @@ export default class UnitDrawer extends PureComponent {
                           quantity={n}
                         />
                       ))
-                      : ' '}
+                      : ' '} */}
+                    <DotItem
+                      title="报警"
+                      color={`rgb(248,51,41)`}
+                      quantity={unnormal}
+                      className={unnormal > 0 ? styles.itemActive : ''}
+                      onClick={() =>
+                        unnormal > 0
+                          ? handleAlarmClick(undefined, company_id, company_name, unnormal)
+                          : ''
+                      }
+                    />
+                    <DotItem title="故障" color={`rgb(255,180,0)`} quantity={faultNum} />
+                    <DotItem title="失联" color={`rgb(159,159,159)`} quantity={outContact} />
+                    <DotItem title="正常" color={`rgb(55,164,96)`} quantity={normal} />
                   </p>
                 }
               />
@@ -187,6 +213,7 @@ export default class UnitDrawer extends PureComponent {
       <DrawerContainer
         title="接入单位统计"
         visible={visible}
+        zIndex={1000}
         left={left}
         right={right}
         placement="right"
