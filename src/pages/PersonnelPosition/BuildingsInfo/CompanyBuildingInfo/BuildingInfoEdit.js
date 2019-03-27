@@ -563,8 +563,17 @@ export default class BuildingInfoEdit extends PureComponent {
         cName: '建筑物名称',
         rules: generateRules('建筑物名称', undefined, {
           required: true,
-          message: `请输入建筑物名称`,
+          validator: (rule, value, callback) => {
+            if (!value) {
+              callback('请输入建筑物名称!');
+            } else if (!value.trim()) {
+              callback('建筑物名称不能全部为空格!');
+            } else {
+              callback();
+            }
+          },
         }),
+        validateTrigger: 'onBlur',
         component: (
           <div>
             {getFieldDecorator('buildingName', { initialValue: buildingName })(
@@ -635,9 +644,10 @@ export default class BuildingInfoEdit extends PureComponent {
               <InputNumber
                 style={{ width: '100%' }}
                 min={0}
+                defaultValue={''}
                 placeholder="请输入建筑层数"
-                formatter={value => (isNaN(value) ? '' : Math.round(value))}
-                parser={value => (isNaN(value) ? '' : Math.round(value))}
+                formatter={value => (!value || isNaN(value) ? '' : Math.round(value))}
+                parser={value => (!value || isNaN(value) ? '' : Math.round(value))}
               />
             )}
           </div>

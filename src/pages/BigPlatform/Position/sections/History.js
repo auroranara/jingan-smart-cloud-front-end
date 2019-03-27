@@ -223,7 +223,7 @@ export default class History extends PureComponent {
 
   genHandleTrack = (cardId, userId) => e => {
     e.stopPropagation();
-    const { dispatch, companyId, handleLabelClick, setSelectedCard, selectedIdType } = this.props;
+    const { dispatch, companyId, handleLabelClick, setSelectedCard, position: { selectedIdType } } = this.props;
     const isCardId = +selectedIdType;
     const prop = isCardId ? 'cardId' : 'userId';
     const id = isCardId ? cardId : userId;
@@ -233,8 +233,9 @@ export default class History extends PureComponent {
       payload: { companyId },
       callback: list => {
         const person = list.find(({ [prop]: pId }) => pId === id);
+        // console.log(selectedIdType, isCardId, id, person);
         if (!person || !person.areaId) {
-          message.warn('追踪目标无法找到');
+          message.warn('目标不在厂区内，无法追踪！');
           return;
         }
         const { cardId, userId } = person;
@@ -372,13 +373,14 @@ export default class History extends PureComponent {
                         </div>
                       )}
                       {tableList && tableList.length > 0 && tableList.map(area => {
-                        const { cardId, userId, cardCode, phoneNumber, departmentName } = area;
+                        const { cardId, cardType, userId, cardCode, phoneNumber, visitorPhone, departmentName } = area;
                         const id = +selectedIdType ? cardId : userId;
+                        const phone = +cardType ? visitorPhone : phoneNumber;
                         return (
                           <div className={styles[`tr${selectedTableRow === id ? 1 : ''}`]} key={id} onClick={(e) => {this.handleClickTableRow(id, e)}}>
                             <div className={styles.td}>{getUserName(area)}</div>
                             <div className={styles.td}>{cardCode}</div>
-                            <div className={styles.td}>{phoneNumber || '-'}</div>
+                            <div className={styles.td}>{phone || '-'}</div>
                             <div className={styles.td}>{departmentName || '-'}</div>
                             <div className={styles.td2} onClick={this.genHandleTrack(cardId, userId)}>追踪</div>
                           </div>

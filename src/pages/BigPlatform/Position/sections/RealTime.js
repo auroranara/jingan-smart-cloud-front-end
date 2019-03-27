@@ -192,8 +192,7 @@ export default class RealTime extends PureComponent {
       case WARNING_TYPE:
         this.handleAlarms(data);
         this.showNotifications(data);
-        if (!isTrack)
-          this.handleAutoShowVideo(data);
+        this.handleAutoShowVideo(data);
         break;
       case AREA_STATUS_TYPE:
         this.handleAreaStatusChange(data);
@@ -456,7 +455,11 @@ export default class RealTime extends PureComponent {
   };
 
   handleAutoShowVideo = data => {
-    const { personPosition: { positionList } } = this.props;
+    const { selectedCardId, personPosition: { positionList } } = this.props;
+
+    // 当追踪时,有视频,不再显示视频
+    if (this.isTargetTrack() && selectedCardId)
+      return;
 
     // 如果data不是数组，则直接传入的就是alarm对象，如果不是数组，则传入的是alarm数组
     let alarm = data;

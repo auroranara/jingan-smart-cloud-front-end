@@ -62,16 +62,12 @@ export default class AlarmHandle extends Component {
 
   render() {
     const {
-      data: {
-        startMap: { unitType, createTime },
-        handleMap: { createTime: handleTime, safetyMan, safetyPhone, type },
-        finshMap: { safetyMan: safetyMans, endTime, safetyPhone: safetyPhones, type: endType },
-        picture,
-      },
+      data: { startMap, handleMap, finshMap, picture },
     } = this.props;
 
-    // const picture = [b1, b2, b3, b4, b5, b6];
-    // const picture = [b1, b2, b3, b4];
+    const { unitType, createTime } = startMap || {};
+    const { createTime: handleTime, safetyMan, safetyPhone, type } = handleMap || {};
+    const { safetyMan: safetyMans, endTime, safetyPhone: safetyPhones, type: endType } = finshMap;
 
     const { index, magIndex, showImg } = this.state;
     const picLength = picture.length;
