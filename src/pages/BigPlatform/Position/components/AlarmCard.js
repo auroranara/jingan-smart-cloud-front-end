@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Button, Checkbox } from 'antd';
 import moment from 'moment';
+import Ellipsis from '@/components/Ellipsis';
 
 import styles from './AlarmCard.less';
 import { getUserName } from '../utils';
@@ -8,6 +9,8 @@ import { getUserName } from '../utils';
 // const TYPES = ['SOS', '越界', '长时间逗留', '超员', '缺员'];
 const STATUS = ['待处理', '已忽略', '已处理'];
 const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+
+const MAX = 15;
 
 export default class AlarmCard extends PureComponent {
     render() {
@@ -20,6 +23,7 @@ export default class AlarmCard extends PureComponent {
         const userName = getUserName(data, true);
         const handled = +executeStatus;
         const desc = isSOS ? `${userName}(${cardCode}) ${phone || ''}` : `${isTlongOrOverstep ? `${userName}(${cardCode}) ` : ''}${typeName}`;
+        const etDesc = `处理信息：${executeDesc || '-'}`;
 
         return (
             <div className={styles.card} {...restProps}>
@@ -32,14 +36,14 @@ export default class AlarmCard extends PureComponent {
                       <p>{isSOS ? '人员' : '报警'}信息：{desc}</p>
                       <p>报警位置：{areaInfo[areaId].fullName}</p>
                       <p>处理时间：{executeTime ? moment(executeTime).format(TIME_FORMAT) : '-'}</p>
-                      <p>处理信息：{executeDesc || '-'}</p>
+                      <p>{etDesc.length > MAX ? <Ellipsis length={MAX} tooltip>{etDesc}</Ellipsis> : etDesc}</p>
                     </div>
                     <Button
                       disabled={handled}
                       className={styles[`btn${handled ? 1 : ''}`]}
                       onClick={e => handleShowSubmit(id)}
                     >
-                      {STATUS[executeStatus]}
+                      {handled ? '已': ''}处理
                     </Button>
                 </div>
             </div>
