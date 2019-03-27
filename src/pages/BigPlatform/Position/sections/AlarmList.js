@@ -107,11 +107,12 @@ export default class AlarmList extends PureComponent {
     this.setState({ handleDesc: e.target.value });
   };
 
-  handleShowSubmit = (ids) => {
+  handleShowSubmit = ids => {
     if (!ids.length) {
       message.warn('请先选择一个警报');
       return;
     }
+    // console.log(ids);
     this.submitId = Array.isArray(ids) ? ids.join(',') : ids;
     this.setState({ modalVisible: true });
   };
@@ -120,7 +121,7 @@ export default class AlarmList extends PureComponent {
     const { personPosition: { alarms } } = this.props;
     const { selectedCards } = this.state;
     // 将选中的并且是未处理的报警筛选处理
-    const ids = alarms.filter((a, i) => selectedCards[i] && !+a.executeStatus);
+    const ids = alarms.filter((a, i) => selectedCards[i] && !+a.executeStatus).map(({ id }) => id);
     this.handleShowSubmit(ids);
   };
 
@@ -137,7 +138,7 @@ export default class AlarmList extends PureComponent {
       callback: (code, msg) => {
         if (code === 200) {
           this.handleHideSubmit();
-          this.setState({ handleDesc: '' });
+          this.setState({ batch: false, handleDesc: '' });
           message.success(msg);
           this.getAlarms();
         }

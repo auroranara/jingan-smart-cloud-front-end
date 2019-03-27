@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { stringify } from 'qs';
+import moment from 'moment';
 import { message, notification } from 'antd';
 
 import styles from './RealTime.less';
@@ -101,8 +102,9 @@ export default class RealTime extends PureComponent {
     // this.treeTimer = setInterval(() => {
     //   this.fetchSectionTree();
     // }, DELAY);
-
     // setTimeout(() => this.showNotification({}), 3000);
+
+    this.getServerTime();
   }
 
   componentWillUnmount() {
@@ -114,6 +116,34 @@ export default class RealTime extends PureComponent {
   ws = null;
   areaInfo = {};
   treeTimer = null;
+  zeroTimestamp = 0; // 开始计时时的零点时间戳
+
+  // 获取服务器时间，计算当前时间到00:00的时间，挂一个定时器，由于计时器不一定准，所以到时候再获取一次服务器时间，若此时已经过了零点
+  // 则重新获取一遍sectionTree，若此时还未过零点，重复上述操作
+  getServerTime = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'personPosition/fetchServerTime',
+      callback: (code, time) => {
+        if (code !== 200) {
+          setTimeout(this.getServerTime, 2000);
+          return;
+        }
+        // 初始化zeroTimestamp，只在第一次调用时执行
+        if (!this.zeroTimestamp)
+          this.zeroTimestamp = +moment(time).endOf('day');
+        // 服务器时间离第一次获取服务器时间的当天时间的时间差
+        let delay = this.zeroTimestamp - time;
+        // 时间差小于零，则已经过了那天，更新零点时间戳，并重新获取区域树来刷新出入人次
+        if (delay <= 0) {
+          this.zeroTimestamp = +moment(time).endOf('day');
+          this.fetchSectionTree();
+          delay = this.zeroTimestamp - time;
+        }
+        setTimeout(this.getServerTime, delay);
+      },
+    });
+  };
 
   // 判定当前页面是否是目标追踪
   isTargetTrack = () => {

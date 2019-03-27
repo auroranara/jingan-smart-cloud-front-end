@@ -7,6 +7,7 @@ import {
   queryBeacons,
   getStatusCount,
   getMonthCount,
+  getServerTime,
 } from '../services/bigPlatform/personPosition';
 import { genAggregation, getSectionTree } from '@/pages/BigPlatform/Position/utils';
 
@@ -21,6 +22,7 @@ export default {
     beaconList: [],
     statusCount: {},
     monthCount: [],
+    serverTime: 0,
   },
 
   effects: {
@@ -86,6 +88,13 @@ export default {
         yield put({ type: 'saveMonthCount', payload: list });
       }
     },
+    *fetchServerTime({ payload, callback }, { call, put }) {
+      const response = yield call(getServerTime, payload);
+      const { code=500, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveServerTime', payload: data });
+      callback && callback(code, data);
+    },
   },
 
   reducers: {
@@ -122,6 +131,9 @@ export default {
     },
     saveMonthCount(state, action) {
       return { ...state, monthCount: action.payload };
+    },
+    saveServerTime(state, action) {
+      return { ...state, serverTime: action.payload };
     },
   },
 };

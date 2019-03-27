@@ -48,3 +48,8 @@ export async function getStatusCount(params) {
 export async function getMonthCount(params) {
   return request(`${URL_PREFIX}/location/warningMonthCount?${stringify(params)}`);
 }
+
+// 获取服务器时间
+export async function getServerTime(params) {
+  return request(`${URL_PREFIX}/sys/time${stringify(params)}`);
+}

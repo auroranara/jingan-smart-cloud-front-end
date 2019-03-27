@@ -18,18 +18,18 @@ const { region } = global.PROJECT_CONFIG;
 export default function OverviewSection(props) {
   const {
     data: {
-      titleName='暂无信息',
-      total=0,
+      titleName = '暂无信息',
+      total = 0,
       // activeCount=0,
-      importCount=0,
-      todayCount=0,
-      thisWeekCount=0,
-      thisMonthCount=0,
-      totalDanger=0,
-      overdueNum=0,
-      rectifyNum=0,
-      reviewNum=0,
-    }={},
+      importCount = 0,
+      todayCount = 0,
+      thisWeekCount = 0,
+      thisMonthCount = 0,
+      totalDanger = 0,
+      overdueNum = 0,
+      rectifyNum = 0,
+      reviewNum = 0,
+    } = {},
     handleDrawerVisibleChange,
   } = props;
 
@@ -49,7 +49,9 @@ export default function OverviewSection(props) {
               title="管辖单位"
               url={companyIcon}
               num={total}
-              onClick={e => handleDrawerVisibleChange('unit', { unitDrawerLabelIndex: 0, isUnit: 0 })}
+              onClick={e =>
+                handleDrawerVisibleChange('unit', { unitDrawerLabelIndex: 0, isUnit: 0 })
+              }
             />
           </div>
         </Col>
@@ -59,7 +61,9 @@ export default function OverviewSection(props) {
               title="消防重点单位"
               url={hostIcon}
               num={importCount}
-              onClick={e => handleDrawerVisibleChange('unit', { unitDrawerLabelIndex: 1, isUnit: 0 })}
+              onClick={e =>
+                handleDrawerVisibleChange('unit', { unitDrawerLabelIndex: 1, isUnit: 0 })
+              }
             />
           </div>
         </Col>
@@ -70,7 +74,7 @@ export default function OverviewSection(props) {
         thisMonth={thisMonthCount}
         handleDrawerVisibleChange={handleDrawerVisibleChange}
         // style={{ height: HEIGHT, padding: PADDING, marginTop: 25 }}
-        style={{ height: HEIGHT, padding: PADDING, marginTop: 20 }}
+        style={{ height: HEIGHT }}
       />
       <OvDangerCards
         total={totalDanger}
@@ -78,7 +82,7 @@ export default function OverviewSection(props) {
         rectify={rectifyNum}
         review={reviewNum}
         handleClick={i => handleDrawerVisibleChange('danger')}
-        style={{ height: HEIGHT, padding: PADDING }}
+        style={{ height: HEIGHT }}
       />
     </FcSection>
   );

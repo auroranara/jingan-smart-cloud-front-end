@@ -361,7 +361,7 @@ export default class MultipleHistoryPlay extends PureComponent {
           isAlarm,
           isVistor,
           userName,
-          vistorName,
+          visitorName,
           locationStatusHistoryList,
         } = currentData;
         // 获取人员所属区域id
@@ -409,7 +409,7 @@ export default class MultipleHistoryPlay extends PureComponent {
             }, alarm) : alarm,
             isVistor,
             userName,
-            vistorName,
+            visitorName,
           };
           if (isAlarm && !isAlarmMap[currentAreaId]) {
             isAlarmMap[currentAreaId] = true;
@@ -436,7 +436,7 @@ export default class MultipleHistoryPlay extends PureComponent {
               }, alarm) : alarm,
               isVistor,
               userName,
-              vistorName,
+              visitorName,
             };
           }
           if (isAlarm) {
@@ -504,7 +504,7 @@ export default class MultipleHistoryPlay extends PureComponent {
     const { id, isBuilding, isFloor, children, parentId } = currentArea;
     // 如果当前区域为建筑，则获取楼层子区域生成菜单对象
     if (isBuilding) {
-      const floors = children.reduce((floors, id) => {
+      const floors = children.reduce((floors, id, index) => {
         const area = tree[id];
         const { isFloor, name } = area;
         if (isFloor) {
@@ -513,7 +513,7 @@ export default class MultipleHistoryPlay extends PureComponent {
             [styles.hoverableFloor]: selectedTableRow === 'all',
             [styles.alarmFloor]: isAlarmMap[id],
             [styles.selectedFloor]: selectedArea && selectedArea.id === id,
-          })}" data-id="${id}">${name}</div>`);
+          })}" data-id="${id}">F${index+1}</div>`);
         }
         return floors;
       }, []);
@@ -542,7 +542,7 @@ export default class MultipleHistoryPlay extends PureComponent {
    */
   getDivIcons = (locationMap) => {
     // 遍历人员位置
-    return Object.values(locationMap).map(({ id, count, latlng, alarm, isVistor, userName, vistorName }) => {
+    return Object.values(locationMap).map(({ id, count, latlng, alarm, isVistor, userName, visitorName }) => {
       // 是否为报警状态
       const isAlarm = alarm.length > 0;
       // 人员元素类名
@@ -566,7 +566,7 @@ export default class MultipleHistoryPlay extends PureComponent {
             className = styles.bluePerson;
           }
         }
-        personTitle = `<div class="${styles.personName}">${isVistor?vistorName||'访客':userName||'未领'}</div>`;
+        personTitle = `<div class="${styles.personName}">${isVistor?visitorName||'访客':userName||'未领'}</div>`;
       }
       else {
         if (isAlarm) {
@@ -769,7 +769,7 @@ export default class MultipleHistoryPlay extends PureComponent {
         if ((prevTimeStamp - currentTimeStamp) < (currentTimeStamp - startTime)) {
           // 从之前的往前找，如果找不到，就取-1
           for (let i = currentIndex; i >= 0; i--) {
-            if (list[i].intime <= currentTimeStamp) {
+            if (list[i] && list[i].intime <= currentTimeStamp) {
               currentIndex = i;
               break;
             }

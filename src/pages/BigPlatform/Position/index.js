@@ -5,6 +5,8 @@ import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 // import styles from './index.less';
 import { AlarmList, CountBoard, History, RealTime } from './sections/Components';
 
+const AUTOSPACE = window.innerWidth > 1366;
+
 @connect(({ personPosition, position, user }) => ({ personPosition, position, user }))
 export default class PositionIndex extends PureComponent {
   state = {
@@ -94,6 +96,7 @@ export default class PositionIndex extends PureComponent {
     return (
       <BigPlatformLayout
         title="晶安人员定位监控系统"
+        autoSpace={AUTOSPACE}
         extra={companyName}
         headerStyle={{ fontSize: 16 }}
         titleStyle={{ fontSize: 46 }}
