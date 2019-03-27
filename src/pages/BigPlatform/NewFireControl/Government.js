@@ -146,7 +146,10 @@ export default class FireControlBigPlatform extends PureComponent {
     const gridId = this.getGridId();
 
     dispatch({ type: 'bigFireControl/fetchOvAlarmCounts', payload: { gridId } });
-    dispatch({ type: 'bigFireControl/fetchOvDangerCounts', payload: { gridId, businessType: 2, govFlag: 1 } });
+    dispatch({
+      type: 'bigFireControl/fetchOvDangerCounts',
+      payload: { gridId, businessType: 2, govFlag: 1 },
+    });
     // dispatch({ type: 'bigFireControl/fetchOvDangerCounts', payload: { gridId, businessType: 2, reportSource: 2 } });
     dispatch({ type: 'bigFireControl/fetchSys', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchAlarm', payload: { gridId } });
@@ -155,7 +158,10 @@ export default class FireControlBigPlatform extends PureComponent {
     dispatch({ type: 'bigFireControl/fetchCompanyFireInfo', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchDanger', payload: { gridId, businessType: 2 } });
 
-    dispatch({ type: 'bigFireControl/fetchDangerList', payload: { gridId, businessType: 2,  govFlag: 1 } });
+    dispatch({
+      type: 'bigFireControl/fetchDangerList',
+      payload: { gridId, businessType: 2, govFlag: 1 },
+    });
     // dispatch({ type: 'bigFireControl/fetchDangerList', payload: { gridId, businessType: 2, reportSource: 2 } });
     dispatch({ type: 'bigFireControl/fetchHostAlarmTrend', payload: { gridId } });
 
@@ -239,7 +245,7 @@ export default class FireControlBigPlatform extends PureComponent {
     this.handleAlarmClick(alarmDetail);
   };
 
-  fetchInitLookUp = (isCountdownBack) => {
+  fetchInitLookUp = isCountdownBack => {
     const {
       dispatch,
       // match: { params: { gridId } },
