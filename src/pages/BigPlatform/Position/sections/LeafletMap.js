@@ -405,10 +405,17 @@ export default class LeafletMap extends PureComponent {
           iconSize: [38, 40],
           iconAnchor: [19, 40],
           className: styles.personContainer,
+          // html: `
+          //   <div class="${styles[containerClassName]}">
+          //     <div class="${
+          //       styles[isSingle ? 'personTitle' : isAlarm ? 'nodisplay' : 'personNum']
+          //     }">${showName}</div>
+          //     <div class="${styles[isAlarm ? 'alarms' : 'nodisplay']}">${alarmTypes}</div>
+          //   </div>`,
           html: `
             <div class="${styles[containerClassName]}">
               <div class="${
-                styles[isSingle ? 'personTitle' : isAlarm ? 'nodisplay' : 'personNum']
+                styles[isSingle ? 'personTitle' : `personNum${isAlarm ? 'Red' : ''}`]
               }">${showName}</div>
               <div class="${styles[isAlarm ? 'alarms' : 'nodisplay']}">${alarmTypes}</div>
             </div>`,
