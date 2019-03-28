@@ -112,7 +112,6 @@ export default class FireStatisticsDrawer extends PureComponent {
       <DrawerContainer
         title="火警统计"
         width={535}
-        zIndex={2000}
         visible={visible}
         left={left}
         placement="right"

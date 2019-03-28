@@ -246,7 +246,7 @@ export default class MonitorDrawer extends PureComponent {
         title={'单位监测信息'}
         width={700}
         visible={visible}
-        zIndex={1050}
+        zIndex={2000}
         left={left}
         placement="right"
         rowStyle={{ height: 'calc(100% - 70px)' }}
