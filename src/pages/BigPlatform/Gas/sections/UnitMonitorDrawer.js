@@ -47,9 +47,16 @@ function parseDataNum(n) {
   return DEFAULT;
 }
 
+/**
+ * 单位监测弹窗
+ * @export
+ * @class UnitMonitorDrawer
+ * @extends {PureComponent}
+ */
 @connect(({ gas }) => ({
   gas,
 }))
+
 export default class UnitMonitorDrawer extends PureComponent {
   state = {
     videoVisible: false,
@@ -237,8 +244,8 @@ export default class UnitMonitorDrawer extends PureComponent {
                           {parseDataNum(realtimeData) > 0 || parseDataNum(realtimeData) === 0 ? (
                             <span>{unit}</span>
                           ) : (
-                            ''
-                          )}
+                              ''
+                            )}
                         </span>
                       </Ellipsis>
                       <Ellipsis className={styles.line} lines={1} tooltip>
@@ -262,14 +269,14 @@ export default class UnitMonitorDrawer extends PureComponent {
               )}
             </div>
           ) : (
-            <div
-              className={styles.emptyContainer}
-              style={{
-                background: `url(${noMonitorImg}) no-repeat center center`,
-                backgroundSize: '35% 80%',
-              }}
-            />
-          )}
+              <div
+                className={styles.emptyContainer}
+                style={{
+                  background: `url(${noMonitorImg}) no-repeat center center`,
+                  backgroundSize: '35% 80%',
+                }}
+              />
+            )}
         </div>
         {/* 异常趋势图 */}
         <div className={styles.abnormalTrend}>
@@ -295,7 +302,7 @@ export default class UnitMonitorDrawer extends PureComponent {
       <DrawerContainer
         id="unitMonitorDrawer"
         title={title}
-        z-index={2000}
+        zIndex={2000}
         width={700}
         left={left}
         visible={visible}

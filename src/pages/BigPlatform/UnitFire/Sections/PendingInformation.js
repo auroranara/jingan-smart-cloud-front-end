@@ -437,8 +437,8 @@ export default class PendingInformation extends PureComponent {
       <Section title={newTitle} action={extra} contentStyle={{ paddingLeft: 15 }}>
         <div className={styles.filterContainer}>
           <Radio.Group value={status} buttonStyle="solid" onChange={onFilterChange}>
-            <Radio.Button value="实时消息">实时消息</Radio.Button>
-            <Radio.Button value="待处理">待处理</Radio.Button>
+            <Radio.Button value="实时消息">待处理</Radio.Button>
+            {/* <Radio.Button value="待处理">待处理</Radio.Button> */}
             <Radio.Button value="处理中">处理中</Radio.Button>
           </Radio.Group>
         </div>

@@ -134,6 +134,16 @@ export default class UnitDrawer extends PureComponent {
                 person={principal_name || NO_DATA}
                 phone={principal_phone || NO_DATA}
                 style={{ cursor: 'auto' }}
+                clickName={() => handleClickUnitStatistics({
+                  companyId: company_id,
+                  companyName: company_name,
+                  address,
+                  principalName: principal_name,
+                  principalPhone: principal_phone,
+                  normal,
+                  unnormal,
+                  faultNum,
+                })}
                 infoStyle={{
                   width: 70,
                   textAlign: 'center',
