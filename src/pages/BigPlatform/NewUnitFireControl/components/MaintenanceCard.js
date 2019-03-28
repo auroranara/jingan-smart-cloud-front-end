@@ -69,20 +69,6 @@ function Handled(props) {
   );
 }
 
-function SelfHandle(props) {
-  const { man, phone } = props;
-
-  return (
-    <div className={styles.card}>
-      <p>维修难度较小，自行处理</p>
-      <p>
-        维修人员：
-        {man} {phone}
-      </p>
-    </div>
-  );
-}
-
 /* step 获取第几步: -> 1-4
  * faultType 故障类型: 0 -> 主机报障(显示4步)  1 -> 一键报修(显示三步);
  * nstatus 是否进行了维保: undefined 只显示第一步，存在的话，根据status进行判断
