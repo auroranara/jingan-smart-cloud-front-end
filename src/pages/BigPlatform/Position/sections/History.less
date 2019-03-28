@@ -61,8 +61,8 @@
 
   .inner {
     position: relative;
-    // padding-top: 88px;
-    padding-top: 200px;
+    padding-top: 210px;
+    // padding-top: 250px;
     height: 100%;
 
     .leftTop {
@@ -536,13 +536,13 @@
   }
 }
 
-.treeContainer, .selects {
-  color: #FFF;
-  margin-bottom: 12px;
-}
-
 @color: rgb(255, 255, 255);
 @size: 18px;
+
+.treeContainer {
+  color: #FFF;
+  width: calc(100% - 90px);
+}
 
 .treeContainer, .tree1 {
   font-size: @size;
@@ -604,6 +604,7 @@
 
 .selects {
   display: flex;
+  justify-content: space-between;
 }
 
 .selects1 {
@@ -634,20 +635,25 @@
 
 .select1 {
   width: 80px;
-  :global {
-    .ant-select-selection {
-      border-radius: 4px 0 0 4px;
-      border-right: none;
-    }
-  }
+  margin-bottom: 12px;
+
+  // :global {
+  //   .ant-select-selection {
+  //     border-radius: 4px 0 0 4px;
+  //     border-right: none;
+  //   }
+  // }
 }
 
 .cardSelect, .cardSelect1 {
-  width: calc(100% - 70px);
+  // width: calc(100% - 70px);
+  width: 100%;
+  margin-bottom: 12px;
+
   :global {
-    .ant-select-selection {
-      border-radius: 0 4px 4px 0;
-    }
+    // .ant-select-selection {
+    //   border-radius: 0 4px 4px 0;
+    // }
 
     .ant-select-selection--multiple .ant-select-selection__choice {
       color: #FFF;
@@ -662,6 +668,8 @@
 }
 
 .cardSelect1 {
+  margin-bottom: 0;
+
   :global {
     .ant-select-selection {
       border-radius: 4px;
