@@ -254,11 +254,11 @@ export default class MapSection extends PureComponent {
             <div
               className={+unnormal > 0 ? styles.itemActive : styles.statusItem}
               onClick={() => {
-                if (+unnormal > 0) {
-                  handleAlarmClick(undefined, companyId, companyName, +unnormal);
-                } else {
-                  return null;
-                }
+                // if (+unnormal > 0) {
+                handleAlarmClick(undefined, companyId, companyName, +unnormal);
+                // } else {
+                //   return null;
+                // }
               }}
             >
               <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
