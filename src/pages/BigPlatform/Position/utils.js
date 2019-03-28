@@ -520,8 +520,10 @@ export function isArraySame(a1, a2) {
     return a1 === a2;
   if (a1.length !== a2.length)
     return false;
-  for (let i = 0; i < a1.length; i++)
-    if (a1[i] !== a2[i])
+  const [b1, b2] = [a1, a2].map(a => Array.from(a));
+  [b1, b2].forEach(b => b.sort());
+  for (let i = 0; i < b1.length; i++)
+    if (b1[i] !== b2[i])
       return false;
   return true;
 }
