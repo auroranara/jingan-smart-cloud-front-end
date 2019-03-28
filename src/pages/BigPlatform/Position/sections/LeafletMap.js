@@ -55,7 +55,7 @@ export default class LeafletMap extends PureComponent {
       'movingCards',
       'aggregation',
       'positions',
-      ];
+    ];
     // 状态变化对象，变化的为true
     const states = props.reduce((prev, next) => {
       prev[next] = prevProps[next] !== currentProps[next];

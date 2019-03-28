@@ -525,3 +525,18 @@ export function isArraySame(a1, a2) {
       return false;
   return true;
 }
+
+// 全屏的人数展示时，获取最底层节点的名字和人数
+export function getSectionCount(tree, parentName='') {
+  const { children } = tree;
+  if (!Array.isArray(children))
+    return [];
+  const result = [];
+  for (const node of children) {
+    const { name, count } = node;
+    const fullName = `${parentName}${name}`;
+    result.push({ name: fullName, count });
+    result.push(...getSectionCount(node, fullName));
+  }
+  return result;
+}

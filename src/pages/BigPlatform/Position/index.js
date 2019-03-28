@@ -91,6 +91,7 @@ export default class PositionIndex extends PureComponent {
       boardVisible,
     } = this.state;
 
+    const { sectionTree } = personPosition;
     const { currentUser: { companyName } } = user;
 
     return (
@@ -142,7 +143,7 @@ export default class PositionIndex extends PureComponent {
             handleLabelClick={this.handleLabelClick}
           />
         )}
-        {boardVisible ? <CountBoard hideBoard={this.hideBoard} /> : null}
+        {boardVisible ? <CountBoard sectionTree={sectionTree} hideBoard={this.hideBoard} /> : null}
       </BigPlatformLayout>
     );
   }
