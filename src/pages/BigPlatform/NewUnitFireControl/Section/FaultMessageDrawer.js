@@ -30,32 +30,6 @@ function Occured(props) {
   );
 }
 
-function Assigned(props) {
-  const { systemType, loopNumber, partNumber, position } = props;
-
-  return (
-    <div className={styles.card}>
-      <p>
-        部件类型：
-        {systemType}
-      </p>
-      <p>
-        详细位置：
-        {position}
-      </p>
-      {loopNumber &&
-        partNumber && (
-          <p>
-            回路故障号：
-            {loopNumber}
-            回路
-            {partNumber}号
-          </p>
-        )}
-    </div>
-  );
-}
-
 // type 0 -> 日期 1 -> 时间
 function getTime(time, type = 0) {
   if (!time) return;
@@ -78,12 +52,18 @@ export default function FaultMessageDrawer(props) {
   const left = (
     <div className={styles.container} {...restProps}>
       <div className={styles.head}>
-        <div style={{ backgroundImage: `url(${flowImg})` }} className={styles.flow} />
+        <div
+          style={{
+            background: `url(${flowImg}) no-repeat center center`,
+            backgroundSize: '100% auto',
+          }}
+          className={styles.flow}
+        />
       </div>
       <div className={styles.timeline}>
         <Timeline>
           {/* 主机故障时才会显示这个，一键报修时不显示 */}
-          {!isOneKey && (
+          {/* {!isOneKey && (
             <TimelineItem
               spans={SPANS}
               label="故障发生"
@@ -111,8 +91,20 @@ export default function FaultMessageDrawer(props) {
                 position={installAddress}
               />
             )}
+          </TimelineItem> */}
+          <TimelineItem
+            spans={SPANS}
+            label="故障发生"
+            day={getTime(addTime)}
+            hour={getTime(addTime, 1)}
+          >
+            <Occured
+              position={installAddress || NO_DATA}
+              type={componentType || NO_DATA}
+              model={model}
+            />
           </TimelineItem>
-          <TimelineItem spans={SPANS} label="受理中" />
+          <TimelineItem spans={SPANS} label="开始处理" />
           <TimelineItem spans={SPANS} label="处理完毕" />
         </Timeline>
       </div>
