@@ -211,10 +211,10 @@ export default class Smoke extends PureComponent {
             const newList =
               sameIndex >= 0
                 ? [
-                    ...alarmIds.slice(0, sameIndex),
-                    { companyId, messageFlag },
-                    ...alarmIds.slice(sameIndex + 1),
-                  ]
+                  ...alarmIds.slice(0, sameIndex),
+                  { companyId, messageFlag },
+                  ...alarmIds.slice(sameIndex + 1),
+                ]
                 : [...alarmIds, { companyId, messageFlag }];
             this.setState({ alarmIds: newList });
             this.showWarningNotification(data);
@@ -345,12 +345,12 @@ export default class Smoke extends PureComponent {
   /**
    * 更新后
    */
-  componentDidUpdate() {}
+  componentDidUpdate() { }
 
   /**
    * 销毁前
    */
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   // cardsInfo = [];
   importCardsInfo = [];
@@ -548,7 +548,7 @@ export default class Smoke extends PureComponent {
     this.setState({ type: type });
   };
 
-  handleAlarmClick = (id, companyId, companyName, num) => {
+  handleAlarmClick = (id, companyId, companyName, num, deviceId) => {
     const {
       dispatch,
       match: {
@@ -558,29 +558,29 @@ export default class Smoke extends PureComponent {
     this.setState({ companyName });
     dispatch({
       type: 'smoke/fetchSmokeForMaintenance',
-      payload: { companyId, id, gridId, num, type: '1' },
+      payload: { companyId, id, gridId, num, type: '1', deviceId },
       success: () => {
         this.handleDrawerVisibleChange('alarmDynamic');
       },
     });
   };
 
-  handleFaultClick = (id, companyId, companyName, num) => {
-    // return null;
-    const {
-      dispatch,
-      match: {
-        params: { gridId },
-      },
-    } = this.props;
-    this.setState({ companyName });
-    dispatch({
-      type: 'smoke/fetchSmokeForMaintenance',
-      payload: { companyId, id, gridId, num, type: '2' },
-      success: () => {
-        this.handleDrawerVisibleChange('maintenance');
-      },
-    });
+  handleFaultClick = (id, companyId, companyName, num, deviceId) => {
+    return null;
+    // const {
+    //   dispatch,
+    //   match: {
+    //     params: { gridId },
+    //   },
+    // } = this.props;
+    // this.setState({ companyName });
+    // dispatch({
+    //   type: 'smoke/fetchSmokeForMaintenance',
+    //   payload: { companyId, id, gridId, num, type: '2', deviceId },
+    //   success: () => {
+    //     this.handleDrawerVisibleChange('maintenance');
+    //   },
+    // });
   };
 
   onRef = ref => {
@@ -601,8 +601,8 @@ export default class Smoke extends PureComponent {
 
   handleClickUnitStatistics = unitDetail => {
     const { dispatch } = this.props;
-    const { companyId } = unitDetail;
-    this.setState({ unitDetail });
+    const { companyId } = unitDetail
+    this.setState({ unitDetail })
     dispatch({ type: 'smoke/fetchCameraList', payload: { company_id: companyId } });
     dispatch({
       type: 'smoke/fetchCompanySmokeInfo',
@@ -611,7 +611,7 @@ export default class Smoke extends PureComponent {
         this.handleDrawerVisibleChange('monitor');
       },
     });
-  };
+  }
 
   /**
    * 渲染
@@ -750,7 +750,6 @@ export default class Smoke extends PureComponent {
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleAlarmClick={this.handleAlarmClick}
-          handleFaultClick={this.handleFaultClick}
           handleClickUnitStatistics={this.handleClickUnitStatistics}
         />
         <AlarmDrawer

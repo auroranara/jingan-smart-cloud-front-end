@@ -89,15 +89,7 @@ const SPANS = [4, 20];
 const NO_DATA = '暂无信息';
 
 export default function TimelineCard(props) {
-  const {
-    startMap,
-    handleMap,
-    finshMap: finishMap,
-    createCompanyName,
-    finishCompanyName,
-    startCompanyName,
-    ...restProps
-  } = props;
+  const { startMap, handleMap, finshMap: finishMap, companyName, ...restProps } = props;
   const [isStarted, isHandling, isFinished] = [startMap, handleMap, finishMap].map(
     m => (m ? !!Object.keys(m).length : false)
   );
@@ -123,7 +115,7 @@ export default function TimelineCard(props) {
                 type={startMap.unitType || NO_DATA}
                 safety={startMap.safetyMan || NO_DATA}
                 phone={startMap.safetyPhone || NO_DATA}
-                companyName={startMap.companyName || createCompanyName || NO_DATA}
+                companyName={startMap.companyName || startMap.createCompanyName || NO_DATA}
               />
             )}
           </TimelineItem>
@@ -138,7 +130,7 @@ export default function TimelineCard(props) {
                 status={handleMap.fireType || 0}
                 reporter={handleMap.reportMan || NO_DATA}
                 phone={handleMap.reportPhone || NO_DATA}
-                companyName={startCompanyName || NO_DATA}
+                companyName={finishMap.startCompanyName || NO_DATA}
               />
             )}
           </TimelineItem>
@@ -152,7 +144,7 @@ export default function TimelineCard(props) {
               <Handled
                 reporter={finishMap.executMan || NO_DATA}
                 phone={finishMap.executPhone || NO_DATA}
-                companyName={finishCompanyName || NO_DATA}
+                companyName={finishMap.finishCompanyName || NO_DATA}
                 feedback={finishMap.disasterDesc || NO_DATA}
                 picture={finishMap.picture || []}
               />
