@@ -139,6 +139,7 @@ export default class UnitFireControl extends PureComponent {
         companyId,
         overFlag: 0,
         deviceTypeList: '101,102,103',
+        sort: '1',
       },
       callback: () => {
         this.setState({ pendingInfoLoading: false });
@@ -277,6 +278,7 @@ export default class UnitFireControl extends PureComponent {
           companyId,
           overFlag: 0,
           deviceTypeList: '101,102,103',
+          sort: '1',
         },
       });
 
@@ -631,6 +633,7 @@ export default class UnitFireControl extends PureComponent {
           companyId,
           overFlag: 0,
           deviceTypeList: '101,102,103',
+          sort: '1',
         },
         callback,
       });

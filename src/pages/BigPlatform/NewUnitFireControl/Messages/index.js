@@ -520,7 +520,8 @@ export default class Messages extends PureComponent {
         contentStyle={{
           flex: '1',
           display: 'flex',
-          height: 'auto',
+          height: '100%',
+          overflow: 'hidden',
           backgroundColor: 'rgba(17, 58, 112, 0.9)' /* padding: '16px 0' */,
         }}
         scroll={{
