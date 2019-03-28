@@ -178,7 +178,7 @@ export default function MaintenanceCard(props) {
             hour={getTime(create_date, 1)}
           >
             <Occured
-              position={install_address || NO_DATA}
+              position={install_address || device_address || NO_DATA}
               type={label || systemTypeValue || NO_DATA}
               safety={safetyPerson || NO_DATA}
               phone={safetyPhone || NO_DATA}
