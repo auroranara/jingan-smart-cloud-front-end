@@ -251,7 +251,8 @@ export default class Messages extends PureComponent {
             {address || getEmptyData()}
           </div>
           <div className={styles.msgBody}>
-            维修单位：
+            {type === 10 ? '上报' : '维修'}
+            单位：
             {proceCompany}
           </div>
         </div>
