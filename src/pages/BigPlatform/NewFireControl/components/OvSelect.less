@@ -30,10 +30,12 @@
   right: 0;
 }
 
-.one, .two {
+.one,
+.two {
   :global {
     .ant-select-selection {
-      border-color: rgb(4, 253, 255);;
+      border-color: rgb(4, 253, 255);
+      ;
       background-color: transparent;
     }
 
@@ -48,6 +50,8 @@
 }
 
 .dropdown {
+  z-index: 6666;
+
   :global {
     .ant-select-dropdown {
       background-color: rgb(3, 48, 105);
@@ -66,7 +70,8 @@
       background-color: #063b6f;
     }
 
-    .ant-select-dropdown-menu-item-selected, .ant-select-dropdown-menu-item-selected:hover {
+    .ant-select-dropdown-menu-item-selected,
+    .ant-select-dropdown-menu-item-selected:hover {
       color: rgb(4, 253, 255);
       background-color: #063b6f;
     }
