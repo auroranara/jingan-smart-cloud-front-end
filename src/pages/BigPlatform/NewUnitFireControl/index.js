@@ -1071,10 +1071,26 @@ export default class App extends PureComponent {
   };
 
   handleFaultClick = data => {
-    const { cameraMessage } = data;
+    const { cameraMessage, messageFlag } = data;
     this.hiddeAllPopup();
-    this.setState({ faultMessage: data, faultMessageDrawerVisible: true });
-    this.handleShowFireVideo(cameraMessage);
+    // this.setState({ faultMessage: data, faultMessageDrawerVisible: true });
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchMaintenanceMsg',
+      payload: { dataId: messageFlag },
+      callback: res => {
+        if (!res.data.list.length) {
+          this.setState({ faultMessage: data, faultMessageDrawerVisible: true });
+          return;
+        }
+        this.setState({
+          maintenanceTitle: '故障处理动态',
+          processIds: res.data.list.map(item => item.id),
+        });
+        this.handleDrawerVisibleChange('maintenanceMsg');
+        this.handleShowFireVideo(cameraMessage);
+      },
+    });
   };
 
   hiddeAllPopup = () => {
