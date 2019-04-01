@@ -502,38 +502,40 @@ export default class MultipleHistoryPlay extends PureComponent {
   getMenu = (currentArea, isAlarmMap, selectedArea) => {
     const { tree, selectedTableRow } = this.props;
     const { id, isBuilding, isFloor, children, parentId } = currentArea;
-    // 如果当前区域为建筑，则获取楼层子区域生成菜单对象
-    if (isBuilding) {
-      const floors = children.reduce((floors, id, index) => {
-        const area = tree[id];
-        const { isFloor, name } = area;
-        if (isFloor) {
-          floors.push(`<div class="${classNames({
-            [styles.floor]: true,
-            [styles.hoverableFloor]: selectedTableRow === 'all',
-            [styles.alarmFloor]: isAlarmMap[id],
-            [styles.selectedFloor]: selectedArea && selectedArea.id === id,
-          })}" data-id="${id}">F${index+1}</div>`);
-        }
-        return floors;
-      }, []);
-      return {
-        id,
-        latlng: this.getAreaRightTop(selectedArea || currentArea),
-        icon: L.divIcon({
-          iconSize: ['auto', 'auto'],
-          iconAnchor: [-3, 3],
-          className: styles.menuContainer,
-          html: `<div class="${styles.menu}">${floors.join('')}</div>`,
-        }),
-        category: 'menu',
-      };
+    // 选择所有人时才显示楼层菜单
+    if (selectedTableRow === 'all') {
+      // 如果当前区域为建筑，则获取楼层子区域生成菜单对象
+      if (isBuilding) {
+        const floors = children.reduce((floors, id, index) => {
+          const area = tree[id];
+          const { isFloor, name } = area;
+          if (isFloor) {
+            floors.push(`<div class="${classNames({
+              [styles.floor]: true,
+              [styles.hoverableFloor]: true,
+              [styles.alarmFloor]: isAlarmMap[id],
+              [styles.selectedFloor]: selectedArea && selectedArea.id === id,
+            })}" data-id="${id}">F${index+1}</div>`);
+          }
+          return floors;
+        }, []);
+        return {
+          id,
+          latlng: this.getAreaRightTop(selectedArea || currentArea),
+          icon: L.divIcon({
+            iconSize: ['auto', 'auto'],
+            iconAnchor: [-3, 3],
+            className: styles.menuContainer,
+            html: `<div class="${styles.menu}">${floors.join('')}</div>`,
+          }),
+          category: 'menu',
+        };
+      }
+      // 如果当前区域为楼层，则以父区域作为建筑获取楼层子区域生成菜单
+      else if (isFloor) {
+        return this.getMenu(tree[parentId], isAlarmMap, currentArea);
+      }
     }
-    // 如果当前区域为楼层，则以父区域作为建筑获取楼层子区域生成菜单
-    else if (isFloor) {
-      return this.getMenu(tree[parentId], isAlarmMap, currentArea);
-    }
-    // 否则不显示菜单
   }
 
   /**
