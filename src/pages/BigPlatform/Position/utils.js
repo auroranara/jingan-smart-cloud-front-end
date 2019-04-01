@@ -514,3 +514,31 @@ export function getAncestorId(currentId, rootId, areaInfo) {
 
   return;
 }
+
+export function isArraySame(a1, a2) {
+  if (!Array.isArray(a1) || !Array.isArray(a2))
+    return a1 === a2;
+  if (a1.length !== a2.length)
+    return false;
+  const [b1, b2] = [a1, a2].map(a => Array.from(a));
+  [b1, b2].forEach(b => b.sort());
+  for (let i = 0; i < b1.length; i++)
+    if (b1[i] !== b2[i])
+      return false;
+  return true;
+}
+
+// 全屏的人数展示时，获取最底层节点的名字和人数
+export function getSectionCount(tree, parentName='') {
+  const { children } = tree;
+  if (!Array.isArray(children))
+    return [];
+  const result = [];
+  for (const node of children) {
+    const { name, count } = node;
+    const fullName = `${parentName}${name}`;
+    result.push({ name: fullName, count });
+    result.push(...getSectionCount(node, fullName));
+  }
+  return result;
+}

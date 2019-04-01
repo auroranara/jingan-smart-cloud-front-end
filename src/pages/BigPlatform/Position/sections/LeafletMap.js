@@ -14,6 +14,7 @@ import {
   getPersonAlarmTypes,
   getIconClassName,
   getAncestorId,
+  isArraySame,
   OPTIONS_BLUE,
 } from '../utils';
 
@@ -30,24 +31,45 @@ export default class LeafletMap extends PureComponent {
     reference: undefined,
     floorIcon: undefined,
     beaconOn: true, // 是否显示信标
+    positionIcons: [], // 人员及信标的图标
+    movingIcons: [], // 移动的人员的图标
   };
 
   currentSection = {};
 
   componentDidUpdate(prevProps, prevState) {
-    const {
-      areaId: prevAreaId,
-      highlightedAreaId: prevHighlightedAreaId,
-      sectionTree: prevSectionTree,
-    } = prevProps;
-    const { areaId, highlightedAreaId, sectionTree } = this.props;
+    // const {
+    //   areaId: prevAreaId,
+    //   highlightedAreaId: prevHighlightedAreaId,
+    //   sectionTree: prevSectionTree,
+    // } = prevProps;
+    // const { areaId, highlightedAreaId, sectionTree } = this.props;
+    const currentProps = this.props;
+    const props = [
+      'areaId',
+      'highlightedAreaId',
+      'sectionTree',
+      'areaInfo',
+      'isTrack',
+      'selectedCardId',
+      'movingCards',
+      'aggregation',
+      'positions',
+    ];
+    // 状态变化对象，变化的为true
+    const states = props.reduce((prev, next) => {
+      prev[next] = prevProps[next] !== currentProps[next];
+      return prev;
+    }, {});
+    const [prevMovingIds, currentMovingIds] = [prevProps.movingCards, currentProps.movingCards].map(cards => cards.map(({ cardId }) => cardId));
+    states.movingIds = !isArraySame(prevMovingIds, currentMovingIds);
 
-    if (
-      areaId !== prevAreaId ||
-      sectionTree !== prevSectionTree ||
-      highlightedAreaId !== prevHighlightedAreaId
-    )
+    if (states.areaId || states.sectionTree || states.highlightedAreaId)
       this.handleMapData();
+    if (states.aggregation || states.areaId || states.areaInfo || states.isTrack || states.selectedCardId || states.positions || states.movingIds)
+      this.setState({ positionIcons: this.positionsToIcons() });
+    if (states.movingCards || states.areaId || states.areaInfo || states.isTrack || states.selectedCardId)
+      this.setState({ movingIcons: this.movingCardsToIcons() });
   }
 
   // 修正areaId，若areaId为null或''，则其在区域外，修正为最顶层节点的id
@@ -156,16 +178,17 @@ export default class LeafletMap extends PureComponent {
         [styles.selectedFloor]: id === floorId,
       })}" data-floor="${id}">F${i + 1}</p>`;
     }, '');
+
     return {
       id: `${buildingId}_@@building`,
       name: buildingId,
       latlng: { lat: y, lng: x },
-      iconProps: {
+      icon: L.divIcon({
         iconSize: [40, 20 * length],
         iconAnchor: [-2, 2],
         className: styles.iconContainer,
         html: `<div class="${styles.floors}">${floors}</div>`,
-      },
+      }),
     };
   };
 
@@ -291,7 +314,16 @@ export default class LeafletMap extends PureComponent {
       id: `${id}_@@beacon`,
       name: beaconCode,
       latlng: { lat: yarea, lng: xarea },
-      iconProps: {
+      // iconProps: {
+      //   iconSize: [15, 15],
+      //   // iconAnchor: [10, 10],
+      //   className: styles.beaconContainer,
+      //   html: `
+      //     <div class="${styles[+status ? 'beacon' : 'beaconOff']}">
+      //       <div class="${styles.personTitle}">${beaconCode}</div>
+      //     </div>`,
+      // },
+      icon: L.divIcon({
         iconSize: [15, 15],
         // iconAnchor: [10, 10],
         className: styles.beaconContainer,
@@ -299,7 +331,7 @@ export default class LeafletMap extends PureComponent {
           <div class="${styles[+status ? 'beacon' : 'beaconOff']}">
             <div class="${styles.personTitle}">${beaconCode}</div>
           </div>`,
-      },
+      }),
     }));
   };
 
@@ -328,7 +360,17 @@ export default class LeafletMap extends PureComponent {
         id: `${cardId}_@@moving`,
         name,
         latlng: { lat: yarea, lng: xarea },
-        iconProps: {
+        // iconProps: {
+        //   iconSize: [38, 40],
+        //   iconAnchor: [19, 40],
+        //   className: styles.personContainer,
+        //   html: `
+        //     <div class="${styles[containerClassName]}">
+        //       <div class="${styles.personTitle}">${name}</div>
+        //       <div class="${styles[isAlarm ? 'alarms' : 'nodisplay']}">${alarmTypes}</div>
+        //     </div>`,
+        // },
+        icon: L.divIcon({
           iconSize: [38, 40],
           iconAnchor: [19, 40],
           className: styles.personContainer,
@@ -337,7 +379,7 @@ export default class LeafletMap extends PureComponent {
               <div class="${styles.personTitle}">${name}</div>
               <div class="${styles[isAlarm ? 'alarms' : 'nodisplay']}">${alarmTypes}</div>
             </div>`,
-        },
+        }),
       };
     });
 
@@ -401,17 +443,22 @@ export default class LeafletMap extends PureComponent {
         id: beaconId,
         name: length > 5 ? `${name}...` : name, // 若name为数字则会报错
         latlng: { lat: yarea, lng: xarea },
-        iconProps: {
+        // iconProps: {
+        //   iconSize: [38, 40],
+        //   iconAnchor: [19, 40],
+        //   className: styles.personContainer,
+        //   html: `
+        //     <div class="${styles[containerClassName]}">
+        //       <div class="${
+        //         styles[isSingle ? 'personTitle' : `personNum${isAlarm ? 'Red' : ''}`]
+        //       }">${showName}</div>
+        //       <div class="${styles[isAlarm ? 'alarms' : 'nodisplay']}">${alarmTypes}</div>
+        //     </div>`,
+        // },
+        icon: L.divIcon({
           iconSize: [38, 40],
           iconAnchor: [19, 40],
           className: styles.personContainer,
-          // html: `
-          //   <div class="${styles[containerClassName]}">
-          //     <div class="${
-          //       styles[isSingle ? 'personTitle' : isAlarm ? 'nodisplay' : 'personNum']
-          //     }">${showName}</div>
-          //     <div class="${styles[isAlarm ? 'alarms' : 'nodisplay']}">${alarmTypes}</div>
-          //   </div>`,
           html: `
             <div class="${styles[containerClassName]}">
               <div class="${
@@ -419,7 +466,7 @@ export default class LeafletMap extends PureComponent {
               }">${showName}</div>
               <div class="${styles[isAlarm ? 'alarms' : 'nodisplay']}">${alarmTypes}</div>
             </div>`,
-        },
+        }),
       };
     });
 
@@ -444,21 +491,22 @@ export default class LeafletMap extends PureComponent {
     // }, []);
 
     const beaconIcons = this.beaconListToIcons(targetAgg);
-    const movingIcons = this.movingCardsToIcons();
+    // const movingIcons = this.movingCardsToIcons();
 
     // return points;
-    // console.log('points', points, beaconIcons);
-    return [...points, ...movingIcons, ...beaconIcons];
+    // return [...points, ...movingIcons, ...beaconIcons];
+    return [...points, ...beaconIcons];
   };
 
   render() {
-    const { url, areaId, areaInfo } = this.props;
-    const { data, images, reference, beaconOn, floorIcon } = this.state;
+    const { url, areaId, areaInfo, showBoard } = this.props;
+    const { data, images, reference, beaconOn, floorIcon, positionIcons, movingIcons } = this.state;
     // const { count, inCardCount, outCardCount } = this.currentTrueSection || {};
 
     const currentAreaInfo = (areaId && areaInfo[areaId]) || {};
     const { parentId, fullName } = currentAreaInfo;
-    const icons = this.positionsToIcons().concat(floorIcon || []);
+    // const icons = this.positionsToIcons().concat(floorIcon || []);
+    const icons = [...positionIcons, ...movingIcons].concat(floorIcon || []);
     // console.log('render icons', Date(), icons);
 
     const imgDraw = (
@@ -485,6 +533,7 @@ export default class LeafletMap extends PureComponent {
     return (
       <div className={styles.container}>
         {imgDraw}
+        <Icon type="arrows-alt" onClick={showBoard} className={styles.board} />
         <Icon type="home" onClick={this.handleHome} className={styles.home} />
         {parentId && <Icon type="rollback" onClick={this.handleBack} className={styles.back} />}
         {/* <div className={styles.mapInfo}>

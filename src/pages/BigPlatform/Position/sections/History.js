@@ -295,18 +295,43 @@ export default class History extends PureComponent {
           <div className={styles.wrapper}>
             <div className={styles.inner}>
               <div className={styles.leftTop}>
-                <div className={styles.treeContainer}>
-                  <TreeSelect
-                    // allowClear
-                    treeDefaultExpandAll
-                    value={selectedAreaId}
-                    className={styles.tree}
-                    treeData={sectionTreeList}
-                    onChange={this.handleAreaChange}
-                    dropdownClassName={styles.treeDropdown}
-                  />
-                </div>
                 <div className={styles.selects}>
+                  <Select
+                    defaultValue="0"
+                    value={idType}
+                    className={styles.select1}
+                    dropdownClassName={styles.dropdown}
+                    onChange={this.handleIdTypeChange}
+                  >
+                    <Option key="0" value="0">人员</Option>
+                    <Option key="1" value="1">卡号</Option>
+                  </Select>
+                  <div className={styles.treeContainer}>
+                    <TreeSelect
+                      // allowClear
+                      treeDefaultExpandAll
+                      value={selectedAreaId}
+                      className={styles.tree}
+                      treeData={sectionTreeList}
+                      onChange={this.handleAreaChange}
+                      dropdownClassName={styles.treeDropdown}
+                    />
+                  </div>
+                </div>
+                <Select
+                  allowClear
+                  showSearch
+                  mode="multiple"
+                  className={styles.cardSelect}
+                  dropdownClassName={styles.dropdown}
+                  value={isCard ? cardIds : userIds}
+                  placeholder="请选择或搜索人员/卡号"
+                  onChange={this.handleIdsChange}
+                  optionFilterProp="children"
+                >
+                  {options}
+                </Select>
+                {/* <div className={styles.selects}>
                   <Select
                     // disabled={loading}
                     defaultValue="0"
@@ -331,7 +356,7 @@ export default class History extends PureComponent {
                   >
                     {options}
                   </Select>
-                </div>
+                </div> */}
                 <RangePicker
                   dropdownClassName={styles.rangePickerDropDown}
                   className={styles.rangePicker}

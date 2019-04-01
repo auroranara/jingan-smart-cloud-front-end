@@ -1,0 +1,57 @@
+@red: #ff4848;
+
+.container {
+  color: @red;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 1);
+  z-index: 1000;
+  overflow: hidden auto;
+
+  .section {
+    border-top: 1px solid rgb(220, 220, 220);
+
+    .title {
+      color: @red;
+      padding-left: 5%;
+      height: 80px;
+      line-height: 80px;
+      font-size: 40px;
+      margin-bottom: 0;
+    }
+
+    .desc {
+      padding: 0 0 20px 8%;
+
+      .descp > div {
+        color: @red;
+        height: 60px;
+        line-height: 60px;
+        font-size: 30px;
+      }
+    }
+  }
+}
+
+.shrink {
+  color: #0FF;
+  font-size: 20px;
+  width: 30px;
+  height: 30px;
+  line-height: 34px;
+  position: absolute;
+  right: 30px;
+  top: 30px;
+  background-color: rgba(0, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+.head {
+  color: @red;
+  height: 120px;
+  line-height: 120px;
+  font-size: 60px;
+  padding-left: 5%;
+}
