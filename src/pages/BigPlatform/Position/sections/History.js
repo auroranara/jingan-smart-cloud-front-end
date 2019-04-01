@@ -7,7 +7,7 @@ import { Scroll } from 'react-transform-components';
 
 import styles from './History.less';
 import { Tabs, MultipleHistoryPlay } from '../components/Components';
-import { getUserName } from '../utils';
+import { getUserName, getDisabledDatetime } from '../utils';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -21,6 +21,7 @@ const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)', right: -2 };
 // 限制1天
 const RANGE_LIMIT = 24 * 60 * 60 * 1000;
 const ALL = 'all';
+const SHOW_TIME = { hideDisabledOptions: true, format: 'HH:mm' };
 
 /**
  * description: 历史轨迹
@@ -34,6 +35,9 @@ export default class History extends PureComponent {
       // 区域搜索框当前选中的区域id
       selectedAreaId: undefined,
       tableList: [],
+      startValue: null,
+      endValue: null,
+      endOpen: false,
     };
     mapMutations(this, {
       namespace: 'position',
@@ -255,6 +259,44 @@ export default class History extends PureComponent {
     this.setState({ tableList: currentDataList });
   };
 
+  disabledStartDate = (startValue) => {
+    const endValue = this.state.endValue;
+    if (!startValue || !endValue) {
+      return false;
+    }
+    return startValue.valueOf() > endValue.valueOf();
+  };
+
+  disabledEndDate = (endValue) => {
+    const startValue = this.state.startValue;
+    if (!endValue || !startValue) {
+      return false;
+    }
+    return endValue.valueOf() <= startValue.valueOf();
+  };
+
+  disabledRangeTime = () => {
+    return { disabledMinutes: () => getDisabledDatetime() };
+  };
+
+  onStartChange = (value) => {
+    this.setState({ startValue: value });
+  };
+
+  onEndChange = (value) => {
+    this.setState({ endValue: value });
+  };
+
+  handleStartOpenChange = (open) => {
+    if (!open) {
+      this.setState({ endOpen: true });
+    }
+  };
+
+  handleEndOpenChange = (open) => {
+    this.setState({ endOpen: open });
+  };
+
   render() {
     const {
       loading,
@@ -278,7 +320,7 @@ export default class History extends PureComponent {
       },
       // handleLabelClick,
     } = this.props;
-    const { range, selectedAreaId, tableList } = this.state;
+    const { range, selectedAreaId, tableList, startValue, endValue, endOpen } = this.state;
     const [ startTimeStamp, endTimeStamp ] = timeRange;
 
     const historyTree = originalTree.find(({ id }) => id === selectedAreaId);
@@ -357,7 +399,7 @@ export default class History extends PureComponent {
                     {options}
                   </Select>
                 </div> */}
-                <RangePicker
+                {/* <RangePicker
                   dropdownClassName={styles.rangePickerDropDown}
                   className={styles.rangePicker}
                   style={{ width: '100%' }}
@@ -369,7 +411,35 @@ export default class History extends PureComponent {
                   onOk={this.handleOk}
                   onOpenChange={this.handleOpenChange}
                   allowClear={false}
-                />
+                /> */}
+                <div className={styles.dates}>
+                  <DatePicker
+                    style={{ width: '45%' }}
+                    className={styles.datePicker}
+                    dropdownClassName={styles.datePickerDropdown}
+                    disabledDate={this.disabledStartDate}
+                    disabledTime={this.disabledRangeTime}
+                    showTime={SHOW_TIME}
+                    format="YYYY-MM-DD HH:mm"
+                    value={startValue}
+                    placeholder="开始时间"
+                    onChange={this.onStartChange}
+                    onOpenChange={this.handleStartOpenChange}
+                  />
+                  <DatePicker
+                    style={{ width: '45%' }}
+                    className={styles.datePicker}
+                    dropdownClassName={styles.datePickerDropdown}
+                    disabledDate={this.disabledEndDate}
+                    showTime={SHOW_TIME}
+                    format="YYYY-MM-DD HH:mm"
+                    value={endValue}
+                    placeholder="结束时间"
+                    onChange={this.onEndChange}
+                    open={endOpen}
+                    onOpenChange={this.handleEndOpenChange}
+                  />
+                </div>
                 <Button className={styles.searchBtn} onClick={this.handleSearch}>搜索</Button>
               </div>
               <div className={styles.leftMiddle}>

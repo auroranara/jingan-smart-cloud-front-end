@@ -542,3 +542,7 @@ export function getSectionCount(tree, parentName='') {
   }
   return result;
 }
+
+export function getDisabledDatetime() {
+  return [...Array(60).keys()].filter(n => n % 5);
+};
