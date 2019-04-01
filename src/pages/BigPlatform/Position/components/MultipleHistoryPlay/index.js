@@ -98,7 +98,7 @@ export default class MultipleHistoryPlay extends PureComponent {
    * 更新后
    */
   componentDidUpdate({ ids: prevIds, idMap: prevIdMap }) {
-    const { ids, idMap, startTime, top, selectedTableRow, tree } = this.props;
+    const { ids, idMap, startTime, top, selectedTableRow } = this.props;
     // console.log(idMap);
     // console.log(ids);
     // 如果源数据发生变化，则重置所有参数，保留播放速度相关参数
@@ -1095,6 +1095,30 @@ export default class MultipleHistoryPlay extends PureComponent {
   }
 
   /**
+   * 面包屑
+   */
+  renderBreadcrumb = () => {
+    const { tree, selectedTableRow } = this.props;
+    const { currentAreaId } = this.state;
+    if (currentAreaId) {
+      const isAll = selectedTableRow === 'all';
+      const currentArea = tree[currentAreaId];
+      const areaList = currentArea.parentIds.reduce((parentAreaList, areaId) => {
+        const area = tree[areaId];
+        const props = isAll && {
+          className: styles.hoverableBreadcrumb,
+          onClick: () => { this.handleClick({ target: { options: { data: { areaId, category: 'area' } } } }); },
+        };
+        parentAreaList.push(<span key={areaId} {...props}>{area.name}</span>);
+        parentAreaList.push(' > ');
+        return parentAreaList;
+      }, []);
+      areaList.push(<span key={currentAreaId}>{currentArea.name}</span>);
+      return areaList;
+    }
+  }
+
+  /**
    * 渲染
    */
   render() {
@@ -1141,6 +1165,8 @@ export default class MultipleHistoryPlay extends PureComponent {
 
     return (
       <div className={styles.container}>
+        {/* 面包屑容器 */}
+        <div className={styles.breadcrumbWrapper}>当前区域：{this.renderBreadcrumb()}</div>
         {/* 内容容器 */}
         <div className={styles.contentWrapper}>
           <ImageDraw
