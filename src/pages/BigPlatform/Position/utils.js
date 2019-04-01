@@ -545,4 +545,20 @@ export function getSectionCount(tree, parentName='') {
 
 export function getDisabledDatetime() {
   return [...Array(60).keys()].filter(n => n % 5);
-};
+}
+
+export function getDefaultRange() {
+  const current = moment();
+  const currentTimestamp = +current;
+  const day = current.clone().startOf('day');
+  const six = day.clone().add(6, 'hours');
+  const sixTimestamp = +six;
+  // 当前时间大于六点，返回六点到当前时间，小于六点，返回零点到当前时间
+  if (currentTimestamp > sixTimestamp)
+    return [six, current];
+  return [day, current];
+}
+
+export function getHourFromMoment(m, date) {
+  return Math.ceil((+m - +date) / 3600000);
+}

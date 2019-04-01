@@ -296,6 +296,10 @@
 
 .datePickerDropdown, .rangePickerDropDown {
   :global {
+    .ant-calendar {
+      background-color: @history-background-color;
+      border-color: @history-border-color;
+    }
     .ant-calendar-time, .ant-calendar-range {
       color: #fff;
       background-color: @history-background-color;
@@ -551,7 +555,11 @@
     }
     // disabled
     .ant-calendar-disabled-cell .ant-calendar-date {
+      // color: rgba(204, 204, 204, 0.5);
       background-color: @history-disabled-background-color;
+    }
+    .ant-calendar-picker-container {
+      color: #FFF;
     }
   }
 }
@@ -632,7 +640,7 @@
   color: #FFF;
 }
 
-.select1, .cardSelect, .cardSelect1 {
+.select1, .cardSelect, .cardSelect1, .hourSelect {
   color: #FFF;
   background-color: transparent;
 
@@ -695,6 +703,10 @@
       border-radius: 4px;
     }
   }
+}
+
+.hourSelect {
+  width: calc(49% - 87px);
 }
 
 .selects1, .cardSelect1, .tree1, .rangePicker1, .btns {
