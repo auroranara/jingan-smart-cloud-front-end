@@ -148,6 +148,7 @@ export default class FireDevice extends PureComponent {
                   <Radio.Button
                     value={val}
                     className={waterAlarm[index] ? styles.tabAlarm : undefined}
+                    key={index}
                   >
                     {waterSys[val].name}
                   </Radio.Button>
