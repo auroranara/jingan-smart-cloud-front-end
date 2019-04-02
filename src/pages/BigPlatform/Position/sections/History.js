@@ -400,10 +400,12 @@ export default class History extends PureComponent {
                 /> */}
                 <div className={styles.dates}>
                   <DatePicker
+                    style={{ width: '40%' }}
                     className={styles.datePicker}
                     dropdownClassName={styles.datePickerDropdown}
                     format="YYYY-MM-DD"
                     value={date}
+                    allowClear={false}
                     disabledDate={disabledDate}
                     onChange={this.onDateChange}
                   />
