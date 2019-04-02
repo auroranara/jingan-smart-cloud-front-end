@@ -1,4 +1,5 @@
 @history-background-color: #032d5d;
+@history-disabled-background-color: rgb(3, 55, 115);
 @history-selected-color: #195fbd;
 @history-hover-color: #06366c;
 @history-disabled-color: #1b497d;
@@ -265,7 +266,12 @@
   transform: translateY(-50%);
 }
 
-.rangePicker, .rangePicker1 {
+.dates {
+  display: flex;
+  justify-content: space-between;
+}
+
+.datePicker, .rangePicker, .rangePicker1 {
   :global {
     .ant-input {
       color: #fff;
@@ -281,15 +287,26 @@
     .ant-calendar-picker-icon {
       color: #fff;
     }
+    .ant-calendar-picker-clear {
+      color: #FFF;
+      background-color: #033069;
+    }
   }
 }
 
-.rangePickerDropDown {
+.datePickerDropdown, .rangePickerDropDown {
   :global {
-    .ant-calendar-range {
+    .ant-calendar {
+      background-color: @history-background-color;
+      border-color: @history-border-color;
+    }
+    .ant-calendar-time, .ant-calendar-range {
       color: #fff;
       background-color: @history-background-color;
       border-color: @history-border-color;
+    }
+    .ant-calendar-header {
+      border-bottom-color: @history-border-color;
     }
     .ant-calendar-footer, .ant-calendar-body {
       border-top-color: @history-border-color;
@@ -410,6 +427,9 @@
     }
     .ant-calendar-time-picker {
       background-color: transparent;
+    }
+    .ant-calendar-time-picker-inner {
+      background-color: @history-background-color;
     }
     .ant-calendar-range-right .ant-calendar-time-picker-inner {
       border-left-color: @history-border-color;
@@ -533,6 +553,14 @@
         background-color: transparent;
       }
     }
+    // disabled
+    .ant-calendar-disabled-cell .ant-calendar-date {
+      // color: rgba(204, 204, 204, 0.5);
+      background-color: @history-disabled-background-color;
+    }
+    .ant-calendar-picker-container {
+      color: #FFF;
+    }
   }
 }
 
@@ -612,7 +640,7 @@
   color: #FFF;
 }
 
-.select1, .cardSelect, .cardSelect1 {
+.select1, .cardSelect, .cardSelect1, .hourSelect {
   color: #FFF;
   background-color: transparent;
 
@@ -675,6 +703,10 @@
       border-radius: 4px;
     }
   }
+}
+
+.hourSelect {
+  width: calc(49% - 87px);
 }
 
 .selects1, .cardSelect1, .tree1, .rangePicker1, .btns {

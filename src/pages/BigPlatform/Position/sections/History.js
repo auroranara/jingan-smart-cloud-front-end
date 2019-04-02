@@ -7,7 +7,12 @@ import { Scroll } from 'react-transform-components';
 
 import styles from './History.less';
 import { Tabs, MultipleHistoryPlay } from '../components/Components';
-import { getUserName } from '../utils';
+import { getUserName, getDefaultRange, getHourFromMoment } from '../utils';
+
+// 不能选择大于今天的日期
+function disabledDate(current) {
+  return current > moment().endOf('day');
+};
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -15,12 +20,15 @@ const { Option } = Select;
 // 时间格式
 const timeFormat = 'YYYY-MM-DD HH:mm';
 // 默认范围
-const defaultRange = [moment().startOf('minute').subtract(24, 'hours'), moment().startOf('minute')];
+// const defaultRange = [moment().startOf('minute').subtract(24, 'hours'), moment().startOf('minute')];
+const defaultRange = getDefaultRange();
+const TODAY = moment().startOf('day');
 const renderThumbHorizontal = ({ style }) => <div style={{ ...style, display: 'none' }} />;
 const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)', right: -2 };
-// 限制1天
-const RANGE_LIMIT = 24 * 60 * 60 * 1000;
+// const HOUR_MS = 60 * 60 * 1000;
+// const DAY_MS = 24 * HOUR_MS; // 一天的毫秒数
 const ALL = 'all';
+const START_OPTIONS = [...Array(24).keys()].map(i => <Option key={i} value={i}>{i}:00</Option>);
 
 /**
  * description: 历史轨迹
@@ -29,11 +37,14 @@ const ALL = 'all';
 export default class History extends PureComponent {
   constructor(props) {
     super(props);
+    const [start, end] = defaultRange;
     this.state = {
-      range: defaultRange,
-      // 区域搜索框当前选中的区域id
-      selectedAreaId: undefined,
+      // range: defaultRange,
+      selectedAreaId: undefined, // 区域搜索框当前选中的区域id
       tableList: [],
+      date: TODAY,
+      startTime: getHourFromMoment(start, TODAY),
+      endTime: getHourFromMoment(end, TODAY),
     };
     mapMutations(this, {
       namespace: 'position',
@@ -66,8 +77,7 @@ export default class History extends PureComponent {
     } = this.props;
     // 默认选中最顶层的第一个区域
     this.setState({ selectedAreaId: originalTree[0].id }, () => {
-      const { range } = this.state;
-      this.getData(range);
+      this.getData(defaultRange);
     });
     // 如果是从目标跟踪过来的，则根据跟踪的人员初始化数据
     // if (userIds.length || cardIds.length) {
@@ -94,7 +104,7 @@ export default class History extends PureComponent {
     this.save({
       areaDataList: [],
       historyIdMap: {},
-      timeRange: [moment().startOf('minute').subtract(24, 'hours'), moment().startOf('minute')],
+      timeRange: getDefaultRange(),
       selectedIds: [],
       selectedTableRow: ALL,
       selectedIdType: 0,
@@ -103,12 +113,12 @@ export default class History extends PureComponent {
 
   setTopScrollReference = (topScroll) => {
     this.topScroll = topScroll && topScroll.dom;
-  }
+  };
 
   /**
    * 获取列表
    */
-  getData = (range) => {
+  getData = range => {
     const { idType, userIds, cardIds } = this.props;
     const { selectedAreaId } = this.state;
     const [queryStartTime, queryEndTime] = range;
@@ -130,35 +140,29 @@ export default class History extends PureComponent {
     });
   }
 
-  /**
-   * 时间选择change事件
-   */
-  handleChange = (range) => {
-    this.setState({ range });
-  }
+   // 时间选择change事件
+  // handleChange = (range) => {
+  //   this.setState({ range });
+  // }
 
-  /**
-   * 时间选择Ok事件
-   */
-  handleOk = (range) => {
-    this.isOk = true;
-    this.lastRange = range;
-    this.setState({ range });
-  }
+  // 时间选择Ok事件
+  // handleOk = (range) => {
+  //   this.isOk = true;
+  //   this.lastRange = range;
+  //   this.setState({ range });
+  // }
 
-  /**
-   * 时间选择OpenChange
-   */
-  handleOpenChange = (status) => {
-    if (!status) {
-      if (this.isOk) {
-        this.isOk = false;
-      }
-      else {
-        this.setState({ range: this.lastRange });
-      }
-    }
-  }
+  // 时间选择OpenChange
+  // handleOpenChange = (status) => {
+  //   if (!status) {
+  //     if (this.isOk) {
+  //       this.isOk = false;
+  //     }
+  //     else {
+  //       this.setState({ range: this.lastRange });
+  //     }
+  //   }
+  // }
 
   /**
    * 点击表格行
@@ -201,12 +205,11 @@ export default class History extends PureComponent {
    * 搜索按钮点击事件
    */
   handleSearch = e => {
-    const { range } = this.state;
-    const [start, end] = range.map(m => +m);
-    if (end - start > RANGE_LIMIT) {
-      message.warn('选择的时间范围请限制在24小时以内');
-    }
+    const { date, startTime, endTime } = this.state;
+    if (!date || !startTime || !endTime)
+      message.warn('日期或时间未选择!')
     else {
+      const range = [startTime, endTime].map(t => date.clone().add(t, 'hours'));
       this.getData(range);
     }
   };
@@ -255,6 +258,30 @@ export default class History extends PureComponent {
     this.setState({ tableList: currentDataList });
   };
 
+  onDateChange = value => {
+    const today = moment().startOf('day');
+    const valueDay = value.clone().startOf('day');
+    const props = ['startTime', 'endTime'];
+    const state = { date: value };
+    // 选择时间为今天
+    if (+today === +valueDay) {
+      const defaultRange = getDefaultRange();
+      props.forEach((p, i) => state[p] = getHourFromMoment(defaultRange[i], today));
+    } else {
+      state.startTime = 6;
+      state.endTime = 26;
+    }
+    this.setState(state);
+  };
+
+  onStartChange = value => {
+    this.setState({ startTime: value, endTime: undefined });
+  };
+
+  onEndChange = value => {
+    this.setState({ endTime: value });
+  };
+
   render() {
     const {
       loading,
@@ -278,7 +305,7 @@ export default class History extends PureComponent {
       },
       // handleLabelClick,
     } = this.props;
-    const { range, selectedAreaId, tableList } = this.state;
+    const { range, selectedAreaId, tableList, date, startTime, endTime } = this.state;
     const [ startTimeStamp, endTimeStamp ] = timeRange;
 
     const historyTree = originalTree.find(({ id }) => id === selectedAreaId);
@@ -287,6 +314,7 @@ export default class History extends PureComponent {
     const options = isCard
       ? cards.map(({ id, code }) => <Option key={id} value={id}>{code}</Option>)
       : people.map(({ user_id, user_name }) => <Option key={user_id} value={user_id}>{user_name}</Option>);
+    const endOptions = [...Array(48).keys()].filter(n => n > startTime && n < startTime + 25).map(n => <Option key={n} value={n}>{n > 23 ? '次日' : ''}{n % 24}:00</Option>);
 
     return (
       <div className={styles.container}>
@@ -357,7 +385,7 @@ export default class History extends PureComponent {
                     {options}
                   </Select>
                 </div> */}
-                <RangePicker
+                {/* <RangePicker
                   dropdownClassName={styles.rangePickerDropDown}
                   className={styles.rangePicker}
                   style={{ width: '100%' }}
@@ -369,7 +397,36 @@ export default class History extends PureComponent {
                   onOk={this.handleOk}
                   onOpenChange={this.handleOpenChange}
                   allowClear={false}
-                />
+                /> */}
+                <div className={styles.dates}>
+                  <DatePicker
+                    className={styles.datePicker}
+                    dropdownClassName={styles.datePickerDropdown}
+                    format="YYYY-MM-DD"
+                    value={date}
+                    disabledDate={disabledDate}
+                    onChange={this.onDateChange}
+                  />
+                  <Select
+                    className={styles.hourSelect}
+                    dropdownClassName={styles.dropdown}
+                    placeholder="开始时间"
+                    value={startTime}
+                    onChange={this.onStartChange}
+                  >
+                    {START_OPTIONS}
+                  </Select>
+                  <Select
+                    className={styles.hourSelect}
+                    dropdownClassName={styles.dropdown}
+                    placeholder="结束时间"
+                    value={endTime}
+                    onChange={this.onEndChange}
+                    disabled={startTime === undefined}
+                  >
+                    {endOptions}
+                  </Select>
+                </div>
                 <Button className={styles.searchBtn} onClick={this.handleSearch}>搜索</Button>
               </div>
               <div className={styles.leftMiddle}>
