@@ -98,7 +98,7 @@ export default class MultipleHistoryPlay extends PureComponent {
    * 更新后
    */
   componentDidUpdate({ ids: prevIds, idMap: prevIdMap }) {
-    const { ids, idMap, startTime, top, selectedTableRow, tree } = this.props;
+    const { ids, idMap, startTime, top, selectedTableRow } = this.props;
     // console.log(idMap);
     // console.log(ids);
     // 如果源数据发生变化，则重置所有参数，保留播放速度相关参数
@@ -502,38 +502,40 @@ export default class MultipleHistoryPlay extends PureComponent {
   getMenu = (currentArea, isAlarmMap, selectedArea) => {
     const { tree, selectedTableRow } = this.props;
     const { id, isBuilding, isFloor, children, parentId } = currentArea;
-    // 如果当前区域为建筑，则获取楼层子区域生成菜单对象
-    if (isBuilding) {
-      const floors = children.reduce((floors, id, index) => {
-        const area = tree[id];
-        const { isFloor, name } = area;
-        if (isFloor) {
-          floors.push(`<div class="${classNames({
-            [styles.floor]: true,
-            [styles.hoverableFloor]: selectedTableRow === 'all',
-            [styles.alarmFloor]: isAlarmMap[id],
-            [styles.selectedFloor]: selectedArea && selectedArea.id === id,
-          })}" data-id="${id}">F${index+1}</div>`);
-        }
-        return floors;
-      }, []);
-      return {
-        id,
-        latlng: this.getAreaRightTop(selectedArea || currentArea),
-        icon: L.divIcon({
-          iconSize: ['auto', 'auto'],
-          iconAnchor: [-3, 3],
-          className: styles.menuContainer,
-          html: `<div class="${styles.menu}">${floors.join('')}</div>`,
-        }),
-        category: 'menu',
-      };
+    // 选择所有人时才显示楼层菜单
+    if (selectedTableRow === 'all') {
+      // 如果当前区域为建筑，则获取楼层子区域生成菜单对象
+      if (isBuilding) {
+        const floors = children.reduce((floors, id, index) => {
+          const area = tree[id];
+          const { isFloor, name } = area;
+          if (isFloor) {
+            floors.push(`<div class="${classNames({
+              [styles.floor]: true,
+              [styles.hoverableFloor]: true,
+              [styles.alarmFloor]: isAlarmMap[id],
+              [styles.selectedFloor]: selectedArea && selectedArea.id === id,
+            })}" data-id="${id}">F${index+1}</div>`);
+          }
+          return floors;
+        }, []);
+        return {
+          id,
+          latlng: this.getAreaRightTop(selectedArea || currentArea),
+          icon: L.divIcon({
+            iconSize: ['auto', 'auto'],
+            iconAnchor: [-3, 3],
+            className: styles.menuContainer,
+            html: `<div class="${styles.menu}">${floors.join('')}</div>`,
+          }),
+          category: 'menu',
+        };
+      }
+      // 如果当前区域为楼层，则以父区域作为建筑获取楼层子区域生成菜单
+      else if (isFloor) {
+        return this.getMenu(tree[parentId], isAlarmMap, currentArea);
+      }
     }
-    // 如果当前区域为楼层，则以父区域作为建筑获取楼层子区域生成菜单
-    else if (isFloor) {
-      return this.getMenu(tree[parentId], isAlarmMap, currentArea);
-    }
-    // 否则不显示菜单
   }
 
   /**
@@ -1093,6 +1095,30 @@ export default class MultipleHistoryPlay extends PureComponent {
   }
 
   /**
+   * 面包屑
+   */
+  renderBreadcrumb = () => {
+    const { tree, selectedTableRow } = this.props;
+    const { currentAreaId } = this.state;
+    if (currentAreaId) {
+      const isAll = selectedTableRow === 'all';
+      const currentArea = tree[currentAreaId];
+      const areaList = currentArea.parentIds.reduce((parentAreaList, areaId) => {
+        const area = tree[areaId];
+        const props = isAll && {
+          className: styles.hoverableBreadcrumb,
+          onClick: () => { this.handleClick({ target: { options: { data: { areaId, category: 'area' } } } }); },
+        };
+        parentAreaList.push(<span key={areaId} {...props}>{area.name}</span>);
+        parentAreaList.push(' > ');
+        return parentAreaList;
+      }, []);
+      areaList.push(<span key={currentAreaId}>{currentArea.name}</span>);
+      return areaList;
+    }
+  }
+
+  /**
    * 渲染
    */
   render() {
@@ -1139,6 +1165,8 @@ export default class MultipleHistoryPlay extends PureComponent {
 
     return (
       <div className={styles.container}>
+        {/* 面包屑容器 */}
+        <div className={styles.breadcrumbWrapper}>当前区域：{this.renderBreadcrumb()}</div>
         {/* 内容容器 */}
         <div className={styles.contentWrapper}>
           <ImageDraw
