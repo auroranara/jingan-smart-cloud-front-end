@@ -9,6 +9,11 @@ import styles from './History.less';
 import { Tabs, MultipleHistoryPlay } from '../components/Components';
 import { getUserName, getDefaultRange, getHourFromMoment } from '../utils';
 
+// 不能选择大于今天的日期
+function disabledDate(current) {
+  return current > moment().endOf('day');
+};
+
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
@@ -399,6 +404,7 @@ export default class History extends PureComponent {
                     dropdownClassName={styles.datePickerDropdown}
                     format="YYYY-MM-DD"
                     value={date}
+                    disabledDate={disabledDate}
                     onChange={this.onDateChange}
                   />
                   <Select
