@@ -1,20 +1,18 @@
 import React, { Fragment, PureComponent } from 'react';
-import { Button, DatePicker, Input, message, Modal, Select, TreeSelect } from 'antd';
+import { Button, DatePicker, Input, message, Modal, Select, TimePicker, TreeSelect } from 'antd';
 import moment from 'moment';
 
 import styles from './History.less';
-import { AlarmCard, Tabs } from '../components/Components';
+import { AlarmCard, EmptyMsg, Tabs } from '../components/Components';
 import { ChartBar, ChartLine, GraphSwitch } from '@/pages/BigPlatform/NewFireControl/components/Components';
 
-const { RangePicker } = DatePicker;
+// const { RangePicker } = DatePicker;
 const { Option } = Select;
 const { Group: ButtonGroup } = Button;
 const { TextArea } = Input;
 
 const rect = <span className={styles.rect} />;
-const timeFormat = 'YYYY-MM-DD HH:mm';
-const defaultRange = [moment().startOf('minute').subtract(24, 'hours'), moment().startOf('minute')];;
-// const RANGE_LIMIT = 24 * 3600 * 1000;
+const TIME_FORMAT = 'HH:mm';
 const TYPES = ['SOS', '越界', '长时间逗留', '超员', '缺员'];
 const TYPE_OPTIONS = TYPES.map((t, i) => <Option key={i} value={i + 1}>{t}</Option>);
 const STATUS = { 0:'待处理', 2:'已处理' };
@@ -26,7 +24,9 @@ export default class AlarmList extends PureComponent {
     graph: 0,
     batch: false,
     searchValue: '',
-    range: defaultRange,
+    date: moment(),
+    startTime: moment().startOf('day'),
+    endTime: moment().endOf('day'),
     selectedArea: undefined,
     alarmType: undefined,
     alarmStatus: undefined,
@@ -52,12 +52,13 @@ export default class AlarmList extends PureComponent {
 
   getAlarms = () => {
     const { dispatch, companyId } = this.props;
-    const { searchValue, range, selectedArea, alarmType, alarmStatus } = this.state;
+    const { searchValue, date, startTime, endTime, selectedArea, alarmType, alarmStatus } = this.state;
     const typeList = !alarmType || !alarmType.length ? undefined : alarmType.join(',');
 
-    // const [startTime, endTime] = range.map(r => +r);
-    const [startTime, endTime] = range.map(r => r.format('YYYY-MM-DD HH:mm:ss'));
-    const payload = { startTime, endTime, typeList, executeStatus: alarmStatus, pageSize: 0, pageNum: 1, companyId };
+    const day = date.format('YYYY-MM-DD');
+    const start = `${day} ${startTime.format('HH:mm:ss')}`;
+    const end = `${day} ${endTime.format('HH:mm:ss')}`;
+    const payload = { startTime: start, endTime: end, typeList, executeStatus: alarmStatus, pageSize: 0, pageNum: 1, companyId };
     if (searchValue)
       payload.userName = searchValue;
     if (selectedArea)
@@ -87,9 +88,17 @@ export default class AlarmList extends PureComponent {
     this.setState({ selectedArea: value });
   };
 
-  handleRangeChange = (range) => {
-    this.setState({ range });
-  }
+  handleDateChange = date => {
+    this.setState({ date });
+  };
+
+  handleStartChange = time => {
+    this.setState({ startTime: time });
+  };
+
+  handleEndChange = time => {
+    this.setState({ endTime: time });
+  };
 
   genHandleSelectCard = index => e => {
     this.setState(({ selectedCards }) => ({ selectedCards: selectedCards.map((b, i) => i === index ? !b : b) }));
@@ -156,11 +165,24 @@ export default class AlarmList extends PureComponent {
       personPosition: { alarms, statusCount, monthCount },
       handleLabelClick,
     } = this.props;
-    const { graph, batch, searchValue, range, selectedArea, alarmType, alarmStatus, selectedCards, handleDesc, modalVisible } = this.state;
+    const {
+      graph,
+      batch,
+      searchValue,
+      date,
+      startTime,
+      endTime,
+      selectedArea,
+      alarmType,
+      alarmStatus,
+      selectedCards,
+      handleDesc,
+      modalVisible,
+    } = this.state;
 
     const list = monthCount.map(({ warningMonth, warningNum }) => ({ name: warningMonth, value: warningNum }));
     const { waitExecuteNum, executeNum } = statusCount;
-    let cards = '暂无信息';
+    let cards = <EmptyMsg />;
     if (alarms.length)
       cards = alarms.map((item, i) => (
         <AlarmCard
@@ -275,7 +297,7 @@ export default class AlarmList extends PureComponent {
                   onChange={this.handleAreaChange}
                   dropdownClassName={styles.treeDropdown}
                 />
-                <RangePicker
+                {/* <RangePicker
                   style={{ width: '30%' }}
                   dropdownClassName={styles.rangePickerDropDown}
                   className={styles.rangePicker1}
@@ -287,18 +309,50 @@ export default class AlarmList extends PureComponent {
                   onOk={this.handleOk}
                   onOpenChange={this.handleOpenChange}
                   allowClear={false}
-                />
-                <ButtonGroup className={styles.btns}>
-                  <Button ghost className={styles.searchBtn1} onClick={this.getAlarms}>搜索</Button>
-                  {batch
-                    ? (
-                    <Fragment>
-                      <Button ghost className={styles.searchBtn1} onClick={this.handleShowMultiSubmit}>确定</Button>
-                      <Button ghost className={styles.searchBtn1} onClick={this.hideBatch}>取消</Button>
-                    </Fragment>
-                    ) : <Button ghost className={styles.searchBtn1} onClick={this.handleBatch}>批量处理</Button>
-                  }
-                </ButtonGroup>
+                /> */}
+                <div className={styles.rowRight}>
+                  <div className={styles.times}>
+                    <DatePicker
+                      style={{ width: '38%' }}
+                      className={styles.datePicker}
+                      dropdownClassName={styles.datePickerDropdown}
+                      // format="YYYY-MM-DD"
+                      value={date}
+                      allowClear={false}
+                      onChange={this.handleDateChange}
+                    />
+                    <TimePicker
+                      className={styles.timePicker}
+                      popupClassName={styles.timeDropdown}
+                      format={TIME_FORMAT}
+                      value={startTime}
+                      placeholder="开始时间"
+                      allowClear={false}
+                      onChange={this.handleStartChange}
+                    />
+                    ~
+                    <TimePicker
+                      className={styles.timePicker}
+                      popupClassName={styles.timeDropdown}
+                      format={TIME_FORMAT}
+                      value={endTime}
+                      placeholder="结束时间"
+                      allowClear={false}
+                      onChange={this.handleEndChange}
+                    />
+                  </div>
+                  <ButtonGroup className={styles.btns}>
+                    <Button ghost className={styles.searchBtn1} onClick={this.getAlarms}>搜索</Button>
+                    {batch
+                      ? (
+                      <Fragment>
+                        <Button ghost className={styles.searchBtn1} onClick={this.handleShowMultiSubmit}>确定</Button>
+                        <Button ghost className={styles.searchBtn1} onClick={this.hideBatch}>取消</Button>
+                      </Fragment>
+                      ) : <Button ghost className={styles.searchBtn1} onClick={this.handleBatch}>批量处理</Button>
+                    }
+                  </ButtonGroup>
+                </div>
               </div>
             </div>
             <div className={styles.rightBottom}>

@@ -259,6 +259,79 @@
   margin-bottom: 10px;
 }
 
+.rowRight {
+  width: 65%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.times {
+  width: 65%;
+  line-height: 32px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.timePicker {
+  width: 29%;
+
+  :global {
+    .ant-time-picker-input {
+      color: #FFF;
+      background-color: #033069;
+      border-color: #04abc3;
+    }
+    .ant-time-picker-icon .ant-time-picker-clock-icon {
+      color: #FFF;
+    }
+  }
+}
+
+.timeDropdown {
+  color: #FFF;
+
+  :global {
+    .ant-time-picker-panel {
+      color: #FFF;
+    }
+    .ant-time-picker-panel-inner {
+      background-color: @history-background-color;
+    }
+    .ant-time-picker-panel-input-wrap {
+      border-color: @history-border-color;
+    }
+    .ant-time-picker-panel-input {
+      color: #FFF;
+      background-color: @history-background-color;
+    }
+    .ant-time-picker-panel-select li:hover {
+      color: #FFF;
+      background-color: @history-hover-color;
+    }
+    li.ant-time-picker-panel-select-option-selected {
+      color: #FFF;
+      background-color: @history-selected-color;
+    }
+    .ant-time-picker-panel-select {
+      border-color: @history-border-color;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background: rgba(0, 87, 169, 1);
+    }
+
+    ::-webkit-scrollbar-track {
+      border-radius: 4px;
+      background: rgba(2, 28, 64, 0.6);
+    }
+  }
+}
+
 .spread {
   position: absolute;
   left: 15%;
@@ -269,6 +342,7 @@
 .dates {
   display: flex;
   justify-content: space-between;
+  line-height: 32px;
 }
 
 .datePicker, .rangePicker, .rangePicker1 {
@@ -711,8 +785,12 @@
   width: 29%;
 }
 
-.selects1, .cardSelect1, .tree1, .rangePicker1, .btns {
+.selects1, .cardSelect1, .tree1, .rangePicker1 {
   width: 30%;
+}
+
+.btns {
+  // width: 30%;
 }
 
 .dropdown {

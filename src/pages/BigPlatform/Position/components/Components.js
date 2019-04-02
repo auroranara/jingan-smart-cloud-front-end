@@ -2,6 +2,7 @@ import AlarmCard from './AlarmCard';
 import AlarmHandle from './AlarmHandle';
 import AlarmMsg from './AlarmMsg';
 import DrawerContainer from './DrawerContainer';
+import EmptyMsg from './EmptyMsg';
 import Map from './Map';
 import MapInfo from './MapInfo';
 import Info from './Info';
@@ -17,6 +18,7 @@ export {
   AlarmHandle,
   AlarmMsg,
   DrawerContainer,
+  EmptyMsg,
   Map,
   MapInfo,
   Info,

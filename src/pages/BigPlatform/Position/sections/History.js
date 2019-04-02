@@ -400,7 +400,7 @@ export default class History extends PureComponent {
                 /> */}
                 <div className={styles.dates}>
                   <DatePicker
-                    style={{ width: '40%' }}
+                    style={{ width: '36%' }}
                     className={styles.datePicker}
                     dropdownClassName={styles.datePickerDropdown}
                     format="YYYY-MM-DD"
@@ -418,6 +418,7 @@ export default class History extends PureComponent {
                   >
                     {START_OPTIONS}
                   </Select>
+                  ~
                   <Select
                     className={styles.hourSelect}
                     dropdownClassName={styles.dropdown}
