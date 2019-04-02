@@ -1074,10 +1074,15 @@ export default class App extends PureComponent {
     const { cameraMessage, messageFlag } = data;
     this.hiddeAllPopup();
     // this.setState({ faultMessage: data, faultMessageDrawerVisible: true });
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchMaintenanceMsg',
-      payload: { dataId: messageFlag },
+      payload: { dataId: messageFlag, companyId },
       callback: res => {
         if (!res.data.list.length) {
           this.setState({ faultMessage: data, faultMessageDrawerVisible: true });
