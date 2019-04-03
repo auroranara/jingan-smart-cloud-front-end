@@ -145,6 +145,7 @@ export default function MaintenanceCard(props) {
     unit_name,
     disaster_desc,
     //时间
+    create_time,
     create_date,
     start_date,
     end_date,
@@ -174,8 +175,8 @@ export default function MaintenanceCard(props) {
           <TimelineItem
             spans={SPANS}
             label="故障发生"
-            day={getTime(create_date)}
-            hour={getTime(create_date, 1)}
+            day={getTime(isOneKey ? create_date : create_time)}
+            hour={getTime(isOneKey ? create_date : create_time, 1)}
           >
             <Occured
               position={install_address || device_address || NO_DATA}
