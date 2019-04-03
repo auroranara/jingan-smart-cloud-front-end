@@ -34,7 +34,7 @@ const UPLOADERS_MAP = { companyLogo: 'logoList', reachGradeAccessory: 'standardL
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
-const folder = 'safetyInfo';
+const folder = 'safetyinfo';
 
 const UploadIcon = <Icon type="upload" />;
 

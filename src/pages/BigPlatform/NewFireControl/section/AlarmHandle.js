@@ -62,16 +62,12 @@ export default class AlarmHandle extends Component {
 
   render() {
     const {
-      data: {
-        startMap: { unitType, createTime },
-        handleMap: { createTime: handleTime, safetyMan, safetyPhone, type },
-        finshMap: { safetyMan: safetyMans, endTime, safetyPhone: safetyPhones, type: endType },
-        picture,
-      },
+      data: { startMap, handleMap, finshMap, picture },
     } = this.props;
 
-    // const picture = [b1, b2, b3, b4, b5, b6];
-    // const picture = [b1, b2, b3, b4];
+    const { unitType, createTime } = startMap || {};
+    const { createTime: handleTime, safetyMan, safetyPhone, type } = handleMap || {};
+    const { safetyMan: safetyMans, endTime, safetyPhone: safetyPhones, type: endType } = finshMap;
 
     const { index, magIndex, showImg } = this.state;
     const picLength = picture.length;
@@ -141,7 +137,7 @@ export default class AlarmHandle extends Component {
                 )} */}
 
                 {createTime ? (
-                  <Timeline.Item style={{ paddingBottom: 22 }}>
+                  <Timeline.Item className={styles.timeLine} style={{ paddingBottom: 22 }}>
                     <span className={styles.yearTime} style={{ color: '#fff' }}>
                       {getYearTime(createTime)}
                     </span>
@@ -149,9 +145,7 @@ export default class AlarmHandle extends Component {
                       {getTime(createTime)}
                     </span>
                     <div>
-                      <span className={styles.status}>
-                        报警
-                      </span>
+                      <span className={styles.status}>报警</span>
                     </div>
                     <div>
                       <p className={styles.content} style={{ color: '#fff' }}>
@@ -162,9 +156,7 @@ export default class AlarmHandle extends Component {
                 ) : (
                   <Timeline.Item style={{ paddingBottom: 22 }}>
                     <div>
-                      <span className={styles.bestatus}>
-                        报警
-                      </span>
+                      <span className={styles.bestatus}>报警</span>
                     </div>
                     <div>
                       <p className={styles.content} style={{ color: '#4f6793' }}>
@@ -198,9 +190,7 @@ export default class AlarmHandle extends Component {
                       {getTime(handleTime)}
                     </span>
                     <div>
-                      <span className={styles.status}>
-                        上报
-                      </span>
+                      <span className={styles.status}>上报</span>
                     </div>
                     <div>
                       <p className={styles.content} style={{ color: '#fff' }}>
@@ -217,9 +207,7 @@ export default class AlarmHandle extends Component {
                 ) : (
                   <Timeline.Item style={{ paddingBottom: 10 }}>
                     <div>
-                      <span className={styles.bestatus}>
-                        上报
-                      </span>
+                      <span className={styles.bestatus}>上报</span>
                     </div>
                     <div>
                       <p className={styles.content} style={{ color: '#4f6793' }}>
@@ -253,9 +241,7 @@ export default class AlarmHandle extends Component {
                       {getTime(endTime)}
                     </span>
                     <div>
-                      <span className={styles.status}>
-                        处理
-                      </span>
+                      <span className={styles.status}>处理</span>
                     </div>
                     <div>
                       <p className={styles.content} style={{ color: '#fff' }}>
@@ -272,9 +258,7 @@ export default class AlarmHandle extends Component {
                 ) : (
                   <Timeline.Item style={{ paddingBottom: 10 }}>
                     <div>
-                      <span className={styles.bestatus}>
-                        处理
-                      </span>
+                      <span className={styles.bestatus}>处理</span>
                     </div>
                     <div>
                       <p className={styles.content} style={{ color: '#4f6793' }}>

@@ -38,7 +38,7 @@ export default class CardList extends PureComponent {
       title: '操作',
       key: 'operation',
       render: (text, record) => {
-        return <span className={styles.track} onClick={e => handleTrack(record.areaId, record.id)}>追踪</span>
+        return <span className={styles.track} onClick={e => handleTrack(record.areaId, record.id, record.userId)}>追踪</span>
       },
     }];
 
@@ -47,8 +47,8 @@ export default class CardList extends PureComponent {
       list = positions.filter(({ userName, visitorName, cardCode }) => [userName, visitorName, cardCode.toString()].some(s => s && s.includes(value)));
 
     // console.log(list, areaInfo);
-    const dataSource = list.map(p => {
-      const { areaId, cardId, cardCode, sos, tlong, overstep, onlineStatus } = p;
+    const dataSource = list.filter(({ areaId }) => areaId).map(p => {
+      const { areaId, cardId, cardCode, sos, tlong, overstep, onlineStatus, userId } = p;
       const name = getUserName(p, true);
       return {
         id: cardId,
@@ -58,6 +58,7 @@ export default class CardList extends PureComponent {
         code: cardCode,
         status: sos || tlong || overstep, // true 火警 false 正常
         online: +onlineStatus === ONLINE,
+        userId,
       };
     });
 

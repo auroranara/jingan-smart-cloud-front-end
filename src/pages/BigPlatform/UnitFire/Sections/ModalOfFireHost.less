@@ -1,0 +1,241 @@
+.modalOfFireHost {
+  @border-color: #0967D3;
+  @dark-white: #dfdbdb;
+  :global {
+    .ant-modal-body * {
+      border-color: @border-color  !important;
+    }
+    /* .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+      background: @border-color;
+      & span {
+        color: @dark-white;
+      }
+    }
+    .ant-radio-button-wrapper {
+      background-color: #062756;
+      color: @dark-white;
+      border-color: @border-color;
+    }
+    .ant-radio-button-wrapper:not(:first-child) {
+      &::before {
+        background-color: @border-color;
+      }
+    }
+    .ant-radio-button-wrapper-checked {
+      background-color: @border-color;
+      box-shadow: none;
+      &:hover {
+        box-shadow: none;
+      }
+      &::before {
+        background-color: @border-color  !important;
+        opacity: 1;
+      }
+    } */
+    .ant-table-bordered.ant-table-empty .ant-table-placeholder {
+      border: none;
+    }
+  }
+  .sectionFilter {
+    position: relative;
+    width: 100%; // height: 86px;
+    padding: 0;
+    margin-bottom: 10px;
+    .filter {
+      height: 34px;
+      margin-bottom: 9px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .redText {
+        color: #E16762;
+      }
+      .activeFilter {
+        height: 34px;
+        line-height: 34px;
+        min-width: 100px;
+        padding: 0 9px;
+        overflow: hidden;
+        text-align: center;
+        background: #0967D3;
+        border-radius: 20px;
+        color: #fff;
+        cursor: pointer;
+      }
+      .inActiveFilter {
+        height: 34px;
+        line-height: 32px;
+        min-width: 100px;
+        padding: 0 8px;
+        overflow: hidden;
+        text-align: center;
+        border-radius: 20px;
+        color: #fff;
+        background: #054795;
+        cursor: pointer; // border: 1px solid #054795;
+      }
+    }
+  }
+  .listContainer {
+    width: 100%;
+    height: 450px;
+    overflow-y: auto;
+    padding-right: 2px;
+    /* &>div:nth-child(2n+1) {
+      padding-right: 10px;
+    }
+    &>div:nth-child(2n) {
+      padding-left: 10px;
+    } */
+    &::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 7px rgba(0, 0, 0, 0.3);
+      background-color: transparent;
+    }
+    &::-webkit-scrollbar {
+      width: 7px;
+      background-color: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: #06428a;
+    }
+    .cardContainer {
+      &:nth-child(2n+1) {
+        padding-right: 10px;
+      }
+      &:nth-child(2n) {
+        padding-left: 10px;
+      }
+      .cardItem {
+        box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
+        margin-bottom: 20px;
+        position: relative;
+        padding: 10px 25px 10px 0; // background: #011539;
+        background: #043B7E;
+        overflow: hidden;
+        .innerItem {
+          width: 100%;
+          height: 100%;
+          .titleContainer {
+            padding-left: 12px;
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            color: #E14848;
+            .title {
+              width: 55%;
+              height: 30px;
+              position: relative;
+              display: flex;
+              .icon {
+                width: 30px;
+                height: 30px;
+                display: inline-block;
+                flex: none;
+              }
+              .redText {
+                font-size: 16px;
+                font-weight: 500;
+                height: 30px;
+                line-height: 30px;
+                display: inline-block;
+                flex: 1;
+                overflow: hidden;
+                color: #E14848;
+              }
+              .blueText {
+                font-size: 16px;
+                font-weight: 500;
+                height: 30px;
+                line-height: 30px;
+                display: inline-block;
+                flex: 1;
+                overflow: hidden;
+                color: #00a8ff;
+              }
+            }
+          }
+          .line {
+            padding-left: 17px;
+            width: 100%;
+            height: 25px;
+            line-height: 25px;
+            position: relative;
+            word-wrap: nowrap;
+            overflow: hidden;
+            color: #fff;
+          }
+          .lastLine {
+            padding-left: 17px;
+            width: 100%;
+            height: 25px;
+            line-height: 25px;
+            position: relative;
+            color: #516895; // display: flex;
+            // justify-content: space-between;
+            word-wrap: nowrap;
+            overflow: hidden;
+            display: flex;
+            .location {
+              flex: 1;
+              overflow: hidden;
+              word-wrap: nowrap;
+            }
+            .time {
+              flex: none;
+            }
+          }
+        }
+        .topRightBlueTag {
+          position: absolute;
+          width: 100%;
+          text-align: center;
+          background: #1890FF;
+          font-size: 15px;
+          line-height: 25px;
+          transform: translate(50%, 0) translate(-20px, 20px) rotate(45deg);
+          transform-origin: 50% 0;
+          top: 0;
+          right: 0;
+          color: #D2D7DE;
+        }
+        .topRightGreenTag {
+          position: absolute;
+          width: 100%;
+          text-align: center;
+          background: #00ABC9;
+          font-size: 15px;
+          line-height: 25px;
+          transform: translate(50%, 0) translate(-20px, 20px) rotate(45deg);
+          transform-origin: 50% 0;
+          top: 0;
+          right: 0;
+          color: #D2D7DE;
+        }
+      }
+    }
+  }
+  .noContent {
+    width: 100%;
+    height: 450px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #022756;
+    text-align: center;
+    color: #dfdbdb;
+  }
+  .footer {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    .pagesText {
+      line-height: 32px;
+      color: @dark-white;
+    }
+  }
+}

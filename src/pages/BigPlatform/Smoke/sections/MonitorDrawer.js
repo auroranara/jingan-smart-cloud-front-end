@@ -17,6 +17,7 @@ import emptyBg from '../imgs/waterBg.png';
 import smokeAlarm from '../imgs/smoke-alarm.png';
 import smokeFault from '../imgs/smoke-fault.png';
 import smokeNormal from '../imgs/smoke-normal.png';
+import Ellipsis from '@/components/Ellipsis';
 
 const LABELS = ['正常', '火警', '故障'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
@@ -102,8 +103,14 @@ export default class MonitorDrawer extends PureComponent {
                       <img src={smokeImg} alt="smokeImg" />
                     </div>
                     <div className={styles.infoWrapper}>
-                      <div className={styles.position}>{`${area}：${location}`}</div>
-                      <div className={styles.infos}>{+status === 0 ? devStatus : occurTime}</div>
+                      <div className={styles.position}>
+                        <Ellipsis lines={1} tooltip>{`${area}：${location}`}</Ellipsis>
+                      </div>
+                      <div className={styles.infos}>
+                        <Ellipsis lines={1} tooltip>
+                          {+status === 0 ? devStatus : occurTime}
+                        </Ellipsis>
+                      </div>
                       <div className={styles.extraWrapper}>
                         {!!cameraList.length && (
                           <div
@@ -239,6 +246,7 @@ export default class MonitorDrawer extends PureComponent {
         title={'单位监测信息'}
         width={700}
         visible={visible}
+        zIndex={2000}
         left={left}
         placement="right"
         rowStyle={{ height: 'calc(100% - 70px)' }}

@@ -1,16 +1,67 @@
+/* 下拉框 */
+div.fourColorImgSelect {
+  position: absolute;
+  top: 11.2963%;
+  left: 22%;
+  min-width: 120px;
+  color: #fff;
+  z-index: 999;
+
+  :global {
+    .ant-select-selection {
+      background-color: transparent;
+      border-radius: 32px;
+      border-color: #00ffff;
+    }
+    .ant-select-selection__rendered {
+      margin-left: 15px;
+      margin-right: 15px;
+    }
+    .ant-select-arrow {
+      color: #00ffff;
+    }
+    .ant-select-selection-selected-value {
+      padding-right: 16px;
+    }
+  }
+}
+div.fourColorImgSelectDropDown {
+  padding: 4px 0;
+  background-color: rgb(3, 48, 105);
+  border: 1px solid #00ffff;
+
+  :global {
+    .ant-select-dropdown-menu-item {
+      padding-left: 15px;
+      padding-right: 15px;
+      color: #fff;
+      font-weight: normal;
+      border-radius: 0;
+      background-color: rgb(3, 48, 105);
+
+      &:hover {
+        color: #00ffff;
+        background-color: #04407d;
+      }
+    }
+  }
+}
 .container {
   position: relative;
   // padding: 0 15%;
   height: 100%;
 }
+
 .wrapper {
   position: relative;
   height: calc(~'100% - 30px');
   background: no-repeat center center;
   background-size: 100% 100%;
 }
+
 .imageContainer {
   height: 100% !important;
+
   :global {
     .leaflet-right {
       right: 21%;
@@ -18,6 +69,7 @@
     }
   }
 }
+
 // 以marker作为tooltip使用
 .tooltipMarker {
   margin-top: -89px !important;
@@ -47,12 +99,14 @@
     content: "";
   }
 }
+
 .legendWrapper {
   position: absolute;
   top: 11.2963%;
   right: 22%;
   z-index: 888;
 }
+
 .legend {
   display: flex;
   align-items: center;
@@ -77,22 +131,27 @@
     }
   }
 }
+
 .alarm {
   margin-left: 10px;
   color: #04fdff;
   cursor: pointer;
 }
+
 @keyframes fade {
   from {
-      opacity: 1.0;
+    opacity: 1.0;
   }
+
   50% {
-      opacity: 0.4;
+    opacity: 0.4;
   }
+
   to {
-      opacity: 1.0;
+    opacity: 1.0;
   }
 }
+
 .alarmTooltip {
   animation: fade 0.5s 3 alternate;
 
@@ -104,11 +163,20 @@
 }
 
 
-@keyframes myfirst
-{
-  from {width: 0; height: 0; background-color: rgba(255,0,0,0.6)}
-  to {width: 10em; height: 10em; background-color: rgba(255,0,0,0.1)}
+@keyframes myfirst {
+  from {
+    width: 0;
+    height: 0;
+    background-color: rgba(255, 0, 0, 0.6)
+  }
+
+  to {
+    width: 10em;
+    height: 10em;
+    background-color: rgba(255, 0, 0, 0.1)
+  }
 }
+
 .animated {
   position: absolute;
   top: 50%;
@@ -127,4 +195,8 @@
   }
 }
 
-
+.iconbg {
+  background-image: url(../imgs/dangerIcon.png);
+  background-size: 70% 70%;
+  background-repeat: no-repeat;
+}

@@ -47,7 +47,7 @@ export default class Messages extends PureComponent {
 
   handleClickExpandButton = () => {
     this.setState(({ isExpanded }) => ({ isExpanded: !isExpanded }));
-  }
+  };
 
   renderMsg = (msg, index) => {
     const {
@@ -58,6 +58,7 @@ export default class Messages extends PureComponent {
       handleFaultClick,
       handleFireMessage,
       handleWorkOrderCardClickMsg,
+      handleViewWater,
     } = this.props;
     const {
       type,
@@ -87,6 +88,12 @@ export default class Messages extends PureComponent {
       maintenanceCompany,
       maintenanceUser,
       // addTimeStr,
+      deviceType,
+      area,
+      location,
+      paramName,
+      condition,
+      virtualName,
     } = msg;
     let msgItem = null;
     if (type === 1 || type === 2 || type === 3 || type === 4) {
@@ -116,7 +123,7 @@ export default class Messages extends PureComponent {
           <a
             className={styles.detailBtn}
             onClick={() => {
-              if (type === 5) handleClickMessage(messageFlag);
+              if (type === 5) handleClickMessage(messageFlag, { ...msg });
               else handleFaultClick({ ...msg });
             }}
           >
@@ -244,7 +251,8 @@ export default class Messages extends PureComponent {
             {address || getEmptyData()}
           </div>
           <div className={styles.msgBody}>
-            维修单位：
+            {type === 10 ? '上报' : '维修'}
+            单位：
             {proceCompany}
           </div>
         </div>
@@ -432,6 +440,58 @@ export default class Messages extends PureComponent {
           </div>
         </div>
       );
+    } else if (type === 36) {
+      // 动态监测报警
+      msgItem = (
+        <div className={styles.msgItem} key={index}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleViewWater([101, 102, 103].indexOf(+deviceType), deviceType);
+            }}
+          >
+            详情
+            <Icon type="double-right" />
+          </a>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgType}>{title}</div>
+          <div className={styles.msgBody}>
+            {+deviceType === 101
+              ? '消火栓系统'
+              : +deviceType === 102
+                ? '自动喷淋系统'
+                : '水池/水箱'}
+          </div>
+          <div className={styles.msgBody}>
+            {virtualName + '-' + paramName + (condition === '>=' ? '高于' : '低于') + '报警值'}
+          </div>
+        </div>
+      );
+    } else if (type === 37) {
+      // 动态监测恢复
+      msgItem = (
+        <div className={styles.msgItem} key={index}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleViewWater([101, 102, 103].indexOf(+deviceType), deviceType);
+            }}
+          >
+            详情
+            <Icon type="double-right" />
+          </a>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgType}>{title}</div>
+          <div className={styles.msgBody}>
+            {+deviceType === 101
+              ? '消火栓系统'
+              : +deviceType === 102
+                ? '自动喷淋系统'
+                : '水池/水箱'}
+          </div>
+          <div className={styles.msgBody}>{virtualName + '恢复正常'}</div>
+        </div>
+      );
     } else {
       msgItem = (
         <div className={styles.msgItem} key={index}>
@@ -458,20 +518,34 @@ export default class Messages extends PureComponent {
         className={className}
         style={{ display: 'flex', flexDirection: 'column', height: 'auto' }}
         titleStyle={{ flex: 'none' }}
-        contentStyle={{ flex: '1', display: 'flex', height: 'auto' /* padding: '16px 0' */ }}
+        contentStyle={{
+          flex: '1',
+          display: 'flex',
+          height: '100%',
+          overflow: 'hidden',
+          backgroundColor: 'rgba(17, 58, 112, 0.9)' /* padding: '16px 0' */,
+        }}
         scroll={{
           className: styles.scroll,
         }}
-        other={screenMessage.length > 3 && <Icon type={isExpanded?'double-left':'double-right'} className={styles.expandButton} onClick={this.handleClickExpandButton} />}
+        other={
+          screenMessage.length > 3 && (
+            <Icon
+              type={isExpanded ? 'double-left' : 'double-right'}
+              className={styles.expandButton}
+              onClick={this.handleClickExpandButton}
+            />
+          )
+        }
         planB
       >
-          {list.length > 0 ? (
-            list.map((item, index) => {
-              return this.renderMsg(item, index);
-            })
-          ) : (
-            <div className={styles.emptyData}>暂无消息</div>
-          )}
+        {list.length > 0 ? (
+          list.map((item, index) => {
+            return this.renderMsg(item, index);
+          })
+        ) : (
+          <div className={styles.emptyData}>暂无消息</div>
+        )}
       </NewSection>
     );
   }

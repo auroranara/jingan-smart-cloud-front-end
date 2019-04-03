@@ -57,6 +57,7 @@ import {
   fetchHiddenDangerDetail,
   queryWorkOrderMsg,
   queryDataId,
+  queryWaterSystem,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -341,6 +342,11 @@ export default {
     },
     // 故障
     faultList: [],
+    // 水系统列表
+    waterSystemData: {
+      list: [],
+    },
+    waterAlarm: [],
   },
 
   subscriptions: {
@@ -811,7 +817,7 @@ export default {
       }
     },
     // 火警动态列表或火警消息
-    *fetchAlarmHandle({ payload }, { call, put }) {
+    *fetchAlarmHandle({ payload, callback }, { call, put }) {
       const response = yield call(queryAlarmHandleList, payload);
       if (response && response.code === 200) {
         yield put({
@@ -820,6 +826,7 @@ export default {
           }`,
           payload: response.data ? response.data.list : [],
         });
+        if (callback) callback(response);
       }
     },
     // 维保工单列表或维保处理动态
@@ -842,13 +849,14 @@ export default {
         });
       }
     },
-    *fetchFault({ payload }, { call, put }) {
+    *fetchFault({ payload, callback }, { call, put }) {
       const response = yield call(queryFault, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveFault',
           payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
         });
+        if (callback) callback(response);
       }
     },
     // 维保巡查详情
@@ -878,7 +886,7 @@ export default {
       }
     },
     // 消息故障详情
-    *fetchMaintenanceMsg({ payload }, { call, put }) {
+    *fetchMaintenanceMsg({ payload, callback }, { call, put }) {
       const response = yield call(queryWorkOrderMsg, payload);
       if (response && response.code === 200) {
         yield put({
@@ -886,6 +894,7 @@ export default {
           payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
         });
       }
+      if (callback) callback(response);
     },
     // 根据processId查dataId
     *fetchDataId({ payload, success, error }, { call, put }) {
@@ -895,6 +904,37 @@ export default {
       } else if (error) {
         error();
       }
+    },
+
+    // 水系统
+    *fetchWaterSystem({ payload }, { call, put }) {
+      const response = yield call(queryWaterSystem, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveWaterSystem',
+          payload: response.data,
+        });
+      }
+    },
+    // 水系统
+    *fetchWaterAlarm({ payload, callback }, { call, put }) {
+      const response1 = yield call(queryWaterSystem, { ...payload, type: 101 });
+      const response2 = yield call(queryWaterSystem, { ...payload, type: 102 });
+      const response3 = yield call(queryWaterSystem, { ...payload, type: 103 });
+      if (
+        response1 &&
+        response1.code === 200 &&
+        response2 &&
+        response2.code === 200 &&
+        response3 &&
+        response3.code === 200
+      ) {
+        yield put({
+          type: 'waterAlarm',
+          payload: [response1.data.list, response2.data.list, response3.data.list],
+        });
+      }
+      if (callback) callback();
     },
   },
 
@@ -1089,6 +1129,29 @@ export default {
       return {
         ...state,
         maintenanceCompany: payload,
+      };
+    },
+
+    // 水系统
+    saveWaterSystem(state, { payload }) {
+      return {
+        ...state,
+        waterSystemData: payload,
+      };
+    },
+    waterAlarm(state, { payload }) {
+      const waterAlarm = payload.map(item => {
+        return !!item.filter(item => {
+          const { deviceDataList } = item;
+          if (!deviceDataList.length) return false;
+          const [{ status }] = deviceDataList;
+          if (+status === 0) return false;
+          else return true;
+        }).length;
+      });
+      return {
+        ...state,
+        waterAlarm,
       };
     },
   },

@@ -10,11 +10,19 @@ export default class AlarmDynamicDrawer extends PureComponent {
   state = { index: 0 };
 
   handleLeftClick = () => {
+    const { handleParentChange, data: list } = this.props;
+    const { index } = this.state;
+    const videoList = list[index - 1].cameraMessage || [];
     this.setState(({ index }) => ({ index: index - 1 }));
+    handleParentChange({ videoList });
   };
 
   handleRightClick = () => {
+    const { handleParentChange, data: list } = this.props;
+    const { index } = this.state;
+    const videoList = list[index + 1].cameraMessage || [];
     this.setState(({ index }) => ({ index: index + 1 }));
+    handleParentChange({ videoList });
   };
 
   render() {
@@ -29,7 +37,8 @@ export default class AlarmDynamicDrawer extends PureComponent {
 
     let left = null;
     if (length)
-      left = length === 1 ? (
+      left =
+        length === 1 ? (
           <TimelineCard {...list[0]} />
         ) : (
           <Fragment>
@@ -42,19 +51,14 @@ export default class AlarmDynamicDrawer extends PureComponent {
             />
             <div className={styles.sliderContainer}>
               <Slider index={index} length={length} size={1}>
-                {list.map((item, i) => <TimelineCard key={i} style={{ width: `calc(100% / ${length})` }} {...item} />)}
+                {list.map((item, i) => (
+                  <TimelineCard key={i} style={{ width: `calc(100% / ${length})` }} {...item} />
+                ))}
               </Slider>
             </div>
           </Fragment>
-      );
+        );
 
-    return (
-      <DrawerContainer
-        title="火警动态"
-        width={535}
-        left={left}
-        {...restProps}
-      />
-    );
+    return <DrawerContainer title="火警动态" width={535} left={left} {...restProps} />;
   }
 }

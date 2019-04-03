@@ -152,7 +152,7 @@ export default class Smoke extends PureComponent {
           gasErrorUnitSet: { errorUnits = [] },
         } = data;
         this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
-        this.setState({errorUnitsCardsInfo:this.errorUnitsCardsInfo});
+        this.setState({ errorUnitsCardsInfo: this.errorUnitsCardsInfo });
       },
     });
 
@@ -211,10 +211,10 @@ export default class Smoke extends PureComponent {
             const newList =
               sameIndex >= 0
                 ? [
-                    ...alarmIds.slice(0, sameIndex),
-                    { companyId, messageFlag },
-                    ...alarmIds.slice(sameIndex + 1),
-                  ]
+                  ...alarmIds.slice(0, sameIndex),
+                  { companyId, messageFlag },
+                  ...alarmIds.slice(sameIndex + 1),
+                ]
                 : [...alarmIds, { companyId, messageFlag }];
             this.setState({ alarmIds: newList });
             this.showWarningNotification(data);
@@ -293,8 +293,8 @@ export default class Smoke extends PureComponent {
         params: { gridId },
       },
     } = this.props;
-     // 获取单位数据
-     dispatch({
+    // 获取单位数据
+    dispatch({
       type: 'smoke/fetchUnitData',
       payload: { gridId },
     });
@@ -337,7 +337,7 @@ export default class Smoke extends PureComponent {
           gasErrorUnitSet: { errorUnits = [] },
         } = data;
         this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
-        this.setState({errorUnitsCardsInfo:this.errorUnitsCardsInfo});
+        this.setState({ errorUnitsCardsInfo: this.errorUnitsCardsInfo });
       },
     });
   };
@@ -345,12 +345,12 @@ export default class Smoke extends PureComponent {
   /**
    * 更新后
    */
-  componentDidUpdate() {}
+  componentDidUpdate() { }
 
   /**
    * 销毁前
    */
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   // cardsInfo = [];
   importCardsInfo = [];
@@ -599,6 +599,20 @@ export default class Smoke extends PureComponent {
     });
   };
 
+  handleClickUnitStatistics = unitDetail => {
+    const { dispatch } = this.props;
+    const { companyId } = unitDetail
+    this.setState({ unitDetail })
+    dispatch({ type: 'smoke/fetchCameraList', payload: { company_id: companyId } });
+    dispatch({
+      type: 'smoke/fetchCompanySmokeInfo',
+      payload: { company_id: companyId },
+      success: () => {
+        this.handleDrawerVisibleChange('monitor');
+      },
+    });
+  }
+
   /**
    * 渲染
    */
@@ -736,6 +750,7 @@ export default class Smoke extends PureComponent {
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleAlarmClick={this.handleAlarmClick}
+          handleClickUnitStatistics={this.handleClickUnitStatistics}
         />
         <AlarmDrawer
           data={{ list: errorUnitsCardsInfo, companyStatus, graphList: AbnormalTrend }}
@@ -743,6 +758,7 @@ export default class Smoke extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleAlarmClick={this.handleAlarmClick}
           handleFaultClick={this.handleFaultClick}
+          handleClickDeviceNumber={this.handleClickUnitStatistics}
         />
         <FireStatisticsDrawer
           visible={fireDrawerVisible}

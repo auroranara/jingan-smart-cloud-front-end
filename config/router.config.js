@@ -112,9 +112,13 @@ module.exports = env => {
           path: '/big-platform/new-fire-control/government/:gridId',
           component: './BigPlatform/NewFireControl/Government',
         },
+        // {
+        //   path: '/big-platform/fire-control/company/:unitId',
+        //   component: './BigPlatform/UnitFireControl/UnitFireControl',
+        // },
         {
           path: '/big-platform/fire-control/company/:unitId',
-          component: './BigPlatform/UnitFireControl/UnitFireControl',
+          component: './BigPlatform/UnitFire/UnitFireControl',
         },
         {
           path: '/big-platform/fire-control/new-company/:unitId',
@@ -847,18 +851,44 @@ module.exports = env => {
                   component: './DeviceManagement/VideoMonitor/VideoMonitorDetail',
                 },
                 {
-                  path: '/device-management/video-monitor/associate/:id',
+                  path: '/device-management/video-monitor/associate/:type/:id',
                   code: 'deviceManagement.videoMonitor.associate',
                   name: 'associate',
                   component: './DeviceManagement/VideoMonitor/AssociateDevice',
                 },
                 {
-                  path: '/device-management/video-monitor/associate/:id/add',
+                  path: '/device-management/video-monitor/associate/:id/add/:type',
                   code: 'deviceManagement.videoMonitor.addAssociate',
                   name: 'addAssociate',
                   component: './DeviceManagement/VideoMonitor/AddAssociate',
                 },
                 // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
+              ],
+            },
+            // 设备关联传感
+            {
+              path: '/device-management/associate-sensor',
+              code: 'deviceManagement.associateSensor',
+              name: 'associateSensor',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/associate-sensor',
+                  name: 'associateSensor',
+                  redirect: '/device-management/associate-sensor/list',
+                },
+                {
+                  path: '/device-management/associate-sensor/list',
+                  name: 'listView',
+                  code: 'deviceManagement.associateSensor.listView',
+                  component: './DeviceManagement/AssociateSensor/SensorCompanyList',
+                },
+                {
+                  path: '/device-management/associate-sensor/company/:companyId/water-system',
+                  name: 'waterSystem',
+                  code: 'deviceManagement.associateSensor.waterSystem',
+                  component: './DeviceManagement/AssociateSensor/WaterSystem',
+                },
               ],
             },
           ],
@@ -1570,6 +1600,18 @@ module.exports = env => {
                   code: 'personnelPosition.beaconManagement.companyBeacon',
                   path: '/personnel-position/beacon-management/company/:companyId',
                   component: './PersonnelPosition/BeaconManagement/CompanyBeacon',
+                },
+                {
+                  name: 'add',
+                  code: 'personnelPosition.beaconManagement.add',
+                  path: '/personnel-position/beacon-management/company/:companyId/beacon/add',
+                  component: './PersonnelPosition/BeaconManagement/BeaconHandler',
+                },
+                {
+                  name: 'edit',
+                  code: 'personnelPosition.beaconManagement.edit',
+                  path: '/personnel-position/beacon-management/company/:companyId/beacon/edit/:id',
+                  component: './PersonnelPosition/BeaconManagement/BeaconHandler',
                 },
               ],
             },

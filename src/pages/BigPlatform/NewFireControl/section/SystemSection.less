@@ -1,36 +1,36 @@
 .left {
-    padding-left: 10px;
-    position: relative;
+  padding-left: 10px;
+  position: relative;
 }
 
 .unit {
-    font-size: 20px;
-    margin: 0 0 20px;
-    position: relative;
-    // color: rgb(0, 168, 255);
+  font-size: 20px;
+  margin: 0 0 20px;
+  position: relative;
+  // color: rgb(0, 168, 255);
 
-    color: #FFF;
+  color: #FFF;
 }
 
 .percent {
-    font-size: 26px;
-    position: absolute;
-    color: #FFF;
-    right: 10%;
-    top: -4px;
+  font-size: 26px;
+  position: absolute;
+  color: #FFF;
+  right: 10%;
+  top: -4px;
 }
 
 .unitNumber {
-    font-size: 16px;
-    margin: 15px 0 0;
-    // color: rgb(54, 129, 199);
+  font-size: 16px;
+  margin: 15px 0 0;
+  // color: rgb(54, 129, 199);
 
-    color: #FFF;
+  color: #FFF;
 }
 
 .right {
-    padding-left: 100px;
-    position: relative;
+  padding-left: 100px;
+  position: relative;
 }
 
 .hostIcon {
@@ -44,22 +44,23 @@
 }
 
 .host {
-    font-size: 20px;
-    margin: 5px 0 15px;
-    // color: rgb(0, 168, 255);
+  font-size: 20px;
+  margin: 5px 0 15px;
+  // color: rgb(0, 168, 255);
 
-    color: #FFF;
+  color: #FFF;
 }
 
 .hostNumber {
-    font-size: 26px;
-    margin: 0;
-    color: #FFF;
+  font-size: 26px;
+  margin: 0;
+  color: #FFF;
 }
 
 @color: rgb(9, 103, 211);
 
 .table {
+  height: calc(100% - 110px);
   margin-top: 25px;
   border-top: 2px solid @color;
   // padding-right: 5px;
@@ -100,4 +101,107 @@
 
 .link:hover {
   color: rgb(4, 253, 255);
+}
+
+@media screen and (max-width: 1366px) {
+  .left {
+    padding-left: 10px;
+    position: relative;
+  }
+
+  .unit {
+    font-size: 16px;
+    margin: 0 0 2px;
+    position: relative;
+    // color: rgb(0, 168, 255);
+
+    color: #FFF;
+  }
+
+  .percent {
+    font-size: 20px;
+    position: absolute;
+    color: #FFF;
+    right: 10%;
+    top: -4px;
+  }
+
+  .unitNumber {
+    font-size: 16px;
+    margin: 0;
+    color: #FFF;
+  }
+
+  .right {
+    padding-left: 100px;
+    position: relative;
+  }
+
+  .hostIcon {
+    width: 34px;
+    height: 56px;
+    position: absolute;
+    top: 0;
+    left: 20px;
+    background-size: 100% 100%;
+  }
+
+  .host {
+    font-size: 16px;
+    margin: 5px 0 0 -40px;
+    color: #FFF;
+  }
+
+  .hostNumber {
+    font-size: 26px;
+    margin: 0;
+    color: #FFF;
+    margin-left: -40px;
+  }
+
+  @color: rgb(9, 103, 211);
+
+  .table {
+    height: calc(100% - 120px) !important;
+    margin-top: 9px;
+    border-top: 2px solid @color;
+    // padding-right: 5px;
+  }
+
+  .tableTitle {
+    margin: 0;
+    padding: 5px 0;
+    // color: rgb(54, 129, 199);
+    text-align: center;
+
+    color: #FFF;
+  }
+
+  .unitCard {
+    margin: 0;
+    padding: 7px 0;
+    // color: rgb(164, 166, 172);
+    text-align: center;
+    cursor: pointer;
+
+    color: #FFF;
+  }
+
+  .fire:extend(.unitCard) {
+    color: rgb(255, 72, 72);
+  }
+
+  .link {
+    // color: rgb(164, 166, 172);
+
+    color: #FFF;
+  }
+
+  .link:focus {
+    text-decoration: none;
+  }
+
+  .link:hover {
+    color: rgb(4, 253, 255);
+  }
 }

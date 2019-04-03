@@ -26,12 +26,19 @@ export default function(props) {
     lookUpShow,
     startLookUp,
     offGuardWarnLoading,
-    data: { lookUp: { createTime }, countdown, offGuard, videoLookUp },
+    data: { createTime, countdown, offGuard, videoLookUp },
     fetchLookUpVideo,
     handleRotateBack,
+    handleLookingUpRotateBack, // 正在查岗时，点击右上角返回按钮时的返回
     handleVideoLookUpRotate,
     handleVideoShow,
   } = props;
+
+  const clickMap = {
+    [LOOKING_UP]: handleLookingUpRotateBack,
+    [OFF_GUARD]: () => handleRotateBack(),
+    [VIDEO_LOOK_UP]: handleVideoLookUpRotate,
+  };
 
   return (
     <FcSection title={titleMap[lookUpShow]} style={{ position: 'relative' }} isBack>
@@ -58,12 +65,17 @@ export default function(props) {
         handleVideoShow={handleVideoShow}
         fetchLookUpVideo={fetchLookUpVideo}
       />
-      {lookUpShow === OFF_GUARD || VIDEO_LOOK_UP ? (
+      {/* {lookUpShow === OFF_GUARD || lookUpShow === VIDEO_LOOK_UP ? (
         <span
           onClick={lookUpShow === OFF_GUARD ? () => handleRotateBack() : handleVideoLookUpRotate}
           className={styles.offGuardBackIcon}
           style={{ backgroundImage: `url(${back})` }} />
-      ) : null}
+      ) : null} */}
+      <span
+        onClick={clickMap[lookUpShow]}
+        className={styles.offGuardBackIcon}
+        style={{ backgroundImage: `url(${back})` }}
+      />
     </FcSection>
   );
 }

@@ -121,7 +121,10 @@ export function getSectionTree(list) {
     } = item;
     const status = lackStatus || outstripStatus || overstepStatus || tlongStatus ? 2 : 1;
     const parsedRange = JSON.parse(range);
-    parsedRange.options.fill = false;
+    parsedRange.id = `${id}_@@section`;
+    // parsedRange.options.fill = false; // 无法点击
+    parsedRange.options.fillOpacity = 0;
+    parsedRange.options.weight = 3;
     return {
       id,
       name,
@@ -164,8 +167,29 @@ export function findInTree(targetValue, list, prop = 'id') {
 }
 
 export function parseImage(section) {
-  let { id, mapPhoto, range } = section;
+  let { id, mapPhoto, range, parentId } = section;
   range = range || {};
+  if (parentId === '0') {
+    range.latlngs = [
+      {
+        lat: 0,
+        lng: 0,
+      },
+      {
+        lat: 1,
+        lng: 0,
+      },
+      {
+        lat: 1,
+        lng: 1,
+      },
+      {
+        lat: 0,
+        lng: 1,
+      },
+    ];
+  }
+
   return { id, url: mapPhoto.url, ...range };
 }
 
@@ -234,6 +258,20 @@ function isBuilding(mapId, childMapId, companyMapId) {
   return false;
 }
 
+// areaIds数组中，第一个表示建筑id，第二个表示该区域所在楼层id，楼层id不存在时，则当前区域即为建筑
+export function findBuildingId(areaId, areaInfo) {
+  const areaIds = [];
+  while(areaId) {
+    areaIds.unshift(areaId);
+    const current = areaInfo[areaId];
+    if (current.isBuilding)
+      return  [areaId, areaIds[1]];
+    areaId = current.parentId;
+  }
+
+  return;
+}
+
 // 将区域树打平成一个Map对象，areaId => { name, parent, childIds }
 // export function getAreaInfo(list) {
 //   const cache = {};
@@ -257,7 +295,7 @@ export function getAreaInfo(list) {
   const cache = {};
   const areaInfo = {};
   traverse(list, (item, parents) => {
-    const { id, name, companyMap, mapId, children } = item;
+    const { id, name, companyMap, mapId, children, range } = item;
     const length = parents.length;
     const parent = length ? parents[length - 1] : {};
     const firstChild = children && children.length ? children[0] : {};
@@ -270,6 +308,7 @@ export function getAreaInfo(list) {
       isBuilding: isBuilding(mapId, firstChild.mapId, companyMap),
       childIds: getChildIds(item, cache),
       images: getMapImages(nodeList),
+      // range: JSON.parse(range),
     };
   });
 
@@ -303,10 +342,14 @@ function getMapImages(list) {
 }
 
 function getTimeDesc(t) {
+  if (!t)
+    return '';
+
   const ms = +t;
-  const minutes = Math.floor(ms / 60000);
-  const hours = Math.floor(ms / 3600000);
-  return `${hours ? `${hours}小时` : ''}${minutes ? `${minutes}分钟` : ''}`;
+  // const minutes = Math.floor(ms / 60000);
+  const hours = Math.floor((ms / 3600000) * 10) / 10;
+  // return `${hours ? `${hours}小时` : ''}${minutes ? `${minutes}分钟` : ''}`;
+  return `${hours}小时`;
 }
 
 export function getAlarmDesc(item, areaInfo) {
@@ -346,22 +389,24 @@ export function getAlarmDesc(item, areaInfo) {
 // cardType 0 正常 1 访客
 export function getUserName(item, showPrefix) {
   const { cardType, userName, visitorName } = item;
-  const isVisitor = !!+cardType;
+  if (cardType === null || cardType === undefined)
+    return '';
 
-  if (!isVisitor)
-    return userName || '未领';
-  if (showPrefix && visitorName)
-    return `访客-${visitorName}`;
-  if (!showPrefix && visitorName)
-    return visitorName;
+  const isVisitor = !!+cardType;
+  if (!isVisitor) return userName || '未领';
+  if (showPrefix && visitorName) return `访客-${visitorName}`;
+  if (!showPrefix && visitorName) return visitorName;
   return '访客';
 }
 
-// 0 区域 1 视频 2 人
+// 0 区域 1 视频 2 移动的人 3 信标 4 建筑物 5 聚合/单人
 export function getMapClickedType(id) {
-  if (!id) return 0;
+  if (id.includes('_@@section')) return 0;
   if (id.includes('_@@video')) return 1;
-  return 2;
+  if (id.includes('_@@moving')) return 2;
+  if (id.includes('_@@beacon')) return 3;
+  if (id.includes('_@@building')) return 4;
+  return 5;
 }
 
 const PERSON_ALARM_TYPES = ['SOS', '越界', '长时间逗留'];
@@ -393,13 +438,11 @@ export function getIconClassName(isSingle, isVisitor, isOnline, isAlarm) {
 }
 
 export function isCompanyMap(current) {
-  if (!current || !Object.keys(current).length)
-    return;
-
+  if (!current || !Object.keys(current).length) return;
 
   let { mapId, companyMap, parent } = current;
   // mapId不存在时，找到离其最近的父元素的mapId
-  while(!mapId && parent) {
+  while (!mapId && parent) {
     mapId = parent.mapId;
     parent = parent.parent;
   }
@@ -408,25 +451,114 @@ export function isCompanyMap(current) {
 }
 
 const INTERVAL = 1000;
-export function animate(posInfo, move, callback) {
-  const { id, origin, target } = posInfo;
-  const { x, y } = origin;
-  const { x1, y1 } = target;
+function animate(id, origin, target, move, callback) {
+  const [x, y] = origin.map(n => parseFloat(n));
+  const [x1, y1] = target.map(n => parseFloat(n));
   const deltaX = x1 - x;
   const deltaY = y1 - y;
   let start = null;
   function step(timestamp) {
-    if (!start)
-      start = timestamp;
+    if (!start) start = timestamp;
     const progress = timestamp - start;
     if (progress < INTERVAL) {
       const percent = progress / INTERVAL;
-      move(id, origin + deltaX * percent, progress + deltaY * percent);
+      move(id, x + deltaX * percent, y + deltaY * percent);
       window.requestAnimationFrame(step);
-    }
-    else
-      callback(id);
+    } else callback(id);
   }
 
   window.requestAnimationFrame(step);
+}
+
+const MAX_PAIR_NUM = 100;
+const DELTA = 0.0000001;
+export function handleOriginMovingCards(
+  changedCards,
+  prevCardList,
+  originMovingCards,
+  move,
+  callback
+) {
+  const movingCardIds = originMovingCards.map(({ cardId }) => cardId);
+  for (const card of changedCards) {
+    const { cardId, xarea, yarea } = card;
+    // 移动的卡片超过一定数目时，忽略更多的卡片
+    if (originMovingCards.length >= MAX_PAIR_NUM) break;
+    // 当前移动的卡片位置或报警状态变化了，更新，忽略位置的变化，只保留状态的变化，位置使用当前moving的位置
+    if (movingCardIds.includes(cardId)) {
+      const index = originMovingCards.findIndex(({ cardId: id }) => id === cardId);
+      const mCard = originMovingCards[index];
+      originMovingCards[index] = { ...card, xarea: mCard.xarea, yarea: mCard.yarea };
+    }
+    const org = prevCardList.find(({ cardId: id }) => id === cardId);
+    // 卡片新出现，之前列表中没有，忽略
+    if (!org) continue;
+    const { xarea: xarea1, yarea: yarea1 } = org;
+    // 新旧两个点之间的值大于一定距离时，才有动画效果
+    if (Math.abs(xarea - xarea1) > DELTA || Math.abs(yarea - yarea1) > DELTA) {
+      originMovingCards.push(org);
+      animate(cardId, [xarea1, yarea1], [xarea, yarea], move, callback);
+    }
+  }
+}
+
+// 从当前节点查找其所属的顶层节点下的第一层子节点的id，此处可以保证当前节点至少为顶层节点的子节点层，不会为顶层节点
+export function getAncestorId(currentId, rootId, areaInfo) {
+  let targetId = currentId;
+  while(targetId) {
+    const parentId = areaInfo[targetId].parentId;
+    if (parentId === rootId)
+      return targetId;
+    targetId = parentId;
+  }
+
+  return;
+}
+
+export function isArraySame(a1, a2) {
+  if (!Array.isArray(a1) || !Array.isArray(a2))
+    return a1 === a2;
+  if (a1.length !== a2.length)
+    return false;
+  const [b1, b2] = [a1, a2].map(a => Array.from(a));
+  [b1, b2].forEach(b => b.sort());
+  for (let i = 0; i < b1.length; i++)
+    if (b1[i] !== b2[i])
+      return false;
+  return true;
+}
+
+// 全屏的人数展示时，获取最底层节点的名字和人数
+export function getSectionCount(tree, parentName='') {
+  const { children } = tree;
+  if (!Array.isArray(children))
+    return [];
+  const result = [];
+  for (const node of children) {
+    const { name, count } = node;
+    const fullName = `${parentName}${name}`;
+    result.push({ name: fullName, count });
+    result.push(...getSectionCount(node, fullName));
+  }
+  return result;
+}
+
+export function getDisabledDatetime() {
+  return [...Array(60).keys()].filter(n => n % 5);
+}
+
+export function getDefaultRange() {
+  const current = moment();
+  const currentTimestamp = +current;
+  const day = current.clone().startOf('day');
+  const six = day.clone().add(6, 'hours');
+  const sixTimestamp = +six;
+  // 当前时间大于六点，返回六点到当前时间，小于六点，返回零点到当前时间
+  if (currentTimestamp > sixTimestamp)
+    return [six, current];
+  return [day, current];
+}
+
+export function getHourFromMoment(m, date) {
+  return Math.ceil((+m - +date) / 3600000);
 }

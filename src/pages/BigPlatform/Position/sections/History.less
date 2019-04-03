@@ -1,4 +1,5 @@
 @history-background-color: #032d5d;
+@history-disabled-background-color: rgb(3, 55, 115);
 @history-selected-color: #195fbd;
 @history-hover-color: #06366c;
 @history-disabled-color: #1b497d;
@@ -31,9 +32,23 @@
       box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.75);
     }
   }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: rgba(0, 87, 169, 1);
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 4px;
+    background: rgba(2, 28, 64, 0.6);
+  }
 }
 
-.wrapper {
+.wrapper, .wrapper1 {
   padding: 24px 24px 12px 18px;
   height: calc(100% - 35px);
   font-size: 14px;
@@ -47,7 +62,8 @@
 
   .inner {
     position: relative;
-    padding-top: 88px;
+    padding-top: 210px;
+    // padding-top: 250px;
     height: 100%;
 
     .leftTop {
@@ -58,10 +74,88 @@
     }
     .leftMiddle, .leftBottom {
       padding-bottom: 12px;
-	    height: 50%;
+      height: 100%;
+	    // height: 50%;
     }
   }
 
+  .leftTop1 {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 40%;
+  }
+
+  .redCircle, .blueCircle {
+    width: 120px;
+    height: 140px;
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    p {
+      text-align: center;
+      margin-bottom: 0;
+    }
+
+    .circleNum {
+      text-align: center;
+      font-size: 30px;
+      height: 100px;
+      line-height: 110px;
+    }
+
+    .circleLabel {
+      font-size: 16px;
+      line-height: 30px;
+    }
+  }
+
+  .redCircle {
+    background-image: url(../imgs/redCircle.png);
+  }
+
+  .blueCircle {
+    background-image: url(../imgs/blueCircle.png);
+  }
+
+  .leftMiddle1 {
+    height: 60%;
+    border-top: 1px solid #0FF;
+  }
+
+  .rect {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 10px;
+    position: relative;
+    top: 2px;
+    background-color: #0FF;
+  }
+
+  .chartTitle {
+    color: #FFF;
+    height: 50px;
+    line-height: 50px;
+    padding-left: 20px;
+    margin-bottom: 0;
+    background-image: url(../imgs/titleBg.png);
+    background-size: 33% 100%;
+    background-repeat: no-repeat;
+    position: relative;
+  }
+
+  .graph {
+    padding-left: 35px;
+  }
+
+  .searchBtn {
+    width: 100%;
+    color: #FFF;
+    background-color: #0e4f9f;
+    border-color: #0e4f9f;
+    margin-top: 12px;
+  }
 
   .table {
     display: table;
@@ -87,23 +181,35 @@
     cursor: pointer;
   }
 
+  .tr1 {
+    background-color: rgba(0, 255, 255, 0.5);
+  }
+
   .tr:hover {
     background-color: rgba(9, 103, 211, 0.2);
   }
 
-  .tr, .th, .emptyTr {
+  .tr, .tr1, .th, .emptyTr {
     display: flex;
     border-bottom: 1px solid rgb(0, 186, 255);
 
-    .td {
+    .td, .td1, .td2 {
       flex: 1;
       padding: 6px;
       text-align: center;
+      position: relative;
+    }
+
+    .td1 {
+      opacity: 0;
+    }
+
+    .td2 {
+      color: #0FF;
     }
   }
 
-  .tr:last-child,
-  .emptyTr:last-child {
+  .tr:last-child, .emptyTr:last-child {
     border-bottom: none;
   }
   .ellipsis {
@@ -111,8 +217,135 @@
   }
 }
 
-.rangePicker {
+.wrapper1 {
+  padding: 0;
+}
 
+.rightContainer {
+  height: 100%;
+}
+
+.rightTop, .rightBottom {
+  padding: 20px;
+}
+
+.rightTop {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #0FF;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+.searchInput {
+  color: #fff;
+  background-color: transparent;
+  border-color: rgb(4, 171, 195);
+}
+
+.searchBtn1 {
+  border-color: rgb(4, 171, 195);
+}
+
+.rightBottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  height: calc(100% - 114px);
+  overflow: auto;
+}
+
+.selectRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.rowRight {
+  width: 65%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.times {
+  width: 65%;
+  line-height: 32px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.timePicker {
+  width: 29%;
+
+  :global {
+    .ant-time-picker-input {
+      color: #FFF;
+      background-color: #033069;
+      border-color: #04abc3;
+    }
+    .ant-time-picker-icon .ant-time-picker-clock-icon {
+      color: #FFF;
+    }
+  }
+}
+
+.timeDropdown {
+  color: #FFF;
+
+  :global {
+    .ant-time-picker-panel {
+      color: #FFF;
+    }
+    .ant-time-picker-panel-inner {
+      background-color: @history-background-color;
+    }
+    .ant-time-picker-panel-input-wrap {
+      border-color: @history-border-color;
+    }
+    .ant-time-picker-panel-input {
+      color: #FFF;
+      background-color: @history-background-color;
+    }
+    .ant-time-picker-panel-select li:hover {
+      color: #FFF;
+      background-color: @history-hover-color;
+    }
+    li.ant-time-picker-panel-select-option-selected {
+      color: #FFF;
+      background-color: @history-selected-color;
+    }
+    .ant-time-picker-panel-select {
+      border-color: @history-border-color;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background: rgba(0, 87, 169, 1);
+    }
+
+    ::-webkit-scrollbar-track {
+      border-radius: 4px;
+      background: rgba(2, 28, 64, 0.6);
+    }
+  }
+}
+
+.spread {
+  position: absolute;
+  left: 15%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dates {
+  display: flex;
+  justify-content: space-between;
+  line-height: 32px;
+}
+
+.datePicker, .rangePicker, .rangePicker1 {
   :global {
     .ant-input {
       color: #fff;
@@ -128,14 +361,36 @@
     .ant-calendar-picker-icon {
       color: #fff;
     }
+    .ant-calendar-picker-clear {
+      color: #FFF;
+      background-color: #033069;
+    }
   }
 }
-.rangePickerDropDown {
+
+.datePickerDropdown, .rangePickerDropDown {
+  color: #FFF;
+
   :global {
-    .ant-calendar-range {
+    // disabled
+    .ant-calendar-disabled-cell .ant-calendar-date {
+      color: rgba(204, 204, 204, 0.5);
+      background-color: @history-disabled-background-color;
+    }
+    // .ant-calendar-picker-container {
+    //   color: #FFF;
+    // }
+    .ant-calendar {
+      background-color: @history-background-color;
+      border-color: @history-border-color;
+    }
+    .ant-calendar-time, .ant-calendar-range {
       color: #fff;
       background-color: @history-background-color;
       border-color: @history-border-color;
+    }
+    .ant-calendar-header {
+      border-bottom-color: @history-border-color;
     }
     .ant-calendar-footer, .ant-calendar-body {
       border-top-color: @history-border-color;
@@ -256,6 +511,9 @@
     }
     .ant-calendar-time-picker {
       background-color: transparent;
+    }
+    .ant-calendar-time-picker-inner {
+      background-color: @history-background-color;
     }
     .ant-calendar-range-right .ant-calendar-time-picker-inner {
       border-left-color: @history-border-color;
@@ -382,10 +640,84 @@
   }
 }
 
-.cardSelect {
+@color: rgb(255, 255, 255);
+@size: 18px;
+
+.treeContainer {
   color: #FFF;
+  width: calc(100% - 90px);
+}
+
+.treeContainer, .tree1 {
+  font-size: @size;
+
+  :global {
+    .ant-select {
+      color: @color;
+    }
+
+    .ant-select-arrow {
+      color: @color;
+    }
+
+    .ant-select-selection {
+      // border: none;
+      border-color: #04abc3;
+      background-color: transparent;
+    }
+
+    .ant-select-selection__clear {
+      color: #FFF;
+      background: rgb(3, 48, 105);
+    }
+  }
+}
+
+.tree1 {
+  color: #FFF;
+  font-size: 14px;
+}
+
+.treeDropdown {
+  color: @color;
+  background-color: rgba(1, 29, 67, 0.9);
+  box-shadow: 0 0 10px rgba(9, 103, 211, 0.9);
+
+  :global {
+    .ant-select-tree {
+      color: @color;
+
+      li .ant-select-tree-node-content-wrapper {
+        color: @color;
+      }
+
+      li .ant-select-tree-node-content-wrapper:hover {
+        background-color: rgba(4, 73, 140, 0.5);
+      }
+
+      li .ant-select-tree-node-content-wrapper.ant-select-tree-node-selected {
+        background-color: rgb(4, 73, 140);
+      }
+    }
+  }
+}
+
+.tree {
   width: 100%;
-  margin-bottom: 12px;
+}
+
+.selects {
+  display: flex;
+  justify-content: space-between;
+}
+
+.selects1 {
+  display: flex;
+  color: #FFF;
+}
+
+.select1, .cardSelect, .cardSelect1, .hourSelect {
+  color: #FFF;
   background-color: transparent;
 
   :global {
@@ -397,10 +729,73 @@
     .ant-select-arrow {
       color: #FFF;
     }
+
+    .ant-select-selection__clear {
+      color: #FFF;
+      background: rgb(3, 48, 105);
+    }
   }
 }
 
+.select1 {
+  width: 80px;
+  margin-bottom: 12px;
+
+  // :global {
+  //   .ant-select-selection {
+  //     border-radius: 4px 0 0 4px;
+  //     border-right: none;
+  //   }
+  // }
+}
+
+.cardSelect, .cardSelect1 {
+  // width: calc(100% - 70px);
+  width: 100%;
+  margin-bottom: 12px;
+
+  :global {
+    // .ant-select-selection {
+    //   border-radius: 0 4px 4px 0;
+    // }
+
+    .ant-select-selection--multiple .ant-select-selection__choice {
+      color: #FFF;
+      background-color: #0e4f9f;
+      border-color: #0e4f9f;
+    }
+
+    .ant-select-selection--multiple .ant-select-selection__choice__remove {
+      color: #FFF;
+    }
+  }
+}
+
+.cardSelect1 {
+  margin-bottom: 0;
+
+  :global {
+    .ant-select-selection {
+      border-radius: 4px;
+    }
+  }
+}
+
+.hourSelect {
+  width: 29%;
+}
+
+.selects1, .cardSelect1, .tree1, .rangePicker1 {
+  width: 30%;
+}
+
+.btns {
+  // width: 30%;
+}
+
 .dropdown {
+  background-color: rgb(3, 48, 105);
+
   :global {
     .ant-select-dropdown {
       background-color: rgb(3, 48, 105);
@@ -448,6 +843,44 @@
     }
     &::-webkit-scrollbar-track {
       background-color: transparent;
+    }
+  }
+}
+
+.footerBtns {
+  display: flex;
+  justify-content: space-around;
+}
+
+.footerBtn {
+  color: #0FF;
+  border-color: #0FF;
+}
+
+@modalColor: rgb(3, 48, 105);
+.modal {
+  :global {
+    .ant-modal-content {
+      background-color: @modalColor;
+    }
+    .ant-modal-header {
+      background-color: @modalColor;
+      border-bottom: none;
+    }
+    .ant-modal-title {
+      color: #FFF;
+    }
+    .ant-modal-close {
+      color: #FFF;
+    }
+    .ant-modal-footer {
+      border-top: none;
+      padding-bottom: 30px;
+    }
+    .ant-input {
+      color: #FFF;
+      background-color: rgba(0, 0, 0, 0.4);
+      border-color: rgba(76, 206, 240, 0.6);
     }
   }
 }

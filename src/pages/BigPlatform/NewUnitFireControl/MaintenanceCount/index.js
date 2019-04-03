@@ -27,7 +27,7 @@ export default class App extends PureComponent {
             '--'
           ) : (
             <Progress
-              width={100}
+              width={document.body.offsetWidth < 1380 ? 65 : 100}
               type="circle"
               percent={percent}
               strokeColor="#04fdff"

@@ -572,12 +572,13 @@ export default class Gas extends PureComponent {
     const { companyId } = unitInfo
     const { dispatch } = this.props
     const { unitMonitorStatus } = this.state
-    this.setState({ unitInfo, unitMonitorDrawerVisible: true })
     // 获取单位实时监测数据
     dispatch({
       type: 'gas/fetchRealTimeMonitor',
       payload: { companyId, status: unitMonitorStatus },
     })
+     // 获取视频
+     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
     // 获取异常趋势图数据
     dispatch({
       type: 'gas/fetchAbnormalTrend',
@@ -587,11 +588,9 @@ export default class Gas extends PureComponent {
           const [{ faultNum, month, outContact, unnormal }] = Object.values(item)
           return [month, unnormal, faultNum, outContact]
         })
-        this.setState({ unitAbnormalTrend })
+        this.setState({ unitAbnormalTrend,unitInfo, unitMonitorDrawerVisible: true  })
       },
     })
-    // 获取视频
-    dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
   }
 
   // 单位监测数据弹窗筛选
@@ -739,12 +738,15 @@ export default class Gas extends PureComponent {
           data={{ list: importCardsInfo, AccessStatistics, AccessCount }}
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          handleClickUnitStatistics={this.hanldeViewUnitMonitor}
+          handleAlarmClick={this.handleAlarmClick}
         />
         <AlarmDrawer
           data={{ list: errorUnitsCardsInfo, companyStatus, graphList: AbnormalTrend }}
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleAlarmClick={this.handleAlarmClick}
+          handleClickDeviceNumber={this.hanldeViewUnitMonitor}
         />
         <BusinessDrawer
           data={{ list: pendingUnitsCardsInfo, graphList: gasChartByMonth }}

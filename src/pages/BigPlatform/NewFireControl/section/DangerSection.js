@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import ReactEcharts from 'echarts-for-react'
+import ReactEcharts from 'echarts-for-react';
 
 import { myParseInt } from '../utils';
 import FcSection from './FcSection';
@@ -44,8 +44,7 @@ export default class DangerSection extends PureComponent {
 
   tipMove = () => {
     const count = this.count;
-    if (!this.chart || !length)
-      return;
+    if (!this.chart || !length) return;
 
     this.chart.dispatchAction({
       type: 'showTip',
@@ -67,14 +66,20 @@ export default class DangerSection extends PureComponent {
   // };
 
   render() {
-    const { data: { list = [] }, title, backTitle, isBack, handleRotate } = this.props;
+    const {
+      data: { list = [] },
+      title,
+      backTitle,
+      isBack,
+      handleRotate,
+    } = this.props;
     const source = handleSource(list);
     // const source = genSource();
 
     this.length = list.length;
     const option = {
       legend: {
-        top: backTitle ? 45 : 18,
+        top: 45,
         right: 10,
         data: ['巡查次数', '隐患数量'],
         textStyle: { color: '#FFF' },
@@ -110,9 +115,8 @@ export default class DangerSection extends PureComponent {
         },
         // 小数标签不显示
         axisLabel: {
-          formatter: function (value, index) {
-            if (myParseInt(value) !== value)
-              return "";
+          formatter: function(value, index) {
+            if (myParseInt(value) !== value) return '';
             return myParseInt(value);
           },
         },
@@ -140,17 +144,25 @@ export default class DangerSection extends PureComponent {
       textStyle: {
         color: '#FFF',
       },
-  };
+    };
 
-  let chartComponent = <EmptyChart url={emptyIcon} title="暂无巡查/隐患" />;
-  if (list.length)
-    chartComponent = (
-      <ReactEcharts
-        option={option}
-        style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', zIndex: -1 }}
-        onChartReady={chart => { this.chart = chart; }}
-      />
-    );
+    let chartComponent = <EmptyChart url={emptyIcon} title="暂无巡查/隐患" />;
+    if (list.length)
+      chartComponent = (
+        <ReactEcharts
+          option={option}
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: '100%',
+            height: '100%',
+          }}
+          onChartReady={chart => {
+            this.chart = chart;
+          }}
+        />
+      );
 
     return (
       <FcSection

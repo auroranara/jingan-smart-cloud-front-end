@@ -48,7 +48,7 @@ const defaultPageSize = 20;
 // 上传文件地址
 const uploadUrl = '/acloud_new/v2/uploadFile';
 // 上传文件夹
-const folder = 'fireControl';
+const folder = 'firecontrol';
 
 @connect(
   ({ contract, user, loading }) => ({

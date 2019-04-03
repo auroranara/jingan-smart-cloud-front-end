@@ -39,7 +39,13 @@ export default class App extends PureComponent {
             {title}
             {extra && <span className={styles.extra}>{extra}</span>}
           </div>
-          <div className={styles.content} style={{ backgroundImage: `url(${contentBg})`, ...contentStyle }}>
+          <div
+            className={styles.content}
+            style={{
+              // backgroundImage: `url(${contentBg})`,
+              ...contentStyle,
+            }}
+            >
             <div className={styles.scroll} style={{ overflow: isScroll ? 'auto' : 'hidden', height: '100%' }}>{children}</div>
           </div>
       </div>

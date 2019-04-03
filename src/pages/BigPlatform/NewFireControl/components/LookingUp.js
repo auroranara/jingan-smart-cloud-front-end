@@ -121,13 +121,12 @@ export default class LookingUp extends Component {
           <Col span={24}>
             <div className={styles.jobRate}>
               <Col span={4}>
-                <div className={styles.jobRateWrite} style={{ width: '100px' }}>
-                  在岗率
-                </div>
+                <div className={styles.jobRateWrite}>在岗率</div>
               </Col>
               <Col span={8}>
                 <ReactEcharts
                   style={{ width: '100%', height: '100px' }}
+                  className={styles.echarts}
                   option={this.getOption(rate)}
                   notMerge={true}
                   lazyUpdate={true}

@@ -5,15 +5,15 @@ import locationIcon from '../img/cardLocation.png';
 import personIcon from '../img/cardPerson.png';
 
 export default function DrawerCard(props) {
-  const { name, location, person, phone, status, statusLabels, info, infoStyle, more, hover, ...restProps } = props;
+  const { name, location, person, phone, status, statusLabels, info, infoStyle, more, hover, clickName, ...restProps } = props;
   // 0 -> 正常  1 -> 不正常
   const isNormal = !status;
 
   return (
     <div className={styles.outer}>
       <div className={hover ? styles.container : styles.containerNoHover} {...restProps}>
-        <p className={styles.company}>
-          {name}
+        <p>
+          <span className={clickName ? styles.company : null} onClick={() => clickName ? clickName() : null}>{name}</span>
         </p>
         <p className={styles.location}>
           <span className={styles.locationIcon} style={{ backgroundImage: `url(${locationIcon})` }} />

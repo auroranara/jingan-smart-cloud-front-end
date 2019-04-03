@@ -172,6 +172,7 @@ export default class ModalOfInspectionStatistics extends PureComponent {
                 top: 'calc(35% - 106px)',
                 border: '1px solid #0967D3',
                 boxShadow: '0 0 3px 1px #041220',
+                paddingBottom: dangers.length > 1 ? '48px' : 0,
               }}
               onClose={this.handleCloseCard}
             >

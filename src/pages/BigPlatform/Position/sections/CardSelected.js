@@ -11,8 +11,9 @@ function emptyFn() {}
 
 export default class CardSelected extends PureComponent {
   handleToHistory = e => {
-    const { cardId, setHistoryCard, handleLabelClick } = this.props;
-    setHistoryCard(cardId);
+    const { cardId, userId, setHistoryRecord, handleLabelClick } = this.props;
+    // setHistoryRecord({ id: userId || cardId, isCardId: !userId });
+    setHistoryRecord(cardId, userId);
     handleLabelClick(2);
   };
 
@@ -28,13 +29,16 @@ export default class CardSelected extends PureComponent {
   // };
 
   render() {
-    const { areaInfo, cardId, positions } = this.props;
-    const card = positions.find(({ cardId: id }) => id === cardId) || {};
+    const { areaInfo, cardId, userId, positions } = this.props;
+    // userId存在时优先userId，不存在时用cardId
+    const card = positions.find(({ cardId: cId, userId: uId }) => userId ? uId === userId : cId === cardId) || {};
     const { areaId, cardType, phoneNumber, visitorPhone, cardCode, departmentName, videoList } = card;
     const isVisitor = !!+cardType;
     const name = getUserName(card, true);
     const phone = isVisitor ? visitorPhone : phoneNumber;
-    const videoKeyId = videoList.length ? videoList[0].keyId : '';
+    const showVideo = videoList && videoList.length;
+    const videoKeyId = showVideo ? videoList[0].keyId : '';
+    const showList = videoList && videoList.length > 1 ? true : false;
     const sectionName = areaInfo && areaInfo[areaId] ? areaInfo[areaId].fullName : '外围区域';
 
     // console.log(videoKeyId);
@@ -69,8 +73,8 @@ export default class CardSelected extends PureComponent {
               hideHead
               visible={true}
               style={VIDEO_STYLE}
-              showList={false}
-              videoList={[]}
+              showList={showList}
+              videoList={ showList ? videoList : []}
               keyId={videoKeyId}
               draggable={false}
               handleVideoClose={emptyFn}

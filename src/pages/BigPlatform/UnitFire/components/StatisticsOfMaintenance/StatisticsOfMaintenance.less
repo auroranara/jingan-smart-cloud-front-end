@@ -1,0 +1,147 @@
+/************************ 维保情况统计 ****************************/
+// /* 图表图例 */
+// .legendList {
+//   display: flex;
+//   padding: 0 24px;
+
+//   .legendItem {
+//     flex: 1;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+
+//     .legendItemIcon {
+//       flex: none;
+//       margin-right: 8px;
+//       width: 12px;
+//       height: 12px;
+//       border-radius: 50%;
+//     }
+
+//     .legendItemName {
+//       flex: 1;
+//     }
+//   }
+// }
+
+/* 图表容器 */
+.chartContainer {
+  padding-bottom: 98px;
+  height: 100%;
+}
+
+/* 详情容器 */
+.detailContainer {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  padding: 18px 16px;
+  font-size: 14px;
+  overflow: hidden;
+  background-color: rgba(0,0,0,0.3);
+
+  & > div {
+    float: left;
+    padding-left: 16px;
+    width: 50%;
+  }
+
+  & > div:first-child {
+    border-right: 2px solid #04D8DD;
+  }
+
+  .detailItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 0;
+
+    & > :first-child {
+      flex: none;
+      width: 84px;
+    }
+
+    & > :nth-child(2) {
+      flex: 1;
+      text-align: center;
+    }
+
+    &:first-child {
+      margin-bottom: 12px;
+    }
+  }
+}
+
+/* 开关容器 */
+.switcherContainer {
+  position: absolute;
+  top: 36px;
+  right: 0;
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1599px) {
+  /* 图表容器 */
+  .chartContainer {
+    padding-bottom: 80px;
+  }
+
+  /* 详情容器 */
+  .detailContainer {
+    padding: 14px 12px;
+    font-size: 12px;
+
+    & > div {
+      padding-left: 12px;
+    }
+
+    .detailItem {
+      padding: 5px 0;
+
+      & > :first-child {
+        width: 72px;
+      }
+
+      & > :nth-child(2) {
+        font-size: 16px;
+      }
+
+      &:first-child {
+        margin-bottom: 10px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1199px) {
+  /* 图表容器 */
+  .chartContainer {
+    padding-bottom: 62px;
+  }
+
+  /* 详情容器 */
+  .detailContainer {
+    padding: 10px 8px;
+    font-size: 12px;
+
+    & > div {
+      padding-left: 8px;
+    }
+
+    .detailItem {
+      padding: 4px 0;
+
+      & > :first-child {
+        width: 72px;
+      }
+
+      & > :nth-child(2) {
+        font-size: 14px;
+      }
+
+      &:first-child {
+        margin-bottom: 8px;
+      }
+    }
+  }
+}

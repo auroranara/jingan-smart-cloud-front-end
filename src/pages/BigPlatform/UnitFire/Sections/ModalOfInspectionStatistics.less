@@ -1,0 +1,102 @@
+.modalOfInspection {
+  @dark-white: #dfdbdb;
+  width: 100%;
+  position: relative;
+  :global {
+    .ant-table-bordered.ant-table-empty .ant-table-placeholder {
+      border-bottom-width: 1px;
+    }
+  }
+  .contentContainer {
+    width: 100%;
+    height: 450px;
+    overflow-y: auto;
+    &::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 7px rgba(0, 0, 0, 0.3);
+      background-color: transparent;
+    }
+    &::-webkit-scrollbar {
+      width: 7px;
+      background-color: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: #06428a;
+    }
+    .cardContainer {
+      &:nth-child(2n + 1) {
+        padding-right: 10px;
+      }
+      &:nth-child(2n) {
+        padding-left: 10px;
+      }
+      .cardItem {
+        box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
+        margin-bottom: 20px;
+        position: relative;
+        padding: 10px 25px 10px 0; // background: #011539;
+        background: #043b7e;
+        overflow: hidden;
+        .line {
+          padding-left: 17px;
+          width: 100%;
+          height: 25px;
+          line-height: 25px;
+          position: relative;
+          word-wrap: nowrap;
+          overflow: hidden;
+          color: #fff;
+          display: flex;
+          .label {
+            color: #7b8caf;
+            width: 5.5em;
+            flex: none;
+          }
+          .text {
+            flex: 1;
+          }
+        }
+      }
+    }
+    .moreButton {
+      width: 100px;
+      margin: 0 auto;
+      padding: 3px 10px;
+      border: 1px solid #0967d3;
+      border-radius: 15px;
+      color: white;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.8s;
+      &:hover {
+        background: #2857aa94;
+      }
+    }
+  }
+  .noContent {
+    width: 100%;
+    height: 450px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #022756;
+    text-align: center;
+    color: #dfdbdb;
+  }
+  .footer {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    .pagesText {
+      line-height: 32px;
+      color: @dark-white;
+    }
+  }
+  .dangerCard {
+    position: fixed;
+  }
+}

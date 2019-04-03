@@ -35,7 +35,14 @@ const breadcrumbList = [
 
 const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
-const ICONS = ['electricity', 'toxic-gas', 'waste-water', 'waste-gas', 'storage-tank', 'smoke-detector'];
+const ICONS = [
+  'electricity',
+  'toxic-gas',
+  'waste-water',
+  'waste-gas',
+  'storage-tank',
+  'smoke-detector',
+];
 const ICONS_URL = {
   electricity: electricityIcon,
   'electricity-d': electricityDarkIcon,
@@ -95,7 +102,13 @@ const fields = [
     wrapperCol: WRAPPER_COL,
     inputSpan: INPUT_SPAN,
     options: { initialValue: '0' },
-    render: () => <Select placeholder="请选择监测类型">{OPTIONS.map(({ name, key }) => <Option key={key}>{name}</Option>)}</Select>,
+    render: () => (
+      <Select placeholder="请选择监测类型">
+        {OPTIONS.map(({ name, key }) => (
+          <Option key={key}>{name}</Option>
+        ))}
+      </Select>
+    ),
   },
 ];
 
@@ -103,7 +116,10 @@ const documentElem = document.documentElement;
 // const body = document.body;
 const childElem = document.querySelector('#root div');
 
-@connect(({ loading, dataAnalysis }) => ({ dataAnalysis, loading: loading.effects['dataAnalysis/fetchCompanyList'] }))
+@connect(({ loading, dataAnalysis }) => ({
+  dataAnalysis,
+  loading: loading.effects['dataAnalysis/fetchCompanyList'],
+}))
 export default class DataAnalysisList extends PureComponent {
   state = {
     formVals: null,
@@ -128,13 +144,13 @@ export default class DataAnalysisList extends PureComponent {
     const { hasMore } = this.state;
     // 滚动时子元素相对定高的父元素滚动，事件加在父元素上，且查看父元素scrollTop，当滚到底时，父元素scrollTop+父元素高度=子元素高度
     // 判断页面是否滚到底部
-    const scrollToBottom = documentElem.scrollTop + documentElem.offsetHeight >= childElem.offsetHeight;
+    const scrollToBottom =
+      documentElem.scrollTop + documentElem.offsetHeight >= childElem.offsetHeight;
     // 当页面滚到底部且当前并不在请求数据且数据库还有数据时，才能再次请求
-    if (scrollToBottom && !loading && hasMore)
-      this.loadMore();
+    if (scrollToBottom && !loading && hasMore) this.loadMore();
   };
 
-  handleSearch = (values) => {
+  handleSearch = values => {
     this.setState({ formVals: values });
     this.fetchCompanies(true, values);
   };
@@ -159,15 +175,13 @@ export default class DataAnalysisList extends PureComponent {
 
     const pageNum = this.pageNum;
     let payload = { pageSize: PAGE_SIZE, pageNum: pageNum };
-    if (values)
-      payload = { ...payload, ...handleListFormVals(values) };
+    if (values) payload = { ...payload, ...handleListFormVals(values) };
 
     dispatch({
       type: 'dataAnalysis/fetchCompanyList',
       payload,
-      callback: (total) => {
-        if (total <= pageNum * PAGE_SIZE)
-          this.setState({ hasMore: false });
+      callback: total => {
+        if (total <= pageNum * PAGE_SIZE) this.setState({ hasMore: false });
         this.pageNum++;
       },
     });
@@ -177,7 +191,7 @@ export default class DataAnalysisList extends PureComponent {
     const {
       loading,
       dataAnalysis: {
-        companies: { list=[] },
+        companies: { list = [] },
       },
     } = this.props;
 
@@ -198,7 +212,7 @@ export default class DataAnalysisList extends PureComponent {
               safetyPhone,
               elecNum,
               gasNum,
-              smokeNum=0,
+              smokeNum = 0,
               pollutionWaterNum,
               pollutionGasNum,
               opcNum,
@@ -228,42 +242,49 @@ export default class DataAnalysisList extends PureComponent {
 
             return (
               <List.Item key={id}>
-                  <Card className={styles.card} title={name}>
-                    <Ellipsis tooltip className={styles.ellipsis} lines={1}>
-                      地址：
-                      {practicalAddressLabel ? practicalAddressLabel : NO_DATA}
-                    </Ellipsis>
-                    <p>
-                      行业类别：
-                      {industryCategoryLabel ? industryCategoryLabel : NO_DATA}
-                    </p>
-                    <p>
-                      安全负责人：
-                      {safetyName ? safetyName : NO_DATA}
-                    </p>
-                    <p>
-                      联系电话：
-                      {safetyPhone ? safetyPhone : NO_DATA}
-                    </p>
-                    <p className={styles.icons}>
-                      {/* {ICONS.map(icon => ( */}
-                      {ICONS.filter(icon => iconNums[icon]).map(icon => (
-                        <AuthIcon
-                          key={icon}
-                          title={ICONS_CN[icon]}
-                          url={ICONS_URL[icon]}
-                          darkUrl={ICONS_URL[`${icon}-d`]}
-                          code={CODES.dataAnalysis.IOTAbnormalData[icon]}
-                          // to={{
-                          //   pathname: `/data-analysis/IOT-abnormal-data/${icon}/${id}`,
-                          //   num: iconNums[icon],
-                          // }}
-                          to={`/data-analysis/IOT-abnormal-data/${icon}/${id}/count/${iconNums[icon]}`}
-                          style={{ width: 30, height: 30, marginRight: 15, backgroundSize: '100% 100%' }}
-                        />
-                      ))}
-                    </p>
-                  </Card>
+                <Card className={styles.card} title={name}>
+                  <Ellipsis tooltip className={styles.ellipsis} lines={1}>
+                    地址：
+                    {practicalAddressLabel ? practicalAddressLabel : NO_DATA}
+                  </Ellipsis>
+                  <Ellipsis tooltip className={styles.ellipsis} lines={1}>
+                    行业类别：
+                    {industryCategoryLabel ? industryCategoryLabel : NO_DATA}
+                  </Ellipsis>
+                  <p>
+                    安全负责人：
+                    {safetyName ? safetyName : NO_DATA}
+                  </p>
+                  <p>
+                    联系电话：
+                    {safetyPhone ? safetyPhone : NO_DATA}
+                  </p>
+                  <p className={styles.icons}>
+                    {/* {ICONS.map(icon => ( */}
+                    {ICONS.filter(icon => iconNums[icon]).map(icon => (
+                      <AuthIcon
+                        key={icon}
+                        title={ICONS_CN[icon]}
+                        url={ICONS_URL[icon]}
+                        darkUrl={ICONS_URL[`${icon}-d`]}
+                        code={CODES.dataAnalysis.IOTAbnormalData[icon]}
+                        // to={{
+                        //   pathname: `/data-analysis/IOT-abnormal-data/${icon}/${id}`,
+                        //   num: iconNums[icon],
+                        // }}
+                        to={`/data-analysis/IOT-abnormal-data/${icon}/${id}/count/${
+                          iconNums[icon]
+                        }`}
+                        style={{
+                          width: 30,
+                          height: 30,
+                          marginRight: 15,
+                          backgroundSize: '100% 100%',
+                        }}
+                      />
+                    ))}
+                  </p>
+                </Card>
               </List.Item>
             );
           }}
@@ -273,7 +294,11 @@ export default class DataAnalysisList extends PureComponent {
   }
 
   render() {
-    const { dataAnalysis: { companies: { list=[] } } } = this.props;
+    const {
+      dataAnalysis: {
+        companies: { list = [] },
+      },
+    } = this.props;
 
     return (
       <PageHeaderLayout
@@ -281,7 +306,8 @@ export default class DataAnalysisList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div className={styles.total}>
-            监测单位总数：{list.length}
+            监测单位总数：
+            {list.length}
           </div>
         }
       >

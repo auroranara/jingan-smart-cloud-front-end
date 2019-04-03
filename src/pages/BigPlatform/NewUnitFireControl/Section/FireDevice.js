@@ -1,93 +1,192 @@
 import React, { PureComponent } from 'react';
-import { Carousel } from 'antd';
+import { Radio, Row, Col } from 'antd';
 
+import WaterCards from '../components/WaterCards';
+import ChartGauge from '../components/ChartGauge';
 import Section from '../Section';
 import styles from './FireDevice.less';
+import waterBg from '../imgs/waterBg.png';
+import Ellipsis from '@/components/Ellipsis';
 
-import normal from '../imgs/normal.png';
-import fine from '../imgs/fine.png';
-import error from '../imgs/error.png';
+const waterSys = {
+  '101': {
+    name: '消火栓系统',
+    code: 'hydrant',
+  },
+  '102': {
+    name: '自动喷淋系统',
+    code: 'pistol',
+  },
+  '103': {
+    name: '水池/水箱',
+    code: 'pond',
+  },
+};
 
 export default class FireDevice extends PureComponent {
-
-  getImageByStatus = (status) => {
-    switch (+status) {
-      case 1:
-        return error;
-      case 2:
-        return normal;
-      case 3:
-        return fine;
-      default:
-        return;
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      type: '101',
+    };
   }
 
-  render() {
+  // 切换状态
+  handelRadioChange = item => {
+    const { fetchWaterSystem } = this.props;
     const {
-      systemScore: { list = [] },
-      onClick,
-    } = this.props;
+      target: { value },
+    } = item;
+    this.setState({ type: value });
+    fetchWaterSystem(value);
+  };
 
-    // 移除没有状态的成员
-    const arr = list.filter(({ status }) => status);
-    // 分为4个一组
-    const result = arr.reduce((total, item, index) => {
-      const i = Math.floor(index / 4);
-      if (index % 4 === 0) {
-        total[i] = [item];
-      }
-      else {
-        total[i].push(item);
-      }
-      return total;
-    }, [[]]);
+  renderNoCards = () => {
     return (
-      <Section title="消防设施情况">
+      <div
+        className={styles.noCards}
+        style={{
+          background: `url(${waterBg})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center center',
+          backgroundSize: 'auto 80%',
+        }}
+      />
+    );
+  };
+
+  renderHydrant = () => {
+    const { waterList } = this.props;
+    if (!waterList.filter(item => item.deviceDataList.length).length) {
+      return this.renderNoCards();
+    }
+
+    return waterList.map(item => {
+      const { deviceDataList } = item;
+      if (!deviceDataList.length) return null;
+      const { deviceId, deviceName } = item;
+      const [
+        {
+          value,
+          status,
+          unit,
+          deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
+        },
+      ] = deviceDataList;
+
+      return (
+        <Col
+          span={12}
+          className={styles.gaugeCol}
+          key={deviceId}
+          style={{ display: 'flex', flexDirection: 'column', height: '100px' }}
+        >
+          <ChartGauge
+            showName={false}
+            showValue
+            radius="80%"
+            isLost={+status < 0}
+            status={+status}
+            name={deviceName}
+            value={value || 0}
+            range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
+            normalRange={[normalLower, normalUpper]}
+            unit={unit}
+            style={{ flex: 1 }}
+          />
+          <div
+            style={{
+              padding: '0 8px',
+              textAlign: 'center',
+              lineHeight: '20px',
+              marginTop: '-15px',
+            }}
+          >
+            <Ellipsis lines={1} tooltip>
+              {deviceName}
+            </Ellipsis>
+          </div>
+        </Col>
+      );
+    });
+  };
+
+  renderPond = () => {
+    const { waterList } = this.props;
+    if (!waterList.filter(item => item.deviceDataList.length).length) {
+      return this.renderNoCards();
+    }
+    return waterList.map(item => {
+      const { deviceDataList } = item;
+      if (!deviceDataList.length) return null;
+      const { deviceId, deviceName } = item;
+      const [
+        {
+          value,
+          status,
+          unit,
+          deviceParamsInfo: { normalUpper, normalLower },
+        },
+      ] = deviceDataList;
+
+      return (
+        <WaterCards
+          key={deviceId}
+          name={deviceName}
+          value={value}
+          status={status}
+          unit={unit}
+          range={[normalLower, normalUpper]}
+        />
+      );
+    });
+  };
+
+  render() {
+    const { onClick, waterList, waterAlarm } = this.props;
+    const { type } = this.state;
+
+    const deviceList = waterList.filter(item => item.deviceDataList.length);
+
+    return (
+      <Section title="水系统">
         <div className={styles.container}>
-          <Carousel autoplay autoplaySpeed={5000}>
-            {/* {result.map((cols, index) => {
-              const [{ sysName }] = cols;
-              return (
-                <div key={sysName} className={styles.wrapper}>
-                  {cols.map(({ sysId, sysName, status }) => (
-                    <div className={styles.item} key={sysName} onClick={() => { onClick({ sysId, sysName }) }}>
-                      <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
-                      <div className={styles.label}>{sysName}</div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })} */}
-            <div className={styles.wrapper}>
-              {result[0].map(({ sysId, sysName, status }) => (
-                <div className={styles.item} key={sysName} onClick={() => { onClick({ sysId, sysName }) }}>
-                  <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
-                  <div className={styles.label}>{sysName}</div>
-                </div>
-              ))}
-            </div>
-            {result.length > 1 && (
-              <div className={styles.wrapper}>
-                {result[1].map(({ sysId, sysName, status }) => (
-                  <div className={styles.item} key={sysName} onClick={() => { onClick({ sysId, sysName }) }}>
-                    <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
-                    <div className={styles.label}>{sysName}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            {result.length > 2 && (
-              <div className={styles.wrapper}>
-                {result[2].map(({ sysId, sysName, status }) => (
-                  <div className={styles.item} key={sysName} onClick={() => { onClick({ sysId, sysName }) }}>
-                    <div className={styles.icon} style={{ backgroundImage: `url(${this.getImageByStatus(status)})` }} />
-                    <div className={styles.label}>{sysName}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Carousel>
+          <div className={styles.tabsWrapper}>
+            <Radio.Group value={type} buttonStyle="solid" onChange={this.handelRadioChange}>
+              {['101', '102', '103'].map((val, index) => {
+                // const isAlarm =
+                //   Array.isArray(waterList) &&
+                //   !!waterList.filter(item => {
+                //     const { deviceDataList } = item;
+                //     if (!deviceDataList.length) return false;
+                //     const [{ status }] = deviceDataList;
+                //     if (+status === 0) return false;
+                //     else return true;
+                //   }).length;
+                return (
+                  <Radio.Button
+                    value={val}
+                    className={waterAlarm[index] ? styles.tabAlarm : undefined}
+                    key={index}
+                  >
+                    {waterSys[val].name}
+                  </Radio.Button>
+                );
+              })}
+            </Radio.Group>
+          </div>
+          <Row
+            className={styles.itemsWrapper}
+            onClick={() => {
+              if (type === '101' && deviceList.length > 0) onClick(0, type);
+              if (type === '102' && deviceList.length > 0) onClick(1, type);
+              if (type === '103' && deviceList.length > 0) onClick(2, type);
+            }}
+          >
+            {type === '101' && this.renderHydrant()}
+            {type === '102' && this.renderHydrant()}
+            {type === '103' && this.renderPond()}
+          </Row>
         </div>
       </Section>
     );

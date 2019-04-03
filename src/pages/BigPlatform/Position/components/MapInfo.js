@@ -5,7 +5,7 @@ import styles from './MapInfo.less';
 import { getAlarmDesc } from '../utils';
 
 export default function MapInfo(props) {
-  const { alarms, areaInfo, sectionTree, positionList, showPersonInfoOrAlarmMsg, handleShowAlarmDrawer } = props;
+  const { alarms, areaInfo, sectionTree, positionList, showPersonInfoOrAlarmMsg, handleShowAlarmDrawer, handleShowLowPowerDrawer } = props;
   const length = alarms.length;
   const sos = alarms.reduce((count, current) => count + (+current.type === 1), 0);
   const low = positionList.reduce((count, current) => +current.lowPower + count, 0);
@@ -19,11 +19,11 @@ export default function MapInfo(props) {
         全厂：
         <span className={styles.total}>{total}人</span>
         报警：
-        <span className={length ? styles.alarmRed : styles.alarm} onClick={e => handleShowAlarmDrawer()}>{length}起</span>
+        <span className={length ? styles.alarmRed : styles.alarm} onClick={length ? e => handleShowAlarmDrawer() : null}>{length}起</span>
         SOS求救：
-        <span className={sos ? styles.sosRed : styles.sos} onClick={e => handleShowAlarmDrawer(true)}>{sos}起</span>
+        <span className={sos ? styles.sosRed : styles.sos} onClick={sos ? e => handleShowAlarmDrawer(true) : null}>{sos}起</span>
         低电量：
-        <span className={low ? styles.lowPower : null}>{low}</span>
+        <span className={low ? styles.lowPower : null} onClick={low ? handleShowLowPowerDrawer : null}>{low}</span>
       </div>
       {latest && (
         <div

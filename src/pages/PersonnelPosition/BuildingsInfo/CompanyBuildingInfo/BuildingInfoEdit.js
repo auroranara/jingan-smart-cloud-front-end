@@ -23,7 +23,7 @@ const addTitle = '新增建筑';
 const uploadAction = '/acloud_new/v2/uploadFile';
 
 // 上传文件夹
-const folder = 'buildingsInfo';
+const folder = 'buildingsinfo';
 
 const UploadIcon = <Icon type="upload" />;
 
@@ -50,11 +50,11 @@ const itemLayout1 = {
 };
 
 function generateRules(cName, msg = '输入', ...rules) {
-  return [{ required: true, message: `请${msg}${cName}` }, ...rules];
+  return [{ required: false, message: `请${msg}${cName}` }, ...rules];
 }
 
 function generateRulesSelect(cName, msg = '选择', ...rules) {
-  return [{ required: true, message: `请${msg}${cName}` }, ...rules];
+  return [{ required: false, message: `请${msg}${cName}` }, ...rules];
 }
 
 // function generateRulesInput(cName, msg = '输入', ...rules) {
@@ -498,7 +498,10 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'companyId',
         cName: '单位名称',
-        rules: generateRulesSelect('单位名称'),
+        rules: generateRulesSelect('单位名称', undefined, {
+          required: true,
+          message: `请选择单位名称`,
+        }),
         component: (
           <div>
             <Col span={23}>
@@ -558,7 +561,19 @@ export default class BuildingInfoEdit extends PureComponent {
       {
         name: 'buildingName',
         cName: '建筑物名称',
-        rules: generateRules('建筑物名称'),
+        rules: generateRules('建筑物名称', undefined, {
+          required: true,
+          validator: (rule, value, callback) => {
+            if (!value) {
+              callback('请输入建筑物名称!');
+            } else if (!value.trim()) {
+              callback('建筑物名称不能全部为空格!');
+            } else {
+              callback();
+            }
+          },
+        }),
+        validateTrigger: 'onBlur',
         component: (
           <div>
             {getFieldDecorator('buildingName', { initialValue: buildingName })(
@@ -629,9 +644,10 @@ export default class BuildingInfoEdit extends PureComponent {
               <InputNumber
                 style={{ width: '100%' }}
                 min={0}
+                defaultValue={''}
                 placeholder="请输入建筑层数"
-                formatter={value => (isNaN(value) ? '' : Math.round(value))}
-                parser={value => (isNaN(value) ? '' : Math.round(value))}
+                formatter={value => (!value || isNaN(value) ? '' : Math.round(value))}
+                parser={value => (!value || isNaN(value) ? '' : Math.round(value))}
               />
             )}
           </div>

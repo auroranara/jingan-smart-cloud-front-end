@@ -4,6 +4,10 @@ import {
   quitSOS,
   putAlarm,
   querySectionTree,
+  queryBeacons,
+  getStatusCount,
+  getMonthCount,
+  getServerTime,
 } from '../services/bigPlatform/personPosition';
 import { genAggregation, getSectionTree } from '@/pages/BigPlatform/Position/utils';
 
@@ -15,6 +19,10 @@ export default {
     positionAggregation: [],
     sectionTree: [],
     alarms: [],
+    beaconList: [],
+    statusCount: {},
+    monthCount: [],
+    serverTime: 0,
   },
 
   effects: {
@@ -58,6 +66,35 @@ export default {
         callback && callback(treeList);
       }
     },
+    *fetchBeacons({ payload, callback }, { call, put }) {
+      const response = yield call(queryBeacons, payload);
+      const { code=500, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list : [];
+        yield put({ type: 'saveBeacons', payload: list });
+      }
+    },
+    *fetchStatusCount({ payload, callback }, { call, put }) {
+      const response = yield call(getStatusCount, payload);
+      const { code=500, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveStatusCount', payload: data });
+    },
+    *fetchMonthCount({ payload, callback }, { call, put }) {
+      const response = yield call(getMonthCount, payload);
+      const { code=500, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list : [];
+        yield put({ type: 'saveMonthCount', payload: list });
+      }
+    },
+    *fetchServerTime({ payload, callback }, { call, put }) {
+      const response = yield call(getServerTime, payload);
+      const { code=500, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveServerTime', payload: data });
+      callback && callback(code, data);
+    },
   },
 
   reducers: {
@@ -85,6 +122,18 @@ export default {
         ...state,
         sectionTree: action.payload,
       };
+    },
+    saveBeacons(state, action) {
+      return { ...state, beaconList: action.payload };
+    },
+    saveStatusCount(state, action) {
+      return { ...state, statusCount: action.payload };
+    },
+    saveMonthCount(state, action) {
+      return { ...state, monthCount: action.payload };
+    },
+    saveServerTime(state, action) {
+      return { ...state, serverTime: action.payload };
     },
   },
 };

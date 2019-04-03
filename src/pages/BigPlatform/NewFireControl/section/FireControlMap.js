@@ -361,6 +361,7 @@ export default class FireControlMap extends PureComponent {
             plugins={[{ name: 'Scale', options: { locate: false } }, { name: 'ControlBar' }]}
             status={status}
             useAMapUI
+            pitch={60}
             mapStyle="amap://styles/b9d9da96da6ba2487d60019876b26fc5"
             center={center}
             zooms={ZOOMS}

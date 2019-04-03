@@ -1,0 +1,251 @@
+@width: 150px;
+
+.empty {
+  width: 100%;
+  height: @width;
+  background-size: @width @width;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.chartContainer {
+  padding: 20px 0 0 15px;
+}
+
+.chartTitle {
+  height: 18px;
+  display: flex;
+  color: #fff;
+  font-size: 16px;
+  line-height: 18px;
+  border-left: 2px solid #04fdff;
+  padding-left: 10px;
+}
+
+.select {
+  height: 32px;
+  position: relative;
+  align-self: flex-start;
+  flex-grow: 1;
+  top: -10px;
+}
+
+.search {
+  height: 32px;
+  position: relative;
+  align-self: flex-start;
+  flex-grow: 1;
+  top: -10px;
+
+  .resetBtn {
+    height: 32px;
+    line-height: 30px;
+    border-radius: 6px;
+    padding: 0 8px;
+    position: absolute;
+    right: 227px;
+    top: 5px;
+    color: #04fdff;
+    border: 1px solid #04fdff;
+    background: transparent;
+    cursor: pointer;
+
+    &:hover {
+      color: #40a9ff;
+      border-color: #40a9ff;
+    }
+  }
+
+  :global {
+    .ant-input-search {
+      position: absolute;
+      right: 17px;
+      top: 5px;
+      color: #04fdff;
+
+      .ant-input {
+        background-color: transparent;
+        border-color: #04fdff;
+        color: #fff;
+
+        &::-webkit-input-placeholder {
+          color: rgba(255, 255, 255, 0.8);
+        }
+      }
+
+      // .ant-input-affix-wrapper:hover .ant-input:not(.ant-input-disabled) {
+      //   border-color: #04fdff;
+      // }
+      .ant-input-suffix i {
+        color: #04fdff;
+      }
+    }
+  }
+}
+
+.camera {
+  width: 36px;
+  height: 36px;
+  background-size: 100% 100%;
+  align-self: flex-start;
+  position: relative;
+  top: -2px;
+  cursor: pointer;
+  flex-grow: 0;
+}
+
+.section {
+  padding-left: 10px;
+
+  .statisticsWrapper {
+    position: relative;
+    width: 64%;
+    color: #fff;
+
+    .statisticsItem {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 25px 0;
+
+      img {
+        width: 56px;
+        height: auto;
+        margin-right: 15px;
+      }
+
+      .infoWrapper {
+        flex: 1;
+        line-height: 36px;
+
+        .barWrapper {
+          background-color: #dee0eb;
+          overflow: hidden;
+          height: 12px;
+          border-radius: 10px;
+
+          .bar {
+            float: left;
+            height: 100%;
+            border-radius: 10px;
+          }
+        }
+      }
+
+      .value {
+        width: 50px;
+        font-size: 34px;
+        margin-left: 15px;
+        position: relative;
+        bottom: -10px;
+      }
+    }
+  }
+}
+
+.secTitle {
+  color: #fff;
+  font-size: 14px;
+  line-height: 16px;
+  margin-bottom: 0;
+}
+
+.secTitle1:extend(.secTitle) {
+  margin-bottom: 8px;
+}
+
+.gauges {
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.devScroll {
+  overflow-x: hidden;
+  overflow-y: auto; // max-height: 410px;
+  margin-top: 10px;
+  height: 100%;
+  padding-right: 10px;
+
+  .deviceWrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    border: 1px solid #04fdff;
+    color: #fff; // color: #bbbbbc;
+    padding: 10px;
+    padding-left: 0;
+    margin-bottom: 15px;
+    overflow: hidden;
+    align-items: center;
+    overflow: hidden;
+
+    .deviceImg {
+      width: 80px;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      img {
+        width: 70%;
+        height: auto;
+      }
+    }
+
+    .infoWrapper {
+      flex: 1;
+      justify-content: space-around;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 120px;
+
+      .name {
+        width: 90%;
+      }
+
+      .position {
+        width: 100%;
+      }
+
+      .extraWrapper {
+        display: flex;
+        margin-top: 5px;
+        justify-content: space-between;
+        align-items: center;
+
+        .camraImg {
+          width: 32px;
+          height: 32px;
+          background-size: 100% 100%;
+          align-self: flex-start;
+          position: relative;
+          top: -2px;
+          cursor: pointer;
+          flex-grow: 0;
+        }
+
+        .status {
+          padding: 2px 12px;
+          border: 1px solid;
+          border-radius: 6px;
+        }
+      }
+    }
+
+    .status {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 100%;
+      text-align: center;
+      transform: translate(50%, 0) translate(-10px, 10px) rotate(45deg);
+      transform-origin: 50% 0;
+      color: #fff;
+      background-color: #ff4848;
+      font-size: 12px;
+      line-height: 16px;
+    }
+  }
+}

@@ -85,31 +85,31 @@ export default class FourColor extends PureComponent {
   componentDidUpdate({
     model: {
       companyMessage: { fourColorImg: prevFourColorImg },
+      points: prevPoints,
+      videoList: prevVideoList,
     },
   }) {
     const {
       model: {
         companyMessage: { fourColorImg },
+        points,
+        videoList,
       },
     } = this.props;
     // 当四色图源数据更新后，默认获取第一个四色图作为初始值
     if (fourColorImg !== prevFourColorImg) {
       this.changeSelectedFourColorImg(fourColorImg[0] || {});
     }
+    else if (points !==prevPoints || videoList !== prevVideoList) {
+      this.changeSelectedFourColorImg();
+    }
   }
 
   /**
    * 设置选中的四色图并筛选出对应的点位和视频
    */
-  changeSelectedFourColorImg = selectedFourColorImg => {
+  changeSelectedFourColorImg = (selectedFourColorImg=this.state.selectedFourColorImg) => {
     const { id } = selectedFourColorImg;
-    const {
-      selectedFourColorImg: { id: selectedFourColorImgId },
-    } = this.state;
-    // 如果新选中的四色图与原来的一致，则不做任何操作
-    if (selectedFourColorImgId === id) {
-      return;
-    }
     const {
       model: {
         points: { fourColorImgPoints },
@@ -294,9 +294,9 @@ export default class FourColor extends PureComponent {
                         <div>
                           有无隐患：
                           {+originalStatus === 2 ? (
-                            <span style={{ color: '#ff4848' }}>有隐患</span>
+                            <span style={{ color: '#ff4848' }}>有</span>
                           ) : (
-                            '无隐患'
+                            '无'
                           )}
                         </div>
                         <div>

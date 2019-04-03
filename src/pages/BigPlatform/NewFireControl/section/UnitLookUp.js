@@ -36,7 +36,7 @@ export default class UnitLookUp extends Component {
     this.setState(({ hover }) => ({ hover: !hover }));
   };
 
-  getOption = (r) => {
+  getOption = r => {
     const rate = Number.parseInt(r, 10);
 
     const option = {
@@ -91,7 +91,14 @@ export default class UnitLookUp extends Component {
   render() {
     const { data, handleClickLookUp, handleClickOffGuard, handleClickVideoLookUp } = this.props;
     const { hover } = this.state;
-    const { lastTime='暂无信息', fast='0,0', slow='0,0', rate=0, onGuardNum=0, offGuardNum=0 } = data;
+    const {
+      lastTime = '暂无信息',
+      fast = '0,0',
+      slow = '0,0',
+      rate = 0,
+      onGuardNum = 0,
+      offGuardNum = 0,
+    } = data;
     const [day, time] = lastTime.split(' ');
 
     return (
@@ -138,15 +145,16 @@ export default class UnitLookUp extends Component {
                     在岗率
                   </div>
                 </Col>
-                <Col span={6} style={COL_STYLE}>
+                <Col span={6} className={styles.colTop}>
                   <ReactEcharts
                     style={{ width: '100%', height: '100px' }}
+                    className={styles.echarts}
                     option={this.getOption(rate)}
                     notMerge={true}
                     lazyUpdate={true}
                   />
                 </Col>
-                <Col span={12} style={COL_STYLE}>
+                <Col span={12} className={styles.colTop}>
                   <div className={styles.jobNum}>
                     <p className={styles.onJob}>
                       <span
@@ -178,9 +186,12 @@ export default class UnitLookUp extends Component {
                   </div>
                 </Col>
                 <Col span={6} style={COL_STYLE}>
-                  <div className={styles.timeIcon} style={{ backgroundImage: `url(${timeIcon})` }} />
+                  <div
+                    className={styles.timeIcon}
+                    style={{ backgroundImage: `url(${timeIcon})` }}
+                  />
                 </Col>
-                <Col span={12} style={COL_STYLE}>
+                <Col span={12} className={styles.colTop}>
                   <div className={styles.timeNum}>
                     <p className={styles.rabbit}>
                       <span

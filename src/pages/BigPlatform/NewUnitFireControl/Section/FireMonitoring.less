@@ -45,9 +45,10 @@
   font-size: 16px;
   border: 1px solid rgb(4, 253, 255);
   margin-bottom: 5px;
-  padding: 12% 0 0 26%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-
   .fireCount {
     font-size: 18px;
     color: rgb(255, 72, 72);
@@ -59,7 +60,9 @@
   height: 46%;
   font-size: 16px;
   border: 1px solid rgb(4, 253, 255);
-  padding: 12% 0 0 26%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
   .errorCount {
     font-size: 18px;
@@ -135,4 +138,37 @@
 
 .errorHover:hover {
   color: rgb(255, 182, 80);
+}
+
+@media screen and (max-width: 1440px) {
+  .top {
+    height: 60%;
+  }
+  .bottom {
+    height: 40%;
+  }
+  .linkage {
+    .linkageCount {
+      font-size: 16px;
+      margin-top: 0px;
+    }
+  }
+  .regulation {
+    .regulationCount {
+      font-size: 16px;
+      margin-top: 0px;
+    }
+  }
+  .shield {
+    .shieldCount {
+      font-size: 16px;
+      margin-top: 0px;
+    }
+  }
+  .feedback {
+    .feedbackCount {
+      font-size: 16px;
+      margin-top: 0px;
+    }
+  }
 }

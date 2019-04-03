@@ -2,6 +2,7 @@
 
 // https://umijs.org/config/
 
+import os from 'os';
 const path = require('path');
 const initRouters = require('./router.config');
 const webpackplugin = require('./plugin.config');
@@ -21,7 +22,7 @@ const hosts = {
   tw: '192.168.10.5', // 田伟
   cfm: '192.168.10.6', // 崔富民
   jiangxi: '58.215.178.100:12083',
-  xuzhou: '58.215.178.100:12081',
+  xuzhou: 'xuzhou.jinganyun.net',
   shanxi: '58.215.178.100:12085',
   nanxiao: '58.215.178.100:12084',
   sk: '192.168.10.21',
@@ -60,13 +61,16 @@ export default {
           default: 'zh-CN', // default zh-CN
           baseNavigator: true, // default true, when it is true, will use `navigator.language` overwrite default
         },
-        polyfills: ['ie9'],
         dynamicImport: true,
-        dll: {
-          include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-          exclude: ['@babel/runtime'],
-        },
-        hardSource: false,
+        ...(os.platform() === 'darwin'
+          ? {
+              dll: {
+                include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+                exclude: ['@babel/runtime'],
+              },
+              hardSource: false,
+            }
+          : {}),
       },
     ],
   ],
@@ -75,6 +79,9 @@ export default {
   routes: initRouters(process.env.PROJECT_ENV),
   history: 'hash',
   hash: true,
+  targets: {
+    ie: 11,
+  },
   // 如果是演示环境 publicPath目录为xshow
   publicPath: process.env.PROJECT_ENV === 'show' ? '/xshow/' : '/',
   // publicPath: '/acloud_new/',

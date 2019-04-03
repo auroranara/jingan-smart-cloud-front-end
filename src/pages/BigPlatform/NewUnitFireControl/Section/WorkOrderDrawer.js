@@ -17,21 +17,21 @@ const STATUS_MAP = { 7: '已超期', 2: '待完成', 1: '已完成' };
 const ICONS_MAP = { 7: overIcon, '2.0': handlingIcon, '2.2': handleIcon, 1: handledIcon };
 const TYPES = ['一键报修', '主机报障'];
 const ITEMS = [
-  ['systemTypeValue', 'device_name', 'device_address', 'report_desc', 'unit_name' ], // 一键报修  report_type = 2
+  ['systemTypeValue', 'device_name', 'device_address', 'report_desc', 'unit_name'], // 一键报修  report_type = 2
   ['install_address', 'number', 'assign', 'unit_name'], // 主机报障
 ];
 const ITEM_MAP = {
-  'systemTypeValue': '系统类型',
-  'device_name': '设备名称',
-  'device_address': '详细位置',
-  'install_address': '详细位置',
-  'report_desc': '故障描述',
-  'unit_name': '维保公司',
-  'number': '回路故障号',
-  'assign': '指派人员',
+  systemTypeValue: '系统类型',
+  device_name: '设备名称',
+  device_address: '详细位置',
+  install_address: '详细位置',
+  report_desc: '故障描述',
+  unit_name: '维保公司',
+  number: '回路故障号',
+  assign: '维修人员',
 };
 const STYLES = ['zero', 'one', 'two'];
-const ARROW_STYLE = { color: '#0FF',position: 'absolute', top: 20, right: 20 };
+const ARROW_STYLE = { color: '#0FF', position: 'absolute', top: 20, right: 20 };
 
 // const CARDS = [...Array(10).keys()].map(i => ({
 //   id: i,
@@ -44,10 +44,11 @@ const ARROW_STYLE = { color: '#0FF',position: 'absolute', top: 20, right: 20 };
 // }));
 
 function OrderCard(props) {
-  const { type, data, ...restProps } = props;
+  const { type, data, maintenanceCompanys, ...restProps } = props;
 
   const {
-    status=0,
+    type: orderType, // 1,2火警, 3,4故障
+    status = 0,
     report_type,
     create_date,
     // save_time,
@@ -56,14 +57,18 @@ function OrderCard(props) {
     component_no,
     component_region,
     label,
-    createByName,
-    createByPhone,
+    finishByName,
+    finishByPhone,
   } = data;
   const isHandled = type === 1;
   const isOneKey = report_type === '2'; // 是否为一键报修
-
-  data.assign = `${createByName} ${createByPhone}`;
-  data.number = `${component_region}回路${component_no}号 ${label}`;
+  const isFire = +orderType === 1 || +orderType === 2;
+  data.assign = `${finishByName} ${finishByPhone}`;
+  data.number =
+    component_region || component_region === 0
+      ? `${component_region}回路${component_no}号 ${label}`
+      : label;
+  data.unit_name = maintenanceCompanys;
 
   const days = Math.floor((Date.now() - plan_finish_date) / DAY_MS);
 
@@ -72,13 +77,23 @@ function OrderCard(props) {
       <div className={styles.card} {...restProps}>
         <Icon type="right" style={ARROW_STYLE} />
         <div className={styles.status}>
-          <div style={{ backgroundImage: `url(${ICONS_MAP[type === 2 ? `${type}.${status}` : type]})` }} className={styles.stamp}></div>
-          {type === 7 && <p className={styles.day}>已超期<span className={styles.days}>{days}</span>天</p>}
+          <div
+            style={{
+              backgroundImage: `url(${ICONS_MAP[type === 2 ? `${type}.${status}` : type]})`,
+            }}
+            className={styles.stamp}
+          />
+          {type === 7 && (
+            <p className={styles.day}>
+              已超期
+              <span className={styles.days}>{days}</span>天
+            </p>
+          )}
         </div>
         <p className={styles.time}>
           {/* {moment(isOneKey ? create_date : save_time).format('YYYY-MM-DD HH:mm:ss')} */}
           {moment(isHandled ? update_date : create_date).format('YYYY-MM-DD HH:mm:ss')}
-          <span className={styles.info}>{TYPES[isOneKey ? 0 : 1]}</span>
+          <span className={styles.info}>{isFire ? '主机报警' : TYPES[isOneKey ? 0 : 1]}</span>
         </p>
         {ITEMS[isOneKey ? 0 : 1].map(item => (
           <p key={item}>
@@ -95,21 +110,28 @@ export default class WorkOrderDrawer extends PureComponent {
   state = { isWarned: false };
 
   render() {
-    const { type, handleLabelChange, handleCardClick, data, ...restProps } = this.props;
+    const {
+      type,
+      handleLabelChange,
+      handleCardClick,
+      data,
+      maintenanceCompanys,
+      ...restProps
+    } = this.props;
     const { isWarned } = this.state;
     // console.log(data, `workOrderList${type}`);
     const list = data[`workOrderList${type}`];
 
     const left = (
       <div className={styles.container}>
-        {type === 7 && (
+        {/* {type === 7 && (
           <span
             className={isWarned ? styles.warned : styles.warn}
             onClick={e => this.setState({ isWarned: true })}
           >
             {isWarned ? '已提醒' : '提醒维修'}
           </span>
-        )}
+        )} */}
         <div className={styles.spans}>
           {STATUS.map((s, i) => {
             const t = STATUS_N[i];
@@ -117,7 +139,7 @@ export default class WorkOrderDrawer extends PureComponent {
             return (
               <span
                 key={s}
-                className={ t === type ? styles.selected : styles.span}
+                className={t === type ? styles.selected : styles.span}
                 onClick={e => handleLabelChange(t)}
               >
                 {s}-{data[`workOrderList${t}`].length}
@@ -126,18 +148,21 @@ export default class WorkOrderDrawer extends PureComponent {
           })}
         </div>
         <div className={styles.cards}>
-          {list.map(item => <OrderCard key={item.id} type={type} data={item} onClick={e => handleCardClick(item.id)} />)}
+          {list.map(item => (
+            <OrderCard
+              key={item.id}
+              type={type}
+              data={item}
+              maintenanceCompanys={maintenanceCompanys}
+              onClick={e => handleCardClick(item)}
+            />
+          ))}
         </div>
       </div>
     );
 
     return (
-      <DrawerContainer
-        title={`${STATUS_MAP[type]}工单`}
-        width={535}
-        left={left}
-        {...restProps}
-      />
+      <DrawerContainer title={`${STATUS_MAP[type]}工单`} width={535} left={left} {...restProps} />
     );
   }
 }
