@@ -5,6 +5,7 @@ import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import ChartGauge from '../../components/ChartGauge';
 import styles from './index.less';
 import cameraIcon from '../../images/camera.png';
+import Ellipsis from '@/components/Ellipsis';
 
 const Search = Input.Search;
 const FormItem = Form.Item;
@@ -109,7 +110,11 @@ export default class WaterDrawer extends PureComponent {
                     </div>
                     <div className={styles.infoWrapper}>
                       <div>
-                        <div className={styles.name}>{name}</div>
+                        <div className={styles.name}>
+                          <Ellipsis lines={1} tooltip>
+                            {name}
+                          </Ellipsis>
+                        </div>
                         <div className={styles.position}>{`位置：${location}`}</div>
                         <Row gutter={8}>
                           <Col span={newLine ? 24 : 12}>

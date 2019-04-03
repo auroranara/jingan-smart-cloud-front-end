@@ -1222,6 +1222,7 @@ export default class App extends PureComponent {
         faultList,
         waterSystemData: { list },
         waterAlarm,
+        maintenanceCompany: { name: maintenanceCompanys = [] },
       },
     } = this.props;
 
@@ -1488,6 +1489,7 @@ export default class App extends PureComponent {
         />
         <WorkOrderDrawer
           data={{ workOrderList1, workOrderList2, workOrderList7 }}
+          maintenanceCompanys={maintenanceCompanys.map(data => data.name).join(',')}
           type={drawerType}
           visible={workOrderDrawerVisible}
           handleLabelChange={this.handleWorkOrderLabelChange}

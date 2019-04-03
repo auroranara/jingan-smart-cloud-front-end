@@ -1,4 +1,5 @@
 @width: 150px;
+
 .empty {
   width: 100%;
   height: @width;
@@ -35,6 +36,7 @@
   align-self: flex-start;
   flex-grow: 1;
   top: -10px;
+
   .resetBtn {
     height: 32px;
     line-height: 30px;
@@ -47,25 +49,31 @@
     border: 1px solid #04fdff;
     background: transparent;
     cursor: pointer;
+
     &:hover {
       color: #40a9ff;
       border-color: #40a9ff;
     }
   }
+
   :global {
     .ant-input-search {
       position: absolute;
       right: 17px;
       top: 5px;
       color: #04fdff;
+
       .ant-input {
         background-color: transparent;
         border-color: #04fdff;
         color: #fff;
+
         &::-webkit-input-placeholder {
           color: rgba(255, 255, 255, 0.8);
         }
-      } // .ant-input-affix-wrapper:hover .ant-input:not(.ant-input-disabled) {
+      }
+
+      // .ant-input-affix-wrapper:hover .ant-input:not(.ant-input-disabled) {
       //   border-color: #04fdff;
       // }
       .ant-input-suffix i {
@@ -88,28 +96,34 @@
 
 .section {
   padding-left: 10px;
+
   .statisticsWrapper {
     position: relative;
     width: 64%;
     color: #fff;
+
     .statisticsItem {
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 25px 0;
+
       img {
         width: 56px;
         height: auto;
         margin-right: 15px;
       }
+
       .infoWrapper {
         flex: 1;
         line-height: 36px;
+
         .barWrapper {
           background-color: #dee0eb;
           overflow: hidden;
           height: 12px;
           border-radius: 10px;
+
           .bar {
             float: left;
             height: 100%;
@@ -117,6 +131,7 @@
           }
         }
       }
+
       .value {
         width: 50px;
         font-size: 34px;
@@ -151,6 +166,7 @@
   margin-top: 10px;
   height: 100%;
   padding-right: 10px;
+
   .deviceWrapper {
     position: relative;
     width: 100%;
@@ -163,17 +179,20 @@
     overflow: hidden;
     align-items: center;
     overflow: hidden;
+
     .deviceImg {
       width: 80px;
       height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
+
       img {
         width: 70%;
         height: auto;
       }
     }
+
     .infoWrapper {
       flex: 1;
       justify-content: space-around;
@@ -181,14 +200,21 @@
       flex-direction: column;
       position: relative;
       height: 120px;
+
+      .name {
+        width: 90%;
+      }
+
       .position {
         width: 100%;
       }
+
       .extraWrapper {
         display: flex;
         margin-top: 5px;
         justify-content: space-between;
         align-items: center;
+
         .camraImg {
           width: 32px;
           height: 32px;
@@ -199,6 +225,7 @@
           cursor: pointer;
           flex-grow: 0;
         }
+
         .status {
           padding: 2px 12px;
           border: 1px solid;
@@ -206,6 +233,7 @@
         }
       }
     }
+
     .status {
       position: absolute;
       right: 0;
