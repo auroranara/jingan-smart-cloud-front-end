@@ -15,10 +15,10 @@ const STATUS = ['已超期', '待完成', '已完成'];
 const STATUS_N = [7, 2, 1];
 const STATUS_MAP = { 7: '已超期', 2: '待完成', 1: '已完成' };
 const ICONS_MAP = { 7: overIcon, '2.0': handlingIcon, '2.2': handleIcon, 1: handledIcon };
-const TYPES = ['一键报修', '主机报警'];
+const TYPES = ['一键报修', '主机报障'];
 const ITEMS = [
   ['systemTypeValue', 'device_name', 'device_address', 'report_desc', 'unit_name'], // 一键报修  report_type = 2
-  ['install_address', 'number', 'assign', 'unit_name'], // 主机报警
+  ['install_address', 'number', 'assign', 'unit_name'], // 主机报障
 ];
 const ITEM_MAP = {
   systemTypeValue: '系统类型',
@@ -47,6 +47,7 @@ function OrderCard(props) {
   const { type, data, maintenanceCompanys, ...restProps } = props;
 
   const {
+    type: orderType, // 1,2火警, 3,4故障
     status = 0,
     report_type,
     create_date,
@@ -61,7 +62,7 @@ function OrderCard(props) {
   } = data;
   const isHandled = type === 1;
   const isOneKey = report_type === '2'; // 是否为一键报修
-
+  const isFire = +orderType === 1 || +orderType === 2;
   data.assign = `${finishByName} ${finishByPhone}`;
   data.number =
     component_region || component_region === 0
@@ -92,7 +93,7 @@ function OrderCard(props) {
         <p className={styles.time}>
           {/* {moment(isOneKey ? create_date : save_time).format('YYYY-MM-DD HH:mm:ss')} */}
           {moment(isHandled ? update_date : create_date).format('YYYY-MM-DD HH:mm:ss')}
-          <span className={styles.info}>{TYPES[isOneKey ? 0 : 1]}</span>
+          <span className={styles.info}>{isFire ? '主机报警' : TYPES[isOneKey ? 0 : 1]}</span>
         </p>
         {ITEMS[isOneKey ? 0 : 1].map(item => (
           <p key={item}>
@@ -153,7 +154,7 @@ export default class WorkOrderDrawer extends PureComponent {
               type={type}
               data={item}
               maintenanceCompanys={maintenanceCompanys}
-              onClick={e => handleCardClick(item.id)}
+              onClick={e => handleCardClick(item)}
             />
           ))}
         </div>

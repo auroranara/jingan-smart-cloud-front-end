@@ -972,9 +972,16 @@ export default class App extends PureComponent {
     this.setState({ drawerType: type });
   };
 
-  handleWorkOrderCardClick = id => {
-    this.handleDrawerVisibleChange('maintenance');
-    this.handleFetchWorkOrder(undefined, id);
+  handleWorkOrderCardClick = item => {
+    const { id, type, data_id } = item;
+    const isFire = +type === 1 || +type === 2;
+    if (!isFire) {
+      this.handleDrawerVisibleChange('maintenance');
+      this.handleFetchWorkOrder(undefined, id);
+    } else {
+      this.handleDrawerVisibleChange('alarmDynamic');
+      this.handleFetchAlarmHandle(data_id);
+    }
   };
 
   handleWorkOrderCardClickMsg = ids => {
