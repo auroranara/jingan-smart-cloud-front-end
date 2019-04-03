@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import classNames from 'classnames';
 import { Input, Row, Col, Select, Table, Icon } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import styles from './SectionList.less';
@@ -172,8 +173,10 @@ export default class SectionList extends PureComponent {
 
   getTableRowClassName = (record, index) => {
     const { areaId } = this.props;
-    if (record.id === areaId)
-      return styles.rowSelected;
+    return classNames({
+      [styles.tableRow]: true,
+      [styles.rowSelected]: record.id === areaId,
+    });
   };
 
   /**

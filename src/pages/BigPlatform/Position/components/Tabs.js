@@ -2,13 +2,14 @@ import React, { PureComponent } from 'react';
 
 import styles from './Tabs.less';
 
-// const TABS = ['实时监控', '目标跟踪', '历史轨迹'];
-const TABS = ['实时监控', '目标跟踪', '历史轨迹', '报警查看'];
+const TABS = ['实时监控', '目标跟踪', '历史轨迹'];
+// const TABS = ['实时监控', '目标跟踪', '历史轨迹', '报警查看'];
 
 export default class Tabs extends PureComponent {
   render() {
     const { value, handleLabelClick, ...restProps } = this.props;
-    const leftPercent = 100 / TABS.length;
+    // const leftPercent = 100 / TABS.length;
+    const leftPercent = 25;
 
     return (
       <div className={styles.container} {...restProps}>
