@@ -7,6 +7,7 @@ import pondAbnormal from '../images/pond-abnormal.png';
 import pondNormal from '../images/pond-normal.png';
 import pondLost from '../images/pond-lost.png';
 import waterBg from '../images/waterBg.png';
+import Ellipsis from '@/components/Ellipsis';
 
 const waterSys = {
   '101': {
@@ -102,7 +103,7 @@ export default class FireHostMonitoring extends PureComponent {
       return (
         <Col span={12} key={deviceId}>
           <ChartGauge
-            showName
+            showName={false}
             showValue
             isLost={+status < 0}
             status={+status}
@@ -112,6 +113,18 @@ export default class FireHostMonitoring extends PureComponent {
             normalRange={[normalLower, normalUpper]}
             unit={unit}
           />
+          <div
+            style={{
+              padding: '0 8px',
+              textAlign: 'center',
+              lineHeight: '20px',
+              marginTop: '-20px',
+            }}
+          >
+            <Ellipsis lines={1} tooltip>
+              {deviceName}
+            </Ellipsis>
+          </div>
         </Col>
       );
     });
@@ -139,7 +152,7 @@ export default class FireHostMonitoring extends PureComponent {
       return (
         <Col span={12} key={deviceId}>
           <ChartGauge
-            showName
+            showName={false}
             showValue
             isLost={+status < 0}
             status={+status}
@@ -149,6 +162,18 @@ export default class FireHostMonitoring extends PureComponent {
             normalRange={[normalLower, normalUpper]}
             unit={unit}
           />
+          <div
+            style={{
+              padding: '0 8px',
+              textAlign: 'center',
+              lineHeight: '20px',
+              marginTop: '-20px',
+            }}
+          >
+            <Ellipsis lines={1} tooltip>
+              {deviceName}
+            </Ellipsis>
+          </div>
         </Col>
       );
     });

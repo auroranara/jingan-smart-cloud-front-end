@@ -6,6 +6,7 @@ import ChartGauge from '../components/ChartGauge';
 import Section from '../Section';
 import styles from './FireDevice.less';
 import waterBg from '../imgs/waterBg.png';
+import Ellipsis from '@/components/Ellipsis';
 
 const waterSys = {
   '101': {
@@ -74,11 +75,16 @@ export default class FireDevice extends PureComponent {
       ] = deviceDataList;
 
       return (
-        <Col span={12} className={styles.gaugeCol} key={deviceId}>
+        <Col
+          span={12}
+          className={styles.gaugeCol}
+          key={deviceId}
+          style={{ display: 'flex', flexDirection: 'column', height: '100px' }}
+        >
           <ChartGauge
-            showName
+            showName={false}
             showValue
-            radius="70%"
+            radius="80%"
             isLost={+status < 0}
             status={+status}
             name={deviceName}
@@ -86,7 +92,20 @@ export default class FireDevice extends PureComponent {
             range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
             normalRange={[normalLower, normalUpper]}
             unit={unit}
+            style={{ flex: 1 }}
           />
+          <div
+            style={{
+              padding: '0 8px',
+              textAlign: 'center',
+              lineHeight: '20px',
+              marginTop: '-15px',
+            }}
+          >
+            <Ellipsis lines={1} tooltip>
+              {deviceName}
+            </Ellipsis>
+          </div>
         </Col>
       );
     });
