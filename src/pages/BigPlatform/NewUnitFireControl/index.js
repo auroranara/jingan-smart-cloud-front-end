@@ -979,7 +979,7 @@ export default class App extends PureComponent {
       this.handleDrawerVisibleChange('maintenance');
       this.handleFetchWorkOrder(undefined, id);
     } else {
-      this.handleDrawerVisibleChange('alarmDynamic');
+      this.handleDrawerVisibleChange('alarmMessage');
       this.handleFetchAlarmHandle(data_id);
     }
   };
