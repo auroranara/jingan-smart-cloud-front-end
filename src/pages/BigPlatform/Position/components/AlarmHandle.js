@@ -11,10 +11,9 @@ export default class AlarmHandle extends PureComponent {
   state = { value: '' };
 
   genHandleAlarm = status => e => {
-    const { alarmId, cardId, handleAlarm, handleSOS } = this.props;
-    // if (cardId) status === 2 && handleSOS(cardId);
-    // else handleAlarm(alarmId, status, this.value);
-    handleAlarm(alarmId);
+    const { alarmId, handleAlarm } = this.props;
+    const { value } = this.state;
+    handleAlarm(alarmId, status, status === 1 ? '忽略' : value);
     this.onClose();
   };
 
