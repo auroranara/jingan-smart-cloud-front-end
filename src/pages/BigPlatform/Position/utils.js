@@ -430,7 +430,8 @@ export function getIconClassName(isSingle, isVisitor, isOnline, isAlarm) {
   // 多人报警
   if (!isSingle) return `people${suffix}`;
 
-  suffix = isOnline ? (isAlarm ? 'Red' : '') : 'Off';
+  // suffix = isOnline ? (isAlarm ? 'Red' : '') : 'Off'; // 离线优先级高
+  suffix = isAlarm ? 'Red' : (isOnline ? '' : 'Off'); // 报警优先级高
   // 其余均为单人情况
   // 单人 && 访客
   if (isVisitor) return `visitor${suffix}`;
