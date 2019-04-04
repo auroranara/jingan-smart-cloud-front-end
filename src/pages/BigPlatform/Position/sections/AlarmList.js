@@ -144,7 +144,7 @@ export default class AlarmList extends PureComponent {
     const { handleDesc } = this.state;
     dispatch({
       type: 'personPosition/handleAlarm',
-      payload: { ids: this.submitId, executeDesc: handleDesc, executeStatus: status },
+      payload: { ids: this.submitId, executeStatus: status, executeDesc: status === 1 ? '忽略' : handleDesc },
       callback: (code, msg) => {
         if (code === 200) {
           this.handleHideSubmit();
