@@ -84,7 +84,7 @@ export default class MonitorDrawer extends PureComponent {
         <Row gutter={16}>
           {dataList.length ? (
             dataList.map((item, index) => {
-              const { area, location, add_time, status, device_id } = item;
+              const { area, location, add_time, status, iotId } = item;
               const occurTime = `发生时间：${moment(add_time).format('YYYY-MM-DD HH:mm:ss')}`;
               const devStatus = '设备状态：正常';
               const color = +status > 0 ? '#f83329' : '#ffb400';
@@ -122,12 +122,12 @@ export default class MonitorDrawer extends PureComponent {
                         {(+status !== 0 || !status) && (
                           <div
                             className={styles.status}
-                            style={{ color, borderColor: color /* cursor: 'pointer' */ }}
-                            // onClick={() => {
-                            //   +status > 0
-                            //     ? handleAlarmClick(undefined, companyId, companyName, undefined, device_id)
-                            //     : handleFaultClick(undefined, companyId, companyName, undefined, device_id);
-                            // }}
+                            style={{ color, borderColor: color, ursor: 'pointer' }}
+                            onClick={() => {
+                              +status > 0
+                                ? handleAlarmClick(iotId, companyId, companyName, undefined)
+                                : handleFaultClick(iotId, companyId, companyName, undefined);
+                            }}
                           >
                             {+status > 0 ? '火警' : '故障'}
                           </div>
