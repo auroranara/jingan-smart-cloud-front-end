@@ -65,6 +65,7 @@ export default class AlarmList extends PureComponent {
       payload.rootAreaId = selectedArea;
     dispatch({
       type: 'personPosition/fetchInitAlarms',
+      alarmType: 1,
       payload,
       callback: list => {
         this.setState({ selectedCards: Array(list.length).fill(false) });
@@ -127,7 +128,7 @@ export default class AlarmList extends PureComponent {
   };
 
   handleShowMultiSubmit = e => {
-    const { personPosition: { alarms } } = this.props;
+    const { personPosition: { alarms1: alarms } } = this.props;
     const { selectedCards } = this.state;
     // 将选中的并且是未处理的报警筛选处理
     const ids = alarms.filter((a, i) => selectedCards[i] && !+a.executeStatus).map(({ id }) => id);
@@ -162,7 +163,7 @@ export default class AlarmList extends PureComponent {
       labelIndex,
       areaInfo,
       position: { sectionTree },
-      personPosition: { alarms, statusCount, monthCount },
+      personPosition: { alarms1: alarms, statusCount, monthCount },
       handleLabelClick,
     } = this.props;
     const {

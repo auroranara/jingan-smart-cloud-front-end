@@ -19,6 +19,7 @@ export default {
     positionAggregation: [],
     sectionTree: [],
     alarms: [],
+    alarms1: [], // 报警查看中的报警列表
     beaconList: [],
     statusCount: {},
     monthCount: [],
@@ -35,13 +36,13 @@ export default {
         yield put({ type: 'savePositions', payload: list });
       }
     },
-    *fetchInitAlarms({ payload, callback }, { call, put }) {
+    *fetchInitAlarms({ payload, callback, alarmType }, { call, put }) {
       const response = yield call(queryInitialAlarms, payload);
       const { code=500, data } = response || {};
       if (code === 200) {
         const list = data && Array.isArray(data.list) ? data.list: [];
         callback && callback(list);
-        yield put({ type: 'saveAlarms', payload: list });
+        yield put({ type: `saveAlarms${alarmType ? 1 : ''}`, payload: list });
       }
     },
     *handleSOS({ payload, callback }, { call }) {
@@ -115,6 +116,14 @@ export default {
       return {
         ...state,
         alarms: action.payload,
+      };
+    },
+    saveAlarms1(state, action) {
+      const list = action.payload;
+      list.sort((a1, a2) => a2.warningTime - a1.warningTime);
+      return {
+        ...state,
+        alarms1: action.payload,
       };
     },
     saveSectionTree(state, action) {
