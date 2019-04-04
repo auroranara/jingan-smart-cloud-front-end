@@ -14,11 +14,11 @@ import {
   getAbnormalingTotal, // 异常单位统计
   getPendingMission, // 待处理业务
   getGasForMaintenance,
-  fetchRealTimeMonitor,// 获取单位实时监测数据
-  fetchAbnormalTrend,   // 获取异常趋势图数据
+  fetchRealTimeMonitor, // 获取单位实时监测数据
+  fetchAbnormalTrend, // 获取异常趋势图数据
 } from '../services/gas';
 // 获取单位集
-const getUnitSet = function (units) {
+const getUnitSet = function(units) {
   // 告警单位
   const alarmUnit = [];
   // 预警单位
@@ -422,23 +422,30 @@ export default {
     },
     // 获取单位实时监测数据
     *fetchRealTimeMonitor({ payload }, { call, put }) {
-      const response = yield call(fetchRealTimeMonitor, payload)
+      const response = yield call(fetchRealTimeMonitor, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'save',
-          payload: { unitRealTimeMonitor: response.data.list },
-        })
+          payload: {
+            unitRealTimeMonitor: response.data.list.map(item => {
+              return {
+                ...item,
+                status: +item.status === 2 ? 1 : +item.status,
+              };
+            }),
+          },
+        });
       }
     },
     // 获取异常趋势图数据
     *fetchAbnormalTrend({ payload, callback }, { call, put }) {
-      const response = yield call(fetchAbnormalTrend, payload)
+      const response = yield call(fetchAbnormalTrend, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'save',
           payload: { unitAbnormalTrend: response.data.list },
-        })
-        if (callback) callback(response.data.list)
+        });
+        if (callback) callback(response.data.list);
       }
     },
   },
