@@ -38,3 +38,17 @@ export async function exportData(params) {
 export async function getDocumentList({ id }) {
   return request(`/acloud_new/v2/hiddenDanger/showDoc/${id}`);
 }
+
+/**
+ * 新添隐患字典数据
+ */
+export async function getHiddenContent(params) {
+  return request(`/acloud_new/v2/mobile/getHiddenContent.json?${stringify(params)}`);
+}
+
+/**
+ * 获取隐患字典
+ */
+export async function getHiddenPosition(params) {
+  return request(`/acloud_new/v2/mobile/getPosition.json?${stringify(params)}`);
+}

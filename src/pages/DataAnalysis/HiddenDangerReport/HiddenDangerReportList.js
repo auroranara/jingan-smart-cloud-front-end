@@ -1,5 +1,18 @@
 import React, { PureComponent } from 'react';
-import { Form, Card, Table, Row, Col, Input, Select, DatePicker, Button, Spin, Badge, TreeSelect } from 'antd';
+import {
+  Form,
+  Card,
+  Table,
+  Row,
+  Col,
+  Input,
+  Select,
+  DatePicker,
+  Button,
+  Spin,
+  Badge,
+  TreeSelect,
+} from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import Lightbox from 'react-images';
@@ -14,11 +27,17 @@ import styles from './HiddenDangerReportList.less';
 const { Option: TagSelectOption } = TagSelect;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-const { home: homeUrl, hiddenDangerReport: { detail: detailUrl } } = urls;
-const { home: homeTitle, hiddenDangerReport: { list: title, menu: menuTitle } } = titles;
+const {
+  home: homeUrl,
+  hiddenDangerReport: { detail: detailUrl },
+} = urls;
+const {
+  home: homeTitle,
+  hiddenDangerReport: { list: title, menu: menuTitle },
+} = titles;
 
 /* 根据隐患状态获取对应文字 */
-const getLabelByStatus = function (status) {
+const getLabelByStatus = function(status) {
   switch (+status) {
     case 1:
     case 2:
@@ -68,12 +87,18 @@ const fieldLabels = {
   item_name: '点位名称',
   level: '隐患等级',
   documentTypeIds: '相关文书',
+  reportingChannels: '上报途径',
+  checkType: '检查类型',
+  hiddenDangerType: '隐患类型',
+  hiddenDangerDepartment: '隐患部门',
+  hiddenDangerAddress: '隐患地点',
+  rectificationDepartment: '整改部门',
+  causeAnalysis: '原因分析',
 };
 /* 获取root下的div */
 const getRootChild = () => document.querySelector('#root>div');
 /* session前缀 */
 const sessionPrefix = 'hidden_danger_report_list_';
-
 
 /**
  * 隐患排查报表
@@ -87,13 +112,28 @@ const sessionPrefix = 'hidden_danger_report_list_';
 export default class App extends PureComponent {
   constructor(props) {
     super(props);
-    const { user: { currentUser: { unitType } } } = props;
+    const {
+      user: {
+        currentUser: { unitType },
+      },
+    } = props;
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
     /* 图片字段render方法 */
-    const renderImage = (value) => {
+    const renderImage = value => {
       const src = value.filter(image => /(.jpg|.png)$/.test(image))[0];
-      return src ? <img style={{ width: 30, height: 40, cursor: 'pointer' }} src={src} alt="" onClick={() => { this.setState({ images: value, currentImage: 0 }); }} /> : <span style={{ display: 'inline-block', width: 30, height: 40 }} />;
+      return src ? (
+        <img
+          style={{ width: 30, height: 40, cursor: 'pointer' }}
+          src={src}
+          alt=""
+          onClick={() => {
+            this.setState({ images: value, currentImage: 0 });
+          }}
+        />
+      ) : (
+        <span style={{ display: 'inline-block', width: 30, height: 40 }} />
+      );
     };
     /* 默认除操作列以外的表格列 */
     const defaultColumns = [
@@ -104,6 +144,14 @@ export default class App extends PureComponent {
       {
         title: '隐患来源',
         dataIndex: 'report_source_name',
+      },
+      {
+        title: '上报途径',
+        dataIndex: '',
+      },
+      {
+        title: '检查类型',
+        dataIndex: '',
       },
       {
         title: '点位名称',
@@ -122,9 +170,21 @@ export default class App extends PureComponent {
         dataIndex: 'level_name',
       },
       {
+        title: '隐患类型',
+        dataIndex: '',
+      },
+      {
+        title: '隐患部门',
+        dataIndex: '',
+      },
+      {
+        title: '隐患地点',
+        dataIndex: '',
+      },
+      {
         title: '隐患状态',
         dataIndex: 'status',
-        render: (value) => getLabelByStatus(value),
+        render: value => getLabelByStatus(value),
       },
       {
         title: '创建人',
@@ -134,17 +194,21 @@ export default class App extends PureComponent {
       {
         title: '检查人',
         dataIndex: 'allCheckPersonNames',
-        render: (val) => <Ellipsis tooltip length={7} style={{ overflow: 'visible' }}>{val}</Ellipsis>,
+        render: val => (
+          <Ellipsis tooltip length={7} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       },
       {
         title: '创建日期',
         dataIndex: 'report_time',
-        render: (value) => moment(+value).format('YYYY-MM-DD'),
+        render: value => moment(+value).format('YYYY-MM-DD'),
       },
       {
         title: '计划整改日期',
         dataIndex: 'plan_rectify_time',
-        render: (value) => moment(+value).format('YYYY-MM-DD'),
+        render: value => moment(+value).format('YYYY-MM-DD'),
       },
       {
         title: '隐患描述',
@@ -156,13 +220,21 @@ export default class App extends PureComponent {
         render: renderImage,
       },
       {
+        title: '整改部门',
+        dataIndex: '',
+      },
+      {
+        title: '原因分析',
+        dataIndex: '',
+      },
+      {
         title: '整改措施',
         dataIndex: 'rectify_desc',
       },
       {
         title: '整改金额',
         dataIndex: 'real_rectify_money',
-        render: (value) => value,
+        render: value => value,
       },
       {
         title: '整改后图片',
@@ -194,7 +266,13 @@ export default class App extends PureComponent {
    * 挂载后
    */
   componentDidMount() {
-    const { dispatch, form: { setFieldsValue }, user: { currentUser: { id } } } = this.props;
+    const {
+      dispatch,
+      form: { setFieldsValue },
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
     // 从sessionStorage中获取存储的控件值
     const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
       pageNum: 1,
@@ -202,10 +280,23 @@ export default class App extends PureComponent {
       // query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
       // query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
     };
-    const { pageNum, pageSize, documentTypeIds, query_start_time, query_end_time, ...rest } = payload;
+    const {
+      pageNum,
+      pageSize,
+      documentTypeIds,
+      query_start_time,
+      query_end_time,
+      ...rest
+    } = payload;
     // 重置控件
     setFieldsValue({
-      createTime: query_start_time && query_end_time ? [moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'), moment(query_end_time, 'YYYY/MM/DD HH:mm:ss')] : [],
+      createTime:
+        query_start_time && query_end_time
+          ? [
+              moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'),
+              moment(query_end_time, 'YYYY/MM/DD HH:mm:ss'),
+            ]
+          : [],
       documentTypeIds: documentTypeIds && documentTypeIds.split(','),
       ...rest,
     });
@@ -220,12 +311,18 @@ export default class App extends PureComponent {
     dispatch({
       type: 'hiddenDangerReport/fetchGridList',
     });
+
+    // 获取新添隐患字段
+    dispatch({
+      type: 'hiddenDangerReport/fetchHiddenContent',
+      payload: '',
+    });
   }
 
   /**
    * 修改表格列
    */
-  handleChangeColumns = (columns) => {
+  handleChangeColumns = columns => {
     // // 保证至少有一个字段显示
     // if (columns.length === 0) {
     //   return;
@@ -235,14 +332,25 @@ export default class App extends PureComponent {
         return this.defaultColumns.indexOf(a) - this.defaultColumns.indexOf(b);
       }),
     });
-  }
+  };
 
   /**
    * 查询
    */
   handleSearch = () => {
-    const { dispatch, form: { getFieldsValue }, hiddenDangerReport: { list: { pagination: { pageSize } } }, user: { currentUser: { id } } } = this.props;
-    const { createTime, documentTypeIds,report_source, ...rest } = getFieldsValue();
+    const {
+      dispatch,
+      form: { getFieldsValue },
+      hiddenDangerReport: {
+        list: {
+          pagination: { pageSize },
+        },
+      },
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+    const { createTime, documentTypeIds, report_source, ...rest } = getFieldsValue();
     const [query_start_time, query_end_time] = createTime || [];
     const payload = {
       ...rest,
@@ -250,8 +358,9 @@ export default class App extends PureComponent {
       pageSize,
       query_start_time: query_start_time && `${query_start_time.format('YYYY/MM/DD')} 00:00:00`,
       query_end_time: query_end_time && `${query_end_time.format('YYYY/MM/DD')} 23:59:59`,
-      documentTypeIds: documentTypeIds && documentTypeIds.length > 0 ? documentTypeIds.join(',') : undefined,
-      report_source:report_source,
+      documentTypeIds:
+        documentTypeIds && documentTypeIds.length > 0 ? documentTypeIds.join(',') : undefined,
+      report_source: report_source,
     };
     // 获取隐患列表
     dispatch({
@@ -260,13 +369,15 @@ export default class App extends PureComponent {
     });
     // 保存筛选条件
     sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
-  }
+  };
 
   /**
    * 重置
    */
   handleReset = () => {
-    const { form: { setFieldsValue } } = this.props;
+    const {
+      form: { setFieldsValue },
+    } = this.props;
     // const createTime = [moment().subtract(1, 'months'), moment()];
     // 重置控件
     setFieldsValue({
@@ -282,32 +393,39 @@ export default class App extends PureComponent {
       documentTypeIds: undefined,
     });
     this.handleSearch();
-  }
+  };
 
   /**
    * 导出
    */
   handleExport = () => {
-    const { dispatch, user: { currentUser: { id } } } = this.props;
+    const {
+      dispatch,
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
     // 从sessionStorage中获取存储的控件值
-    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
-      // query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
-      // query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
-    };
+    const payload =
+      JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) ||
+      {
+        // query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
+        // query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
+      };
     dispatch({
       type: 'hiddenDangerReport/exportData',
       payload,
     });
-  }
+  };
 
   /**
    * 切换图片
    */
-  handleSwitchImage = (currentImage) => {
+  handleSwitchImage = currentImage => {
     this.setState({
       currentImage,
     });
-  }
+  };
 
   /**
    * 切换上一张图片
@@ -316,7 +434,7 @@ export default class App extends PureComponent {
     this.setState(({ currentImage }) => ({
       currentImage: currentImage - 1,
     }));
-  }
+  };
 
   /**
    * 切换下一张图片
@@ -325,7 +443,7 @@ export default class App extends PureComponent {
     this.setState(({ currentImage }) => ({
       currentImage: currentImage + 1,
     }));
-  }
+  };
 
   /**
    * 关闭图片详情
@@ -334,19 +452,34 @@ export default class App extends PureComponent {
     this.setState({
       images: null,
     });
-  }
+  };
 
   /**
    * 加载更多
    */
   handleLoadMore = (num, size) => {
-    const { dispatch, form: { setFieldsValue }, user: { currentUser: { id } } } = this.props;
+    const {
+      dispatch,
+      form: { setFieldsValue },
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
     // 从sessionStorage中获取存储的控件值
-    const fieldsValue = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
-      // query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
-      // query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
-    };
-    const { pageNum, pageSize, documentTypeIds, query_start_time, query_end_time, ...rest } = fieldsValue;
+    const fieldsValue =
+      JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) ||
+      {
+        // query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
+        // query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
+      };
+    const {
+      pageNum,
+      pageSize,
+      documentTypeIds,
+      query_start_time,
+      query_end_time,
+      ...rest
+    } = fieldsValue;
     // 重置控件
     setFieldsValue({
       grid_id: undefined,
@@ -357,7 +490,13 @@ export default class App extends PureComponent {
       business_type: undefined,
       item_name: undefined,
       level: undefined,
-      createTime: query_start_time && query_end_time ? [moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'), moment(query_end_time, 'YYYY/MM/DD HH:mm:ss')] : [],
+      createTime:
+        query_start_time && query_end_time
+          ? [
+              moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'),
+              moment(query_end_time, 'YYYY/MM/DD HH:mm:ss'),
+            ]
+          : [],
       documentTypeIds: documentTypeIds && documentTypeIds.split(','),
       ...rest,
     });
@@ -372,12 +511,15 @@ export default class App extends PureComponent {
       },
     });
     // 保存筛选条件
-    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify({
-      ...fieldsValue,
-      pageNum: 1,
-      pageSize: size,
-    }));
-  }
+    sessionStorage.setItem(
+      `${sessionPrefix}${id}`,
+      JSON.stringify({
+        ...fieldsValue,
+        pageNum: 1,
+        pageSize: size,
+      })
+    );
+  };
 
   /**
    * 表格显示列
@@ -387,10 +529,17 @@ export default class App extends PureComponent {
     return (
       <Form className={styles.form}>
         <Form.Item label="表格所显示的字段">
-          <TagSelect style={{ marginLeft: 0 }} value={columns} onChange={this.handleChangeColumns} expandable /* hideCheckAll */>
-            {this.defaultColumns.map((column) => {
+          <TagSelect
+            style={{ marginLeft: 0 }}
+            value={columns}
+            onChange={this.handleChangeColumns}
+            expandable /* hideCheckAll */
+          >
+            {this.defaultColumns.map(column => {
               return (
-                <TagSelectOption value={column} key={column.title}>{column.title}</TagSelectOption>
+                <TagSelectOption value={column} key={column.title}>
+                  {column.title}
+                </TagSelectOption>
               );
             })}
           </TagSelect>
@@ -411,10 +560,9 @@ export default class App extends PureComponent {
         businessTypeList,
         levelList,
         documentTypeList,
+        hiddenContentList,
       },
-      form: {
-        getFieldDecorator,
-      },
+      form: { getFieldDecorator },
     } = this.props;
     return (
       <Form className={styles.form}>
@@ -454,19 +602,92 @@ export default class App extends PureComponent {
           {/* 创建时间 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.createTime}>
-              {getFieldDecorator('createTime', {
-              })(<RangePicker style={{ width: '100%' }} getCalendarContainer={getRootChild} allowClear />)}
+              {getFieldDecorator('createTime', {})(
+                <RangePicker
+                  style={{ width: '100%' }}
+                  getCalendarContainer={getRootChild}
+                  allowClear
+                />
+              )}
             </Form.Item>
           </Col>
           {/* 隐患来源 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.report_source}>
               {getFieldDecorator('report_source')(
-                <Select
+                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                  {sourceList.map(({ key, value }) => (
+                    <Option value={key} key={key}>
+                      {value}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </Form.Item>
+          </Col>
+          {/* 上报途径 */}
+          <Col xl={8} md={12} sm={24} xs={24}>
+            <Form.Item label={fieldLabels.reportingChannels}>
+              {getFieldDecorator('report_source')(
+                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                  {sourceList.map(({ key, value }) => (
+                    <Option value={key} key={key}>
+                      {value}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </Form.Item>
+          </Col>
+          {/* 检查类型 */}
+          <Col xl={8} md={12} sm={24} xs={24}>
+            <Form.Item label={fieldLabels.checkType}>
+              {getFieldDecorator('checkType')(
+                <TreeSelect
+                  treeData={hiddenContentList}
                   placeholder="请选择"
                   getPopupContainer={getRootChild}
                   allowClear
-                >
+                  dropdownStyle={{
+                    maxHeight: '50vh',
+                  }}
+                />
+              )}
+            </Form.Item>
+          </Col>
+          {/* 隐患类型 */}
+          <Col xl={8} md={12} sm={24} xs={24}>
+            <Form.Item label={fieldLabels.hiddenDangerType}>
+              {getFieldDecorator('report_source')(
+                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                  {sourceList.map(({ key, value }) => (
+                    <Option value={key} key={key}>
+                      {value}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </Form.Item>
+          </Col>
+          {/* 隐患部门 */}
+          <Col xl={8} md={12} sm={24} xs={24}>
+            <Form.Item label={fieldLabels.hiddenDangerDepartment}>
+              {getFieldDecorator('report_source')(
+                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                  {sourceList.map(({ key, value }) => (
+                    <Option value={key} key={key}>
+                      {value}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </Form.Item>
+          </Col>
+          {/* 隐患地点 */}
+          <Col xl={8} md={12} sm={24} xs={24}>
+            <Form.Item label={fieldLabels.hiddenDangerAddress}>
+              {getFieldDecorator('report_source')(
+                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
                   {sourceList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}
@@ -480,30 +701,8 @@ export default class App extends PureComponent {
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.status}>
               {getFieldDecorator('status')(
-                <Select
-                  placeholder="请选择"
-                  getPopupContainer={getRootChild}
-                  allowClear
-                >
+                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
                   {statusList.map(({ key, value }) => (
-                    <Option value={key} key={key}>
-                      {value}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </Form.Item>
-          </Col>
-          {/* 业务分类 */}
-          <Col xl={8} md={12} sm={24} xs={24}>
-            <Form.Item label={fieldLabels.business_type}>
-              {getFieldDecorator('business_type')(
-                <Select
-                  placeholder="请选择"
-                  getPopupContainer={getRootChild}
-                  allowClear
-                >
-                  {businessTypeList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}
                     </Option>
@@ -522,12 +721,50 @@ export default class App extends PureComponent {
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.level}>
               {getFieldDecorator('level')(
-                <Select
-                  placeholder="请选择"
-                  getPopupContainer={getRootChild}
-                  allowClear
-                >
+                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
                   {levelList.map(({ key, value }) => (
+                    <Option value={key} key={key}>
+                      {value}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </Form.Item>
+          </Col>
+          {/* 业务分类 */}
+          <Col xl={8} md={12} sm={24} xs={24}>
+            <Form.Item label={fieldLabels.business_type}>
+              {getFieldDecorator('business_type')(
+                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                  {businessTypeList.map(({ key, value }) => (
+                    <Option value={key} key={key}>
+                      {value}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </Form.Item>
+          </Col>
+          {/* 整改部门 */}
+          <Col xl={8} md={12} sm={24} xs={24}>
+            <Form.Item label={fieldLabels.rectificationDepartment}>
+              {getFieldDecorator('report_source')(
+                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                  {sourceList.map(({ key, value }) => (
+                    <Option value={key} key={key}>
+                      {value}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </Form.Item>
+          </Col>
+          {/* 原因分析 */}
+          <Col xl={8} md={12} sm={24} xs={24}>
+            <Form.Item label={fieldLabels.causeAnalysis}>
+              {getFieldDecorator('report_source')(
+                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                  {sourceList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}
                     </Option>
@@ -540,12 +777,7 @@ export default class App extends PureComponent {
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.documentTypeIds}>
               {getFieldDecorator('documentTypeIds')(
-                <Select
-                  mode="multiple"
-                  style={{ width: '100%' }}
-                  placeholder="请选择"
-                  allowClear
-                >
+                <Select mode="multiple" style={{ width: '100%' }} placeholder="请选择" allowClear>
                   {documentTypeList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}
@@ -558,9 +790,15 @@ export default class App extends PureComponent {
           {/* 按钮 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item>
-              <Button type="primary" onClick={this.handleSearch} style={{ marginRight: 16 }}>查询</Button>
-              <Button onClick={this.handleReset} style={{ marginRight: 16 }}>重置</Button>
-              <Button type="primary" onClick={this.handleExport}>导出</Button>
+              <Button type="primary" onClick={this.handleSearch} style={{ marginRight: 16 }}>
+                查询
+              </Button>
+              <Button onClick={this.handleReset} style={{ marginRight: 16 }}>
+                重置
+              </Button>
+              <Button type="primary" onClick={this.handleExport}>
+                导出
+              </Button>
             </Form.Item>
           </Col>
         </Row>
@@ -576,11 +814,7 @@ export default class App extends PureComponent {
       hiddenDangerReport: {
         list: {
           list,
-          pagination: {
-            pageSize = 10,
-            pageNum = 1,
-            total = 0,
-          },
+          pagination: { pageSize = 10, pageNum = 1, total = 0 },
         },
       },
     } = this.props;
@@ -589,7 +823,11 @@ export default class App extends PureComponent {
       <Table
         className={styles.table}
         dataSource={list}
-        columns={columns.length > 0 ? columns.concat(fixedOperationColumn) : columns.concat(operationColumn)}
+        columns={
+          columns.length > 0
+            ? columns.concat(fixedOperationColumn)
+            : columns.concat(operationColumn)
+        }
         rowKey="id"
         scroll={{
           x: true,
@@ -603,12 +841,16 @@ export default class App extends PureComponent {
           showQuickJumper: true,
           showSizeChanger: true,
           onChange: this.handleLoadMore,
-          onShowSizeChange: (num, size) => { this.handleLoadMore(1, size); },
+          onShowSizeChange: (num, size) => {
+            this.handleLoadMore(1, size);
+          },
         }}
       />
     ) : (
-        <div style={{ textAlign: 'center' }}><span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span></div>
-      );
+      <div style={{ textAlign: 'center' }}>
+        <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>
+      </div>
+    );
   }
 
   /**
@@ -640,13 +882,25 @@ export default class App extends PureComponent {
    * 渲染函数
    */
   render() {
-    const { hiddenDangerReport: { list: { pagination: { total } } }, loading } = this.props;
+    const {
+      hiddenDangerReport: {
+        list: {
+          pagination: { total },
+        },
+      },
+      loading,
+    } = this.props;
 
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={<div>隐患总数：{total}</div>}
+        content={
+          <div>
+            隐患总数：
+            {total}
+          </div>
+        }
       >
         <Spin spinning={!!loading}>
           <Card bordered={false}>

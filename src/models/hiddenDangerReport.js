@@ -12,7 +12,9 @@ import {
   exportData,
   // 获取文书列表
   getDocumentList,
-} from '@/services/hiddenDangerReport.js'
+  // 新添隐患字典数据
+  getHiddenContent,
+} from '@/services/hiddenDangerReport.js';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
 import router from 'umi/router';
@@ -20,7 +22,7 @@ import urls from '@/utils/urls';
 /* 格式化网格树 */
 const formatGrid = function(tree) {
   const list = [];
-  for(let { grid_id, grid_name, children } of tree) {
+  for (let { grid_id, grid_name, children } of tree) {
     if (children && children.length > 0) {
       children = formatGrid(children);
     }
@@ -39,20 +41,16 @@ const formatTimeLine = function(timeLine) {
     let type = +item.type;
     if (type === 1) {
       type = '隐患创建';
-    }
-    else if (type === 2) {
+    } else if (type === 2) {
       // 如果index大于1，意味着必然为重新整改
       if (index > 1) {
         type = '重新整改';
-      }
-      else {
+      } else {
         type = '隐患整改';
       }
-    }
-    else if (type === 3) {
+    } else if (type === 3) {
       type = '隐患复查';
-    }
-    else if (type === 4) {
+    } else if (type === 4) {
       type = '隐患关闭';
     }
     return {
@@ -63,15 +61,15 @@ const formatTimeLine = function(timeLine) {
   });
   const lastIndex = timeLine.length - 1;
   const { type } = timeLine[lastIndex];
-  switch(+type) {
+  switch (+type) {
     case 1:
-      list.push({ type: '隐患整改', id: lastIndex+1 }, { type: '隐患复查', id: lastIndex+2 });
+      list.push({ type: '隐患整改', id: lastIndex + 1 }, { type: '隐患复查', id: lastIndex + 2 });
       break;
     case 2:
-      list.push({ type: '隐患复查', id: lastIndex+1 });
+      list.push({ type: '隐患复查', id: lastIndex + 1 });
       break;
     case 3:
-      list.push({ type: '重新整改', id: lastIndex+1 }, { type: '隐患复查', id: lastIndex+2 });
+      list.push({ type: '重新整改', id: lastIndex + 1 }, { type: '隐患复查', id: lastIndex + 2 });
       break;
     default:
       break;
@@ -87,7 +85,9 @@ const {
 /**
  * 跳转到500页面
  */
-const error = () => { router.push(exceptionUrl); };
+const error = () => {
+  router.push(exceptionUrl);
+};
 
 export default {
   namespace: 'hiddenDangerReport',
@@ -196,6 +196,8 @@ export default {
         value: '复查意见书',
       },
     ],
+    /* 新添隐患字段列表 */
+    hiddenContentList: [],
   },
 
   effects: {
@@ -215,8 +217,7 @@ export default {
         if (callback) {
           callback(response.data);
         }
-      }
-      else {
+      } else {
         error();
       }
     },
@@ -233,8 +234,7 @@ export default {
         if (callback) {
           callback(response.data);
         }
-      }
-      else {
+      } else {
         error();
       }
     },
@@ -260,8 +260,7 @@ export default {
         if (callback) {
           callback(value);
         }
-      }
-      else {
+      } else {
         error();
       }
     },
@@ -282,8 +281,7 @@ export default {
         if (callback) {
           callback(list);
         }
-      }
-      else {
+      } else {
         error();
       }
     },
@@ -310,9 +308,19 @@ export default {
         if (callback) {
           callback(response.data.list);
         }
-      }
-      else {
+      } else {
         error();
+      }
+    },
+
+    // 获取新添隐患字段
+    *fetchHiddenContent({ payload }, { call, put }) {
+      const response = yield call(getHiddenContent, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'queryHiddenContent',
+          payload: response.data.list,
+        });
       }
     },
   },
@@ -321,7 +329,12 @@ export default {
     /**
      * 保存字段
      **/
-    save(state, { payload: { key, value } }) {
+    save(
+      state,
+      {
+        payload: { key, value },
+      }
+    ) {
       return {
         ...state,
         [key]: value,
@@ -330,7 +343,12 @@ export default {
     /**
      * 追加数组
      */
-    append(state, { payload: { list, pagination } }) {
+    append(
+      state,
+      {
+        payload: { list, pagination },
+      }
+    ) {
       return {
         ...state,
         list: {
@@ -339,5 +357,13 @@ export default {
         },
       };
     },
+
+    // 获取隐患新添字段
+    queryHiddenContent(state, { payload: hiddenContentList }) {
+      return {
+        ...state,
+        hiddenContentList,
+      };
+    },
   },
-}
+};
