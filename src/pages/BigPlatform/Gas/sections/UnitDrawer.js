@@ -128,14 +128,16 @@ export default class UnitDrawer extends PureComponent {
             normal,
             count,
           }) => (
-              <DrawerCard
-                key={company_id}
-                name={company_name || NO_DATA}
-                location={address || NO_DATA}
-                person={principal_name || NO_DATA}
-                phone={principal_phone || NO_DATA}
-                style={{ cursor: 'auto' }}
-                clickName={() => handleClickUnitStatistics({
+            <DrawerCard
+              key={company_id}
+              name={company_name || NO_DATA}
+              location={address || NO_DATA}
+              person={principal_name || NO_DATA}
+              phone={principal_phone || NO_DATA}
+              style={{ cursor: 'auto' }}
+              clickName={() =>
+                count &&
+                handleClickUnitStatistics({
                   companyId: company_id,
                   companyName: company_name,
                   address,
@@ -145,19 +147,22 @@ export default class UnitDrawer extends PureComponent {
                   unnormal,
                   faultNum,
                   outContact,
-                })}
-                infoStyle={{
-                  width: 70,
-                  textAlign: 'center',
-                  color: '#FFF',
-                  bottom: '50%',
-                  right: 25,
-                  transform: 'translateY(50%)',
-                }}
-                info={
-                  <Fragment>
-                    <div
-                      onClick={() => handleClickUnitStatistics({
+                })
+              }
+              infoStyle={{
+                width: 70,
+                textAlign: 'center',
+                color: '#FFF',
+                bottom: '50%',
+                right: 25,
+                transform: 'translateY(50%)',
+              }}
+              info={
+                <Fragment>
+                  <div
+                    onClick={() =>
+                      count &&
+                      handleClickUnitStatistics({
                         companyId: company_id,
                         companyName: company_name,
                         address,
@@ -167,15 +172,17 @@ export default class UnitDrawer extends PureComponent {
                         unnormal,
                         faultNum,
                         outContact,
-                      })}
-                      className={styles.equipment}
-                    >
-                      {count || '--'}
-                    </div>
-                    设备数
+                      })
+                    }
+                    className={styles.equipment}
+                  >
+                    {count || '--'}
+                  </div>
+                  设备数
                 </Fragment>
-                }
-                more={
+              }
+              more={
+                count > 0 ? (
                   <p className={styles.more}>
                     {/* {count
                       ? [unnormal, faultNum, outContact, normal].map((n, i) => (
@@ -202,9 +209,10 @@ export default class UnitDrawer extends PureComponent {
                     <DotItem title="失联" color={`rgb(159,159,159)`} quantity={outContact} />
                     <DotItem title="正常" color={`rgb(55,164,96)`} quantity={normal} />
                   </p>
-                }
-              />
-            )
+                ) : null
+              }
+            />
+          )
         )}
       </SearchBar>
     );

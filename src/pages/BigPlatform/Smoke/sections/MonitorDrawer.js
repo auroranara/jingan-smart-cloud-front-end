@@ -122,7 +122,7 @@ export default class MonitorDrawer extends PureComponent {
                         {(+status !== 0 || !status) && (
                           <div
                             className={styles.status}
-                            style={{ color, borderColor: color, ursor: 'pointer' }}
+                            style={{ color, borderColor: color, cursor: 'pointer' }}
                             onClick={() => {
                               +status > 0
                                 ? handleAlarmClick(iotId, companyId, companyName, undefined)
