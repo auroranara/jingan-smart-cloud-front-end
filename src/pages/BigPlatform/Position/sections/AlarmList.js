@@ -181,8 +181,8 @@ export default class AlarmList extends PureComponent {
       modalVisible,
     } = this.state;
 
-    const list = monthCount.map(({ warningMonth, warningNum }) => ({ name: warningMonth, value: warningNum }));
-    const { waitExecuteNum, executeNum } = statusCount;
+    const list = Array.isArray(monthCount) ? monthCount.map(({ warningMonth, warningNum }) => ({ name: warningMonth, value: warningNum })) : [];
+    const { waitExecuteNum=0, executeNum=0 } = statusCount || {};
     let cards = <EmptyMsg />;
     if (alarms.length)
       cards = alarms.map((item, i) => (
