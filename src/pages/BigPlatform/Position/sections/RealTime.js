@@ -108,9 +108,11 @@ export default class RealTime extends PureComponent {
   }
 
   componentWillUnmount() {
+    const { personPosition: { alarms } } = this.props;
     const ws = this.ws;
     ws && ws.close();
     clearInterval(this.treeTimer);
+    alarms.forEach(({ id }) => notification.close(id)); // 当从实时监控或目标跟踪标签页切换到历史轨迹或报警查看标签页时，关闭所有通知
   }
 
   ws = null;
