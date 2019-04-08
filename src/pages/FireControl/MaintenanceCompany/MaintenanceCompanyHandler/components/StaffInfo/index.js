@@ -9,7 +9,7 @@ export default class App extends PureComponent {
   /**
    * 去除数据左右空格
    */
-  handleTrim = e => e.target.value.trim()
+  handleTrim = e => e.target.value.trim();
 
   render() {
     const {
@@ -28,9 +28,7 @@ export default class App extends PureComponent {
           } = {},
         },
       },
-      form: {
-        getFieldDecorator,
-      },
+      form: { getFieldDecorator },
       styles,
       fieldLabels,
     } = this.props;
@@ -45,7 +43,7 @@ export default class App extends PureComponent {
                 {getFieldDecorator('legalName', {
                   initialValue: legalName,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入法定代表人姓名' }],
+                  rules: [{ required: false, message: '请输入法定代表人姓名' }],
                 })(<Input placeholder="请输入姓名" />)}
               </Form.Item>
             </Col>
@@ -55,7 +53,7 @@ export default class App extends PureComponent {
                   initialValue: legalPhone,
                   getValueFromEvent: this.handleTrim,
                   rules: [
-                    { required: true, message: '请输入法定代表人联系方式' },
+                    { required: false, message: '请输入法定代表人联系方式' },
                     { pattern: phoneReg, message: '法定代表人联系方式格式不正确' },
                   ],
                 })(<Input placeholder="请输入联系方式" />)}
@@ -78,7 +76,7 @@ export default class App extends PureComponent {
                 {getFieldDecorator('safetyName', {
                   initialValue: safetyName,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入主要负责人姓名' }],
+                  rules: [{ required: false, message: '请输入主要负责人姓名' }],
                 })(<Input placeholder="请输入姓名" />)}
               </Form.Item>
             </Col>
@@ -88,7 +86,7 @@ export default class App extends PureComponent {
                   initialValue: safetyPhone,
                   getValueFromEvent: this.handleTrim,
                   rules: [
-                    { required: true, message: '请输入主要负责人联系方式' },
+                    { required: false, message: '请输入主要负责人联系方式' },
                     { pattern: phoneReg, message: '主要负责人联系方式格式不正确' },
                   ],
                 })(<Input placeholder="请输入联系方式" />)}

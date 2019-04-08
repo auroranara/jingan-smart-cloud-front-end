@@ -55,7 +55,7 @@ export default class BusinessDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, data: { list = [], graphList = [] } = {} } = this.props;
+    const { visible, data: { list = [], graphList = [] } = {}, handleAlarmClick } = this.props;
     const { graph, selected, searchValue, otherGraph } = this.state;
 
     const faultList = [
@@ -186,7 +186,7 @@ export default class BusinessDrawer extends PureComponent {
             gasFire,
             fault = 0,
           }) => (
-            <div style={{ marginBottom: '10px' }}>
+            <div style={{ marginBottom: '10px' }} key={company_id}>
               {gasFire > 0 && (
                 <DrawerCard
                   key={company_id}
@@ -198,7 +198,15 @@ export default class BusinessDrawer extends PureComponent {
                   more={
                     <p className={styles.more}>
                       {gasFire > 0 && (
-                        <DotItem title="未处理报警" color={`rgb(248,51,41)`} quantity={gasFire} />
+                        <DotItem
+                          title="未处理报警"
+                          color={`rgb(248,51,41)`}
+                          quantity={gasFire}
+                          onClick={
+                            gasFire > 0 &&
+                            (() => handleAlarmClick(undefined, company_id, company_name, gasFire))
+                          }
+                        />
                       )}
                       {fault > 0 && (
                         <DotItem title="未处理故障" color={`rgb(255,180,0)`} quantity={fault} />

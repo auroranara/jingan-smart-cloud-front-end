@@ -66,7 +66,9 @@ function OrderCard(props) {
   data.assign = `${finishByName} ${finishByPhone}`;
   data.number =
     component_region || component_region === 0
-      ? `${component_region}回路${component_no}号 ${label}`
+      ? label
+        ? `${component_region}回路${component_no}号 ${label}`
+        : `${component_region}回路${component_no}号`
       : label;
   data.unit_name = maintenanceCompanys;
 

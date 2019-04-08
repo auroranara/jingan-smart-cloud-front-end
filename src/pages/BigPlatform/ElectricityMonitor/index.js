@@ -286,6 +286,12 @@ export default class ElectricityMonitor extends PureComponent {
       return;
     }
 
+    // 可能同时有多个警报，会来回点，会在未清定时器的情况下调用好几次这个函数，所以把之前的先清掉
+    clearInterval(this.deviceStatusCountTimer);
+    clearInterval(this.deviceRealTimeDataTimer);
+    clearInterval(this.deviceHistoryDataTimer);
+    clearInterval(this.deviceConfigTimer);
+
     const {
       dispatch,
       electricityMonitor: {

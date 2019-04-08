@@ -18,6 +18,7 @@ const TYPE_OPTIONS = TYPES.map((t, i) => <Option key={i} value={i + 1}>{t}</Opti
 const STATUS = { 0:'待处理', 2:'已处理' };
 const STATUS_OPTIONS = Object.entries(STATUS).map(([n, s]) => <Option key={n} value={n}>{s}</Option>);
 const GRAPH_STYLE = { position: 'absolute', top: 15, right: 15 };
+const CHART_STYLE = { height: 320 };
 
 export default class AlarmList extends PureComponent {
   state = {
@@ -65,6 +66,7 @@ export default class AlarmList extends PureComponent {
       payload.rootAreaId = selectedArea;
     dispatch({
       type: 'personPosition/fetchInitAlarms',
+      alarmType: 1,
       payload,
       callback: list => {
         this.setState({ selectedCards: Array(list.length).fill(false) });
@@ -127,7 +129,7 @@ export default class AlarmList extends PureComponent {
   };
 
   handleShowMultiSubmit = e => {
-    const { personPosition: { alarms } } = this.props;
+    const { personPosition: { alarms1: alarms } } = this.props;
     const { selectedCards } = this.state;
     // 将选中的并且是未处理的报警筛选处理
     const ids = alarms.filter((a, i) => selectedCards[i] && !+a.executeStatus).map(({ id }) => id);
@@ -143,7 +145,7 @@ export default class AlarmList extends PureComponent {
     const { handleDesc } = this.state;
     dispatch({
       type: 'personPosition/handleAlarm',
-      payload: { ids: this.submitId, executeDesc: handleDesc, executeStatus: status },
+      payload: { ids: this.submitId, executeStatus: status, executeDesc: status === 1 ? '忽略' : handleDesc },
       callback: (code, msg) => {
         if (code === 200) {
           this.handleHideSubmit();
@@ -162,7 +164,7 @@ export default class AlarmList extends PureComponent {
       labelIndex,
       areaInfo,
       position: { sectionTree },
-      personPosition: { alarms, statusCount, monthCount },
+      personPosition: { alarms1: alarms, statusCount, monthCount },
       handleLabelClick,
     } = this.props;
     const {
@@ -180,8 +182,8 @@ export default class AlarmList extends PureComponent {
       modalVisible,
     } = this.state;
 
-    const list = monthCount.map(({ warningMonth, warningNum }) => ({ name: warningMonth, value: warningNum }));
-    const { waitExecuteNum, executeNum } = statusCount;
+    const list = Array.isArray(monthCount) ? monthCount.map(({ warningMonth, warningNum }) => ({ name: warningMonth, value: warningNum })) : [];
+    const { waitExecuteNum=0, executeNum=0 } = statusCount || {};
     let cards = <EmptyMsg />;
     if (alarms.length)
       cards = alarms.map((item, i) => (
@@ -222,10 +224,13 @@ export default class AlarmList extends PureComponent {
               <h3 className={styles.chartTitle}>
                 {rect}
                 报警趋势图
+                <span className={styles.twelve}>(近12个月)</span>
                 <GraphSwitch handleSwitch={this.handleSwitch} style={GRAPH_STYLE} />
               </h3>
               <div className={styles.graph}>
-                {graph ? <ChartBar data={list} /> : <ChartLine data={list} />}
+                <div className={styles.graphContainer}>
+                  {graph ? <ChartBar data={list} chartStyle={CHART_STYLE} /> : <ChartLine data={list} chartStyle={CHART_STYLE} />}
+                </div>
               </div>
             </div>
           </div>

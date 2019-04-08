@@ -19,9 +19,9 @@ export default class HistoricalFire extends PureComponent {
       data: {
         // 本月历史火警
         fireByMonth = 0,
-        // 本季度历史火警
-        fireByYear = 0,
         // 本年历史火警
+        fireByYear = 0,
+        // 本季度历史火警
         fireByQuarter = 0,
       },
       // 点击事件
@@ -40,13 +40,13 @@ export default class HistoricalFire extends PureComponent {
           {
             border: '2px solid #04fdff',
             name: '本季',
-            value: fireByYear,
+            value: fireByQuarter,
             type: 2,
           },
           {
             border: '2px solid #04fdff',
             name: '本年',
-            value: fireByQuarter,
+            value: fireByYear,
             type: 3,
           },
         ].map(({ border, name, value, type }) => (
