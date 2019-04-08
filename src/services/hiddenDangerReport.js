@@ -47,8 +47,15 @@ export async function getHiddenContent(params) {
 }
 
 /**
- * 获取隐患字典
+ * 获取隐患地点---建筑物及楼层
  */
 export async function getHiddenPosition(params) {
   return request(`/acloud_new/v2/mobile/getPosition.json?${stringify(params)}`);
+}
+
+/**
+ * 获取隐患部门、整改部门列表
+ */
+export async function getHiddendeptContent(params) {
+  return request(`/acloud_new/v2/mobile/getdeptContent.json?${stringify(params)}`);
 }

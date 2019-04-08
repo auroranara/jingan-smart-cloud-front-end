@@ -27,6 +27,7 @@ import styles from './HiddenDangerReportList.less';
 const { Option: TagSelectOption } = TagSelect;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
+const TreeNode = TreeSelect.TreeNode;
 const {
   home: homeUrl,
   hiddenDangerReport: { detail: detailUrl },
@@ -100,6 +101,34 @@ const getRootChild = () => document.querySelector('#root>div');
 /* session前缀 */
 const sessionPrefix = 'hidden_danger_report_list_';
 
+const generateTree = data => {
+  return data.map(item => {
+    if (item.children && item.children.length) {
+      return (
+        <TreeNode title={item.name} key={item.addressId} value={item.addressId}>
+          {generateTree(item.children)}
+        </TreeNode>
+      );
+    }
+    return <TreeNode title={item.name} key={item.addressId} value={item.addressId} />;
+  });
+};
+
+const generateDeptTree = data => {
+  return data.map(item => {
+    if (item.children && item.children.length) {
+      return (
+        <TreeNode title={item.departmentName} key={item.departmentId} value={item.departmentId}>
+          {generateDeptTree(item.children)}
+        </TreeNode>
+      );
+    }
+    return (
+      <TreeNode title={item.departmentName} key={item.departmentId} value={item.departmentId} />
+    );
+  });
+};
+
 /**
  * 隐患排查报表
  */
@@ -147,11 +176,11 @@ export default class App extends PureComponent {
       },
       {
         title: '上报途径',
-        dataIndex: '',
+        dataIndex: 'source_type_name',
       },
       {
         title: '检查类型',
-        dataIndex: '',
+        dataIndex: 'inspectionType',
       },
       {
         title: '点位名称',
@@ -171,15 +200,15 @@ export default class App extends PureComponent {
       },
       {
         title: '隐患类型',
-        dataIndex: '',
+        dataIndex: 'hiddenType',
       },
       {
         title: '隐患部门',
-        dataIndex: '',
+        dataIndex: 'hiddenDept',
       },
       {
         title: '隐患地点',
-        dataIndex: '',
+        dataIndex: 'location',
       },
       {
         title: '隐患状态',
@@ -221,11 +250,11 @@ export default class App extends PureComponent {
       },
       {
         title: '整改部门',
-        dataIndex: '',
+        dataIndex: 'rectify_dept',
       },
       {
         title: '原因分析',
-        dataIndex: '',
+        dataIndex: 'analysis',
       },
       {
         title: '整改措施',
@@ -270,7 +299,7 @@ export default class App extends PureComponent {
       dispatch,
       form: { setFieldsValue },
       user: {
-        currentUser: { id },
+        currentUser: { id, companyId },
       },
     } = this.props;
     // 从sessionStorage中获取存储的控件值
@@ -312,10 +341,34 @@ export default class App extends PureComponent {
       type: 'hiddenDangerReport/fetchGridList',
     });
 
-    // 获取新添隐患字段
+    // 获取检查类型
     dispatch({
       type: 'hiddenDangerReport/fetchHiddenContent',
-      payload: '',
+      payload: { type: 'inspectionType' },
+    });
+
+    // 获取隐患类型
+    dispatch({
+      type: 'hiddenDangerReport/fetchHiddenContent',
+      payload: { type: 'hiddenType' },
+    });
+
+    // 获取原因分析
+    dispatch({
+      type: 'hiddenDangerReport/fetchHiddenContent',
+      payload: { type: 'analysis' },
+    });
+
+    // 获取隐患地点
+    dispatch({
+      type: 'hiddenDangerReport/fetchHiddePosition',
+      payload: { companyId },
+    });
+
+    // 获取整改和隐患部门
+    dispatch({
+      type: 'hiddenDangerReport/fetchHiddedeptContent',
+      payload: { companyId },
     });
   }
 
@@ -500,7 +553,6 @@ export default class App extends PureComponent {
       documentTypeIds: documentTypeIds && documentTypeIds.split(','),
       ...rest,
     });
-    // console.log(pageNum);
     // 获取隐患列表
     dispatch({
       type: 'hiddenDangerReport/fetchList',
@@ -560,7 +612,12 @@ export default class App extends PureComponent {
         businessTypeList,
         levelList,
         documentTypeList,
-        hiddenContentList,
+        inspectionType = [],
+        hiddenType = [],
+        analysis = [],
+        reportingChannelsList,
+        hiddenPositionList,
+        hiddendeptContentList,
       },
       form: { getFieldDecorator },
     } = this.props;
@@ -628,9 +685,9 @@ export default class App extends PureComponent {
           {/* 上报途径 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.reportingChannels}>
-              {getFieldDecorator('report_source')(
+              {getFieldDecorator('source_type')(
                 <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
-                  {sourceList.map(({ key, value }) => (
+                  {reportingChannelsList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}
                     </Option>
@@ -642,9 +699,9 @@ export default class App extends PureComponent {
           {/* 检查类型 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.checkType}>
-              {getFieldDecorator('checkType')(
+              {getFieldDecorator('inspectionType')(
                 <TreeSelect
-                  treeData={hiddenContentList}
+                  treeData={inspectionType}
                   placeholder="请选择"
                   getPopupContainer={getRootChild}
                   allowClear
@@ -658,42 +715,49 @@ export default class App extends PureComponent {
           {/* 隐患类型 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.hiddenDangerType}>
-              {getFieldDecorator('report_source')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
-                  {sourceList.map(({ key, value }) => (
-                    <Option value={key} key={key}>
-                      {value}
-                    </Option>
-                  ))}
-                </Select>
+              {getFieldDecorator('hiddenType')(
+                <TreeSelect
+                  treeData={hiddenType}
+                  placeholder="请选择"
+                  getPopupContainer={getRootChild}
+                  allowClear
+                  dropdownStyle={{
+                    maxHeight: '50vh',
+                  }}
+                />
               )}
             </Form.Item>
           </Col>
           {/* 隐患部门 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.hiddenDangerDepartment}>
-              {getFieldDecorator('report_source')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
-                  {sourceList.map(({ key, value }) => (
-                    <Option value={key} key={key}>
-                      {value}
-                    </Option>
-                  ))}
-                </Select>
+              {getFieldDecorator('hiddenDept')(
+                <TreeSelect
+                  placeholder="请选择"
+                  getPopupContainer={getRootChild}
+                  allowClear
+                  dropdownStyle={{
+                    maxHeight: '50vh',
+                  }}
+                >
+                  {generateDeptTree(hiddendeptContentList)}
+                </TreeSelect>
               )}
             </Form.Item>
           </Col>
           {/* 隐患地点 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.hiddenDangerAddress}>
-              {getFieldDecorator('report_source')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
-                  {sourceList.map(({ key, value }) => (
-                    <Option value={key} key={key}>
-                      {value}
-                    </Option>
-                  ))}
-                </Select>
+              {getFieldDecorator('location')(
+                <TreeSelect
+                  placeholder="请选择"
+                  allowClear
+                  dropdownStyle={{
+                    maxHeight: '50vh',
+                  }}
+                >
+                  {generateTree(hiddenPositionList)}
+                </TreeSelect>
               )}
             </Form.Item>
           </Col>
@@ -748,28 +812,33 @@ export default class App extends PureComponent {
           {/* 整改部门 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.rectificationDepartment}>
-              {getFieldDecorator('report_source')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
-                  {sourceList.map(({ key, value }) => (
-                    <Option value={key} key={key}>
-                      {value}
-                    </Option>
-                  ))}
-                </Select>
+              {getFieldDecorator('rectify_dept')(
+                <TreeSelect
+                  placeholder="请选择"
+                  getPopupContainer={getRootChild}
+                  allowClear
+                  dropdownStyle={{
+                    maxHeight: '50vh',
+                  }}
+                >
+                  {generateDeptTree(hiddendeptContentList)}
+                </TreeSelect>
               )}
             </Form.Item>
           </Col>
           {/* 原因分析 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.causeAnalysis}>
-              {getFieldDecorator('report_source')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
-                  {sourceList.map(({ key, value }) => (
-                    <Option value={key} key={key}>
-                      {value}
-                    </Option>
-                  ))}
-                </Select>
+              {getFieldDecorator('analysis')(
+                <TreeSelect
+                  treeData={analysis}
+                  placeholder="请选择"
+                  getPopupContainer={getRootChild}
+                  allowClear
+                  dropdownStyle={{
+                    maxHeight: '50vh',
+                  }}
+                />
               )}
             </Form.Item>
           </Col>

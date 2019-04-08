@@ -14,6 +14,10 @@ import {
   getDocumentList,
   // 新添隐患字典数据
   getHiddenContent,
+  // 获取隐患地点---建筑物及楼层
+  getHiddenPosition,
+  // 获取隐患部门.整改部门列表
+  getHiddendeptContent,
 } from '@/services/hiddenDangerReport.js';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
@@ -196,8 +200,27 @@ export default {
         value: '复查意见书',
       },
     ],
+    /* 上报途径列表 */
+    reportingChannelsList: [
+      {
+        key: '2',
+        value: '随手拍',
+      },
+      {
+        key: '3',
+        value: '风险点上报',
+      },
+      {
+        key: '4',
+        value: '监督点上报',
+      },
+    ],
     /* 新添隐患字段列表 */
     hiddenContentList: [],
+    /* 隐患地点列表 */
+    hiddenPositionList: [],
+    /* 隐患部门、整改部门列表 */
+    hiddendeptContentList: [],
   },
 
   effects: {
@@ -316,9 +339,34 @@ export default {
     // 获取新添隐患字段
     *fetchHiddenContent({ payload }, { call, put }) {
       const response = yield call(getHiddenContent, payload);
+      const { type } = payload;
+      const obj = {};
       if (response && response.code === 200) {
+        obj[type] = response.data.list;
         yield put({
           type: 'queryHiddenContent',
+          payload: obj,
+        });
+      }
+    },
+
+    // 获取隐患地点---建筑物及楼层
+    *fetchHiddePosition({ payload }, { call, put }) {
+      const response = yield call(getHiddenPosition, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'queryHiddenPosition',
+          payload: response.data.list,
+        });
+      }
+    },
+
+    // 获取隐患部门、整改部门列表
+    *fetchHiddedeptContent({ payload }, { call, put }) {
+      const response = yield call(getHiddendeptContent, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'queryHiddendeptContent',
           payload: response.data.list,
         });
       }
@@ -362,7 +410,23 @@ export default {
     queryHiddenContent(state, { payload: hiddenContentList }) {
       return {
         ...state,
-        hiddenContentList,
+        ...hiddenContentList,
+      };
+    },
+
+    // 获取隐患地点---建筑物及楼层
+    queryHiddenPosition(state, { payload: hiddenPositionList }) {
+      return {
+        ...state,
+        hiddenPositionList,
+      };
+    },
+
+    // 获取隐患部门、整改部门列表
+    queryHiddendeptContent(state, { payload: hiddendeptContentList }) {
+      return {
+        ...state,
+        hiddendeptContentList,
       };
     },
   },
