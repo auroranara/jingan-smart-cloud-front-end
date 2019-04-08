@@ -56,12 +56,14 @@ export default class CompanyInfo extends PureComponent {
             <div className={styles.infoWrapper} style={{ marginTop: '8px' }}>
               <div className={styles.companyName}>{companyName}</div>
               <DescriptionList col={1}>
-                <Description term="主要负责人">
-                  <div className={styles.manWrapper} style={{ width: '145px' }}>
-                    {PrincipalName}
-                    <span className={styles.phone}>{PrincipalPhone}</span>
-                  </div>
-                </Description>
+                {PrincipalName && (
+                  <Description term="主要负责人">
+                    <div className={styles.manWrapper} style={{ width: '145px' }}>
+                      {PrincipalName}
+                      <span className={styles.phone}>{PrincipalPhone}</span>
+                    </div>
+                  </Description>
+                )}
               </DescriptionList>
             </div>
           </div>
