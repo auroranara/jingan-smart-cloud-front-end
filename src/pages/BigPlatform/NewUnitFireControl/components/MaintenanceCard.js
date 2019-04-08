@@ -151,7 +151,7 @@ export default function MaintenanceCard(props) {
         <div
           style={{
             background: `url(${flowImg}) no-repeat center center`,
-            backgroundSize: '100% auto',
+            backgroundSize: '99% auto',
           }}
           className={styles.flow}
         />
