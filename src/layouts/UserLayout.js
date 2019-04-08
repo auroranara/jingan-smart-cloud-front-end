@@ -10,7 +10,6 @@ import DocumentTitle from 'react-document-title';
 const links = [];
 // console.log('PROJECT_CONFIG', global.PROJECT_CONFIG);
 const { serviceSupport, servicePhone, projectName, logo } = global.PROJECT_CONFIG;
-
 const BrowserType = () => {
   const userAgent = window.navigator.userAgent; //取得浏览器的userAgent字符串
   const isOpera = userAgent.indexOf('Opera') > -1; //判断是否Opera浏览器

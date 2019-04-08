@@ -7,6 +7,16 @@ const path = require('path');
 const initRouters = require('./router.config');
 const webpackplugin = require('./plugin.config');
 
+let version = '';
+process.argv.forEach(p => {
+  if (p.indexOf('version=') > -1) {
+    version = p.split('=')[1];
+    console.log('version', version);
+  }
+});
+
+console.log(' process.env.PROJECT_ENV ', process.env.PROJECT_ENV);
+
 const hosts = {
   lm: '192.168.10.2', // 吕旻
   sj: '192.168.10.3', // 沈杰
@@ -128,6 +138,7 @@ export default {
   },
   define: {
     'process.env.PROJECT_ENV': process.env.PROJECT_ENV || 'default',
+    'process.env.VERSION': version,
   },
   manifest: {
     name: 'jing-an-smart-cloud',

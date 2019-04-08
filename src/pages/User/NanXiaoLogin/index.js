@@ -1,5 +1,18 @@
 import React, { PureComponent } from 'react';
-import { Alert, Input, Carousel, Icon, Form, Button, Checkbox, List, Card, Tabs, Spin, Modal } from 'antd';
+import {
+  Alert,
+  Input,
+  Carousel,
+  Icon,
+  Form,
+  Button,
+  Checkbox,
+  List,
+  Card,
+  Tabs,
+  Spin,
+  Modal,
+} from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 // import debounce from 'lodash/debounce';
@@ -9,7 +22,7 @@ import config from '../config';
 import styles from './index.less';
 
 const { Item: FormItem } = Form;
-const { TabPane } = Tabs
+const { TabPane } = Tabs;
 
 // 轮播时间
 const carouselTime = 10 * 1000;
@@ -55,7 +68,6 @@ export default class NanXiaoLogin extends PureComponent {
     // this.debouncedHandleResize = debounce(this.handleResize, 100);
   }
 
-
   /**
    * 挂载后
    */
@@ -74,39 +86,50 @@ export default class NanXiaoLogin extends PureComponent {
     // window.removeEventListener('resize', this.debouncedHandleResize);
   }
 
-  refBigCarousel = (bigCarousel) => {
+  refBigCarousel = bigCarousel => {
     this.bigCarousel = bigCarousel;
-  }
+  };
 
-  refSmallCarousel = (smallCarousel) => {
+  refSmallCarousel = smallCarousel => {
     this.smallCarousel = smallCarousel;
-  }
+  };
 
-  refPasswordInput = (passwordInput) => {
+  refPasswordInput = passwordInput => {
     this.passwordInput = passwordInput;
-  }
+  };
 
-  refMain = (main) => {
+  refMain = main => {
     this.main = main;
-  }
+  };
 
   /**
    * 获取localStorage数据
    */
   getLocalStorage = () => {
-    const { location: { query: { type } } } = this.props;
+    const {
+      location: {
+        query: { type },
+      },
+    } = this.props;
     const { projectShortName } = config[type] || global.PROJECT_CONFIG;
-    this.setState({ commonAccount: JSON.parse(localStorage.getItem(`${projectShortName}${localStorageName}`)) || [] });
-  }
+    this.setState({
+      commonAccount:
+        JSON.parse(localStorage.getItem(`${projectShortName}${localStorageName}`)) || [],
+    });
+  };
 
   /**
    * 存储localStorage数据
    */
-  setLocalStorage = (data) => {
-    const { location: { query: { type } } } = this.props;
+  setLocalStorage = data => {
+    const {
+      location: {
+        query: { type },
+      },
+    } = this.props;
     const { projectShortName } = config[type] || global.PROJECT_CONFIG;
     localStorage.setItem(`${projectShortName}${localStorageName}`, JSON.stringify(data));
-  }
+  };
 
   /**
    * 添加轮播定时器
@@ -117,7 +140,7 @@ export default class NanXiaoLogin extends PureComponent {
       this.smallCarousel && this.smallCarousel.next();
       this.addCarouselTimer();
     }, carouselTime);
-  }
+  };
 
   /**
    * resize事件
@@ -127,14 +150,12 @@ export default class NanXiaoLogin extends PureComponent {
     const { size } = this.state;
     if (height > 800) {
       size !== 'large' && this.setState({ size: 'large' });
-    }
-    else if (height > 600) {
+    } else if (height > 600) {
       size !== 'default' && this.setState({ size: 'default' });
-    }
-    else {
+    } else {
       size !== 'small' && this.setState({ size: 'small' });
     }
-  }
+  };
 
   /**
    * 登录类型切换
@@ -147,7 +168,9 @@ export default class NanXiaoLogin extends PureComponent {
    * 提交
    */
   handleSubmit = () => {
-    const { form: { validateFields } } = this.props;
+    const {
+      form: { validateFields },
+    } = this.props;
     validateFields((err, values) => {
       if (!err) {
         const { username, password, remember } = values;
@@ -158,7 +181,9 @@ export default class NanXiaoLogin extends PureComponent {
           payload,
           success: () => {
             const { commonAccount } = this.state;
-            const account = commonAccount.filter(({ username: userName }) => userName === username)[0];
+            const account = commonAccount.filter(
+              ({ username: userName }) => userName === username
+            )[0];
             // 账号已存在并且有更新时
             if (account && account.password !== payload.password) {
               account.password = payload.password;
@@ -170,7 +195,7 @@ export default class NanXiaoLogin extends PureComponent {
               this.setLocalStorage(commonAccount);
             }
           },
-          error: (notice) => {
+          error: notice => {
             this.setState({ notice });
           },
           handleMoreUser: () => {
@@ -187,7 +212,7 @@ export default class NanXiaoLogin extends PureComponent {
   /**
    * 快捷登录
    */
-  handleQuickLogin = (payload) => {
+  handleQuickLogin = payload => {
     const { dispatch } = this.props;
     dispatch({
       type: 'login/login',
@@ -202,7 +227,7 @@ export default class NanXiaoLogin extends PureComponent {
         });
       },
     });
-  }
+  };
 
   /**
    * 用户名输入框回车
@@ -214,19 +239,19 @@ export default class NanXiaoLogin extends PureComponent {
     //   if (!err) {
     //   }
     // });
-  }
+  };
 
   /**
    * 密码输入框回车
    */
   handlePasswordPressEnter = () => {
     this.handleSubmit();
-  }
+  };
 
   /**
    * 多用户选择
    */
-  handleSelectUser = (userId) => {
+  handleSelectUser = userId => {
     const { dispatch } = this.props;
     const { payload } = this.state;
 
@@ -237,27 +262,29 @@ export default class NanXiaoLogin extends PureComponent {
         ...payload,
       },
     });
-  }
+  };
 
   /**
    * 关闭警告
    */
   handleAlertClose = () => {
     this.setState({ notice: undefined });
-  }
+  };
 
   /**
    * 前往下载页面
    */
   handleToDownload = () => {
-    const { location: { search } } = this.props;
+    const {
+      location: { search },
+    } = this.props;
     router.push(`/user/download${search}`);
-  }
+  };
 
   /**
    *
    */
-  handleDeleteCommonAccount = (account) => {
+  handleDeleteCommonAccount = account => {
     Modal.confirm({
       cancelText: '取消',
       okText: '确定',
@@ -277,19 +304,28 @@ export default class NanXiaoLogin extends PureComponent {
         this.setLocalStorage(newCommonAccount);
       },
     });
-  }
+  };
 
   /**
    * 表单
    */
   renderForm = () => {
-    const { form: { getFieldDecorator } } = this.props;
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
     const { size, notice } = this.state;
 
     return (
       <Form className={styles.form}>
         {notice && (
-          <Alert style={{ marginBottom: 16 }} message={notice} type="error" showIcon closable onClose={this.handleAlertClose} />
+          <Alert
+            style={{ marginBottom: 16 }}
+            message={notice}
+            type="error"
+            showIcon
+            closable
+            onClose={this.handleAlertClose}
+          />
         )}
         <FormItem>
           {getFieldDecorator('username', {
@@ -321,9 +357,7 @@ export default class NanXiaoLogin extends PureComponent {
           {getFieldDecorator('remember', {
             valuePropName: 'checked',
             initialValue: true,
-          })(
-            <Checkbox>保存为本地常用账号</Checkbox>
-          )}
+          })(<Checkbox>保存为本地常用账号</Checkbox>)}
         </FormItem>
         {this.renderCommonAccount()}
         <FormItem className={styles.submitFormItem}>
@@ -348,7 +382,7 @@ export default class NanXiaoLogin extends PureComponent {
         </FormItem>
       </Form>
     );
-  }
+  };
 
   /**
    * 多用户
@@ -382,12 +416,27 @@ export default class NanXiaoLogin extends PureComponent {
     return (
       <div className={styles.commonAccountWrapper}>
         {showAccount && <div>选择常用账号登录：</div>}
-        {showAccount && commonAccount.map((item) => (
-          <div key={item.username} className={styles.commonAccount}>
-            <span className={styles.quickLoginButton} onClick={() => {this.handleQuickLogin(item);}}>{item.username}</span>
-            <span className={styles.accountDeleleButton} onClick={() => {this.handleDeleteCommonAccount(item);}}><Icon type="close" /></span>
-          </div>
-        ))}
+        {showAccount &&
+          commonAccount.map(item => (
+            <div key={item.username} className={styles.commonAccount}>
+              <span
+                className={styles.quickLoginButton}
+                onClick={() => {
+                  this.handleQuickLogin(item);
+                }}
+              >
+                {item.username}
+              </span>
+              <span
+                className={styles.accountDeleleButton}
+                onClick={() => {
+                  this.handleDeleteCommonAccount(item);
+                }}
+              >
+                <Icon type="close" />
+              </span>
+            </div>
+          ))}
       </div>
     );
   }
@@ -396,7 +445,12 @@ export default class NanXiaoLogin extends PureComponent {
    * 手机版
    */
   renderMobile() {
-    const { submitting, location: { query: { type: configType } } } = this.props;
+    const {
+      submitting,
+      location: {
+        query: { type: configType },
+      },
+    } = this.props;
     const { isMoreUser } = this.state;
     const { logo } = global.PROJECT_CONFIG;
     const { projectName, focus } = config[configType] || global.PROJECT_CONFIG;
@@ -432,7 +486,12 @@ export default class NanXiaoLogin extends PureComponent {
    * PC端
    */
   renderPC() {
-    const { submitting, location: { query: { type: configType } } } = this.props;
+    const {
+      submitting,
+      location: {
+        query: { type: configType },
+      },
+    } = this.props;
     const { type, isMoreUser } = this.state;
     const { logo, unitName, servicePhone, serviceSupport } = global.PROJECT_CONFIG;
     const { projectName, focus, blur } = config[configType] || global.PROJECT_CONFIG;
@@ -467,9 +526,13 @@ export default class NanXiaoLogin extends PureComponent {
               </div>
               {/* <div className={styles.logo} /> */}
               <div className={styles.formWrapper}>
-                {isMoreUser ? this.renderMoreUser() : (
+                {isMoreUser ? (
+                  this.renderMoreUser()
+                ) : (
                   <Tabs activeKey={type} onChange={this.handleTabChange}>
-                    <TabPane tab="账号密码登录" key="1">{this.renderForm()}</TabPane>
+                    <TabPane tab="账号密码登录" key="1">
+                      {this.renderForm()}
+                    </TabPane>
                   </Tabs>
                 )}
               </div>
@@ -478,8 +541,21 @@ export default class NanXiaoLogin extends PureComponent {
         </div>
         <div className={styles.footer}>
           <div>
-            <div><span>copyright©2019</span><span>{unitName}</span></div>
-            <div><span>运营支持：{serviceSupport}</span><span>服务电话：{servicePhone}</span></div>
+            <div>
+              <span>copyright©2019</span>
+              <span>{unitName}</span>
+              <span style={{ marginLeft: '5px' }}>{global.VERSION}</span>
+            </div>
+            <div>
+              <span>
+                运营支持：
+                {serviceSupport}
+              </span>
+              <span>
+                服务电话：
+                {servicePhone}
+              </span>
+            </div>
           </div>
         </div>
       </div>
