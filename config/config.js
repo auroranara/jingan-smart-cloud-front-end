@@ -11,11 +11,8 @@ let version = '';
 process.argv.forEach(p => {
   if (p.indexOf('version=') > -1) {
     version = p.split('=')[1];
-    console.log('version', version);
   }
 });
-
-console.log(' process.env.PROJECT_ENV ', process.env.PROJECT_ENV);
 
 const hosts = {
   lm: '192.168.10.2', // 吕旻
