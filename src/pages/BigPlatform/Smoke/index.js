@@ -80,7 +80,7 @@ export default class Smoke extends PureComponent {
       type: 0,
       errorUnitsCardsInfo: [],
       unitDetail: {},
-      importCardsInfo:[],
+      importCardsInfo: [],
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -137,7 +137,7 @@ export default class Smoke extends PureComponent {
           gasUnitSet: { importingUnits = [] },
         } = data;
         // this.importCardsInfo = genCardsInfo(importingUnits);
-this.setState({importCardsInfo:genCardsInfo(importingUnits)});
+        this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
       },
     });
 
@@ -318,7 +318,7 @@ this.setState({importCardsInfo:genCardsInfo(importingUnits)});
           gasUnitSet: { importingUnits = [] },
         } = data;
         // this.importCardsInfo = genCardsInfo(importingUnits);
-        this.setState({importCardsInfo:genCardsInfo(importingUnits)});
+        this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
       },
     });
     // 烟感地图数据
@@ -777,7 +777,27 @@ this.setState({importCardsInfo:genCardsInfo(importingUnits)});
           data={statisticsData}
           className={`${styles.left} ${styles.accessUnitStatistics}`}
           onClick={e => {
-            this.fetchMapInfo();
+            const {
+              dispatch,
+              match: {
+                params: { gridId },
+              },
+            } = this.props;
+            // 获取接入单位统计列表
+            dispatch({
+              type: 'smoke/fetchImportingTotal',
+              payload: {
+                status,
+                gridId,
+              },
+              callback: data => {
+                if (!data) return;
+                const {
+                  gasUnitSet: { importingUnits = [] },
+                } = data;
+                this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
+              },
+            });
             this.handleDrawerVisibleChange('unit');
           }}
         />
