@@ -151,9 +151,10 @@ export default class MapSection extends PureComponent {
 
   handleMapClick = extData => {
     if (extData.companyId === this.state.infoWindow.companyId && this.state.infoWindowShow) return;
-    // const { pollingMap, clearPollingMap } = this.props;
+    const { fetchMapInfo } = this.props;
     // clearPollingMap();
     // pollingMap();
+    fetchMapInfo();
     this.setState({
       infoWindowShow: true,
       infoWindow: {
