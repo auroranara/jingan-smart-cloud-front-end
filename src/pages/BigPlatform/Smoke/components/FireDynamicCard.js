@@ -204,19 +204,24 @@ export default function MaintenanceCard(props) {
       <div className={styles.head}>
         <div
           style={{
-            background: `url(${typeConfig.img}) no-repeat center center`,
-            backgroundSize: '100% auto',
+            // background: `url(${typeConfig.img}) no-repeat center center`,
+            // backgroundSize: '100% auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
           className={styles.flow}
-        />
+        >
+          <img src={typeConfig.img} style={{ width: '99%', height: 'auto' }} alt="flow" />
+        </div>
       </div>
       <div className={styles.timeline}>
         <Timeline>
           <TimelineItem
             spans={SPANS}
             label={`报警`}
-            day={getTime(create_date)}
-            hour={getTime(create_date, 1)}
+            day={getTime(realtime)}
+            hour={getTime(realtime, 1)}
           >
             <Occured
               position={area + location || NO_DATA}

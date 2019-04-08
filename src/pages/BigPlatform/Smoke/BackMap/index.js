@@ -64,6 +64,18 @@ export default class MapSection extends PureComponent {
     this.props.onRef(this);
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const { units } = this.props;
+    const { units: prevUnits } = prevProps;
+    const { infoWindowShow, infoWindow } = this.state;
+    if (JSON.stringify(units) !== JSON.stringify(prevUnits) && infoWindowShow) {
+      const { companyId } = infoWindow;
+      this.setState({
+        infoWindow: { ...infoWindow, ...units.find(item => item.companyId === companyId) },
+      });
+    }
+  }
+
   renderMarkers = lvl => {
     const { units = [], unitDetail: { companyId: selectedCompanyId } = {} } = this.props;
     if (units.length === 0) {
@@ -254,11 +266,11 @@ export default class MapSection extends PureComponent {
             <div
               className={+unnormal > 0 ? styles.itemActive : styles.statusItem}
               onClick={() => {
-                // if (+unnormal > 0) {
-                handleAlarmClick(undefined, companyId, companyName, +unnormal);
-                // } else {
-                //   return null;
-                // }
+                if (+unnormal > 0) {
+                  handleAlarmClick(undefined, companyId, companyName, +unnormal);
+                } else {
+                  return null;
+                }
               }}
             >
               <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />

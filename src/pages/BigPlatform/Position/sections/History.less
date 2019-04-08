@@ -145,8 +145,19 @@
     position: relative;
   }
 
+  .twelve {
+    font-size: 14px;
+  }
+
   .graph {
+    display: flex;
+    align-items: center;
+    height: calc(100% - 50px);
+  }
+
+  .graphContainer {
     padding-left: 35px;
+    width: 100%;
   }
 
   .searchBtn {
@@ -251,6 +262,7 @@
   align-content: flex-start;
   height: calc(100% - 114px);
   overflow: auto;
+  position: relative;
 }
 
 .selectRow {
@@ -882,5 +894,24 @@
       background-color: rgba(0, 0, 0, 0.4);
       border-color: rgba(76, 206, 240, 0.6);
     }
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: rgba(0, 87, 169, 1);
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 4px;
+    background: rgba(2, 28, 64, 0.6);
+  }
+  ::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+  ::-webkit-resizer {
+    background-color: transparent;
   }
 }

@@ -135,17 +135,19 @@ export default class UnitDrawer extends PureComponent {
               person={principal_name || NO_DATA}
               phone={principal_phone || NO_DATA}
               style={{ cursor: 'auto' }}
-              clickName={() =>
-                handleClickUnitStatistics({
-                  companyId: company_id,
-                  companyName: company_name,
-                  address,
-                  principalName: principal_name,
-                  principalPhone: principal_phone,
-                  normal,
-                  unnormal,
-                  faultNum,
-                })
+              clickName={
+                count &&
+                (() =>
+                  handleClickUnitStatistics({
+                    companyId: company_id,
+                    companyName: company_name,
+                    address,
+                    principalName: principal_name,
+                    principalPhone: principal_phone,
+                    normal,
+                    unnormal,
+                    faultNum,
+                  }))
               }
               infoStyle={{
                 width: 70,
@@ -158,20 +160,21 @@ export default class UnitDrawer extends PureComponent {
               info={
                 <Fragment>
                   <span
-                    onClick={() =>
-                      handleClickUnitStatistics({
-                        companyId: company_id,
-                        companyName: company_name,
-                        address,
-                        principalName: principal_name,
-                        principalPhone: principal_phone,
-                        normal,
-                        unnormal,
-                        faultNum,
-                      })
-                    }
+                    onClick={() => {
+                      count &&
+                        handleClickUnitStatistics({
+                          companyId: company_id,
+                          companyName: company_name,
+                          address,
+                          principalName: principal_name,
+                          principalPhone: principal_phone,
+                          normal,
+                          unnormal,
+                          faultNum,
+                        });
+                    }}
                     className={styles.equipment}
-                    style={{ display: 'block' }}
+                    style={{ display: 'block', cursor: count ? 'pointer' : 'default' }}
                   >
                     {count || '--'}
                   </span>
