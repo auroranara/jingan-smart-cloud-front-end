@@ -406,9 +406,10 @@ export default {
     // 报警处理流程
     *fetchGasForMaintenance({ payload, success, error }, { call, put }) {
       const response = yield call(getGasForMaintenance, payload);
-      const num = payload.num || 0;
-      const list = num ? response.data.list.slice(0, num) : response.data.list;
       if (response.code === 200) {
+        const newList = response.data.list.filter(item => +item.nstatus !== 1);
+        const num = payload.num || 0;
+        const list = num ? newList.slice(0, num) : newList;
         yield put({
           type: 'gasForMaintenance',
           payload: list,
