@@ -104,7 +104,9 @@ export default class Smoke extends PureComponent {
         params: { gridId },
       },
     } = this.props;
-
+    setTimeout(() => {
+      console.log('this.mapChild.state', this.mapChild.state);
+    }, 1500);
     // 获取单位数据
     dispatch({
       type: 'smoke/fetchUnitData',
@@ -293,6 +295,11 @@ export default class Smoke extends PureComponent {
         params: { gridId },
       },
     } = this.props;
+    const { monitorDrawerVisible } = this.state;
+    const {
+      infoWindowShow,
+      infoWindow: { companyId },
+    } = this.mapChild.state;
     // 获取单位数据
     dispatch({
       type: 'smoke/fetchUnitData',
@@ -340,6 +347,13 @@ export default class Smoke extends PureComponent {
         this.setState({ errorUnitsCardsInfo: this.errorUnitsCardsInfo });
       },
     });
+
+    if (monitorDrawerVisible) {
+      dispatch({
+        type: 'smoke/fetchCompanySmokeInfo',
+        payload: { company_id: companyId },
+      });
+    }
   };
 
   /**

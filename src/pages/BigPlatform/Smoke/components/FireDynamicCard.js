@@ -220,8 +220,8 @@ export default function MaintenanceCard(props) {
           <TimelineItem
             spans={SPANS}
             label={`报警`}
-            day={getTime(create_date)}
-            hour={getTime(create_date, 1)}
+            day={getTime(realtime)}
+            hour={getTime(realtime, 1)}
           >
             <Occured
               position={area + location || NO_DATA}

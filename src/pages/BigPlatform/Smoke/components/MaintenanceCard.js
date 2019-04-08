@@ -42,7 +42,7 @@ function Occured(props) {
       <p>{position}</p>
       <p>
         发生故障！
-        {type && <span style={{ color: '#ffb400' }}>({type})</span>}
+        <span style={{ color: '#ffb400' }}>({type || '失联'})</span>
       </p>
       <p>
         安全负责人：
@@ -199,8 +199,8 @@ export default function MaintenanceCard(props) {
           <TimelineItem
             spans={SPANS}
             label={`${typeConfig.name}发生`}
-            day={getTime(create_date)}
-            hour={getTime(create_date, 1)}
+            day={getTime(realtime)}
+            hour={getTime(realtime, 1)}
           >
             <Occured
               position={area + location || NO_DATA}
