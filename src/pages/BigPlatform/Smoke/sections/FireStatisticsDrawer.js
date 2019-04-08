@@ -95,6 +95,7 @@ export default class FireStatisticsDrawer extends PureComponent {
                 defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
               }}
               onOk={() => this.handleOk(type)}
+              popupStyle={{ zIndex: 3000 }}
             />
           )}
         </FormItem>
@@ -112,7 +113,7 @@ export default class FireStatisticsDrawer extends PureComponent {
       <DrawerContainer
         title="火警统计"
         width={535}
-        zIndex={2000}
+        zIndex={1050}
         visible={visible}
         left={left}
         placement="right"

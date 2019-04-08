@@ -166,13 +166,14 @@ export default class MonitorDrawer extends PureComponent {
           address,
           principalName,
           principalPhone,
-          normal = 0,
-          unnormal = 0,
-          faultNum = 0,
+          // normal = 0,
+          // unnormal = 0,
+          // faultNum = 0,
         } = {},
         cameraList = [],
         dataByCompany,
         devList,
+        companySmokeInfo: { map: devMap = { unnormal: [], fault: [], normal: [] } },
       },
       handleClose,
     } = this.props;
@@ -192,7 +193,7 @@ export default class MonitorDrawer extends PureComponent {
               `${principalName ? principalName : '未命名'} ${principalPhone ? principalPhone : ''}`}
           </p>
           <p className={styles.dots}>
-            {[normal, unnormal, faultNum].map((n, i) => (
+            {[devMap.normal.length, devMap.unnormal.length, devMap.fault.length].map((n, i) => (
               <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
             ))}
           </p>

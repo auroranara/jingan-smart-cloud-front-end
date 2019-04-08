@@ -36,12 +36,12 @@ function getContainer() {
 }
 
 function Occured(props) {
-  const { position, type, safety, phone } = props;
+  const { position, type, safety, phone, model } = props;
 
   return (
     <div className={styles.card}>
       <p>{position}</p>
-      <p>发生报警</p>
+      <p>{model} 发生报警！</p>
       <p>
         安全负责人：
         {safety} {phone}
@@ -171,6 +171,7 @@ export default function MaintenanceCard(props) {
     finishByName,
     finishByPhone,
     finishCompanyName,
+    model_desc,
   } = data;
 
   const isOneKey = report_type === '2' ? 1 : 0; // 0 -> 主机报障  1 -> 一键报修
@@ -198,6 +199,7 @@ export default function MaintenanceCard(props) {
               position={area + location || NO_DATA}
               safety={safetyPerson || NO_DATA}
               phone={safetyPhone || NO_DATA}
+              model={model_desc}
             />
           </TimelineItem>
 

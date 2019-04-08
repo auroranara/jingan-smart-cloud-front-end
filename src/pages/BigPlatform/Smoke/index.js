@@ -104,9 +104,7 @@ export default class Smoke extends PureComponent {
         params: { gridId },
       },
     } = this.props;
-    setTimeout(() => {
-      console.log('this.mapChild.state', this.mapChild.state);
-    }, 1500);
+
     // 获取单位数据
     dispatch({
       type: 'smoke/fetchUnitData',
@@ -347,13 +345,6 @@ export default class Smoke extends PureComponent {
         this.setState({ errorUnitsCardsInfo: this.errorUnitsCardsInfo });
       },
     });
-
-    if (monitorDrawerVisible) {
-      dispatch({
-        type: 'smoke/fetchCompanySmokeInfo',
-        payload: { company_id: companyId },
-      });
-    }
   };
 
   /**
@@ -364,7 +355,9 @@ export default class Smoke extends PureComponent {
   /**
    * 销毁前
    */
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    clearInterval(this.pollCompanyInfo);
+  }
 
   // cardsInfo = [];
   importCardsInfo = [];
@@ -609,6 +602,12 @@ export default class Smoke extends PureComponent {
       payload: { company_id: companyId },
       success: () => {
         this.handleDrawerVisibleChange('monitor');
+        this.pollCompanyInfo = setInterval(() => {
+          dispatch({
+            type: 'smoke/fetchCompanySmokeInfo',
+            payload: { company_id: companyId },
+          });
+        }, 2000);
       },
     });
   };
@@ -623,8 +622,34 @@ export default class Smoke extends PureComponent {
       payload: { company_id: companyId },
       success: () => {
         this.handleDrawerVisibleChange('monitor');
+        this.pollCompanyInfo = setInterval(() => {
+          dispatch({
+            type: 'smoke/fetchCompanySmokeInfo',
+            payload: { company_id: companyId },
+          });
+        }, 2000);
       },
     });
+  };
+
+  pollingMap = () => {
+    const {
+      dispatch,
+      match: {
+        params: { gridId },
+      },
+    } = this.props;
+    this.poMap = setInterval(() => {
+      // 烟感地图数据
+      dispatch({
+        type: 'smoke/fetchMapList',
+        payload: { gridId },
+      });
+    }, 2000);
+  };
+
+  clearPollingMap = () => {
+    clearInterval(this.poMap);
   };
 
   /**
@@ -710,6 +735,8 @@ export default class Smoke extends PureComponent {
           handleFaultClick={this.handleFaultClick}
           onRef={this.onRef}
           handleCompanyClick={this.handleCompanyClick}
+          clearPollingMap={this.clearPollingMap}
+          pollingMap={this.pollingMap}
         />
         {/* 搜索框 */}
         <MapSearch
@@ -813,10 +840,14 @@ export default class Smoke extends PureComponent {
             unitDetail,
             cameraList,
             dataByCompany,
+            companySmokeInfo: this.props.smoke.companySmokeInfo,
             devList: [...devMap.unnormal, ...devMap.fault, ...devMap.normal],
           }}
           visible={monitorDrawerVisible}
-          handleClose={this.hideUnitDetail}
+          handleClose={() => {
+            this.hideUnitDetail();
+            clearInterval(this.pollCompanyInfo);
+          }}
           handleSelect={this.handleSelectDevice}
           handleClickCamera={this.handleClickCamera}
           handleFaultClick={this.handleFaultClick}

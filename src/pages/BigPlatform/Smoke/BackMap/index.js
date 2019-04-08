@@ -151,6 +151,9 @@ export default class MapSection extends PureComponent {
 
   handleMapClick = extData => {
     if (extData.companyId === this.state.infoWindow.companyId && this.state.infoWindowShow) return;
+    // const { pollingMap, clearPollingMap } = this.props;
+    // clearPollingMap();
+    // pollingMap();
     this.setState({
       infoWindowShow: true,
       infoWindow: {
@@ -294,6 +297,8 @@ export default class MapSection extends PureComponent {
         <Icon
           type="close"
           onClick={() => {
+            // const { clearPollingMap } = this.props;
+            // clearPollingMap();
             this.setState({ infoWindowShow: false });
           }}
           style={{
