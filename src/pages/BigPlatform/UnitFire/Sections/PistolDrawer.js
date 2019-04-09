@@ -42,7 +42,7 @@ export default class PistolDrawer extends PureComponent {
         title={'喷淋系统'}
         visible={visible}
         dataSet={{
-          subTitle: '自动喷淋',
+          subTitle: '喷淋',
           abnormal,
           normal,
           abnormalImg: pistolAbnormal,
