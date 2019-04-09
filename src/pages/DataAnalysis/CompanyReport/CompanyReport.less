@@ -1,0 +1,48 @@
+/**
+ * 企业自查报表列表
+ */
+.form {
+  :global {
+    .ant-form-item {
+      display: flex;
+    }
+
+    .ant-form-item-label {
+      flex: none;
+    }
+
+    .ant-form-item-control-wrapper {
+      flex: 1;
+    }
+  }
+}
+
+.table {
+  :global {
+    .ant-table {
+
+      td,
+      th {
+        white-space: nowrap;
+      }
+    }
+
+    .ant-table-body {
+      overflow-x: auto !important;
+    }
+
+    .ant-spin-nested-loading {
+      z-index: 2;
+    }
+  }
+}
+
+.content {
+  padding-top: 8px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.heading {
+  font-size: 20px;
+}

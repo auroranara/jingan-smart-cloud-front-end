@@ -759,6 +759,32 @@ module.exports = env => {
                 },
               ],
             },
+            // 企业自查报表
+            {
+              path: '/data-analysis/company-report',
+              code: 'dataAnalysis.companyReport',
+              name: 'companyReport',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/data-analysis/company-report',
+                  name: 'companyReport',
+                  redirect: '/data-analysis/company-report/list',
+                },
+                {
+                  path: '/data-analysis/company-report/list',
+                  code: 'dataAnalysis.companyReport.view',
+                  name: 'list',
+                  component: './DataAnalysis/CompanyReport/CompanyReportList',
+                },
+                {
+                  path: '/data-analysis/company-report/detail',
+                  code: 'dataAnalysis.companyReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/CompanyReport/CompanyReportDetail',
+                },
+              ],
+            },
           ],
         },
 
