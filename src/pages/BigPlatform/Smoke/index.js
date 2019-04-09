@@ -80,6 +80,7 @@ export default class Smoke extends PureComponent {
       type: 0,
       errorUnitsCardsInfo: [],
       unitDetail: {},
+      importCardsInfo: [],
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -104,9 +105,7 @@ export default class Smoke extends PureComponent {
         params: { gridId },
       },
     } = this.props;
-    setTimeout(() => {
-      console.log('this.mapChild.state', this.mapChild.state);
-    }, 1500);
+
     // 获取单位数据
     dispatch({
       type: 'smoke/fetchUnitData',
@@ -137,7 +136,8 @@ export default class Smoke extends PureComponent {
         const {
           gasUnitSet: { importingUnits = [] },
         } = data;
-        this.importCardsInfo = genCardsInfo(importingUnits);
+        // this.importCardsInfo = genCardsInfo(importingUnits);
+        this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
       },
     });
 
@@ -317,7 +317,8 @@ export default class Smoke extends PureComponent {
         const {
           gasUnitSet: { importingUnits = [] },
         } = data;
-        this.importCardsInfo = genCardsInfo(importingUnits);
+        // this.importCardsInfo = genCardsInfo(importingUnits);
+        this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
       },
     });
     // 烟感地图数据
@@ -347,13 +348,6 @@ export default class Smoke extends PureComponent {
         this.setState({ errorUnitsCardsInfo: this.errorUnitsCardsInfo });
       },
     });
-
-    if (monitorDrawerVisible) {
-      dispatch({
-        type: 'smoke/fetchCompanySmokeInfo',
-        payload: { company_id: companyId },
-      });
-    }
   };
 
   /**
@@ -364,7 +358,9 @@ export default class Smoke extends PureComponent {
   /**
    * 销毁前
    */
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    clearInterval(this.pollCompanyInfo);
+  }
 
   // cardsInfo = [];
   importCardsInfo = [];
@@ -609,6 +605,12 @@ export default class Smoke extends PureComponent {
       payload: { company_id: companyId },
       success: () => {
         this.handleDrawerVisibleChange('monitor');
+        this.pollCompanyInfo = setInterval(() => {
+          dispatch({
+            type: 'smoke/fetchCompanySmokeInfo',
+            payload: { company_id: companyId },
+          });
+        }, 2000);
       },
     });
   };
@@ -623,7 +625,47 @@ export default class Smoke extends PureComponent {
       payload: { company_id: companyId },
       success: () => {
         this.handleDrawerVisibleChange('monitor');
+        this.pollCompanyInfo = setInterval(() => {
+          dispatch({
+            type: 'smoke/fetchCompanySmokeInfo',
+            payload: { company_id: companyId },
+          });
+        }, 2000);
       },
+    });
+  };
+
+  pollingMap = () => {
+    const {
+      dispatch,
+      match: {
+        params: { gridId },
+      },
+    } = this.props;
+    this.poMap = setInterval(() => {
+      // 烟感地图数据
+      dispatch({
+        type: 'smoke/fetchMapList',
+        payload: { gridId },
+      });
+    }, 2000);
+  };
+
+  clearPollingMap = () => {
+    clearInterval(this.poMap);
+  };
+
+  fetchMapInfo = () => {
+    const {
+      dispatch,
+      match: {
+        params: { gridId },
+      },
+    } = this.props;
+    // 烟感地图数据
+    dispatch({
+      type: 'smoke/fetchMapList',
+      payload: { gridId },
     });
   };
 
@@ -671,9 +713,10 @@ export default class Smoke extends PureComponent {
       companyName,
       type,
       errorUnitsCardsInfo,
+      importCardsInfo,
     } = this.state;
 
-    const importCardsInfo = this.importCardsInfo;
+    // const importCardsInfo = this.importCardsInfo;
     // const errorUnitsCardsInfo = this.errorUnitsCardsInfo;
     const extra = <GridSelect gridId={gridId} urlBase="/big-platform/smoke" />;
     return (
@@ -710,6 +753,9 @@ export default class Smoke extends PureComponent {
           handleFaultClick={this.handleFaultClick}
           onRef={this.onRef}
           handleCompanyClick={this.handleCompanyClick}
+          clearPollingMap={this.clearPollingMap}
+          pollingMap={this.pollingMap}
+          fetchMapInfo={this.fetchMapInfo}
         />
         {/* 搜索框 */}
         <MapSearch
@@ -730,7 +776,30 @@ export default class Smoke extends PureComponent {
         <AccessUnitStatistics
           data={statisticsData}
           className={`${styles.left} ${styles.accessUnitStatistics}`}
-          onClick={e => this.handleDrawerVisibleChange('unit')}
+          onClick={e => {
+            const {
+              dispatch,
+              match: {
+                params: { gridId },
+              },
+            } = this.props;
+            // 获取接入单位统计列表
+            dispatch({
+              type: 'smoke/fetchImportingTotal',
+              payload: {
+                status,
+                gridId,
+              },
+              callback: data => {
+                if (!data) return;
+                const {
+                  gasUnitSet: { importingUnits = [] },
+                } = data;
+                this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
+              },
+            });
+            this.handleDrawerVisibleChange('unit');
+          }}
         />
         {/* 异常单位统计 */}
         <RealTimeFire
@@ -813,10 +882,14 @@ export default class Smoke extends PureComponent {
             unitDetail,
             cameraList,
             dataByCompany,
+            companySmokeInfo: this.props.smoke.companySmokeInfo,
             devList: [...devMap.unnormal, ...devMap.fault, ...devMap.normal],
           }}
           visible={monitorDrawerVisible}
-          handleClose={this.hideUnitDetail}
+          handleClose={() => {
+            this.hideUnitDetail();
+            clearInterval(this.pollCompanyInfo);
+          }}
           handleSelect={this.handleSelectDevice}
           handleClickCamera={this.handleClickCamera}
           handleFaultClick={this.handleFaultClick}
