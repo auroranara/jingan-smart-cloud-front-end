@@ -891,6 +891,58 @@ module.exports = env => {
                 },
               ],
             },
+            // 设备管理
+            {
+              path: '/device-management/sensor',
+              code: 'deviceManagement.sensor',
+              name: 'sensor',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/sensor',
+                  name: 'sensor',
+                  redirect: '/device-management/sensor/list',
+                },
+                {
+                  path: '/device-management/sensor/list',
+                  name: 'listView',
+                  code: 'deviceManagement.sensor.listView',
+                  component: './DeviceManagement/Sensor/SensorList',
+                },
+                {
+                  path: '/device-management/sensor/add',
+                  name: 'add',
+                  code: 'deviceManagement.sensor.add',
+                  component: './DeviceManagement/Sensor/AddSensor',
+                },
+                {
+                  path: '/device-management/sensor/edit/:id',
+                  name: 'edit',
+                  code: 'deviceManagement.sensor.edit',
+                  component: './DeviceManagement/Sensor/AddSensor',
+                },
+              ],
+            },
+            // 设备型号
+            {
+              path: '/device-management/sensor-model',
+              code: 'deviceManagement.sensorModel',
+              name: 'sensorModel',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/sensor-model',
+                  name: 'sensorModel',
+                  redirect: '/device-management/sensor-model/list',
+                },
+                {
+                  path: '/device-management/sensor-model/list',
+                  name: 'listView',
+                  code: 'deviceManagement.sensorModel.listView',
+                  component: './DeviceManagement/SensorModel/SensorModelList',
+                },
+              ],
+            },
           ],
         },
 

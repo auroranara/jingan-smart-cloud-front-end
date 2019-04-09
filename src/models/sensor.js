@@ -14,6 +14,13 @@ import {
 export default {
   namespace: 'sensor',
   state: {
+    // 传感器列表
+    list: [],
+    pagination: {
+      pageNum: 1,
+      pageSize: 10,
+      total: 0,
+    },
     // 绑定设备的企业
     sensorCompany: {
       list: [],
