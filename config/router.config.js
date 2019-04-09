@@ -1036,6 +1036,31 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/system-management/app-authority',
+              code: 'systemManagement.appAuthority',
+              name: 'appAuthority',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/system-management/app-authority',
+                  name: 'appAuthority',
+                  redirect: '/system-management/app-authority/index',
+                },
+                {
+                  path: '/system-management/app-authority/index',
+                  code: 'systemManagement.appAuthority.view',
+                  name: 'view',
+                  component: './SystemManagement/AppAuthority/AppAuthority',
+                },
+                {
+                  path: '/system-management/app-authority/add-or-edit/:id',
+                  code: 'systemManagement.appAuthority.edit',
+                  name: 'edit',
+                  component: './SystemManagement/AppAuthority/AppAuthorityAddOrEdit',
+                },
+              ],
+            },
           ],
         },
 
