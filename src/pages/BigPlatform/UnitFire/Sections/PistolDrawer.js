@@ -39,7 +39,7 @@ export default class PistolDrawer extends PureComponent {
     const abnormal = dataList.filter(item => item).length - normal;
     return (
       <WaterDrawer
-        title={'自动喷淋系统'}
+        title={'喷淋系统'}
         visible={visible}
         dataSet={{
           subTitle: '自动喷淋',

@@ -456,11 +456,7 @@ export default class Messages extends PureComponent {
           <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
-            {+deviceType === 101
-              ? '消火栓系统'
-              : +deviceType === 102
-                ? '自动喷淋系统'
-                : '水池/水箱'}
+            {+deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱'}
           </div>
           <div className={styles.msgBody}>
             {virtualName + '-' + paramName + (condition === '>=' ? '高于' : '低于') + '报警值'}
@@ -483,11 +479,7 @@ export default class Messages extends PureComponent {
           <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
-            {+deviceType === 101
-              ? '消火栓系统'
-              : +deviceType === 102
-                ? '自动喷淋系统'
-                : '水池/水箱'}
+            {+deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱'}
           </div>
           <div className={styles.msgBody}>{virtualName + '恢复正常'}</div>
         </div>
