@@ -15,8 +15,14 @@ import hiddenIcon from '@/assets/hiddenIcon.png';
 import styles from './HiddenDangerReportDetail.less';
 const { Step } = Steps;
 const { Description } = DescriptionList;
-const { home: homeUrl, hiddenDangerReport: { list: listUrl } } = urls;
-const { home: homeTitle, hiddenDangerReport: { list: listTitle, menu: menuTitle, detail: title } } = titles;
+const {
+  home: homeUrl,
+  hiddenDangerReport: { list: listUrl },
+} = urls;
+const {
+  home: homeTitle,
+  hiddenDangerReport: { list: listTitle, menu: menuTitle, detail: title },
+} = titles;
 /* 面包屑 */
 const breadcrumbList = [
   { title: homeTitle, name: homeTitle, href: homeUrl },
@@ -27,7 +33,7 @@ const breadcrumbList = [
 /* 头部标签列表 */
 const tabList = [
   {
-    key: "1",
+    key: '1',
     tab: '详情',
   },
   {
@@ -38,7 +44,7 @@ const tabList = [
 /* 获取页面宽度 */
 const getWindowWidth = () => window.innerWidth || document.documentElement.clientWidth;
 /* 根据status获取名称 */
-const getLabelByStatus = function (status) {
+const getLabelByStatus = function(status) {
   switch (+status) {
     case 3:
       return '待复查';
@@ -55,7 +61,7 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 /* 根据业务分类id获取label */
-const getLabelByBusinessType = function (business_type) {
+const getLabelByBusinessType = function(business_type) {
   switch (+business_type) {
     case 1:
       return '安全生产';
@@ -103,14 +109,22 @@ export default class App extends PureComponent {
       {
         title: '创建时间',
         dataIndex: 'createTime',
-        render: (text) => moment(+text).format('YYYY-MM-DD HH:mm:ss'),
+        render: text => moment(+text).format('YYYY-MM-DD HH:mm:ss'),
       },
       {
         title: '操作',
         dataIndex: '',
-        render: (text, { docPath }) => docPath ? (
-          <span style={{ cursor: 'pointer', color: '#1890ff' }} onClick={() => { this.setState({ images: docPath.split(',').map(src => ({ src })) }); }}>查看</span>
-        ) : (
+        render: (text, { docPath }) =>
+          docPath ? (
+            <span
+              style={{ cursor: 'pointer', color: '#1890ff' }}
+              onClick={() => {
+                this.setState({ images: docPath.split(',').map(src => ({ src })) });
+              }}
+            >
+              查看
+            </span>
+          ) : (
             <span style={{ color: 'rgba(0,0,0,0.45)' }}>未上传</span>
           ),
       },
@@ -122,12 +136,16 @@ export default class App extends PureComponent {
     this.setStepDirection = debounce(this.setStepDirection, 200);
   }
 
-
   /**
    * 挂载后
    */
   componentDidMount() {
-    const { dispatch, match: { params: { id } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
 
     // 获取隐患详情
     dispatch({
@@ -170,23 +188,23 @@ export default class App extends PureComponent {
         stepDirection: 'horizontal',
       });
     }
-  }
+  };
 
   /**
    * 切换头部标签
    */
-  handleTabChange = (tab) => {
+  handleTabChange = tab => {
     this.setState({ tab });
-  }
+  };
 
   /**
    * 切换图片
    */
-  handleSwitchImage = (currentImage) => {
+  handleSwitchImage = currentImage => {
     this.setState({
       currentImage,
     });
-  }
+  };
 
   /**
    * 切换上一张图片
@@ -195,7 +213,7 @@ export default class App extends PureComponent {
     this.setState(({ currentImage }) => ({
       currentImage: currentImage - 1,
     }));
-  }
+  };
 
   /**
    * 切换下一张图片
@@ -204,7 +222,7 @@ export default class App extends PureComponent {
     this.setState(({ currentImage }) => ({
       currentImage: currentImage + 1,
     }));
-  }
+  };
 
   /**
    * 关闭图片详情
@@ -213,13 +231,15 @@ export default class App extends PureComponent {
     this.setState({
       images: null,
     });
-  }
+  };
 
   /**
    * 相关文书
    */
   renderDocumentList() {
-    const { hiddenDangerReport: { documentList } } = this.props;
+    const {
+      hiddenDangerReport: { documentList },
+    } = this.props;
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -234,21 +254,24 @@ export default class App extends PureComponent {
   }
 
   /**
- * 图片详情
- */
+   * 图片详情
+   */
   renderImageDetail() {
     const { images, currentImage } = this.state;
-    return images && images.length > 0 && (
-      <Lightbox
-        images={images}
-        isOpen={true}
-        currentImage={currentImage}
-        onClickPrev={this.handlePrevImage}
-        onClickNext={this.handleNextImage}
-        onClose={this.handleClose}
-        onClickThumbnail={this.handleSwitchImage}
-        showThumbnails
-      />
+    return (
+      images &&
+      images.length > 0 && (
+        <Lightbox
+          images={images}
+          isOpen={true}
+          currentImage={currentImage}
+          onClickPrev={this.handlePrevImage}
+          onClickNext={this.handleNextImage}
+          onClose={this.handleClose}
+          onClickThumbnail={this.handleSwitchImage}
+          showThumbnails
+        />
+      )
     );
   }
 
@@ -292,13 +315,29 @@ export default class App extends PureComponent {
             plan_rectify_time,
             // 指定复查人
             review_user_name,
+            // 上报途径
+            source_type,
+            // 检查类型
+            inspectionType,
+            // 隐患类型
+            hiddenType,
+            // 隐患部门
+            hiddenDept,
+            // 隐患地点
+            location,
+            // 指定整改单位
+            rectifyCompanyName,
+            // 指定复查单位
+            reviewCompanyName,
           },
           hiddenDangerRecord,
           timeLine,
           current,
         },
       },
-      user: { currentUser: { unitType } },
+      user: {
+        currentUser: { unitType },
+      },
       loading,
     } = this.props;
     const { stepDirection, tab } = this.state;
@@ -307,29 +346,31 @@ export default class App extends PureComponent {
     // 文件
     const fileList = files ? files.map(({ id: key, web_url: src }) => ({ key, src })) : [];
     // 隐患图片
-    const images = [], audios = [];
+    const images = [],
+      audios = [];
     for (const file of fileList) {
       if (/(.jpg|.png)$/.test(file.src)) {
         images.push(file);
-      }
-      else {
+      } else {
         audios.push(file);
       }
     }
 
-
     return (
       <PageHeaderLayout
-        title={<Fragment>{`隐患编号：${code}`}{!isCompany && <div className={styles.content}>{`单位名称：${company_name}`}</div>}</Fragment>}
-        logo={
-          <img alt="" src={hiddenIcon} />
+        title={
+          <Fragment>
+            {`隐患编号：${code}`}
+            {!isCompany && <div className={styles.content}>{`单位名称：${company_name}`}</div>}
+          </Fragment>
         }
-        action={(
+        logo={<img alt="" src={hiddenIcon} />}
+        action={
           <div>
             <div className={styles.textSecondary}>状态</div>
             <div className={styles.heading}>{getLabelByStatus(status)}</div>
           </div>
-        )}
+        }
         tabList={tabList}
         tabActiveKey={tab}
         onTabChange={this.handleTabChange}
@@ -341,161 +382,322 @@ export default class App extends PureComponent {
               <Card title="流程进度" className={styles.card} bordered={false}>
                 <Steps direction={stepDirection} progressDot={dot => dot} current={current}>
                   {timeLine.map(({ id, time, type, user }) => (
-                    <Step key={id} title={type} description={time && user ? (
-                      <div className={classNames(styles.textSecondary, styles.stepDescription)}>
-                        {user}
-                        <div>{time}</div>
-                      </div>
-                    ) : undefined} />
+                    <Step
+                      key={id}
+                      title={type}
+                      description={
+                        time && user ? (
+                          <div className={classNames(styles.textSecondary, styles.stepDescription)}>
+                            {user}
+                            <div>{time}</div>
+                          </div>
+                        ) : (
+                          undefined
+                        )
+                      }
+                    />
                   ))}
                 </Steps>
               </Card>
               <Card title="隐患信息" className={styles.card} bordered={false}>
                 <DescriptionList style={{ marginBottom: 16 }}>
-                  <Description term="隐患来源"><Ellipsis tooltip={!!report_source_name} lines={1} style={{ height: 22 }}>{report_source_name || getEmptyData()}</Ellipsis></Description>
-                  <Description term="点位名称"><Ellipsis tooltip={!!item_name} lines={1} style={{ height: 22 }}>{item_name || getEmptyData()}</Ellipsis></Description>
-                  <Description term="业务分类"><Ellipsis tooltip={!!business_type} lines={1} style={{ height: 22 }}>{business_type || getEmptyData()}</Ellipsis></Description>
-                  <Description term="隐患等级"><Ellipsis tooltip={!!level_name} lines={1} style={{ height: 22 }}>{level_name || getEmptyData()}</Ellipsis></Description>
-                  <Description term="检查人"><Ellipsis tooltip={!!allCheckPersonNames} lines={1} style={{ height: 22 }}>{allCheckPersonNames || getEmptyData()}</Ellipsis></Description>
-                  <Description term="创建日期"><Ellipsis tooltip={!!report_time} lines={1} style={{ height: 22 }}>{report_time ? moment(+report_time).format('YYYY-MM-DD') : getEmptyData()}</Ellipsis></Description>
+                  <Description term="隐患来源">
+                    <Ellipsis tooltip={!!report_source_name} lines={1} style={{ height: 22 }}>
+                      {report_source_name || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="上报途径">
+                    <Ellipsis tooltip={!!source_type} lines={1} style={{ height: 22 }}>
+                      {+source_type === 2
+                        ? '随手拍'
+                        : +source_type === 3
+                          ? '风险点上报'
+                          : '监督点上报' || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="检查类型">
+                    <Ellipsis tooltip={!!inspectionType} lines={1} style={{ height: 22 }}>
+                      {inspectionType || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="点位名称">
+                    <Ellipsis tooltip={!!item_name} lines={1} style={{ height: 22 }}>
+                      {item_name || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="业务分类">
+                    <Ellipsis tooltip={!!business_type} lines={1} style={{ height: 22 }}>
+                      {business_type || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="隐患等级">
+                    <Ellipsis tooltip={!!level_name} lines={1} style={{ height: 22 }}>
+                      {level_name || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="隐患类型">
+                    <Ellipsis tooltip={!!hiddenType} lines={1} style={{ height: 22 }}>
+                      {hiddenType || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="隐患部门">
+                    <Ellipsis tooltip={!!hiddenDept} lines={1} style={{ height: 22 }}>
+                      {hiddenDept || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="隐患地点">
+                    <Ellipsis tooltip={!!location} lines={1} style={{ height: 22 }}>
+                      {location || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="检查人">
+                    <Ellipsis tooltip={!!allCheckPersonNames} lines={1} style={{ height: 22 }}>
+                      {allCheckPersonNames || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="创建日期">
+                    <Ellipsis tooltip={!!report_time} lines={1} style={{ height: 22 }}>
+                      {report_time ? moment(+report_time).format('YYYY-MM-DD') : getEmptyData()}
+                    </Ellipsis>
+                  </Description>
                 </DescriptionList>
                 <DescriptionList style={{ marginBottom: 16 }} col={1}>
-                  <Description term="检查内容"><Ellipsis tooltip={!!flow_name} lines={1} style={{ height: 22 }}>{flow_name || getEmptyData()}</Ellipsis></Description>
-                  <Description term="隐患描述"><Ellipsis tooltip={!!desc} lines={1} style={{ height: 22 }}>{desc || getEmptyData()}</Ellipsis></Description>
-                  <Description term="隐患图片">{images.length > 0 ? (
-                    images.map(({ key, src }, index) => (
-                      <img
-                        src={src}
-                        key={key}
-                        alt=""
-                        style={{ marginRight: 10, width: 30, height: 40, cursor: 'pointer' }}
-                        onClick={() => { this.setState({ images, currentImage: index }); }}
-                      />
-                    ))
-                  ) : getEmptyData()}</Description>
+                  <Description term="检查内容">
+                    <Ellipsis tooltip={!!flow_name} lines={1} style={{ height: 22 }}>
+                      {flow_name || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="隐患描述">
+                    <Ellipsis tooltip={!!desc} lines={1} style={{ height: 22 }}>
+                      {desc || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="隐患图片">
+                    {images.length > 0
+                      ? images.map(({ key, src }, index) => (
+                          <img
+                            src={src}
+                            key={key}
+                            alt=""
+                            style={{ marginRight: 10, width: 30, height: 40, cursor: 'pointer' }}
+                            onClick={() => {
+                              this.setState({ images, currentImage: index });
+                            }}
+                          />
+                        ))
+                      : getEmptyData()}
+                  </Description>
                   {audios.length > 0 && (
-                    <Description term="隐患音频">{(
-                      audios.map(({ key, src }, index) => (
+                    <Description term="隐患音频">
+                      {audios.map(({ key, src }, index) => (
                         <div key={key}>
                           <a href={src} target="_blank" rel="noopener noreferrer">
                             {`隐患音频${index + 1}`}
                           </a>
                         </div>
-                      ))
-                    )}</Description>
+                      ))}
+                    </Description>
                   )}
                 </DescriptionList>
                 <DescriptionList style={{ marginBottom: 16 }}>
-                  <Description term="指定整改人"><Ellipsis tooltip={!!rectify_user_name} lines={1} style={{ height: 22 }}>{rectify_user_name || getEmptyData()}</Ellipsis></Description>
-                  <Description term="计划整改日期"><Ellipsis tooltip={!!plan_rectify_time} lines={1} style={{ height: 22 }}>{plan_rectify_time ? moment(+plan_rectify_time).format('YYYY-MM-DD') : getEmptyData()}</Ellipsis></Description>
+                  <Description term="指定整改单位">
+                    <Ellipsis tooltip={!!rectifyCompanyName} lines={1} style={{ height: 22 }}>
+                      {rectifyCompanyName || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="指定整改人">
+                    <Ellipsis tooltip={!!rectify_user_name} lines={1} style={{ height: 22 }}>
+                      {rectify_user_name || getEmptyData()}
+                    </Ellipsis>
+                  </Description>
+                  <Description term="计划整改日期">
+                    <Ellipsis tooltip={!!plan_rectify_time} lines={1} style={{ height: 22 }}>
+                      {plan_rectify_time
+                        ? moment(+plan_rectify_time).format('YYYY-MM-DD')
+                        : getEmptyData()}
+                    </Ellipsis>
+                  </Description>
                 </DescriptionList>
                 {report_user_name !== review_user_name && (
-                  <DescriptionList style={{ marginBottom: 16 }} col={1}>
-                    <Description term="指定复查人"><Ellipsis tooltip={!!review_user_name} lines={1} style={{ height: 22 }}>{review_user_name || getEmptyData()}</Ellipsis></Description>
+                  <DescriptionList style={{ marginBottom: 16 }}>
+                    <Description term="指定复查单位">
+                      <Ellipsis tooltip={!!reviewCompanyName} lines={1} style={{ height: 22 }}>
+                        {reviewCompanyName || getEmptyData()}
+                      </Ellipsis>
+                    </Description>
+                    <Description term="指定复查人">
+                      <Ellipsis tooltip={!!review_user_name} lines={1} style={{ height: 22 }}>
+                        {review_user_name || getEmptyData()}
+                      </Ellipsis>
+                    </Description>
                   </DescriptionList>
                 )}
               </Card>
-              {hiddenDangerRecord.map(({
-                id,
-                // 2是整改，3是复查
-                type,
-                // 人
-                operator_name,
-                // 时间
-                create_time_str,
-                // 金额
-                money,
-                // 措施
-                operate_content,
-                // 图片
-                files,
-                // 备注
-                remark,
-              }) => {
-                const fileList = files && files.map(({ id: key, web_url: src }) => ({ key, src }));
-                // 隐患图片
-                const images = [], audios = [];
-                for (const file of fileList) {
-                  if (/(.jpg|.png)$/.test(file.src)) {
-                    images.push(file);
+              {hiddenDangerRecord.map(
+                ({
+                  id,
+                  type, // 2是整改，3是复查
+                  operator_name, // 人
+                  create_time_str, // 时间
+                  money, // 金额
+                  operate_content, // 措施
+                  files, // 图片
+                  remark, // 备注
+                  companyName,
+                  deptName, // 整改部门
+                  analysis, // 原因分析
+                }) => {
+                  const fileList =
+                    files && files.map(({ id: key, web_url: src }) => ({ key, src }));
+                  // 隐患图片
+                  const images = [],
+                    audios = [];
+                  for (const file of fileList) {
+                    if (/(.jpg|.png)$/.test(file.src)) {
+                      images.push(file);
+                    } else {
+                      audios.push(file);
+                    }
                   }
-                  else {
-                    audios.push(file);
+                  if (+type === 2) {
+                    return (
+                      <Card title="整改信息" className={styles.card} bordered={false} key={id}>
+                        <DescriptionList style={{ marginBottom: 16 }}>
+                          <Description term="整改单位">
+                            <Ellipsis tooltip={!!companyName} lines={1} style={{ height: 22 }}>
+                              {companyName || getEmptyData()}
+                            </Ellipsis>
+                          </Description>
+                          <Description term="整改部门">
+                            <Ellipsis tooltip={!!deptName} lines={1} style={{ height: 22 }}>
+                              {deptName || getEmptyData()}
+                            </Ellipsis>
+                          </Description>
+                          <Description term="实际整改人">
+                            <Ellipsis tooltip={!!operator_name} lines={1} style={{ height: 22 }}>
+                              {operator_name || getEmptyData()}
+                            </Ellipsis>
+                          </Description>
+                          <Description term="实际整改日期">
+                            <Ellipsis tooltip={!!create_time_str} lines={1} style={{ height: 22 }}>
+                              {create_time_str || getEmptyData()}
+                            </Ellipsis>
+                          </Description>
+                          <Description term="原因分析">
+                            <Ellipsis tooltip={!!analysis} lines={1} style={{ height: 22 }}>
+                              {analysis || getEmptyData()}
+                            </Ellipsis>
+                          </Description>
+                          <Description term="整改金额">
+                            <Ellipsis tooltip lines={1} style={{ height: 22 }}>
+                              {typeof money === 'number' ? money : 0}
+                            </Ellipsis>
+                          </Description>
+                        </DescriptionList>
+                        <DescriptionList style={{ marginBottom: 16 }} col={1}>
+                          <Description term="整改措施">
+                            <Ellipsis tooltip={!!operate_content} lines={1} style={{ height: 22 }}>
+                              {operate_content || getEmptyData()}
+                            </Ellipsis>
+                          </Description>
+                          <Description term="整改图片">
+                            {images.length > 0
+                              ? images.map(({ key, src }, index) => (
+                                  <img
+                                    src={src}
+                                    key={key}
+                                    alt=""
+                                    style={{
+                                      marginRight: 10,
+                                      width: 30,
+                                      height: 40,
+                                      cursor: 'pointer',
+                                    }}
+                                    onClick={() => {
+                                      this.setState({ images, currentImage: index });
+                                    }}
+                                  />
+                                ))
+                              : getEmptyData()}
+                          </Description>
+                          {audios.length > 0 && (
+                            <Description term="整改音频">
+                              {audios.map(({ key, src }, index) => (
+                                <div key={key}>
+                                  <a href={src} target="_blank" rel="noopener noreferrer">
+                                    {`整改音频${index + 1}`}
+                                  </a>
+                                </div>
+                              ))}
+                            </Description>
+                          )}
+                        </DescriptionList>
+                      </Card>
+                    );
+                  } else if (+type === 3) {
+                    return (
+                      <Card title="复查信息" className={styles.card} bordered={false} key={id}>
+                        <DescriptionList style={{ marginBottom: 16 }}>
+                          <Description term="复查单位">
+                            <Ellipsis tooltip={!!companyName} lines={1} style={{ height: 22 }}>
+                              {companyName || getEmptyData()}
+                            </Ellipsis>
+                          </Description>
+                          <Description term="复查人">
+                            <Ellipsis tooltip={!!operator_name} lines={1} style={{ height: 22 }}>
+                              {operator_name || getEmptyData()}
+                            </Ellipsis>
+                          </Description>
+                          <Description term="复查日期">
+                            <Ellipsis tooltip={!!create_time_str} lines={1} style={{ height: 22 }}>
+                              {create_time_str || getEmptyData()}
+                            </Ellipsis>
+                          </Description>
+                        </DescriptionList>
+                        <DescriptionList style={{ marginBottom: 16 }} col={1}>
+                          <Description term="备注">
+                            <Ellipsis tooltip={!!remark} lines={1} style={{ height: 22 }}>
+                              {remark || getEmptyData()}
+                            </Ellipsis>
+                          </Description>
+                          <Description term="复查图片">
+                            {images.length > 0
+                              ? images.map(({ key, src }, index) => (
+                                  <img
+                                    src={src}
+                                    key={key}
+                                    alt=""
+                                    style={{
+                                      marginRight: 10,
+                                      width: 30,
+                                      height: 40,
+                                      cursor: 'pointer',
+                                    }}
+                                    onClick={() => {
+                                      this.setState({ images, currentImage: index });
+                                    }}
+                                  />
+                                ))
+                              : getEmptyData()}
+                          </Description>
+                          {audios.length > 0 && (
+                            <Description term="复查音频">
+                              {audios.map(({ key, src }, index) => (
+                                <div key={key}>
+                                  <a href={src} target="_blank" rel="noopener noreferrer">
+                                    {`复查音频${index + 1}`}
+                                  </a>
+                                </div>
+                              ))}
+                            </Description>
+                          )}
+                        </DescriptionList>
+                      </Card>
+                    );
                   }
+                  return null;
                 }
-                if (+type === 2) {
-                  return (
-                    <Card title="整改信息" className={styles.card} bordered={false} key={id}>
-                      <DescriptionList style={{ marginBottom: 16 }}>
-                        <Description term="整改人"><Ellipsis tooltip={!!operator_name} lines={1} style={{ height: 22 }}>{operator_name || getEmptyData()}</Ellipsis></Description>
-                        <Description term="实际整改日期"><Ellipsis tooltip={!!create_time_str} lines={1} style={{ height: 22 }}>{create_time_str || getEmptyData()}</Ellipsis></Description>
-                        <Description term="整改金额"><Ellipsis tooltip lines={1} style={{ height: 22 }}>{typeof money === 'number' ? money : 0}</Ellipsis></Description>
-                      </DescriptionList>
-                      <DescriptionList style={{ marginBottom: 16 }} col={1}>
-                        <Description term="整改措施"><Ellipsis tooltip={!!operate_content} lines={1} style={{ height: 22 }}>{operate_content || getEmptyData()}</Ellipsis></Description>
-                        <Description term="整改图片">{images.length > 0 ? (
-                          images.map(({ key, src }, index) => (
-                            <img
-                              src={src}
-                              key={key}
-                              alt=""
-                              style={{ marginRight: 10, width: 30, height: 40, cursor: 'pointer' }}
-                              onClick={() => { this.setState({ images, currentImage: index }); }}
-                            />
-                          ))
-                        ) : getEmptyData()}</Description>
-                        {audios.length > 0 && (
-                          <Description term="整改音频">{(
-                            audios.map(({ key, src }, index) => (
-                              <div key={key}>
-                                <a href={src} target="_blank" rel="noopener noreferrer">
-                                  {`整改音频${index + 1}`}
-                                </a>
-                              </div>
-                            ))
-                          )}</Description>
-                        )}
-                      </DescriptionList>
-                    </Card>
-                  );
-                }
-                else if (+type === 3) {
-                  return (
-                    <Card title="复查信息" className={styles.card} bordered={false} key={id}>
-                      <DescriptionList style={{ marginBottom: 16 }}>
-                        <Description term="复查人"><Ellipsis tooltip={!!operator_name} lines={1} style={{ height: 22 }}>{operator_name || getEmptyData()}</Ellipsis></Description>
-                        <Description term="复查日期"><Ellipsis tooltip={!!create_time_str} lines={1} style={{ height: 22 }}>{create_time_str || getEmptyData()}</Ellipsis></Description>
-                      </DescriptionList>
-                      <DescriptionList style={{ marginBottom: 16 }} col={1}>
-                        <Description term="备注"><Ellipsis tooltip={!!remark} lines={1} style={{ height: 22 }}>{remark || getEmptyData()}</Ellipsis></Description>
-                        <Description term="复查图片">{images.length > 0 ? (
-                          images.map(({ key, src }, index) => (
-                            <img
-                              src={src}
-                              key={key}
-                              alt=""
-                              style={{ marginRight: 10, width: 30, height: 40, cursor: 'pointer' }}
-                              onClick={() => { this.setState({ images, currentImage: index }); }}
-                            />
-                          ))
-                        ) : getEmptyData()}</Description>
-                        {audios.length > 0 && (
-                          <Description term="复查音频">{(
-                            audios.map(({ key, src }, index) => (
-                              <div key={key}>
-                                <a href={src} target="_blank" rel="noopener noreferrer">
-                                  {`复查音频${index + 1}`}
-                                </a>
-                              </div>
-                            ))
-                          )}</Description>
-                        )}
-                      </DescriptionList>
-                    </Card>
-                  );
-                }
-                return null;
-              })}
+              )}
             </Fragment>
           )}
           {tab === '2' && this.renderDocumentList()}
