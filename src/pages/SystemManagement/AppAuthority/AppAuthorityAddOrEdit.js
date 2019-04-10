@@ -4,7 +4,7 @@ import router from 'umi/router';
 import { Button, Card, TreeSelect, Select, Input, Form, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { METHODS, NODE_TYPES, formItemLayout, tailFormItemLayout, getIdMap, sortTree, addProps } from '@/pages/SystemManagement/PageAuthority/utils';
+import { METHODS, formItemLayout, tailFormItemLayout, getIdMap, sortTree, addProps } from '@/pages/SystemManagement/PageAuthority/utils';
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
@@ -13,47 +13,62 @@ const { Option } = Select;
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '系统管理', name: '系统管理' },
-  { title: 'APP权限配置', name: 'APP权限配置', href: '/system-management/page-authority/index' },
+  { title: 'APP权限配置', name: 'APP权限配置', href: '/system-management/app-authority/index' },
   { title: '配置', name: '配置' },
 ];
 
-const KEYS = ['parentId', 'code', 'zname', 'showZname', 'sort', 'type', 'method', 'url'];
+const KEYS = ['parentId', 'code', 'showName', 'sort', 'type', 'method', 'url'];
+const TREE_TYPES = ['企业', '政府', '维保'];
 
-@connect(({ pageAuth, loading }) => ({ pageAuth, loading: loading.models.pageAuth }))
+@connect(({ appAuth, loading }) => ({ appAuth, loading: loading.models.appAuth }))
 @Form.create()
-export default class PageAuthorityAdd extends Component {
+export default class AppAuthorityAdd extends Component {
   componentDidMount() {
     const { match: { params: { id } }, dispatch, form: { setFieldsValue } } = this.props;
     if (id !== 'undefined')
       dispatch({
-        type: 'pageAuth/fetchOne',
-        payload: id,
-        callback: (data) => {
+        type: 'appAuth/fetchList',
+        payload: { ids: id },
+        callback: data => {
+          if (!Array.isArray(data) || !data.length)
+            return;
+
+          const detail = data[0];
+          this.fetchTree(detail.type);
           setFieldsValue(KEYS.reduce((prev, next) => {
             if (next === 'code') {
-              const codes = data[next].split('.').filter(c => c);
+              const codes = detail[next].split('.').filter(c => c);
               prev[next] = codes[codes.length - 1];
             }
             else
-              prev[next] = data[next];
+              prev[next] = detail[next];
             return prev;
           }, {}));
-        },
-      });
-      dispatch({
-        type: 'pageAuth/fetchTree',
-        callback: data => {
-          [this.idMap, this.codeMap] = getIdMap(data);
-          addProps(data);
-          sortTree(data);
-
-          // console.log(this.idMap);
         },
       });
   }
 
   idMap = {};
   codeMap = {};
+
+  handleTreeTypeChange = value => {
+    const { form: { setFieldsValue } } = this.props;
+    this.fetchTree(value, () => setFieldsValue({ parentId: undefined }));
+  };
+
+  fetchTree = (type, cb) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'appAuth/fetchTree',
+      payload: { type },
+      callback: data => {
+        [this.idMap, this.codeMap] = getIdMap(data);
+        addProps(data);
+        sortTree(data);
+        cb && cb();
+      },
+    });
+  };
 
   handleSubmit = e => {
     const { dispatch, match: { params: { id } } } = this.props;
@@ -62,12 +77,11 @@ export default class PageAuthorityAdd extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        // console.log('Received values of form: ', values);
         const { parentId, code } = values;
         const parentCode = this.codeMap[parentId];
         const newVals = {
           ...values,
-          ename: code,
+          // ename: code,
           code: parentCode ? `${parentCode}.${code}` : code,
           parentIds: [...this.idMap[parentId], parentId].join(','),
         };
@@ -76,15 +90,13 @@ export default class PageAuthorityAdd extends Component {
         if (!isAdd)
           newVals.id = id;
 
-        // console.log(newVals);
-
         dispatch({
-          type: `pageAuth/${isAdd ? 'postAuth' :'putAuth'}`,
+          type: `appAuth/${isAdd ? 'postAuth' :'putAuth'}`,
           payload: newVals,
           callback: (code, msg) => {
             if (code === 200) {
               message.success('成功');
-              router.push('/system-management/page-authority/index');
+              router.push('/system-management/app-authority/index');
             }
             else
               message.warn(msg);
@@ -99,11 +111,9 @@ export default class PageAuthorityAdd extends Component {
       loading,
       form: { getFieldDecorator },
       match: { params: { id } },
-      pageAuth: { tree=[] },
+      appAuth: { tree=[] },
     } = this.props;
     const isAdd = id === 'undefined';
-
-    // console.log(tree);
 
     // 在节点数外面加一层根节点NULL层，以此来可以添加或编辑节点时，可以在最顶层添加模块
     const newTreeData = [{ title: 'NULL', value: '0', key: '0', children: tree }];
@@ -112,15 +122,16 @@ export default class PageAuthorityAdd extends Component {
       <PageHeaderLayout
           title={`${isAdd ? '新增' : '编辑'}APP权限`}
           breadcrumbList={breadcrumbList}
-          // content={
-          //   <div>
-          //     layout
-          //   </div>
-          // }
-          // action={<Button type="primary" onClick={e => router.push("/system-management/page-authority/index")}>返回</Button>}
         >
           <Card>
             <Form onSubmit={this.handleSubmit}>
+              <FormItem label="权限树类型" {...formItemLayout}>
+                {getFieldDecorator('type', { rules: [{ required: true, message: '请选择权限树类型' }] })(
+                  <Select placeholder="请选择权限树类型" onChange={this.handleTreeTypeChange}>
+                    {TREE_TYPES.map((c, i) => <Option key={c} value={(i + 1).toString()}>{c}</Option>)}
+                  </Select>
+                )}
+              </FormItem>
               <FormItem label="父节点" {...formItemLayout}>
                 {getFieldDecorator('parentId', { rules: [{ required: true, message: '请选择父节点' }] })(
                   <TreeSelect
@@ -135,19 +146,9 @@ export default class PageAuthorityAdd extends Component {
                   <Input placeholder="请输入编码值" />
                 )}
               </FormItem>
-              {/* <FormItem label="英文名字" {...formItemLayout}>
-                {getFieldDecorator('ename', { rules: [{ required: true, message: '请输入英文名称' }] })(
-                  <Input placeholder="请输入英文名称" />
-                )}
-              </FormItem> */}
-              <FormItem label="中文名字(参考)" {...formItemLayout}>
-                {getFieldDecorator('zname', {})(
-                  <Input placeholder="请输入中文名称(参考)" />
-                )}
-              </FormItem>
-              <FormItem label="中文名字(显示)" {...formItemLayout}>
-                {getFieldDecorator('showZname', { rules: [{ required: true, message: '请输入中文名称(显示)' }] })(
-                  <Input placeholder="请输入中文名称(显示)" />
+              <FormItem label="中文名字" {...formItemLayout}>
+                {getFieldDecorator('showName', { rules: [{ required: true, message: '请输入中文名称' }] })(
+                  <Input placeholder="请输入中文名称" />
                 )}
               </FormItem>
               <FormItem label="排序优先级" {...formItemLayout}>
@@ -155,13 +156,13 @@ export default class PageAuthorityAdd extends Component {
                   <Input placeholder="请输入排序优先级" />
                 )}
               </FormItem>
-              <FormItem label="节点类型" {...formItemLayout}>
+              {/* <FormItem label="节点类型" {...formItemLayout}>
                 {getFieldDecorator('type', {})(
                   <Select placeholder="请选择节点类型">
                     {NODE_TYPES.map(n => <Option key={n} value={n}>{n}</Option>)}
                   </Select>
                 )}
-              </FormItem>
+              </FormItem> */}
               <FormItem label="请求方式" {...formItemLayout}>
                 {getFieldDecorator('method', {})(
                   <Select placeholder="请选择请求方式">

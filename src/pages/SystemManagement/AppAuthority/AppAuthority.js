@@ -10,6 +10,7 @@ import {
   Input,
   Popconfirm,
   Form,
+  Select,
   notification,
 } from 'antd';
 
@@ -34,7 +35,9 @@ for (let i = 0; i < 30; i++) {
   });
 }
 const { Item: FormItem } = Form;
+const { Option } = Select;
 const EditableContext = createContext();
+const OPTIONS = ['企业', '政府', '维保'].map((c, i) => <Option key={c} value={i + 1}>{c}</Option>);
 
 // 包裹EditableCell用的，其子元素在props.children中传入
 const EditableRow = ({ form, index, ...props }) => (
@@ -85,8 +88,8 @@ class EditableCell extends Component {
   }
 }
 
-@connect(({ pageAuth, loading }) => ({ pageAuth, loading: loading.models.pageAuth }))
-export default class PageAuthority extends Component {
+@connect(({ appAuth, loading }) => ({ appAuth, loading: loading.models.appAuth }))
+export default class AppAuthority extends Component {
   constructor(props) {
     super(props);
     this.state = { data: [], editingKey: '' };
@@ -94,42 +97,35 @@ export default class PageAuthority extends Component {
       {
         title: '编号',
         dataIndex: 'id',
-        width: 300,
+        width: 250,
         // align: 'center',
         // editable: true,
       },
       {
-        title: '父节点编号',
+        title: '父节点',
         dataIndex: 'parentId',
-        width: 300,
+        width: 250,
         // align: 'center',
         // editable: true,
       },
       {
         title: '编码',
         dataIndex: 'code',
-        width: 450,
+        // width: 350,
         // align: 'center',
         editable: true,
       },
+      // {
+      //   title: '英文名称',
+      //   dataIndex: 'ename',
+      //   width: 200,
+      //   align: 'center',
+      //   editable: true,
+      // },
       {
-        title: '英文名称',
-        dataIndex: 'ename',
+        title: '中文名称',
+        dataIndex: 'showName',
         width: 200,
-        align: 'center',
-        editable: true,
-      },
-      {
-        title: '中文名称(参考)',
-        dataIndex: 'zname',
-        width: 250,
-        align: 'center',
-        editable: true,
-      },
-      {
-        title: '中文名称(显示)',
-        dataIndex: 'showZname',
-        width: 250,
         align: 'center',
         editable: true,
       },
@@ -140,27 +136,25 @@ export default class PageAuthority extends Component {
         align: 'center',
         editable: true,
       },
-      {
-        title: '节点类型',
-        dataIndex: 'type',
-        width: 100,
-        align: 'center',
-        editable: true,
-      },
-      {
-        title: '请求方式',
-        dataIndex: 'method',
-        width: 100,
-        align: 'center',
-        editable: true,
-      },
-      {
-        title: '路径',
-        dataIndex: 'url',
-        // width: 350,
-        // align: 'center',
-        editable: true,
-      },
+      // {
+      //   title: '权限树类型',
+      //   dataIndex: 'type',
+      //   width: 100,
+      //   align: 'center',
+      //   editable: true,
+      // },
+      // {
+      //   title: '请求方式',
+      //   dataIndex: 'method',
+      //   width: 100,
+      //   align: 'center',
+      //   editable: true,
+      // },
+      // {
+      //   title: '路径',
+      //   dataIndex: 'url',
+      //   editable: true,
+      // },
       {
         title: '操作',
         dataIndex: 'operation',
@@ -190,7 +184,7 @@ export default class PageAuthority extends Component {
                 </span>
               ) : (
                 <span>
-                  <Link to={`/system-management/page-authority/add-or-edit/${record.id}`}>编辑</Link>
+                  <Link to={`/system-management/app-authority/add-or-edit/${record.id}`}>编辑</Link>
                   {/* <a onClick={() => this.edit(record.id)}>编辑</a>
                   <Popconfirm title="确定删除？" onConfirm={null}>
                     <a onClick={null} className={styles.delete}>
@@ -207,33 +201,38 @@ export default class PageAuthority extends Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'pageAuth/fetchTree',
-      callback: data => {
-        addProps(data);
-        sortTree(data);
-      },
-    });
-    this.fetchList();
+    this.fetchTree(1);
+    this.fetchList([], true, 1);
   }
 
-  // componentWillUnmount() {
-  //   const { dispatch } = this.props;
-  //   dispatch({
-  //     type: 'pageAuth/saveTree',
-  //     payload: [],
-  //   });
-  // }
-
+  treeType = 1;
   selectedKeys = [];
   checkedKeys = [];
 
-  fetchList = (ids=[], initial=true) => {
+  fetchTree = type => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'pageAuth/fetchList',
-      payload: { ids: ids.join(',') },
+      type: 'appAuth/fetchTree',
+      payload: { type },
+      callback: data => {
+        addProps(data);
+        sortTree(data);
+        this.selectedKeys = [];
+        this.checkedKeys = [];
+      },
+    });
+  };
+
+  fetchList = (ids=[], initial=true, type) => {
+    const { dispatch } = this.props;
+    let payload;
+    if (ids.length)
+      payload = { ids: ids.join(',') };
+    else
+      payload = { type };
+    dispatch({
+      type: 'appAuth/fetchList',
+      payload,
       callback: list => {
         this.setState({ data: initial ? list.slice(0, 20) : list });
       },
@@ -282,12 +281,11 @@ export default class PageAuthority extends Component {
   };
 
   onSearch = e => {
-    // console.log(this.checkedKeys);
-    this.fetchList(this.checkedKeys, false);
+    this.fetchList(this.checkedKeys, false, this.treeType);
   };
 
   jumpTo = id => {
-    router.push(`/system-management/page-authority/add-or-edit/${id}`);
+    router.push(`/system-management/app-authority/add-or-edit/${id}`);
   };
 
   handleEditClick = e => {
@@ -303,9 +301,14 @@ export default class PageAuthority extends Component {
     this.jumpTo(id);
   };
 
+  handleSelectChange = value => {
+    this.treeType = value;
+    this.fetchTree(value);
+    this.fetchList([], true, value);
+  };
+
   render() {
-    // console.log(this.props.pageAuth);
-    const { pageAuth: { tree=[] } } = this.props;
+    const { appAuth: { tree=[] } } = this.props;
     const { data } = this.state;
 
     const components = {
@@ -334,17 +337,6 @@ export default class PageAuthority extends Component {
     return (
       <PageHeaderLayout
         title="APP权限树"
-        // breadcrumbList={breadcrumbList}
-        // content={
-        //   <div>
-        //     layout
-        //   </div>
-        // }
-        // action={
-        //   <Button type="primary" onClick={e => this.jumpTo()}>
-        //     新增
-        //   </Button>
-        // }
       >
         <Card>
           <div className={styles.btnContainer}>
@@ -352,6 +344,16 @@ export default class PageAuthority extends Component {
             <Button onClick={this.handleEditClick} className={styles.editBtn}>编辑</Button>
             <Button onClick={e => this.jumpTo()}>新增</Button>
           </div>
+          <h3>
+            权限树类型：
+            <Select
+              defaultValue={1}
+              onChange={this.handleSelectChange}
+            >
+              {OPTIONS}
+            </Select>
+          </h3>
+          <h3>权限树：</h3>
           <Tree
             checkable
             // defaultExpandAll
@@ -369,7 +371,7 @@ export default class PageAuthority extends Component {
             dataSource={data}
             columns={columns}
             pagination={false}
-            scroll={{ x: 2600, y: 600 }}
+            scroll={{ x: 1300, y: 600 }}
             // rowClassName="editable-row"
           />
         </Card>

@@ -82,7 +82,7 @@ export function getIdMap(tree) {
 
 export function addProps(tree) {
   traverse(tree, item => {
-    item.title = item.showZname;
+    item.title = item.showZname || item.showName;
     item.value = item.key = item.id;
     item.children = item.childMenus;
   }, 'childMenus');
@@ -92,12 +92,12 @@ export function renderRoleTreeNodes(data) {
   return data.map((item) => {
     if (item.childMenus) {
       return (
-        <TreeNode title={item.showZname} key={item.id} dataRef={item}>
+        <TreeNode title={item.showZname || item.showName} key={item.id} dataRef={item}>
           {renderRoleTreeNodes(item.childMenus)}
         </TreeNode>
       );
     }
-    return <TreeNode title={item.showZname} key={item.id} dataRef={item} />;
+    return <TreeNode title={item.showZname || item.showName} key={item.id} dataRef={item} />;
   });
 }
 
