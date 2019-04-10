@@ -25,6 +25,7 @@ export default {
         value: '随手拍',
       },
     ],
+
     /* 检查结果列表 */
     checkResultList: [
       {
@@ -36,6 +37,7 @@ export default {
         value: '异常',
       },
     ],
+
     selectList: [],
   },
 

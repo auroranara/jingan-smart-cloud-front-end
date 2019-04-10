@@ -47,13 +47,9 @@ const getLabelByStatus = function(status) {
       return '';
   }
 };
-/* 获取无数据 */
-// const getEmptyData = () => {
-//   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-// };
 
 /**
- * 隐患排查报表详情
+ * 企业自查报表详情
  */
 @connect(({ companyReport, user, loading }) => ({
   companyReport,
@@ -125,6 +121,13 @@ export default class App extends PureComponent {
       {
         title: '检查结果',
         dataIndex: 'check_result',
+        render: val => {
+          return val && val.length > 0
+            ? val.map((v, i) => {
+                return <div key={i}> {v.userName}</div>;
+              })
+            : '';
+        },
       },
       {
         title: '相关隐患',

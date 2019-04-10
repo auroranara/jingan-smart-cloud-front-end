@@ -17,7 +17,6 @@ import { connect } from 'dva';
 import moment from 'moment';
 import Link from 'umi/link';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import Ellipsis from '@/components/Ellipsis';
 
 import styles from './CompanyReport.less';
 const { Option } = Select;
@@ -68,7 +67,7 @@ const fieldLabels = {
 const getRootChild = () => document.querySelector('#root>div');
 
 /* session前缀 */
-const sessionPrefix = 'hidden_danger_report_list_';
+const sessionPrefix = 'company_report_list_';
 
 /**
  * 企业自查报表
@@ -104,11 +103,6 @@ export default class App extends PureComponent {
       {
         title: '检查人',
         dataIndex: 'allCheckPersonNames',
-        render: val => (
-          <Ellipsis tooltip length={7} style={{ overflow: 'visible' }}>
-            {val}
-          </Ellipsis>
-        ),
       },
       {
         title: '检查日期',
@@ -124,15 +118,25 @@ export default class App extends PureComponent {
       {
         title: '隐患情况',
         dataIndex: 'status',
-        render: val => (
-          <div>
-            <p style={{ marginBottom: 0 }}>
-              总数：
-              {val}
-            </p>
-            <p style={{ marginBottom: 0 }}>待整改 1 / 待复查 1</p>
-          </div>
-        ),
+        render: val => {
+          const { finish, overtime, rectifyNum, reviewNum, total } = val;
+          const resultStatus = ['已超期', '待整改', '待复查', '已关闭'];
+          const nums = [overtime, rectifyNum, reviewNum, finish];
+          return (
+            <div>
+              <p style={{ marginBottom: 0 }}>
+                总数：
+                {total || 0}
+              </p>
+              {resultStatus
+                .map((data, index) => {
+                  return nums[index] ? `${data} ${nums[index]}` : '';
+                })
+                .filter(data => data)
+                .join('/')}
+            </div>
+          );
+        },
       },
       {
         title: '操作',
@@ -170,13 +174,13 @@ export default class App extends PureComponent {
         currentUser: { id },
       },
     } = this.props;
+
     // 从sessionStorage中获取存储的控件值
     const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
       pageNum: 1,
       pageSize: 10,
-      // query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
-      // query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
     };
+
     const { pageNum, pageSize, query_start_time, query_end_time, ...rest } = payload;
     // 重置控件
     setFieldsValue({
@@ -227,7 +231,7 @@ export default class App extends PureComponent {
       query_start_time: query_start_time && `${query_start_time.format('YYYY/MM/DD')} 00:00:00`,
       query_end_time: query_end_time && `${query_end_time.format('YYYY/MM/DD')} 23:59:59`,
     };
-    // 获取隐患列表
+    // 获取列表
     dispatch({
       type: 'companyReport/fetchList',
       payload,
