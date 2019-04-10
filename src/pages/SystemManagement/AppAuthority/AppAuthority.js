@@ -124,7 +124,7 @@ export default class AppAuthority extends Component {
       // },
       {
         title: '中文名称',
-        dataIndex: 'showName',
+        dataIndex: 'showZname',
         width: 200,
         align: 'center',
         editable: true,

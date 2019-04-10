@@ -17,7 +17,7 @@ const breadcrumbList = [
   { title: '配置', name: '配置' },
 ];
 
-const KEYS = ['parentId', 'code', 'showName', 'sort', 'type', 'method', 'url'];
+const KEYS = ['parentId', 'code', 'showZname', 'sort', 'type', 'method', 'url'];
 const TREE_TYPES = ['企业', '政府', '维保'];
 
 @connect(({ appAuth, loading }) => ({ appAuth, loading: loading.models.appAuth }))
@@ -46,6 +46,8 @@ export default class AppAuthorityAdd extends Component {
           }, {}));
         },
       });
+    else
+      this.fetchTree(1);
   }
 
   idMap = {};
@@ -126,8 +128,8 @@ export default class AppAuthorityAdd extends Component {
           <Card>
             <Form onSubmit={this.handleSubmit}>
               <FormItem label="权限树类型" {...formItemLayout}>
-                {getFieldDecorator('type', { rules: [{ required: true, message: '请选择权限树类型' }] })(
-                  <Select placeholder="请选择权限树类型" onChange={this.handleTreeTypeChange}>
+                {getFieldDecorator('type', { initialValue: '1', rules: [{ required: true, message: '请选择权限树类型' }] })(
+                  <Select placeholder="请选择权限树类型" disabled={!isAdd} onChange={this.handleTreeTypeChange}>
                     {TREE_TYPES.map((c, i) => <Option key={c} value={(i + 1).toString()}>{c}</Option>)}
                   </Select>
                 )}
@@ -147,7 +149,7 @@ export default class AppAuthorityAdd extends Component {
                 )}
               </FormItem>
               <FormItem label="中文名字" {...formItemLayout}>
-                {getFieldDecorator('showName', { rules: [{ required: true, message: '请输入中文名称' }] })(
+                {getFieldDecorator('showZname', { rules: [{ required: true, message: '请输入中文名称' }] })(
                   <Input placeholder="请输入中文名称" />
                 )}
               </FormItem>

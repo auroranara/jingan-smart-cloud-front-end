@@ -13,6 +13,7 @@ const { TreeNode } = Tree;
 
 // 标题
 const title = '角色详情';
+const TYPES = { 1: '企业', 2: '政府', 3: '维保' };
 // 获取链接地址
 const { role: { list: backUrl, edit: editUrl } } = urls;
 // 获取code
@@ -127,12 +128,13 @@ export default class RoleDetail extends PureComponent {
 
   /* 渲染基础信息 */
   renderBasicInfo() {
-    const { role: { detail: { sysRole: { name, description } } } } = this.props;
+    const { role: { detail: { sysRole: { name, description, type } } } } = this.props;
 
     return (
       <Card title="基本信息">
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term="角色名称">{name || getEmptyData()}</Description>
+          <Description term="角色类型">{type ? TYPES[type] : getEmptyData()}</Description>
           <Description term="角色描述">{<div style={{ whiteSpace: 'pre-wrap' }}>{description}</div> || getEmptyData()}</Description>
         </DescriptionList>
       </Card>
@@ -158,15 +160,24 @@ export default class RoleDetail extends PureComponent {
   renderAuthorizationConfiguration() {
     const { role: { detail: { treeMap } } } = this.props;
     const menu = treeMap ? (treeMap.menu || []) : [];
+    const appMenu = treeMap && Array.isArray(treeMap.appMenu) ? treeMap.appMenu : [];
     const tree = sortTree(menu);
+    const appTree = sortTree(appMenu);
 
     return (
       <Card title="权限配置" style={{ marginTop: '24px' }}>
-        <DescriptionList col={1} style={{ marginBottom: 16 }}>
-          <Description term="权限树">
+        <DescriptionList col={2} style={{ marginBottom: 16 }}>
+          <Description term="WEB权限树">
             {treeMap ? (
               <Tree>
                 {this.renderTreeNodes(tree)}
+              </Tree>
+            ) : getEmptyData()}
+          </Description>
+          <Description term="APP权限树">
+            {treeMap ? (
+              <Tree>
+                {this.renderTreeNodes(appTree)}
               </Tree>
             ) : getEmptyData()}
           </Description>
