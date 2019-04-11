@@ -147,6 +147,7 @@ export default class RoleHandler extends PureComponent {
   /* 挂载后 */
   componentDidMount() {
     const {
+      dispatch,
       fetchDetail,
       fetchPermissionTree,
       clearDetail,
@@ -159,30 +160,53 @@ export default class RoleHandler extends PureComponent {
     if (id) {
       // 根据id获取详情
       fetchDetail({
-        payload: {
-          id,
+        payload: { id },
+        success: detail => {
+          const type = detail && detail.sysRole ? detail.sysRole.type : undefined;
+          type ? this.fetchAppTree(type, tree => this.initialAppPermissionTree = tree) : dispatch({ type: 'role/saveAppPermissionTree', payload: [] });
         },
       });
     } else {
       // 清空详情
       clearDetail();
+      this.fetchAppTree(1, tree => this.initialAppPermissionTree = tree);
     }
     // 获取WEB权限树
     if (permissionTree.length === 0) {
       fetchPermissionTree();
     }
-    // 获取APP权限树
-    this.fetchAppTree(1);
   }
 
+  initialAppPermissionTree = [];
+
   handleTreeTypeChange = value => {
-    const { form: { setFieldsValue } } = this.props;
-    this.fetchAppTree(value, () => setFieldsValue({ appPermissions: undefined }));
+    const {
+      form: { setFieldsValue },
+      role: {
+        detail: {
+          appPermissions,
+          sysRole: { type },
+        },
+      },
+    } = this.props;
+
+    this.fetchAppTree(
+      value,
+      // 在model变化前，先清空值，不然会报warning
+      () => { setFieldsValue({ appPermissions: undefined }); },
+      // model变化后再设置值，不然当先设置值时，就会报warning，且model后变化，就没办法正确设置上值了
+      () => {
+        if (type && value === type) {
+          const appValue = appPermissions ? uncheckParent(this.initialAppPermissionTree, appPermissions) : [];
+          setFieldsValue({ appPermissions: appValue });
+        }
+      }
+    );
   };
 
-  fetchAppTree = (type, callback) => {
+  fetchAppTree = (type, callback, callbackLast) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'role/fetchAppPermissionTree', payload: { type }, callback });
+    dispatch({ type: 'role/fetchAppPermissionTree', payload: { type }, callback, callbackLast });
   };
 
   /* 提交 */
@@ -206,9 +230,10 @@ export default class RoleHandler extends PureComponent {
         const {
           role: { permissionTree, appPermissionTree },
         } = this.props;
-        const { name, description, permissions, appPermissions } = values;
+        const { type, name, description, permissions, appPermissions } = values;
         const payload = {
           id,
+          type,
           name: name.trim(),
           description,
           permissions: checkParent(permissionTree, permissions).join(','),
@@ -248,9 +273,12 @@ export default class RoleHandler extends PureComponent {
   /* 基本信息 */
   renderBasicInfo() {
     const {
+      match: {
+        params: { id },
+      },
       role: {
         detail: {
-          sysRole: { name, description } = {},
+          sysRole: { name, description, type } = {},
         },
       },
       form: { getFieldDecorator },
@@ -273,10 +301,13 @@ export default class RoleHandler extends PureComponent {
             }}
           >
             {getFieldDecorator('type', {
-              initialValue: '1',
+              initialValue: type,
               rules: [{ required: true, message: '请选择角色类型' }],
             })(
-              <Select onChange={this.handleTreeTypeChange}>
+              <Select
+                // disabled={!!id}
+                onChange={this.handleTreeTypeChange}
+              >
                 {OPTIONS}
               </Select>
             )}
@@ -297,7 +328,7 @@ export default class RoleHandler extends PureComponent {
             {getFieldDecorator('name', {
               initialValue: name,
               rules: [{ required: true, message: '请输入角色名称', whitespace: true }],
-            })(<Input maxLength="50" placeholder="请输入角色名称" />)}
+            })(<Input maxLength={50} placeholder="请输入角色名称" />)}
           </Form.Item>
           <Form.Item
             label="角色描述"
@@ -348,9 +379,10 @@ export default class RoleHandler extends PureComponent {
       form: { getFieldDecorator },
     } = this.props;
     const value = permissions && uncheckParent(permissionTree, permissions);
-    const appValue = appPermissions && uncheckParent(appPermissionTree, appPermissions);
+    const appValue = appPermissions ? uncheckParent(appPermissionTree, appPermissions) : [];
     const tree = sortTree(permissionTree);
     const appTree = sortTree(appPermissionTree);
+    // console.log('app', appTree, appValue);
 
     return (
       <Card title="权限配置" style={{ marginTop: '24px' }}>

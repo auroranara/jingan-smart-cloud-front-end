@@ -114,7 +114,7 @@ export default {
       }
     },
     // 获取APP权限树
-    *fetchAppPermissionTree({ payload, callback }, { call, put }) {
+    *fetchAppPermissionTree({ payload, callback, callbackLast }, { call, put }) {
       let response = yield call(getAppPermissionTree, payload);
       response = response || {};
       const { code=500 } = response;
@@ -122,6 +122,7 @@ export default {
         const tree = response.data && Array.isArray(response.data.menu) ? response.data.menu : [];
         callback && callback(tree);
         yield put({ type: 'saveAppPermissionTree', payload: tree });
+        callbackLast && callbackLast(tree);
       }
     },
     /* 新增角色 */
