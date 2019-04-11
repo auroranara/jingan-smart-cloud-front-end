@@ -79,7 +79,7 @@ class VideoPlay extends Component {
         key_id: videoId,
       },
       success: response => {
-        console.log('response', response);
+        // console.log('response', response);
         if (videoId) {
           let index = videoList.findIndex(item => {
             return item.key_id === videoId;

@@ -32,9 +32,9 @@ export default class RenderInPopup extends Component {
     let disY = 0;
     oDiv.onmousedown = function(event) {
       const handle = document.querySelector(dragHandle);
-      console.log('handleoffsetLeft',handle.offsetLeft);
-      console.log('handleoffsetTop',handle.offsetTop);
-      console.log('event',event);
+      // console.log('handleoffsetLeft',handle.offsetLeft);
+      // console.log('handleoffsetTop',handle.offsetTop);
+      // console.log('event',event);
       let ifHandle = false;
       event.path.forEach(element => {
         if(element === handle) ifHandle = true;

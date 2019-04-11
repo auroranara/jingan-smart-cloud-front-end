@@ -1196,6 +1196,31 @@ export default class App extends PureComponent {
     this.setState({ ...newState });
   };
 
+  handlePlay = (list, callback) => {
+    const MediaPlayUrls = list.map(({ rtsp_address, name }) => ({ videoUrl: rtsp_address, videoName: name }));
+    // const MediaPlayUrls = [{"videoUrl":"rtsp://admin:12345@192.168.16.250:554/h264/ch7/sub/av_stream","videoName":"视频1"},{"videoUrl":"rtsp://admin:12345@192.168.16.250:554/h264/ch7/sub/av_stream","videoName":"视频2"}];
+    const url = 'ws://localhost:10035/test';
+    const ws = new WebSocket(url);
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ MediaPlayUrls }));
+    };
+
+    ws.onmessage = (e) => {
+      console.log(e.data);
+      ws.close();
+    }
+
+    ws.onerror = () => {
+      console.log('error');
+      callback();
+      ws.close();
+    }
+
+    ws.onclose = () => {
+      console.log('close');
+    }
+  }
+
   render() {
     // 从props中获取数据
     const {
@@ -1309,6 +1334,7 @@ export default class App extends PureComponent {
             this.handleViewDangerDetail({ id: hiddenDangerId });
             this.removeFourColorTip(id, hiddenDangerId);
           }}
+          handlePlay={this.handlePlay}
           tips={fourColorTips}
           latestHiddenDangerId={latestHiddenDangerId}
         />
@@ -1356,7 +1382,7 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 重点部位监控 */}
-                <VideoSurveillance handleShowVideo={this.handleShowVideo} data={allCamera} />
+                <VideoSurveillance handlePlay={this.handlePlay} handleShowVideo={this.handleShowVideo} data={allCamera} />
               </div>
             </div>
             <div className={styles.item}>
