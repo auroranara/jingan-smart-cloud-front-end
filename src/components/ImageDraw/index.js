@@ -388,7 +388,6 @@ class ImageDraw extends PureComponent {
     // 如果reference存在，则使用reference数据计算最大边界及设置缩放等级以适应容器
     if (reference) {
       const { latlngs, radius, latLng } = reference;
-      // console.log('latlngs', latlngs);
       if (radius) {
         center = latLng;
         maxBounds = L.circle(
@@ -408,8 +407,7 @@ class ImageDraw extends PureComponent {
       } = maxBounds;
       const boundWidth = lng2 - lng1;
       const boundHeight = lat2 - lat1;
-      // console.log('boundWidth', boundWidth);
-      // console.log('boundHeight', boundHeight);
+
       zoom = this.getFitZoom(boundWidth, boundHeight);
       if (maxBoundsRatio !== 1) {
         maxBounds = L.latLngBounds(
