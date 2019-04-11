@@ -12,7 +12,13 @@ import {
   exportData,
   // 获取文书列表
   getDocumentList,
-} from '@/services/hiddenDangerReport.js'
+  // 新添隐患字典数据
+  getHiddenContent,
+  // 获取隐患地点---建筑物及楼层
+  getHiddenPosition,
+  // 获取隐患部门.整改部门列表
+  getHiddendeptContent,
+} from '@/services/hiddenDangerReport.js';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
 import router from 'umi/router';
@@ -20,7 +26,7 @@ import urls from '@/utils/urls';
 /* 格式化网格树 */
 const formatGrid = function(tree) {
   const list = [];
-  for(let { grid_id, grid_name, children } of tree) {
+  for (let { grid_id, grid_name, children } of tree) {
     if (children && children.length > 0) {
       children = formatGrid(children);
     }
@@ -39,20 +45,16 @@ const formatTimeLine = function(timeLine) {
     let type = +item.type;
     if (type === 1) {
       type = '隐患创建';
-    }
-    else if (type === 2) {
+    } else if (type === 2) {
       // 如果index大于1，意味着必然为重新整改
       if (index > 1) {
         type = '重新整改';
-      }
-      else {
+      } else {
         type = '隐患整改';
       }
-    }
-    else if (type === 3) {
+    } else if (type === 3) {
       type = '隐患复查';
-    }
-    else if (type === 4) {
+    } else if (type === 4) {
       type = '隐患关闭';
     }
     return {
@@ -63,15 +65,15 @@ const formatTimeLine = function(timeLine) {
   });
   const lastIndex = timeLine.length - 1;
   const { type } = timeLine[lastIndex];
-  switch(+type) {
+  switch (+type) {
     case 1:
-      list.push({ type: '隐患整改', id: lastIndex+1 }, { type: '隐患复查', id: lastIndex+2 });
+      list.push({ type: '隐患整改', id: lastIndex + 1 }, { type: '隐患复查', id: lastIndex + 2 });
       break;
     case 2:
-      list.push({ type: '隐患复查', id: lastIndex+1 });
+      list.push({ type: '隐患复查', id: lastIndex + 1 });
       break;
     case 3:
-      list.push({ type: '重新整改', id: lastIndex+1 }, { type: '隐患复查', id: lastIndex+2 });
+      list.push({ type: '重新整改', id: lastIndex + 1 }, { type: '隐患复查', id: lastIndex + 2 });
       break;
     default:
       break;
@@ -87,7 +89,9 @@ const {
 /**
  * 跳转到500页面
  */
-const error = () => { router.push(exceptionUrl); };
+const error = () => {
+  router.push(exceptionUrl);
+};
 
 export default {
   namespace: 'hiddenDangerReport',
@@ -196,6 +200,27 @@ export default {
         value: '复查意见书',
       },
     ],
+    /* 上报途径列表 */
+    reportingChannelsList: [
+      {
+        key: '2',
+        value: '随手拍',
+      },
+      {
+        key: '3',
+        value: '风险点上报',
+      },
+      {
+        key: '4',
+        value: '监督点上报',
+      },
+    ],
+    /* 新添隐患字段列表 */
+    hiddenContentList: [],
+    /* 隐患地点列表 */
+    hiddenPositionList: [],
+    /* 隐患部门、整改部门列表 */
+    hiddendeptContentList: [],
   },
 
   effects: {
@@ -215,8 +240,7 @@ export default {
         if (callback) {
           callback(response.data);
         }
-      }
-      else {
+      } else {
         error();
       }
     },
@@ -233,8 +257,7 @@ export default {
         if (callback) {
           callback(response.data);
         }
-      }
-      else {
+      } else {
         error();
       }
     },
@@ -260,8 +283,7 @@ export default {
         if (callback) {
           callback(value);
         }
-      }
-      else {
+      } else {
         error();
       }
     },
@@ -282,8 +304,7 @@ export default {
         if (callback) {
           callback(list);
         }
-      }
-      else {
+      } else {
         error();
       }
     },
@@ -310,9 +331,44 @@ export default {
         if (callback) {
           callback(response.data.list);
         }
-      }
-      else {
+      } else {
         error();
+      }
+    },
+
+    // 获取新添隐患字段
+    *fetchHiddenContent({ payload }, { call, put }) {
+      const response = yield call(getHiddenContent, payload);
+      const { type } = payload;
+      const obj = {};
+      if (response && response.code === 200) {
+        obj[type] = response.data.list;
+        yield put({
+          type: 'queryHiddenContent',
+          payload: obj,
+        });
+      }
+    },
+
+    // 获取隐患地点---建筑物及楼层
+    *fetchHiddePosition({ payload }, { call, put }) {
+      const response = yield call(getHiddenPosition, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'queryHiddenPosition',
+          payload: response.data.list,
+        });
+      }
+    },
+
+    // 获取隐患部门、整改部门列表
+    *fetchHiddedeptContent({ payload }, { call, put }) {
+      const response = yield call(getHiddendeptContent, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'queryHiddendeptContent',
+          payload: response.data.list,
+        });
       }
     },
   },
@@ -321,7 +377,12 @@ export default {
     /**
      * 保存字段
      **/
-    save(state, { payload: { key, value } }) {
+    save(
+      state,
+      {
+        payload: { key, value },
+      }
+    ) {
       return {
         ...state,
         [key]: value,
@@ -330,7 +391,12 @@ export default {
     /**
      * 追加数组
      */
-    append(state, { payload: { list, pagination } }) {
+    append(
+      state,
+      {
+        payload: { list, pagination },
+      }
+    ) {
       return {
         ...state,
         list: {
@@ -339,5 +405,29 @@ export default {
         },
       };
     },
+
+    // 获取隐患新添字段
+    queryHiddenContent(state, { payload: hiddenContentList }) {
+      return {
+        ...state,
+        ...hiddenContentList,
+      };
+    },
+
+    // 获取隐患地点---建筑物及楼层
+    queryHiddenPosition(state, { payload: hiddenPositionList }) {
+      return {
+        ...state,
+        hiddenPositionList,
+      };
+    },
+
+    // 获取隐患部门、整改部门列表
+    queryHiddendeptContent(state, { payload: hiddendeptContentList }) {
+      return {
+        ...state,
+        hiddendeptContentList,
+      };
+    },
   },
-}
+};

@@ -38,3 +38,24 @@ export async function exportData(params) {
 export async function getDocumentList({ id }) {
   return request(`/acloud_new/v2/hiddenDanger/showDoc/${id}`);
 }
+
+/**
+ * 新添隐患字典数据
+ */
+export async function getHiddenContent(params) {
+  return request(`/acloud_new/v2/mobile/getHiddenContent.json?${stringify(params)}`);
+}
+
+/**
+ * 获取隐患地点---建筑物及楼层
+ */
+export async function getHiddenPosition(params) {
+  return request(`/acloud_new/v2/mobile/getPosition.json?${stringify(params)}`);
+}
+
+/**
+ * 获取隐患部门、整改部门列表
+ */
+export async function getHiddendeptContent(params) {
+  return request(`/acloud_new/v2/mobile/getdeptContent.json?${stringify(params)}`);
+}
