@@ -158,9 +158,9 @@ export default class RoleDetail extends PureComponent {
 
   /* 权限配置 */
   renderAuthorizationConfiguration() {
-    const { role: { detail: { treeMap } } } = this.props;
+    const { role: { detail: { treeMap, appTreeMap } } } = this.props;
     const menu = treeMap ? (treeMap.menu || []) : [];
-    const appMenu = treeMap && Array.isArray(treeMap.appMenu) ? treeMap.appMenu : [];
+    const appMenu = appTreeMap && Array.isArray(appTreeMap.menu) ? appTreeMap.menu : [];
     const tree = sortTree(menu);
     const appTree = sortTree(appMenu);
 

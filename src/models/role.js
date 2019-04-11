@@ -17,6 +17,7 @@ export default {
       sysRole: {},
     },
     rolePermissions: [],
+    roleAppPermissions: [],
     permissionTree: [],
     appPermissionTree: [],
     data: {
@@ -82,17 +83,17 @@ export default {
     // 在账号菜单中(非当前的角色菜单)获取roles对应的权限
     *fetchRolePermissions({ payload, success, error }, { call, put }) {
       const response = yield call(queryRolePermissions, payload);
-      // console.log(response);
       if (response && response.code === 200) {
         let rolePermissions = [];
+        let roleAppPermissions = [];
         if (response.data && response.data.permissions)
           rolePermissions = Array.from(new Set(response.data.permissions.split(',').filter(k => k)));
+        if (response.data && response.data.appPermissions)
+          roleAppPermissions = Array.from(new Set(response.data.appPermissions.split(',').filter(k => k)));
 
-        yield put({
-          type: 'saveRolePermissions',
-          payload: rolePermissions,
-        });
-        success &&  success(rolePermissions);
+        yield put({ type: 'saveRolePermissions', payload: rolePermissions });
+        yield put({ type: 'saveRoleAppPermissions', payload: roleAppPermissions });
+        success &&  success(rolePermissions, roleAppPermissions);
       }
       else
         error && error();
@@ -207,6 +208,9 @@ export default {
     // 保存roles对应的permissions
     saveRolePermissions(state, { payload: rolePermissions }) {
       return { ...state, rolePermissions };
+    },
+    saveRoleAppPermissions(state, action) {
+      return { ...state, roleAppPermissions: action.payload };
     },
     /* 获取权限树 */
     queryPermissionTree(state, { payload: permissionTree }) {
