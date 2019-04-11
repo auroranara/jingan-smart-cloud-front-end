@@ -444,6 +444,13 @@ export default class App extends PureComponent {
       item_name: undefined,
       level: undefined,
       documentTypeIds: undefined,
+      inspectionType: undefined,
+      source_type: undefined,
+      hiddenType: undefined,
+      hiddenDept: undefined,
+      location: undefined,
+      rectify_dept: undefined,
+      analysis: undefined,
     });
     this.handleSearch();
   };
