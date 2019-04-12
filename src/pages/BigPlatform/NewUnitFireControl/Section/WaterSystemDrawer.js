@@ -24,7 +24,7 @@ function title(i) {
     case 0:
       return '消火栓';
     case 1:
-      return '自动喷淋';
+      return '喷淋';
     case 2:
       return '水池/水箱';
     default:

@@ -15,7 +15,7 @@ const waterSys = {
     code: 'hydrant',
   },
   '102': {
-    name: '自动喷淋系统',
+    name: '喷淋系统',
     code: 'pistol',
   },
   '103': {

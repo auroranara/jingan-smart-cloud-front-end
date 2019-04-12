@@ -34,12 +34,13 @@ const hosts = {
   nanxiao: '58.215.178.100:12084',
   sk: '192.168.10.21',
   ly: '192.168.10.19:8080',
+  show: 'www.jinganyun.net',
 };
 
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.show}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -49,7 +50,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.show}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },

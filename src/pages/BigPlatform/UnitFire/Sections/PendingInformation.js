@@ -120,7 +120,7 @@ export default class PendingInformation extends PureComponent {
                     {+deviceType === 101
                       ? '消防栓系统'
                       : +deviceType === 102
-                        ? '自动喷淋系统'
+                        ? '喷淋系统'
                         : '水池/水箱'}
                   </span>
                 </Ellipsis>
