@@ -12,8 +12,10 @@ import {
   Spin,
   Badge,
   TreeSelect,
+  AutoComplete,
 } from 'antd';
 import { connect } from 'dva';
+import debounce from 'lodash/debounce';
 import moment from 'moment';
 import Lightbox from 'react-images';
 import Link from 'umi/link';
@@ -132,10 +134,11 @@ const generateDeptTree = data => {
 /**
  * 隐患排查报表
  */
-@connect(({ hiddenDangerReport, user, loading }) => ({
+@connect(({ hiddenDangerReport, user, account, loading }) => ({
   hiddenDangerReport,
+  account,
   user,
-  loading: loading.models.hiddenDangerReport,
+  loading: loading.models.hiddenDangerReport && loading.models.account,
 }))
 @Form.create()
 export default class App extends PureComponent {
@@ -289,6 +292,7 @@ export default class App extends PureComponent {
     this.isCompany = isCompany;
     // 默认表格字段
     this.defaultColumns = defaultColumns;
+    this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
   }
 
   /**
@@ -299,7 +303,7 @@ export default class App extends PureComponent {
       dispatch,
       form: { setFieldsValue },
       user: {
-        currentUser: { id, companyId },
+        currentUser: { id, companyId, unitType },
       },
     } = this.props;
     // 从sessionStorage中获取存储的控件值
@@ -370,6 +374,12 @@ export default class App extends PureComponent {
       type: 'hiddenDangerReport/fetchHiddedeptContent',
       payload: { companyId },
     });
+
+    // 根据用户类型获取单位
+    dispatch({
+      type: 'account/fetchUnitListFuzzy',
+      // payload: { unitType },
+    });
   }
 
   /**
@@ -429,13 +439,14 @@ export default class App extends PureComponent {
    */
   handleReset = () => {
     const {
+      dispatch,
       form: { setFieldsValue },
     } = this.props;
     // const createTime = [moment().subtract(1, 'months'), moment()];
     // 重置控件
     setFieldsValue({
       grid_id: undefined,
-      company_name: undefined,
+      company_id: undefined,
       code: undefined,
       createTime: undefined,
       report_source: undefined,
@@ -453,6 +464,14 @@ export default class App extends PureComponent {
       analysis: undefined,
     });
     this.handleSearch();
+    dispatch({
+      type: 'account/fetchUnitListFuzzy',
+      payload: {
+        // unitName: value && value.trim(),
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
   };
 
   /**
@@ -543,13 +562,20 @@ export default class App extends PureComponent {
     // 重置控件
     setFieldsValue({
       grid_id: undefined,
-      company_name: undefined,
+      company_id: undefined,
       code: undefined,
       report_source: undefined,
       status: undefined,
       business_type: undefined,
       item_name: undefined,
       level: undefined,
+      inspectionType: undefined,
+      source_type: undefined,
+      hiddenType: undefined,
+      hiddenDept: undefined,
+      location: undefined,
+      rectify_dept: undefined,
+      analysis: undefined,
       createTime:
         query_start_time && query_end_time
           ? [
@@ -578,6 +604,46 @@ export default class App extends PureComponent {
         pageSize: size,
       })
     );
+  };
+
+  // 单位下拉框输入
+  handleUnitIdChange = value => {
+    const {
+      dispatch,
+      form: { setFieldsValue },
+    } = this.props;
+    // 根据输入值获取列表
+    dispatch({
+      type: 'account/fetchUnitListFuzzy',
+      payload: {
+        unitName: value && value.trim(),
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
+    // 清除
+    setFieldsValue({
+      hiddenDept: undefined,
+      rectify_dept: undefined,
+      location: undefined,
+    });
+  };
+
+  // 单位下拉框选择
+  handleUnitSelect = value => {
+    const { dispatch } = this.props;
+
+    // 获取整改和隐患部门
+    dispatch({
+      type: 'hiddenDangerReport/fetchHiddedeptContent',
+      payload: { companyId: value },
+    });
+
+    // 获取隐患地点
+    dispatch({
+      type: 'hiddenDangerReport/fetchHiddePosition',
+      payload: { companyId: value },
+    });
   };
 
   /**
@@ -612,6 +678,9 @@ export default class App extends PureComponent {
    **/
   renderFilterForm() {
     const {
+      user: {
+        currentUser: { unitType },
+      },
       hiddenDangerReport: {
         gridList,
         sourceList,
@@ -626,34 +695,55 @@ export default class App extends PureComponent {
         hiddenPositionList,
         hiddendeptContentList,
       },
+      account: { unitIdes },
       form: { getFieldDecorator },
+      loading,
     } = this.props;
+
     return (
       <Form className={styles.form}>
         <Row gutter={{ md: 24 }}>
           {/* 所属网格 */}
-          {!this.isCompany && (
-            <Col xl={8} md={12} sm={24} xs={24}>
-              <Form.Item label={fieldLabels.grid_id}>
-                {getFieldDecorator('grid_id')(
-                  <TreeSelect
-                    treeData={gridList}
-                    placeholder="请选择"
-                    getPopupContainer={getRootChild}
-                    allowClear
-                    dropdownStyle={{
-                      maxHeight: '50vh',
-                    }}
-                  />
-                )}
-              </Form.Item>
-            </Col>
-          )}
+          {!this.isCompany &&
+            unitType !== 1 && (
+              <Col xl={8} md={12} sm={24} xs={24}>
+                <Form.Item label={fieldLabels.grid_id}>
+                  {getFieldDecorator('grid_id')(
+                    <TreeSelect
+                      treeData={gridList}
+                      placeholder="请选择"
+                      getPopupContainer={getRootChild}
+                      allowClear
+                      dropdownStyle={{
+                        maxHeight: '50vh',
+                      }}
+                    />
+                  )}
+                </Form.Item>
+              </Col>
+            )}
           {/* 单位名称 */}
           {!this.isCompany && (
             <Col xl={8} md={12} sm={24} xs={24}>
               <Form.Item label={fieldLabels.company_name}>
-                {getFieldDecorator('company_name')(<Input placeholder="请输入" />)}
+                {getFieldDecorator('company_id')(
+                  <AutoComplete
+                    mode="combobox"
+                    optionLabelProp="children"
+                    placeholder="请选择"
+                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    onSearch={this.handleUnitIdChange}
+                    onSelect={this.handleUnitSelect}
+                    // onBlur={this.handleUnitIdBlur}
+                    filterOption={false}
+                  >
+                    {unitIdes.map(({ id, name }) => (
+                      <Option value={id} key={id}>
+                        {name}
+                      </Option>
+                    ))}
+                  </AutoComplete>
+                )}
               </Form.Item>
             </Col>
           )}
@@ -667,11 +757,7 @@ export default class App extends PureComponent {
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.createTime}>
               {getFieldDecorator('createTime', {})(
-                <RangePicker
-                  style={{ width: '100%' }}
-                  getCalendarContainer={getRootChild}
-                  allowClear
-                />
+                <RangePicker getCalendarContainer={getRootChild} allowClear />
               )}
             </Form.Item>
           </Col>
@@ -728,8 +814,10 @@ export default class App extends PureComponent {
                   placeholder="请选择"
                   getPopupContainer={getRootChild}
                   allowClear
+                  style={{ width: '100%' }}
                   dropdownStyle={{
                     maxHeight: '50vh',
+                    width: 350,
                   }}
                 />
               )}
@@ -850,19 +938,22 @@ export default class App extends PureComponent {
             </Form.Item>
           </Col>
           {/* 相关文书 */}
-          <Col xl={8} md={12} sm={24} xs={24}>
-            <Form.Item label={fieldLabels.documentTypeIds}>
-              {getFieldDecorator('documentTypeIds')(
-                <Select mode="multiple" style={{ width: '100%' }} placeholder="请选择" allowClear>
-                  {documentTypeList.map(({ key, value }) => (
-                    <Option value={key} key={key}>
-                      {value}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </Form.Item>
-          </Col>
+          {unitType !== 1 && (
+            <Col xl={8} md={12} sm={24} xs={24}>
+              <Form.Item label={fieldLabels.documentTypeIds}>
+                {getFieldDecorator('documentTypeIds')(
+                  <Select mode="multiple" placeholder="请选择" allowClear>
+                    {documentTypeList.map(({ key, value }) => (
+                      <Option value={key} key={key}>
+                        {value}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+          )}
+
           {/* 按钮 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item>
