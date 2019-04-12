@@ -1416,7 +1416,7 @@ export default class UnitFireControl extends PureComponent {
             data={companyDevicesByType}
             onClose={() => this.handleDrawerVisibleChange('hydrant')}
           />
-          {/* 自动喷淋系统 */}
+          {/* 喷淋系统 */}
           <PistolDrawer
             visible={pistolDrawerVisible}
             data={companyDevicesByType}
