@@ -11,11 +11,30 @@ const getEmptyData = () => {
 };
 const { Description } = DescriptionList;
 const statusColor = ['#ff4848', '#ffb650', '#04fdff'];
+
+const { projectKey } = global.PROJECT_CONFIG;
+const isVague = projectKey.indexOf('czey') >= 0;
+function nameToVague(str) {
+  let newStr = '';
+  if (str && str.length === 1) return str;
+  else if (str && str.length === 2) {
+    newStr = str.substr(0, 1) + '*';
+  } else if (str && str.length > 2) {
+    newStr = str.substr(0, 1) + '*' + str.substr(-1);
+  } else return str;
+  return newStr;
+}
+
+function phoneToVague(str) {
+  if (!str) return str;
+  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
+  return newStr;
+}
 export default class MaintenanceCheckDrawer extends PureComponent {
   getOption = score => {
     let color;
-    if(+score < 60) color = statusColor[0];
-    else if(+score >= 60 && +score < 80) color = statusColor[1];
+    if (+score < 60) color = statusColor[0];
+    else if (+score >= 60 && +score < 80) color = statusColor[1];
     else color = statusColor[2];
     const option = {
       color: [color, '#00294a'],
@@ -114,8 +133,10 @@ export default class MaintenanceCheckDrawer extends PureComponent {
                   const { userName, phoneNumber } = data;
                   return (
                     <Col span={12}>
-                      {userName}
-                      <span className={styles.phone}>{phoneNumber}</span>
+                      {isVague ? nameToVague(userName) : userName}
+                      <span className={styles.phone}>
+                        {isVague ? phoneToVague(phoneNumber) : phoneNumber}
+                      </span>
                     </Col>
                   );
                 })}

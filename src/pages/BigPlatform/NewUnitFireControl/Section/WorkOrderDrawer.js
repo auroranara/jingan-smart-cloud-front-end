@@ -33,6 +33,25 @@ const ITEM_MAP = {
 const STYLES = ['zero', 'one', 'two'];
 const ARROW_STYLE = { color: '#0FF', position: 'absolute', top: 20, right: 20 };
 
+const { projectKey } = global.PROJECT_CONFIG;
+const isVague = projectKey.indexOf('czey') >= 0;
+function nameToVague(str) {
+  let newStr = '';
+  if (str && str.length === 1) return str;
+  else if (str && str.length === 2) {
+    newStr = str.substr(0, 1) + '*';
+  } else if (str && str.length > 2) {
+    newStr = str.substr(0, 1) + '*' + str.substr(-1);
+  } else return str;
+  return newStr;
+}
+
+function phoneToVague(str) {
+  if (!str) return str;
+  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
+  return newStr;
+}
+
 // const CARDS = [...Array(10).keys()].map(i => ({
 //   id: i,
 //   time: '2018-11-28',
@@ -63,7 +82,9 @@ function OrderCard(props) {
   const isHandled = type === 1;
   const isOneKey = report_type === '2'; // 是否为一键报修
   const isFire = +orderType === 1 || +orderType === 2;
-  data.assign = `${finishByName} ${finishByPhone}`;
+  data.assign = `${isVague ? nameToVague(finishByName) : finishByName} ${
+    isVague ? phoneToVague(finishByPhone) : finishByPhone
+  }`;
   data.number =
     component_region || component_region === 0
       ? label

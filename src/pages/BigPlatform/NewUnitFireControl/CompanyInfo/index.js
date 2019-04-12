@@ -17,6 +17,25 @@ import iconCheck from '@/assets/icon-check.png';
  */
 const { Description } = DescriptionList;
 
+const { projectKey } = global.PROJECT_CONFIG;
+const isVague = projectKey.indexOf('czey') >= 0;
+function nameToVague(str) {
+  let newStr = '';
+  if (str && str.length === 1) return str;
+  else if (str && str.length === 2) {
+    newStr = str.substr(0, 1) + '*';
+  } else if (str && str.length > 2) {
+    newStr = str.substr(0, 1) + '*' + str.substr(-1);
+  } else return str;
+  return newStr;
+}
+
+function phoneToVague(str) {
+  if (!str) return str;
+  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
+  return newStr;
+}
+
 @connect(({ newUnitFireControl }) => ({
   newUnitFireControl,
 }))
@@ -59,8 +78,10 @@ export default class CompanyInfo extends PureComponent {
                 {PrincipalName && (
                   <Description term="主要负责人">
                     <div className={styles.manWrapper} style={{ width: '145px' }}>
-                      {PrincipalName}
-                      <span className={styles.phone}>{PrincipalPhone}</span>
+                      {isVague ? nameToVague(PrincipalName) : PrincipalName}
+                      <span className={styles.phone}>
+                        {isVague ? phoneToVague(PrincipalPhone) : PrincipalPhone}
+                      </span>
                     </div>
                   </Description>
                 )}
@@ -87,8 +108,10 @@ export default class CompanyInfo extends PureComponent {
                   {newUsers.map((data, index) => {
                     return (
                       <div className={styles.manWrapper} key={index}>
-                        {data.userName}
-                        <span className={styles.phone}>{data.phoneNumber}</span>
+                        {isVague ? nameToVague(data.userName) : data.userName}
+                        <span className={styles.phone}>
+                          {isVague ? phoneToVague(data.phoneNumber) : data.phoneNumber}
+                        </span>
                       </div>
                     );
                   })}

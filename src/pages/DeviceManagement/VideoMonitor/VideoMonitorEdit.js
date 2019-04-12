@@ -22,11 +22,12 @@ const fieldLabels = {
   companyName: '单位名称',
   equipmentID: '设备ID',
   cameraID: '摄像头ID',
-  videoArea: '视频所属区域',
+  videoArea: '视频名称',
   // videoStatus: '视频状态',
   videoURL: '视频URL',
   picAddress: '图片地址',
   inspectSentries: '是否用于查岗',
+  status: '视频监控状态',
   fourPictureX: '四色图坐标 -X：',
   fourPictureY: '四色图坐标 -Y：',
   firePictureX: '消防平面图坐标 -X',
@@ -162,7 +163,7 @@ export default class VideoMonitorEdit extends PureComponent {
           deviceId,
           keyId,
           name,
-          // status,
+          status,
           rtspAddress,
           photoAddress,
           xNum,
@@ -180,7 +181,7 @@ export default class VideoMonitorEdit extends PureComponent {
           videoId: id,
           keyId,
           name,
-          // status,
+          status: +status,
           companyId: companyIdParams || companyId || unitId,
           rtspAddress,
           photoAddress,
@@ -423,7 +424,7 @@ export default class VideoMonitorEdit extends PureComponent {
       )
         callback();
       else callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾，不能含有大写字母');
-    } else callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾，不能含有大写字母');
+    } else callback();
   };
 
   // 渲染视频设备信息
@@ -439,7 +440,7 @@ export default class VideoMonitorEdit extends PureComponent {
             deviceId,
             keyId,
             name,
-            // status,
+            status,
             rtspAddress,
             photoAddress,
             isInspection,
@@ -548,14 +549,26 @@ export default class VideoMonitorEdit extends PureComponent {
             )}
           </FormItem>
 
+          <FormItem {...formItemLayout} label={fieldLabels.videoArea}>
+            {getFieldDecorator('name', {
+              initialValue: name,
+              rules: [
+                {
+                  required: true,
+                  message: '请输入视频名称',
+                },
+              ],
+            })(<Input placeholder="请输入视频名称" />)}
+          </FormItem>
+
           <FormItem {...formItemLayout} label={fieldLabels.equipmentID}>
             {getFieldDecorator('deviceId', {
               initialValue: deviceId,
               rules: [
-                {
-                  required: true,
-                  message: '请输入设备ID',
-                },
+                // {
+                //   required: true,
+                //   message: '请输入设备ID',
+                // },
                 {
                   validator: this.validatorID,
                 },
@@ -567,27 +580,15 @@ export default class VideoMonitorEdit extends PureComponent {
             {getFieldDecorator('keyId', {
               initialValue: keyId,
               rules: [
-                {
-                  required: true,
-                  message: '请输入摄像头ID',
-                },
+                // {
+                //   required: true,
+                //   message: '请输入摄像头ID',
+                // },
                 {
                   validator: this.validatorID,
                 },
               ],
             })(<Input placeholder="请输入摄像头ID" />)}
-          </FormItem>
-
-          <FormItem {...formItemLayout} label={fieldLabels.videoArea}>
-            {getFieldDecorator('name', {
-              initialValue: name,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入视频所属区域',
-                },
-              ],
-            })(<Input placeholder="请输入视频所属区域" />)}
           </FormItem>
 
           {/*
@@ -607,10 +608,10 @@ export default class VideoMonitorEdit extends PureComponent {
             {getFieldDecorator('rtspAddress', {
               initialValue: rtspAddress,
               rules: [
-                {
-                  required: true,
-                  message: '请输入视频URL',
-                },
+                // {
+                //   required: true,
+                //   message: '请输入视频URL',
+                // },
               ],
             })(<Input placeholder="请输入视频URL" />)}
           </FormItem>
@@ -631,6 +632,13 @@ export default class VideoMonitorEdit extends PureComponent {
               valuePropName: 'checked',
               initialValue: !!isInspection,
             })(<Switch checkedChildren="是" unCheckedChildren="否" />)}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label={fieldLabels.status}>
+            {getFieldDecorator('status', {
+              valuePropName: 'checked',
+              initialValue: (!status && +status !== 0) || +status === 1,
+            })(<Switch checkedChildren="启用" unCheckedChildren="禁用" />)}
           </FormItem>
         </Form>
 

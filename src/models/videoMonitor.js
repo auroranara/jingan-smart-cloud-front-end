@@ -1,6 +1,7 @@
 import {
   addVideoDevice,
   updateVideoDevice,
+  deleteVideoDevice,
   queryVideoCompaniesList,
   queryVideoList,
   queryVideoDetail,
@@ -149,6 +150,19 @@ export default {
       }
       callback && callback(response.code);
     },
+    // 删除视频
+    *deleteVideoDevice({ payload, success, error, callback }, { call, put }) {
+      const response = yield call(deleteVideoDevice, payload);
+      if (response.code === 200) {
+        yield put({ type: 'removeVideoList', payload });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+      callback && callback(response.code);
+    },
 
     // 视频设备列表
     *fetchEquipmentList({ payload, callback }, { call, put }) {
@@ -186,164 +200,164 @@ export default {
     },
     // 获取视频绑定的信标（人员定位）
     *fetchVideoBeacons({ payload }, { call, put }) {
-      const response = yield call(fetchVideoBeacons, payload)
+      const response = yield call(fetchVideoBeacons, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveVideoDevice',
           payload: response.data,
-        })
+        });
       }
     },
     // 获取未绑定视频的信标（人员定位）
     *fetchVideoBeaconsAvailable({ payload }, { call, put }) {
-      const response = yield call(fetchVideoBeaconsAvailable, payload)
+      const response = yield call(fetchVideoBeaconsAvailable, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveAvailableVideoDevice',
           payload: response.data,
-        })
+        });
       }
     },
     // 绑定信标（人员定位）
     *bindBeacon({ payload, success, error }, { call, put }) {
-      const response = yield call(bindBeacon, payload)
+      const response = yield call(bindBeacon, payload);
       if (response && response.code === 200) {
-        if (success) success()
-      } else if (error) error()
+        if (success) success();
+      } else if (error) error();
     },
     // 取消关联信标（人员定位）
     *unBindBeacon({ payload, success, error }, { call, put }) {
-      const response = yield call(unBindBeacon, payload)
+      const response = yield call(unBindBeacon, payload);
       if (response && response.code === 200) {
-        if (success) success()
-      } else if (error) error()
+        if (success) success();
+      } else if (error) error();
     },
     // 获取系统列表（全部）
     *fetchSystemList({ payload }, { call, put }) {
-      const response = yield call(fetchSystemList, payload)
+      const response = yield call(fetchSystemList, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveSystemList',
           payload: response.data.list,
-        })
+        });
       }
     },
     // 获取已绑定设备（动态监测）
-    * fetchBindedMonitorDevice({ payload }, { call, put }) {
-      const response = yield call(fetchBindedMonitorDevice, payload)
+    *fetchBindedMonitorDevice({ payload }, { call, put }) {
+      const response = yield call(fetchBindedMonitorDevice, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveVideoDevice',
           payload: response.data,
-        })
+        });
       }
     },
     // 获取未绑定设备（动态监测）
     *fetchUnBindedMonitorDevice({ payload }, { call, put }) {
-      const response = yield call(fetchUnBindedMonitorDevice, payload)
+      const response = yield call(fetchUnBindedMonitorDevice, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveAvailableVideoDevice',
           payload: response.data,
-        })
+        });
       }
     },
     // 视频绑定设备（动态监测）
     *bindedMonitorDevice({ payload, success, error }, { call }) {
-      const response = yield call(bindedMonitorDevice, payload)
+      const response = yield call(bindedMonitorDevice, payload);
       if (response && response.code === 200) {
-        if (success) success()
-      } else if (error) error()
+        if (success) success();
+      } else if (error) error();
     },
     // 视频解绑设备（动态监测）
     *unbindedMonitorDevice({ payload, success, error }, { call }) {
-      const response = yield call(unbindedMonitorDevice, payload)
+      const response = yield call(unbindedMonitorDevice, payload);
       if (response && response.code === 200) {
-        if (success) success()
-      } else if (error) error()
+        if (success) success();
+      } else if (error) error();
     },
     // 当前摄像头绑定的报警点位(火灾报警系统)
     *fetchBindedFireDevice({ payload }, { call, put }) {
-      const response = yield call(fetchBindedFireDevice, payload)
+      const response = yield call(fetchBindedFireDevice, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveVideoDevice',
           payload: response.data,
-        })
+        });
       }
     },
     // 当前摄像头可绑定的报警点位(火灾报警系统)
     *fetchUnBindedFireDevice({ payload }, { call, put }) {
-      const response = yield call(fetchUnBindedFireDevice, payload)
+      const response = yield call(fetchUnBindedFireDevice, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveAvailableVideoDevice',
           payload: response.data,
-        })
+        });
       }
     },
     // 绑定摄像头（批量）(火灾报警系统)
     *bindedFirerDevice({ payload, success, error }, { call, put }) {
-      const response = yield call(bindedFirerDevice, payload)
+      const response = yield call(bindedFirerDevice, payload);
       if (response && response.code === 200) {
-        if (success) success()
-      } else if (error) error()
+        if (success) success();
+      } else if (error) error();
     },
     // 解除绑定关系(火灾报警系统)
     *unbindedFirerDevice({ payload, success, error }, { call, put }) {
-      const response = yield call(unbindedFirerDevice, payload)
+      const response = yield call(unbindedFirerDevice, payload);
       if (response && response.code === 200) {
-        if (success) success()
-      } else if (error) error()
+        if (success) success();
+      } else if (error) error();
     },
     // 获取品牌列表
     *getOptionalList({ payload }, { call, put }) {
-      const response = yield call(getOptionalList, payload)
+      const response = yield call(getOptionalList, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveState',
           payload: { key: 'optionalList', value: response.data.list || [] },
-        })
+        });
       }
     },
     // 获取产品型号列表
     *getModelDescList({ payload }, { call, put }) {
-      const response = yield call(getModelDescList, payload)
+      const response = yield call(getModelDescList, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveState',
           payload: { key: 'modelDescList', value: response.data.list || [] },
-        })
+        });
       }
     },
     // 获取监测类型列表
     *getClassTypeList({ payload }, { call, put }) {
-      const response = yield call(getClassTypeList, payload)
+      const response = yield call(getClassTypeList, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveState',
           payload: { key: 'classTypeList', value: response.data.list || [] },
-        })
+        });
       }
     },
     // 获取消控主机和设施部件列表
     *fetchFireFilterList({ payload }, { call, put }) {
-      const response = yield call(fetchFireFilterList, payload)
+      const response = yield call(fetchFireFilterList, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveFireFilterList',
           payload: response.data,
-        })
+        });
       }
     },
     // 获取设施系统类型 传入key决定保存的参数
     *fetchDictList({ payload }, { call, put }) {
-      const response = yield call(fetchDictList, payload)
+      const response = yield call(fetchDictList, payload);
       if (response) {
         yield put({
           type: 'saveState',
           payload: { key: payload.key, value: response.result || [] },
-        })
+        });
       }
     },
   },
@@ -414,6 +428,17 @@ export default {
       };
     },
 
+    removeVideoList(state, { payload }) {
+      const { videoId } = payload;
+      const { list } = state;
+      const newList = list.filter(item => item.id !== videoId);
+      return {
+        ...state,
+        list: newList,
+        videoData: { list: newList },
+      };
+    },
+
     // 查看视频设备信息
     saveDetail(state, { payload }) {
       return {
@@ -442,10 +467,10 @@ export default {
         modal: payload,
       };
     },
-    saveVideoDevice(state, { payload: {
-      list = [],
-      pagination = { pageNum: 1, pageSize: 10, total: 0 },
-    } = {} }) {
+    saveVideoDevice(
+      state,
+      { payload: { list = [], pagination = { pageNum: 1, pageSize: 10, total: 0 } } = {} }
+    ) {
       return {
         ...state,
         associateDevice: {
@@ -453,12 +478,12 @@ export default {
           list,
           pagination,
         },
-      }
+      };
     },
-    saveAvailableVideoDevice(state, { payload: {
-      list = [],
-      pagination = { pageNum: 1, pageSize: 10, total: 0 },
-    } = {} }) {
+    saveAvailableVideoDevice(
+      state,
+      { payload: { list = [], pagination = { pageNum: 1, pageSize: 10, total: 0 } } = {} }
+    ) {
       return {
         ...state,
         associateDevice: {
@@ -466,26 +491,36 @@ export default {
           availableList: list,
           availablePagination: pagination,
         },
-      }
+      };
     },
     saveSystemList(state, { payload = [] }) {
       return {
         ...state,
         systemList: payload,
-      }
+      };
     },
-    saveState(state, { payload: { key, value } }) {
-      state[key] = value
+    saveState(
+      state,
+      {
+        payload: { key, value },
+      }
+    ) {
+      state[key] = value;
       return {
         ...state,
-      }
+      };
     },
-    saveFireFilterList(state, { payload: { deviceCodes = [], dictDataList = [] } }) {
+    saveFireFilterList(
+      state,
+      {
+        payload: { deviceCodes = [], dictDataList = [] },
+      }
+    ) {
       return {
         ...state,
         deviceCodes,
         dictDataList,
-      }
+      };
     },
   },
 };

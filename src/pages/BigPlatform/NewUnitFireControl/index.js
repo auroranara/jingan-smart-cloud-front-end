@@ -1197,7 +1197,10 @@ export default class App extends PureComponent {
   };
 
   handlePlay = (list, callback) => {
-    const MediaPlayUrls = list.map(({ rtsp_address, name }) => ({ videoUrl: rtsp_address, videoName: name }));
+    const MediaPlayUrls = list.map(({ rtsp_address, name }) => ({
+      videoUrl: rtsp_address,
+      videoName: name,
+    }));
     // const MediaPlayUrls = [{"videoUrl":"rtsp://admin:12345@192.168.16.250:554/h264/ch7/sub/av_stream","videoName":"视频1"},{"videoUrl":"rtsp://admin:12345@192.168.16.250:554/h264/ch7/sub/av_stream","videoName":"视频2"}];
     const url = 'ws://localhost:10035/test';
     const ws = new WebSocket(url);
@@ -1205,21 +1208,21 @@ export default class App extends PureComponent {
       ws.send(JSON.stringify({ MediaPlayUrls }));
     };
 
-    ws.onmessage = (e) => {
+    ws.onmessage = e => {
       console.log(e.data);
       ws.close();
-    }
+    };
 
     ws.onerror = () => {
       console.log('error');
       callback();
       ws.close();
-    }
+    };
 
     ws.onclose = () => {
       console.log('close');
-    }
-  }
+    };
+  };
 
   render() {
     // 从props中获取数据
@@ -1382,7 +1385,11 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 重点部位监控 */}
-                <VideoSurveillance handlePlay={this.handlePlay} handleShowVideo={this.handleShowVideo} data={allCamera} />
+                <VideoSurveillance
+                  handlePlay={this.handlePlay}
+                  handleShowVideo={this.handleShowVideo}
+                  data={allCamera}
+                />
               </div>
             </div>
             <div className={styles.item}>
@@ -1498,6 +1505,7 @@ export default class App extends PureComponent {
           visible={pointDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />*/}
+        {/* 点位巡查详情 */}
         <PointInspectionDrawer
           date={pointInspectionDrawerSelectedDate}
           handleChangeDate={this.handleChangePointInspectionDrawerSelectedDate}

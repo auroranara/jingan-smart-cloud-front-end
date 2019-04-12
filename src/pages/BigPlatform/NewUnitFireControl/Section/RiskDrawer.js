@@ -13,6 +13,25 @@ const CARDS = [...Array(10).keys()].map(i => ({
   status: Math.random() > 0.5 ? '正常' : '异常',
 }));
 
+const { projectKey } = global.PROJECT_CONFIG;
+const isVague = projectKey.indexOf('czey') >= 0;
+function nameToVague(str) {
+  let newStr = '';
+  if (str && str.length === 1) return str;
+  else if (str && str.length === 2) {
+    newStr = str.substr(0, 1) + '*';
+  } else if (str && str.length > 2) {
+    newStr = str.substr(0, 1) + '*' + str.substr(-1);
+  } else return str;
+  return newStr;
+}
+
+function phoneToVague(str) {
+  if (!str) return str;
+  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
+  return newStr;
+}
+
 function RiskCard(props) {
   const { point, examiner, date, status } = props;
 
@@ -25,7 +44,7 @@ function RiskCard(props) {
         </p>
         <p>
           <span className={styles.point}>检查人</span>
-          {examiner}
+          {isVague ? nameToVague(examiner) : examiner}
         </p>
         <p>
           <span className={styles.date}>检查时间</span>

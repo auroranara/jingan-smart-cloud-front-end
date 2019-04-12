@@ -13,6 +13,24 @@ const abnormal = 1; // 异常
 const rectify = 4; // 待检查
 const overTime = 3; // 超时检查
 
+const { projectKey } = global.PROJECT_CONFIG;
+const isVague = projectKey.indexOf('czey') >= 0;
+function nameToVague(str) {
+  let newStr = '';
+  if (str && str.length === 1) return str;
+  else if (str && str.length === 2) {
+    newStr = str.substr(0, 1) + '*';
+  } else if (str && str.length > 2) {
+    newStr = str.substr(0, 1) + '*' + str.substr(-1);
+  } else return str;
+  return newStr;
+}
+
+function phoneToVague(str) {
+  if (!str) return str;
+  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
+  return newStr;
+}
 @connect(({ newUnitFireControl }) => ({
   newUnitFireControl,
 }))
@@ -133,7 +151,7 @@ export default class CheckingDrawer extends PureComponent {
             { label: '点位名称', value: object_title },
             {
               label: '上次巡查人',
-              value: <Fragment>{user_name}</Fragment>,
+              value: <Fragment>{isVague ? nameToVague(user_name) : user_name}</Fragment>,
             },
             {
               label: '上次巡查日期',

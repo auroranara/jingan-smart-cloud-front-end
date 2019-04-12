@@ -13,6 +13,25 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(255, 250, 250, 0.45)' }}>暂无数据</span>;
 };
 
+const { projectKey } = global.PROJECT_CONFIG;
+const isVague = projectKey.indexOf('czey') >= 0;
+function nameToVague(str) {
+  let newStr = '';
+  if (str && str.length === 1) return str;
+  else if (str && str.length === 2) {
+    newStr = str.substr(0, 1) + '*';
+  } else if (str && str.length > 2) {
+    newStr = str.substr(0, 1) + '*' + str.substr(-1);
+  } else return str;
+  return newStr;
+}
+
+function phoneToVague(str) {
+  if (!str) return str;
+  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
+  return newStr;
+}
+
 export default class DrawerHiddenDangerDetail extends PureComponent {
   render() {
     const SPANS = [6, 18];
@@ -92,7 +111,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                               {level_name || getEmptyData()}
                             </Description>
                             <Description className={styles.line} term="检查人">
-                              {report_user_name || getEmptyData()}
+                              {isVague
+                                ? nameToVague(report_user_name)
+                                : report_user_name || getEmptyData()}
                             </Description>
                             <Description className={styles.line} term="隐患描述">
                               {desc || getEmptyData()}
@@ -101,7 +122,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                               {rectify_company_name || getEmptyData()}
                             </Description> */}
                             <Description className={styles.line} term="指定整改人">
-                              {rectify_user_name || getEmptyData()}
+                              {isVague
+                                ? nameToVague(rectify_user_name)
+                                : rectify_user_name || getEmptyData()}
                             </Description>
                             <Description className={styles.line} term="计划整改日期">
                               {plan_rectify_time
@@ -112,7 +135,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                               {review_company_name || getEmptyData()}
                             </Description> */}
                             <Description className={styles.line} term="指定复查人">
-                              {review_user_name || getEmptyData()}
+                              {isVague
+                                ? nameToVague(review_user_name)
+                                : review_user_name || getEmptyData()}
                             </Description>
                           </DescriptionList>
                           {picture &&
@@ -136,7 +161,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                         <div className={styles.contentContainer}>
                           <DescriptionList className={styles.lineList} col={1}>
                             <Description className={styles.line} term="整改人">
-                              {operator_name || getEmptyData()}
+                              {isVague
+                                ? nameToVague(operator_name)
+                                : operator_name || getEmptyData()}
                             </Description>
                             {/* <Description className={styles.line} term="整改单位">
                               {operator_company_name || getEmptyData()}
@@ -172,7 +199,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                         <div className={styles.contentContainer}>
                           <DescriptionList className={styles.lineList} col={1}>
                             <Description className={styles.line} term="复查人">
-                              {operator_name || getEmptyData()}
+                              {isVague
+                                ? nameToVague(operator_name)
+                                : operator_name || getEmptyData()}
                             </Description>
                             {/* <Description className={styles.line} term="复查单位">
                               {operator_company_name || getEmptyData()}
@@ -212,7 +241,9 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                         <div className={styles.contentContainer}>
                           <DescriptionList className={styles.lineList} col={1}>
                             <Description className={styles.line} term="复查人">
-                              {operator_name || getEmptyData()}
+                              {isVague
+                                ? nameToVague(operator_name)
+                                : operator_name || getEmptyData()}
                             </Description>
                             <Description className={styles.line} term="备注">
                               {remark || getEmptyData()}

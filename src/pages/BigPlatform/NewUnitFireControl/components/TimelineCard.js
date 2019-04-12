@@ -9,6 +9,25 @@ import flowImg from '../imgs/flow.png';
 
 const STATUS = { 1: '误报火警', 2: '真实火警' };
 
+const { projectKey } = global.PROJECT_CONFIG;
+const isVague = projectKey.indexOf('czey') >= 0;
+function nameToVague(str) {
+  let newStr = '';
+  if (str && str.length === 1) return str;
+  else if (str && str.length === 2) {
+    newStr = str.substr(0, 1) + '*';
+  } else if (str && str.length > 2) {
+    newStr = str.substr(0, 1) + '*' + str.substr(-1);
+  } else return str;
+  return newStr;
+}
+
+function phoneToVague(str) {
+  if (!str) return str;
+  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
+  return newStr;
+}
+
 function Alarmed(props) {
   const { deviceCode, deviceAddress, position, type, safety, phone, companyName } = props;
 
@@ -26,7 +45,7 @@ function Alarmed(props) {
       </p>
       <p>
         安全负责人：
-        {safety} {phone}
+        {isVague ? nameToVague(safety) : safety} {isVague ? phoneToVague(phone) : phone}
       </p>
     </div>
   );
@@ -48,7 +67,7 @@ function Confirmed(props) {
       </p>
       <p>
         处理人员：
-        {reporter} {phone}
+        {isVague ? nameToVague(reporter) : reporter} {isVague ? phoneToVague(phone) : phone}
       </p>
     </div>
   );
@@ -66,7 +85,7 @@ function Handled(props) {
       </p>
       <p>
         处理人员：
-        {reporter} {phone}
+        {isVague ? nameToVague(reporter) : reporter} {isVague ? phoneToVague(phone) : phone}
       </p>
       <p>
         结果反馈：

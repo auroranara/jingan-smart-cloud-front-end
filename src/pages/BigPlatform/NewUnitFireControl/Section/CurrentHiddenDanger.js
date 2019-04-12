@@ -10,6 +10,24 @@ const redColor = '#E96767'; // 红
 const yellowColor = '#F6B54E'; // 黄
 const blueColor = '#2A8BD5'; // 蓝
 
+const { projectKey } = global.PROJECT_CONFIG;
+const isVague = projectKey.indexOf('czey') >= 0;
+function nameToVague(str) {
+  let newStr = '';
+  if (str && str.length === 1) return str;
+  else if (str && str.length === 2) {
+    newStr = str.substr(0, 1) + '*';
+  } else if (str && str.length > 2) {
+    newStr = str.substr(0, 1) + '*' + str.substr(-1);
+  } else return str;
+  return newStr;
+}
+
+function phoneToVague(str) {
+  if (!str) return str;
+  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
+  return newStr;
+}
 export default class CurrentHiddenDanger extends PureComponent {
   constructor(props) {
     super(props);
@@ -247,7 +265,7 @@ export default class CurrentHiddenDanger extends PureComponent {
                           label: '上报',
                           value: (
                             <Fragment>
-                              {report_user_name}
+                              {isVague ? nameToVague(report_user_name) : report_user_name}
                               <span className={styles.text}>
                                 {moment(+report_time).format('YYYY-MM-DD')}
                               </span>
@@ -259,14 +277,14 @@ export default class CurrentHiddenDanger extends PureComponent {
                           value:
                             +status === 3 ? (
                               <Fragment>
-                                {rectify_user_name}
+                                {isVague ? nameToVague(rectify_user_name) : rectify_user_name}
                                 <span className={styles.text}>
                                   {moment(+real_rectify_time).format('YYYY-MM-DD')}
                                 </span>
                               </Fragment>
                             ) : (
                               <Fragment>
-                                {rectify_user_name}
+                                {isVague ? nameToVague(rectify_user_name) : rectify_user_name}
                                 <span className={+status === 7 ? styles.warningText : styles.text}>
                                   {moment(+plan_rectify_time).format('YYYY-MM-DD')}
                                 </span>

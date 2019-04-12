@@ -1,6 +1,18 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, BackTop, Col, Row, Switch, message } from 'antd';
+import {
+  Form,
+  List,
+  Card,
+  Button,
+  Input,
+  BackTop,
+  Col,
+  Row,
+  Switch,
+  message,
+  Popconfirm,
+} from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import codesMap from '@/utils/codes';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -8,6 +20,7 @@ import {
   // hasAuthority,
   AuthButton,
   AuthLink,
+  AuthA,
 } from '@/utils/customAuth';
 
 import styles from './VideoEquipmentList.less';
@@ -219,6 +232,38 @@ export default class VideoEquipmentList extends PureComponent {
     );
   }
 
+  handleDelete = (id, companyId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'videoMonitor/deleteVideoDevice',
+      payload: {
+        videoId: id,
+        companyId,
+      },
+      success: () => {
+        message.success('删除成功');
+        const {
+          videoMonitor: {
+            videoData: { list },
+          },
+        } = this.props;
+        const checkedArray = list.reduce((prev, next) => {
+          const { isInspection } = next;
+          prev.push(!!isInspection);
+          return prev;
+        }, []);
+        this.setState({
+          total: list.length,
+          checkedArray,
+          loadingArray: Array(list.length).fill(false),
+        });
+      },
+      error: msg => {
+        message.error(msg);
+      },
+    });
+  };
+
   /* 渲染列表 */
   renderList() {
     const {
@@ -243,7 +288,7 @@ export default class VideoEquipmentList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={(item, index) => {
-            const { id, name, companyId, deviceId, keyId } = item;
+            const { id, name, companyId, deviceId, keyId, status } = item;
             return (
               <List.Item key={id}>
                 <Card
@@ -270,7 +315,15 @@ export default class VideoEquipmentList extends PureComponent {
                       to={`/device-management/video-monitor/associate/fire/${id}?name=${equipmentListName}&&companyId=${companyId}`}
                     >
                       关联设备
-                  </AuthLink>,
+                    </AuthLink>,
+                    <Popconfirm
+                      title="确认要删除该视频吗？"
+                      onConfirm={() => this.handleDelete(id, companyId)}
+                    >
+                      <AuthA code={codesMap.deviceManagement.videoMonitor.delete} codes={codes}>
+                        删除
+                      </AuthA>
+                    </Popconfirm>,
                   ]}
                 >
                   <Row>
@@ -328,6 +381,7 @@ export default class VideoEquipmentList extends PureComponent {
                       />
                     </Col>
                   </Row>
+                  {!+status && <div className={styles.disable}>已禁用</div>}
                 </Card>
               </List.Item>
             );
@@ -356,8 +410,8 @@ export default class VideoEquipmentList extends PureComponent {
           {total}
         </span>
       ) : (
-          <span>视频总数：0</span>
-        );
+        <span>视频总数：0</span>
+      );
 
     return (
       <PageHeaderLayout title={equipmentListName} breadcrumbList={breadcrumbList} content={content}>
