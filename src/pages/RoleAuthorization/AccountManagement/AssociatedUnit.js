@@ -119,8 +119,10 @@ const generateTressNode = data => {
   ({ account, role, loading }) => ({
     account,
     role,
+    loadingEffects: loading.effects,
     loading: loading.models.account,
     authorityTreeLoading: loading.effects['role/fetchPermissionTree'],
+    appAuthorityTreeLoading: loading.effects['role/fetchAppPermissionTree'],
     editSubmitting: loading.effects['account/editAssociatedUnit'],
     addSubmitting: loading.effects['account/addAssociatedUnit'],
   }),
@@ -642,6 +644,7 @@ export default class AssociatedUnit extends PureComponent {
           documentTypeId: null,
           execCertificateCode: null,
         });
+        this.appAuthTreeCheckedKeys = [];
         this.fetchRolePermissions(getFieldValue('roleIds'));
 
         // if (id === 4) {
@@ -1219,14 +1222,19 @@ export default class AssociatedUnit extends PureComponent {
   fetchRolePermissions = ids => {
     const { dispatch, form: { setFieldsValue } } = this.props;
     const { unitTypeChecked } = this.state;
+    const isNotAdmin = unitTypeChecked !== 3;
 
     // ids不为数组或者ids的长度为0，则本地清空
     if (!Array.isArray(ids) || !ids.length) {
+      const values = { permissions: this.authTreeCheckedKeys };
       this.permissions = [];
-      this.appPermissions = [];
-      setFieldsValue({ permissions: this.authTreeCheckedKeys, appPermissions: this.appAuthTreeCheckedKeys });
       dispatch({ type: 'role/saveRolePermissions', payload: [] });
-      dispatch({ type: 'role/saveRoleAppPermissions', payload: [] });
+      if (isNotAdmin) {
+        values.appPermissions = this.appAuthTreeCheckedKeys;
+        this.appPermissions = [];
+        dispatch({ type: 'role/saveRoleAppPermissions', payload: [] });
+      }
+      setFieldsValue(values);
     }
     else
       dispatch({
@@ -1234,9 +1242,11 @@ export default class AssociatedUnit extends PureComponent {
         payload: { id: ids.join(','), type: UNIT_TYPE_FIX[unitTypeChecked] },
         success: (permissions, appPermissions) => {
           this.permissions = permissions;
-          this.appPermissions = appPermissions;
           this.setPermissions();
-          this.setAppPermissions();
+          if (isNotAdmin) {
+            this.appPermissions = appPermissions;
+            this.setAppPermissions();
+          }
         },
       });
   };
@@ -1253,11 +1263,14 @@ export default class AssociatedUnit extends PureComponent {
     });
   };
 
+  // 当获取树和获取详情接口都返回时，才可以设值，但先后顺序没法控制，所以在两个接口返回时都调用当前函数，且在函数中通过loading来判断，是否两个接口都返回了，都返回了后再设值
   setAppPermissions = () => {
     const {
+      loadingEffects,
       form: { setFieldsValue },
     } = this.props;
-    setFieldsValue({
+    const isloaded = !loadingEffects['role/fetchAppPermissionTree'] && !loadingEffects['role/fetchDetail'];
+    isloaded && setFieldsValue({
       appPermissions: removeParentKey(
         mergeArrays(this.appPermissions, this.appAuthTreeCheckedKeys),
         this.appIdMap
@@ -1605,7 +1618,7 @@ export default class AssociatedUnit extends PureComponent {
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
-    const { loading } = this.props;
+    const { loading, authorityTreeLoading, appAuthorityTreeLoading } = this.props;
     const { submitting } = this.state;
     return (
       <FooterToolbar>
@@ -1614,7 +1627,7 @@ export default class AssociatedUnit extends PureComponent {
           type="primary"
           size="large"
           onClick={this.handleClickValidate}
-          loading={loading || submitting}
+          loading={loading || submitting || authorityTreeLoading || appAuthorityTreeLoading}
           style={{ fontSize: 16 }}
         >
           提交
@@ -1626,6 +1639,8 @@ export default class AssociatedUnit extends PureComponent {
   render() {
     const {
       loading,
+      authorityTreeLoading,
+      appAuthorityTreeLoading,
       match: {
         params: { id, userId },
       },
@@ -1666,7 +1681,7 @@ export default class AssociatedUnit extends PureComponent {
         wrapperClassName={styles.advancedForm}
         content={content}
       >
-        <Spin spinning={loading || submitting}>
+        <Spin spinning={loading || submitting || authorityTreeLoading || appAuthorityTreeLoading}>
           {this.renderBasicInfo()}
           {this.renderRolePermission()}
           {this.renderFooterToolbar()}
