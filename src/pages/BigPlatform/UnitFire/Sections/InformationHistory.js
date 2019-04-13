@@ -266,8 +266,8 @@ export default class InformationHistory extends PureComponent {
             </div>
           </div>
         </div>
-        {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>指派维保</div>}
-        {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>自处理</div>}
+        {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>维保处理</div>}
+        {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>业主处理</div>}
       </Col>
     );
   };

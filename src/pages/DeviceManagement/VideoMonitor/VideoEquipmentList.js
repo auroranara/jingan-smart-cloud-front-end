@@ -12,6 +12,7 @@ import {
   Switch,
   message,
   Popconfirm,
+  Select,
 } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import codesMap from '@/utils/codes';
@@ -29,7 +30,7 @@ import VideoPlay from '../../BigPlatform/FireControl/section/VideoPlay';
 import videoIcon from './videoIcon.png';
 
 const FormItem = Form.Item;
-
+const { Option } = Select;
 //面包屑
 const breadcrumbList = [
   {
@@ -57,6 +58,7 @@ const pageSize = 18;
 // 默认表单值
 const defaultFormData = {
   name: undefined,
+  status: undefined,
 };
 
 /* 获取无数据 */
@@ -207,7 +209,26 @@ export default class VideoEquipmentList extends PureComponent {
             {getFieldDecorator('name', {
               initialValue: defaultFormData.name,
               getValueFromEvent: e => e.target.value.trim(),
-            })(<Input placeholder="请输入视频所属区域" />)}
+            })(<Input placeholder="请输入视频名称" />)}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('status', {
+              initialValue: defaultFormData.status,
+            })(
+              <Select
+                allowClear
+                placeholder="请选择视频监控状态"
+                getPopupContainer={() => document.querySelector('#root>div')}
+                style={{ width: '180px' }}
+              >
+                <Option value={'1'} key={'1'}>
+                  启用
+                </Option>
+                <Option value={'0'} key={'0'}>
+                  禁用
+                </Option>
+              </Select>
+            )}
           </FormItem>
           <FormItem>
             <Button type="primary" onClick={this.handleClickToQuery}>
