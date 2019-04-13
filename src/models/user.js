@@ -30,12 +30,15 @@ export default {
       const response = yield call(queryCurrent);
       if (response && response.data) {
         const {
-          data: { unitType },
+          data: { unitType, permissionCodes },
         } = response;
+        // 如果包含账号管理权限
+        const isAdmin = permissionCodes.includes('roleAuthorization.accountManagement');
         // 是否是运营来判断
         yield put({
           type: 'setting/changeSetting',
-          payload: unitType === 3 ? { contentWidth: 'Fluid', layout: 'sidemenu' } : setting,
+          payload:
+            unitType === 3 || isAdmin ? { contentWidth: 'Fluid', layout: 'sidemenu' } : setting,
         });
         yield put({
           type: 'saveCurrentUser',
