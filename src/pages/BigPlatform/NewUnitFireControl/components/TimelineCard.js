@@ -10,7 +10,7 @@ import flowImg from '../imgs/flow.png';
 const STATUS = { 1: '误报火警', 2: '真实火警' };
 
 const { projectKey } = global.PROJECT_CONFIG;
-const isVague = projectKey.indexOf('czey') >= 0;
+const isVague = projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
 function nameToVague(str) {
   let newStr = '';
   if (str && str.length === 1) return str;

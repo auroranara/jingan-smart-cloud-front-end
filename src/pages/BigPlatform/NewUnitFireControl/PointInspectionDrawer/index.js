@@ -9,7 +9,7 @@ import styles from './index.less';
 const { Option } = Select;
 
 const { projectKey } = global.PROJECT_CONFIG;
-const isVague = projectKey.indexOf('czey') >= 0;
+const isVague = projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
 function nameToVague(str) {
   let newStr = '';
   if (str && str.length === 1) return str;

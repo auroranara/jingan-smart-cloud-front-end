@@ -8,7 +8,7 @@ const getEmptyValue = () => {
   return <span style={{ color: 'rgba(255, 250, 250, 0.45)' }}>暂无数据</span>;
 };
 const { projectKey } = global.PROJECT_CONFIG;
-const isVague = projectKey.indexOf('czey') >= 0;
+const isVague = projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
 function nameToVague(str) {
   let newStr = '';
   if (str && str.length === 1) return str;
