@@ -60,7 +60,7 @@ const fieldLabels = {
   treeIds: '数据权限',
   roleIds: '配置角色',
   departmentId: '所属部门',
-  userType: '用户类型',
+  userType: '用户角色',
   documentTypeId: '执法证种类',
   execCertificateCode: '执法证编号',
   regulatoryClassification: '业务分类',
@@ -197,7 +197,7 @@ const generateUnitsTree = data => {
       });
     },
 
-    // 获取用户类型
+    // 获取用户角色
     fetchUserType() {
       dispatch({
         type: 'account/fetchUserType',
@@ -318,7 +318,7 @@ export default class accountManagementEdit extends PureComponent {
       fetchExecCertificateType({
         error: goToException,
       });
-      // 获取用户类型
+      // 获取用户角色
       fetchUserType({
         error: goToException,
       });
@@ -1033,11 +1033,11 @@ export default class accountManagementEdit extends PureComponent {
                       rules: [
                         {
                           required: true,
-                          message: '请选择用户类型',
+                          message: '请选择用户角色',
                         },
                       ],
                     })(
-                      <Select placeholder="请选择用户类型">
+                      <Select placeholder="请选择用户角色">
                         {userTypes.map(item => (
                           <Option value={item.value} key={item.value}>
                             {item.label}
@@ -1079,11 +1079,11 @@ export default class accountManagementEdit extends PureComponent {
                       rules: [
                         {
                           required: true,
-                          message: '请选择用户类型',
+                          message: '请选择用户角色',
                         },
                       ],
                     })(
-                      <Select placeholder="请选择用户类型">
+                      <Select placeholder="请选择用户角色">
                         {gavUserTypes.map(item => (
                           <Option value={item.id} key={item.id}>
                             {item.label}
@@ -1290,7 +1290,7 @@ export default class accountManagementEdit extends PureComponent {
 
     const roleList = roles.map(({ id, name }) => ({ key: id, title: name }));
     return (
-      <Card title="角色权限配置" className={styles.card} bordered={false}>
+      <Card title="系统角色权限配置" className={styles.card} bordered={false}>
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col span={24}>

@@ -126,7 +126,7 @@ export default class PersonalInfo extends PureComponent {
           <Description term="所属单位">{unitName || getEmptyData()}</Description>
           <Description term="所属部门">{departmentName || getEmptyData()}</Description>
           {companyType && (
-            <Description term="用户类型">
+            <Description term="用户角色">
               {userTypeObj ? userTypeObj.label : getEmptyData()}
             </Description>
           )}
