@@ -118,14 +118,17 @@ export default class FourColor extends PureComponent {
   handleClickMarker = ({ target: layer }) => {
     const {
       options: {
-        data: { render, item_id, status, object_title, key_id },
+        data: { render, item_id, status, object_title, key_id, name, rtsp_address },
       },
     } = layer;
     if (render === this.renderPoint) {
       const { handleShowPointDetail } = this.props;
       handleShowPointDetail(item_id, status, object_title);
     } else if (render === this.renderVideo) {
-      this.handleShowVideo(key_id);
+      const { handlePlay } = this.props;
+      handlePlay([{ rtsp_address, name }], () => {
+        this.handleShowVideo(key_id);
+      });
     }
   };
 

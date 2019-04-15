@@ -206,7 +206,7 @@ export default class History extends PureComponent {
    */
   handleSearch = e => {
     const { date, startTime, endTime } = this.state;
-    if (!date || !startTime || !endTime)
+    if (!date || startTime === undefined || !endTime)
       message.warn('日期或时间未选择!')
     else {
       const range = [startTime, endTime].map(t => date.clone().add(t, 'hours'));

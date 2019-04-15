@@ -15,6 +15,8 @@ export default class ChartGauge extends PureComponent {
       normalRange: [normalMin, normalMax] = [0.4, 1.2],
       status,
       unit,
+      isNotIn,
+      isMending,
     } = this.props;
     let axisLine = [];
     if (normalMin === null || normalMin < min) {
@@ -67,7 +69,7 @@ export default class ChartGauge extends PureComponent {
           axisLine: {
             lineStyle: {
               width: 2,
-              color: !!isLost ? [[1, '#bbbbbc']] : axisLine,
+              color: !!isLost || isNotIn || isMending ? [[1, '#bbbbbc']] : axisLine,
             },
           },
           splitLine: {
@@ -87,13 +89,17 @@ export default class ChartGauge extends PureComponent {
           detail: {
             show: !!showValue,
             fontSize: 12,
-            color: status === 0 ? '#fff' : 'auto',
+            color: isMending ? colors[0] : status === 0 ? '#fff' : 'auto',
             formatter: value => {
-              return !!isLost ? '---' : value + unit || '';
+              // return !!isLost ? '---' : value + unit || '';
+              if (isNotIn) return '未接入';
+              else if (isMending) return '检修中';
+              else if (status < 0) return '---';
+              else return value + unit || '';
             },
             offsetCenter: [0, '50%'],
           },
-          data: [{ value: isLost ? 0 : value, name }],
+          data: [{ value: isLost || isMending || isNotIn ? 0 : value, name }],
         },
       ],
     };
