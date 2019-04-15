@@ -228,7 +228,7 @@ export default {
       }
     },
 
-    // 查询用户类型
+    // 查询用户角色
     *fetchUserType({ payload, callback }, { call, put }) {
       const response = yield call(queryUserType, payload);
       if (callback) callback(response);
@@ -412,7 +412,7 @@ export default {
       };
     },
 
-    /* 查询用户类型 */
+    /* 查询用户角色 */
     queryUserType(state, { payload }) {
       return {
         ...state,
