@@ -61,20 +61,20 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 /* 根据业务分类id获取label */
-const getLabelByBusinessType = function(business_type) {
-  switch (+business_type) {
-    case 1:
-      return '安全生产';
-    case 2:
-      return '消防';
-    case 3:
-      return '环保';
-    case 4:
-      return '卫生';
-    default:
-      return '';
-  }
-};
+// const getLabelByBusinessType = function(business_type) {
+//   switch (+business_type) {
+//     case 1:
+//       return '安全生产';
+//     case 2:
+//       return '消防';
+//     case 3:
+//       return '环保';
+//     case 4:
+//       return '卫生';
+//     default:
+//       return '';
+//   }
+// };
 
 /**
  * 隐患排查报表详情
@@ -329,6 +329,7 @@ export default class App extends PureComponent {
             rectifyCompanyName,
             // 指定复查单位
             reviewCompanyName,
+            rectify_dept,
           },
           hiddenDangerRecord,
           timeLine,
@@ -508,6 +509,7 @@ export default class App extends PureComponent {
                   <Description term="指定整改人">
                     <Ellipsis tooltip={!!rectify_user_name} lines={1} style={{ height: 22 }}>
                       {rectify_user_name || getEmptyData()}
+                      {rectify_dept ? <span> ({rectify_dept || getEmptyData()}) </span> : ''}
                     </Ellipsis>
                   </Description>
                   <Description term="计划整改日期">
@@ -518,20 +520,21 @@ export default class App extends PureComponent {
                     </Ellipsis>
                   </Description>
                 </DescriptionList>
-                {review_user_name && report_user_name !== review_user_name && (
-                  <DescriptionList style={{ marginBottom: 16 }}>
-                    <Description term="指定复查单位">
-                      <Ellipsis tooltip={!!reviewCompanyName} lines={1} style={{ height: 22 }}>
-                        {reviewCompanyName || getEmptyData()}
-                      </Ellipsis>
-                    </Description>
-                    <Description term="指定复查人">
-                      <Ellipsis tooltip={!!review_user_name} lines={1} style={{ height: 22 }}>
-                        {review_user_name || getEmptyData()}
-                      </Ellipsis>
-                    </Description>
-                  </DescriptionList>
-                )}
+                {review_user_name &&
+                  report_user_name !== review_user_name && (
+                    <DescriptionList style={{ marginBottom: 16 }}>
+                      <Description term="指定复查单位">
+                        <Ellipsis tooltip={!!reviewCompanyName} lines={1} style={{ height: 22 }}>
+                          {reviewCompanyName || getEmptyData()}
+                        </Ellipsis>
+                      </Description>
+                      <Description term="指定复查人">
+                        <Ellipsis tooltip={!!review_user_name} lines={1} style={{ height: 22 }}>
+                          {review_user_name || getEmptyData()}
+                        </Ellipsis>
+                      </Description>
+                    </DescriptionList>
+                  )}
               </Card>
               {hiddenDangerRecord.map(
                 ({
