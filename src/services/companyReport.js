@@ -7,15 +7,15 @@ import request from '@/utils/request';
 /**
  * 获取列表
  */
-export async function getHiddenDangerList(params) {
-  return request(`/acloud_new/v2/hiddenDanger/hiddenDangerInfoForPage?${stringify(params)}`);
+export async function getCompanySelfCheckList(params) {
+  return request(`/acloud_new/v2/statistics/companySelfCheck?${stringify(params)}`);
 }
 
 /**
  * 获取详情
  */
-export async function getHiddenDangerDetail({ id }) {
-  return request(`/acloud_new/v2/hiddenDanger/hiddenDangerInfo/${id}`);
+export async function getCheckDetail({ id }) {
+  return request(`/acloud_new/v2/statistics/getCheckDetail/${id}`);
 }
 
 /**

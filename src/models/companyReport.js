@@ -1,4 +1,4 @@
-// import { searchCompanies } from '../services/companyReport.js';
+import { getCompanySelfCheckList, getCheckDetail } from '../services/companyReport.js';
 
 export default {
   namespace: 'companyReport',
@@ -43,6 +43,15 @@ export default {
 
   effects: {
     // 列表
+    *fetchList({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanySelfCheckList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveList',
+          payload: response.data.list,
+        });
+      }
+    },
     // 详情
     // 网格
     // 导出
