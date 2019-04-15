@@ -14,7 +14,7 @@ const CARDS = [...Array(10).keys()].map(i => ({
 }));
 
 const { projectKey } = global.PROJECT_CONFIG;
-const isVague = projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
+const isVague = true;// projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
 function nameToVague(str) {
   let newStr = '';
   if (str && str.length === 1) return str;

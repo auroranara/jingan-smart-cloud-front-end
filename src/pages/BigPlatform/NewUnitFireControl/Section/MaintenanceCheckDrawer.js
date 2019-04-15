@@ -13,7 +13,7 @@ const { Description } = DescriptionList;
 const statusColor = ['#ff4848', '#ffb650', '#04fdff'];
 
 const { projectKey } = global.PROJECT_CONFIG;
-const isVague = projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
+const isVague = true;// projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
 function nameToVague(str) {
   let newStr = '';
   if (str && str.length === 1) return str;
