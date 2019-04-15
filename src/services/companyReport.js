@@ -14,7 +14,7 @@ export async function getCompanySelfCheckList(params) {
 /**
  * 获取详情
  */
-export async function getCheckDetail({ id }) {
+export async function getSelfCheckDetail({ id }) {
   return request(`/acloud_new/v2/statistics/getCheckDetail/${id}`);
 }
 

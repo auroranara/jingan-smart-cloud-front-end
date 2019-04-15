@@ -40,18 +40,6 @@ const breadcrumbList = [
   },
 ];
 
-/* 根据检查结果获取对应文字 */
-const getLabelByStatus = function(status) {
-  switch (+status) {
-    case 1:
-      return <Badge status="success" text="正常" />;
-    case 2:
-      return <Badge status="error" text="异常" />;
-    default:
-      return '---';
-  }
-};
-
 /* 筛选表单label */
 const fieldLabels = {
   grid_id: '所属网格',
@@ -94,39 +82,44 @@ export default class App extends PureComponent {
     const defaultColumns = [
       {
         title: '上报途径',
-        dataIndex: 'reporting_channels',
+        dataIndex: 'itemTypeName',
       },
       {
         title: '点位名称',
-        dataIndex: 'name',
+        dataIndex: 'object_title',
       },
       {
         title: '检查人',
-        dataIndex: 'allCheckPersonNames',
+        dataIndex: 'check_user_name',
       },
       {
         title: '检查日期',
-        dataIndex: 'report_time',
+        dataIndex: 'check_date',
         render: value => moment(+value).format('YYYY-MM-DD'),
       },
       {
         title: '检查结果',
         align: 'center',
-        dataIndex: 'check_result',
-        render: value => getLabelByStatus(value),
+        dataIndex: 'checkResultName',
+        render: value =>
+          (value = '异常' ? (
+            <Badge status="error" text={value} />
+          ) : (
+            <Badge status="success" text={value} />
+          )),
       },
       {
         title: '隐患情况',
-        dataIndex: 'status',
-        render: val => {
-          const { finish, overtime, rectifyNum, reviewNum, total } = val;
+        dataIndex: 'dangerStatus',
+        render: (val, text) => {
+          const { over_rectify, rectify, review, closed, total } = text;
           const resultStatus = ['已超期', '待整改', '待复查', '已关闭'];
-          const nums = [overtime, rectifyNum, reviewNum, finish];
+          const nums = [over_rectify, rectify, review, closed];
           return (
             <div>
               <p style={{ marginBottom: 0 }}>
                 总数：
-                {total || 0}
+                {total}
               </p>
               {resultStatus
                 .map((data, index) => {
@@ -144,7 +137,9 @@ export default class App extends PureComponent {
         key: 'operation',
         fixed: 'right',
         width: 64,
-        render: (text, { id }) => <Link to={'/data-analysis/company-report/detail'}>查看</Link>,
+        render: text => (
+          <Link to={`/data-analysis/company-report/detail/${text.check_id}`}>查看</Link>
+        ),
       },
     ];
     if (!isCompany) {
@@ -181,28 +176,25 @@ export default class App extends PureComponent {
       pageSize: 10,
     };
 
-    const { pageNum, pageSize, query_start_time, query_end_time, ...rest } = payload;
+    const { pageNum, pageSize, startTime, endTime, ...rest } = payload;
     // 重置控件
     setFieldsValue({
       createTime:
-        query_start_time && query_end_time
-          ? [
-              moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'),
-              moment(query_end_time, 'YYYY/MM/DD HH:mm:ss'),
-            ]
+        startTime && endTime
+          ? [moment(startTime, 'YYYY/MM/DD HH:mm:ss'), moment(endTime, 'YYYY/MM/DD HH:mm:ss')]
           : [],
       ...rest,
     });
 
     // 获取列表
     dispatch({
-      type: 'hiddenDangerReport/fetchList',
+      type: 'companyReport/fetchList',
       payload,
     });
 
     // 获取网格列表
     dispatch({
-      type: 'companyReport/fetchGridList',
+      type: 'hiddenDangerReport/fetchGridList',
     });
   }
 
@@ -214,7 +206,7 @@ export default class App extends PureComponent {
       dispatch,
       form: { getFieldsValue },
       companyReport: {
-        list: {
+        data: {
           pagination: { pageSize },
         },
       },
@@ -223,13 +215,13 @@ export default class App extends PureComponent {
       },
     } = this.props;
     const { createTime, ...rest } = getFieldsValue();
-    const [query_start_time, query_end_time] = createTime || [];
+    const [startTime, endTime] = createTime || [];
     const payload = {
       ...rest,
       pageNum: 1,
       pageSize,
-      query_start_time: query_start_time && `${query_start_time.format('YYYY/MM/DD')} 00:00:00`,
-      query_end_time: query_end_time && `${query_end_time.format('YYYY/MM/DD')} 23:59:59`,
+      startTime: startTime && `${startTime.format('YYYY/MM/DD')} 00:00:00`,
+      endTime: endTime && `${endTime.format('YYYY/MM/DD')} 23:59:59`,
     };
     // 获取列表
     dispatch({
@@ -249,14 +241,13 @@ export default class App extends PureComponent {
     } = this.props;
     // 重置控件
     setFieldsValue({
-      grid_id: undefined,
-      company_name: undefined,
-      code: undefined,
+      gridId: undefined,
+      companyName: undefined,
       createTime: undefined,
-      status: undefined,
-      business_type: undefined,
-      item_name: undefined,
-      level: undefined,
+      itemType: undefined,
+      objectTitle: undefined,
+      checkUserName: undefined,
+      checkResult: undefined,
     });
     this.handleSearch();
   };
@@ -292,22 +283,18 @@ export default class App extends PureComponent {
     } = this.props;
     // 从sessionStorage中获取存储的控件值
     const fieldsValue = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
-    const { pageNum, pageSize, query_start_time, query_end_time, ...rest } = fieldsValue;
+    const { pageNum, pageSize, startTime, endTime, ...rest } = fieldsValue;
     // 重置控件
     setFieldsValue({
-      grid_id: undefined,
-      company_name: undefined,
-      code: undefined,
-      status: undefined,
-      business_type: undefined,
-      item_name: undefined,
-      level: undefined,
+      gridId: undefined,
+      companyName: undefined,
+      itemType: undefined,
+      objectTitle: undefined,
+      checkUserName: undefined,
+      checkResult: undefined,
       createTime:
-        query_start_time && query_end_time
-          ? [
-              moment(query_start_time, 'YYYY/MM/DD HH:mm:ss'),
-              moment(query_end_time, 'YYYY/MM/DD HH:mm:ss'),
-            ]
+        startTime && endTime
+          ? [moment(startTime, 'YYYY/MM/DD HH:mm:ss'), moment(endTime, 'YYYY/MM/DD HH:mm:ss')]
           : [],
       ...rest,
     });
@@ -347,7 +334,7 @@ export default class App extends PureComponent {
           {!this.isCompany && (
             <Col xl={8} md={12} sm={24} xs={24}>
               <Form.Item label={fieldLabels.grid_id}>
-                {getFieldDecorator('grid_id')(
+                {getFieldDecorator('gridId')(
                   <TreeSelect
                     treeData={gridList}
                     placeholder="请选择"
@@ -365,7 +352,7 @@ export default class App extends PureComponent {
           {!this.isCompany && (
             <Col xl={8} md={12} sm={24} xs={24}>
               <Form.Item label={fieldLabels.company_name}>
-                {getFieldDecorator('company_name')(<Input placeholder="请输入" />)}
+                {getFieldDecorator('companyName')(<Input placeholder="请输入" />)}
               </Form.Item>
             </Col>
           )}
@@ -384,7 +371,7 @@ export default class App extends PureComponent {
           {/* 上报途径 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.reportingChannels}>
-              {getFieldDecorator('source_type')(
+              {getFieldDecorator('itemType')(
                 <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
                   {reportingChannelsList.map(({ key, value }) => (
                     <Option value={key} key={key}>
@@ -398,21 +385,21 @@ export default class App extends PureComponent {
           {/* 点位名称 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.item_name}>
-              {getFieldDecorator('item_name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('objectTitle')(<Input placeholder="请输入" />)}
             </Form.Item>
           </Col>
           {/* 检查人 */}
           {!this.isCompany && (
             <Col xl={8} md={12} sm={24} xs={24}>
               <Form.Item label={fieldLabels.checkUser}>
-                {getFieldDecorator('company_name')(<Input placeholder="请输入" />)}
+                {getFieldDecorator('checkUserName')(<Input placeholder="请输入" />)}
               </Form.Item>
             </Col>
           )}
           {/* 检查结果 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.checkResult}>
-              {getFieldDecorator('source_type')(
+              {getFieldDecorator('checkResult')(
                 <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
                   {checkResultList.map(({ key, value }) => (
                     <Option value={key} key={key}>
@@ -447,8 +434,8 @@ export default class App extends PureComponent {
    */
   renderTable() {
     const {
-      hiddenDangerReport: {
-        list: {
+      companyReport: {
+        data: {
           list,
           pagination: { pageSize = 10, pageNum = 1, total = 0 },
         },
@@ -460,7 +447,7 @@ export default class App extends PureComponent {
         className={styles.table}
         dataSource={list}
         columns={columns}
-        rowKey="id"
+        rowKey="check_id"
         scroll={{
           x: true,
         }}
@@ -491,7 +478,7 @@ export default class App extends PureComponent {
   render() {
     const {
       companyReport: {
-        list: {
+        data: {
           pagination: { total },
         },
       },

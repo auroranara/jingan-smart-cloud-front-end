@@ -1,13 +1,17 @@
-import { getCompanySelfCheckList, getCheckDetail } from '../services/companyReport.js';
+import { getCompanySelfCheckList, getSelfCheckDetail } from '../services/companyReport.js';
 
 export default {
   namespace: 'companyReport',
 
   state: {
     /* 报告列表 */
-    list: {
+    data: {
       list: [],
-      pagination: {},
+      pagination: {
+        total: 0,
+        pageSize: 24,
+        pageNum: 1,
+      },
     },
 
     /* 上报途径列表 */
@@ -47,15 +51,37 @@ export default {
       const response = yield call(getCompanySelfCheckList, payload);
       if (response.code === 200) {
         yield put({
-          type: 'saveList',
+          type: 'save',
           payload: response.data.list,
         });
+        if (callback) callback(response);
       }
     },
+
     // 详情
+    *fetchDetail({ payload, callback }, { call, put }) {
+      const response = yield call(getSelfCheckDetail, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: response.data.list,
+        });
+        if (callback) callback(response);
+      }
+    },
     // 网格
     // 导出
   },
 
-  reducers: {},
+  reducers: {
+    save(state, { payload }) {
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          list: payload || [],
+        },
+      };
+    },
+  },
 };

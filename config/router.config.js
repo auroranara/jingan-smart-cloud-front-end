@@ -778,7 +778,7 @@ module.exports = env => {
                   component: './DataAnalysis/CompanyReport/CompanyReportList',
                 },
                 {
-                  path: '/data-analysis/company-report/detail',
+                  path: '/data-analysis/company-report/detail/:id',
                   code: 'dataAnalysis.companyReport.view',
                   name: 'detail',
                   component: './DataAnalysis/CompanyReport/CompanyReportDetail',
