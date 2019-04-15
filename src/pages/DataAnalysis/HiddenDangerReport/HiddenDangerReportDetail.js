@@ -518,7 +518,7 @@ export default class App extends PureComponent {
                     </Ellipsis>
                   </Description>
                 </DescriptionList>
-                {report_user_name !== review_user_name && (
+                {review_user_name && report_user_name !== review_user_name && (
                   <DescriptionList style={{ marginBottom: 16 }}>
                     <Description term="指定复查单位">
                       <Ellipsis tooltip={!!reviewCompanyName} lines={1} style={{ height: 22 }}>
