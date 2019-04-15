@@ -303,7 +303,7 @@ export default class App extends PureComponent {
       dispatch,
       form: { setFieldsValue },
       user: {
-        currentUser: { id, companyId, unitType },
+        currentUser: { id, companyId },
       },
     } = this.props;
     // 从sessionStorage中获取存储的控件值
@@ -313,6 +313,35 @@ export default class App extends PureComponent {
       // query_start_time: `${moment().subtract(1, 'months').format('YYYY/MM/DD')} 00:00:00`,
       // query_end_time: `${moment().format('YYYY/MM/DD')} 23:59:59`,
     };
+
+    // 判断sessionStorage里是否有company_id
+    if (payload.company_id) {
+      // 获取整改和隐患部门
+      dispatch({
+        type: 'hiddenDangerReport/fetchHiddedeptContent',
+        payload: { companyId: payload.company_id },
+      });
+
+      // 获取隐患地点
+      dispatch({
+        type: 'hiddenDangerReport/fetchHiddePosition',
+        payload: { companyId: payload.company_id },
+      });
+    }
+
+    // 判断当前用户所在企业的id
+    if (companyId) {
+      dispatch({
+        type: 'hiddenDangerReport/fetchHiddedeptContent',
+        payload: { companyId },
+      });
+
+      dispatch({
+        type: 'hiddenDangerReport/fetchHiddePosition',
+        payload: { companyId },
+      });
+    }
+
     const {
       pageNum,
       pageSize,
@@ -363,22 +392,9 @@ export default class App extends PureComponent {
       payload: { type: 'analysis' },
     });
 
-    // 获取隐患地点
-    dispatch({
-      type: 'hiddenDangerReport/fetchHiddePosition',
-      payload: { companyId },
-    });
-
-    // 获取整改和隐患部门
-    dispatch({
-      type: 'hiddenDangerReport/fetchHiddedeptContent',
-      payload: { companyId },
-    });
-
     // 根据用户类型获取单位
     dispatch({
       type: 'account/fetchUnitListFuzzy',
-      // payload: { unitType },
     });
   }
 
@@ -484,6 +500,7 @@ export default class App extends PureComponent {
         currentUser: { id },
       },
     } = this.props;
+
     // 从sessionStorage中获取存储的控件值
     const payload =
       JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) ||
