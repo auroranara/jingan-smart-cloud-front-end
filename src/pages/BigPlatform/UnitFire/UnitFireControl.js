@@ -245,7 +245,7 @@ export default class UnitFireControl extends PureComponent {
     this.fetchCompanyDevicesByType('103');
 
     // 设置轮询
-    this.pollingTimer = setInterval(this.polling, 5000);
+    // this.pollingTimer = setInterval(this.polling, 5000);
   }
 
   /**
