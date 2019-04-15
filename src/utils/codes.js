@@ -46,6 +46,7 @@ export default {
       associate: 'deviceManagement.videoMonitor.associate',
       addAssociate: 'deviceManagement.videoMonitor.addAssociate',
       unBindBeacon: 'deviceManagement.videoMonitor.unBindBeacon',
+      delete: 'deviceManagement.videoMonitor.delete',
     },
     associateSensor: {
       listView: 'deviceManagement.associateSensor.listView',

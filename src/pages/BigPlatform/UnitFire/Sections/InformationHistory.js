@@ -137,7 +137,7 @@ export default class InformationHistory extends PureComponent {
                   {+deviceType === 101
                     ? '消防栓系统'
                     : +deviceType === 102
-                      ? '自动喷淋系统'
+                      ? '喷淋系统'
                       : '水池/水箱'}
                 </span>
               </div>
@@ -219,7 +219,9 @@ export default class InformationHistory extends PureComponent {
             </div>
           </div>
         </div>
-        <div className={styles.topRightPurpleTag}>指派维保</div>
+        {/* <div className={styles.topRightPurpleTag}>指派维保</div> */}
+        {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>维保处理</div>}
+        {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>业主处理</div>}
       </Col>
     ) : (
       <Col key={id} span={24} className={styles.alarmItem}>
@@ -266,8 +268,8 @@ export default class InformationHistory extends PureComponent {
             </div>
           </div>
         </div>
-        {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>指派维保</div>}
-        {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>自处理</div>}
+        {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>维保处理</div>}
+        {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>业主处理</div>}
       </Col>
     );
   };

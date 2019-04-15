@@ -120,7 +120,7 @@ export default class PendingInformation extends PureComponent {
                     {+deviceType === 101
                       ? '消防栓系统'
                       : +deviceType === 102
-                        ? '自动喷淋系统'
+                        ? '喷淋系统'
                         : '水池/水箱'}
                   </span>
                 </Ellipsis>
@@ -272,8 +272,8 @@ export default class PendingInformation extends PureComponent {
             </div>
           </div>
         </div>
-        {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>指派维保</div>}
-        {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>自处理</div>}
+        {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>维保处理</div>}
+        {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>业主处理</div>}
         <div className={styles.videoPlayButton} onClick={handleClick}>
           <img src={videoIcon} alt="" />
         </div>
@@ -341,7 +341,9 @@ export default class PendingInformation extends PureComponent {
                 </div>
               </div>
             </div>
-            <div className={styles.topRightPurpleTag}>指派维保</div>
+            {/* <div className={styles.topRightPurpleTag}>指派维保</div> */}
+            {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>维保处理</div>}
+            {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>业主处理</div>}
             <div className={styles.videoPlayButton} onClick={handleClick}>
               <img src={videoIcon} alt="" />
             </div>
@@ -397,8 +399,8 @@ export default class PendingInformation extends PureComponent {
                 </div>
               </div>
             </div>
-            {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>指派维保</div>}
-            {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>自处理</div>}
+            {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>维保处理</div>}
+            {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>业主处理</div>}
             <div className={styles.videoPlayButton} onClick={handleClick}>
               <img src={videoIcon} alt="" />
             </div>

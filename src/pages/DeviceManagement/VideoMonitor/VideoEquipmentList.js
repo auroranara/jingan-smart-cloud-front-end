@@ -1,6 +1,19 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, List, Card, Button, Input, BackTop, Col, Row, Switch, message } from 'antd';
+import {
+  Form,
+  List,
+  Card,
+  Button,
+  Input,
+  BackTop,
+  Col,
+  Row,
+  Switch,
+  message,
+  Popconfirm,
+  Select,
+} from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import codesMap from '@/utils/codes';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -8,6 +21,7 @@ import {
   // hasAuthority,
   AuthButton,
   AuthLink,
+  AuthA,
 } from '@/utils/customAuth';
 
 import styles from './VideoEquipmentList.less';
@@ -16,7 +30,7 @@ import VideoPlay from '../../BigPlatform/FireControl/section/VideoPlay';
 import videoIcon from './videoIcon.png';
 
 const FormItem = Form.Item;
-
+const { Option } = Select;
 //面包屑
 const breadcrumbList = [
   {
@@ -44,6 +58,7 @@ const pageSize = 18;
 // 默认表单值
 const defaultFormData = {
   name: undefined,
+  status: undefined,
 };
 
 /* 获取无数据 */
@@ -194,7 +209,26 @@ export default class VideoEquipmentList extends PureComponent {
             {getFieldDecorator('name', {
               initialValue: defaultFormData.name,
               getValueFromEvent: e => e.target.value.trim(),
-            })(<Input placeholder="请输入视频所属区域" />)}
+            })(<Input placeholder="请输入视频名称" />)}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('status', {
+              initialValue: defaultFormData.status,
+            })(
+              <Select
+                allowClear
+                placeholder="请选择视频监控状态"
+                getPopupContainer={() => document.querySelector('#root>div')}
+                style={{ width: '180px' }}
+              >
+                <Option value={'1'} key={'1'}>
+                  启用
+                </Option>
+                <Option value={'0'} key={'0'}>
+                  禁用
+                </Option>
+              </Select>
+            )}
           </FormItem>
           <FormItem>
             <Button type="primary" onClick={this.handleClickToQuery}>
@@ -218,6 +252,38 @@ export default class VideoEquipmentList extends PureComponent {
       </Card>
     );
   }
+
+  handleDelete = (id, companyId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'videoMonitor/deleteVideoDevice',
+      payload: {
+        videoId: id,
+        companyId,
+      },
+      success: () => {
+        message.success('删除成功');
+        const {
+          videoMonitor: {
+            videoData: { list },
+          },
+        } = this.props;
+        const checkedArray = list.reduce((prev, next) => {
+          const { isInspection } = next;
+          prev.push(!!isInspection);
+          return prev;
+        }, []);
+        this.setState({
+          total: list.length,
+          checkedArray,
+          loadingArray: Array(list.length).fill(false),
+        });
+      },
+      error: msg => {
+        message.error(msg);
+      },
+    });
+  };
 
   /* 渲染列表 */
   renderList() {
@@ -243,7 +309,7 @@ export default class VideoEquipmentList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={(item, index) => {
-            const { id, name, companyId, deviceId, keyId } = item;
+            const { id, name, companyId, deviceId, keyId, status } = item;
             return (
               <List.Item key={id}>
                 <Card
@@ -270,7 +336,15 @@ export default class VideoEquipmentList extends PureComponent {
                       to={`/device-management/video-monitor/associate/fire/${id}?name=${equipmentListName}&&companyId=${companyId}`}
                     >
                       关联设备
-                  </AuthLink>,
+                    </AuthLink>,
+                    <Popconfirm
+                      title="确认要删除该视频吗？"
+                      onConfirm={() => this.handleDelete(id, companyId)}
+                    >
+                      <AuthA code={codesMap.deviceManagement.videoMonitor.delete} codes={codes}>
+                        删除
+                      </AuthA>
+                    </Popconfirm>,
                   ]}
                 >
                   <Row>
@@ -328,6 +402,7 @@ export default class VideoEquipmentList extends PureComponent {
                       />
                     </Col>
                   </Row>
+                  {!+status && <div className={styles.disable}>已禁用</div>}
                 </Card>
               </List.Item>
             );
@@ -356,8 +431,8 @@ export default class VideoEquipmentList extends PureComponent {
           {total}
         </span>
       ) : (
-          <span>视频总数：0</span>
-        );
+        <span>视频总数：0</span>
+      );
 
     return (
       <PageHeaderLayout title={equipmentListName} breadcrumbList={breadcrumbList} content={content}>

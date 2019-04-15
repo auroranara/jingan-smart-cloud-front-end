@@ -147,30 +147,38 @@ export default class MultipleHistoryPlay extends PureComponent {
     else if (ids !== prevIds) {
       // 移除播放定时器
       this.unsetFrameTimer();
-      this.setState(({ currentTimeStamp, currentAreaId: prevAreaId, drawProps }) => {
-        // 获取当前位置索引数组
-        const currentIndexes = this.getCurrentIndexes({ currentTimeStamp });
-        // 如果只有一个人，则区域跟着人变化
-        let currentAreaId = prevAreaId;
-        if (selectedTableRow !== 'all') {
-          const currentData = idMap[ids[0]][currentIndexes[0]];
-          if (currentData) {
-            currentAreaId = currentData.areaId || top.id; // 如果在厂内，则取当前区域id，不在厂内，则取最顶层区域id
+      this.setState(
+        ({ currentTimeStamp, currentAreaId: prevAreaId, drawProps }) => {
+          // 获取当前位置索引数组
+          const currentIndexes = this.getCurrentIndexes({ currentTimeStamp });
+          // 如果只有一个人，则区域跟着人变化
+          let currentAreaId = prevAreaId;
+          if (selectedTableRow !== 'all') {
+            const currentData = idMap[ids[0]][currentIndexes[0]];
+            if (currentData) {
+              currentAreaId = currentData.areaId || top.id; // 如果在厂内，则取当前区域id，不在厂内，则取最顶层区域id
+            }
+          }
+          return {
+            currentAreaId,
+            currentIndexes,
+            drawProps: {
+              ...drawProps,
+              ...this.getDrawProps({
+                currentAreaId,
+                currentIndexes,
+                currentTimeStamp,
+                reset: true /* currentAreaId !== prevAreaId */,
+              }),
+            },
+          };
+        },
+        () => {
+          if (this.state.playing) {
+            this.setFrameTimer();
           }
         }
-        return {
-          currentAreaId,
-          currentIndexes,
-          drawProps: {
-            ...drawProps,
-            ...this.getDrawProps({ currentAreaId, currentIndexes, currentTimeStamp, reset: true/* currentAreaId !== prevAreaId */ }),
-          },
-        };
-      }, () => {
-        if (this.state.playing) {
-          this.setFrameTimer();
-        }
-      });
+      );
     }
   }
 
@@ -207,7 +215,13 @@ export default class MultipleHistoryPlay extends PureComponent {
    */
   frameCallback = timestamp => {
     const { startTime, endTime, ids, idMap, top, selectedTableRow } = this.props;
-    const { currentTimeStamp: prevTimeStamp, currentIndexes: prevIndexes, speed, drawProps, currentAreaId: prevAreaId } = this.state;
+    const {
+      currentTimeStamp: prevTimeStamp,
+      currentIndexes: prevIndexes,
+      speed,
+      drawProps,
+      currentAreaId: prevAreaId,
+    } = this.state;
     if (!this.frameStart) {
       this.frameStart = timestamp;
       this.playingStart = prevTimeStamp || startTime;
@@ -215,9 +229,16 @@ export default class MultipleHistoryPlay extends PureComponent {
       return;
     }
     // 获取当前时间戳
-    const currentTimeStamp = Math.min(this.playingStart + (timestamp - this.frameStart) * speed, endTime);
+    const currentTimeStamp = Math.min(
+      this.playingStart + (timestamp - this.frameStart) * speed,
+      endTime
+    );
     // 获取当前位置索引数组
-    const currentIndexes = this.getCurrentIndexes(ids.length === prevIndexes.length ? { currentTimeStamp, prevTimeStamp, prevIndexes } : { currentTimeStamp });
+    const currentIndexes = this.getCurrentIndexes(
+      ids.length === prevIndexes.length
+        ? { currentTimeStamp, prevTimeStamp, prevIndexes }
+        : { currentTimeStamp }
+    );
     // 获取当前区域id
     let currentAreaId = prevAreaId;
     // 如果只有一个人，则区域跟着人变化
@@ -235,7 +256,15 @@ export default class MultipleHistoryPlay extends PureComponent {
         currentTimeStamp,
         currentIndexes,
         currentAreaId,
-        drawProps: { ...drawProps, ...this.getDrawProps({ currentAreaId, currentIndexes, currentTimeStamp, reset: currentAreaId !== prevAreaId }) },
+        drawProps: {
+          ...drawProps,
+          ...this.getDrawProps({
+            currentAreaId,
+            currentIndexes,
+            currentTimeStamp,
+            reset: currentAreaId !== prevAreaId,
+          }),
+        },
       });
     }
     // 如果当前时间戳小于结束时间，则继续播放
@@ -244,7 +273,15 @@ export default class MultipleHistoryPlay extends PureComponent {
         currentTimeStamp,
         currentIndexes,
         currentAreaId,
-        drawProps: { ...drawProps, ...this.getDrawProps({ currentAreaId, currentIndexes, currentTimeStamp, reset: currentAreaId !== prevAreaId }) },
+        drawProps: {
+          ...drawProps,
+          ...this.getDrawProps({
+            currentAreaId,
+            currentIndexes,
+            currentTimeStamp,
+            reset: currentAreaId !== prevAreaId,
+          }),
+        },
       });
       this.setFrameTimer();
     }
@@ -254,7 +291,7 @@ export default class MultipleHistoryPlay extends PureComponent {
    * 显示提示框
    * @param {event} e 鼠标事件对象
    */
-  showTooltip = (e) => {
+  showTooltip = e => {
     // 根据鼠标在时间轴上的位置获取对应的时间戳
     const currentTime = moment(this.getCurrentTimeStamp(e)).format(DEFAULT_TIME_FORMAT);
     this.setState({
@@ -285,13 +322,17 @@ export default class MultipleHistoryPlay extends PureComponent {
    * @return {object} 需要改变的组件参数对象
    */
   getDrawProps = ({ currentAreaId, currentIndexes, currentTimeStamp, reset }) => {
-    const { tree={}, onChange } = this.props;
+    const { tree = {}, onChange, top } = this.props;
     const currentArea = tree[currentAreaId];
     if (!currentArea) {
       return;
     }
     // 不管当前区域是否发生变化，人员位置始终改变
-    const { locationMap, isAlarmMap, currentDataList } = this.getLocationMap({ currentArea, currentIndexes, currentTimeStamp });
+    const { locationMap, isAlarmMap, currentDataList } = this.getLocationMap({
+      currentArea,
+      currentIndexes,
+      currentTimeStamp,
+    });
     onChange(currentDataList);
     const divIcons = this.getDivIcons(locationMap);
     let drawProps;
@@ -303,7 +344,17 @@ export default class MultipleHistoryPlay extends PureComponent {
         // 区域
         data: this.getAreas(currentArea, isAlarmMap),
         // 居中
-        reference: currentArea,
+        reference:
+          top.id === currentArea.id
+            ? {
+                latlngs: [
+                  { lat: 0, lng: 0 },
+                  { lat: 1, lng: 0 },
+                  { lat: 1, lng: 1 },
+                  { lat: 0, lng: 1 },
+                ],
+              }
+            : currentArea,
         // 人员
         divIcons,
         // 菜单
@@ -315,8 +366,15 @@ export default class MultipleHistoryPlay extends PureComponent {
       };
     }
     // 如果区域没有发生变化但是状态发生了变化
-    else if (isAlarmMap[currentAreaId] !== this.isAlarmMap[currentAreaId] || currentArea.children.some((childId) => isAlarmMap[childId] !== this.isAlarmMap[childId])) {
-      drawProps = { divIcons, data: this.getAreas(currentArea, isAlarmMap), menu: this.getMenu(currentArea, isAlarmMap) };
+    else if (
+      isAlarmMap[currentAreaId] !== this.isAlarmMap[currentAreaId] ||
+      currentArea.children.some(childId => isAlarmMap[childId] !== this.isAlarmMap[childId])
+    ) {
+      drawProps = {
+        divIcons,
+        data: this.getAreas(currentArea, isAlarmMap),
+        menu: this.getMenu(currentArea, isAlarmMap),
+      };
     }
     // 如果区域和状态都没有发生变化
     else {
@@ -324,7 +382,7 @@ export default class MultipleHistoryPlay extends PureComponent {
     }
     this.isAlarmMap = isAlarmMap;
     return drawProps;
-  }
+  };
 
   /**
    * 获取人员位置数组
@@ -343,126 +401,133 @@ export default class MultipleHistoryPlay extends PureComponent {
     const { ids, idMap, tree, top } = this.props;
     const { id: currentAreaId } = currentArea;
     // 遍历人员列表获取在当前区域内的人员的位置
-    return ids.reduce((result, userId, index) => {
-      const { locationMap, isAlarmMap, currentDataList } = result;
-      // 获取人员对应的数据列表
-      const list = idMap[userId] || [];
-      // 获取人员的当前位置索引
-      const currentIndex = currentIndexes[index];
-      // 获取人员的当前数据
-      const currentData = list[currentIndex];
-      // 当前数据存在时才显示
-      if (currentData) {
-        const nextData = list[currentIndex + 1];
-        const {
-          id,
-          latlng: { lat: y1, lng: x1 },
-          uptime: out1,
-          isAlarm,
-          isVistor,
-          userName,
-          visitorName,
-          locationStatusHistoryList,
-        } = currentData;
-        // 获取人员所属区域id
-        const areaId = currentData.areaId || top.id;
-        // 获取人员所属区域
-        const area = tree[areaId];
-        // 当前区域在人员所在区域的父区域列表中的索引
-        const currentAreaIndex = area.parentIds.indexOf(currentAreaId);
-        // 如果人员在当前区域内
-        if (area === currentArea) {
-          let latlng;
-          // 如果下个位置索引对应的数据不存在（即当前为最后一个位置索引），
-          // 或者当前时间戳小于当前位置索引的离开时间（即人员还没有从当前位置索引离开），
-          // 则返回当前位置索引的位置，从而使人员显示在当前位置索引的位置
-          if (!nextData || currentTimeStamp <= out1) {
-            latlng = { lat: y1, lng: x1 };
-          }
-          // 如果下个位置索引对应的数据存在，
-          // 并且当前时间戳大于当前位置索引的离开时间（即人员已经离开当前位置索引，在去往下个位置索引的路上），
-          // 则假设人员的移动速度是固定的，从而计算出当前位置
-          else {
-            const {
-              latlng: { lat: y2, lng: x2 },
-              intime: in2,
-            } = nextData;
-            const percent = (currentTimeStamp - out1) / (in2 - out1);
-            latlng = {
-              lat: y1 + (y2 - y1) * percent,
-              lng: x1 + (x2 - x1) * percent,
-            };
-          }
-          const key = `${latlng.lat.toFixed(2)},${latlng.lng.toFixed(2)}`;
-          // 如果已经存在相同位置的数据，则进行聚合操作
-          const { count=0, alarm=[] } = locationMap[key] || {};
-          locationMap[key] = {
+    return ids.reduce(
+      (result, userId, index) => {
+        const { locationMap, isAlarmMap, currentDataList } = result;
+        // 获取人员对应的数据列表
+        const list = idMap[userId] || [];
+        // 获取人员的当前位置索引
+        const currentIndex = currentIndexes[index];
+        // 获取人员的当前数据
+        const currentData = list[currentIndex];
+        // 当前数据存在时才显示
+        if (currentData) {
+          const nextData = list[currentIndex + 1];
+          const {
             id,
-            count: count+1,
-            latlng,
-            alarm: isAlarm ? locationStatusHistoryList.reduce((alarm, { status }) => {
-              const label = alarmStatusDict[status];
-              if (!alarm.includes(label)) {
-                alarm.push(label);
-              }
-              return alarm;
-            }, alarm) : alarm,
+            latlng: { lat: y1, lng: x1 },
+            uptime: out1,
+            isAlarm,
             isVistor,
             userName,
             visitorName,
-          };
-          if (isAlarm && !isAlarmMap[currentAreaId]) {
-            isAlarmMap[currentAreaId] = true;
-          }
-          currentDataList.push(currentData);
-        }
-        // 如果人员在当前区域子区域内
-        else if (currentAreaIndex > -1) {
-          // 获取人员所属区域树中离当前区域最近的区域id
-          const key = area.parentIds[currentAreaIndex + 1] || areaId;
-          // 最近区域如果不是楼层才显示
-          if (!tree[key].isFloor) {
-            const { count=0, alarm=[], latlng } = locationMap[key] || {};
+            locationStatusHistoryList,
+          } = currentData;
+          // 获取人员所属区域id
+          const areaId = currentData.areaId || top.id;
+          // 获取人员所属区域
+          const area = tree[areaId];
+          // 当前区域在人员所在区域的父区域列表中的索引
+          const currentAreaIndex = area.parentIds.indexOf(currentAreaId);
+          // 如果人员在当前区域内
+          if (area === currentArea) {
+            let latlng;
+            // 如果下个位置索引对应的数据不存在（即当前为最后一个位置索引），
+            // 或者当前时间戳小于当前位置索引的离开时间（即人员还没有从当前位置索引离开），
+            // 则返回当前位置索引的位置，从而使人员显示在当前位置索引的位置
+            if (!nextData || currentTimeStamp <= out1) {
+              latlng = { lat: y1, lng: x1 };
+            }
+            // 如果下个位置索引对应的数据存在，
+            // 并且当前时间戳大于当前位置索引的离开时间（即人员已经离开当前位置索引，在去往下个位置索引的路上），
+            // 则假设人员的移动速度是固定的，从而计算出当前位置
+            else {
+              const {
+                latlng: { lat: y2, lng: x2 },
+                intime: in2,
+              } = nextData;
+              const percent = (currentTimeStamp - out1) / (in2 - out1);
+              latlng = {
+                lat: y1 + (y2 - y1) * percent,
+                lng: x1 + (x2 - x1) * percent,
+              };
+            }
+            const key = `${latlng.lat.toFixed(2)},${latlng.lng.toFixed(2)}`;
+            // 如果已经存在相同位置的数据，则进行聚合操作
+            const { count = 0, alarm = [] } = locationMap[key] || {};
             locationMap[key] = {
-              id: key,
-              count: count+1,
-              latlng: latlng || this.getAreaCenter(tree[key]),
-              alarm: isAlarm ? locationStatusHistoryList.reduce((alarm, { status }) => {
-                const label = alarmStatusDict[status];
-                if (!alarm.includes(label)) {
-                  alarm.push(label);
-                }
-                return alarm;
-              }, alarm) : alarm,
+              id,
+              count: count + 1,
+              latlng,
+              alarm: isAlarm
+                ? locationStatusHistoryList.reduce((alarm, { status }) => {
+                    const label = alarmStatusDict[status];
+                    if (!alarm.includes(label)) {
+                      alarm.push(label);
+                    }
+                    return alarm;
+                  }, alarm)
+                : alarm,
               isVistor,
               userName,
               visitorName,
             };
-          }
-          if (isAlarm) {
-            if (!isAlarmMap[currentAreaId]) {
+            if (isAlarm && !isAlarmMap[currentAreaId]) {
               isAlarmMap[currentAreaId] = true;
             }
-            if (!isAlarmMap[key]) {
-              isAlarmMap[key] = true;
+            currentDataList.push(currentData);
+          }
+          // 如果人员在当前区域子区域内
+          else if (currentAreaIndex > -1) {
+            // 获取人员所属区域树中离当前区域最近的区域id
+            const key = area.parentIds[currentAreaIndex + 1] || areaId;
+            // 最近区域如果不是楼层才显示
+            if (!tree[key].isFloor) {
+              const { count = 0, alarm = [], latlng } = locationMap[key] || {};
+              locationMap[key] = {
+                id: key,
+                count: count + 1,
+                latlng: latlng || this.getAreaCenter(tree[key]),
+                alarm: isAlarm
+                  ? locationStatusHistoryList.reduce((alarm, { status }) => {
+                      const label = alarmStatusDict[status];
+                      if (!alarm.includes(label)) {
+                        alarm.push(label);
+                      }
+                      return alarm;
+                    }, alarm)
+                  : alarm,
+                isVistor,
+                userName,
+                visitorName,
+              };
+            }
+            if (isAlarm) {
+              if (!isAlarmMap[currentAreaId]) {
+                isAlarmMap[currentAreaId] = true;
+              }
+              if (!isAlarmMap[key]) {
+                isAlarmMap[key] = true;
+              }
+            }
+            currentDataList.push(currentData);
+          }
+          // 如果当前区域为楼层，则也统计同建筑楼层是否报警
+          else if (currentArea.isFloor) {
+            const index = area.parentIds.indexOf(currentArea.parentId);
+            if (index > -1) {
+              const key = area.parentIds[index + 1] || areaId;
+              if (isAlarm && !isAlarmMap[key]) {
+                isAlarmMap[key] = true;
+              }
             }
           }
-          currentDataList.push(currentData);
+          // 否则不显示
         }
-        // 如果当前区域为楼层，则也统计同建筑楼层是否报警
-        else if (currentArea.isFloor){
-          const index = area.parentIds.indexOf(currentArea.parentId);
-          if (index > -1) {
-            const key = area.parentIds[index + 1] || areaId;
-            if (isAlarm && !isAlarmMap[key]) {
-              isAlarmMap[key] = true;
-            }
-          }
-        }
-        // 否则不显示
-      }
-      return result;
-    }, { locationMap: {}, isAlarmMap: {}, currentDataList: [] });
+        return result;
+      },
+      { locationMap: {}, isAlarmMap: {}, currentDataList: [] }
+    );
   };
 
   /**
@@ -472,12 +537,11 @@ export default class MultipleHistoryPlay extends PureComponent {
     let center;
     if (radius) {
       center = latlng;
-    }
-    else {
+    } else {
       center = L.latLngBounds(latlngs).getCenter();
     }
     return center;
-  }
+  };
 
   /**
    * 获取区域右上角
@@ -486,12 +550,11 @@ export default class MultipleHistoryPlay extends PureComponent {
     let bounds;
     if (radius) {
       bounds = L.circle(latlng, radius).getBounds();
-    }
-    else {
+    } else {
       bounds = L.latLngBounds(latlngs);
     }
     return bounds.getNorthEast();
-  }
+  };
 
   /**
    * 获取楼层切换菜单
@@ -510,12 +573,14 @@ export default class MultipleHistoryPlay extends PureComponent {
           const area = tree[id];
           const { isFloor, name } = area;
           if (isFloor) {
-            floors.push(`<div class="${classNames({
-              [styles.floor]: true,
-              [styles.hoverableFloor]: true,
-              [styles.alarmFloor]: isAlarmMap[id],
-              [styles.selectedFloor]: selectedArea && selectedArea.id === id,
-            })}" data-id="${id}">F${index+1}</div>`);
+            floors.push(
+              `<div class="${classNames({
+                [styles.floor]: true,
+                [styles.hoverableFloor]: true,
+                [styles.alarmFloor]: isAlarmMap[id],
+                [styles.selectedFloor]: selectedArea && selectedArea.id === id,
+              })}" data-id="${id}">F${index + 1}</div>`
+            );
           }
           return floors;
         }, []);
@@ -536,70 +601,73 @@ export default class MultipleHistoryPlay extends PureComponent {
         return this.getMenu(tree[parentId], isAlarmMap, currentArea);
       }
     }
-  }
+  };
 
   /**
    * 获取人员数组
    * @param {array} locationMap 人员位置对象
    */
-  getDivIcons = (locationMap) => {
+  getDivIcons = locationMap => {
     // 遍历人员位置
-    return Object.values(locationMap).map(({ id, count, latlng, alarm, isVistor, userName, visitorName }) => {
-      // 是否为报警状态
-      const isAlarm = alarm.length > 0;
-      // 人员元素类名
-      let className;
-      // 人员名称
-      let personTitle;
-      if (count === 1) {
-        if (isVistor) {
+    return Object.values(locationMap).map(
+      ({ id, count, latlng, alarm, isVistor, userName, visitorName }) => {
+        // 是否为报警状态
+        const isAlarm = alarm.length > 0;
+        // 人员元素类名
+        let className;
+        // 人员名称
+        let personTitle;
+        if (count === 1) {
+          if (isVistor) {
+            if (isAlarm) {
+              className = styles.redVistor;
+            } else {
+              className = styles.blueVistor;
+            }
+          } else {
+            if (isAlarm) {
+              className = styles.redPerson;
+            } else {
+              className = styles.bluePerson;
+            }
+          }
+          personTitle = `<div class="${styles.personName}">${
+            isVistor ? visitorName || '访客' : userName || '未领'
+          }</div>`;
+        } else {
           if (isAlarm) {
-            className = styles.redVistor;
+            className = styles.redPeople;
+          } else {
+            className = styles.bluePeople;
           }
-          else {
-            className = styles.blueVistor;
-          }
+          personTitle = `<div class="${styles.personCount}" style="background-color: ${
+            isAlarm ? '#ff0019' : '#04FDFF'
+          };">${count}</div>`;
         }
-        else {
-          if (isAlarm) {
-            className = styles.redPerson;
-          }
-          else {
-            className = styles.bluePerson;
-          }
-        }
-        personTitle = `<div class="${styles.personName}">${isVistor?visitorName||'访客':userName||'未领'}</div>`;
+        return {
+          id,
+          latlng,
+          iconProps: {
+            iconSize: [37, 37],
+            iconAnchor: count === 1 && isVistor ? [18.5, 32] : [18.5, 37],
+            className: styles.personContainer,
+            html: `<div class="${className}">${personTitle}${
+              isAlarm ? `<div class="${styles.alarm}">${alarm.join('，')}</div>` : ''
+            }</div>`,
+          },
+          category: 'person',
+        };
       }
-      else {
-        if (isAlarm) {
-          className = styles.redPeople;
-        }
-        else {
-          className = styles.bluePeople;
-        }
-        personTitle = `<div class="${styles.personCount}" style="background-color: ${isAlarm ? '#ff0019' : '#04FDFF'};">${count}</div>`;
-      }
-      return {
-        id,
-        latlng,
-        iconProps: {
-          iconSize: [37, 37],
-          iconAnchor: count === 1 && isVistor ? [18.5, 32] : [18.5, 37],
-          className: styles.personContainer,
-          html: `<div class="${className}">${personTitle}${isAlarm ? `<div class="${styles.alarm}">${alarm.join('，')}</div>` : ''}</div>`,
-        },
-        category: 'person',
-      };
-    });
-  }
+    );
+  };
 
   /**
    * 获取楼层图片数组
    * @param {object} currentArea 当前区域
    * @return {array} 从当前位置索引往上遍历得到的不同楼层图片数组，不包括单位图
    */
-  getImages = (currentArea) => {
-    const { tree={} } = this.props;
+  getImages = currentArea => {
+    const { tree = {} } = this.props;
     // 根据当前位置索引所在的区域id获取到区域对象
     let image = currentArea;
     const images = [];
@@ -634,20 +702,33 @@ export default class MultipleHistoryPlay extends PureComponent {
           id: `${id}${Math.random()}`,
           areaId: id,
           className: selectedTableRow === 'all' ? styles.hoverable : undefined,
-          options: { ...DEFAULT_AREA_OPTIONS, color: isAlarm ? '#ff4848' : 'transparent', fill: true },
+          options: {
+            ...DEFAULT_AREA_OPTIONS,
+            color: isAlarm ? '#ff4848' : 'transparent',
+            fill: true,
+          },
           category: 'area',
         });
       }
       return arr;
     }, []);
-    return [{
-      ...currentArea,
-      id: `${currentArea.id}${Math.random()}`,
-      areaId: currentArea.id,
-      options: { ...DEFAULT_AREA_OPTIONS, color: tree[currentArea.parentId] ? (isAlarmMap[currentArea.id] ? '#ff4848' : '#00ffff') : 'transparent' },
-      category: 'area',
-    }].concat(list);
-  }
+    return [
+      {
+        ...currentArea,
+        id: `${currentArea.id}${Math.random()}`,
+        areaId: currentArea.id,
+        options: {
+          ...DEFAULT_AREA_OPTIONS,
+          color: tree[currentArea.parentId]
+            ? isAlarmMap[currentArea.id]
+              ? '#ff4848'
+              : '#00ffff'
+            : 'transparent',
+        },
+        category: 'area',
+      },
+    ].concat(list);
+  };
 
   // /**
   //  * 获取信标点
@@ -735,7 +816,7 @@ export default class MultipleHistoryPlay extends PureComponent {
    * @return {number} 当前时间戳对应的位置索引数组
    */
   getCurrentIndexes = ({ currentTimeStamp, prevTimeStamp, prevIndexes = [] }) => {
-    const { ids=[], idMap={}, startTime, endTime } = this.props;
+    const { ids = [], idMap = {}, startTime, endTime } = this.props;
     // 遍历人员列表，获取人员在当前时间戳的位置索引
     return ids.map((id, index) => {
       // 获取当前人员的数据列表
@@ -745,7 +826,7 @@ export default class MultipleHistoryPlay extends PureComponent {
       // 如果当前时间戳在之前时间戳和结束时间之间
       if (currentTimeStamp > prevTimeStamp) {
         // 如果当前时间戳离结束时间更近
-        if ((currentTimeStamp - prevTimeStamp) > (endTime - currentTimeStamp)) {
+        if (currentTimeStamp - prevTimeStamp > endTime - currentTimeStamp) {
           // 从最后一个往前找，如果找不到，就取之前的
           for (let i = list.length - 1; i > currentIndex; i--) {
             if (list[i].intime <= currentTimeStamp) {
@@ -768,7 +849,7 @@ export default class MultipleHistoryPlay extends PureComponent {
       // 如果当前时间戳在开始时间和之前时间戳之间
       else {
         // 如果当前时间戳离之前时间戳更近
-        if ((prevTimeStamp - currentTimeStamp) < (currentTimeStamp - startTime)) {
+        if (prevTimeStamp - currentTimeStamp < currentTimeStamp - startTime) {
           // 从之前的往前找，如果找不到，就取-1
           for (let i = currentIndex; i >= 0; i--) {
             if (list[i] && list[i].intime <= currentTimeStamp) {
@@ -854,7 +935,15 @@ export default class MultipleHistoryPlay extends PureComponent {
         currentTimeStamp,
         currentIndexes,
         currentAreaId,
-        drawProps: { ...drawProps, ...this.getDrawProps({ currentAreaId, currentIndexes, currentTimeStamp, reset: currentAreaId !== prevAreaId }) },
+        drawProps: {
+          ...drawProps,
+          ...this.getDrawProps({
+            currentAreaId,
+            currentIndexes,
+            currentTimeStamp,
+            reset: currentAreaId !== prevAreaId,
+          }),
+        },
       };
     }
     this.setState({
@@ -932,7 +1021,13 @@ export default class MultipleHistoryPlay extends PureComponent {
    */
   handleLocate = e => {
     const { ids, idMap, top, selectedTableRow } = this.props;
-    const { playing, currentIndexes: prevIndexes, currentTimeStamp: prevTimeStamp, drawProps, currentAreaId: prevAreaId } = this.state;
+    const {
+      playing,
+      currentIndexes: prevIndexes,
+      currentTimeStamp: prevTimeStamp,
+      drawProps,
+      currentAreaId: prevAreaId,
+    } = this.state;
     const currentTimeStamp = e.currentTimeStamp || this.getCurrentTimeStamp(e);
     // 如果时间戳没有发生变化，则不做任何操作
     if (currentTimeStamp === prevTimeStamp) {
@@ -949,80 +1044,93 @@ export default class MultipleHistoryPlay extends PureComponent {
         currentAreaId = currentData.areaId || top.id; // 如果在厂内，则取当前区域id，不在厂内，则取最顶层区域id
       }
     }
-    this.setState({
-      // 重置当前时间戳（即重置时间轴进度）
-      currentTimeStamp,
-      // 重置当前位置索引（即重置人员位置）
-      currentIndexes,
-      // 重置当前区域id
-      currentAreaId,
-      // 重置绘图参数
-      drawProps: { ...drawProps, ...this.getDrawProps({ currentAreaId, currentIndexes, currentTimeStamp, reset: currentAreaId !== prevAreaId }) },
-    }, () => {
-      // 根据是否在播放决定是否重置定时器
-      if (playing) {
-        this.setFrameTimer();
+    this.setState(
+      {
+        // 重置当前时间戳（即重置时间轴进度）
+        currentTimeStamp,
+        // 重置当前位置索引（即重置人员位置）
+        currentIndexes,
+        // 重置当前区域id
+        currentAreaId,
+        // 重置绘图参数
+        drawProps: {
+          ...drawProps,
+          ...this.getDrawProps({
+            currentAreaId,
+            currentIndexes,
+            currentTimeStamp,
+            reset: currentAreaId !== prevAreaId,
+          }),
+        },
+      },
+      () => {
+        // 根据是否在播放决定是否重置定时器
+        if (playing) {
+          this.setFrameTimer();
+        }
       }
-    });
+    );
   };
 
   /**
    * 跳转到上一个点
    */
   handlePrev = () => {
-    const { ids=[], idMap={} } = this.props;
-    const { currentIndexes=[], currentTimeStamp: prevTimeStamp } = this.state;
+    const { ids = [], idMap = {} } = this.props;
+    const { currentIndexes = [], currentTimeStamp: prevTimeStamp } = this.state;
     // 遍历当前位置索引获取离当前时间戳最近的进入时间
-    const { currentTimeStamp } = ids.reduce((result, id, index) => {
-      const { currentTimeStamp, max } = result;
-      // 获取当前人员的数据列表
-      const list = idMap[id] || [];
-      // 获取当前位置索引
-      const currentIndex = Math.min(currentIndexes[index], list.length - 1);
-      // 获取当前位置索引对应的数据
-      const currentData = list[currentIndex];
-      if (currentData) {
-        if (currentData.intime === prevTimeStamp) {
-          const prevData = list[currentIndex - 1];
-          if (prevData) {
+    const { currentTimeStamp } = ids.reduce(
+      (result, id, index) => {
+        const { currentTimeStamp, max } = result;
+        // 获取当前人员的数据列表
+        const list = idMap[id] || [];
+        // 获取当前位置索引
+        const currentIndex = Math.min(currentIndexes[index], list.length - 1);
+        // 获取当前位置索引对应的数据
+        const currentData = list[currentIndex];
+        if (currentData) {
+          if (currentData.intime === prevTimeStamp) {
+            const prevData = list[currentIndex - 1];
+            if (prevData) {
+              if (!max) {
+                result.max = currentData.intime;
+              } else if (currentData.intime > max) {
+                result.max = currentData.intime;
+                result.currentTimeStamp = max;
+              }
+              if (!result.currentTimeStamp || prevData.intime > result.currentTimeStamp) {
+                result.currentTimeStamp = prevData.intime;
+              }
+            }
+          } else {
             if (!max) {
               result.max = currentData.intime;
-            }
-            else if (currentData.intime > max) {
+            } else if (currentData.intime > max) {
               result.max = currentData.intime;
               result.currentTimeStamp = max;
-            }
-            if (!result.currentTimeStamp || prevData.intime > result.currentTimeStamp) {
-              result.currentTimeStamp = prevData.intime;
+            } else if (
+              currentData.intime < max &&
+              (!currentTimeStamp || currentData.intime > currentTimeStamp)
+            ) {
+              result.currentTimeStamp = currentData.intime;
             }
           }
         }
-        else {
-          if (!max) {
-            result.max = currentData.intime;
-          }
-          else if (currentData.intime > max){
-            result.max = currentData.intime;
-            result.currentTimeStamp = max;
-          }
-          else if (currentData.intime < max && (!currentTimeStamp || currentData.intime > currentTimeStamp)) {
-            result.currentTimeStamp = currentData.intime;
-          }
-        }
-      }
-      return result;
-    }, { currentTimeStamp: undefined, max: undefined });
+        return result;
+      },
+      { currentTimeStamp: undefined, max: undefined }
+    );
     if (currentTimeStamp) {
       this.handleLocate({ currentTimeStamp });
     }
-  }
+  };
 
   /**
    * 跳转到下一个点
    */
   handleNext = () => {
-    const { ids=[], idMap={} } = this.props;
-    const { currentIndexes=[] } = this.state;
+    const { ids = [], idMap = {} } = this.props;
+    const { currentIndexes = [] } = this.state;
     // 遍历下个位置索引获取离当前时间戳最近的进入时间
     const currentTimeStamp = ids.reduce((currentTimeStamp, id, index) => {
       // 获取当前人员对应的数据列表
@@ -1040,12 +1148,17 @@ export default class MultipleHistoryPlay extends PureComponent {
     if (currentTimeStamp) {
       this.handleLocate({ currentTimeStamp });
     }
-  }
+  };
 
   /**
    * 点击图形
    */
-  handleClick = ({ target: { options: { data: { areaId, category }={} } }, originalEvent }) => {
+  handleClick = ({
+    target: {
+      options: { data: { areaId, category } = {} },
+    },
+    originalEvent,
+  }) => {
     const { selectedTableRow } = this.props;
     // 如果当前在追踪某个人员，则不能点击区域和菜单
     if (selectedTableRow !== 'all') {
@@ -1055,27 +1168,29 @@ export default class MultipleHistoryPlay extends PureComponent {
     let currentAreaId;
     if (category === 'area' && prevAreaId !== areaId) {
       currentAreaId = areaId;
-    }
-    else if (category === 'menu' && prevAreaId !== originalEvent.srcElement.dataset.id) {
+    } else if (category === 'menu' && prevAreaId !== originalEvent.srcElement.dataset.id) {
       currentAreaId = originalEvent.srcElement.dataset.id;
     }
     if (currentAreaId) {
       // 清除变量以方便按照新的速度重新计算
       this.unsetFrameTimer();
-      this.setState(({ drawProps, currentTimeStamp, currentIndexes }) => ({
-        currentAreaId,
-        drawProps: {
-          ...drawProps,
-          ...this.getDrawProps({ currentAreaId, currentTimeStamp, currentIndexes, reset: true }),
-        },
-      }), () => {
-        // 根据是否在播放决定是否重置定时器
-        if (playing) {
-          this.setFrameTimer();
+      this.setState(
+        ({ drawProps, currentTimeStamp, currentIndexes }) => ({
+          currentAreaId,
+          drawProps: {
+            ...drawProps,
+            ...this.getDrawProps({ currentAreaId, currentTimeStamp, currentIndexes, reset: true }),
+          },
+        }),
+        () => {
+          // 根据是否在播放决定是否重置定时器
+          if (playing) {
+            this.setFrameTimer();
+          }
         }
-      });
+      );
     }
-  }
+  };
 
   /**
    * 点击回到最顶层
@@ -1083,7 +1198,7 @@ export default class MultipleHistoryPlay extends PureComponent {
   handleClickHome = () => {
     const { top } = this.props;
     this.handleClick({ target: { options: { data: { areaId: top.id, category: 'area' } } } });
-  }
+  };
 
   /**
    * 点击回到上一层
@@ -1091,8 +1206,10 @@ export default class MultipleHistoryPlay extends PureComponent {
   handleClickBack = () => {
     const { tree } = this.props;
     const { currentAreaId } = this.state;
-    this.handleClick({ target: { options: { data: { areaId: tree[currentAreaId].parentId, category: 'area' } } } });
-  }
+    this.handleClick({
+      target: { options: { data: { areaId: tree[currentAreaId].parentId, category: 'area' } } },
+    });
+  };
 
   /**
    * 面包屑
@@ -1107,16 +1224,22 @@ export default class MultipleHistoryPlay extends PureComponent {
         const area = tree[areaId];
         const props = isAll && {
           className: styles.hoverableBreadcrumb,
-          onClick: () => { this.handleClick({ target: { options: { data: { areaId, category: 'area' } } } }); },
+          onClick: () => {
+            this.handleClick({ target: { options: { data: { areaId, category: 'area' } } } });
+          },
         };
-        parentAreaList.push(<span key={areaId} {...props}>{area.name}</span>);
+        parentAreaList.push(
+          <span key={areaId} {...props}>
+            {area.name}
+          </span>
+        );
         parentAreaList.push(' > ');
         return parentAreaList;
       }, []);
       areaList.push(<span key={currentAreaId}>{currentArea.name}</span>);
       return areaList;
     }
-  }
+  };
 
   /**
    * 渲染
@@ -1146,16 +1269,15 @@ export default class MultipleHistoryPlay extends PureComponent {
       ? `${((currentTimeStamp - startTime) / (endTime - startTime)) * 100}%`
       : 0;
     // 播放按钮类名
-    const playButtonClassName = classNames(
-      styles.playButton,
-      enable ? undefined : styles.disabled,
-    );
+    const playButtonClassName = classNames(styles.playButton, enable ? undefined : styles.disabled);
     // 时间轴事件
-    const timeBarEvents = enable ? {
-      onClick: this.handleLocate,
-      onMouseMove: this.showTooltip,
-      onMouseLeave: this.hideTooltip,
-    } : undefined;
+    const timeBarEvents = enable
+      ? {
+          onClick: this.handleLocate,
+          onMouseMove: this.showTooltip,
+          onMouseLeave: this.hideTooltip,
+        }
+      : undefined;
     // console.log(currentAreaId);
 
     // console.log(drawProps);
@@ -1166,7 +1288,10 @@ export default class MultipleHistoryPlay extends PureComponent {
     return (
       <div className={styles.container}>
         {/* 面包屑容器 */}
-        <div className={styles.breadcrumbWrapper}>当前区域：{this.renderBreadcrumb()}</div>
+        <div className={styles.breadcrumbWrapper}>
+          当前区域：
+          {this.renderBreadcrumb()}
+        </div>
         {/* 内容容器 */}
         <div className={styles.contentWrapper}>
           <ImageDraw
@@ -1176,20 +1301,24 @@ export default class MultipleHistoryPlay extends PureComponent {
             onClick={this.handleClick}
             {...drawProps}
           />
-          {selectedTableRow === 'all' && topLevelArea && currentAreaId && topLevelArea.id !== currentAreaId && (
-            <Fragment>
-              <Icon type="home" className={styles.homeButton} onClick={this.handleClickHome} />
-              <Icon type="rollback" className={styles.backButton} onClick={this.handleClickBack} />
-            </Fragment>
-          )}
+          {selectedTableRow === 'all' &&
+            topLevelArea &&
+            currentAreaId &&
+            topLevelArea.id !== currentAreaId && (
+              <Fragment>
+                <Icon type="home" className={styles.homeButton} onClick={this.handleClickHome} />
+                <Icon
+                  type="rollback"
+                  className={styles.backButton}
+                  onClick={this.handleClickBack}
+                />
+              </Fragment>
+            )}
         </div>
         {/* 控件容器 */}
         <div className={styles.controlWrapper}>
           {/* 时间轴 */}
-          <div
-            className={styles.timeBar}
-            {...timeBarEvents}
-          >
+          <div className={styles.timeBar} {...timeBarEvents}>
             {/* 当前时间轴 */}
             <div className={styles.currentTimeBar} style={{ width }} />
           </div>
@@ -1215,8 +1344,8 @@ export default class MultipleHistoryPlay extends PureComponent {
             <Tooltip title={`减速，当前${speed}x`}>
               <Icon
                 type="backward"
-                className={classNames(styles.button, isMinSpeed?styles.disabled:undefined)}
-                onClick={isMinSpeed ? undefined: this.handleDecelerate}
+                className={classNames(styles.button, isMinSpeed ? styles.disabled : undefined)}
+                onClick={isMinSpeed ? undefined : this.handleDecelerate}
               />
             </Tooltip>
             <div className={styles.playButtonWrapper}>
@@ -1226,14 +1355,14 @@ export default class MultipleHistoryPlay extends PureComponent {
                   type="pause-circle"
                   theme="filled"
                   className={playButtonClassName}
-                  onClick={enable?this.handlePause:undefined}
+                  onClick={enable ? this.handlePause : undefined}
                 />
               ) : (
                 <Icon
                   type="play-circle"
                   theme="filled"
                   className={playButtonClassName}
-                  onClick={enable?this.handlePlay:undefined}
+                  onClick={enable ? this.handlePlay : undefined}
                 />
               )}
             </div>
@@ -1241,8 +1370,8 @@ export default class MultipleHistoryPlay extends PureComponent {
             <Tooltip title={`加速，当前${speed}x`}>
               <Icon
                 type="forward"
-                className={classNames(styles.button, isMaxSpeed?styles.disabled:undefined)}
-                onClick={isMaxSpeed ? undefined: this.handleAccelerate}
+                className={classNames(styles.button, isMaxSpeed ? styles.disabled : undefined)}
+                onClick={isMaxSpeed ? undefined : this.handleAccelerate}
               />
             </Tooltip>
             {/* 下个点跳转按钮 */}

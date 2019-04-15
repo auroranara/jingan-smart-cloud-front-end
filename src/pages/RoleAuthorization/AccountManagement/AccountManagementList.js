@@ -551,9 +551,9 @@ export default class accountManagementList extends React.Component {
             )}
             {unitTypeChecked &&
               unitTypeChecked === 4 && (
-                <FormItem label="用户类型">
+                <FormItem label="用户角色">
                   {getFieldDecorator('userType')(
-                    <Select placeholder="请选择用户类型" style={{ width: 152 }} allowClear>
+                    <Select placeholder="请选择用户角色" style={{ width: 152 }} allowClear>
                       {userTypes.map(item => (
                         <Option value={item.value} key={item.value}>
                           {item.label}
@@ -565,9 +565,9 @@ export default class accountManagementList extends React.Component {
               )}
             {unitTypeChecked &&
               unitTypeChecked === 2 && (
-                <FormItem label="用户类型">
+                <FormItem label="用户角色">
                   {getFieldDecorator('userType')(
-                    <Select placeholder="请选择用户类型" style={{ width: 152 }} allowClear>
+                    <Select placeholder="请选择用户角色" style={{ width: 152 }} allowClear>
                       {gavUserTypes.map(item => (
                         <Option value={item.id} key={item.id}>
                           {item.label}

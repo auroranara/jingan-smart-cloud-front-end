@@ -34,6 +34,7 @@ const hosts = {
   nanxiao: '58.215.178.100:12084',
   sk: '192.168.10.21',
   ly: '192.168.10.19:8080',
+  show: 'www.jinganyun.net',
 };
 
 export default {
