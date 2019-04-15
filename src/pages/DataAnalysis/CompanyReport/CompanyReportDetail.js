@@ -71,16 +71,15 @@ export default class App extends PureComponent {
     const {
       dispatch,
       match: {
-        params: { id },
+        params: { id: checkId },
       },
     } = this.props;
+    console.log('this.props', this.props);
     // 获取详情
-    // dispatch({
-    //   type: 'companyReport/fetchDetail',
-    //   payload: {
-    //     checkId: id,
-    //   },
-    // });
+    dispatch({
+      type: 'companyReport/fetchDetail',
+      payload: { checkId },
+    });
   }
 
   /**

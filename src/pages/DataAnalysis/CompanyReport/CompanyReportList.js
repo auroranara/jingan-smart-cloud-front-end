@@ -299,7 +299,7 @@ export default class App extends PureComponent {
       ...rest,
     });
     // console.log(pageNum);
-    // 获取隐患列表
+    // 获取列表
     dispatch({
       type: 'companyReport/fetchList',
       payload: {
@@ -437,10 +437,11 @@ export default class App extends PureComponent {
       companyReport: {
         data: {
           list,
-          pagination: { pageSize = 10, pageNum = 1, total = 0 },
+          pagination: { pageSize, pageNum, total },
         },
       },
     } = this.props;
+    console.log('this.propsthis.props', list);
     const { columns } = this.state;
     return list.length > 0 ? (
       <Table
@@ -484,6 +485,7 @@ export default class App extends PureComponent {
       },
       loading,
     } = this.props;
+    console.log('this.propsthis.props', total);
 
     return (
       <PageHeaderLayout
