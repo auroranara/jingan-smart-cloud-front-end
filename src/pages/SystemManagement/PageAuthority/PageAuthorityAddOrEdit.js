@@ -4,7 +4,7 @@ import router from 'umi/router';
 import { Button, Card, TreeSelect, Select, Input, Form, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { METHODS, NODE_TYPES, formItemLayout, tailFormItemLayout, getIdMap, sortTree, addProps } from './utils';
+import { METHODS, NODE_TYPES, formItemLayout, tailFormItemLayout, getIdMap, sortTree, addProps, getSortValue } from './utils';
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
@@ -56,7 +56,7 @@ export default class PageAuthorityAdd extends Component {
   codeMap = {};
 
   handleSubmit = e => {
-    const { dispatch, match: { params: { id } } } = this.props;
+    const { dispatch, match: { params: { id } }, pageAuth: { tree=[] } } = this.props;
     const isAdd = id === 'undefined';
 
     e.preventDefault();
@@ -72,8 +72,10 @@ export default class PageAuthorityAdd extends Component {
           parentIds: [...this.idMap[parentId], parentId].join(','),
         };
 
-        // 编辑时，传id，新增时不传
-        if (!isAdd)
+        // 编辑时，传id，新增时自动生成sort
+        if (isAdd)
+          newVals.sort = getSortValue(parentId, tree);
+        else
           newVals.id = id;
 
         // console.log(newVals);
@@ -150,11 +152,13 @@ export default class PageAuthorityAdd extends Component {
                   <Input placeholder="请输入中文名称(显示)" />
                 )}
               </FormItem>
-              <FormItem label="排序优先级" {...formItemLayout}>
-                {getFieldDecorator('sort', { rules: [{ required: true, message: '请输入排序优先级' }] })(
-                  <Input placeholder="请输入排序优先级" />
-                )}
-              </FormItem>
+              {!isAdd && (
+                <FormItem label="排序优先级" {...formItemLayout}>
+                  {getFieldDecorator('sort', { rules: [{ required: true, message: '请输入排序优先级' }] })(
+                    <Input placeholder="请输入排序优先级" />
+                  )}
+                </FormItem>
+              )}
               <FormItem label="节点类型" {...formItemLayout}>
                 {getFieldDecorator('type', {})(
                   <Select placeholder="请选择节点类型">

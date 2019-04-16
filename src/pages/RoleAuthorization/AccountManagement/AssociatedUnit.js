@@ -579,9 +579,7 @@ export default class AssociatedUnit extends PureComponent {
               this.appParentIdMap
             ).join(','),
           };
-          switch (
-            payload.unitType //单位类型
-          ) {
+          switch (payload.unitType) { //单位类型
             // 维保企业 设置用户类型
             case 1:
               payload.userType = 'company_safer';
