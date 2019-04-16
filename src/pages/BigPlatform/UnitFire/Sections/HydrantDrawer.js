@@ -11,8 +11,10 @@ export default class HydrantDrawer extends PureComponent {
       data: { '101': list = [] },
     } = this.props;
     const dataList = list.map(item => {
-      const { deviceDataList } = item;
-      if (!deviceDataList.length) return null;
+      const { deviceDataList, status: devStatus } = item;
+      const isMending = +devStatus === -1;
+      const isNotIn = !deviceDataList.length;
+      // if (!deviceDataList.length) return null;
       const { deviceId, deviceName, area, location, videoList } = item;
       const [
         {
@@ -20,7 +22,7 @@ export default class HydrantDrawer extends PureComponent {
           status,
           deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
           unit,
-        },
+        } = { deviceParamsInfo: {} },
       ] = deviceDataList;
       return {
         name: deviceName,
@@ -33,6 +35,8 @@ export default class HydrantDrawer extends PureComponent {
         normalRange: [normalLower, normalUpper],
         status: +status,
         videoList,
+        isMending,
+        isNotIn,
       };
     });
     const normal = dataList.filter(item => item && item.status === 0).length;

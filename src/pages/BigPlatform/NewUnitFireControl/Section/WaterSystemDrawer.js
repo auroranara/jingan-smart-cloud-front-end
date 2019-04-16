@@ -107,8 +107,9 @@ export default class WaterSystemDrawer extends PureComponent {
     }
 
     return filterFireList.map(item => {
-      const { deviceDataList, videoList } = item;
-      if (!deviceDataList.length) return null;
+      const { deviceDataList, videoList, status: devStatus } = item;
+      const isMending = +devStatus === -1;
+      const isNotIn = !deviceDataList.length;
       const { area, deviceId, location, deviceName } = item;
       const [
         {
@@ -116,18 +117,20 @@ export default class WaterSystemDrawer extends PureComponent {
           status,
           unit,
           deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
-        },
+        } = { deviceParamsInfo: {} },
       ] = deviceDataList;
       const normalRange = [normalLower, normalUpper];
-
+      const isGray = isMending || isNotIn || (!isMending && +status < 0);
       return (
         <Col span={12}>
           <div
             className={styles.card}
             key={deviceId}
-            style={{ border: +status !== 0 ? '1px solid #f83329' : '1px solid #04fdff' }}
+            style={{ border: isGray ? '1px solid #f83329' : '1px solid #04fdff' }}
           >
-            {+status !== 0 && <div className={styles.status}>异常</div>}
+            {isMending && <div className={styles.status}>检修</div>}
+            {isNotIn && <div className={styles.status}>未接入</div>}
+            {!isMending && !isNotIn && +status !== 0 && <div className={styles.status}>异常</div>}
             <div className={styles.picArea}>
               <ChartGauge
                 showName
@@ -138,6 +141,8 @@ export default class WaterSystemDrawer extends PureComponent {
                 range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
                 normalRange={[normalLower, normalUpper]}
                 unit={unit}
+                isMending={isMending}
+                isNotIn={isNotIn}
               />
             </div>
             <div className={styles.itemContainer}>
@@ -145,7 +150,7 @@ export default class WaterSystemDrawer extends PureComponent {
                 className={styles.line}
                 lines={1}
                 tooltip
-                style={{ color: +status === -1 ? '#838383' : '' }}
+                style={{ color: isGray ? '#838383' : '' }}
               >
                 {deviceName}
               </Ellipsis>
@@ -153,17 +158,17 @@ export default class WaterSystemDrawer extends PureComponent {
                 className={styles.line}
                 lines={1}
                 tooltip
-                style={{ color: +status === -1 ? '#838383' : '' }}
+                style={{ color: isGray ? '#838383' : '' }}
               >
                 位置：
                 {area}
                 {location}
               </Ellipsis>
               <Ellipsis className={styles.line} lines={1} tooltip>
-                {+status === -1 ? (
-                  <span style={{ color: +status === -1 ? '#838383' : '' }}>
-                    当前压力：
-                    {!value && value !== 0 ? '---' : <span>{value + unit}</span>}
+                {isGray ? (
+                  <span style={{ color: isGray ? '#838383' : '' }}>
+                    当前压力：---
+                    {/* {!value && value !== 0 ? '---' : <span>{value + unit}</span>} */}
                   </span>
                 ) : (
                   <span>
@@ -180,11 +185,12 @@ export default class WaterSystemDrawer extends PureComponent {
                 className={styles.line}
                 lines={1}
                 tooltip
-                style={{ color: +status === -1 ? '#838383' : '' }}
+                style={{ color: isGray ? '#838383' : '' }}
               >
                 参考范围：
                 {(!normalRange[0] && normalRange[0] !== 0) ||
-                (!normalRange[1] && normalRange[1] !== 0) ? (
+                (!normalRange[1] && normalRange[1] !== 0) ||
+                isNotIn ? (
                   '---'
                 ) : (
                   <span>
@@ -239,31 +245,33 @@ export default class WaterSystemDrawer extends PureComponent {
     }
 
     return filterPondList.map(item => {
-      const { deviceDataList, videoList } = item;
-      if (!deviceDataList.length) return null;
+      const { deviceDataList, videoList, status: devStatus } = item;
+      const isMending = +devStatus === -1;
+      const isNotIn = !deviceDataList.length;
       const { area, deviceId, location, deviceName } = item;
       const [
-        {
-          value,
-          status,
-          unit,
-          deviceParamsInfo: { normalUpper, normalLower },
+        { value, status, unit, deviceParamsInfo: { normalUpper, normalLower } } = {
+          deviceParamsInfo: {},
         },
       ] = deviceDataList;
       const normalRange = [normalLower, normalUpper];
+      const isGray = isMending || isNotIn || (!isMending && +status < 0);
       return (
         <div>
           <Col span={12}>
             <div
               className={styles.card}
               key={deviceId}
-              style={{ border: +status !== 0 ? '1px solid #f83329' : '1px solid #04fdff' }}
+              style={{ border: isGray ? '1px solid #f83329' : '1px solid #04fdff' }}
             >
-              {+status !== 0 && <div className={styles.status}>异常</div>}
+              {isMending && <div className={styles.status}>检修</div>}
+              {isNotIn && <div className={styles.status}>未接入</div>}
+              {!isMending && !isNotIn && +status !== 0 && <div className={styles.status}>异常</div>}
               <div className={styles.picAreaPond}>
                 <img
                   className={styles.pondBg}
-                  src={+status === 0 ? pondNormal : +status === -1 ? pondLoss : pondAbnormal}
+                  // src={+status === 0 ? pondNormal : +status === -1 ? pondLoss : pondAbnormal}
+                  src={isGray ? pondLoss : !isMending && +status === 0 ? pondNormal : pondAbnormal}
                   alt="pond"
                 />
               </div>
@@ -272,7 +280,7 @@ export default class WaterSystemDrawer extends PureComponent {
                   className={styles.line}
                   lines={1}
                   tooltip
-                  style={{ color: +status === -1 ? '#838383' : '' }}
+                  style={{ color: isGray ? '#838383' : '' }}
                 >
                   {deviceName}
                 </Ellipsis>
@@ -280,17 +288,17 @@ export default class WaterSystemDrawer extends PureComponent {
                   className={styles.line}
                   lines={1}
                   tooltip
-                  style={{ color: +status === -1 ? '#838383' : '' }}
+                  style={{ color: isGray ? '#838383' : '' }}
                 >
                   位置：
                   {area}
                   {location}
                 </Ellipsis>
                 <p style={{ marginBottom: 0 }}>
-                  {+status === -1 ? (
+                  {isGray ? (
                     <span style={{ color: '#838383' }}>
-                      当前水位：
-                      <span> {!value && value !== 0 ? '---' : <span>{value + unit}</span>}</span>
+                      当前水位：---
+                      {/* <span> {!value && value !== 0 ? '---' : <span>{value + unit}</span>}</span> */}
                     </span>
                   ) : (
                     <span>
@@ -309,10 +317,10 @@ export default class WaterSystemDrawer extends PureComponent {
                   )}
                 </p>
                 <p style={{ marginBottom: 0 }}>
-                  {+status === -1 ? (
+                  {isGray ? (
                     <span style={{ color: '#838383' }}>
-                      参考范围：
-                      {(!normalRange[0] && normalRange[0] !== 0) ||
+                      参考范围：暂无
+                      {/* {(!normalRange[0] && normalRange[0] !== 0) ||
                       (!normalRange[1] && normalRange[1] !== 0) ? (
                         '暂无'
                       ) : (
@@ -320,13 +328,14 @@ export default class WaterSystemDrawer extends PureComponent {
                           {normalRange[0]}~{normalRange[1]}
                           {unit}
                         </span>
-                      )}
+                      )} */}
                     </span>
                   ) : (
                     <span>
                       参考范围：
                       {(!normalRange[0] && normalRange[0] !== 0) ||
-                      (!normalRange[1] && normalRange[1] !== 0) ? (
+                      (!normalRange[1] && normalRange[1] !== 0) ||
+                      isNotIn ? (
                         '暂无'
                       ) : (
                         <span>

@@ -57,13 +57,14 @@ export default class FireDevice extends PureComponent {
 
   renderHydrant = () => {
     const { waterList } = this.props;
-    if (!waterList.filter(item => item.deviceDataList.length).length) {
+    if (!waterList.length) {
       return this.renderNoCards();
     }
 
     return waterList.map(item => {
-      const { deviceDataList } = item;
-      if (!deviceDataList.length) return null;
+      const { deviceDataList, status: devStatus } = item;
+      const isMending = +devStatus === -1;
+      const isNotIn = !deviceDataList.length;
       const { deviceId, deviceName } = item;
       const [
         {
@@ -71,7 +72,7 @@ export default class FireDevice extends PureComponent {
           status,
           unit,
           deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
-        },
+        } = { deviceParamsInfo: {} },
       ] = deviceDataList;
 
       return (
@@ -87,9 +88,11 @@ export default class FireDevice extends PureComponent {
             radius="80%"
             isLost={+status < 0}
             status={+status}
+            isMending={isMending}
+            isNotIn={isNotIn}
             name={deviceName}
             value={value || 0}
-            range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
+            range={isMending ? [0, 2] : [minValue || 0, maxValue || (value ? 2 * value : 5)]}
             normalRange={[normalLower, normalUpper]}
             unit={unit}
             style={{ flex: 1 }}
@@ -113,19 +116,17 @@ export default class FireDevice extends PureComponent {
 
   renderPond = () => {
     const { waterList } = this.props;
-    if (!waterList.filter(item => item.deviceDataList.length).length) {
+    if (!waterList.length) {
       return this.renderNoCards();
     }
     return waterList.map(item => {
-      const { deviceDataList } = item;
-      if (!deviceDataList.length) return null;
+      const { deviceDataList, status: devStatus } = item;
+      const isMending = +devStatus === -1;
+      const isNotIn = !deviceDataList.length;
       const { deviceId, deviceName } = item;
       const [
-        {
-          value,
-          status,
-          unit,
-          deviceParamsInfo: { normalUpper, normalLower },
+        { value, status, unit, deviceParamsInfo: { normalUpper, normalLower } } = {
+          deviceParamsInfo: {},
         },
       ] = deviceDataList;
 
@@ -135,6 +136,8 @@ export default class FireDevice extends PureComponent {
           name={deviceName}
           value={value}
           status={status}
+          isMending={isMending}
+          isNotIn={isNotIn}
           unit={unit}
           range={[normalLower, normalUpper]}
         />
