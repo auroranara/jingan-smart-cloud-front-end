@@ -93,6 +93,9 @@ export default class App extends PureComponent {
       user: {
         currentUser: { unitType },
       },
+      match: {
+        params: { id },
+      },
       location: {
         query: {
           checkResultName,
@@ -132,9 +135,9 @@ export default class App extends PureComponent {
         dataIndex: 'statusName',
         render: (text, val) => (
           <Link
-            to={`/data-analysis/hidden-danger-report/detail/${val._id}?objectTitle=${
-              val.object_title
-            }`}
+            to={`/data-analysis/hidden-danger-report/detail/${
+              val._id
+            }?checkId=${id}&&companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_name=${check_user_name}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
           >
             <span style={{ color: '#40a9ff' }}> {val.statusName} </span>
           </Link>

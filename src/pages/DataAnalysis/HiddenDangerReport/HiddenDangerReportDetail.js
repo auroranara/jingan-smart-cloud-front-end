@@ -23,13 +23,11 @@ const {
   home: homeTitle,
   hiddenDangerReport: { list: listTitle, menu: menuTitle, detail: title },
 } = titles;
-/* 面包屑 */
-const breadcrumbList = [
-  { title: homeTitle, name: homeTitle, href: homeUrl },
-  { title: menuTitle, name: menuTitle },
-  { title: listTitle, name: listTitle, href: listUrl },
-  { title, name: title },
-];
+
+const crListTitle = '企业自查报表';
+const crListUrl = '/data-analysis/company-report/list';
+const crDetailtitle = '企业自查报表详情';
+
 /* 头部标签列表 */
 const tabList = [
   {
@@ -339,11 +337,38 @@ export default class App extends PureComponent {
       user: {
         currentUser: { unitType },
       },
+      location: {
+        query: {
+          newId,
+          checkId,
+          checkResultName,
+          object_title,
+          check_date,
+          check_user_name,
+          companyName,
+          itemTypeName,
+        },
+      },
       loading,
     } = this.props;
     const { stepDirection, tab } = this.state;
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
+
+    const crDetailUrl = `/data-analysis/company-report/detail/${checkId}?companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_name=${check_user_name}&&check_date=${check_date}&&checkResultName=${checkResultName}`;
+
+    /* 面包屑 */
+    const breadcrumbList = [
+      { title: homeTitle, name: homeTitle, href: homeUrl },
+      { title: menuTitle, name: menuTitle },
+      {
+        title: newId ? crListTitle : object_title ? crDetailtitle : listTitle,
+        name: newId ? crListTitle : object_title ? crDetailtitle : listTitle,
+        href: newId ? crListUrl : object_title ? crDetailUrl : listUrl,
+      },
+      { title, name: title },
+    ];
+
     // 文件
     const fileList = files ? files.map(({ id: key, web_url: src }) => ({ key, src })) : [];
     // 隐患图片

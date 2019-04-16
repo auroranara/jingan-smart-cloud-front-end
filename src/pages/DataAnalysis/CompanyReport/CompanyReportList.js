@@ -155,7 +155,7 @@ export default class App extends PureComponent {
               查看
             </Link>
           ) : (
-            <Link to={`/data-analysis/hidden-danger-report/detail/${_id}?`}>查看</Link>
+            <Link to={`/data-analysis/hidden-danger-report/detail/${_id}?newId=${_id}`}>查看</Link>
           );
         },
       },
