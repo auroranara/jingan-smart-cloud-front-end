@@ -20,25 +20,28 @@ function parseDataNum(n) {
 }
 
 export default function WaterCards(props) {
-  const { name, status, value, unit, range, onClick } = props;
+  const { name, status, value, unit, range, onClick, isMending, isNotIn } = props;
+  const isGray = isMending || isNotIn || (!isMending && +status < 0);
   return (
     <Col span={24} className={styles.container} onClick={onClick}>
-      {+status !== 0 && <div className={styles.status}>异常</div>}
-      <img src={+status === -1 ? waterLoss : +status === 0 ? waterNormal : waterError} alt="pond" />
-      {+status === -1 && (
+      {isMending && <div className={styles.status}>检修</div>}
+      {isNotIn && <div className={styles.status}>未接入</div>}
+      {!isMending && !isNotIn && +status !== 0 && <div className={styles.status}>异常</div>}
+      <img
+        src={isGray ? waterLoss : !isMending && +status === 0 ? waterNormal : waterError}
+        alt="pond"
+      />
+      {isGray && (
         <div className={styles.itemContainer}>
           <div style={{ color: '#838383' }}>{name}</div>
           <Row style={{ color: '#838383' }}>
             <Col span={12}>
               当前水位：
-              <span>
-                {parseDataNum(value)}
-                {parseDataNum(value) === '---' ? '' : unit}
-              </span>
+              <span>---</span>
             </Col>
             <Col span={12}>
               参考范围：
-              {(!range[0] && range[0] !== 0) || (!range[1] && range[1] !== 0) ? (
+              {isNotIn || (!range[0] && range[0] !== 0) || (!range[1] && range[1] !== 0) ? (
                 '---'
               ) : (
                 <span>
@@ -50,7 +53,7 @@ export default function WaterCards(props) {
           </Row>
         </div>
       )}
-      {+status !== -1 && (
+      {!isGray && (
         <div className={styles.itemContainer}>
           <div>{name}</div>
           <Row>

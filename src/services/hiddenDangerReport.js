@@ -59,3 +59,8 @@ export async function getHiddenPosition(params) {
 export async function getHiddendeptContent(params) {
   return request(`/acloud_new/v2/mobile/getdeptContent.json?${stringify(params)}`);
 }
+
+/*根据单位类型模糊搜索单位 */
+export async function queryUnits(params) {
+  return request(`/acloud_new/v2/rolePermission/user/unitsByGrid?${stringify(params)}`);
+}

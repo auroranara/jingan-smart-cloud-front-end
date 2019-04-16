@@ -134,11 +134,10 @@ const generateDeptTree = data => {
 /**
  * 隐患排查报表
  */
-@connect(({ hiddenDangerReport, user, account, loading }) => ({
+@connect(({ hiddenDangerReport, user, loading }) => ({
   hiddenDangerReport,
-  account,
   user,
-  loading: loading.models.hiddenDangerReport && loading.models.account,
+  loading: loading.models.hiddenDangerReport,
 }))
 @Form.create()
 export default class App extends PureComponent {
@@ -394,7 +393,7 @@ export default class App extends PureComponent {
 
     // 根据用户类型获取单位
     dispatch({
-      type: 'account/fetchUnitListFuzzy',
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
     });
   }
 
@@ -457,6 +456,9 @@ export default class App extends PureComponent {
     const {
       dispatch,
       form: { setFieldsValue },
+      user: {
+        currentUser: { companyId },
+      },
     } = this.props;
     // const createTime = [moment().subtract(1, 'months'), moment()];
     // 重置控件
@@ -481,12 +483,21 @@ export default class App extends PureComponent {
     });
     this.handleSearch();
     dispatch({
-      type: 'account/fetchUnitListFuzzy',
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
       payload: {
         // unitName: value && value.trim(),
         pageNum: 1,
         pageSize: 10,
       },
+    });
+    dispatch({
+      type: 'hiddenDangerReport/fetchHiddedeptContent',
+      payload: { companyId },
+    });
+
+    dispatch({
+      type: 'hiddenDangerReport/fetchHiddePosition',
+      payload: { companyId },
     });
   };
 
@@ -631,7 +642,7 @@ export default class App extends PureComponent {
     } = this.props;
     // 根据输入值获取列表
     dispatch({
-      type: 'account/fetchUnitListFuzzy',
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
       payload: {
         unitName: value && value.trim(),
         pageNum: 1,
@@ -711,8 +722,8 @@ export default class App extends PureComponent {
         reportingChannelsList,
         hiddenPositionList,
         hiddendeptContentList,
+        unitIdes,
       },
-      account: { unitIdes },
       form: { getFieldDecorator },
       loading,
     } = this.props;

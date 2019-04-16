@@ -18,6 +18,9 @@ import iconCheck from '@/assets/icon-check.png';
 const { Description } = DescriptionList;
 
 const { projectKey } = global.PROJECT_CONFIG;
+console.log('global.PROJECT_CONFIG', global.PROJECT_CONFIG);
+console.log('projectKey', projectKey);
+
 const isVague = projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
 function nameToVague(str) {
   let newStr = '';

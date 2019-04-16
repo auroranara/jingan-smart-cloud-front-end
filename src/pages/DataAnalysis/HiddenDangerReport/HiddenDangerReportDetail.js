@@ -533,7 +533,8 @@ export default class App extends PureComponent {
                   </Description>
                   <Description term="指定整改人">
                     <Ellipsis tooltip={!!rectify_user_name} lines={1} style={{ height: 22 }}>
-                      {rectify_user_name || getEmptyData()}({rectify_dept || getEmptyData()})
+                      {rectify_user_name || getEmptyData()}
+                      {rectify_dept ? <span> ({rectify_dept || getEmptyData()}) </span> : ''}
                     </Ellipsis>
                   </Description>
                   <Description term="计划整改日期">
