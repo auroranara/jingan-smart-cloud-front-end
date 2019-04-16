@@ -18,6 +18,7 @@ import {
   getHiddenPosition,
   // 获取隐患部门.整改部门列表
   getHiddendeptContent,
+  queryUnits,
 } from '@/services/hiddenDangerReport.js';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
@@ -221,6 +222,7 @@ export default {
     hiddenPositionList: [],
     /* 隐患部门、整改部门列表 */
     hiddendeptContentList: [],
+    unitIdes: [],
   },
 
   effects: {
@@ -371,6 +373,22 @@ export default {
         });
       }
     },
+
+    // 根据单位类型模糊搜索
+    *fetchUnitListFuzzy({ payload, success, error }, { call, put }) {
+      const response = yield call(queryUnits, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'queryUnits',
+          payload: response.data.list,
+        });
+        if (success) {
+          success(response.data.list);
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
   },
 
   reducers: {
@@ -427,6 +445,13 @@ export default {
       return {
         ...state,
         hiddendeptContentList,
+      };
+    },
+
+    queryUnits(state, { payload }) {
+      return {
+        ...state,
+        unitIdes: payload,
       };
     },
   },
