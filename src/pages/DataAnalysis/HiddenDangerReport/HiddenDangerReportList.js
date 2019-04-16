@@ -457,6 +457,9 @@ export default class App extends PureComponent {
     const {
       dispatch,
       form: { setFieldsValue },
+      user: {
+        currentUser: { companyId },
+      },
     } = this.props;
     // const createTime = [moment().subtract(1, 'months'), moment()];
     // 重置控件
@@ -487,6 +490,15 @@ export default class App extends PureComponent {
         pageNum: 1,
         pageSize: 10,
       },
+    });
+    dispatch({
+      type: 'hiddenDangerReport/fetchHiddedeptContent',
+      payload: { companyId },
+    });
+
+    dispatch({
+      type: 'hiddenDangerReport/fetchHiddePosition',
+      payload: { companyId },
     });
   };
 
