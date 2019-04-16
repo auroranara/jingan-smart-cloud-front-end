@@ -198,7 +198,7 @@ export default class AlarmHandle extends Component {
                       </p>
                       <p className={styles.contact} style={{ color: '#4f6793' }}>
                         <span>
-                          {type}：{safetyMan}
+                          {type ? `${type}: ` : null}{safetyMan}
                         </span>
                         <span className={styles.phone}>{safetyPhone}</span>
                       </p>
@@ -249,7 +249,7 @@ export default class AlarmHandle extends Component {
                       </p>
                       <p className={styles.contact} style={{ color: '#4f6793' }}>
                         <span>
-                          {endType}：{safetyMans}
+                          {endType ? `${endType}: ` : null}{safetyMans}
                         </span>
                         <span className={styles.phone}>{safetyPhones}</span>
                       </p>
