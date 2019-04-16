@@ -232,10 +232,10 @@ export default {
     }, */
     // 获取待处理信息(无status)和处理中信息（status传入'2'）
     *fetchPendingInfo({ payload, payload: { status } = {}, callback }, { call, put }) {
-      const response =
-        status && status === '2'
-          ? yield call(fetchPendingInfo, payload)
-          : yield call(fetchUnPendingInfo, payload);
+      const response = yield call(fetchPendingInfo, payload);
+      // status && status === '2'
+      //   ? yield call(fetchPendingInfo, payload)
+      //   : yield call(fetchUnPendingInfo, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'savePendingInfo',

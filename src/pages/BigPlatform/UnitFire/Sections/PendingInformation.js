@@ -217,7 +217,7 @@ export default class PendingInformation extends PureComponent {
             </div>
           </div>
         </div>
-        <div className={styles.topRightPurpleTag}>指派维保</div>
+        {/* <div className={styles.topRightPurpleTag}>指派维保</div> */}
         <div
           className={styles.videoPlayButton}
           onClick={() => {
@@ -272,8 +272,12 @@ export default class PendingInformation extends PureComponent {
             </div>
           </div>
         </div>
-        {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>维保处理</div>}
-        {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>业主处理</div>}
+        {status !== '实时消息' &&
+          ntype &&
+          ntype === '4' && <div className={styles.topRightPurpleTag}>维保处理</div>}
+        {status !== '实时消息' &&
+          ntype &&
+          ntype === '3' && <div className={styles.topRightBlueTag}>业主处理</div>}
         <div className={styles.videoPlayButton} onClick={handleClick}>
           <img src={videoIcon} alt="" />
         </div>
