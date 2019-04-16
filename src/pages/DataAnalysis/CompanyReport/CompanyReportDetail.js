@@ -1,6 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Card, Spin, Table } from 'antd';
 import { connect } from 'dva';
+import Link from 'umi/link';
+import moment from 'moment';
+
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import hiddenIcon from '@/assets/hiddenIcon.png';
 
@@ -36,18 +39,6 @@ const tabList = [
   },
 ];
 
-/* 根据status获取名称 */
-const getLabelByStatus = function(status) {
-  switch (+status) {
-    case 1:
-      return '正常';
-    case 2:
-      return '异常';
-    default:
-      return '';
-  }
-};
-
 /**
  * 企业自查报表详情
  */
@@ -71,14 +62,16 @@ export default class App extends PureComponent {
     const {
       dispatch,
       match: {
-        params: { id: checkId },
+        params: { id },
       },
     } = this.props;
-    console.log('this.props', this.props);
+
     // 获取详情
     dispatch({
-      type: 'companyReport/fetchDetail',
-      payload: { checkId },
+      type: 'companyReport/fetchCheckDetail',
+      payload: {
+        checkId: id,
+      },
     });
   }
 
@@ -94,12 +87,25 @@ export default class App extends PureComponent {
    */
   render() {
     const {
+      companyReport: {
+        detail: { list = [] },
+      },
       user: {
         currentUser: { unitType },
       },
+      location: {
+        query: {
+          checkResultName,
+          object_title,
+          check_date,
+          check_user_name,
+          companyName,
+          itemTypeName,
+        },
+      },
       loading,
     } = this.props;
-    const list = [];
+    console.log('this.propsthis.props', this.props);
     const { tab } = this.state;
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
@@ -107,47 +113,53 @@ export default class App extends PureComponent {
     const columns = [
       {
         title: '检查项',
-        dataIndex: 'check_type',
+        dataIndex: 'object_title',
       },
       {
         title: '业务分类',
-        dataIndex: 'bussiness_type',
+        dataIndex: 'businessTypeName',
       },
       {
         title: '检查内容',
-        dataIndex: 'check_content',
+        dataIndex: 'flow_name',
       },
       {
         title: '检查结果',
-        dataIndex: 'check_result',
-        render: val => {
-          return val && val.length > 0
-            ? val.map((v, i) => {
-                return <div key={i}> {v.userName}</div>;
-              })
-            : '';
-        },
+        dataIndex: 'conclusion_name',
       },
       {
         title: '相关隐患',
-        dataIndex: 'about_hiddenDanger',
+        dataIndex: 'statusName',
+        render: (text, val) => (
+          <Link
+            to={`/data-analysis/hidden-danger-report/detail/${val._id}?objectTitle=${
+              val.object_title
+            }`}
+          >
+            <span style={{ color: '#40a9ff' }}> {val.statusName} </span>
+          </Link>
+        ),
       },
     ];
     return (
       <PageHeaderLayout
         title={
           <Fragment>
-            {`风险点：`}
-            {!isCompany && <div className={styles.content}>{`单位名称：`}</div>}
-            {!isCompany && <div className={styles.content}>{`检查人：`}</div>}
-            {!isCompany && <div className={styles.content}>{`检查时间：`}</div>}
+            {itemTypeName}：{object_title}
+            {!isCompany && <div className={styles.content}>{`单位名称：${companyName}`}</div>}
+            {!isCompany && <div className={styles.content}>{`检查人：${check_user_name}`}</div>}
+            {!isCompany && (
+              <div className={styles.content}>{`检查时间：${moment(+check_date).format(
+                'YYYY-MM-DD'
+              )}`}</div>
+            )}
           </Fragment>
         }
         logo={<img alt="" src={hiddenIcon} />}
         action={
           <div>
             <div className={styles.textSecondary}>状态</div>
-            <div className={styles.heading}>{getLabelByStatus(status)}</div>
+            <div className={styles.heading}>{checkResultName}</div>
           </div>
         }
         tabList={tabList}
@@ -162,10 +174,11 @@ export default class App extends PureComponent {
                 className={styles.table}
                 dataSource={list}
                 columns={columns}
-                rowKey="id"
+                rowKey="_id"
                 scroll={{
                   x: true,
                 }}
+                pagination={false}
               />
             </Card>
           )}

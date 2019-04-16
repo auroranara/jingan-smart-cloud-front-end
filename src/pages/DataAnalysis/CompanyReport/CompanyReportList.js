@@ -137,9 +137,26 @@ export default class App extends PureComponent {
         key: 'operation',
         fixed: 'right',
         width: 64,
-        render: text => (
-          <Link to={`/data-analysis/company-report/detail/${text.check_id}`}>查看</Link>
-        ),
+        render: text => {
+          const {
+            check_id,
+            company_name,
+            itemTypeName,
+            check_user_name,
+            check_date,
+            checkResultName,
+            object_title,
+          } = text;
+          return itemTypeName !== '随手拍' ? (
+            <Link
+              to={`/data-analysis/company-report/detail/${check_id}?companyName=${company_name}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_name=${check_user_name}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+            >
+              查看
+            </Link>
+          ) : (
+            <Link to={`/data-analysis/hidden-danger-report/detail/${check_id}?`}>查看</Link>
+          );
+        },
       },
     ];
     if (!isCompany) {
@@ -298,7 +315,6 @@ export default class App extends PureComponent {
           : [],
       ...rest,
     });
-    // console.log(pageNum);
     // 获取列表
     dispatch({
       type: 'companyReport/fetchList',
@@ -324,8 +340,9 @@ export default class App extends PureComponent {
    **/
   renderFilterForm() {
     const {
-      companyReport: { gridList, reportingChannelsList, checkResultList },
+      companyReport: { reportingChannelsList, checkResultList },
       form: { getFieldDecorator },
+      hiddenDangerReport: { gridList },
     } = this.props;
     return (
       <Form className={styles.form}>
@@ -441,7 +458,6 @@ export default class App extends PureComponent {
         },
       },
     } = this.props;
-    console.log('this.propsthis.props', list);
     const { columns } = this.state;
     return list.length > 0 ? (
       <Table
@@ -485,8 +501,6 @@ export default class App extends PureComponent {
       },
       loading,
     } = this.props;
-    console.log('this.propsthis.props', total);
-
     return (
       <PageHeaderLayout
         title={title}

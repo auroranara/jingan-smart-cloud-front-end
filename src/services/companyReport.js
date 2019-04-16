@@ -14,10 +14,9 @@ export async function getCompanySelfCheckList(params) {
 /**
  * 获取详情
  */
-export async function getSelfCheckDetail({ id }) {
-  return request(`/acloud_new/v2/statistics/getCheckDetail/${id}`);
+export async function getSelfCheckDetail(params) {
+  return request(`/acloud_new/v2/statistics/getCheckDetail?${stringify(params)}`);
 }
-
 /**
  * 获取所属网格列表
  */
@@ -29,5 +28,5 @@ export async function getGridList() {
  * 导出
  */
 export async function exportData(params) {
-  return request(`/acloud_new/v2/hiddenDanger/export?${stringify(params)}`);
+  return request(`/acloud_new/v2/statistics/export?${stringify(params)}`);
 }

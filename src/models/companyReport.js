@@ -1,4 +1,12 @@
-import { getCompanySelfCheckList, getSelfCheckDetail } from '../services/companyReport.js';
+import {
+  getCompanySelfCheckList,
+  // 获取详情
+  getSelfCheckDetail,
+  // 导出
+  exportData,
+} from '../services/companyReport.js';
+import fileDownload from 'js-file-download';
+import moment from 'moment';
 
 export default {
   namespace: 'companyReport',
@@ -42,7 +50,9 @@ export default {
       },
     ],
 
-    selectList: [],
+    detail: {
+      list: [],
+    },
   },
 
   effects: {
@@ -51,36 +61,47 @@ export default {
       const response = yield call(getCompanySelfCheckList, payload);
       if (response.code === 200) {
         yield put({
-          type: 'save',
-          payload: response.data.list,
+          type: 'saveList',
+          payload: response.data,
         });
         if (callback) callback(response);
       }
     },
 
     // 详情
-    *fetchDetail({ payload, callback }, { call, put }) {
+    *fetchCheckDetail({ payload }, { call, put }) {
+      console.log('payload', payload);
       const response = yield call(getSelfCheckDetail, payload);
       if (response.code === 200) {
         yield put({
-          type: 'save',
-          payload: response.data.list,
+          type: 'saveDetail',
+          payload: response.data,
         });
-        if (callback) callback(response);
       }
     },
-    // 网格
     // 导出
+    *exportData({ payload, callback }, { call, put }) {
+      const blob = yield call(exportData, payload);
+      fileDownload(blob, `企业自查报表_${moment().format('YYYYMMDD')}.xls`);
+    },
   },
 
   reducers: {
-    save(state, { payload }) {
+    saveList(state, { payload }) {
+      const { list } = payload;
       return {
         ...state,
-        data: {
-          ...state.data,
-          list: payload || [],
-        },
+        list,
+        data: payload,
+      };
+    },
+
+    saveDetail(state, { payload }) {
+      const { list } = payload;
+      return {
+        ...state,
+        list,
+        detail: payload,
       };
     },
   },
