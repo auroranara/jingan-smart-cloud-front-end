@@ -301,7 +301,6 @@ export default class App extends PureComponent {
     } = this.props;
     // 从sessionStorage中获取存储的控件值
     const fieldsValue = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
-    const { pageNum, pageSize, startTime, endTime, ...rest } = fieldsValue;
     // 重置控件
     setFieldsValue({
       gridId: undefined,
@@ -310,11 +309,7 @@ export default class App extends PureComponent {
       objectTitle: undefined,
       checkUserName: undefined,
       checkResult: undefined,
-      createTime:
-        startTime && endTime
-          ? [moment(startTime, 'YYYY/MM/DD HH:mm:ss'), moment(endTime, 'YYYY/MM/DD HH:mm:ss')]
-          : [],
-      ...rest,
+      createTime: undefined,
     });
     // 获取列表
     dispatch({
