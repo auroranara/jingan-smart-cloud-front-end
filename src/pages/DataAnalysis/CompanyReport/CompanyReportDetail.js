@@ -174,7 +174,7 @@ export default class App extends PureComponent {
                 className={styles.table}
                 dataSource={list}
                 columns={columns}
-                rowKey="_id"
+                rowKey="check_id"
                 scroll={{
                   x: true,
                 }}
