@@ -146,6 +146,7 @@ export default class App extends PureComponent {
             check_date,
             checkResultName,
             object_title,
+            _id,
           } = text;
           return itemTypeName !== '随手拍' ? (
             <Link
@@ -154,7 +155,7 @@ export default class App extends PureComponent {
               查看
             </Link>
           ) : (
-            <Link to={`/data-analysis/hidden-danger-report/detail/${check_id}?`}>查看</Link>
+            <Link to={`/data-analysis/hidden-danger-report/detail/${_id}?`}>查看</Link>
           );
         },
       },
