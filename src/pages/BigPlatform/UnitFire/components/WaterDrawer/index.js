@@ -47,7 +47,6 @@ export default class WaterDrawer extends PureComponent {
     const list = filterName
       ? dataList.filter(item => item && item.name.includes(filterName))
       : dataList;
-    console.log('this.props.dataSet.dataList', this.props.dataSet.dataList);
 
     return (
       <div className={styles.devScroll}>

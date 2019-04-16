@@ -288,7 +288,7 @@ export default class UnitFireControl extends PureComponent {
         type: 'unitFireControl/fetchPendingInfo',
         payload: {
           companyId,
-          status: pendingInfoStatus === '处理中' ? '2' : null,
+          status: pendingInfoStatus === '处理中' ? '0' : null,
           pageNum: 1,
           pageSize: 50,
         },
@@ -623,7 +623,7 @@ export default class UnitFireControl extends PureComponent {
     } else if (value === '处理中') {
       dispatch({
         type: 'unitFireControl/fetchPendingInfo',
-        payload: { companyId, status: '2', pageNum: 1, pageSize: 50 },
+        payload: { companyId, status: '0', pageNum: 1, pageSize: 50 },
         callback,
       });
     } else if (value === '实时消息') {
