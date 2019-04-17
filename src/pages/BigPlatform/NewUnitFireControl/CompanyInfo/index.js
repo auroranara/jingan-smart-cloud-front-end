@@ -67,7 +67,7 @@ export default class CompanyInfo extends PureComponent {
                   </Description>
                 )}
                 {isCzey && (
-                  <Description term="值班">
+                  <Description term="值班人员">
                     <div className={styles.manWrapper} style={{ width: '200px' }}>
                       朱文琴
                       <span className={styles.phone}>13861080705</span>
