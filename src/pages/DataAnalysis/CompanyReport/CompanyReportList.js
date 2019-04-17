@@ -77,13 +77,10 @@ export default class App extends PureComponent {
     } = props;
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
+    const isWbCompany = unitType === 1;
 
     /* 默认除操作列以外的表格列 */
     const defaultColumns = [
-      {
-        title: '上报途径',
-        dataIndex: 'itemTypeName',
-      },
       {
         title: '点位名称',
         dataIndex: 'object_title',
@@ -165,6 +162,10 @@ export default class App extends PureComponent {
         title: '单位名称',
         dataIndex: 'company_name',
       });
+      defaultColumns.splice(1, 0, {
+        title: '上报途径',
+        dataIndex: 'itemTypeName',
+      });
     }
     this.state = {
       // 当前显示的表格字段
@@ -172,6 +173,8 @@ export default class App extends PureComponent {
     };
     // 是否是企业
     this.isCompany = isCompany;
+    // 是否是维保
+    this.isWbCompany = isWbCompany;
     // 默认表格字段
     this.defaultColumns = defaultColumns;
   }
@@ -344,23 +347,24 @@ export default class App extends PureComponent {
       <Form className={styles.form}>
         <Row gutter={{ md: 24 }}>
           {/* 所属网格 */}
-          {!this.isCompany && (
-            <Col xl={8} md={12} sm={24} xs={24}>
-              <Form.Item label={fieldLabels.grid_id}>
-                {getFieldDecorator('gridId')(
-                  <TreeSelect
-                    treeData={gridList}
-                    placeholder="请选择"
-                    getPopupContainer={getRootChild}
-                    allowClear
-                    dropdownStyle={{
-                      maxHeight: '50vh',
-                    }}
-                  />
-                )}
-              </Form.Item>
-            </Col>
-          )}
+          {!this.isCompany &&
+            !this.isWbCompany && (
+              <Col xl={8} md={12} sm={24} xs={24}>
+                <Form.Item label={fieldLabels.grid_id}>
+                  {getFieldDecorator('gridId')(
+                    <TreeSelect
+                      treeData={gridList}
+                      placeholder="请选择"
+                      getPopupContainer={getRootChild}
+                      allowClear
+                      dropdownStyle={{
+                        maxHeight: '50vh',
+                      }}
+                    />
+                  )}
+                </Form.Item>
+              </Col>
+            )}
           {/* 单位名称 */}
           {!this.isCompany && (
             <Col xl={8} md={12} sm={24} xs={24}>
@@ -402,13 +406,11 @@ export default class App extends PureComponent {
             </Form.Item>
           </Col>
           {/* 检查人 */}
-          {!this.isCompany && (
-            <Col xl={8} md={12} sm={24} xs={24}>
-              <Form.Item label={fieldLabels.checkUser}>
-                {getFieldDecorator('checkUserName')(<Input placeholder="请输入" />)}
-              </Form.Item>
-            </Col>
-          )}
+          <Col xl={8} md={12} sm={24} xs={24}>
+            <Form.Item label={fieldLabels.checkUser}>
+              {getFieldDecorator('checkUserName')(<Input placeholder="请输入" />)}
+            </Form.Item>
+          </Col>
           {/* 检查结果 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.checkResult}>
