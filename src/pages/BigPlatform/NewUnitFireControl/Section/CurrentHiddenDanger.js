@@ -10,8 +10,8 @@ const redColor = '#E96767'; // 红
 const yellowColor = '#F6B54E'; // 黄
 const blueColor = '#2A8BD5'; // 蓝
 
-const { projectKey } = global.PROJECT_CONFIG;
-const isVague = projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
+
+const isVague = false;
 function nameToVague(str) {
   let newStr = '';
   if (str && str.length === 1) return str;
@@ -23,11 +23,6 @@ function nameToVague(str) {
   return newStr;
 }
 
-function phoneToVague(str) {
-  if (!str) return str;
-  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
-  return newStr;
-}
 export default class CurrentHiddenDanger extends PureComponent {
   constructor(props) {
     super(props);

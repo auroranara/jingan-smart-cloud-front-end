@@ -56,7 +56,7 @@ export default function OverviewBackSection(props) {
             </Ellipsis>
           </div>
           <p className={styles.safety}>
-            安全负责人：
+            安全管理员：
             <span className={styles.info}>{safetyName ? safetyName : NO_DATA}</span>
           </p>
           <p>

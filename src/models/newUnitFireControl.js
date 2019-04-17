@@ -255,7 +255,7 @@ export default {
       companyMessage: {
         // 企业名称
         companyName: '',
-        // 安全负责人
+        // 安全管理员
         headOfSecurity: '',
         // 联系方式
         headOfSecurityPhone: '',

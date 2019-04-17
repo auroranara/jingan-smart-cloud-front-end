@@ -10,6 +10,7 @@
     "start:wuxi": "cross-env PROJECT_ENV=wuxi ESLINT=none umi dev",
     "start:shanxi": "cross-env PROJECT_ENV=shanxi ESLINT=none umi dev",
     "start:nanxiao": "cross-env PROJECT_ENV=nanxiao ESLINT=none umi dev",
+    "start:czey": "cross-env PROJECT_ENV=czey ESLINT=none umi dev",
     "start:eye": "cross-env PROJECT_ENV=eye ESLINT=none umi dev",
     "start:no-mock": "cross-env MOCK=none ESLINT=none umi dev",
     "start:limin": "cross-env PROJECT_ENV=limin MOCK=none ESLINT=none umi dev",

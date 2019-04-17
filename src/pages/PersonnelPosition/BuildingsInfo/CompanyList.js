@@ -244,7 +244,7 @@ export default class CompanyList extends PureComponent {
                         {industryName || getEmptyData()}
                       </Ellipsis>
                       <p>
-                        安全负责人：
+                        安全管理员：
                         {head_of_security || getEmptyData()}
                       </p>
                       <p>

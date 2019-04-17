@@ -43,7 +43,7 @@ function Occured(props) {
       <p>{position}</p>
       <p>{model} 发生报警！</p>
       <p>
-        安全负责人：
+        安全管理员：
         {safety} {phone}
       </p>
     </div>

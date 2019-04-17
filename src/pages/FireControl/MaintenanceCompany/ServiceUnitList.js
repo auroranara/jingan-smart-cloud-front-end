@@ -261,7 +261,7 @@ export default class ServiceUnitList extends PureComponent {
                       {industryCategoryLabel || getEmptyData()}
                     </Ellipsis>
                     <p>
-                      安全负责人：
+                      安全管理员：
                       {safetyName || getEmptyData()}
                     </p>
                     <p>
