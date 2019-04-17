@@ -52,6 +52,7 @@ export default class App extends PureComponent {
     super(props);
     this.state = {
       tab: '1',
+      i: '0',
     };
   }
 
@@ -108,8 +109,7 @@ export default class App extends PureComponent {
       },
       loading,
     } = this.props;
-    console.log('this.propsthis.props', this.props);
-    const { tab } = this.state;
+    const { tab, i } = this.state;
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
 
@@ -124,24 +124,55 @@ export default class App extends PureComponent {
       },
       {
         title: '检查内容',
-        dataIndex: 'flow_name',
+        dataIndex: 'list',
+        render: val => {
+          return val && val.length > 0
+            ? val.map((v, i) => {
+                return (
+                  <div key={i}>
+                    <span>{v.flow_name}</span>
+                  </div>
+                );
+              })
+            : '';
+        },
       },
       {
         title: '检查结果',
         dataIndex: 'conclusion_name',
+        render: (text, val) => {
+          const { list } = val;
+          return list && list.length > 0
+            ? list.map((v, i) => {
+                return (
+                  <div key={i}>
+                    <span>{v.conclusion_name}</span>
+                  </div>
+                );
+              })
+            : '';
+        },
       },
       {
         title: '相关隐患',
         dataIndex: 'statusName',
-        render: (text, val) => (
-          <Link
-            to={`/data-analysis/hidden-danger-report/detail/${
-              val._id
-            }?checkId=${id}&&companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_name=${check_user_name}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
-          >
-            <span style={{ color: '#40a9ff' }}> {val.statusName} </span>
-          </Link>
-        ),
+        render: (text, val) => {
+          const { list } = val;
+          return list && list.length > 0
+            ? list.map((v, i) => {
+                return (
+                  <Link
+                    key={i}
+                    to={`/data-analysis/company-report/checkDetail/${
+                      v._id
+                    }?checkId=${id}&&companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_name=${check_user_name}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+                  >
+                    <span style={{ color: '#40a9ff' }}> {v.statusName} </span>
+                  </Link>
+                );
+              })
+            : '';
+        },
       },
     ];
     return (
@@ -175,7 +206,7 @@ export default class App extends PureComponent {
                 className={styles.table}
                 dataSource={list}
                 columns={columns}
-                rowKey="check_id"
+                rowKey={i + 1}
                 scroll={{
                   x: true,
                 }}

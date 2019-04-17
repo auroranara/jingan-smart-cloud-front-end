@@ -82,12 +82,25 @@ export default class App extends PureComponent {
     /* 默认除操作列以外的表格列 */
     const defaultColumns = [
       {
+        title: '上报途径',
+        dataIndex: 'itemTypeName',
+      },
+      {
         title: '点位名称',
         dataIndex: 'object_title',
       },
       {
         title: '检查人',
         dataIndex: 'check_user_name',
+        render: (text, val) => {
+          return (
+            <div>
+              <span>
+                {text},{val.check_user_names}
+              </span>
+            </div>
+          );
+        },
       },
       {
         title: '检查日期',
@@ -99,11 +112,11 @@ export default class App extends PureComponent {
         align: 'center',
         dataIndex: 'checkResultName',
         render: value =>
-          (value = '异常' ? (
+          value === '异常' ? (
             <Badge status="error" text={value} />
           ) : (
             <Badge status="success" text={value} />
-          )),
+          ),
       },
       {
         title: '隐患情况',
@@ -152,7 +165,9 @@ export default class App extends PureComponent {
               查看
             </Link>
           ) : (
-            <Link to={`/data-analysis/hidden-danger-report/detail/${_id}?newId=${_id}`}>查看</Link>
+            <Link to={`/data-analysis/company-report/convenientlyDetail/${_id}?newId=${_id}`}>
+              查看
+            </Link>
           );
         },
       },
@@ -161,10 +176,6 @@ export default class App extends PureComponent {
       defaultColumns.splice(0, 0, {
         title: '单位名称',
         dataIndex: 'company_name',
-      });
-      defaultColumns.splice(1, 0, {
-        title: '上报途径',
-        dataIndex: 'itemTypeName',
       });
     }
     this.state = {

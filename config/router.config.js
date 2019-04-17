@@ -783,6 +783,18 @@ module.exports = env => {
                   name: 'detail',
                   component: './DataAnalysis/CompanyReport/CompanyReportDetail',
                 },
+                {
+                  path: '/data-analysis/company-report/convenientlyDetail/:id',
+                  code: 'dataAnalysis.companyReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+                },
+                {
+                  path: '/data-analysis/company-report/checkDetail/:id',
+                  code: 'dataAnalysis.companyReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+                },
               ],
             },
           ],
