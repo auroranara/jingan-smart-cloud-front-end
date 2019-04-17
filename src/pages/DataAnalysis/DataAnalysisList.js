@@ -252,7 +252,7 @@ export default class DataAnalysisList extends PureComponent {
                     {industryCategoryLabel ? industryCategoryLabel : NO_DATA}
                   </Ellipsis>
                   <p>
-                    安全负责人：
+                    安全管理员：
                     {safetyName ? safetyName : NO_DATA}
                   </p>
                   <p>

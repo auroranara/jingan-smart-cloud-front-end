@@ -89,7 +89,7 @@ export default class RepairRecordDetail extends PureComponent {
         <Card title="服务单位">
           <DescriptionList col={1} style={{ marginBottom: 16 }}>
             <Description term="单位名称">{name || getEmptyData()}</Description>
-            <Description term="安全负责人">{safetyName || getEmptyData()}</Description>
+            <Description term="安全管理员">{safetyName || getEmptyData()}</Description>
             <Description term="联系电话">{safetyPhone || getEmptyData()}</Description>
           </DescriptionList>
         </Card>

@@ -11,7 +11,7 @@ import { convertMsToDate } from './AutoFireAlarm';
 const { Description } = DescriptionList;
 
 const DETAIL_ITEMS = ['name', 'time', 'code', 'failureCode', 'type', 'position', 'alarmStatus', 'hostStatus', 'operateTime', 'safetyName', 'safetyPhone'];
-const DETAIL_ITEMS_CHINESE = ['单位名称', '发生时间', '主机编号', '回路故障号', '设施部件类型', '具体位置', '警情状态', '主机状态', '复位/关机时间', '安全负责人', '联系电话'];
+const DETAIL_ITEMS_CHINESE = ['单位名称', '发生时间', '主机编号', '回路故障号', '设施部件类型', '具体位置', '警情状态', '主机状态', '复位/关机时间', '安全管理员', '联系电话'];
 
 @connect(({ fireAlarm, loading }) => ({
   fireAlarm,

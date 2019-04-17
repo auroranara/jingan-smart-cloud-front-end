@@ -7,8 +7,8 @@ import DrawerContainer from '../components/DrawerContainer';
 import TimelineItem from '../components/TimelineItem';
 import flowImg from '../imgs/flow_m.png';
 
-const { projectKey } = global.PROJECT_CONFIG;
-const isVague = projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
+
+const isVague = false;
 function nameToVague(str) {
   let newStr = '';
   if (str && str.length === 1) return str;
@@ -41,7 +41,7 @@ function Occured(props) {
       <p>{position}</p>
       <p>{type} 发生故障</p>
       <p>
-        安全负责人：
+        安全管理员：
         {isVague ? nameToVague(headOfSecurity) : headOfSecurity}{' '}
         {isVague ? phoneToVague(headOfSecurityPhone) : headOfSecurityPhone}
       </p>

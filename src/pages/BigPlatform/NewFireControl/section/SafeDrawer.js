@@ -11,7 +11,7 @@ import DrawerContainer from '../components/DrawerContainer';
 // ];
 
 const TYPE = 'safe';
-const DUTIES = ['单位法人', '安全负责人', '安全管理员', '安全员'];
+const DUTIES = ['单位法人', '安全管理员', '安全管理员', '安全员'];
 const KEYS = ['legalList', 'safeChargerList', 'safeManagerList', 'saferList'];
 const COLORS = ['255,72,72', '198,193,129', '0,168,255', '9,103,211'];
 // const CLASSES = ['legal', 'leader', 'admin', 'person'];
@@ -19,16 +19,19 @@ const COLORS = ['255,72,72', '198,193,129', '0,168,255', '9,103,211'];
 function PersonCard(props) {
   const { list, duty, color, style, ...restProps } = props;
 
-  return list && list.length && (
-    <div className={styles.card} style={{ borderColor: color, ...style }} {...restProps}>
-      <span className={styles.duty}>{duty}</span>
-      {list.map(({ user_id: id, user_name: name, mobile: phone }) => (
-        <p key={id}>
-          <span className={styles.name}>{name}</span>
-          <span>{phone}</span>
-        </p>
-      ))}
-    </div>
+  return (
+    list &&
+    list.length && (
+      <div className={styles.card} style={{ borderColor: color, ...style }} {...restProps}>
+        <span className={styles.duty}>{duty}</span>
+        {list.map(({ user_id: id, user_name: name, mobile: phone }) => (
+          <p key={id}>
+            <span className={styles.name}>{name}</span>
+            <span>{phone}</span>
+          </p>
+        ))}
+      </div>
+    )
   );
 }
 
@@ -52,7 +55,7 @@ export default class SafeDrawer extends PureComponent {
             </Col>
             <Col span={12}>
               <p className={styles.p}>
-                安全负责人
+                安全管理员
                 <span className={styles.leader}>{safes[1].length}</span>
               </p>
             </Col>
@@ -60,7 +63,8 @@ export default class SafeDrawer extends PureComponent {
           <Row>
             <Col span={12}>
               <p className={styles.p}>
-                安全管理员<span className={styles.admin}>{safes[2].length}</span>
+                安全管理员
+                <span className={styles.admin}>{safes[2].length}</span>
               </p>
             </Col>
             <Col span={12}>
@@ -73,13 +77,8 @@ export default class SafeDrawer extends PureComponent {
         </div>
         <div className={styles.cards}>
           {DUTIES.map((d, i) => (
-            <PersonCard
-              key={i}
-              duty={d}
-              color={`rgb(${COLORS[i]})`}
-              list={safes[i]}
-            />)
-          )}
+            <PersonCard key={i} duty={d} color={`rgb(${COLORS[i]})`} list={safes[i]} />
+          ))}
         </div>
       </div>
     );

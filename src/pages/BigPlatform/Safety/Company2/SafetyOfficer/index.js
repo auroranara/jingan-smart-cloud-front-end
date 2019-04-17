@@ -47,7 +47,7 @@ export default class SafetyOfficer extends PureComponent {
             </Col>
 
             <Col span={12} className={styles.person}>
-              <div className={styles.personName}>安全负责人</div>
+              <div className={styles.personName}>安全管理员</div>
               <div className={styles.personValue}>{safeChargerNum}</div>
             </Col>
 
@@ -76,7 +76,7 @@ export default class SafetyOfficer extends PureComponent {
           )}
         {safeChargerList.length !== 0 && (
           <div className={styles.personList} style={{ borderColor: '#C6C181' }}>
-            <div className={styles.personLabel}>安全负责人</div>
+            <div className={styles.personLabel}>安全管理员</div>
             {safeChargerList.map(({ user_id: id, user_name: name, mobile: phone }) => (
               <div className={styles.personItem} key={id}>
                 <div className={styles.personItemName}>{name}</div>

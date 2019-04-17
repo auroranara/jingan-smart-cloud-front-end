@@ -45,7 +45,7 @@ function Occured(props) {
         <span style={{ color: '#ffb400' }}>({type || '失联'})</span>
       </p>
       <p>
-        安全负责人：
+        安全管理员：
         {safety} {phone}
       </p>
     </div>

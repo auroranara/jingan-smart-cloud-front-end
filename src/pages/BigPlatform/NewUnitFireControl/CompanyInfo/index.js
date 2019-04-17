@@ -16,28 +16,8 @@ import iconCheck from '@/assets/icon-check.png';
  * date: 2018年12月03日
  */
 const { Description } = DescriptionList;
-
-const { projectKey } = global.PROJECT_CONFIG;
-console.log('global.PROJECT_CONFIG', global.PROJECT_CONFIG);
-console.log('projectKey', projectKey);
-
-const isVague = projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
-function nameToVague(str) {
-  let newStr = '';
-  if (str && str.length === 1) return str;
-  else if (str && str.length === 2) {
-    newStr = str.substr(0, 1) + '*';
-  } else if (str && str.length > 2) {
-    newStr = str.substr(0, 1) + '*' + str.substr(-1);
-  } else return str;
-  return newStr;
-}
-
-function phoneToVague(str) {
-  if (!str) return str;
-  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
-  return newStr;
-}
+// 是否是常州二院
+const isCzey = window.PROJECT_CONFIG.projectKey === 'czey_pro';
 
 @connect(({ newUnitFireControl }) => ({
   newUnitFireControl,
@@ -55,14 +35,14 @@ export default class CompanyInfo extends PureComponent {
         maintenanceCompany: {
           name: companyNames = [],
           result: userList = [],
-          PrincipalName = '',
+          PrincipalName = '', //安全管理员
           PrincipalPhone = '',
         },
       },
     } = this.props;
     // console.log('currentHiddenDanger',this.props.model.currentHiddenDanger);
 
-    const newUsers = userList.slice(0, 2);
+    const newUsers = userList.slice(0, 1);
 
     return (
       <Section title="单位基本信息" style={{ height: 'auto' }}>
@@ -79,12 +59,18 @@ export default class CompanyInfo extends PureComponent {
               <div className={styles.companyName}>{companyName}</div>
               <DescriptionList col={1}>
                 {PrincipalName && (
-                  <Description term="主要负责人">
-                    <div className={styles.manWrapper} style={{ width: '145px' }}>
-                      {isVague ? nameToVague(PrincipalName) : PrincipalName}
-                      <span className={styles.phone}>
-                        {isVague ? phoneToVague(PrincipalPhone) : PrincipalPhone}
-                      </span>
+                  <Description term="安全管理员">
+                    <div className={styles.manWrapper} style={{ width: '200px' }}>
+                      {PrincipalName}
+                      <span className={styles.phone}>{PrincipalPhone}</span>
+                    </div>
+                  </Description>
+                )}
+                {isCzey && (
+                  <Description term="值班人员">
+                    <div className={styles.manWrapper} style={{ width: '200px' }}>
+                      朱文琴
+                      <span className={styles.phone}>13861080705</span>
                     </div>
                   </Description>
                 )}
@@ -111,10 +97,8 @@ export default class CompanyInfo extends PureComponent {
                   {newUsers.map((data, index) => {
                     return (
                       <div className={styles.manWrapper} key={index}>
-                        {isVague ? nameToVague(data.userName) : data.userName}
-                        <span className={styles.phone}>
-                          {isVague ? phoneToVague(data.phoneNumber) : data.phoneNumber}
-                        </span>
+                        {data.userName}
+                        <span className={styles.phone}>{data.phoneNumber}</span>
                       </div>
                     );
                   })}

@@ -904,7 +904,7 @@ class CompanyLayout extends PureComponent {
         companyMessage: {
           // 企业名称
           companyName,
-          // 安全负责人
+          // 安全管理员
           headOfSecurity,
           // 联系电话
           headOfSecurityPhone,
@@ -948,7 +948,7 @@ class CompanyLayout extends PureComponent {
                   {companyName}
                 </div>
                 <div className={styles.companyCharger}>
-                  <span className={styles.fieldName}>安全负责人：</span>
+                  <span className={styles.fieldName}>安全管理员：</span>
                   {headOfSecurity}
                 </div>
                 <div className={styles.companyPhone}>
@@ -1752,7 +1752,7 @@ class CompanyLayout extends PureComponent {
               </Col>
 
               <Col span={12} className={styles.person}>
-                <div className={styles.personName}>安全负责人</div>
+                <div className={styles.personName}>安全管理员</div>
                 <div className={styles.personValue}>{safeChargerNum}</div>
               </Col>
 
@@ -1780,7 +1780,7 @@ class CompanyLayout extends PureComponent {
                 )}
               {safeChargerList.length !== 0 && (
                 <div className={styles.personList} style={{ borderColor: '#C6C181' }}>
-                  <div className={styles.personLabel}>安全负责人</div>
+                  <div className={styles.personLabel}>安全管理员</div>
                   {safeChargerList.map(({ user_id: id, user_name: name, mobile: phone }) => (
                     <div className={styles.personItem} key={id}>
                       <div className={styles.personItemName}>{name}</div>

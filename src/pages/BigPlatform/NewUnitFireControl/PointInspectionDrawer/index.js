@@ -8,8 +8,8 @@ import styles from './index.less';
 
 const { Option } = Select;
 
-const { projectKey } = global.PROJECT_CONFIG;
-const isVague = projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
+
+const isVague = false;
 function nameToVague(str) {
   let newStr = '';
   if (str && str.length === 1) return str;
@@ -21,11 +21,7 @@ function nameToVague(str) {
   return newStr;
 }
 
-function phoneToVague(str) {
-  if (!str) return str;
-  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
-  return newStr;
-}
+
 /**
  * description: 点位巡查抽屉
  * author: sunkai

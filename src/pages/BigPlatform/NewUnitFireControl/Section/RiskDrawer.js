@@ -13,8 +13,8 @@ const CARDS = [...Array(10).keys()].map(i => ({
   status: Math.random() > 0.5 ? '正常' : '异常',
 }));
 
-const { projectKey } = global.PROJECT_CONFIG;
-const isVague = projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
+
+const isVague = false;
 function nameToVague(str) {
   let newStr = '';
   if (str && str.length === 1) return str;
@@ -23,12 +23,6 @@ function nameToVague(str) {
   } else if (str && str.length > 2) {
     newStr = str.substr(0, 1) + '*' + str.substr(-1);
   } else return str;
-  return newStr;
-}
-
-function phoneToVague(str) {
-  if (!str) return str;
-  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
   return newStr;
 }
 

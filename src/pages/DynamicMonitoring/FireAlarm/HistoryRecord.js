@@ -381,7 +381,7 @@ export default class HistoryRecord extends PureComponent {
             <FormItem {...formItemLayout} label="警情状态：">
               {historyDetail.alarmStatus}
             </FormItem>
-            <FormItem {...formItemLayout} label="安全负责人：">
+            <FormItem {...formItemLayout} label="安全管理员：">
               {historyDetail.safetyName}
             </FormItem>
             <FormItem {...formItemLayout} label="联系电话：">
