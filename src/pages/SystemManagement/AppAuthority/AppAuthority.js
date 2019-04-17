@@ -18,22 +18,6 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './AppAuthority.less';
 import { sortTree, renderRoleTreeNodes, addProps } from '@/pages/SystemManagement/PageAuthority/utils';
 
-const data = [];
-for (let i = 0; i < 30; i++) {
-  data.push({
-    key: i.toString(),
-    id: i.toString(),
-    parentId: `parent-${i}`,
-    code: `code-${i}`,
-    ename: `Edrward ${i}`,
-    zName: '查看',
-    showZName: '查看',
-    sort: 0,
-    type: Math.random() > 0.5 ? 'menu' : 'page',
-    method: Math.random() > 0.5 ? 'GET' : 'POST',
-    url: 'url',
-  });
-}
 const { Item: FormItem } = Form;
 const { Option } = Select;
 const EditableContext = createContext();
@@ -136,13 +120,6 @@ export default class AppAuthority extends Component {
         align: 'center',
         editable: true,
       },
-      // {
-      //   title: '权限树类型',
-      //   dataIndex: 'type',
-      //   width: 100,
-      //   align: 'center',
-      //   editable: true,
-      // },
       // {
       //   title: '请求方式',
       //   dataIndex: 'method',

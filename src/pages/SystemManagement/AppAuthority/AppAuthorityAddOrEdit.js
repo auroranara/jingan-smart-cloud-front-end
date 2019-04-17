@@ -79,7 +79,7 @@ export default class AppAuthorityAdd extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        const { parentId, code } = values;
+        const { parentId, code, sort } = values;
         const parentCode = this.codeMap[parentId];
         const newVals = {
           ...values,
@@ -88,11 +88,16 @@ export default class AppAuthorityAdd extends Component {
           parentIds: [...this.idMap[parentId], parentId].join(','),
         };
 
-        // 编辑时，传id，新增时自己计算sort值
+        // 新增时自己计算sort值
+        const [nextSort, sorts] = getSortValue(parentId, tree);
         if (isAdd)
-          newVals.sort = getSortValue(parentId, tree);
-        else
+          newVals.sort = nextSort;
+        // 编辑时，传id，目标节点中已有当前sort，自动校正
+        else {
           newVals.id = id;
+          if (sorts.includes(+sort))
+            newVals.sort = nextSort;
+        }
 
         dispatch({
           type: `appAuth/${isAdd ? 'postAuth' :'putAuth'}`,

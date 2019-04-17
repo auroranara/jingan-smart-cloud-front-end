@@ -63,7 +63,7 @@ export default class PageAuthorityAdd extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         // console.log('Received values of form: ', values);
-        const { parentId, code } = values;
+        const { parentId, code, sort } = values;
         const parentCode = this.codeMap[parentId];
         const newVals = {
           ...values,
@@ -72,13 +72,16 @@ export default class PageAuthorityAdd extends Component {
           parentIds: [...this.idMap[parentId], parentId].join(','),
         };
 
-        // 编辑时，传id，新增时自动生成sort
+        // 新增时自己计算sort值
+        const [nextSort, sorts] = getSortValue(parentId, tree);
         if (isAdd)
-          newVals.sort = getSortValue(parentId, tree);
-        else
+          newVals.sort = nextSort;
+        // 编辑时，传id，目标节点中已有当前sort，自动校正
+        else {
           newVals.id = id;
-
-        // console.log(newVals);
+          if (sorts.includes(+sort))
+            newVals.sort = nextSort;
+        }
 
         dispatch({
           type: `pageAuth/${isAdd ? 'postAuth' :'putAuth'}`,

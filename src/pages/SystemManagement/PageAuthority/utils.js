@@ -140,8 +140,8 @@ export function getSortValue(parentId, tree) {
   if (!target)
     return 0;
   const sorts = target.map(({ sort }) => +sort).filter(sort => typeof sort === 'number');
-  let sort = sorts.length;
+  let sort = 0;
   while (sorts.includes(sort))
     sort++;
-  return sort;
+  return [sort, sorts];
 }
