@@ -16,8 +16,8 @@ import iconCheck from '@/assets/icon-check.png';
  * date: 2018年12月03日
  */
 const { Description } = DescriptionList;
-
-console.log('global', global);
+// 是否是常州二院
+const isCzey = window.PROJECT_CONFIG.projectKey === 'czey_pro';
 
 @connect(({ newUnitFireControl }) => ({
   newUnitFireControl,
@@ -60,9 +60,17 @@ export default class CompanyInfo extends PureComponent {
               <DescriptionList col={1}>
                 {PrincipalName && (
                   <Description term="安全管理员">
-                    <div className={styles.manWrapper} style={{ width: '150px' }}>
+                    <div className={styles.manWrapper} style={{ width: '200px' }}>
                       {PrincipalName}
                       <span className={styles.phone}>{PrincipalPhone}</span>
+                    </div>
+                  </Description>
+                )}
+                {isCzey && (
+                  <Description term="值班">
+                    <div className={styles.manWrapper} style={{ width: '200px' }}>
+                      朱文琴
+                      <span className={styles.phone}>13861080705</span>
                     </div>
                   </Description>
                 )}
