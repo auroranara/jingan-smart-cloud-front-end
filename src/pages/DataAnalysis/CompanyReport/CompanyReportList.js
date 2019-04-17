@@ -91,16 +91,7 @@ export default class App extends PureComponent {
       },
       {
         title: '检查人',
-        dataIndex: 'check_user_name',
-        render: (text, val) => {
-          return (
-            <div>
-              <span>
-                {text},{val.check_user_names}
-              </span>
-            </div>
-          );
-        },
+        dataIndex: 'check_user_names',
       },
       {
         title: '检查日期',
@@ -122,22 +113,24 @@ export default class App extends PureComponent {
         title: '隐患情况',
         dataIndex: 'dangerStatus',
         render: (val, text) => {
-          const { over_rectify, rectify, review, closed, total } = text;
+          const { over_rectify, rectify, review, closed, total, checkResultName } = text;
           const resultStatus = ['已超期', '待整改', '待复查', '已关闭'];
           const nums = [over_rectify, rectify, review, closed];
           return (
-            <div>
-              <p style={{ marginBottom: 0 }}>
-                总数：
-                {total}
-              </p>
-              {resultStatus
-                .map((data, index) => {
-                  return nums[index] ? `${data} ${nums[index]}` : '';
-                })
-                .filter(data => data)
-                .join('/')}
-            </div>
+            checkResultName === '异常' && (
+              <div>
+                <p style={{ marginBottom: 0 }}>
+                  总数：
+                  {total}
+                </p>
+                {resultStatus
+                  .map((data, index) => {
+                    return nums[index] ? `${data} ${nums[index]}` : '';
+                  })
+                  .filter(data => data)
+                  .join('/')}
+              </div>
+            )
           );
         },
       },

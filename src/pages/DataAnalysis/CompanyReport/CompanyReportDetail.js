@@ -110,6 +110,7 @@ export default class App extends PureComponent {
       loading,
     } = this.props;
     const { tab, i } = this.state;
+    console.log('iiiiiiiii', i);
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
 
@@ -159,16 +160,22 @@ export default class App extends PureComponent {
         render: (text, val) => {
           const { list } = val;
           return list && list.length > 0
-            ? list.map((v, i) => {
+            ? list.map((v, d) => {
                 return (
-                  <Link
-                    key={i}
-                    to={`/data-analysis/company-report/checkDetail/${
-                      v._id
-                    }?checkId=${id}&&companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_name=${check_user_name}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
-                  >
-                    <span style={{ color: '#40a9ff' }}> {v.statusName} </span>
-                  </Link>
+                  <div>
+                    <Link
+                      key={d}
+                      to={`/data-analysis/company-report/checkDetail/${
+                        v._id
+                      }?checkId=${id}&&companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_name=${check_user_name}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+                    >
+                      {v.statusName ? (
+                        <span style={{ color: '#40a9ff' }}> {v.statusName} </span>
+                      ) : (
+                        <span className={styles.statusName}>''</span>
+                      )}
+                    </Link>
+                  </div>
                 );
               })
             : '';
@@ -206,7 +213,7 @@ export default class App extends PureComponent {
                 className={styles.table}
                 dataSource={list}
                 columns={columns}
-                rowKey={i + 1}
+                rowKey={i}
                 scroll={{
                   x: true,
                 }}
