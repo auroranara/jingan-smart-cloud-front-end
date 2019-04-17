@@ -24,7 +24,6 @@ import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import AuthorityTree from './AuthorityTree';
-import AppAuthorityTree from './AppAuthorityTree';
 import {
   renderSearchedTreeNodes,
   getParentKeys,
@@ -72,7 +71,6 @@ const fieldLabels = {
 // 运营企业：3
 // 政府机构：2
 // 维保企业：1
-const UNIT_TYPE_FIX = { 4: 1, 3: 0, 2: 2, 1: 3 };
 
 // 默认的所属单位长度
 const defaultPageSize = 20;
@@ -118,7 +116,6 @@ const generateUnitsTree = data => {
     role,
     loading: loading.models.account,
     authorityTreeLoading: loading.effects['role/fetchPermissionTree'],
-    appAuthorityTreeLoading: loading.effects['role/fetchAppPermissionTree'],
   }),
   dispatch => ({
     // 修改账号
@@ -333,22 +330,16 @@ export default class accountManagementEdit extends PureComponent {
     });
   }
 
+  // sortMap = {};
+  // totalMap = {};
   childrenMap = {};
   idMap = {};
-  appIdMap = {};
   parentIdMap = {};
-  appParentIdMap = {};
   permissions = [];
-  appPermissions = [];
   authTreeCheckedKeys = [];
-  appAuthTreeCheckedKeys = [];
 
   setIdMaps = idMaps => {
     [this.parentIdMap, this.idMap] = idMaps;
-  };
-
-  setAppIdMaps = idMaps => {
-    [this.appParentIdMap, this.appIdMap] = idMaps;
   };
 
   //获取维保权限树
@@ -404,7 +395,6 @@ export default class accountManagementEdit extends PureComponent {
           execCertificateCode,
           regulatoryClassification,
           permissions,
-          appPermissions,
           serCheckedKeys = [],
           subCheckedKeys = [],
           isCheckAll,
@@ -477,10 +467,6 @@ export default class accountManagementEdit extends PureComponent {
                 getNoRepeat(permissions, this.permissions),
                 this.parentIdMap
               ).join(','),
-              appPermissions: addParentKey(
-                getNoRepeat(appPermissions, this.appPermissions),
-                this.appParentIdMap
-              ).join(','),
             };
             switch (payload.unitType) {
               // 维保企业
@@ -513,7 +499,7 @@ export default class accountManagementEdit extends PureComponent {
     // 不同的地方在于，再次选择时，若选择了和上次一样的选项，则会出发onselect，但是由于Select框的值并未发生改变，所以不会触发onchange事件
     this.handleUnitTypeSelect(id);
     const {
-      form: { setFieldsValue, getFieldValue },
+      form: { setFieldsValue },
     } = this.props;
     this.setState(
       {
@@ -526,11 +512,7 @@ export default class accountManagementEdit extends PureComponent {
           setFieldsValue({ userType: undefined });
         }
 
-        if (id === 4 || id === 2)
-          setFieldsValue({ regulatoryClassification: SUPERVISIONS_ALL });
-
-        this.appAuthTreeCheckedKeys = [];
-        this.fetchRolePermissions(getFieldValue('roleIds'));
+        if (id === 4 || id === 2) setFieldsValue({ regulatoryClassification: SUPERVISIONS_ALL });
       }
     );
   };
@@ -1262,61 +1244,27 @@ export default class accountManagementEdit extends PureComponent {
     } = this.props;
     setFieldsValue({ roleIds: nextTargetKeys });
 
-    this.fetchRolePermissions(nextTargetKeys);
-
-    // // 穿梭框中有值
-    // if (nextTargetKeys.length)
-    //   dispatch({
-    //     type: 'role/fetchRolePermissions',
-    //     payload: { id: nextTargetKeys.join(',') },
-    //     success: permissions => {
-    //       this.permissions = permissions;
-    //       setFieldsValue({
-    //         permissions: removeParentKey(
-    //           mergeArrays(permissions, this.authTreeCheckedKeys),
-    //           this.idMap
-    //         ),
-    //       });
-    //     },
-    //   });
-    // // 穿梭框中没有值时，不需要请求服务器，本地清空即可
-    // else {
-    //   this.permissions = [];
-    //   setFieldsValue({ permissions: this.authTreeCheckedKeys });
-    //   dispatch({ type: 'role/saveRolePermissions', payload: [] });
-    // }
-  };
-
-  fetchRolePermissions = ids => {
-    const { dispatch, form: { setFieldsValue } } = this.props;
-    const { unitTypeChecked } = this.state;
-    const isNotAdmin = unitTypeChecked !== 3;
-
-    // ids不为数组或者ids的长度为0，则本地清空
-    if (!Array.isArray(ids) || !ids.length) {
-      const values = { permissions: this.authTreeCheckedKeys };
-      this.permissions = [];
-      dispatch({ type: 'role/saveRolePermissions', payload: [] });
-      if (isNotAdmin) {
-        values.appPermissions = this.appAuthTreeCheckedKeys;
-        this.appPermissions = [];
-        dispatch({ type: 'role/saveRoleAppPermissions', payload: [] });
-      }
-      setFieldsValue(values);
-    }
-    else
+    // 穿梭框中有值
+    if (nextTargetKeys.length)
       dispatch({
         type: 'role/fetchRolePermissions',
-        payload: { id: ids.join(','), type: UNIT_TYPE_FIX[unitTypeChecked] },
-        success: (permissions, appPermissions) => {
+        payload: { id: nextTargetKeys.join(',') },
+        success: permissions => {
           this.permissions = permissions;
-          // this.setPermissions();
-          if (isNotAdmin) {
-            this.appPermissions = appPermissions;
-            // this.setAppPermissions();
-          }
+          setFieldsValue({
+            permissions: removeParentKey(
+              mergeArrays(permissions, this.authTreeCheckedKeys),
+              this.idMap
+            ),
+          });
         },
       });
+    // 穿梭框中没有值时，不需要请求服务器，本地清空即可
+    else {
+      this.permissions = [];
+      setFieldsValue({ permissions: this.authTreeCheckedKeys });
+      dispatch({ type: 'role/saveRolePermissions', payload: [] });
+    }
   };
 
   /* 渲染角色权限信息 */
@@ -1370,7 +1318,7 @@ export default class accountManagementEdit extends PureComponent {
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label="WEB账号权限">
+              <Form.Item label="账号权限">
                 <AuthorityTree
                   role={role}
                   form={form}
@@ -1382,20 +1330,6 @@ export default class accountManagementEdit extends PureComponent {
                 />
               </Form.Item>
             </Col>
-            {(unitTypeChecked === 1 || unitTypeChecked === 2 || unitTypeChecked === 4) && (
-              <Col lg={12} md={12} sm={24}>
-                <Form.Item label="APP账号权限">
-                  <AppAuthorityTree
-                    role={role}
-                    form={form}
-                    dispatch={dispatch}
-                    treeType={UNIT_TYPE_FIX[unitTypeChecked]}
-                    setIdMaps={this.setAppIdMaps}
-                    handleChangeAuthTreeCheckedKeys={this.handleChangeAppAuthTreeCheckedKeys}
-                  />
-                </Form.Item>
-              </Col>
-            )}
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
