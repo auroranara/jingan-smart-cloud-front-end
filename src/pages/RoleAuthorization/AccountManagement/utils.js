@@ -294,7 +294,7 @@ export function removeParentKey(keys, idMap) {
   const indexes = keys.reduce((prev, next, i) => {
     // 若目标节点含有子元素
     const node = idMap[next];
-    if (Array.isArray(node.childMenus) && getNotExist(node, keys, cache))
+    if (node && Array.isArray(node.childMenus) && getNotExist(node, keys, cache))
       prev.push(i);
 
     return prev;

@@ -82,7 +82,7 @@ export function getIdMap(tree) {
 
 export function addProps(tree) {
   traverse(tree, item => {
-    item.title = item.showZname;
+    item.title = item.showZname || item.showName;
     item.value = item.key = item.id;
     item.children = item.childMenus;
   }, 'childMenus');
@@ -92,12 +92,12 @@ export function renderRoleTreeNodes(data) {
   return data.map((item) => {
     if (item.childMenus) {
       return (
-        <TreeNode title={item.showZname} key={item.id} dataRef={item}>
+        <TreeNode title={item.showZname || item.showName} key={item.id} dataRef={item}>
           {renderRoleTreeNodes(item.childMenus)}
         </TreeNode>
       );
     }
-    return <TreeNode title={item.showZname} key={item.id} dataRef={item} />;
+    return <TreeNode title={item.showZname || item.showName} key={item.id} dataRef={item} />;
   });
 }
 
@@ -112,4 +112,36 @@ export function renderTreeNodes(data) {
     }
     return <TreeNode {...item} />;
   });
+}
+
+// 返回目标项目的children数组
+function findTargetInTree(targetId, tree) {
+  if (!tree || !Array.isArray(tree) || !tree.length)
+    return;
+
+  if (targetId === '0')
+    return tree;
+
+  let result;
+  for(const { id, children } of tree) {
+    if (targetId === id)
+      result = children;
+    else
+      result = findTargetInTree(targetId, children);
+
+    if (result)
+      return result;
+  }
+}
+
+// 获取sort值
+export function getSortValue(parentId, tree) {
+  const target = findTargetInTree(parentId, tree);
+  if (!target)
+    return 0;
+  const sorts = target.map(({ sort }) => +sort).filter(sort => typeof sort === 'number');
+  let sort = 0;
+  while (sorts.includes(sort))
+    sort++;
+  return [sort, sorts];
 }
