@@ -170,6 +170,7 @@ export default class App extends PureComponent {
     this.state = {
       // 当前显示的表格字段
       columns: defaultColumns,
+      i: 0,
     };
     // 是否是企业
     this.isCompany = isCompany;
@@ -303,7 +304,11 @@ export default class App extends PureComponent {
       },
     } = this.props;
     // 从sessionStorage中获取存储的控件值
-    const fieldsValue = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
+    const fieldsValue = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
+      pageNum: 1,
+      pageSize: 10,
+    };
+    const { pageNum, pageSize, startTime, endTime, ...rest } = fieldsValue;
     // 重置控件
     setFieldsValue({
       gridId: undefined,
@@ -312,7 +317,11 @@ export default class App extends PureComponent {
       objectTitle: undefined,
       checkUserName: undefined,
       checkResult: undefined,
-      createTime: undefined,
+      createTime:
+        startTime && endTime
+          ? [moment(startTime, 'YYYY/MM/DD HH:mm:ss'), moment(endTime, 'YYYY/MM/DD HH:mm:ss')]
+          : [],
+      ...rest,
     });
     // 获取列表
     dispatch({
@@ -456,13 +465,13 @@ export default class App extends PureComponent {
         },
       },
     } = this.props;
-    const { columns } = this.state;
+    const { columns, i } = this.state;
     return list.length > 0 ? (
       <Table
         className={styles.table}
         dataSource={list}
         columns={columns}
-        rowKey="check_id"
+        key={i + 1}
         scroll={{
           x: true,
         }}

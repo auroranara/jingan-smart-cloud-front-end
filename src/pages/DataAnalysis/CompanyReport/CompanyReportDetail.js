@@ -150,12 +150,10 @@ export default class App extends PureComponent {
           <Fragment>
             {itemTypeName}：{object_title}
             {!isCompany && <div className={styles.content}>{`单位名称：${companyName}`}</div>}
-            {!isCompany && <div className={styles.content}>{`检查人：${check_user_name}`}</div>}
-            {!isCompany && (
-              <div className={styles.content}>{`检查时间：${moment(+check_date).format(
-                'YYYY-MM-DD'
-              )}`}</div>
-            )}
+            <div className={styles.content}>{`检查人：${check_user_name}`}</div>
+            <div className={styles.content}>{`检查时间：${moment(+check_date).format(
+              'YYYY-MM-DD'
+            )}`}</div>
           </Fragment>
         }
         logo={<img alt="" src={hiddenIcon} />}
