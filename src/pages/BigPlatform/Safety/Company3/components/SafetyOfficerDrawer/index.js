@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Row, Col } from 'antd'
+import { Row, Col } from 'antd';
 import SectionDrawer from '../SectionDrawer';
 // 引入样式文件
 import styles from './index.less';
@@ -15,11 +15,11 @@ export default class SafetyOfficerDrawer extends PureComponent {
     }
   }
 
-  refScroll = (scroll) => {
+  refScroll = scroll => {
     this.scroll = scroll;
-  }
+  };
 
-  render()  {
+  render() {
     let {
       // 抽屉是否可见
       visible,
@@ -48,7 +48,9 @@ export default class SafetyOfficerDrawer extends PureComponent {
         drawerProps={{
           title: '安全人员',
           visible,
-          onClose: () => {onClose('safetyOfficer');},
+          onClose: () => {
+            onClose('safetyOfficer');
+          },
         }}
         sectionProps={{
           refScroll: this.refScroll,
@@ -62,7 +64,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
               </Col>
 
               <Col span={12} className={styles.person}>
-                <div className={styles.personName}>安全管理员</div>
+                <div className={styles.personName}>安全负责人</div>
                 <div className={styles.personValue}>{safeChargerNum}</div>
               </Col>
 
@@ -81,19 +83,19 @@ export default class SafetyOfficerDrawer extends PureComponent {
       >
         <div className={styles.container}>
           {legalList.length !== 0 && (
-              <div className={styles.personList} style={{ borderColor: '#FF4848' }}>
-                <div className={styles.personLabel}>单位法人</div>
-                {legalList.map(({ user_id: id, user_name: name, mobile: phone }) => (
-                  <div className={styles.personItem} key={id}>
-                    <div className={styles.personItemName}>{name}</div>
-                    <div className={styles.personItemPhone}>{phone}</div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className={styles.personList} style={{ borderColor: '#FF4848' }}>
+              <div className={styles.personLabel}>单位法人</div>
+              {legalList.map(({ user_id: id, user_name: name, mobile: phone }) => (
+                <div className={styles.personItem} key={id}>
+                  <div className={styles.personItemName}>{name}</div>
+                  <div className={styles.personItemPhone}>{phone}</div>
+                </div>
+              ))}
+            </div>
+          )}
           {safeChargerList.length !== 0 && (
             <div className={styles.personList} style={{ borderColor: '#C6C181' }}>
-              <div className={styles.personLabel}>安全管理员</div>
+              <div className={styles.personLabel}>安全负责人</div>
               {safeChargerList.map(({ user_id: id, user_name: name, mobile: phone }) => (
                 <div className={styles.personItem} key={id}>
                   <div className={styles.personItemName}>{name}</div>

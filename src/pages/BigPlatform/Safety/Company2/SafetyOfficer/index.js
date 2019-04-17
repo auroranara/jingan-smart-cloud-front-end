@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Row, Col } from 'antd'
+import { Row, Col } from 'antd';
 import Section from '@/components/Section';
 
 import styles from './index.less';
@@ -39,7 +39,7 @@ export default class SafetyOfficer extends PureComponent {
         skip
         onClose={onClose}
         titleStyle={{ marginBottom: 0 }}
-        fixedContent={(
+        fixedContent={
           <Row className={styles.personWrapper}>
             <Col span={12} className={styles.person}>
               <div className={styles.personName}>单位法人</div>
@@ -47,7 +47,7 @@ export default class SafetyOfficer extends PureComponent {
             </Col>
 
             <Col span={12} className={styles.person}>
-              <div className={styles.personName}>安全管理员</div>
+              <div className={styles.personName}>安全负责人</div>
               <div className={styles.personValue}>{safeChargerNum}</div>
             </Col>
 
@@ -61,19 +61,19 @@ export default class SafetyOfficer extends PureComponent {
               <div className={styles.personValue}>{saferNum}</div>
             </Col>
           </Row>
-        )}
+        }
       >
         {legalList.length !== 0 && (
-            <div className={styles.personList} style={{ borderColor: '#FF4848' }}>
-              <div className={styles.personLabel}>单位法人</div>
-              {legalList.map(({ user_id: id, user_name: name, mobile: phone }) => (
-                <div className={styles.personItem} key={id}>
-                  <div className={styles.personItemName}>{name}</div>
-                  <div className={styles.personItemPhone}>{phone}</div>
-                </div>
-              ))}
-            </div>
-          )}
+          <div className={styles.personList} style={{ borderColor: '#FF4848' }}>
+            <div className={styles.personLabel}>单位法人</div>
+            {legalList.map(({ user_id: id, user_name: name, mobile: phone }) => (
+              <div className={styles.personItem} key={id}>
+                <div className={styles.personItemName}>{name}</div>
+                <div className={styles.personItemPhone}>{phone}</div>
+              </div>
+            ))}
+          </div>
+        )}
         {safeChargerList.length !== 0 && (
           <div className={styles.personList} style={{ borderColor: '#C6C181' }}>
             <div className={styles.personLabel}>安全管理员</div>
