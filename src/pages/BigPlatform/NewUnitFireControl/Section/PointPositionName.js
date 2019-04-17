@@ -13,8 +13,8 @@ import DrawerContainer from '../components/DrawerContainer';
 import hasDanger from '../imgs/hasDanger.png';
 import noDanger from '../imgs/noDanger.png';
 
-const { projectKey } = global.PROJECT_CONFIG;
-const isVague = true;// projectKey.indexOf('czey') >= 0 || projectKey.indexOf('test') >= 0;
+
+const isVague = false;
 function nameToVague(str) {
   let newStr = '';
   if (str && str.length === 1) return str;
@@ -26,11 +26,6 @@ function nameToVague(str) {
   return newStr;
 }
 
-function phoneToVague(str) {
-  if (!str) return str;
-  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
-  return newStr;
-}
 const columns = [
   {
     title: '巡查日期',

@@ -458,7 +458,7 @@ export default class CompanyDetail extends PureComponent {
               {principalEmail || getEmptyData()}
             </Description>
           </DescriptionList>
-          <DescriptionList title="安全负责人" col={3} style={{ marginBottom: 32 }}>
+          <DescriptionList title="安全管理员" col={3} style={{ marginBottom: 32 }}>
             <Description term={fieldLabels.principalName}>
               {safetyName || getEmptyData()}
             </Description>

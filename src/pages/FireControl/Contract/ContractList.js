@@ -466,7 +466,7 @@ export default class ContractList extends PureComponent {
                       {searchArea || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      安全负责人：
+                      安全管理员：
                       {safetyName ? (
                         <Fragment>
                           <span style={{ marginRight: '24px' }}>{safetyName}</span>

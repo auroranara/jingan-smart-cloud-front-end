@@ -257,7 +257,7 @@ export default class FireAlarm extends PureComponent {
                       {practicalAddressLabel ? practicalAddressLabel : '暂无信息'}
                     </Ellipsis>
                     <p>
-                      安全负责人：
+                      安全管理员：
                       {safetyName ? safetyName : '暂无信息'}
                     </p>
                     <p>

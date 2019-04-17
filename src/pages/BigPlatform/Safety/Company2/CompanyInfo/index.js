@@ -33,7 +33,7 @@ export default class CompanyInfo extends PureComponent {
           companyMessage: {
             // 企业名称
             companyName,
-            // 安全负责人
+            // 安全管理员
             headOfSecurity,
             // 联系电话
             headOfSecurityPhone,
@@ -85,7 +85,7 @@ export default class CompanyInfo extends PureComponent {
             </div>
             <div style={{ paddingRight: 90 }}>
               <Ellipsis lines={1} /* tooltip */>
-                <span className={styles.fieldName} style={{ flex: 'none' }}>安全负责人：</span>
+                <span className={styles.fieldName} style={{ flex: 'none' }}>安全管理员：</span>
                 {headOfSecurity}
               </Ellipsis>
             </div>
