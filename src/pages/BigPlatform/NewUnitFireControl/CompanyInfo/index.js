@@ -43,7 +43,7 @@ export default class CompanyInfo extends PureComponent {
     // console.log('currentHiddenDanger',this.props.model.currentHiddenDanger);
 
     // TODO: 为了常州二院过滤掉第一个人
-    const newUsers = userList.slice(1, 1);
+    const newUsers = userList.slice(1, 2);
 
     return (
       <Section title="单位基本信息" style={{ height: 'auto' }}>
@@ -61,7 +61,7 @@ export default class CompanyInfo extends PureComponent {
               <DescriptionList col={1}>
                 {PrincipalName && (
                   <Description term="安全管理员">
-                    <div className={styles.manWrapper} style={{ width: '200px' }}>
+                    <div className={styles.manWrapper} style={{ width: '160px' }}>
                       {PrincipalName}
                       <span className={styles.phone}>{PrincipalPhone}</span>
                     </div>
@@ -69,7 +69,7 @@ export default class CompanyInfo extends PureComponent {
                 )}
                 {isCzey && (
                   <Description term="值班人员">
-                    <div className={styles.manWrapper} style={{ width: '200px' }}>
+                    <div className={styles.manWrapper} style={{ width: '160px' }}>
                       朱文琴
                       <span className={styles.phone}>13861080705</span>
                     </div>
