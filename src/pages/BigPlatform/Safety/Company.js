@@ -439,7 +439,7 @@ class CompanyLayout extends PureComponent {
       seriesIndex: 0,
       dataIndex: this.currentPieIndex,
     });
-  }
+  };
 
   // 显示视频弹框
   handleVideoShow = keyId => {
@@ -682,12 +682,12 @@ class CompanyLayout extends PureComponent {
   /**
    * 显示巡查点位抽屉
    */
-  handleShowPatrolPointDrawer = (data) => {
+  handleShowPatrolPointDrawer = data => {
     this.setState({
       patrolPointDrawerVisible: true,
       patrolPointDrawerData: data,
     });
-  }
+  };
 
   /**
    * 单位巡查人员列表
@@ -1180,11 +1180,25 @@ class CompanyLayout extends PureComponent {
                 className="domPieChart"
               />
               <RiskPointPieLegend
-                style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)' }}
+                style={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                }}
                 data={legendData}
               />
             </div>
-            <div style={{ position: 'absolute', bottom: '42%', left: 0, right: 0, height: 2, background: `url(${splitLine}) no-repeat center center / 100% 100%` }} />
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '42%',
+                left: 0,
+                right: 0,
+                height: 2,
+                background: `url(${splitLine}) no-repeat center center / 100% 100%`,
+              }}
+            />
             <div className={styles.summaryBottom} style={{ height: '42%' }}>
               <div
                 className={
@@ -1541,14 +1555,17 @@ class CompanyLayout extends PureComponent {
     });
 
     const option = {
-      dataZoom: [{
+      dataZoom: [
+        {
           type: 'inside',
-      }, {
+        },
+        {
           type: 'slider',
           textStyle: {
             color: '#fff',
           },
-      }],
+        },
+      ],
       xAxis: {
         type: 'category',
         boundaryGap: false,
@@ -1752,7 +1769,7 @@ class CompanyLayout extends PureComponent {
               </Col>
 
               <Col span={12} className={styles.person}>
-                <div className={styles.personName}>安全管理员</div>
+                <div className={styles.personName}>安全负责人</div>
                 <div className={styles.personValue}>{safeChargerNum}</div>
               </Col>
 
@@ -1768,19 +1785,19 @@ class CompanyLayout extends PureComponent {
             </Row>
             <div className={scrollClassName}>
               {legalList.length !== 0 && (
-                  <div className={styles.personList} style={{ borderColor: '#FF4848' }}>
-                    <div className={styles.personLabel}>单位法人</div>
-                    {legalList.map(({ user_id: id, user_name: name, mobile: phone }) => (
-                      <div className={styles.personItem} key={id}>
-                        <div className={styles.personItemName}>{name}</div>
-                        <div className={styles.personItemPhone}>{phone}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <div className={styles.personList} style={{ borderColor: '#FF4848' }}>
+                  <div className={styles.personLabel}>单位法人</div>
+                  {legalList.map(({ user_id: id, user_name: name, mobile: phone }) => (
+                    <div className={styles.personItem} key={id}>
+                      <div className={styles.personItemName}>{name}</div>
+                      <div className={styles.personItemPhone}>{phone}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
               {safeChargerList.length !== 0 && (
                 <div className={styles.personList} style={{ borderColor: '#C6C181' }}>
-                  <div className={styles.personLabel}>安全管理员</div>
+                  <div className={styles.personLabel}>安全负责人</div>
                   {safeChargerList.map(({ user_id: id, user_name: name, mobile: phone }) => (
                     <div className={styles.personItem} key={id}>
                       <div className={styles.personItemName}>{name}</div>
@@ -2229,13 +2246,17 @@ class CompanyLayout extends PureComponent {
 
   /* 风险点抽屉 */
   renderRiskPointDrawer() {
-    const { bigPlatform: { countDangerLocationForCompany } } = this.props;
+    const {
+      bigPlatform: { countDangerLocationForCompany },
+    } = this.props;
     const { riskPointDrawerVisible, riskPointDrawerLevel } = this.state;
     return (
       <RiskPointDrawer
         drawerProps={{
           visible: riskPointDrawerVisible,
-          onClose: () => { this.setState({ riskPointDrawerVisible: false }) },
+          onClose: () => {
+            this.setState({ riskPointDrawerVisible: false });
+          },
         }}
         levelName={riskPointDrawerLevel}
         data={countDangerLocationForCompany}
@@ -2250,7 +2271,9 @@ class CompanyLayout extends PureComponent {
       <PatrolPointDrawer
         drawerProps={{
           visible: patrolPointDrawerVisible,
-          onClose: () => { this.setState({ patrolPointDrawerVisible: false }) },
+          onClose: () => {
+            this.setState({ patrolPointDrawerVisible: false });
+          },
         }}
         data={patrolPointDrawerData}
       />
@@ -2316,11 +2339,9 @@ class CompanyLayout extends PureComponent {
           handleVideoClose={this.handleVideoClose}
         />
         {/* 风险点抽屉 */
-          this.renderRiskPointDrawer()
-        }
+        this.renderRiskPointDrawer()}
         {/* 巡查点位抽屉 */
-          this.renderPatrolPointDrawer()
-        }
+        this.renderPatrolPointDrawer()}
       </div>
     );
   }

@@ -66,7 +66,7 @@ const UserTypes = [
     value: 'company_legal_person',
   },
   {
-    label: '企业安全管理员',
+    label: '企业安全负责人',
     value: 'company_charger',
   },
   {
