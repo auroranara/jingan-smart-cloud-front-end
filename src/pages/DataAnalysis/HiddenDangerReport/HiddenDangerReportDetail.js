@@ -344,7 +344,7 @@ export default class App extends PureComponent {
           checkResultName,
           object_title,
           check_date,
-          check_user_name,
+          check_user_names,
           companyName,
           itemTypeName,
         },
@@ -355,7 +355,7 @@ export default class App extends PureComponent {
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
 
-    const crDetailUrl = `/data-analysis/company-report/detail/${checkId}?companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_name=${check_user_name}&&check_date=${check_date}&&checkResultName=${checkResultName}`;
+    const crDetailUrl = `/data-analysis/company-report/detail/${checkId}?companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`;
 
     /* 面包屑 */
     const breadcrumbList = [

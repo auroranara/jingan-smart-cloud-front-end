@@ -340,7 +340,6 @@ export default class App extends PureComponent {
         payload: { companyId },
       });
     }
-
     const {
       pageNum,
       pageSize,
@@ -391,10 +390,20 @@ export default class App extends PureComponent {
       payload: { type: 'analysis' },
     });
 
-    // 根据用户类型获取单位
     dispatch({
       type: 'hiddenDangerReport/fetchUnitListFuzzy',
     });
+
+    // 根据用户类型获取单位
+    payload.company_id &&
+      dispatch({
+        type: 'hiddenDangerReport/fetchUnitListFuzzy',
+        payload: {
+          unitName: payload.company_name,
+          pageNum: 1,
+          pageSize: 10,
+        },
+      });
   }
 
   /**
@@ -423,13 +432,15 @@ export default class App extends PureComponent {
         list: {
           pagination: { pageSize },
         },
+        unitIdes,
       },
       user: {
         currentUser: { id },
       },
     } = this.props;
-    const { createTime, documentTypeIds, report_source, ...rest } = getFieldsValue();
+    const { createTime, documentTypeIds, report_source, company_id, ...rest } = getFieldsValue();
     const [query_start_time, query_end_time] = createTime || [];
+
     const payload = {
       ...rest,
       pageNum: 1,
@@ -439,6 +450,10 @@ export default class App extends PureComponent {
       documentTypeIds:
         documentTypeIds && documentTypeIds.length > 0 ? documentTypeIds.join(',') : undefined,
       report_source: report_source,
+      company_id,
+      company_name:
+        unitIdes.find(item => item.id === company_id) &&
+        unitIdes.find(item => item.id === company_id).name,
     };
     // 获取隐患列表
     dispatch({

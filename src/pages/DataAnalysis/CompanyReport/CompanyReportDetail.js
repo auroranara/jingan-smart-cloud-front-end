@@ -102,7 +102,7 @@ export default class App extends PureComponent {
           checkResultName,
           object_title,
           check_date,
-          check_user_name,
+          check_user_names,
           companyName,
           itemTypeName,
         },
@@ -110,7 +110,6 @@ export default class App extends PureComponent {
       loading,
     } = this.props;
     const { tab, i } = this.state;
-    console.log('iiiiiiiii', i);
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
 
@@ -160,14 +159,14 @@ export default class App extends PureComponent {
         render: (text, val) => {
           const { list } = val;
           return list && list.length > 0
-            ? list.map((v, d) => {
+            ? list.map((v, index) => {
                 return (
                   <div>
                     <Link
-                      key={d}
+                      key={index}
                       to={`/data-analysis/company-report/checkDetail/${
                         v._id
-                      }?checkId=${id}&&companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_name=${check_user_name}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+                      }?checkId=${id}&&companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_name=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
                     >
                       {v.statusName ? (
                         <span style={{ color: '#40a9ff' }}> {v.statusName} </span>
@@ -188,7 +187,7 @@ export default class App extends PureComponent {
           <Fragment>
             {itemTypeName}：{object_title}
             {!isCompany && <div className={styles.content}>{`单位名称：${companyName}`}</div>}
-            <div className={styles.content}>{`检查人：${check_user_name}`}</div>
+            <div className={styles.content}>{`检查人：${check_user_names}`}</div>
             <div className={styles.content}>{`检查时间：${moment(+check_date).format(
               'YYYY-MM-DD'
             )}`}</div>
