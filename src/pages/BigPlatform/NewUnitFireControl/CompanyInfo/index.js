@@ -61,7 +61,7 @@ export default class CompanyInfo extends PureComponent {
               <DescriptionList col={1}>
                 {PrincipalName && (
                   <Description term="安全管理员">
-                    <div className={styles.manWrapper} style={{ width: '160px' }}>
+                    <div className={styles.manWrapper} style={{ width: '165px' }}>
                       {PrincipalName}
                       <span className={styles.phone}>{PrincipalPhone}</span>
                     </div>
@@ -69,7 +69,7 @@ export default class CompanyInfo extends PureComponent {
                 )}
                 {isCzey && (
                   <Description term="值班人员">
-                    <div className={styles.manWrapper} style={{ width: '160px' }}>
+                    <div className={styles.manWrapper} style={{ width: '165px' }}>
                       朱文琴
                       <span className={styles.phone}>13861080705</span>
                     </div>
