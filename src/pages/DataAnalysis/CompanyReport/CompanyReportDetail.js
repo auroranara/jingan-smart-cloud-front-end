@@ -3,6 +3,7 @@ import { Card, Spin, Table } from 'antd';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import moment from 'moment';
+import Ellipsis from '@/components/Ellipsis';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import hiddenIcon from '@/assets/hiddenIcon.png';
@@ -125,12 +126,15 @@ export default class App extends PureComponent {
       {
         title: '检查内容',
         dataIndex: 'list',
+        width: 280,
         render: val => {
           return val && val.length > 0
             ? val.map((v, i) => {
                 return (
                   <div key={i}>
-                    <span>{v.flow_name}</span>
+                    <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+                      {v.flow_name}
+                    </Ellipsis>
                   </div>
                 );
               })
@@ -166,7 +170,7 @@ export default class App extends PureComponent {
                       key={index}
                       to={`/data-analysis/company-report/checkDetail/${
                         v._id
-                      }?checkId=${id}&&companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_name=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+                      }?checkId=${id}&&companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
                     >
                       {v.statusName ? (
                         <span style={{ color: '#40a9ff' }}> {v.statusName} </span>

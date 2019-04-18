@@ -17,6 +17,7 @@ import { connect } from 'dva';
 import moment from 'moment';
 import Link from 'umi/link';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import Ellipsis from '@/components/Ellipsis';
 
 import styles from './CompanyReport.less';
 const { Option } = Select;
@@ -88,10 +89,20 @@ export default class App extends PureComponent {
       {
         title: '点位名称',
         dataIndex: 'object_title',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       },
       {
         title: '检查人',
         dataIndex: 'check_user_names',
+        render: val => (
+          <Ellipsis tooltip length={6} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       },
       {
         title: '检查日期',

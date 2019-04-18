@@ -187,6 +187,11 @@ export default class App extends PureComponent {
       {
         title: '点位名称',
         dataIndex: 'name',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       },
       {
         title: '业务分类',
@@ -195,6 +200,11 @@ export default class App extends PureComponent {
       {
         title: '检查内容',
         dataIndex: 'flow_name',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       },
       {
         title: '隐患等级',
@@ -203,6 +213,11 @@ export default class App extends PureComponent {
       {
         title: '隐患类型',
         dataIndex: 'hiddenType',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       },
       {
         title: '隐患部门',
@@ -211,6 +226,11 @@ export default class App extends PureComponent {
       {
         title: '隐患地点',
         dataIndex: 'location',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       },
       {
         title: '隐患状态',
@@ -244,6 +264,11 @@ export default class App extends PureComponent {
       {
         title: '隐患描述',
         dataIndex: 'desc',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       },
       {
         title: '隐患图片',
@@ -261,6 +286,11 @@ export default class App extends PureComponent {
       {
         title: '整改措施',
         dataIndex: 'rectify_desc',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       },
       {
         title: '整改金额',
