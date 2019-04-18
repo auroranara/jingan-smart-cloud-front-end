@@ -73,7 +73,8 @@ const sortTree = (list) => {
   return newList;
 };
 
-@connect(({ role, user, loading }) => ({
+@connect(({ account, role, user, loading }) => ({
+  account,
   role,
   user,
   loading: loading.models.role,
@@ -109,7 +110,8 @@ const sortTree = (list) => {
 export default class RoleDetail extends PureComponent {
   /* 挂载后 */
   componentDidMount() {
-    const { fetchDetail, fetchPermissionTree, goToException, role: { permissionTree }, match: { params: { id } } } = this.props;
+    const { dispatch, fetchDetail, fetchPermissionTree, goToException, role: { permissionTree }, match: { params: { id } } } = this.props;
+    dispatch({ type: 'account/fetchOptions' });
     // 根据id获取详情
     fetchDetail({
       payload: {
@@ -127,12 +129,21 @@ export default class RoleDetail extends PureComponent {
 
   /* 渲染基础信息 */
   renderBasicInfo() {
-    const { role: { detail: { sysRole: { name, description } } } } = this.props;
+    const {
+      account: { unitTypes },
+      role: { detail: { sysRole: { name, description, unitType } } },
+    } = this.props;
+    const typeMap = unitTypes ? unitTypes.reduce((prev, next) => {
+      const { id, label } = next;
+      prev[id] = label;
+      return prev;
+    }, {}) : {};
 
     return (
       <Card title="基本信息">
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term="角色名称">{name || getEmptyData()}</Description>
+          <Description term="角色类型">{typeMap[unitType] || getEmptyData()}</Description>
           <Description term="角色描述">{<div style={{ whiteSpace: 'pre-wrap' }}>{description}</div> || getEmptyData()}</Description>
         </DescriptionList>
       </Card>

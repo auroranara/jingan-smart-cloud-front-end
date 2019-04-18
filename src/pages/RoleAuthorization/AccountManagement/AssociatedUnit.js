@@ -643,8 +643,9 @@ export default class AssociatedUnit extends PureComponent {
         // }
       }
     );
+
     // 单位类型改变时，改变角色列表，若与原有单位类型相同，则保留原来的值，若不同则清空已选角色及已选权限
-    fetchRoles({ unitType: id });
+    fetchRoles({ payload: { unitType: id } });
     const selectedRoles = roleIds ? roleIds.split(',').filter(id => id) : [];
     if (+unitType === id && selectedRoles.length) {
       this.fetchRolePermissions(selectedRoles);
@@ -1213,9 +1214,9 @@ export default class AssociatedUnit extends PureComponent {
   };
 
   clearRolePermissions = () => {
-    const { dispatch } = this.props;
+    const { dispatch, form: { setFieldsValue } } = this.props;
     this.permissions = [];
-    // setFieldsValue({ permissions: this.authTreeCheckedKeys });
+    setFieldsValue({ permissions: this.authTreeCheckedKeys });
     dispatch({ type: 'role/saveRolePermissions', payload: [] });
   };
 
