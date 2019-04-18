@@ -145,7 +145,7 @@ export default class App extends PureComponent {
             check_id,
             company_name,
             itemTypeName,
-            check_user_name,
+            check_user_names,
             check_date,
             checkResultName,
             object_title,
@@ -153,7 +153,7 @@ export default class App extends PureComponent {
           } = text;
           return itemTypeName !== '随手拍' ? (
             <Link
-              to={`/data-analysis/company-report/detail/${check_id}?companyName=${company_name}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_name=${check_user_name}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+              to={`/data-analysis/company-report/detail/${check_id}?companyName=${company_name}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
             >
               查看
             </Link>
@@ -469,13 +469,13 @@ export default class App extends PureComponent {
         },
       },
     } = this.props;
-    const { columns, i } = this.state;
+    const { columns } = this.state;
     return list.length > 0 ? (
       <Table
         className={styles.table}
+        rowKey="check_id"
         dataSource={list}
         columns={columns}
-        key={i + 1}
         scroll={{
           x: true,
         }}
