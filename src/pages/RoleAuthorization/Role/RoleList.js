@@ -54,6 +54,14 @@ const preventDefault = e => {
   e.preventDefault();
 };
 
+const UNIT_TYPES_CN = {
+  1: '维保企业',
+  2: '政府机构',
+  3: '运营企业',
+  4: '企事业主体',
+  undefined: '',
+};
+
 @connect(
   ({ role, user, loading }) => ({
     role,
@@ -353,7 +361,8 @@ export default class RoleList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
-            const { id, name, description } = item;
+            const { id, name, description, unitType } = item;
+            const title = `${name}[${UNIT_TYPES_CN[unitType]}]`;
             return (
               <List.Item key={id}>
                 <Card
