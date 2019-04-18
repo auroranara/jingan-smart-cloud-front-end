@@ -52,8 +52,8 @@ export function checkAccountOrPhone(params) {
 }
 
 /* 获取角色列表 */
-export function queryRoles(params) {
-  return request(`/acloud_new/v2/rolePermission/user/role?${stringify(params)}`);
+export function queryRoles() {
+  return request(`/acloud_new/v2/rolePermission/user/role`);
 }
 
 /* 查询执法证件种类 */

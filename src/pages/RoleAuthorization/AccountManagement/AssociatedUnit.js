@@ -205,10 +205,9 @@ const generateTressNode = data => {
     },
 
     // 获取角色列表
-    fetchRoles(action) {
+    fetchRoles() {
       dispatch({
         type: 'account/fetchRoles',
-        ...action,
       });
     },
 
@@ -321,10 +320,6 @@ export default class AssociatedUnit extends PureComponent {
             },
             () => {}
           );
-          fetchRoles({
-            payload: { unitType },
-            error: goToException,
-          });
           // 若为维保单位，则获取维保权限树，并设置维保权限树初值
           unitType === 1 &&
             this.getMaintenanceTree({
@@ -446,9 +441,9 @@ export default class AssociatedUnit extends PureComponent {
     }
 
     // 获取角色列表
-    // fetchRoles({
-    //   error: goToException,
-    // });
+    fetchRoles({
+      error: goToException,
+    });
 
     // 获取执法证件种类
     fetchExecCertificateType({
@@ -617,13 +612,8 @@ export default class AssociatedUnit extends PureComponent {
     // 不同的地方在于，再次选择时，若选择了和上次一样的选项，则会出发onselect，但是由于Select框的值并未发生改变，所以不会触发onchange事件
     this.handleUnitTypeSelect(id);
     const {
-      fetchRoles,
-      account: { detail },
       form: { setFieldsValue },
     } = this.props;
-    const { data } = detail || {};
-    const { unitType, roleIds } = data || {};
-
     this.setState(
       {
         unitTypeChecked: id,
@@ -643,17 +633,6 @@ export default class AssociatedUnit extends PureComponent {
         // }
       }
     );
-    // 单位类型改变时，改变角色列表，若与原有单位类型相同，则保留原来的值，若不同则清空已选角色及已选权限
-    fetchRoles({ unitType: id });
-    const selectedRoles = roleIds ? roleIds.split(',').filter(id => id) : [];
-    if (+unitType === id && selectedRoles.length) {
-      this.fetchRolePermissions(selectedRoles);
-      setFieldsValue({ roleIds: selectedRoles });
-    }
-    else {
-      setFieldsValue({ roleIds: [] });
-      this.clearRolePermissions();
-    }
   };
 
   // 单位类型下拉框选择
@@ -1208,15 +1187,11 @@ export default class AssociatedUnit extends PureComponent {
     // 穿梭框中有值
     if (nextTargetKeys.length) this.fetchRolePermissions(nextTargetKeys);
     // 穿梭框中没有值时，不需要请求服务器，本地清空即可
-    else
-      this.clearRolePermissions();
-  };
-
-  clearRolePermissions = () => {
-    const { dispatch } = this.props;
-    this.permissions = [];
-    // setFieldsValue({ permissions: this.authTreeCheckedKeys });
-    dispatch({ type: 'role/saveRolePermissions', payload: [] });
+    else {
+      this.permissions = [];
+      setFieldsValue({ permissions: this.authTreeCheckedKeys });
+      dispatch({ type: 'role/saveRolePermissions', payload: [] });
+    }
   };
 
   fetchRolePermissions = ids => {
