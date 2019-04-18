@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Input, Button, Select, Spin, Tree, message } from 'antd';
+import { Form, Card, Input, Button, Spin, Tree, message } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -12,7 +12,6 @@ import codes from '@/utils/codes';
 
 const { TreeNode } = Tree;
 const { TextArea } = Input;
-const { Option } = Select;
 
 // 标题
 const addTitle = '新增角色';
@@ -90,8 +89,7 @@ const sortTree = list => {
 };
 
 @connect(
-  ({ account, role, user, loading }) => ({
-    account,
+  ({ role, user, loading }) => ({
     role,
     user,
     loading: loading.models.role,
@@ -146,7 +144,6 @@ export default class RoleHandler extends PureComponent {
   /* 挂载后 */
   componentDidMount() {
     const {
-      dispatch,
       fetchDetail,
       fetchPermissionTree,
       clearDetail,
@@ -155,7 +152,6 @@ export default class RoleHandler extends PureComponent {
         params: { id },
       },
     } = this.props;
-    dispatch({ type: 'account/fetchOptions' });
     // 根据params.id是否存在判断当前为新增还是编辑
     if (id) {
       // 根据id获取详情
@@ -195,10 +191,9 @@ export default class RoleHandler extends PureComponent {
         const {
           role: { permissionTree },
         } = this.props;
-        const { name, description, permissions, unitType } = values;
+        const { name, description, permissions } = values;
         const payload = {
           id,
-          unitType,
           name: name.trim(),
           description,
           permissions: checkParent(permissionTree, permissions).join(','),
@@ -237,46 +232,17 @@ export default class RoleHandler extends PureComponent {
   /* 基本信息 */
   renderBasicInfo() {
     const {
-      account: { unitTypes },
       role: {
         detail: {
-          sysRole: { name, description, unitType } = {},
+          sysRole: { name, description } = {},
         },
       },
       form: { getFieldDecorator },
     } = this.props;
 
-    const sortedUnitTypes = unitTypes ? Array.from(unitTypes) : [];
-    sortedUnitTypes.sort((u1, u2) => u1.sort - u2.sort);
-
     return (
       <Card title="基本信息">
         <Form>
-          <Form.Item
-            label="角色类型"
-            labelCol={{
-              sm: { span: 24 },
-              md: { span: 3 },
-              lg: { span: 3 },
-            }}
-            wrapperCol={{
-              sm: { span: 24 },
-              md: { span: 6 },
-              lg: { span: 3 },
-            }}
-          >
-            {getFieldDecorator('unitType', {
-              initialValue: unitType ? +unitType : unitType,
-              rules: [{ required: true, message: '请选择角色类型' }],
-            })(
-              <Select
-                // disabled={!!id}
-                // onChange={this.handleTreeTypeChange}
-              >
-                {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
-              </Select>
-            )}
-          </Form.Item>
           <Form.Item
             label="角色名称"
             labelCol={{
@@ -293,7 +259,7 @@ export default class RoleHandler extends PureComponent {
             {getFieldDecorator('name', {
               initialValue: name,
               rules: [{ required: true, message: '请输入角色名称', whitespace: true }],
-            })(<Input maxLength={50} placeholder="请输入角色名称" />)}
+            })(<Input maxLength="50" placeholder="请输入角色名称" />)}
           </Form.Item>
           <Form.Item
             label="角色描述"

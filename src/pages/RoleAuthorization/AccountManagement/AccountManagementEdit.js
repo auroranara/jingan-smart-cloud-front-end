@@ -179,10 +179,9 @@ const generateUnitsTree = data => {
     },
 
     // 获取角色列表
-    fetchRoles(action) {
+    fetchRoles() {
       dispatch({
         type: 'account/fetchRoles',
-        ...action,
       });
     },
 
@@ -313,8 +312,6 @@ export default class accountManagementEdit extends PureComponent {
       clearDetail();
       // 获取角色列表
       fetchRoles({
-        // 这里本该获取选项后再和数组第一个对应，由于第一个已固定为企事业单位，所以这里先固定
-        payload: { unitType: 4 },
         error: goToException,
       });
       // 获取执法证件种类
@@ -496,7 +493,7 @@ export default class accountManagementEdit extends PureComponent {
 
   // 单位类型下拉框中的值发生改变时调用
   handleUnitTypesChange = id => {
-    const { fetchRoles } = this.props;
+    // console.log('change');
 
     // 非combox模式下，即单选时Select的onChange, onSelect几乎一样，只需要用一个即可，所以将下面的onSelect函数合并上来
     // 不同的地方在于，再次选择时，若选择了和上次一样的选项，则会出发onselect，但是由于Select框的值并未发生改变，所以不会触发onchange事件
@@ -518,11 +515,6 @@ export default class accountManagementEdit extends PureComponent {
         if (id === 4 || id === 2) setFieldsValue({ regulatoryClassification: SUPERVISIONS_ALL });
       }
     );
-
-    // 单位类型改变时，清空已选角色及已选权限
-    fetchRoles({ payload: { unitType: id } });
-    setFieldsValue({ roleIds: [] });
-    this.clearRolePermissions();
   };
 
   // 单位类型下拉框选择
@@ -533,7 +525,8 @@ export default class accountManagementEdit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     // 清除所属单位、所属部门
-    setFieldsValue({ unitId: undefined, departmentId: undefined });
+    setFieldsValue({ unitId: undefined });
+    setFieldsValue({ departmentId: undefined });
     // 根据当前选中的单位类型获取对应的所属单位列表
     if (value === 2) {
       fetchUnitsFuzzy({
@@ -1253,43 +1246,25 @@ export default class accountManagementEdit extends PureComponent {
 
     // 穿梭框中有值
     if (nextTargetKeys.length)
-      this.fetchRolePermissions(nextTargetKeys);
+      dispatch({
+        type: 'role/fetchRolePermissions',
+        payload: { id: nextTargetKeys.join(',') },
+        success: permissions => {
+          this.permissions = permissions;
+          setFieldsValue({
+            permissions: removeParentKey(
+              mergeArrays(permissions, this.authTreeCheckedKeys),
+              this.idMap
+            ),
+          });
+        },
+      });
     // 穿梭框中没有值时，不需要请求服务器，本地清空即可
-    else
-      this.clearRolePermissions();
-  };
-
-  clearRolePermissions = () => {
-    const { dispatch, form: { setFieldsValue } } = this.props;
-    this.permissions = [];
-    setFieldsValue({ permissions: this.authTreeCheckedKeys });
-    dispatch({ type: 'role/saveRolePermissions', payload: [] });
-  };
-
-  fetchRolePermissions = ids => {
-    const {
-      dispatch,
-    } = this.props;
-    dispatch({
-      type: 'role/fetchRolePermissions',
-      payload: { id: ids.join(',') },
-      success: permissions => {
-        this.permissions = permissions;
-        this.setPermissions();
-      },
-    });
-  };
-
-  setPermissions = () => {
-    const {
-      form: { setFieldsValue },
-    } = this.props;
-    setFieldsValue({
-      permissions: removeParentKey(
-        mergeArrays(this.permissions, this.authTreeCheckedKeys),
-        this.idMap
-      ),
-    });
+    else {
+      this.permissions = [];
+      setFieldsValue({ permissions: this.authTreeCheckedKeys });
+      dispatch({ type: 'role/saveRolePermissions', payload: [] });
+    }
   };
 
   /* 渲染角色权限信息 */
