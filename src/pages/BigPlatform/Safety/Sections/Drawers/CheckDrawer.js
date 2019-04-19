@@ -92,7 +92,7 @@ class CheckDrawer extends PureComponent {
                       top: '14px',
                       left: '130px',
                       paddingLeft: '18px',
-                      borderLeft: '1px solid #00A9FF',
+                      borderLeft: '1px solid #00ffff',
                     }}
                   >
                     <Select
@@ -128,7 +128,7 @@ class CheckDrawer extends PureComponent {
                   />
                   <div className={styles.sectionMain}>
                     <div className={styles.sectionContent}>
-                      <Row style={{ borderBottom: '2px solid #0967d3', padding: '6px 0' }}>
+                      <Row style={{ borderBottom: '1px solid #0175B4', padding: '6px 0' }}>
                         <Col span={12}>
                           <div className={styles.checksContent}>
                             <span className={styles.iconCom1} />
@@ -214,7 +214,7 @@ class CheckDrawer extends PureComponent {
                                     <td
                                       style={{
                                         color: item.hiddenCompanyNum
-                                          ? 'rgba(232, 103, 103, 0.8)'
+                                          ? '#f83329'
                                           : 'rgba(255, 255, 255, 0.7)',
                                         cursor: item.hiddenCompanyNum ? 'pointer' : 'text',
                                       }}

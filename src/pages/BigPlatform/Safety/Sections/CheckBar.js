@@ -58,14 +58,14 @@ class CheckBar extends PureComponent {
         splitLine: {
           show: false,
           lineStyle: {
-            color: '#394456',
+            color: '#174073',
             width: 2,
           },
         },
         axisLine: {
           show: true,
           lineStyle: {
-            color: '#394456',
+            color: '#174073',
             width: 2,
           },
         },
@@ -82,7 +82,7 @@ class CheckBar extends PureComponent {
         axisLine: {
           show: true,
           lineStyle: {
-            color: '#394456',
+            color: '#174073',
             width: 2,
           },
         },

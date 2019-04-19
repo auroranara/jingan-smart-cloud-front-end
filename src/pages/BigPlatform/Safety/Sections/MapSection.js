@@ -359,7 +359,7 @@ class MapSection extends PureComponent {
 
     return (
       <section className={styles2.sectionWrapper} style={{ marginTop: '12px', flex: 1 }}>
-        <div className={styles2.sectionWrapperIn}>
+        <div className={styles2.sectionWrapperIn} style={{ padding: 0, marginTop: '1px' }}>
           <div className={styles2.sectionMain} style={{ border: 'none' }}>
             <div className={styles.mapContainer}>
               <GDMap
@@ -373,7 +373,7 @@ class MapSection extends PureComponent {
                   keyboardEnable: false,
                 }}
                 useAMapUI
-                mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
+                mapStyle="amap://styles/b9d9da96da6ba2487d60019876b26fc5"
                 center={center}
                 zoom={zoom}
                 pitch={60}

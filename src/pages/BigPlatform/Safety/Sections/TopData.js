@@ -40,7 +40,7 @@ class TopData extends PureComponent {
                     }}
                   >
                     <div className={styles.topName}>重点/所有单位</div>
-                    <div className={styles.topNum} style={{ color: '#00baff' }}>
+                    <div className={styles.topNum} style={{ color: '#00ffff' }}>
                       {dataImportant.length}/{dataImportant.length + dataUnimportantCompany.length}
                     </div>
                   </div>
@@ -58,7 +58,7 @@ class TopData extends PureComponent {
                     }}
                   >
                     <div className={styles.topName}>监管人员</div>
-                    <div className={styles.topNum} style={{ color: '#00baff' }}>
+                    <div className={styles.topNum} style={{ color: '#00ffff' }}>
                       {fulltimeWorker}
                     </div>
                   </div>
@@ -76,7 +76,7 @@ class TopData extends PureComponent {
                     }}
                   >
                     <div className={styles.topName}>已超期隐患</div>
-                    <div className={styles.topNum} style={{ color: '#e86767' }}>
+                    <div className={styles.topNum} style={{ color: '#F83329' }}>
                       {overRectifyNum}
                     </div>
                   </div>
@@ -92,7 +92,7 @@ class TopData extends PureComponent {
                     }}
                   >
                     <div className={styles.topName}>已超时风险点</div>
-                    <div className={styles.topNum} style={{ color: '#00baff' }}>
+                    <div className={styles.topNum} style={{ color: '#00ffff' }}>
                       {selectOvertimeItemNum}
                     </div>
                   </div>
@@ -110,7 +110,7 @@ class TopData extends PureComponent {
                     }}
                   >
                     <div className={styles.topName}>风险点</div>
-                    <div className={styles.topNum} style={{ color: '#00baff' }}>
+                    <div className={styles.topNum} style={{ color: '#00ffff' }}>
                       {selfCheckPointTotal}
                     </div>
                   </div>
@@ -137,7 +137,7 @@ class TopData extends PureComponent {
                     }}
                   >
                     <div className={styles.topName}>本月安全检查</div>
-                    <div className={styles.topNum} style={{ color: '#00baff' }}>
+                    <div className={styles.topNum} style={{ color: '#00ffff' }}>
                       {checkedCompanyInfo}
                     </div>
                   </div>

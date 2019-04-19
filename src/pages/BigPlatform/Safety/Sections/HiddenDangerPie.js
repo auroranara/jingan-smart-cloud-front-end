@@ -133,14 +133,14 @@ class HiddenDangerPie extends PureComponent {
         splitLine: {
           show: true,
           lineStyle: {
-            color: '#394456',
+            color: '#174073',
             width: 2,
           },
         },
         axisLine: {
           show: false,
           lineStyle: {
-            color: '#394456',
+            color: '#174073',
             width: 2,
           },
         },
@@ -158,7 +158,7 @@ class HiddenDangerPie extends PureComponent {
         axisLine: {
           show: true,
           lineStyle: {
-            color: '#394456',
+            color: '#174073',
             width: 2,
           },
         },
@@ -339,7 +339,7 @@ class HiddenDangerPie extends PureComponent {
             }}
           >
             隐患单位
-            <span className={styles.hdCompanyNum} style={{ color: '#00baff' }}>
+            <span className={styles.hdCompanyNum} style={{ color: '#00ffff' }}>
               {dangerCompanyNum || 0}
             </span>
           </div>
