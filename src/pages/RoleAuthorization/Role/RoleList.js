@@ -10,8 +10,8 @@ import InlineForm from '../../BaseInfo/Company/InlineForm';
 import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
-
 import styles from './Role.less';
+import { getUnitTypeLabel } from './utils';
 
 const { TreeNode } = TreeSelect;
 
@@ -55,7 +55,8 @@ const preventDefault = e => {
 };
 
 @connect(
-  ({ role, user, loading }) => ({
+  ({ account, role, user, loading }) => ({
+    account,
     role,
     user,
     loading: loading.models.role,
@@ -116,6 +117,7 @@ export default class RoleList extends PureComponent {
 
   componentDidMount() {
     const {
+      dispatch,
       fetchList,
       goToException,
       fetchPermissionTree,
@@ -126,6 +128,7 @@ export default class RoleList extends PureComponent {
         },
       },
     } = this.props;
+    dispatch({ type: 'account/fetchOptions' });
     // 获取列表
     fetchList({
       payload: {
@@ -332,6 +335,7 @@ export default class RoleList extends PureComponent {
   /* 渲染列表 */
   renderList() {
     const {
+      account: { unitTypes },
       role: {
         data: { list },
       },
@@ -353,11 +357,12 @@ export default class RoleList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
-            const { id, name, description } = item;
+            const { id, name, description, unitType } = item;
             return (
               <List.Item key={id}>
                 <Card
                   title={name}
+                  extra={getUnitTypeLabel(unitType, unitTypes)}
                   className={styles.card}
                   actions={[
                     <Link

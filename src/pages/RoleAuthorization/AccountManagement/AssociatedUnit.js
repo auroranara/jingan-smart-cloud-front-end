@@ -25,6 +25,7 @@ import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
 import AuthorityTree from './AuthorityTree';
+import AppAuthorityTree from './AppAuthorityTree';
 import {
   renderSearchedTreeNodes,
   getInitParentKeys,
@@ -73,6 +74,7 @@ const fieldLabels = {
 // 运营企业：3
 // 政府机构：2
 // 维保企业：1
+const UNIT_TYPE_FIX = { 4: 1, 3: 0, 2: 2, 1: 3 };
 
 // 默认的所属单位长度
 const defaultPageSize = 20;
@@ -117,27 +119,14 @@ const generateTressNode = data => {
   ({ account, role, loading }) => ({
     account,
     role,
+    loadingEffects: loading.effects,
     loading: loading.models.account,
     authorityTreeLoading: loading.effects['role/fetchPermissionTree'],
+    appAuthorityTreeLoading: loading.effects['role/fetchAppPermissionTree'],
     editSubmitting: loading.effects['account/editAssociatedUnit'],
     addSubmitting: loading.effects['account/addAssociatedUnit'],
   }),
   dispatch => ({
-    // 修改账号
-    // updateAccountDetail(action) {
-    //   dispatch({
-    //     type: 'account/updateAccountDetail',
-    //     ...action,
-    //   });
-    // },
-
-    // 新增账号
-    /* addAccount(action) {
-      dispatch({
-        type: 'account/addAccount',
-        ...action,
-      });
-    }, */
     editAssociatedUnit(action) {
       dispatch({
         type: 'account/editAssociatedUnit',
@@ -205,9 +194,10 @@ const generateTressNode = data => {
     },
 
     // 获取角色列表
-    fetchRoles() {
+    fetchRoles(action) {
       dispatch({
         type: 'account/fetchRoles',
+        ...action,
       });
     },
 
@@ -299,9 +289,7 @@ export default class AssociatedUnit extends PureComponent {
     fetchOptions({
       success,
     });
-    if (!!userId) {
-      // 如果是编辑
-
+    if (!!userId) { // 编辑
       fetchAssociatedUnitDeatil({
         payload: {
           userId,
@@ -312,6 +300,7 @@ export default class AssociatedUnit extends PureComponent {
           regulatoryClassification,
           roleIds,
           permissions = '',
+          appPermissions = '',
           maintenacePermissions = [],
         }) => {
           this.setState(
@@ -320,6 +309,11 @@ export default class AssociatedUnit extends PureComponent {
             },
             () => {}
           );
+          // 根据企业类型获取对应类型的角色
+          fetchRoles({
+            payload: { unitType },
+            error: goToException,
+          });
           // 若为维保单位，则获取维保权限树，并设置维保权限树初值
           unitType === 1 &&
             this.getMaintenanceTree({
@@ -382,6 +376,7 @@ export default class AssociatedUnit extends PureComponent {
             });
           // 获取roleIds对应的权限，并设置权限树的初值
           this.authTreeCheckedKeys = handleKeysString(permissions);
+          this.appAuthTreeCheckedKeys = handleKeysString(appPermissions);
           const roles = roleIds.split(',');
           roles.length && this.fetchRolePermissions(roles);
 
@@ -406,44 +401,13 @@ export default class AssociatedUnit extends PureComponent {
           goToException();
         },
       });
-    } else {
-      // 如果是新增
+    } else { // 新增
       fetchAccountDetail({
-        payload: {
-          id,
-        },
-        // success: ({ unitType, unitId }) => {
-        //   this.setState({
-        //     unitTypeChecked: unitType,
-        //   });
-        //   // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
-        //   fetchUnitsFuzzy({
-        //     payload: {
-        //       unitType: unitType,
-        //       pageNum: 1,
-        //       pageSize: defaultPageSize,
-        //     },
-        //   });
-        //   if (unitId) {
-        //     fetchDepartmentList({
-        //       payload: {
-        //         companyId: unitId,
-        //       },
-        //       error: goToException,
-        //     });
-        //   }
-        // },
-        error: () => {
-          goToException();
-        },
+        payload: { id },
+        error: () => { goToException(); },
       });
       initValue();
     }
-
-    // 获取角色列表
-    fetchRoles({
-      error: goToException,
-    });
 
     // 获取执法证件种类
     fetchExecCertificateType({
@@ -458,12 +422,21 @@ export default class AssociatedUnit extends PureComponent {
 
   childrenMap = {};
   idMap = {};
+  appIdMap = {};
   parentIdMap = {};
+  appParentIdMap = {};
   permissions = [];
+  appPermissions = [];
   authTreeCheckedKeys = [];
+  appAuthTreeCheckedKeys = [];
+
 
   setIdMaps = idMaps => {
     [this.parentIdMap, this.idMap] = idMaps;
+  };
+
+  setAppIdMaps = idMaps => {
+    [this.appParentIdMap, this.appIdMap] = idMaps;
   };
 
   // 判断两个字符串数组内容是否一样
@@ -517,7 +490,6 @@ export default class AssociatedUnit extends PureComponent {
           unitType,
           unitId,
           treeIds,
-          // maintenacePermissions,
           roleIds,
           departmentId,
           userType,
@@ -525,6 +497,7 @@ export default class AssociatedUnit extends PureComponent {
           execCertificateCode = null,
           regulatoryClassification,
           permissions,
+          appPermissions,
           serCheckedKeys = [],
           subCheckedKeys = [],
           isCheckAll,
@@ -559,10 +532,12 @@ export default class AssociatedUnit extends PureComponent {
               getNoRepeat(permissions, this.permissions),
               this.parentIdMap
             ).join(','),
+            appPermissions: addParentKey(
+              getNoRepeat(appPermissions, this.appPermissions),
+              this.appParentIdMap
+            ).join(','),
           };
-          switch (
-            payload.unitType //单位类型
-          ) {
+          switch (payload.unitType) { //单位类型
             // 维保企业 设置用户角色
             case 1:
               payload.userType = 'company_safer';
@@ -612,8 +587,13 @@ export default class AssociatedUnit extends PureComponent {
     // 不同的地方在于，再次选择时，若选择了和上次一样的选项，则会出发onselect，但是由于Select框的值并未发生改变，所以不会触发onchange事件
     this.handleUnitTypeSelect(id);
     const {
+      fetchRoles,
+      account: { detail },
       form: { setFieldsValue },
     } = this.props;
+    const { data } = detail || {};
+    const { unitType, roleIds } = data || {};
+
     this.setState(
       {
         unitTypeChecked: id,
@@ -625,14 +605,20 @@ export default class AssociatedUnit extends PureComponent {
           documentTypeId: null,
           execCertificateCode: null,
         });
-
-        // if (id === 4) {
-        //   setFieldsValue({ userType: 'company_legal_person' });
-        // } else {
-        //   setFieldsValue({ userType: undefined });
-        // }
       }
     );
+
+    // 单位类型改变时，改变角色列表，若与原有单位类型相同，则保留原来的值，若不同则清空已选角色及已选权限
+    fetchRoles({ payload: { unitType: id } });
+    const selectedRoles = roleIds ? roleIds.split(',').filter(id => id) : [];
+    if (+unitType === id && selectedRoles.length) {
+      this.fetchRolePermissions(selectedRoles);
+      setFieldsValue({ roleIds: selectedRoles });
+    }
+    else {
+      setFieldsValue({ roleIds: [] });
+      this.clearRolePermissions(id);
+    }
   };
 
   // 单位类型下拉框选择
@@ -869,7 +855,6 @@ export default class AssociatedUnit extends PureComponent {
             <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
               <Form.Item label={fieldLabels.unitType}>
                 {getFieldDecorator('unitType', {
-                  // initialValue: userId ? unitType : unitTypes.length === 0 ? undefined : 4,
                   initialValue: userId
                     ? unitType
                     : unitTypes && unitTypes.length === 0
@@ -884,7 +869,6 @@ export default class AssociatedUnit extends PureComponent {
                 })(
                   <Select
                     placeholder="请选择单位类型"
-                    // onSelect={this.handleUnitTypeSelect}
                     onChange={this.handleUnitTypesChange}
                   >
                     {unitTypes.map(item => (
@@ -900,7 +884,6 @@ export default class AssociatedUnit extends PureComponent {
               <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
                 <Form.Item label={fieldLabels.unitId}>
                   {getFieldDecorator('unitId', {
-                    // TODO：
                     initialValue:
                       userId && unitId && unitName ? { key: unitId, label: unitName } : undefined,
                     rules: [
@@ -938,7 +921,6 @@ export default class AssociatedUnit extends PureComponent {
               <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
                 <Form.Item label={fieldLabels.unitId}>
                   {getFieldDecorator('unitId', {
-                    // TODO：
                     initialValue:
                       userId && unitId && unitName ? { value: unitId, label: unitName } : undefined,
                     rules: [
@@ -963,7 +945,6 @@ export default class AssociatedUnit extends PureComponent {
             <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
               <Form.Item label={fieldLabels.departmentId}>
                 {getFieldDecorator('departmentId', {
-                  // TODO：
                   initialValue: userId ? departmentId : null,
                 })(
                   <TreeSelect
@@ -1011,7 +992,6 @@ export default class AssociatedUnit extends PureComponent {
                   <Form.Item label={fieldLabels.regulatoryClassification}>
                     {getFieldDecorator('regulatoryClassification', {
                       initialValue: SUPERVISIONS_ALL,
-                      // initialValue: regulatoryClassification ? regulatoryClassification.split(',') : [],
                       rules: [{ required: true, message: '请选择业务分类' }],
                     })(
                       <Select mode="multiple" placeholder="请选择业务分类">
@@ -1056,7 +1036,6 @@ export default class AssociatedUnit extends PureComponent {
                   <Form.Item label={fieldLabels.regulatoryClassification}>
                     {getFieldDecorator('regulatoryClassification', {
                       initialValue: SUPERVISIONS_ALL,
-                      // initialValue: regulatoryClassification ? regulatoryClassification.split(',') : [],
                       rules: [{ required: true, message: '请选择业务分类' }],
                     })(
                       <Select mode="multiple" placeholder="请选择业务分类">
@@ -1177,49 +1156,58 @@ export default class AssociatedUnit extends PureComponent {
   };
 
   handleTransferChange = (nextTargetKeys, direction, moveKeys) => {
-    // console.log(nextTargetKeys);
     const {
-      dispatch,
       form: { setFieldsValue },
     } = this.props;
+    console.log(nextTargetKeys);
     setFieldsValue({ roleIds: nextTargetKeys });
 
-    // 穿梭框中有值
-    if (nextTargetKeys.length) this.fetchRolePermissions(nextTargetKeys);
-    // 穿梭框中没有值时，不需要请求服务器，本地清空即可
-    else {
+    this.fetchRolePermissions(nextTargetKeys);
+
+    // // 穿梭框中有值
+    // if (nextTargetKeys.length)
+    //   this.fetchRolePermissions(nextTargetKeys);
+    // // 穿梭框中没有值时，不需要请求服务器，本地清空即可
+    // else
+    //   this.clearRolePermissions();
+  };
+
+  clearRolePermissions = unitType => {
+    const { dispatch, form: { setFieldsValue } } = this.props;
+    const isNotAdmin = unitType !== 3;
+
+    const values = { permissions: this.authTreeCheckedKeys };
       this.permissions = [];
-      setFieldsValue({ permissions: this.authTreeCheckedKeys });
       dispatch({ type: 'role/saveRolePermissions', payload: [] });
-    }
+      if (isNotAdmin) {
+        values.appPermissions = this.appAuthTreeCheckedKeys;
+        this.appPermissions = [];
+        dispatch({ type: 'role/saveRoleAppPermissions', payload: [] });
+      }
+      setFieldsValue(values);
   };
 
   fetchRolePermissions = ids => {
-    const {
-      dispatch,
-      form: { setFieldsValue },
-    } = this.props;
-    dispatch({
-      type: 'role/fetchRolePermissions',
-      payload: { id: ids.join(',') },
-      success: permissions => {
-        this.permissions = permissions;
+    const { dispatch } = this.props;
+    const { unitTypeChecked } = this.state;
+    const isNotAdmin = unitTypeChecked !== 3;
 
-        // console.log(permissions, this.authTreeCheckedKeys);
-        // console.log(
-        //   removeParentKey(mergeArrays(permissions, this.authTreeCheckedKeys), this.idMap)
-        // );
-
-        // setFieldsValue({
-        //   permissions: removeParentKey(
-        //     mergeArrays(permissions, this.authTreeCheckedKeys),
-        //     this.idMap
-        //   ),
-        // });
-
-        this.setPermissions();
-      },
-    });
+    // ids不为数组或者ids的长度为0，则本地清空
+    if (!Array.isArray(ids) || !ids.length)
+      this.clearRolePermissions(unitTypeChecked);
+    else
+      dispatch({
+        type: 'role/fetchRolePermissions',
+        payload: { id: ids.join(',') },
+        success: (permissions, appPermissions) => {
+          this.permissions = permissions;
+          this.setPermissions();
+          if (isNotAdmin) {
+            this.appPermissions = appPermissions;
+            this.setAppPermissions();
+          }
+        },
+      });
   };
 
   setPermissions = () => {
@@ -1233,6 +1221,30 @@ export default class AssociatedUnit extends PureComponent {
       ),
     });
   };
+
+  // 当获取树和获取详情接口都返回时，才可以设值，但先后顺序没法控制，所以在两个接口返回时都调用当前函数，且在函数中通过loading来判断，是否两个接口都返回了，都返回了后再设值
+  setAppPermissions = () => {
+    const {
+      loadingEffects,
+      form: { setFieldsValue },
+    } = this.props;
+    const isloaded = !loadingEffects['role/fetchAppPermissionTree'] && !loadingEffects['role/fetchDetail'];
+    isloaded && setFieldsValue({
+      appPermissions: removeParentKey(
+        mergeArrays(this.appPermissions, this.appAuthTreeCheckedKeys),
+        this.appIdMap
+      ),
+    });
+  };
+
+  handleChangeAuthTreeCheckedKeys = checkedKeys => {
+    this.authTreeCheckedKeys = checkedKeys;
+  };
+
+  handleChangeAppAuthTreeCheckedKeys = checkedKeys => {
+    this.appAuthTreeCheckedKeys = checkedKeys;
+  };
+
 
   /* 维保权限全选 */
   handleCheckAll = (isCheckAll, checkedRootKey) => {
@@ -1356,20 +1368,33 @@ export default class AssociatedUnit extends PureComponent {
             </Col>
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24}>
-              <Form.Item label="账号权限">
+            <Col lg={12} md={12} sm={24}>
+              <Form.Item label="WEB账号权限">
                 <AuthorityTree
                   role={role}
                   form={form}
                   dispatch={dispatch}
                   setIdMaps={this.setIdMaps}
                   setPermissions={this.setPermissions}
-                  handleChangeAuthTreeCheckedKeys={checkedKeys => {
-                    this.authTreeCheckedKeys = checkedKeys;
-                  }}
+                  handleChangeAuthTreeCheckedKeys={this.handleChangeAuthTreeCheckedKeys}
                 />
               </Form.Item>
             </Col>
+            {(unitTypeChecked === 1 || unitTypeChecked === 2 || unitTypeChecked === 4) && (
+              <Col lg={12} md={12} sm={24}>
+                <Form.Item label="APP账号权限">
+                  <AppAuthorityTree
+                    role={role}
+                    form={form}
+                    dispatch={dispatch}
+                    treeType={UNIT_TYPE_FIX[unitTypeChecked]}
+                    setIdMaps={this.setAppIdMaps}
+                    setPermissions={this.setAppPermissions}
+                    handleChangeAuthTreeCheckedKeys={this.handleChangeAppAuthTreeCheckedKeys}
+                  />
+                </Form.Item>
+              </Col>
+            )}
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
@@ -1398,33 +1423,6 @@ export default class AssociatedUnit extends PureComponent {
               </Form.Item>
             </Col>
           </Row>
-          {/* {unitTypeChecked === 1 && treeList.length ? (
-            <Row gutter={{ lg: 48, md: 24 }}>
-              <Col lg={8} md={12} sm={24}>
-                <p className={styles.mTree}>维保权限</p>
-                <Search placeholder="请输入单位名称查询" onChange={this.onTreeSearch} />
-                <Form.Item>
-                  {getFieldDecorator('maintenacePermissions', {
-                    // initialValue: maintenacePermissions,
-                    valuePropName: 'checkedKeys',
-                  })(
-                    <Tree
-                      checkable
-                      onExpand={this.onExpand}
-                      expandedKeys={expandedKeys}
-                      autoExpandParent={autoExpandParent}
-                      onCheck={this.onCheck}
-                      // checkedKeys={this.state.checkedKeys}
-                      // onSelect={this.onSelect}
-                      // selectedKeys={this.state.selectedKeys}
-                    >
-                      {renderSearchedTreeNodes(treeList, searchValue)}
-                    </Tree>
-                  )}
-                </Form.Item>
-              </Col>
-            </Row>
-          ) : null} */}
           {unitTypeChecked === 1 && treeList.length > 0 ? (
             <Row gutter={{ lg: 48, md: 24 }}>
               <Col lg={8} md={12} sm={24}>
@@ -1553,7 +1551,7 @@ export default class AssociatedUnit extends PureComponent {
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
-    const { loading } = this.props;
+    const { loading, authorityTreeLoading, appAuthorityTreeLoading } = this.props;
     const { submitting } = this.state;
     return (
       <FooterToolbar>
@@ -1562,7 +1560,7 @@ export default class AssociatedUnit extends PureComponent {
           type="primary"
           size="large"
           onClick={this.handleClickValidate}
-          loading={loading || submitting}
+          loading={loading || submitting || authorityTreeLoading || appAuthorityTreeLoading}
           style={{ fontSize: 16 }}
         >
           提交
@@ -1574,9 +1572,9 @@ export default class AssociatedUnit extends PureComponent {
   render() {
     const {
       loading,
-      match: {
-        params: { id, userId },
-      },
+      authorityTreeLoading,
+      appAuthorityTreeLoading,
+      match: { params: { userId } },
     } = this.props;
     const { submitting } = this.state;
     const title = userId ? editTitle : addTitle;
@@ -1586,7 +1584,6 @@ export default class AssociatedUnit extends PureComponent {
       </div>
     );
 
-    // 面包屑
     const breadcrumbList = [
       {
         title: '首页',
@@ -1614,7 +1611,7 @@ export default class AssociatedUnit extends PureComponent {
         wrapperClassName={styles.advancedForm}
         content={content}
       >
-        <Spin spinning={loading || submitting}>
+        <Spin spinning={loading || submitting || authorityTreeLoading || appAuthorityTreeLoading}>
           {this.renderBasicInfo()}
           {this.renderRolePermission()}
           {this.renderFooterToolbar()}

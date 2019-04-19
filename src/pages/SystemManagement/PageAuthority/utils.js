@@ -113,3 +113,35 @@ export function renderTreeNodes(data) {
     return <TreeNode {...item} />;
   });
 }
+
+// 返回目标项目的children数组
+function findTargetInTree(targetId, tree) {
+  if (!tree || !Array.isArray(tree) || !tree.length)
+    return;
+
+  if (targetId === '0')
+    return tree;
+
+  let result;
+  for(const { id, children } of tree) {
+    if (targetId === id)
+      result = children;
+    else
+      result = findTargetInTree(targetId, children);
+
+    if (result)
+      return result;
+  }
+}
+
+// 获取sort值
+export function getSortValue(parentId, tree) {
+  const target = findTargetInTree(parentId, tree);
+  if (!target)
+    return 0;
+  const sorts = target.map(({ sort }) => +sort).filter(sort => typeof sort === 'number');
+  let sort = 0;
+  while (sorts.includes(sort))
+    sort++;
+  return [sort, sorts];
+}

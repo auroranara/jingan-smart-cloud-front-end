@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Input, Button, Spin, Tree, message } from 'antd';
+import { Form, Card, Input, Button, Select, Spin, Tree, message } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -12,7 +12,10 @@ import codes from '@/utils/codes';
 
 const { TreeNode } = Tree;
 const { TextArea } = Input;
+const { Option } = Select;
 
+const UNIT_TYPE_FIX = { 4: 1, 3: 0, 2: 2, 1: 3 };
+const INLINE_FORM_STYLE = { width: '50%', marginRight: 0 };
 // 标题
 const addTitle = '新增角色';
 const editTitle = '编辑角色';
@@ -89,7 +92,8 @@ const sortTree = list => {
 };
 
 @connect(
-  ({ role, user, loading }) => ({
+  ({ account, role, user, loading }) => ({
+    account,
     role,
     user,
     loading: loading.models.role,
@@ -139,11 +143,13 @@ const sortTree = list => {
 export default class RoleHandler extends PureComponent {
   state = {
     submitting: false,
+    unitType: undefined,
   };
 
   /* 挂载后 */
   componentDidMount() {
     const {
+      dispatch,
       fetchDetail,
       fetchPermissionTree,
       clearDetail,
@@ -152,23 +158,66 @@ export default class RoleHandler extends PureComponent {
         params: { id },
       },
     } = this.props;
+    dispatch({ type: 'account/fetchOptions' });
     // 根据params.id是否存在判断当前为新增还是编辑
     if (id) {
       // 根据id获取详情
       fetchDetail({
-        payload: {
-          id,
+        payload: { id },
+        success: detail => {
+          const type = detail && detail.sysRole ? detail.sysRole.unitType : undefined;
+          type && +type !== 3 ? this.fetchAppTree(type, tree => this.initialAppPermissionTree = tree) : dispatch({ type: 'role/saveAppPermissionTree', payload: [] });
+          this.setState({ unitType: type ? +type : type });
         },
       });
     } else {
       // 清空详情
       clearDetail();
     }
-    // 获取权限树
+    // 获取WEB权限树
     if (permissionTree.length === 0) {
       fetchPermissionTree();
     }
   }
+
+  initialAppPermissionTree = [];
+
+  handleTreeTypeChange = value => {
+    const {
+      form: { setFieldsValue },
+      role: {
+        detail: {
+          appPermissions,
+          sysRole: { unitType },
+        },
+      },
+    } = this.props;
+
+    this.setState({ unitType: +value });
+
+    this.fetchAppTree(
+      value,
+      // 在model变化前，先清空值，不然会报warning
+      () => { setFieldsValue({ appPermissions: undefined }); },
+      // model变化后再设置值，不然当先设置值时，就会报warning，且model后变化，就没办法正确设置上值了
+      () => {
+        if (+value === +unitType) {
+          const appValue = appPermissions ? uncheckParent(this.initialAppPermissionTree, appPermissions) : [];
+          setFieldsValue({ appPermissions: appValue });
+        }
+      }
+    );
+  };
+
+  fetchAppTree = (type, callback, callbackLast) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'role/fetchAppPermissionTree',
+      payload: { type: UNIT_TYPE_FIX[type] },
+      callback,
+      callbackLast,
+    });
+  };
 
   /* 提交 */
   handleSubmit = () => {
@@ -189,14 +238,16 @@ export default class RoleHandler extends PureComponent {
           submitting: true,
         });
         const {
-          role: { permissionTree },
+          role: { permissionTree, appPermissionTree },
         } = this.props;
-        const { name, description, permissions } = values;
+        const { name, description, permissions, appPermissions, unitType } = values;
         const payload = {
           id,
+          unitType,
           name: name.trim(),
           description,
           permissions: checkParent(permissionTree, permissions).join(','),
+          appPermissions: checkParent(appPermissionTree, appPermissions).join(','),
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -232,17 +283,46 @@ export default class RoleHandler extends PureComponent {
   /* 基本信息 */
   renderBasicInfo() {
     const {
+      account: { unitTypes },
       role: {
         detail: {
-          sysRole: { name, description } = {},
+          sysRole: { name, description, unitType } = {},
         },
       },
       form: { getFieldDecorator },
     } = this.props;
 
+    const sortedUnitTypes = unitTypes ? Array.from(unitTypes) : [];
+    sortedUnitTypes.sort((u1, u2) => u1.sort - u2.sort);
+
     return (
       <Card title="基本信息">
         <Form>
+          <Form.Item
+            label="角色类型"
+            labelCol={{
+              sm: { span: 24 },
+              md: { span: 3 },
+              lg: { span: 3 },
+            }}
+            wrapperCol={{
+              sm: { span: 24 },
+              md: { span: 6 },
+              lg: { span: 3 },
+            }}
+          >
+            {getFieldDecorator('unitType', {
+              initialValue: unitType ? +unitType : unitType,
+              rules: [{ required: true, message: '请选择角色类型' }],
+            })(
+              <Select
+                // disabled={!!id}
+                onChange={this.handleTreeTypeChange}
+              >
+                {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
+              </Select>
+            )}
+          </Form.Item>
           <Form.Item
             label="角色名称"
             labelCol={{
@@ -259,7 +339,7 @@ export default class RoleHandler extends PureComponent {
             {getFieldDecorator('name', {
               initialValue: name,
               rules: [{ required: true, message: '请输入角色名称', whitespace: true }],
-            })(<Input maxLength="50" placeholder="请输入角色名称" />)}
+            })(<Input maxLength={50} placeholder="请输入角色名称" />)}
           </Form.Item>
           <Form.Item
             label="角色描述"
@@ -304,25 +384,31 @@ export default class RoleHandler extends PureComponent {
     const {
       role: {
         permissionTree,
-        detail: { permissions },
+        appPermissionTree,
+        detail: { permissions, appPermissions },
       },
       form: { getFieldDecorator },
     } = this.props;
+    const { unitType } = this.state;
+
     const value = permissions && uncheckParent(permissionTree, permissions);
+    const appValue = appPermissions ? uncheckParent(appPermissionTree, appPermissions) : [];
     const tree = sortTree(permissionTree);
+    const appTree = sortTree(appPermissionTree);
 
     return (
       <Card title="权限配置" style={{ marginTop: '24px' }}>
-        <Form>
+        <Form layout="inline">
           <Form.Item
-            label="权限树"
+            label="WEB权限树"
+            style={INLINE_FORM_STYLE}
             labelCol={{
               sm: { span: 24 },
-              md: { span: 3 },
+              md: { span: 6 },
             }}
             wrapperCol={{
               sm: { span: 24 },
-              md: { span: 21 },
+              md: { span: 18 },
             }}
           >
             {getFieldDecorator('permissions', {
@@ -333,12 +419,40 @@ export default class RoleHandler extends PureComponent {
               rules: [
                 {
                   required: true,
-                  message: '请选择权限',
+                  message: '请选择WEB权限',
                   transform: value => value && value.join(','),
                 },
               ],
             })(<Tree checkable>{this.renderTreeNodes(tree)}</Tree>)}
           </Form.Item>
+          {unitType !== 3 && (
+            <Form.Item
+              label="APP权限树"
+              style={INLINE_FORM_STYLE}
+              labelCol={{
+                sm: { span: 24 },
+                md: { span: 6 },
+              }}
+              wrapperCol={{
+                sm: { span: 24 },
+                md: { span: 18 },
+              }}
+            >
+              {getFieldDecorator('appPermissions', {
+                initialValue: appValue,
+                trigger: 'onCheck',
+                validateTrigger: 'onCheck',
+                valuePropName: 'checkedKeys',
+                rules: [
+                  {
+                    required: true,
+                    message: '请选择APP权限',
+                    transform: value => value && value.join(','),
+                  },
+                ],
+              })(<Tree checkable>{this.renderTreeNodes(appTree)}</Tree>)}
+            </Form.Item>
+          )}
         </Form>
         {this.renderButtonGroup()}
       </Card>
