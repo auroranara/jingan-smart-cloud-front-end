@@ -357,7 +357,7 @@ export default class UnitSafety extends PureComponent {
         itemId,
         status,
         month,
-        checkUserId,
+        // checkUserId,
       },
       () => {
         this.setDrawerVisible('inspectionDetail');
