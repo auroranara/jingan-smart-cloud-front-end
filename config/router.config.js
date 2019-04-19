@@ -94,22 +94,26 @@ module.exports = env => {
     //big platform
     {
       path: '/big-platform',
+      component: '../layouts/BigPlatformAuthLayout',
       routes: [
         { path: '/big-platform', redirect: '/big-platform/safety/government/index' },
         {
           path: '/big-platform/safety/government/:gridId',
+          code: 'dashboard.safetyView',
           component: './BigPlatform/Safety/Government',
         },
         {
           path: '/big-platform/safety/company/:companyId',
+          code: 'dashboard.safetyView',
           component: './BigPlatform/Safety/Company3',
         },
-        {
-          path: '/big-platform/fire-control/government/:gridId',
-          component: './BigPlatform/FireControl/Government',
-        },
+        // {
+        //   path: '/big-platform/fire-control/government/:gridId',
+        //   component: './BigPlatform/FireControl/Government',
+        // },
         {
           path: '/big-platform/new-fire-control/government/:gridId',
+          code: 'dashboard.fireControlView',
           component: './BigPlatform/NewFireControl/Government',
         },
         // {
@@ -118,14 +122,17 @@ module.exports = env => {
         // },
         {
           path: '/big-platform/fire-control/company/:unitId',
+          code: 'dashboard.fireControlView',
           component: './BigPlatform/UnitFire/UnitFireControl',
         },
         {
           path: '/big-platform/fire-control/new-company/:unitId',
+          code: 'dashboard.fireControlView',
           component: './BigPlatform/NewUnitFireControl',
         },
         {
           path: '/big-platform/monitor/company/:companyId',
+          code: 'dashboard.dynamicMonitorView',
           component: './BigPlatform/Monitor/Company',
         },
         {
@@ -134,6 +141,7 @@ module.exports = env => {
         },
         {
           path: '/big-platform/position/:companyId',
+          code: 'dashboard.personnelPositioningView',
           component: './BigPlatform/Position/index',
         },
         // {
@@ -142,14 +150,17 @@ module.exports = env => {
         // },
         {
           path: '/big-platform/electricity-monitor/:gridId',
+          code: 'dashboard.electricityMonitorView',
           component: './BigPlatform/ElectricityMonitor',
         },
         {
           path: '/big-platform/gas/:gridId',
+          code: 'dashboard.gasView',
           component: './BigPlatform/Gas',
         },
         {
           path: '/big-platform/smoke/:gridId',
+          code: 'dashboard.smokeView',
           component: './BigPlatform/Smoke',
         },
       ],
