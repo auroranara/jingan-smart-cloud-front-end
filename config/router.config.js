@@ -941,6 +941,12 @@ module.exports = env => {
                   code: 'deviceManagement.sensorModel.listView',
                   component: './DeviceManagement/SensorModel/SensorModelList',
                 },
+                // {
+                //   path:'/device-management/sensor-model/model/:id',
+                //   name:'modelParameter',
+                //   code:'deviceManagement.sensorModel.model.listView',
+                //   component:'',
+                // },
               ],
             },
           ],
