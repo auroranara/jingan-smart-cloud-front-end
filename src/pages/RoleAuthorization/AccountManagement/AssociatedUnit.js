@@ -471,12 +471,14 @@ export default class AssociatedUnit extends PureComponent {
         params: { id, userId },
       },
       account: {
+        roles,
         detail: {
           data: { loginId, active },
         },
       },
     } = this.props;
     const { unitTypeChecked, checkedRootKey } = this.state;
+    const roleIdList = roles.map(({ id }) => id);
 
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
@@ -519,7 +521,7 @@ export default class AssociatedUnit extends PureComponent {
             unitId: unitId ? (unitTypeChecked === 2 ? unitId.value : unitId.key) : null,
             treeIds: treeIds ? treeIds.key : null,
             maintenacePermissions: isCheckAll ? [checkedRootKey] : maintenacePermissions,
-            roleIds: roleIds.join(','),
+            roleIds: roleIds.filter(id => roleIdList.includes(id)).join(','), // 处理脏数据，在提交时将不在列表中的roleId排除
             departmentId: departmentId || '',
             userType,
             documentTypeId, // 执法证种类id
