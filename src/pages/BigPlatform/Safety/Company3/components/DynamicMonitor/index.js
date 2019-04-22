@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Carousel } from 'antd';
+import { Carousel, Tooltip } from 'antd';
 import debounce from 'lodash/debounce';
 import Section from '../Section';
 // 消防主机
@@ -22,8 +22,16 @@ import videoMonitorIcon from '../../imgs/dynamic-monitor/video_monitor.png';
 import styles from './index.less';
 
 // 获取转换之后的数据
-const getValue = (data) => {
-  return data ? (data.warningNum > 0 ? <span className={styles.warning}>{data.warningNum}</span> : `0`) : '--';
+const getValue = data => {
+  // return data ? (
+  // data.warningNum > 0 ? (
+  return data && <span className={styles.warning}>{data.warningNum}</span>;
+  //   ) : (
+  //     `0`
+  //   )
+  // ) : (
+  //   '--'
+  // );
 };
 
 /**
@@ -39,7 +47,6 @@ export default class DynamicMonitor extends PureComponent {
     this.carouselTimer = null;
   }
 
-
   componentDidMount() {
     this.setCarouselTimer();
     window.addEventListener('resize', this.debouncedResize);
@@ -51,20 +58,37 @@ export default class DynamicMonitor extends PureComponent {
     window.removeEventListener('resize', this.debouncedResize);
   }
 
-  refCarousel = (carousel) => {
+  refCarousel = carousel => {
     this.carousel = carousel;
-  }
+  };
 
   setCarouselTimer = () => {
     this.carouselTimer = setTimeout(() => {
       this.carousel && this.carousel.next();
       this.setCarouselTimer();
     }, 10 * 1000);
-  }
+  };
 
   resize = () => {
     this.setState({ zoom: window.innerWidth / 1920 });
-  }
+  };
+
+  renderTooltip = showTotal => {
+    return (
+      <div>
+        {!!showTotal && (
+          <div>
+            <div className={styles.circle} style={{ backgroundColor: '#ff4848' }} />
+            报警设备
+          </div>
+        )}
+        <div>
+          <div className={styles.circle} style={{ backgroundColor: '#00ffff' }} />
+          设备总数
+        </div>
+      </div>
+    );
+  };
 
   render() {
     const {
@@ -80,49 +104,50 @@ export default class DynamicMonitor extends PureComponent {
         effluent,
         exhaustGas,
         videoMonitor,
-      }={},
+      } = {},
+      handleClickVideo,
     } = this.props;
     const { zoom } = this.state;
 
     const list = [
       {
-        key: '消防主机报警',
+        key: '消防主机监测',
         value: getValue(fireEngine),
         icon: fireEngineIcon,
         originalValue: fireEngine,
       },
       {
-        key: '电气火灾报警',
+        key: '电气火灾监测',
         value: getValue(electricalFire),
         icon: electricalFireIcon,
         originalValue: electricalFire,
       },
       {
-        key: '独立烟感报警',
+        key: '独立烟感监测',
         value: getValue(smokeAlarm),
         icon: smokeAlarmIcon,
         originalValue: smokeAlarm,
       },
       {
-        key: '储罐监测报警',
+        key: '储罐监测',
         value: getValue(storageTank),
         icon: storageTankIcon,
         originalValue: storageTank,
       },
       {
-        key: '可燃有毒气体报警',
+        key: '可燃有毒气体监测',
         value: getValue(toxicGas),
         icon: toxicGasIcon,
         originalValue: toxicGas,
       },
       {
-        key: '废水监测报警',
+        key: '废水监测',
         value: getValue(effluent),
         icon: effluentIcon,
         originalValue: effluent,
       },
       {
-        key: '废气监测报警',
+        key: '废气监测',
         value: getValue(exhaustGas),
         icon: exhaustGasIcon,
         originalValue: exhaustGas,
@@ -132,40 +157,87 @@ export default class DynamicMonitor extends PureComponent {
         value: videoMonitor ? videoMonitor.totalNum : '--',
         icon: videoMonitorIcon,
         originalValue: videoMonitor,
+        onClick: () => {
+          handleClickVideo();
+        },
       },
-    ].filter(({ originalValue: { totalNum }={} }) => totalNum);
+    ].filter(({ originalValue: { totalNum } = {} }) => totalNum);
 
     return (
       <Section
         title="动态监测"
-        action={<span className={styles.jumpButton} onClick={onClick}>驾驶舱<span className={styles.jumpButtonIcon} /></span>}
+        action={
+          <span className={styles.jumpButton} onClick={onClick}>
+            驾驶舱
+            <span className={styles.jumpButtonIcon} />
+          </span>
+        }
       >
         <div className={styles.container}>
           <Carousel className={styles.carousel} ref={this.refCarousel}>
             <div className={styles.listWrapper}>
               <div className={styles.list} style={{ zoom }}>
-                {list.slice(0, 4).map(({ key, value, icon }) => {
-                  return (
-                    <div className={styles.item} style={{ backgroundImage: `url(${icon})` }} key={key}>
-                      <div className={styles.itemLabel}>{key}</div>
-                      <div className={styles.itemValue}>{value}</div>
-                    </div>
-                  );
-                })}
+                {list
+                  .slice(0, 4)
+                  .map(({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }) => {
+                    return (
+                      <div
+                        className={styles.item}
+                        style={{
+                          backgroundImage: `url(${icon})`,
+                          cursor: onClick ? 'pointer' : 'default',
+                        }}
+                        key={key}
+                        onClick={onClick || undefined}
+                      >
+                        <div className={styles.itemLabel}>{key}</div>
+
+                        <div className={styles.itemValue}>
+                          {/* <Tooltip
+                            placement="bottom"
+                            title={this.renderTooltip(warningNum !== undefined)}
+                          > */}
+                          {value}
+                          {warningNum !== undefined && `/${totalNum}`}
+                          {/* </Tooltip> */}
+                        </div>
+                      </div>
+                    );
+                  })}
               </div>
               {list.length === 0 && <div className={styles.default} />}
             </div>
             {list.length > 4 && (
               <div className={styles.listWrapper}>
                 <div className={styles.list} style={{ zoom }}>
-                  {list.slice(4, 8).map(({ key, value, icon }) => {
-                    return (
-                      <div className={styles.item} style={{ backgroundImage: `url(${icon})` }} key={key}>
-                        <div className={styles.itemLabel}>{key}</div>
-                        <div className={styles.itemValue}>{value}</div>
-                      </div>
-                    );
-                  })}
+                  {list
+                    .slice(4, 8)
+                    .map(
+                      ({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }) => {
+                        return (
+                          <div
+                            className={styles.item}
+                            style={{
+                              backgroundImage: `url(${icon})`,
+                              cursor: onClick ? 'pointer' : 'default',
+                            }}
+                            key={key}
+                            onClick={onClick || undefined}
+                          >
+                            <div className={styles.itemLabel}>{key}</div>
+                            <div className={styles.itemValue}>
+                              {/* <Tooltip
+                                placement="right"
+                                title={this.renderTooltip(warningNum !== undefined)}
+                              > */}
+                              {value}
+                              {warningNum !== undefined && `/${totalNum}`}
+                              {/* </Tooltip> */}
+                            </div>
+                          </div>
+                        );
+                      }
+                    )}
                 </div>
               </div>
             )}
