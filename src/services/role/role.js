@@ -41,7 +41,7 @@ export async function queryPermissionTree() {
 
 // 获取APP权限树
 export async function getAppPermissionTree(params) {
-  return request(`/acloud_new/v2/appPermission/appPermission?${stringify(params)}`)
+  return request(`/acloud_new/v2/appPermission/appPermission?${stringify(params)}`);
 }
 
 /* 获取角色列表 */
