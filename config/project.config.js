@@ -56,16 +56,6 @@ const configs = {
     projectKey: 'jiangxi_pro',
     projectShortName: '无锡晶安智慧云',
     code,
-    blur: [
-      'http://data.jingan-china.cn/v2/login/limin/1_blur.png',
-      'http://data.jingan-china.cn/v2/login/limin/2_blur.png',
-      'http://data.jingan-china.cn/v2/login/limin/3_blur.png',
-    ],
-    focus: [
-      'http://data.jingan-china.cn/v2/login/limin/1.png',
-      'http://data.jingan-china.cn/v2/login/limin/2.png',
-      'http://data.jingan-china.cn/v2/login/limin/3.png',
-    ],
     layer: 'http://data.jingan-china.cn/v2/login/wuxi_download_layer.png',
     ios:
       'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/jxjd/official_version/JXJDInterSafe.plist&ran=',
@@ -75,8 +65,18 @@ const configs = {
   ehu: {
     region: '无锡市',
     projectKey: 'jiangxi_pro',
-    projectShortName: '鹅湖晶安智慧云',
+    projectShortName: '鹅湖智慧云',
     code,
+    blur: [
+      'http://image.jingan-china.cn/v2/login/ehu/1_blur.png',
+      'http://image.jingan-china.cn/v2/login/ehu/2_blur.png',
+      'http://image.jingan-china.cn/v2/login/ehu/3_blur.png',
+    ],
+    focus: [
+      'http://image.jingan-china.cn/v2/login/ehu/1.png',
+      'http://image.jingan-china.cn/v2/login/ehu/2.png',
+      'http://image.jingan-china.cn/v2/login/ehu/3.png',
+    ],
     layer: 'http://data.jingan-china.cn/v2/login/wuxi_download_layer.png',
     ios:
       'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/jxjd/official_version/JXJDInterSafe.plist&ran=',

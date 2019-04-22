@@ -14,6 +14,7 @@
     "start:eye": "cross-env PROJECT_ENV=eye ESLINT=none umi dev",
     "start:no-mock": "cross-env MOCK=none ESLINT=none umi dev",
     "start:limin": "cross-env PROJECT_ENV=limin MOCK=none ESLINT=none umi dev",
+    "start:ehu": "cross-env PROJECT_ENV=ehu MOCK=none ESLINT=none umi dev",
     "build": "cross-env ESLINT=none umi build",
     "build:default": "cross-env ESLINT=none umi build",
     "build:wuxi": "cross-env PROJECT_ENV=wuxi ESLINT=none umi build",
