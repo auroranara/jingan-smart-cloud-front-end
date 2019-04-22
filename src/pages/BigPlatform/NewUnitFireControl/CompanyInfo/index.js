@@ -43,7 +43,11 @@ export default class CompanyInfo extends PureComponent {
     // console.log('currentHiddenDanger',this.props.model.currentHiddenDanger);
 
     // TODO: 为了常州二院过滤掉第一个人
-    const newUsers = userList.slice(1, 2);
+    const newUsers = userList
+      .filter(user => {
+        return user.userName !== '万胜邦';
+      })
+      .slice(0, 1);
 
     return (
       <Section title="单位基本信息" style={{ height: 'auto' }}>
