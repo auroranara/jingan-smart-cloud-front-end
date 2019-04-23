@@ -171,36 +171,37 @@ module.exports = env => {
     //   component: './Demo',
     // },
     // 档案分析报告
-    // {
-    //   path: '/training/myFile/analysisReport/:id',
-    //   code: 'training.myFile.view',
-    //   name: 'myAnalysis',
-    //   component: './Training/MyFile/AnalysisReport',
-    // },
-    // {
-    //   path: '/training/myFile/synthesisReport',
-    //   code: 'training.myFile.view',
-    //   name: 'mySynthesis',
-    //   component: './Training/MyFile/SynthesisReport',
-    // },
-    // {
-    //   path: '/training/generalFile/examFileReport/:id',
-    //   code: 'training.generalFile.view',
-    //   name: 'examReport',
-    //   component: './Training/GeneralFile/ExamFile/ExamFileReport',
-    // },
-    // {
-    //   path: '/training/generalFile/myFile/analysisReport/:id',
-    //   code: 'training.generalFile.view',
-    //   name: 'myAnalysis',
-    //   component: './Training/GeneralFile/MyFile/AnalysisReport',
-    // },
-    // {
-    //   path: '/training/generalFile/myFile/synthesisReport',
-    //   code: 'training.generalFile.view',
-    //   name: 'mySynthesis',
-    //   component: './Training/GeneralFile/MyFile/SynthesisReport',
-    // },
+    // TODO 由于iframe原因
+    {
+      path: '/training/myFile/analysisReport/:id',
+      code: 'training.myFile.view',
+      name: 'myAnalysis',
+      component: './Training/MyFile/AnalysisReport',
+    },
+    {
+      path: '/training/myFile/synthesisReport',
+      code: 'training.myFile.view',
+      name: 'mySynthesis',
+      component: './Training/MyFile/SynthesisReport',
+    },
+    {
+      path: '/training/generalFile/examFileReport/:id',
+      code: 'training.generalFile.view',
+      name: 'examReport',
+      component: './Training/GeneralFile/ExamFile/ExamFileReport',
+    },
+    {
+      path: '/training/generalFile/myFile/analysisReport/:id',
+      code: 'training.generalFile.view',
+      name: 'myAnalysis',
+      component: './Training/GeneralFile/MyFile/AnalysisReport',
+    },
+    {
+      path: '/training/generalFile/myFile/synthesisReport',
+      code: 'training.generalFile.view',
+      name: 'mySynthesis',
+      component: './Training/GeneralFile/MyFile/SynthesisReport',
+    },
 
     //404
     {
