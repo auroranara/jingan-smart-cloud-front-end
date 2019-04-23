@@ -63,3 +63,145 @@ export async function deleteCompanyDevice({ id }) {
     method: 'DELETE',
   })
 }
+
+// 获取传感器列表（分页）
+export async function fetchSensors(params) {
+  return request(`/acloud_new/v2/sensor/sensorForPage?${stringify(params)}`)
+}
+
+// 获取监测类型字典
+export async function fetchMonitoringTypeDict(params) {
+  return request(`/acloud_new/v2/sensor/monitoringTypeDict?${stringify(params)}`)
+}
+
+// 获取品牌字典
+export async function fetchSensorBrandDict(params) {
+  return request(`/acloud_new/v2/sensor/sensorBrandDict?${stringify(params)}`)
+}
+
+// 获取传感器型号字典
+export async function fetchSensorTypeDict(params) {
+  return request(`/acloud_new/v2/sensor/sensorTypeDict?${stringify(params)}`)
+}
+
+
+/**
+ * 获取监测参数列表
+ */
+export async function fetchMonitoringParameter(params) {
+  return request(`/acloud_new/v2/sensor/monitoringParameter?${stringify(params)}`)
+}
+
+
+/**
+ * 企业列表弹出框
+ */
+export async function queryModelList(params) {
+  return request(`/acloud_new/v2/baseInfo/companies?${stringify(params)}`);
+}
+
+
+/**
+ * 新增传感器
+ */
+export async function addSensor(params) {
+  return request('/acloud_new/v2/sensor/sensor', {
+    method: 'POST',
+    body: params,
+  })
+}
+
+
+/**
+ * 编辑传感器
+ */
+export async function editSensor(params) {
+  return request('/acloud_new/v2/sensor/sensor', {
+    method: 'PUT',
+    body: params,
+  })
+}
+
+
+/**
+ * 删除传感器
+ */
+export async function deleteSensor({ id }) {
+  return request(`/acloud_new/v2/sensor/sensor/${id}`, {
+    method: 'DELETE',
+  })
+}
+
+
+/**
+ * 获取传感器详情
+ */
+export async function fetchSensorDetail({ id }) {
+  return request(`/acloud_new/v2/sensor/sensor/${id}`)
+}
+
+
+/**
+ * 获取传感器型号列表
+ */
+export async function fetchSensorModels(params) {
+  return request(`/acloud_new/v2/sensorType/sensorTypeForPage?${stringify(params)}`)
+}
+
+
+/**
+ * 新增传感器型号
+ */
+export async function editSensorModel(params) {
+  return request('/acloud_new/v2/sensorType/sensorType', {
+    method: 'PUT',
+    body: params,
+  })
+}
+
+/**
+ * 新增传感器型号
+ */
+export async function addSensorModel({ copyId, ...body }) {
+  return request(`/acloud_new/v2/sensorType/sensorType?copyId=${copyId}`, {
+    method: 'POST',
+    body,
+  })
+}
+
+
+/**
+ * 获取传感器型号的参数列表
+ */
+export async function fetchModelParameters({ modelId }) {
+  return request(`/acloud_new/v2/sensorType/sensorType/${modelId}/monitoringParameter`)
+}
+
+/**
+ * 新增传感器型号的参数
+ */
+export async function addModelParameter(params) {
+  return request(`/acloud_new/v2/sensorType/sensorType/${params.modelId}/monitoringParameter`, {
+    method: 'POST',
+    body: params,
+  })
+}
+
+/**
+ * 编辑传感器型号的参数
+ */
+export async function editModelParameter(params) {
+  return request(`/acloud_new/v2/sensorType/sensorType/${params.modelId}/monitoringParameter`, {
+    method: 'PUT',
+    body: params,
+  })
+}
+
+/**
+ * 删除传感器型号的参数
+ */
+export async function deleteModelParameter({ modelId, id }) {
+  return request(`/acloud_new/v2/sensorType/sensorType/${modelId}/monitoringParameter/${id}`, {
+    method: 'DELETE',
+  })
+}
