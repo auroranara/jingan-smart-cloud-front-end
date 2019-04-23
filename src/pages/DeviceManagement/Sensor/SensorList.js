@@ -136,27 +136,31 @@ export default class SensorList extends Component {
    * 筛选栏检测类型改变
    */
   handlemonitoringTypeChange = (monitoringTypeId) => {
-    this.fetchSensorBrandDict({ payload: { monitoringTypeId } })
-    this.fetchSensorTypeDict({ payload: { monitoringTypeId } })
+    const { getFieldValue } = this.props.form
+    const brandId = getFieldValue('brandId')
+    // this.fetchSensorBrandDict({ payload: { monitoringTypeId } })
+    this.fetchSensorTypeDict({ payload: { monitoringTypeId, brandId } })
   }
 
 
   /**
    * 筛选栏品牌改变
    */
-  handleBrandChange = (brand) => {
-    this.fetchMonitoringTypeDict({ payload: { brand } })
-    this.fetchSensorTypeDict({ payload: { brand } })
+  handleBrandChange = (brandId) => {
+    const { getFieldValue } = this.props.form
+    const monitoringTypeId = getFieldValue('monitoringTypeId')
+    // this.fetchMonitoringTypeDict({ payload: { brand } })
+    this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } })
   }
 
 
   /**
    * 筛选栏类型改变
    */
-  handleTypeChange = (type) => {
-    this.fetchMonitoringTypeDict({ payload: { type } })
-    this.fetchSensorBrandDict({ payload: { type } })
-  }
+  // handleTypeChange = (type) => {
+  //   this.fetchMonitoringTypeDict({ payload: { type } })
+  //   this.fetchSensorBrandDict({ payload: { type } })
+  // }
 
   /**
    * 渲染筛选栏
@@ -198,7 +202,7 @@ export default class SensorList extends Component {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('brand')(
+                {getFieldDecorator('brandId')(
                   <Select placeholder="品牌" onChange={this.handleBrandChange}>
                     {brandDict.map(({ value, key }) => (
                       <Option key={key} value={key}>{value}</Option>
@@ -209,8 +213,8 @@ export default class SensorList extends Component {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('type')(
-                  <Select placeholder="传感器型号" onChange={this.handleTypeChange}>
+                {getFieldDecorator('typeId')(
+                  <Select placeholder="传感器型号">
                     {typeDict.map(({ value, key }) => (
                       <Option key={key} value={key}>{value}</Option>
                     ))}

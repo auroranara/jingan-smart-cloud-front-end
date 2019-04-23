@@ -75,6 +75,7 @@ export default {
         add: 'deviceManagement.sensorModel.model.add',
         edit: 'deviceManagement.sensorModel.model.edit',
         delete: 'deviceManagement.sensorModel.model.delete',
+        alarmStrategy: 'deviceManagement.sensorModel.model.alarmStrategy',
       },
     },
   },

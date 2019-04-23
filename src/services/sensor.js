@@ -169,3 +169,39 @@ export async function addSensorModel({ copyId, ...body }) {
   })
 }
 
+
+/**
+ * 获取传感器型号的参数列表
+ */
+export async function fetchModelParameters({ modelId }) {
+  return request(`/acloud_new/v2/sensorType/sensorType/${modelId}/monitoringParameter`)
+}
+
+/**
+ * 新增传感器型号的参数
+ */
+export async function addModelParameter(params) {
+  return request(`/acloud_new/v2/sensorType/sensorType/${params.modelId}/monitoringParameter`, {
+    method: 'POST',
+    body: params,
+  })
+}
+
+/**
+ * 编辑传感器型号的参数
+ */
+export async function editModelParameter(params) {
+  return request(`/acloud_new/v2/sensorType/sensorType/${params.modelId}/monitoringParameter`, {
+    method: 'PUT',
+    body: params,
+  })
+}
+
+/**
+ * 删除传感器型号的参数
+ */
+export async function deleteModelParameter({ modelId, id }) {
+  return request(`/acloud_new/v2/sensorType/sensorType/${modelId}/monitoringParameter/${id}`, {
+    method: 'DELETE',
+  })
+}

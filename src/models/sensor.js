@@ -23,6 +23,10 @@ import {
   fetchSensorModels,
   addSensorModel,
   editSensorModel,
+  fetchModelParameters,
+  addModelParameter,
+  editModelParameter,
+  deleteModelParameter,
 } from '../services/sensor'
 const defaultPagination = { pageNum: 1, pageSize: 10, total: 0 }
 export default {
@@ -103,6 +107,8 @@ export default {
         total: 0,
       },
     },
+    // 型号参数
+    modelParameters: [],
   },
   effects: {
     // 获取传感器企业列表
@@ -328,6 +334,37 @@ export default {
     // 编辑传感器型号
     *editSensorModel({ payload, success, error }, { call }) {
       const response = yield call(editSensorModel, payload)
+      if (response && response.code === 200 && success) {
+        success()
+      } else if (error) error(response)
+    },
+    // 获取传感器型号的监测参数
+    *fetchModelParameters({ payload }, { call, put }) {
+      const response = yield call(fetchModelParameters, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveState',
+          payload: { key: 'modelParameters', value: response.data.list || [] },
+        })
+      }
+    },
+    // 新增传感器型号的监测参数
+    *addModelParameter({ payload, success, error }, { call }) {
+      const response = yield call(addModelParameter, payload)
+      if (response && response.code === 200 && success) {
+        success()
+      } else if (error) error(response)
+    },
+    // 编辑传感器型号的监测参数
+    *editModelParameter({ payload, success, error }, { call }) {
+      const response = yield call(editModelParameter, payload)
+      if (response && response.code === 200 && success) {
+        success()
+      } else if (error) error(response)
+    },
+    // 删除传感器型号的监测参数
+    *deleteModelParameter({ payload, success, error }, { call }) {
+      const response = yield call(deleteModelParameter, payload)
       if (response && response.code === 200 && success) {
         success()
       } else if (error) error(response)

@@ -63,7 +63,6 @@ export default class SensorModelList extends PureComponent {
   componentDidMount() {
     this.fetchMonitoringTypeDict()
     this.fetchSensorBrandDict()
-    this.fetchSensorTypeDict()
     this.handleQuery()
   }
 
@@ -115,58 +114,48 @@ export default class SensorModelList extends PureComponent {
   /**
    * 筛选栏监测类型改变
    */
-  handlemonitoringTypeChange = (monitoringTypeId, justState = false) => {
-    this.fetchSensorBrandDict({
-      payload: { monitoringTypeId, justState },
-      callback: (brandDict) => {
-        this.setState({ brandDict })
-      },
-    })
-    this.fetchSensorTypeDict({
-      payload: { monitoringTypeId, justState },
-      callback: (typeDict) => {
-        this.setState({ typeDict })
-      },
-    })
-  }
+  // handlemonitoringTypeChange = (monitoringTypeId, justState = false) => {
+  //   this.fetchSensorBrandDict({
+  //     payload: { monitoringTypeId, justState },
+  //     callback: (brandDict) => {
+  //       this.setState({ brandDict })
+  //     },
+  //   })
+  //   this.fetchSensorTypeDict({
+  //     payload: { monitoringTypeId, justState },
+  //     callback: (typeDict) => {
+  //       this.setState({ typeDict })
+  //     },
+  //   })
+  // }
 
 
   /**
    * 筛选栏品牌改变
    */
-  handleBrandChange = (brand, justState = false) => {
-    this.fetchMonitoringTypeDict({
-      payload: { brand, justState },
-      callback: (monitoringTypeDict) => {
-        this.setState({ monitoringTypeDict })
-      },
-    })
-    this.fetchSensorTypeDict({
-      payload: { brand, justState },
-      callback: (typeDict) => {
-        this.setState({ typeDict })
-      },
-    })
-  }
+  // handleBrandChange = (brand, justState = false) => {
+  //   this.fetchMonitoringTypeDict({
+  //     payload: { brand, justState },
+  //     callback: (monitoringTypeDict) => {
+  //       this.setState({ monitoringTypeDict })
+  //     },
+  //   })
+  //   this.fetchSensorTypeDict({
+  //     payload: { brand, justState },
+  //     callback: (typeDict) => {
+  //       this.setState({ typeDict })
+  //     },
+  //   })
+  // }
 
 
   /**
    * 筛选栏类型改变
    */
-  handleTypeChange = (type, justState = false) => {
-    this.fetchMonitoringTypeDict({
-      payload: { type, justState },
-      callback: (monitoringTypeDict) => {
-        this.setState({ monitoringTypeDict })
-      },
-    })
-    this.fetchSensorBrandDict({
-      payload: { type, justState },
-      callback: (brandDict) => {
-        this.setState({ brandDict })
-      },
-    })
-  }
+  // handleTypeChange = (type) => {
+  //   this.fetchMonitoringTypeDict({ payload: { type } })
+  //   this.fetchSensorBrandDict({ payload: { type } })
+  // }
 
   handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
     const {
@@ -178,7 +167,7 @@ export default class SensorModelList extends PureComponent {
         pageNum,
         pageSize,
         monitoringTypeId: serMonitoringTypeId,
-        brand: serBrand,
+        brandId: serBrand,
         type: serType,
       },
     })
@@ -200,20 +189,7 @@ export default class SensorModelList extends PureComponent {
    * 打开新增弹窗（点击筛选栏新增按钮）
    */
   handleViewAddModel = () => {
-    const payload = { justState: true }
-    this.fetchMonitoringTypeDict({
-      payload,
-      callback: (monitoringTypeDict) => {
-        this.setState({ monitoringTypeDict, sensorDetail: null })
-      },
-    })
-    this.fetchSensorBrandDict({
-      payload,
-      callback: (brandDict) => {
-        this.setState({ brandDict, sensorDetail: null })
-      },
-    })
-    this.setState({ addModalVisible: true, modalType: 'add' })
+    this.setState({ addModalVisible: true, modalType: 'add', sensorDetail: null })
   }
 
 
@@ -271,32 +247,22 @@ export default class SensorModelList extends PureComponent {
    */
   handleToEdit = (sensorDetail, modalType) => {
     const { form: { setFieldsValue } } = this.props
-    this.fetchMonitoringTypeDict({
-      payload: { justState: true, brand: sensorDetail.brand },
-      callback: (monitoringTypeDict) => {
-        this.setState({ monitoringTypeDict, sensorDetail: null })
-      },
-    })
-    this.fetchSensorBrandDict({
-      payload: { justState: true, monitoringTypeId: sensorDetail.monitoringTypeId },
-      callback: (brandDict) => {
-        this.setState({ brandDict, sensorDetail: {} })
-      },
-    })
+    this.fetchMonitoringTypeDict({ payload: { brandId: sensorDetail.brandId } })
+    this.fetchSensorBrandDict({ payload: { monitoringTypeId: sensorDetail.monitoringTypeId } })
     this.setState({ sensorModelId: sensorDetail.id, addModalVisible: true, modalType }, () => {
-      const { monitoringType: label, monitoringTypeId: key, type, brand, typeId } = sensorDetail
+      const { monitoringType: label, monitoringTypeId: key, type, brandId, typeCode } = sensorDetail
       if (modalType === 'copy') {
         setFieldsValue({
           monitoringType: { key, label },
-          brand,
+          brandId,
         })
         return
       }
       setFieldsValue({
         monitoringType: { key, label },
         type,
-        brand,
-        typeId,
+        brandId,
+        typeCode,
       })
     })
   }
@@ -320,7 +286,7 @@ export default class SensorModelList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('serMonitoringTypeId')(
-                  <Select placeholder="监测类型" onChange={(value) => this.handlemonitoringTypeChange(value, false)}>
+                  <Select placeholder="监测类型">
                     {monitoringTypeDict.map(({ value, key }) => (
                       <Option key={key} value={key}>{value}</Option>
                     ))}
@@ -331,7 +297,7 @@ export default class SensorModelList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('serBrand')(
-                  <Select placeholder="品牌" onChange={(value) => this.handleBrandChange(value, false)}>
+                  <Select placeholder="品牌">
                     {brandDict.map(({ value, key }) => (
                       <Option key={key} value={key}>{value}</Option>
                     ))}
@@ -382,13 +348,13 @@ export default class SensorModelList extends PureComponent {
     const columns = [
       {
         title: '监测类型代码',
-        dataIndex: 'monitorintTypeId',
+        dataIndex: 'monitoringTypeId',
         align: 'center',
         width: 200,
       },
       {
         title: '监测类型',
-        dataIndex: 'monitorintType',
+        dataIndex: 'monitoringType',
         align: 'center',
         width: 200,
       },
@@ -400,7 +366,7 @@ export default class SensorModelList extends PureComponent {
       },
       {
         title: '型号代码',
-        dataIndex: 'typeId',
+        dataIndex: 'typeCode',
         align: 'center',
         width: 150,
       },
@@ -429,7 +395,7 @@ export default class SensorModelList extends PureComponent {
         width: 200,
         render: (val, row) => (
           <Fragment>
-            <AuthA code={addCode} onClick={() => router.push(``)}>配置参数</AuthA>
+            <AuthA code={addCode} onClick={() => router.push(`/device-management/sensor-model/model/${row.id}`)}>配置参数</AuthA>
             <Divider type="vertical" />
             <AuthA code={addCode} onClick={() => this.handleToEdit(row, 'copy')}>复制</AuthA>
             <Divider type="vertical" />
@@ -471,11 +437,13 @@ export default class SensorModelList extends PureComponent {
   renderAddModal = () => {
     const {
       form: { getFieldDecorator },
+      sensor: {
+        monitoringTypeDict,
+        brandDict,
+      },
     } = this.props
     const {
       addModalVisible,
-      monitoringTypeDict,
-      brandDict,
       modalType,
     } = this.state
     return (
@@ -492,7 +460,7 @@ export default class SensorModelList extends PureComponent {
             {getFieldDecorator('monitoringType', {
               rules: [{ required: true, message: '请输入监测类型' }],
             })(
-              <Select labelInValue placeholder="请选择" onChange={({ key }) => this.handlemonitoringTypeChange(key, true)}>
+              <Select labelInValue placeholder="请选择">
                 {monitoringTypeDict.map(({ value, key }) => (
                   <Option key={key} value={key}>{value}</Option>
                 ))}
@@ -500,10 +468,10 @@ export default class SensorModelList extends PureComponent {
             )}
           </FormItem>
           <FormItem label="品牌" {...formItemLayout}>
-            {getFieldDecorator('brand', {
+            {getFieldDecorator('brandId', {
               rules: [{ required: true, message: '请输入品牌' }],
             })(
-              <Select placeholder="请选择" onChange={(value) => this.handleBrandChange(value, true)}>
+              <Select placeholder="请选择">
                 {brandDict.map(({ value, key }) => (
                   <Option key={key} value={key}>{value}</Option>
                 ))}
@@ -518,7 +486,7 @@ export default class SensorModelList extends PureComponent {
             )}
           </FormItem>
           <FormItem label="型号代码" {...formItemLayout}>
-            {getFieldDecorator('typeId', {
+            {getFieldDecorator('typeCode', {
               rules: [{ required: true, message: '请输入型号代码' }],
             })(
               <Input placeholder="请输入" />
