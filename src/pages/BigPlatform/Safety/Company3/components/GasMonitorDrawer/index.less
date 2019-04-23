@@ -1,0 +1,78 @@
+.container {
+  table-layout: fixed;
+  width: 100%;
+  height: 100%;
+  font-size: 14px;
+  line-height: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .countContainer {
+    position: relative;
+    border-bottom: 1px solid #0967d3;
+    padding: 10px 0;
+
+    .circle {
+      height: 110px;
+      position: relative;
+      background-size: contain;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-image: url(http://data.jingan-china.cn/v2/big-platform/monitor/com/gasCircle.png);
+    }
+
+    .pointNum {
+      font-size: 30px;
+      color: rgb(0, 168, 255);
+      position: absolute;
+      left: 50%;
+      top: 25%;
+      transform: translateX(-50%);
+    }
+
+    .point {
+      color: #fff;
+      position: absolute;
+      left: 50%;
+      top: 58%;
+      transform: translateX(-50%);
+    }
+
+    .progressContainer {
+      // height: 60%;
+      padding: 10px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .progress {
+        width: 100%;
+        display: flex;
+        margin: 12px 0;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+
+        :global {
+          .ant-progress-inner {
+            background-color: #062756;
+          }
+        }
+
+        .status {
+          width: 50px;
+          text-align: center;
+          margin-right: 12px;
+        }
+
+        .num {
+          font-size: 18px;
+          width: 50px;
+          text-align: center;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+}

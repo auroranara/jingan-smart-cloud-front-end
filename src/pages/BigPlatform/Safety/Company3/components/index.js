@@ -24,6 +24,8 @@ import RiskPointDetailDrawer from './RiskPointDetailDrawer';
 import InspectionDetailDrawer from './InspectionDetailDrawer';
 // 特种设备抽屉
 import SpecialEquipmentDrawer from './SpecialEquipmentDrawer';
+// 可燃有毒气体监测
+import GasMonitorDrawer from './GasMonitorDrawer';
 
 export {
   // 企业信息
@@ -51,4 +53,6 @@ export {
   // 巡查点位详情抽屉
   InspectionDetailDrawer,
   SpecialEquipmentDrawer,
+  // 可燃有毒气体监测
+  GasMonitorDrawer,
 };

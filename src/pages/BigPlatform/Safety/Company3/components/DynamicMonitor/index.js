@@ -106,8 +106,9 @@ export default class DynamicMonitor extends PureComponent {
         videoMonitor,
       } = {},
       handleClickVideo,
+      handleClickGas,
     } = this.props;
-    const { zoom } = this.state;
+    // const { zoom } = this.state;
 
     const list = [
       {
@@ -139,6 +140,9 @@ export default class DynamicMonitor extends PureComponent {
         value: getValue(toxicGas),
         icon: toxicGasIcon,
         originalValue: toxicGas,
+        onClick: () => {
+          handleClickGas();
+        },
       },
       {
         key: '废水监测',
@@ -176,7 +180,10 @@ export default class DynamicMonitor extends PureComponent {
         <div className={styles.container}>
           <Carousel className={styles.carousel} ref={this.refCarousel}>
             <div className={styles.listWrapper}>
-              <div className={styles.list} style={{ zoom }}>
+              <div
+                className={styles.list}
+                //  style={{ zoom }}
+              >
                 {list
                   .slice(0, 4)
                   .map(({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }) => {
@@ -193,13 +200,13 @@ export default class DynamicMonitor extends PureComponent {
                         <div className={styles.itemLabel}>{key}</div>
 
                         <div className={styles.itemValue}>
-                          {/* <Tooltip
-                            placement="bottom"
+                          <Tooltip
+                            placement="right"
                             title={this.renderTooltip(warningNum !== undefined)}
-                          > */}
-                          {value}
-                          {warningNum !== undefined && `/${totalNum}`}
-                          {/* </Tooltip> */}
+                          >
+                            {value}
+                            {warningNum !== undefined && `/${totalNum}`}
+                          </Tooltip>
                         </div>
                       </div>
                     );
@@ -209,7 +216,10 @@ export default class DynamicMonitor extends PureComponent {
             </div>
             {list.length > 4 && (
               <div className={styles.listWrapper}>
-                <div className={styles.list} style={{ zoom }}>
+                <div
+                  className={styles.list}
+                  //  style={{ zoom }}
+                >
                   {list
                     .slice(4, 8)
                     .map(
@@ -226,13 +236,13 @@ export default class DynamicMonitor extends PureComponent {
                           >
                             <div className={styles.itemLabel}>{key}</div>
                             <div className={styles.itemValue}>
-                              {/* <Tooltip
+                              <Tooltip
                                 placement="right"
                                 title={this.renderTooltip(warningNum !== undefined)}
-                              > */}
-                              {value}
-                              {warningNum !== undefined && `/${totalNum}`}
-                              {/* </Tooltip> */}
+                              >
+                                {value}
+                                {warningNum !== undefined && `/${totalNum}`}
+                              </Tooltip>
                             </div>
                           </div>
                         );
