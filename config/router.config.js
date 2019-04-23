@@ -545,6 +545,42 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/role-authorization/userRole',
+              code: 'roleAuthorization.userRole',
+              name: 'userRole',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/role-authorization/userRole',
+                  redirect: 'list',
+                },
+                {
+                  path: '/role-authorization/userRole/list',
+                  name: 'list',
+                  code: 'roleAuthorization.userRole.listView',
+                  component: './RoleAuthorization/UserRole/UserRoleList',
+                },
+                {
+                  path: '/role-authorization/userRole/detail/:id',
+                  name: 'detail',
+                  code: 'roleAuthorization.userRole.view',
+                  component: './RoleAuthorization/UserRole/UserRoleDetail',
+                },
+                {
+                  path: '/role-authorization/userRole/add',
+                  name: 'add',
+                  code: 'roleAuthorization.userRole.add',
+                  component: './RoleAuthorization/UserRole/UserRoleHandler',
+                },
+                {
+                  path: '/role-authorization/userRole/edit/:id',
+                  name: 'edit',
+                  code: 'roleAuthorization.userRole.edit',
+                  component: './RoleAuthorization/UserRole/UserRoleHandler',
+                },
+              ],
+            },
           ],
         },
         // exception
