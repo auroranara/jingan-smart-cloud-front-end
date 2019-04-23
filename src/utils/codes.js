@@ -60,6 +60,25 @@ export default {
         unbindSensor: 'deviceManagement.associateSensor.waterSystem.unbindSensor',
       },
     },
+    sensor: {
+      listView: 'deviceManagement.sensor.listView',
+      add: 'deviceManagement.sensor.add',
+      edit: 'deviceManagement.sensor.edit',
+      delete: 'deviceManagement.sensor.delete',
+    },
+    sensorModel: {
+      listView: 'deviceManagement.sensorModel.listView',
+      add: 'deviceManagement.sensorModel.add',
+      edit: 'deviceManagement.sensorModel.edit',
+      copy: 'deviceManagement.sensorModel.copy',
+      model: {
+        listView: 'deviceManagement.sensorModel.model.listView',
+        add: 'deviceManagement.sensorModel.model.add',
+        edit: 'deviceManagement.sensorModel.model.edit',
+        delete: 'deviceManagement.sensorModel.model.delete',
+        alarmStrategy: 'deviceManagement.sensorModel.model.alarmStrategy',
+      },
+    },
   },
   videoSurveillance: {
     hikVideoTree: {
