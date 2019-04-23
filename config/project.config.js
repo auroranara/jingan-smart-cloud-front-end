@@ -62,6 +62,27 @@ const configs = {
     android:
       'http://58.215.178.100:12083/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
+  ehu: {
+    region: '无锡市',
+    projectKey: 'jiangxi_pro',
+    projectShortName: '鹅湖智慧云',
+    code,
+    blur: [
+      'http://image.jingan-china.cn/v2/login/ehu/1_blur.png',
+      'http://image.jingan-china.cn/v2/login/ehu/2_blur.png',
+      'http://image.jingan-china.cn/v2/login/ehu/3_blur.png',
+    ],
+    focus: [
+      'http://image.jingan-china.cn/v2/login/ehu/1.png',
+      'http://image.jingan-china.cn/v2/login/ehu/2.png',
+      'http://image.jingan-china.cn/v2/login/ehu/3.png',
+    ],
+    layer: 'http://data.jingan-china.cn/v2/login/wuxi_download_layer.png',
+    ios:
+      'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/jxjd/official_version/JXJDInterSafe.plist&ran=',
+    android:
+      'http://58.215.178.100:12083/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
+  },
   xuzhou: {
     region: '徐州市',
     projectKey: 'xuzhou_pro',
@@ -102,7 +123,7 @@ const configs = {
       'http://data.jingan-china.cn/v2/login/limin/3.png',
     ],
     ios:
-      'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/limin/official_version/XZInterSafe.plist&ran=',
+      'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/limin/official_version/limin.plist&ran=',
     android:
       'http://58.215.178.100:12081/acloud_new/v2/mobileVersion/version/getLatest?type=1&version=1&ran=',
   },

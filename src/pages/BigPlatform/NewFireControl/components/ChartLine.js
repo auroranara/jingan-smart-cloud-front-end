@@ -5,7 +5,7 @@ const LINE_STYLE =  { width: 2, color: 'rgb(64, 95, 135)' };
 
 export default class ChartLine extends PureComponent {
   render() {
-    const { data: list, xLabels, labelRotate=-35 } = this.props;
+    const { data: list, xLabels, labelRotate=-35, chartStyle } = this.props;
 
     const xData = xLabels || list.map(({ name }) => name);
     const seriesData = list;
@@ -47,7 +47,7 @@ export default class ChartLine extends PureComponent {
       chartComponent = (
         <ReactEcharts
           option={option}
-          style={{ height: 400 }}
+          style={chartStyle || { height: 400 }}
           // style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', zIndex: -1 }}
           onChartReady={chart => { this.chart = chart; }}
         />

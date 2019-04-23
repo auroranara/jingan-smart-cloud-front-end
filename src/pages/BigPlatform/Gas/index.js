@@ -217,10 +217,10 @@ export default class Gas extends PureComponent {
             const newList =
               sameIndex !== undefined
                 ? [
-                  ...alarmIds.slice(0, sameIndex),
-                  { companyId, messageFlag },
-                  ...alarmIds.slice(sameIndex + 1),
-                ]
+                    ...alarmIds.slice(0, sameIndex),
+                    { companyId, messageFlag },
+                    ...alarmIds.slice(sameIndex + 1),
+                  ]
                 : [...alarmIds, { companyId, messageFlag }];
             this.setState({ alarmIds: newList });
             this.showWarningNotification(data);
@@ -355,17 +355,17 @@ export default class Gas extends PureComponent {
         this.pendingUnitsCardsInfo = genPendingCardsInfo(companyList);
       },
     });
-  }
+  };
 
   /**
    * 更新后
    */
-  componentDidUpdate() { }
+  componentDidUpdate() {}
 
   /**
    * 销毁前
    */
-  componentWillUnmount() { }
+  componentWillUnmount() {}
 
   cardsInfo = [];
   importCardsInfo = [];
@@ -564,51 +564,50 @@ export default class Gas extends PureComponent {
   };
 
   handleCloseUnitMonitor = () => {
-    this.setState({ unitMonitorDrawerVisible: false, unitMonitorStatus: null })
-  }
+    this.setState({ unitMonitorDrawerVisible: false, unitMonitorStatus: null });
+  };
 
   // 点击打开企业实时监测数据弹窗
-  hanldeViewUnitMonitor = (unitInfo) => {
-    const { companyId } = unitInfo
-    const { dispatch } = this.props
-    const { unitMonitorStatus } = this.state
-    this.setState({ unitInfo, unitMonitorDrawerVisible: true })
+  hanldeViewUnitMonitor = unitInfo => {
+    const { companyId } = unitInfo;
+    const { dispatch } = this.props;
+    const { unitMonitorStatus } = this.state;
     // 获取单位实时监测数据
     dispatch({
       type: 'gas/fetchRealTimeMonitor',
       payload: { companyId, status: unitMonitorStatus },
-    })
+    });
+    // 获取视频
+    dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
     // 获取异常趋势图数据
     dispatch({
       type: 'gas/fetchAbnormalTrend',
       payload: { companyId },
       callback: (list = []) => {
         const unitAbnormalTrend = list.map(item => {
-          const [{ faultNum, month, outContact, unnormal }] = Object.values(item)
-          return [month, unnormal, faultNum, outContact]
-        })
-        this.setState({ unitAbnormalTrend })
+          const [{ faultNum, month, outContact, unnormal }] = Object.values(item);
+          return [month, unnormal, faultNum, outContact];
+        });
+        this.setState({ unitAbnormalTrend, unitInfo, unitMonitorDrawerVisible: true });
       },
-    })
-    // 获取视频
-    dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
-  }
+    });
+  };
 
   // 单位监测数据弹窗筛选
   handleChangeMonitorStatus = unitMonitorStatus => {
-    const { dispatch } = this.props
-    const { unitInfo } = this.state
+    const { dispatch } = this.props;
+    const { unitInfo } = this.state;
     this.setState({ unitMonitorStatus }, () => {
       dispatch({
         type: 'gas/fetchRealTimeMonitor',
         payload: { companyId: unitInfo.companyId, status: unitMonitorStatus },
-      })
-    })
-  }
+      });
+    });
+  };
 
   handleViewVideo = () => {
-    this.setState({ videoVisible: true })
-  }
+    this.setState({ videoVisible: true });
+  };
 
   /**
    * 渲染
@@ -740,6 +739,7 @@ export default class Gas extends PureComponent {
           visible={unitDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleClickUnitStatistics={this.hanldeViewUnitMonitor}
+          handleAlarmClick={this.handleAlarmClick}
         />
         <AlarmDrawer
           data={{ list: errorUnitsCardsInfo, companyStatus, graphList: AbnormalTrend }}
@@ -752,6 +752,7 @@ export default class Gas extends PureComponent {
           data={{ list: pendingUnitsCardsInfo, graphList: gasChartByMonth }}
           visible={businessDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          handleAlarmClick={this.handleAlarmClick}
         />
         <MaintenanceDrawer
           title="报警处理动态"

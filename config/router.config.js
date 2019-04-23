@@ -94,22 +94,26 @@ module.exports = env => {
     //big platform
     {
       path: '/big-platform',
+      component: '../layouts/BigPlatformAuthLayout',
       routes: [
         { path: '/big-platform', redirect: '/big-platform/safety/government/index' },
         {
           path: '/big-platform/safety/government/:gridId',
+          code: 'dashboard.safetyView',
           component: './BigPlatform/Safety/Government',
         },
         {
           path: '/big-platform/safety/company/:companyId',
+          code: 'dashboard.safetyView',
           component: './BigPlatform/Safety/Company3',
         },
-        {
-          path: '/big-platform/fire-control/government/:gridId',
-          component: './BigPlatform/FireControl/Government',
-        },
+        // {
+        //   path: '/big-platform/fire-control/government/:gridId',
+        //   component: './BigPlatform/FireControl/Government',
+        // },
         {
           path: '/big-platform/new-fire-control/government/:gridId',
+          code: 'dashboard.fireControlView',
           component: './BigPlatform/NewFireControl/Government',
         },
         // {
@@ -118,22 +122,26 @@ module.exports = env => {
         // },
         {
           path: '/big-platform/fire-control/company/:unitId',
+          code: 'dashboard.fireControlView',
           component: './BigPlatform/UnitFire/UnitFireControl',
         },
         {
           path: '/big-platform/fire-control/new-company/:unitId',
+          code: 'dashboard.fireControlView',
           component: './BigPlatform/NewUnitFireControl',
         },
         {
           path: '/big-platform/monitor/company/:companyId',
+          code: 'dashboard.dynamicMonitorView',
           component: './BigPlatform/Monitor/Company',
         },
-        {
-          path: '/big-platform/video',
-          component: './BigPlatform/Video',
-        },
+        // {
+        //   path: '/big-platform/video',
+        //   component: './BigPlatform/Video',
+        // },
         {
           path: '/big-platform/position/:companyId',
+          code: 'dashboard.personnelPositioningView',
           component: './BigPlatform/Position/index',
         },
         // {
@@ -142,14 +150,17 @@ module.exports = env => {
         // },
         {
           path: '/big-platform/electricity-monitor/:gridId',
+          code: 'dashboard.electricityMonitorView',
           component: './BigPlatform/ElectricityMonitor',
         },
         {
           path: '/big-platform/gas/:gridId',
+          code: 'dashboard.gasView',
           component: './BigPlatform/Gas',
         },
         {
           path: '/big-platform/smoke/:gridId',
+          code: 'dashboard.smokeView',
           component: './BigPlatform/Smoke',
         },
       ],
@@ -160,6 +171,7 @@ module.exports = env => {
     //   component: './Demo',
     // },
     // 档案分析报告
+    // TODO 由于iframe原因
     {
       path: '/training/myFile/analysisReport/:id',
       code: 'training.myFile.view',
@@ -754,6 +766,44 @@ module.exports = env => {
                 {
                   path: '/data-analysis/hidden-danger-report/detail/:id',
                   code: 'dataAnalysis.hiddenDangerReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+                },
+              ],
+            },
+            // 企业自查报表
+            {
+              path: '/data-analysis/company-report',
+              code: 'dataAnalysis.companyReport',
+              name: 'companyReport',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/data-analysis/company-report',
+                  name: 'companyReport',
+                  redirect: '/data-analysis/company-report/list',
+                },
+                {
+                  path: '/data-analysis/company-report/list',
+                  code: 'dataAnalysis.companyReport.view',
+                  name: 'list',
+                  component: './DataAnalysis/CompanyReport/CompanyReportList',
+                },
+                {
+                  path: '/data-analysis/company-report/detail/:id',
+                  code: 'dataAnalysis.companyReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/CompanyReport/CompanyReportDetail',
+                },
+                {
+                  path: '/data-analysis/company-report/convenientlyDetail/:id',
+                  code: 'dataAnalysis.companyReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+                },
+                {
+                  path: '/data-analysis/company-report/checkDetail/:id',
+                  code: 'dataAnalysis.companyReport.view',
                   name: 'detail',
                   component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
                 },

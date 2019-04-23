@@ -131,10 +131,7 @@ export default class AlarmAddOrEdit extends PureComponent {
   };
 
   handleMapChange = value => {
-    const {
-      dispatch,
-      personPositionAlarm: { mapList },
-    } = this.props;
+    const { personPositionAlarm: { mapList } } = this.props;
     this.setState({ mapId: value });
     this.getAreaList(value);
 
@@ -144,6 +141,9 @@ export default class AlarmAddOrEdit extends PureComponent {
 
   getAreaList = value => {
     const { dispatch } = this.props;
+    if (!value)
+      return;
+
     dispatch({
       type: 'personPositionAlarm/fetchAreaList',
       payload: { mapId: value, pageSize: 0 },

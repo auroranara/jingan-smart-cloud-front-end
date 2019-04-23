@@ -6,6 +6,7 @@ import iconBarChartActive from '../img/icon-barChart-active.png';
 import iconPieChart from '../img/icon-pieChart.png';
 import iconPieChartActive from '../img/icon-pieChart-active.png';
 
+const isTinyHeight = window.screen.availHeight < 650;
 const dangerTitles = ['未超期隐患', '待复查隐患', '已超期隐患'];
 const dangerStatus = [2, 3, 7];
 const modeBtns = [
@@ -45,12 +46,12 @@ class HiddenDangerPie extends PureComponent {
         top: '41%',
         textStyle: {
           color: '#fff',
-          fontSize: 22,
+          fontSize: isTinyHeight ? 15 : 22,
         },
         subtext: '总数',
         subtextStyle: {
           color: '#fff',
-          fontSize: 14,
+          fontSize: isTinyHeight ? 12 : 14,
         },
       },
       legend: {
@@ -60,7 +61,7 @@ class HiddenDangerPie extends PureComponent {
         formatter: name => {
           return `${name} ${legendData[name]}`;
         },
-        bottom: 15,
+        bottom: isTinyHeight ? 5 : 15,
         left: 'center',
         textStyle: { color: '#fff' },
         itemGap: 20,
@@ -69,7 +70,8 @@ class HiddenDangerPie extends PureComponent {
       series: [
         {
           type: 'pie',
-          radius: ['40%', '60%'],
+          // radius: ['40%', '60%'],
+          radius: ['30%', '48%'],
           avoidLabelOverlap: false,
           label: {
             normal: {
@@ -77,7 +79,7 @@ class HiddenDangerPie extends PureComponent {
               formatter: '{b}\n{number|{c}}',
               rich: {
                 number: {
-                  fontSize: 20,
+                  fontSize: isTinyHeight ? 14 : 18,
                   color: '#fff',
                   align: 'center',
                 },
@@ -86,14 +88,18 @@ class HiddenDangerPie extends PureComponent {
             emphasis: {
               show: true,
               textStyle: {
-                fontSize: 13,
+                fontSize: isTinyHeight ? 12 : 13,
                 fontWeight: 'bold',
+                textShadowColor: '#01112e',
+                textShadowBlur: 3,
               },
             },
           },
           labelLine: {
             normal: {
               show: false,
+              length: isTinyHeight ? 20 : 30,
+              length2: 5,
             },
             emphasis: {
               show: true,
@@ -127,14 +133,14 @@ class HiddenDangerPie extends PureComponent {
         splitLine: {
           show: true,
           lineStyle: {
-            color: '#394456',
+            color: '#174073',
             width: 2,
           },
         },
         axisLine: {
           show: false,
           lineStyle: {
-            color: '#394456',
+            color: '#174073',
             width: 2,
           },
         },
@@ -152,7 +158,7 @@ class HiddenDangerPie extends PureComponent {
         axisLine: {
           show: true,
           lineStyle: {
-            color: '#394456',
+            color: '#174073',
             width: 2,
           },
         },
@@ -333,7 +339,7 @@ class HiddenDangerPie extends PureComponent {
             }}
           >
             隐患单位
-            <span className={styles.hdCompanyNum} style={{ color: '#00baff' }}>
+            <span className={styles.hdCompanyNum} style={{ color: '#00ffff' }}>
               {dangerCompanyNum || 0}
             </span>
           </div>

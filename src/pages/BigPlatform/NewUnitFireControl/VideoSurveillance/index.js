@@ -8,10 +8,8 @@ import styles from './VideoSurveillance.less';
  */
 export default class VideoSurveillance extends PureComponent {
   render() {
-    const { handleShowVideo, data: list } = this.props;
-
-    const srcs = list.map(({ name, photo, key_id: keyId, ...others }) => ({ ...others, name, photo, keyId }));
-    const video = srcs[0]; //获取第一个视频
+    const { handlePlay, handleShowVideo, data=[] } = this.props;
+    const video = data[0]; //获取第一个视频
 
     return (
       <Section title="重点部位监控">
@@ -19,7 +17,9 @@ export default class VideoSurveillance extends PureComponent {
           <div
             className={styles.videoItem}
             onClick={() => {
-              handleShowVideo(video.keyId);
+              handlePlay(data, () => {
+                handleShowVideo(video.key_id);
+              });
             }}
             style={{
               backgroundImage:

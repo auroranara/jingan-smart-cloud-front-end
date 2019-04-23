@@ -7,6 +7,24 @@ import DrawerContainer from '../components/DrawerContainer';
 import TimelineItem from '../components/TimelineItem';
 import flowImg from '../imgs/flow_m.png';
 
+
+const isVague = false;
+function nameToVague(str) {
+  let newStr = '';
+  if (str && str.length === 1) return str;
+  else if (str && str.length === 2) {
+    newStr = str.substr(0, 1) + '*';
+  } else if (str && str.length > 2) {
+    newStr = str.substr(0, 1) + '*' + str.substr(-1);
+  } else return str;
+  return newStr;
+}
+
+function phoneToVague(str) {
+  if (!str) return str;
+  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
+  return newStr;
+}
 function Occured(props) {
   const {
     position,
@@ -23,35 +41,10 @@ function Occured(props) {
       <p>{position}</p>
       <p>{type} 发生故障</p>
       <p>
-        安全负责人：
-        {headOfSecurity} {headOfSecurityPhone}
+        安全管理员：
+        {isVague ? nameToVague(headOfSecurity) : headOfSecurity}{' '}
+        {isVague ? phoneToVague(headOfSecurityPhone) : headOfSecurityPhone}
       </p>
-    </div>
-  );
-}
-
-function Assigned(props) {
-  const { systemType, loopNumber, partNumber, position } = props;
-
-  return (
-    <div className={styles.card}>
-      <p>
-        部件类型：
-        {systemType}
-      </p>
-      <p>
-        详细位置：
-        {position}
-      </p>
-      {loopNumber &&
-        partNumber && (
-          <p>
-            回路故障号：
-            {loopNumber}
-            回路
-            {partNumber}号
-          </p>
-        )}
     </div>
   );
 }
@@ -78,12 +71,18 @@ export default function FaultMessageDrawer(props) {
   const left = (
     <div className={styles.container} {...restProps}>
       <div className={styles.head}>
-        <div style={{ backgroundImage: `url(${flowImg})` }} className={styles.flow} />
+        <div
+          style={{
+            background: `url(${flowImg}) no-repeat center center`,
+            backgroundSize: '100% auto',
+          }}
+          className={styles.flow}
+        />
       </div>
       <div className={styles.timeline}>
         <Timeline>
           {/* 主机故障时才会显示这个，一键报修时不显示 */}
-          {!isOneKey && (
+          {/* {!isOneKey && (
             <TimelineItem
               spans={SPANS}
               label="故障发生"
@@ -111,8 +110,20 @@ export default function FaultMessageDrawer(props) {
                 position={installAddress}
               />
             )}
+          </TimelineItem> */}
+          <TimelineItem
+            spans={SPANS}
+            label="故障发生"
+            day={getTime(addTime)}
+            hour={getTime(addTime, 1)}
+          >
+            <Occured
+              position={installAddress || NO_DATA}
+              type={componentType || NO_DATA}
+              model={model}
+            />
           </TimelineItem>
-          <TimelineItem spans={SPANS} label="受理中" />
+          <TimelineItem spans={SPANS} label="开始处理" />
           <TimelineItem spans={SPANS} label="处理完毕" />
         </Timeline>
       </div>

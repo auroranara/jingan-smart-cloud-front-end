@@ -21,7 +21,7 @@ function Alarmed(props) {
         {deviceCode} {deviceAddress}
       </p> */}
       <p>
-        安全负责人：
+        安全管理员：
         {safety} {phone}
       </p>
     </div>

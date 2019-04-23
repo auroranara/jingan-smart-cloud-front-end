@@ -357,7 +357,7 @@ export default class UnitSafety extends PureComponent {
         itemId,
         status,
         month,
-        checkUserId,
+        // checkUserId,
       },
       () => {
         this.setDrawerVisible('inspectionDetail');
@@ -545,7 +545,11 @@ export default class UnitSafety extends PureComponent {
               />
             </div>
             <div className={styles.rightBottom}>
-              <DynamicMonitor data={dynamicMonitorData} onClick={this.goToMonitor} />
+              <DynamicMonitor
+                data={dynamicMonitorData}
+                onClick={this.goToMonitor}
+                handleClickVideo={this.showVideo}
+              />
             </div>
           </Col>
         </Row>

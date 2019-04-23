@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { stringify } from 'qs';
+import moment from 'moment';
 import { message, notification } from 'antd';
 
 import styles from './RealTime.less';
@@ -42,7 +43,7 @@ export default class RealTime extends PureComponent {
     alarmDrawerVisible: false, // 报警列表抽屉
     lowPowerDrawerVisible: false, // 低电量报警抽屉
     personDrawerVisible: false, // 人员列表抽屉
-    useCardIdHandleAlarm: undefined, // 当sos存在时，又在报警列表找不到时，标记为sos对应的cardId，使用另外一个接口
+    // useCardIdHandleAlarm: undefined, // 当sos存在时，又在报警列表找不到时，标记为sos对应的cardId，使用另外一个接口
     expandedRowKeys: [], // SectionList组件中的展开的树节点
     movingCards: [], // 带有不断变化的x，y的卡片
   };
@@ -53,8 +54,8 @@ export default class RealTime extends PureComponent {
     const { dispatch, companyId, setAreaInfoCache } = this.props;
 
     this.connectWebSocket();
-
     this.fetchSectionTree(list => {
+      const { areaId } = this.state;
       const areaInfo = this.areaInfo = getAreaInfo(list);
       setAreaInfoCache(areaInfo);
       this.setTableExpandedRowKeys(Object.keys(areaInfo).filter(prop => prop !== 'null' && prop !== 'undefined'));
@@ -62,12 +63,31 @@ export default class RealTime extends PureComponent {
       if (list.length) {
         const root = list[0];
         const { id } = root;
-        this.setState({ areaId: id, mapBackgroundUrl: root.mapPhoto.url });
+        const state = { areaId: id, mapBackgroundUrl: root.mapPhoto.url };
+        // 如果从历史轨迹里点追踪进入当前组件，则areaId可能已存在，若存在，则用，不存在则使用根节点
+        if (areaId)
+          state.areaId = areaId;
+        this.setState(state);
       }
     });
     dispatch({
       type: 'personPosition/fetchInitialPositions',
       payload: { companyId },
+      callback: list => {
+        // 初始化时，selectedCardId或selectedUserId某一个已经存在则为从历史轨迹中点击跟踪时进入
+        const { selectedCardId, selectedUserId, setSelectedCard } = this.props;
+        if (!selectedCardId && !selectedUserId)
+          return;
+        // 从历史轨迹中进入时，只会传一个值，哪个有，就根据哪个判断
+        const isUserId = !!selectedUserId;
+        const person = list.find(({ cardId, userId }) => isUserId ? userId === selectedUserId : cardId === selectedCardId);
+        if (!person)
+          return;
+        const { cardId, userId, areaId } = person;
+        // console.log(person);
+        this.setAreaId(areaId);
+        setSelectedCard(cardId, userId);
+      },
     });
     dispatch({
       type: 'personPosition/fetchInitAlarms',
@@ -82,19 +102,50 @@ export default class RealTime extends PureComponent {
     // this.treeTimer = setInterval(() => {
     //   this.fetchSectionTree();
     // }, DELAY);
-
     // setTimeout(() => this.showNotification({}), 3000);
+
+    this.getServerTime();
   }
 
   componentWillUnmount() {
+    const { personPosition: { alarms } } = this.props;
     const ws = this.ws;
     ws && ws.close();
     clearInterval(this.treeTimer);
+    alarms.forEach(({ id }) => notification.close(id)); // 当从实时监控或目标跟踪标签页切换到历史轨迹或报警查看标签页时，关闭所有通知
   }
 
   ws = null;
   areaInfo = {};
   treeTimer = null;
+  zeroTimestamp = 0; // 开始计时时的零点时间戳
+
+  // 获取服务器时间，计算当前时间到00:00的时间，挂一个定时器，由于计时器不一定准，所以到时候再获取一次服务器时间，若此时已经过了零点
+  // 则重新获取一遍sectionTree，若此时还未过零点，重复上述操作
+  getServerTime = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'personPosition/fetchServerTime',
+      callback: (code, time) => {
+        if (code !== 200) {
+          setTimeout(this.getServerTime, 2000);
+          return;
+        }
+        // 初始化zeroTimestamp，只在第一次调用时执行
+        if (!this.zeroTimestamp)
+          this.zeroTimestamp = +moment(time).endOf('day');
+        // 服务器时间离第一次获取服务器时间的当天时间的时间差
+        let delay = this.zeroTimestamp - time;
+        // 时间差小于零，则已经过了那天，更新零点时间戳，并重新获取区域树来刷新出入人次
+        if (delay <= 0) {
+          this.zeroTimestamp = +moment(time).endOf('day');
+          this.fetchSectionTree();
+          delay = this.zeroTimestamp - time;
+        }
+        setTimeout(this.getServerTime, delay);
+      },
+    });
+  };
 
   // 判定当前页面是否是目标追踪
   isTargetTrack = () => {
@@ -173,8 +224,7 @@ export default class RealTime extends PureComponent {
       case WARNING_TYPE:
         this.handleAlarms(data);
         this.showNotifications(data);
-        if (!isTrack)
-          this.handleAutoShowVideo(data);
+        this.handleAutoShowVideo(data);
         break;
       case AREA_STATUS_TYPE:
         this.handleAreaStatusChange(data);
@@ -191,8 +241,10 @@ export default class RealTime extends PureComponent {
   handlePositions = data => {
     const { dispatch, personPosition: { positionList } } = this.props;
     const cardIds = data.map(({ cardId }) => cardId);
-    handleOriginMovingCards(data, positionList, this.originMovingCards, this.moveCard, this.removeMovingCard);
-    const newPositionList = positionList.filter(({ cardId }) => !cardIds.includes(cardId)).concat(data);
+    // 将禁用的卡从人员列表中剔除
+    const filteredData = data.filter(({ cardStatus }) => +cardStatus !== 2);
+    handleOriginMovingCards(filteredData, positionList, this.originMovingCards, this.moveCard, this.removeMovingCard);
+    const newPositionList = positionList.filter(({ cardId }) => !cardIds.includes(cardId)).concat(filteredData);
     dispatch({ type: 'personPosition/savePositions', payload: newPositionList });
   };
 
@@ -281,18 +333,19 @@ export default class RealTime extends PureComponent {
   };
 
   // 处理报警
-  handleAlarm = (id, executeStatus, executeDesc)=> {
+  handleAlarm = (ids, executeStatus, executeDesc)=> {
     const { dispatch, personPosition: { alarms } } = this.props;
     dispatch({
       type: 'personPosition/handleAlarm',
-      payload: { id, executeStatus, executeDesc },
+      payload: { ids, executeStatus, executeDesc },
       callback: (code, msg) => {
         if (code === 200) {
           message.success(msg);
-          const newAlarms = alarms.filter(({ id: alarmId }) => alarmId !== id);
+          const alarmIds = ids.split(',');
+          const newAlarms = alarms.filter(({ id }) => !alarmIds.includes(id));
           dispatch({ type: 'personPosition/saveAlarms', payload: newAlarms });
           this.setState({ alarmHandleVisible: false });
-          notification.close(id);
+          alarmIds.forEach(id => notification.close(id));
         }
         else
           message.warn(msg);
@@ -386,25 +439,26 @@ export default class RealTime extends PureComponent {
     this.setState({ alarmMsgVisible: true, alarmId });
   };
 
-  handleShowAlarmMsgOrHandle = (alarmId, cardId, handleSOS) => {
-    if (handleSOS)
-      this.handleShowAlarmHandle(alarmId, cardId);
-    else
-      this.handleShowAlarmMsg(alarmId);
-  };
+  // handleShowAlarmMsgOrHandle = (alarmId, cardId, handleSOS) => {
+  //   if (handleSOS)
+  //     this.handleShowAlarmHandle(alarmId, cardId);
+  //   else
+  //     this.handleShowAlarmMsg(alarmId);
+  // };
 
   handleShowAlarmHandle = (alarmId, cardId) => {
     // alarmId不存在时，使用cardId处理，针对的是sos存在于person，而报警列表中没有
-    if (!alarmId)
-      this.setState({ alarmHandleVisible: true, useCardIdHandleAlarm: cardId });
-    else
-      this.setState({ alarmHandleVisible: true, alarmId });
+    // if (!alarmId)
+    //   this.setState({ alarmHandleVisible: true, useCardIdHandleAlarm: cardId });
+    // else
+    //   this.setState({ alarmHandleVisible: true, alarmId });
+    this.setState({ alarmHandleVisible: true, alarmId });
   };
 
   handleHideAlarmHandle = () => {
     this.setState({
       alarmId: undefined,
-      useCardIdHandleAlarm: undefined,
+      // useCardIdHandleAlarm: undefined,
       alarmMsgVisible: false,
       personInfoVisible: false,
       alarmHandleVisible: false,
@@ -433,7 +487,11 @@ export default class RealTime extends PureComponent {
   };
 
   handleAutoShowVideo = data => {
-    const { personPosition: { positionList } } = this.props;
+    const { selectedCardId, personPosition: { positionList } } = this.props;
+
+    // 当追踪时,有视频,不再显示视频
+    if (this.isTargetTrack() && selectedCardId)
+      return;
 
     // 如果data不是数组，则直接传入的就是alarm对象，如果不是数组，则传入的是alarm数组
     let alarm = data;
@@ -477,6 +535,7 @@ export default class RealTime extends PureComponent {
       selectedUserId,
       areaInfoCache,
       personPosition: { sectionTree, positionList, positionAggregation, alarms, beaconList },
+      showBoard,
       handleLabelClick,
       setSelectedCard,
       setHistoryRecord,
@@ -498,7 +557,7 @@ export default class RealTime extends PureComponent {
       alarmDrawerVisible,
       lowPowerDrawerVisible,
       personDrawerVisible,
-      useCardIdHandleAlarm,
+      // useCardIdHandleAlarm,
       expandedRowKeys,
       movingCards,
     } = this.state;
@@ -556,13 +615,14 @@ export default class RealTime extends PureComponent {
               highlightedAreaId={highlightedAreaId}
               areaInfo={areaInfo}
               sectionTree={sectionTree}
+              beaconList={beaconList}
               positions={positionList}
               aggregation={positionAggregation}
               movingCards={movingCards}
               removeMovingCard={this.removeMovingCard}
-              beaconList={beaconList}
               setAreaId={this.setAreaId}
               setHighlightedAreaId={this.setHighlightedAreaId}
+              showBoard={showBoard}
               handleShowVideo={this.handleShowVideo}
               handleShowPersonInfo={this.handleShowPersonInfo}
               handleShowPersonDrawer={this.handleShowPersonDrawer}
@@ -583,7 +643,8 @@ export default class RealTime extends PureComponent {
               alarms={alarms}
               personItem={getPersonInfoItem(cardId, positionList)}
               handleTrack={this.handleTrack}
-              handleShowAlarmMsgOrHandle={this.handleShowAlarmMsgOrHandle}
+              // handleShowAlarmMsgOrHandle={this.handleShowAlarmMsgOrHandle}
+              handleShowAlarmHandle={this.handleShowAlarmHandle}
               handleClose={this.handleClose}
             />
             <AlarmMsg
@@ -594,7 +655,7 @@ export default class RealTime extends PureComponent {
               handleClose={this.handleClose}
             />
             <AlarmHandle
-              cardId={useCardIdHandleAlarm}
+              // cardId={useCardIdHandleAlarm}
               alarmId={alarmId}
               alarms={alarms}
               visible={alarmHandleVisible}

@@ -972,9 +972,16 @@ export default class App extends PureComponent {
     this.setState({ drawerType: type });
   };
 
-  handleWorkOrderCardClick = id => {
-    this.handleDrawerVisibleChange('maintenance');
-    this.handleFetchWorkOrder(undefined, id);
+  handleWorkOrderCardClick = item => {
+    const { id, type, data_id } = item;
+    const isFire = +type === 1 || +type === 2;
+    if (!isFire) {
+      this.handleDrawerVisibleChange('maintenance');
+      this.handleFetchWorkOrder(undefined, id);
+    } else {
+      this.handleDrawerVisibleChange('alarmMessage');
+      this.handleFetchAlarmHandle(data_id);
+    }
   };
 
   handleWorkOrderCardClickMsg = ids => {
@@ -1071,10 +1078,31 @@ export default class App extends PureComponent {
   };
 
   handleFaultClick = data => {
-    const { cameraMessage } = data;
+    const { cameraMessage, messageFlag } = data;
     this.hiddeAllPopup();
-    this.setState({ faultMessage: data, faultMessageDrawerVisible: true });
-    this.handleShowFireVideo(cameraMessage);
+    // this.setState({ faultMessage: data, faultMessageDrawerVisible: true });
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchMaintenanceMsg',
+      payload: { dataId: messageFlag, companyId },
+      callback: res => {
+        if (!res.data.list.length) {
+          this.setState({ faultMessage: data, faultMessageDrawerVisible: true });
+          return;
+        }
+        this.setState({
+          maintenanceTitle: '故障处理动态',
+          processIds: res.data.list.map(item => item.id),
+        });
+        this.handleDrawerVisibleChange('maintenanceMsg');
+        this.handleShowFireVideo(cameraMessage);
+      },
+    });
   };
 
   hiddeAllPopup = () => {
@@ -1168,6 +1196,34 @@ export default class App extends PureComponent {
     this.setState({ ...newState });
   };
 
+  handlePlay = (list, callback) => {
+    const MediaPlayUrls = list.map(({ rtsp_address, name }) => ({
+      videoUrl: rtsp_address,
+      videoName: name,
+    }));
+    // const MediaPlayUrls = [{"videoUrl":"rtsp://admin:12345@192.168.16.250:554/h264/ch7/sub/av_stream","videoName":"视频1"},{"videoUrl":"rtsp://admin:12345@192.168.16.250:554/h264/ch7/sub/av_stream","videoName":"视频2"}];
+    const url = 'ws://localhost:10035/test';
+    const ws = new WebSocket(url);
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ MediaPlayUrls }));
+    };
+
+    ws.onmessage = e => {
+      console.log(e.data);
+      ws.close();
+    };
+
+    ws.onerror = () => {
+      console.log('error');
+      callback();
+      ws.close();
+    };
+
+    ws.onclose = () => {
+      console.log('close');
+    };
+  };
+
   render() {
     // 从props中获取数据
     const {
@@ -1201,6 +1257,7 @@ export default class App extends PureComponent {
         faultList,
         waterSystemData: { list },
         waterAlarm,
+        maintenanceCompany: { name: maintenanceCompanys = [] },
       },
     } = this.props;
 
@@ -1280,6 +1337,7 @@ export default class App extends PureComponent {
             this.handleViewDangerDetail({ id: hiddenDangerId });
             this.removeFourColorTip(id, hiddenDangerId);
           }}
+          handlePlay={this.handlePlay}
           tips={fourColorTips}
           latestHiddenDangerId={latestHiddenDangerId}
         />
@@ -1327,7 +1385,11 @@ export default class App extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 重点部位监控 */}
-                <VideoSurveillance handleShowVideo={this.handleShowVideo} data={allCamera} />
+                <VideoSurveillance
+                  handlePlay={this.handlePlay}
+                  handleShowVideo={this.handleShowVideo}
+                  data={allCamera}
+                />
               </div>
             </div>
             <div className={styles.item}>
@@ -1443,6 +1505,7 @@ export default class App extends PureComponent {
           visible={pointDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />*/}
+        {/* 点位巡查详情 */}
         <PointInspectionDrawer
           date={pointInspectionDrawerSelectedDate}
           handleChangeDate={this.handleChangePointInspectionDrawerSelectedDate}
@@ -1467,6 +1530,7 @@ export default class App extends PureComponent {
         />
         <WorkOrderDrawer
           data={{ workOrderList1, workOrderList2, workOrderList7 }}
+          maintenanceCompanys={maintenanceCompanys.map(data => data.name).join(',')}
           type={drawerType}
           visible={workOrderDrawerVisible}
           handleLabelChange={this.handleWorkOrderLabelChange}

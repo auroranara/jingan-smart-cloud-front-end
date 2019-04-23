@@ -1288,7 +1288,7 @@ export default class CompanyDetail extends PureComponent {
                 {getFieldDecorator('legalName', {
                   initialValue: legalName,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入法定代表人姓名' }],
+                  rules: [{ required: false, message: '请输入法定代表人姓名' }],
                 })(<Input placeholder="请输入姓名" />)}
               </Form.Item>
             </Col>
@@ -1298,7 +1298,7 @@ export default class CompanyDetail extends PureComponent {
                   initialValue: legalPhone,
                   getValueFromEvent: this.handleTrim,
                   rules: [
-                    { required: true, message: '请输入法定代表人联系方式' },
+                    { required: false, message: '请输入法定代表人联系方式' },
                     { pattern: phoneReg, message: '法定代表人联系方式格式不正确' },
                   ],
                 })(<Input placeholder="请输入联系方式" />)}
@@ -1321,7 +1321,7 @@ export default class CompanyDetail extends PureComponent {
                 {getFieldDecorator('principalName', {
                   initialValue: principalName,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入主要负责人姓名' }],
+                  rules: [{ required: false, message: '请输入主要负责人姓名' }],
                 })(<Input placeholder="请输入姓名" />)}
               </Form.Item>
             </Col>
@@ -1331,7 +1331,7 @@ export default class CompanyDetail extends PureComponent {
                   initialValue: principalPhone,
                   getValueFromEvent: this.handleTrim,
                   rules: [
-                    { required: true, message: '请输入主要负责人联系方式' },
+                    { required: false, message: '请输入主要负责人联系方式' },
                     { pattern: phoneReg, message: '主要负责人联系方式格式不正确' },
                   ],
                 })(<Input placeholder="请输入联系方式" />)}
@@ -1347,14 +1347,14 @@ export default class CompanyDetail extends PureComponent {
               </Form.Item>
             </Col>
           </Row>
-          <h3 className={styles.subTitle}>安全负责人</h3>
+          <h3 className={styles.subTitle}>安全管理员</h3>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.principalName}>
                 {getFieldDecorator('safetyName', {
                   initialValue: safetyName,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入安全负责人姓名' }],
+                  rules: [{ required: false, message: '请输入安全管理员姓名' }],
                 })(<Input placeholder="请输入姓名" />)}
               </Form.Item>
             </Col>
@@ -1364,8 +1364,8 @@ export default class CompanyDetail extends PureComponent {
                   initialValue: safetyPhone,
                   getValueFromEvent: this.handleTrim,
                   rules: [
-                    { required: true, message: '请输入安全负责人联系方式' },
-                    { pattern: phoneReg, message: '安全负责人联系方式格式不正确' },
+                    { required: false, message: '请输入安全管理员联系方式' },
+                    { pattern: phoneReg, message: '安全管理员联系方式格式不正确' },
                   ],
                 })(<Input placeholder="请输入联系方式" />)}
               </Form.Item>
@@ -1375,7 +1375,7 @@ export default class CompanyDetail extends PureComponent {
                 {getFieldDecorator('safetyEmail', {
                   initialValue: safetyEmail,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ pattern: emailReg, message: '安全负责人邮箱格式不正确' }],
+                  rules: [{ pattern: emailReg, message: '安全管理员邮箱格式不正确' }],
                 })(<Input placeholder="请输入邮箱" />)}
               </Form.Item>
             </Col>

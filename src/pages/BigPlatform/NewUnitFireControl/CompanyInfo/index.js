@@ -16,6 +16,8 @@ import iconCheck from '@/assets/icon-check.png';
  * date: 2018年12月03日
  */
 const { Description } = DescriptionList;
+// 是否是常州二院
+const isCzey = window.PROJECT_CONFIG.projectKey === 'czey_pro';
 
 @connect(({ newUnitFireControl }) => ({
   newUnitFireControl,
@@ -33,14 +35,15 @@ export default class CompanyInfo extends PureComponent {
         maintenanceCompany: {
           name: companyNames = [],
           result: userList = [],
-          PrincipalName = '',
+          PrincipalName = '', //安全管理员
           PrincipalPhone = '',
         },
       },
     } = this.props;
     // console.log('currentHiddenDanger',this.props.model.currentHiddenDanger);
 
-    const newUsers = userList.slice(0, 2);
+    // TODO: 为了常州二院过滤掉第一个人
+    const newUsers = userList.slice(1, 2);
 
     return (
       <Section title="单位基本信息" style={{ height: 'auto' }}>
@@ -56,12 +59,22 @@ export default class CompanyInfo extends PureComponent {
             <div className={styles.infoWrapper} style={{ marginTop: '8px' }}>
               <div className={styles.companyName}>{companyName}</div>
               <DescriptionList col={1}>
-                <Description term="主要负责人">
-                  <div className={styles.manWrapper} style={{ width: '145px' }}>
-                    {PrincipalName}
-                    <span className={styles.phone}>{PrincipalPhone}</span>
-                  </div>
-                </Description>
+                {PrincipalName && (
+                  <Description term="安全管理员">
+                    <div className={styles.manWrapper} style={{ width: '165px' }}>
+                      {PrincipalName}
+                      <span className={styles.phone}>{PrincipalPhone}</span>
+                    </div>
+                  </Description>
+                )}
+                {isCzey && (
+                  <Description term="值班人员">
+                    <div className={styles.manWrapper} style={{ width: '165px' }}>
+                      朱文琴
+                      <span className={styles.phone}>13861080705</span>
+                    </div>
+                  </Description>
+                )}
               </DescriptionList>
             </div>
           </div>

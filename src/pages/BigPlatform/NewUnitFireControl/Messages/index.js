@@ -20,6 +20,25 @@ const formatTime = time => {
   }
 };
 
+
+const isVague = false;
+function nameToVague(str) {
+  let newStr = '';
+  if (str && str.length === 1) return str;
+  else if (str && str.length === 2) {
+    newStr = str.substr(0, 1) + '*';
+  } else if (str && str.length > 2) {
+    newStr = str.substr(0, 1) + '*' + str.substr(-1);
+  } else return str;
+  return newStr;
+}
+
+function phoneToVague(str) {
+  if (!str) return str;
+  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
+  return newStr;
+}
+
 const getEmptyData = () => {
   return '暂无数据';
 };
@@ -167,7 +186,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             处理人：
-            {proceUser || getEmptyData()}
+            {isVague ? nameToVague(proceUser) : proceUser || getEmptyData()}
           </div>
           <div className={styles.msgBody}>
             确认结果：
@@ -196,7 +215,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             处理人：
-            {proceUser || getEmptyData()}
+            {isVague ? nameToVague(proceUser) : proceUser || getEmptyData()}
           </div>
           <div className={styles.msgBody}>
             处理内容：
@@ -226,7 +245,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             维修人：
-            {proceUser || getEmptyData()}
+            {isVague ? nameToVague(proceUser) : proceUser || getEmptyData()}
           </div>
         </div>
       );
@@ -251,7 +270,8 @@ export default class Messages extends PureComponent {
             {address || getEmptyData()}
           </div>
           <div className={styles.msgBody}>
-            维修单位：
+            {type === 10 ? '上报' : '维修'}
+            单位：
             {proceCompany}
           </div>
         </div>
@@ -282,7 +302,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             维修人：
-            {proceUser}
+            {isVague ? nameToVague(proceUser) : proceUser}
           </div>
           <div className={styles.msgBody}>
             结果反馈：
@@ -302,7 +322,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             巡查人：
-            {checkUser || getEmptyData()}
+            {isVague ? nameToVague(checkUser) : checkUser || getEmptyData()}
           </div>
           <div className={styles.msgBody}>
             巡查结果：
@@ -335,7 +355,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             上报人：
-            {reportUser}
+            {isVague ? nameToVague(reportUser) : reportUser}
           </div>
         </div>
       );
@@ -364,7 +384,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             整改人：
-            {rectifyUser}
+            {isVague ? nameToVague(rectifyUser) : rectifyUser}
           </div>
           <div className={styles.msgBody}>
             整改措施：
@@ -397,7 +417,7 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             复查人：
-            {reviewUser}
+            {isVague ? nameToVague(reviewUser) : reviewUser}
           </div>
           <div className={styles.msgBody}>
             复查结果：
@@ -431,7 +451,15 @@ export default class Messages extends PureComponent {
           </div>
           <div className={styles.msgBody}>
             维保人：
-            {(Array.isArray(maintenanceUser) && maintenanceUser.join('，')) || maintenanceUser}
+            {Array.isArray(maintenanceUser)
+              ? maintenanceUser
+                  .map(item => {
+                    return isVague ? nameToVague(item) : item;
+                  })
+                  .join('，')
+              : isVague
+                ? nameToVague(maintenanceUser)
+                : maintenanceUser}
           </div>
           <div className={styles.msgBody}>
             消防设施评分：
@@ -455,11 +483,7 @@ export default class Messages extends PureComponent {
           <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
-            {+deviceType === 101
-              ? '消火栓系统'
-              : +deviceType === 102
-                ? '自动喷淋系统'
-                : '水池/水箱'}
+            {+deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱'}
           </div>
           <div className={styles.msgBody}>
             {virtualName + '-' + paramName + (condition === '>=' ? '高于' : '低于') + '报警值'}
@@ -482,11 +506,7 @@ export default class Messages extends PureComponent {
           <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>{title}</div>
           <div className={styles.msgBody}>
-            {+deviceType === 101
-              ? '消火栓系统'
-              : +deviceType === 102
-                ? '自动喷淋系统'
-                : '水池/水箱'}
+            {+deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱'}
           </div>
           <div className={styles.msgBody}>{virtualName + '恢复正常'}</div>
         </div>
@@ -520,7 +540,8 @@ export default class Messages extends PureComponent {
         contentStyle={{
           flex: '1',
           display: 'flex',
-          height: 'auto',
+          height: '100%',
+          overflow: 'hidden',
           backgroundColor: 'rgba(17, 58, 112, 0.9)' /* padding: '16px 0' */,
         }}
         scroll={{

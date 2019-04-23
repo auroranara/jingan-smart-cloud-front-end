@@ -45,7 +45,7 @@ const fieldLabels = {
   maintenancePhone: '联系电话',
   serviceUnit: '服务单位',
   unitAddress: '单位地址',
-  safetyPerson: '安全负责人',
+  safetyPerson: '安全管理员',
   servicePhone: '联系电话',
   maintenanceContent: '维保内容',
   syntheticalMark: '综合评分',

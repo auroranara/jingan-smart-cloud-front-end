@@ -35,7 +35,7 @@ export default class AlarmDrawer extends PureComponent {
   render() {
     const { visible, areaInfo, data, handleClose, showSOSAlarm } = this.props;
     const list = Array.from(data);
-    list.reverse();
+    list.sort((w1, w2) => w2.warningTime - w1.warningTime);
     let filtered = list;
     if (showSOSAlarm)
       filtered = list.filter(({ type }) => +type === 1);

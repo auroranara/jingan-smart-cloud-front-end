@@ -17,12 +17,13 @@ export default class GraphSwitch extends PureComponent {
   };
 
   render() {
+    const { handleSwitch, ...restProps } = this.props;
     const { index } = this.state;
     const isLineChosen = index === 0;
     const isBarChosen = index === 1;
 
     return (
-      <div className={styles.container}>
+      <div className={styles.container} {...restProps}>
         <span
           onClick={e => this.handleClick(0)}
           className={`${styles.line} ${isLineChosen ? styles.chosen : ''}`}

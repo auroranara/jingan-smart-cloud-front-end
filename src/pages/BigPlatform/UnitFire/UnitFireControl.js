@@ -139,6 +139,7 @@ export default class UnitFireControl extends PureComponent {
         companyId,
         overFlag: 0,
         deviceTypeList: '101,102,103',
+        sort: '1',
       },
       callback: () => {
         this.setState({ pendingInfoLoading: false });
@@ -277,6 +278,7 @@ export default class UnitFireControl extends PureComponent {
           companyId,
           overFlag: 0,
           deviceTypeList: '101,102,103',
+          sort: '1',
         },
       });
 
@@ -286,7 +288,7 @@ export default class UnitFireControl extends PureComponent {
         type: 'unitFireControl/fetchPendingInfo',
         payload: {
           companyId,
-          status: pendingInfoStatus === '处理中' ? '2' : null,
+          status: pendingInfoStatus === '处理中' ? '0' : null,
           pageNum: 1,
           pageSize: 50,
         },
@@ -621,7 +623,7 @@ export default class UnitFireControl extends PureComponent {
     } else if (value === '处理中') {
       dispatch({
         type: 'unitFireControl/fetchPendingInfo',
-        payload: { companyId, status: '2', pageNum: 1, pageSize: 50 },
+        payload: { companyId, status: '0', pageNum: 1, pageSize: 50 },
         callback,
       });
     } else if (value === '实时消息') {
@@ -631,6 +633,7 @@ export default class UnitFireControl extends PureComponent {
           companyId,
           overFlag: 0,
           deviceTypeList: '101,102,103',
+          sort: '1',
         },
         callback,
       });
@@ -1413,7 +1416,7 @@ export default class UnitFireControl extends PureComponent {
             data={companyDevicesByType}
             onClose={() => this.handleDrawerVisibleChange('hydrant')}
           />
-          {/* 自动喷淋系统 */}
+          {/* 喷淋系统 */}
           <PistolDrawer
             visible={pistolDrawerVisible}
             data={companyDevicesByType}

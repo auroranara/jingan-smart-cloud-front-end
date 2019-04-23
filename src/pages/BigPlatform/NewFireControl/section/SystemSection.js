@@ -26,10 +26,7 @@ function UnitCard(props) {
         <p className={styles.unitCard}>{hostNum}</p>
       </Col>
       <Col span={4}>
-        <p
-          className={styles[isFire ? 'fire' : 'unitCard']}
-          onClick={() => handleClick(index)}
-        >
+        <p className={styles[isFire ? 'fire' : 'unitCard']} onClick={() => handleClick(index)}>
           {isFire ? '报警' : '正常'}
         </p>
       </Col>
@@ -65,8 +62,7 @@ export default class SystemSection extends PureComponent {
   changePadding = () => {
     const container = this.container;
     let isScroll = false;
-    if (container && container.offsetHeight < container.scrollHeight)
-      isScroll = true;
+    if (container && container.offsetHeight < container.scrollHeight) isScroll = true;
     this.setState({ isScroll });
   };
 
@@ -103,18 +99,27 @@ export default class SystemSection extends PureComponent {
         </Row>
         <div className={styles.table} style={{ height: 'calc(100% - 180px)' }}>
           {/* <Row style={{ borderBottom: '1px solid rgb(9, 103, 211)' }}> */}
-          <Row style={{ borderBottom: '1px solid rgb(9, 103, 211)', backgroundColor: 'rgba(9, 71, 146, 0.5)', paddingRight: 8 }}>
-            <Col span={16}>
+          <Row
+            style={{
+              borderBottom: '1px solid rgb(9, 103, 211)',
+              backgroundColor: 'rgba(9, 71, 146, 0.5)',
+              paddingRight: 8,
+            }}
+          >
+            <Col span={14}>
               <p className={styles.tableTitle}>接入单位</p>
             </Col>
-            <Col span={4}>
+            <Col span={5}>
               <p className={styles.tableTitle}>主机数量</p>
             </Col>
-            <Col span={4}>
+            <Col span={5}>
               <p className={styles.tableTitle}>状态</p>
             </Col>
           </Row>
-          <div style={{ overflow: 'auto', height: 'calc(100% - 42px)' }} ref={dom => this.container = dom}>
+          <div
+            style={{ overflow: 'auto', height: 'calc(100% - 42px)' }}
+            ref={dom => (this.container = dom)}
+          >
             {companyList.map(({ companyId, name, count, isFire }, index) => (
               <UnitCard
                 key={companyId}

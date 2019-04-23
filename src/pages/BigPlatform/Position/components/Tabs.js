@@ -9,6 +9,7 @@ export default class Tabs extends PureComponent {
   render() {
     const { value, handleLabelClick, ...restProps } = this.props;
     const leftPercent = 100 / TABS.length;
+    // const leftPercent = 25;
 
     return (
       <div className={styles.container} {...restProps}>

@@ -121,13 +121,15 @@ class VideoPlay extends Component {
               [styles.itemActive]: activeIndex === index,
             });
             const keyId = item.key_id || item.keyId;
+            const id = item.id || keyId;
             return (
               <li
+                title={item.name}
                 className={itemStyles}
                 onClick={() => {
                   this.handleItemClick(index, keyId);
                 }}
-                key={keyId}
+                key={id}
               >
                 {activeIndex === index && (
                   <Icon type="caret-right" style={{ color: '#f6b54e', margin: '0 8px' }} />

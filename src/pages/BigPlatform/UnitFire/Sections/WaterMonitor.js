@@ -7,6 +7,7 @@ import pondAbnormal from '../images/pond-abnormal.png';
 import pondNormal from '../images/pond-normal.png';
 import pondLost from '../images/pond-lost.png';
 import waterBg from '../images/waterBg.png';
+import Ellipsis from '@/components/Ellipsis';
 
 const waterSys = {
   '101': {
@@ -14,7 +15,7 @@ const waterSys = {
     code: 'hydrant',
   },
   '102': {
-    name: '自动喷淋系统',
+    name: '喷淋系统',
     code: 'pistol',
   },
   '103': {
@@ -88,8 +89,10 @@ export default class FireHostMonitoring extends PureComponent {
       return this.renderNoCards();
     }
     return list.map(item => {
-      const { deviceDataList } = item;
-      if (!deviceDataList.length) return null;
+      const { deviceDataList, status: devStatus } = item;
+      // if (!deviceDataList.length) return null;
+      const isMending = +devStatus === -1;
+      const isNotIn = !deviceDataList.length;
       const { deviceId, deviceName } = item;
       const [
         {
@@ -97,21 +100,35 @@ export default class FireHostMonitoring extends PureComponent {
           status,
           unit,
           deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
-        },
+        } = { deviceParamsInfo: {} },
       ] = deviceDataList;
       return (
         <Col span={12} key={deviceId}>
           <ChartGauge
-            showName
+            showName={false}
             showValue
             isLost={+status < 0}
             status={+status}
+            isNotIn={isNotIn}
+            isMending={isMending}
             name={deviceName}
             value={value || 0}
-            range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
+            range={isMending ? [0, 2] : [minValue || 0, maxValue || (value ? 2 * value : 5)]}
             normalRange={[normalLower, normalUpper]}
             unit={unit}
           />
+          <div
+            style={{
+              padding: '0 8px',
+              textAlign: 'center',
+              lineHeight: '20px',
+              marginTop: '-20px',
+            }}
+          >
+            <Ellipsis lines={1} tooltip>
+              {deviceName}
+            </Ellipsis>
+          </div>
         </Col>
       );
     });
@@ -125,8 +142,10 @@ export default class FireHostMonitoring extends PureComponent {
       return this.renderNoCards();
     }
     return list.map(item => {
-      const { deviceDataList } = item;
-      if (!deviceDataList.length) return null;
+      const { deviceDataList, status: devStatus } = item;
+      // if (!deviceDataList.length) return null;
+      const isMending = +devStatus === -1;
+      const isNotIn = !deviceDataList.length;
       const { deviceId, deviceName } = item;
       const [
         {
@@ -134,21 +153,35 @@ export default class FireHostMonitoring extends PureComponent {
           status,
           unit,
           deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
-        },
+        } = { deviceParamsInfo: {} },
       ] = deviceDataList;
       return (
         <Col span={12} key={deviceId}>
           <ChartGauge
-            showName
+            showName={false}
             showValue
             isLost={+status < 0}
             status={+status}
+            isMending={isMending}
+            isNotIn={isNotIn}
             name={deviceName}
             value={value || 0}
-            range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
+            range={isMending ? [0, 2] : [minValue || 0, maxValue || (value ? 2 * value : 5)]}
             normalRange={[normalLower, normalUpper]}
             unit={unit}
           />
+          <div
+            style={{
+              padding: '0 8px',
+              textAlign: 'center',
+              lineHeight: '20px',
+              marginTop: '-20px',
+            }}
+          >
+            <Ellipsis lines={1} tooltip>
+              {deviceName}
+            </Ellipsis>
+          </div>
         </Col>
       );
     });
@@ -162,17 +195,16 @@ export default class FireHostMonitoring extends PureComponent {
       return this.renderNoCards();
     }
     return list.map(item => {
-      const { deviceDataList } = item;
-      if (!deviceDataList.length) return null;
+      const { deviceDataList, status: devStatus } = item;
+      const isMending = +devStatus === -1;
+      const isNotIn = !deviceDataList.length;
       const { deviceId, deviceName } = item;
       const [
-        {
-          value,
-          status,
-          deviceParamsInfo: { normalUpper, normalLower },
-          unit,
+        { value, status, deviceParamsInfo: { normalUpper, normalLower }, unit } = {
+          deviceParamsInfo: {},
         },
       ] = deviceDataList;
+      const isGray = isMending || isNotIn || (!isMending && +status < 0);
       const rangeStr =
         (!normalLower && normalLower !== 0) || (!normalUpper && normalUpper !== 0)
           ? '暂无'
@@ -183,11 +215,14 @@ export default class FireHostMonitoring extends PureComponent {
           span={24}
           className={styles.pondWrapper}
           key={deviceId}
-          style={{ color: isLost ? '#bbbbbc' : '#fff' }}
+          style={{ color: isGray ? '#bbbbbc' : '#fff' }}
         >
-          {+status !== 0 && <div className={styles.pondStatus}>异常</div>}
+          {isMending && <div className={styles.pondStatus}>检修</div>}
+          {isNotIn && <div className={styles.pondStatus}>未接入</div>}
+          {!isMending && !isNotIn && +status !== 0 && <div className={styles.pondStatus}>异常</div>}
+          {/* {+status !== 0 && <div className={styles.pondStatus}>异常</div>} */}
           <img
-            src={+status < 0 ? pondLost : +status === 0 ? pondNormal : pondAbnormal}
+            src={isGray ? pondLost : !isMending && +status === 0 ? pondNormal : pondAbnormal}
             alt="pond"
           />
           <div className={styles.infoWrapper}>
@@ -196,14 +231,16 @@ export default class FireHostMonitoring extends PureComponent {
               <Col span={12}>
                 当前水位：
                 <span
-                  style={{ color: +status < 0 ? '#bbbbbc' : +status === 0 ? '#fff' : '#f83329' }}
+                  style={{
+                    color: isGray ? '#bbbbbc' : !isMending && +status === 0 ? '#fff' : '#f83329',
+                  }}
                 >
-                  {!value && value !== 0 ? '---' : value + unit}
+                  {isGray || (!value && value !== 0) ? '---' : value + unit}
                 </span>
               </Col>
               <Col span={12}>
                 参考范围：
-                {rangeStr}
+                {isNotIn ? '暂无' : rangeStr}
               </Col>
             </Row>
           </div>

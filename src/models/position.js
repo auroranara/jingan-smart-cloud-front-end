@@ -53,9 +53,15 @@ function formatData(list) {
     areaId,
     xpx: lng,
     ypx: lat,
+    cardId,
+    userId,
+    phoneNumber,
+    departmentName,
+    cardCode,
     cardType,
     userName,
-    vistorName,
+    visitorName,
+    visitorPhone,
     locationStatusHistoryList,
   }, index) => {
     const isAlarm = locationStatusHistoryList && locationStatusHistoryList.length > 0;
@@ -70,11 +76,18 @@ function formatData(list) {
       areaId,
       latlng: { lng, lat },
       isVistor: +cardType === 1,
+      cardType,
       userName,
-      vistorName,
+      visitorName,
+      visitorPhone,
       isAlarm,
       options: { color: isAlarm ? '#ff4848' : '#00ffff' },
       locationStatusHistoryList,
+      cardId,
+      userId,
+      phoneNumber,
+      departmentName,
+      cardCode,
     };
   });
 }

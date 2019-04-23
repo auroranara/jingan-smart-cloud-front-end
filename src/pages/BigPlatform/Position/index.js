@@ -3,7 +3,9 @@ import { connect } from 'dva';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 // import styles from './index.less';
-import { AlarmList, History, RealTime } from './sections/Components';
+import { AlarmList, CountBoard, History, RealTime } from './sections/Components';
+
+const AUTOSPACE = window.innerWidth > 1366;
 
 @connect(({ personPosition, position, user }) => ({ personPosition, position, user }))
 export default class PositionIndex extends PureComponent {
@@ -17,6 +19,7 @@ export default class PositionIndex extends PureComponent {
     historyUserIds: [],
     historyCardIds: [],
     areaInfoCache: {}, // 缓存RealTime组件中的areaInfo对象，以防切换tab时，areaInfo为空对象的问题
+    boardVisible: false,
   };
 
   componentDidMount() {
@@ -60,6 +63,14 @@ export default class PositionIndex extends PureComponent {
     this.setState({ historyCardIds: cardIds });
   };
 
+  showBoard = () => {
+    this.setState({ boardVisible: true });
+  };
+
+  hideBoard = () => {
+    this.setState({ boardVisible: false });
+  };
+
   render() {
     // 注意这里额外引了一个model
     const {
@@ -77,13 +88,16 @@ export default class PositionIndex extends PureComponent {
       historyUserIds,
       historyCardIds,
       areaInfoCache,
+      boardVisible,
     } = this.state;
 
+    const { sectionTree } = personPosition;
     const { currentUser: { companyName } } = user;
 
     return (
       <BigPlatformLayout
         title="晶安人员定位监控系统"
+        autoSpace={AUTOSPACE}
         extra={companyName}
         headerStyle={{ fontSize: 16 }}
         titleStyle={{ fontSize: 46 }}
@@ -98,6 +112,7 @@ export default class PositionIndex extends PureComponent {
             selectedCardId={selectedCardId}
             selectedUserId={selectedUserId}
             personPosition={personPosition}
+            showBoard={this.showBoard}
             handleLabelClick={this.handleLabelClick}
             setSelectedCard={this.setSelectedCard}
             setHistoryRecord={this.setHistoryRecord}
@@ -105,13 +120,12 @@ export default class PositionIndex extends PureComponent {
         )}
         {labelIndex === 2 && (
           <History
-            // historyRecord={historyRecord}
             idType={historyIdType}
             userIds={historyUserIds}
             cardIds={historyCardIds}
             companyId={companyId}
             labelIndex={labelIndex}
-            // setHistoryRecord={this.setHistoryRecord}
+            setSelectedCard={this.setSelectedCard}
             setIdType={this.setHistoryIdType}
             setUserIds={this.setHistoryUserIds}
             setCardIds={this.setHistoryCardIds}
@@ -120,9 +134,16 @@ export default class PositionIndex extends PureComponent {
         )}
         {labelIndex === 3 && (
           <AlarmList
+            dispatch={dispatch}
+            labelIndex={labelIndex}
+            companyId={companyId}
+            areaInfo={areaInfoCache}
             position={position}
+            personPosition={personPosition}
+            handleLabelClick={this.handleLabelClick}
           />
         )}
+        {boardVisible ? <CountBoard sectionTree={sectionTree} hideBoard={this.hideBoard} /> : null}
       </BigPlatformLayout>
     );
   }

@@ -20,7 +20,7 @@ export default class MaintenanceDrawer extends PureComponent {
   };
 
   render() {
-    const { title, type, data, companyName, ...restProps } = this.props;
+    const { title, type, data, companyName, onClose, ...restProps } = this.props;
     const { index } = this.state;
     const list = Array.isArray(data) ? data : [];
     const length = list.length;
@@ -66,6 +66,10 @@ export default class MaintenanceDrawer extends PureComponent {
         subTitle={companyName}
         width={535}
         left={left}
+        onClose={() => {
+          this.setState({ index: 0 });
+          onClose();
+        }}
         {...restProps}
       />
     );

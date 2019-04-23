@@ -23,7 +23,14 @@ export default class BeaconCoordinate extends PureComponent {
     let data;
     if (value) {
       const { xarea, yarea } = value;
-      data = [{ type: 'circlemarker', id: xarea, latlng: { lat: +yarea, lng: +xarea }, options: { color } }];
+      data = [
+        {
+          type: 'circlemarker',
+          id: xarea,
+          latlng: { lat: +yarea, lng: +xarea },
+          options: { color },
+        },
+      ];
     }
     this.setState(({ drawProps }) => ({
       drawProps: {

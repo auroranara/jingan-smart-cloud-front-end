@@ -266,6 +266,16 @@ export default class AlarmDrawer extends PureComponent {
                 person={principal_name || NO_DATA}
                 phone={principal_phone || NO_DATA}
                 style={{ cursor: 'auto' }}
+                clickName={() => handleClickDeviceNumber({
+                  companyId: company_id,
+                  companyName: company_name,
+                  address,
+                  principalName: principal_name,
+                  principalPhone: principal_phone,
+                  normal: listNormal,
+                  unnormal: listUnnormal = 0,
+                  faultNum: listFaultNum,
+                })}
                 infoStyle={{
                   width: 70,
                   textAlign: 'center',

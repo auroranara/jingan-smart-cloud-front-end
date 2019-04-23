@@ -8,10 +8,30 @@
   font-size: 16px;
   line-height: 1;
 }
+/* 面包屑容器 */
+.breadcrumbWrapper {
+  padding: 16px 16px 0;
+  font-size: 14px;
+
+  .hoverableBreadcrumb {
+    cursor: pointer;
+    &:hover {
+      color: #0ff;
+    }
+  }
+}
 /* 内容容器 */
 .contentWrapper {
 	display: table-row;
   height: 100%;
+  :global {
+    .leaflet-left .leaflet-control {
+      margin-left: 0;
+    }
+    .leaflet-top .leaflet-control {
+      margin-top: 0;
+    }
+  }
 }
 /* 控制器容器 */
 .controlWrapper {
@@ -225,8 +245,8 @@
 }
 .homeButton {
   position: absolute;
-  left: 37px;
-  top: 98px;
+  left: 27px;
+  top: 120px;
   width: 30px;
   height: 30px;
   line-height: 34px;
@@ -245,7 +265,7 @@
 }
 .backButton {
   .homeButton;
-  top: 138px;
+  top: 162px;
   &:hover {
     background-color: #0259a4;
   }

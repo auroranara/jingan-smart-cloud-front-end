@@ -2,9 +2,17 @@
 
 // https://umijs.org/config/
 
+import os from 'os';
 const path = require('path');
 const initRouters = require('./router.config');
 const webpackplugin = require('./plugin.config');
+
+let version = '';
+process.argv.forEach(p => {
+  if (p.indexOf('version=') > -1) {
+    version = p.split('=')[1];
+  }
+});
 
 const hosts = {
   lm: '192.168.10.2', // 吕旻
@@ -26,6 +34,7 @@ const hosts = {
   nanxiao: '58.215.178.100:12084',
   sk: '192.168.10.21',
   ly: '192.168.10.19:8080',
+  show: 'www.jinganyun.net',
 };
 
 export default {
@@ -60,13 +69,16 @@ export default {
           default: 'zh-CN', // default zh-CN
           baseNavigator: true, // default true, when it is true, will use `navigator.language` overwrite default
         },
-        polyfills: ['ie9'],
         dynamicImport: true,
-        dll: {
-          include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-          exclude: ['@babel/runtime'],
-        },
-        hardSource: false,
+        ...(os.platform() === 'darwin'
+          ? {
+              dll: {
+                include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+                exclude: ['@babel/runtime'],
+              },
+              hardSource: false,
+            }
+          : {}),
       },
     ],
   ],
@@ -75,6 +87,9 @@ export default {
   routes: initRouters(process.env.PROJECT_ENV),
   history: 'hash',
   hash: true,
+  targets: {
+    ie: 11,
+  },
   // 如果是演示环境 publicPath目录为xshow
   publicPath: process.env.PROJECT_ENV === 'show' ? '/xshow/' : '/',
   // publicPath: '/acloud_new/',
@@ -121,6 +136,7 @@ export default {
   },
   define: {
     'process.env.PROJECT_ENV': process.env.PROJECT_ENV || 'default',
+    'process.env.VERSION': version,
   },
   manifest: {
     name: 'jing-an-smart-cloud',

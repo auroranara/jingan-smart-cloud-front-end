@@ -13,7 +13,7 @@ import safetyIcon from '../img/ovSafety.png';
 import riskIcon from '../img/ovRisk.png';
 
 const UNIT_STYLE = { height: 48 };
-const ICON_STYLE = { width: 48, height: 48 };
+// const ICON_STYLE = { width: 48, height: 48 };
 
 const NO_DATA = '暂无信息';
 
@@ -56,7 +56,7 @@ export default function OverviewBackSection(props) {
             </Ellipsis>
           </div>
           <p className={styles.safety}>
-            安全负责人：
+            安全管理员：
             <span className={styles.info}>{safetyName ? safetyName : NO_DATA}</span>
           </p>
           <p>
@@ -71,7 +71,7 @@ export default function OverviewBackSection(props) {
                 url={safetyIcon}
                 title="安全人员"
                 style={UNIT_STYLE}
-                iconStyle={ICON_STYLE}
+                // iconStyle={ICON_STYLE}
                 num={safetyOfficer}
                 onClick={e => handleDrawerVisibleChange('safe')}
               />
@@ -83,7 +83,7 @@ export default function OverviewBackSection(props) {
                 url={riskIcon}
                 title="风险点"
                 style={UNIT_STYLE}
-                iconStyle={ICON_STYLE}
+                // iconStyle={ICON_STYLE}
                 num={riskPointer}
                 onClick={e => handleDrawerVisibleChange('risk')}
               />

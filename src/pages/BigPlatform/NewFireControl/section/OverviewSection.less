@@ -6,6 +6,7 @@
     .ant-divider.ant-divider-horizontal.ant-divider-with-text::before {
       border-top: @width solid @color;
     }
+
     .ant-divider.ant-divider-horizontal.ant-divider-with-text::after {
       border-top: @width solid @color;
     }
@@ -21,4 +22,10 @@
 
 .unit {
   padding-left: 30px;
+}
+
+@media screen and (max-width:1366px) {
+  .unit {
+    padding-left: 5px;
+  }
 }

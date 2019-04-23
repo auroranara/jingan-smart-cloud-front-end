@@ -18,7 +18,7 @@ export default function CompanyInfo({
       companyMessage: {
         // 企业名称
         companyName,
-        // 安全负责人
+        // 安全管理员
         headOfSecurity,
         // 联系电话
         headOfSecurityPhone,
@@ -58,9 +58,9 @@ export default function CompanyInfo({
             <div className={styles.unitName} onClick={handleClickUnitName} title={companyName}>
               <div className={styles.cell}>{companyName}</div>
             </div>
-            <div className={styles.unitContact} title={`安全负责人：${headOfSecurity}`}>
+            <div className={styles.unitContact} title={`安全管理员：${headOfSecurity}`}>
               <div className={styles.cell}>
-                <span className={styles.fieldName}>安全负责人：</span>
+                <span className={styles.fieldName}>安全管理员：</span>
                 {headOfSecurity}
               </div>
             </div>

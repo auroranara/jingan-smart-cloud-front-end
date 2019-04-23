@@ -255,7 +255,7 @@ export default {
       companyMessage: {
         // 企业名称
         companyName: '',
-        // 安全负责人
+        // 安全管理员
         headOfSecurity: '',
         // 联系方式
         headOfSecurityPhone: '',
@@ -886,7 +886,7 @@ export default {
       }
     },
     // 消息故障详情
-    *fetchMaintenanceMsg({ payload }, { call, put }) {
+    *fetchMaintenanceMsg({ payload, callback }, { call, put }) {
       const response = yield call(queryWorkOrderMsg, payload);
       if (response && response.code === 200) {
         yield put({
@@ -894,6 +894,7 @@ export default {
           payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
         });
       }
+      if (callback) callback(response);
     },
     // 根据processId查dataId
     *fetchDataId({ payload, success, error }, { call, put }) {

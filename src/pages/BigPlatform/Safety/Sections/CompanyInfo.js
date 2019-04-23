@@ -34,7 +34,7 @@ class CompanyInfo extends PureComponent {
         companyMessage: {
           // 企业名称
           companyName,
-          // 安全负责人
+          // 安全管理员
           headOfSecurity,
           // 联系电话
           headOfSecurityPhone,
@@ -88,7 +88,7 @@ class CompanyInfo extends PureComponent {
                       {companyName}
                     </div>
                     <div className={styles.companyCharger}>
-                      <span className={styles.fieldName}>安全负责人：</span>
+                      <span className={styles.fieldName}>安全管理员：</span>
                       {headOfSecurity}
                     </div>
                     <div className={styles.companyPhone}>

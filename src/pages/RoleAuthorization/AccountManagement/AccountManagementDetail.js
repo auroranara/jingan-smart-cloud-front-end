@@ -49,7 +49,7 @@ const fieldLabels = {
   treeIds: '数据权限',
   roleIds: '配置角色',
   departmentId: '所属部门',
-  userType: '用户类型',
+  userType: '用户角色',
   documentTypeId: '执法证种类',
   execCertificateCode: '执法证编号',
 };
@@ -298,7 +298,7 @@ export default class accountManagementDetail extends PureComponent {
     } = this.props;
 
     return (
-      <Card title="角色权限配置" className={styles.card} bordered={false}>
+      <Card title="系统角色权限配置" className={styles.card} bordered={false}>
         <DescriptionList layout="vertical">
           <Description term={fieldLabels.roleIds}>
             <div style={{ paddingTop: 8 }}>

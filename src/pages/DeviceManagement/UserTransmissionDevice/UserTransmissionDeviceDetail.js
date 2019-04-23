@@ -51,10 +51,12 @@ const deviceModalFormItems = [
     // type: 'inputNumber',
     // deviceCode为数字，则要设置type=number，不然默认为string，下面主机中的两个deviceCode同理
     // options: { rules: [{ required: true, type: 'number', message: '请输入用户传输装置编号' }] },
-    options: { rules: [
-      { required: true, whitespace: true, message: '请输入用户传输装置编号' },
-      { pattern: /^\d+$/, message: '装置编号请输入纯数字' },
-    ] },
+    options: {
+      rules: [
+        { required: true, whitespace: true, message: '请输入用户传输装置编号' },
+        { pattern: /^\d+$/, message: '装置编号请输入纯数字' },
+      ],
+    },
   },
   {
     label: '品牌',
@@ -95,10 +97,12 @@ const hostModalFormItems = [
     // deviceCode为数字，则要设置type=number，不然默认为string
     // type: 'inputNumber',
     // options: { rules: [{ required: true, type: 'number', message: '请输入消防主机编号' }] },
-    options: { rules: [
-      { required: true, whitespace: true, message: '请输入消防主机编号' },
-      { pattern: /^\d+$/, message: '主机编号请输入纯数字' },
-    ] },
+    options: {
+      rules: [
+        { required: true, whitespace: true, message: '请输入消防主机编号' },
+        { pattern: /^\d+$/, message: '主机编号请输入纯数字' },
+      ],
+    },
   },
   {
     label: '品牌',
@@ -137,7 +141,7 @@ function dispatchCallback(code, successMsg, failMsg, msg) {
   if (code === 200)
     message.success(successMsg);
   else
-    message.error(msg ? `${failMsg} ${msg}` : failMsg);
+    message.error(msg || failMsg);
 }
 
 function convertMsToString(ms) {
@@ -439,7 +443,7 @@ export default class UserTransmissionDeviceDetail extends Component {
           title="用户传输装置"
           className={styles.modalForm}
           operation={operation}
-          items={operation === 'add' ? deviceModalFormItems: deviceModalFormItemsUpdate}
+          items={operation === 'add' ? deviceModalFormItems : deviceModalFormItemsUpdate}
           initialValues={deviceRecord}
         />
         <ModalForm

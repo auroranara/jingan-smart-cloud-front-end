@@ -375,9 +375,19 @@ export default {
     // 报警处理流程
     *fetchSmokeForMaintenance({ payload, success, error }, { call, put }) {
       const response = yield call(getSmokeForMaintenance, payload);
-      const num = payload.num || 0;
-      const list = num ? response.data.list.slice(0, num) : response.data.list;
+      // const ids = [];
+      // const newList = [];
+      // response.data.list.forEach(item => {
+      //   const { device_id } = item;
+      //   if (ids.indexOf(device_id) < 0) {
+      //     ids.push(device_id);
+      //     newList.push({ ...item });
+      //   }
+      // });
+      const newList = response.data.list.filter(item => +item.over_flag === 0);
       if (response.code === 200) {
+        const num = payload.num || 0;
+        const list = num ? newList.slice(0, num) : newList;
         yield put({
           type: 'gasForMaintenance',
           payload: list,

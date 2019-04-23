@@ -5,6 +5,7 @@ import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import ChartGauge from '../../components/ChartGauge';
 import styles from './index.less';
 import cameraIcon from '../../images/camera.png';
+import Ellipsis from '@/components/Ellipsis';
 
 const Search = Input.Search;
 const FormItem = Form.Item;
@@ -46,6 +47,7 @@ export default class WaterDrawer extends PureComponent {
     const list = filterName
       ? dataList.filter(item => item && item.name.includes(filterName))
       : dataList;
+
     return (
       <div className={styles.devScroll}>
         <Row gutter={16}>
@@ -63,9 +65,12 @@ export default class WaterDrawer extends PureComponent {
                 id,
                 isLost,
                 videoList,
+                isMending,
+                isNotIn,
               } = item;
               let valColor;
-              if (!!isLost) valColor = '#bbbbbc';
+              const isGray = isMending || isNotIn || (!isMending && !!isLost);
+              if (isGray) valColor = '#bbbbbc';
               else if (+status !== 0) valColor = '#f83329';
               else valColor = '#fff';
               const rangeStr =
@@ -78,11 +83,15 @@ export default class WaterDrawer extends PureComponent {
                   <div
                     className={styles.deviceWrapper}
                     style={{
-                      color: !!isLost ? '#bbbbbc' : '#fff',
-                      borderColor: +status !== 0 ? '#ff4848' : '#04fdff',
+                      color: isGray ? '#bbbbbc' : '#fff',
+                      borderColor: isGray || (!isMending && +status !== 0) ? '#ff4848' : '#04fdff',
                     }}
                   >
-                    {+status !== 0 && <div className={styles.status}>异常</div>}
+                    {isMending && <div className={styles.status}>检修</div>}
+                    {isNotIn && <div className={styles.status}>未接入</div>}
+                    {!isMending &&
+                      !isNotIn &&
+                      +status !== 0 && <div className={styles.status}>异常</div>}
                     <div
                       className={styles.deviceImg}
                       style={{ width: useGauge ? '120px' : '80px' }}
@@ -93,6 +102,8 @@ export default class WaterDrawer extends PureComponent {
                           showValue={false}
                           name={name}
                           value={value}
+                          isMending={isMending}
+                          isNotIn={isNotIn}
                           status={+status}
                           range={range}
                           isLost={isLost}
@@ -102,23 +113,31 @@ export default class WaterDrawer extends PureComponent {
                         />
                       ) : (
                         <img
-                          src={!!isLost ? lostImg : +status === 0 ? normalImg : abnormalImg}
+                          src={
+                            isGray ? lostImg : !isMending && +status === 0 ? normalImg : abnormalImg
+                          }
                           alt=""
                         />
                       )}
                     </div>
                     <div className={styles.infoWrapper}>
                       <div>
-                        <div className={styles.name}>{name}</div>
+                        <div className={styles.name}>
+                          <Ellipsis lines={1} tooltip>
+                            {name}
+                          </Ellipsis>
+                        </div>
                         <div className={styles.position}>{`位置：${location}`}</div>
                         <Row gutter={8}>
                           <Col span={newLine ? 24 : 12}>
                             {`当前${valName}：`}
                             <span style={{ color: valColor }}>{`${
-                              !value && value !== 0 ? '---' : value + unit
+                              isMending || isNotIn || (!value && value !== 0) ? '---' : value + unit
                             }`}</span>
                           </Col>
-                          <Col span={newLine ? 24 : 12}>{`参考范围：${rangeStr}`}</Col>
+                          <Col span={newLine ? 24 : 12}>{`参考范围：${
+                            isNotIn ? '暂无' : rangeStr
+                          }`}</Col>
                         </Row>
                       </div>
 

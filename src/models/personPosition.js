@@ -5,6 +5,9 @@ import {
   putAlarm,
   querySectionTree,
   queryBeacons,
+  getStatusCount,
+  getMonthCount,
+  getServerTime,
 } from '../services/bigPlatform/personPosition';
 import { genAggregation, getSectionTree } from '@/pages/BigPlatform/Position/utils';
 
@@ -16,7 +19,11 @@ export default {
     positionAggregation: [],
     sectionTree: [],
     alarms: [],
+    alarms1: [], // 报警查看中的报警列表
     beaconList: [],
+    statusCount: {},
+    monthCount: [],
+    serverTime: 0,
   },
 
   effects: {
@@ -29,13 +36,13 @@ export default {
         yield put({ type: 'savePositions', payload: list });
       }
     },
-    *fetchInitAlarms({ payload, callback }, { call, put }) {
+    *fetchInitAlarms({ payload, callback, alarmType }, { call, put }) {
       const response = yield call(queryInitialAlarms, payload);
       const { code=500, data } = response || {};
       if (code === 200) {
         const list = data && Array.isArray(data.list) ? data.list: [];
         callback && callback(list);
-        yield put({ type: 'saveAlarms', payload: list });
+        yield put({ type: `saveAlarms${alarmType ? 1 : ''}`, payload: list });
       }
     },
     *handleSOS({ payload, callback }, { call }) {
@@ -68,6 +75,27 @@ export default {
         yield put({ type: 'saveBeacons', payload: list });
       }
     },
+    *fetchStatusCount({ payload, callback }, { call, put }) {
+      const response = yield call(getStatusCount, payload);
+      const { code=500, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveStatusCount', payload: data });
+    },
+    *fetchMonthCount({ payload, callback }, { call, put }) {
+      const response = yield call(getMonthCount, payload);
+      const { code=500, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list : [];
+        yield put({ type: 'saveMonthCount', payload: list });
+      }
+    },
+    *fetchServerTime({ payload, callback }, { call, put }) {
+      const response = yield call(getServerTime, payload);
+      const { code=500, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveServerTime', payload: data });
+      callback && callback(code, data);
+    },
   },
 
   reducers: {
@@ -90,6 +118,14 @@ export default {
         alarms: action.payload,
       };
     },
+    saveAlarms1(state, action) {
+      const list = action.payload;
+      list.sort((a1, a2) => a2.warningTime - a1.warningTime);
+      return {
+        ...state,
+        alarms1: action.payload,
+      };
+    },
     saveSectionTree(state, action) {
       return {
         ...state,
@@ -98,6 +134,15 @@ export default {
     },
     saveBeacons(state, action) {
       return { ...state, beaconList: action.payload };
+    },
+    saveStatusCount(state, action) {
+      return { ...state, statusCount: action.payload };
+    },
+    saveMonthCount(state, action) {
+      return { ...state, monthCount: action.payload };
+    },
+    saveServerTime(state, action) {
+      return { ...state, serverTime: action.payload };
     },
   },
 };

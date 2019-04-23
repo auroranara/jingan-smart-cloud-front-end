@@ -84,7 +84,7 @@ export default class MonitorDrawer extends PureComponent {
         <Row gutter={16}>
           {dataList.length ? (
             dataList.map((item, index) => {
-              const { area, location, add_time, status, device_id } = item;
+              const { area, location, add_time, status, iotId } = item;
               const occurTime = `发生时间：${moment(add_time).format('YYYY-MM-DD HH:mm:ss')}`;
               const devStatus = '设备状态：正常';
               const color = +status > 0 ? '#f83329' : '#ffb400';
@@ -103,8 +103,14 @@ export default class MonitorDrawer extends PureComponent {
                       <img src={smokeImg} alt="smokeImg" />
                     </div>
                     <div className={styles.infoWrapper}>
-                      <div className={styles.position}><Ellipsis lines={1} tooltip>{`${area}：${location}`}</Ellipsis></div>
-                      <div className={styles.infos}><Ellipsis lines={1} tooltip>{+status === 0 ? devStatus : occurTime}</Ellipsis></div>
+                      <div className={styles.position}>
+                        <Ellipsis lines={1} tooltip>{`${area}：${location}`}</Ellipsis>
+                      </div>
+                      <div className={styles.infos}>
+                        <Ellipsis lines={1} tooltip>
+                          {+status === 0 ? devStatus : occurTime}
+                        </Ellipsis>
+                      </div>
                       <div className={styles.extraWrapper}>
                         {!!cameraList.length && (
                           <div
@@ -116,12 +122,12 @@ export default class MonitorDrawer extends PureComponent {
                         {(+status !== 0 || !status) && (
                           <div
                             className={styles.status}
-                            style={{ color, borderColor: color /* cursor: 'pointer' */ }}
-                          // onClick={() => {
-                          //   +status > 0
-                          //     ? handleAlarmClick(undefined, companyId, companyName, undefined, device_id)
-                          //     : handleFaultClick(undefined, companyId, companyName, undefined, device_id);
-                          // }}
+                            style={{ color, borderColor: color, cursor: 'pointer' }}
+                            onClick={() => {
+                              +status > 0
+                                ? handleAlarmClick(iotId, companyId, companyName, undefined)
+                                : handleFaultClick(iotId, companyId, companyName, undefined);
+                            }}
                           >
                             {+status > 0 ? '火警' : '故障'}
                           </div>
@@ -133,19 +139,19 @@ export default class MonitorDrawer extends PureComponent {
               );
             })
           ) : (
-              <div
-                style={{
-                  width: '100%',
-                  height: '135px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  color: '#4f678d',
-                }}
-              >
-                暂无相关监测数据
+            <div
+              style={{
+                width: '100%',
+                height: '135px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: '#4f678d',
+              }}
+            >
+              暂无相关监测数据
             </div>
-            )}
+          )}
         </Row>
       </div>
     );
@@ -160,13 +166,14 @@ export default class MonitorDrawer extends PureComponent {
           address,
           principalName,
           principalPhone,
-          normal = 0,
-          unnormal = 0,
-          faultNum = 0,
+          // normal = 0,
+          // unnormal = 0,
+          // faultNum = 0,
         } = {},
         cameraList = [],
         dataByCompany,
         devList,
+        companySmokeInfo: { map: devMap = { unnormal: [], fault: [], normal: [] } },
       },
       handleClose,
     } = this.props;
@@ -186,7 +193,7 @@ export default class MonitorDrawer extends PureComponent {
               `${principalName ? principalName : '未命名'} ${principalPhone ? principalPhone : ''}`}
           </p>
           <p className={styles.dots}>
-            {[normal, unnormal, faultNum].map((n, i) => (
+            {[devMap.normal.length, devMap.unnormal.length, devMap.fault.length].map((n, i) => (
               <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
             ))}
           </p>
@@ -208,8 +215,8 @@ export default class MonitorDrawer extends PureComponent {
             {devList.length > 0 ? (
               this.renderItems()
             ) : (
-                <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />
-              )}
+              <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />
+            )}
           </div>
         </div>
         <div className={styles.chartContainer}>
@@ -240,6 +247,7 @@ export default class MonitorDrawer extends PureComponent {
         title={'单位监测信息'}
         width={700}
         visible={visible}
+        zIndex={1050}
         left={left}
         placement="right"
         rowStyle={{ height: 'calc(100% - 70px)' }}

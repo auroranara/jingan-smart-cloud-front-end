@@ -9,6 +9,25 @@ import flowImg from '../imgs/flow_m.png';
 
 const ID = 'maintenance-drawer';
 
+
+const isVague = false;
+function nameToVague(str) {
+  let newStr = '';
+  if (str && str.length === 1) return str;
+  else if (str && str.length === 2) {
+    newStr = str.substr(0, 1) + '*';
+  } else if (str && str.length > 2) {
+    newStr = str.substr(0, 1) + '*' + str.substr(-1);
+  } else return str;
+  return newStr;
+}
+
+function phoneToVague(str) {
+  if (!str) return str;
+  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
+  return newStr;
+}
+
 function getContainer() {
   return document.querySelector(`#${ID}`);
 }
@@ -21,82 +40,43 @@ function Occured(props) {
       <p>{position}</p>
       <p>{type} 发生故障</p>
       <p>
-        安全负责人：
-        {safety} {phone}
+        安全管理员：
+        {isVague ? nameToVague(safety) : safety} {isVague ? phoneToVague(phone) : phone}
       </p>
-    </div>
-  );
-}
-
-function Assigned(props) {
-  const { man, phone, desc, systemType, deviceName, position, company, oneKeyDesc, imgs } = props;
-
-  return (
-    <div className={styles.card}>
-      {desc && <p>{desc}</p>}
-      {systemType && (
-        <p>
-          系统类型：
-          {systemType}
-        </p>
-      )}
-      {deviceName && (
-        <p>
-          设备名称：
-          {deviceName}
-        </p>
-      )}
-      {position && (
-        <p>
-          详细位置：
-          {position}
-        </p>
-      )}
-      <p>
-        指派人员：
-        {man} {phone}
-      </p>
-      <p>
-        维修单位：
-        {company}
-      </p>
-      {oneKeyDesc && (
-        <p>
-          故障描述：
-          {oneKeyDesc}
-        </p>
-      )}
-      {/* {imgs && !!imgs.length && <ImgSlider picture={imgs} getContainer={getContainer} />} */}
-      {imgs && !!imgs.length && <ImgSlider picture={imgs} />}
     </div>
   );
 }
 
 function Received(props) {
-  const { man, phone, desc, imgs } = props;
+  const { man, phone, companyName } = props;
 
   return (
     <div className={styles.card}>
-      <p>维保公司受理该维保工单</p>
+      <p>
+        维修单位：
+        {companyName}
+      </p>
       <p>
         维修人员：
-        {man} {phone}
+        {isVague ? nameToVague(man) : man} {isVague ? phoneToVague(phone) : phone}
       </p>
-      {/* {desc && <p>问题描述：{desc}</p>}
-      {imgs && !!imgs.length && <ImgSlider picture={imgs} />} */}
     </div>
   );
 }
 
 function Handled(props) {
-  const { man, phone, feedback, imgs } = props;
+  const { man, phone, feedback, imgs, companyName } = props;
 
   return (
     <div className={styles.card}>
-      <p>故障已处理完毕</p>
+      <p>故障已处理完毕！</p>
+      <p>
+        维修单位：
+        {companyName}
+      </p>
       <p>
         维修人员：
-        {man} {phone}
+        {isVague ? nameToVague(man) : man} {isVague ? phoneToVague(phone) : phone}
       </p>
       <p>
         结果反馈：
@@ -104,20 +84,6 @@ function Handled(props) {
       </p>
       {/* {imgs && !!imgs.length && <ImgSlider picture={imgs} getContainer={getContainer} />} */}
       {imgs && !!imgs.length && <ImgSlider picture={imgs} />}
-    </div>
-  );
-}
-
-function SelfHandle(props) {
-  const { man, phone } = props;
-
-  return (
-    <div className={styles.card}>
-      <p>维修难度较小，自行处理</p>
-      <p>
-        维修人员：
-        {man} {phone}
-      </p>
     </div>
   );
 }
@@ -180,22 +146,20 @@ export default function MaintenanceCard(props) {
     // 相同部分
     safetyPerson,
     safetyPhone,
-    createByName,
-    createByPhone,
-    executor_name,
     phone,
     unit_name,
     disaster_desc,
     //时间
-    save_time,
+    create_time,
     create_date,
     start_date,
-    update_date,
-    // 自处理
-    selfAndMaintenance,
-    selfAndMaintenanceDate,
-    selfAndMaintenanceName,
-    selfAndMaintenancePhone,
+    end_date,
+    startByName,
+    startByPhone,
+    startCompanyName,
+    finishByName,
+    finishByPhone,
+    finishCompanyName,
   } = data;
 
   const isOneKey = report_type === '2' ? 1 : 0; // 0 -> 主机报障  1 -> 一键报修
@@ -203,126 +167,57 @@ export default function MaintenanceCard(props) {
   return (
     <div className={styles.container} {...restProps}>
       <div className={styles.head}>
-        <div style={{ backgroundImage: `url(${flowImg})` }} className={styles.flow} />
+        <div
+          style={{
+            background: `url(${flowImg}) no-repeat center center`,
+            backgroundSize: '99% auto',
+          }}
+          className={styles.flow}
+        />
       </div>
       <div className={styles.timeline}>
         <Timeline>
-          {/* 主机故障时才会显示这个，一键报修时不显示 */}
-          {/* {!isOneKey && ( */}
-          {isStepShow(1, isOneKey, nstatus) && (
-            <TimelineItem
-              spans={SPANS}
-              label="故障发生"
-              day={getTime(save_time)}
-              hour={getTime(save_time, 1)}
-            >
-              <Occured
-                position={install_address || NO_DATA}
-                type={label || NO_DATA}
-                safety={safetyPerson || NO_DATA}
-                phone={safetyPhone || NO_DATA}
+          <TimelineItem
+            spans={SPANS}
+            label="故障发生"
+            day={getTime(isOneKey ? create_date : create_time)}
+            hour={getTime(isOneKey ? create_date : create_time, 1)}
+          >
+            <Occured
+              position={install_address || device_address || NO_DATA}
+              type={label || systemTypeValue || NO_DATA}
+              safety={safetyPerson || NO_DATA}
+              phone={safetyPhone || NO_DATA}
+            />
+          </TimelineItem>
+
+          <TimelineItem
+            spans={SPANS}
+            label="开始处理"
+            day={getTime(start_date)}
+            hour={getTime(start_date, 1)}
+          >
+            {isStepShow(3, isOneKey, nstatus) && (
+              <Received
+                man={startByName || NO_DATA}
+                phone={startByPhone || NO_DATA}
+                companyName={startCompanyName || NO_DATA}
               />
-            </TimelineItem>
-          )}
-          {+selfAndMaintenance === 1 && (
-            <TimelineItem
-              spans={SPANS}
-              label="自处理"
-              day={getTime(selfAndMaintenanceDate)}
-              hour={getTime(selfAndMaintenanceDate, 1)}
-            >
-              <SelfHandle
-                man={selfAndMaintenanceName || NO_DATA}
-                phone={selfAndMaintenancePhone || NO_DATA}
-              />
-            </TimelineItem>
-          )}
-          {+maintenanceType === 3 && (
-            <TimelineItem
-              spans={SPANS}
-              label="自处理"
-              day={getTime(start_date)}
-              hour={getTime(start_date, 1)}
-            >
-              <SelfHandle man={executor_name || NO_DATA} phone={phone || NO_DATA} />
-            </TimelineItem>
-          )}
-          {+maintenanceType === 4 &&
-            !isOneKey && (
-              <TimelineItem
-                spans={SPANS}
-                label={isOneKey ? '故障报修' : '指派维保'}
-                day={getTime(create_date)}
-                hour={getTime(create_date, 1)}
-              >
-                {/* 故障弹框时，一键报修显示，主机报障不显示；维保弹框时，进行type及status的判断 */}
-                {/* {((!isMaintenance && isOneKey) || (isMaintenance && (type === 1 || status === '2' || status === '0'))) && ( */}
-                {isStepShow(2, isOneKey, nstatus) && (
-                  <Assigned
-                    man={createByName || NO_DATA}
-                    phone={createByPhone || NO_DATA}
-                    desc={isOneKey ? '' : HOST_FAULT_DESC}
-                    company={unit_name || NO_DATA}
-                    imgs={reportPhotos}
-                    // 一键报修时，比主机故障多显示以下信息
-                    systemType={systemTypeValue}
-                    deviceName={device_name}
-                    position={device_address}
-                    oneKeyDesc={isOneKey ? report_desc : ''}
-                  />
-                )}
-              </TimelineItem>
             )}
-          {isOneKey && (
-            <TimelineItem
-              spans={SPANS}
-              label={'故障报修'}
-              day={getTime(create_date)}
-              hour={getTime(create_date, 1)}
-            >
-              {/* 故障弹框时，一键报修显示，主机报障不显示；维保弹框时，进行type及status的判断 */}
-              {/* {((!isMaintenance && isOneKey) || (isMaintenance && (type === 1 || status === '2' || status === '0'))) && ( */}
-              {isStepShow(2, isOneKey, nstatus) && (
-                <Assigned
-                  man={createByName || NO_DATA}
-                  phone={createByPhone || NO_DATA}
-                  desc={isOneKey ? '' : HOST_FAULT_DESC}
-                  company={unit_name || NO_DATA}
-                  imgs={reportPhotos}
-                  // 一键报修时，比主机故障多显示以下信息
-                  systemType={systemTypeValue}
-                  deviceName={device_name}
-                  position={device_address}
-                  oneKeyDesc={isOneKey ? report_desc : ''}
-                />
-              )}
-            </TimelineItem>
-          )}
-          {+maintenanceType !== 3 && (
-            <TimelineItem
-              spans={SPANS}
-              label="受理中"
-              day={getTime(start_date)}
-              hour={getTime(start_date, 1)}
-            >
-              {/* {isMaintenance && (type === 1 || status === '0') && ( */}
-              {isStepShow(3, isOneKey, nstatus) && (
-                <Received man={executor_name || NO_DATA} phone={phone || NO_DATA} />
-              )}
-            </TimelineItem>
-          )}
+          </TimelineItem>
+
           <TimelineItem
             spans={SPANS}
             label="处理完毕"
-            day={getTime(update_date)}
-            hour={getTime(update_date, 1)}
+            day={getTime(end_date)}
+            hour={getTime(end_date, 1)}
           >
-            {/* {isMaintenance && type === 1 && ( */}
             {isStepShow(4, isOneKey, nstatus) && (
               <Handled
-                man={executor_name || NO_DATA}
-                phone={phone || NO_DATA}
+                man={finishByName || NO_DATA}
+                phone={finishByPhone || NO_DATA}
                 feedback={disaster_desc || NO_DATA}
+                companyName={finishCompanyName || NO_DATA}
                 imgs={sitePhotos}
               />
             )}

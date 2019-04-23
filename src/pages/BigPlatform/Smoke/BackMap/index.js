@@ -64,6 +64,18 @@ export default class MapSection extends PureComponent {
     this.props.onRef(this);
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const { units } = this.props;
+    const { units: prevUnits } = prevProps;
+    const { infoWindowShow, infoWindow } = this.state;
+    if (JSON.stringify(units) !== JSON.stringify(prevUnits) && infoWindowShow) {
+      const { companyId } = infoWindow;
+      this.setState({
+        infoWindow: { ...infoWindow, ...units.find(item => item.companyId === companyId) },
+      });
+    }
+  }
+
   renderMarkers = lvl => {
     const { units = [], unitDetail: { companyId: selectedCompanyId } = {} } = this.props;
     if (units.length === 0) {
@@ -139,6 +151,10 @@ export default class MapSection extends PureComponent {
 
   handleMapClick = extData => {
     if (extData.companyId === this.state.infoWindow.companyId && this.state.infoWindowShow) return;
+    const { fetchMapInfo } = this.props;
+    // clearPollingMap();
+    // pollingMap();
+    fetchMapInfo();
     this.setState({
       infoWindowShow: true,
       infoWindow: {
@@ -282,6 +298,8 @@ export default class MapSection extends PureComponent {
         <Icon
           type="close"
           onClick={() => {
+            // const { clearPollingMap } = this.props;
+            // clearPollingMap();
             this.setState({ infoWindowShow: false });
           }}
           style={{

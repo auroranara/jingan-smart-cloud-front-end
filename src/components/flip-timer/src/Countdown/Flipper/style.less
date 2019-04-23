@@ -23,7 +23,7 @@
   z-index: 0;
 }
 
-.card.now + .card {
+.card.now+.card {
   z-index: 3;
 }
 
@@ -45,7 +45,7 @@
   transition: all 0.5s;
 }
 
-.now + .card .sides,
+.now+.card .sides,
 .card:last-child .sides {
   transform: rotateX(-180deg);
   transition: all 1s;
@@ -117,4 +117,16 @@
   border-radius: 0 0 5px 5px;
   margin-bottom: -1px;
   box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8) inset;
+}
+
+
+@media screen and(max-width: 1366px) {
+  .cards {
+    background: #000;
+    height: 65px;
+    width: 29px;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 1px;
+  }
 }

@@ -97,14 +97,14 @@ class RiskPoint extends PureComponent {
                               <th>风险点总数</th>
                               <th
                                 style={{
-                                  color: 'rgba(232, 103, 103, 0.8)',
+                                  color: '#f83329',
                                 }}
                               >
                                 异常
                               </th>
                               <th
                                 style={{
-                                  color: 'rgba(232, 103, 103, 0.8)',
+                                  color: '#f83329',
                                 }}
                               >
                                 超时
@@ -155,18 +155,14 @@ class RiskPoint extends PureComponent {
                                   <td>{item.total}</td>
                                   <td
                                     style={{
-                                      color: item.abnormal
-                                        ? 'rgba(232, 103, 103, 0.8)'
-                                        : 'rgba(255, 255, 255, 0.7)',
+                                      color: item.abnormal ? '#f83329' : 'rgba(255, 255, 255, 0.7)',
                                     }}
                                   >
                                     {item.abnormal}
                                   </td>
                                   <td
                                     style={{
-                                      color: item.overTime
-                                        ? 'rgba(232, 103, 103, 0.8)'
-                                        : 'rgba(255, 255, 255, 0.7)',
+                                      color: item.overTime ? '#f83329' : 'rgba(255, 255, 255, 0.7)',
                                     }}
                                   >
                                     {item.overTime}

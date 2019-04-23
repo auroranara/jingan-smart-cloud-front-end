@@ -61,7 +61,7 @@ export function queryExecCertificateType() {
   return request(`/acloud_new/v2/rolePermission/execCertificateType`);
 }
 
-/* 查询用户类型 */
+/* 查询用户角色 */
 export function queryUserType() {
   return request(`/acloud_new/v2/rolePermission/userType`);
 }

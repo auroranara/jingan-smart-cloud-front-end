@@ -1,6 +1,8 @@
 @imgUrl: 'http://data.jingan-china.cn/v2/big-platform/safety/gov';
 @comImgUrl2: 'http://data.jingan-china.cn/v2/big-platform/safety/com/';
 @govImgUrl2: 'http://data.jingan-china.cn/v2/big-platform/safety/gov/';
+@govImgs: 'http://image.jingan-china.cn/v2/big-platform/safety/gov/new/';
+
 .main {
   width: 100%;
   height: 100vh;
@@ -8,7 +10,7 @@
   overflow: hidden;
   padding: 0 20px 30px;
   color: #fff;
-  background: url('@{govImgUrl2}safety-bg.png') no-repeat center center;
+  background: url('http://data.jingan-china.cn/v2/big-platform/fire-control/gov/new_bg.png') no-repeat center center;
   background-size: 100% 100%;
   display: flex;
   flex-direction: column;
@@ -20,8 +22,9 @@
     position: relative;
     text-align: center;
     letter-spacing: 14px;
-    background: url('@{comImgUrl2}title-bg.png') no-repeat center center;
-    background-size: 100% 100%;
+    background: url('@{govImgs}header_bg.png') no-repeat center bottom;
+    background-size: 100% 55.76923%;
+
     .subHeader {
       line-height: 1;
       letter-spacing: 0px;
@@ -29,19 +32,22 @@
       font-size: 20px;
       position: absolute;
       bottom: 15px;
-      right: 0;
-      width: 25%;
+      right: 6.09%;
+      width: 21.72%;
       margin-right: -4px;
     }
+
     .treeContainer {
       position: absolute;
-      width: 25%;
+      width: 21.72%;
+      left: 6.09%;
       text-align: center;
       bottom: 10px;
       line-height: 32px;
       font-size: 18px;
       margin-left: -4px;
       letter-spacing: 0;
+
       :global {
         .ant-select {
           color: #fff;
@@ -49,9 +55,11 @@
           font-size: 18px;
           letter-spacing: 0px;
         }
+
         .ant-select-arrow {
-          color: #fff;
+          color: #00ffff;
         }
+
         .ant-select-selection {
           border: none;
           background-color: transparent;
@@ -59,63 +67,95 @@
       }
     }
   }
+
   .mainBody {
     // height: calc(~'100% - 95px');
     width: 100%;
     position: relative;
     margin-top: 10px;
     flex: 1;
+
     .sectionWrapper {
       width: 100%;
       height: 100%;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 0 1.8em #000;
+      // box-shadow: 0 0 1.8em #000;
+      border: 1px solid #02fcfa;
+      box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.75);
+      background-color: #033069;
+
       .sectionWrapperIn {
         width: 100%;
         height: 100%;
         padding: 10px;
         overflow: hidden;
         position: relative;
-        box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
+        // box-shadow: 0 0 1.1em rgba(9, 103, 211, 0.9) inset;
         background: rgba(9, 103, 211, 0.06);
         display: flex;
         flex-direction: column;
       }
     }
+
     .backBtn {
       position: absolute;
       top: 7px;
       right: 13px;
       width: 32px;
       height: 32px;
-      background: url('@{govImgUrl2}icon-back.png') no-repeat center center;
+      background: url('@{govImgs}icon-back.png') no-repeat center center;
       background-size: 100% 100%;
       cursor: pointer;
     }
+
     .sectionTitle {
       font-size: 16px;
       margin-bottom: 5px;
-      line-height: 30px;
-      height: 30px;
+      line-height: 50px;
+      // height: 30px;
+      margin-top: -10px;
+      margin-left: -10px;
       display: inline-block;
       padding-left: 10px;
       font-weight: bold;
+      background-repeat: no-repeat;
+      background-image: linear-gradient(to right, #025194, transparent);
+      background-size: 177px 100%;
+
       .titleBlock {
         display: inline-block;
         width: 18px;
         height: 18px;
-        background-color: #0967d3;
+        background-color: #00ffff;
+        // border: 1px solid #00ffff;
+        // border-radius: 50%;
+        overflow: hidden;
         margin-right: 10px;
         position: relative;
         top: 2px;
+
+        // &::after {
+        //   content: '';
+        //   position: absolute;
+        //   top: 4px;
+        //   left: 4px;
+        //   right: 0;
+        //   bottom: 0;
+        //   width: 9px;
+        //   height: 9px;
+        //   background-color: #00ffff;
+        //   border-radius: 50%;
+        // }
       }
     }
+
     .sectionMain {
       width: 100%; // height: calc(~'100% - 40px');
       flex: 1;
       position: relative;
       overflow: hidden;
+
       .noChecks {
         position: relative;
         width: 100%;
@@ -125,26 +165,31 @@
         padding: 0;
         overflow: hidden;
       }
+
       .thFix {
         width: 100%;
         vertical-align: middle;
         text-align: center;
         height: 45px;
+
         th {
           padding: 0 5px;
           font-size: 16px;
-          color: #00baff;
-          border-bottom: 1px solid #00baff;
+          color: #00ffff;
+          border-bottom: 1px solid #0175B4;
           height: 45px;
         }
       }
+
       .scrollWrapper {
         width: 100%;
         height: calc(~'100% - 45px');
         overflow: hidden;
         position: relative;
+
         .tableWrapper {
           width: 100%; // position: absolute;
+
           // top: 0;
           // left: 0;
           .safeTable {
@@ -152,17 +197,19 @@
             vertical-align: middle;
             text-align: center;
             margin-bottom: 150px;
+
             th {
               padding: 0 5px;
               font-size: 16px;
-              color: #00baff;
-              border-bottom: 1px solid #00baff;
+              color: #00ffff;
+              border-bottom: 1px solid #0175B4;
               height: 45px;
               width: 50%;
             }
+
             td {
               padding: 0 5px;
-              border-bottom: 1px solid #00baff;
+              border-bottom: 1px solid #0175B4;
               font-size: 15px;
               height: 50px;
               width: 50%;
@@ -170,23 +217,28 @@
           }
         }
       }
+
       .hdArea {
         width: 100%; // height: 100%;
         flex: 1;
       }
+
       .hdPie {
         width: 100%;
         height: 100%;
       }
+
       .hdBarLegend {
         width: 100%;
         height: 70px;
         line-height: 35px;
         text-align: center;
+
         .legendItem {
           float: left;
           width: 33.3%;
           font-size: 12px;
+
           .legendIcon {
             display: inline-block;
             width: 12px;
@@ -198,15 +250,18 @@
           }
         }
       }
+
       .hdPieLegend {
         width: 100%;
         height: 45px;
         line-height: 45px;
         text-align: center;
+
         .legendItem {
           float: left;
           width: 33.3%;
           font-size: 12px;
+
           .legendIcon {
             display: inline-block;
             width: 12px;
@@ -216,6 +271,7 @@
             border-radius: 50%;
             margin-right: 5px;
           }
+
           .legendNum {
             display: inline-block;
             font-size: 16px;
@@ -223,15 +279,18 @@
           }
         }
       }
+
       .legendHdPie {
         width: 100%;
         height: 45px;
         line-height: 45px;
         text-align: center;
+
         .legendItem {
           float: left;
           width: 50%;
           font-size: 12px;
+
           .legendIcon {
             display: inline-block;
             width: 12px;
@@ -241,6 +300,7 @@
             border-radius: 50%;
             margin-right: 5px;
           }
+
           .legendNum {
             display: inline-block;
             font-size: 16px;
@@ -248,26 +308,31 @@
           }
         }
       }
+
       .sectionContent {
         display: flex;
         flex-direction: column;
         height: 100%;
+
         .tableTitleWrapper {
           text-align: center;
           padding: 10px 0;
           height: 50px;
-          border-bottom: 2px solid #0967d3;
+          border-bottom: 1px solid #0175B4;
+
           .tableTitle {
             display: inline-block;
             font-size: 16px;
             border: 2px solid transparent;
-            border-image: url('@{govImgUrl2}table-title-border.png') 2 2 stretch;
+            border-image: url('@{govImgs}table-title-border.png') 2 2 stretch;
             padding: 0 20px;
           }
         }
+
         .riskContent {
           line-height: 27px;
           text-align: center;
+
           .riskIcon {
             display: inline-block;
             position: relative;
@@ -275,29 +340,35 @@
             height: 40px;
             width: 40px; // top: 4px;
           }
+
           .iconCom {
             .riskIcon;
             background: url('@{govImgUrl2}icon-company.png') no-repeat center center;
             background-size: 100% 100%;
           }
+
           .iconRisk {
             .riskIcon;
-            background: url('@{govImgUrl2}icon-danger-location.png') no-repeat center center;
+            background: url('@{govImgs}icon-danger-location.png') no-repeat center center;
             background-size: 100% 100%;
           }
+
           .iconDanger {
             .riskIcon;
-            background: url('@{govImgUrl2}icon-danger.png') no-repeat center center;
+            background: url('@{govImgs}icon-danger.png') no-repeat center center;
             background-size: 100% 100%;
           }
+
           .riskWrapper {
             display: inline-block;
             text-align: left;
+
             .riskNum {
               font-size: 18px;
             }
           }
         }
+
         .checksContent {
           line-height: 27px;
           text-align: center;
@@ -305,6 +376,7 @@
           padding: 5px 0;
           margin: 0 auto;
           border-radius: 5px;
+
           .checksIcon {
             display: inline-block;
             position: relative;
@@ -312,56 +384,67 @@
             height: 40px;
             width: 40px; // top: 4px;
           }
+
           .iconCom1 {
             .checksIcon;
-            background: url('@{govImgUrl2}icon-company1.png') no-repeat center center;
+            background: url('@{govImgs}icon-company1.png') no-repeat center center;
             background-size: 100% 100%;
           }
+
           .iconCom2 {
             .checksIcon;
-            background: url('@{govImgUrl2}icon-company2.png') no-repeat center center;
+            background: url('@{govImgs}icon-company2.png') no-repeat center center;
             background-size: 100% 100%;
           }
+
           .iconCom3 {
             .checksIcon;
-            background: url('@{govImgUrl2}icon-company3.png') no-repeat center center;
+            background: url('@{govImgs}icon-company3.png') no-repeat center center;
             background-size: 100% 100%;
           }
+
           .iconCom4 {
             .checksIcon;
-            background: url('@{govImgUrl2}icon-company4.png') no-repeat center center;
+            background: url('@{govImgs}icon-company4.png') no-repeat center center;
             background-size: 100% 100%;
           }
+
           .checksWrapper {
             display: inline-block;
             text-align: left;
+
             .checksNum {
               font-size: 18px;
             }
           }
         }
+
         .checksContentActive {
           .checksContent;
           cursor: pointer;
         }
+
         .checksContentActive:hover {
           background-color: rgba(9, 103, 211, 0.2);
           box-shadow: 0 0 1em rgba(0, 168, 255, 0.5) inset;
         }
+
         .scrollContainer {
           flex: 1;
           overflow-x: hidden;
           overflow-y: auto;
           width: 100%; // border-top: 1px solid #0967d3;
+
           .scrollCol1 {
             width: 100%;
             text-align: center;
             height: 45px;
             line-height: 45px;
-            border-bottom: 1px solid #00baff;
+            border-bottom: 1px solid #0175B4;
             position: relative;
             color: rgba(255, 255, 255, 0.7);
             cursor: pointer;
+
             .scrollOrder {
               position: absolute;
               left: 7%;
@@ -369,26 +452,31 @@
               line-height: 45px;
             }
           }
+
           .scrollTable {
             width: 100%;
             text-align: center;
             vertical-align: middle;
+
             th {
-              color: #00baff;
+              color: #00ffff;
               font-size: 15px;
-              border-bottom: 1px solid #00baff;
+              border-bottom: 1px solid #0175B4;
               height: 50px;
             }
+
             td {
-              border-bottom: 1px solid #00baff;
+              border-bottom: 1px solid #0175B4;
               height: 45px;
               position: relative;
               color: rgba(255, 255, 255, 0.7);
+
               .tableOrder {
                 position: absolute;
                 display: inline-block;
                 left: 12%;
               }
+
               .keyComMark {
                 // position: absolute;
                 display: inline-block; // left: 7%;
@@ -397,32 +485,38 @@
                 left: 10px;
                 width: 24px;
                 height: 24px;
-                background: url('@{govImgUrl2}key-company.png') no-repeat center center;
+                background: url('@{govImgs}key-company.png') no-repeat center center;
                 background-size: 100% 100%;
               }
             }
           }
         }
+
         .scrollContainer::-webkit-scrollbar-track {
           box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3); // background-color: #021c40;
           background-color: transparent;
         }
+
         .scrollContainer::-webkit-scrollbar {
           width: 8px;
           background-color: transparent; // background-color: #021c40;
         }
+
         .scrollContainer::-webkit-scrollbar-thumb {
           border-radius: 10px;
           background-color: rgba(9, 103, 211, 0.5);
         }
+
         .summaryWrapper {
-          border-bottom: 1px solid #0967d3;
+          border-bottom: 1px solid #0175B4;
           line-height: 54px;
           height: 54px;
+
           .summaryItem {
             width: 49.9%;
             float: left;
             text-align: center;
+
             .summaryIcon {
               display: inline-block;
               width: 32px;
@@ -431,41 +525,49 @@
               position: relative;
               top: 6px;
             }
+
             .summaryNum {
               font-size: 18px;
               margin-left: 12px;
             }
+
             .summaryIconCom {
               .summaryIcon;
-              background: url('@{govImgUrl2}icon-company.png') no-repeat center center;
+              background: url('@{govImgs}icon-company.png') no-repeat center center;
               background-size: 100% 100%;
             }
+
             .summaryIconHd {
               .summaryIcon;
-              background: url('@{govImgUrl2}icon-hd.png') no-repeat center center;
+              background: url('@{govImgs}icon-hd.png') no-repeat center center;
               background-size: 100% 100%;
             }
+
             .summaryIconCommunity {
               .summaryIcon;
-              background: url('@{govImgUrl2}icon-community.png') no-repeat center center;
+              background: url('@{govImgs}icon-community.png') no-repeat center center;
               background-size: 100% 100%;
             }
           }
         }
+
         .fieldName {
-          color: #00a1f6;
+          color: #00ffff;
         }
+
         .companyMain {
           border-bottom: 1px solid #0967d3;
           padding-bottom: 10px;
+
           .companyIcon {
             float: left;
             width: 44px;
             height: 96px;
             margin: 0 10px;
-            background: url('@{govImgUrl2}icon-company.png') no-repeat center center;
+            background: url('@{govImgs}icon-company.png') no-repeat center center;
             background-size: 100% auto;
           }
+
           .companyInfo {
             width: calc(~'100% - 65px');
             float: left;
@@ -473,25 +575,30 @@
             overflow: hidden;
             white-space: nowrap;
             position: relative;
+
             .companyName {
               height: 36px;
               line-height: 36px;
               font-size: 18px;
-              color: #00baff;
+              color: #00ffff;
             }
+
             .companyCharger {
               height: 30px;
               line-height: 30px;
             }
+
             .companyPhone {
               .companyCharger;
             }
+
             .importantUnit {
               position: absolute;
               right: 0;
               bottom: 0;
               width: 82px;
               height: 27px;
+
               img {
                 display: block;
                 width: 100%;
@@ -500,47 +607,56 @@
             }
           }
         }
+
         .summaryBottom {
           width: 100%;
           margin-top: 15px;
           border-bottom: 1px solid #3681c7;
+
           .summaryHalf {
             height: 50%;
             margin-bottom: 15px;
+
             .summaryIcon {
               float: left;
               width: 44px;
               height: 44px;
               margin: 5px 10px;
             }
+
             .summaryText {
               float: left;
               width: calc(~'100% - 65px');
               height: 27px;
               line-height: 27px;
             }
+
             .summaryNum {
               .summaryText;
               font-size: 22px;
             }
+
             .summarySpecial {
               .summaryIcon;
-              background: url('@{govImgUrl2}icon-special.png') no-repeat center center;
+              background: url('@{govImgs}icon-special.png') no-repeat center center;
               background-size: 100% 100%;
             }
+
             .summaryRisk {
               .summaryIcon;
-              background: url('@{govImgUrl2}icon-risk.png') no-repeat center center;
+              background: url('@{govImgs}icon-risk.png') no-repeat center center;
               background-size: 100% 100%;
             }
+
             .summaryOver {
               .summaryIcon;
-              background: url('@{govImgUrl2}over-hd.png') no-repeat center center;
+              background: url('@{govImgs}over-hd.png') no-repeat center center;
               background-size: 100% 100%;
             }
           }
         }
       }
+
       .riskDetailWrapper {
         flex: 1;
         width: 100%;
@@ -549,6 +665,7 @@
         display: flex;
         flex-direction: column;
         position: relative;
+
         .riskDetailBtns {
           position: absolute;
           border-radius: 50%;
@@ -563,29 +680,36 @@
           color: #010f2d;
           cursor: pointer;
         }
+
         .riskDetailBtns:hover {
           background-color: #117af3;
         }
       }
+
       .rankBar {
         width: 100%;
         height: 250px;
       }
+
       .riskImg {
         width: 135px;
       }
+
       .riskDescription {
         font-size: 16px;
       }
+
       .riskMsg {
         font-size: 16px;
         padding: 5px 0 5px 18px;
       }
     }
+
     .sectionMainFull {
       .sectionMain;
       height: 100%;
     }
+
     .hdCompany {
       padding: 0px 10px;
       position: absolute;
@@ -595,15 +719,18 @@
       border-radius: 5px;
       z-index: 6;
       cursor: pointer;
+
       .hdCompanyNum {
         display: inline-block;
         margin-left: 10px;
         font-size: 25px;
       }
     }
+
     .hdCompany:hover {
       background-color: rgba(4, 57, 110, 0.5);
     }
+
     .modeChange {
       position: absolute;
       width: auto;
@@ -614,6 +741,7 @@
       z-index: 6;
       overflow: hidden;
       border: 1px solid #0e4a95;
+
       .modeBtn {
         position: relative;
         display: inline-block;
@@ -622,12 +750,15 @@
         text-align: center;
         background-color: #033069;
         cursor: pointer;
+
         &+.modeBtn {
           border-left: 1px solid #0e4a95;
         }
+
         &:hover {
           opacity: 0.8;
         }
+
         img {
           width: auto;
           height: 70%;
@@ -636,6 +767,7 @@
         }
       }
     }
+
     .riskTotal {
       padding: 5px 16px;
       position: absolute;
@@ -643,6 +775,7 @@
       right: 10px;
       border-radius: 5px;
       z-index: 6;
+
       .riskTotalNum {
         display: inline-block;
         margin-left: 10px;
@@ -656,15 +789,19 @@
   color: #fff;
   background-color: rgba(1, 29, 67, 0.9);
   box-shadow: 0 0 10px rgba(9, 103, 211, 0.9);
+
   :global {
     .ant-select-tree {
       color: #fff;
+
       li .ant-select-tree-node-content-wrapper {
         color: #fff;
       }
+
       li .ant-select-tree-node-content-wrapper:hover {
         background-color: rgba(4, 73, 140, 0.5);
       }
+
       li .ant-select-tree-node-content-wrapper.ant-select-tree-node-selected {
         background-color: rgb(4, 73, 140);
       }
@@ -681,11 +818,13 @@
   line-height: 60px;
   height: 60px;
   padding: 0 20px;
+
   .summaryNum {
     display: inline-block;
     margin-left: 10px;
     font-size: 26px;
   }
+
   .spanHalf {
     display: inline-block;
     width: 49.5%;
@@ -699,24 +838,29 @@
   height: 110px;
   font-size: 16px;
   text-align: center;
+
   .topItem {
     float: left;
     flex: 0 0 auto;
     width: 20%;
     height: 100%;
+
     .itemActive {
       width: 115px;
       margin: 0 auto;
       border-radius: 10px;
       cursor: pointer;
     }
+
     .itemActive:hover {
       background-color: rgba(4, 57, 110, 0.5);
     }
+
     .topName {
       padding-top: 20px;
       white-space: nowrap;
     }
+
     .topNum {
       line-height: 64px;
       font-size: 36px;
@@ -731,6 +875,7 @@
   top: 50%;
   right: 0;
   margin-top: -100px;
+
   .hdTitle {
     font-size: 12px;
     text-align: center;
@@ -738,6 +883,7 @@
     float: left;
     width: 100%;
   }
+
   .hdLegend {
     float: left;
     padding-right: 8px;
@@ -746,6 +892,7 @@
     height: 22px;
     overflow: hidden;
     font-size: 12px;
+
     .legendCircle {
       display: inline-block;
       width: 15px;
@@ -755,6 +902,7 @@
       top: 3px;
       margin-right: 3px;
     }
+
     .legendNum {
       float: right;
     }
@@ -765,6 +913,7 @@
   width: 100%;
   height: 100%;
   position: relative; // padding: 12px 10px;
+
   .allPoint {
     position: absolute;
     top: 10px;
@@ -778,27 +927,33 @@
     border-radius: 5px;
     text-align: center;
   }
+
   .allPoint:hover {
     opacity: 0.85;
   }
+
   .allPoint:active {
     color: #fff;
   }
+
   :global {
     .amap-toolbar.amap-touch-toolbar {
       right: 10px !important;
       bottom: 150px !important;
+
       .amap-zoomcontrol {
         border: none;
         box-shadow: 0 0 0;
         background-color: rgba(4, 71, 134, 0.8);
         border-radius: 5px;
         width: 30px;
+
         .amap-zoom-touch-minus,
         .amap-zoom-touch-plus {
           background: none;
           height: 30px;
         }
+
         .amap-zoom-touch-minus>div,
         .amap-zoom-touch-plus>div {
           color: #a3a3a3;
@@ -806,20 +961,24 @@
         }
       }
     }
+
     .amap-touch-toolbar .amap-zoomcontrol:after {
       top: 34px;
       background-color: #00a1f6;
       opacity: 0.2;
     }
+
     .amap-scalecontrol {
       left: auto !important;
       bottom: 72px !important;
       right: 65px !important;
     }
+
     .amap-info-content.amap-info-outer {
       background-color: rgba(0, 49, 96, 0.9) !important;
       border: none;
     }
+
     .amap-info-sharp {
       // display: none;
       height: 13px !important;
@@ -827,6 +986,7 @@
       background-size: auto 100%;
     }
   }
+
   .mapLegend {
     width: 100%;
     height: 60px;
@@ -838,8 +998,10 @@
     padding-left: 15px;
     padding-right: 25px;
     white-space: nowrap;
+
     .legendItem {
       cursor: pointer;
+
       .legendIcon {
         display: inline-block;
         width: 18px;
@@ -848,6 +1010,7 @@
         top: 4px;
         margin-right: 3px;
       }
+
       .dotRed {
         .legendIcon; // background: url('@{imgUrl}dot-red.svg') no-repeat center center;
         background: url('@{govImgUrl2}dot-red.png') no-repeat center center;
@@ -855,40 +1018,48 @@
         // height: 24px;
         // top: 7px;
       }
+
       .dotOrange {
         .legendIcon;
         background: url('@{govImgUrl2}dot-orange.png') no-repeat center center;
         background-size: 100% 100%;
       }
+
       .dotYel {
         .legendIcon;
         background: url('@{govImgUrl2}dot-yel.png') no-repeat center center;
         background-size: 100% 100%;
       }
+
       .dotBlue {
         .legendIcon;
         background: url('@{govImgUrl2}dot-blue.png') no-repeat center center;
         background-size: 100% 100%;
       }
     }
+
     .legendItem.notActive {
       .dotRed {
         background: url('@{govImgUrl2}red-hollow.png') no-repeat center center;
         background-size: 100% 100%;
       }
+
       .dotOrange {
         background: url('@{govImgUrl2}orange-hollow.png') no-repeat center center;
         background-size: 100% 100%;
       }
+
       .dotYel {
         background: url('@{govImgUrl2}yel-hollow.png') no-repeat center center;
         background-size: 100% 100%;
       }
+
       .dotBlue {
         background: url('@{govImgUrl2}blue-hollow.png') no-repeat center center;
         background-size: 100% 100%;
       }
     }
+
     .legendItem:hover {
       color: rgb(0, 186, 255);
     }
@@ -899,13 +1070,16 @@
   .main {
     padding: 0 10px 15px;
     font-size: 12px;
+
     .mainHeader {
       line-height: 70px;
       height: 70px;
       font-size: 30px;
+
       .subHeader {
         font-size: 16px;
       }
+
       .treeContainer {
         :global {
           .ant-select {
@@ -914,28 +1088,35 @@
         }
       }
     }
+
     .mainBody {
       .sectionTitle {
         .titleBlock {
           width: 14px;
           height: 14px;
         }
+
         font-size: 14px;
         height: 26px;
         line-height: 26px;
       }
+
       .sectionMain {
+
         // height: calc(~'100% - 34px');
         .thFix {
           height: 40px;
+
           th {
             font-size: 14px;
             height: 40px;
           }
         }
+
         .hdBarLegend {
           height: 48px;
           line-height: 24px;
+
           .legendItem {
             .legendIcon {
               width: 12px;
@@ -943,15 +1124,19 @@
             }
           }
         }
+
         .tableTitle {
           font-size: 14px !important;
         }
+
         .rankBar {
           height: 180px !important;
         }
+
         .hdPieLegend {
           height: 36px;
           line-height: 36px;
+
           .legendItem {
             .legendIcon {
               width: 12px;
@@ -959,8 +1144,10 @@
             }
           }
         }
+
         .scrollWrapper {
           height: calc(~'100% - 40px');
+
           .tableWrapper {
             .safeTable {
               th {
@@ -968,6 +1155,7 @@
                 font-size: 14px;
                 height: 40px;
               }
+
               td {
                 padding: 0 5px;
                 font-size: 13px;
@@ -976,6 +1164,7 @@
             }
           }
         }
+
         .companyMain {
           .companyInfo {
             .companyName {
@@ -984,44 +1173,55 @@
           }
         }
       }
+
       .riskImg {
         width: 115px !important;
       }
+
       .riskDescription {
         font-size: 14px !important;
       }
+
       .riskMsg {
         font-size: 13px !important;
         padding: 5px 0 5px 5px !important;
       }
     }
+
     .summaryBar {
       height: 35px;
       line-height: 35px;
+
       .summaryNum {
         font-size: 24px;
       }
     }
+
     .pieLegend {
       width: 31%;
+
       .legendCircle {
         width: 12px;
         height: 12px;
       }
     }
+
     .topData {
       font-size: 14px;
       height: 66px;
+
       .topItem {
         .topName {
           padding-top: 5px;
         }
+
         .topNum {
           line-height: 40px;
           font-size: 28px;
         }
       }
     }
+
     .mapContainer {
       .mapLegend {
         height: 40px;

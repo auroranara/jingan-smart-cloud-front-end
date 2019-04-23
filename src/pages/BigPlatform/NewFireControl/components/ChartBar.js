@@ -7,7 +7,7 @@ const LINE_STYLE = { width: 2, color: 'rgb(64, 95, 135)' };
 
 export default class ChartBar extends PureComponent {
   render() {
-    const { data: list, xLabels, barWidth=20, labelRotate=-35, yAxisRange=[null, null], sameColor, barColors } = this.props;
+    const { data: list, xLabels, barWidth=20, labelRotate=-35, yAxisRange=[null, null], sameColor, barColors, chartStyle } = this.props;
 
     const xData = xLabels || list.map(({ name }) => name);
     const colors = barColors || DEFAULT_COLORS;
@@ -58,7 +58,7 @@ export default class ChartBar extends PureComponent {
       chartComponent = (
         <ReactEcharts
           option={option}
-          style={{ height: 400 }}
+          style={chartStyle || { height: 400 }}
           onChartReady={chart => { this.chart = chart; }}
         />
       );

@@ -169,6 +169,7 @@ export function findInTree(targetValue, list, prop = 'id') {
 export function parseImage(section) {
   let { id, mapPhoto, range, parentId } = section;
   range = range || {};
+
   if (parentId === '0') {
     range.latlngs = [
       {
@@ -261,11 +262,10 @@ function isBuilding(mapId, childMapId, companyMapId) {
 // areaIds数组中，第一个表示建筑id，第二个表示该区域所在楼层id，楼层id不存在时，则当前区域即为建筑
 export function findBuildingId(areaId, areaInfo) {
   const areaIds = [];
-  while(areaId) {
+  while (areaId) {
     areaIds.unshift(areaId);
     const current = areaInfo[areaId];
-    if (current.isBuilding)
-      return  [areaId, areaIds[1]];
+    if (current.isBuilding) return [areaId, areaIds[1]];
     areaId = current.parentId;
   }
 
@@ -342,8 +342,7 @@ function getMapImages(list) {
 }
 
 function getTimeDesc(t) {
-  if (!t)
-    return '';
+  if (!t) return '';
 
   const ms = +t;
   // const minutes = Math.floor(ms / 60000);
@@ -389,8 +388,9 @@ export function getAlarmDesc(item, areaInfo) {
 // cardType 0 正常 1 访客
 export function getUserName(item, showPrefix) {
   const { cardType, userName, visitorName } = item;
-  const isVisitor = !!+cardType;
+  if (cardType === null || cardType === undefined) return '';
 
+  const isVisitor = !!+cardType;
   if (!isVisitor) return userName || '未领';
   if (showPrefix && visitorName) return `访客-${visitorName}`;
   if (!showPrefix && visitorName) return visitorName;
@@ -428,7 +428,8 @@ export function getIconClassName(isSingle, isVisitor, isOnline, isAlarm) {
   // 多人报警
   if (!isSingle) return `people${suffix}`;
 
-  suffix = isOnline ? (isAlarm ? 'Red' : '') : 'Off';
+  // suffix = isOnline ? (isAlarm ? 'Red' : '') : 'Off'; // 离线优先级高
+  suffix = isAlarm ? 'Red' : isOnline ? '' : 'Off'; // 报警优先级高
   // 其余均为单人情况
   // 单人 && 访客
   if (isVisitor) return `visitor${suffix}`;
@@ -503,12 +504,53 @@ export function handleOriginMovingCards(
 // 从当前节点查找其所属的顶层节点下的第一层子节点的id，此处可以保证当前节点至少为顶层节点的子节点层，不会为顶层节点
 export function getAncestorId(currentId, rootId, areaInfo) {
   let targetId = currentId;
-  while(targetId) {
+  while (targetId) {
     const parentId = areaInfo[targetId].parentId;
-    if (parentId === rootId)
-      return targetId;
+    if (parentId === rootId) return targetId;
     targetId = parentId;
   }
 
   return;
+}
+
+export function isArraySame(a1, a2) {
+  if (!Array.isArray(a1) || !Array.isArray(a2)) return a1 === a2;
+  if (a1.length !== a2.length) return false;
+  const [b1, b2] = [a1, a2].map(a => Array.from(a));
+  [b1, b2].forEach(b => b.sort());
+  for (let i = 0; i < b1.length; i++) if (b1[i] !== b2[i]) return false;
+  return true;
+}
+
+// 全屏的人数展示时，获取最底层节点的名字和人数
+export function getSectionCount(tree, parentName = '') {
+  const { children } = tree;
+  if (!Array.isArray(children)) return [];
+  const result = [];
+  for (const node of children) {
+    const { name, count } = node;
+    const fullName = `${parentName}${name}`;
+    result.push({ name: fullName, count });
+    result.push(...getSectionCount(node, fullName));
+  }
+  return result;
+}
+
+export function getDisabledDatetime() {
+  return [...Array(60).keys()].filter(n => n % 5);
+}
+
+export function getDefaultRange() {
+  const current = moment();
+  const currentTimestamp = +current;
+  const day = current.clone().startOf('day');
+  const six = day.clone().add(6, 'hours');
+  const sixTimestamp = +six;
+  // 当前时间大于六点，返回六点到当前时间，小于六点，返回零点到当前时间
+  if (currentTimestamp > sixTimestamp) return [six, current];
+  return [day, current];
+}
+
+export function getHourFromMoment(m, date) {
+  return Math.ceil((+m - +date) / 3600000);
 }

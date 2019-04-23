@@ -6,6 +6,7 @@ import ChartGauge from '../components/ChartGauge';
 import Section from '../Section';
 import styles from './FireDevice.less';
 import waterBg from '../imgs/waterBg.png';
+import Ellipsis from '@/components/Ellipsis';
 
 const waterSys = {
   '101': {
@@ -13,7 +14,7 @@ const waterSys = {
     code: 'hydrant',
   },
   '102': {
-    name: '自动喷淋系统',
+    name: '喷淋系统',
     code: 'pistol',
   },
   '103': {
@@ -56,13 +57,14 @@ export default class FireDevice extends PureComponent {
 
   renderHydrant = () => {
     const { waterList } = this.props;
-    if (!waterList.filter(item => item.deviceDataList.length).length) {
+    if (!waterList.length) {
       return this.renderNoCards();
     }
 
     return waterList.map(item => {
-      const { deviceDataList } = item;
-      if (!deviceDataList.length) return null;
+      const { deviceDataList, status: devStatus } = item;
+      const isMending = +devStatus === -1;
+      const isNotIn = !deviceDataList.length;
       const { deviceId, deviceName } = item;
       const [
         {
@@ -70,23 +72,43 @@ export default class FireDevice extends PureComponent {
           status,
           unit,
           deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
-        },
+        } = { deviceParamsInfo: {} },
       ] = deviceDataList;
 
       return (
-        <Col span={12} className={styles.gaugeCol} key={deviceId}>
+        <Col
+          span={12}
+          className={styles.gaugeCol}
+          key={deviceId}
+          style={{ display: 'flex', flexDirection: 'column', height: '100px' }}
+        >
           <ChartGauge
-            showName
+            showName={false}
             showValue
-            radius="70%"
+            radius="80%"
             isLost={+status < 0}
             status={+status}
+            isMending={isMending}
+            isNotIn={isNotIn}
             name={deviceName}
             value={value || 0}
-            range={[minValue || 0, maxValue || (value ? 2 * value : 5)]}
+            range={isMending ? [0, 2] : [minValue || 0, maxValue || (value ? 2 * value : 5)]}
             normalRange={[normalLower, normalUpper]}
             unit={unit}
+            style={{ flex: 1 }}
           />
+          <div
+            style={{
+              padding: '0 8px',
+              textAlign: 'center',
+              lineHeight: '20px',
+              marginTop: '-15px',
+            }}
+          >
+            <Ellipsis lines={1} tooltip>
+              {deviceName}
+            </Ellipsis>
+          </div>
         </Col>
       );
     });
@@ -94,19 +116,17 @@ export default class FireDevice extends PureComponent {
 
   renderPond = () => {
     const { waterList } = this.props;
-    if (!waterList.filter(item => item.deviceDataList.length).length) {
+    if (!waterList.length) {
       return this.renderNoCards();
     }
     return waterList.map(item => {
-      const { deviceDataList } = item;
-      if (!deviceDataList.length) return null;
+      const { deviceDataList, status: devStatus } = item;
+      const isMending = +devStatus === -1;
+      const isNotIn = !deviceDataList.length;
       const { deviceId, deviceName } = item;
       const [
-        {
-          value,
-          status,
-          unit,
-          deviceParamsInfo: { normalUpper, normalLower },
+        { value, status, unit, deviceParamsInfo: { normalUpper, normalLower } } = {
+          deviceParamsInfo: {},
         },
       ] = deviceDataList;
 
@@ -116,6 +136,8 @@ export default class FireDevice extends PureComponent {
           name={deviceName}
           value={value}
           status={status}
+          isMending={isMending}
+          isNotIn={isNotIn}
           unit={unit}
           range={[normalLower, normalUpper]}
         />
@@ -148,6 +170,7 @@ export default class FireDevice extends PureComponent {
                   <Radio.Button
                     value={val}
                     className={waterAlarm[index] ? styles.tabAlarm : undefined}
+                    key={index}
                   >
                     {waterSys[val].name}
                   </Radio.Button>

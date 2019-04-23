@@ -41,8 +41,10 @@ export default class SpecialEquipmentDrawer extends PureComponent {
       // 数据
       specialData: { list = [] },
     } = this.props;
-
     const { specialStatus } = this.state;
+
+    const expiredList = list.filter(item => +item.checkStatus === 1);
+    const noExpiredList = list.filter(item => +item.checkStatus === 0);
 
     const filterLabel = [
       { value: 2, label: '全部', color: 'rgb(243, 245, 246)', number: list.length },
@@ -50,28 +52,44 @@ export default class SpecialEquipmentDrawer extends PureComponent {
         value: 1,
         label: '已过期',
         color: 'rgb( 248, 51, 41)',
-        number: list.filter(item => item.checkStatus === '1').length,
+        number: expiredList.length,
       },
       {
         value: 0,
         label: '未过期',
         color: 'rgb(243, 245, 246)',
-        number: list.filter(item => item.checkStatus === '0').length,
+        number: noExpiredList.length,
       },
     ];
 
-    const filterList = list.filter(item => {
-      switch (specialStatus) {
-        case 0:
-          return item.checkStatus === '0';
-        case 1:
-          return item.checkStatus === '1';
-        case 2:
-          return true;
-        default:
-          return false;
-      }
-    });
+    // const filterList = list.filter(item => {
+    //   switch (specialStatus) {
+    //     case 0:
+    //       return +item.checkStatus === 0;
+    //     case 1:
+    //       return +item.checkStatus === 1;
+    //     case 2:
+    //       return true;
+    //     default:
+    //       return false;
+    //   }
+    // });
+
+    let filterList = [];
+    switch (specialStatus) {
+      case 0:
+        filterList = noExpiredList;
+        break;
+      case 1:
+        filterList = expiredList;
+        break;
+      case 2:
+        filterList = list;
+        break;
+      default:
+        filterList = list;
+        break;
+    }
 
     return (
       <SectionDrawer
@@ -111,9 +129,16 @@ export default class SpecialEquipmentDrawer extends PureComponent {
       >
         <div className={styles.container}>
           {filterList.map(
-            ({ data_id, data_true_name, factory_number, linkman, recheck_date, checkStatus }) => (
+            ({
+              special_equipment_id,
+              data_true_name,
+              factory_number,
+              linkman,
+              recheck_date,
+              checkStatus,
+            }) => (
               <Cards
-                key={data_id}
+                key={special_equipment_id}
                 status={checkStatus}
                 contentList={[
                   { label: '设备名称', value: data_true_name },

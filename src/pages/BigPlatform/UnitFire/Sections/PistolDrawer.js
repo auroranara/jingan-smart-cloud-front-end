@@ -11,8 +11,9 @@ export default class PistolDrawer extends PureComponent {
       data: { '102': list = [] },
     } = this.props;
     const dataList = list.map(item => {
-      const { deviceDataList } = item;
-      if (!deviceDataList.length) return null;
+      const { deviceDataList, status: devStatus } = item;
+      const isMending = +devStatus === -1;
+      const isNotIn = !deviceDataList.length;
       const { deviceId, deviceName, area, location, videoList } = item;
       const [
         {
@@ -20,7 +21,7 @@ export default class PistolDrawer extends PureComponent {
           status,
           deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
           unit,
-        },
+        } = { deviceParamsInfo: {} },
       ] = deviceDataList;
       return {
         name: deviceName,
@@ -33,16 +34,18 @@ export default class PistolDrawer extends PureComponent {
         normalRange: [normalLower, normalUpper],
         status: +status,
         videoList,
+        isMending,
+        isNotIn,
       };
     });
     const normal = dataList.filter(item => item && item.status === 0).length;
     const abnormal = dataList.filter(item => item).length - normal;
     return (
       <WaterDrawer
-        title={'自动喷淋系统'}
+        title={'喷淋系统'}
         visible={visible}
         dataSet={{
-          subTitle: '自动喷淋',
+          subTitle: '喷淋',
           abnormal,
           normal,
           abnormalImg: pistolAbnormal,

@@ -23,7 +23,17 @@
   cursor: auto;
 }
 
-.container, .containerNoHover {
+.company {
+  cursor: pointer;
+  transition: 0.5s;
+
+  &:hover {
+    color: #00ffff;
+  }
+}
+
+.container,
+.containerNoHover {
   p {
     margin-bottom: 6px;
     color: #FFF;

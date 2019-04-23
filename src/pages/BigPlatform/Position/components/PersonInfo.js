@@ -6,43 +6,51 @@ import { getUserName } from '../utils';
 
 const NO_DATA = '暂无信息';
 
-function getStatusElem(isAlarmExceptSOS, isSOS, isOff, SOSItem, alarmExceptSOSItem) {
-  let elem = null;
-  let disabled = false;
-  let alarmId = undefined;
-  let handleSOS = false;
-  // 最高优先级，sos状态且sos报警还有未处理的
-  if (isSOS && SOSItem) {
-    handleSOS = true;
-    alarmId = SOSItem.id;
-    elem = <span className={styles.sos} />;
-  }
-  // 次优先，普通报警状态且普通报警还有未处理的
-  else if (isAlarmExceptSOS && alarmExceptSOSItem) {
-    alarmId = alarmExceptSOSItem.id;
-    elem = <span className={styles.alarm}>[报警]</span>;
-  }
-  // 第三优先级，sos状态但sos报警都已处理
-  else if (isSOS && !SOSItem) {
-    handleSOS = true;
-    elem = <span className={styles.sos} />;
-  }
-  // 上述三个优先级都可以处理报警，下面一个不需要处理
-  // 第四优先级，普通报警状态存在但报警都已处理
-  else if (isAlarmExceptSOS && !alarmExceptSOSItem) {
-    disabled = true;
-    elem = <span className={styles.alarm}>[报警]</span>;
-  }
-  // 上面的都是有报警的状态，会显示处理报警按钮，下面的离线和在线状态不显示报警处理按钮，所以不需要对disable赋值
-  // 第五优先级，离线状态
-  else if (isOff)
-    elem = <span className={styles.offline}>[离线]</span>;
-  // 最低优先级，在线状态
-  else
-    elem = <span className={styles.online}>[在线]</span>;
+// function getStatusElem(isAlarmExceptSOS, isSOS, isOff, SOSItem, alarmExceptSOSItem) {
+//   let elem = null;
+//   let disabled = false;
+//   let alarmId = undefined;
+//   let handleSOS = false;
+//   // 最高优先级，sos状态且sos报警还有未处理的
+//   if (isSOS && SOSItem) {
+//     handleSOS = true;
+//     alarmId = SOSItem.id;
+//     elem = <span className={styles.sos} />;
+//   }
+//   // 次优先，普通报警状态且普通报警还有未处理的
+//   else if (isAlarmExceptSOS && alarmExceptSOSItem) {
+//     alarmId = alarmExceptSOSItem.id;
+//     elem = <span className={styles.alarm}>[报警]</span>;
+//   }
+//   // 第三优先级，sos状态但sos报警都已处理
+//   else if (isSOS && !SOSItem) {
+//     handleSOS = true;
+//     elem = <span className={styles.sos} />;
+//   }
+//   // 上述三个优先级都可以处理报警，下面一个不需要处理
+//   // 第四优先级，普通报警状态存在但报警都已处理
+//   else if (isAlarmExceptSOS && !alarmExceptSOSItem) {
+//     disabled = true;
+//     elem = <span className={styles.alarm}>[报警]</span>;
+//   }
+//   // 上面的都是有报警的状态，会显示处理报警按钮，下面的离线和在线状态不显示报警处理按钮，所以不需要对disable赋值
+//   // 第五优先级，离线状态
+//   else if (isOff)
+//     elem = <span className={styles.offline}>[离线]</span>;
+//   // 最低优先级，在线状态
+//   else
+//     elem = <span className={styles.online}>[在线]</span>;
 
 
-  return { elem, disabled, alarmId, handleSOS };
+//   return { elem, disabled, alarmId, handleSOS };
+// }
+
+function getStatusElem(isAlarm, isOff) {
+  if (isAlarm)
+    return <span className={styles.alarm}>[报警]</span>;
+  if (isOff)
+    return <span className={styles.offline}>[离线]</span>;
+  return <span className={styles.online}>[在线]</span>;
 }
 
 export default class PersonInfo extends PureComponent {
@@ -79,26 +87,28 @@ export default class PersonInfo extends PureComponent {
       personItem,
       style,
       handleTrack,
-      handleShowAlarmMsgOrHandle,
+      handleShowAlarmHandle,
       handleClose,
       ...restProps
     } = this.props;
 
-    const { cardId, sos: isSOS, tlong, overstep, cardType, phoneNumber, visitorPhone, cardCode, areaId, departmentName, onlineStatus } = personItem;
-    const isAlarmExceptSOS = tlong || overstep;
+    const { cardId, sos, tlong, overstep, cardType, phoneNumber, visitorPhone, cardCode, areaId, departmentName, onlineStatus } = personItem;
+    // const isAlarmExceptSOS = tlong || overstep;
+    const isAlarm = sos || tlong || overstep;
     const isVisitor = !!+cardType;
     const isOff = !+onlineStatus;
     const name = getUserName(personItem);
     const phone = isVisitor ? visitorPhone : phoneNumber;
     const areaName = areaInfo[areaId] ? areaInfo[areaId].fullName : NO_DATA;
-    const sortAlarms = [...alarms];
-    sortAlarms.sort((a1, a2) => a2.warningTime - a1.warningTime);
-    const SOSItem = sortAlarms.find(({ cardId: id, type }) => id === cardId && +type === 1);
-    const alarmExceptSOSItem = sortAlarms.find(({ cardId: id, type }) => id === cardId && +type !== 1);
-    const { elem, disabled, alarmId, handleSOS } = getStatusElem(isAlarmExceptSOS, isSOS, isOff, SOSItem, alarmExceptSOSItem);
+    // const sortAlarms = [...alarms];
+    // sortAlarms.sort((a1, a2) => a2.warningTime - a1.warningTime);
+    // const SOSItem = sortAlarms.find(({ cardId: id, type }) => id === cardId && +type === 1);
+    // const alarmExceptSOSItem = sortAlarms.find(({ cardId: id, type }) => id === cardId && +type !== 1);
+    const alarmIds = alarms.filter(({ cardId: id }) => id === cardId).map(({ id }) => id).join(',');
+    const disabled = !alarmIds;
+    const elem = getStatusElem(isAlarm, isOff);
 
     const newStyle = {
-      // paddingBottom: isSOS ? 70 : 15,
       ...style,
       display: visible ? 'block' : 'none',
     };
@@ -118,12 +128,12 @@ export default class PersonInfo extends PureComponent {
           <p>区域：{areaName}</p>
         </div>
         <div className={styles.btns}>
-          {(isSOS || isAlarmExceptSOS) && (
+          {isAlarm && (
             <Button
               ghost
               disabled={disabled}
               className={styles.btn}
-              onClick={e => handleShowAlarmMsgOrHandle(alarmId, cardId, handleSOS)}
+              onClick={e => handleShowAlarmHandle(alarmIds)}
             >
               {disabled ? '已' : ''}处理
             </Button>

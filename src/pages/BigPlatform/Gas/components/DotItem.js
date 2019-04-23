@@ -6,7 +6,11 @@ export default function DotItem(props) {
   const { title, color, quantity, className, onClick } = props;
   return (
     <Fragment>
-      <span className={className} onClick={onClick}>
+      <span
+        className={className}
+        onClick={onClick}
+        style={{ cursor: onClick ? 'pointer' : 'default' }}
+      >
         <span style={{ backgroundColor: color }} className={styles.dot} />
         {title}
         <span className={styles.quantity}>{quantity}</span>
