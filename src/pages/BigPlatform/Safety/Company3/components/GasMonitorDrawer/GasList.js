@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react';
-import GasCard from '../../../../Monitor/Components/GasCard';
-import EmptyBg from '../../../../Monitor/Components/EmptyBg';
+import GasCard from '../../../../Monitor/components/GasCard';
+import EmptyBg from '../../../../Monitor/components/EmptyBg';
 import styles from './GasList.less';
 
-import { ALL, NORMAL, ABNORMAL, LOSS } from '../../../../Monitor/Components/gasStatus';
+import { ALL, NORMAL, ABNORMAL, LOSS } from '../../../../Monitor/components/gasStatus';
 
 const STATUS_CN = ['正常', '报警', '失联', '全部'];
 const COLORS = [
