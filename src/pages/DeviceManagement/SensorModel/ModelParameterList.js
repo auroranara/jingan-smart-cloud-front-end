@@ -414,7 +414,7 @@ export default class ModelParameterList extends PureComponent {
             <AuthA code={editCode} onClick={() => this.handleToEdit(row)}>编辑</AuthA>
             <Divider type="vertical" />
             {deleteAuth ? (
-              <Popconfirm title="确认要删除该传感器吗？" onConfirm={() => this.handleDelete(row)}>
+              <Popconfirm title="确认要删除该型号参数吗？" onConfirm={() => this.handleDelete(row)}>
                 <a>删除</a>
               </Popconfirm>
             ) : (<span {...noAuthStyle}>删除</span>)}

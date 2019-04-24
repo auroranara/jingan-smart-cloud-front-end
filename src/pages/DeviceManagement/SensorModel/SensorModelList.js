@@ -15,7 +15,7 @@ const breadcrumbList = [
   { title: '设备管理', name: '设备管理' },
   { title, name: title },
 ]
-const colWrapper = { lg: 8, md: 8, sm: 24, xs: 24 }
+const colWrapper = { lg: 12, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
 const defaultPageSize = 10;
 const {
@@ -55,6 +55,7 @@ export default class SensorModelList extends PureComponent {
       // 传感器型号字典
       typeDict: [],
       sensorModelId: null,
+      sensorDetail: {},
       // 弹窗类型 add/edit/copy
       modalType: 'add',
     }
@@ -189,7 +190,7 @@ export default class SensorModelList extends PureComponent {
    * 打开新增弹窗（点击筛选栏新增按钮）
    */
   handleViewAddModel = () => {
-    this.setState({ addModalVisible: true, modalType: 'add', sensorModelId: null })
+    this.setState({ addModalVisible: true, modalType: 'add', sensorModelId: null, sensorDetail: {} })
   }
 
 
@@ -242,6 +243,39 @@ export default class SensorModelList extends PureComponent {
     })
   }
 
+  validateType = (rule, type, callback) => {
+    const { sensorDetail } = this.state
+    const preType = sensorDetail && sensorDetail.type
+    if (type && preType !== type) {
+      const { dispatch } = this.props
+      dispatch({
+        type: 'sensor/fetchModelCount',
+        payload: { type },
+        callback: ({ count }) => {
+          if (+count > 0) {
+            callback('传感器型号已存在')
+          } else callback()
+        },
+      })
+    }
+  }
+
+  validateTypeCode = (rule, typeCode, callback) => {
+    const { sensorDetail } = this.state
+    const preTypeCode = sensorDetail && sensorDetail.typeCode
+    if (typeCode && preTypeCode !== typeCode) {
+      const { dispatch } = this.props
+      dispatch({
+        type: 'sensor/fetchModelCount',
+        payload: { typeCode },
+        callback: ({ count }) => {
+          if (+count > 0) {
+            callback('型号代码已存在')
+          } else callback()
+        },
+      })
+    }
+  }
 
   /**
    * 点击编辑按钮
@@ -250,7 +284,7 @@ export default class SensorModelList extends PureComponent {
     const { form: { setFieldsValue } } = this.props
     this.fetchMonitoringTypeDict({ payload: { brandId: sensorDetail.brandId } })
     this.fetchSensorBrandDict({ payload: { monitoringTypeId: sensorDetail.monitoringTypeId } })
-    this.setState({ sensorModelId: sensorDetail.id, addModalVisible: true, modalType }, () => {
+    this.setState({ sensorModelId: sensorDetail.id, addModalVisible: true, modalType, sensorDetail }, () => {
       const { monitoringType: label, monitoringTypeId: key, type, brandId, typeCode } = sensorDetail
       if (modalType === 'copy') {
         // 如果是复制
@@ -304,6 +338,13 @@ export default class SensorModelList extends PureComponent {
                       <Option key={key} value={key}>{value}</Option>
                     ))}
                   </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('serType')(
+                  <Input placeholder="请输入" />
                 )}
               </FormItem>
             </Col>
@@ -408,26 +449,28 @@ export default class SensorModelList extends PureComponent {
     ]
     return (
       <Card style={{ marginTop: '24px' }}>
-        <Table
-          rowKey="id"
-          // loading={}
-          columns={columns}
-          dataSource={list}
-          scroll={{ x: 1300 }}
-          bordered
-          pagination={{
-            current: pageNum,
-            pageSize,
-            total,
-            showQuickJumper: true,
-            showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
-            onChange: this.handleQuery,
-            onShowSizeChange: (num, size) => {
-              this.handleQuery(1, size);
-            },
-          }}
-        />
+        {list && list.length > 0 ? (
+          <Table
+            rowKey="id"
+            // loading={}
+            columns={columns}
+            dataSource={list}
+            scroll={{ x: 1300 }}
+            bordered
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: this.handleQuery,
+              onShowSizeChange: (num, size) => {
+                this.handleQuery(1, size);
+              },
+            }}
+          />
+        ) : (<div style={{ width: '100%', textAlign: 'center' }}><span>暂无数据</span></div>)}
       </Card>
     )
   }
@@ -460,7 +503,8 @@ export default class SensorModelList extends PureComponent {
         <Form>
           <FormItem label="监测类型" {...formItemLayout}>
             {getFieldDecorator('monitoringType', {
-              rules: [{ required: true, message: '请输入监测类型' }],
+              rules: [{ required: true, message: '请选择监测类型' }],
+              validateTrigger: 'onBlur',
             })(
               <Select labelInValue placeholder="请选择">
                 {monitoringTypeDict.map(({ value, key }) => (
@@ -471,7 +515,8 @@ export default class SensorModelList extends PureComponent {
           </FormItem>
           <FormItem label="品牌" {...formItemLayout}>
             {getFieldDecorator('brandId', {
-              rules: [{ required: true, message: '请输入品牌' }],
+              rules: [{ required: true, message: '请选择品牌' }],
+              validateTrigger: 'onBlur',
             })(
               <Select placeholder="请选择">
                 {brandDict.map(({ value, key }) => (
@@ -482,14 +527,22 @@ export default class SensorModelList extends PureComponent {
           </FormItem>
           <FormItem label="传感器型号" {...formItemLayout}>
             {getFieldDecorator('type', {
-              rules: [{ required: true, message: '请输入传感器型号' }],
+              rules: [
+                { required: true, message: '请输入传感器型号' },
+                { validator: this.validateType },
+              ],
+              validateTrigger: 'onBlur',
             })(
               <Input placeholder="请输入" />
             )}
           </FormItem>
           <FormItem label="型号代码" {...formItemLayout}>
             {getFieldDecorator('typeCode', {
-              rules: [{ required: true, message: '请输入型号代码' }],
+              rules: [
+                { required: true, message: '请输入型号代码' },
+                { validator: this.validateTypeCode },
+              ],
+              validateTrigger: 'onBlur',
             })(
               <Input placeholder="请输入" />
             )}

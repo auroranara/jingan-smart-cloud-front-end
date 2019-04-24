@@ -12,11 +12,12 @@
   box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.75);
   overflow: hidden;
 }
+
 .titleWrapper {
   padding: 17px 19px;
   font-size: 16px;
   background-repeat: no-repeat;
-  background-image: linear-gradient(to left, rgb(4,50,109) 0%, rgb(2,81,148) 81%);
+  background-image: linear-gradient(to left, rgb(4, 50, 109) 0%, rgb(2, 81, 148) 81%);
   background-size: 177px 100%;
 
   .title {
@@ -45,10 +46,12 @@
       }
     }
   }
+
   .action {
     float: right;
   }
 }
+
 .content {
   position: relative;
   height: calc(~"100% - 50px");
@@ -59,6 +62,7 @@
     :global {
       .ant-spin-container {
         height: 100%;
+
         &:after {
           background-color: transparent;
         }
@@ -69,14 +73,24 @@
   .scroll {
     height: 100%;
 
-    & > div {
+    &>div {
       &::-webkit-scrollbar {
         background-color: transparent;
       }
+
       &::-webkit-scrollbar-thumb {
         background-color: transparent;
       }
+
       &::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
+
+      &::-webkit-scrollbar-corner {
+        background-color: transparent;
+      }
+
+      &::-webkit-resizer {
         background-color: transparent;
       }
     }
