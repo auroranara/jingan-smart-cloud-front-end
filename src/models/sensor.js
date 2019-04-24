@@ -28,6 +28,7 @@ import {
   editModelParameter,
   deleteModelParameter,
   copySensorModel,
+  fetchModelCount,
 } from '../services/sensor'
 const defaultPagination = { pageNum: 1, pageSize: 10, total: 0 }
 export default {
@@ -375,6 +376,13 @@ export default {
       if (response && response.code === 200 && success) {
         success()
       } else if (error) error(response)
+    },
+    //
+    *fetchModelCount({ payload, callback }, { call }) {
+      const response = yield call(fetchModelCount, payload)
+      if (response && response.code === 200 && callback) {
+        callback(response.data)
+      }
     },
   },
   reducers: {

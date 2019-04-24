@@ -212,3 +212,11 @@ export async function deleteModelParameter({ modelId, id }) {
     method: 'DELETE',
   })
 }
+
+
+/**
+ * 获取传感器型号统计
+ */
+export async function fetchModelCount(params) {
+  return request(`/acloud_new/v2/sensorType/sensorType/count?${stringify(params)}`)
+}
