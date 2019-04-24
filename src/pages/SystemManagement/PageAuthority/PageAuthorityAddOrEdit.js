@@ -73,7 +73,7 @@ export default class PageAuthorityAdd extends Component {
         };
 
         // 新增时自己计算sort值
-        const [nextSort, sorts] = getSortValue(parentId, tree);
+        const [nextSort, sorts] = getSortValue(parentId, tree, id);
         if (isAdd)
           newVals.sort = nextSort;
         // 编辑时，传id，目标节点中已有当前sort，自动校正

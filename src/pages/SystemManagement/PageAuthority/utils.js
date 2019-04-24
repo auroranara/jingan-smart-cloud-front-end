@@ -134,12 +134,12 @@ function findTargetInTree(targetId, tree) {
   }
 }
 
-// 获取sort值
-export function getSortValue(parentId, tree) {
+// 获取sort值，编辑时sorts数组要先把当前项目对应的sort排除，以保证其位置不会变化
+export function getSortValue(parentId, tree, currentId) {
   const target = findTargetInTree(parentId, tree);
   if (!target)
-    return 0;
-  const sorts = target.map(({ sort }) => +sort).filter(sort => typeof sort === 'number');
+    return [0, []];
+  const sorts = target.filter(({ id }) => id !== currentId).map(({ sort }) => +sort).filter(sort => typeof sort === 'number');
   let sort = 0;
   while (sorts.includes(sort))
     sort++;
