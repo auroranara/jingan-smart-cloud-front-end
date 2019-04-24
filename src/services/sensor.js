@@ -162,7 +162,14 @@ export async function editSensorModel(params) {
 /**
  * 新增传感器型号
  */
-export async function addSensorModel({ copyId, ...body }) {
+export async function addSensorModel(body) {
+  return request('/acloud_new/v2/sensorType/sensorType', {
+    method: 'POST',
+    body,
+  })
+}
+
+export async function copySensorModel({ copyId, ...body }) {
   return request(`/acloud_new/v2/sensorType/sensorType?copyId=${copyId}`, {
     method: 'POST',
     body,

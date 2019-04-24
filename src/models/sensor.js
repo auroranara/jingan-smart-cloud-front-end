@@ -27,6 +27,7 @@ import {
   addModelParameter,
   editModelParameter,
   deleteModelParameter,
+  copySensorModel,
 } from '../services/sensor'
 const defaultPagination = { pageNum: 1, pageSize: 10, total: 0 }
 export default {
@@ -327,6 +328,12 @@ export default {
     // 新增传感器型号
     *addSensorModel({ payload, success, error }, { call }) {
       const response = yield call(addSensorModel, payload)
+      if (response && response.code === 200 && success) {
+        success()
+      } else if (error) error(response)
+    },
+    *copySensorModel({ payload, success, error }, { call }) {
+      const response = yield call(copySensorModel, payload)
       if (response && response.code === 200 && success) {
         success()
       } else if (error) error(response)

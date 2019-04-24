@@ -176,7 +176,6 @@ export default class SensorList extends Component {
         // 传感器型号字典
         typeDict = [],
       },
-      user: { },
     } = this.props
     return (
       <Card>
@@ -192,7 +191,7 @@ export default class SensorList extends Component {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('monitoringTypeId')(
-                  <Select placeholder="监测类型" onChange={this.handlemonitoringTypeChange}>
+                  <Select getPopupContainer={() => document.querySelector('#root>div')} placeholder="监测类型" onChange={this.handlemonitoringTypeChange}>
                     {monitoringTypeDict.map(({ value, key }) => (
                       <Option key={key} value={key}>{value}</Option>
                     ))}
@@ -260,7 +259,7 @@ export default class SensorList extends Component {
 
     const columns = [
       {
-        title: '企业名称',
+        title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 400,
@@ -328,26 +327,31 @@ export default class SensorList extends Component {
     ]
     return (
       <Card style={{ marginTop: '24px' }}>
-        <Table
-          rowKey="deviceId"
-          loading={loading}
-          columns={columns}
-          dataSource={list}
-          bordered
-          scroll={{ x: 1500 }}
-          pagination={{
-            current: pageNum,
-            pageSize,
-            total,
-            showQuickJumper: true,
-            showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
-            onChange: this.handleQuery,
-            onShowSizeChange: (num, size) => {
-              this.handleQuery(1, size);
-            },
-          }}
-        />
+        {list && list.length > 0 ? (
+          <Table
+            rowKey="deviceId"
+            loading={loading}
+            columns={columns}
+            dataSource={list}
+            bordered
+            scroll={{ x: 1500 }}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: this.handleQuery,
+              onShowSizeChange: (num, size) => {
+                this.handleQuery(1, size);
+              },
+            }}
+          />
+        ) : (
+            <div style={{ width: '100%', textAlign: 'center' }}><span>暂无数据</span></div>
+          )}
+
       </Card>
     )
   }

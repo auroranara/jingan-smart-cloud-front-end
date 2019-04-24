@@ -75,7 +75,10 @@ export default class SensorCompanyList extends Component {
     })
   }
 
-  // 获取企业下传感器列表
+
+  /**
+   * 获取企业下传感器列表
+   */
   fetchCompanySensor = actions => {
     const { dispatch } = this.props
     dispatch({
@@ -84,7 +87,10 @@ export default class SensorCompanyList extends Component {
     })
   }
 
-  // 获取已绑定传感器列表
+
+  /**
+   * 获取已绑定传感器列表
+   */
   fetchDeviceBindedSensor = actions => {
     const { dispatch } = this.props
     dispatch({
