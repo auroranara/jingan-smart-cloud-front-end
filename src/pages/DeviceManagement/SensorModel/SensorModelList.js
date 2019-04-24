@@ -9,7 +9,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-const title = '传感器管理'
+const title = '传感器型号管理'
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '设备管理', name: '设备管理' },
@@ -189,7 +189,7 @@ export default class SensorModelList extends PureComponent {
    * 打开新增弹窗（点击筛选栏新增按钮）
    */
   handleViewAddModel = () => {
-    this.setState({ addModalVisible: true, modalType: 'add', sensorDetail: null })
+    this.setState({ addModalVisible: true, modalType: 'add', sensorModelId: null })
   }
 
 
@@ -204,7 +204,7 @@ export default class SensorModelList extends PureComponent {
     const { sensorModelId, modalType } = this.state
     const success = () => {
       message.success(`${modalLabel[modalType]}成功！`)
-      this.setState({ addModalVisible: false, sensorDetail: null })
+      this.setState({ addModalVisible: false })
       this.handleQuery()
     }
     const error = () => {
@@ -212,12 +212,13 @@ export default class SensorModelList extends PureComponent {
     }
     validateFields((errors, values) => {
       if (errors) return
-      const { serBrand, serMonitoringTypeId, serType, monitoringType: { key: monitoringTypeId, label: monitoringType }, ...payload } = values
+      const { serBrand, serMonitoringTypeId, serType, monitoringType: { key: monitoringTypeId, label: monitoringType }, ...others } = values
+      const payload = { ...others, monitoringType, monitoringTypeId }
       // 如果编辑
       if (modalType === 'edit') {
         dispatch({
           type: 'sensor/editSensorModel',
-          payload: { ...payload, id: sensorModelId, monitoringType, monitoringTypeId },
+          payload: { ...payload, id: sensorModelId },
           success,
           error,
         })
@@ -225,15 +226,15 @@ export default class SensorModelList extends PureComponent {
         // 如果新增
         dispatch({
           type: 'sensor/addSensorModel',
-          payload: { ...payload, monitoringType, monitoringTypeId },
+          payload: { ...payload },
           success,
           error,
         })
       } else {
         // 如果复制
         dispatch({
-          type: 'sensor/addSensorModel',
-          payload: { ...payload, monitoringType, monitoringTypeId, copyId: sensorModelId },
+          type: 'sensor/copySensorModel',
+          payload: { ...payload, copyId: sensorModelId },
           success,
           error,
         })
@@ -252,6 +253,7 @@ export default class SensorModelList extends PureComponent {
     this.setState({ sensorModelId: sensorDetail.id, addModalVisible: true, modalType }, () => {
       const { monitoringType: label, monitoringTypeId: key, type, brandId, typeCode } = sensorDetail
       if (modalType === 'copy') {
+        // 如果是复制
         setFieldsValue({
           monitoringType: { key, label },
           brandId,
@@ -395,7 +397,7 @@ export default class SensorModelList extends PureComponent {
         width: 200,
         render: (val, row) => (
           <Fragment>
-            <AuthA code={addCode} onClick={() => router.push(`/device-management/sensor-model/model/${row.id}`)}>配置参数</AuthA>
+            <AuthA code={viewModelCode} onClick={() => router.push(`/device-management/sensor-model/model/${row.id}`)}>配置参数</AuthA>
             <Divider type="vertical" />
             <AuthA code={addCode} onClick={() => this.handleToEdit(row, 'copy')}>复制</AuthA>
             <Divider type="vertical" />
@@ -452,7 +454,7 @@ export default class SensorModelList extends PureComponent {
         width={700}
         destroyOnClose
         visible={addModalVisible}
-        onCancel={() => { this.setState({ addModalVisible: false, sensorDetail: null }) }}
+        onCancel={() => { this.setState({ addModalVisible: false }) }}
         onOk={this.handleAdd}
       >
         <Form>
@@ -500,12 +502,14 @@ export default class SensorModelList extends PureComponent {
   render() {
     const {
       user: { currentUser: { permissionCodes } },
+      sensor: { sensorModel: { pagination: { total = 0 } } },
     } = this.props
     const addAuth = hasAuthority(addCode, permissionCodes)
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
+        content={`传感器型号总数：${total}`}
       >
         {this.renderFilter({ addAuth })}
         {this.renderTable()}

@@ -231,6 +231,10 @@ export default class AddSensor extends Component {
     })
   }
 
+
+  /**
+   * 保存已配置的报警策略
+   */
   handleSaveAlarmStrategy = (key, value) => {
     let currentParameter = this.state.currentParameter
     currentParameter[key] = value
@@ -250,7 +254,13 @@ export default class AddSensor extends Component {
     validateFields(['normalLower', 'normalUpper', 'smallLower', 'largeUpper'], (errors, { normalLower, normalUpper, smallLower, largeUpper }) => {
       if (!errors) {
         let { currentParameter } = this.state
-        currentParameter = { ...currentParameter, normalLower, normalUpper, smallLower, largeUpper }
+        currentParameter = {
+          ...currentParameter,
+          normalLower: +normalLower,
+          normalUpper: +normalUpper,
+          smallLower: +smallLower,
+          largeUpper: +largeUpper,
+        }
         const newMonitoringParameters = monitoringParameters.map(item => {
           return item.id === currentParameter.id ? currentParameter : item
         })
@@ -407,7 +417,7 @@ export default class AddSensor extends Component {
         key: '报警策略数量',
         align: 'center',
         render: (val, { normalUpper, normalLower, largeUpper, smallLower }) => (
-          <span>{(!!normalUpper || !!normalLower) + (!!largeUpper || !!smallLower)}</span>
+          <span>{(numberReg.test(normalUpper) || numberReg.test(normalLower)) + (numberReg.test(largeUpper) || numberReg.test(smallLower))}</span>
         ),
       },
       {
@@ -465,9 +475,7 @@ export default class AddSensor extends Component {
             )}
           </FormItem>
           <FormItem label="传感器名称" {...formItemLayout}>
-            {getFieldDecorator('deviceName', {
-              rules: [{ required: true, message: '请输入传感器名称' }],
-            })(
+            {getFieldDecorator('deviceName')(
               <Input {...itemStyles} />
             )}
           </FormItem>
@@ -480,7 +488,7 @@ export default class AddSensor extends Component {
           </FormItem> */}
           <FormItem label="传感器ID" {...formItemLayout}>
             {getFieldDecorator('relationDeviceId', {
-              rules: [{ required: true, message: '请输入传感器名称' }],
+              rules: [{ required: true, message: '请输入传感器ID' }],
             })(
               <Input {...itemStyles} />
             )}
@@ -522,10 +530,11 @@ export default class AddSensor extends Component {
     } = this.props
     const {
       alarmStrategyModalVisible,
+      currentParameter: { desc } = {},
     } = this.state
     return (
       <Modal
-        title="配置报警策略-A相电压"
+        title={desc ? `配置报警策略--${desc}` : '配置报警策略'}
         width={800}
         visible={alarmStrategyModalVisible}
         onCancel={() => { this.setState({ alarmStrategyModalVisible: false }) }}
@@ -541,7 +550,7 @@ export default class AddSensor extends Component {
               </FormItem>
             </Col>
             <Col span={11}>
-              <FormItem style={{ display: 'inline-block' }} label="报警阈值"></FormItem>
+              <FormItem style={{ display: 'inline-block' }} label="预警阈值"></FormItem>
               <FormItem style={{ width: '180px', display: 'inline-block' }}>
                 {getFieldDecorator('normalLower', {
                   rules: [{ validator: this.validateNormalLower }],

@@ -392,7 +392,7 @@ export default class ModelParameterList extends PureComponent {
         dataIndex: '',
         align: 'center',
         width: 220,
-        render: (val, row) => (<span>{row.minValue}~{row.maxValue}</span>),
+        render: (val, { minValue, maxValue }) => (<span>{minValue && maxValue ? `${minValue}~${maxValue}` : '——'}</span>),
       },
       {
         title: '报警策略数量',
@@ -400,7 +400,7 @@ export default class ModelParameterList extends PureComponent {
         align: 'center',
         width: 130,
         render: (val, { normalUpper, normalLower, largeUpper, smallLower }) => (
-          <span>{(!!normalUpper || !!normalLower) + (!!largeUpper || !!smallLower)}</span>
+          <span>{(numberReg.test(normalUpper) || numberReg.test(normalLower)) + (numberReg.test(largeUpper) || numberReg.test(smallLower))}</span>
         ),
       },
       {
@@ -499,10 +499,11 @@ export default class ModelParameterList extends PureComponent {
     } = this.props
     const {
       alarmStrategyModalVisible,
+      parameterDetail: { desc } = {},
     } = this.state
     return (
       <Modal
-        title="配置报警策略-A相电压"
+        title={desc ? `配置报警策略--${desc}` : '配置报警策略'}
         width={800}
         visible={alarmStrategyModalVisible}
         onCancel={() => { this.setState({ alarmStrategyModalVisible: false }) }}
@@ -518,7 +519,7 @@ export default class ModelParameterList extends PureComponent {
               </FormItem>
             </Col>
             <Col span={11}>
-              <FormItem style={{ display: 'inline-block' }} label="报警阈值"></FormItem>
+              <FormItem style={{ display: 'inline-block' }} label="预警阈值"></FormItem>
               <FormItem style={{ width: '180px', display: 'inline-block' }}>
                 {getFieldDecorator('normalLower', {
                   rules: [{ validator: this.validateNormalLower }],
