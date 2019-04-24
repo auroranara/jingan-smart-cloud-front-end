@@ -229,18 +229,22 @@ export default class FireHostMonitoring extends PureComponent {
             <div className={styles.name}>{deviceName}</div>
             <Row>
               <Col span={12}>
-                当前水位：
-                <span
-                  style={{
-                    color: isGray ? '#bbbbbc' : !isMending && +status === 0 ? '#fff' : '#f83329',
-                  }}
-                >
-                  {isGray || (!value && value !== 0) ? '---' : value + unit}
-                </span>
+                <Ellipsis lines={1} tooltip>
+                  当前水位：
+                  <span
+                    style={{
+                      color: isGray ? '#bbbbbc' : !isMending && +status === 0 ? '#fff' : '#f83329',
+                    }}
+                  >
+                    {isGray || (!value && value !== 0) ? '---' : value + unit}
+                  </span>
+                </Ellipsis>
               </Col>
               <Col span={12}>
-                参考范围：
-                {isNotIn ? '暂无' : rangeStr}
+                <Ellipsis lines={1} tooltip>
+                  参考范围：
+                  {isNotIn ? '暂无' : rangeStr}
+                </Ellipsis>
               </Col>
             </Row>
           </div>
