@@ -79,7 +79,7 @@
   position: relative;
   display: block !important;
   margin: 0 auto;
-  padding: 16px;
+  // padding: 16px;
   max-width: 420px;
   height: 100%;
 }
@@ -93,7 +93,8 @@
   color: #00ffff;
 
   .item {
-    flex: none;
+    // flex: none;
+    width: 100%;
     padding-left: 64px;
     background: no-repeat left;
     background-size: 48px 48px;
@@ -131,4 +132,17 @@
   width: 8px;
   height: 8px;
   margin-right: 5px;
+}
+
+@media screen and (max-width: 1450px) {
+  .container {
+    .itemLabel {
+      font-size: 14px;
+    }
+
+    .item {
+      padding-left: 55px;
+      background-size: 40px 40px;
+    }
+  }
 }
