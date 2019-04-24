@@ -34,6 +34,8 @@ import {
   InspectionDetailDrawer,
   // 特种设备抽屉
   SpecialEquipmentDrawer,
+  // 可燃有毒气体监测
+  GasMonitorDrawer,
 } from './components';
 import IndexDrawer from '../Company2/sections/IndexDrawer';
 // 引入样式文件
@@ -45,13 +47,14 @@ const DEFAULT_PAGE_SIZE = 10;
 /**
  * description: 模板
  */
-@connect(({ unitSafety, loading }) => ({
+@connect(({ unitSafety, loading, monitor }) => ({
   unitSafety,
   loadingSafetyIndex: loading.effects['unitSafety/fetchSafetyIndex'],
   loadingRiskPointInspectionList: loading.effects['unitSafety/fetchRiskPointInspectionList'],
   loadingRiskPointHiddenDangerList: loading.effects['unitSafety/fetchRiskPointHiddenDangerList'],
   loadingHiddenDangerList: loading.effects['unitSafety/fetchHiddenDangerList'],
   loadingDangerList: loading.effects['unitSafety/fetchDangerList'],
+  monitor,
 }))
 export default class UnitSafety extends PureComponent {
   constructor(props) {
@@ -86,6 +89,8 @@ export default class UnitSafety extends PureComponent {
       // 选中的人员id
       checkUserId: null,
       // specialStatus: undefined,
+      // 可燃有毒气体监测
+      gasMonitorDrawerVisible: false,
     };
     // 添加变异函数
     mapMutations(this, {
@@ -151,6 +156,7 @@ export default class UnitSafety extends PureComponent {
       match: {
         params: { companyId },
       },
+      dispatch,
     } = this.props;
     // 获取企业信息
     this.fetchCompanyMessage({ company_id: companyId });
@@ -176,6 +182,9 @@ export default class UnitSafety extends PureComponent {
     this.fetchPoints({ companyId });
     // 获取特种设备列表
     this.fetchSpecialEquipmentInfo({ companyId });
+
+    dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
+    dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
   }
 
   /* 前往动态监控大屏 */
@@ -432,6 +441,10 @@ export default class UnitSafety extends PureComponent {
     this.setState({ selectedStaffRecordsMonth: month });
   };
 
+  handleClickGas = () => {
+    this.setDrawerVisible('gasMonitor');
+  };
+
   /**
    * 渲染
    */
@@ -443,6 +456,7 @@ export default class UnitSafety extends PureComponent {
       loadingRiskPointHiddenDangerList,
       loadingHiddenDangerList,
       loadingDangerList,
+      monitor: { gasCount = {}, gasList = [] },
     } = this.props;
     const {
       riskPointDrawerVisible,
@@ -458,6 +472,7 @@ export default class UnitSafety extends PureComponent {
       inspectionIndex,
       selectedStaffListMonth,
       selectedStaffRecordsMonth,
+      gasMonitorDrawerVisible,
     } = this.state;
     const {
       videoList,
@@ -549,6 +564,7 @@ export default class UnitSafety extends PureComponent {
                 data={dynamicMonitorData}
                 onClick={this.goToMonitor}
                 handleClickVideo={this.showVideo}
+                handleClickGas={this.handleClickGas}
               />
             </div>
           </Col>
@@ -611,6 +627,12 @@ export default class UnitSafety extends PureComponent {
           showList={true}
           keyId={videoKeyId}
           handleVideoClose={this.hideVideo}
+        />
+        <GasMonitorDrawer
+          visible={gasMonitorDrawerVisible}
+          onClose={this.setDrawerVisible}
+          data={gasCount}
+          gasList={gasList}
         />
       </BigPlatformLayout>
     );

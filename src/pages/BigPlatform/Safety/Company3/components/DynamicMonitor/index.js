@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Carousel, Tooltip } from 'antd';
+import { Carousel, Tooltip, Col } from 'antd';
 import debounce from 'lodash/debounce';
 import Section from '../Section';
 // 消防主机
@@ -106,48 +106,52 @@ export default class DynamicMonitor extends PureComponent {
         videoMonitor,
       } = {},
       handleClickVideo,
+      handleClickGas,
     } = this.props;
-    const { zoom } = this.state;
+    // const { zoom } = this.state;
 
     const list = [
       {
-        key: '消防主机监测',
+        key: '消防主机',
         value: getValue(fireEngine),
         icon: fireEngineIcon,
         originalValue: fireEngine,
       },
       {
-        key: '电气火灾监测',
+        key: '电气火灾',
         value: getValue(electricalFire),
         icon: electricalFireIcon,
         originalValue: electricalFire,
       },
       {
-        key: '独立烟感监测',
+        key: '独立烟感',
         value: getValue(smokeAlarm),
         icon: smokeAlarmIcon,
         originalValue: smokeAlarm,
       },
       {
-        key: '储罐监测',
+        key: '储罐',
         value: getValue(storageTank),
         icon: storageTankIcon,
         originalValue: storageTank,
       },
       {
-        key: '可燃有毒气体监测',
+        key: '可燃有毒气体',
         value: getValue(toxicGas),
         icon: toxicGasIcon,
         originalValue: toxicGas,
+        onClick: () => {
+          handleClickGas();
+        },
       },
       {
-        key: '废水监测',
+        key: '废水',
         value: getValue(effluent),
         icon: effluentIcon,
         originalValue: effluent,
       },
       {
-        key: '废气监测',
+        key: '废气',
         value: getValue(exhaustGas),
         icon: exhaustGasIcon,
         originalValue: exhaustGas,
@@ -176,32 +180,37 @@ export default class DynamicMonitor extends PureComponent {
         <div className={styles.container}>
           <Carousel className={styles.carousel} ref={this.refCarousel}>
             <div className={styles.listWrapper}>
-              <div className={styles.list} style={{ zoom }}>
+              <div
+                className={styles.list}
+                //  style={{ zoom }}
+              >
                 {list
                   .slice(0, 4)
                   .map(({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }) => {
                     return (
-                      <div
-                        className={styles.item}
-                        style={{
-                          backgroundImage: `url(${icon})`,
-                          cursor: onClick ? 'pointer' : 'default',
-                        }}
-                        key={key}
-                        onClick={onClick || undefined}
-                      >
-                        <div className={styles.itemLabel}>{key}</div>
+                      <Col xs={24} sm={12} md={12} lg={12}>
+                        <div
+                          className={styles.item}
+                          style={{
+                            backgroundImage: `url(${icon})`,
+                            cursor: onClick ? 'pointer' : 'default',
+                          }}
+                          key={key}
+                          onClick={onClick || undefined}
+                        >
+                          <div className={styles.itemLabel}>{key}</div>
 
-                        <div className={styles.itemValue}>
-                          {/* <Tooltip
-                            placement="bottom"
-                            title={this.renderTooltip(warningNum !== undefined)}
-                          > */}
-                          {value}
-                          {warningNum !== undefined && `/${totalNum}`}
-                          {/* </Tooltip> */}
+                          <div className={styles.itemValue}>
+                            <Tooltip
+                              placement="right"
+                              title={this.renderTooltip(warningNum !== undefined)}
+                            >
+                              {value}
+                              {warningNum !== undefined && `/${totalNum}`}
+                            </Tooltip>
+                          </div>
                         </div>
-                      </div>
+                      </Col>
                     );
                   })}
               </div>
@@ -209,32 +218,37 @@ export default class DynamicMonitor extends PureComponent {
             </div>
             {list.length > 4 && (
               <div className={styles.listWrapper}>
-                <div className={styles.list} style={{ zoom }}>
+                <div
+                  className={styles.list}
+                  //  style={{ zoom }}
+                >
                   {list
                     .slice(4, 8)
                     .map(
                       ({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }) => {
                         return (
-                          <div
-                            className={styles.item}
-                            style={{
-                              backgroundImage: `url(${icon})`,
-                              cursor: onClick ? 'pointer' : 'default',
-                            }}
-                            key={key}
-                            onClick={onClick || undefined}
-                          >
-                            <div className={styles.itemLabel}>{key}</div>
-                            <div className={styles.itemValue}>
-                              {/* <Tooltip
-                                placement="right"
-                                title={this.renderTooltip(warningNum !== undefined)}
-                              > */}
-                              {value}
-                              {warningNum !== undefined && `/${totalNum}`}
-                              {/* </Tooltip> */}
+                          <Col xs={24} sm={12} md={12} lg={12}>
+                            <div
+                              className={styles.item}
+                              style={{
+                                backgroundImage: `url(${icon})`,
+                                cursor: onClick ? 'pointer' : 'default',
+                              }}
+                              key={key}
+                              onClick={onClick || undefined}
+                            >
+                              <div className={styles.itemLabel}>{key}</div>
+                              <div className={styles.itemValue}>
+                                <Tooltip
+                                  placement="right"
+                                  title={this.renderTooltip(warningNum !== undefined)}
+                                >
+                                  {value}
+                                  {warningNum !== undefined && `/${totalNum}`}
+                                </Tooltip>
+                              </div>
                             </div>
-                          </div>
+                          </Col>
                         );
                       }
                     )}
