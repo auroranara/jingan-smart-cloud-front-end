@@ -546,6 +546,42 @@ module.exports = env => {
               ],
             },
             {
+              path: '/role-authorization/commonRole',
+              code: 'roleAuthorization.commonRole',
+              name: 'commonRole',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/role-authorization/commonRole',
+                  redirect: 'list',
+                },
+                {
+                  path: '/role-authorization/commonRole/list',
+                  name: 'list',
+                  code: 'roleAuthorization.commonRole.listView',
+                  component: './RoleAuthorization/CommonRole/CommonRoleList',
+                },
+                {
+                  path: '/role-authorization/commonRole/detail/:id',
+                  name: 'detail',
+                  code: 'roleAuthorization.commonRole.view',
+                  component: './RoleAuthorization/CommonRole/CommonRoleDetail',
+                },
+                {
+                  path: '/role-authorization/commonRole/add',
+                  name: 'add',
+                  code: 'roleAuthorization.commonRole.add',
+                  component: './RoleAuthorization/CommonRole/CommonRoleHandler',
+                },
+                {
+                  path: '/role-authorization/commonRole/edit/:id',
+                  name: 'edit',
+                  code: 'roleAuthorization.commonRole.edit',
+                  component: './RoleAuthorization/CommonRole/CommonRoleHandler',
+                },
+              ],
+            },
+            {
               path: '/role-authorization/userRole',
               code: 'roleAuthorization.userRole',
               name: 'userRole',
