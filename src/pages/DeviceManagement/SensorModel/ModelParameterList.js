@@ -92,12 +92,12 @@ export default class ModelParameterList extends PureComponent {
    * 量程最小值改变
    */
   handleminValueChange = (e) => {
-    const minValue = e.target.value
+    const minValue = e.target.value.trim() || null
     const { setFieldsValue, getFieldValue } = this.props.form
     const range = getFieldValue('range')
     // const maxValue=getFieldValue('maxValue')
     // 如果是数字
-    if (!isNaN(minValue) || numberReg.test(minValue) || minValue === '') {
+    if (!isNaN(minValue) || numberReg.test(minValue)) {
       setFieldsValue({ range: { ...range, minValue } })
     }
   }
@@ -107,12 +107,12 @@ export default class ModelParameterList extends PureComponent {
    * 量程最大值改变
    */
   handlemaxValueChange = (e) => {
-    const maxValue = e.target.value
+    const maxValue = e.target.value.trim() || null
     const { setFieldsValue, getFieldValue } = this.props.form
     const range = getFieldValue('range')
     // const minValue=getFieldValue('maxValue')
     // 如果是数字
-    if (!isNaN(maxValue) || numberReg.test(maxValue) || maxValue === '') {
+    if (!isNaN(maxValue) || numberReg.test(maxValue)) {
       setFieldsValue({ range: { ...range, maxValue } })
     }
   }
@@ -314,7 +314,6 @@ export default class ModelParameterList extends PureComponent {
         const { parameterDetail } = this.state
         const payload = { ...parameterDetail, normalLower, normalUpper, smallLower, largeUpper }
         this.setState({ alarmStrategyModalVisible: false })
-        this.handleQuery()
         dispatch({
           type: 'sensor/editModelParameter',
           payload,
@@ -464,19 +463,23 @@ export default class ModelParameterList extends PureComponent {
             )}
           </FormItem>
           <FormItem label="描述" {...formItemLayout}>
-            {getFieldDecorator('desc')(
+            {getFieldDecorator('desc', {
+              getValueFromEvent: e => e.target.value.trim(),
+            })(
               <Input placeholder="请输入" />
             )}
           </FormItem>
           <FormItem label="单位" {...formItemLayout}>
-            {getFieldDecorator('unit')(
+            {getFieldDecorator('unit', {
+              getValueFromEvent: e => e.target.value.trim(),
+            })(
               <Input placeholder="请输入" />
             )}
           </FormItem>
           <FormItem label="量程" {...formItemLayout}>
             {getFieldDecorator('range', {
               rules: [{ validator: this.validateRange }],
-              trigger: 'onBlur',
+              validateTrigger: 'onBlur',
             })(
               <Fragment>
                 <Input placeholder="请输入" value={range.minValue} onChange={this.handleminValueChange} style={{ width: 'calc(50% - 1em)' }} addonBefore="下限" addonAfter="v" />
@@ -499,7 +502,7 @@ export default class ModelParameterList extends PureComponent {
     } = this.props
     const {
       alarmStrategyModalVisible,
-      parameterDetail: { desc } = {},
+      parameterDetail: { desc, unit } = {},
     } = this.state
     return (
       <Modal
@@ -523,8 +526,9 @@ export default class ModelParameterList extends PureComponent {
               <FormItem style={{ width: '180px', display: 'inline-block' }}>
                 {getFieldDecorator('normalLower', {
                   rules: [{ validator: this.validateNormalLower }],
+                  getValueFromEvent: e => e.target.value.trim() || null,
                 })(
-                  <Input addonBefore="下限" addonAfter="V" style={{ width: '100%' }} />
+                  <Input addonBefore="下限" addonAfter={unit} style={{ width: '100%' }} />
                 )}
               </FormItem>
             </Col>
@@ -532,8 +536,9 @@ export default class ModelParameterList extends PureComponent {
               <FormItem>
                 {getFieldDecorator('normalUpper', {
                   rules: [{ validator: this.validateNormalUpper }],
+                  getValueFromEvent: e => e.target.value.trim() || null,
                 })(
-                  <Input addonBefore="上限" addonAfter="V" style={{ width: '180px' }} />
+                  <Input addonBefore="上限" addonAfter={unit} style={{ width: '180px' }} />
                 )}
               </FormItem>
             </Col>
@@ -552,8 +557,9 @@ export default class ModelParameterList extends PureComponent {
               <FormItem style={{ width: '180px', display: 'inline-block' }}>
                 {getFieldDecorator('smallLower', {
                   rules: [{ validator: this.validateSmallLower }],
+                  getValueFromEvent: e => e.target.value.trim() || null,
                 })(
-                  <Input addonBefore="下限" addonAfter="V" style={{ width: '100%' }} />
+                  <Input addonBefore="下限" addonAfter={unit} style={{ width: '100%' }} />
                 )}
               </FormItem>
             </Col>
@@ -561,8 +567,9 @@ export default class ModelParameterList extends PureComponent {
               <FormItem>
                 {getFieldDecorator('largeUpper', {
                   rules: [{ validator: this.validateLargeUpper }],
+                  getValueFromEvent: e => e.target.value.trim() || null,
                 })(
-                  <Input addonBefore="上限" addonAfter="V" style={{ width: '180px' }} />
+                  <Input addonBefore="上限" addonAfter={unit} style={{ width: '180px' }} />
                 )}
               </FormItem>
             </Col>
