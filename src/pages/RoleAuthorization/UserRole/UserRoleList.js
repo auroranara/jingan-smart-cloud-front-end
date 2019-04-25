@@ -11,7 +11,7 @@ import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
 import styles from '@/pages/RoleAuthorization/Role/Role.less';
-import { getUnitTypeLabel } from '@/pages/RoleAuthorization/Role/utils';
+import { getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from '@/pages/RoleAuthorization/Role/utils';
 
 const { TreeNode } = TreeSelect;
 
@@ -41,18 +41,6 @@ const {
 const {
   role: { detail: detailCode, edit: editCode, add: addCode },
 } = codes;
-/* 去除两边空格 */
-const transform = value => value.trim();
-/* 获取无数据 */
-const getEmptyData = () => {
-  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-};
-/* 设置相对定位 */
-const getRootChild = () => document.querySelector('#root>div');
-// 阻止默认行为
-const preventDefault = e => {
-  e.preventDefault();
-};
 
 @connect(
   ({ account, role, user, loading }) => ({

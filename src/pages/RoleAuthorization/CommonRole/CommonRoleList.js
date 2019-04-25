@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Input, Card, Button, Spin, List, Modal, message, TreeSelect } from 'antd';
+import { Form, Input, Card, Button, Spin, List, Modal, message, Select, TreeSelect } from 'antd';
 import { Link, routerRedux } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
@@ -11,12 +11,13 @@ import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
 import styles from '@/pages/RoleAuthorization/Role/Role.less';
-import { getUnitTypeLabel } from '@/pages/RoleAuthorization/Role/utils';
+import { getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from '@/pages/RoleAuthorization/Role/utils';
 
+const { Option } = Select;
 const { TreeNode } = TreeSelect;
 
 // 标题
-const title = '角色管理';
+const title = '用户公共角色';
 // 面包屑
 const breadcrumbList = [
   {
@@ -41,18 +42,6 @@ const {
 const {
   role: { detail: detailCode, edit: editCode, add: addCode },
 } = codes;
-/* 去除两边空格 */
-const transform = value => value.trim();
-/* 获取无数据 */
-const getEmptyData = () => {
-  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-};
-/* 设置相对定位 */
-const getRootChild = () => document.querySelector('#root>div');
-// 阻止默认行为
-const preventDefault = e => {
-  e.preventDefault();
-};
 
 @connect(
   ({ account, role, user, loading }) => ({

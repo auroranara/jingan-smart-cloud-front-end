@@ -7,7 +7,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
-import { checkParent, uncheckParent, sortTree } from '@/pages/RoleAuthorization/Role/utils';
+import { checkParent, uncheckParent, sortTree } from './utils';
 
 const { TreeNode } = Tree;
 const { TextArea } = Input;
@@ -76,7 +76,7 @@ const {
   })
 )
 @Form.create()
-export default class UserRoleHandler extends PureComponent {
+export default class RoleHandler extends PureComponent {
   state = {
     submitting: false,
     unitType: undefined,
@@ -352,13 +352,13 @@ export default class UserRoleHandler extends PureComponent {
               trigger: 'onCheck',
               validateTrigger: 'onCheck',
               valuePropName: 'checkedKeys',
-              rules: [
-                {
-                  required: true,
-                  message: '请选择WEB权限',
-                  transform: value => value && value.join(','),
-                },
-              ],
+              // rules: [
+              //   {
+              //     required: true,
+              //     message: '请选择WEB权限',
+              //     transform: value => value && value.join(','),
+              //   },
+              // ],
             })(<Tree checkable>{this.renderTreeNodes(tree)}</Tree>)}
           </Form.Item>
           {unitType !== 3 && (
@@ -379,13 +379,13 @@ export default class UserRoleHandler extends PureComponent {
                 trigger: 'onCheck',
                 validateTrigger: 'onCheck',
                 valuePropName: 'checkedKeys',
-                rules: [
-                  {
-                    required: true,
-                    message: '请选择APP权限',
-                    transform: value => value && value.join(','),
-                  },
-                ],
+                // rules: [
+                //   {
+                //     required: true,
+                //     message: '请选择APP权限',
+                //     transform: value => value && value.join(','),
+                //   },
+                // ],
               })(<Tree checkable>{this.renderTreeNodes(appTree)}</Tree>)}
             </Form.Item>
           )}

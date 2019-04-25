@@ -2,11 +2,13 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Card, Spin, Tree, Button } from 'antd';
 import { routerRedux } from 'dva/router';
+
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
+import { getEmptyData, sortTree } from '@/pages/RoleAuthorization/Role/utils';
 
 const { Description } = DescriptionList;
 const { TreeNode } = Tree;
@@ -38,40 +40,6 @@ const breadcrumbList = [
     name: title,
   },
 ];
-/* 获取无数据 */
-const getEmptyData = () => {
-  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-};
-/* 对树排序 */
-const sortTree = (list) => {
-  const newList = [];
-  list.forEach((item) => {
-    const { childMenus, sort } = item;
-    if (!sort && sort !== 0) {
-      newList.push({
-        ...item,
-      });
-      return;
-    }
-    if (childMenus) {
-      newList[sort] = {
-        ...item,
-        childMenus: sortTree(childMenus),
-      };
-    }
-    else {
-      newList[sort] = {
-        ...item,
-      };
-    }
-  });
-  for(var i=newList.length-1;i>=0;i--){
-    if (!newList[i]) {
-      newList.splice(i, 1);
-    }
-  }
-  return newList;
-};
 
 @connect(({ account, role, user, loading }) => ({
   account,

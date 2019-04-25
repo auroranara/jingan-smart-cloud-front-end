@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Input, Card, Button, Select, Spin, List, Modal, message, TreeSelect } from 'antd';
-import { Link } from 'dva/router';
+import { Link, routerRedux } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
 
@@ -11,7 +11,7 @@ import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
 import styles from './Role.less';
-import { LIST_PAGE_SIZE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from './utils';
+import { getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from './utils';
 
 const { Option } = Select;
 const { TreeNode } = TreeSelect;
@@ -41,26 +41,100 @@ const {
   role: { detail: detailCode, edit: editCode, add: addCode },
 } = codes;
 
+@connect(
+  ({ account, role, user, loading }) => ({
+    account,
+    role,
+    user,
+    loading: loading.models.role,
+  }),
+  dispatch => ({
+    /* 获取角色列表 */
+    fetchList(action) {
+      dispatch({
+        type: 'role/fetchList',
+        ...action,
+      });
+    },
+    /* 追加维保合同列表 */
+    appendList(action) {
+      dispatch({
+        type: 'role/appendList',
+        ...action,
+      });
+    },
+    /* 删除 */
+    remove(action) {
+      dispatch({
+        type: 'role/remove',
+        ...action,
+      });
+    },
+    // 获取权限树
+    fetchPermissionTree() {
+      dispatch({
+        type: 'role/fetchPermissionTree',
+      });
+    },
+    /* 跳转到详情页面 */
+    goToDetail(id) {
+      dispatch(routerRedux.push(detailUrl + id));
+    },
+    /* 跳转到新增页面 */
+    goToAdd() {
+      dispatch(routerRedux.push(addUrl));
+    },
+    /* 跳转到编辑页面 */
+    goToEdit() {
+      dispatch(routerRedux.push(editUrl));
+    },
+    // 异常
+    goToException() {
+      dispatch(routerRedux.push('/exception/500'));
+    },
+    dispatch,
+  })
+)
 @Form.create()
 export default class RoleList extends PureComponent {
   state = {
     formData: {},
+    // isInit: false,
   };
 
   componentDidMount() {
     const {
       dispatch,
       fetchList,
+      goToException,
       fetchPermissionTree,
+      role: {
+        permissionTree,
+        data: {
+          pagination: { pageSize },
+        },
+      },
     } = this.props;
     dispatch({ type: 'account/fetchOptions' });
+    // 获取列表
     fetchList({
       payload: {
         pageNum: 1,
-        pageSize: LIST_PAGE_SIZE,
+        pageSize,
+      },
+      // success: () => {
+      //   this.setState({
+      //     isInit: true,
+      //   });
+      // },
+      error: () => {
+        goToException();
       },
     });
-    fetchPermissionTree();
+    // 获取权限树
+    if (permissionTree.length === 0) {
+      fetchPermissionTree();
+    }
   }
 
   /* 滚动加载 */
@@ -92,34 +166,60 @@ export default class RoleList extends PureComponent {
 
   /* 查询点击事件 */
   handleSearch = values => {
-    const { fetchList } = this.props;
+    const {
+      fetchList,
+      goToException,
+      role: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
 
     fetchList({
       payload: {
         ...values,
-        pageSize: LIST_PAGE_SIZE,
+        pageSize,
         pageNum: 1,
       },
       success: () => {
+        // message.success('查询成功', 1);
         this.setState({
           formData: values,
         });
+      },
+      error: () => {
+        // message.success('查询失败', 1);
+        goToException();
       },
     });
   };
 
   /* 重置点击事件 */
   handleReset = () => {
-    const { fetchList } = this.props;
+    const {
+      fetchList,
+      goToException,
+      role: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
     fetchList({
       payload: {
-        pageSize: LIST_PAGE_SIZE,
+        pageSize,
         pageNum: 1,
       },
       success: () => {
+        // message.success('重置成功', 1);
         this.setState({
           formData: {},
         });
+      },
+      error: () => {
+        // message.success('重置失败', 1);
+        goToException();
       },
     });
   };
@@ -213,7 +313,8 @@ export default class RoleList extends PureComponent {
         transform,
       },
     ];
-    const hasAddAuthority = hasAuthority(addCode, permissionCodes); // 是否有新增权限
+    // 是否有新增权限
+    const hasAddAuthority = hasAuthority(addCode, permissionCodes);
 
     return (
       <Card>
@@ -244,13 +345,16 @@ export default class RoleList extends PureComponent {
       },
       goToDetail,
     } = this.props;
-    const hasDetailAuthority = hasAuthority(detailCode, permissionCodes); // 是否有查看权限
-    const hasEditAuthority = hasAuthority(editCode, permissionCodes); // 是否有编辑权限
+    // 是否有查看权限
+    const hasDetailAuthority = hasAuthority(detailCode, permissionCodes);
+    // 是否有编辑权限
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
           rowKey="id"
+          // loading={loading}
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
