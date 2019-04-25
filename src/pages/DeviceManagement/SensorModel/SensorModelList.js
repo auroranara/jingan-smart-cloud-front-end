@@ -40,6 +40,7 @@ const modalLabel = { 'add': '新增', 'edit': '编辑', 'copy': '复制' }
   sensor,
   resourceManagement,
   user,
+  loading: loading.effects['sensor/fetchSensorModels'],
 }))
 export default class SensorModelList extends PureComponent {
 
@@ -257,7 +258,7 @@ export default class SensorModelList extends PureComponent {
           } else callback()
         },
       })
-    }
+    } else callback()
   }
 
   validateTypeCode = (rule, typeCode, callback) => {
@@ -274,7 +275,7 @@ export default class SensorModelList extends PureComponent {
           } else callback()
         },
       })
-    }
+    } else callback()
   }
 
   /**
@@ -344,7 +345,7 @@ export default class SensorModelList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('serType')(
-                  <Input placeholder="请输入" />
+                  <Input placeholder="传感器型号" />
                 )}
               </FormItem>
             </Col>
@@ -377,6 +378,7 @@ export default class SensorModelList extends PureComponent {
   */
   renderTable = () => {
     const {
+      loading,
       sensor: {
         sensorModel: {
           list = [],
@@ -452,7 +454,7 @@ export default class SensorModelList extends PureComponent {
         {list && list.length > 0 ? (
           <Table
             rowKey="id"
-            // loading={}
+            loading={loading}
             columns={columns}
             dataSource={list}
             scroll={{ x: 1300 }}

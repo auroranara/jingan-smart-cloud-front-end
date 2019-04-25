@@ -256,10 +256,10 @@ export default class AddSensor extends Component {
         let { currentParameter } = this.state
         currentParameter = {
           ...currentParameter,
-          normalLower: +normalLower,
-          normalUpper: +normalUpper,
-          smallLower: +smallLower,
-          largeUpper: +largeUpper,
+          normalLower: normalLower && +normalLower,
+          normalUpper: normalUpper && +normalUpper,
+          smallLower: smallLower && +smallLower,
+          largeUpper: largeUpper && +largeUpper,
         }
         const newMonitoringParameters = monitoringParameters.map(item => {
           return item.id === currentParameter.id ? currentParameter : item
@@ -530,7 +530,7 @@ export default class AddSensor extends Component {
     } = this.props
     const {
       alarmStrategyModalVisible,
-      currentParameter: { desc } = {},
+      currentParameter: { desc, unit } = {},
     } = this.state
     return (
       <Modal
@@ -554,8 +554,9 @@ export default class AddSensor extends Component {
               <FormItem style={{ width: '180px', display: 'inline-block' }}>
                 {getFieldDecorator('normalLower', {
                   rules: [{ validator: this.validateNormalLower }],
+                  getValueFromEvent: e => e.target.value.trim() || null,
                 })(
-                  <Input addonBefore="下限" addonAfter="V" style={{ width: '100%' }} />
+                  <Input addonBefore="下限" addonAfter={unit} style={{ width: '100%' }} />
                 )}
               </FormItem>
             </Col>
@@ -563,8 +564,9 @@ export default class AddSensor extends Component {
               <FormItem>
                 {getFieldDecorator('normalUpper', {
                   rules: [{ validator: this.validateNormalUpper }],
+                  getValueFromEvent: e => e.target.value.trim() || null,
                 })(
-                  <Input addonBefore="上限" addonAfter="V" style={{ width: '180px' }} />
+                  <Input addonBefore="上限" addonAfter={unit} style={{ width: '180px' }} />
                 )}
               </FormItem>
             </Col>
@@ -583,8 +585,9 @@ export default class AddSensor extends Component {
               <FormItem style={{ width: '180px', display: 'inline-block' }}>
                 {getFieldDecorator('smallLower', {
                   rules: [{ validator: this.validateSmallLower }],
+                  getValueFromEvent: e => e.target.value.trim() || null,
                 })(
-                  <Input addonBefore="下限" addonAfter="V" style={{ width: '100%' }} />
+                  <Input addonBefore="下限" addonAfter={unit} style={{ width: '100%' }} />
                 )}
               </FormItem>
             </Col>
@@ -592,8 +595,9 @@ export default class AddSensor extends Component {
               <FormItem>
                 {getFieldDecorator('largeUpper', {
                   rules: [{ validator: this.validateLargeUpper }],
+                  getValueFromEvent: e => e.target.value.trim() || null,
                 })(
-                  <Input addonBefore="上限" addonAfter="V" style={{ width: '180px' }} />
+                  <Input addonBefore="上限" addonAfter={unit} style={{ width: '180px' }} />
                 )}
               </FormItem>
             </Col>
