@@ -16,7 +16,7 @@ const formItemLayout = {
 };
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
 const defaultPageSize = 10;
-const numberReg = /^(0|[1-9][0-9]*)(\.[0-9]*)?$/;
+const numberReg = /^(0|[1-9][0-9]*)(\.[0-9]{1,3})?$/;
 
 @Form.create()
 @connect(({ sensor, loading }) => ({
@@ -280,7 +280,7 @@ export default class AddSensor extends Component {
   validateNormalLower = (rule, value, callback) => {
     if (!value) {
       callback()
-    } else if (!isNaN(value) || numberReg.test(value)) {
+    } else if (numberReg.test(value)) {
       // 如果是数字
       const { getFieldsValue } = this.props.form
       const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
@@ -307,7 +307,7 @@ export default class AddSensor extends Component {
   validateNormalUpper = (rule, value, callback) => {
     if (!value) {
       callback()
-    } else if (!isNaN(value) || numberReg.test(value)) {
+    } else if (numberReg.test(value)) {
       const { getFieldsValue } = this.props.form
       const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
       if (+value < 0) {
@@ -333,7 +333,7 @@ export default class AddSensor extends Component {
   validateSmallLower = (rule, value, callback) => {
     if (!value) {
       callback()
-    } else if (!isNaN(value) || numberReg.test(value)) {
+    } else if (numberReg.test(value)) {
       const { getFieldsValue } = this.props.form
       const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
       if (+value < 0) {
@@ -359,7 +359,7 @@ export default class AddSensor extends Component {
   validateLargeUpper = (rule, value, callback) => {
     if (!value) {
       callback()
-    } else if (!isNaN(value) || numberReg.test(value)) {
+    } else if (numberReg.test(value)) {
       const { getFieldsValue } = this.props.form
       const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
       if (+value < 0) {

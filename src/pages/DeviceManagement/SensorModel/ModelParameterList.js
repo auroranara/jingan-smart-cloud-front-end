@@ -29,7 +29,7 @@ const {
     },
   },
 } = codes
-const numberReg = /^(0|[1-9][0-9]*)(\.[0-9]*)?$/;
+const numberReg = /^(0|[1-9][0-9]*)(\.[0-9]{1,3})?$/;
 
 @Form.create()
 @connect(({ sensor, user, loading }) => ({
@@ -96,8 +96,8 @@ export default class ModelParameterList extends PureComponent {
     const { setFieldsValue, getFieldValue } = this.props.form
     const range = getFieldValue('range')
     // const maxValue=getFieldValue('maxValue')
-    // 如果是数字
-    if (!isNaN(minValue) || numberReg.test(minValue)) {
+    // 如果是数字或无输入
+    if (!minValue || numberReg.test(minValue)) {
       setFieldsValue({ range: { ...range, minValue } })
     }
   }
@@ -112,7 +112,7 @@ export default class ModelParameterList extends PureComponent {
     const range = getFieldValue('range')
     // const minValue=getFieldValue('maxValue')
     // 如果是数字
-    if (!isNaN(maxValue) || numberReg.test(maxValue)) {
+    if (!maxValue || numberReg.test(maxValue)) {
       setFieldsValue({ range: { ...range, maxValue } })
     }
   }
@@ -175,7 +175,7 @@ export default class ModelParameterList extends PureComponent {
   validateNormalLower = (rule, value, callback) => {
     if (!value) {
       callback()
-    } else if (!isNaN(value) || numberReg.test(value)) {
+    } else if (numberReg.test(value)) {
       // 如果是数字
       const { getFieldsValue } = this.props.form
       const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
@@ -202,7 +202,7 @@ export default class ModelParameterList extends PureComponent {
   validateNormalUpper = (rule, value, callback) => {
     if (!value) {
       callback()
-    } else if (!isNaN(value) || numberReg.test(value)) {
+    } else if (numberReg.test(value)) {
       const { getFieldsValue } = this.props.form
       const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
       if (+value < 0) {
@@ -228,7 +228,7 @@ export default class ModelParameterList extends PureComponent {
   validateSmallLower = (rule, value, callback) => {
     if (!value) {
       callback()
-    } else if (!isNaN(value) || numberReg.test(value)) {
+    } else if (numberReg.test(value)) {
       const { getFieldsValue } = this.props.form
       const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
       if (+value < 0) {
@@ -254,7 +254,7 @@ export default class ModelParameterList extends PureComponent {
   validateLargeUpper = (rule, value, callback) => {
     if (!value) {
       callback()
-    } else if (!isNaN(value) || numberReg.test(value)) {
+    } else if (numberReg.test(value)) {
       const { getFieldsValue } = this.props.form
       const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
       if (+value < 0) {
@@ -442,8 +442,7 @@ export default class ModelParameterList extends PureComponent {
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props
-    const { parameterDetail, addModalVisible } = this.state
-    const id = parameterDetail && parameterDetail.id || null
+    const { parameterDetail: { id, unit }, addModalVisible } = this.state
     const range = getFieldValue('range') || {}
     return (
       <Modal
@@ -482,9 +481,9 @@ export default class ModelParameterList extends PureComponent {
               validateTrigger: 'onBlur',
             })(
               <Fragment>
-                <Input placeholder="请输入" value={range.minValue} onChange={this.handleminValueChange} style={{ width: 'calc(50% - 1em)' }} addonBefore="下限" addonAfter="v" />
+                <Input placeholder="请输入" value={range.minValue} onChange={this.handleminValueChange} style={{ width: 'calc(50% - 1em)' }} addonBefore="下限" addonAfter={unit} />
                 <span style={{ padding: '0 1em' }}></span>
-                <Input placeholder="请输入" value={range.maxValue} onChange={this.handlemaxValueChange} style={{ width: 'calc(50% - 1em)' }} addonBefore="上限" addonAfter="v" />
+                <Input placeholder="请输入" value={range.maxValue} onChange={this.handlemaxValueChange} style={{ width: 'calc(50% - 1em)' }} addonBefore="上限" addonAfter={unit} />
               </Fragment>
             )}
           </FormItem>
