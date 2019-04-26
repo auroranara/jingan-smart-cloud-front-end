@@ -323,7 +323,7 @@ export default class SensorModelList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('serMonitoringTypeId')(
-                  <Select placeholder="监测类型">
+                  <Select placeholder="监测类型" dropdownStyle={{ zIndex: 50 }}>
                     {monitoringTypeDict.map(({ value, key }) => (
                       <Option key={key} value={key}>{value}</Option>
                     ))}

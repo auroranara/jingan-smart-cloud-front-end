@@ -58,7 +58,7 @@ const breadcrumbList = [
   {
     title: '建筑物信息',
     name: '建筑物信息',
-    href: '/personnel-position/buildings-info/list',
+    href: '/base-info/buildings-info/list',
   },
   {
     title: '建筑物信息列表',
@@ -335,7 +335,7 @@ export default class BuildingInfoList extends PureComponent {
                 <AuthButton
                   type="primary"
                   code={codesMap.personnelPosition.buildingsInfo.add}
-                  href={`#/personnel-position/buildings-info/add?companyId=${companyId}&&name=${name}`}
+                  href={`#/base-info/buildings-info/add?companyId=${companyId}&&name=${name}`}
                 >
                   新增
                 </AuthButton>
@@ -390,7 +390,7 @@ export default class BuildingInfoList extends PureComponent {
                     <AuthLink
                       code={codesMap.personnelPosition.buildingsInfo.edit}
                       codes={codes}
-                      to={`/personnel-position/buildings-info/edit/${id}?companyId=${companyId}&&name=${name}`}
+                      to={`/base-info/buildings-info/edit/${id}?companyId=${companyId}&&name=${name}`}
                     >
                       编辑
                     </AuthLink>,
@@ -426,8 +426,8 @@ export default class BuildingInfoList extends PureComponent {
                           }}
                         />
                       ) : (
-                        <div className={styles.detailpic} />
-                      )}
+                          <div className={styles.detailpic} />
+                        )}
                     </Col>
                     <Col span={14}>
                       <p>
@@ -453,7 +453,7 @@ export default class BuildingInfoList extends PureComponent {
                       <AuthButton
                         code={codesMap.personnelPosition.buildingsInfo.floorListView}
                         style={{ cursor: 'pointer' }}
-                        href={`#/personnel-position/buildings-info/floor/list/${id}?companyId=${companyId}&&name=${name}`}
+                        href={`#/base-info/buildings-info/floor/list/${id}?companyId=${companyId}&&name=${name}`}
                       >
                         楼层管理
                       </AuthButton>

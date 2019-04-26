@@ -109,8 +109,8 @@ export default class FloorManagementEdit extends PureComponent {
     const success = () => {
       message.success(id ? '编辑成功' : '新增成功');
       router.push(
-        `/personnel-position/buildings-info/floor/list/${newbuildingId ||
-          buildingId}?companyId=${companyId}&&name=${name}`
+        `/base-info/buildings-info/floor/list/${newbuildingId ||
+        buildingId}?companyId=${companyId}&&name=${name}`
       );
     };
 
@@ -314,20 +314,20 @@ export default class FloorManagementEdit extends PureComponent {
           {id ? (
             <Button
               loading={uploading}
-              href={`#/personnel-position/buildings-info/floor/list/${editBuilding}?companyId=${companyId}&&name=${name}`}
+              href={`#/base-info/buildings-info/floor/list/${editBuilding}?companyId=${companyId}&&name=${name}`}
               style={{ marginLeft: '10px' }}
             >
               返回
             </Button>
           ) : (
-            <Button
-              loading={uploading}
-              href={`#/personnel-position/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`}
-              style={{ marginLeft: '10px' }}
-            >
-              返回
+              <Button
+                loading={uploading}
+                href={`#/base-info/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`}
+                style={{ marginLeft: '10px' }}
+              >
+                返回
             </Button>
-          )}
+            )}
         </div>
       </Card>
     );
@@ -360,8 +360,8 @@ export default class FloorManagementEdit extends PureComponent {
         title: '楼层管理列表',
         name: '楼层管理列表',
         href: id
-          ? `/personnel-position/buildings-info/floor/list/${editBuildingId}?companyId=${companyId}&&name=${name}`
-          : `/personnel-position/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`,
+          ? `/base-info/buildings-info/floor/list/${editBuildingId}?companyId=${companyId}&&name=${name}`
+          : `/base-info/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`,
       },
       {
         title: id ? editTitle : addTitle,
