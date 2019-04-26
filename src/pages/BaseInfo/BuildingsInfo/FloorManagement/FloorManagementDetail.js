@@ -184,7 +184,7 @@ export default class FloorManagementDetail extends PureComponent {
       {
         title: '楼层管理列表',
         name: '楼层管理列表',
-        href: `/personnel-position/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${companyName}`,
+        href: `/base-info/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${companyName}`,
       },
       {
         title,

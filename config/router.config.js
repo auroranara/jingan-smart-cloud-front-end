@@ -331,6 +331,75 @@ module.exports = env => {
                 },
               ],
             },
+            /* 建筑物信息 */
+            {
+              name: 'buildingsInfo',
+              path: '/base-info/buildings-info',
+              code: 'personnelPosition.buildingsInfo',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/buildings-info',
+                  redirect: '/base-info/buildings-info/list',
+                },
+                {
+                  name: 'list',
+                  code: 'personnelPosition.buildingsInfo.listView',
+                  path: '/base-info/buildings-info/list',
+                  component: './BaseInfo/BuildingsInfo/CompanyList',
+                },
+                {
+                  name: 'view',
+                  code: 'personnelPosition.buildingsInfo.view',
+                  path: '/base-info/buildings-info/detail/:id',
+                  component:
+                    './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoList',
+                },
+                {
+                  name: 'add',
+                  code: 'personnelPosition.buildingsInfo.add',
+                  path: '/base-info/buildings-info/add',
+                  component:
+                    './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+                },
+                {
+                  name: 'edit',
+                  code: 'personnelPosition.buildingsInfo.edit',
+                  path: '/base-info/buildings-info/edit/:id',
+                  component:
+                    './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+                },
+                {
+                  name: 'floorList',
+                  code: 'personnelPosition.buildingsInfo.floorListView',
+                  path: '/base-info/buildings-info/floor/list/:id',
+                  component:
+                    './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementList',
+                },
+                {
+                  name: 'floorAdd',
+                  code: 'personnelPosition.buildingsInfo.floorAdd',
+                  path: '/base-info/buildings-info/floor/add',
+                  component:
+                    './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementEdit',
+                },
+                {
+                  name: 'floorEdit',
+                  code: 'personnelPosition.buildingsInfo.floorEdit',
+                  path: '/base-info/buildings-info/floor/edit/:id',
+                  component:
+                    './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementEdit',
+                },
+                {
+                  name: 'floorDetail',
+                  code: 'personnelPosition.buildingsInfo.floorView',
+                  path: '/base-info/buildings-info/floor/detail/:id',
+                  component:
+                    './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementDetail',
+                },
+              ],
+            },
           ],
         },
 
@@ -1617,74 +1686,74 @@ module.exports = env => {
               ],
             },
             /* 建筑物信息 */
-            {
-              name: 'buildingsInfo',
-              path: '/personnel-position/buildings-info',
-              code: 'personnelPosition.buildingsInfo',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  name: 'list',
-                  path: '/personnel-position/buildings-info',
-                  redirect: '/personnel-position/buildings-info/list',
-                },
-                {
-                  name: 'list',
-                  code: 'personnelPosition.buildingsInfo.listView',
-                  path: '/personnel-position/buildings-info/list',
-                  component: './PersonnelPosition/BuildingsInfo/CompanyList',
-                },
-                {
-                  name: 'view',
-                  code: 'personnelPosition.buildingsInfo.view',
-                  path: '/personnel-position/buildings-info/detail/:id',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoList',
-                },
-                {
-                  name: 'add',
-                  code: 'personnelPosition.buildingsInfo.add',
-                  path: '/personnel-position/buildings-info/add',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
-                },
-                {
-                  name: 'edit',
-                  code: 'personnelPosition.buildingsInfo.edit',
-                  path: '/personnel-position/buildings-info/edit/:id',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
-                },
-                {
-                  name: 'floorList',
-                  code: 'personnelPosition.buildingsInfo.floorListView',
-                  path: '/personnel-position/buildings-info/floor/list/:id',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementList',
-                },
-                {
-                  name: 'floorAdd',
-                  code: 'personnelPosition.buildingsInfo.floorAdd',
-                  path: '/personnel-position/buildings-info/floor/add',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
-                },
-                {
-                  name: 'floorEdit',
-                  code: 'personnelPosition.buildingsInfo.floorEdit',
-                  path: '/personnel-position/buildings-info/floor/edit/:id',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
-                },
-                {
-                  name: 'floorDetail',
-                  code: 'personnelPosition.buildingsInfo.floorView',
-                  path: '/personnel-position/buildings-info/floor/detail/:id',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementDetail',
-                },
-              ],
-            },
+            // {
+            //   name: 'buildingsInfo',
+            //   path: '/personnel-position/buildings-info',
+            //   code: 'personnelPosition.buildingsInfo',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       name: 'list',
+            //       path: '/personnel-position/buildings-info',
+            //       redirect: '/personnel-position/buildings-info/list',
+            //     },
+            //     {
+            //       name: 'list',
+            //       code: 'personnelPosition.buildingsInfo.listView',
+            //       path: '/personnel-position/buildings-info/list',
+            //       component: './PersonnelPosition/BuildingsInfo/CompanyList',
+            //     },
+            //     {
+            //       name: 'view',
+            //       code: 'personnelPosition.buildingsInfo.view',
+            //       path: '/personnel-position/buildings-info/detail/:id',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoList',
+            //     },
+            //     {
+            //       name: 'add',
+            //       code: 'personnelPosition.buildingsInfo.add',
+            //       path: '/personnel-position/buildings-info/add',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+            //     },
+            //     {
+            //       name: 'edit',
+            //       code: 'personnelPosition.buildingsInfo.edit',
+            //       path: '/personnel-position/buildings-info/edit/:id',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+            //     },
+            //     {
+            //       name: 'floorList',
+            //       code: 'personnelPosition.buildingsInfo.floorListView',
+            //       path: '/personnel-position/buildings-info/floor/list/:id',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementList',
+            //     },
+            //     {
+            //       name: 'floorAdd',
+            //       code: 'personnelPosition.buildingsInfo.floorAdd',
+            //       path: '/personnel-position/buildings-info/floor/add',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
+            //     },
+            //     {
+            //       name: 'floorEdit',
+            //       code: 'personnelPosition.buildingsInfo.floorEdit',
+            //       path: '/personnel-position/buildings-info/floor/edit/:id',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
+            //     },
+            //     {
+            //       name: 'floorDetail',
+            //       code: 'personnelPosition.buildingsInfo.floorView',
+            //       path: '/personnel-position/buildings-info/floor/detail/:id',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementDetail',
+            //     },
+            //   ],
+            // },
             /* 信标管理 */
             {
               name: 'beaconManagement',

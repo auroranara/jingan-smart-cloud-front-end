@@ -79,7 +79,7 @@ export default class CompanyList extends PureComponent {
   // 跳转到建筑物信息列表
   handleBuildingList = (id, name) => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/personnel-position/buildings-info/detail/${id}?name=${name}`));
+    dispatch(routerRedux.push(`/base-info/buildings-info/detail/${id}?name=${name}`));
   };
 
   /* 查询 */
@@ -197,7 +197,7 @@ export default class CompanyList extends PureComponent {
             <AuthButton
               code={codesMap.personnelPosition.buildingsInfo.add}
               type="primary"
-              href="#/personnel-position/buildings-info/add"
+              href="#/base-info/buildings-info/add"
             >
               新增
             </AuthButton>

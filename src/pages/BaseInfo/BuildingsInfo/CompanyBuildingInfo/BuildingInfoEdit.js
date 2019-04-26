@@ -236,8 +236,8 @@ export default class BuildingInfoEdit extends PureComponent {
       message.success(id ? '编辑成功' : '新增成功');
       router.push(
         company_Id
-          ? `/personnel-position/buildings-info/detail/${company_Id}?name=${company_name}`
-          : '/personnel-position/buildings-info/list'
+          ? `/base-info/buildings-info/detail/${company_Id}?name=${company_name}`
+          : '/base-info/buildings-info/list'
       );
     };
 
@@ -512,25 +512,25 @@ export default class BuildingInfoEdit extends PureComponent {
                   )}
                 </div>
               ) : (
-                <div>
-                  {getFieldDecorator('companyId', {
-                    initialValue:
-                      unitType === 4 || unitType === 1
-                        ? company_name || defaultName
-                        : company_name
-                          ? company_name
-                          : undefined,
-                  })(
-                    <Input
-                      disabled
-                      ref={input => {
-                        this.CompanyIdInput = input;
-                      }}
-                      placeholder="请选择单位名称"
-                    />
-                  )}
-                </div>
-              )}
+                  <div>
+                    {getFieldDecorator('companyId', {
+                      initialValue:
+                        unitType === 4 || unitType === 1
+                          ? company_name || defaultName
+                          : company_name
+                            ? company_name
+                            : undefined,
+                    })(
+                      <Input
+                        disabled
+                        ref={input => {
+                          this.CompanyIdInput = input;
+                        }}
+                        placeholder="请选择单位名称"
+                      />
+                    )}
+                  </div>
+                )}
             </Col>
             {defaultName || (company_Id && unitType !== 2) ? null : (
               <Col span={1}>
@@ -639,12 +639,11 @@ export default class BuildingInfoEdit extends PureComponent {
         component: (
           <div>
             {getFieldDecorator('floorLevel', {
-              initialValue: floorLevel,
+              initialValue: id?floorLevel:null,
             })(
               <InputNumber
                 style={{ width: '100%' }}
                 min={0}
-                defaultValue={''}
                 placeholder="请输入建筑层数"
                 formatter={value => (!value || isNaN(value) ? '' : Math.round(value))}
                 parser={value => (!value || isNaN(value) ? '' : Math.round(value))}
@@ -731,8 +730,8 @@ export default class BuildingInfoEdit extends PureComponent {
         title: company_Id ? '建筑物信息列表' : '建筑物信息',
         name: company_Id ? '建筑物信息列表' : '建筑物信息',
         href: company_Id
-          ? `/personnel-position/buildings-info/detail/${company_Id}?name=${company_name}`
-          : '/personnel-position/buildings-info/list',
+          ? `/base-info/buildings-info/detail/${company_Id}?name=${company_name}`
+          : '/base-info/buildings-info/list',
       },
       {
         title: '新增建筑物',
@@ -754,22 +753,22 @@ export default class BuildingInfoEdit extends PureComponent {
                 {company_Id ? (
                   <Button
                     loading={uploading}
-                    href={`#/personnel-position/buildings-info/detail/${company_Id}?name=${company_name}`}
+                    href={`#/base-info/buildings-info/detail/${company_Id}?name=${company_name}`}
                     type="primary"
                     style={{ marginLeft: '10px' }}
                   >
                     返回
                   </Button>
                 ) : (
-                  <Button
-                    loading={uploading}
-                    href="#/personnel-position/buildings-info/list"
-                    type="primary"
-                    style={{ marginLeft: '10px' }}
-                  >
-                    返回
+                    <Button
+                      loading={uploading}
+                      href="#/base-info/buildings-info/list"
+                      type="primary"
+                      style={{ marginLeft: '10px' }}
+                    >
+                      返回
                   </Button>
-                )}
+                  )}
               </FormItem>
             </Col>
           </Form>
