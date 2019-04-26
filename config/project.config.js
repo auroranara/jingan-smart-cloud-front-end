@@ -219,6 +219,27 @@ const configs = {
       'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/czey/official_version/Czeysafe.plist&ran=',
     android: 'http://czey.jinganyun.net/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
+  huishan: {
+    region: '无锡市',
+    projectKey: 'jiangxi_pro',
+    projectShortName: '惠山街道智慧云',
+    code,
+    layer: 'http://data.jingan-china.cn/v2/login/wuxi_download_layer.png',
+    ios:
+      'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/jxjd/official_version/JXJDInterSafe.plist&ran=',
+    android:
+      'http://58.215.178.100:12083/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
+    blur: [
+      'http://image.jingan-china.cn/v2/login/huishan/1_blur.png',
+      'http://image.jingan-china.cn/v2/login/huishan/2_blur.png',
+      'http://image.jingan-china.cn/v2/login/huishan/3_blur.png',
+    ],
+    focus: [
+      'http://image.jingan-china.cn/v2/login/huishan/1.png',
+      'http://image.jingan-china.cn/v2/login/huishan/2.png',
+      'http://image.jingan-china.cn/v2/login/huishan/3.png',
+    ],
+  },
 };
 
 export default class Config {
