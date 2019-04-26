@@ -639,12 +639,11 @@ export default class BuildingInfoEdit extends PureComponent {
         component: (
           <div>
             {getFieldDecorator('floorLevel', {
-              initialValue: floorLevel,
+              initialValue: id?floorLevel:null,
             })(
               <InputNumber
                 style={{ width: '100%' }}
                 min={0}
-                defaultValue={''}
                 placeholder="请输入建筑层数"
                 formatter={value => (!value || isNaN(value) ? '' : Math.round(value))}
                 parser={value => (!value || isNaN(value) ? '' : Math.round(value))}
