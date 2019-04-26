@@ -334,7 +334,7 @@ export default class SensorModelList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('serBrand')(
-                  <Select placeholder="品牌">
+                  <Select placeholder="品牌" dropdownStyle={{ zIndex: 50 }}>
                     {brandDict.map(({ value, key }) => (
                       <Option key={key} value={key}>{value}</Option>
                     ))}

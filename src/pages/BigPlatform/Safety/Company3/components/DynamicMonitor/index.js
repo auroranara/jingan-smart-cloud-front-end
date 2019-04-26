@@ -73,19 +73,21 @@ export default class DynamicMonitor extends PureComponent {
     this.setState({ zoom: window.innerWidth / 1920 });
   };
 
-  renderTooltip = showTotal => {
+  renderTooltip = (showAlarm, showTotal = true) => {
     return (
       <div>
-        {!!showTotal && (
+        {!!showAlarm && (
           <div>
             <div className={styles.circle} style={{ backgroundColor: '#ff4848' }} />
             报警设备
           </div>
         )}
-        <div>
-          <div className={styles.circle} style={{ backgroundColor: '#00ffff' }} />
-          设备总数
-        </div>
+        {!!showTotal && (
+          <div>
+            <div className={styles.circle} style={{ backgroundColor: '#00ffff' }} />
+            设备总数
+          </div>
+        )}
       </div>
     );
   };
@@ -166,7 +168,11 @@ export default class DynamicMonitor extends PureComponent {
         },
       },
     ].filter(({ originalValue: { totalNum } = {} }) => totalNum);
-
+    const newList = [];
+    for (let index = 0; index < list.length / 4; index++) {
+      let item = list.slice(4 * index, 4*(index+1));
+      newList.push(item);
+    }
     return (
       <Section
         title="动态监测"
@@ -179,52 +185,14 @@ export default class DynamicMonitor extends PureComponent {
       >
         <div className={styles.container}>
           <Carousel className={styles.carousel} ref={this.refCarousel}>
-            <div className={styles.listWrapper}>
-              <div
-                className={styles.list}
-                //  style={{ zoom }}
-              >
-                {list
-                  .slice(0, 4)
-                  .map(({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }) => {
-                    return (
-                      <Col xs={24} sm={12} md={12} lg={12}>
-                        <div
-                          className={styles.item}
-                          style={{
-                            backgroundImage: `url(${icon})`,
-                            cursor: onClick ? 'pointer' : 'default',
-                          }}
-                          key={key}
-                          onClick={onClick || undefined}
-                        >
-                          <div className={styles.itemLabel}>{key}</div>
-
-                          <div className={styles.itemValue}>
-                            <Tooltip
-                              placement="right"
-                              title={this.renderTooltip(warningNum !== undefined)}
-                            >
-                              {value}
-                              {warningNum !== undefined && `/${totalNum}`}
-                            </Tooltip>
-                          </div>
-                        </div>
-                      </Col>
-                    );
-                  })}
-              </div>
-              {list.length === 0 && <div className={styles.default} />}
-            </div>
-            {list.length > 4 && (
-              <div className={styles.listWrapper}>
-                <div
-                  className={styles.list}
-                  //  style={{ zoom }}
-                >
-                  {list
-                    .slice(4, 8)
-                    .map(
+            {newList.map((lists, index) => {
+              return (
+                <div className={styles.listWrapper} key={index}>
+                  <div
+                    className={styles.list}
+                    //  style={{ zoom }}
+                  >
+                    {lists.map(
                       ({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }) => {
                         return (
                           <Col xs={24} sm={12} md={12} lg={12}>
@@ -238,13 +206,17 @@ export default class DynamicMonitor extends PureComponent {
                               onClick={onClick || undefined}
                             >
                               <div className={styles.itemLabel}>{key}</div>
+
                               <div className={styles.itemValue}>
                                 <Tooltip
                                   placement="right"
-                                  title={this.renderTooltip(warningNum !== undefined)}
+                                  title={this.renderTooltip(
+                                    warningNum !== undefined,
+                                    key !== '消防主机'
+                                  )}
                                 >
                                   {value}
-                                  {warningNum !== undefined && `/${totalNum}`}
+                                  {warningNum !== undefined && key !== '消防主机' && `/${totalNum}`}
                                 </Tooltip>
                               </div>
                             </div>
@@ -252,9 +224,10 @@ export default class DynamicMonitor extends PureComponent {
                         );
                       }
                     )}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })}
           </Carousel>
         </div>
       </Section>

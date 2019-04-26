@@ -54,6 +54,7 @@ const DEFAULT_PAGE_SIZE = 10;
   loadingRiskPointHiddenDangerList: loading.effects['unitSafety/fetchRiskPointHiddenDangerList'],
   loadingHiddenDangerList: loading.effects['unitSafety/fetchHiddenDangerList'],
   loadingDangerList: loading.effects['unitSafety/fetchDangerList'],
+  loadingStaffRecords: loading.effects['unitSafety/fetchStaffRecords'],
   monitor,
 }))
 export default class UnitSafety extends PureComponent {
@@ -456,6 +457,7 @@ export default class UnitSafety extends PureComponent {
       loadingRiskPointHiddenDangerList,
       loadingHiddenDangerList,
       loadingDangerList,
+      loadingStaffRecords,
       monitor: { gasCount = {}, gasList = [] },
     } = this.props;
     const {
@@ -538,6 +540,7 @@ export default class UnitSafety extends PureComponent {
                 {/* 人员记录 */}
                 <StaffRecords
                   data={staffRecords}
+                  loading={loadingStaffRecords}
                   inspectionRecordData={inspectionRecordData}
                   month={selectedStaffRecordsMonth}
                   onBack={this.showStaffList}

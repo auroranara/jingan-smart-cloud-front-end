@@ -57,6 +57,7 @@ export default class StaffList extends PureComponent {
       // 显示隐患详情
       handleShowDetail,
       getInspectionRecordData,
+      loading,
     } = this.props;
     const { visible } = this.state;
     const total = data.length;
@@ -160,6 +161,7 @@ export default class StaffList extends PureComponent {
           pagination={false}
           bordered={false}
           rowKey="check_id"
+          loading={loading}
         />
         {hiddenData && (
           <Switcher
