@@ -11,11 +11,13 @@ import {
   Button,
   Spin,
   Badge,
+  AutoComplete,
   TreeSelect,
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import Link from 'umi/link';
+import debounce from 'lodash/debounce';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Ellipsis from '@/components/Ellipsis';
 
@@ -71,6 +73,7 @@ const sessionPrefix = 'company_report_list_';
 export default class App extends PureComponent {
   constructor(props) {
     super(props);
+    this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
     const {
       user: {
         currentUser: { unitType },
@@ -178,6 +181,11 @@ export default class App extends PureComponent {
       defaultColumns.splice(0, 0, {
         title: '单位名称',
         dataIndex: 'company_name',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       });
     }
     this.state = {
@@ -231,6 +239,21 @@ export default class App extends PureComponent {
     dispatch({
       type: 'hiddenDangerReport/fetchGridList',
     });
+
+    dispatch({
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
+    });
+
+    // 根据用户类型获取单位
+    payload.company_id &&
+      dispatch({
+        type: 'hiddenDangerReport/fetchUnitListFuzzy',
+        payload: {
+          unitName: payload.companyName,
+          pageNum: 1,
+          pageSize: 10,
+        },
+      });
   }
 
   /**
@@ -245,16 +268,21 @@ export default class App extends PureComponent {
           pagination: { pageSize },
         },
       },
+      hiddenDangerReport: { unitIdes },
       user: {
         currentUser: { id },
       },
     } = this.props;
-    const { createTime, ...rest } = getFieldsValue();
+    const { createTime, company_id, ...rest } = getFieldsValue();
     const [startTime, endTime] = createTime || [];
     const payload = {
       ...rest,
       pageNum: 1,
       pageSize,
+      company_id,
+      companyName:
+        unitIdes.find(item => item.id === company_id) &&
+        unitIdes.find(item => item.id === company_id).name,
       startTime: startTime && `${startTime.format('YYYY/MM/DD')} 00:00:00`,
       endTime: endTime && `${endTime.format('YYYY/MM/DD')} 23:59:59`,
     };
@@ -272,12 +300,13 @@ export default class App extends PureComponent {
    */
   handleReset = () => {
     const {
+      dispatch,
       form: { setFieldsValue },
     } = this.props;
     // 重置控件
     setFieldsValue({
       gridId: undefined,
-      companyName: undefined,
+      company_id: undefined,
       createTime: undefined,
       itemType: undefined,
       objectTitle: undefined,
@@ -285,6 +314,14 @@ export default class App extends PureComponent {
       checkResult: undefined,
     });
     this.handleSearch();
+    dispatch({
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
+      payload: {
+        // unitName: value && value.trim(),
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
   };
 
   /**
@@ -321,11 +358,11 @@ export default class App extends PureComponent {
       pageNum: 1,
       pageSize: 10,
     };
-    const { pageNum, pageSize, startTime, endTime, ...rest } = fieldsValue;
+    const { pageNum, pageSize, startTime, endTime, company_id, ...rest } = fieldsValue;
     // 重置控件
     setFieldsValue({
       gridId: undefined,
-      companyName: undefined,
+      company_id: undefined,
       itemType: undefined,
       objectTitle: undefined,
       checkUserName: undefined,
@@ -356,6 +393,20 @@ export default class App extends PureComponent {
     );
   };
 
+  // 单位下拉框输入
+  handleUnitIdChange = value => {
+    const { dispatch } = this.props;
+    // 根据输入值获取列表
+    dispatch({
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
+      payload: {
+        unitName: value && value.trim(),
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
+  };
+
   /**
    * 筛选表单
    **/
@@ -363,7 +414,8 @@ export default class App extends PureComponent {
     const {
       companyReport: { reportingChannelsList, checkResultList },
       form: { getFieldDecorator },
-      hiddenDangerReport: { gridList },
+      hiddenDangerReport: { gridList, unitIdes },
+      loading,
     } = this.props;
     return (
       <Form className={styles.form}>
@@ -391,7 +443,24 @@ export default class App extends PureComponent {
           {!this.isCompany && (
             <Col xl={8} md={12} sm={24} xs={24}>
               <Form.Item label={fieldLabels.company_name}>
-                {getFieldDecorator('companyName')(<Input placeholder="请输入" />)}
+                {getFieldDecorator('company_id')(
+                  <AutoComplete
+                    mode="combobox"
+                    optionLabelProp="children"
+                    placeholder="请选择"
+                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    onSearch={this.handleUnitIdChange}
+                    // onSelect={this.handleUnitSelect}
+                    // onBlur={this.handleUnitIdBlur}
+                    filterOption={false}
+                  >
+                    {unitIdes.map(({ id, name }) => (
+                      <Option value={id} key={id}>
+                        {name}
+                      </Option>
+                    ))}
+                  </AutoComplete>
+                )}
               </Form.Item>
             </Col>
           )}

@@ -98,6 +98,11 @@ export default class App extends PureComponent {
       {
         title: '检查单位',
         dataIndex: 'checkCompanyName',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       },
       {
         title: '检查人',
@@ -179,6 +184,11 @@ export default class App extends PureComponent {
       defaultColumns.splice(0, 0, {
         title: '单位名称',
         dataIndex: 'company_name',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       });
     }
     this.state = {
@@ -486,11 +496,13 @@ export default class App extends PureComponent {
             </Form.Item>
           </Col>
           {/* 检查单位 */}
-          <Col xl={8} md={12} sm={24} xs={24}>
-            <Form.Item label={fieldLabels.checkCompany}>
-              {getFieldDecorator('checkCompanyName')(<Input placeholder="请输入" />)}
-            </Form.Item>
-          </Col>
+          {!this.isWbCompany && (
+            <Col xl={8} md={12} sm={24} xs={24}>
+              <Form.Item label={fieldLabels.checkCompany}>
+                {getFieldDecorator('checkCompanyName')(<Input placeholder="请输入" />)}
+              </Form.Item>
+            </Col>
+          )}
           {/* 检查人 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.checkUser}>

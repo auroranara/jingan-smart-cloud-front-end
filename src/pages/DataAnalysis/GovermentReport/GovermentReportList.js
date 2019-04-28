@@ -185,6 +185,11 @@ export default class App extends PureComponent {
       defaultColumns.splice(0, 0, {
         title: '单位名称',
         dataIndex: 'company_name',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       });
     }
     this.state = {
@@ -366,7 +371,7 @@ export default class App extends PureComponent {
       pageNum: 1,
       pageSize: 10,
     };
-    const { pageNum, pageSize, startTime, endTime, ...rest } = fieldsValue;
+    const { pageNum, pageSize, startTime, endTime, company_id, ...rest } = fieldsValue;
     // 重置控件
     setFieldsValue({
       gridId: undefined,
@@ -391,6 +396,7 @@ export default class App extends PureComponent {
         reportSource: 2,
       },
     });
+
     // 保存筛选条件
     sessionStorage.setItem(
       `${sessionPrefix}${id}`,
@@ -455,12 +461,11 @@ export default class App extends PureComponent {
                 {getFieldDecorator('company_id')(
                   <AutoComplete
                     mode="combobox"
+                    dropdownClassName={styles.dropdown}
                     optionLabelProp="children"
                     placeholder="请选择"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     onSearch={this.handleUnitIdChange}
-                    // onSelect={this.handleUnitSelect}
-                    // onBlur={this.handleUnitIdBlur}
                     filterOption={false}
                   >
                     {unitIdes.map(({ id, name }) => (

@@ -307,6 +307,11 @@ export default class App extends PureComponent {
       defaultColumns.splice(1, 0, {
         title: '单位名称',
         dataIndex: 'company_name',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       });
     }
     this.state = {

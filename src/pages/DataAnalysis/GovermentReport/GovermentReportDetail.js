@@ -193,7 +193,7 @@ export default class App extends PureComponent {
             {!isCompany && <div className={styles.content}>{`单位名称：${companyName}`}</div>}
             <div className={styles.content}>{`检查人：${check_user_names}`}</div>
             <div className={styles.content}>{`检查时间：${moment(+check_date).format(
-              'YYYY-MM-DD'
+              'YYYY-MM-DD HH:mm'
             )}`}</div>
           </Fragment>
         }
