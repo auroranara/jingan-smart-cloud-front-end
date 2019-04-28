@@ -1154,6 +1154,37 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/video-surveillance/government-video-permission',
+              code: 'videoSurveillance.governmentVideoPermission',
+              name: 'governmentVideoPermission',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/video-surveillance/government-video-permission',
+                  name: 'governmentVideoPermission',
+                  redirect: '/video-surveillance/government-video-permission/list',
+                },
+                {
+                  path: '/video-surveillance/government-video-permission/list',
+                  code: 'videoSurveillance.governmentVideoPermission.listView',
+                  name: 'list',
+                  component: './VideoSurveillance/GovernmentVideoPermission/GovernmentVideoPermissionList',
+                },
+                {
+                  path: '/video-surveillance/government-video-permission/edit/:companyId',
+                  code: 'videoSurveillance.governmentVideoPermission.edit',
+                  name: 'edit',
+                  component: './VideoSurveillance/GovernmentVideoPermission/GovernmentVideoPermissionEdit',
+                },
+                {
+                  path: '/video-surveillance/government-video-permission/add',
+                  code: 'videoSurveillance.governmentVideoPermission.add',
+                  name: 'add',
+                  component: './VideoSurveillance/GovernmentVideoPermission/GovernmentVideoPermissionEdit',
+                },
+              ],
+            },
           ],
         },
         {
