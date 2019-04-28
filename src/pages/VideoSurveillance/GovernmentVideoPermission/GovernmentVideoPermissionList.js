@@ -110,17 +110,17 @@ export default class VideoPermissionList extends PureComponent {
       dispatch,
       video: {
         permission: {
-          isLast,
-          pagination: { pageNum, pageSize },
+          govIsLast,
+          govPagination: { pageNum, pageSize },
         },
       },
     } = this.props;
-    if (isLast) {
+    if (govIsLast) {
       return;
     }
     // 请求数据
     dispatch({
-      type: 'video/fetchCompanyListByScorll',
+      type: 'video/fetchGovListByScorll',
       payload: {
         pageNum: pageNum + 1,
         pageSize,
