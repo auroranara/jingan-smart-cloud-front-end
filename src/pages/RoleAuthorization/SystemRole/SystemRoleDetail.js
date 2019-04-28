@@ -8,7 +8,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
-import { getEmptyData, sortTree } from './utils';
+import { getEmptyData, sortTree } from '../Role/utils';
 
 const { Description } = DescriptionList;
 const { TreeNode } = Tree;
@@ -31,8 +31,8 @@ const breadcrumbList = [
     name: '权限管理',
   },
   {
-    title: '角色管理',
-    name: '角色管理',
+    title: '系统角色',
+    name: '系统角色',
     href: backUrl,
   },
   {

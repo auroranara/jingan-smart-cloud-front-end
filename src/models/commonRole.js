@@ -11,11 +11,7 @@ export default {
   namespace: 'commonRole',
 
   state: {
-    detail: {
-      sysRole: {},
-    },
-    rolePermissions: [],
-    roleAppPermissions: [],
+    detail: {},
     permissionTree: [],
     appPermissionTree: [],
     data: {
@@ -65,18 +61,16 @@ export default {
     /* 获取详情 */
     *fetchDetail({ payload, success, error }, { call, put }) {
       const response = yield call(queryDetail, payload);
-      if (response.code === 200) {
+      const { code, data } = response || {};
+      if (code === 200) {
         yield put({
-          type: 'queryDetail',
-          payload: response.data,
+          type: 'saveDetail',
+          payload: data || {},
         });
-        if (success) {
-          success(response.data);
-        }
+        success && success(data);
       }
-      else if (error) {
-        error();
-      }
+      else
+        error && error();
     },
     /* 获取WEB权限树 */
     *fetchPermissionTree({ payload, callback, callbackLater }, { call, put }) {
@@ -118,20 +112,10 @@ export default {
       }
     },
     /* 删除角色 */
-    *remove({ payload, success, error }, { call, put }) {
+    *remove({ payload, callback }, { call, put }) {
       const response = yield call(deleteRole, payload);
-      if (response.code === 200) {
-        yield put({
-          type: 'deleteRole',
-          payload: payload.id,
-        });
-        if (success) {
-          success();
-        }
-      }
-      else if (error) {
-        error();
-      }
+      const { code, msg } = response || {};
+      callback && callback(code, msg);
     },
   },
 
@@ -158,18 +142,8 @@ export default {
       };
     },
     /* 获取详情 */
-    queryDetail(state, { payload: detail }) {
-      return {
-        ...state,
-        detail,
-      };
-    },
-    // 保存roles对应的permissions
-    saveRolePermissions(state, { payload: rolePermissions }) {
-      return { ...state, rolePermissions };
-    },
-    saveRoleAppPermissions(state, action) {
-      return { ...state, roleAppPermissions: action.payload };
+    saveDetail(state, { payload: detail }) {
+      return { ...state, detail };
     },
     /* 获取权限树 */
     savePermissionTree(state, action) {
@@ -178,25 +152,6 @@ export default {
         ...state,
         permissionTree: webPermissions,
         appPermissionTree: appPermissions,
-      };
-    },
-    /* 清除详情 */
-    clearDetail(state) {
-      return {
-        ...state,
-        detail: {
-          sysRole: {},
-        },
-      };
-    },
-    /* 删除角色 */
-    deleteRole(state, { payload: id }) {
-      return {
-        ...state,
-        data: {
-          ...state.data,
-          list: state.data.list.filter(item => item.id !== id),
-        },
       };
     },
   },

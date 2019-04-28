@@ -2,7 +2,9 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 
+import codes from '@/utils/codes';
 import RoleHandler from '../Role/RoleHandler';
+import { COMMON_LIST_URL as LIST_URL, COMMON_URLS as URLS } from '../Role/utils';
 
 @connect(({ account, commonRole, user, loading }) => ({
   account,
@@ -13,10 +15,7 @@ import RoleHandler from '../Role/RoleHandler';
 export default class CommonRoleHandler extends PureComponent {
   fetchUnitTypes = action => {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'account/fetchOptions',
-      ...action,
-    });
+    dispatch({ type: 'account/fetchOptions', ...action });
   };
 
   fetchDetail = action => {
@@ -36,7 +35,7 @@ export default class CommonRoleHandler extends PureComponent {
 
   clearDetail = () => {
     const { dispatch } = this.props;
-    dispatch({ type: 'commonRole/clearDetail' });
+    dispatch({ type: 'commonRole/saveDetail', payload: {} });
   };
 
   fetchPermissionTree = action => {
@@ -49,14 +48,16 @@ export default class CommonRoleHandler extends PureComponent {
     dispatch({ type: 'commonRole/savePermissionTree', payload: [[], []] });
   };
 
-  goBack = () => {
-    router.push('/role-authorization/commonRole/list');
+  goBack() {
+    router.push(LIST_URL);
   };
 
   render() {
     return (
       <RoleHandler
-        type="common"
+        type={1}
+        urls={URLS}
+        codes={codes.commonRole}
         fetchUnitTypes={this.fetchUnitTypes}
         fetchDetail={this.fetchDetail}
         insertRole={this.insertRole}

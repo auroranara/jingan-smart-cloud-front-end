@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { connect } from 'dva';
 import { Form, Input, Card, Button, Select, Spin, List, Modal, message, TreeSelect } from 'antd';
 import { Link } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -8,38 +7,11 @@ import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import InlineForm from '../../BaseInfo/Company/InlineForm';
 import { hasAuthority } from '@/utils/customAuth';
-import urls from '@/utils/urls';
-import codes from '@/utils/codes';
 import styles from './Role.less';
 import { LIST_PAGE_SIZE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from './utils';
 
 const { Option } = Select;
 const { TreeNode } = TreeSelect;
-
-const title = '系统角色';
-const breadcrumbList = [
-  {
-    title: '首页',
-    name: '首页',
-    href: '/',
-  },
-  {
-    title: '权限管理',
-    name: '权限管理',
-  },
-  {
-    title,
-    name: title,
-  },
-];
-// 获取链接地址
-const {
-  role: { detail: detailUrl, edit: editUrl, add: addUrl },
-} = urls;
-// 获取code
-const {
-  role: { detail: detailCode, edit: editCode, add: addCode },
-} = codes;
 
 @Form.create()
 export default class RoleList extends PureComponent {
@@ -49,18 +21,13 @@ export default class RoleList extends PureComponent {
 
   componentDidMount() {
     const {
-      dispatch,
+      type,
+      fetchUnitTypes,
       fetchList,
-      fetchPermissionTree,
     } = this.props;
-    dispatch({ type: 'account/fetchOptions' });
-    fetchList({
-      payload: {
-        pageNum: 1,
-        pageSize: LIST_PAGE_SIZE,
-      },
-    });
-    fetchPermissionTree();
+
+    fetchUnitTypes();
+    fetchList({ payload: { pageNum: 1, pageSize: LIST_PAGE_SIZE, isPublic: type } });
   }
 
   /* 滚动加载 */
@@ -163,10 +130,19 @@ export default class RoleList extends PureComponent {
     });
   }
 
+  handleUnitTypeChange = id => {
+    const { fetchPermissionTree, clearPermissionTree } = this.props;
+    if (id)
+      fetchPermissionTree({ payload: id });
+    else
+      clearPermissionTree();
+  };
+
   /* 渲染表单 */
   renderForm() {
     const {
       goToAdd,
+      codes: { add: addCode },
       account: { unitTypes },
       role: { permissionTree },
       user: {
@@ -180,9 +156,9 @@ export default class RoleList extends PureComponent {
     const fields = [
       {
         id: 'unitType',
-        render() {
+        render: () => {
           return (
-            <Select placeholder="请选择单位类型">
+            <Select placeholder="请选择单位类型" onChange={this.handleUnitTypeChange} allowClear>
               {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
             </Select>
           );
@@ -200,10 +176,10 @@ export default class RoleList extends PureComponent {
         render: () => {
           return (
             <TreeSelect
+              allowClear
               style={{ width: '100%' }}
               dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
               placeholder="请选择权限"
-              allowClear
               getPopupContainer={getRootChild}
             >
               {this.renderTreeNodes(permissionTree)}
@@ -232,9 +208,23 @@ export default class RoleList extends PureComponent {
     );
   }
 
+  handleDelete = id => e => {
+    const { remove } = this.props;
+    remove({
+      payload: { id },
+      callback: (code, msg) => {
+        if (code === 200)
+          message.success('删除成功');
+        else
+          message.error(msg);
+      },
+    });
+  };
+
   /* 渲染列表 */
   renderList() {
     const {
+      codes: { detail: detailCode, edit: editCode, delete: deleteCode },
       account: { unitTypes },
       role: {
         data: { list },
@@ -243,9 +233,11 @@ export default class RoleList extends PureComponent {
         currentUser: { permissionCodes },
       },
       goToDetail,
+      urls: { detailUrl, editUrl },
     } = this.props;
     const hasDetailAuthority = hasAuthority(detailCode, permissionCodes); // 是否有查看权限
     const hasEditAuthority = hasAuthority(editCode, permissionCodes); // 是否有编辑权限
+    const hasDeleteAuthority = hasAuthority(deleteCode, permissionCodes); // 是否有编辑权限
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
@@ -254,50 +246,37 @@ export default class RoleList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
-            const { id, name, description, unitType } = item;
+            const { id, roleName, description, unitType } = item;
             return (
               <List.Item key={id}>
                 <Card
-                  title={name}
+                  title={roleName}
                   extra={getUnitTypeLabel(unitType, unitTypes)}
                   className={styles.card}
                   actions={[
                     <Link
-                      to={detailUrl + id}
+                      to={`${detailUrl}/${id}`}
                       onClick={hasDetailAuthority ? null : preventDefault}
                       disabled={!hasDetailAuthority}
                     >
                       查看
                     </Link>,
                     <Link
-                      to={editUrl + id}
+                      to={`${editUrl}/${id}`}
                       onClick={hasEditAuthority ? null : preventDefault}
                       disabled={!hasEditAuthority}
                     >
                       编辑
                     </Link>,
-                    <span>删除</span>,
+                    <span
+                      onClick={hasDeleteAuthority ? null : this.genHandleDelete(id)}
+                    >
+                      删除
+                    </span>,
                   ]}
-                // extra={
-                //   <Button
-                //     onClick={() => {
-                //       this.handleShowDeleteConfirm(id);
-                //     }}
-                //     shape="circle"
-                //     style={{ border: 'none', fontSize: '20px' }}
-                //   >
-                //     <Icon type="close" />
-                //   </Button>
-                // }
                 >
                   <div
-                    onClick={
-                      hasDetailAuthority
-                        ? () => {
-                          goToDetail(id);
-                        }
-                        : null
-                    }
+                    onClick={ hasDetailAuthority ? () => goToDetail(id) : null}
                     style={hasDetailAuthority ? { cursor: 'pointer' } : null}
                   >
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
@@ -315,6 +294,8 @@ export default class RoleList extends PureComponent {
 
   render() {
     const {
+      title,
+      breadcrumbList,
       loading,
       role: {
         isLast,
@@ -323,7 +304,6 @@ export default class RoleList extends PureComponent {
         },
       },
     } = this.props;
-    const { isInit } = this.state;
 
     return (
       <PageHeaderLayout

@@ -3,8 +3,6 @@ import { Form, Card, Input, Button, Select, Spin, Tree, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
-import urls from '@/utils/urls';
-import codes from '@/utils/codes';
 import { checkParent, uncheckParent, sortTree } from './utils';
 
 const { TreeNode } = Tree;
@@ -15,14 +13,6 @@ const INLINE_FORM_STYLE = { width: '50%', marginRight: 0 };
 // 标题
 const addTitle = '新增角色';
 const editTitle = '编辑角色';
-// 获取链接地址
-const {
-  role: { list: backUrl },
-} = urls;
-// 获取code
-const {
-  role: { list: listCode },
-} = codes;
 
 @Form.create()
 export default class RoleHandler extends PureComponent {
@@ -35,7 +25,6 @@ export default class RoleHandler extends PureComponent {
   componentDidMount() {
     const {
       match: { params: { id } },
-      type,
       fetchUnitTypes,
       fetchDetail,
       fetchPermissionTree,
@@ -49,23 +38,17 @@ export default class RoleHandler extends PureComponent {
       fetchDetail({
         payload: { id },
         success: detail => {
-          const type = detail && detail.sysRole ? detail.sysRole.unitType : undefined;
-          type && +type !== 3 && fetchPermissionTree({
-            payload: type,
-            callback: ([tree, appTree]) => {
-              this.initialAppPermissionTree = appTree
-            },
-            callbackLater: clearPermissionTree,
-          });
+          const type = detail ? detail.unitType : undefined;
+          type && +type !== 3 && fetchPermissionTree({ payload: type });
 
           this.setState({ unitType: type ? +type : type });
         },
       });
-    } else // 新增
+    } else { // 新增
       clearDetail();
+      clearPermissionTree();
+    }
   }
-
-  initialAppPermissionTree = [];
 
   handleTreeTypeChange = value => {
     const {
@@ -73,8 +56,9 @@ export default class RoleHandler extends PureComponent {
       form: { setFieldsValue },
       role: {
         detail: {
-          appPermissions,
-          sysRole: { unitType },
+          unitType,
+          webPermissionIds,
+          appPermissionIds,
         },
       },
     } = this.props;
@@ -84,14 +68,16 @@ export default class RoleHandler extends PureComponent {
     fetchPermissionTree({
       payload: value,
       // 在model变化前，先清空值，不然会报warning
-      callback: () => { setFieldsValue({ appPermissions: undefined }); },
+      callback: () => { setFieldsValue({ permissions:undefined, appPermissions: undefined }); },
       // model变化后再设置值，不然当先设置值时，就会报warning，且model后变化，就没办法正确设置上值了
-      // callbackLater: () => {
-      //   if (+value === +unitType) {
-      //     const appValue = appPermissions ? uncheckParent(this.initialAppPermissionTree, appPermissions) : [];
-      //     setFieldsValue({ appPermissions: appValue });
-      //   }
-      // }
+      callbackLater: (tree, appTree) => {
+        console.log(tree, appTree);
+        if (+value === +unitType) {
+          const value = webPermissionIds ? uncheckParent(tree, webPermissionIds) : [];
+          const appValue = appPermissionIds ? uncheckParent(appTree, appPermissionIds) : [];
+          setFieldsValue({ permissions: value, appPermissions: appValue });
+        }
+      },
     });
   };
 
@@ -114,11 +100,11 @@ export default class RoleHandler extends PureComponent {
         const {
           role: { permissionTree, appPermissionTree },
         } = this.props;
-        const { name, description, permissions, appPermissions, unitType } = values;
+        const { roleName, description, permissions, appPermissions, unitType } = values;
         const payload = {
           id,
           unitType,
-          roleName: name.trim(),
+          roleName: roleName.trim(),
           description,
           webPermissionIds: checkParent(permissionTree, permissions),
           appPermissionIds: checkParent(appPermissionTree, appPermissions),
@@ -135,21 +121,11 @@ export default class RoleHandler extends PureComponent {
           });
         };
         // 如果id存在，则编辑角色
-        if (id) {
-          updateRole({
-            payload,
-            success,
-            error,
-          });
-        }
+        if (id)
+          updateRole({ payload, success, error });
         // 否则新增角色
-        else {
-          insertRole({
-            payload,
-            success,
-            error,
-          });
-        }
+        else
+          insertRole({ payload, success, error });
       }
     });
   };
@@ -159,9 +135,7 @@ export default class RoleHandler extends PureComponent {
     const {
       account: { unitTypes },
       role: {
-        detail: {
-          sysRole: { name, description, unitType } = {},
-        },
+        detail: { roleName, description, unitType },
       },
       form: { getFieldDecorator },
     } = this.props;
@@ -209,8 +183,8 @@ export default class RoleHandler extends PureComponent {
               lg: { span: 9 },
             }}
           >
-            {getFieldDecorator('name', {
-              initialValue: name,
+            {getFieldDecorator('roleName', {
+              initialValue: roleName,
               rules: [{ required: true, message: '请输入角色名称', whitespace: true }],
             })(<Input maxLength={50} placeholder="请输入角色名称" />)}
           </Form.Item>
@@ -258,14 +232,14 @@ export default class RoleHandler extends PureComponent {
       role: {
         permissionTree,
         appPermissionTree,
-        detail: { permissions, appPermissions },
+        detail: { appPermissionIds, webPermissionIds },
       },
       form: { getFieldDecorator },
     } = this.props;
     const { unitType } = this.state;
 
-    const value = permissions && uncheckParent(permissionTree, permissions);
-    const appValue = appPermissions ? uncheckParent(appPermissionTree, appPermissions) : [];
+    const value = webPermissionIds ? uncheckParent(permissionTree, webPermissionIds) : [];
+    const appValue = appPermissionIds ? uncheckParent(appPermissionTree, appPermissionIds) : [];
     const tree = sortTree(permissionTree);
     const appTree = sortTree(appPermissionTree);
 
@@ -289,13 +263,13 @@ export default class RoleHandler extends PureComponent {
               trigger: 'onCheck',
               validateTrigger: 'onCheck',
               valuePropName: 'checkedKeys',
-              rules: [
-                {
-                  required: true,
-                  message: '请选择WEB权限',
-                  transform: value => value && value.join(','),
-                },
-              ],
+              // rules: [
+              //   {
+              //     required: true,
+              //     message: '请选择WEB权限',
+              //     transform: value => value && value.join(','),
+              //   },
+              // ],
             })(<Tree checkable>{this.renderTreeNodes(tree)}</Tree>)}
           </Form.Item>
           {unitType !== 3 && (
@@ -316,13 +290,13 @@ export default class RoleHandler extends PureComponent {
                 trigger: 'onCheck',
                 validateTrigger: 'onCheck',
                 valuePropName: 'checkedKeys',
-                rules: [
-                  {
-                    required: true,
-                    message: '请选择APP权限',
-                    transform: value => value && value.join(','),
-                  },
-                ],
+                // rules: [
+                //   {
+                //     required: true,
+                //     message: '请选择APP权限',
+                //     transform: value => value && value.join(','),
+                //   },
+                // ],
               })(<Tree checkable>{this.renderTreeNodes(appTree)}</Tree>)}
             </Form.Item>
           )}
@@ -337,9 +311,8 @@ export default class RoleHandler extends PureComponent {
     const {
       goBack,
       loading,
-      user: {
-        currentUser: { permissionCodes },
-      },
+      codes: { list: listCode },
+      user: { currentUser: { permissionCodes } },
     } = this.props;
     const hasListAuthority = hasAuthority(listCode, permissionCodes);
 
@@ -358,30 +331,31 @@ export default class RoleHandler extends PureComponent {
   render() {
     const {
       loading,
+      type,
+      urls: { listUrl },
+      codes: { list: listCode },
       match: { params: { id } },
       user: { currentUser: { permissionCodes } },
     } = this.props;
     const { submitting } = this.state;
 
-    // 是否有列表权限
-    const hasListAuthority = hasAuthority(listCode, permissionCodes);
-    // 根据params.id是否存在判断当前为新增还是编辑
-    const title = id ? editTitle : addTitle;
-    // 面包屑
-    const breadcrumbList = [
+    const typeLabel = type ? '公共' : '私有';
+    const hasListAuthority = hasAuthority(listCode, permissionCodes); // 是否有列表权限
+    const title = id ? editTitle : addTitle; // 根据params.id是否存在判断当前为新增还是编辑
+    const breadcrumbList = [ // 面包屑
       {
         title: '首页',
         name: '首页',
         href: '/',
       },
       {
-        title: '权限管理',
-        name: '权限管理',
+        title: '角色权限',
+        name: '角色权限',
       },
       {
-        title: '角色管理',
-        name: '角色管理',
-        href: hasListAuthority ? backUrl : undefined,
+        title: `${typeLabel}角色`,
+        name: `${typeLabel}角色`,
+        href: hasListAuthority ? listUrl : undefined,
       },
       {
         title,

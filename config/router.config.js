@@ -529,7 +529,7 @@ module.exports = env => {
                   path: '/role-authorization/role/detail/:id',
                   name: 'detail',
                   code: 'roleAuthorization.role.view',
-                  component: './RoleAuthorization/Role/RoleDetail',
+                  component: './RoleAuthorization/SystemRole/SystemRoleDetail',
                 },
                 {
                   path: '/role-authorization/role/add',
@@ -559,13 +559,13 @@ module.exports = env => {
                   path: '/role-authorization/commonRole/list',
                   name: 'list',
                   code: 'roleAuthorization.commonRole.listView',
-                  component: './RoleAuthorization/Role/RoleList',
+                  component: './RoleAuthorization/CommonRole/CommonRoleList',
                 },
                 {
                   path: '/role-authorization/commonRole/detail/:id',
                   name: 'detail',
                   code: 'roleAuthorization.commonRole.view',
-                  component: './RoleAuthorization/Role/RoleDetail',
+                  component: './RoleAuthorization/CommonRole/CommonRoleDetail',
                 },
                 {
                   path: '/role-authorization/commonRole/add',

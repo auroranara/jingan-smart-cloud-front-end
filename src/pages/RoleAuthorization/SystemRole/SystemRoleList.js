@@ -10,8 +10,8 @@ import InlineForm from '../../BaseInfo/Company/InlineForm';
 import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
-import styles from './Role.less';
-import { getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from './utils';
+import styles from '../Role/Role.less';
+import { getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from '../Role/utils';
 
 const { Option } = Select;
 const { TreeNode } = TreeSelect;

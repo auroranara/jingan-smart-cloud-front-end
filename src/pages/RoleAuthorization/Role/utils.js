@@ -1,5 +1,27 @@
 export const LIST_PAGE_SIZE = 24;
 
+export const COMMON_LIST_URL = '/role-authorization/commonRole/list';
+export const COMMON_DETAIL_URL = '/role-authorization/commonRole/detail';
+export const COMMON_ADD_URL = '/role-authorization/commonRole/add';
+export const COMMON_EDIT_URL = '/role-authorization/commonRole/edit';
+export const COMMON_URLS = {
+  listUrl: COMMON_LIST_URL,
+  detailUrl: COMMON_DETAIL_URL,
+  addUrl: COMMON_ADD_URL,
+  editUrl: COMMON_EDIT_URL,
+};
+
+export const PRIVATE_LIST_URL = '/role-authorization/userRole/list';
+export const PRIVATE_DETAIL_URL = '/role-authorization/userRole/detail';
+export const PRIVATE_ADD_URL = '/role-authorization/userRole/add';
+export const PRIVATE_EDIT_URL = '/role-authorization/userRole/edit';
+export const PRIVATE_URLS = {
+  listUrl: PRIVATE_LIST_URL,
+  detailUrl: PRIVATE_DETAIL_URL,
+  addUrl: PRIVATE_ADD_URL,
+  editUrl: PRIVATE_EDIT_URL,
+};
+
 export function getUnitTypeLabel(type, types) {
   if (!types || !types.length || !type)
     return;
@@ -93,4 +115,22 @@ export function preventDefault(e) {
 /* 去除两边空格 */
 export function transform(value) {
   return value.trim();
+}
+
+export function getSelectedTree(selected, tree) {
+  if (!tree || !tree.length)
+    return [];
+  return tree.reduce((prev, next) => {
+    const { id, childMenus } = next;
+    if (selected.includes(id)) {
+      const node = { ...next };
+      const children = getSelectedTree(selected, childMenus);
+      if (children.length)
+        node.childMenus = children;
+      else
+        delete node.childMenus;
+      prev.push(node);
+    }
+    return prev;
+  }, []);
 }

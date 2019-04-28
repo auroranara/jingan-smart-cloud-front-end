@@ -1,198 +1,54 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Spin, Tree, Button } from 'antd';
-import { routerRedux } from 'dva/router';
+import router from 'umi/router';
 
-import DescriptionList from '@/components/DescriptionList';
-import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import { hasAuthority } from '@/utils/customAuth';
-import urls from '@/utils/urls';
+import RoleDetail from '../Role/RoleDetail';
 import codes from '@/utils/codes';
-import { getEmptyData, sortTree } from '@/pages/RoleAuthorization/Role/utils';
+import { COMMON_LIST_URL as LIST_URL, COMMON_EDIT_URL as EDIT_URL } from '@/pages/RoleAuthorization/Role/utils';
 
-const { Description } = DescriptionList;
-const { TreeNode } = Tree;
-
-// 标题
-const title = '角色详情';
-// 获取链接地址
-const { role: { list: backUrl, edit: editUrl } } = urls;
-// 获取code
-const { role: { list: listCode, edit: editCode } } = codes;
-// 面包屑
-const breadcrumbList = [
-  {
-    title: '首页',
-    name: '首页',
-    href: '/',
-  },
-  {
-    title: '权限管理',
-    name: '权限管理',
-  },
-  {
-    title: '角色管理',
-    name: '角色管理',
-    href: backUrl,
-  },
-  {
-    title,
-    name: title,
-  },
-];
-
-@connect(({ account, role, user, loading }) => ({
+@connect(({ account, commonRole, user, loading }) => ({
   account,
-  role,
+  role: commonRole,
   user,
-  loading: loading.models.role,
-}), (dispatch) => ({
-  // 获取详情
-  fetchDetail(action) {
-    dispatch({
-      type: 'role/fetchDetail',
-      ...action,
-    });
-  },
-  // 获取权限树
-  fetchPermissionTree() {
-    dispatch({
-      type: 'role/fetchPermissionTree',
-    });
-  },
-  // 返回
-  goBack() {
-    dispatch(routerRedux.push(backUrl));
-  },
-  /* 跳转到编辑页面 */
-  goToEdit(id) {
-    dispatch(routerRedux.push(editUrl + id));
-  },
-  /* 异常 */
-  goToException() {
-    dispatch(routerRedux.push('/exception/500'));
-  },
-  dispatch,
+  loading: loading.models.commonRole,
 }))
-@Form.create()
 export default class CommonRoleDetail extends PureComponent {
-  /* 挂载后 */
-  componentDidMount() {
-    const { dispatch, fetchDetail, fetchPermissionTree, goToException, role: { permissionTree }, match: { params: { id } } } = this.props;
-    dispatch({ type: 'account/fetchOptions' });
-    // 根据id获取详情
-    fetchDetail({
-      payload: {
-        id,
-      },
-      error: () => {
-        goToException();
-      },
-    });
-    // 获取权限树
-    if (permissionTree.length === 0) {
-      fetchPermissionTree();
-    }
+  fetchUnitTypes = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'account/fetchOptions', ...action });
+  };
+
+  fetchDetail = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'commonRole/fetchDetail', ...action });
+  };
+
+  fetchPermissionTree = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'commonRole/fetchPermissionTree', ...action });
+  };
+
+  goBack() {
+    router.push(LIST_URL);
   }
 
-  /* 渲染基础信息 */
-  renderBasicInfo() {
-    const {
-      account: { unitTypes },
-      role: { detail: { sysRole: { name, description, unitType } } },
-    } = this.props;
-    const typeMap = unitTypes ? unitTypes.reduce((prev, next) => {
-      const { id, label } = next;
-      prev[id] = label;
-      return prev;
-    }, {}) : {};
-
-    return (
-      <Card title="基本信息">
-        <DescriptionList col={1} style={{ marginBottom: 16 }}>
-          <Description term="角色名称">{name || getEmptyData()}</Description>
-          <Description term="角色类型">{typeMap[unitType] || getEmptyData()}</Description>
-          <Description term="角色描述">{<div style={{ whiteSpace: 'pre-wrap' }}>{description}</div> || getEmptyData()}</Description>
-        </DescriptionList>
-      </Card>
-    );
-  }
-
-  /* 树节点 */
-  renderTreeNodes(data) {
-    return data.map((item) => {
-      const { id, showZname: title, childMenus: children } = item;
-      if (children) {
-        return (
-          <TreeNode title={title} key={id} dataRef={item} selectable={false}>
-            {this.renderTreeNodes(children)}
-          </TreeNode>
-        );
-      }
-      return <TreeNode title={title} key={id} dataRef={item} selectable={false} />;
-    });
-  }
-
-  /* 权限配置 */
-  renderAuthorizationConfiguration() {
-    const { role: { detail: { treeMap, appTreeMap, sysRole: { unitType } } } } = this.props;
-    const menu = treeMap ? (treeMap.menu || []) : [];
-    const tree = sortTree(menu);
-    const appMenu = appTreeMap && Array.isArray(appTreeMap.menu) ? appTreeMap.menu : [];
-    const appTree = sortTree(appMenu);
-    const isAdmin = +unitType === 3;
-
-    return (
-      <Card title="权限配置" style={{ marginTop: '24px' }}>
-        <DescriptionList col={2} style={{ marginBottom: 16 }}>
-          <Description term="WEB权限树">
-            {treeMap ? (
-              <Tree>
-                {this.renderTreeNodes(tree)}
-              </Tree>
-            ) : getEmptyData()}
-          </Description>
-          {!isAdmin && (
-            <Description term="APP权限树">
-              {treeMap ? (
-                <Tree>
-                  {this.renderTreeNodes(appTree)}
-                </Tree>
-              ) : getEmptyData()}
-            </Description>
-          )}
-        </DescriptionList>
-        {this.renderButtonGroup()}
-      </Card>
-    );
-  }
-
-  /* 按钮组 */
-  renderButtonGroup() {
-    const { goBack, goToEdit, match: { params: { id } }, user: { currentUser: { permissionCodes } } } = this.props;
-    // 是否有列表权限
-    const hasListAuthority = hasAuthority(listCode, permissionCodes);
-    // 是否有编辑权限
-    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
-
-    return (
-      <div style={{ textAlign: 'center' }}>
-        <Button disabled={!hasListAuthority} onClick={goBack} style={{ marginRight: '24px' }}>返回</Button>
-        <Button type="primary" disabled={!hasEditAuthority} onClick={() => {goToEdit(id)}}>编辑</Button>
-      </div>
-    );
+  goToEdit() {
+    const { match: { params: { id } } } = this.props;
+    router.push(`${EDIT_URL}/${id}`);
   }
 
   render() {
-    const { loading } = this.props;
-
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
-        <Spin spinning={loading}>
-          {this.renderBasicInfo()}
-          {this.renderAuthorizationConfiguration()}
-        </Spin>
-      </PageHeaderLayout>
+      <RoleDetail
+        type={1}
+        codes={codes.commonRole}
+        fetchUnitTypes={this.fetchUnitTypes}
+        fetchDetail={this.fetchDetail}
+        fetchPermissionTree={this.fetchPermissionTree}
+        goBack={this.goBack}
+        goToEdit={this.goToEdit}
+        {...this.props}
+      />
     );
   }
 }

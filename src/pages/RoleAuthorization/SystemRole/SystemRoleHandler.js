@@ -7,7 +7,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
-import { checkParent, uncheckParent, sortTree } from './utils';
+import { checkParent, uncheckParent, sortTree } from '../Role/utils';
 
 const { TreeNode } = Tree;
 const { TextArea } = Input;
@@ -445,8 +445,8 @@ export default class RoleHandler extends PureComponent {
         name: '权限管理',
       },
       {
-        title: '角色管理',
-        name: '角色管理',
+        title: '系统角色',
+        name: '系统角色',
         href: hasListAuthority ? backUrl : undefined,
       },
       {
