@@ -74,7 +74,7 @@ export default class VideoPermissionList extends PureComponent {
     } = this.props;
     const name = getFieldValue('name');
     dispatch({
-      type: 'video/fetchCompanyList',
+      type: 'video/fetchGovList',
       payload: {
         pageNum: 1,
         pageSize,
@@ -96,7 +96,7 @@ export default class VideoPermissionList extends PureComponent {
     } = this.props;
     resetFields();
     dispatch({
-      type: 'video/fetchCompanyList',
+      type: 'video/fetchGovList',
       payload: {
         pageNum: 1,
         pageSize,
