@@ -53,7 +53,7 @@ export default class VideoPermissionList extends PureComponent {
       },
     } = this.props;
     dispatch({
-      type: 'video/fetchCompanyList',
+      type: 'video/fetchGovList',
       payload: {
         pageNum: 1,
         pageSize,
@@ -176,7 +176,7 @@ export default class VideoPermissionList extends PureComponent {
     const {
       loading,
       video: {
-        permission: { list },
+        permission: { govList },
       },
       // user: {
       //   currentUser: { permissionCodes },
@@ -195,35 +195,24 @@ export default class VideoPermissionList extends PureComponent {
           rowKey="id"
           loading={loading}
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
-          dataSource={list}
+          dataSource={govList}
           renderItem={item => {
             const {
-              id,
-              name,
-              practicalAddress,
-              industryCategoryLabel,
-              safetyName,
-              safetyPhone,
-              practicalProvinceLabel,
-              practicalCityLabel,
-              practicalDistrictLabel,
-              practicalTownLabel,
+              address,
+              departmentId,
+              departmentName,
+              userId,
+              officePhoneJ,
             } = item;
-            const practicalAddressLabel =
-              (practicalProvinceLabel || '') +
-              (practicalCityLabel || '') +
-              (practicalDistrictLabel || '') +
-              (practicalTownLabel || '') +
-              (practicalAddress || '');
             return (
-              <ListItem key={id}>
+              <ListItem key={departmentId}>
                 <Card
-                  title={name}
+                  title={departmentName}
                   className={styles.card}
                   actions={[
                     <AuthLink
                       code={edit}
-                      to={`/video-surveillance/government-video-permission/edit/${item.id}`}
+                      to={`/video-surveillance/government-video-permission/edit/${departmentId}?name=${departmentName}`}
                     >
                       编辑
                     </AuthLink>,
@@ -241,19 +230,19 @@ export default class VideoPermissionList extends PureComponent {
                   <div>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       地址：
-                      {practicalAddressLabel || getEmptyData()}
+                      {address || getEmptyData()}
                     </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       行业类别：
                       {industryCategoryLabel || getEmptyData()}
-                    </Ellipsis>
+                    </Ellipsis> */}
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      负责人：
-                      {safetyName || getEmptyData()}
+                      机构负责人：
+                      {userId || getEmptyData()}
                     </Ellipsis>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       联系电话：
-                      {safetyPhone || getEmptyData()}
+                      {officePhoneJ || getEmptyData()}
                     </Ellipsis>
                   </div>
                 </Card>
@@ -268,8 +257,8 @@ export default class VideoPermissionList extends PureComponent {
   render() {
     const {
       video: {
-        permission: { isLast },
-        companyData: {
+        permission: { govIsLast },
+        govData: {
           pagination: { total },
         },
       },
@@ -295,7 +284,7 @@ export default class VideoPermissionList extends PureComponent {
             // 防止多次加载
             !loading && this.handleLoadMore();
           }}
-          hasMore={!isLast}
+          hasMore={!govIsLast}
           loader={
             <div className="loader" key={0}>
               {loading && (

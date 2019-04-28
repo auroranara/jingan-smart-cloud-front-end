@@ -69,3 +69,8 @@ export async function fetchCompanyOptions(params) {
 export async function synchronizeDirectory() {
   return request('/acloud_new/v2/video/api/manualSync');
 }
+
+// 获取政府列表（视频权限）
+export async function fetchGovList(params) {
+  return request(`/acloud_new/v2/baseInfo/eyeGovList?${stringify(params)}`);
+}
