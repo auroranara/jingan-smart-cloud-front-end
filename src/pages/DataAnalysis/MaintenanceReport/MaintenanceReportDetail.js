@@ -8,8 +8,8 @@ import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import hiddenIcon from '@/assets/hiddenIcon.png';
 
-import styles from './CompanyReport.less';
-const title = '企业自查报表详情';
+import styles from './MaintenanceReport.less';
+const title = '维保检查报表详情';
 
 /* 面包屑 */
 const breadcrumbList = [
@@ -23,13 +23,13 @@ const breadcrumbList = [
     name: '数据分析',
   },
   {
-    title: '企业自查报表',
-    name: '企业自查报表',
-    href: '/data-analysis/company-report/list',
+    title: '维保检查报表',
+    name: '维保检查报表',
+    href: '/data-analysis/maintenance-report/list',
   },
   {
     title,
-    name: '企业自查报表详情',
+    name: '维保检查报表详情',
   },
 ];
 /* 头部标签列表 */
@@ -41,18 +41,19 @@ const tabList = [
 ];
 
 /**
- * 企业自查报表详情
+ * 维保检查报表详情
  */
-@connect(({ companyReport, user, loading }) => ({
-  companyReport,
+@connect(({ maintenanceReport, user, loading }) => ({
+  maintenanceReport,
   user,
-  loading: loading.models.companyReport,
+  loading: loading.models.maintenanceReport,
 }))
 export default class App extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       tab: '1',
+      i: '0',
     };
   }
 
@@ -69,7 +70,7 @@ export default class App extends PureComponent {
 
     // 获取详情
     dispatch({
-      type: 'companyReport/fetchCheckDetail',
+      type: 'maintenanceReport/fetchCheckDetail',
       payload: {
         checkId: id,
       },
@@ -88,7 +89,7 @@ export default class App extends PureComponent {
    */
   render() {
     const {
-      companyReport: {
+      maintenanceReport: {
         detail: { list = [] },
       },
       user: {
@@ -98,18 +99,11 @@ export default class App extends PureComponent {
         params: { id },
       },
       location: {
-        query: {
-          checkResultName,
-          object_title,
-          check_date,
-          check_user_names,
-          companyName,
-          itemTypeName,
-        },
+        query: { companyName, checkCompanyName, userName, checkDate, status, objectTitle },
       },
       loading,
     } = this.props;
-    const { tab } = this.state;
+    const { tab, i } = this.state;
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
 
@@ -117,14 +111,17 @@ export default class App extends PureComponent {
       {
         title: '检查项',
         dataIndex: 'object_title',
+        key: 'object_title',
       },
       {
         title: '业务分类',
         dataIndex: 'businessTypeName',
+        key: 'businessTypeName',
       },
       {
         title: '检查内容',
         dataIndex: 'list',
+        key: 'list',
         width: 280,
         render: val => {
           return val && val.length > 0
@@ -143,6 +140,7 @@ export default class App extends PureComponent {
       {
         title: '检查结果',
         dataIndex: 'conclusion_name',
+        key: 'conclusion_name',
         render: (text, val) => {
           const { list } = val;
           return list && list.length > 0
@@ -159,6 +157,7 @@ export default class App extends PureComponent {
       {
         title: '相关隐患',
         dataIndex: 'statusName',
+        key: 'statusName',
         render: (text, val) => {
           const { list } = val;
           return list && list.length > 0
@@ -167,9 +166,9 @@ export default class App extends PureComponent {
                   <div>
                     <Link
                       key={v.detail_id}
-                      to={`/data-analysis/company-report/checkDetail/${
+                      to={`/data-analysis/maintenance-report/maintenanCheckDetail/${
                         v._id
-                      }?checkId=${id}&&companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+                      }?checkId=${id}&&companyMtName=${companyName}&&objectTitle=${objectTitle}&&checkCompanyName=${checkCompanyName}&&userName=${userName}&&checkDate=${checkDate}`}
                     >
                       {v.statusName ? (
                         <span style={{ color: '#40a9ff' }}> {v.statusName} </span>
@@ -188,10 +187,11 @@ export default class App extends PureComponent {
       <PageHeaderLayout
         title={
           <Fragment>
-            {itemTypeName}：{object_title}
+            {objectTitle}
             {!isCompany && <div className={styles.content}>{`单位名称：${companyName}`}</div>}
-            <div className={styles.content}>{`检查人：${check_user_names}`}</div>
-            <div className={styles.content}>{`检查时间：${moment(+check_date).format(
+            <div className={styles.content}>{`维保单位：${checkCompanyName}`}</div>
+            <div className={styles.content}>{`检查人：${userName}`}</div>
+            <div className={styles.content}>{`检查时间：${moment(+checkDate).format(
               'YYYY-MM-DD'
             )}`}</div>
           </Fragment>
@@ -200,7 +200,7 @@ export default class App extends PureComponent {
         action={
           <div>
             <div className={styles.textSecondary}>状态</div>
-            <div className={styles.heading}>{checkResultName}</div>
+            <div className={styles.heading}>{+status === 1 ? '正常' : '异常'}</div>
           </div>
         }
         tabList={tabList}
@@ -215,7 +215,7 @@ export default class App extends PureComponent {
                 className={styles.table}
                 dataSource={list}
                 columns={columns}
-                key="_id"
+                rowKey={i}
                 scroll={{
                   x: true,
                 }}

@@ -8,8 +8,8 @@ import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import hiddenIcon from '@/assets/hiddenIcon.png';
 
-import styles from './CompanyReport.less';
-const title = '企业自查报表详情';
+import styles from './GovermentReport.less';
+const title = '政府监督报表详情';
 
 /* 面包屑 */
 const breadcrumbList = [
@@ -23,13 +23,13 @@ const breadcrumbList = [
     name: '数据分析',
   },
   {
-    title: '企业自查报表',
-    name: '企业自查报表',
-    href: '/data-analysis/company-report/list',
+    title: '政府监督报表',
+    name: '政府监督报表',
+    href: '/data-analysis/goverment-report/list',
   },
   {
     title,
-    name: '企业自查报表详情',
+    name: '政府监督报表详情',
   },
 ];
 /* 头部标签列表 */
@@ -41,18 +41,19 @@ const tabList = [
 ];
 
 /**
- * 企业自查报表详情
+ * 政府监督报表详情
  */
-@connect(({ companyReport, user, loading }) => ({
-  companyReport,
+@connect(({ maintenanceReport, user, loading }) => ({
+  maintenanceReport,
   user,
-  loading: loading.models.companyReport,
+  loading: loading.models.maintenanceReport,
 }))
 export default class App extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       tab: '1',
+      i: '0',
     };
   }
 
@@ -69,7 +70,7 @@ export default class App extends PureComponent {
 
     // 获取详情
     dispatch({
-      type: 'companyReport/fetchCheckDetail',
+      type: 'maintenanceReport/fetchCheckDetail',
       payload: {
         checkId: id,
       },
@@ -88,7 +89,7 @@ export default class App extends PureComponent {
    */
   render() {
     const {
-      companyReport: {
+      maintenanceReport: {
         detail: { list = [] },
       },
       user: {
@@ -109,7 +110,7 @@ export default class App extends PureComponent {
       },
       loading,
     } = this.props;
-    const { tab } = this.state;
+    const { tab, i } = this.state;
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
 
@@ -167,9 +168,9 @@ export default class App extends PureComponent {
                   <div>
                     <Link
                       key={v.detail_id}
-                      to={`/data-analysis/company-report/checkDetail/${
+                      to={`/data-analysis/goverment-report/govermentCheckDetail/${
                         v._id
-                      }?checkId=${id}&&companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+                      }?checkId=${id}&&companyGovName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
                     >
                       {v.statusName ? (
                         <span style={{ color: '#40a9ff' }}> {v.statusName} </span>
@@ -215,7 +216,7 @@ export default class App extends PureComponent {
                 className={styles.table}
                 dataSource={list}
                 columns={columns}
-                key="_id"
+                rowKey={i}
                 scroll={{
                   x: true,
                 }}

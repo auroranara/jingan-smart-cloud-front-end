@@ -865,14 +865,72 @@ module.exports = env => {
                   component: './DataAnalysis/CompanyReport/CompanyReportDetail',
                 },
                 {
-                  path: '/data-analysis/company-report/convenientlyDetail/:id',
+                  path: '/data-analysis/company-report/checkDetail/:id',
                   code: 'dataAnalysis.companyReport.view',
                   name: 'detail',
                   component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
                 },
+              ],
+            },
+            // 维保检查报表
+            {
+              path: '/data-analysis/maintenance-report',
+              code: 'dataAnalysis.maintenanceReport',
+              name: 'maintenanceReport',
+              hideChildrenInMenu: true,
+              routes: [
                 {
-                  path: '/data-analysis/company-report/checkDetail/:id',
-                  code: 'dataAnalysis.companyReport.view',
+                  path: '/data-analysis/maintenance-report',
+                  name: 'maintenanceReport',
+                  redirect: '/data-analysis/maintenance-report/list',
+                },
+                {
+                  path: '/data-analysis/maintenance-report/list',
+                  code: 'dataAnalysis.maintenanceReport.view',
+                  name: 'list',
+                  component: './DataAnalysis/MaintenanceReport/MaintenanceReportList',
+                },
+                {
+                  path: '/data-analysis/maintenance-report/detail/:id',
+                  code: 'dataAnalysis.maintenanceReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/MaintenanceReport/MaintenanceReportDetail',
+                },
+                {
+                  path: '/data-analysis/maintenance-report/maintenanCheckDetail/:id',
+                  code: 'dataAnalysis.maintenanceReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+                },
+              ],
+            },
+            // 政府监督报表
+            {
+              path: '/data-analysis/goverment-report',
+              code: 'dataAnalysis.govermentReport',
+              name: 'govermentReport',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/data-analysis/goverment-report',
+                  name: 'govermentReport',
+                  redirect: '/data-analysis/goverment-report/list',
+                },
+                {
+                  path: '/data-analysis/goverment-report/list',
+                  code: 'dataAnalysis.govermentReport.view',
+                  name: 'list',
+                  component: './DataAnalysis/GovermentReport/GovermentReportList',
+                },
+                {
+                  path: '/data-analysis/goverment-report/detail/:id',
+                  code: 'dataAnalysis.govermentReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/GovermentReport/GovermentReportDetail',
+                },
+                {
+                  path: '/data-analysis/goverment-report/govermentCheckDetail/:id',
+                  code: 'dataAnalysis.govermentReport.view',
                   name: 'detail',
                   component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
                 },

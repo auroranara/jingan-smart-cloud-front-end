@@ -11,18 +11,20 @@ import {
   Button,
   Spin,
   Badge,
+  AutoComplete,
   TreeSelect,
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import Link from 'umi/link';
+import debounce from 'lodash/debounce';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Ellipsis from '@/components/Ellipsis';
 
-import styles from './CompanyReport.less';
+import styles from './MaintenanceReport.less';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-const title = '企业自查报表';
+const title = '维保检查报表';
 
 /* 面包屑 */
 const breadcrumbList = [
@@ -37,17 +39,18 @@ const breadcrumbList = [
   },
   {
     title,
-    name: '企业自查报表',
+    name: '维保检查报表',
   },
 ];
 
 /* 筛选表单label */
 const fieldLabels = {
-  grid_id: '所属网格',
-  company_name: '单位名称',
+  gridId: '所属网格',
+  companyName: '单位名称',
   checkTime: '检查时间',
   reportingChannels: '上报途径',
-  item_name: '点位名称',
+  itemName: '点位名称',
+  checkCompany: '检查单位',
   checkUser: '检查人',
   checkResult: '检查结果',
 };
@@ -56,21 +59,22 @@ const fieldLabels = {
 const getRootChild = () => document.querySelector('#root>div');
 
 /* session前缀 */
-const sessionPrefix = 'company_report_list_';
+const sessionPrefix = 'maintenance_report_list_';
 
 /**
  * 企业自查报表
  */
-@connect(({ hiddenDangerReport, companyReport, user, loading }) => ({
+@connect(({ hiddenDangerReport, maintenanceReport, user, loading }) => ({
   hiddenDangerReport,
-  companyReport,
+  maintenanceReport,
   user,
-  loading: loading.models.companyReport,
+  loading: loading.models.maintenanceReport,
 }))
 @Form.create()
 export default class App extends PureComponent {
   constructor(props) {
     super(props);
+    this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
     const {
       user: {
         currentUser: { unitType },
@@ -83,10 +87,6 @@ export default class App extends PureComponent {
     /* 默认除操作列以外的表格列 */
     const defaultColumns = [
       {
-        title: '上报途径',
-        dataIndex: 'itemTypeName',
-      },
-      {
         title: '点位名称',
         dataIndex: 'object_title',
         render: val => (
@@ -94,6 +94,10 @@ export default class App extends PureComponent {
             {val}
           </Ellipsis>
         ),
+      },
+      {
+        title: '检查单位',
+        dataIndex: 'checkCompanyName',
       },
       {
         title: '检查人',
@@ -112,23 +116,23 @@ export default class App extends PureComponent {
       {
         title: '检查结果',
         align: 'center',
-        dataIndex: 'checkResultName',
+        dataIndex: 'status',
         render: value =>
-          value === '异常' ? (
-            <Badge status="error" text={value} />
+          +value === 1 ? (
+            <Badge status="success" text="正常" />
           ) : (
-            <Badge status="success" text={value} />
+            <Badge status="error" text="异常" />
           ),
       },
       {
         title: '隐患情况',
         dataIndex: 'dangerStatus',
         render: (val, text) => {
-          const { over_rectify, rectify, review, closed, total, checkResultName } = text;
+          const { over_rectify, rectify, review, closed, total, status } = text;
           const resultStatus = ['已超期', '待整改', '待复查', '已关闭'];
           const nums = [over_rectify, rectify, review, closed];
           return (
-            checkResultName === '异常' && (
+            +status === 2 && (
               <div>
                 <p style={{ marginBottom: 0 }}>
                   总数：
@@ -155,21 +159,18 @@ export default class App extends PureComponent {
           const {
             check_id,
             company_name,
-            itemTypeName,
+            checkCompanyName,
             check_user_names,
             check_date,
-            checkResultName,
+            status,
             object_title,
-            _id,
           } = text;
-          return itemTypeName !== '随手拍' ? (
+          return (
             <Link
-              to={`/data-analysis/company-report/detail/${check_id}?companyName=${company_name}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+              to={`/data-analysis/maintenance-report/detail/${check_id}?companyName=${company_name}&&objectTitle=${object_title}&&checkCompanyName=${checkCompanyName}&&userName=${check_user_names}&&checkDate=${check_date}&&status=${status}`}
             >
               查看
             </Link>
-          ) : (
-            <Link to={`/data-analysis/company-report/checkDetail/${_id}?newId=${_id}`}>查看</Link>
           );
         },
       },
@@ -223,45 +224,71 @@ export default class App extends PureComponent {
 
     // 获取列表
     dispatch({
-      type: 'companyReport/fetchList',
-      payload,
+      type: 'maintenanceReport/fetchMaintenancList',
+      payload: {
+        ...payload,
+        reportSource: 3,
+      },
     });
 
     // 获取网格列表
     dispatch({
       type: 'hiddenDangerReport/fetchGridList',
     });
+
+    dispatch({
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
+    });
+
+    // 根据用户类型获取单位
+    payload.company_id &&
+      dispatch({
+        type: 'hiddenDangerReport/fetchUnitListFuzzy',
+        payload: {
+          unitName: payload.companyName,
+          pageNum: 1,
+          pageSize: 10,
+        },
+      });
   }
 
   /**
    * 查询
    */
-  handleSearch = () => {
+  handleOnSearch = () => {
     const {
       dispatch,
       form: { getFieldsValue },
-      companyReport: {
+      maintenanceReport: {
         data: {
           pagination: { pageSize },
         },
       },
+      hiddenDangerReport: { unitIdes },
       user: {
         currentUser: { id },
       },
     } = this.props;
-    const { createTime, ...rest } = getFieldsValue();
+    const { createTime, company_id, ...rest } = getFieldsValue();
     const [startTime, endTime] = createTime || [];
     const payload = {
       ...rest,
       pageNum: 1,
       pageSize,
+      company_id,
+      companyName:
+        unitIdes.find(item => item.id === company_id) &&
+        unitIdes.find(item => item.id === company_id).name,
       startTime: startTime && `${startTime.format('YYYY/MM/DD')} 00:00:00`,
       endTime: endTime && `${endTime.format('YYYY/MM/DD')} 23:59:59`,
     };
     // 获取列表
     dispatch({
-      type: 'companyReport/fetchList',
-      payload,
+      type: 'maintenanceReport/fetchMaintenancList',
+      payload: {
+        ...payload,
+        reportSource: 3,
+      },
     });
     // 保存筛选条件
     sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
@@ -272,19 +299,28 @@ export default class App extends PureComponent {
    */
   handleReset = () => {
     const {
+      dispatch,
       form: { setFieldsValue },
     } = this.props;
     // 重置控件
     setFieldsValue({
       gridId: undefined,
-      companyName: undefined,
+      company_id: undefined,
       createTime: undefined,
-      itemType: undefined,
       objectTitle: undefined,
+      checkCompanyName: undefined,
       checkUserName: undefined,
       checkResult: undefined,
     });
-    this.handleSearch();
+    this.handleOnSearch();
+    dispatch({
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
+      payload: {
+        // unitName: value && value.trim(),
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
   };
 
   /**
@@ -300,8 +336,11 @@ export default class App extends PureComponent {
     // 从sessionStorage中获取存储的控件值
     const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
     dispatch({
-      type: 'companyReport/exportData',
-      payload,
+      type: 'maintenanceReport/exportData',
+      payload: {
+        ...payload,
+        reportSource: 3,
+      },
     });
   };
 
@@ -326,8 +365,8 @@ export default class App extends PureComponent {
     setFieldsValue({
       gridId: undefined,
       companyName: undefined,
-      itemType: undefined,
       objectTitle: undefined,
+      checkCompanyName: undefined,
       checkUserName: undefined,
       checkResult: undefined,
       createTime:
@@ -338,11 +377,12 @@ export default class App extends PureComponent {
     });
     // 获取列表
     dispatch({
-      type: 'companyReport/fetchList',
+      type: 'maintenanceReport/fetchMaintenancList',
       payload: {
         ...fieldsValue,
         pageNum: num,
         pageSize: size,
+        reportSource: 3,
       },
     });
     // 保存筛选条件
@@ -356,14 +396,29 @@ export default class App extends PureComponent {
     );
   };
 
+  // 单位下拉框输入
+  handleUnitIdChange = value => {
+    const { dispatch } = this.props;
+    // 根据输入值获取列表
+    dispatch({
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
+      payload: {
+        unitName: value && value.trim(),
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
+  };
+
   /**
    * 筛选表单
    **/
   renderFilterForm() {
     const {
-      companyReport: { reportingChannelsList, checkResultList },
+      maintenanceReport: { checkResultList },
       form: { getFieldDecorator },
-      hiddenDangerReport: { gridList },
+      hiddenDangerReport: { gridList, unitIdes },
+      loading,
     } = this.props;
     return (
       <Form className={styles.form}>
@@ -372,7 +427,7 @@ export default class App extends PureComponent {
           {!this.isCompany &&
             !this.isWbCompany && (
               <Col xl={8} md={12} sm={24} xs={24}>
-                <Form.Item label={fieldLabels.grid_id}>
+                <Form.Item label={fieldLabels.gridId}>
                   {getFieldDecorator('gridId')(
                     <TreeSelect
                       treeData={gridList}
@@ -390,8 +445,25 @@ export default class App extends PureComponent {
           {/* 单位名称 */}
           {!this.isCompany && (
             <Col xl={8} md={12} sm={24} xs={24}>
-              <Form.Item label={fieldLabels.company_name}>
-                {getFieldDecorator('companyName')(<Input placeholder="请输入" />)}
+              <Form.Item label={fieldLabels.companyName}>
+                {getFieldDecorator('company_id')(
+                  <AutoComplete
+                    mode="combobox"
+                    optionLabelProp="children"
+                    placeholder="请选择"
+                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    onSearch={this.handleUnitIdChange}
+                    // onSelect={this.handleUnitSelect}
+                    // onBlur={this.handleUnitIdBlur}
+                    filterOption={false}
+                  >
+                    {unitIdes.map(({ id, name }) => (
+                      <Option value={id} key={id}>
+                        {name}
+                      </Option>
+                    ))}
+                  </AutoComplete>
+                )}
               </Form.Item>
             </Col>
           )}
@@ -407,24 +479,16 @@ export default class App extends PureComponent {
               )}
             </Form.Item>
           </Col>
-          {/* 上报途径 */}
-          <Col xl={8} md={12} sm={24} xs={24}>
-            <Form.Item label={fieldLabels.reportingChannels}>
-              {getFieldDecorator('itemType')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
-                  {reportingChannelsList.map(({ key, value }) => (
-                    <Option value={key} key={key}>
-                      {value}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </Form.Item>
-          </Col>
           {/* 点位名称 */}
           <Col xl={8} md={12} sm={24} xs={24}>
-            <Form.Item label={fieldLabels.item_name}>
+            <Form.Item label={fieldLabels.itemName}>
               {getFieldDecorator('objectTitle')(<Input placeholder="请输入" />)}
+            </Form.Item>
+          </Col>
+          {/* 检查单位 */}
+          <Col xl={8} md={12} sm={24} xs={24}>
+            <Form.Item label={fieldLabels.checkCompany}>
+              {getFieldDecorator('checkCompanyName')(<Input placeholder="请输入" />)}
             </Form.Item>
           </Col>
           {/* 检查人 */}
@@ -450,7 +514,7 @@ export default class App extends PureComponent {
           {/* 按钮 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item>
-              <Button type="primary" onClick={this.handleSearch} style={{ marginRight: 16 }}>
+              <Button type="primary" onClick={this.handleOnSearch} style={{ marginRight: 16 }}>
                 查询
               </Button>
               <Button onClick={this.handleReset} style={{ marginRight: 16 }}>
@@ -471,7 +535,7 @@ export default class App extends PureComponent {
    */
   renderTable() {
     const {
-      companyReport: {
+      maintenanceReport: {
         data: {
           list,
           pagination: { pageSize, pageNum, total },
@@ -514,7 +578,7 @@ export default class App extends PureComponent {
    */
   render() {
     const {
-      companyReport: {
+      maintenanceReport: {
         data: {
           pagination: { total },
         },
