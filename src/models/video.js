@@ -215,6 +215,15 @@ export default {
         });
       }
     },
+    *fetchGovListByScorll({ payload, callback }, { call, put }) {
+      const response = yield call(fetchGovList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveGovListByScroll',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -347,6 +356,25 @@ export default {
         },
         govData: {
           pagination: { pageNum, pageSize, total },
+        },
+      };
+    },
+    saveGovListByScroll(
+      state,
+      {
+        payload: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
+      return {
+        ...state,
+        permission: {
+          ...state.permission,
+          govIsLast: pageNum * pageSize >= total,
+          govList: [...state.permission.govList, ...list],
+          govPagination: { pageNum, pageSize, total },
         },
       };
     },
