@@ -100,6 +100,14 @@ export default class AppAuthorityAdd extends Component {
       });
   };
 
+  handleClickTypeChange = (value, option) => {
+    const { match: { params: { id } }, form: { setFieldsValue } } = this.props;
+
+    const isAdd = id === 'undefined';
+    const text = option.props.children;
+    isAdd && setFieldsValue({ showZname: text, realName: text });
+  };
+
   handleShowClickType = value => {
     if (value === undefined || value === null)
       return;
@@ -235,7 +243,7 @@ export default class AppAuthorityAdd extends Component {
               {showClickType && (
                 <FormItem label="点击类型" {...formItemLayout}>
                   {getFieldDecorator('clickType', { rules: [{ required: true, message: '请选择类型' }] })(
-                    <Select placeholder="请选择点击类型">
+                    <Select placeholder="请选择点击类型" onChange={this.handleClickTypeChange}>
                       {clickTypeList.map(({ key, desc }) => <Option key={key} value={key}>{desc}</Option>)}
                     </Select>
                   )}
