@@ -148,7 +148,7 @@ export default class VideoPermissionList extends PureComponent {
       form: { getFieldDecorator },
       user: { currentUser: { unitType } = {} },
     } = this.props;
-    return unitType && unitType === 3 ? (
+    return unitType && unitType === 3 || unitType === 2 ? (
       <Card>
         <Form layout="inline">
           <FormItem label="所属单位：">

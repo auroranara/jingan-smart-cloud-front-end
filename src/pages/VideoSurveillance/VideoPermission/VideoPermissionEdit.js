@@ -180,8 +180,8 @@ export default class VideoPermissionEdit extends PureComponent {
         currentUser: { unitType, departmentId } = {},
       },
     } = this.props
-    if (unitType && unitType === 3) {
-      // 运营账号
+    if (unitType && unitType === 3 || unitType === 2) {
+      // 运营账号或政府
       return true
     } else {
       // 如果是企业账号
@@ -341,11 +341,12 @@ export default class VideoPermissionEdit extends PureComponent {
             dataSource={departmentTree}
             pagination={false}
             defaultExpandAllRows={true}
-          ></Table>) : (
-            <div style={{ textAlign: 'center' }}>暂无数据</div>
-          )}
+          />
+        ) : (
+          <div style={{ textAlign: 'center' }}>暂无数据</div>
+        )}
       </Card>
-    )
+    );
   }
 
   render() {
