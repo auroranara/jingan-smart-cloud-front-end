@@ -9,7 +9,7 @@ import styles from './VideoPermissionList.less';
 import InfiniteScroll from 'react-infinite-scroller';
 // import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
-import { AuthLink } from '@/utils/customAuth';
+import { AuthLink, AuthButton } from '@/utils/customAuth';
 
 const FormItem = Form.Item;
 const ListItem = List.Item;
@@ -148,6 +148,11 @@ export default class VideoPermissionList extends PureComponent {
       form: { getFieldDecorator },
       user: { currentUser: { unitType } = {} },
     } = this.props;
+    const {
+      videoSurveillance: {
+        videoPermission: { add },
+      },
+    } = codes;
     return unitType && unitType === 3 || unitType === 2 ? (
       <Card>
         <Form layout="inline">
@@ -165,9 +170,9 @@ export default class VideoPermissionList extends PureComponent {
             <Button onClick={this.handleReset}>重置</Button>
           </FormItem>
           <FormItem style={{ float: 'right' }}>
-            <Button onClick={this.handleToAdd} type="primary">
+            <AuthButton code={add} type="primary" href="#/video-surveillance/video-permission/add">
               新增
-            </Button>
+            </AuthButton>
           </FormItem>
         </Form>
       </Card>
