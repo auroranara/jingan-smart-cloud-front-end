@@ -37,20 +37,20 @@ export default class VideoPermissionEdit extends PureComponent {
   }
 
   componentDidMount() {
-    const { dispatch, match: { params: { companyId }, path } } = this.props
+    // const { dispatch, match: { params: { companyId }, path } } = this.props
 
-    if (companyId) {
-      // 获取企业信息
-      // dispatch({
-      //   type: 'video/fetchCompanyDetail',
-      //   payload: { id: companyId },
-      // })
-      // 获取部门树
-      // dispatch({
-      //   type: 'video/fetchDepartmentList',
-      //   payload: { companyId },
-      // })
-    }
+    // if (companyId) {
+    //   // 获取企业信息
+    //   // dispatch({
+    //   //   type: 'video/fetchCompanyDetail',
+    //   //   payload: { id: companyId },
+    //   // })
+    //   // 获取部门树
+    //   // dispatch({
+    //   //   type: 'video/fetchDepartmentList',
+    //   //   payload: { companyId },
+    //   // })
+    // }
   }
 
   componentWillUnmount() {
@@ -181,13 +181,14 @@ export default class VideoPermissionEdit extends PureComponent {
         currentUser: { unitType, departmentId } = {},
       },
     } = this.props
-    if (unitType && unitType === 3) {
-      // 运营账号
-      return true
-    } else {
-      // 如果是企业账号
-      return type !== 'company' && !departmentId
-    }
+    return true;
+    // if (unitType && unitType === 3) {
+    //   // 运营账号
+    //   return true
+    // } else {
+    //   // 如果是企业账号
+    //   return type !== 'company' && !departmentId
+    // }
   }
 
   // 提交时如果是勾选就不上传子节点id了
