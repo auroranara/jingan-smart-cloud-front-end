@@ -73,7 +73,7 @@ export default class VideoPermissionEdit extends PureComponent {
       },
     } = this.props;
     const { selectedCompanyId } = this.state;
-    // const buttonPermission = this.checkButtonPermission('company')
+    const buttonPermission = this.checkButtonPermission('company')
 
     const success = ({ list, checked, halfChecked }) => {
       this.setState({
@@ -83,7 +83,7 @@ export default class VideoPermissionEdit extends PureComponent {
         type: 'company',
         departmentId: null,
         expandedKeys: halfChecked,
-        buttonPermission: true,
+        buttonPermission,
         expandedId: '',
       });
     };
@@ -181,9 +181,13 @@ export default class VideoPermissionEdit extends PureComponent {
   // 返回弹窗确定按钮的disabled状态
   checkButtonPermission = type => {
     const {
-      user: { currentUser: { unitType, departmentId } = {} },
+      user: { currentUser: { unitType, departmentId } = {}, unitId },
+      match: {
+        params: { companyId },
+      },
     } = this.props;
-    return true;
+    if(companyId && companyId === unitId) return false;
+    else return true;
     // if (unitType && unitType === 3) {
     //   // 运营账号
     //   return true
@@ -305,7 +309,7 @@ export default class VideoPermissionEdit extends PureComponent {
       match: {
         params: { companyId },
       },
-      user: { currentUser: { departmentId } = {}, unitId },
+      user: { currentUser: { departmentId } = {} },
       location: {
         query: { name },
       },
@@ -340,15 +344,13 @@ export default class VideoPermissionEdit extends PureComponent {
             )}
           </Col>
           <Col span={4} offset={1}>
-            {unitId !== companyId && (
-              <Button
-                disabled={!!departmentId}
-                onClick={() => this.handleSetPermission()}
-                type="primary"
-              >
-                设置视频权限
-              </Button>
-            )}
+            <Button
+              disabled={!!departmentId}
+              onClick={() => this.handleSetPermission()}
+              type="primary"
+            >
+              设置视频权限
+            </Button>
           </Col>
         </Row>
       </Card>
