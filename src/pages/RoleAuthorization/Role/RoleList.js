@@ -6,7 +6,7 @@ import Ellipsis from '@/components/Ellipsis';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import InlineForm from '../../BaseInfo/Company/InlineForm';
-import { hasAuthority } from '@/utils/customAuth';
+import { hasAuthority, AuthSpan } from '@/utils/customAuth';
 import styles from './Role.less';
 import { LIST_PAGE_SIZE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from './utils';
 
@@ -92,25 +92,27 @@ export default class RoleList extends PureComponent {
   };
 
   /* 显示删除确认提示框 */
-  handleShowDeleteConfirm = id => {
-    const { remove } = this.props;
+  genHandleShowDeleteConfirm = id => e => {
     Modal.confirm({
       title: '你确定要删除这个角色吗?',
       content: '如果你确定要删除这个角色，点击确定按钮',
       okText: '确定',
       cancelText: '取消',
       onOk: () => {
-        remove({
-          payload: {
-            id,
-          },
-          success: () => {
-            message.success('删除成功！');
-          },
-          error: () => {
-            message.error('删除失败，请联系管理人员！');
-          },
-        });
+        this.handleDelete(id);
+      },
+    });
+  };
+
+  handleDelete = id => {
+    const { remove } = this.props;
+    remove({
+      payload: { id },
+      callback: (code, msg) => {
+        if (code === 200)
+          message.success('删除成功');
+        else
+          message.error(msg);
       },
     });
   };
@@ -208,19 +210,6 @@ export default class RoleList extends PureComponent {
     );
   }
 
-  handleDelete = id => e => {
-    const { remove } = this.props;
-    remove({
-      payload: { id },
-      callback: (code, msg) => {
-        if (code === 200)
-          message.success('删除成功');
-        else
-          message.error(msg);
-      },
-    });
-  };
-
   /* 渲染列表 */
   renderList() {
     const {
@@ -237,7 +226,7 @@ export default class RoleList extends PureComponent {
     } = this.props;
     const hasDetailAuthority = hasAuthority(detailCode, permissionCodes); // 是否有查看权限
     const hasEditAuthority = hasAuthority(editCode, permissionCodes); // 是否有编辑权限
-    const hasDeleteAuthority = hasAuthority(deleteCode, permissionCodes); // 是否有编辑权限
+    // const hasDeleteAuthority = hasAuthority(deleteCode, permissionCodes); // 是否有编辑权限
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
@@ -268,11 +257,12 @@ export default class RoleList extends PureComponent {
                     >
                       编辑
                     </Link>,
-                    <span
-                      onClick={hasDeleteAuthority ? null : this.genHandleDelete(id)}
+                    <AuthSpan
+                      code={deleteCode}
+                      onClick={this.genHandleShowDeleteConfirm(id)}
                     >
                       删除
-                    </span>,
+                    </AuthSpan>,
                   ]}
                 >
                   <div

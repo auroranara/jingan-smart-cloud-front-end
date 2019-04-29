@@ -23,6 +23,13 @@ export default {
     edit: 'roleAuthorization.commonRole.edit',
     delete: 'roleAuthorization.commonRole.delete',
   },
+  userRole: {
+    list: 'roleAuthorization.userRole.listView',
+    detail: 'roleAuthorization.userRole.view',
+    add: 'roleAuthorization.userRole.add',
+    edit: 'roleAuthorization.userRole.edit',
+    delete: 'roleAuthorization.userRole.delete',
+  },
   account: {
     edit: 'roleAuthorization.accountManagement.edit',
     detail: 'roleAuthorization.accountManagement.view',

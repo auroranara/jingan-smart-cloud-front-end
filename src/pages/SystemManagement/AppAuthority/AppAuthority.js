@@ -21,7 +21,6 @@ import { sortTree, renderRoleTreeNodes, addProps } from '@/pages/SystemManagemen
 const { Item: FormItem } = Form;
 const { Option } = Select;
 const EditableContext = createContext();
-const OPTIONS = ['企业', '政府', '维保'].map((c, i) => <Option key={c} value={i + 1}>{c}</Option>);
 
 // 包裹EditableCell用的，其子元素在props.children中传入
 const EditableRow = ({ form, index, ...props }) => (
@@ -178,35 +177,29 @@ export default class AppAuthority extends Component {
   }
 
   componentDidMount() {
-    this.fetchTree(1);
-    this.fetchList([], true, 1);
+    this.fetchTree();
+    this.fetchList([], true);
   }
 
-  treeType = 1;
   selectedKeys = [];
   checkedKeys = [];
 
-  fetchTree = type => {
+  fetchTree = () => {
     const { dispatch } = this.props;
     dispatch({
       type: 'appAuth/fetchTree',
-      payload: { type },
       callback: data => {
         addProps(data);
         sortTree(data);
-        this.selectedKeys = [];
-        this.checkedKeys = [];
       },
     });
   };
 
-  fetchList = (ids=[], initial=true, type) => {
+  fetchList = (ids=[], initial=true) => {
     const { dispatch } = this.props;
     let payload;
     if (ids.length)
       payload = { ids: ids.join(',') };
-    else
-      payload = { type };
     dispatch({
       type: 'appAuth/fetchList',
       payload,
@@ -258,7 +251,7 @@ export default class AppAuthority extends Component {
   };
 
   onSearch = e => {
-    this.fetchList(this.checkedKeys, false, this.treeType);
+    this.fetchList(this.checkedKeys, false);
   };
 
   jumpTo = id => {
@@ -276,12 +269,6 @@ export default class AppAuthority extends Component {
     }
 
     this.jumpTo(id);
-  };
-
-  handleSelectChange = value => {
-    this.treeType = value;
-    this.fetchTree(value);
-    this.fetchList([], true, value);
   };
 
   render() {
@@ -321,15 +308,6 @@ export default class AppAuthority extends Component {
             <Button onClick={this.handleEditClick} className={styles.editBtn}>编辑</Button>
             <Button onClick={e => this.jumpTo()}>新增</Button>
           </div>
-          <h3>
-            权限树类型：
-            <Select
-              defaultValue={1}
-              onChange={this.handleSelectChange}
-            >
-              {OPTIONS}
-            </Select>
-          </h3>
           <h3>权限树：</h3>
           <Tree
             checkable

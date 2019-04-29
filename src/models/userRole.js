@@ -2,13 +2,16 @@ import {
   queryList,
   queryDetail,
   queryPermissionTree,
-  addRole,
-  editRole,
   deleteRole,
 } from '../services/role/commonRole';
+import {
+  // queryPermissionTree,
+  addRole,
+  editRole,
+} from '../services/role/userRole';
 
 export default {
-  namespace: 'commonRole',
+  namespace: 'userRole',
 
   state: {
     detail: {},

@@ -1,4 +1,4 @@
-import { getTree, getList, getOne, postAuth, putAuth } from '../services/appAuth';
+import { getTree, getList, postAuth, putAuth, getClassTypeList, getClickTypeList } from '../services/appAuth';
 
 const DEFAULT_CODE = 500;
 
@@ -8,6 +8,8 @@ export default {
   state: {
     tree: [],
     list: [],
+    classTypeList: [],
+    clickTypeList: [],
   },
 
   effects: {
@@ -41,6 +43,18 @@ export default {
       const { code = DEFAULT_CODE, msg } = response;
       callback && callback(code, msg);
     },
+    *fetchClassTypeList({ payload, callback }, { call, put }) {
+      const response = yield call(getClassTypeList, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveClassTypeList', payload: data && Array.isArray(data.list) ? data.list : [] });
+    },
+    *fetchClickTypeList({ payload, callback }, { call, put }) {
+      const response = yield call(getClickTypeList, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveClickTypeList', payload: data && Array.isArray(data.list) ? data.list : [] });
+    },
   },
   reducers: {
     saveTree(state, action) {
@@ -48,6 +62,12 @@ export default {
     },
     saveList(state, action) {
       return { ...state, list: action.payload };
+    },
+    saveClassTypeList(state, action) {
+      return { ...state, classTypeList: action.payload };
+    },
+    saveClickTypeList(state, action) {
+      return { ...state, clickTypeList: action.payload };
     },
   },
 }

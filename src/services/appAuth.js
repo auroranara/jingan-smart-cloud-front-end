@@ -28,3 +28,13 @@ export async function putAuth(params) {
     body: params,
   });
 }
+
+// 样式列表
+export async function getClassTypeList(type) {
+  return request(`${URL_PREFIX}/getClassTypeSelList/${type}`);
+}
+
+// 点击类型
+export async function getClickTypeList() {
+  return request(`${URL_PREFIX}/getClickTypeSelList`);
+}
