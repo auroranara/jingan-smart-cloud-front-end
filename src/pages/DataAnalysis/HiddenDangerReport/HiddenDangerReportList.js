@@ -635,6 +635,7 @@ export default class App extends PureComponent {
       documentTypeIds,
       query_start_time,
       query_end_time,
+      company_id,
       ...rest
     } = fieldsValue;
     // 重置控件
@@ -806,6 +807,7 @@ export default class App extends PureComponent {
               <Form.Item label={fieldLabels.company_name}>
                 {getFieldDecorator('company_id')(
                   <AutoComplete
+                    allowClear
                     mode="combobox"
                     optionLabelProp="children"
                     placeholder="请选择"

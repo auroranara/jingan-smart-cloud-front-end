@@ -445,6 +445,7 @@ export default class App extends PureComponent {
               <Form.Item label={fieldLabels.company_name}>
                 {getFieldDecorator('company_id')(
                   <AutoComplete
+                    allowClear
                     mode="combobox"
                     optionLabelProp="children"
                     placeholder="请选择"

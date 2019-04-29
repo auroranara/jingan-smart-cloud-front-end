@@ -460,8 +460,8 @@ export default class App extends PureComponent {
               <Form.Item label={fieldLabels.company_name}>
                 {getFieldDecorator('company_id')(
                   <AutoComplete
+                    allowClear
                     mode="combobox"
-                    dropdownClassName={styles.dropdown}
                     optionLabelProp="children"
                     placeholder="请选择"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}

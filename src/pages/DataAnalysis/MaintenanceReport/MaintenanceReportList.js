@@ -370,11 +370,11 @@ export default class App extends PureComponent {
       pageNum: 1,
       pageSize: 10,
     };
-    const { pageNum, pageSize, startTime, endTime, ...rest } = fieldsValue;
+    const { pageNum, pageSize, startTime, endTime, company_id, ...rest } = fieldsValue;
     // 重置控件
     setFieldsValue({
       gridId: undefined,
-      companyName: undefined,
+      company_id: undefined,
       objectTitle: undefined,
       checkCompanyName: undefined,
       checkUserName: undefined,
@@ -458,13 +458,12 @@ export default class App extends PureComponent {
               <Form.Item label={fieldLabels.companyName}>
                 {getFieldDecorator('company_id')(
                   <AutoComplete
+                    allowClear
                     mode="combobox"
                     optionLabelProp="children"
                     placeholder="请选择"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     onSearch={this.handleUnitIdChange}
-                    // onSelect={this.handleUnitSelect}
-                    // onBlur={this.handleUnitIdBlur}
                     filterOption={false}
                   >
                     {unitIdes.map(({ id, name }) => (
