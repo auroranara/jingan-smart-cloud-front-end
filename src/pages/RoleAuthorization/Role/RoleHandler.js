@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Form, Card, Input, Button, Select, Spin, Tree, message } from 'antd';
+import _ from 'lodash';
+import { AutoComplete, Form, Card, Input, Button, Select, Spin, Tree, TreeSelect, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
-import { checkParent, uncheckParent, sortTree } from './utils';
+import { GOV, OPE, checkParent, generateTreeNode, sortTree, uncheckParent } from './utils';
 
 const { TreeNode } = Tree;
 const { TextArea } = Input;
@@ -17,6 +18,7 @@ const editTitle = '编辑角色';
 @Form.create()
 export default class RoleHandler extends PureComponent {
   state = {
+    modalVisible: false,
     submitting: false,
     unitType: undefined,
   };
@@ -71,7 +73,6 @@ export default class RoleHandler extends PureComponent {
       callback: () => { setFieldsValue({ permissions:undefined, appPermissions: undefined }); },
       // model变化后再设置值，不然当先设置值时，就会报warning，且model后变化，就没办法正确设置上值了
       callbackLater: (tree, appTree) => {
-        console.log(tree, appTree);
         if (+value === +unitType) {
           const value = webPermissionIds ? uncheckParent(tree, webPermissionIds) : [];
           const appValue = appPermissionIds ? uncheckParent(appTree, appPermissionIds) : [];
@@ -133,15 +134,57 @@ export default class RoleHandler extends PureComponent {
   /* 基本信息 */
   renderBasicInfo() {
     const {
+      type,
+      companyId,
+      unitsLoading,
+      match: { params: { id } },
       account: { unitTypes },
       role: {
+        unitList,
         detail: { roleName, description, unitType },
       },
       form: { getFieldDecorator },
     } = this.props;
+    const { unitType: unitTypeSelected } = this.state;
 
     const sortedUnitTypes = unitTypes ? Array.from(unitTypes) : [];
     sortedUnitTypes.sort((u1, u2) => u1.sort - u2.sort);
+
+    const isPublic = type;
+    const isOperate = unitTypeSelected === OPE;
+    const notOperateAndNotPublic = !isOperate && !isPublic; // 非运营且渲染私有角色
+    const isGovernment = unitTypeSelected === GOV;
+    const disabled = !!id || notOperateAndNotPublic; // 编辑或非运营看私有角色为true
+    const unit = isGovernment ? (
+      <TreeSelect
+        allowClear
+        disabled={disabled}
+        placeholder="请选择所属单位"
+        labelInValue
+        onSelect={this.handleUnitSelect}
+      >
+        {generateTreeNode(unitList)}
+      </TreeSelect>
+    ) : (
+      <AutoComplete
+        mode="combobox"
+        labelInValue
+        disabled={disabled}
+        optionLabelProp="children"
+        placeholder="请选择所属单位"
+        notFoundContent={unitsLoading ? <Spin size="small" /> : '暂无数据'}
+        onSearch={this.handleUnitIdChange}
+        onSelect={this.handleDataPermissions}
+        onBlur={this.handleUnitIdBlur}
+        filterOption={false}
+      >
+        {unitList.map(item => (
+          <Option value={item.id} key={item.id}>
+            {item.name}
+          </Option>
+        ))}
+      </AutoComplete>
+    );
 
     return (
       <Card title="基本信息">
@@ -170,6 +213,26 @@ export default class RoleHandler extends PureComponent {
               </Select>
             )}
           </Form.Item>
+          {notOperateAndNotPublic && (
+            <Form.Item
+              label="单位名称"
+              labelCol={{
+                sm: { span: 24 },
+                md: { span: 3 },
+                lg: { span: 3 },
+              }}
+              wrapperCol={{
+                sm: { span: 24 },
+                md: { span: 21 },
+                lg: { span: 9 },
+              }}
+            >
+              {getFieldDecorator('companyId', {
+                initialValue: companyId,
+                rules: [{ required: true, message: '请选择单位' }],
+              })(unit)}
+            </Form.Item>
+          )}
           <Form.Item
             label="角色名称"
             labelCol={{
@@ -272,7 +335,7 @@ export default class RoleHandler extends PureComponent {
               // ],
             })(<Tree checkable>{this.renderTreeNodes(tree)}</Tree>)}
           </Form.Item>
-          {unitType !== 3 && (
+          {unitType !== OPE && (
             <Form.Item
               label="APP权限树"
               style={INLINE_FORM_STYLE}
@@ -339,7 +402,7 @@ export default class RoleHandler extends PureComponent {
     } = this.props;
     const { submitting } = this.state;
 
-    const typeLabel = type ? '公共' : '私有';
+    const typeLabel = type ? '公共' : '用户';
     const hasListAuthority = hasAuthority(listCode, permissionCodes); // 是否有列表权限
     const title = id ? editTitle : addTitle; // 根据params.id是否存在判断当前为新增还是编辑
     const breadcrumbList = [ // 面包屑

@@ -20,14 +20,10 @@ export default class RoleList extends PureComponent {
   };
 
   componentDidMount() {
-    const {
-      type,
-      fetchUnitTypes,
-      fetchList,
-    } = this.props;
+    const { fetchUnitTypes } = this.props;
 
     fetchUnitTypes();
-    fetchList({ payload: { pageNum: 1, pageSize: LIST_PAGE_SIZE, isPublic: type } });
+    this.getRoleList({ pageNum: 1 });
   }
 
   /* 滚动加载 */
@@ -59,36 +55,32 @@ export default class RoleList extends PureComponent {
 
   /* 查询点击事件 */
   handleSearch = values => {
-    const { fetchList } = this.props;
-
-    fetchList({
-      payload: {
-        ...values,
-        pageSize: LIST_PAGE_SIZE,
-        pageNum: 1,
-      },
-      success: () => {
-        this.setState({
-          formData: values,
-        });
-      },
+    this.getRoleList({ ...values, pageNum: 1 }, () => {
+      this.setState({
+        formData: values,
+      });
     });
   };
 
   /* 重置点击事件 */
   handleReset = () => {
-    const { fetchList } = this.props;
-    fetchList({
-      payload: {
-        pageSize: LIST_PAGE_SIZE,
-        pageNum: 1,
-      },
-      success: () => {
-        this.setState({
-          formData: {},
-        });
-      },
+    this.getRoleList({ pageNum: 1 }, () => {
+      this.setState({
+        formData: {},
+      });
     });
+  };
+
+  getRoleList = (payload, success) => {
+    const { type, companyId, fetchList } = this.props;
+    const newPayload = {
+      ...payload,
+      pageSize: LIST_PAGE_SIZE,
+      isPublic: type,
+    };
+    if (companyId)
+      newPayload.companyId = companyId;
+    fetchList({ payload: newPayload, success});
   };
 
   /* 显示删除确认提示框 */
@@ -144,6 +136,7 @@ export default class RoleList extends PureComponent {
   renderForm() {
     const {
       goToAdd,
+      companyId,
       codes: { add: addCode },
       account: { unitTypes },
       role: { permissionTree },
@@ -152,20 +145,23 @@ export default class RoleList extends PureComponent {
       },
     } = this.props;
 
+    const isAdmin = !companyId;
+
     const sortedUnitTypes = unitTypes ? Array.from(unitTypes) : [];
     sortedUnitTypes.sort((u1, u2) => u1.sort - u2.sort);
+    const field = {
+      id: 'unitType',
+      render: () => {
+        return (
+          <Select placeholder="请选择单位类型" onChange={this.handleUnitTypeChange} allowClear>
+            {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
+          </Select>
+        );
+      },
+    };
+
     /* 表单字段 */
     const fields = [
-      {
-        id: 'unitType',
-        render: () => {
-          return (
-            <Select placeholder="请选择单位类型" onChange={this.handleUnitTypeChange} allowClear>
-              {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
-            </Select>
-          );
-        },
-      },
       {
         id: 'name',
         render() {
@@ -191,6 +187,10 @@ export default class RoleList extends PureComponent {
         transform,
       },
     ];
+
+    if (isAdmin)
+      fields.unshift(field);
+
     const hasAddAuthority = hasAuthority(addCode, permissionCodes); // 是否有新增权限
 
     return (
@@ -213,6 +213,8 @@ export default class RoleList extends PureComponent {
   /* 渲染列表 */
   renderList() {
     const {
+      type,
+      companyId,
       codes: { detail: detailCode, edit: editCode, delete: deleteCode },
       account: { unitTypes },
       role: {
@@ -224,9 +226,11 @@ export default class RoleList extends PureComponent {
       goToDetail,
       urls: { detailUrl, editUrl },
     } = this.props;
+
+    const isPublic = type;
+    const isAdmin = !companyId;
     const hasDetailAuthority = hasAuthority(detailCode, permissionCodes); // 是否有查看权限
     const hasEditAuthority = hasAuthority(editCode, permissionCodes); // 是否有编辑权限
-    // const hasDeleteAuthority = hasAuthority(deleteCode, permissionCodes); // 是否有编辑权限
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
@@ -235,7 +239,7 @@ export default class RoleList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
-            const { id, roleName, description, unitType } = item;
+            const { id, roleName, description, unitType, companyName } = item;
             return (
               <List.Item key={id}>
                 <Card
@@ -269,6 +273,11 @@ export default class RoleList extends PureComponent {
                     onClick={ hasDetailAuthority ? () => goToDetail(id) : null}
                     style={hasDetailAuthority ? { cursor: 'pointer' } : null}
                   >
+                    {isAdmin && !isPublic && (
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                      {companyName ? <span>{companyName}</span> : getEmptyData()}
+                      </Ellipsis>
+                    )}
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       {description ? <span>{description}</span> : getEmptyData()}
                     </Ellipsis>

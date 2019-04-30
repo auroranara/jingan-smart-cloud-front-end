@@ -927,7 +927,7 @@ export default class AssociatedUnit extends PureComponent {
                       userId && unitId && unitName ? { value: unitId, label: unitName } : undefined,
                     rules: [
                       {
-                        required: true, // 如果是运营企业 不需要必填,
+                        required: true,
                         message: '请选择所属单位',
                       },
                     ],

@@ -13,7 +13,6 @@ const { TreeNode } = Tree;
 const { TextArea } = Input;
 const { Option } = Select;
 
-const UNIT_TYPE_FIX = { 4: 1, 3: 0, 2: 2, 1: 3 };
 const INLINE_FORM_STYLE = { width: '50%', marginRight: 0 };
 // 标题
 const addTitle = '新增角色';
@@ -149,7 +148,6 @@ export default class RoleHandler extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'role/fetchAppPermissionTree',
-      payload: { type: UNIT_TYPE_FIX[type] },
       callback,
       callbackLast,
     });

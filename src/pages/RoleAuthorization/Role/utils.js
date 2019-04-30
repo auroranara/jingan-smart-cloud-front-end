@@ -1,4 +1,11 @@
+import { TreeSelect } from 'antd';
+
+const { TreeNode } = TreeSelect;
+
 export const LIST_PAGE_SIZE = 24;
+
+export const GOV = 2; // 政府
+export const OPE = 3; // 运营
 
 export const COMMON_LIST_URL = '/role-authorization/commonRole/list';
 export const COMMON_DETAIL_URL = '/role-authorization/commonRole/detail';
@@ -134,3 +141,24 @@ export function getSelectedTree(selected, tree) {
     return prev;
   }, []);
 }
+
+// 根据unitType判断是否是管理员
+export function isAdmin(unitType) {
+  if (unitType === undefined || unitType === null || +unitType === 3)
+    return true;
+  return false;
+}
+
+// 生成树节点
+export function generateTreeNode(list) {
+  return list.map(item => {
+    if (item.child && item.child.length) {
+      return (
+        <TreeNode title={item.name} key={item.id} value={item.id}>
+          {generateTreeNode(item.child)}
+        </TreeNode>
+      );
+    }
+    return <TreeNode title={item.name} key={item.id} value={item.id} />;
+  });
+};

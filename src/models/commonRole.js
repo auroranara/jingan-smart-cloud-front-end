@@ -72,7 +72,7 @@ export default {
       else
         error && error();
     },
-    /* 获取WEB权限树 */
+    /* 获取单位类型对应的权限树 */
     *fetchPermissionTree({ payload, callback, callbackLater }, { call, put }) {
       const response = yield call(queryPermissionTree, payload);
       const { code, data } = response || {};

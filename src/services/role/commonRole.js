@@ -29,7 +29,7 @@ export async function deleteRole({ id }) {
   });
 }
 
-/* 获取WEB权限树 */
+/* 获取单位类型对应的权限树 */
 export async function queryPermissionTree(unitType) {
   return request(`/acloud_new/v2/role/getPermissionTree/${unitType}`);
 }

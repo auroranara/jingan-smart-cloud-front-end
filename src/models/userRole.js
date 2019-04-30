@@ -5,9 +5,10 @@ import {
   deleteRole,
 } from '../services/role/commonRole';
 import {
-  // queryPermissionTree,
+  queryCompanyPermissionTree,
   addRole,
   editRole,
+  getUnits,
 } from '../services/role/userRole';
 
 export default {
@@ -25,6 +26,7 @@ export default {
         total: 0,
       },
     },
+    unitList: [],
     isLast: false,
   },
 
@@ -75,9 +77,24 @@ export default {
       else
         error && error();
     },
-    /* 获取WEB权限树 */
+    // 获取单位类型对应的权限树
     *fetchPermissionTree({ payload, callback, callbackLater }, { call, put }) {
       const response = yield call(queryPermissionTree, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const webPermissions = data && Array.isArray(data.webPermissions) ? data.webPermissions : [];
+        const appPermissions = data && Array.isArray(data.appPermissions) ? data.appPermissions : [];
+        callback && callback(webPermissions, appPermissions);
+        yield put({
+          type: 'savePermissionTree',
+          payload: [webPermissions, appPermissions],
+        });
+        callbackLater && callbackLater(webPermissions, appPermissions);
+      }
+    },
+    // 获取企业对应的权限树
+    *fetchCompanyPermissionTree({ payload, callback, callbackLater }, { call, put }) {
+      const response = yield call(queryCompanyPermissionTree, payload);
       const { code, data } = response || {};
       if (code === 200) {
         const webPermissions = data && Array.isArray(data.webPermissions) ? data.webPermissions : [];
@@ -122,6 +139,12 @@ export default {
         yield put({ type: 'decreaseList', payload });
       callback && callback(code, msg);
     },
+    *fetchUnits({ payload, callback }, { call, put }) {
+      const response = yield call(getUnits, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveUnits', payload: data && Array.isArray(data.list) ? data.list : [] });
+    },
   },
 
   reducers: {
@@ -164,6 +187,9 @@ export default {
         permissionTree: webPermissions,
         appPermissionTree: appPermissions,
       };
+    },
+    saveUnits(state, action) {
+      return { ...state, unitList: action.payload };
     },
   },
 }

@@ -5,7 +5,7 @@ import { Form } from 'antd';
 
 import RoleList from '../Role/RoleList';
 import codes from '@/utils/codes';
-import { PRIVATE_DETAIL_URL as DETAIL_URL, PRIVATE_ADD_URL as ADD_URL, PRIVATE_URLS as URLS } from '../Role/utils';
+import { PRIVATE_DETAIL_URL as DETAIL_URL, PRIVATE_ADD_URL as ADD_URL, PRIVATE_URLS as URLS, isAdmin } from '../Role/utils';
 
 const TITLE = '用户角色';
 const BREADCRUMB_LIST = [
@@ -57,6 +57,11 @@ export default class CommonRoleList extends PureComponent {
     dispatch({ type: 'userRole/fetchPermissionTree', ...action });
   };
 
+  fetchCompanyPermissionTree = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'userRole/fetchCompanyPermissionTree', ...action });
+  };
+
   clearPermissionTree = () => {
     const { dispatch } = this.props;
     dispatch({ type: 'userRole/savePermissionTree', payload: [[], []] });
@@ -71,9 +76,13 @@ export default class CommonRoleList extends PureComponent {
   }
 
   render() {
+    const { user: { currentUser: { unitId, unitType } } } = this.props;
+    const isAdm = isAdmin(unitType);
+
     return (
       <RoleList
         type={0}
+        companyId={isAdm ? null : unitId} // 不存在即为管理员或运营
         urls={URLS}
         codes={codes.userRole}
         title={TITLE}
@@ -82,7 +91,7 @@ export default class CommonRoleList extends PureComponent {
         fetchList={this.fetchList}
         appendList={this.appendList}
         remove={this.remove}
-        fetchPermissionTree={this.fetchPermissionTree}
+        fetchPermissionTree={isAdm ? this.fetchPermissionTree : this.fetchCompanyPermissionTree}
         clearPermissionTree={this.clearPermissionTree}
         goToDetail={this.goToDetail}
         goToAdd={this.goToAdd}
