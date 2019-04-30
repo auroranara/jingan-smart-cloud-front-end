@@ -9,7 +9,7 @@ import styles from './GovernmentVideoPermissionList.less';
 import InfiniteScroll from 'react-infinite-scroller';
 // import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
-import { AuthLink } from '@/utils/customAuth';
+import { AuthLink, hasAuthority } from '@/utils/customAuth';
 
 const FormItem = Form.Item;
 const ListItem = List.Item;
@@ -144,9 +144,16 @@ export default class VideoPermissionList extends PureComponent {
   renderQuery() {
     const {
       form: { getFieldDecorator },
-      user: { currentUser: { unitType } = {} },
+      user: { currentUser: { unitType, permissionCodes } = {} },
     } = this.props;
-    return unitType && unitType === 3 ? (
+    const {
+      videoSurveillance: {
+        governmentVideoPermission: { add },
+      },
+    } = codes;
+    const hasAddAuthority = hasAuthority(add, permissionCodes);
+    // return unitType && unitType === 3 ? (
+    return (
       <Card>
         <Form layout="inline">
           <FormItem label="所属单位：">
@@ -163,13 +170,14 @@ export default class VideoPermissionList extends PureComponent {
             <Button onClick={this.handleReset}>重置</Button>
           </FormItem>
           <FormItem style={{ float: 'right' }}>
-            <Button onClick={this.handleToAdd} type="primary">
+            <Button onClick={this.handleToAdd} type="primary" disabled={!hasAddAuthority}>
               新增
             </Button>
           </FormItem>
         </Form>
       </Card>
-    ) : null;
+    );
+    // : null;
   }
 
   renderList() {
@@ -185,7 +193,7 @@ export default class VideoPermissionList extends PureComponent {
 
     const {
       videoSurveillance: {
-        videoPermission: { edit },
+        governmentVideoPermission: { edit },
       },
     } = codes;
 
@@ -197,13 +205,7 @@ export default class VideoPermissionList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={govList}
           renderItem={item => {
-            const {
-              address,
-              departmentId,
-              departmentName,
-              userId,
-              officePhoneJ,
-            } = item;
+            const { address, departmentId, departmentName, userId, officePhoneJ } = item;
             return (
               <ListItem key={departmentId}>
                 <Card
@@ -268,13 +270,7 @@ export default class VideoPermissionList extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={
-          <div>
-            单位总数：
-            {total}
-            {''}
-          </div>
-        }
+        content={<div>单位总数：{total}</div>}
       >
         {this.renderQuery()}
         <InfiniteScroll
@@ -285,15 +281,15 @@ export default class VideoPermissionList extends PureComponent {
             !loading && this.handleLoadMore();
           }}
           hasMore={!govIsLast}
-          loader={
-            <div className="loader" key={0}>
-              {loading && (
-                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-                  <Spin />
-                </div>
-              )}
-            </div>
-          }
+          // loader={
+          //   <div className="loader" key={0}>
+          //     {loading && (
+          //       <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+          //         <Spin />
+          //       </div>
+          //     )}
+          //   </div>
+          // }
         >
           {this.renderList()}
         </InfiniteScroll>

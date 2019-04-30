@@ -89,6 +89,10 @@ export default {
       edit: 'videoSurveillance.videoPermission.edit',
       add: 'videoSurveillance.videoPermission.add',
     },
+    governmentVideoPermission: {
+      edit: 'videoSurveillance.governmentVideoPermission.edit',
+      add: 'videoSurveillance.governmentVideoPermission.add',
+    },
   },
   company: {
     list: 'baseInfo.company.listView',
