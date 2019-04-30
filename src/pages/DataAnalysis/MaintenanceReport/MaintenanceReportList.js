@@ -97,6 +97,15 @@ export default class App extends PureComponent {
         ),
       },
       {
+        title: '检查单位',
+        dataIndex: 'checkCompanyName',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
+      },
+      {
         title: '检查人',
         dataIndex: 'check_user_names',
         render: val => (
@@ -183,17 +192,6 @@ export default class App extends PureComponent {
           </Ellipsis>
         ),
       });
-      if (isBranch !== 1) {
-        defaultColumns.splice(2, 0, {
-          title: '检查单位',
-          dataIndex: 'checkCompanyName',
-          render: val => (
-            <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
-              {val}
-            </Ellipsis>
-          ),
-        });
-      }
     }
     this.state = {
       // 当前显示的表格字段
@@ -496,16 +494,15 @@ export default class App extends PureComponent {
             </Form.Item>
           </Col>
           {/* 点位名称 */}
-          {+isBranch !== 1 && (
-            <Col xl={8} md={12} sm={24} xs={24}>
-              <Form.Item label={fieldLabels.itemName}>
-                {getFieldDecorator('objectTitle')(<Input placeholder="请输入" />)}
-              </Form.Item>
-            </Col>
-          )}
+
+          <Col xl={8} md={12} sm={24} xs={24}>
+            <Form.Item label={fieldLabels.itemName}>
+              {getFieldDecorator('objectTitle')(<Input placeholder="请输入" />)}
+            </Form.Item>
+          </Col>
 
           {/* 检查单位 */}
-          {!this.isWbCompany && (
+          {!isBranch && (
             <Col xl={8} md={12} sm={24} xs={24}>
               <Form.Item label={fieldLabels.checkCompany}>
                 {getFieldDecorator('checkCompanyName')(<Input placeholder="请输入" />)}
