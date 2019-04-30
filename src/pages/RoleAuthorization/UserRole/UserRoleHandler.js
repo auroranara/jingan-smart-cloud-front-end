@@ -54,6 +54,16 @@ export default class CommonRoleHandler extends PureComponent {
     dispatch({ type: 'userRole/savePermissionTree', payload: [[], []] });
   };
 
+  fetchUnits = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'userRole/fetchUnits', ...action });
+  };
+
+  clearUnits = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'userRole/saveUnits', payload: [] });
+  };
+
   goBack() {
     router.push(LIST_URL);
   };
@@ -64,7 +74,7 @@ export default class CommonRoleHandler extends PureComponent {
 
     return (
       <RoleHandler
-        type={1}
+        type={0}
         urls={URLS}
         companyId={isAdm ? null : unitId} // 不存在即为管理员或运营
         codes={codes.commonRole}
@@ -75,6 +85,8 @@ export default class CommonRoleHandler extends PureComponent {
         clearDetail={this.clearDetail}
         fetchPermissionTree={isAdm ? this.fetchPermissionTree : this.fetchCompanyPermissionTree}
         clearPermissionTree={this.clearPermissionTree}
+        fetchUnits={this.fetchUnits}
+        clearUnits={this.clearUnits}
         goBack={this.goBack}
         {...this.props}
       />

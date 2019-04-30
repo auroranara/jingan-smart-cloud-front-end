@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import _ from 'lodash';
-import { AutoComplete, Form, Card, Input, Button, Select, Spin, Tree, TreeSelect, message } from 'antd';
+import { Form, Card, Input, Button, Select, Spin, Tree, TreeSelect, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
@@ -10,6 +10,7 @@ const { TreeNode } = Tree;
 const { TextArea } = Input;
 const { Option } = Select;
 
+const PAGE_SIZE = 20;
 const INLINE_FORM_STYLE = { width: '50%', marginRight: 0 };
 // 标题
 const addTitle = '新增角色';
@@ -27,12 +28,15 @@ export default class RoleHandler extends PureComponent {
   componentDidMount() {
     const {
       match: { params: { id } },
+      fetchUnits,
       fetchUnitTypes,
       fetchDetail,
       fetchPermissionTree,
       clearPermissionTree,
       clearDetail,
     } = this.props;
+
+    this.lazyFetchUnits = _.debounce(fetchUnits, 100);
 
     fetchUnitTypes();
 
@@ -41,7 +45,7 @@ export default class RoleHandler extends PureComponent {
         payload: { id },
         success: detail => {
           const type = detail ? detail.unitType : undefined;
-          type && +type !== 3 && fetchPermissionTree({ payload: type });
+          type && +type !== OPE && fetchPermissionTree({ payload: type });
 
           this.setState({ unitType: type ? +type : type });
         },
@@ -52,7 +56,7 @@ export default class RoleHandler extends PureComponent {
     }
   }
 
-  handleTreeTypeChange = value => {
+  handleTypeChange = value => {
     const {
       fetchPermissionTree,
       form: { setFieldsValue },
@@ -131,6 +135,15 @@ export default class RoleHandler extends PureComponent {
     });
   };
 
+  handleUnitValueChange = value => {
+    const { clearUnits } = this.props;
+
+    if (value)
+      this.lazyFetchUnits({ payload: { unitName: value, pageNum: 1, pageSize: PAGE_SIZE } });
+    else
+      clearUnits();
+  };
+
   /* 基本信息 */
   renderBasicInfo() {
     const {
@@ -150,41 +163,39 @@ export default class RoleHandler extends PureComponent {
     const sortedUnitTypes = unitTypes ? Array.from(unitTypes) : [];
     sortedUnitTypes.sort((u1, u2) => u1.sort - u2.sort);
 
-    const isPublic = type;
-    const isOperate = unitTypeSelected === OPE;
+    let unit;
+    const isPublic = type; // 是否是渲染公共角色
+    const isOperate = unitTypeSelected === OPE; // 是否是运营类型
     const notOperateAndNotPublic = !isOperate && !isPublic; // 非运营且渲染私有角色
-    const isGovernment = unitTypeSelected === GOV;
-    const disabled = !!id || notOperateAndNotPublic; // 编辑或非运营看私有角色为true
-    const unit = isGovernment ? (
-      <TreeSelect
-        allowClear
-        disabled={disabled}
-        placeholder="请选择所属单位"
-        labelInValue
-        onSelect={this.handleUnitSelect}
-      >
-        {generateTreeNode(unitList)}
-      </TreeSelect>
-    ) : (
-      <AutoComplete
-        mode="combobox"
-        labelInValue
-        disabled={disabled}
-        optionLabelProp="children"
-        placeholder="请选择所属单位"
-        notFoundContent={unitsLoading ? <Spin size="small" /> : '暂无数据'}
-        onSearch={this.handleUnitIdChange}
-        onSelect={this.handleDataPermissions}
-        onBlur={this.handleUnitIdBlur}
-        filterOption={false}
-      >
-        {unitList.map(item => (
-          <Option value={item.id} key={item.id}>
-            {item.name}
-          </Option>
-        ))}
-      </AutoComplete>
-    );
+    const isGovernment = unitTypeSelected === GOV; // 是否是政府类型
+    const disabled = !!id || id && isOperate; // 编辑或新增时非运营看私有角色为true
+    if (!isPublic)
+      unit = isGovernment ? (
+        <TreeSelect
+          allowClear
+          disabled={disabled}
+          placeholder="请选择所属单位"
+          labelInValue
+          onSelect={this.handleUnitSelect}
+        >
+          {generateTreeNode(unitList)}
+        </TreeSelect>
+      ) : (
+        <Select
+          showSearch
+          placeholder="请选择所属单位"
+          notFoundContent={unitsLoading ? <Spin size="small" /> : '暂无数据'}
+          onSearch={this.handleUnitValueChange}
+          onChange={this.handleUnitChange}
+          filterOption={false}
+        >
+          {unitList.map(item => (
+            <Option value={item.id} key={item.id}>
+              {item.name}
+            </Option>
+          ))}
+        </Select>
+      );
 
     return (
       <Card title="基本信息">
@@ -207,7 +218,7 @@ export default class RoleHandler extends PureComponent {
               rules: [{ required: true, message: '请选择角色类型' }],
             })(
               <Select
-                onChange={this.handleTreeTypeChange}
+                onChange={this.handleTypeChange}
               >
                 {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
               </Select>
