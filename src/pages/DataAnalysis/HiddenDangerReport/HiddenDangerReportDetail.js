@@ -364,13 +364,12 @@ export default class App extends PureComponent {
       },
       loading,
     } = this.props;
-    console.log('this.propsthis.props', this.props);
     const { stepDirection, tab } = this.state;
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
 
     const crDetailUrl = `/data-analysis/company-report/detail/${checkId}?companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`;
-    const mtUrl = `/data-analysis/maintenance-report/detail/${checkId}?companyName=${companyMtName}&&objectTitle=${objectTitle}&&checkCompanyName=${checkCompanyName}&&userName=${userName}&&checkDate=${checkDate}&&status=${mtStatus}`;
+    const mtUrl = `/data-analysis/maintenance-report/detail/${checkId}?companyName=${companyMtName}&&objectTitle=${objectTitle}&&checkCompanyName=${checkCompanyName}&&itemTypeName=${itemTypeName}&&userName=${userName}&&checkDate=${checkDate}&&status=${mtStatus}`;
     const govDetailUrl = `/data-analysis/goverment-report/detail/${checkId}?companyName=${companyGovName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`;
 
     /* 面包屑 */
