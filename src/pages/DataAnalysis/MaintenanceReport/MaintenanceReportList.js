@@ -78,6 +78,7 @@ export default class App extends PureComponent {
     const {
       user: {
         currentUser: { unitType },
+        companyBasicInfo: { isBranch } = {},
       },
     } = props;
     /* 当前账号是否是企业 */
@@ -169,10 +170,11 @@ export default class App extends PureComponent {
             check_date,
             status,
             object_title,
+            itemTypeName,
           } = text;
           return (
             <Link
-              to={`/data-analysis/maintenance-report/detail/${check_id}?companyName=${company_name}&&objectTitle=${object_title}&&checkCompanyName=${checkCompanyName}&&userName=${check_user_names}&&checkDate=${check_date}&&status=${status}`}
+              to={`/data-analysis/maintenance-report/detail/${check_id}?companyName=${company_name}&&objectTitle=${object_title}&&checkCompanyName=${checkCompanyName}&&itemTypeName=${itemTypeName}&&userName=${check_user_names}&&checkDate=${check_date}&&status=${status}`}
             >
               查看
             </Link>
@@ -428,6 +430,9 @@ export default class App extends PureComponent {
       maintenanceReport: { checkResultList },
       form: { getFieldDecorator },
       hiddenDangerReport: { gridList, unitIdes },
+      user: {
+        currentUser: { companyBasicInfo: { isBranch } = {} },
+      },
       loading,
     } = this.props;
     return (
@@ -489,13 +494,15 @@ export default class App extends PureComponent {
             </Form.Item>
           </Col>
           {/* 点位名称 */}
+
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.itemName}>
               {getFieldDecorator('objectTitle')(<Input placeholder="请输入" />)}
             </Form.Item>
           </Col>
+
           {/* 检查单位 */}
-          {!this.isWbCompany && (
+          {!isBranch && (
             <Col xl={8} md={12} sm={24} xs={24}>
               <Form.Item label={fieldLabels.checkCompany}>
                 {getFieldDecorator('checkCompanyName')(<Input placeholder="请输入" />)}

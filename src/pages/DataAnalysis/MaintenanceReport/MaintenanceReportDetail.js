@@ -99,7 +99,15 @@ export default class App extends PureComponent {
         params: { id },
       },
       location: {
-        query: { companyName, checkCompanyName, userName, checkDate, status, objectTitle },
+        query: {
+          companyName,
+          checkCompanyName,
+          userName,
+          checkDate,
+          status,
+          objectTitle,
+          itemTypeName,
+        },
       },
       loading,
     } = this.props;
@@ -168,7 +176,7 @@ export default class App extends PureComponent {
                       key={v.detail_id}
                       to={`/data-analysis/maintenance-report/maintenanCheckDetail/${
                         v._id
-                      }?checkId=${id}&&companyMtName=${companyName}&&objectTitle=${objectTitle}&&checkCompanyName=${checkCompanyName}&&userName=${userName}&&checkDate=${checkDate}`}
+                      }?checkId=${id}&&companyMtName=${companyName}&&itemTypeName=${itemTypeName}&&objectTitle=${objectTitle}&&checkCompanyName=${checkCompanyName}&&userName=${userName}&&checkDate=${checkDate}`}
                     >
                       {v.statusName ? (
                         <span style={{ color: '#40a9ff' }}> {v.statusName} </span>
@@ -187,7 +195,7 @@ export default class App extends PureComponent {
       <PageHeaderLayout
         title={
           <Fragment>
-            {objectTitle}
+            {itemTypeName}:{objectTitle}
             {!isCompany && <div className={styles.content}>{`单位名称：${companyName}`}</div>}
             <div className={styles.content}>{`维保单位：${checkCompanyName}`}</div>
             <div className={styles.content}>{`检查人：${userName}`}</div>

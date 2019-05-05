@@ -181,7 +181,7 @@ export default class VideoPermissionEdit extends PureComponent {
   // 返回弹窗确定按钮的disabled状态
   checkButtonPermission = type => {
     const {
-      user: { currentUser: { unitType, departmentId } = {}, unitId },
+      user: { currentUser: { unitType, departmentId, unitId } = {} },
       match: {
         params: { companyId },
       },

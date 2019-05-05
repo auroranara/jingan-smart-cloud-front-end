@@ -335,7 +335,7 @@ module.exports = env => {
             {
               name: 'buildingsInfo',
               path: '/base-info/buildings-info',
-              code: 'personnelPosition.buildingsInfo',
+              code: 'baseInfo.buildingsInfo',
               hideChildrenInMenu: true,
               routes: [
                 {
@@ -345,55 +345,55 @@ module.exports = env => {
                 },
                 {
                   name: 'list',
-                  code: 'personnelPosition.buildingsInfo.listView',
+                  code: 'baseInfo.buildingsInfo.listView',
                   path: '/base-info/buildings-info/list',
                   component: './BaseInfo/BuildingsInfo/CompanyList',
                 },
                 {
                   name: 'view',
-                  code: 'personnelPosition.buildingsInfo.view',
+                  code: 'baseInfo.buildingsInfo.view',
                   path: '/base-info/buildings-info/detail/:id',
                   component:
                     './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoList',
                 },
                 {
                   name: 'add',
-                  code: 'personnelPosition.buildingsInfo.add',
+                  code: 'baseInfo.buildingsInfo.add',
                   path: '/base-info/buildings-info/add',
                   component:
                     './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
                 },
                 {
                   name: 'edit',
-                  code: 'personnelPosition.buildingsInfo.edit',
+                  code: 'baseInfo.buildingsInfo.edit',
                   path: '/base-info/buildings-info/edit/:id',
                   component:
                     './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
                 },
                 {
                   name: 'floorList',
-                  code: 'personnelPosition.buildingsInfo.floorListView',
+                  code: 'baseInfo.buildingsInfo.floorListView',
                   path: '/base-info/buildings-info/floor/list/:id',
                   component:
                     './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementList',
                 },
                 {
                   name: 'floorAdd',
-                  code: 'personnelPosition.buildingsInfo.floorAdd',
+                  code: 'baseInfo.buildingsInfo.floorAdd',
                   path: '/base-info/buildings-info/floor/add',
                   component:
                     './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementEdit',
                 },
                 {
                   name: 'floorEdit',
-                  code: 'personnelPosition.buildingsInfo.floorEdit',
+                  code: 'baseInfo.buildingsInfo.floorEdit',
                   path: '/base-info/buildings-info/floor/edit/:id',
                   component:
                     './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementEdit',
                 },
                 {
                   name: 'floorDetail',
-                  code: 'personnelPosition.buildingsInfo.floorView',
+                  code: 'baseInfo.buildingsInfo.floorView',
                   path: '/base-info/buildings-info/floor/detail/:id',
                   component:
                     './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementDetail',
