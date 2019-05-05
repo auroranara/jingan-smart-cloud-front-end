@@ -305,7 +305,7 @@ export default class FloorManagementList extends PureComponent {
             <FormItem style={{ float: 'right' }}>
               <AuthButton
                 type="primary"
-                code={codesMap.personnelPosition.buildingsInfo.floorAdd}
+                code={codesMap.company.buildingsInfo.floorAdd}
                 href={`#/base-info/buildings-info/floor/add?id=${id}&&name=${name}&&companyId=${companyId}`}
               >
                 新增
@@ -357,7 +357,7 @@ export default class FloorManagementList extends PureComponent {
             <Fragment>
               {floorWebUrl && floorWebUrl.length ? (
                 <AuthA
-                  code={codesMap.personnelPosition.buildingsInfo.floorView}
+                  code={codesMap.company.buildingsInfo.floorView}
                   onClick={() => {
                     this.handleShowModal(floorWebUrl);
                   }}
@@ -379,21 +379,21 @@ export default class FloorManagementList extends PureComponent {
         render: (record, rows) => (
           <span>
             <AuthA
-              code={codesMap.personnelPosition.buildingsInfo.floorView}
+              code={codesMap.company.buildingsInfo.floorView}
               onClick={() => this.goFloorDetail(rows.id)}
             >
               查看
             </AuthA>
             <Divider type="vertical" />
             <AuthA
-              code={codesMap.personnelPosition.buildingsInfo.floorEdit}
+              code={codesMap.company.buildingsInfo.floorEdit}
               onClick={() => this.goFloorEdit(rows.id)}
             >
               编辑
             </AuthA>
             <Divider type="vertical" />
             <Popconfirm title="确认要删除该楼层吗？" onConfirm={() => this.handleDelete(rows.id)}>
-              <AuthA code={codesMap.personnelPosition.buildingsInfo.floorDelete}>删除</AuthA>
+              <AuthA code={codesMap.company.buildingsInfo.floorDelete}>删除</AuthA>
             </Popconfirm>
           </span>
         ),

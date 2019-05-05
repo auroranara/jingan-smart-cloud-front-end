@@ -195,7 +195,7 @@ export default class CompanyList extends PureComponent {
           </FormItem>
           <FormItem style={{ float: 'right' }}>
             <AuthButton
-              code={codesMap.personnelPosition.buildingsInfo.add}
+              code={codesMap.company.buildingsInfo.add}
               type="primary"
               href="#/base-info/buildings-info/add"
             >
@@ -255,7 +255,7 @@ export default class CompanyList extends PureComponent {
                     <Col
                       span={8}
                       onClick={() => {
-                        if (hasAuthority(codesMap.personnelPosition.buildingsInfo.view, codes))
+                        if (hasAuthority(codesMap.company.buildingsInfo.view, codes))
                           this.handleBuildingList(company_id, company_name);
                         else message.warn('您没有权限访问对应页面');
                       }}

@@ -39,6 +39,17 @@ const defaultFormData = {
   floorNumber: undefined,
 };
 
+const {
+  company: {
+    buildingsInfo: {
+      add: addCode,
+      edit: editCode,
+      delete: deleteCode,
+      floorListView: floorListViewCode,
+    },
+  },
+} = codesMap
+
 /* 获取无数据 */
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
@@ -334,7 +345,7 @@ export default class BuildingInfoList extends PureComponent {
               <FormItem style={{ float: 'right' }}>
                 <AuthButton
                   type="primary"
-                  code={codesMap.personnelPosition.buildingsInfo.add}
+                  code={addCode}
                   href={`#/base-info/buildings-info/add?companyId=${companyId}&&name=${name}`}
                 >
                   新增
@@ -388,7 +399,7 @@ export default class BuildingInfoList extends PureComponent {
                   className={styles.card}
                   actions={[
                     <AuthLink
-                      code={codesMap.personnelPosition.buildingsInfo.edit}
+                      code={editCode}
                       codes={codes}
                       to={`/base-info/buildings-info/edit/${id}?companyId=${companyId}&&name=${name}`}
                     >
@@ -397,7 +408,7 @@ export default class BuildingInfoList extends PureComponent {
                   ]}
                   extra={
                     <AuthButton
-                      code={codesMap.personnelPosition.buildingsInfo.delete}
+                      code={deleteCode}
                       codes={codes}
                       onClick={() => {
                         this.handleShowDeleteConfirm(id);
@@ -451,7 +462,7 @@ export default class BuildingInfoList extends PureComponent {
                         {floorLevel || getEmptyData()}
                       </p>
                       <AuthButton
-                        code={codesMap.personnelPosition.buildingsInfo.floorListView}
+                        code={floorListViewCode}
                         style={{ cursor: 'pointer' }}
                         href={`#/base-info/buildings-info/floor/list/${id}?companyId=${companyId}&&name=${name}`}
                       >

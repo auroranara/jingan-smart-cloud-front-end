@@ -106,6 +106,20 @@ export default {
       delete: 'baseInfo.company.department.delete',
       edit: 'baseInfo.company.department.edit',
     },
+    // 建筑物信息
+    buildingsInfo: {
+      list: 'baseInfo.buildingsInfo.listView',
+      view: 'baseInfo.buildingsInfo.view',
+      add: 'baseInfo.buildingsInfo.add',
+      edit: 'baseInfo.buildingsInfo.edit',
+      delete: 'baseInfo.buildingsInfo.delete',
+      // 楼层
+      floorListView: 'baseInfo.buildingsInfo.floorListView',
+      floorAdd: 'baseInfo.buildingsInfo.floorAdd',
+      floorEdit: 'baseInfo.buildingsInfo.floorEdit',
+      floorView: 'baseInfo.buildingsInfo.floorView',
+      floorDelete: 'baseInfo.buildingsInfo.floorDelete',
+    },
   },
   contract: {
     list: 'fireControl.contract.listView',
@@ -185,20 +199,20 @@ export default {
       edit: 'personnelPosition.systemConfiguration.edit',
       delete: 'personnelPosition.systemConfiguration.delete',
     },
-    // 建筑物信息
-    buildingsInfo: {
-      list: 'personnelPosition.buildingsInfo.listView',
-      view: 'personnelPosition.buildingsInfo.view',
-      add: 'personnelPosition.buildingsInfo.add',
-      edit: 'personnelPosition.buildingsInfo.edit',
-      delete: 'personnelPosition.buildingsInfo.delete',
-      // 楼层
-      floorListView: 'personnelPosition.buildingsInfo.floorListView',
-      floorAdd: 'personnelPosition.buildingsInfo.floorAdd',
-      floorEdit: 'personnelPosition.buildingsInfo.floorEdit',
-      floorView: 'personnelPosition.buildingsInfo.floorView',
-      floorDelete: 'personnelPosition.buildingsInfo.floorDelete',
-    },
+    // // 建筑物信息
+    // buildingsInfo: {
+    //   list: 'personnelPosition.buildingsInfo.listView',
+    //   view: 'personnelPosition.buildingsInfo.view',
+    //   add: 'personnelPosition.buildingsInfo.add',
+    //   edit: 'personnelPosition.buildingsInfo.edit',
+    //   delete: 'personnelPosition.buildingsInfo.delete',
+    //   // 楼层
+    //   floorListView: 'personnelPosition.buildingsInfo.floorListView',
+    //   floorAdd: 'personnelPosition.buildingsInfo.floorAdd',
+    //   floorEdit: 'personnelPosition.buildingsInfo.floorEdit',
+    //   floorView: 'personnelPosition.buildingsInfo.floorView',
+    //   floorDelete: 'personnelPosition.buildingsInfo.floorDelete',
+    // },
     // 信标管理
     beaconManagement: {
       list: 'personnelPosition.beaconManagement.listView',
