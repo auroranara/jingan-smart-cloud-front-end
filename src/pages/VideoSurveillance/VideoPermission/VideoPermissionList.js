@@ -230,7 +230,7 @@ export default class VideoPermissionList extends PureComponent {
                   actions={[
                     <AuthLink
                       code={edit}
-                      to={`/video-surveillance/video-permission/edit/${item.id}`}
+                      to={`/video-surveillance/video-permission/edit/${item.id}?name=${name}`}
                     >
                       编辑
                     </AuthLink>,
