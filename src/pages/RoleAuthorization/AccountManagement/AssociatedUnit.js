@@ -61,7 +61,7 @@ const fieldLabels = {
   unitId: '所属单位',
   accountStatus: '账号状态',
   treeIds: '数据权限',
-  roleIds: '配置角色',
+  roleId: '配置角色',
   departmentId: '所属部门',
   userType: '用户角色',
   documentTypeId: '执法证种类',
@@ -142,9 +142,9 @@ const generateTressNode = data => {
     },
 
     // 获取用户详情
-    fetchAssociatedUnitDeatil(action) {
+    fetchAssociatedUnitDetail(action) {
       dispatch({
-        type: 'account/fetchAssociatedUnitDeatil',
+        type: 'account/fetchAssociatedUnitDetail',
         ...action,
       });
     },
@@ -252,7 +252,7 @@ export default class AssociatedUnit extends PureComponent {
     const {
       dispatch,
       fetchAccountDetail,
-      fetchAssociatedUnitDeatil,
+      fetchAssociatedUnitDetail,
       match: {
         params: { id, userId },
       },
@@ -290,7 +290,7 @@ export default class AssociatedUnit extends PureComponent {
       success,
     });
     if (!!userId) { // 编辑
-      fetchAssociatedUnitDeatil({
+      fetchAssociatedUnitDetail({
         payload: {
           userId,
         },
@@ -298,7 +298,7 @@ export default class AssociatedUnit extends PureComponent {
           unitType,
           unitId,
           regulatoryClassification,
-          roleIds,
+          roleId,
           permissions = '',
           appPermissions = '',
           maintenacePermissions = [],
@@ -311,7 +311,7 @@ export default class AssociatedUnit extends PureComponent {
           );
           // 根据企业类型获取对应类型的角色
           fetchRoles({
-            payload: { unitType },
+            payload: { unitType, unitId },
             error: goToException,
           });
           // 若为维保单位，则获取维保权限树，并设置维保权限树初值
@@ -377,8 +377,7 @@ export default class AssociatedUnit extends PureComponent {
           // 获取roleIds对应的权限，并设置权限树的初值
           this.authTreeCheckedKeys = handleKeysString(permissions);
           this.appAuthTreeCheckedKeys = handleKeysString(appPermissions);
-          const roles = roleIds.split(',');
-          roles.length && this.fetchRolePermissions(roles);
+          roleId && this.fetchRolePermissions(roleId);
 
           // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
           fetchUnitsFuzzy({
@@ -591,10 +590,10 @@ export default class AssociatedUnit extends PureComponent {
     const {
       fetchRoles,
       account: { detail },
-      form: { setFieldsValue },
+      form: { setFieldsValue, getFieldValue },
     } = this.props;
     const { data } = detail || {};
-    const { unitType, roleIds } = data || {};
+    const { unitType, roleId } = data || {};
 
     this.setState(
       {
@@ -611,14 +610,14 @@ export default class AssociatedUnit extends PureComponent {
     );
 
     // 单位类型改变时，改变角色列表，若与原有单位类型相同，则保留原来的值，若不同则清空已选角色及已选权限
-    fetchRoles({ payload: { unitType: id } });
-    const selectedRoles = roleIds ? roleIds.split(',').filter(id => id) : [];
-    if (+unitType === id && selectedRoles.length) {
-      this.fetchRolePermissions(selectedRoles);
-      setFieldsValue({ roleIds: selectedRoles });
+    const unitId = getFieldValue('unitId');
+    fetchRoles({ payload: { unitType: id, unitId } });
+    if (+unitType === id && roleId) {
+      this.fetchRolePermissions(roleId);
+      setFieldsValue({ roleId });
     }
     else {
-      setFieldsValue({ roleIds: [] });
+      setFieldsValue({ roleId: undefined });
       this.clearRolePermissions(id);
     }
   };
@@ -1327,7 +1326,7 @@ export default class AssociatedUnit extends PureComponent {
       role,
       account: {
         detail: {
-          data: { treeNames, treeIds, roleIds },
+          data: { treeNames, treeIds, roleId },
         },
         roles,
         maintenanceTree: { list: treeList = [] },
@@ -1341,13 +1340,13 @@ export default class AssociatedUnit extends PureComponent {
     const { getFieldDecorator } = form;
     const { subExpandedKeys, searchSerValue, searchSubValue, unitTypeChecked } = this.state;
 
-    const roleList = roles.map(({ id, name }) => ({ key: id, title: name }));
+    // const roleList = roles.map(({ id, name }) => ({ key: id, title: name }));
     return (
       <Card title="系统角色权限配置" className={styles.card} bordered={false}>
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
-            <Col span={24}>
-              <Form.Item label={fieldLabels.roleIds}>
+            <Col sm={24} md={12} lg={8}>
+              {/* <Form.Item label={fieldLabels.roleIds}>
                 {getFieldDecorator('roleIds', {
                   initialValue: roleIds ? roleIds.split(',') : [],
                   valuePropName: 'targetKeys',
@@ -1365,6 +1364,18 @@ export default class AssociatedUnit extends PureComponent {
                     render={item => item.title}
                     onChange={this.handleTransferChange}
                   />
+                )}
+              </Form.Item> */}
+              <Form.Item label={fieldLabels.roleId}>
+                {getFieldDecorator('roleId', {
+                  initialValue: roleId,
+                  rules: [{ required: true, message: '请配置角色' }],
+                })(
+                  <Select
+                    onChange={this.handleRoleChange}
+                  >
+                    {roles.map(({ id, roleName }) => <Option key={id} value={id}>{roleName}</Option>)}
+                  </Select>
                 )}
               </Form.Item>
             </Col>

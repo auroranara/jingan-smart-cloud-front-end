@@ -15,10 +15,10 @@ export default class AthorityTree extends PureComponent {
     const { dispatch } = this.props;
     this.fetchTree();
     // 清空detail，以免从角色页面跳过来时，渲染其获取的detail
-    dispatch({
-      type: 'role/saveRoleAppPermissions',
-      payload: [],
-    });
+    // dispatch({
+    //   type: 'role/saveRoleAppPermissions',
+    //   payload: [],
+    // });
   }
 
   componentDidUpdate(prevProps) {

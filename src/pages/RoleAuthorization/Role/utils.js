@@ -40,6 +40,7 @@ export function getUnitTypeLabel(type, types) {
 
 /* 根据选中的子节点获取父节点 */
 export function checkParent(list, permissions) {
+  permissions = permissions || [];
   let newList = [];
   list.forEach(item => {
     const { id, childMenus } = item;
@@ -162,3 +163,18 @@ export function generateTreeNode(list) {
     return <TreeNode title={item.name} key={item.id} value={item.id} />;
   });
 };
+
+// 获取RoleHandler组件中企业和单位类型是否可以编辑
+export function getUnitDisabled(isEdit, isCommon, isAdmin) {
+  if (isCommon) // 公共角色
+    return false;
+
+  // 以下皆为私有角色
+  if (isEdit)
+    return true;
+  // 以下皆为私有角色新增
+  if (!isAdmin)
+    return true;
+
+  return false;
+}

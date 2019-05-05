@@ -55,6 +55,9 @@ export default class RoleList extends PureComponent {
 
   /* 查询点击事件 */
   handleSearch = values => {
+    if (!values.companyName)
+      delete values.companyName;
+
     this.getRoleList({ ...values, pageNum: 1 }, () => {
       this.setState({
         formData: values,
@@ -135,6 +138,7 @@ export default class RoleList extends PureComponent {
   /* 渲染表单 */
   renderForm() {
     const {
+      type,
       goToAdd,
       companyId,
       codes: { add: addCode },
@@ -145,11 +149,12 @@ export default class RoleList extends PureComponent {
       },
     } = this.props;
 
+    const isPublic = type;
     const isAdmin = !companyId;
 
     const sortedUnitTypes = unitTypes ? Array.from(unitTypes) : [];
     sortedUnitTypes.sort((u1, u2) => u1.sort - u2.sort);
-    const field = {
+    const unitTypeField = {
       id: 'unitType',
       render: () => {
         return (
@@ -158,6 +163,13 @@ export default class RoleList extends PureComponent {
           </Select>
         );
       },
+    };
+    const companyNameField = {
+      id: 'companyName',
+      render() {
+        return <Input placeholder="请输入单位名称" />;
+      },
+      transform,
     };
 
     /* 表单字段 */
@@ -188,8 +200,11 @@ export default class RoleList extends PureComponent {
       },
     ];
 
+    if (!isPublic && isAdmin) // 私有角色，管理员
+      fields.unshift(companyNameField);
+
     if (isAdmin)
-      fields.unshift(field);
+      fields.unshift(unitTypeField);
 
     const hasAddAuthority = hasAuthority(addCode, permissionCodes); // 是否有新增权限
 
@@ -229,6 +244,7 @@ export default class RoleList extends PureComponent {
 
     const isPublic = type;
     const isAdmin = !companyId;
+    const isAdminAndPrivate = isAdmin && !isPublic;
     const hasDetailAuthority = hasAuthority(detailCode, permissionCodes); // 是否有查看权限
     const hasEditAuthority = hasAuthority(editCode, permissionCodes); // 是否有编辑权限
 
@@ -273,12 +289,12 @@ export default class RoleList extends PureComponent {
                     onClick={ hasDetailAuthority ? () => goToDetail(id) : null}
                     style={hasDetailAuthority ? { cursor: 'pointer' } : null}
                   >
-                    {isAdmin && !isPublic && (
-                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      {companyName ? <span>{companyName}</span> : getEmptyData()}
+                    {isAdminAndPrivate && (
+                      <Ellipsis tooltip lines={1} className={isAdminAndPrivate ? styles.ellipsisUpText : styles.ellipsisText}>
+                      {companyName ? <span>{companyName}</span> : '暂无所属企业信息'}
                       </Ellipsis>
                     )}
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                    <Ellipsis tooltip lines={1} className={isAdminAndPrivate ? styles.ellipsisDownText : styles.ellipsisText}>
                       {description ? <span>{description}</span> : getEmptyData()}
                     </Ellipsis>
                   </div>
@@ -302,6 +318,7 @@ export default class RoleList extends PureComponent {
           pagination: { total },
         },
       },
+      user: { currentUser: { unitName } },
     } = this.props;
 
     return (
@@ -312,6 +329,7 @@ export default class RoleList extends PureComponent {
           <div>
             角色总数：
             {total}{' '}
+            {unitName && <p>{unitName}</p>}
           </div>
         }
       >

@@ -55,7 +55,7 @@ export default class CommonRoleHandler extends PureComponent {
   render() {
     return (
       <RoleHandler
-        type={1}
+        type={1} // 0 私有角色 1 公共角色
         urls={URLS}
         codes={codes.commonRole}
         fetchUnitTypes={this.fetchUnitTypes}

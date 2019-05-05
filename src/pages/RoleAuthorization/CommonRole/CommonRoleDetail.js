@@ -32,7 +32,7 @@ export default class CommonRoleDetail extends PureComponent {
     router.push(LIST_URL);
   }
 
-  goToEdit() {
+  goToEdit = () => {
     const { match: { params: { id } } } = this.props;
     router.push(`${EDIT_URL}/${id}`);
   }

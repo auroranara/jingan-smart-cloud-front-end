@@ -73,7 +73,7 @@ export default class CommonRoleList extends PureComponent {
   render() {
     return (
       <RoleList
-        type={1}
+        type={1} // 0 私有角色 1 公共角色
         urls={URLS}
         codes={codes.commonRole}
         title={TITLE}

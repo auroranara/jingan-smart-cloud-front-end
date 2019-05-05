@@ -4,7 +4,7 @@ import { Form, Card, Input, Button, Select, Spin, Tree, TreeSelect, message } fr
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
-import { GOV, OPE, checkParent, generateTreeNode, sortTree, uncheckParent } from './utils';
+import { GOV, OPE, checkParent, generateTreeNode, sortTree, uncheckParent, getUnitDisabled } from './utils';
 
 const { TreeNode } = Tree;
 const { TextArea } = Input;
@@ -27,7 +27,10 @@ export default class RoleHandler extends PureComponent {
   /* 挂载后 */
   componentDidMount() {
     const {
+      type,
+      companyId,
       match: { params: { id } },
+      form: { setFieldsValue },
       fetchUnits,
       fetchUnitTypes,
       fetchDetail,
@@ -36,7 +39,9 @@ export default class RoleHandler extends PureComponent {
       clearDetail,
     } = this.props;
 
-    this.lazyFetchUnits = _.debounce(fetchUnits, 100);
+    const isAdmin = !companyId;
+    if (!type && fetchUnits)
+      this.lazyFetchUnits = _.debounce(fetchUnits, 300);
 
     fetchUnitTypes();
 
@@ -44,10 +49,16 @@ export default class RoleHandler extends PureComponent {
       fetchDetail({
         payload: { id },
         success: detail => {
-          const type = detail ? detail.unitType : undefined;
-          type && +type !== OPE && fetchPermissionTree({ payload: type });
+          const { unitType, companyId, companyName } = detail || {};
+          if (unitType === undefined || unitType === null)
+            return;
 
-          this.setState({ unitType: type ? +type : type });
+          fetchPermissionTree({ payload: isAdmin ? unitType : companyId });
+
+          companyName && this.fetchInitUnits(unitType, companyName);
+          companyId && setFieldsValue({ companyId });
+
+          this.setState({ unitType: +unitType });
         },
       });
     } else { // 新增
@@ -71,6 +82,7 @@ export default class RoleHandler extends PureComponent {
 
     this.setState({ unitType: +value });
 
+    this.fetchInitUnits(value);
     fetchPermissionTree({
       payload: value,
       // 在model变化前，先清空值，不然会报warning
@@ -80,21 +92,33 @@ export default class RoleHandler extends PureComponent {
         if (+value === +unitType) {
           const value = webPermissionIds ? uncheckParent(tree, webPermissionIds) : [];
           const appValue = appPermissionIds ? uncheckParent(appTree, appPermissionIds) : [];
-          setFieldsValue({ permissions: value, appPermissions: appValue });
+          setFieldsValue({ permissions: value, appPermissions: appValue  });
         }
       },
     });
   };
 
+  fetchInitUnits = (unitType, unitName) => {
+    const { fetchUnits } = this.props;
+    let payload;
+    if (+unitType === GOV)
+      payload= { unitType };
+    else
+      payload = { unitType, unitName, pageNum: 1, pageSize: PAGE_SIZE };
+      fetchUnits && fetchUnits({ payload });
+  };
+
   /* 提交 */
   handleSubmit = () => {
     const {
+      companyId: compyId,
       insertRole,
       updateRole,
       goBack,
       form: { validateFieldsAndScroll },
       match: { params: { id } },
     } = this.props;
+
     // 验证表单
     validateFieldsAndScroll((error, values) => {
       if (!error) {
@@ -105,9 +129,11 @@ export default class RoleHandler extends PureComponent {
         const {
           role: { permissionTree, appPermissionTree },
         } = this.props;
-        const { roleName, description, permissions, appPermissions, unitType } = values;
+        const { roleName, description, permissions, appPermissions, unitType, companyId } = values;
+
         const payload = {
           id,
+          companyId: companyId || compyId,
           unitType,
           roleName: roleName.trim(),
           description,
@@ -136,12 +162,7 @@ export default class RoleHandler extends PureComponent {
   };
 
   handleUnitValueChange = value => {
-    const { clearUnits } = this.props;
-
-    if (value)
       this.lazyFetchUnits({ payload: { unitName: value, pageNum: 1, pageSize: PAGE_SIZE } });
-    else
-      clearUnits();
   };
 
   /* 基本信息 */
@@ -164,18 +185,19 @@ export default class RoleHandler extends PureComponent {
     sortedUnitTypes.sort((u1, u2) => u1.sort - u2.sort);
 
     let unit;
+    const isEdit = !!id;
     const isPublic = type; // 是否是渲染公共角色
-    const isOperate = unitTypeSelected === OPE; // 是否是运营类型
-    const notOperateAndNotPublic = !isOperate && !isPublic; // 非运营且渲染私有角色
-    const isGovernment = unitTypeSelected === GOV; // 是否是政府类型
-    const disabled = !!id || id && isOperate; // 编辑或新增时非运营看私有角色为true
-    if (!isPublic)
+    const isAdmin = !companyId;
+    const isOperate = unitTypeSelected === OPE; // 选择类型是否是运营类型
+    const isGovernment = unitTypeSelected === GOV; // 选择类型是否是政府类型
+    const notOperateAndNotPublic = !isOperate && !isPublic; // 私有角色下且选择类型为非运营
+    const disabled = getUnitDisabled(isEdit, isPublic, isAdmin); // 1.私有角色编辑 2.新增,私有角色,非管理员  true
+    if (!isPublic) // 私有角色下才有选择单位
       unit = isGovernment ? (
         <TreeSelect
           allowClear
           disabled={disabled}
           placeholder="请选择所属单位"
-          labelInValue
           onSelect={this.handleUnitSelect}
         >
           {generateTreeNode(unitList)}
@@ -183,6 +205,7 @@ export default class RoleHandler extends PureComponent {
       ) : (
         <Select
           showSearch
+          disabled={disabled}
           placeholder="请选择所属单位"
           notFoundContent={unitsLoading ? <Spin size="small" /> : '暂无数据'}
           onSearch={this.handleUnitValueChange}
@@ -218,6 +241,7 @@ export default class RoleHandler extends PureComponent {
               rules: [{ required: true, message: '请选择角色类型' }],
             })(
               <Select
+                disabled={disabled}
                 onChange={this.handleTypeChange}
               >
                 {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
@@ -239,7 +263,6 @@ export default class RoleHandler extends PureComponent {
               }}
             >
               {getFieldDecorator('companyId', {
-                initialValue: companyId,
                 rules: [{ required: true, message: '请选择单位' }],
               })(unit)}
             </Form.Item>

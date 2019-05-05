@@ -74,7 +74,7 @@ export default class CommonRoleHandler extends PureComponent {
 
     return (
       <RoleHandler
-        type={0}
+        type={0} // 0 私有角色 1 公共角色
         urls={URLS}
         companyId={isAdm ? null : unitId} // 不存在即为管理员或运营
         codes={codes.commonRole}

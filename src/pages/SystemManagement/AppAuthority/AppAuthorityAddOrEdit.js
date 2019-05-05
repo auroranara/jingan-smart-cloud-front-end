@@ -23,7 +23,7 @@ const FUNCTION_POINTS = '2';
 const KEYS = ['parentId', 'showZname', 'sort', 'type', 'realName', 'classType'];
 const MORE_KEYS = ['code', 'clickType'];
 const KEYS_POINTS = KEYS.concat(MORE_KEYS);
-const TYPES = [{ name: '面板', key: '1' }, { name: '功能点', key: FUNCTION_POINTS }];
+const TYPES = [{ name: '面板', key: '1' }, { name: '功能点', key: FUNCTION_POINTS }, { name: '按钮', key: '3' }];
 
 @connect(({ appAuth, loading }) => ({ appAuth, loading: loading.models.appAuth }))
 @Form.create()

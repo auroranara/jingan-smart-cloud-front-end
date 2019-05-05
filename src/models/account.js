@@ -11,7 +11,7 @@ import {
   queryExecCertificateType,
   queryUserType,
   queryDepartmentList,
-  fetchAssociatedUnitDeatil,
+  fetchAssociatedUnitDetail,
   addAssociatedUnit,
   editAssociatedUnit,
   chnageAccountStatus,
@@ -58,6 +58,8 @@ export default {
     accountStatuses: [],
     unitIdes: [],
     roles: [],
+    permissionTree: [],
+    appPermissionTree: [],
     userTypes: [],
     gavUserTypes: [],
     subDepartments: [],
@@ -203,17 +205,15 @@ export default {
     // 查询角色列表
     *fetchRoles({ payload, success, error }, { call, put }) {
       const response = yield call(queryRoles, payload);
-      if (response.code === 200) {
-        yield put({
-          type: 'queryRoles',
-          payload: response.data.list,
-        });
-        if (success) {
-          success(response.data.list);
-        }
-      } else if (error) {
-        error();
-      }
+      const { code, data } = response || {};
+      if (code === 200) {
+        const list = data && data.roleList ? data.roleList : [];
+        const trees = data && data.allPermissionTree ? data.allPermissionTree : {};
+        yield put({ type: 'queryRoles', payload: list });
+        yield put({ type: 'saveTrees', payload: trees });
+        success && success(list, trees);
+      } else
+      error && error();
     },
 
     // 查询执法证件种类
@@ -251,8 +251,8 @@ export default {
       }
     },
     // 获取用户详情（关联企业页面）
-    *fetchAssociatedUnitDeatil({ payload, success, error }, { call, put }) {
-      const response = yield call(fetchAssociatedUnitDeatil, payload);
+    *fetchAssociatedUnitDetail({ payload, success, error }, { call, put }) {
+      const response = yield call(fetchAssociatedUnitDetail, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'queryAccountDetail',
@@ -401,6 +401,15 @@ export default {
       return {
         ...state,
         roles,
+      };
+    },
+
+    saveTrees(state, action) {
+      const { webPermissions, appPermissions } = action.payload;
+      return {
+        ...state,
+        permissionTree: webPermissions || [],
+        appPermissionTree: appPermissions || [],
       };
     },
 

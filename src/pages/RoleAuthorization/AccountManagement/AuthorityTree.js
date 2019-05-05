@@ -27,10 +27,10 @@ export default class AthorityTree extends PureComponent {
       },
     });
     // 清空detail，以免从角色页面跳过来时，渲染其获取的detail
-    dispatch({
-      type: 'role/saveRolePermissions',
-      payload: [],
-    });
+    // dispatch({
+    //   type: 'role/saveRolePermissions',
+    //   payload: [],
+    // });
   }
 
   onCheck = (checkedKeys) => {

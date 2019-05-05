@@ -81,7 +81,7 @@ export default class CommonRoleList extends PureComponent {
 
     return (
       <RoleList
-        type={0}
+        type={0} // 0 私有角色 1 公共角色
         companyId={isAdm ? null : unitId} // 不存在即为管理员或运营
         urls={URLS}
         codes={codes.userRole}
