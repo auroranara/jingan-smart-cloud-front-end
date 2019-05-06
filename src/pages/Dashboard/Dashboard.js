@@ -33,14 +33,14 @@ const smokeItem = { src: smokeImg, url: '', label: '烟感驾驶舱' };
 }))
 export default class Dashboard extends PureComponent {
   state = {
-    safetyProduction: 0,      // 安全大屏可见
-    fireService: 0,           // 消防可见
-    monitorService: 0,        // 动态监测可见
-    personnelPositioning: 0,  // 人员定位可见
-    electricityMonitor: 0,    // 用电安全可见
-    gasVisible: 0,            // 燃气入口可见
+    safetyProduction: 0, // 安全大屏可见
+    fireService: 0, // 消防可见
+    monitorService: 0, // 动态监测可见
+    personnelPositioning: 0, // 人员定位可见
+    electricityMonitor: 0, // 用电安全可见
+    gasVisible: 0, // 燃气入口可见
     fireMaintenanceVisible: 0, // 消防维保大屏可见
-    smokeVisible: 0,           // 烟感大屏可见
+    smokeVisible: 0, // 烟感大屏可见
   };
 
   componentDidMount() {
@@ -115,10 +115,12 @@ export default class Dashboard extends PureComponent {
 
     // 企业url
     const safeUrl = `${window.publicPath}#/big-platform/safety/company/${companyId}`;
-    const fireUrl = `${window.publicPath}#/big-platform/fire-control/company/${companyId}`;
+    const fireUrl = `${window.publicPath}#/big-platform/fire-control/new-company/${companyId}`;
     const monitorUrl = `${window.publicPath}#/big-platform/monitor/company/${companyId}`;
     const positionUrl = `${window.publicPath}#/big-platform/position/${companyId}`;
-    const fireMaintenanceUrl = `${window.publicPath}#/big-platform/fire-control/new-company/${companyId}`;
+    const fireMaintenanceUrl = `${
+      window.publicPath
+    }#/big-platform/fire-control/new-company/${companyId}`;
 
     // 企事业主体和政府有业务分类，维保和运营没有
     // 所以企事业主体和政府的大屏权限 = 用户业务权限 && 企事业业务分类 && 账户被配置的权限，运营和维保企业的大屏权限 = 用户业务权限 && 账户被配置的权限
@@ -183,17 +185,17 @@ export default class Dashboard extends PureComponent {
   }
 
   generateAlign = (arr, i) => {
-    if (!arr || !Array.isArray(arr)) return
-    const length = arr.length
+    if (!arr || !Array.isArray(arr)) return;
+    const length = arr.length;
     switch (length) {
       case 1:
-        return 'center'
+        return 'center';
       case 2:
-        return (i === 0 && 'flex-end') || (i === 1 && 'flex-start')
+        return (i === 0 && 'flex-end') || (i === 1 && 'flex-start');
       default:
-        return ['flex-end', 'center', 'flex-start'][i % 3]
+        return ['flex-end', 'center', 'flex-start'][i % 3];
     }
-  }
+  };
 
   render() {
     const {
@@ -201,13 +203,13 @@ export default class Dashboard extends PureComponent {
     } = this.props;
     electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor/${
       grids.length ? grids[0].value : 'index'
-      }`;
+    }`;
     gasItem.url = `${window.publicPath}#/big-platform/gas/${
       grids.length ? grids[0].value : 'index'
-      }`;
+    }`;
     smokeItem.url = `${window.publicPath}#/big-platform/smoke/${
       grids.length ? grids[0].value : 'index'
-      }`;
+    }`;
 
     // safetyProduction,fireService 1开启/0关闭
     // const imgWrapper =
@@ -228,7 +230,16 @@ export default class Dashboard extends PureComponent {
     // }
 
     // items中的参数必须与state中一一对应
-    const items = [safeItem, fireItem, monitorItem, positionItem, electricItem, gasItem, fireMaintenanceItem, smokeItem];
+    const items = [
+      safeItem,
+      fireItem,
+      monitorItem,
+      positionItem,
+      electricItem,
+      gasItem,
+      fireMaintenanceItem,
+      smokeItem,
+    ];
     // 如果state中不全是控制大屏显示的参数，则需要修改
     const imgWrapper = Object.entries(this.state).reduce((prev, [, value], i) => {
       value && prev.push(items[i]);
@@ -247,7 +258,11 @@ export default class Dashboard extends PureComponent {
       <Row
         gutter={{ xs: 10, sm: 20, md: 20, lg: 50 }}
         className={styles.dashboardContainer}
-        style={imgWrapper.length > 3 ? { height: 'auto' } : { height: '800px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        style={
+          imgWrapper.length > 3
+            ? { height: 'auto' }
+            : { height: '800px', display: 'flex', justifyContent: 'center', alignItems: 'center' }
+        }
       >
         {imgWrapper.map((item, i) => (
           <Col

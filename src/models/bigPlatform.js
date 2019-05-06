@@ -512,6 +512,9 @@ export default {
     },
     *fetchRiskDetail({ payload, success }, { call, put }) {
       const response = yield call(getRiskDetail, payload);
+      if (!response.hiddenDangers || !response.hiddenDangers.length) {
+        return;
+      }
       const ycq = response.hiddenDangers
         .filter(({ status }) => +status === 7)
         .sort((a, b) => {

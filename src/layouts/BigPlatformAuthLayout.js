@@ -34,7 +34,6 @@ export default class BigPlatformAuthLayout extends Component {
     } = this.props;
 
     const currentUserLoaded = !!codes;
-    console.log(codes, codeMap, pathArray);
     const page403 = (
       <Exception
         type="403"
