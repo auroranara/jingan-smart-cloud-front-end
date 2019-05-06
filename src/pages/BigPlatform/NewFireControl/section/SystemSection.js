@@ -34,21 +34,6 @@ function UnitCard(props) {
   );
 }
 
-// const systemUint = [...Array(5).keys()].map(i => ({ company: '无锡晶安智慧科技有限公司', hostNum: Math.floor(Math.random() * 10) }));
-
-// const COLUMNS = [{
-//   title: '接入单位',
-//   dataIndex: 'name',
-//   key: 'name',
-// }, {
-//   title: '主机数量',
-//   dataIndex: 'count',
-//   key: 'count',
-// }, {
-//   title: '状态',
-//   dataIndex: 'isFire',
-//   key: 'isFire',
-// }];
 
 export default class SystemSection extends PureComponent {
   state = { isScroll: false };

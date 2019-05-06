@@ -372,7 +372,8 @@ export default class NanXiaoLogin extends PureComponent {
             登录
           </Button>
         </FormItem>
-        <FormItem className={styles.downloadFormItem}>
+        {/*
+         <FormItem className={styles.downloadFormItem}>
           <div className={styles.downloadContainer}>
             <span onClick={this.handleToDownload} className={styles.download}>
               <Icon type="download" className={styles.downloadIcon} />
@@ -380,6 +381,7 @@ export default class NanXiaoLogin extends PureComponent {
             </span>
           </div>
         </FormItem>
+       */}
       </Form>
     );
   };
@@ -544,9 +546,9 @@ export default class NanXiaoLogin extends PureComponent {
             <div>
               <span>copyright©2019</span>
               <span>{unitName}</span>
-              <span style={{ marginLeft: '5px' }}>{global.VERSION}</span>
             </div>
             <div>
+              {/*
               <span>
                 运营支持：
                 {serviceSupport}
@@ -554,7 +556,7 @@ export default class NanXiaoLogin extends PureComponent {
               <span>
                 服务电话：
                 {servicePhone}
-              </span>
+              </span> */}
             </div>
           </div>
         </div>

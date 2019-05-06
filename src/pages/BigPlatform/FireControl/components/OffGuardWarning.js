@@ -32,9 +32,6 @@ function UnitCard(props) {
   );
 }
 
-// const list = [...Array(20).keys()].map(i => ({
-//   unit: '无锡晶安智慧科技有限公司',
-// }));
 
 export default class OffGuardWarning extends Component {
   handleClick = item => {

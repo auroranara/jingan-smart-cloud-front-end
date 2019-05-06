@@ -1,4 +1,5 @@
 import logo from '../src/assets/logo_jingan.svg';
+import fireLogo from '../src/assets/fire_logo.svg';
 import code from '../src/assets/jingan_download_code.png';
 import czeyLogo from '../src/assets/logo_czey.svg';
 import nanxiaoLogo from '../src/assets/logo_nanxiao.svg';
@@ -141,6 +142,10 @@ const configs = {
       'http://58.215.178.100:12080/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
   eye: {},
+  fire: {
+    projectShortName: '智慧消防云',
+    logo: fireLogo,
+  },
   xiaoyuan: {
     projectKey: 'v2_test',
     projectShortName: '校园智慧安全云',
