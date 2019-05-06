@@ -91,7 +91,7 @@ export default {
     ie: 11,
   },
   // 如果是演示环境 publicPath目录为xshow
-  publicPath: process.env.PROJECT_ENV === 'show' ? '/xshow/' : '/',
+  publicPath: process.env.PROJECT_ENV === 'show' ? '/xshow/' : '/acloud_new/',
   // publicPath: '/acloud_new/',
   theme: {
     'card-actions-background': '#f5f8fa',
