@@ -8,6 +8,7 @@ import {
   queryRolePermissions,
   getAppPermissionTree,
 } from '../services/role/role';
+import { queryDetail as queryRoleDetail } from '../services/role/commonRole';
 
 export default {
   namespace: 'role',
@@ -82,18 +83,16 @@ export default {
     },
     // 在账号菜单中(非当前的角色菜单)获取roles对应的权限
     *fetchRolePermissions({ payload, success, error }, { call, put }) {
-      const response = yield call(queryRolePermissions, payload);
-      if (response && response.code === 200) {
-        let rolePermissions = [];
-        let roleAppPermissions = [];
-        if (response.data && response.data.permissions)
-          rolePermissions = Array.from(new Set(response.data.permissions.split(',').filter(k => k)));
-        if (response.data && response.data.appPermissions)
-          roleAppPermissions = Array.from(new Set(response.data.appPermissions.split(',').filter(k => k)));
+      const response = yield call(queryRoleDetail, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        let { webPermissionIds, appPermissionIds } = data || {};
+        webPermissionIds = webPermissionIds || [];
+        appPermissionIds = appPermissionIds || [];
 
-        yield put({ type: 'saveRolePermissions', payload: rolePermissions });
-        yield put({ type: 'saveRoleAppPermissions', payload: roleAppPermissions });
-        success &&  success(rolePermissions, roleAppPermissions);
+        yield put({ type: 'saveRolePermissions', payload: webPermissionIds });
+        yield put({ type: 'saveRoleAppPermissions', payload: appPermissionIds });
+        success &&  success(webPermissionIds, appPermissionIds);
       }
       else
         error && error();
@@ -206,10 +205,7 @@ export default {
     },
     /* 获取权限树 */
     queryPermissionTree(state, { payload: permissionTree }) {
-      return {
-        ...state,
-        permissionTree,
-      };
+      return { ...state, permissionTree };
     },
     saveAppPermissionTree(state, action) {
       return { ...state, appPermissionTree: action.payload };

@@ -4,8 +4,10 @@ const { TreeNode } = TreeSelect;
 
 export const LIST_PAGE_SIZE = 24;
 
+export const MAI = 1; // 维保
 export const GOV = 2; // 政府
 export const OPE = 3; // 运营
+export const COM = 4; // 企事业
 
 export const COMMON_LIST_URL = '/role-authorization/commonRole/list';
 export const COMMON_DETAIL_URL = '/role-authorization/commonRole/detail';

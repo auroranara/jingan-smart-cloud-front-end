@@ -41,7 +41,7 @@ export default class CommonRoleDetail extends PureComponent {
     return (
       <RoleDetail
         type={0}
-        codes={codes.commonRole}
+        codes={codes.userRole}
         fetchUnitTypes={this.fetchUnitTypes}
         fetchDetail={this.fetchDetail}
         fetchPermissionTree={this.fetchPermissionTree}

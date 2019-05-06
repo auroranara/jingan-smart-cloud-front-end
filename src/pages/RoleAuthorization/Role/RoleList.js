@@ -327,9 +327,8 @@ export default class RoleList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            角色总数：
-            {total}{' '}
-            {unitName && <p>{unitName}</p>}
+            角色总数：{total}
+            {unitName && <p className={styles.companyName}>{unitName}</p>}
           </div>
         }
       >

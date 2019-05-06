@@ -37,8 +37,10 @@ export default class RoleHandler extends PureComponent {
       fetchPermissionTree,
       clearPermissionTree,
       clearDetail,
+      user: { currentUser: { unitType, unitName } },
     } = this.props;
 
+    const isPublic = type;
     const isAdmin = !companyId;
     if (!type && fetchUnits)
       this.lazyFetchUnits = _.debounce(fetchUnits, 300);
@@ -61,7 +63,12 @@ export default class RoleHandler extends PureComponent {
           this.setState({ unitType: +unitType });
         },
       });
-    } else { // 新增
+    } else if(!isPublic && !isAdmin){ // 新增,私有角色,非运营
+      fetchPermissionTree({ payload: companyId });
+      this.fetchInitUnits(unitType, unitName);
+      setFieldsValue({ unitType, companyId });
+      this.setState({ unitType: +unitType });
+    } else {
       clearDetail();
       clearPermissionTree();
     }

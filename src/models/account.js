@@ -56,7 +56,7 @@ export default {
     },
     unitTypes: [],
     accountStatuses: [],
-    unitIdes: [],
+    unitIds: [],
     roles: [],
     permissionTree: [],
     appPermissionTree: [],
@@ -364,7 +364,7 @@ export default {
     queryUnits(state, { payload }) {
       return {
         ...state,
-        unitIdes: payload,
+        unitIds: payload,
       };
     },
 

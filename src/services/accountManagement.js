@@ -52,9 +52,9 @@ export function checkAccountOrPhone(params) {
 }
 
 /* 获取角色列表 */
-export function queryRoles({ unitType, unitId }) {
+export function queryRoles(params) {
   // return request(`/acloud_new/v2/rolePermission/user/role?${stringify(params)}`);
-  return request(`/acloud_new/v2/role/getSelRoles/${unitType}${unitId ? `/${unitId}` : ''}`);
+  return request(`/acloud_new/v2/role/getSelRoles?${stringify(params)}`);
 }
 
 /* 查询执法证件种类 */

@@ -30,6 +30,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import styles from './AccountManagementList.less';
 import { AuthLink, AuthButton, AuthSpan } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
+import{ getListByUnitId } from './utils';
 
 const { TreeNode } = TreeSelect;
 // 标题
@@ -467,7 +468,7 @@ export default class accountManagementList extends React.Component {
   /* 渲染form表单 */
   renderForm() {
     const {
-      account: { unitTypes, unitIdes, userTypes, gavUserTypes },
+      account: { unitTypes, unitIds, userTypes, gavUserTypes },
       form: { getFieldDecorator },
       loading,
     } = this.props;
@@ -525,7 +526,7 @@ export default class accountManagementList extends React.Component {
                     filterOption={false}
                     style={{ width: 230 }}
                   >
-                    {unitIdes.map(item => (
+                    {unitIds.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.name}
                       </Option>
@@ -544,7 +545,7 @@ export default class accountManagementList extends React.Component {
                     // labelInValue
                     style={{ width: 230 }}
                   >
-                    {this.generateTressNode(unitIdes)}
+                    {this.generateTressNode(unitIds)}
                   </TreeSelect>
                 )}
               </FormItem>
@@ -607,44 +608,52 @@ export default class accountManagementList extends React.Component {
   /* 渲染列表 */
   renderList() {
     const {
+      user: { currentUser: { unitId } },
       account: { list },
     } = this.props;
+
+    const filteredList = getListByUnitId(list, unitId);
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
           rowKey="loginId"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
-          dataSource={list}
+          dataSource={filteredList}
           renderItem={item => {
             const { loginId, loginName, status } = item;
+            const actions = [
+              <AuthLink
+                code={codesMap.account.detail}
+                to={`/role-authorization/account-management/detail/${item.loginId}`}
+              >
+                查看
+              </AuthLink>,
+              <AuthLink
+                code={codesMap.account.edit}
+                to={`/role-authorization/account-management/edit/${item.loginId}`}
+              >
+                编辑
+              </AuthLink>,
+              <AuthLink
+                code={codesMap.account.addAssociatedUnit}
+                to={`/role-authorization/account-management/associated-unit/add/${
+                  item.loginId
+                }`}
+              >
+                关联单位
+              </AuthLink>,
+            ];
+
+            if (unitId) // 有单位id则不能再关联其他单位
+              actions.pop();
+
             return (
               <List.Item key={loginId}>
                 <Card
                   title={loginName}
                   className={styles.card}
-                  actions={[
-                    <AuthLink
-                      code={codesMap.account.detail}
-                      to={`/role-authorization/account-management/detail/${item.loginId}`}
-                    >
-                      查看
-                    </AuthLink>,
-                    <AuthLink
-                      code={codesMap.account.edit}
-                      to={`/role-authorization/account-management/edit/${item.loginId}`}
-                    >
-                      编辑
-                    </AuthLink>,
-                    <AuthLink
-                      code={codesMap.account.addAssociatedUnit}
-                      to={`/role-authorization/account-management/associated-unit/add/${
-                        item.loginId
-                      }`}
-                    >
-                      关联单位
-                    </AuthLink>,
-                  ]}
+                  actions={actions}
                   // extra={
                   //   <Button
                   //     onClick={() => {

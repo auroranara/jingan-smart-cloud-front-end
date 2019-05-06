@@ -46,14 +46,10 @@ export default class RoleDetail extends PureComponent {
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
-      type,
       account: { unitTypes },
-      user: { currentUser: { unitId } },
       role: { detail: { roleName, description, unitType, companyName } },
     } = this.props;
 
-    const isPublic = type;
-    const isAdmin = !unitId;
     const typeMap = unitTypes ? unitTypes.reduce((prev, next) => {
       const { id, label } = next;
       prev[id] = label;
@@ -65,7 +61,7 @@ export default class RoleDetail extends PureComponent {
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term="角色名称">{roleName || getEmptyData()}</Description>
           <Description term="角色类型">{typeMap[unitType] || getEmptyData()}</Description>
-          {!isPublic && isAdmin && <Description term="单位名称">{companyName || getEmptyData()}</Description>}
+          <Description term="单位名称">{companyName || getEmptyData()}</Description>
           <Description term="角色描述">{<div style={{ whiteSpace: 'pre-wrap' }}>{description}</div> || getEmptyData()}</Description>
         </DescriptionList>
       </Card>
@@ -144,11 +140,9 @@ export default class RoleDetail extends PureComponent {
     const {
       type,
       loading,
-      user: { currentUser: { unitId, unitName } },
     } = this.props;
 
     const isPublic = type;
-    const isAdmin = !unitId;
     const typeLabel = isPublic ? '公共' : '用户';
     const breadcrumbList = [
       {
@@ -175,9 +169,6 @@ export default class RoleDetail extends PureComponent {
       <PageHeaderLayout
         title={TITLE}
         breadcrumbList={breadcrumbList}
-        content={
-          !isPublic && !isAdmin ? <div>{unitName}</div> : null
-        }
       >
         <Spin spinning={loading}>
           {this.renderBasicInfo()}

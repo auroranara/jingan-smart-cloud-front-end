@@ -478,13 +478,13 @@ module.exports = env => {
                   component: './RoleAuthorization/AccountManagement/AccountManagementList',
                 },
                 {
-                  path: '/role-authorization/account-management/add',
+                  path: '/role-authorization/account-management/add', // 新增账号基本信息和第一个关联单位
                   code: 'roleAuthorization.accountManagement.add',
                   name: 'add',
                   component: './RoleAuthorization/AccountManagement/AccountManagementEdit',
                 },
                 {
-                  path: '/role-authorization/account-management/edit/:id',
+                  path: '/role-authorization/account-management/edit/:id', // 编辑账号基本信息
                   code: 'roleAuthorization.accountManagement.edit',
                   name: 'edit',
                   component: './RoleAuthorization/AccountManagement/AccountManagementEdit',
@@ -496,13 +496,13 @@ module.exports = env => {
                   component: './RoleAuthorization/AccountManagement/AccountManagementDetail',
                 },
                 {
-                  path: '/role-authorization/account-management/associated-unit/add/:id',
+                  path: '/role-authorization/account-management/associated-unit/add/:id', // 新增关联单位
                   code: 'roleAuthorization.accountManagement.associatedUnit.add',
                   name: 'addAssociatedUnit',
                   component: './RoleAuthorization/AccountManagement/AssociatedUnit',
                 },
                 {
-                  path: '/role-authorization/account-management/associated-unit/edit/:userId',
+                  path: '/role-authorization/account-management/associated-unit/edit/:userId', // 编辑关联单位
                   code: 'roleAuthorization.accountManagement.associatedUnit.edit',
                   name: 'editAssociatedUnit',
                   component: './RoleAuthorization/AccountManagement/AssociatedUnit',
