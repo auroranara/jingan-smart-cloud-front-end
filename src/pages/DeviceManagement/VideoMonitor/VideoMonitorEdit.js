@@ -9,6 +9,8 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 // import { numReg } from '@/utils/validate';
 import Coordinate from '@/components/Coordinate';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
+import codes from '@/utils/codes';
+import { hasAuthority } from '@/utils/customAuth';
 import styles from './VideoMonitorEdit.less';
 
 const FormItem = Form.Item;
@@ -507,7 +509,7 @@ export default class VideoMonitorEdit extends PureComponent {
       match: { params: { id } },
       safety: { detail: { safetyFourPicture } },
       company: { detail: { data: { fireIchnographyUrl } } },
-      user: { currentUser: { unitType, companyName: defaultName } },
+      user: { currentUser: { unitType, companyName: defaultName,permissionCodes } },
       personnelPosition: { map: { buildings = [], floors = [] } },
     } = this.props;
     const {
@@ -523,7 +525,7 @@ export default class VideoMonitorEdit extends PureComponent {
 
     const fireImgs = fireIchnographyUrl ? JSON.parse(fireIchnographyUrl) : [];
     const buildingFloor = getFieldValue('buildingFloor') || {}
-
+    const addBuildingAuth=hasAuthority(codes.company.buildingsInfo.add,permissionCodes)
     return (
       <Card className={styles.card} bordered={false}>
         <Form hideRequiredMark style={{ marginTop: 8 }}>
@@ -602,7 +604,7 @@ export default class VideoMonitorEdit extends PureComponent {
                     ))}
                   </Select>
                 </div>
-                <Button type="primary" onClick={this.handleToAddBuilding}>新增建筑楼层</Button>
+                <Button type="primary" disabled={!addBuildingAuth} onClick={this.handleToAddBuilding}>新增建筑楼层</Button>
               </Fragment>
             )}
           </FormItem>

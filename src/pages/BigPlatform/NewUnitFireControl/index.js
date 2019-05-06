@@ -5,6 +5,7 @@ import moment from 'moment';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import VideoSurveillance from './VideoSurveillance';
 import VideoPlay from '../NewFireControl/section/VideoPlay';
+import NewVideoPlay from '../NewFireControl/section/NewVideoPlay';
 import PointInspectionCount from './PointInspectionCount';
 import CompanyInfo from './CompanyInfo';
 import Messages from './Messages';
@@ -480,6 +481,7 @@ export default class App extends PureComponent {
     // this.pollTimer = setInterval(this.polling, DELAY);
     // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
+    dispatch({ type: 'monitor/fetchCameraTree', payload: { company_id: companyId } });
 
     this.fetchWaterSystem('101');
   }
@@ -1230,7 +1232,7 @@ export default class App extends PureComponent {
       match: {
         params: { unitId: companyId },
       },
-      monitor: { allCamera },
+      monitor: { allCamera, cameraTree },
       newUnitFireControl: {
         fireAlarmSystem: {
           fire_state = 0,
@@ -1428,13 +1430,21 @@ export default class App extends PureComponent {
             </div>
           </div>
         </div>
-        <VideoPlay
+        <NewVideoPlay
+          showList={showVideoList}
+          videoList={cameraTree}
+          visible={videoVisible}
+          keyId={videoKeyId} // keyId
+          handleVideoClose={this.handleVideoClose}
+          isTree={true}
+        />
+        {/* <VideoPlay
           showList={showVideoList}
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
-        />
+        /> */}
         <VideoPlay
           showList={true}
           videoList={videoList}
