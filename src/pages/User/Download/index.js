@@ -11,7 +11,7 @@ import styles from './index.less';
  * author: sunkai
  * date: 2019年01月25日
  */
-export default function NanXiaoDownload({
+export default function Download({
   location: {
     query: { type: configType },
     search,
@@ -79,7 +79,7 @@ export default function NanXiaoDownload({
               <div
                 className={styles.loginButton}
                 onClick={() => {
-                  router.push('/nanxiao/user/login');
+                  router.push('/user/login');
                 }}
               >
                 登录
