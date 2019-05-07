@@ -152,18 +152,16 @@ export default {
     /* 删除角色 */
     *remove({ payload, success, error }, { call, put }) {
       const response = yield call(deleteRole, payload);
-      if (response.code === 200) {
+      const { code, msg } = response || {};
+      if (code === 200) {
         yield put({
           type: 'deleteRole',
           payload: payload.id,
         });
-        if (success) {
-          success();
-        }
+        success && success();
       }
-      else if (error) {
-        error();
-      }
+      else
+        error && error(msg);
     },
   },
 

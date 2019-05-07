@@ -228,6 +228,7 @@ export default class AccountManagementEdit extends PureComponent {
       fetchRoles({
         // 这里本该获取选项后再和数组第一个对应，由于第一个已固定为企事业单位，所以这里先固定
         payload: { unitType: COM },
+        success: this.genRolesSuccess(COM),
         error: goToException,
       });
       // 获取执法证件种类
