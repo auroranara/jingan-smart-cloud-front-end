@@ -648,6 +648,174 @@ export default class AccountManagementEdit extends PureComponent {
     }
   };
 
+  // 勾选服务单位
+  onSerCheck = serCheckedKeys => {
+    const {
+      form: { setFieldsValue, getFieldValue },
+      account: {
+        maintenanceTree: { list = [] },
+        maintenanceSerTree = [], // 服务单位公司列表
+        maintenanceSubTree = [], // 分公司列表
+      },
+    } = this.props;
+    // 因为服务单位理论上没有children，所以判断length
+    const isCheckAllSer = maintenanceSerTree.length === serCheckedKeys.length;
+    // 如果分公司无数据，默认当作全选状态
+    const isCheckAllSub = maintenanceSubTree.length === 0 || getFieldValue('isCheckAllSub');
+    const isCheckAll = isCheckAllSer && isCheckAllSub;
+    let fields = { serCheckedKeys, isCheckAll, isCheckAllSer };
+    maintenanceSubTree.length > 0 && Object.assign(fields, { isCheckAllSub });
+    setFieldsValue(fields);
+    this.setState({ checkedRootKey: isCheckAll ? list[0].key : undefined });
+  };
+
+  // 勾选分公司及服务单位
+  onSubCheck = subCheckedKeys => {
+    const {
+      form: { setFieldsValue, getFieldValue },
+      account: {
+        maintenanceTree: { list = [] },
+        maintenanceSerTree = [],
+        maintenanceSubTree = [], // 分公司单位列表
+      },
+    } = this.props;
+    const subKeys = maintenanceSubTree.map(item => item.key);
+    const isCheckAllSer = getFieldValue('isCheckAllSer');
+    const isCheckAllSub = this.isAContentsB(subCheckedKeys, subKeys);
+    const isCheckAll = isCheckAllSer && isCheckAllSub;
+    let fields = { subCheckedKeys, isCheckAll, isCheckAllSub };
+    maintenanceSerTree.length > 0 && Object.assign(fields, { isCheckAllSer });
+    setFieldsValue(fields);
+    this.setState({ checkedRootKey: isCheckAll ? list[0].key : undefined });
+  };
+
+  isAContentsB = (a, b) => {
+    for (const item of b) {
+      if (!a.includes(item)) return false;
+    }
+    return true;
+  };
+
+  // 展开分公司及服务单位
+  onSubExpand = subExpandedKeys => {
+    this.setState({
+      subExpandedKeys,
+    });
+  };
+
+  // 判断两个字符串数组内容是否一样
+  isArrContentSame = (first, second) => {
+    return first.sort().join(',') === second.sort().join(',');
+  };
+
+  // 数据权限服务单位搜索
+  onSerTreeSearch = (value, tree) => {
+    this.setState({
+      searchSerValue: value,
+    });
+  };
+
+  // 数据权限子公司及服务单位搜索
+  onSubTreeSearch = (value, tree) => {
+    const subExpandedKeys = getParentKeys(tree, value);
+
+    this.setState({
+      subExpandedKeys,
+      searchSubValue: value,
+    });
+  };
+
+  // handleTransferChange = (nextTargetKeys, direction, moveKeys) => {
+  //   const {
+  //     form: { setFieldsValue },
+  //   } = this.props;
+  //   setFieldsValue({ roleIds: nextTargetKeys });
+
+  //   // // 穿梭框中有值
+  //   // if (nextTargetKeys.length)
+  //   //   this.fetchRolePermissions(nextTargetKeys);
+  //   // // 穿梭框中没有值时，不需要请求服务器，本地清空即可
+  //   // else
+  //   //   this.clearRolePermissions();
+  // };
+
+  handleRoleChange = value => {
+    this.fetchRolePermissions(value);
+  };
+
+  clearRolePermissions = unitType => {
+    const { dispatch, form: { setFieldsValue } } = this.props;
+    const isNotAdmin = unitType !== OPE;
+
+    const values = { permissions: this.authTreeCheckedKeys };
+      this.permissions = [];
+      dispatch({ type: 'role/saveRolePermissions', payload: [] });
+      if (isNotAdmin) {
+        values.appPermissions = this.appAuthTreeCheckedKeys;
+        this.appPermissions = [];
+        dispatch({ type: 'role/saveRoleAppPermissions', payload: [] });
+      }
+      setFieldsValue(values);
+  };
+
+  fetchRolePermissions = id => {
+    const { dispatch } = this.props;
+    const { unitTypeChecked } = this.state;
+    const isNotAdmin = unitTypeChecked !== OPE;
+
+    // ids不为数组或者ids的长度为0，则本地清空
+    if (!id)
+      this.clearRolePermissions(unitTypeChecked);
+    else
+      dispatch({
+        type: 'role/fetchRolePermissions',
+        payload: { id },
+        success: (permissions, appPermissions) => {
+          this.permissions = permissions;
+          this.setPermissions();
+          if (isNotAdmin) {
+            this.appPermissions = appPermissions;
+            this.setAppPermissions();
+          }
+        },
+      });
+  };
+
+  setPermissions = () => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({
+      permissions: removeParentKey(
+        mergeArrays(this.permissions, this.authTreeCheckedKeys),
+        this.idMap
+      ),
+    });
+  };
+
+  // 当获取树和获取详情接口都返回时，才可以设值，但先后顺序没法控制，所以在两个接口返回时都调用当前函数，且在函数中通过loading来判断，是否两个接口都返回了，都返回了后再设值
+  setAppPermissions = () => {
+    const {
+      loadingEffects,
+      form: { setFieldsValue },
+    } = this.props;
+    const isloaded = !loadingEffects['account/fetchRoles'] && !loadingEffects['role/fetchDetail'];
+    isloaded && setFieldsValue({
+      appPermissions: removeParentKey(
+        mergeArrays(this.appPermissions, this.appAuthTreeCheckedKeys),
+        this.appIdMap
+      ),
+    });
+  };
+
+  handleChangeAuthTreeCheckedKeys = checkedKeys => {
+    this.authTreeCheckedKeys = checkedKeys;
+  };
+
+  handleChangeAppAuthTreeCheckedKeys = checkedKeys => {
+    this.appAuthTreeCheckedKeys = checkedKeys;
+  };
+
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
@@ -659,7 +827,6 @@ export default class AccountManagementEdit extends PureComponent {
             phoneNumber,
             unitType,
             accountStatus,
-            userType,
             unitId,
             unitName,
             documentTypeId,
@@ -670,8 +837,6 @@ export default class AccountManagementEdit extends PureComponent {
         unitTypes,
         accountStatuses,
         unitIds,
-        userTypes,
-        gavUserTypes,
         documentTypeIds,
         departments,
       },
@@ -1041,174 +1206,6 @@ export default class AccountManagementEdit extends PureComponent {
     );
   }
 
-  // 勾选服务单位
-  onSerCheck = serCheckedKeys => {
-    const {
-      form: { setFieldsValue, getFieldValue },
-      account: {
-        maintenanceTree: { list = [] },
-        maintenanceSerTree = [], // 服务单位公司列表
-        maintenanceSubTree = [], // 分公司列表
-      },
-    } = this.props;
-    // 因为服务单位理论上没有children，所以判断length
-    const isCheckAllSer = maintenanceSerTree.length === serCheckedKeys.length;
-    // 如果分公司无数据，默认当作全选状态
-    const isCheckAllSub = maintenanceSubTree.length === 0 || getFieldValue('isCheckAllSub');
-    const isCheckAll = isCheckAllSer && isCheckAllSub;
-    let fields = { serCheckedKeys, isCheckAll, isCheckAllSer };
-    maintenanceSubTree.length > 0 && Object.assign(fields, { isCheckAllSub });
-    setFieldsValue(fields);
-    this.setState({ checkedRootKey: isCheckAll ? list[0].key : undefined });
-  };
-
-  // 勾选分公司及服务单位
-  onSubCheck = subCheckedKeys => {
-    const {
-      form: { setFieldsValue, getFieldValue },
-      account: {
-        maintenanceTree: { list = [] },
-        maintenanceSerTree = [],
-        maintenanceSubTree = [], // 分公司单位列表
-      },
-    } = this.props;
-    const subKeys = maintenanceSubTree.map(item => item.key);
-    const isCheckAllSer = getFieldValue('isCheckAllSer');
-    const isCheckAllSub = this.isAContentsB(subCheckedKeys, subKeys);
-    const isCheckAll = isCheckAllSer && isCheckAllSub;
-    let fields = { subCheckedKeys, isCheckAll, isCheckAllSub };
-    maintenanceSerTree.length > 0 && Object.assign(fields, { isCheckAllSer });
-    setFieldsValue(fields);
-    this.setState({ checkedRootKey: isCheckAll ? list[0].key : undefined });
-  };
-
-  isAContentsB = (a, b) => {
-    for (const item of b) {
-      if (!a.includes(item)) return false;
-    }
-    return true;
-  };
-
-  // 展开分公司及服务单位
-  onSubExpand = subExpandedKeys => {
-    this.setState({
-      subExpandedKeys,
-    });
-  };
-
-  // 判断两个字符串数组内容是否一样
-  isArrContentSame = (first, second) => {
-    return first.sort().join(',') === second.sort().join(',');
-  };
-
-  // 数据权限服务单位搜索
-  onSerTreeSearch = (value, tree) => {
-    this.setState({
-      searchSerValue: value,
-    });
-  };
-
-  // 数据权限子公司及服务单位搜索
-  onSubTreeSearch = (value, tree) => {
-    const subExpandedKeys = getParentKeys(tree, value);
-
-    this.setState({
-      subExpandedKeys,
-      searchSubValue: value,
-    });
-  };
-
-  // handleTransferChange = (nextTargetKeys, direction, moveKeys) => {
-  //   const {
-  //     form: { setFieldsValue },
-  //   } = this.props;
-  //   setFieldsValue({ roleIds: nextTargetKeys });
-
-  //   // // 穿梭框中有值
-  //   // if (nextTargetKeys.length)
-  //   //   this.fetchRolePermissions(nextTargetKeys);
-  //   // // 穿梭框中没有值时，不需要请求服务器，本地清空即可
-  //   // else
-  //   //   this.clearRolePermissions();
-  // };
-
-  handleRoleChange = value => {
-    this.fetchRolePermissions(value);
-  };
-
-  clearRolePermissions = unitType => {
-    const { dispatch, form: { setFieldsValue } } = this.props;
-    const isNotAdmin = unitType !== OPE;
-
-    const values = { permissions: this.authTreeCheckedKeys };
-      this.permissions = [];
-      dispatch({ type: 'role/saveRolePermissions', payload: [] });
-      if (isNotAdmin) {
-        values.appPermissions = this.appAuthTreeCheckedKeys;
-        this.appPermissions = [];
-        dispatch({ type: 'role/saveRoleAppPermissions', payload: [] });
-      }
-      setFieldsValue(values);
-  };
-
-  fetchRolePermissions = id => {
-    const { dispatch } = this.props;
-    const { unitTypeChecked } = this.state;
-    const isNotAdmin = unitTypeChecked !== OPE;
-
-    // ids不为数组或者ids的长度为0，则本地清空
-    if (!id)
-      this.clearRolePermissions(unitTypeChecked);
-    else
-      dispatch({
-        type: 'role/fetchRolePermissions',
-        payload: { id },
-        success: (permissions, appPermissions) => {
-          this.permissions = permissions;
-          this.setPermissions();
-          if (isNotAdmin) {
-            this.appPermissions = appPermissions;
-            this.setAppPermissions();
-          }
-        },
-      });
-  };
-
-  setPermissions = () => {
-    const {
-      form: { setFieldsValue },
-    } = this.props;
-    setFieldsValue({
-      permissions: removeParentKey(
-        mergeArrays(this.permissions, this.authTreeCheckedKeys),
-        this.idMap
-      ),
-    });
-  };
-
-  // 当获取树和获取详情接口都返回时，才可以设值，但先后顺序没法控制，所以在两个接口返回时都调用当前函数，且在函数中通过loading来判断，是否两个接口都返回了，都返回了后再设值
-  setAppPermissions = () => {
-    const {
-      loadingEffects,
-      form: { setFieldsValue },
-    } = this.props;
-    const isloaded = !loadingEffects['account/fetchRoles'] && !loadingEffects['role/fetchDetail'];
-    isloaded && setFieldsValue({
-      appPermissions: removeParentKey(
-        mergeArrays(this.appPermissions, this.appAuthTreeCheckedKeys),
-        this.appIdMap
-      ),
-    });
-  };
-
-  handleChangeAuthTreeCheckedKeys = checkedKeys => {
-    this.authTreeCheckedKeys = checkedKeys;
-  };
-
-  handleChangeAppAuthTreeCheckedKeys = checkedKeys => {
-    this.appAuthTreeCheckedKeys = checkedKeys;
-  };
-
   /* 渲染角色权限信息 */
   renderRolePermission() {
     const {
@@ -1232,7 +1229,7 @@ export default class AccountManagementEdit extends PureComponent {
     const { subExpandedKeys, searchSerValue, searchSubValue, unitTypeChecked } = this.state;
 
     return (
-      <Card title="系统角色权限配置" className={styles.card} bordered={false}>
+      <Card title="角色权限配置" className={styles.card} bordered={false}>
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col sm={24} md={12} lg={8}>
