@@ -7,7 +7,7 @@ import Ellipsis from '@/components/Ellipsis';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import InlineForm from '../../BaseInfo/Company/InlineForm';
-import { hasAuthority } from '@/utils/customAuth';
+import { hasAuthority, AuthSpan } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
 import styles from '../Role/Role.less';
@@ -38,7 +38,7 @@ const {
 } = urls;
 // 获取code
 const {
-  role: { detail: detailCode, edit: editCode, add: addCode },
+  role: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode },
 } = codes;
 
 @connect(
@@ -99,7 +99,6 @@ const {
 export default class RoleList extends PureComponent {
   state = {
     formData: {},
-    // isInit: false,
   };
 
   componentDidMount() {
@@ -122,11 +121,6 @@ export default class RoleList extends PureComponent {
         pageNum: 1,
         pageSize,
       },
-      // success: () => {
-      //   this.setState({
-      //     isInit: true,
-      //   });
-      // },
       error: () => {
         goToException();
       },
@@ -183,13 +177,11 @@ export default class RoleList extends PureComponent {
         pageNum: 1,
       },
       success: () => {
-        // message.success('查询成功', 1);
         this.setState({
           formData: values,
         });
       },
       error: () => {
-        // message.success('查询失败', 1);
         goToException();
       },
     });
@@ -212,20 +204,18 @@ export default class RoleList extends PureComponent {
         pageNum: 1,
       },
       success: () => {
-        // message.success('重置成功', 1);
         this.setState({
           formData: {},
         });
       },
       error: () => {
-        // message.success('重置失败', 1);
         goToException();
       },
     });
   };
 
   /* 显示删除确认提示框 */
-  handleShowDeleteConfirm = id => {
+  genHandleShowDeleteConfirm = id => e => {
     const { remove } = this.props;
     Modal.confirm({
       title: '你确定要删除这个角色吗?',
@@ -240,8 +230,8 @@ export default class RoleList extends PureComponent {
           success: () => {
             message.success('删除成功！');
           },
-          error: () => {
-            message.error('删除失败，请联系管理人员！');
+          error: msg => {
+            message.error(`删除失败，${msg}！`);
           },
         });
       },
@@ -282,7 +272,7 @@ export default class RoleList extends PureComponent {
         id: 'unitType',
         render() {
           return (
-            <Select placeholder="请选择单位类型">
+            <Select placeholder="请选择单位类型" allowClear>
               {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
             </Select>
           );
@@ -380,7 +370,7 @@ export default class RoleList extends PureComponent {
                     >
                       编辑
                     </Link>,
-                    <span>删除</span>,
+                    <AuthSpan code={deleteCode} onClick={this.genHandleShowDeleteConfirm(id)}>删除</AuthSpan>,
                   ]}
                 // extra={
                 //   <Button
@@ -427,7 +417,6 @@ export default class RoleList extends PureComponent {
         },
       },
     } = this.props;
-    const { isInit } = this.state;
 
     return (
       <PageHeaderLayout
