@@ -17,13 +17,18 @@ const { TreeNode } = TreeSelect;
 export default class RoleList extends PureComponent {
   state = {
     formData: {},
+    unitType: undefined,
   };
 
   componentDidMount() {
-    const { fetchUnitTypes } = this.props;
+    const { type, fetchUnitTypes, fetchPermissionTree, user: { currentUser: { unitId } } } = this.props;
 
+    const isPublic = type;
     fetchUnitTypes();
     this.getRoleList({ pageNum: 1 });
+
+    if (!isPublic && unitId)
+      fetchPermissionTree({ payload: unitId });
   }
 
   /* 滚动加载 */
@@ -129,6 +134,7 @@ export default class RoleList extends PureComponent {
 
   handleUnitTypeChange = id => {
     const { fetchPermissionTree, clearPermissionTree } = this.props;
+    this.setState({ unitType: id });
     if (id)
       fetchPermissionTree({ payload: id });
     else
@@ -143,11 +149,12 @@ export default class RoleList extends PureComponent {
       companyId,
       codes: { add: addCode },
       account: { unitTypes },
-      role: { permissionTree },
+      role: { permissionTree, appPermissionTree },
       user: {
         currentUser: { permissionCodes },
       },
     } = this.props;
+    const { unitType } = this.state;
 
     const isPublic = type;
     const isAdmin = !companyId;
@@ -175,7 +182,7 @@ export default class RoleList extends PureComponent {
     /* 表单字段 */
     const fields = [
       {
-        id: 'name',
+        id: 'roleName',
         render() {
           return <Input placeholder="请输入角色名称" />;
         },
@@ -189,10 +196,27 @@ export default class RoleList extends PureComponent {
               allowClear
               style={{ width: '100%' }}
               dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-              placeholder="请选择权限"
+              placeholder="请选择WEB权限"
               getPopupContainer={getRootChild}
             >
               {this.renderTreeNodes(permissionTree)}
+            </TreeSelect>
+          );
+        },
+        transform,
+      },
+      {
+        id: 'appPermissionId',
+        render: () => {
+          return (
+            <TreeSelect
+              allowClear
+              style={{ width: '100%' }}
+              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+              placeholder="请选择APP权限"
+              getPopupContainer={getRootChild}
+            >
+              {this.renderTreeNodes(appPermissionTree)}
             </TreeSelect>
           );
         },
@@ -205,6 +229,9 @@ export default class RoleList extends PureComponent {
 
     if (isAdmin)
       fields.unshift(unitTypeField);
+
+    if (+unitType === 3)
+      fields.pop();
 
     const hasAddAuthority = hasAuthority(addCode, permissionCodes); // 是否有新增权限
 
