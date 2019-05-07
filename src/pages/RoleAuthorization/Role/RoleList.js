@@ -8,7 +8,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import InlineForm from '../../BaseInfo/Company/InlineForm';
 import { hasAuthority, AuthSpan } from '@/utils/customAuth';
 import styles from './Role.less';
-import { LIST_PAGE_SIZE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from './utils';
+import { OPE, LIST_PAGE_SIZE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from './utils';
 
 const { Option } = Select;
 const { TreeNode } = TreeSelect;
@@ -30,6 +30,8 @@ export default class RoleList extends PureComponent {
     if (!isPublic && unitId)
       fetchPermissionTree({ payload: unitId });
   }
+
+  form = null;
 
   /* 滚动加载 */
   handleLoadMore = () => {
@@ -135,6 +137,7 @@ export default class RoleList extends PureComponent {
   handleUnitTypeChange = id => {
     const { fetchPermissionTree, clearPermissionTree } = this.props;
     this.setState({ unitType: id });
+    this.form.setFieldsValue({ queryWebPermissionId: undefined, queryAppPermissionId: undefined });
     if (id)
       fetchPermissionTree({ payload: id });
     else
@@ -189,7 +192,7 @@ export default class RoleList extends PureComponent {
         transform,
       },
       {
-        id: 'permissionId',
+        id: 'queryWebPermissionId',
         render: () => {
           return (
             <TreeSelect
@@ -206,7 +209,7 @@ export default class RoleList extends PureComponent {
         transform,
       },
       {
-        id: 'appPermissionId',
+        id: 'queryAppPermissionId',
         render: () => {
           return (
             <TreeSelect
@@ -230,7 +233,7 @@ export default class RoleList extends PureComponent {
     if (isAdmin)
       fields.unshift(unitTypeField);
 
-    if (+unitType === 3)
+    if (+unitType === OPE)
       fields.pop();
 
     const hasAddAuthority = hasAuthority(addCode, permissionCodes); // 是否有新增权限
@@ -238,6 +241,7 @@ export default class RoleList extends PureComponent {
     return (
       <Card>
         <InlineForm
+          ref={form => { this.form = form; }}
           fields={fields}
           gutter={{ lg: 48, md: 24 }}
           action={

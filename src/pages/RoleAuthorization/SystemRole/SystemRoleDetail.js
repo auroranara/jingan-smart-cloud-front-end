@@ -27,8 +27,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '权限管理',
-    name: '权限管理',
+    title: '角色权限',
+    name: '角色权限',
   },
   {
     title: '系统角色',

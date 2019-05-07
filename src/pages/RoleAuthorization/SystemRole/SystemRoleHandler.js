@@ -41,11 +41,17 @@ const {
         ...action,
       });
     },
-    // 获取权限树
+    // 获取WEB权限树
     fetchPermissionTree() {
       dispatch({
         type: 'role/fetchPermissionTree',
       });
+    },
+    // 获取APP权限树
+    fetchAppPermissionTree() {
+      dispatch({
+        type: 'role/fetchAppPermissionTree',
+      })
     },
     // 新增角色
     insertRole(action) {
@@ -87,8 +93,8 @@ export default class RoleHandler extends PureComponent {
       dispatch,
       fetchDetail,
       fetchPermissionTree,
+      fetchAppPermissionTree,
       clearDetail,
-      role: { permissionTree },
       match: {
         params: { id },
       },
@@ -99,59 +105,15 @@ export default class RoleHandler extends PureComponent {
       // 根据id获取详情
       fetchDetail({
         payload: { id },
-        success: detail => {
-          const type = detail && detail.sysRole ? detail.sysRole.unitType : undefined;
-          type && +type !== 3 ? this.fetchAppTree(type, tree => this.initialAppPermissionTree = tree) : dispatch({ type: 'role/saveAppPermissionTree', payload: [] });
-          this.setState({ unitType: type ? +type : type });
-        },
       });
     } else {
       // 清空详情
       clearDetail();
     }
     // 获取WEB权限树
-    if (permissionTree.length === 0) {
-      fetchPermissionTree();
-    }
+    fetchPermissionTree();
+    fetchAppPermissionTree();
   }
-
-  initialAppPermissionTree = [];
-
-  handleTreeTypeChange = value => {
-    const {
-      form: { setFieldsValue },
-      role: {
-        detail: {
-          appPermissions,
-          sysRole: { unitType },
-        },
-      },
-    } = this.props;
-
-    this.setState({ unitType: +value });
-
-    this.fetchAppTree(
-      value,
-      // 在model变化前，先清空值，不然会报warning
-      () => { setFieldsValue({ appPermissions: undefined }); },
-      // model变化后再设置值，不然当先设置值时，就会报warning，且model后变化，就没办法正确设置上值了
-      () => {
-        if (+value === +unitType) {
-          const appValue = appPermissions ? uncheckParent(this.initialAppPermissionTree, appPermissions) : [];
-          setFieldsValue({ appPermissions: appValue });
-        }
-      }
-    );
-  };
-
-  fetchAppTree = (type, callback, callbackLast) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'role/fetchAppPermissionTree',
-      callback,
-      callbackLast,
-    });
-  };
 
   /* 提交 */
   handleSubmit = () => {
@@ -249,11 +211,8 @@ export default class RoleHandler extends PureComponent {
               initialValue: unitType ? +unitType : unitType,
               rules: [{ required: true, message: '请选择角色类型' }],
             })(
-              <Select
-                // disabled={!!id}
-                onChange={this.handleTreeTypeChange}
-              >
-                {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
+              <Select>
+                {sortedUnitTypes.map(({ id, label }) => <Option key={id} value={id}>{label}</Option>)}
               </Select>
             )}
           </Form.Item>
@@ -321,10 +280,10 @@ export default class RoleHandler extends PureComponent {
         appPermissionTree,
         detail: { permissions, appPermissions },
       },
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
     } = this.props;
-    const { unitType } = this.state;
 
+    const unitType = getFieldValue('unitType');
     const value = permissions && uncheckParent(permissionTree, permissions);
     const appValue = appPermissions ? uncheckParent(appPermissionTree, appPermissions) : [];
     const tree = sortTree(permissionTree);
@@ -359,7 +318,7 @@ export default class RoleHandler extends PureComponent {
               // ],
             })(<Tree checkable>{this.renderTreeNodes(tree)}</Tree>)}
           </Form.Item>
-          {unitType !== 3 && (
+          {+unitType !== 3 && (
             <Form.Item
               label="APP权限树"
               style={INLINE_FORM_STYLE}
@@ -439,8 +398,8 @@ export default class RoleHandler extends PureComponent {
         href: '/',
       },
       {
-        title: '权限管理',
-        name: '权限管理',
+        title: '角色权限',
+        name: '角色权限',
       },
       {
         title: '系统角色',

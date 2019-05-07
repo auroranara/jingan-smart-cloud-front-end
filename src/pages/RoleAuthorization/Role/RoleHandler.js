@@ -87,6 +87,7 @@ export default class RoleHandler extends PureComponent {
       },
     } = this.props;
 
+    setFieldsValue({ companyId: undefined });
     this.setState({ unitType: +value });
 
     this.fetchInitUnits(value);

@@ -31,6 +31,7 @@ import styles from './AccountManagementList.less';
 import { AuthLink, AuthButton, AuthSpan } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
 import{ getListByUnitId } from './utils';
+import { MAI, GOV, OPE, COM } from '@/pages/RoleAuthorization/Role/utils';
 
 const { TreeNode } = TreeSelect;
 // 标题
@@ -58,16 +59,6 @@ const pageSize = 18;
 
 // 默认的所属单位长度
 const defaultPageSize = 20;
-
-// 默认表单值
-// const defaultFormData = {
-//   loginName: undefined,
-//   userName: undefined,
-//   phoneNumber: undefined,
-//   unitType: undefined,
-//   unitId: undefined,
-//   // accountStatus: undefined,
-// };
 
 /* 账号状态 */
 const statusList = {
@@ -119,9 +110,6 @@ const getEmptyData = () => {
         ...action,
       });
     },
-    /* goToDetail(url) {
-      dispatch(routerRedux.push(url));
-    }, */
     saveAccounts(action) {
       dispatch({
         type: 'account/saveAccounts',
@@ -174,83 +162,80 @@ export default class accountManagementList extends React.Component {
       modalVisible: false,
       associatedUnits: [],
       currentLoginId: null,
-      unitTypeChecked: 4,
+      unitTypeChecked: undefined,
     };
   }
 
   // 生命周期函数
   componentDidMount() {
     const {
-      fetch,
       fetchOptions,
-      fetchUnitsFuzzy,
-      // fetchGavUserTypes,
       fetchUserType,
-      account: { searchInfo },
-      form: { setFieldsValue },
     } = this.props;
 
-    // fetchGavUserTypes()
-    fetchUserType({
-      success: () => {},
-    });
-    // 获取单位类型和账户状态
-    fetchOptions({
-      success: ({ unitType }) => {
-        const selectedUnitType =
-          (searchInfo && searchInfo.unitType) ||
-          (unitType && unitType.length && unitType[0].id) ||
-          undefined;
-        this.setState({ unitTypeChecked: selectedUnitType });
-
-        // 如果有搜索条件，则填入并所属单位和账号列表
-        if (searchInfo) {
-          const { unitId: { key } = {}, ...other } = searchInfo;
-          selectedUnitType === 2
-            ? fetchUnitsFuzzy({
-                payload: { unitType: 2 },
-              })
-            : fetchUnitsFuzzy({
-                payload: {
-                  unitType: selectedUnitType,
-                  pageNum: 1,
-                  pageSize: defaultPageSize,
-                },
-              });
-          setFieldsValue(searchInfo);
-          fetch({
-            payload: {
-              pageSize,
-              pageNum: 1,
-              unitId: key || null,
-              ...other,
-            },
-          });
-        } else {
-          fetchUnitsFuzzy({
-            payload: {
-              unitType: selectedUnitType,
-              pageNum: 1,
-              pageSize: defaultPageSize,
-            },
-          });
-          fetch({
-            payload: {
-              pageSize,
-              pageNum: 1,
-              // 初始获取企事业主页的列表
-              unitType: 4,
-            },
-          });
-        }
-      },
-    });
+    fetchUserType();
+    fetchOptions(); // 获取单位类型和账户状态
+    this.getInitValues();
   }
 
   componentWillUnmount() {
     const { initPageNum } = this.props;
     initPageNum();
   }
+
+  getInitValues = () => {
+    const {
+      fetch,
+      fetchUnitsFuzzy,
+      account: { searchInfo },
+      form: { setFieldsValue },
+    } = this.props;
+
+    let selectedUnitType;
+    if (searchInfo) // 上次缓存在model里的筛选条件
+      selectedUnitType = searchInfo.unitType;
+
+    this.setState({ unitTypeChecked: selectedUnitType });
+
+    // 如果有搜索条件，则填入并所属单位和账号列表
+    if (searchInfo) {
+      const { unitId: { key } = {}, ...other } = searchInfo;
+      selectedUnitType === GOV
+        ? fetchUnitsFuzzy({
+            payload: { unitType: GOV },
+          })
+        : fetchUnitsFuzzy({
+            payload: {
+              unitType: selectedUnitType,
+              pageNum: 1,
+              pageSize: defaultPageSize,
+            },
+          });
+      setFieldsValue(searchInfo);
+      fetch({
+        payload: {
+          pageSize,
+          pageNum: 1,
+          unitId: key || null,
+          ...other,
+        },
+      });
+    } else { // 最初没有选择任何条件的状态
+      fetchUnitsFuzzy({
+        payload: {
+          unitType: selectedUnitType,
+          pageNum: 1,
+          pageSize: defaultPageSize,
+        },
+      });
+      fetch({
+        payload: {
+          pageSize,
+          pageNum: 1,
+        },
+      });
+    }
+  };
 
   /* 去除输入框里左右两边空白 */
   handleTrim = e => e.target.value.trim();
@@ -264,8 +249,6 @@ export default class accountManagementList extends React.Component {
     } = this.props;
     const data = getFieldsValue();
     const { unitId: { key } = {}, ...other } = data;
-    // 修改表单数据
-    // this.formData = data;
     // 重新请求数据
     fetch({
       payload: {
@@ -286,14 +269,10 @@ export default class accountManagementList extends React.Component {
       fetch,
       fetchUnitsFuzzy,
       saveSearchInfo,
-      // goToException,
-      // fetchOptions,
       form: { resetFields, getFieldValue },
     } = this.props;
     // 清除筛选条件
     resetFields();
-    // 修改表单数据
-    // this.formData = defaultFormData;
     // 重新请求数据
     fetch({
       payload: {
@@ -347,7 +326,7 @@ export default class accountManagementList extends React.Component {
     setFieldsValue({ unitId: undefined, userType: [] });
     this.setState({ unitTypeChecked: value || selectedUnitType });
     // 根据当前选中的单位类型获取对应的所属单位列表
-    if (value === 2) {
+    if (value === GOV) {
       fetchUnitsFuzzy({
         payload: {
           unitType: value,
@@ -487,7 +466,7 @@ export default class accountManagementList extends React.Component {
             </FormItem>
             <FormItem label="单位类型">
               {getFieldDecorator('unitType', {
-                initialValue: unitTypes.length === 0 ? undefined : unitTypes[0].id,
+                // initialValue: unitTypes.length === 0 ? undefined : unitTypes[0].id,
               })(
                 <Select
                   placeholder="请选择单位类型"
@@ -504,7 +483,7 @@ export default class accountManagementList extends React.Component {
               )}
             </FormItem>
 
-            {unitTypeChecked !== 2 && (
+            {unitTypeChecked !== GOV && (
               <FormItem label="所属单位">
                 {getFieldDecorator('unitId', {
                   rules: [
@@ -536,7 +515,7 @@ export default class accountManagementList extends React.Component {
               </FormItem>
             )}
 
-            {unitTypeChecked === 2 && (
+            {unitTypeChecked === GOV && (
               <FormItem label="所属单位">
                 {getFieldDecorator('unitId')(
                   <TreeSelect
@@ -550,12 +529,11 @@ export default class accountManagementList extends React.Component {
                 )}
               </FormItem>
             )}
-            {unitTypeChecked &&
-              unitTypeChecked === 4 && (
+            {unitTypeChecked && (
                 <FormItem label="用户角色">
                   {getFieldDecorator('userType')(
                     <Select placeholder="请选择用户角色" style={{ width: 152 }} allowClear>
-                      {userTypes.map(item => (
+                      {[].map(item => (
                         <Option value={item.value} key={item.value}>
                           {item.label}
                         </Option>
@@ -564,8 +542,8 @@ export default class accountManagementList extends React.Component {
                   )}
                 </FormItem>
               )}
-            {unitTypeChecked &&
-              unitTypeChecked === 2 && (
+            {/* {unitTypeChecked &&
+              unitTypeChecked === GOV && (
                 <FormItem label="用户角色">
                   {getFieldDecorator('userType')(
                     <Select placeholder="请选择用户角色" style={{ width: 152 }} allowClear>
@@ -577,7 +555,7 @@ export default class accountManagementList extends React.Component {
                     </Select>
                   )}
                 </FormItem>
-              )}
+              )} */}
           </Col>
 
           {/* 按钮 */}

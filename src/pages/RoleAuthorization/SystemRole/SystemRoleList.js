@@ -11,7 +11,7 @@ import { hasAuthority, AuthSpan } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
 import styles from '../Role/Role.less';
-import { getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from '../Role/utils';
+import { OPE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from '../Role/utils';
 
 const { Option } = Select;
 const { TreeNode } = TreeSelect;
@@ -24,8 +24,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '权限管理',
-    name: '权限管理',
+    title: '角色权限',
+    name: '角色权限',
   },
   {
     title,
@@ -70,11 +70,17 @@ const {
         ...action,
       });
     },
-    // 获取权限树
+    // 获取WEB权限树
     fetchPermissionTree() {
       dispatch({
         type: 'role/fetchPermissionTree',
       });
+    },
+    // 获取APP权限树
+    fetchAppPermissionTree() {
+      dispatch({
+        type: 'role/fetchAppPermissionTree',
+      })
     },
     /* 跳转到详情页面 */
     goToDetail(id) {
@@ -99,6 +105,7 @@ const {
 export default class RoleList extends PureComponent {
   state = {
     formData: {},
+    unitType: undefined,
   };
 
   componentDidMount() {
@@ -107,8 +114,8 @@ export default class RoleList extends PureComponent {
       fetchList,
       goToException,
       fetchPermissionTree,
+      fetchAppPermissionTree,
       role: {
-        permissionTree,
         data: {
           pagination: { pageSize },
         },
@@ -126,9 +133,8 @@ export default class RoleList extends PureComponent {
       },
     });
     // 获取权限树
-    if (permissionTree.length === 0) {
-      fetchPermissionTree();
-    }
+    fetchPermissionTree();
+    fetchAppPermissionTree();
   }
 
   /* 滚动加载 */
@@ -238,6 +244,11 @@ export default class RoleList extends PureComponent {
     });
   };
 
+  handleUnitTypeChange = id => {
+    console.log(id);
+    this.setState({ unitType: +id });
+  };
+
   /* 渲染树节点 */
   renderTreeNodes(data) {
     return data.map(item => {
@@ -258,11 +269,12 @@ export default class RoleList extends PureComponent {
     const {
       goToAdd,
       account: { unitTypes },
-      role: { permissionTree },
+      role: { permissionTree, appPermissionTree },
       user: {
         currentUser: { permissionCodes },
       },
     } = this.props;
+    const { unitType } = this.state;
 
     const sortedUnitTypes = unitTypes ? Array.from(unitTypes) : [];
     sortedUnitTypes.sort((u1, u2) => u1.sort - u2.sort);
@@ -270,9 +282,9 @@ export default class RoleList extends PureComponent {
     const fields = [
       {
         id: 'unitType',
-        render() {
+        render: () => {
           return (
-            <Select placeholder="请选择单位类型" allowClear>
+            <Select placeholder="请选择单位类型" onChange={this.handleUnitTypeChange} allowClear>
               {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
             </Select>
           );
@@ -292,7 +304,7 @@ export default class RoleList extends PureComponent {
             <TreeSelect
               style={{ width: '100%' }}
               dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-              placeholder="请选择权限"
+              placeholder="请选择WEB权限"
               allowClear
               getPopupContainer={getRootChild}
             >
@@ -302,7 +314,27 @@ export default class RoleList extends PureComponent {
         },
         transform,
       },
+      {
+        id: 'appPermissionId',
+        render: () => {
+          return (
+            <TreeSelect
+              style={{ width: '100%' }}
+              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+              placeholder="请选择APP权限"
+              allowClear
+              getPopupContainer={getRootChild}
+            >
+              {this.renderTreeNodes(appPermissionTree)}
+            </TreeSelect>
+          );
+        },
+        transform,
+      },
     ];
+
+    if (unitType === OPE)
+      fields.pop();
     // 是否有新增权限
     const hasAddAuthority = hasAuthority(addCode, permissionCodes);
 
@@ -310,6 +342,7 @@ export default class RoleList extends PureComponent {
       <Card>
         <InlineForm
           fields={fields}
+          ref={form => this.form=form}
           gutter={{ lg: 48, md: 24 }}
           action={
             <Button type="primary" onClick={goToAdd} disabled={!hasAddAuthority}>
