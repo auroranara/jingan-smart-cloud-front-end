@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 // import { connect } from 'dva';
 import { Tree } from 'antd';
 
-import { renderTreeNodes, sortTree, mergeArrays, getNoRepeat, getIdMaps } from './utils';
+import { renderTreeNodes, sortTree, getNoRepeat, getIdMaps } from './utils';
 
 // @connect(({ role, loading }) => ({ role, loading: loading.effects['role/fetchPermissionTree'] }))
 export default class AthorityTree extends PureComponent {
@@ -12,10 +12,28 @@ export default class AthorityTree extends PureComponent {
   };
 
   // componentDidMount() {
-  //   const { dispatch, setIdMaps, setPermissions } = this.props;
+  //   const { dispatch } = this.props;
+  //   this.fetchTree();
+  //   // 清空detail，以免从角色页面跳过来时，渲染其获取的detail
+  //   // dispatch({
+  //   //   type: 'role/saveRoleAppPermissions',
+  //   //   payload: [],
+  //   // });
+  // }
+
+  // componentDidUpdate(prevProps) {
+  //   const { treeType: prevTreeType } = prevProps;
+  //   const { treeType } = this.props;
+  //   if (treeType !== prevTreeType)
+  //     this.fetchTree();
+  // }
+
+  // fetchTree = () => {
+  //   const { dispatch, setIdMaps, setPermissions, treeType } = this.props;
   //   dispatch({
-  //     type: 'role/fetchPermissionTree',
-  //     success: tree => {
+  //     type: 'role/fetchAppPermissionTree',
+  //     payload: { type: treeType },
+  //     callbackLast: tree => {
   //       // console.log('tree', tree);
   //       // console.log(getIdMaps(tree));
   //       setIdMaps(getIdMaps(tree));
@@ -26,12 +44,7 @@ export default class AthorityTree extends PureComponent {
   //       setPermissions && setPermissions();
   //     },
   //   });
-  //   // 清空detail，以免从角色页面跳过来时，渲染其获取的detail
-  //   // dispatch({
-  //   //   type: 'role/saveRolePermissions',
-  //   //   payload: [],
-  //   // });
-  // }
+  // };
 
   onCheck = (checkedKeys) => {
     // role.rolePermissions已将返回结果的字符串处理成数组并去重
@@ -39,8 +52,8 @@ export default class AthorityTree extends PureComponent {
     // 获得树中选中的值去掉角色对应的权限值后多余的权限值，并缓存到父组件中
     handleChangeAuthTreeCheckedKeys(getNoRepeat(checkedKeys, permissions));
 
-    // console.log('onCheck', checkedKeys, permissions && permissions.split(','));
-    setFieldsValue({ permissions: checkedKeys });
+    // console.log('onCheck', checkedKeys, appPermissions && appPermissions.split(','));
+    setFieldsValue({ appPermissions: checkedKeys });
   };
 
   onExpand = (expandedKeys) => {
@@ -53,9 +66,9 @@ export default class AthorityTree extends PureComponent {
   render() {
     const { tree, permissions, form: { getFieldDecorator } } = this.props;
     const { expandedKeys, autoExpandParent } = this.state;
-    // console.log(permissionTree);
+    // console.log(appPermissionTree);
 
-    return getFieldDecorator('permissions', { valuePropName: 'checkedKeys' })(
+    return getFieldDecorator('appPermissions', { valuePropName: 'checkedKeys' })(
       <Tree
         checkable
         onCheck={this.onCheck}
@@ -64,7 +77,7 @@ export default class AthorityTree extends PureComponent {
         autoExpandParent={autoExpandParent}
       >
         {renderTreeNodes(tree, permissions, 'childMenus', 'showZname', 'id')}
-        {/* {renderTreeNodes(permissionTree, [], 'childMenus', 'showZname', 'id')} */}
+        {/* {renderTreeNodes(appPermissionTree, [], 'childMenus', 'showZname', 'id')} */}
       </Tree>
     );
   }

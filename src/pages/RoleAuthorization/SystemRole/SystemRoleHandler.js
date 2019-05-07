@@ -1,25 +1,82 @@
 import React, { PureComponent } from 'react';
-import _ from 'lodash';
-import { Form, Card, Input, Button, Select, Spin, Tree, TreeSelect, message } from 'antd';
+import { connect } from 'dva';
+import { Form, Card, Input, Button, Select, Spin, Tree, message } from 'antd';
+import { routerRedux } from 'dva/router';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
-import { GOV, OPE, checkParent, generateTreeNode, sortTree, uncheckParent, getUnitDisabled } from './utils';
+import urls from '@/utils/urls';
+import codes from '@/utils/codes';
+import { checkParent, uncheckParent, sortTree } from '../Role/utils';
 
 const { TreeNode } = Tree;
 const { TextArea } = Input;
 const { Option } = Select;
 
-const PAGE_SIZE = 20;
 const INLINE_FORM_STYLE = { width: '50%', marginRight: 0 };
 // 标题
 const addTitle = '新增角色';
 const editTitle = '编辑角色';
+// 获取链接地址
+const {
+  role: { list: backUrl },
+} = urls;
+// 获取code
+const {
+  role: { list: listCode },
+} = codes;
 
+@connect(
+  ({ account, role, user, loading }) => ({
+    account,
+    role,
+    user,
+    loading: loading.models.role,
+  }),
+  dispatch => ({
+    // 获取详情
+    fetchDetail(action) {
+      dispatch({
+        type: 'role/fetchDetail',
+        ...action,
+      });
+    },
+    // 获取权限树
+    fetchPermissionTree() {
+      dispatch({
+        type: 'role/fetchPermissionTree',
+      });
+    },
+    // 新增角色
+    insertRole(action) {
+      dispatch({
+        type: 'role/insertRole',
+        ...action,
+      });
+    },
+    // 编辑角色
+    updateRole(action) {
+      dispatch({
+        type: 'role/updateRole',
+        ...action,
+      });
+    },
+    // 清空详情
+    clearDetail() {
+      dispatch({
+        type: 'role/clearDetail',
+      });
+    },
+    // 返回
+    goBack() {
+      dispatch(routerRedux.push(backUrl));
+    },
+    dispatch,
+  })
+)
 @Form.create()
 export default class RoleHandler extends PureComponent {
   state = {
-    modalVisible: false,
     submitting: false,
     unitType: undefined,
   };
@@ -27,105 +84,86 @@ export default class RoleHandler extends PureComponent {
   /* 挂载后 */
   componentDidMount() {
     const {
-      type,
-      companyId,
-      match: { params: { id } },
-      form: { setFieldsValue },
-      fetchUnits,
-      fetchUnitTypes,
+      dispatch,
       fetchDetail,
       fetchPermissionTree,
-      clearPermissionTree,
       clearDetail,
-      user: { currentUser: { unitType, unitName } },
+      role: { permissionTree },
+      match: {
+        params: { id },
+      },
     } = this.props;
-
-    const isPublic = type;
-    const isAdmin = !companyId;
-    if (!type && fetchUnits)
-      this.lazyFetchUnits = _.debounce(fetchUnits, 300);
-
-    fetchUnitTypes();
-
-    if (id) { // 编辑
+    dispatch({ type: 'account/fetchOptions' });
+    // 根据params.id是否存在判断当前为新增还是编辑
+    if (id) {
+      // 根据id获取详情
       fetchDetail({
         payload: { id },
         success: detail => {
-          const { unitType, companyId, companyName } = detail || {};
-          if (unitType === undefined || unitType === null)
-            return;
-
-          fetchPermissionTree({ payload: isAdmin ? unitType : companyId });
-
-          companyName && this.fetchInitUnits(unitType, companyName);
-          companyId && setFieldsValue({ companyId });
-
-          this.setState({ unitType: +unitType });
+          const type = detail && detail.sysRole ? detail.sysRole.unitType : undefined;
+          type && +type !== 3 ? this.fetchAppTree(type, tree => this.initialAppPermissionTree = tree) : dispatch({ type: 'role/saveAppPermissionTree', payload: [] });
+          this.setState({ unitType: type ? +type : type });
         },
       });
-    } else if(!isPublic && !isAdmin){ // 新增,私有角色,非运营
-      fetchPermissionTree({ payload: companyId });
-      this.fetchInitUnits(unitType, unitName);
-      setFieldsValue({ unitType, companyId });
-      this.setState({ unitType: +unitType });
     } else {
+      // 清空详情
       clearDetail();
-      clearPermissionTree();
+    }
+    // 获取WEB权限树
+    if (permissionTree.length === 0) {
+      fetchPermissionTree();
     }
   }
 
-  handleTypeChange = value => {
+  initialAppPermissionTree = [];
+
+  handleTreeTypeChange = value => {
     const {
-      fetchPermissionTree,
       form: { setFieldsValue },
       role: {
         detail: {
-          unitType,
-          webPermissionIds,
-          appPermissionIds,
+          appPermissions,
+          sysRole: { unitType },
         },
       },
     } = this.props;
 
     this.setState({ unitType: +value });
 
-    this.fetchInitUnits(value);
-    fetchPermissionTree({
-      payload: value,
+    this.fetchAppTree(
+      value,
       // 在model变化前，先清空值，不然会报warning
-      callback: () => { setFieldsValue({ permissions:undefined, appPermissions: undefined }); },
+      () => { setFieldsValue({ appPermissions: undefined }); },
       // model变化后再设置值，不然当先设置值时，就会报warning，且model后变化，就没办法正确设置上值了
-      callbackLater: (tree, appTree) => {
+      () => {
         if (+value === +unitType) {
-          const value = webPermissionIds ? uncheckParent(tree, webPermissionIds) : [];
-          const appValue = appPermissionIds ? uncheckParent(appTree, appPermissionIds) : [];
-          setFieldsValue({ permissions: value, appPermissions: appValue  });
+          const appValue = appPermissions ? uncheckParent(this.initialAppPermissionTree, appPermissions) : [];
+          setFieldsValue({ appPermissions: appValue });
         }
-      },
-    });
+      }
+    );
   };
 
-  fetchInitUnits = (unitType, unitName) => {
-    const { fetchUnits } = this.props;
-    let payload;
-    if (+unitType === GOV)
-      payload= { unitType };
-    else
-      payload = { unitType, unitName, pageNum: 1, pageSize: PAGE_SIZE };
-      fetchUnits && fetchUnits({ payload });
+  fetchAppTree = (type, callback, callbackLast) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'role/fetchAppPermissionTree',
+      callback,
+      callbackLast,
+    });
   };
 
   /* 提交 */
   handleSubmit = () => {
     const {
-      companyId: compyId,
       insertRole,
       updateRole,
       goBack,
       form: { validateFieldsAndScroll },
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
     } = this.props;
-
     // 验证表单
     validateFieldsAndScroll((error, values) => {
       if (!error) {
@@ -136,16 +174,14 @@ export default class RoleHandler extends PureComponent {
         const {
           role: { permissionTree, appPermissionTree },
         } = this.props;
-        const { roleName, description, permissions, appPermissions, unitType, companyId } = values;
-
+        const { name, description, permissions, appPermissions, unitType } = values;
         const payload = {
           id,
-          companyId: companyId || compyId,
           unitType,
-          roleName: roleName.trim(),
+          name: name.trim(),
           description,
-          webPermissionIds: checkParent(permissionTree, permissions),
-          appPermissionIds: checkParent(appPermissionTree, appPermissions),
+          permissions: checkParent(permissionTree, permissions).join(','),
+          appPermissions: checkParent(appPermissionTree, appPermissions).join(','),
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -159,73 +195,39 @@ export default class RoleHandler extends PureComponent {
           });
         };
         // 如果id存在，则编辑角色
-        if (id)
-          updateRole({ payload, success, error });
+        if (id) {
+          updateRole({
+            payload,
+            success,
+            error,
+          });
+        }
         // 否则新增角色
-        else
-          insertRole({ payload, success, error });
+        else {
+          insertRole({
+            payload,
+            success,
+            error,
+          });
+        }
       }
     });
-  };
-
-  handleUnitValueChange = value => {
-      this.lazyFetchUnits({ payload: { unitName: value, pageNum: 1, pageSize: PAGE_SIZE } });
   };
 
   /* 基本信息 */
   renderBasicInfo() {
     const {
-      type,
-      companyId,
-      unitsLoading,
-      match: { params: { id } },
       account: { unitTypes },
       role: {
-        unitList,
-        detail: { roleName, description, unitType },
+        detail: {
+          sysRole: { name, description, unitType } = {},
+        },
       },
       form: { getFieldDecorator },
     } = this.props;
-    const { unitType: unitTypeSelected } = this.state;
 
     const sortedUnitTypes = unitTypes ? Array.from(unitTypes) : [];
     sortedUnitTypes.sort((u1, u2) => u1.sort - u2.sort);
-
-    let unit;
-    const isEdit = !!id;
-    const isPublic = type; // 是否是渲染公共角色
-    const isAdmin = !companyId;
-    const isOperate = unitTypeSelected === OPE; // 选择类型是否是运营类型
-    const isGovernment = unitTypeSelected === GOV; // 选择类型是否是政府类型
-    const notOperateAndNotPublic = !isOperate && !isPublic; // 私有角色下且选择类型为非运营
-    const disabled = getUnitDisabled(isEdit, isPublic, isAdmin); // 1.私有角色编辑 2.新增,私有角色,非管理员  true
-    if (!isPublic) // 私有角色下才有选择单位
-      unit = isGovernment ? (
-        <TreeSelect
-          allowClear
-          disabled={disabled}
-          placeholder="请选择所属单位"
-          onSelect={this.handleUnitSelect}
-        >
-          {generateTreeNode(unitList)}
-        </TreeSelect>
-      ) : (
-        <Select
-          showSearch
-          disabled={disabled}
-          placeholder="请选择所属单位"
-          notFoundContent={unitsLoading ? <Spin size="small" /> : '暂无数据'}
-          onSearch={this.handleUnitValueChange}
-          onChange={this.handleUnitChange}
-          filterOption={false}
-        >
-          {unitList.map(item => (
-            <Option value={item.id} key={item.id}>
-              {item.name}
-            </Option>
-          ))}
-        </Select>
-      );
 
     return (
       <Card title="基本信息">
@@ -248,32 +250,13 @@ export default class RoleHandler extends PureComponent {
               rules: [{ required: true, message: '请选择角色类型' }],
             })(
               <Select
-                disabled={disabled}
-                onChange={this.handleTypeChange}
+                // disabled={!!id}
+                onChange={this.handleTreeTypeChange}
               >
                 {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
               </Select>
             )}
           </Form.Item>
-          {notOperateAndNotPublic && (
-            <Form.Item
-              label="单位名称"
-              labelCol={{
-                sm: { span: 24 },
-                md: { span: 3 },
-                lg: { span: 3 },
-              }}
-              wrapperCol={{
-                sm: { span: 24 },
-                md: { span: 21 },
-                lg: { span: 9 },
-              }}
-            >
-              {getFieldDecorator('companyId', {
-                rules: [{ required: true, message: '请选择单位' }],
-              })(unit)}
-            </Form.Item>
-          )}
           <Form.Item
             label="角色名称"
             labelCol={{
@@ -287,8 +270,8 @@ export default class RoleHandler extends PureComponent {
               lg: { span: 9 },
             }}
           >
-            {getFieldDecorator('roleName', {
-              initialValue: roleName,
+            {getFieldDecorator('name', {
+              initialValue: name,
               rules: [{ required: true, message: '请输入角色名称', whitespace: true }],
             })(<Input maxLength={50} placeholder="请输入角色名称" />)}
           </Form.Item>
@@ -336,14 +319,14 @@ export default class RoleHandler extends PureComponent {
       role: {
         permissionTree,
         appPermissionTree,
-        detail: { appPermissionIds, webPermissionIds },
+        detail: { permissions, appPermissions },
       },
       form: { getFieldDecorator },
     } = this.props;
     const { unitType } = this.state;
 
-    const value = webPermissionIds ? uncheckParent(permissionTree, webPermissionIds) : [];
-    const appValue = appPermissionIds ? uncheckParent(appPermissionTree, appPermissionIds) : [];
+    const value = permissions && uncheckParent(permissionTree, permissions);
+    const appValue = appPermissions ? uncheckParent(appPermissionTree, appPermissions) : [];
     const tree = sortTree(permissionTree);
     const appTree = sortTree(appPermissionTree);
 
@@ -376,7 +359,7 @@ export default class RoleHandler extends PureComponent {
               // ],
             })(<Tree checkable>{this.renderTreeNodes(tree)}</Tree>)}
           </Form.Item>
-          {unitType !== OPE && (
+          {unitType !== 3 && (
             <Form.Item
               label="APP权限树"
               style={INLINE_FORM_STYLE}
@@ -415,8 +398,9 @@ export default class RoleHandler extends PureComponent {
     const {
       goBack,
       loading,
-      codes: { list: listCode },
-      user: { currentUser: { permissionCodes } },
+      user: {
+        currentUser: { permissionCodes },
+      },
     } = this.props;
     const hasListAuthority = hasAuthority(listCode, permissionCodes);
 
@@ -435,31 +419,33 @@ export default class RoleHandler extends PureComponent {
   render() {
     const {
       loading,
-      type,
-      urls: { listUrl },
-      codes: { list: listCode },
-      match: { params: { id } },
-      user: { currentUser: { permissionCodes } },
+      match: {
+        params: { id },
+      },
+      user: {
+        currentUser: { permissionCodes },
+      },
     } = this.props;
     const { submitting } = this.state;
-
-    const typeLabel = type ? '公共' : '用户';
-    const hasListAuthority = hasAuthority(listCode, permissionCodes); // 是否有列表权限
-    const title = id ? editTitle : addTitle; // 根据params.id是否存在判断当前为新增还是编辑
-    const breadcrumbList = [ // 面包屑
+    // 是否有列表权限
+    const hasListAuthority = hasAuthority(listCode, permissionCodes);
+    // 根据params.id是否存在判断当前为新增还是编辑
+    const title = id ? editTitle : addTitle;
+    // 面包屑
+    const breadcrumbList = [
       {
         title: '首页',
         name: '首页',
         href: '/',
       },
       {
-        title: '角色权限',
-        name: '角色权限',
+        title: '权限管理',
+        name: '权限管理',
       },
       {
-        title: `${typeLabel}角色`,
-        name: `${typeLabel}角色`,
-        href: hasListAuthority ? listUrl : undefined,
+        title: '系统角色',
+        name: '系统角色',
+        href: hasListAuthority ? backUrl : undefined,
       },
       {
         title,

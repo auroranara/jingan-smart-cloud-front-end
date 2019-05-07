@@ -16,6 +16,20 @@ export default {
     edit: 'roleAuthorization.role.edit',
     delete: 'roleAuthorization.role.delete',
   },
+  commonRole: {
+    list: 'roleAuthorization.commonRole.listView',
+    detail: 'roleAuthorization.commonRole.view',
+    add: 'roleAuthorization.commonRole.add',
+    edit: 'roleAuthorization.commonRole.edit',
+    delete: 'roleAuthorization.commonRole.delete',
+  },
+  userRole: {
+    list: 'roleAuthorization.userRole.listView',
+    detail: 'roleAuthorization.userRole.view',
+    add: 'roleAuthorization.userRole.add',
+    edit: 'roleAuthorization.userRole.edit',
+    delete: 'roleAuthorization.userRole.delete',
+  },
   account: {
     edit: 'roleAuthorization.accountManagement.edit',
     detail: 'roleAuthorization.accountManagement.view',

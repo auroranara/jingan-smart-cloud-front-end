@@ -1,29 +1,140 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'dva';
 import { Form, Input, Card, Button, Select, Spin, List, Modal, message, TreeSelect } from 'antd';
-import { Link } from 'dva/router';
+import { Link, routerRedux } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import InlineForm from '../../BaseInfo/Company/InlineForm';
-import { hasAuthority, AuthSpan } from '@/utils/customAuth';
-import styles from './Role.less';
-import { LIST_PAGE_SIZE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from './utils';
+import { hasAuthority } from '@/utils/customAuth';
+import urls from '@/utils/urls';
+import codes from '@/utils/codes';
+import styles from '../Role/Role.less';
+import { getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from '../Role/utils';
 
 const { Option } = Select;
 const { TreeNode } = TreeSelect;
 
+const title = '系统角色';
+const breadcrumbList = [
+  {
+    title: '首页',
+    name: '首页',
+    href: '/',
+  },
+  {
+    title: '权限管理',
+    name: '权限管理',
+  },
+  {
+    title,
+    name: title,
+  },
+];
+// 获取链接地址
+const {
+  role: { detail: detailUrl, edit: editUrl, add: addUrl },
+} = urls;
+// 获取code
+const {
+  role: { detail: detailCode, edit: editCode, add: addCode },
+} = codes;
+
+@connect(
+  ({ account, role, user, loading }) => ({
+    account,
+    role,
+    user,
+    loading: loading.models.role,
+  }),
+  dispatch => ({
+    /* 获取角色列表 */
+    fetchList(action) {
+      dispatch({
+        type: 'role/fetchList',
+        ...action,
+      });
+    },
+    /* 追加维保合同列表 */
+    appendList(action) {
+      dispatch({
+        type: 'role/appendList',
+        ...action,
+      });
+    },
+    /* 删除 */
+    remove(action) {
+      dispatch({
+        type: 'role/remove',
+        ...action,
+      });
+    },
+    // 获取权限树
+    fetchPermissionTree() {
+      dispatch({
+        type: 'role/fetchPermissionTree',
+      });
+    },
+    /* 跳转到详情页面 */
+    goToDetail(id) {
+      dispatch(routerRedux.push(detailUrl + id));
+    },
+    /* 跳转到新增页面 */
+    goToAdd() {
+      dispatch(routerRedux.push(addUrl));
+    },
+    /* 跳转到编辑页面 */
+    goToEdit() {
+      dispatch(routerRedux.push(editUrl));
+    },
+    // 异常
+    goToException() {
+      dispatch(routerRedux.push('/exception/500'));
+    },
+    dispatch,
+  })
+)
 @Form.create()
 export default class RoleList extends PureComponent {
   state = {
     formData: {},
+    // isInit: false,
   };
 
   componentDidMount() {
-    const { fetchUnitTypes } = this.props;
-
-    fetchUnitTypes();
-    this.getRoleList({ pageNum: 1 });
+    const {
+      dispatch,
+      fetchList,
+      goToException,
+      fetchPermissionTree,
+      role: {
+        permissionTree,
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    dispatch({ type: 'account/fetchOptions' });
+    // 获取列表
+    fetchList({
+      payload: {
+        pageNum: 1,
+        pageSize,
+      },
+      // success: () => {
+      //   this.setState({
+      //     isInit: true,
+      //   });
+      // },
+      error: () => {
+        goToException();
+      },
+    });
+    // 获取权限树
+    if (permissionTree.length === 0) {
+      fetchPermissionTree();
+    }
   }
 
   /* 滚动加载 */
@@ -55,59 +166,84 @@ export default class RoleList extends PureComponent {
 
   /* 查询点击事件 */
   handleSearch = values => {
-    if (!values.companyName)
-      delete values.companyName;
+    const {
+      fetchList,
+      goToException,
+      role: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
 
-    this.getRoleList({ ...values, pageNum: 1 }, () => {
-      this.setState({
-        formData: values,
-      });
+    fetchList({
+      payload: {
+        ...values,
+        pageSize,
+        pageNum: 1,
+      },
+      success: () => {
+        // message.success('查询成功', 1);
+        this.setState({
+          formData: values,
+        });
+      },
+      error: () => {
+        // message.success('查询失败', 1);
+        goToException();
+      },
     });
   };
 
   /* 重置点击事件 */
   handleReset = () => {
-    this.getRoleList({ pageNum: 1 }, () => {
-      this.setState({
-        formData: {},
-      });
+    const {
+      fetchList,
+      goToException,
+      role: {
+        data: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    fetchList({
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
+      success: () => {
+        // message.success('重置成功', 1);
+        this.setState({
+          formData: {},
+        });
+      },
+      error: () => {
+        // message.success('重置失败', 1);
+        goToException();
+      },
     });
   };
 
-  getRoleList = (payload, success) => {
-    const { type, companyId, fetchList } = this.props;
-    const newPayload = {
-      ...payload,
-      pageSize: LIST_PAGE_SIZE,
-      isPublic: type,
-    };
-    if (companyId)
-      newPayload.companyId = companyId;
-    fetchList({ payload: newPayload, success});
-  };
-
   /* 显示删除确认提示框 */
-  genHandleShowDeleteConfirm = id => e => {
+  handleShowDeleteConfirm = id => {
+    const { remove } = this.props;
     Modal.confirm({
       title: '你确定要删除这个角色吗?',
       content: '如果你确定要删除这个角色，点击确定按钮',
       okText: '确定',
       cancelText: '取消',
       onOk: () => {
-        this.handleDelete(id);
-      },
-    });
-  };
-
-  handleDelete = id => {
-    const { remove } = this.props;
-    remove({
-      payload: { id },
-      callback: (code, msg) => {
-        if (code === 200)
-          message.success('删除成功');
-        else
-          message.error(msg);
+        remove({
+          payload: {
+            id,
+          },
+          success: () => {
+            message.success('删除成功！');
+          },
+          error: () => {
+            message.error('删除失败，请联系管理人员！');
+          },
+        });
       },
     });
   };
@@ -127,21 +263,10 @@ export default class RoleList extends PureComponent {
     });
   }
 
-  handleUnitTypeChange = id => {
-    const { fetchPermissionTree, clearPermissionTree } = this.props;
-    if (id)
-      fetchPermissionTree({ payload: id });
-    else
-      clearPermissionTree();
-  };
-
   /* 渲染表单 */
   renderForm() {
     const {
-      type,
       goToAdd,
-      companyId,
-      codes: { add: addCode },
       account: { unitTypes },
       role: { permissionTree },
       user: {
@@ -149,31 +274,20 @@ export default class RoleList extends PureComponent {
       },
     } = this.props;
 
-    const isPublic = type;
-    const isAdmin = !companyId;
-
     const sortedUnitTypes = unitTypes ? Array.from(unitTypes) : [];
     sortedUnitTypes.sort((u1, u2) => u1.sort - u2.sort);
-    const unitTypeField = {
-      id: 'unitType',
-      render: () => {
-        return (
-          <Select placeholder="请选择单位类型" onChange={this.handleUnitTypeChange} allowClear>
-            {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
-          </Select>
-        );
-      },
-    };
-    const companyNameField = {
-      id: 'companyName',
-      render() {
-        return <Input placeholder="请输入单位名称" />;
-      },
-      transform,
-    };
-
     /* 表单字段 */
     const fields = [
+      {
+        id: 'unitType',
+        render() {
+          return (
+            <Select placeholder="请选择单位类型">
+              {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
+            </Select>
+          );
+        },
+      },
       {
         id: 'name',
         render() {
@@ -186,10 +300,10 @@ export default class RoleList extends PureComponent {
         render: () => {
           return (
             <TreeSelect
-              allowClear
               style={{ width: '100%' }}
               dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
               placeholder="请选择权限"
+              allowClear
               getPopupContainer={getRootChild}
             >
               {this.renderTreeNodes(permissionTree)}
@@ -199,14 +313,8 @@ export default class RoleList extends PureComponent {
         transform,
       },
     ];
-
-    if (!isPublic && isAdmin) // 私有角色，管理员
-      fields.unshift(companyNameField);
-
-    if (isAdmin)
-      fields.unshift(unitTypeField);
-
-    const hasAddAuthority = hasAuthority(addCode, permissionCodes); // 是否有新增权限
+    // 是否有新增权限
+    const hasAddAuthority = hasAuthority(addCode, permissionCodes);
 
     return (
       <Card>
@@ -228,9 +336,6 @@ export default class RoleList extends PureComponent {
   /* 渲染列表 */
   renderList() {
     const {
-      type,
-      companyId,
-      codes: { detail: detailCode, edit: editCode, delete: deleteCode },
       account: { unitTypes },
       role: {
         data: { list },
@@ -239,62 +344,67 @@ export default class RoleList extends PureComponent {
         currentUser: { permissionCodes },
       },
       goToDetail,
-      urls: { detailUrl, editUrl },
     } = this.props;
-
-    const isPublic = type;
-    const isAdmin = !companyId;
-    const isAdminAndPrivate = isAdmin && !isPublic;
-    const hasDetailAuthority = hasAuthority(detailCode, permissionCodes); // 是否有查看权限
-    const hasEditAuthority = hasAuthority(editCode, permissionCodes); // 是否有编辑权限
+    // 是否有查看权限
+    const hasDetailAuthority = hasAuthority(detailCode, permissionCodes);
+    // 是否有编辑权限
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
           rowKey="id"
+          // loading={loading}
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
-            const { id, roleName, description, unitType, companyName } = item;
+            const { id, name, description, unitType } = item;
             return (
               <List.Item key={id}>
                 <Card
-                  title={roleName}
+                  title={name}
                   extra={getUnitTypeLabel(unitType, unitTypes)}
                   className={styles.card}
                   actions={[
                     <Link
-                      to={`${detailUrl}/${id}`}
+                      to={detailUrl + id}
                       onClick={hasDetailAuthority ? null : preventDefault}
                       disabled={!hasDetailAuthority}
                     >
                       查看
                     </Link>,
                     <Link
-                      to={`${editUrl}/${id}`}
+                      to={editUrl + id}
                       onClick={hasEditAuthority ? null : preventDefault}
                       disabled={!hasEditAuthority}
                     >
                       编辑
                     </Link>,
-                    <AuthSpan
-                      code={deleteCode}
-                      onClick={this.genHandleShowDeleteConfirm(id)}
-                    >
-                      删除
-                    </AuthSpan>,
+                    <span>删除</span>,
                   ]}
+                // extra={
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // }
                 >
                   <div
-                    onClick={ hasDetailAuthority ? () => goToDetail(id) : null}
+                    onClick={
+                      hasDetailAuthority
+                        ? () => {
+                          goToDetail(id);
+                        }
+                        : null
+                    }
                     style={hasDetailAuthority ? { cursor: 'pointer' } : null}
                   >
-                    {isAdminAndPrivate && (
-                      <Ellipsis tooltip lines={1} className={isAdminAndPrivate ? styles.ellipsisUpText : styles.ellipsisText}>
-                      {companyName ? <span>{companyName}</span> : '暂无所属企业信息'}
-                      </Ellipsis>
-                    )}
-                    <Ellipsis tooltip lines={1} className={isAdminAndPrivate ? styles.ellipsisDownText : styles.ellipsisText}>
+                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       {description ? <span>{description}</span> : getEmptyData()}
                     </Ellipsis>
                   </div>
@@ -309,8 +419,6 @@ export default class RoleList extends PureComponent {
 
   render() {
     const {
-      title,
-      breadcrumbList,
       loading,
       role: {
         isLast,
@@ -318,8 +426,8 @@ export default class RoleList extends PureComponent {
           pagination: { total },
         },
       },
-      user: { currentUser: { unitName } },
     } = this.props;
+    const { isInit } = this.state;
 
     return (
       <PageHeaderLayout
@@ -327,8 +435,8 @@ export default class RoleList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            角色总数：{total}
-            {unitName && <p className={styles.companyName}>{unitName}</p>}
+            角色总数：
+            {total}{' '}
           </div>
         }
       >
