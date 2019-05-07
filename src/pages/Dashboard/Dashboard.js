@@ -1,12 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-// import Carousel3d from './Carousel3d';
 import codes from '@/utils/codes';
 import styles from './Dashboard.less';
-import { Row, Col } from 'antd';
-import Ellipsis from '@/components/Ellipsis';
-// 用电安全驾驶舱图
-import electricImg from '../../assets/dashboard-electricity.png';
 
 // 大屏入口图片路径
 const fire = 'http://data.jingan-china.cn/v2/dashboard/home-fire.png';
@@ -14,6 +9,7 @@ const safe = 'http://data.jingan-china.cn/v2/dashboard/home-safety.png';
 const monitor = 'http://data.jingan-china.cn/v2/dashboard/home-monitor.png';
 const psoitionImg = 'http://data.jingan-china.cn/v2/dashboard/personnel-positioning.png';
 const gasImg = 'http://data.jingan-china.cn/v2/dashboard/gas.png';
+const electricImg = 'http://data.jingan-china.cn/v2/dashboard/dashboard-electricity.png';
 const fireMaintenanceImg = 'http://data.jingan-china.cn/new-fire-control.png';
 const smokeImg = 'http://data.jingan-china.cn/smoke.png';
 
@@ -211,24 +207,6 @@ export default class Dashboard extends PureComponent {
       grids.length ? grids[0].value : 'index'
     }`;
 
-    // safetyProduction,fireService 1开启/0关闭
-    // const imgWrapper =
-    //   (safetyProduction && fireService && [safeItem, fireItem]) ||
-    //   (safetyProduction && !fireService && [safeItem]) ||
-    //   (!safetyProduction && fireService && [fireItem]) ||
-    //   [];
-
-    // let imgWrapper = [];
-    // if (safetyProduction) {
-    //   imgWrapper.push(safeItem)
-    // }
-    // if (fireService) {
-    //   imgWrapper.push(fireItem)
-    // }
-    // if (monitorService) {
-    //   imgWrapper.push(monitorItem)
-    // }
-
     // items中的参数必须与state中一一对应
     const items = [
       safeItem,
@@ -246,45 +224,33 @@ export default class Dashboard extends PureComponent {
       return prev;
     }, []);
 
-    const goToBigScreen = url => {
-      const win = window.open(url, '_blank');
-      win.focus();
-    };
-
-    // const hasFourItems = { width: '330px', height: '425px', padding: '25px' };
-    // const hasLittleItems = { width: '405px', height: '480px', padding: '40px' };
-
     return (
-      <Row
-        gutter={{ xs: 10, sm: 20, md: 20, lg: 50 }}
-        className={styles.dashboardContainer}
-        style={
-          imgWrapper.length > 3
-            ? { height: 'auto' }
-            : { height: '800px', display: 'flex', justifyContent: 'center', alignItems: 'center' }
-        }
-      >
-        {imgWrapper.map((item, i) => (
-          <Col
-            span={8}
-            key={i.toString()}
-            style={{
-              display: 'flex',
-              justifyContent: this.generateAlign(imgWrapper, i),
-              marginTop: '40px',
-            }}
-          >
-            <div className={styles.section} onClick={() => goToBigScreen(item.url)}>
-              <div className={styles.imgContainer}>
-                <img src={item.src} alt="" />
-              </div>
-              <div className={styles.text}>
-                <Ellipsis lines={1}>{item.label}</Ellipsis>
-              </div>
+      <div className={styles.container}>
+        {imgWrapper.reduce((result, item, index) => {
+          const i = Math.floor(index / 3);
+          if (result[i]) {
+            result[i].push(item);
+          } else {
+            result[i] = [item];
+          }
+          return result;
+        }, []).map((list) => {
+          return (
+            <div className={styles.list} key={list[0].label}>
+              {list.map(({ src, url, label }) => {
+                return (
+                  <div key={label} className={styles.itemWrapper}>
+                    <a href={url} target="_blank" rel="noopener noreferrer" className={styles.item}>
+                      <div className={styles.itemIconWrapper}><div className={styles.itemIcon} style={{ backgroundImage: `url(${src})` }} /></div>
+                      <div className={styles.itemLabel}>{label}</div>
+                    </a>
+                  </div>
+                );
+              })}
             </div>
-          </Col>
-        ))}
-      </Row>
+          );
+        })}
+      </div>
     );
   }
 }
