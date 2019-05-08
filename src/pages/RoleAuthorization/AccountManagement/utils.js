@@ -352,11 +352,11 @@ export function getListByUnitId(list, unitType, utId, userId) {
     return [];
 
   const isAdmin = unitType === null || unitType === undefined || +unitType === OPE;
-  const filterNotSelf = list.filter(({ users }) => {
-    const ids = Array.isArray(users) ? users.map(({ id }) => id) : [];
-    return !ids.includes(userId);
-  });
-  return isAdmin ? filterNotSelf : filterNotSelf.map(item => ({ ...item, users: item.users.filter(({ unitId }) => unitId === utId) }));
+  // const filterNotSelf = list.filter(({ users }) => {
+  //   const ids = Array.isArray(users) ? users.map(({ id }) => id) : [];
+  //   return !ids.includes(userId);
+  // });
+  return isAdmin ? list : list.map(item => ({ ...item, users: item.users.filter(({ unitId }) => unitId === utId) }));
 }
 
 export function treeData(data) {

@@ -524,8 +524,9 @@ export default class AccountManagementEdit extends PureComponent {
     fetchRoles({ payload: { unitType: unitTypeChecked, companyId: value.key }, success: this.genRolesSuccess(unitTypeChecked) });
   };
 
-  handleUnitSelect = ({ value, label }) => {
+  handleGovSelect = ({ value, label }) => {
     const {
+      fetchRoles,
       fetchDepartmentList,
       form: { setFieldsValue },
     } = this.props;
@@ -537,6 +538,7 @@ export default class AccountManagementEdit extends PureComponent {
         companyId: value,
       },
     });
+    fetchRoles({ payload: { unitType: GOV, companyId: value }, success: this.genRolesSuccess(GOV) });
   };
 
   /** 所属单位下拉框失焦 */
@@ -1059,7 +1061,7 @@ export default class AccountManagementEdit extends PureComponent {
                         labelInValue
                         disabled={isUnitUser}
                         placeholder="请选择所属单位"
-                        onSelect={this.handleUnitSelect}
+                        onSelect={this.handleGovSelect}
                       >
                         {generateUnitsTree(unitIds)}
                       </TreeSelect>

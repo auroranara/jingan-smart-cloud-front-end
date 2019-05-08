@@ -243,7 +243,14 @@ export default class AssociatedUnit extends PureComponent {
           // 根据企业类型获取对应类型的角色
           fetchRoles({
             payload: { unitType, companyId: unitId },
-            success: this.genRolesSuccess(unitType),
+            success: (list, trees) => {
+              this.genRolesSuccess(unitType)(list, trees);
+              const ids = Array.isArray(list) ? list.map(({ id }) => id) : [];
+              if (!ids.includes(roleId)) // 处理先配置公共角色后配置私有角色时，原来的公共角色id不存在私有角色列表里的问题
+                setFieldsValue({ roleId: undefined });
+              else
+                this.fetchRolePermissions(roleId);
+            },
           });
           // 若为维保单位，则获取维保权限树，并设置维保权限树初值
           unitType === MAI &&
@@ -308,7 +315,7 @@ export default class AssociatedUnit extends PureComponent {
           // 获取roleIds对应的权限，并设置权限树的初值
           this.authTreeCheckedKeys = handleKeysString(permissions);
           this.appAuthTreeCheckedKeys = handleKeysString(appPermissions);
-          this.fetchRolePermissions(roleId);
+          // this.fetchRolePermissions(roleId);
 
           // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
           fetchUnitsFuzzy({
@@ -632,8 +639,9 @@ export default class AssociatedUnit extends PureComponent {
     fetchRoles({ payload: { unitType: unitTypeChecked, companyId: value.key }, success: this.genRolesSuccess(unitTypeChecked) });
   };
 
-  handleUnitSelect = ({ value, label }) => {
+  handleGovSelect = ({ value, label }) => {
     const {
+      fetchRoles,
       fetchDepartmentList,
       form: { setFieldsValue },
     } = this.props;
@@ -645,6 +653,7 @@ export default class AssociatedUnit extends PureComponent {
         companyId: value,
       },
     });
+    fetchRoles({ payload: { unitType: GOV, companyId: value }, success: this.genRolesSuccess(GOV) });
   };
 
   /** 所属单位下拉框失焦 */
@@ -767,16 +776,6 @@ export default class AssociatedUnit extends PureComponent {
       searchSubValue: value,
     });
   };
-
-  // handleTransferChange = (nextTargetKeys, direction, moveKeys) => {
-  //   const {
-  //     form: { setFieldsValue },
-  //   } = this.props;
-  //   console.log(nextTargetKeys);
-  //   setFieldsValue({ roleIds: nextTargetKeys });
-
-  //   this.fetchRolePermissions(nextTargetKeys);
-  // };
 
   handleRoleChange = value => {
     this.fetchRolePermissions(value);
@@ -1065,7 +1064,6 @@ export default class AssociatedUnit extends PureComponent {
                       notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                       onSearch={this.handleUnitIdChange}
                       onSelect={this.handleDataPermissions}
-                      // onChange={this.handleFetchDepartments}
                       onBlur={this.handleUnitIdBlur}
                       filterOption={false}
                     >
@@ -1098,7 +1096,7 @@ export default class AssociatedUnit extends PureComponent {
                       labelInValue
                       disabled={isUnitUser}
                       placeholder="请选择所属单位"
-                      onSelect={this.handleUnitSelect}
+                      onSelect={this.handleGovSelect}
                     >
                       {generateUnitsTree(unitIds)}
                     </TreeSelect>
@@ -1467,13 +1465,19 @@ export default class AssociatedUnit extends PureComponent {
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
-    const { loading } = this.props;
+    const {
+      loading,
+      match: { params: { userId } },
+      user: { currentUser: { userId: currentUserId } },
+    } = this.props;
+    const disabled = userId === currentUserId;
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
         <Button
           type="primary"
           size="large"
+          disabled={disabled} // 自己无法修改自己的账号
           onClick={this.handleClickValidate}
           loading={loading}
           style={{ fontSize: 16 }}

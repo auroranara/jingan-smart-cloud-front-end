@@ -507,7 +507,6 @@ export default class accountManagementList extends React.Component {
             {!isUnitUser && (
               <FormItem label="单位类型">
                 {getFieldDecorator('unitType', {
-                  // initialValue: unitTypes.length === 0 ? undefined : unitTypes[0].id,
                 })(
                   <Select
                     placeholder="请选择单位类型"
@@ -564,7 +563,6 @@ export default class accountManagementList extends React.Component {
                   <TreeSelect
                     allowClear
                     placeholder="请选择所属单位"
-                    // labelInValue
                     style={{ width: 230 }}
                   >
                     {this.generateTressNode(unitIds)}
@@ -573,7 +571,7 @@ export default class accountManagementList extends React.Component {
               </FormItem>
             )}
             <FormItem label="角色">
-              {getFieldDecorator('userType')(
+              {getFieldDecorator('roleId')(
                 <Select placeholder="请选择角色" style={{ width: 180 }} allowClear>
                   {roles.map(item => (
                     <Option value={item.id} key={item.id}>
@@ -583,20 +581,6 @@ export default class accountManagementList extends React.Component {
                 </Select>
               )}
             </FormItem>
-            {/* {unitTypeChecked &&
-              unitTypeChecked === GOV && (
-                <FormItem label="用户角色">
-                  {getFieldDecorator('userType')(
-                    <Select placeholder="请选择用户角色" style={{ width: 152 }} allowClear>
-                      {gavUserTypes.map(item => (
-                        <Option value={item.id} key={item.id}>
-                          {item.label}
-                        </Option>
-                      ))}
-                    </Select>
-                  )}
-                </FormItem>
-              )} */}
           </Col>
 
           {/* 按钮 */}
@@ -631,7 +615,7 @@ export default class accountManagementList extends React.Component {
       account: { list },
     } = this.props;
 
-    const filteredList = getListByUnitId(list, unitType, unitId, userId);
+    const filteredList = getListByUnitId(list, unitType, unitId);
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
@@ -640,24 +624,30 @@ export default class accountManagementList extends React.Component {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={filteredList}
           renderItem={item => {
-            const { loginId, loginName, status } = item;
+            const { loginId, loginName, userName, phoneNumber, status, users } = item;
+            const isUsersExist = Array.isArray(users) && users.length;
+            let isSelf = false;
+            if (isUsersExist) {
+              const ids = users.map(({ id }) => id);
+              isSelf = ids.includes(userId);
+            }
             const actions = [
               <AuthLink
                 code={codesMap.account.detail}
-                to={`/role-authorization/account-management/detail/${item.loginId}`}
+                to={`/role-authorization/account-management/detail/${loginId}`}
               >
                 查看
               </AuthLink>,
               <AuthLink
-                code={codesMap.account.edit}
-                to={`/role-authorization/account-management/edit/${item.loginId}`}
+                code={isSelf ? 'codeNotExist' : codesMap.account.edit}
+                to={`/role-authorization/account-management/edit/${loginId}`}
               >
                 编辑
               </AuthLink>,
               <AuthLink
                 code={codesMap.account.addAssociatedUnit}
                 to={`/role-authorization/account-management/associated-unit/add/${
-                  item.loginId
+                  loginId
                 }`}
               >
                 关联单位
@@ -690,64 +680,66 @@ export default class accountManagementList extends React.Component {
                       <Col span={12}>
                         <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                           姓名：
-                          {item.userName || getEmptyData()}
+                          {userName || getEmptyData()}
                         </Ellipsis>
                       </Col>
                       <Col span={12}>
-                        <p>电话: {item.phoneNumber || getEmptyData()}</p>
+                        <p>电话: {phoneNumber || getEmptyData()}</p>
                       </Col>
                     </Row>
-                    {item.users && item.users.length ? (
+                    {isUsersExist ? (
                       <Row>
                         <Col span={16}>
                           <Ellipsis tooltip lines={1} className={styles.ellipsisText} length={13}>
-                            {unitTypeList[item.users[0].unitType]}
-                            {item.users[0].unitName && `，${item.users[0].unitName}`}
+                            {unitTypeList[users[0].unitType]}
+                            {users[0].unitName && `，${users[0].unitName}`}
                           </Ellipsis>
                         </Col>
                         <Col span={3}>
                           <AuthSpan
                             code={codesMap.account.editAssociatedUnit}
-                            onClick={() => this.handleToEdit(item.users[0].id)}
+                            onClick={() => this.handleToEdit(users[0].id)}
                             style={{ cursor: 'pointer' }}
                           >
                             <Icon type="edit" />
                           </AuthSpan>
                         </Col>
-                        <Col span={3}>
-                          <Popconfirm
-                            title={`确定要${
-                              !!item.users[0].accountStatus ? '解绑' : '开启'
-                            }关联企业吗？`}
-                            onConfirm={() =>
-                              this.handleAccountStatus({
-                                accountStatus: Number(!item.users[0].accountStatus),
-                                id: item.users[0].id,
-                                users: item.users,
-                                loginId: item.loginId,
-                              })
-                            }
-                          >
-                            <AuthSpan
-                              code={codesMap.account.bindAssociatedUnit}
-                              style={{ cursor: 'pointer' }}
+                        {users[0].id !== userId && (
+                          <Col span={3}>
+                            <Popconfirm
+                              title={`确定要${
+                                !!users[0].accountStatus ? '解绑' : '开启'
+                              }关联企业吗？`}
+                              onConfirm={() =>
+                                this.handleAccountStatus({
+                                  accountStatus: Number(!users[0].accountStatus),
+                                  id: users[0].id,
+                                  users: users,
+                                  loginId: loginId,
+                                })
+                              }
                             >
-                              {!!item.users[0].accountStatus ? (
-                                <Icon type="link" />
-                              ) : (
-                                <Icon style={{ color: 'red' }} type="disconnect" />
-                              )}
-                            </AuthSpan>
-                          </Popconfirm>
-                        </Col>
+                              <AuthSpan
+                                code={codesMap.account.bindAssociatedUnit}
+                                style={{ cursor: 'pointer' }}
+                              >
+                                {!!users[0].accountStatus ? (
+                                  <Icon type="link" />
+                                ) : (
+                                  <Icon style={{ color: 'red' }} type="disconnect" />
+                                )}
+                              </AuthSpan>
+                            </Popconfirm>
+                          </Col>
+                        )}
                       </Row>
                     ) : (
                       <p>{getEmptyData()}</p>
                     )}
                     <p
-                      onClick={() => this.handleViewMore(item.users, item.loginId)}
+                      onClick={() => this.handleViewMore(users, loginId)}
                       style={{
-                        visibility: item.users && item.users.length > 1 ? 'visible' : 'hidden',
+                        visibility: users && users.length > 1 ? 'visible' : 'hidden',
                       }}
                       className={styles.more}
                     >
@@ -765,6 +757,7 @@ export default class accountManagementList extends React.Component {
   }
 
   renderModal = () => {
+    const { user: { currentUser: { userId } } } = this.props;
     const { modalVisible, associatedUnits, currentLoginId } = this.state;
     const columns = [
       {
@@ -800,26 +793,30 @@ export default class accountManagementList extends React.Component {
               >
                 <Icon type="edit" />
               </AuthSpan>
-              <Divider type="vertical" />
-              <Popconfirm
-                title={`确定要${!!row.accountStatus ? '解绑' : '开启'}关联企业吗？`}
-                onConfirm={() =>
-                  this.handleAccountStatus({
-                    accountStatus: Number(!row.accountStatus),
-                    id: row.id,
-                    users: associatedUnits,
-                    loginId: currentLoginId,
-                  })
-                }
-              >
-                <AuthSpan code={codesMap.account.bindAssociatedUnit} style={{ cursor: 'pointer' }}>
-                  {!!row.accountStatus ? (
-                    <Icon type="link" />
-                  ) : (
-                    <Icon style={{ color: 'red' }} type="disconnect" />
-                  )}
-                </AuthSpan>
-              </Popconfirm>
+              {row.id !== userId && (
+                <Fragment>
+                  <Divider type="vertical" />
+                  <Popconfirm
+                    title={`确定要${!!row.accountStatus ? '解绑' : '开启'}关联企业吗？`}
+                    onConfirm={() =>
+                      this.handleAccountStatus({
+                        accountStatus: Number(!row.accountStatus),
+                        id: row.id,
+                        users: associatedUnits,
+                        loginId: currentLoginId,
+                      })
+                    }
+                  >
+                    <AuthSpan code={codesMap.account.bindAssociatedUnit} style={{ cursor: 'pointer' }}>
+                      {!!row.accountStatus ? (
+                        <Icon type="link" />
+                      ) : (
+                        <Icon style={{ color: 'red' }} type="disconnect" />
+                      )}
+                    </AuthSpan>
+                  </Popconfirm>
+                </Fragment>
+              )}
             </Fragment>
           );
         },
@@ -855,7 +852,6 @@ export default class accountManagementList extends React.Component {
         data: {
           pagination: { total },
         },
-        /*   list, */
         isLast,
       },
       loading,
