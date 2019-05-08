@@ -57,9 +57,10 @@ const href = '/role-authorization/account-management/list'; // 返回地址
 
 // 1.编辑关联单位  2.新增关联单位
 @connect(
-  ({ account, role, loading }) => ({
+  ({ account, role, user, loading }) => ({
     account,
     role,
+    user,
     loadingEffects: loading.effects,
     loading: loading.models.account,
   }),
@@ -352,6 +353,11 @@ export default class AssociatedUnit extends PureComponent {
   appParentIdMap = {};
   appPermissions = [];
   appAuthTreeCheckedKeys = [];
+
+  isUnitUser = () => {
+    const { user: { currentUser: { unitId, unitType } } } = this.props;
+    return unitId && +unitType !== OPE;
+  };
 
   genRolesSuccess = unitType => (list, trees) => {
     const isAdmin = +unitType === OPE;
@@ -953,9 +959,9 @@ export default class AssociatedUnit extends PureComponent {
       },
       loading,
     } = this.props;
-
     const { unitTypeChecked } = this.state;
 
+    const isUnitUser = this.isUnitUser();
     const treeList = treeData(departments);
 
     return (
@@ -1023,6 +1029,7 @@ export default class AssociatedUnit extends PureComponent {
                   ],
                 })(
                   <Select
+                    disabled={isUnitUser}
                     placeholder="请选择单位类型"
                     onChange={this.handleUnitTypesChange}
                   >
@@ -1050,8 +1057,9 @@ export default class AssociatedUnit extends PureComponent {
                     ],
                   })(
                     <AutoComplete
-                      mode="combobox"
                       labelInValue
+                      mode="combobox"
+                      disabled={isUnitUser}
                       optionLabelProp="children"
                       placeholder="请选择所属单位"
                       notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
@@ -1087,8 +1095,9 @@ export default class AssociatedUnit extends PureComponent {
                   })(
                     <TreeSelect
                       allowClear
-                      placeholder="请选择所属单位"
                       labelInValue
+                      disabled={isUnitUser}
+                      placeholder="请选择所属单位"
                       onSelect={this.handleUnitSelect}
                     >
                       {generateUnitsTree(unitIds)}
@@ -1493,8 +1502,8 @@ export default class AssociatedUnit extends PureComponent {
         name: '首页',
       },
       {
-        title: '权限管理',
-        name: '权限管理',
+        title: '角色权限',
+        name: '角色权限',
       },
       {
         title: '账号管理',

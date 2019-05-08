@@ -1,6 +1,8 @@
 import React from 'react';
 import { Tree, TreeSelect } from 'antd';
 
+import { MAI, GOV, OPE, COM } from '@/pages/RoleAuthorization/Role/utils';
+
 const { TreeNode } = Tree;
 const { TreeNode: TreeSelectNode } = TreeSelect;
 
@@ -344,15 +346,17 @@ export function handleKeysString(str, divider=',') {
   return [];
 }
 
-// 若当前用户为某一单位的用户，将账号中的users进行过滤，只有当前企业对应的user对其可见
-export function getListByUnitId(list, uId) {
-  if (!uId)
-    return list;
-
+// 将当前用户的当前账号过滤掉，不然可以修改自己的账号，当前用户为某一单位的用户，将账号中的users进行过滤，只有当前企业对应的user对其可见
+export function getListByUnitId(list, unitType, utId, userId) {
   if (!Array.isArray(list))
     return [];
 
-  return list.map(item => ({ ...item, users: item.users.filter(({ unitId }) => unitId === uId) }));
+  const isAdmin = unitType === null || unitType === undefined || +unitType === OPE;
+  const filterNotSelf = list.filter(({ users }) => {
+    const ids = Array.isArray(users) ? users.map(({ id }) => id) : [];
+    return !ids.includes(userId);
+  });
+  return isAdmin ? filterNotSelf : filterNotSelf.map(item => ({ ...item, users: item.users.filter(({ unitId }) => unitId === utId) }));
 }
 
 export function treeData(data) {

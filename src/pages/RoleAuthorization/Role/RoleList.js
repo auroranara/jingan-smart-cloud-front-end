@@ -74,6 +74,8 @@ export default class RoleList extends PureComponent {
 
   /* 重置点击事件 */
   handleReset = () => {
+    const { clearPermissionTree } = this.props;
+    clearPermissionTree();
     this.getRoleList({ pageNum: 1 }, () => {
       this.setState({
         formData: {},

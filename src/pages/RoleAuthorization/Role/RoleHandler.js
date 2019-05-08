@@ -64,6 +64,7 @@ export default class RoleHandler extends PureComponent {
         },
       });
     } else if(!isPublic && !isAdmin){ // 新增,私有角色,非运营
+      clearDetail();
       fetchPermissionTree({ payload: companyId });
       this.fetchInitUnits(unitType, unitName);
       setFieldsValue({ unitType, companyId });
@@ -170,7 +171,8 @@ export default class RoleHandler extends PureComponent {
   };
 
   handleUnitValueChange = value => {
-      this.lazyFetchUnits({ payload: { unitName: value, pageNum: 1, pageSize: PAGE_SIZE } });
+    const { unitType } = this.state;
+    this.lazyFetchUnits({ payload: { unitType, unitName: value, pageNum: 1, pageSize: PAGE_SIZE } });
   };
 
   /* 基本信息 */
