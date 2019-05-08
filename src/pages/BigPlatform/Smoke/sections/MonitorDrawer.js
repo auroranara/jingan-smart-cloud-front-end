@@ -6,7 +6,8 @@ import {
   OvSelect,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import moment from 'moment';
-import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
+// import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
+import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import { DotItem } from '../components/Components';
 import AbnormalChart from '../components/AbnormalChart';
 import styles from './MonitorDrawer.less';
@@ -18,6 +19,7 @@ import smokeAlarm from '../imgs/smoke-alarm.png';
 import smokeFault from '../imgs/smoke-fault.png';
 import smokeNormal from '../imgs/smoke-normal.png';
 import Ellipsis from '@/components/Ellipsis';
+import { findFirstVideo } from '@/utils/utils';
 
 const LABELS = ['正常', '火警', '故障'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
@@ -38,11 +40,11 @@ export default class MonitorDrawer extends PureComponent {
 
   handleClickCamera = () => {
     const {
-      data: { cameraList = [] },
+      data: { cameraTree = [] },
     } = this.props;
     this.setState({
       videoVisible: true,
-      videoKeyId: cameraList.length ? cameraList[0].key_id : '',
+      videoKeyId: cameraTree.length ? findFirstVideo(cameraTree).id : '',
     });
   };
 
@@ -56,7 +58,7 @@ export default class MonitorDrawer extends PureComponent {
 
   renderItems = () => {
     const {
-      data: { devList, cameraList = [], unitDetail: { companyName, companyId } = {} },
+      data: { devList, cameraTree = [], unitDetail: { companyName, companyId } = {} },
       handleAlarmClick,
       handleFaultClick,
     } = this.props;
@@ -112,7 +114,7 @@ export default class MonitorDrawer extends PureComponent {
                         </Ellipsis>
                       </div>
                       <div className={styles.extraWrapper}>
-                        {!!cameraList.length && (
+                        {!!cameraTree.length && (
                           <div
                             className={styles.camraImg}
                             style={{ backgroundImage: `url(${cameraIcon})` }}
@@ -139,19 +141,19 @@ export default class MonitorDrawer extends PureComponent {
               );
             })
           ) : (
-            <div
-              style={{
-                width: '100%',
-                height: '135px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                color: '#4f678d',
-              }}
-            >
-              暂无相关监测数据
+              <div
+                style={{
+                  width: '100%',
+                  height: '135px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  color: '#4f678d',
+                }}
+              >
+                暂无相关监测数据
             </div>
-          )}
+            )}
         </Row>
       </div>
     );
@@ -170,7 +172,7 @@ export default class MonitorDrawer extends PureComponent {
           // unnormal = 0,
           // faultNum = 0,
         } = {},
-        cameraList = [],
+        cameraTree = [],
         dataByCompany,
         devList,
         companySmokeInfo: { map: devMap = { unnormal: [], fault: [], normal: [] } },
@@ -215,8 +217,8 @@ export default class MonitorDrawer extends PureComponent {
             {devList.length > 0 ? (
               this.renderItems()
             ) : (
-              <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />
-            )}
+                <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />
+              )}
           </div>
         </div>
         <div className={styles.chartContainer}>
@@ -231,13 +233,14 @@ export default class MonitorDrawer extends PureComponent {
             <AbnormalChart noData={dataByCompany.length} data={dataByCompany} />
           </div>
         </div>
-        <VideoPlay
+        <NewVideoPlay
           showList={true}
-          videoList={cameraList}
+          videoList={cameraTree}
           visible={videoVisible}
           keyId={videoKeyId}
           // style={VIDEO_STYLE}
           handleVideoClose={this.handleVideoClose}
+          isTree={true}
         />
       </Fragment>
     );

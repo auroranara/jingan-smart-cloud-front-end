@@ -6,7 +6,8 @@ import { Rotate } from 'react-transform-components';
 import { mapMutations } from '@/utils/utils';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 // 视频播放
-import VideoPlay from '@/pages/BigPlatform/FireControl/section/VideoPlay';
+// import VideoPlay from '@/pages/BigPlatform/FireControl/section/VideoPlay';
+import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import {
   // 企业信息
   CompanyInfo,
@@ -105,6 +106,8 @@ export default class UnitSafety extends PureComponent {
         'fetchHiddenDangerList',
         // 获取视频列表
         'fetchVideoList',
+        // 获取视频树列表
+        'fetchVideoTree',
         // 获取监控数据
         'fetchMonitorData',
         // 获取四色风险点
@@ -169,6 +172,8 @@ export default class UnitSafety extends PureComponent {
     this.fetchHiddenDangerCount({ company_id: companyId });
     // 获取视频列表
     this.fetchVideoList({ company_id: companyId });
+    // 获取视频树列表
+    this.fetchVideoTree({ company_id: companyId });
     // 获取监控数据
     this.fetchMonitorData({ companyId });
     // // 获取四色风险点
@@ -478,6 +483,7 @@ export default class UnitSafety extends PureComponent {
     } = this.state;
     const {
       videoList,
+      videoTree,
       hiddenDangerList,
       hiddenDangerCount,
       dynamicMonitorData,
@@ -623,13 +629,22 @@ export default class UnitSafety extends PureComponent {
           handleDrawerVisibleChange={this.setDrawerVisible}
         />
         {/* 视频播放 */}
-        <VideoPlay
+        {/* <VideoPlay
           style={{ zIndex: 99999999 }}
           videoList={videoList}
           visible={videoVisible}
           showList={true}
           keyId={videoKeyId}
           handleVideoClose={this.hideVideo}
+        /> */}
+        <NewVideoPlay
+          style={{ zIndex: 99999999 }}
+          videoList={videoTree}
+          visible={videoVisible}
+          showList={true}
+          keyId={videoKeyId}
+          handleVideoClose={this.hideVideo}
+          isTree={true}
         />
         <GasMonitorDrawer
           visible={gasMonitorDrawerVisible}

@@ -9,51 +9,10 @@ import styles from './NewVideoPlay.less';
 import animate from '../../Safety/Animate.less';
 // import Draggable from 'react-draggable';
 import RenderInPopup from './RenderInPopup';
+import { findFirstVideo } from '@/utils/utils';
 
 const { TreeNode } = Tree
 const { Search } = Input
-const videoList = [
-  {
-    building_name: '建筑A',
-    building_id: 'build01',
-    type: 1,
-    list: [
-      {
-        floor_name: 'A01',
-        floor_id: 'build01-f001',
-        type: 2,
-        list: [
-          { name: '视频1视频1视频1视频1视频1', keyId: 'v001' },
-          { name: 'asdasd', keyId: 'v002' },
-        ],
-      },
-    ],
-  },
-  {
-    building_name: '建筑B',
-    building_id: 'build02',
-    type: 1,
-    list: [
-      {
-        floor_name: 'B01',
-        floor_id: 'build02-f001',
-        type: 2,
-        list: [
-          { name: '视频12', keyId: 'v222' },
-          { name: 'asdasd13', keyId: 'v3333' },
-        ],
-      },
-    ],
-  },
-  { name: '视频4', keyId: 'v004' },
-  { name: '视频5', keyId: 'v005' },
-  { name: '视频6', keyId: 'v006' },
-  { name: '视频7', keyId: 'v007' },
-  { name: '视频8', keyId: 'v008' },
-  { name: '视频9', keyId: 'v009' },
-  { name: '视频10', keyId: 'v0010' },
-  { name: '视频11', keyId: 'v0011' },
-]
 const LOADING_STYLE = {
   color: '#FFF',
   fontSize: 60,
@@ -63,7 +22,7 @@ const LOADING_STYLE = {
   top: '50%',
   transform: 'translate(-50%, -50%)',
 };
-const dataList = [];
+let dataList = [];
 const LOADING_COMPONENT = (
   <div className={styles.loadingContainer}>
     <Icon type="loading" style={LOADING_STYLE} />
@@ -93,20 +52,52 @@ class VideoPlay extends Component {
   // VideoList的值发生改变或者keyId发生改变时，重新获取对应视频
   getSnapshotBeforeUpdate(prevProps, prevState) {
     return (
-      this.props.videoList.toString() !== prevProps.videoList.toString() ||
-      this.props.keyId !== prevProps.keyId
+      this.props.videoList.toString() !== prevProps.videoList.toString() || this.props.keyId !== prevProps.keyId
     );
   }
-  componentDidMount() {
-    // const { videoList } = this.props
-    this.generateList(videoList)
-  }
+  // componentDidMount() {
+  //   const { videoList } = this.props
+  //  this.generateList(videoList)
+  //   this.generateList(videoList)
+  // }
   componentDidUpdate(prevProps, prevState, snapshot) {
     // console.log(snapshot);
-
+    const { isTree } = this.props
     if (snapshot) {
-      this.handleInit();
+      isTree ? this.handleTreeInit() : this.handleInit();
     }
+  }
+
+  handleTreeInit = () => {
+    const { dispatch, videoList, keyId, showList } = this.props;
+    dataList.length = 0
+    this.generateList(videoList)
+    if (showList && !(videoList && videoList.length)) return
+    const item = keyId ? dataList.find(item => item.id === keyId) : findFirstVideo(videoList)
+    const videoId = item.id, videoKey = item.key_id || item.keyId
+    const expandedKeys = this.getParentKey(videoId, videoList)
+    // 清空视频链接
+    this.setState({ videoSrc: '', selectedKeys: [videoId], expandedKeys });
+    dispatch({
+      type: 'videoPlay/fetchStartToPlay',
+      payload: {
+        key_id: videoKey,
+      },
+      success: response => {
+        if (videoKey) {
+          this.setState({
+            videoSrc: response.data.url,
+          });
+        }
+      },
+      // error: response => {
+      //   notification['error']({
+      //     message: '视频请求失败',
+      //     description: response.msg,
+      //     duration: null,
+      //   });
+      // },
+    });
   }
 
   handleInit = () => {
@@ -196,6 +187,7 @@ class VideoPlay extends Component {
   };
 
   handleSearch = e => {
+    const { videoList } = this.props
     const value = e.target.value.trim()
     const expandedKeys = value.length > 0 ? dataList.map(({
       type = null,
@@ -206,16 +198,16 @@ class VideoPlay extends Component {
       building_name = null,
       floor_name = null,
       name = null,
+      id,
     }) => {
-      const newKeyId = key_id || keyId;
+      // const newKeyId = key_id || keyId;
       const title = (+type === 1 && building_name) || (+type === 2 && floor_name) || name
-      const key = (+type === 1 && building_id) || (+type === 2 && floor_id) || newKeyId
+      // const key = (+type === 1 && building_id) || (+type === 2 && floor_id) || newKeyId
       if (title.indexOf(value) > -1) {
-        return this.getParentKey(key, videoList)
+        return this.getParentKey(id, videoList)
       }
       return null;
     }).filter((item, i, self) => item && self.indexOf(item) === i) : []
-    console.log('expandedKeys', expandedKeys);
 
     this.setState({ searchValue: value, autoExpandParent: true, expandedKeys })
   }
@@ -231,12 +223,13 @@ class VideoPlay extends Component {
         building_id = null,
         floor_id = null,
         list = [],
+        id,
       } = node
       const childParent = this.getParentKey(key, list)
-      const nodeKey = (+type === 1 && building_id) || (+type === 2 && floor_id) || (key_id || keyId)
+      // const nodeKey = (+type === 1 && building_id) || (+type === 2 && floor_id) || (key_id || keyId)
       if (list.length > 0) {
         if (list.some(({ type = null, keyId = null, key_id = null, building_id = null, floor_id = null }) => ((!type && (key_id || keyId)) || (+type === 1 && building_id) || (+type === 2 && floor_id)) === key)) {
-          parentKey = nodeKey;
+          parentKey = id;
         } else if (childParent) {
           parentKey = childParent;
         }
@@ -245,6 +238,10 @@ class VideoPlay extends Component {
     return parentKey;
   };
 
+
+  /**
+   * 将数组内的树降维
+   */
   generateList = (tree) => {
     for (let i = 0; i < tree.length; i++) {
       const node = tree[i];
@@ -263,7 +260,7 @@ class VideoPlay extends Component {
   }
 
   renderVideoTree = () => {
-    // const { videoList } = this.props;
+    const { videoList } = this.props;
     const { activeIndex, selectedKeys, searchValue, autoExpandParent, expandedKeys } = this.state;
 
     // if (videoList && videoList.length === 0) return <span>暂无视频</span>
@@ -285,22 +282,22 @@ class VideoPlay extends Component {
     )
   }
   renderTreeNode = arr => {
-    const { searchValue } = this.state
+    const { searchValue, selectedKeys } = this.state
     return arr.map(item => {
+      // type=1（建筑物） ；type=2（楼层）；type不存在（视频）
       const {
         type = null,
-        keyId = null,
-        key_id = null,
         name = null,
         building_name = null,
-        building_id = null,
         floor_name = null,
-        floor_id = null,
         list = [],
+        key_id = null,
+        keyId = null,
+        id,
       } = item
       const newKeyId = key_id || keyId;
       const tempTitle = (+type === 1 && building_name) || (+type === 2 && floor_name) || name
-      const key = (+type === 1 && building_id) || (+type === 2 && floor_id) || newKeyId
+      // const key = (+type === 1 && building_id) || (+type === 2 && floor_id) || newKeyId
       const index = tempTitle.indexOf(searchValue);
       const beforeStr = tempTitle.substr(0, index);
       const afterStr = tempTitle.substr(index + searchValue.length);
@@ -311,14 +308,15 @@ class VideoPlay extends Component {
           {afterStr}
         </span>
       ) : <span>{tempTitle}</span>;
+      const icon = selectedKeys.includes(id) ? (<Icon type="caret-right" style={{ color: '#f6b54e' }} />) : circle
       if (list.length > 0) {
         return (
-          <TreeNode icon={!type ? circle : null} selectable={!type} title={title} key={key}>
+          <TreeNode icon={type ? null : icon} selectable={!type} title={title} key={id} keyId={newKeyId}>
             {this.renderTreeNode(list)}
           </TreeNode>
         )
       }
-      return (<TreeNode icon={!type ? circle : null} selectable={!type} title={title} key={key}></TreeNode>)
+      return (<TreeNode icon={type ? null : icon} selectable={!type} title={title} key={id} keyId={newKeyId}></TreeNode>)
     })
   }
 
@@ -352,9 +350,10 @@ class VideoPlay extends Component {
     );
   };
 
-  handleSelectTree = (keys) => {
+  handleSelectTree = (keys, e) => {
+    // 由于keys由id组成
     if (keys.length === 0) return
-    const [key] = keys
+    const key = e.selectedNodes[0].props.keyId
     const { dispatch, actionType } = this.props;
     this.setState(
       {

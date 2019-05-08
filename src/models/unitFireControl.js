@@ -27,6 +27,7 @@ import {
   resetAllHosts,
   // 获取视频列表
   getVideoList,
+  fetchVideoTree,
   // 获取已处理信息列表
   fetchUnPendingInfo,
   fetchPendingInfo,
@@ -200,6 +201,8 @@ export default {
     hosts: [],
     // 视频列表
     videoList: [],
+    // 视频树列表
+    videoTree: [],
     fireHost: {
       list: [],
       pagination: {
@@ -448,6 +451,17 @@ export default {
       });
       if (success) {
         success();
+      }
+    },
+    // 获取视频树列表
+    *fetchVideoTree({ payload, success }, { call, put }) {
+      const response = yield call(fetchVideoTree, payload);
+      if (response && response.list) {
+        yield put({
+          type: 'saveVideoTree',
+          payload: response.list,
+        });
+        if (success) success();
       }
     },
     // 获取巡查统计数据
@@ -761,6 +775,12 @@ export default {
         videoList,
       };
     },
+    saveVideoTree(state, { payload: videoTree }) {
+      return {
+        ...state,
+        videoTree,
+      };
+    },
     // 保存巡查统计
     saveInspectionStatistics(
       state,
@@ -790,10 +810,10 @@ export default {
       const newList =
         list && list.length > 0
           ? list.map(item => ({
-              ...item,
-              typeName: getPendingInfoType(item),
-              icon: getPendingInfoType(item, 'icon'),
-            }))
+            ...item,
+            typeName: getPendingInfoType(item),
+            icon: getPendingInfoType(item, 'icon'),
+          }))
           : [];
       return {
         ...state,

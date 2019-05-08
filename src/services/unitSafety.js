@@ -26,6 +26,11 @@ export async function getVideoList(params) {
   return request(`/acloud_new/v2/hdf/getAllCamera.json?${stringify(params)}`);
 }
 
+// 获取视频树列表
+export async function fetchVideoTree(params) {
+  return request(`/acloud_new/v2/hdf/getTreeCamera.json?${stringify(params)}`);
+}
+
 /**
  * 获取监控球相关数据
  */

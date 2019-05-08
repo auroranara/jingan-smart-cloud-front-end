@@ -25,7 +25,8 @@ import Tooltip from './section/Tooltip';
 import UnitLookUp from './section/UnitLookUp';
 import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
-import VideoPlay from './section/VideoPlay';
+// import VideoPlay from './section/VideoPlay';
+import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import UnitDrawer from './section/UnitDrawer';
 import UnitDangerDrawer from './section/UnitDangerDrawer';
 import HostDrawer from './section/HostDrawer';
@@ -555,6 +556,13 @@ export default class FireControlBigPlatform extends PureComponent {
     } = this.props;
     const gridId = this.getGridId();
     dispatch({
+      type: 'bigFireControl/fetchCameraTree',
+      payload: {
+        company_id: companyId, // companyId
+        gridId,
+      },
+    });
+    dispatch({
       type: 'bigFireControl/fetchAllCamera',
       payload: {
         company_id: companyId, // companyId
@@ -740,6 +748,7 @@ export default class FireControlBigPlatform extends PureComponent {
         offGuard,
         alarmProcess,
         allCamera,
+        cameraTree,
         videoLookUp,
         lookUpCamera,
         mapLocation,
@@ -978,14 +987,15 @@ export default class FireControlBigPlatform extends PureComponent {
           </Col>
         </Row>
         {this.renderConfirmModal()}
-        <VideoPlay
+        <NewVideoPlay
           // dispatch={dispatch}
           // actionType="bigFireControl/fetchStartToPlay"
           showList={showVideoList}
-          videoList={videoState === VIDEO_LOOK_UP ? lookUpCamera : allCamera}
+          videoList={videoState === VIDEO_LOOK_UP ? lookUpCamera : cameraTree}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
+          isTree={videoState === VIDEO_LOOK_UP ? false : true}
         />
         <Tooltip
           visible={tooltipVisible}
