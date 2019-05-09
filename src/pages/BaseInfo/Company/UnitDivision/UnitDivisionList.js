@@ -1,17 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Form,
-  List,
-  Card,
-  Button,
-  Input,
-  // Modal,
-  BackTop,
-  Spin,
-  message,
-  Modal,
-} from 'antd';
+import { Form, List, Card, Button, Input, Icon, BackTop, Spin, message, Modal } from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import Ellipsis from '@/components/Ellipsis';
@@ -300,7 +289,9 @@ export default class UnitDivisionList extends PureComponent {
                         border: 'none',
                         fontSize: '16px',
                       }}
-                    />
+                    >
+                      <Icon type="close" />
+                    </AuthButton>
                   }
                 >
                   <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
