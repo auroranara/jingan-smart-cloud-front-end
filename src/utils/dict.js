@@ -16,6 +16,25 @@ export const hiddenDangerStatus = {
 };
 
 /**
+ * 隐患业务分类
+ */
+export const hiddenDangerType = {
+  '1': '安全生产',
+  '2': '消防',
+  '3': '环保',
+  '4': '卫生',
+};
+
+/**
+ * 隐患上报来源
+ */
+export const hiddenDangerSource = {
+  1: '企业自查',
+  2: '政府监督',
+  3: '维保检查',
+};
+
+/**
  * 点位风险等级
  */
 export const PointLevel = {
