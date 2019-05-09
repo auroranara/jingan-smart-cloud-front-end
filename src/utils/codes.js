@@ -120,6 +120,13 @@ export default {
       delete: 'baseInfo.company.department.delete',
       edit: 'baseInfo.company.department.edit',
     },
+    division: {
+      list: 'baseInfo.company.division.listView',
+      add: 'baseInfo.company.division.add',
+      delete: 'baseInfo.company.division.delete',
+      edit: 'baseInfo.company.division.edit',
+      detail: 'baseInfo.company.division.view',
+    },
     // 建筑物信息
     buildingsInfo: {
       list: 'baseInfo.buildingsInfo.listView',

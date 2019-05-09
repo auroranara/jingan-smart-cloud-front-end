@@ -299,6 +299,31 @@ module.exports = env => {
                   name: 'department',
                   component: './BaseInfo/Company/DepartmentList',
                 },
+                // 单位分部
+                {
+                  path: '/base-info/company/division/list/:id',
+                  code: 'baseInfo.company.division.listView',
+                  name: 'divisionList',
+                  component: './BaseInfo/Company/UnitDivision/UnitDivisionList',
+                },
+                {
+                  path: '/base-info/company/division/add',
+                  code: 'baseInfo.company.division.add',
+                  name: 'divisionAdd',
+                  component: './BaseInfo/Company/UnitDivision/UnitDivisionEdit',
+                },
+                {
+                  path: '/base-info/company/division/edit/:id',
+                  code: 'baseInfo.company.division.edit',
+                  name: 'divisionEdit',
+                  component: './BaseInfo/Company/UnitDivision/UnitDivisionEdit',
+                },
+                {
+                  path: '/base-info/company/division/detail/:id',
+                  code: 'baseInfo.company.division.view',
+                  name: 'divisionDetail',
+                  component: './BaseInfo/Company/UnitDivision/UnitDivisionDetail',
+                },
               ],
             },
             /* 建筑物信息 */
@@ -323,50 +348,43 @@ module.exports = env => {
                   name: 'view',
                   code: 'baseInfo.buildingsInfo.view',
                   path: '/base-info/buildings-info/detail/:id',
-                  component:
-                    './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoList',
+                  component: './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoList',
                 },
                 {
                   name: 'add',
                   code: 'baseInfo.buildingsInfo.add',
                   path: '/base-info/buildings-info/add',
-                  component:
-                    './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+                  component: './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
                 },
                 {
                   name: 'edit',
                   code: 'baseInfo.buildingsInfo.edit',
                   path: '/base-info/buildings-info/edit/:id',
-                  component:
-                    './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+                  component: './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
                 },
                 {
                   name: 'floorList',
                   code: 'baseInfo.buildingsInfo.floorListView',
                   path: '/base-info/buildings-info/floor/list/:id',
-                  component:
-                    './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementList',
+                  component: './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementList',
                 },
                 {
                   name: 'floorAdd',
                   code: 'baseInfo.buildingsInfo.floorAdd',
                   path: '/base-info/buildings-info/floor/add',
-                  component:
-                    './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementEdit',
+                  component: './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementEdit',
                 },
                 {
                   name: 'floorEdit',
                   code: 'baseInfo.buildingsInfo.floorEdit',
                   path: '/base-info/buildings-info/floor/edit/:id',
-                  component:
-                    './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementEdit',
+                  component: './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementEdit',
                 },
                 {
                   name: 'floorDetail',
                   code: 'baseInfo.buildingsInfo.floorView',
                   path: '/base-info/buildings-info/floor/detail/:id',
-                  component:
-                    './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementDetail',
+                  component: './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementDetail',
                 },
               ],
             },
@@ -1269,19 +1287,22 @@ module.exports = env => {
                   path: '/video-surveillance/government-video-permission/list',
                   code: 'videoSurveillance.governmentVideoPermission.listView',
                   name: 'list',
-                  component: './VideoSurveillance/GovernmentVideoPermission/GovernmentVideoPermissionList',
+                  component:
+                    './VideoSurveillance/GovernmentVideoPermission/GovernmentVideoPermissionList',
                 },
                 {
                   path: '/video-surveillance/government-video-permission/edit/:companyId',
                   code: 'videoSurveillance.governmentVideoPermission.edit',
                   name: 'edit',
-                  component: './VideoSurveillance/GovernmentVideoPermission/GovernmentVideoPermissionEdit',
+                  component:
+                    './VideoSurveillance/GovernmentVideoPermission/GovernmentVideoPermissionEdit',
                 },
                 {
                   path: '/video-surveillance/government-video-permission/add',
                   code: 'videoSurveillance.governmentVideoPermission.add',
                   name: 'add',
-                  component: './VideoSurveillance/GovernmentVideoPermission/GovernmentVideoPermissionEdit',
+                  component:
+                    './VideoSurveillance/GovernmentVideoPermission/GovernmentVideoPermissionEdit',
                 },
               ],
             },
