@@ -1,4 +1,14 @@
-import { queryList, queryDetail, queryPermissionTree, addRole, editRole, deleteRole, queryRolePermissions } from '../services/role/role';
+import {
+  queryList,
+  queryDetail,
+  queryPermissionTree,
+  addRole,
+  editRole,
+  deleteRole,
+  queryRolePermissions,
+  getAppPermissionTree,
+} from '../services/role/role';
+import { queryDetail as queryRoleDetail } from '../services/role/commonRole';
 
 export default {
   namespace: 'role',
@@ -8,7 +18,9 @@ export default {
       sysRole: {},
     },
     rolePermissions: [],
+    roleAppPermissions: [],
     permissionTree: [],
+    appPermissionTree: [],
     data: {
       list: [],
       pagination: {
@@ -71,23 +83,21 @@ export default {
     },
     // 在账号菜单中(非当前的角色菜单)获取roles对应的权限
     *fetchRolePermissions({ payload, success, error }, { call, put }) {
-      const response = yield call(queryRolePermissions, payload);
-      // console.log(response);
-      if (response && response.code === 200) {
-        let rolePermissions = [];
-        if (response.data && response.data.permissions)
-          rolePermissions = Array.from(new Set(response.data.permissions.split(',').filter(k => k)));
+      const response = yield call(queryRoleDetail, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        let { webPermissionIds, appPermissionIds } = data || {};
+        webPermissionIds = webPermissionIds || [];
+        appPermissionIds = appPermissionIds || [];
 
-        yield put({
-          type: 'saveRolePermissions',
-          payload: rolePermissions,
-        });
-        success &&  success(rolePermissions);
+        yield put({ type: 'saveRolePermissions', payload: webPermissionIds });
+        yield put({ type: 'saveRoleAppPermissions', payload: appPermissionIds });
+        success &&  success(webPermissionIds, appPermissionIds);
       }
       else
         error && error();
     },
-    /* 获取权限树 */
+    /* 获取WEB权限树 */
     *fetchPermissionTree({ payload, success, error }, { call, put }) {
       const response = yield call(queryPermissionTree, payload);
       if (response.code === 200) {
@@ -103,14 +113,22 @@ export default {
         error();
       }
     },
+    // 获取APP权限树
+    *fetchAppPermissionTree({ payload, callback, callbackLast }, { call, put }) {
+      let response = yield call(getAppPermissionTree, payload);
+      response = response || {};
+      const { code=500 } = response;
+      if (code === 200) {
+        const tree = response.data && Array.isArray(response.data.menu) ? response.data.menu : [];
+        callback && callback(tree);
+        yield put({ type: 'saveAppPermissionTree', payload: tree });
+        callbackLast && callbackLast(tree);
+      }
+    },
     /* 新增角色 */
     *insertRole({ payload, success, error }, { call }) {
       const response = yield call(addRole, payload);
       if (response.code === 200) {
-        // yield put({
-        //   type: 'addRole',
-        //   payload: response.data,
-        // });
         if (success) {
           success(response.data);
         }
@@ -123,10 +141,6 @@ export default {
     *updateRole({ payload, success, error }, { call }) {
       const response = yield call(editRole, payload);
       if (response.code === 200) {
-        // yield put({
-        //   type: 'editRole',
-        //   payload: response.data,
-        // });
         if (success) {
           success(response.data);
         }
@@ -138,18 +152,16 @@ export default {
     /* 删除角色 */
     *remove({ payload, success, error }, { call, put }) {
       const response = yield call(deleteRole, payload);
-      if (response.code === 200) {
+      const { code, msg } = response || {};
+      if (code === 200) {
         yield put({
           type: 'deleteRole',
           payload: payload.id,
         });
-        if (success) {
-          success();
-        }
+        success && success();
       }
-      else if (error) {
-        error();
-      }
+      else
+        error && error(msg);
     },
   },
 
@@ -186,26 +198,15 @@ export default {
     saveRolePermissions(state, { payload: rolePermissions }) {
       return { ...state, rolePermissions };
     },
+    saveRoleAppPermissions(state, action) {
+      return { ...state, roleAppPermissions: action.payload };
+    },
     /* 获取权限树 */
     queryPermissionTree(state, { payload: permissionTree }) {
-      return {
-        ...state,
-        permissionTree,
-      };
+      return { ...state, permissionTree };
     },
-    /* 新增角色 */
-    addRole(state, { payload: detail }) {
-      return {
-        ...state,
-        detail,
-      };
-    },
-    /* 编辑角色 */
-    editRole(state, { payload: detail }) {
-      return {
-        ...state,
-        detail,
-      };
+    saveAppPermissionTree(state, action) {
+      return { ...state, appPermissionTree: action.payload };
     },
     /* 清除详情 */
     clearDetail(state) {

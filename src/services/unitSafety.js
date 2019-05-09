@@ -3,7 +3,7 @@ import request from '../utils/request';
 
 // 企业信息(包含人员数量四色图等)
 export async function getCompanyMessage(params) {
-  return request(`/acloud_new/v2/sfc/companyMessage.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/sfc/companyInfo.json?${stringify(params)}`);
 }
 
 // 特种设备

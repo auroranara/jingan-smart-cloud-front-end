@@ -1,138 +1,67 @@
 import React, { PureComponent } from 'react';
-import { connect } from 'dva';
 import { Form, Card, Spin, Tree, Button } from 'antd';
-import { routerRedux } from 'dva/router';
+
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
-import urls from '@/utils/urls';
-import codes from '@/utils/codes';
+import { COMMON_LIST_URL, PRIVATE_LIST_URL, getEmptyData, sortTree, getSelectedTree } from './utils';
 
 const { Description } = DescriptionList;
 const { TreeNode } = Tree;
 
-// 标题
-const title = '角色详情';
-// 获取链接地址
-const { role: { list: backUrl, edit: editUrl } } = urls;
-// 获取code
-const { role: { list: listCode, edit: editCode } } = codes;
-// 面包屑
-const breadcrumbList = [
-  {
-    title: '首页',
-    name: '首页',
-    href: '/',
-  },
-  {
-    title: '权限管理',
-    name: '权限管理',
-  },
-  {
-    title: '角色管理',
-    name: '角色管理',
-    href: backUrl,
-  },
-  {
-    title,
-    name: title,
-  },
-];
-/* 获取无数据 */
-const getEmptyData = () => {
-  return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-};
-/* 对树排序 */
-const sortTree = (list) => {
-  const newList = [];
-  list.forEach((item) => {
-    const { childMenus, sort } = item;
-    if (!sort && sort !== 0) {
-      newList.push({
-        ...item,
-      });
-      return;
-    }
-    if (childMenus) {
-      newList[sort] = {
-        ...item,
-        childMenus: sortTree(childMenus),
-      };
-    }
-    else {
-      newList[sort] = {
-        ...item,
-      };
-    }
-  });
-  for(var i=newList.length-1;i>=0;i--){
-    if (!newList[i]) {
-      newList.splice(i, 1);
-    }
-  }
-  return newList;
-};
+const TITLE = '角色详情';
 
-@connect(({ role, user, loading }) => ({
-  role,
-  user,
-  loading: loading.models.role,
-}), (dispatch) => ({
-  // 获取详情
-  fetchDetail(action) {
-    dispatch({
-      type: 'role/fetchDetail',
-      ...action,
-    });
-  },
-  // 获取权限树
-  fetchPermissionTree() {
-    dispatch({
-      type: 'role/fetchPermissionTree',
-    });
-  },
-  // 返回
-  goBack() {
-    dispatch(routerRedux.push(backUrl));
-  },
-  /* 跳转到编辑页面 */
-  goToEdit(id) {
-    dispatch(routerRedux.push(editUrl + id));
-  },
-  /* 异常 */
-  goToException() {
-    dispatch(routerRedux.push('/exception/500'));
-  },
-  dispatch,
-}))
 @Form.create()
 export default class RoleDetail extends PureComponent {
-  /* 挂载后 */
+  state = { webSelected: [], appSelected: [] };
+
   componentDidMount() {
-    const { fetchDetail, fetchPermissionTree, goToException, role: { permissionTree }, match: { params: { id } } } = this.props;
-    // 根据id获取详情
+    const {
+      fetchUnitTypes,
+      fetchDetail,
+      fetchPermissionTree,
+      match: { params: { id } },
+    } = this.props;
+
+    fetchUnitTypes();
     fetchDetail({
-      payload: {
-        id,
-      },
-      error: () => {
-        goToException();
+      payload: { id },
+      success: detail => {
+        if (detail && detail.unitType !== undefined && detail.unitType !== null) {
+          const { unitType, webPermissionIds, appPermissionIds } = detail;
+          fetchPermissionTree({
+            payload: unitType,
+            callback: (webTree, appTree) => {
+              this.setState({
+                webSelected: getSelectedTree(webPermissionIds, webTree),
+                appSelected: getSelectedTree(appPermissionIds, appTree),
+              });
+            },
+          });
+        }
       },
     });
-    // 获取权限树
-    if (permissionTree.length === 0) {
-      fetchPermissionTree();
-    }
   }
 
   /* 渲染基础信息 */
   renderBasicInfo() {
-    const { role: { detail: { sysRole: { name, description } } } } = this.props;
+    const {
+      account: { unitTypes },
+      role: { detail: { roleName, description, unitType, companyName } },
+    } = this.props;
+
+    const typeMap = unitTypes ? unitTypes.reduce((prev, next) => {
+      const { id, label } = next;
+      prev[id] = label;
+      return prev;
+    }, {}) : {};
 
     return (
       <Card title="基本信息">
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
-          <Description term="角色名称">{name || getEmptyData()}</Description>
+          <Description term="角色名称">{roleName || getEmptyData()}</Description>
+          <Description term="角色类型">{typeMap[unitType] || getEmptyData()}</Description>
+          {companyName && <Description term="单位名称">{companyName}</Description>}
           <Description term="角色描述">{<div style={{ whiteSpace: 'pre-wrap' }}>{description}</div> || getEmptyData()}</Description>
         </DescriptionList>
       </Card>
@@ -156,20 +85,31 @@ export default class RoleDetail extends PureComponent {
 
   /* 权限配置 */
   renderAuthorizationConfiguration() {
-    const { role: { detail: { treeMap } } } = this.props;
-    const menu = treeMap ? (treeMap.menu || []) : [];
-    const tree = sortTree(menu);
+    const { role: { detail: { unitType } } } = this.props;
+    const { webSelected, appSelected } = this.state;
+    const tree = sortTree(webSelected);
+    const appTree = sortTree(appSelected);
+    const isAdmin = +unitType === 3;
 
     return (
       <Card title="权限配置" style={{ marginTop: '24px' }}>
-        <DescriptionList col={1} style={{ marginBottom: 16 }}>
-          <Description term="权限树">
-            {treeMap ? (
+        <DescriptionList col={2} style={{ marginBottom: 16 }}>
+          <Description term="WEB权限树">
+            {webSelected.length ? (
               <Tree>
                 {this.renderTreeNodes(tree)}
               </Tree>
             ) : getEmptyData()}
           </Description>
+          {!isAdmin && (
+            <Description term="APP权限树">
+              {appSelected.length ? (
+                <Tree>
+                  {this.renderTreeNodes(appTree)}
+                </Tree>
+              ) : getEmptyData()}
+            </Description>
+          )}
         </DescriptionList>
         {this.renderButtonGroup()}
       </Card>
@@ -178,11 +118,15 @@ export default class RoleDetail extends PureComponent {
 
   /* 按钮组 */
   renderButtonGroup() {
-    const { goBack, goToEdit, match: { params: { id } }, user: { currentUser: { permissionCodes } } } = this.props;
-    // 是否有列表权限
-    const hasListAuthority = hasAuthority(listCode, permissionCodes);
-    // 是否有编辑权限
-    const hasEditAuthority = hasAuthority(editCode, permissionCodes);
+    const {
+      goBack,
+      goToEdit,
+      codes: { list: listCode, edit: editCode },
+      match: { params: { id } },
+      user: { currentUser: { permissionCodes } },
+    } = this.props;
+    const hasListAuthority = hasAuthority(listCode, permissionCodes); // 是否有列表权限
+    const hasEditAuthority = hasAuthority(editCode, permissionCodes); // 是否有编辑权限
 
     return (
       <div style={{ textAlign: 'center' }}>
@@ -193,10 +137,39 @@ export default class RoleDetail extends PureComponent {
   }
 
   render() {
-    const { loading } = this.props;
+    const {
+      type,
+      loading,
+    } = this.props;
+
+    const isPublic = type;
+    const typeLabel = isPublic ? '公共' : '用户';
+    const breadcrumbList = [
+      {
+        title: '首页',
+        name: '首页',
+        href: '/',
+      },
+      {
+        title: '角色权限',
+        name: '角色权限',
+      },
+      {
+        title: `${typeLabel}角色`,
+        name: `${typeLabel}角色`,
+        href: type ? COMMON_LIST_URL : PRIVATE_LIST_URL,
+      },
+      {
+        title: TITLE,
+        name: TITLE,
+      },
+    ];
 
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout
+        title={TITLE}
+        breadcrumbList={breadcrumbList}
+      >
         <Spin spinning={loading}>
           {this.renderBasicInfo()}
           {this.renderAuthorizationConfiguration()}

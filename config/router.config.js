@@ -6,8 +6,8 @@ module.exports = env => {
       // component: '../layouts/UserLayout',
       routes: [
         { path: '/user', redirect: '/user/login' },
-        { path: '/user/login', component: './User/NanXiaoLogin' },
-        { path: '/user/download', component: './User/NanXiaoDownload' },
+        { path: '/user/login', component: './User/Login' },
+        { path: '/user/download', component: './User/Download' },
         { path: '/user/redirect-login', component: './User/RedirectLogin' },
         { path: '/user/register', component: './User/Register' },
         { path: '/user/register-result', component: './User/RegisterResult' },
@@ -61,36 +61,6 @@ module.exports = env => {
         },
       ],
     },
-    // // 南消
-    // {
-    //   path: '/nanxiao',
-    //   routes: [
-    //     { path: '/nanxiao', redirect: '/nanxiao/user/login' },
-    //     {
-    //       path: '/nanxiao/user/login',
-    //       component: './User/NanXiaoLogin',
-    //     },
-    //     {
-    //       path: '/nanxiao/download',
-    //       component: './User/NanXiaoDownload',
-    //     },
-    //   ],
-    // },
-    // // 利民
-    // {
-    //   path: '/limin',
-    //   routes: [
-    //     { path: '/limin', redirect: '/limin/user/login' },
-    //     {
-    //       path: '/limin/user/login',
-    //       component: './User/LiMinLogin',
-    //     },
-    //     {
-    //       path: '/limin/download',
-    //       component: './User/LiMinDownload',
-    //     },
-    //   ],
-    // },
     //big platform
     {
       path: '/big-platform',
@@ -548,13 +518,13 @@ module.exports = env => {
                   component: './RoleAuthorization/AccountManagement/AccountManagementList',
                 },
                 {
-                  path: '/role-authorization/account-management/add',
+                  path: '/role-authorization/account-management/add', // 新增账号基本信息和第一个关联单位
                   code: 'roleAuthorization.accountManagement.add',
                   name: 'add',
                   component: './RoleAuthorization/AccountManagement/AccountManagementEdit',
                 },
                 {
-                  path: '/role-authorization/account-management/edit/:id',
+                  path: '/role-authorization/account-management/edit/:id', // 编辑账号基本信息
                   code: 'roleAuthorization.accountManagement.edit',
                   name: 'edit',
                   component: './RoleAuthorization/AccountManagement/AccountManagementEdit',
@@ -566,13 +536,13 @@ module.exports = env => {
                   component: './RoleAuthorization/AccountManagement/AccountManagementDetail',
                 },
                 {
-                  path: '/role-authorization/account-management/associated-unit/add/:id',
+                  path: '/role-authorization/account-management/associated-unit/add/:id', // 新增关联单位
                   code: 'roleAuthorization.accountManagement.associatedUnit.add',
                   name: 'addAssociatedUnit',
                   component: './RoleAuthorization/AccountManagement/AssociatedUnit',
                 },
                 {
-                  path: '/role-authorization/account-management/associated-unit/edit/:userId',
+                  path: '/role-authorization/account-management/associated-unit/edit/:userId', // 编辑关联单位
                   code: 'roleAuthorization.accountManagement.associatedUnit.edit',
                   name: 'editAssociatedUnit',
                   component: './RoleAuthorization/AccountManagement/AssociatedUnit',
@@ -593,25 +563,97 @@ module.exports = env => {
                   path: '/role-authorization/role/list',
                   name: 'list',
                   code: 'roleAuthorization.role.listView',
-                  component: './RoleAuthorization/Role/RoleList',
+                  component: './RoleAuthorization/SystemRole/SystemRoleList',
                 },
                 {
                   path: '/role-authorization/role/detail/:id',
                   name: 'detail',
                   code: 'roleAuthorization.role.view',
-                  component: './RoleAuthorization/Role/RoleDetail',
+                  component: './RoleAuthorization/SystemRole/SystemRoleDetail',
                 },
                 {
                   path: '/role-authorization/role/add',
                   name: 'add',
                   code: 'roleAuthorization.role.add',
-                  component: './RoleAuthorization/Role/RoleHandler',
+                  component: './RoleAuthorization/SystemRole/SystemRoleHandler',
                 },
                 {
                   path: '/role-authorization/role/edit/:id',
                   name: 'edit',
                   code: 'roleAuthorization.role.edit',
-                  component: './RoleAuthorization/Role/RoleHandler',
+                  component: './RoleAuthorization/SystemRole/SystemRoleHandler',
+                },
+              ],
+            },
+            {
+              path: '/role-authorization/commonRole',
+              code: 'roleAuthorization.commonRole',
+              name: 'commonRole',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/role-authorization/commonRole',
+                  redirect: 'list',
+                },
+                {
+                  path: '/role-authorization/commonRole/list',
+                  name: 'list',
+                  code: 'roleAuthorization.commonRole.listView',
+                  component: './RoleAuthorization/CommonRole/CommonRoleList',
+                },
+                {
+                  path: '/role-authorization/commonRole/detail/:id',
+                  name: 'detail',
+                  code: 'roleAuthorization.commonRole.view',
+                  component: './RoleAuthorization/CommonRole/CommonRoleDetail',
+                },
+                {
+                  path: '/role-authorization/commonRole/add',
+                  name: 'add',
+                  code: 'roleAuthorization.commonRole.add',
+                  component: './RoleAuthorization/CommonRole/CommonRoleHandler',
+                },
+                {
+                  path: '/role-authorization/commonRole/edit/:id',
+                  name: 'edit',
+                  code: 'roleAuthorization.commonRole.edit',
+                  component: './RoleAuthorization/CommonRole/CommonRoleHandler',
+                },
+              ],
+            },
+            {
+              path: '/role-authorization/userRole',
+              code: 'roleAuthorization.userRole',
+              name: 'userRole',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/role-authorization/userRole',
+                  redirect: 'list',
+                },
+                {
+                  path: '/role-authorization/userRole/list',
+                  name: 'list',
+                  code: 'roleAuthorization.userRole.listView',
+                  component: './RoleAuthorization/UserRole/UserRoleList',
+                },
+                {
+                  path: '/role-authorization/userRole/detail/:id',
+                  name: 'detail',
+                  code: 'roleAuthorization.userRole.view',
+                  component: './RoleAuthorization/UserRole/UserRoleDetail',
+                },
+                {
+                  path: '/role-authorization/userRole/add',
+                  name: 'add',
+                  code: 'roleAuthorization.userRole.add',
+                  component: './RoleAuthorization/UserRole/UserRoleHandler',
+                },
+                {
+                  path: '/role-authorization/userRole/edit/:id',
+                  name: 'edit',
+                  code: 'roleAuthorization.userRole.edit',
+                  component: './RoleAuthorization/UserRole/UserRoleHandler',
                 },
               ],
             },
@@ -1299,6 +1341,31 @@ module.exports = env => {
                   code: 'systemManagement.pageAuthority.edit',
                   name: 'sort',
                   component: './SystemManagement/PageAuthority/PageAuthoritySort',
+                },
+              ],
+            },
+            {
+              path: '/system-management/app-authority',
+              code: 'systemManagement.appAuthority',
+              name: 'appAuthority',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/system-management/app-authority',
+                  name: 'appAuthority',
+                  redirect: '/system-management/app-authority/index',
+                },
+                {
+                  path: '/system-management/app-authority/index',
+                  code: 'systemManagement.appAuthority.view',
+                  name: 'view',
+                  component: './SystemManagement/AppAuthority/AppAuthority',
+                },
+                {
+                  path: '/system-management/app-authority/add-or-edit/:id',
+                  code: 'systemManagement.appAuthority.edit',
+                  name: 'edit',
+                  component: './SystemManagement/AppAuthority/AppAuthorityAddOrEdit',
                 },
               ],
             },

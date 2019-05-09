@@ -32,7 +32,7 @@ const localStorageName = '_login_account';
 const isFromMobile = isMobileExcludeIpad();
 
 /**
- * description: 南消登录页面
+ * description: 登录页面
  * author: sunkai
  * date: 2019年01月23日
  */
@@ -41,7 +41,7 @@ const isFromMobile = isMobileExcludeIpad();
   submitting: loading.models.login,
 }))
 @Form.create()
-export default class NanXiaoLogin extends PureComponent {
+export default class Login extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {

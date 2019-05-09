@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <!--eslint-disable-line-->
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,219 +10,173 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>晶安智慧云</title>
   <style>
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
+    * {
       margin: 0;
-    }
-
-    html ul,
-    body ul {
-      list-style-type: none;
       padding: 0;
+      box-sizing: border-box;
     }
-
+    html, body {
+      height: 100%;
+    }
     #root {
+      display: table;
+      table-layout: fixed;
       width: 100%;
       height: 100%;
-      background: url("http://data.jingan-china.cn/v2/solution-business/bg.png") no-repeat center center;
-      background-size: 100% 100%;
-    }
-
-    .main {
-      width: 80%;
-      height: 80%;
-      position: absolute;
-      /* top: 11%; */
-      left: 10%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .main .top {
-      width: 100%;
-      height: 66%;
-      display: flex;
-    }
-
-    .main .bottom {
-      flex: 1;
-      width: 100%;
-      margin-top: 18px;
-      display: flex;
-    }
-
-    .main .item {
-      flex: 1;
+      font-size: 0;
       color: #fff;
-      padding: 0 32px;
-      cursor: pointer;
-      border: 2px solid transparent;
+      line-height: 1.5;
+      background: url("http://data.jingan-china.cn/v2/solution-business/bg.png") no-repeat center / cover;
     }
-
-    .main .item:hover {
-      /* border: 2px solid rgba(255, 255, 255, 0.5); */
-      box-shadow: 0px 0px 8px #fff;
-    }
-
-    .item+.item {
-      height: 100%;
-      margin-left: 20px;
-    }
-
-    .item-title {
-      font-size: 28px;
-      margin-top: 40px;
-      margin-bottom: 25px;
-    }
-
-    .top .item-title {
-      margin-top: 60px;
-    }
-
-    .item-p {
-      font-size: 16px;
-    }
-
-    .safe\&fire {
-      background: url("http://data.jingan-china.cn/v2/solution-business/safe&fire.png") no-repeat center center;
-      background-size: 100% 100%;
-    }
-
-    .production {
-      background: url("http://data.jingan-china.cn/v2/solution-business/production.png") no-repeat center center;
-      background-size: 100% 100%;
-    }
-
-    .fire {
-      background: url("http://data.jingan-china.cn/v2/solution-business/fire.png") no-repeat center center;
-      background-size: 100% 100%;
-    }
-
-    .electricity {
-      background: url("http://data.jingan-china.cn/v2/solution-business/electricity.png") no-repeat center center;
-      background-size: 100% 100%;
-    }
-
-    .gas {
-      background: url("http://data.jingan-china.cn/v2/solution-business/gas.png") no-repeat center center;
-      background-size: 100% 100%;
-    }
-
-    .smoke {
-      background: url("http://data.jingan-china.cn/v2/solution-business/smoke.png") no-repeat center center;
-      background-size: 100% 100%;
-    }
-
-    .title {
-      display: flex;
+    #header:after {
+      content: '';
+      display: block;
       width: 100%;
-      height: 11%;
-      font-size: 56px;
-      font-weight: 500;
-      letter-spacing: 30px;
-      margin-left: 15px;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-    }
-
-    .divider {
+      height: 2px;
       background: -webkit-linear-gradient(left, transparent , #1475d9, transparent); /* Safari 5.1 - 6.0 */
       background: -o-linear-gradient(right, transparent , #1475d9, transparent); /* Opera 11.1 - 12.0 */
       background: -moz-linear-gradient(right, transparent , #1475d9, transparent); /* Firefox 3.6 - 15 */
       background: linear-gradient(to right, transparent , #1475d9, transparent); /* 标准的语法 */
-
+    }
+    #title {
+      padding: 18px 32px;
+      font-size: 48px;
+      font-weight: 400;
+      letter-spacing: 0.5em;
+      text-align: center;
+    }
+    #main {
+      display: table-row;
+      height: 100%;
+    }
+    #content {
+      margin: 0 auto;
+      padding: 16px 6px;
+      max-width: 1592px;
+      height: 100%;
+    }
+    #list {
+      display: table;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 20px 10px;
       width: 100%;
-      height: 2px;
-      margin-bottom: 25px;
+      height: 100%;
+    }
+    .three-columns-tr {
+      display: table-row;
+    }
+    .item {
+      display: table-cell;
+      padding: 1.5em 2em;
+      font-size: 16px;
+      color: inherit;
+      text-decoration: none !important;
+      vertical-align: top;
+    }
+    .item:hover {
+      box-shadow: 0px 0px 0.5em #fff;
+    }
+    .safeAndfire, .production, .fire {
+      height: 66.666666%;
+    }
+    .electricity, .gas, .smoke {
+      height: 33.333333%;
     }
 
-    @media screen and (max-width: 1379px) {
-      .main .item {
-        padding: 0 25px;
+    .item-title {
+      padding: 14px 0;
+      font-size: 24px;
+    }
+
+    .item-content {
+      line-height: 36px;
+    }
+
+    .safeAndfire {
+      background: url("http://data.jingan-china.cn/v2/solution-business/safe&fire.png") no-repeat center / cover;
+    }
+
+    .production {
+      background: url("http://data.jingan-china.cn/v2/solution-business/production.png") no-repeat center / cover;
+    }
+
+    .fire {
+      background: url("http://data.jingan-china.cn/v2/solution-business/fire.png") no-repeat center / cover;
+    }
+
+    .electricity {
+      background: url("http://data.jingan-china.cn/v2/solution-business/electricity.png") no-repeat center / cover;
+    }
+
+    .gas {
+      background: url("http://data.jingan-china.cn/v2/solution-business/gas.png") no-repeat center / cover;
+    }
+
+    .smoke {
+      background: url("http://data.jingan-china.cn/v2/solution-business/smoke.png") no-repeat center / cover;
+    }
+
+    @media screen and (max-width: 575px) {
+      #title {
+        letter-spacing: 0.125em;
       }
-
-      .title {
-        font-size: 40px;
+      .three-columns-tr {
+        display: none;
       }
-
-      .item-title {
-        font-size: 25px;
+      #list {
+        display: block;
+        height: auto;
       }
-
-      .item-p {
-        font-size: 14px;
-
+      .item {
+        display: block;
+        margin: 0 20px 20px;
       }
-
-      .top .item-title {
-        margin-top: 40px;
-        margin-bottom: 18px;
+      .item:first-child {
+        margin-top: 10px;
       }
-
-      .bottom .item-title {
-        margin-top: 15px;
+      .item:last-child {
+        margin-bottom: 10px;
       }
     }
   </style>
 </head>
-
 <body>
   <div id="root">
-    <div class="title">晶安智慧云</div>
-    <div class="divider"></div>
-    <div class="main">
-      <div class="top">
-        <div class="item safe&fire" id="integration">
-          <div class="item-title">安消一体化</div>
-          <p class="item-p">依托物联感知技术，结合物联网硬件产品，</p>
-          <p class="item-p">提供安消一体化平台+IoT终端+APP+安全服务。</p>
-        </div>
-        <div class="item production" id="production">
-          <div class="item-title">智慧安全生产</div>
-          <p class="item-p">电子化安全巡查，闭环化隐患治理，24小时动态监测，</p>
-          <p class="item-p">大数据分析预警，实现安全管理过程化、</p>
-          <p class="item-p">信息化、全面化。</p>
-        </div>
-        <div class="item fire" id="fire">
-          <div class="item-title">智慧消防</div>
-          <p class="item-p">基于物联传感技术，实时监测消防设施设备状态，</p>
-          <p class="item-p">预警提醒；整合电子化巡查工具，</p>
-          <p class="item-p">全面提升消防工作效率。</p>
-        </div>
-      </div>
-
-      <div class="bottom">
-        <div class="item gas" id="gas">
-          <div class="item-title">智慧燃气</div>
-          <p class="item-p">对生产设施、环境参数等信息实时采集</p>
-          <p class="item-p">与监测预警，防患于未然。</p>
-        </div>
-        <div class="item electricity" id="electricity">
-          <div class="item-title">智慧用电</div>
-          <p class="item-p">通过独立IoT设备或物联网网关设备，实时采集</p>
-          <p class="item-p">设备的状态参数，并进行可视化呈现。</p>
-        </div>
-        <div class="item smoke" id="smoke">
-          <div class="item-title">智能烟感</div>
-          <p class="item-p">基于NB-IoT的智慧烟感可实时上报火灾状况，</p>
-          <p class="item-p">及时通知火警状态；可接入大数据平台。</p>
+    <div id="header">
+      <div id="title">晶安智慧云</div>
+    </div>
+    <div id="main">
+      <div id="content">
+        <div id="list">
+          <a href="http://www.jinganyun.net/xshow/#/user/login?type=integration" target="_blank" rel="noopener noreferrer" class="item safeAndfire" id="integration">
+            <div class="item-title">安消一体化</div>
+            <div class="item-content">依托物联感知技术，结合物联网硬件产品，提供安消一体化平台+IoT终端+APP+安全服务。</div>
+          </a>
+          <a href="http://www.jinganyun.net/xshow/#/user/login?type=production" target="_blank" rel="noopener noreferrer" class="item production" id="production">
+            <div class="item-title">智慧安全生产</div>
+            <div class="item-content">电子化安全巡查，闭环化隐患治理，24小时动态监测，大数据分析预警，实现安全管理过程化、信息化、全面化。</div>
+          </a>
+          <a href="http://www.jinganyun.net/xshow/#/user/login?type=fire" target="_blank" rel="noopener noreferrer" class="item fire" id="fire">
+            <div class="item-title">智慧消防</div>
+            <div class="item-content">基于物联传感技术，实时监测消防设施设备状态，预警提醒；整合电子化巡查工具，全面提升消防工作效率。</div>
+          </a>
+          <div class="three-columns-tr"></div>
+          <a href="http://www.jinganyun.net/xshow/#/user/login?type=gas" target="_blank" rel="noopener noreferrer" class="item gas" id="gas">
+            <div class="item-title">智慧燃气</div>
+            <div class="item-content">对生产设施、环境参数等信息实时采集与监测预警，防患于未然。</div>
+          </a>
+          <a href="http://www.jinganyun.net/xshow/#/user/login?type=electricity" target="_blank" rel="noopener noreferrer" class="item electricity" id="electricity">
+            <div class="item-title">智慧用电</div>
+            <div class="item-content">通过独立IoT设备或物联网网关设备，实时采集设备的状态参数，并进行可视化呈现。</div>
+          </a>
+          <a href="http://www.jinganyun.net/xshow/#/user/login?type=smoke" target="_blank" rel="noopener noreferrer" class="item smoke" id="smoke">
+            <div class="item-title">智能烟感</div>
+            <div class="item-content">基于NB-IoT的智慧烟感可实时上报火灾状况，及时通知火警状态；可接入大数据平台。</div>
+          </a>
         </div>
       </div>
     </div>
   </div>
 </body>
-
-<script>
-  const doms = document.getElementsByClassName('item')
-  for (const dom of doms) {
-    dom.addEventListener('click', function() {
-      window.open(`http://www.jinganyun.net/xshow/#/user/login?type=${encodeURI(dom.id)}`)
-    }, false)
-  }
-</script>
-
 </html>

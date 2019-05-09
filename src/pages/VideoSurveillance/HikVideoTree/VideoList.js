@@ -260,7 +260,7 @@ export default class VideoList extends PureComponent {
     if (this.timer !== null) {
       return;
     }
-    const url = 'http://p92lxg7ga.bkt.clouddn.com/VideoClientSetup.exe.zip';
+    const url = 'http://data.jingan-china.cn/VideoClientSetup.exe';
     this.props.dispatch({
       type: 'video/fetchVideoUrl',
       payload: {
