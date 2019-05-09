@@ -333,3 +333,18 @@ export function mapMutations(instance, { namespace, types }) {
     }
   }
 }
+
+/**
+    * 返回列表中第一个视频
+    * @param {Array} tree
+    */
+export function findFirstVideo(tree) {
+  // type不存在为视频
+  if (tree.length === 0) return {}
+  const first = tree[0]
+  if (!first.type) {
+    return first
+  } else if (first.list && first.list.length > 0) {
+    return findFirstVideo(first.list)
+  }
+}

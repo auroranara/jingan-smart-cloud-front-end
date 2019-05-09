@@ -4,12 +4,14 @@ import { notification } from 'antd';
 import moment from 'moment';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import VideoSurveillance from './VideoSurveillance';
-import VideoPlay from '../NewFireControl/section/VideoPlay';
+// import VideoPlay from '../NewFireControl/section/VideoPlay';
+import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import PointInspectionCount from './PointInspectionCount';
 import CompanyInfo from './CompanyInfo';
 import Messages from './Messages';
 import MaintenanceCount from './MaintenanceCount';
 import FourColor from './FourColor';
+import { findFirstVideo } from '@/utils/utils';
 
 import styles from './index.less';
 
@@ -479,7 +481,8 @@ export default class App extends PureComponent {
     // 轮询
     // this.pollTimer = setInterval(this.polling, DELAY);
     // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
-    dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
+    // dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
+    dispatch({ type: 'monitor/fetchCameraTree', payload: { company_id: companyId } });
 
     this.fetchWaterSystem('101');
   }
@@ -1230,7 +1233,7 @@ export default class App extends PureComponent {
       match: {
         params: { unitId: companyId },
       },
-      monitor: { allCamera },
+      monitor: { allCamera, cameraTree },
       newUnitFireControl: {
         fireAlarmSystem: {
           fire_state = 0,
@@ -1388,7 +1391,7 @@ export default class App extends PureComponent {
                 <VideoSurveillance
                   handlePlay={this.handlePlay}
                   handleShowVideo={this.handleShowVideo}
-                  data={allCamera}
+                  data={cameraTree}
                 />
               </div>
             </div>
@@ -1428,20 +1431,36 @@ export default class App extends PureComponent {
             </div>
           </div>
         </div>
-        <VideoPlay
+        <NewVideoPlay
+          showList={showVideoList}
+          videoList={cameraTree}
+          visible={videoVisible}
+          keyId={videoKeyId} // keyId
+          handleVideoClose={this.handleVideoClose}
+          isTree={true}
+        />
+        <NewVideoPlay
+          showList={true}
+          videoList={cameraTree}
+          visible={fireVideoVisible}
+          keyId={videoList.length > 0 ? findFirstVideo(videoList).id : undefined} // keyId
+          handleVideoClose={this.handleFireVideoClose}
+          isTree={true}
+        />
+        {/* <VideoPlay
           showList={showVideoList}
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
-        />
-        <VideoPlay
+        /> */}
+        {/* <VideoPlay
           showList={true}
           videoList={videoList}
           visible={fireVideoVisible}
           keyId={videoList[0] ? videoList[0].key_id : undefined} // keyId
           handleVideoClose={this.handleFireVideoClose}
-        />
+        /> */}
         <RiskDrawer
           visible={riskDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}

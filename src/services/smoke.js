@@ -58,6 +58,11 @@ export async function getCameraList(params) {
   return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
 }
 
+// 视频树列表
+export async function fetchCameraTree(params) {
+  return request(`${URL_PREFIX}/hdf/getTreeCamera.json?${stringify(params)}`);
+}
+
 // 报警处理流程
 export async function getSmokeForMaintenance(params) {
   return request(`${URL_PREFIX}/shs/getSmokeForMaintenance?${stringify(params)}`);

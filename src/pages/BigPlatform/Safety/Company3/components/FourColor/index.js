@@ -100,7 +100,7 @@ export default class FourColor extends PureComponent {
     if (fourColorImg !== prevFourColorImg) {
       this.changeSelectedFourColorImg(fourColorImg[0] || {});
     }
-    else if (points !==prevPoints || videoList !== prevVideoList) {
+    else if (points !== prevPoints || videoList !== prevVideoList) {
       this.changeSelectedFourColorImg();
     }
   }
@@ -108,7 +108,7 @@ export default class FourColor extends PureComponent {
   /**
    * 设置选中的四色图并筛选出对应的点位和视频
    */
-  changeSelectedFourColorImg = (selectedFourColorImg=this.state.selectedFourColorImg) => {
+  changeSelectedFourColorImg = (selectedFourColorImg = this.state.selectedFourColorImg) => {
     const { id } = selectedFourColorImg;
     const {
       model: {
@@ -296,8 +296,8 @@ export default class FourColor extends PureComponent {
                           {+originalStatus === 2 ? (
                             <span style={{ color: '#ff4848' }}>有</span>
                           ) : (
-                            '无'
-                          )}
+                              '无'
+                            )}
                         </div>
                         <div>
                           检查状态：
@@ -311,8 +311,8 @@ export default class FourColor extends PureComponent {
                         </div>
                       </Fragment>
                     ) : (
-                      <div style={{ textAlign: 'center' }}>暂无信息</div>
-                    )
+                        <div style={{ textAlign: 'center' }}>暂无信息</div>
+                      )
                   }
                 >
                   <div
@@ -347,7 +347,7 @@ export default class FourColor extends PureComponent {
                       boxShadow: '0px 1px 5px 0px rgba(0, 0, 0, 0.35)',
                     }}
                     onClick={() => {
-                      handleClickVideo(keyId);
+                      handleClickVideo(id);
                     }}
                   />
                 </Tooltip>
