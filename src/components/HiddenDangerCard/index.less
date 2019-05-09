@@ -1,4 +1,107 @@
+@common-color: #0ff;
+
 .container {
-  overflow: hidden;
-  zoom: 1;
+  position: relative;
+  padding: 1em;
+  padding-top: 0.75em;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #fff;
+  background-color: #033069;
+  border: 1px solid @common-color;
+}
+.titleWrapper {
+  display: flex;
+  padding-bottom: 1.25em;
+  .titleIcon {
+    flex: none;
+    width: 2.125em;
+    height: 1.6875em;
+    background: no-repeat center;
+    background-size: contain;
+  }
+  .title {
+    flex: 1;
+    padding-left: 0.375em;
+    line-height: 1.6875em;
+    .ellipsisTitle {
+      max-width: 18em;
+    }
+  }
+}
+.wrapper {
+  display: flex;
+  .imageWrapper {
+    flex: none;
+    position: relative;
+    width: 7.5em;
+    height: 10em;
+    background: #054795 no-repeat center;
+    background-size: 50% auto;
+    .image {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: no-repeat center;
+      background-size: 100% auto;
+    }
+  }
+  .fieldsWrapper {
+    flex: 1;
+    position: relative;
+    top: -0.25em;
+    padding-left: 1em;
+  }
+}
+.row {
+  display: flex;
+  padding-bottom: 0.5em;
+  .label {
+    flex: none;
+    color: @common-color;
+    .labelWrapper {
+      display: inline-block;
+      width: 4em;
+      white-space: nowrap;
+      overflow: hidden;
+      vertical-align: top;
+    }
+  }
+  .value {
+    flex: 1;
+    padding-left: 0.25em;
+    color: #fff;
+    .value2 {
+      margin-left: 1em;
+    }
+  }
+
+  &.twoCharacter {
+    .labelWrapper {
+      letter-spacing: 2em;
+    }
+  }
+  &.planRectification {
+    .value {
+      span {
+        color: #F83329;
+      }
+    }
+  }
+}
+.status {
+  position: absolute;
+  top: 0;
+  right: 1em;
+  padding-top: 0.75em;
+  padding-bottom: 0.875em;
+  width: 1.75em;
+  text-align: center;
+  line-height: 1;
+  word-break:break-all;
+  border-bottom-left-radius: 1em;
+  border-bottom-right-radius: 1em;
+  z-index: 9;
 }
