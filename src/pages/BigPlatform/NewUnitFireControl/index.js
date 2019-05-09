@@ -1441,11 +1441,11 @@ export default class App extends PureComponent {
         />
         <NewVideoPlay
           showList={true}
-          videoList={cameraTree}
+          videoList={videoList}
           visible={fireVideoVisible}
           keyId={videoList.length > 0 ? findFirstVideo(videoList).id : undefined} // keyId
           handleVideoClose={this.handleFireVideoClose}
-          isTree={true}
+          isTree={false}
         />
         {/* <VideoPlay
           showList={showVideoList}

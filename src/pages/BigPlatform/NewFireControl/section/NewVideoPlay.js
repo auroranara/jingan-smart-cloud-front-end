@@ -74,14 +74,16 @@ class VideoPlay extends Component {
     this.generateList(videoList)
     if (showList && !(videoList && videoList.length)) return
     const item = keyId ? dataList.find(item => item.id === keyId) : findFirstVideo(videoList)
-    const videoId = item.id, videoKey = item.key_id || item.keyId
-    const expandedKeys = this.getParentKey(videoId, videoList)
+    const videoId = item.id, videoKey = item.key_id || item.keyId, deviceId = item.device_id || item.deviceId
+    const expandedKeys = [this.getParentKey(videoId, videoList)]
+
     // 清空视频链接
-    this.setState({ videoSrc: '', selectedKeys: [videoId], expandedKeys });
+    this.setState({ videoSrc: '', selectedKeys: [videoId], expandedKeys, autoExpandParent: true, searchValue: '' });
     dispatch({
       type: 'videoPlay/fetchStartToPlay',
       payload: {
         key_id: videoKey,
+        device_id: deviceId,
       },
       success: response => {
         if (videoKey) {
@@ -103,6 +105,7 @@ class VideoPlay extends Component {
   handleInit = () => {
     const { dispatch, videoList, keyId, showList } = this.props;
     let videoId = '';
+    let deviceId = null;
     // 如果现实列表
     if (showList) {
       // 列表为空直接return
@@ -122,11 +125,14 @@ class VideoPlay extends Component {
       this.setState({
         activeIndex: index,
       });
+      const item = videoList[index]
+      deviceId = item.device_id || item.deviceId
     }
     dispatch({
       type: 'videoPlay/fetchStartToPlay',
       payload: {
         key_id: videoId,
+        device_id: deviceId,
       },
       success: response => {
         console.log('response', response);
@@ -165,13 +171,15 @@ class VideoPlay extends Component {
               [styles.itemActive]: activeIndex === index,
             });
             const keyId = item.key_id || item.keyId;
+            const id = item.id || keyId;
+            const deviceId = item.device_id || item.deviceId
             return (
               <li
                 className={itemStyles}
                 onClick={() => {
-                  this.handleItemClick(index, keyId);
+                  this.handleItemClick(index, keyId, deviceId);
                 }}
-                key={keyId}
+                key={id}
               >
                 {activeIndex === index && (
                   <Icon type="caret-right" style={{ color: '#f6b54e', margin: '0 8px' }} />
@@ -203,7 +211,7 @@ class VideoPlay extends Component {
       // const newKeyId = key_id || keyId;
       const title = (+type === 1 && building_name) || (+type === 2 && floor_name) || name
       // const key = (+type === 1 && building_id) || (+type === 2 && floor_id) || newKeyId
-      if (title.indexOf(value) > -1) {
+      if (title && title.indexOf(value) > -1) {
         return this.getParentKey(id, videoList)
       }
       return null;
@@ -217,19 +225,14 @@ class VideoPlay extends Component {
     for (let i = 0; i < tree.length; i++) {
       const node = tree[i];
       const {
-        type = null,
-        keyId = null,
-        key_id = null,
-        building_id = null,
-        floor_id = null,
         list = [],
-        id,
+        id: parentId,
       } = node
       const childParent = this.getParentKey(key, list)
       // const nodeKey = (+type === 1 && building_id) || (+type === 2 && floor_id) || (key_id || keyId)
       if (list.length > 0) {
-        if (list.some(({ type = null, keyId = null, key_id = null, building_id = null, floor_id = null }) => ((!type && (key_id || keyId)) || (+type === 1 && building_id) || (+type === 2 && floor_id)) === key)) {
-          parentKey = id;
+        if (list.some(({ type = null, keyId = null, key_id = null, building_id = null, floor_id = null, id }) => ((+type === 1 && building_id) || (+type === 2 && floor_id) || id) === key)) {
+          parentKey = parentId;
         } else if (childParent) {
           parentKey = childParent;
         }
@@ -294,13 +297,15 @@ class VideoPlay extends Component {
         key_id = null,
         keyId = null,
         id,
+        deviceId = null,
+        device_id = null,
       } = item
       const newKeyId = key_id || keyId;
       const tempTitle = (+type === 1 && building_name) || (+type === 2 && floor_name) || name
       // const key = (+type === 1 && building_id) || (+type === 2 && floor_id) || newKeyId
-      const index = tempTitle.indexOf(searchValue);
-      const beforeStr = tempTitle.substr(0, index);
-      const afterStr = tempTitle.substr(index + searchValue.length);
+      const index = tempTitle ? tempTitle.indexOf(searchValue) : -1;
+      const beforeStr = index > -1 ? tempTitle.substr(0, index) : null;
+      const afterStr = index > -1 ? tempTitle.substr(index + searchValue.length) : null;
       const title = index > -1 ? (
         <span>
           {beforeStr}
@@ -309,18 +314,26 @@ class VideoPlay extends Component {
         </span>
       ) : <span>{tempTitle}</span>;
       const icon = selectedKeys.includes(id) ? (<Icon type="caret-right" style={{ color: '#f6b54e' }} />) : circle
+      const dataProps = {
+        icon: type ? null : icon,
+        selectable: !type,
+        title: title,
+        key: id,
+        keyId: newKeyId,
+        deviceId: device_id || deviceId,
+      }
       if (list.length > 0) {
         return (
-          <TreeNode icon={type ? null : icon} selectable={!type} title={title} key={id} keyId={newKeyId}>
+          <TreeNode {...dataProps}>
             {this.renderTreeNode(list)}
           </TreeNode>
         )
       }
-      return (<TreeNode icon={type ? null : icon} selectable={!type} title={title} key={id} keyId={newKeyId}></TreeNode>)
+      return (<TreeNode {...dataProps}></TreeNode>)
     })
   }
 
-  handleItemClick = (index, keyId) => {
+  handleItemClick = (index, keyId, deviceId) => {
     const { dispatch, actionType } = this.props;
     this.setState(
       {
@@ -332,6 +345,7 @@ class VideoPlay extends Component {
           type: 'videoPlay/fetchStartToPlay',
           payload: {
             key_id: keyId,
+            device_id: deviceId,
           },
           success: response => {
             this.setState({
@@ -354,6 +368,7 @@ class VideoPlay extends Component {
     // 由于keys由id组成
     if (keys.length === 0) return
     const key = e.selectedNodes[0].props.keyId
+    const deviceId = e.selectedNodes[0].props.deviceId
     const { dispatch, actionType } = this.props;
     this.setState(
       {
@@ -366,6 +381,7 @@ class VideoPlay extends Component {
           type: 'videoPlay/fetchStartToPlay',
           payload: {
             key_id: key,
+            device_id: deviceId,
           },
           success: response => {
             this.setState({

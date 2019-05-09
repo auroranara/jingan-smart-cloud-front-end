@@ -995,7 +995,7 @@ export default class FireControlBigPlatform extends PureComponent {
           visible={videoVisible}
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
-          isTree={videoState === VIDEO_LOOK_UP ? false : true}
+          isTree={true}
         />
         <Tooltip
           visible={tooltipVisible}
