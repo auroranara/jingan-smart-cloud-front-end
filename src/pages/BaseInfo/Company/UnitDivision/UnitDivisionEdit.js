@@ -162,7 +162,7 @@ export default class UnitDivisionEdit extends PureComponent {
 
     return (
       <Card className={styles.card} bordered={false}>
-        <Form hideRequiredMark style={{ marginTop: 8 }}>
+        <Form style={{ marginTop: 8 }}>
           <FormItem {...formItemLayout} label={fieldLabels.divisionName}>
             {getFieldDecorator('name', {
               initialValue: name,
@@ -195,7 +195,6 @@ export default class UnitDivisionEdit extends PureComponent {
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
-                  required: true,
                   message: '请输入负责人姓名',
                 },
               ],
@@ -208,7 +207,6 @@ export default class UnitDivisionEdit extends PureComponent {
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
-                  required: true,
                   message: '请输入联系电话',
                 },
                 { pattern: phoneReg, message: '联系电话格式不正确' },
@@ -321,7 +319,17 @@ export default class UnitDivisionEdit extends PureComponent {
     ];
 
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
+      <PageHeaderLayout
+        title={title}
+        breadcrumbList={breadcrumbList}
+        content={
+          <div>
+            <span style={{ paddingTop: 10 }}>
+              一家单位里有多个分部，可以建立单位分部，比如：XXX医院，有城中院区，洋湖院区，可以在这里创建
+            </span>
+          </div>
+        }
+      >
         {this.renderInfo()}
         {this.renderFooterToolbar()}
       </PageHeaderLayout>
