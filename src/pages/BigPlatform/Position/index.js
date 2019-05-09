@@ -20,6 +20,7 @@ export default class PositionIndex extends PureComponent {
     historyCardIds: [],
     areaInfoCache: {}, // 缓存RealTime组件中的areaInfo对象，以防切换tab时，areaInfo为空对象的问题
     boardVisible: false,
+    fullScreen: false,
   };
 
   componentDidMount() {
@@ -71,6 +72,14 @@ export default class PositionIndex extends PureComponent {
     this.setState({ boardVisible: false });
   };
 
+  showFullScreen = () => {
+    this.setState({ fullScreen: true });
+  };
+
+  hideFullScreen = () => {
+    this.setState({ fullScreen: false });
+  };
+
   render() {
     // 注意这里额外引了一个model
     const {
@@ -89,6 +98,7 @@ export default class PositionIndex extends PureComponent {
       historyCardIds,
       areaInfoCache,
       boardVisible,
+      fullScreen,
     } = this.state;
 
     const { sectionTree } = personPosition;
@@ -99,7 +109,8 @@ export default class PositionIndex extends PureComponent {
         title="晶安人员定位监控系统"
         autoSpace={AUTOSPACE}
         extra={companyName}
-        headerStyle={{ fontSize: 16 }}
+        headerStyle={ fullScreen ? { display: 'none' } : { fontSize: 16 }}
+        contentStyle={ fullScreen ? { height: '100%' } : null}
         titleStyle={{ fontSize: 46 }}
       >
         {(!labelIndex || labelIndex === 1) && (

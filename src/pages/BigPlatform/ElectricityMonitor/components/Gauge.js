@@ -23,6 +23,7 @@ export default function Gauge(props) {
   const {
     data: { desc: title, value, unit, limit=[null, null], status },
   } = props;
+  console.log(title, limit);
   const [start, end] = RANGES[title];
   const [value1, value2] = limit;
   const axisLineColor = [];
