@@ -531,8 +531,8 @@ export default class AssociatedUnit extends PureComponent {
     // 不同的地方在于，再次选择时，若选择了和上次一样的选项，则会出发onselect，但是由于Select框的值并未发生改变，所以不会触发onchange事件
     this.handleUnitTypeSelect(id);
 
-    const { data } = detail || {};
-    const { unitType, roleId } = data || {};
+    // const { data } = detail || {};
+    // const { unitType, roleId } = data || {};
 
     this.setState(
       { unitTypeChecked: id },
@@ -546,17 +546,19 @@ export default class AssociatedUnit extends PureComponent {
       }
     );
 
-    // 单位类型改变时，改变角色列表，若与原有单位类型相同，则保留原来的值，若不同则清空已选角色及已选权限
+    // 单位类型改变时，清空已选角色及已选权限
     const unitId = getFieldValue('unitId');
     fetchRoles({ payload: { unitType: id, companyId: unitId }, success: this.genRolesSuccess(id) });
-    if (+unitType === id && roleId) {
-      this.fetchRolePermissions(roleId);
-      setFieldsValue({ roleId });
-    }
-    else {
-      setFieldsValue({ roleId: undefined });
-      this.clearRolePermissions(id);
-    }
+    setFieldsValue({ roleId: undefined });
+    this.clearRolePermissions(id);
+    // if (+unitType === id && roleId) {
+    //   this.fetchRolePermissions(roleId);
+    //   setFieldsValue({ roleId });
+    // }
+    // else {
+    //   setFieldsValue({ roleId: undefined });
+    //   this.clearRolePermissions(id);
+    // }
   };
 
   // 单位类型下拉框选择
@@ -595,10 +597,7 @@ export default class AssociatedUnit extends PureComponent {
       });
     }
     // 清除数据权限输入框的值
-    setFieldsValue({
-      treeIds: undefined,
-      departmentId: undefined,
-    });
+    setFieldsValue({ treeIds: undefined, departmentId: undefined, roleId: undefined });
   };
 
   // 所属单位下拉框选择
@@ -611,7 +610,7 @@ export default class AssociatedUnit extends PureComponent {
     const { unitTypeChecked } = this.state;
 
     // 根据value从源数组中筛选出对应的数据，获取其值
-    setFieldsValue({ treeIds: value });
+    setFieldsValue({ treeIds: value, roleId: undefined });
     fetchDepartmentList({
       payload: { companyId: value.key },
     });
@@ -646,6 +645,7 @@ export default class AssociatedUnit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     setFieldsValue({
+      roleId: undefined,
       treeIds: { key: value, label },
     });
     fetchDepartmentList({
@@ -659,12 +659,17 @@ export default class AssociatedUnit extends PureComponent {
   /** 所属单位下拉框失焦 */
   handleUnitIdBlur = value => {
     const {
+      fetchRoles,
       fetchUnitsFuzzy,
       account: { unitIds },
       form: { setFieldsValue, getFieldValue },
     } = this.props;
-    // 根据value判断是否是手动输入
-    if (value && value.key === value.label) {
+    const unitType = getFieldValue('unitType');
+    const isUnitTypeExist = unitType !== undefined && unitType !== null;
+    let rolePayload;
+
+    setFieldsValue({ roleId: undefined });
+    if (value && value.key === value.label) { // 根据value判断是否是手动输入
       this.handleUnitIdChange.cancel();
       // 从源数组中筛选出当前值对应的数据，如果存在，则将对应的数据为所属单位下拉框重新赋值
       const unitId = unitIds.filter(item => item.name === value.label)[0];
@@ -677,13 +682,14 @@ export default class AssociatedUnit extends PureComponent {
           unitId: treeIds,
           treeIds,
         });
+        if (isUnitTypeExist)
+          rolePayload = { unitType, companyId: unitId };
       } else {
         setFieldsValue({
           unitId: undefined,
           treeIds: undefined,
         });
-        const unitType = getFieldValue('unitType');
-        if (unitType !== undefined && unitType !== null) {
+        if (isUnitTypeExist) {
           fetchUnitsFuzzy({
             payload: {
               unitType,
@@ -691,8 +697,10 @@ export default class AssociatedUnit extends PureComponent {
               pageSize: defaultPageSize,
             },
           });
+          rolePayload = { unitType };
         }
       }
+      fetchRoles({ payload: rolePayload, success: this.genRolesSuccess(unitType) });
     }
   };
 
@@ -1092,7 +1100,6 @@ export default class AssociatedUnit extends PureComponent {
                     ],
                   })(
                     <TreeSelect
-                      allowClear
                       labelInValue
                       disabled={isUnitUser}
                       placeholder="请选择所属单位"
@@ -1119,35 +1126,6 @@ export default class AssociatedUnit extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-            {/* 当单位类型为企事业主体（企事业主体对应id为4） */}
-            {/* {unitTypes.length !== 0 &&
-              unitTypeChecked === 4 && (
-                <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
-                  <Form.Item label={fieldLabels.userType}>
-                    {getFieldDecorator('userType', {
-                      initialValue: userId
-                        ? userType
-                        : userTypes.length === 0
-                          ? undefined
-                          : userTypes[0].value,
-                      rules: [
-                        {
-                          required: true,
-                          message: '请选择用户角色',
-                        },
-                      ],
-                    })(
-                      <AutoComplete placeholder="请选择用户角色">
-                        {userTypes.map(item => (
-                          <Option value={item.value} key={item.value}>
-                            {item.label}
-                          </Option>
-                        ))}
-                      </AutoComplete>
-                    )}
-                  </Form.Item>
-                </Col>
-              )} */}
             {unitTypes.length !== 0 &&
               unitTypeChecked === COM && (
                 <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
@@ -1167,31 +1145,6 @@ export default class AssociatedUnit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
-            {/* 当单位类型为政府机构（政府机构对应id为2） */}
-            {/* {unitTypes.length !== 0 &&
-              unitTypeChecked === 2 && (
-                <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
-                  <Form.Item label={fieldLabels.userType}>
-                    {getFieldDecorator('userType', {
-                      initialValue: userType,
-                      rules: [
-                        {
-                          required: true,
-                          message: '请选择用户角色',
-                        },
-                      ],
-                    })(
-                      <AutoComplete placeholder="请选择用户角色">
-                        {gavUserTypes.map(item => (
-                          <Option value={item.id} key={item.id}>
-                            {item.label}
-                          </Option>
-                        ))}
-                      </AutoComplete>
-                    )}
-                  </Form.Item>
-                </Col>
-              )} */}
             {unitTypes.length !== 0 &&
               unitTypeChecked === GOV && (
                 <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
@@ -1496,7 +1449,7 @@ export default class AssociatedUnit extends PureComponent {
     const title = userId ? editTitle : addTitle;
     const content = (
       <div>
-        <p>一个账号关联多家单位</p>
+        <p className={styles.desc}>{userId ? '编辑关联单位信息' : '新增账号关联单位，一个账号可关联多家单位'}</p>
       </div>
     );
 

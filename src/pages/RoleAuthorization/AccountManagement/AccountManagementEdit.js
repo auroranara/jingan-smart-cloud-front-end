@@ -484,10 +484,7 @@ export default class AccountManagementEdit extends PureComponent {
       });
     }
     // 清除数据权限输入框的值
-    setFieldsValue({
-      treeIds: undefined,
-      departmentId: undefined,
-    });
+    setFieldsValue({ treeIds: undefined, departmentId: undefined, roleId: undefined });
   };
 
   // 所属单位下拉框选择
@@ -500,7 +497,7 @@ export default class AccountManagementEdit extends PureComponent {
     const { unitTypeChecked } = this.state;
 
     // 根据value从源数组中筛选出对应的数据，获取其值
-    setFieldsValue({ treeIds: value });
+    setFieldsValue({ treeIds: value, roleId: undefined });
     fetchDepartmentList({
       payload: { companyId: value.key },
     });
@@ -531,6 +528,7 @@ export default class AccountManagementEdit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     setFieldsValue({
+      roleId: undefined,
       treeIds: { key: value, label },
     });
     fetchDepartmentList({
@@ -544,12 +542,17 @@ export default class AccountManagementEdit extends PureComponent {
   /** 所属单位下拉框失焦 */
   handleUnitIdBlur = value => {
     const {
+      fetchRoles,
       fetchUnitsFuzzy,
       account: { unitIds },
       form: { setFieldsValue, getFieldValue },
     } = this.props;
-    // 根据value判断是否是手动输入
-    if (value && value.key === value.label) {
+    const unitType = getFieldValue('unitType');
+    const isUnitTypeExist = unitType !== undefined && unitType !== null;
+    let rolePayload;
+
+    setFieldsValue({ roleId: undefined });
+    if (value && value.key === value.label) { // 根据value判断是否是手动输入
       this.handleUnitIdChange.cancel();
       // 从源数组中筛选出当前值对应的数据，如果存在，则将对应的数据为所属单位下拉框重新赋值
       const unitId = unitIds.filter(item => item.name === value.label)[0];
@@ -562,13 +565,14 @@ export default class AccountManagementEdit extends PureComponent {
           unitId: treeIds,
           treeIds,
         });
+        if (isUnitTypeExist)
+          rolePayload = { unitType, companyId: unitId };
       } else {
         setFieldsValue({
           unitId: undefined,
           treeIds: undefined,
         });
-        const unitType = getFieldValue('unitType');
-        if (unitType !== undefined && unitType !== null) {
+        if (isUnitTypeExist) {
           fetchUnitsFuzzy({
             payload: {
               unitType,
@@ -576,8 +580,10 @@ export default class AccountManagementEdit extends PureComponent {
               pageSize: defaultPageSize,
             },
           });
+          rolePayload = { unitType };
         }
       }
+      fetchRoles({ payload: rolePayload, success: this.genRolesSuccess(unitType) });
     }
   };
 
@@ -844,13 +850,7 @@ export default class AccountManagementEdit extends PureComponent {
             loginName,
             userName,
             phoneNumber,
-            // unitType,
             accountStatus,
-            // unitId,
-            // unitName,
-            // documentTypeId,
-            // execCertificateCode,
-            // departmentId,
           },
         },
         unitTypes,
@@ -1057,7 +1057,6 @@ export default class AccountManagementEdit extends PureComponent {
                       ],
                     })(
                       <TreeSelect
-                        allowClear
                         labelInValue
                         disabled={isUnitUser}
                         placeholder="请选择所属单位"
@@ -1077,8 +1076,8 @@ export default class AccountManagementEdit extends PureComponent {
                     // initialValue: [departmentId],
                   })(
                     <TreeSelect
-                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                       allowClear
+                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                       placeholder="请选择所属部门"
                     >
                       {treeList}
@@ -1413,10 +1412,10 @@ export default class AccountManagementEdit extends PureComponent {
     const title = id ? editTitle : addTitle;
     const content = (
       <div>
-        <p>
+        <p className={styles.desc}>
           {id
-            ? '编辑单个账号的基本信息，角色权限、数据权限'
-            : '创建单个账号，包括基本信息、角色权限等'}
+            ? '编辑账号基本信息'
+            : '创建账号基本信息及新建第一个关联单位，并赋予角色权限'}
         </p>
       </div>
     );

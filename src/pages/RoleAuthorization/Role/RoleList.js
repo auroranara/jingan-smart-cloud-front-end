@@ -172,7 +172,7 @@ export default class RoleList extends PureComponent {
       id: 'unitType',
       render: () => {
         return (
-          <Select placeholder="请选择单位类型" onChange={this.handleUnitTypeChange} allowClear>
+          <Select placeholder="请选择角色类型" onChange={this.handleUnitTypeChange} allowClear>
             {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
           </Select>
         );
@@ -344,6 +344,7 @@ export default class RoleList extends PureComponent {
 
   render() {
     const {
+      type,
       title,
       breadcrumbList,
       loading,
@@ -356,14 +357,21 @@ export default class RoleList extends PureComponent {
       user: { currentUser: { unitName } },
     } = this.props;
 
+    const isPublic = type;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            角色总数：{total}
+            <p className={styles.desc}>角色总数：{total}</p>
             {unitName && <p className={styles.companyName}>{unitName}</p>}
+            <p className={styles.desc}>
+              {isPublic
+                ? '公共角色用来方便批量配置账号权限，没有开通用户(私有)角色的单位就应用公共角色'
+                : '用户(私有)角色用来单位自定义角色以配置账号权限，开通用户(私有)角色的单位不再使用公共角色'
+              }
+            </p>
           </div>
         }
       >

@@ -284,7 +284,7 @@ export default class RoleList extends PureComponent {
         id: 'unitType',
         render: () => {
           return (
-            <Select placeholder="请选择单位类型" onChange={this.handleUnitTypeChange} allowClear>
+            <Select placeholder="请选择角色类型" onChange={this.handleUnitTypeChange} allowClear>
               {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
             </Select>
           );
@@ -457,8 +457,8 @@ export default class RoleList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            角色总数：
-            {total}{' '}
+            <p className={styles.desc}>角色总数：{total}</p>
+            <p className={styles.desc}>系统角色是用来限定管理员或运营配置公共或用户(私有)角色时对应类型的权限树的范围，只有系统管理员才拥有管理系统角色的权限</p>
           </div>
         }
       >

@@ -347,7 +347,7 @@ export default class accountManagementList extends React.Component {
       form: { setFieldsValue },
     } = this.props;
 
-    setFieldsValue({ unitId: undefined });
+    setFieldsValue({ unitId: undefined, roleId: undefined });
     this.setState({ unitTypeChecked: value });
 
     if (value !== undefined && value !== null)
@@ -381,13 +381,23 @@ export default class accountManagementList extends React.Component {
   };
 
   handleUnitSelect = value => {
-    const { fetchRoles, clearRoles } = this.props;
+    const { fetchRoles, clearRoles, form: { setFieldsValue } } = this.props;
     const { unitTypeChecked } = this.state;
 
+    setFieldsValue({ roleId: undefined });
     if (!unitTypeChecked && !value)
       clearRoles();
     else
       fetchRoles({ payload: { unitType: unitTypeChecked, companyId: value.key } });
+  };
+
+  handleGovChange = value => {
+    const {
+      fetchRoles,
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ roleId: undefined });
+    fetchRoles({ payload: { unitType: GOV, companyId: value } });
   };
 
   handleUnitSearch = value => {
@@ -470,12 +480,12 @@ export default class accountManagementList extends React.Component {
     });
   };
 
-  generateTressNode = data => {
+  generateTreeNode = data => {
     return data.map(item => {
       if (item.child && item.child.length) {
         return (
           <TreeNode title={item.name} key={item.id} value={item.id}>
-            {this.generateTressNode(item.child)}
+            {this.generateTreeNode(item.child)}
           </TreeNode>
         );
       }
@@ -563,9 +573,10 @@ export default class accountManagementList extends React.Component {
                   <TreeSelect
                     allowClear
                     placeholder="请选择所属单位"
+                    onChange={this.handleGovChange}
                     style={{ width: 230 }}
                   >
-                    {this.generateTressNode(unitIds)}
+                    {this.generateTreeNode(unitIds)}
                   </TreeSelect>
                 )}
               </FormItem>
@@ -859,12 +870,11 @@ export default class accountManagementList extends React.Component {
 
     const content = (
       <div>
-        <p>对账号进行增删改查，并对账号赋予角色，使得账号获得相关菜单、操作按钮以及数据权限等。</p>
-        <p>
+        <p className={styles.desc}>
           账号总数：
           {total}
-          {''}
         </p>
+        <p className={styles.desc}>对账号进行增删改查，关联单位，并对账号赋予角色，使得账号获得相关菜单、操作按钮以及数据权限等</p>
       </div>
     );
 
