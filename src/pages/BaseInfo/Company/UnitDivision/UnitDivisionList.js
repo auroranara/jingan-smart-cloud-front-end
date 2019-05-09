@@ -179,7 +179,7 @@ export default class UnitDivisionList extends PureComponent {
     } = this.props;
     confirm({
       title: '提示信息',
-      content: '是否删除该单位信息',
+      content: '是否删除该分部信息',
       okText: '确认',
       cancelText: '取消',
       onOk() {
@@ -345,6 +345,9 @@ export default class UnitDivisionList extends PureComponent {
               分部总数：
               {total}
             </span>
+            <p style={{ paddingTop: 10 }}>
+              一家单位里有多个分部，可以建立单位分部，比如：XXX医院，有城中院区，洋湖院区，可以在这里创建{' '}
+            </p>
           </div>
         }
       >

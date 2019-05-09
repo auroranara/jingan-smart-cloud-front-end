@@ -60,11 +60,10 @@ export default class UnitDivisionDetail extends PureComponent {
         },
       },
     } = this.props;
-    console.log('this.props', this.props);
     return (
       <Card bordered={false}>
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
-          <Description term="单位名称">{name || getEmptyData()}</Description>
+          <Description term="分部名称">{name || getEmptyData()}</Description>
           <Description term="地址">{address || getEmptyData()}</Description>
           <Description term="负责人">{chargeName || getEmptyData()}</Description>
           <Description term="联系电话">{phone || getEmptyData()}</Description>
