@@ -43,6 +43,8 @@ import {
   getPoints,
   // 获取特种设备列表
   getSpecialEquipmentInfo,
+  // 获取视频树
+  fetchVideoTree,
 } from '../services/unitSafety';
 
 function handleRiskList(response) {
@@ -89,28 +91,28 @@ function getStatus(params) {
 function handleMonitorList(list) {
   const loss = Array.isArray(list.lossDevice)
     ? list.lossDevice.map(
-        ({ deviceId, relationDeviceId, area, location, statusTime, typeName }) => ({
-          id: deviceId,
-          type: typeName,
-          number: relationDeviceId,
-          params: '失联',
-          status: 3,
-          time: statusTime,
-          location: `${area}${location || ''}`,
-        })
-      )
+      ({ deviceId, relationDeviceId, area, location, statusTime, typeName }) => ({
+        id: deviceId,
+        type: typeName,
+        number: relationDeviceId,
+        params: '失联',
+        status: 3,
+        time: statusTime,
+        location: `${area}${location || ''}`,
+      })
+    )
     : [];
   const alarm = Array.isArray(list.abnormalDevice)
     ? list.abnormalDevice.map(
-        ({ deviceId, relationDeviceId, area, location, unormalParams, typeName }) => ({
-          id: deviceId,
-          type: typeName,
-          number: relationDeviceId,
-          params: unormalParams,
-          status: getStatus(unormalParams),
-          location: `${area}${location || ''}`,
-        })
-      )
+      ({ deviceId, relationDeviceId, area, location, unormalParams, typeName }) => ({
+        id: deviceId,
+        type: typeName,
+        number: relationDeviceId,
+        params: unormalParams,
+        status: getStatus(unormalParams),
+        location: `${area}${location || ''}`,
+      })
+    )
     : [];
 
   loss.sort((item, item1) => item1.time - item.time);
@@ -231,6 +233,8 @@ export default {
     hiddenDangerList: {},
     // 视频列表
     videoList: [],
+    // 视频树列表
+    videoTree: [],
     // 监控球数据
     monitorData: { score: 0 },
     // 四色风险点统计
@@ -298,8 +302,8 @@ export default {
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
             ? JSON.parse(response.fourColorImg).filter(
-                ({ id, webUrl }) => /^http/.test(webUrl) && id
-              )
+              ({ id, webUrl }) => /^http/.test(webUrl) && id
+            )
             : [],
       };
       yield put({
@@ -374,6 +378,12 @@ export default {
     *fetchVideoList({ payload, callback }, { call, put }) {
       const response = yield call(getVideoList, payload);
       yield put({ type: 'save', payload: { videoList: response.list } });
+      if (callback) callback(response.list);
+    },
+    // 获取视频树
+    *fetchVideoTree({ payload, callback }, { call, put }) {
+      const response = yield call(fetchVideoTree, payload);
+      yield put({ type: 'save', payload: { videoTree: response.list } });
       if (callback) callback(response.list);
     },
     // 获取监控球数据

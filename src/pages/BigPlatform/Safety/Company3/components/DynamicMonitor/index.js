@@ -170,7 +170,7 @@ export default class DynamicMonitor extends PureComponent {
     ].filter(({ originalValue: { totalNum } = {} }) => totalNum);
     const newList = [];
     for (let index = 0; index < list.length / 4; index++) {
-      let item = list.slice(4 * index, 4*(index+1));
+      let item = list.slice(4 * index, 4 * (index + 1));
       newList.push(item);
     }
     return (
@@ -190,12 +190,12 @@ export default class DynamicMonitor extends PureComponent {
                 <div className={styles.listWrapper} key={index}>
                   <div
                     className={styles.list}
-                    //  style={{ zoom }}
+                  //  style={{ zoom }}
                   >
                     {lists.map(
-                      ({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }) => {
+                      ({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }, i) => {
                         return (
-                          <Col xs={24} sm={12} md={12} lg={12}>
+                          <Col xs={24} sm={12} md={12} lg={12} key={i}>
                             <div
                               className={styles.item}
                               style={{

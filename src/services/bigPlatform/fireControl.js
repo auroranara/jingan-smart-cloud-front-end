@@ -45,6 +45,11 @@ export async function getAllCamera(params) {
   return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
 }
 
+// 视频树列表
+export async function fetchCameraTree(params) {
+  return request(`${URL_PREFIX}/hdf/getTreeCamera.json?${stringify(params)}`);
+}
+
 // 视频播放，已转移到services.videoPlay
 // export async function getStartToPlay(params) {
 //   return request(`/acloud_new/dai/startToPlayForWeb.json?${stringify(params)}`);
@@ -226,6 +231,13 @@ export async function resetAllHosts(params) {
  */
 export async function getVideoList(params) {
   return request(`/acloud_new/v2/hdf/getAllCamera.json?${stringify(params)}`);
+}
+
+/**
+ * 获取视频树列表
+ */
+export async function fetchVideoTree(params) {
+  return request(`/acloud_new/v2/hdf/getTreeCamera.json?${stringify(params)}`);
 }
 
 export async function getVideoLookUp(params) {

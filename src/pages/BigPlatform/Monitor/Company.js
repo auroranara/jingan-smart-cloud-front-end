@@ -9,8 +9,10 @@ import GasSection from './sections/GasSection';
 import GasBackSection from './sections/GasBackSection';
 import StorageTankMonitor from './sections/StorageTankMonitor';
 import StorageTankDrawer from './sections/StorageTankDrawer';
-import VideoPlay from './sections/VideoPlay';
+// import VideoPlay from './sections/VideoPlay';
+import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import { ALL } from './components/gasStatus';
+import { findFirstVideo } from '@/utils/utils';
 
 import ExhaustMonitor from './sections/ExhaustMonitor';
 import EffluentMonitor from './sections/EffluentMonitor';
@@ -60,6 +62,7 @@ export default class App extends PureComponent {
     } = this.props;
 
     // dispatch({ type: 'monitor/fetchCompanyInfo', payload: companyId });
+    dispatch({ type: 'monitor/fetchCameraTree', payload: { company_id: companyId } });
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
@@ -455,6 +458,7 @@ export default class App extends PureComponent {
       monitor: {
         companyInfo: { name: companyName },
         allCamera = [],
+        cameraTree = [],
         gasCount,
         gasList,
         waterCompanyDevicesData,
@@ -512,7 +516,7 @@ export default class App extends PureComponent {
                   backgroundSize: '100% 100%',
                   transform: 'none',
                 }}
-                onClick={() => this.handleVideoShow(allCamera[0].key_id)}
+                onClick={() => this.handleVideoShow(findFirstVideo(cameraTree).id)}
               />
             </Tooltip>
             <Col span={6} style={{ height: '100%' }}>
@@ -637,12 +641,20 @@ export default class App extends PureComponent {
             </Col>
           </Row>
         </div>
-        <VideoPlay
+        {/* <VideoPlay
           showList={true}
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
+        /> */}
+        <NewVideoPlay
+          showList={true}
+          videoList={cameraTree}
+          visible={videoVisible}
+          keyId={videoKeyId} // keyId
+          handleVideoClose={this.handleVideoClose}
+          isTree={true}
         />
         <StorageTankDrawer
           tankDataList={tankDataList}

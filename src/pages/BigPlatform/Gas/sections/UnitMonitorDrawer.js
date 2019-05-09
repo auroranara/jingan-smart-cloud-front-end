@@ -19,7 +19,8 @@ import cameraImg from '../imgs/camera.png';
 // 暂无监测数据
 import noMonitorImg from '../imgs/no-monitor.png';
 import styles from './UnitMonitorDrawer.less';
-import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
+import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
+import { findFirstVideo } from '@/utils/utils';
 
 const OPTIONS = [
   { value: null, desc: '全部' },
@@ -64,10 +65,10 @@ export default class UnitMonitorDrawer extends PureComponent {
   };
 
   handleClickCamera = () => {
-    const { cameraList = [] } = this.props;
+    const { cameraList = [], cameraTree = [] } = this.props;
     this.setState({
       videoVisible: true,
-      videoKeyId: cameraList.length ? cameraList[0].key_id : '',
+      videoKeyId: cameraTree.length ? findFirstVideo(cameraTree).id : '',
     });
   };
 
@@ -108,6 +109,7 @@ export default class UnitMonitorDrawer extends PureComponent {
       handleViewVideo,
       gas: { unitRealTimeMonitor },
       cameraList,
+      cameraTree,
     } = this.props;
     const {
       companyName, // 企业名称
@@ -288,13 +290,14 @@ export default class UnitMonitorDrawer extends PureComponent {
           </div>
           <ReactEcharts className={styles.chartContainer} option={option} />
         </div>
-        <VideoPlay
+        <NewVideoPlay
           showList={true}
-          videoList={cameraList}
+          videoList={cameraTree}
           visible={videoVisible}
           keyId={videoKeyId}
           // style={VIDEO_STYLE}
           handleVideoClose={this.handleVideoClose}
+          isTree={true}
         />
       </div>
     );
