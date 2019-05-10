@@ -1133,24 +1133,6 @@ export default class AccountManagementEdit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
-            {!id && unitTypeChecked === GOV && (
-              <Col lg={16} md={16} sm={24}>
-                <Form.Item label={fieldLabels.gridIds}>
-                  {getFieldDecorator('gridIds', {
-                  })(
-                    <TreeSelect
-                      allowClear
-                      treeCheckable
-                      showCheckedStrategy={TreeSelect.SHOW_PARENT}
-                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                      placeholder="请选择所属网格"
-                    >
-                      {gridList}
-                    </TreeSelect>
-                  )}
-                </Form.Item>
-              </Col>
-            )}
             {unitTypes.length !== 0 &&
               unitTypeChecked === GOV &&
               !id && (
@@ -1186,6 +1168,24 @@ export default class AccountManagementEdit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
+            {!id && unitTypeChecked === GOV && (
+              <Col lg={24} md={24} sm={24}>
+                <Form.Item label={fieldLabels.gridIds}>
+                  {getFieldDecorator('gridIds', {
+                  })(
+                    <TreeSelect
+                      allowClear
+                      treeCheckable
+                      showCheckedStrategy={TreeSelect.SHOW_PARENT}
+                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      placeholder="请选择所属网格"
+                    >
+                      {gridList}
+                    </TreeSelect>
+                  )}
+                </Form.Item>
+              </Col>
+            )}
           </Row>
         </Form>
       </Card>

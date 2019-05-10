@@ -1174,25 +1174,6 @@ export default class AssociatedUnit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
-            {unitTypes.length !== 0 && unitTypeChecked === GOV && (
-              <Col lg={16} md={16} sm={24}>
-                <Form.Item label={fieldLabels.gridIds}>
-                  {getFieldDecorator('gridIds', {
-                    initialValue: gridIds ? gridIds.split(',').filter(id => id) : [],
-                  })(
-                    <TreeSelect
-                      allowClear
-                      treeCheckable
-                      showCheckedStrategy={TreeSelect.SHOW_PARENT}
-                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                      placeholder="请选择所属网格"
-                    >
-                      {gridList}
-                    </TreeSelect>
-                  )}
-                </Form.Item>
-              </Col>
-            )}
             {unitTypes.length !== 0 &&
               unitTypeChecked === GOV && (
                 <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
@@ -1221,6 +1202,25 @@ export default class AssociatedUnit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
+            {unitTypes.length !== 0 && unitTypeChecked === GOV && (
+              <Col lg={24} md={24} sm={24}>
+                <Form.Item label={fieldLabels.gridIds}>
+                  {getFieldDecorator('gridIds', {
+                    initialValue: gridIds ? gridIds.split(',').filter(id => id) : [],
+                  })(
+                    <TreeSelect
+                      allowClear
+                      treeCheckable
+                      showCheckedStrategy={TreeSelect.SHOW_PARENT}
+                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      placeholder="请选择所属网格"
+                    >
+                      {gridList}
+                    </TreeSelect>
+                  )}
+                </Form.Item>
+              </Col>
+            )}
           </Row>
         </Form>
       </Card>
