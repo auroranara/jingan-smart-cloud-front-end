@@ -599,7 +599,7 @@ export default class VideoMonitorEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label={fieldLabels.buildingFloor}>
             {getFieldDecorator('buildingFloor', {
-              initialValue: id ? { buildingId, floorId } : null,
+              initialValue: id ? { buildingId, floorId } : {},
               rules: [{ validator: this.validateBuildingFloor }],
             })(
               <Fragment>
