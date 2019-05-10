@@ -334,13 +334,14 @@ export default {
       } else if (error) error();
     },
     // 获取建筑列表
-    *fetchBuildings({ payload }, { call, put }) {
+    *fetchBuildings({ payload, callback }, { call, put }) {
       const response = yield call(fetchBuildings, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveBuildings',
           payload: response.data.list,
         });
+        if (callback) callback(response.data.list)
       }
     },
     // 获取地图企业列表
@@ -365,13 +366,14 @@ export default {
       }
     },
     // 获取楼层列表
-    *fetchFloors({ payload }, { call, put }) {
+    *fetchFloors({ payload, callback }, { call, put }) {
       const response = yield call(fetchFloors, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveFloors',
           payload: response.data.list,
         });
+        if (callback) callback(response.data.list)
       }
     },
     // 标签获取企业列表
