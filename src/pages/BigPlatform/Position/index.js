@@ -116,6 +116,7 @@ export default class PositionIndex extends PureComponent {
         {(!labelIndex || labelIndex === 1) && (
           <RealTime
             dispatch={dispatch}
+            fullScreen={fullScreen}
             labelIndex={labelIndex}
             companyId={companyId}
             areaInfoCache={areaInfoCache}
@@ -124,6 +125,8 @@ export default class PositionIndex extends PureComponent {
             selectedUserId={selectedUserId}
             personPosition={personPosition}
             showBoard={this.showBoard}
+            showFullScreen={this.showFullScreen}
+            hideFullScreen={this.hideFullScreen}
             handleLabelClick={this.handleLabelClick}
             setSelectedCard={this.setSelectedCard}
             setHistoryRecord={this.setHistoryRecord}
