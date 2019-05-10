@@ -460,6 +460,10 @@ export default class FloorManagementList extends PureComponent {
         href: '/',
       },
       {
+        title: '一企一档',
+        name: '一企一档',
+      },
+      {
         title: '建筑物信息列表',
         name: '建筑物信息列表',
         href: `/base-info/buildings-info/detail/${companyId}?name=${name}`,

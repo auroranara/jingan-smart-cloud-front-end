@@ -723,8 +723,8 @@ export default class BuildingInfoEdit extends PureComponent {
         href: '/',
       },
       {
-        title: '人员定位',
-        name: '人员定位',
+        title: '一企一档',
+        name: '一企一档',
       },
       {
         title: company_Id ? '建筑物信息列表' : '建筑物信息',

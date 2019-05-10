@@ -178,8 +178,8 @@ export default class FloorManagementDetail extends PureComponent {
         href: '/',
       },
       {
-        title: '人员定位',
-        name: '人员定位',
+        title: '一企一档',
+        name: '一企一档',
       },
       {
         title: '楼层管理列表',
