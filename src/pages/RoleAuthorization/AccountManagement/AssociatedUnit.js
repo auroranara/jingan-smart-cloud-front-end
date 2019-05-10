@@ -165,6 +165,9 @@ const href = '/role-authorization/account-management/list'; // 返回地址
         ...action,
       });
     },
+    fetchGrids(action) {
+      dispatch({ type: 'account/fetchGrids', ...action });
+    },
     dispatch,
   })
 )
@@ -187,6 +190,7 @@ export default class AssociatedUnit extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
+      fetchGrids,
       fetchAccountDetail,
       fetchAssociatedUnitDetail,
       match: {
@@ -207,6 +211,7 @@ export default class AssociatedUnit extends PureComponent {
     dispatch({ type: 'account/saveTrees', payload: {} }); // 清空权限树
     this.clearRolePermissions(COM); // 清空所选角色的permissions
 
+    fetchGrids(); // 获取网格点树
     fetchOptions({ // 获取单位类型和账户状态
       success: ({ unitType: unitTypes }) => {
         if (userId)
@@ -439,6 +444,7 @@ export default class AssociatedUnit extends PureComponent {
           treeIds,
           roleId,
           departmentId,
+          gridIds,
           userType,
           documentTypeId = null,
           execCertificateCode = null,
@@ -465,6 +471,7 @@ export default class AssociatedUnit extends PureComponent {
             maintenacePermissions: isCheckAll ? [checkedRootKey] : maintenacePermissions,
             roleId,
             departmentId: departmentId || '',
+            gridIds: Array.isArray(gridIds) ? gridIds.join(',') : '',
             userType,
             documentTypeId, // 执法证种类id
             execCertificateCode, // 执法证编号
@@ -523,7 +530,7 @@ export default class AssociatedUnit extends PureComponent {
   handleUnitTypesChange = id => {
     const {
       fetchRoles,
-      account: { detail },
+      // account: { detail },
       form: { getFieldValue, setFieldsValue },
     } = this.props;
 
@@ -951,6 +958,7 @@ export default class AssociatedUnit extends PureComponent {
             documentTypeId,
             execCertificateCode,
             departmentId,
+            gridIds,
             // regulatoryClassification,
           },
         },
@@ -959,6 +967,7 @@ export default class AssociatedUnit extends PureComponent {
         unitIds,
         documentTypeIds,
         departments,
+        grids,
       },
       form: { getFieldDecorator },
       match: {
@@ -970,6 +979,7 @@ export default class AssociatedUnit extends PureComponent {
 
     const isUnitUser = this.isUnitUser();
     const treeList = treeData(departments);
+    const gridList = treeData(grids);
 
     return (
       <Card title="账号基本信息" className={styles.card} bordered={false}>
@@ -1164,6 +1174,25 @@ export default class AssociatedUnit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
+            {unitTypes.length !== 0 && unitTypeChecked === GOV && (
+              <Col lg={16} md={16} sm={24}>
+                <Form.Item label={fieldLabels.gridIds}>
+                  {getFieldDecorator('gridIds', {
+                    initialValue: gridIds ? gridIds.split(',').filter(id => id) : [],
+                  })(
+                    <TreeSelect
+                      allowClear
+                      treeCheckable
+                      showCheckedStrategy={TreeSelect.SHOW_PARENT}
+                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      placeholder="请选择所属网格"
+                    >
+                      {gridList}
+                    </TreeSelect>
+                  )}
+                </Form.Item>
+              </Col>
+            )}
             {unitTypes.length !== 0 &&
               unitTypeChecked === GOV && (
                 <Col lg={8} md={12} sm={24} style={{ height: '83px' }}>
