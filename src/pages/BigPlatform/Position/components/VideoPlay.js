@@ -59,6 +59,7 @@ class VideoPlay extends Component {
   handleInit = () => {
     const { dispatch, videoList, keyId, showList } = this.props;
     let videoId = '';
+    let deviceId = null;
     // 如果现实列表
     if (showList) {
       // 列表为空直接return
@@ -78,11 +79,14 @@ class VideoPlay extends Component {
       this.setState({
         activeIndex: index,
       });
+      const item = videoList[index]
+      deviceId = item.device_id || item.deviceId
     }
     dispatch({
       type: 'videoPlay/fetchStartToPlay',
       payload: {
         key_id: videoId,
+        device_id: deviceId,
       },
       success: response => {
         // console.log('response', response);
@@ -122,12 +126,13 @@ class VideoPlay extends Component {
             });
             const keyId = item.key_id || item.keyId;
             const id = item.id || keyId;
+            const deviceId = item.device_id || item.deviceId
             return (
               <li
                 title={item.name}
                 className={itemStyles}
                 onClick={() => {
-                  this.handleItemClick(index, keyId);
+                  this.handleItemClick(index, keyId, deviceId);
                 }}
                 key={id}
               >
@@ -144,7 +149,7 @@ class VideoPlay extends Component {
     );
   };
 
-  handleItemClick = (index, keyId) => {
+  handleItemClick = (index, keyId, deviceId) => {
     const { dispatch, actionType } = this.props;
     this.setState(
       {
@@ -156,6 +161,7 @@ class VideoPlay extends Component {
           type: 'videoPlay/fetchStartToPlay',
           payload: {
             key_id: keyId,
+            device_id: deviceId,
           },
           success: response => {
             this.setState({
@@ -210,10 +216,10 @@ class VideoPlay extends Component {
             {loading ? (
               LOADING_COMPONENT
             ) : (
-              <Player>
-                <HLSSource isVideoChild src={videoSrc} ref="source" />
-              </Player>
-            )}
+                <Player>
+                  <HLSSource isVideoChild src={videoSrc} ref="source" />
+                </Player>
+              )}
           </div>
           {showList && (
             <div className={styles.videoList}>
@@ -236,8 +242,8 @@ class VideoPlay extends Component {
         {this.renderPan()}
       </Draggable>
     ) : (
-      this.renderPan()
-    );
+        this.renderPan()
+      );
   }
 }
 

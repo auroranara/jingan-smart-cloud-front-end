@@ -451,6 +451,16 @@ export default class VideoMonitorEdit extends PureComponent {
     } else callback();
   };
 
+  // 验证所属建筑楼层
+  validateBuildingFloor = (rule, value, callback) => {
+    if (value) {
+      const { buildingId = null, floorId = null } = value
+      if (buildingId && floorId || !buildingId && !floorId) {
+        callback()
+      } else callback('请同时选择所属建筑和楼层')
+    } else callback()
+  }
+
 
   /**
    * 选择建筑物
@@ -509,7 +519,7 @@ export default class VideoMonitorEdit extends PureComponent {
       match: { params: { id } },
       safety: { detail: { safetyFourPicture } },
       company: { detail: { data: { fireIchnographyUrl } } },
-      user: { currentUser: { unitType, companyName: defaultName,permissionCodes } },
+      user: { currentUser: { unitType, companyName: defaultName, permissionCodes } },
       personnelPosition: { map: { buildings = [], floors = [] } },
     } = this.props;
     const {
@@ -525,7 +535,7 @@ export default class VideoMonitorEdit extends PureComponent {
 
     const fireImgs = fireIchnographyUrl ? JSON.parse(fireIchnographyUrl) : [];
     const buildingFloor = getFieldValue('buildingFloor') || {}
-    const addBuildingAuth=hasAuthority(codes.company.buildingsInfo.add,permissionCodes)
+    const addBuildingAuth = hasAuthority(codes.company.buildingsInfo.add, permissionCodes)
     return (
       <Card className={styles.card} bordered={false}>
         <Form hideRequiredMark style={{ marginTop: 8 }}>
@@ -590,6 +600,7 @@ export default class VideoMonitorEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.buildingFloor}>
             {getFieldDecorator('buildingFloor', {
               initialValue: id ? { buildingId, floorId } : null,
+              rules: [{ validator: this.validateBuildingFloor }],
             })(
               <Fragment>
                 <div style={{ display: 'inline-block', ...itemStyles.style }}>

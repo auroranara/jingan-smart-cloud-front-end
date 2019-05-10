@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Button, Col, Icon, Input, message, Row, Tooltip } from 'antd';
+import {findFirstVideo} from '@/utils/utils';
 
 import styles from './VideoLookUp.less';
 import cameraIcon from '../img/videoCamera.png';
@@ -55,7 +56,7 @@ export default class VideoLookUp extends PureComponent {
 
     this.setState({ currentIndex: index });
     dispatch({ type: 'bigFireControl/saveLookUpCamera', payload: list});
-    handleVideoShow(list[0].keyId, true, VIDEO_LOOK_UP);
+    handleVideoShow(findFirstVideo(list).id, true, VIDEO_LOOK_UP);
   };
 
   render() {
@@ -96,14 +97,14 @@ export default class VideoLookUp extends PureComponent {
               ))}
             </tbody>
           </table> */}
-          {list.map(({ id, name, deviceAddressInfoList=[] }, index) => (
+          {list.map(({ id, name, deviceAddressInfoList=[],deviceAddressInfoTreeList=[] }, index) => (
             <TableCell
               key={id}
               name={name}
               isDark={videoVisible && index === currentIndex ? true : false}
               // isDark={Math.random() > 0.5 ? true : false}
               index={index + 1}
-              onClick={() => this.handleVideoShow(index, deviceAddressInfoList)}
+              onClick={() => this.handleVideoShow(index, deviceAddressInfoTreeList)}
             />
             ))}
         </div>
