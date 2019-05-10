@@ -3,6 +3,7 @@ import { Drawer, Row, Col, Icon } from 'antd';
 import styles from '../../Government.less';
 import importantIcon from '../../img/importantCompany.png';
 import CompanyRisk from '../../Components/CompanyRisk';
+import LoadMoreButton from '../../Company3/components/LoadMoreButton';
 
 class CompanyInfoDrawer extends PureComponent {
   constructor(props) {
@@ -20,6 +21,11 @@ class CompanyInfoDrawer extends PureComponent {
 
   initFull = () => {
     this.setState({ riskDetailFull: false });
+  };
+
+  handleLoadMore = pageNum => {
+    const { handleLoadHiddenList } = this.props;
+    handleLoadHiddenList(pageNum + 1);
   };
 
   render() {
@@ -43,7 +49,10 @@ class CompanyInfoDrawer extends PureComponent {
         total: hiddenDangerOver,
       },
       specialEquipment,
-      hiddenDangerListByDate,
+      hiddenDangerListByDate: {
+        pagination: { total, pageNum, pageSize },
+        list,
+      },
       // hiddenDangerListByDate: { ycq = [], wcq = [], dfc = [] },
       companyId,
     } = this.props;
@@ -161,13 +170,21 @@ class CompanyInfoDrawer extends PureComponent {
                           style={{ borderBottom: 'none', borderTop: '1px solid #0967d3' }}
                         >
                           <span className={styles.tableTitle}>
-                            当前隐患（
-                            {hiddenDangerListByDate.length}）
+                            当前隐患（{total}）
                           </span>
                         </div>
 
                         <div className={styles.scrollContainer} id="companyRisk">
-                          <CompanyRisk hiddenDangerListByDate={hiddenDangerListByDate} />
+                          <CompanyRisk hiddenDangerListByDate={list} />
+                          {pageNum * pageSize < total && (
+                            <div className={styles.loadMoreWrapper}>
+                              <LoadMoreButton
+                                onClick={() => {
+                                  this.handleLoadMore(pageNum);
+                                }}
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

@@ -71,10 +71,11 @@ const drawVisible = {
 export function getGridId(gridId, initVal = 'index') {
   return !gridId || gridId === initVal ? undefined : gridId;
 }
-@connect(({ bigPlatform, bigPlatformSafetyCompany, bigFireControl }) => ({
+@connect(({ bigPlatform, bigPlatformSafetyCompany, bigFireControl, loading }) => ({
   bigPlatform,
   bigPlatformSafetyCompany,
   bigFireControl,
+  hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'] || loading.effects['bigPlatform/fetchHiddenDangerListByDateForPage'],
 }))
 class GovernmentBigPlatform extends Component {
   constructor(props) {
@@ -468,11 +469,14 @@ class GovernmentBigPlatform extends Component {
     });
     // 风险点隐患
     dispatch({
-      type: 'bigPlatform/fetchRiskDetail',
+      type: 'bigPlatform/fetchHiddenDangerListForPage',
       payload: {
         company_id: id,
         // source_type: '3',
         gridId,
+        pageNum: 1,
+        pageSize: 10,
+        status: 5,
       },
     });
   };
@@ -562,6 +566,44 @@ class GovernmentBigPlatform extends Component {
     this.setState({ ...newState });
   };
 
+  handleLoadHiddenList = pageNum => {
+    const defaultPageSize = 10;
+    const { dispatch } = this.props;
+    const {
+      companyId,
+      dangerCompanyData: { status } = {},
+      dangerCompanyLast,
+      checksMonth,
+      checkUserId,
+    } = this.state;
+    const gridId = this.getGridId();
+    if (dangerCompanyLast === 'checks') {
+      dispatch({
+        type: 'bigPlatform/fetchHiddenDangerListByDateForPage',
+        payload: {
+          company_id: companyId,
+          reportUserId: checkUserId,
+          date: checksMonth,
+          gridId,
+          status,
+          pageNum,
+          pageSize: defaultPageSize,
+        },
+      });
+    } else {
+      dispatch({
+        type: 'bigPlatform/fetchHiddenDangerListForPage',
+        payload: {
+          company_id: companyId,
+          gridId,
+          status,
+          pageNum,
+          pageSize: defaultPageSize,
+        },
+      });
+    }
+  };
+
   render() {
     const {
       communityCom,
@@ -628,7 +670,7 @@ class GovernmentBigPlatform extends Component {
         hiddenDangerCompanyMonth,
         hiddenDangerOverTime,
         checkedCompanyInfo,
-        hiddenDangerListByDate,
+        // hiddenDangerListByDate,
         selectOvertimeItemNum,
         overtimeUncheckedCompany,
         companyMessage,
@@ -639,9 +681,11 @@ class GovernmentBigPlatform extends Component {
         selfCheckPoint = {},
         selfCheckPoint: { total: selfCheckPointTotal },
         securityCheck,
-        riskDetailNoOrder,
+        hiddenDangerList: riskDetailNoOrder,
+        hiddenDangerListByDateForPage: hiddenDangerListByDate,
       },
       bigFireControl: { grids },
+      hiddenDangerLoading,
     } = this.props;
     const gridId = this.getGridId();
     return (
@@ -900,6 +944,7 @@ class GovernmentBigPlatform extends Component {
           handleParentChange={this.handleParentChange}
           closeAllDrawers={this.closeAllDrawers}
           companyName={riskComName}
+          companyId={companyId}
         />
 
         {/* 隐患单位统计 */}
@@ -939,6 +984,9 @@ class GovernmentBigPlatform extends Component {
           riskDetailList={riskDetailNoOrder}
           lastSection={dangerCompanyLast}
           handleParentChange={this.handleParentChange}
+          loading={!!hiddenDangerLoading}
+          dispatch={dispatch}
+          handleLoadHiddenList={this.handleLoadHiddenList}
         />
 
         {/* 已超时单位 */}
@@ -988,6 +1036,7 @@ class GovernmentBigPlatform extends Component {
           hiddenDangerListByDate={riskDetailNoOrder}
           onRef={this.companyInfoRef}
           handleParentChange={this.handleParentChange}
+          handleLoadHiddenList={this.handleLoadHiddenList}
         />
       </div>
     );

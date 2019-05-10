@@ -223,3 +223,31 @@ export async function getStaffList(params) {
 export async function getStaffRecords(params) {
   return request(`/acloud_new/v2/sfc/companyCheckDataByPerson.json?${stringify(params)}`);
 }
+
+/**
+ * 获取隐患详情（分页）
+ */
+export async function getHiddenDangerListForPage(params) {
+  return request(`/acloud_new/v2/sfc/hiddenDangerListForPage.json?${stringify(params)}`);
+}
+
+/**
+ * 获取隐患详情（分页）
+ */
+export async function hiddenDangerListByDateForPage(params) {
+  return request(`/acloud_new/v2/sfg/hiddenDangerListByDateForPage.json?${stringify(params)}`);
+}
+
+/**
+ * 获取风险点列表（分页）
+ */
+export async function getSelfCheckPointDataForPage(params) {
+  return request(`/acloud_new/v2/sfm/getSelfCheckPointDataForPage?${stringify(params)}`);
+}
+
+/**
+ * 获取单位信息
+ */
+export async function getCompanyInfo(params) {
+  return request(`/acloud_new/v2/sfc/companyInfo.json?${stringify(params)}`);
+}

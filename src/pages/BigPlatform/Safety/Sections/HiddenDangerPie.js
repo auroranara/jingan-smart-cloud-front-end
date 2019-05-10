@@ -268,18 +268,18 @@ class HiddenDangerPie extends PureComponent {
 
   handleHdComClick = () => {
     const {
-      dispatch,
+      // dispatch,
       listForMap: { dangerCompany = [], total: dangerCount = 0, dangerCompanyNum = 0 },
       handleParentChange,
-      gridId,
+      // gridId,
     } = this.props;
-    dispatch({
-      type: 'bigPlatform/fetchHiddenDangerCompany',
-      payload: {
-        gridId,
-        reportSource: 2,
-      },
-      success: () => {
+    // dispatch({
+    //   type: 'bigPlatform/fetchHiddenDangerCompany',
+    //   payload: {
+    //     gridId,
+    //     reportSource: 2,
+    //   },
+    //   success: () => {
         handleParentChange({
           dangerCompanyData: { dangerCompanyNum, dangerCompany, dangerCount },
           dangerCompanyLast: '',
@@ -287,9 +287,9 @@ class HiddenDangerPie extends PureComponent {
           dangerCoTitle: '隐患单位统计',
           dangerCoDrawer: true,
         });
-        handleParentChange({ dangerCoDrawer: true });
-      },
-    });
+        // handleParentChange({ dangerCoDrawer: true });
+    //   },
+    // });
   };
 
   handleDataClick = (params, index) => {

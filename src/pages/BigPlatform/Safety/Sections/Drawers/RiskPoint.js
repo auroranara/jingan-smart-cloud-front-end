@@ -130,19 +130,22 @@ class RiskPoint extends PureComponent {
                                           handleParentChange({
                                             riskPointCompany: true,
                                             riskComName: item.company_name,
+                                            companyId: item.company_id,
                                           });
-                                          // dispatch({
-                                          //   type: 'bigPlatform/fetchSelfCheckPointDataByCompanyId',
-                                          //   payload: {
-                                          //     // company_id: 'Fj_1XoafSjKGo3WJDhHsDw',
-                                          //     companyId: item.company_id,
-                                          //   },
-                                          // });
                                           dispatch({
-                                            type: 'bigPlatform/fetchSelfCheckPointData',
+                                            type: 'bigPlatform/fetchSelfCheckPointDataByCompanyId',
                                             payload: {
                                               companyId: item.company_id,
                                               item_type: '2',
+                                            },
+                                          });
+                                          dispatch({
+                                            type: 'bigPlatform/fetchSelfCheckPointDataForPage',
+                                            payload: {
+                                              companyId: item.company_id,
+                                              item_type: '2',
+                                              pageNum: 1,
+                                              pageSize: 10,
                                             },
                                             success: () => {},
                                           });

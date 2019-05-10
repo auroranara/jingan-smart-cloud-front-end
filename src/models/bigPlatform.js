@@ -42,6 +42,10 @@ import {
   getSelfCheckPointDataByCompanyId,
   getListForMapForHidden,
   getSecurityCheck,
+  getHiddenDangerListForPage,
+  hiddenDangerListByDateForPage,
+  getSelfCheckPointDataForPage,
+  getCompanyInfo,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -194,6 +198,37 @@ export default {
       ycq: [],
       wcq: [],
       dfc: [],
+    },
+    hiddenDangerList: {
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+      list: [],
+    },
+    hiddenDangerListByDateForPage: {
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+      list: [],
+    },
+    selfCheckPointDataForPage: {
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+      list: [],
+    },
+    selfCheckPointDataByCompanyId: {
+      abnormal: 0,
+      all: 0,
+      normal: 0,
+      overTime: 0,
+      rectify: 0,
     },
     // 隐患总数
     // hiddenDanger: 0,
@@ -383,7 +418,7 @@ export default {
       // }
     },
     *fetchCompanyMessage({ payload, success, error }, { call, put }) {
-      const response = yield call(getCompanyMessage, payload);
+      const response = yield call(getCompanyInfo, payload);
       const res = {
         ...response,
         point:
@@ -556,6 +591,74 @@ export default {
           wcq,
           dfc,
         });
+      }
+    },
+    *fetchHiddenDangerListForPage({ payload, success }, { call, put }) {
+      const response = yield call(getHiddenDangerListForPage, payload);
+      const {
+        code,
+        data: { list, pagination },
+      } = response;
+      if (code === 200) {
+        yield put({
+          type: 'saveHiddenDangerList',
+          payload: {
+            list: list
+              .filter(
+                ({ status }) => +status === 7 || +status === 1 || +status === 2 || +status === 3
+              )
+              .map(transformHiddenDangerFields),
+            pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
+          },
+          append: payload.pageNum !== 1,
+        });
+        if (success) {
+          success();
+        }
+      }
+    },
+    *fetchHiddenDangerListByDateForPage({ payload, success }, { call, put }) {
+      const response = yield call(getHiddenDangerListByDate, payload);
+      const {
+        code,
+        data: { list, total },
+      } = response;
+      if (code === 200) {
+        yield put({
+          type: 'saveHiddenDangerListByDate',
+          payload: {
+            list: list
+              .filter(
+                ({ status }) => +status === 7 || +status === 1 || +status === 2 || +status === 3
+              )
+              .map(transformHiddenDangerFields),
+            pagination: { total, pageNum: payload.pageNum, pageSize: payload.pageSize },
+          },
+          append: payload.pageNum !== 1,
+        });
+        if (success) {
+          success();
+        }
+      }
+    },
+    *fetchSelfCheckPointDataForPage({ payload, success }, { call, put }) {
+      const response = yield call(getSelfCheckPointDataForPage, payload);
+      const {
+        code,
+        data: { list, pagination },
+      } = response;
+      if (code === 200) {
+        yield put({
+          type: 'saveSelfCheckPointDataForPage',
+          payload: {
+            list,
+            pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
+          },
+          append: payload.pageNum !== 1,
+        });
+        if (success) {
+          success();
+        }
       }
     },
     // *fetchHiddenDanger({ payload, success }, { call, put }) {
@@ -1304,7 +1407,7 @@ export default {
     selfCheckPointDataByCompanyId(state, { payload }) {
       return {
         ...state,
-        selfCheckPointData: { ...state.selfCheckPointData, ...payload },
+        selfCheckPointDataByCompanyId: { ...payload },
       };
     },
     listForMapForHidden(state, { payload }) {
@@ -1317,6 +1420,51 @@ export default {
       return {
         ...state,
         securityCheck: payload.list,
+      };
+    },
+    saveHiddenDangerList(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          hiddenDangerList: {
+            pagination: payload.pagination,
+            list: state.hiddenDangerList.list.concat(payload.list),
+          },
+        };
+      }
+      return {
+        ...state,
+        hiddenDangerList: payload,
+      };
+    },
+    saveHiddenDangerListByDate(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          hiddenDangerListByDateForPage: {
+            pagination: payload.pagination,
+            list: state.hiddenDangerListByDateForPage.list.concat(payload.list),
+          },
+        };
+      }
+      return {
+        ...state,
+        hiddenDangerListByDateForPage: payload,
+      };
+    },
+    saveSelfCheckPointDataForPage(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          selfCheckPointDataForPage: {
+            pagination: payload.pagination,
+            list: state.selfCheckPointDataForPage.list.concat(payload.list),
+          },
+        };
+      }
+      return {
+        ...state,
+        selfCheckPointDataForPage: payload,
       };
     },
   },

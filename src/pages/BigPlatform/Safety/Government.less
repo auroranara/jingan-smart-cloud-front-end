@@ -109,6 +109,24 @@
       cursor: pointer;
     }
 
+    .spin {
+      height: 100%;
+
+      :global {
+        .ant-spin-container {
+          height: 100%;
+
+          &:after {
+            background-color: transparent;
+          }
+        }
+      }
+    }
+
+    .loadMoreWrapper {
+      text-align: center;
+    }
+
     .sectionTitle {
       font-size: 16px;
       margin-bottom: 5px;
