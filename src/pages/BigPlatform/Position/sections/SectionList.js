@@ -1,11 +1,10 @@
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
-import { Input, Row, Col, Select, Table, Icon } from 'antd';
+import { Button, Input, Row, Col, Table, TreeSelect, Icon } from 'antd';
+
 import { Scrollbars } from 'react-custom-scrollbars';
 import styles from './SectionList.less';
-
-// const { Search } = Input;
-const { Option } = Select;
+import { renderTreeNodes } from '../utils';
 
 // 状态字典
 const statuses = [
@@ -239,6 +238,17 @@ export default class SectionList extends PureComponent {
       <div className={styles.container} {...restProps}>
         <Scrollbars style={{ width: '100%', height: '100%' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
           <div className={styles.inner}>
+            <div className={styles.treeSelectContainer}>
+              <TreeSelect
+                treeDefaultExpandAll
+                placeholder="请选择需要清除的区域"
+                className={styles.treeSelect}
+                dropdownClassName={styles.dropdown}
+              >
+                {renderTreeNodes(data)}
+              </TreeSelect>
+              <Button className={styles.clear}>一键清除</Button>
+            </div>
             <Row gutter={16}>
               {/* <Col span={14} style={{ marginBottom: 12 }}> */}
                 {/* 搜索区域名称 */}

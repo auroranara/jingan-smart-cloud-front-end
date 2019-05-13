@@ -1,4 +1,7 @@
 import moment from 'moment';
+import { TreeSelect } from 'antd';
+
+const { TreeNode: TreeSelectNode } = TreeSelect;
 
 export const OPTIONS_RED = '#FF0019';
 export const OPTIONS_BLUE = '#0FF';
@@ -561,4 +564,20 @@ export function getDefaultRange() {
 
 export function getHourFromMoment(m, date) {
   return Math.ceil((+m - +date) / 3600000);
+}
+
+export function renderTreeNodes(list, childrenProp='children', titleProp='name', keyProp='id') {
+  return list.map(item => {
+    const children = item[childrenProp];
+    const title = item[titleProp];
+    const key = item[keyProp];
+    if (children) {
+      return (
+        <TreeSelectNode title={title} value={key} key={key} dataRef={item}>
+          {renderTreeNodes(children, childrenProp, titleProp, keyProp)}
+        </TreeSelectNode>
+      );
+    }
+    return <TreeSelectNode title={title} value={key} key={key} dataRef={item}/>;
+  });
 }
