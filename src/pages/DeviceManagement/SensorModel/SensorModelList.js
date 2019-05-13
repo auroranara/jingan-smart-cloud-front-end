@@ -546,7 +546,7 @@ export default class SensorModelList extends PureComponent {
               ],
               validateTrigger: 'onBlur',
             })(
-              <Input placeholder="请输入" />
+              <Input placeholder="请输入" disabled={modalType === 'edit'} />
             )}
           </FormItem>
         </Form>

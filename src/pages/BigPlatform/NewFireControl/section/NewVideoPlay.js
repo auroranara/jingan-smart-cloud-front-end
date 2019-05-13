@@ -62,7 +62,7 @@ class VideoPlay extends Component {
   // }
   componentDidUpdate(prevProps, prevState, snapshot) {
     // console.log(snapshot);
-    const { isTree } = this.props
+    const { isTree=false } = this.props
     if (snapshot) {
       isTree ? this.handleTreeInit() : this.handleInit();
     }

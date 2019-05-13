@@ -66,11 +66,11 @@ export default class PersonalInfo extends PureComponent {
       match: {
         params: { id },
       },
-      user: { currentUser },
+      // user: { currentUser },
     } = this.props;
     // 获取详情
     dispatch({
-      type: 'account/fetchAssociatedUnitDeatil',
+      type: 'account/fetchAssociatedUnitDetail',
       payload: {
         userId: id,
       },
@@ -98,7 +98,8 @@ export default class PersonalInfo extends PureComponent {
             unitName,
             departmentName,
             userType,
-            roleNames,
+            // roleNames,
+            roleName,
           },
         },
       },
@@ -130,15 +131,16 @@ export default class PersonalInfo extends PureComponent {
               {userTypeObj ? userTypeObj.label : getEmptyData()}
             </Description>
           )}
-          <Description term="角色">
+          {/* <Description term="角色">
             {roleNames
               ? roleNames.split(',').map(roleName => (
-                  <p key={roleName} style={{ margin: 0, padding: 0 }}>
-                    {roleName}
-                  </p>
-                ))
+                <p key={roleName} style={{ margin: 0, padding: 0 }}>
+                  {roleName}
+                </p>
+              ))
               : getEmptyData()}
-          </Description>
+          </Description> */}
+          {roleName && <Description term="角色">{roleName || getEmptyData()}</Description>}
         </DescriptionList>
       </Card>
     );
