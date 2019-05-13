@@ -55,6 +55,7 @@ export default class GridSelect extends PureComponent {
             style={{ width: 300, fontSize: FONT_SIZE }}
             value={treeValue}
             // dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+            dropdownStyle={{ maxHeight: '50vh' }}
             dropdownClassName={styles.dropdown}
             // treeData={TREE_DATA}
             treeData={list}
