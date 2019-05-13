@@ -19,6 +19,7 @@ import {
 } from '../services/accountManagement.js';
 
 import { checkOldPass, changePass } from '../services/account.js';
+import { queryMenus } from '../services/company/safety';
 
 export default {
   namespace: 'account',
@@ -70,6 +71,7 @@ export default {
     maintenanceTree: {},
     maintenanceSerTree: [],
     maintenanceSubTree: [],
+    grids: [], // 网格点
   },
 
   effects: {
@@ -312,6 +314,17 @@ export default {
         callback && callback(payload);
       }
     },
+    // 获取网格点
+    *fetchGrids({ payload, callback }, { call, put }) {
+      const response = yield call(queryMenus, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        let list = data && data.gridList ? data.gridList : [];
+        if (!Array.isArray(list))
+          list = JSON.parse(list);
+        yield put({ type: 'saveGrids', payload: list });
+      }
+    },
   },
 
   reducers: {
@@ -503,6 +516,9 @@ export default {
           },
         },
       };
+    },
+    saveGrids(state, action) {
+      return { ...state, grids: action.payload };
     },
   },
 };

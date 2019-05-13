@@ -97,7 +97,7 @@ module.exports = env => {
         },
         {
           path: '/big-platform/fire-control/new-company/:unitId',
-          code: 'dashboard.fireControlView',
+          code: 'dashboard.fireMaintenanceView',
           component: './BigPlatform/NewUnitFireControl',
         },
         {

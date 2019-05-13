@@ -702,6 +702,7 @@ class GovernmentBigPlatform extends Component {
               ) : (
                 <TreeSelect
                   value={treeValue}
+                  dropdownStyle={{ maxHeight: '50vh' }}
                   dropdownClassName={styles.gridDropdown}
                   treeData={grids}
                   treeDefaultExpandAll

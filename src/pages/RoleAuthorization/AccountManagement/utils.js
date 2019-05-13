@@ -17,6 +17,7 @@ export const FIELD_LABELS = {
   treeIds: '数据权限',
   roleId: '配置角色',
   departmentId: '所属部门',
+  gridIds: '所属网格',
   userType: '用户角色',
   documentTypeId: '执法证种类',
   execCertificateCode: '执法证编号',
@@ -363,12 +364,12 @@ export function treeData(data) {
   return data.map(item => {
     if (item.children) {
       return (
-        <TreeSelectNode title={item.name} key={item.id} value={item.id}>
+        <TreeSelectNode title={item.name || item.text} key={item.id} value={item.id}>
           {treeData(item.children)}
         </TreeSelectNode>
       );
     }
-    return <TreeNode title={item.name} key={item.id} value={item.id} />;
+    return <TreeSelectNode title={item.name || item.text} key={item.id} value={item.id} />;
   });
 };
 

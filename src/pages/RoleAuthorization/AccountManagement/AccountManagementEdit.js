@@ -157,6 +157,9 @@ const { Search } = Input;
         ...action,
       });
     },
+    fetchGrids(action) {
+      dispatch({ type: 'account/fetchGrids', ...action });
+    },
     dispatch,
   })
 )
@@ -183,6 +186,7 @@ export default class AccountManagementEdit extends PureComponent {
       match: {
         params: { id },
       },
+      fetchGrids,
       fetchOptions,
       goToException,
       fetchUnitsFuzzy,
@@ -198,6 +202,7 @@ export default class AccountManagementEdit extends PureComponent {
     dispatch({ type: 'account/saveTrees', payload: {} }); // 清空权限树
     this.clearRolePermissions(COM); // 清空所选角色的permissions
 
+    fetchGrids(); // 获取网格点树
     fetchOptions({ // 获取单位类型和账户状态
       success: ({ unitType: unitTypes }) => {
         if (isUnitUser) {
@@ -333,6 +338,7 @@ export default class AccountManagementEdit extends PureComponent {
           password,
           roleId,
           departmentId,
+          gridIds,
           userType,
           documentTypeId,
           execCertificateCode,
@@ -382,6 +388,7 @@ export default class AccountManagementEdit extends PureComponent {
               maintenacePermissions: isCheckAll ? [checkedRootKey] : maintenacePermissions,
               roleId,
               departmentId: Array.isArray(departmentId) ? undefined : departmentId,
+              gridIds: Array.isArray(gridIds) ? gridIds.join(',') : '',
               userType,
               documentTypeId,
               execCertificateCode,
@@ -858,6 +865,7 @@ export default class AccountManagementEdit extends PureComponent {
         unitIds,
         documentTypeIds,
         departments,
+        grids,
       },
       form: { getFieldDecorator },
       user: { currentUser: { unitId: userUnitId, unitName: userUnitName, unitType: userUnitType } },
@@ -872,6 +880,7 @@ export default class AccountManagementEdit extends PureComponent {
     const unitIdInitValue = userUnitId && userUnitName ? { key: userUnitId, label: userUnitName } : undefined;
     const isValidateLoginName = id ? [] : [{ validator: this.validateUserName }];
     const treeList = treeData(departments);
+    const gridList = treeData(grids);
 
     return (
       <Card title="账号基本信息" className={styles.card} bordered={false}>
@@ -1159,6 +1168,24 @@ export default class AccountManagementEdit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
+            {!id && unitTypeChecked === GOV && (
+              <Col lg={24} md={24} sm={24}>
+                <Form.Item label={fieldLabels.gridIds}>
+                  {getFieldDecorator('gridIds', {
+                  })(
+                    <TreeSelect
+                      allowClear
+                      treeCheckable
+                      showCheckedStrategy={TreeSelect.SHOW_PARENT}
+                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      placeholder="请选择所属网格"
+                    >
+                      {gridList}
+                    </TreeSelect>
+                  )}
+                </Form.Item>
+              </Col>
+            )}
           </Row>
         </Form>
       </Card>
