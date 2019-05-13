@@ -129,3 +129,65 @@ export function getFirstDeviceId(list=[], index=0) {
   const target = list.find(({ status }) => +status === STATUS_MAP[index]);
   return target ? target.deviceId : undefined;
 }
+
+export function getLineColor(limit, isOutOfContact, end, colors) {
+  const axisLineColor = [];
+  const [value1, value2] = limit;
+  if (isOutOfContact) {
+    axisLineColor.push([1, '#ccc']);
+  }
+  else {
+    if (value1 !== null) {
+      axisLineColor.push([ value1/end, colors[0] ]);
+      if (value2 !== null) {
+        axisLineColor.push([ value2/end, colors[1] ]);
+        axisLineColor.push([ 1, colors[2] ]);
+      }
+      else {
+        axisLineColor.push([ 1, colors[1] ]);
+      }
+    }
+    else {
+      if (value2 !== null) {
+        axisLineColor.push([ value2/end, colors[0] ]);
+        axisLineColor.push([ 1, colors[2] ]);
+      }
+      else {
+        axisLineColor.push([ 1, colors[0] ]);
+      }
+    }
+  }
+}
+
+
+const GREEN = '#37a460';
+const ORANGE = '#f9b206';
+const RED = '#ff4905';
+const COLORS = [RED, ORANGE, GREEN, ORANGE, RED];
+export function getLineColor1(limit, isOutOfContact, end) {
+  if (isOutOfContact)
+    return [1, '#ccc'];
+
+  const [[warn1, warn2], [alarm1, alarm2]] = limit;
+  const splits = [alarm1, warn1, warn2, alarm2].map(n => n ? n / end : null);
+  const nums = splits.filter(n => n);
+  nums.push(1); // 末尾添加1
+  const colors = COLORS.map((c, i) => {
+    if (i === 2) // 绿色必然存在
+      return c;
+    return splits[i > 2 ? i - 1 : i] ? c : null; // 剔除warn,alarm上下限不存在时对应的颜色
+  }).filter(c => c);
+  const axisLineColor = nums.map((n, i) => [n, colors[i]]);
+  return axisLineColor;
+}
+
+// condition 1(< 上限) 2(> 下限) [上限, 下限] => 2->0 1->1
+export function getLimit(deviceConfig, code) {
+  const limit = [[], []];
+  deviceConfig.forEach(({ code: code2, level, condition, limitValue }) => {
+    if (code2 === code) {
+      limit[level - 1][+condition % 2] = (+limitValue);
+    }
+  });
+  return limit;
+}

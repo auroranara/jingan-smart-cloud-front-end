@@ -2,6 +2,7 @@ import React from 'react';
 
 import styles from './Gauge.less';
 import { ChartGauge } from '../components/Components';
+import { getLineColor1 as getLineColor } from '../utils';
 
 // const COLORS = ['#37a460', '#f9b206', '#f73329'];
 const COLORS = ['#37a460', '#f9b206', '#ff4905'];
@@ -21,36 +22,14 @@ const RANGES = {
 
 export default function Gauge(props) {
   const {
-    data: { desc: title, value, unit, limit=[null, null], status },
+    data: { desc: title, value, unit, limit=[[], []], status },
   } = props;
   const [start, end] = RANGES[title];
-  const [value1, value2] = limit;
-  const axisLineColor = [];
   const isOutOfContact = +status === -1;
-  if (isOutOfContact) {
-    axisLineColor.push([1, '#ccc']);
-  }
-  else {
-    if (value1 !== null) {
-      axisLineColor.push([ value1/end, COLORS[0] ]);
-      if (value2 !== null) {
-        axisLineColor.push([ value2/end, COLORS[1] ]);
-        axisLineColor.push([ 1, COLORS[2] ]);
-      }
-      else {
-        axisLineColor.push([ 1, COLORS[1] ]);
-      }
-    }
-    else {
-      if (value2 !== null) {
-        axisLineColor.push([ value2/end, COLORS[0] ]);
-        axisLineColor.push([ 1, COLORS[2] ]);
-      }
-      else {
-        axisLineColor.push([ 1, COLORS[0] ]);
-      }
-    }
-  }
+  const axisLineColor = getLineColor(limit, isOutOfContact, end);
+  const [[warn1, warn2], [alarm1, alarm2]] = limit
+  const min = Math.max(...[start, warn1, alarm1].filter(n => typeof n === 'number'));
+  const max = Math.min(...[warn2, alarm2, end].filter(n => typeof n === 'number'));
 
   return (
     <div className={styles.container}>
@@ -65,13 +44,14 @@ export default function Gauge(props) {
         <p className={styles.title}>{title}</p>
         <p>
           实时数值：
-          <span style={{ color: isOutOfContact?undefined:COLORS[status] }}>
+          <span style={{ color: isOutOfContact ? undefined : COLORS[status] }}>
             {isOutOfContact || value === null || value === undefined ? '--' : `${value}${unit}`}
           </span>
         </p>
         <p>
           参考范围值：
-          {isOutOfContact ? '--' : `${start} ~ ${Math.min(end, ...limit.filter(item => item !== null))}${unit}`}
+          {/* {isOutOfContact ? '--' : `${start} ~ ${Math.min(end, ...limit.filter(item => item !== null))}${unit}`} */}
+          {isOutOfContact ? '--' : `${min} ~ ${max}${unit}`}
         </p>
       </div>
     </div>

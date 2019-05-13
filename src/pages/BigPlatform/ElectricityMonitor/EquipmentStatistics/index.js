@@ -131,7 +131,7 @@ export default class EquipmentStatistics extends PureComponent {
     const {
       brandData: { brandList = [] },
     } = this.props;
-    console.log('this.props', this.props);
+    // console.log('this.props', this.props);
     return (
       <div style={{ width: '100%', height: '100%' }}>
         <ReactEcharts
