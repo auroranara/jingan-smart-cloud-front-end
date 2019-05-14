@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
-import { Button, Input, Row, Col, Table, TreeSelect, Icon } from 'antd';
+import { Button, Input, Row, Col, Table, TreeSelect, Icon, message } from 'antd';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 import styles from './SectionList.less';
@@ -76,6 +76,7 @@ export default class SectionList extends PureComponent {
   state = {
     areaName: '',
     status: undefined,
+    selectedAreaId: undefined,
   };
 
   /**
@@ -178,6 +179,23 @@ export default class SectionList extends PureComponent {
     });
   };
 
+  handleClear = e => {
+    const { dispatch, clearAreaId } = this.props;
+    if (clearAreaId)
+      dispatch({
+        type: 'personPosition/clearPositions',
+        payload: clearAreaId,
+        callback: (code, msg) => {
+          if (code === 200)
+            message.success('清除成功');
+          else
+            message.error(msg);
+        },
+      });
+    else
+      message.warn('请先选择需要清除的区域！');
+  };
+
   /**
    * 渲染
    */
@@ -187,10 +205,12 @@ export default class SectionList extends PureComponent {
       // 表格源数据
       data=[],
       areaId,
+      clearAreaId,
       setAreaId,
       setHighlightedAreaId,
       expandedRowKeys,
       setExpandedRowKeys,
+      handleClearTreeChange,
       ...restProps
     } = this.props;
     const { areaName, status } = this.state;
@@ -240,14 +260,23 @@ export default class SectionList extends PureComponent {
           <div className={styles.inner}>
             <div className={styles.treeSelectContainer}>
               <TreeSelect
+                allowClear
                 treeDefaultExpandAll
+                value={clearAreaId}
                 placeholder="请选择需要清除的区域"
                 className={styles.treeSelect}
                 dropdownClassName={styles.dropdown}
+                onChange={handleClearTreeChange}
               >
                 {renderTreeNodes(data)}
               </TreeSelect>
-              <Button className={styles.clear}>一键清除</Button>
+              <Button
+                ghost
+                className={styles.clear}
+                onClick={this.handleClear}
+              >
+                一键清除
+              </Button>
             </div>
             <Row gutter={16}>
               {/* <Col span={14} style={{ marginBottom: 12 }}> */}

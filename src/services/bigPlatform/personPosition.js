@@ -53,3 +53,8 @@ export async function getMonthCount(params) {
 export async function getServerTime(params) {
   return request(`${URL_PREFIX}/sys/time${stringify(params)}`);
 }
+
+// 根据区域id清除人员定位
+export async function clearPosByArea(areaId) {
+  return request(`${URL_PREFIX}/location/command/removeAreaCard/${areaId}`);
+}
