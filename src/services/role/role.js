@@ -48,3 +48,8 @@ export async function getAppPermissionTree(params) {
 export async function queryList(params) {
   return request(`/acloud_new/v2/rolePermission/sysRole?${stringify(params)}`);
 }
+
+// 获取消息类型树
+export async function getMessageTree(params) {
+  return request(`/acloud_new/v2/rolePermission/sysRole/messageTypeTree?${stringify(params)}`);
+}

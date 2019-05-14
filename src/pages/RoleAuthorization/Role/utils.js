@@ -180,3 +180,35 @@ export function getUnitDisabled(isEdit, isCommon, isAdmin) {
 
   return false;
 }
+
+function traverse(list, callback) {
+  if (Array.isArray(list))
+    list.forEach(item => {
+      callback(item);
+      traverse(item.children, callback);
+    });
+}
+
+function getChildIds(item, cache) {
+  const { id, children } = item;
+  const cachedIds = cache[id];
+  if (cachedIds)
+    return cachedIds;
+  let childIds = [];
+  if (Array.isArray(children))
+    childIds = children.reduce((prev, next) => [...prev, next.id, ...getChildIds(next, cache)], []);
+  cache[id] = childIds;
+  return childIds;
+}
+
+export function getIdMap(list) {
+  const cache = {};
+  const parentIdMap = {};
+  const childIdsMap = {};
+  traverse(list, item => {
+    const { id, parentId } = item;
+    parentIdMap[id] = parentId;
+    childIdsMap[id] = getChildIds(item, cache);
+  });
+  return [parentIdMap, childIdsMap];
+}

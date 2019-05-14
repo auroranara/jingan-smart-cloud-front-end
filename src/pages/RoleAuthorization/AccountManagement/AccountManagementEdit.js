@@ -16,6 +16,8 @@ import {
   Spin,
   AutoComplete,
   Checkbox,
+  Table,
+  Tabs,
 } from 'antd';
 import { routerRedux } from 'dva/router';
 import debounce from 'lodash/debounce';
@@ -45,13 +47,13 @@ import {
 import { MAI, GOV, OPE, COM } from '@/pages/RoleAuthorization/Role/utils';
 import styles from './AccountManagementEdit.less';
 
+const { Search } = Input;
 const { Option } = Select;
+const { TabPane } = Tabs;
 
 const editTitle = '编辑账号';
 const addTitle = '新增账号';
 const href = '/role-authorization/account-management/list'; // 返回地址
-
-const { Search } = Input;
 
 // 1.编辑账号基本信息  2.新增账号基本信息和第一个关联单位
 @connect(
@@ -1215,7 +1217,8 @@ export default class AccountManagementEdit extends PureComponent {
     const { subExpandedKeys, searchSerValue, searchSubValue, unitTypeChecked } = this.state;
 
     return (
-      <Card title="角色权限配置" className={styles.card} bordered={false}>
+      <TabPane tab="角色权限配置" key="1" className={styles.tabPane}>
+      {/* <Card title="角色权限配置" className={styles.card} bordered={false}> */}
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col sm={24} md={12} lg={8}>
@@ -1362,7 +1365,8 @@ export default class AccountManagementEdit extends PureComponent {
             </Row>
           ) : null}
         </Form>
-      </Card>
+      {/* </Card> */}
+      </TabPane>
     );
   }
 
@@ -1407,6 +1411,26 @@ export default class AccountManagementEdit extends PureComponent {
           {errorCount}
         </Popover>
       </span>
+    );
+  }
+
+  renderMessageSubscription() {
+    const columns = [
+      { title: '消息类别', dataIndex: 'type', key: 'type' },
+      { title: '是否配置', dataIndex: 'check', key: 'check',
+        render: (txt, record) => (
+          <Checkbox />
+        ),
+      },
+    ];
+
+    return (
+      <TabPane tab="消息订阅配置" key="2" className={styles.tabPane1}>
+        <Table
+          className={styles.table}
+          columns={columns}
+        />
+      </TabPane>
     );
   }
 
@@ -1477,7 +1501,12 @@ export default class AccountManagementEdit extends PureComponent {
       >
         <Spin spinning={loading}>
           {this.renderBasicInfo()}
-          {!id && this.renderRolePermission()}
+          {!id && (
+            <Tabs className={styles.tabs}>
+              {this.renderRolePermission()}
+              {this.renderMessageSubscription()}
+            </Tabs>
+          )}
           {this.renderFooterToolbar()}
         </Spin>
       </PageHeaderLayout>

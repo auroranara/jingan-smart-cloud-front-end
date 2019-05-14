@@ -16,6 +16,8 @@ import {
   Tree,
   AutoComplete,
   Checkbox,
+  Table,
+  Tabs,
 } from 'antd';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';
@@ -50,6 +52,7 @@ import styles from './AccountManagementEdit.less';
 
 const { Option } = Select;
 const { Search } = Input;
+const { TabPane } = Tabs;
 
 const editTitle = '编辑关联单位';
 const addTitle = '新增关联单位';
@@ -1250,7 +1253,8 @@ export default class AssociatedUnit extends PureComponent {
     const { subExpandedKeys, searchSerValue, searchSubValue, unitTypeChecked } = this.state;
 
     return (
-      <Card title="角色权限配置" className={styles.card} bordered={false}>
+      <TabPane tab="角色权限配置" key="1" className={styles.tabPane}>
+      {/* <Card title="角色权限配置" className={styles.card} bordered={false}> */}
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col sm={24} md={12} lg={8}>
@@ -1397,7 +1401,28 @@ export default class AssociatedUnit extends PureComponent {
             </Row>
           ) : null}
         </Form>
-      </Card>
+      {/* </Card> */}
+      </TabPane>
+    );
+  }
+
+  renderMessageSubscription() {
+    const columns = [
+      { title: '消息类别', dataIndex: 'type', key: 'type' },
+      { title: '是否配置', dataIndex: 'check', key: 'check',
+        render: (txt, record) => (
+          <Checkbox />
+        ),
+      },
+    ];
+
+    return (
+      <TabPane tab="消息订阅配置" key="2" className={styles.tabPane1}>
+        <Table
+          className={styles.table}
+          columns={columns}
+        />
+      </TabPane>
     );
   }
 
@@ -1511,7 +1536,10 @@ export default class AssociatedUnit extends PureComponent {
       >
         <Spin spinning={loading}>
           {this.renderBasicInfo()}
-          {this.renderRolePermission()}
+          <Tabs className={styles.tabs}>
+            {this.renderRolePermission()}
+            {this.renderMessageSubscription()}
+          </Tabs>
           {this.renderFooterToolbar()}
         </Spin>
       </PageHeaderLayout>

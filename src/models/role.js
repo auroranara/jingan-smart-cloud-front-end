@@ -7,8 +7,21 @@ import {
   deleteRole,
   queryRolePermissions,
   getAppPermissionTree,
+  getMessageTree,
 } from '../services/role/role';
 import { queryDetail as queryRoleDetail } from '../services/role/commonRole';
+
+function handleList(list) {
+  if (Array.isArray)
+  list.forEach(item => {
+    if (!item.children)
+      return;
+    if (!item.children.length)
+      delete item.children;
+    else
+      handleList(item.children);
+  });
+}
 
 export default {
   namespace: 'role',
@@ -29,6 +42,7 @@ export default {
         total: 0,
       },
     },
+    msgTree: [],
     isLast: false,
   },
 
@@ -163,6 +177,16 @@ export default {
       else
         error && error(msg);
     },
+    *fetchMsgTree({ payload, callback }, { call, put }) { // 获取订阅消息树
+      const response = yield call(getMessageTree, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list : [];
+        handleList(list);
+        yield put({ type: 'saveMsgTree', payload: list });
+        callback && callback(list);
+      }
+    },
   },
 
   reducers: {
@@ -226,6 +250,9 @@ export default {
           list: state.data.list.filter(item => item.id !== id),
         },
       };
+    },
+    saveMsgTree(state, action) {
+      return { ...state, msgTree: action.payload };
     },
   },
 }

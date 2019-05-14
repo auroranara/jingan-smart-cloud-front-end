@@ -1,14 +1,16 @@
 import React, { PureComponent } from 'react';
 import _ from 'lodash';
-import { Form, Card, Input, Button, Select, Spin, Tree, TreeSelect, message } from 'antd';
+import { Checkbox, Form, Card, Input, Button, Select, Spin, Table, Tabs, Tree, TreeSelect, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import styles from './Role.less';
 import { hasAuthority } from '@/utils/customAuth';
 import { GOV, OPE, checkParent, generateTreeNode, sortTree, uncheckParent, getUnitDisabled } from './utils';
 
 const { TreeNode } = Tree;
 const { TextArea } = Input;
 const { Option } = Select;
+const { TabPane } = Tabs;
 
 const PAGE_SIZE = 20;
 const INLINE_FORM_STYLE = { width: '50%', marginRight: 0 };
@@ -351,7 +353,7 @@ export default class RoleHandler extends PureComponent {
     const appTree = sortTree(appPermissionTree);
 
     return (
-      <Card title="权限配置" style={{ marginTop: '24px' }}>
+      <TabPane tab="权限配置" key="1" className={styles.tabPane}>
         <Form layout="inline">
           <Form.Item
             label="WEB权限树"
@@ -370,13 +372,6 @@ export default class RoleHandler extends PureComponent {
               trigger: 'onCheck',
               validateTrigger: 'onCheck',
               valuePropName: 'checkedKeys',
-              // rules: [
-              //   {
-              //     required: true,
-              //     message: '请选择WEB权限',
-              //     transform: value => value && value.join(','),
-              //   },
-              // ],
             })(<Tree checkable>{this.renderTreeNodes(tree)}</Tree>)}
           </Form.Item>
           {unitType !== OPE && (
@@ -397,19 +392,33 @@ export default class RoleHandler extends PureComponent {
                 trigger: 'onCheck',
                 validateTrigger: 'onCheck',
                 valuePropName: 'checkedKeys',
-                // rules: [
-                //   {
-                //     required: true,
-                //     message: '请选择APP权限',
-                //     transform: value => value && value.join(','),
-                //   },
-                // ],
               })(<Tree checkable>{this.renderTreeNodes(appTree)}</Tree>)}
             </Form.Item>
           )}
         </Form>
         {this.renderButtonGroup()}
-      </Card>
+      </TabPane>
+    );
+  }
+
+  renderMessageSubscription() {
+    const columns = [
+      { title: '消息类别', dataIndex: 'type', key: 'type' },
+      { title: '是否配置', dataIndex: 'check', key: 'check',
+        render: (txt, record) => (
+          <Checkbox />
+        ),
+      },
+    ];
+
+    return (
+      <TabPane tab="消息订阅配置" key="2" className={styles.tabPane1}>
+        <Table
+          className={styles.table}
+          columns={columns}
+        />
+        {this.renderButtonGroup()}
+      </TabPane>
     );
   }
 
@@ -474,7 +483,10 @@ export default class RoleHandler extends PureComponent {
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Spin spinning={loading || submitting}>
           {this.renderBasicInfo()}
-          {this.renderAuthorizationConfiguration()}
+          <Tabs className={styles.tabs}>
+            {this.renderAuthorizationConfiguration()}
+            {this.renderMessageSubscription()}
+          </Tabs>
         </Spin>
       </PageHeaderLayout>
     );
