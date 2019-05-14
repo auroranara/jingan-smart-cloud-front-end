@@ -111,7 +111,7 @@ export default class App extends PureComponent {
       },
       loading,
     } = this.props;
-    const { tab, i } = this.state;
+    const { tab } = this.state;
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
 

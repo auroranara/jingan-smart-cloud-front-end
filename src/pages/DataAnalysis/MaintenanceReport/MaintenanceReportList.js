@@ -78,7 +78,7 @@ export default class App extends PureComponent {
     const {
       user: {
         currentUser: { unitType },
-        companyBasicInfo: { isBranch } = {},
+        // companyBasicInfo: { isBranch } = {},
       },
     } = props;
     /* 当前账号是否是企业 */
@@ -451,6 +451,7 @@ export default class App extends PureComponent {
                       allowClear
                       dropdownStyle={{
                         maxHeight: '50vh',
+                        zIndex: 50,
                       }}
                     />
                   )}
@@ -466,6 +467,7 @@ export default class App extends PureComponent {
                     allowClear
                     mode="combobox"
                     optionLabelProp="children"
+                    dropdownStyle={{ zIndex: 50 }}
                     placeholder="请选择"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     onSearch={this.handleUnitIdChange}
@@ -487,6 +489,7 @@ export default class App extends PureComponent {
               {getFieldDecorator('createTime', {})(
                 <RangePicker
                   style={{ width: '100%' }}
+                  popupStyle={{ zIndex: 50 }}
                   getCalendarContainer={getRootChild}
                   allowClear
                 />
@@ -519,7 +522,12 @@ export default class App extends PureComponent {
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.checkResult}>
               {getFieldDecorator('checkResult')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                <Select
+                  placeholder="请选择"
+                  getPopupContainer={getRootChild}
+                  allowClear
+                  dropdownStyle={{ zIndex: 50 }}
+                >
                   {checkResultList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}

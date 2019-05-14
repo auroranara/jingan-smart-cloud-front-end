@@ -448,6 +448,7 @@ export default class App extends PureComponent {
                       allowClear
                       dropdownStyle={{
                         maxHeight: '50vh',
+                        zIndex: 50,
                       }}
                     />
                   )}
@@ -464,6 +465,7 @@ export default class App extends PureComponent {
                     mode="combobox"
                     optionLabelProp="children"
                     placeholder="请选择"
+                    dropdownStyle={{ zIndex: 50 }}
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     onSearch={this.handleUnitIdChange}
                     filterOption={false}
@@ -484,6 +486,7 @@ export default class App extends PureComponent {
               {getFieldDecorator('createTime', {})(
                 <RangePicker
                   style={{ width: '100%' }}
+                  popupStyle={{ zIndex: 50 }}
                   getCalendarContainer={getRootChild}
                   allowClear
                 />
@@ -494,7 +497,12 @@ export default class App extends PureComponent {
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.reporting_channels}>
               {getFieldDecorator('itemType')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                <Select
+                  placeholder="请选择"
+                  getPopupContainer={getRootChild}
+                  dropdownStyle={{ zIndex: 50 }}
+                  allowClear
+                >
                   {reportingChannelsList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}
@@ -520,7 +528,12 @@ export default class App extends PureComponent {
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.check_result}>
               {getFieldDecorator('checkResult')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                <Select
+                  placeholder="请选择"
+                  getPopupContainer={getRootChild}
+                  dropdownStyle={{ zIndex: 50 }}
+                  allowClear
+                >
                   {checkResultList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}
