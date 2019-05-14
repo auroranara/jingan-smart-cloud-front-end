@@ -482,9 +482,7 @@ export default class AddSensor extends Component {
             )}
           </FormItem>
           <FormItem label="传感器名称" {...formItemLayout}>
-            {getFieldDecorator('deviceName', {
-              rules: [{ required: true, message: '请输入传感器名称' }],
-            })(
+            {getFieldDecorator('deviceName')(
               <Input placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
