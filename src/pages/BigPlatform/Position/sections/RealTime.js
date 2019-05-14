@@ -584,6 +584,7 @@ export default class RealTime extends PureComponent {
                 dispatch={dispatch}
                 data={sectionTree}
                 areaInfo={areaInfo}
+                positions={positionList}
                 areaId={areaId}
                 clearAreaId={sectionListClearAreaId}
                 setAreaId={this.setAreaId}

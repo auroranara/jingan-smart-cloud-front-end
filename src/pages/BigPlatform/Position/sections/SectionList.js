@@ -180,8 +180,14 @@ export default class SectionList extends PureComponent {
   };
 
   handleClear = e => {
-    const { dispatch, clearAreaId } = this.props;
-    if (clearAreaId)
+    const { dispatch, areaInfo, positions, clearAreaId } = this.props;
+    let persons = [];
+    // console.log(positions, areaInfo);
+    if (clearAreaId) {
+      const { childIds } = areaInfo[clearAreaId];
+      persons = positions.filter(({ areaId }) => childIds.includes(areaId));
+    }
+    if (clearAreaId && persons.length)
       dispatch({
         type: 'personPosition/clearPositions',
         payload: clearAreaId,
@@ -193,7 +199,7 @@ export default class SectionList extends PureComponent {
         },
       });
     else
-      message.warn('请先选择需要清除的区域！');
+      message.warn(clearAreaId ? '选择的区域没有人员，不需要清除！' : '请先选择需要清除的区域！');
   };
 
   /**
