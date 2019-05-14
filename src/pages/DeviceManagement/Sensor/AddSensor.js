@@ -475,8 +475,10 @@ export default class AddSensor extends Component {
             )}
           </FormItem>
           <FormItem label="传感器名称" {...formItemLayout}>
-            {getFieldDecorator('deviceName')(
-              <Input {...itemStyles} />
+            {getFieldDecorator('deviceName', {
+              rules: [{ required: true, message: '请输入传感器名称' }],
+            })(
+              <Input placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
           {/* <FormItem label="传感器位号" {...formItemLayout}>
@@ -490,7 +492,7 @@ export default class AddSensor extends Component {
             {getFieldDecorator('relationDeviceId', {
               rules: [{ required: true, message: '请输入传感器ID' }],
             })(
-              <Input {...itemStyles} />
+              <Input placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
           {typeId && (
@@ -501,13 +503,17 @@ export default class AddSensor extends Component {
             </FormItem>
           )}
           <FormItem label="所在区域" {...formItemLayout}>
-            {getFieldDecorator('area')(
-              <Input {...itemStyles} />
+            {getFieldDecorator('area', {
+              rules: [{ required: true, message: '请输入所在区域' }],
+            })(
+              <Input placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="位置详情" {...formItemLayout}>
-            {getFieldDecorator('location')(
-              <Input {...itemStyles} />
+            {getFieldDecorator('location', {
+              rules: [{ required: true, message: '请输入位置详情' }],
+            })(
+              <Input placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
           {/* <FormItem label="地图定位" {...formItemLayout}></FormItem> */}
