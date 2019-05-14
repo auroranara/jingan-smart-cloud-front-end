@@ -56,8 +56,8 @@ export default class AddSensor extends Component {
         type: 'sensor/fetchSensorDetail',
         payload: { id },
         callback: (response) => {
-          const { companyId, companyName, monitoringParameters, monitoringTypeId, typeId, brandId, deviceName, relationDeviceId } = response.data
-          setFieldsValue({ companyId, monitoringTypeId, typeId, brandId, deviceName, relationDeviceId })
+          const { companyId, companyName, monitoringParameters, monitoringTypeId, typeId, brandId, deviceName, relationDeviceId, area, location } = response.data
+          setFieldsValue({ companyId, monitoringTypeId, typeId, brandId, deviceName, relationDeviceId, area, location })
           this.setState({
             selectedCompany: { id: companyId, name: companyName },
           })
@@ -500,17 +500,17 @@ export default class AddSensor extends Component {
               </Fragment>
             </FormItem>
           )}
-          {/* <FormItem label="所在区域" {...formItemLayout}>
-            {getFieldDecorator('d')(
+          <FormItem label="所在区域" {...formItemLayout}>
+            {getFieldDecorator('area')(
               <Input {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="位置详情" {...formItemLayout}>
-            {getFieldDecorator('e')(
+            {getFieldDecorator('location')(
               <Input {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="地图定位" {...formItemLayout}></FormItem> */}
+          {/* <FormItem label="地图定位" {...formItemLayout}></FormItem> */}
         </Form>
         <Row style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button onClick={() => { router.push('/device-management/sensor/list') }}>取消</Button>
