@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Icon, notification,Tree,Input } from 'antd';
+import { Icon, notification, Tree, Input } from 'antd';
 import { connect } from 'dva';
 import { Player } from 'video-react';
 import HLSSource from '@/pages/BigPlatform/NewFireControl/components/HLSSource.js';
@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import styles from './VideoPlay.less';
 import animate from '@/pages/BigPlatform/Safety/Animate.less';
 import Draggable from 'react-draggable';
-import {findFirstVideo} from '@/utils/utils';
+import { findFirstVideo } from '@/utils/utils';
 
 const { TreeNode } = Tree
 const { Search } = Input
@@ -41,12 +41,16 @@ class VideoPlay extends Component {
   state = {
     videoSrc: '',
     activeIndex: 0,
+    selectedKeys: [],
+    expandedKeys: [],
+    searchValue: '',
+    autoExpandParent: true,
   };
 
   componentDidMount() {
-    const { keyId, visible } = this.props;
+    const { keyId, visible, isTree = false } = this.props;
     if (keyId && visible)
-      this.handleInit();
+      isTree ? this.handleTreeInit() : this.handleInit();
   }
 
   // VideoList的值发生改变或者keyId发生改变时，重新获取对应视频
@@ -59,7 +63,7 @@ class VideoPlay extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     // console.log(snapshot);
-    const { isTree=true } = this.props
+    const { isTree = false } = this.props
     if (snapshot) {
       isTree ? this.handleTreeInit() : this.handleInit();
     }
@@ -411,7 +415,7 @@ class VideoPlay extends Component {
   }
 
   renderPan = () => {
-    const { loading, style = {}, videoList = [], draggable = true, showList = true, hideHead,isTree=true } = this.props;
+    const { loading, style = {}, videoList = [], draggable = true, showList = true, hideHead, isTree = true } = this.props;
     const { videoSrc, activeIndex } = this.state;
     const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in);
 
@@ -445,7 +449,7 @@ class VideoPlay extends Component {
               <div style={{ height: '36px', lineHeight: '36px', paddingLeft: '10px' }}>
                 设备列表
               </div>
-              {isTree?this.renderVideoTree():this.renderVideoList()}
+              {isTree ? this.renderVideoTree() : this.renderVideoList()}
             </div>
           )}
         </div>

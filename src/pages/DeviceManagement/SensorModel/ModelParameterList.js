@@ -132,7 +132,7 @@ export default class ModelParameterList extends PureComponent {
     validateFields(['code', 'desc', 'unit', 'range'], (error, values) => {
       if (!error) {
         const { code, unit, desc, range } = values
-        const payload = { code, unit, desc, ...range, modelId }
+        const payload = { code, unit: unit || '', desc: desc || '', ...range, modelId }
         const success = () => {
           message.success(id ? '编辑成功！' : '添加成功！')
           this.setState({ addModalVisible: false })

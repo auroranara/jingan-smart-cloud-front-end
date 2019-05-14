@@ -4,11 +4,11 @@ import { Button } from 'antd';
 import { VideoPlay } from '../components/Components';
 import styles from './CardSelected.less';
 import { getUserName } from '../utils';
-import {findFirstVideo} from '@/utils/utils';
+import { findFirstVideo } from '@/utils/utils';
 
 const VIDEO_STYLE = { position: 'relative', margin: 0, width: '100%', height: '100%', top: 0, right: 0 };
 const rect = <span className={styles.rect} />;
-function emptyFn() {}
+function emptyFn() { }
 
 export default class CardSelected extends PureComponent {
   handleToHistory = e => {
@@ -33,12 +33,12 @@ export default class CardSelected extends PureComponent {
     const { areaInfo, cardId, userId, positions } = this.props;
     // userId存在时优先userId，不存在时用cardId
     const card = positions.find(({ cardId: cId, userId: uId }) => userId ? uId === userId : cId === cardId) || {};
-    const { areaId, cardType, phoneNumber, visitorPhone, cardCode, departmentName, videoListTree=[] } = card;
+    const { areaId, cardType, phoneNumber, visitorPhone, cardCode, departmentName, videoListTree = [] } = card;
     const isVisitor = !!+cardType;
     const name = getUserName(card, true);
     const phone = isVisitor ? visitorPhone : phoneNumber;
     const showVideo = videoListTree && videoListTree.length;
-    const videoKeyId = showVideo ? findFirstVideo(videoListTree) : '';
+    const videoKeyId = showVideo ? findFirstVideo(videoListTree).id : '';
     const showList = videoListTree && videoListTree.length > 1 ? true : false;
     const sectionName = areaInfo && areaInfo[areaId] ? areaInfo[areaId].fullName : '外围区域';
 
@@ -75,10 +75,11 @@ export default class CardSelected extends PureComponent {
               visible={true}
               style={VIDEO_STYLE}
               showList={showList}
-              videoList={ showList ? videoListTree : []}
+              videoList={showList ? videoListTree : []}
               keyId={videoKeyId}
               draggable={false}
               handleVideoClose={emptyFn}
+              isTree={true}
             />
           </div>
         </div>
