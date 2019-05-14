@@ -372,8 +372,8 @@ export default class NanXiaoLogin extends PureComponent {
             登录
           </Button>
         </FormItem>
-        {/*
-         <FormItem className={styles.downloadFormItem}>
+
+        <FormItem className={styles.downloadFormItem}>
           <div className={styles.downloadContainer}>
             <span onClick={this.handleToDownload} className={styles.download}>
               <Icon type="download" className={styles.downloadIcon} />
@@ -381,7 +381,6 @@ export default class NanXiaoLogin extends PureComponent {
             </span>
           </div>
         </FormItem>
-       */}
       </Form>
     );
   };

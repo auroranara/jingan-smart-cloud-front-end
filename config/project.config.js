@@ -8,6 +8,7 @@ import liminLogo from '../src/assets/logo_limin.svg';
 import liminCode from '../src/assets/limin_download_code.jpg';
 import changshuCode from '../src/assets/changshu_download_code.png';
 import shanxiCode from '../src/assets/shanxi_download_code.png';
+import fireCode from '../src/assets/fire_download_code.jpg';
 import yanshiCode from '../src/assets/yanshi_download_code.png';
 import xiaoyuanCode from '../src/assets/xiaoyuan_download_code.png';
 import xuzhouCode from '../src/assets/xuzhou_download_code.png';
@@ -145,6 +146,8 @@ const configs = {
   fire: {
     projectShortName: '智慧消防云',
     logo: fireLogo,
+    code: fireCode,
+    layer: 'http://image.jingan-china.cn/v2/login/fire_download_layer.png',
   },
   xiaoyuan: {
     projectKey: 'v2_test',
