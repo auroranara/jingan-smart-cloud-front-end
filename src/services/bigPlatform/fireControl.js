@@ -84,6 +84,11 @@ export async function getMapLocation(params) {
   return request(`${URL_PREFIX}/gridInfo/getMapLocation?${stringify(params)}`);
 }
 
+// 获取网格区域以及它的子区域
+export async function getMapLocationByParent(params) {
+  return request(`${URL_PREFIX}/gridInfo/getMapLocationByParent?${stringify(params)}`);
+}
+
 // 获取网格列表
 export async function getGrids(params) {
   return request(`${URL_PREFIX}/sfc/getGridData.json`);
