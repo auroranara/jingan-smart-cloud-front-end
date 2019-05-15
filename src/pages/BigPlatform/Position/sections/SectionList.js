@@ -1,11 +1,10 @@
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
-import { Input, Row, Col, Select, Table, Icon } from 'antd';
+import { Button, Input, Row, Col, Table, TreeSelect, Icon, message } from 'antd';
+
 import { Scrollbars } from 'react-custom-scrollbars';
 import styles from './SectionList.less';
-
-// const { Search } = Input;
-const { Option } = Select;
+import { renderTreeNodes } from '../utils';
 
 // 状态字典
 const statuses = [
@@ -77,6 +76,7 @@ export default class SectionList extends PureComponent {
   state = {
     areaName: '',
     status: undefined,
+    selectedAreaId: undefined,
   };
 
   /**
@@ -179,6 +179,29 @@ export default class SectionList extends PureComponent {
     });
   };
 
+  handleClear = e => {
+    const { dispatch, areaInfo, positions, clearAreaId } = this.props;
+    let persons = [];
+    // console.log(positions, areaInfo);
+    if (clearAreaId) {
+      const { childIds } = areaInfo[clearAreaId];
+      persons = positions.filter(({ areaId }) => childIds.includes(areaId));
+    }
+    if (clearAreaId && persons.length)
+      dispatch({
+        type: 'personPosition/clearPositions',
+        payload: clearAreaId,
+        callback: (code, msg) => {
+          if (code === 200)
+            message.success('清除成功');
+          else
+            message.error(msg);
+        },
+      });
+    else
+      message.warn(clearAreaId ? '选择的区域没有人员，不需要清除！' : '请先选择需要清除的区域！');
+  };
+
   /**
    * 渲染
    */
@@ -188,10 +211,12 @@ export default class SectionList extends PureComponent {
       // 表格源数据
       data=[],
       areaId,
+      clearAreaId,
       setAreaId,
       setHighlightedAreaId,
       expandedRowKeys,
       setExpandedRowKeys,
+      handleClearTreeChange,
       ...restProps
     } = this.props;
     const { areaName, status } = this.state;
@@ -239,6 +264,26 @@ export default class SectionList extends PureComponent {
       <div className={styles.container} {...restProps}>
         <Scrollbars style={{ width: '100%', height: '100%' }} renderThumbHorizontal={this.renderThumb} renderThumbVertical={this.renderThumb}>
           <div className={styles.inner}>
+            <div className={styles.treeSelectContainer}>
+              <TreeSelect
+                allowClear
+                treeDefaultExpandAll
+                value={clearAreaId}
+                placeholder="请选择需要清除的区域"
+                className={styles.treeSelect}
+                dropdownClassName={styles.dropdown}
+                onChange={handleClearTreeChange}
+              >
+                {renderTreeNodes(data)}
+              </TreeSelect>
+              <Button
+                ghost
+                className={styles.clear}
+                onClick={this.handleClear}
+              >
+                一键清除
+              </Button>
+            </div>
             <Row gutter={16}>
               {/* <Col span={14} style={{ marginBottom: 12 }}> */}
                 {/* 搜索区域名称 */}

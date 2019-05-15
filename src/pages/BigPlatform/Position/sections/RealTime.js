@@ -46,6 +46,7 @@ export default class RealTime extends PureComponent {
     // useCardIdHandleAlarm: undefined, // 当sos存在时，又在报警列表找不到时，标记为sos对应的cardId，使用另外一个接口
     expandedRowKeys: [], // SectionList组件中的展开的树节点
     movingCards: [], // 带有不断变化的x，y的卡片
+    sectionListClearAreaId: undefined, // 清除列表的列表树
   };
 
   originMovingCards = []; // 缓存所有卡片的初始位置，并实时更新状态
@@ -63,7 +64,7 @@ export default class RealTime extends PureComponent {
       if (list.length) {
         const root = list[0];
         const { id } = root;
-        const state = { areaId: id, mapBackgroundUrl: root.mapPhoto.url };
+        const state = { areaId: id, mapBackgroundUrl: root.mapPhoto.url, sectionListClearAreaId: id };
         // 如果从历史轨迹里点追踪进入当前组件，则areaId可能已存在，若存在，则用，不存在则使用根节点
         if (areaId)
           state.areaId = areaId;
@@ -119,6 +120,10 @@ export default class RealTime extends PureComponent {
   areaInfo = {};
   treeTimer = null;
   zeroTimestamp = 0; // 开始计时时的零点时间戳
+
+  handleSectionListClearTreeChange = value => {
+    this.setState({ sectionListClearAreaId: value });
+  };
 
   // 获取服务器时间，计算当前时间到00:00的时间，挂一个定时器，由于计时器不一定准，所以到时候再获取一次服务器时间，若此时已经过了零点
   // 则重新获取一遍sectionTree，若此时还未过零点，重复上述操作
@@ -560,6 +565,7 @@ export default class RealTime extends PureComponent {
       // useCardIdHandleAlarm,
       expandedRowKeys,
       movingCards,
+      sectionListClearAreaId,
     } = this.state;
 
     // console.log(sectionTree);
@@ -575,13 +581,17 @@ export default class RealTime extends PureComponent {
           <div className={styles.leftSection}>
             {!labelIndex && (
               <SectionList
+                dispatch={dispatch}
                 data={sectionTree}
                 areaInfo={areaInfo}
+                positions={positionList}
                 areaId={areaId}
+                clearAreaId={sectionListClearAreaId}
                 setAreaId={this.setAreaId}
                 expandedRowKeys={expandedRowKeys}
                 setHighlightedAreaId={this.setHighlightedAreaId}
                 setExpandedRowKeys={this.setTableExpandedRowKeys}
+                handleClearTreeChange={this.handleSectionListClearTreeChange}
               />
             )}
             {!!labelIndex && !selectedCardId && (
