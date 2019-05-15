@@ -273,20 +273,22 @@ class MapSection extends PureComponent {
   renderPolygons = () => {
     const { polygons } = this.props;
     return polygons.map((p, i) => {
-      return (
-        <Polygon
-          key={i}
-          path={p}
-          visible={p.length}
-          style={{
-            strokeColor: colors[i % 20],
-            strokeOpacity: 1,
-            strokeWeight: 0.5,
-            fillColor: colors[i % 20],
-            fillOpacity: 0.2,
-          }}
-        />
-      );
+      if (p && p.length) {
+        return (
+          <Polygon
+            key={i}
+            path={p}
+            visible={p.length}
+            style={{
+              strokeColor: colors[i % 20],
+              strokeOpacity: 1,
+              strokeWeight: 0.5,
+              fillColor: colors[i % 20],
+              fillOpacity: 0.2,
+            }}
+          />
+        );
+      }
     });
   };
   handleHideInfoWindow = () => {
