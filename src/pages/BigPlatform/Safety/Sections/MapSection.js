@@ -284,7 +284,7 @@ class MapSection extends PureComponent {
               strokeOpacity: 1,
               strokeWeight: 0.5,
               fillColor: colors[i % 20],
-              fillOpacity: 0.2,
+              fillOpacity: 0.5,
             }}
           />
         );
