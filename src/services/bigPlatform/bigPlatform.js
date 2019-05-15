@@ -112,6 +112,11 @@ export async function getMapLocation(params) {
   return request(`/acloud_new/v2/gridInfo/getMapLocation?${stringify(params)}`);
 }
 
+// 获取网格区域以及它的子区域
+export async function getMapLocationByParent(params) {
+  return request(`/acloud_new/v2/gridInfo/getMapLocationByParent?${stringify(params)}`);
+}
+
 // 专职人员检查信息 已检查和未检查单位数量
 export async function getCompanyCheckCount(params) {
   return request(`/acloud_new/v2/sfg/companyCount.json?${stringify(params)}`);

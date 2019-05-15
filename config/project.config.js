@@ -153,7 +153,7 @@ const configs = {
       'http://58.215.178.100:12082/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
   nanxiao: {
-    region: '徐州',
+    region: '徐州市',
     logo: nanxiaoLogo,
     code: nanxiaoCode,
     layer: 'http://data.jingan-china.cn/v2/login/nanxiao/nanxiao_download_layer.png',
@@ -177,7 +177,7 @@ const configs = {
       'http://58.215.178.100:12084/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
   shanxi: {
-    region: '山西',
+    region: '山西省',
     projectKey: 'shanxi',
     projectShortName: '山西晶安智慧云',
     code: shanxiCode,
@@ -188,7 +188,7 @@ const configs = {
       'http://58.215.178.100:12085/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
   show: {
-    region: '无锡',
+    region: '无锡市',
     projectKey: 'yanshi_pro',
     projectShortName: '晶安智慧云',
     code: yanshiCode,
@@ -199,7 +199,7 @@ const configs = {
       'http://58.215.178.100:12086/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
   czey: {
-    region: '常州',
+    region: '常州市',
     projectKey: 'czey_pro',
     projectShortName: '常州二院智慧云',
     logo: czeyLogo,

@@ -36,7 +36,7 @@ import FullStaffDrawer from './Sections/Drawers/FullStaffDrawer';
 import OverHdCom from './Sections/Drawers/OverHdCom';
 import CompanyInfoDrawer from './Sections/Drawers/CompanyInfoDrawer';
 
-const { location: locationDefault, region } = global.PROJECT_CONFIG;
+const { location: locationDefault } = global.PROJECT_CONFIG;
 
 const sectionsVisible = {
   communityCom: false, // 社区接入单位数
@@ -147,13 +147,25 @@ class GovernmentBigPlatform extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     const gridId = this.getGridId();
+
     const isIndex = !gridId;
     // 是首页则获取网格点数组后第一个，不是首页则将值设为传入的gridId
     !isIndex && this.setState({ treeValue: gridId });
     dispatch({
       type: 'bigFireControl/fetchGrids',
       callback: isIndex
-        ? data => this.setState({ treeValue: data && data.length ? data[0].key : '' })
+        ? data => {
+            const gId = data && data.length ? data[0].key : '';
+            this.setState({ treeValue: gId });
+            if (gId) {
+              dispatch({
+                type: 'bigPlatform/fetchMapLocationByParent',
+                payload: {
+                  gridId: gId,
+                },
+              });
+            }
+          }
         : null,
     });
 
@@ -175,11 +187,6 @@ class GovernmentBigPlatform extends Component {
         gridId,
       },
     });
-
-    // dispatch({
-    //   type: 'bigPlatform/fetchProjectName',
-    //   payload: { gridId },
-    // });
 
     // 大屏隐患点位总数据
     dispatch({
@@ -218,14 +225,6 @@ class GovernmentBigPlatform extends Component {
       type: 'bigPlatform/fetchSearchAllCompany',
       payload: { gridId },
     });
-
-    // // 隐患单位数量以及具体信息
-    // dispatch({
-    //   type: 'bigPlatform/fetchHiddenDangerCompany',
-    //   payload: {
-    //     // date: moment().format('YYYY-MM'),
-    //   },
-    // });
 
     dispatch({
       type: 'bigPlatform/fetchNewHomePage',
@@ -272,12 +271,11 @@ class GovernmentBigPlatform extends Component {
       },
     });
 
-    if (region === '无锡市') {
-      // 获取网格区域
+    if (gridId) {
       dispatch({
-        type: 'bigPlatform/fetchMapLocation',
+        type: 'bigPlatform/fetchMapLocationByParent',
         payload: {
-          gridId: 'gH3B8GRpQlyP1IWIw5BTPA',
+          gridId,
         },
       });
     }
@@ -675,7 +673,7 @@ class GovernmentBigPlatform extends Component {
         overtimeUncheckedCompany,
         companyMessage,
         specialEquipment,
-        mapLocation = [],
+        mapLocation = {},
         companyCheckCount,
         riskDetailList,
         selfCheckPoint = {},
@@ -688,6 +686,17 @@ class GovernmentBigPlatform extends Component {
       hiddenDangerLoading,
     } = this.props;
     const gridId = this.getGridId();
+    let polygons = [];
+    if (mapLocation && mapLocation.children && mapLocation.children.length) {
+      polygons = mapLocation.children.map(m => {
+        if (m.mapLocation) {
+          return JSON.parse(m.mapLocation);
+        }
+      });
+    } else {
+      polygons = mapLocation.mapLocation ? [JSON.parse(mapLocation.mapLocation)] : [];
+    }
+
     return (
       <div className={styles.main}>
         <header className={styles.mainHeader}>
@@ -767,7 +776,7 @@ class GovernmentBigPlatform extends Component {
               <MapSection
                 dispatch={dispatch}
                 locData={location}
-                polygon={mapLocation}
+                polygons={polygons}
                 zoom={zoom}
                 center={center}
                 handleIconClick={this.handleIconClick}

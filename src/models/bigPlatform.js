@@ -46,6 +46,7 @@ import {
   hiddenDangerListByDateForPage,
   getSelfCheckPointDataForPage,
   getCompanyInfo,
+  getMapLocationByParent,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
@@ -271,7 +272,7 @@ export default {
     staffRecords: [],
     selectOvertimeItemNum: 0,
     overtimeUncheckedCompany: [],
-    mapLocation: [],
+    mapLocation: {},
     companyCheckCount: {
       companyNum: 0,
       fireCheckCompanyCount: 0,
@@ -989,6 +990,21 @@ export default {
         error();
       }
     },
+    // 获取网格区域以及它的子区域
+    *fetchMapLocationByParent({ payload, success, error }, { call, put }) {
+      const response = yield call(getMapLocationByParent, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'mapLocation',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
     // 专职人员检查信息 已检查和未检查单位数量
     *fetchCompanyCheckCount({ payload, success, error }, { call, put }) {
       const response = yield call(getCompanyCheckCount, payload);
@@ -1377,7 +1393,7 @@ export default {
     mapLocation(state, { payload }) {
       return {
         ...state,
-        mapLocation: payload ? JSON.parse(payload) : [],
+        mapLocation: payload,
       };
     },
     companyCheckCount(state, { payload }) {
