@@ -13,6 +13,28 @@ const layerStyle = {
   left: '10px',
 };
 const { location } = global.PROJECT_CONFIG;
+const colors = [
+  '#dc3912',
+  '#ff9900',
+  '#109618',
+  '#990099',
+  '#0099c6',
+  '#dd4477',
+  '#66aa00',
+  '#b82e2e',
+  '#316395',
+  '#994499',
+  '#22aa99',
+  '#aaaa11',
+  '#6633cc',
+  '#e67300',
+  '#8b0707',
+  '#651067',
+  '#329262',
+  '#5574a6',
+  '#3b3eac',
+  '#3366cc',
+];
 
 @connect(({ map }) => ({
   map,
@@ -26,6 +48,7 @@ export default class GridMap extends PureComponent {
       //绘制的网格点
       path: [],
       editActive: false, // 是否开启编辑
+      otherGridPoints: [], // 其他同级网格
     };
     this.toolEvents = {
       created: tool => {
@@ -48,18 +71,32 @@ export default class GridMap extends PureComponent {
     const {
       dispatch,
       match: {
-        params: { id },
+        params: { id: gridId },
       },
     } = this.props;
+    // 获取当前网格
     dispatch({
       type: 'map/fetchGridPoints',
-      payload: { gridId: id },
+      payload: { gridId },
       callback: list => {
-        this.setState({
-          path: list && list.length ? JSON.parse(list) : [],
+        list && list.length && this.setState({
+          path: JSON.parse(list),
         })
       },
     });
+    // 获取同级其他网格
+    dispatch({
+      type: 'map/fetchOtherGridPoints',
+      payload: { gridId },
+      callback: (list) => {
+        if (!list || !list.length) return
+        const otherGridPoints = list.filter(item => item.mapLocation).map(item => ({
+          ...item,
+          mapLocation: JSON.parse(item.mapLocation),
+        }))
+        this.setState({ otherGridPoints })
+      },
+    })
     // console.log('AMap', window.AMap);
     // const polygon = new window.AMap.Polygon({ path: this.polygonPath });
     // this.mapinst.add(polygon);
@@ -171,19 +208,42 @@ export default class GridMap extends PureComponent {
     } else message.warning('请先结束编辑！');
   };
 
+  // 渲染多边形
+  renderPolygons = (polygons) => {
+    return polygons.map(({ gridName, mapLocation: p }, i) => {
+      if (p && p.length) {
+        return (
+          <Polygon
+            key={i}
+            path={p}
+            visible={p.length}
+            zIndex={9}
+            style={{
+              strokeColor: colors[i % 20],
+              strokeOpacity: 1,
+              strokeWeight: 0.5,
+              fillColor: colors[i % 20],
+              fillOpacity: 0.5,
+            }}
+          />
+        );
+      } else return null
+    });
+  };
+
   render() {
-    const { editActive, what, path } = this.state;
+    const { editActive, what, path, otherGridPoints = [] } = this.state;
     const center =
       path && path.length
         ? path.reduce(
-            (res, item) => {
-              return {
-                longitude: (res.longitude + item.lng) / 2,
-                latitude: (res.latitude + item.lat) / 2,
-              };
-            },
-            { longitude: path[0].lng, latitude: path[0].lat }
-          )
+          (res, item) => {
+            return {
+              longitude: (res.longitude + item.lng) / 2,
+              latitude: (res.latitude + item.lat) / 2,
+            };
+          },
+          { longitude: path[0].lng, latitude: path[0].lat }
+        )
         : this.mapCenter;
     if (path && path.length) {
       this.mapCenter = center;
@@ -204,6 +264,7 @@ export default class GridMap extends PureComponent {
               path.length && (
                 <Polygon path={path} style={{ strokeOpacity: 0.5, fillOpacity: 0.5 }} />
               )}
+            {this.renderPolygons(otherGridPoints)}
           </Map>
         </div>
         <Button

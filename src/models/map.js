@@ -5,6 +5,7 @@ import {
   queryVideoUrl,
   fetchGridPoints,
   updateGridPoints,
+  fetchOtherGridPoints,
 } from '../services/map/map.js';
 
 export default {
@@ -88,6 +89,12 @@ export default {
       if (response && response.code === 200) {
         if (success) success();
       } else if (error) error();
+    },
+    *fetchOtherGridPoints({ payload, callback }, { call, put }) {
+      const response = yield call(fetchOtherGridPoints, payload);
+      if (response && response.code === 200 && response.data) {
+        if (callback) callback(response.data.list || []);
+      }
     },
   },
 
