@@ -104,7 +104,7 @@ export default class RoleHandler extends PureComponent {
     const msgIds = messagePermissionIds || [];
     // loading.effects靠不住，不是接口返回就认为loading变化了，貌似是整个异步函数都调用完成才会改变loading，如callback调用时，也会认为还没完成
     if (msgIds.length && msgPermissionTree.length) { // 考察modals里的具体变量是否已经有了更靠谱
-      const handledMsgIds = removeParentId(msgIds, this.childIdsMap);
+      const handledMsgIds = removeParentId(msgIds, this.idMap);
       this.setState({ msgs: handledMsgIds.reduce((prev, next) => { prev[next] = true; return prev; }, {}) });
     }
   };

@@ -278,7 +278,7 @@ export function getNewAccountMsgs(id, i, state, idMap) { // msgs -> newMsgs
   }); // 勾上则子节点全打勾，取消则子节点全取消
 
   // console.log(id, parentIdMap, state, newState);
-  return fixMsgs(newState);
+  return fixMsgs(newState, i, current);
 }
 
 function fixMsgs(state, mobileOrApp, checked) { // mobileOrApp[0 mobile 1 app] checked[0 取消 1 选中]
@@ -301,6 +301,7 @@ function fixMsgs(state, mobileOrApp, checked) { // mobileOrApp[0 mobile 1 app] c
         prev[id] = [mobile, app];
       return prev;
     }, {});
+  return state;
 }
 
 // {"messageTypeId":"id","appAcceptStatus":0,"webAcceptStatus":0} 0 不接收 1 接受
@@ -309,7 +310,7 @@ export function covertToMsgs(list) {
     return {};
   return list.reduce((prev, next) => {
     const { messageTypeId, appAcceptStatus, webAcceptStatus } = next;
-    prev[messageTypeId] = [webAcceptStatus, appAcceptStatus].map(s => !!+s);
+    prev[messageTypeId] = [appAcceptStatus, webAcceptStatus].map(s => !!+s);
     return prev;
   }, {});
 }
@@ -317,7 +318,7 @@ export function covertToMsgs(list) {
 export function convertToMsgList(msgs) {
   return Object.entries(msgs).reduce((prev, next) => {
     const [id, [mobile, app]] = next;
-    prev.push({ messageTypeId: id, webAcceptStatus: +mobile, appAcceptStatus: +app });
+    prev.push({ messageTypeId: id, appAcceptStatus: +!!mobile, webAcceptStatus: +!!app });
     return prev;
   }, []);
 }
