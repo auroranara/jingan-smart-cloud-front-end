@@ -5,7 +5,7 @@ import { Checkbox, Form, Card, Input, Button, Select, Spin, Table, Tabs, Tree, T
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import styles from './Role.less';
 import { hasAuthority } from '@/utils/customAuth';
-import { GOV, OPE, checkParent, generateTreeNode, sortTree, uncheckParent, getUnitDisabled } from './utils';
+import { GOV, OPE, checkParent, generateTreeNode, sortTree, uncheckParent, getUnitDisabled, getIdMap, getNewMsgs, addParentId, removeParentId } from './utils';
 
 const { TreeNode } = Tree;
 const { TextArea } = Input;
@@ -24,6 +24,7 @@ export default class RoleHandler extends PureComponent {
     modalVisible: false,
     submitting: false,
     unitType: undefined,
+    msgs: {},
   };
 
   /* 挂载后 */
@@ -57,17 +58,24 @@ export default class RoleHandler extends PureComponent {
           if (unitType === undefined || unitType === null)
             return;
 
-          fetchPermissionTree({ payload: isAdmin ? unitType : companyId });
+          fetchPermissionTree({
+            payload: isAdmin ? unitType : companyId,
+            callbackLater: (webTree, appTree, msgTree) => this.handleMsgTree(msgTree),
+          });
 
           companyName && this.fetchInitUnits(unitType, companyName);
           companyId && setFieldsValue({ companyId });
 
           this.setState({ unitType: +unitType });
+          this.setInitMsgs();
         },
       });
     } else if(!isPublic && !isAdmin){ // 新增,私有角色,非运营
       clearDetail();
-      fetchPermissionTree({ payload: companyId });
+      fetchPermissionTree({
+        payload: companyId,
+        callbackLater: (webTree, appTree, msgTree) => this.handleMsgTree(msgTree),
+      });
       this.fetchInitUnits(unitType, unitName);
       setFieldsValue({ unitType, companyId });
       this.setState({ unitType: +unitType });
@@ -76,6 +84,36 @@ export default class RoleHandler extends PureComponent {
       clearPermissionTree();
     }
   }
+
+  componentWillUnmount() {
+    const { clearDetail, clearPermissionTree } = this.props;
+    clearDetail();
+    clearPermissionTree();
+  }
+
+  idMap = {};
+
+  handleMsgTree = list => {
+    this.idMap = getIdMap(list);
+    this.setInitMsgs();
+  };
+
+  setInitMsgs = () => {
+    const { role: { detail, msgPermissionTree } } = this.props;
+    const { messagePermissionIds } = detail || {};
+    const msgIds = messagePermissionIds || [];
+    // loading.effects靠不住，不是接口返回就认为loading变化了，貌似是整个异步函数都调用完成才会改变loading，如callback调用时，也会认为还没完成
+    if (msgIds.length && msgPermissionTree.length) { // 考察modals里的具体变量是否已经有了更靠谱
+      const handledMsgIds = removeParentId(msgIds, this.childIdsMap);
+      this.setState({ msgs: handledMsgIds.reduce((prev, next) => { prev[next] = true; return prev; }, {}) });
+    }
+  };
+
+  genHandleCheck = id => e => {
+    const { msgs } = this.state;
+    const newMsgs = getNewMsgs(id, msgs, this.idMap);
+    this.setState({ msgs: newMsgs });
+  };
 
   handleTypeChange = value => {
     const {
@@ -97,7 +135,7 @@ export default class RoleHandler extends PureComponent {
     fetchPermissionTree({
       payload: value,
       // 在model变化前，先清空值，不然会报warning
-      callback: () => { setFieldsValue({ permissions:undefined, appPermissions: undefined }); },
+      callback: () => { setFieldsValue({ permissions: undefined, appPermissions: undefined }); },
       // model变化后再设置值，不然当先设置值时，就会报warning，且model后变化，就没办法正确设置上值了
       callbackLater: (tree, appTree) => {
         if (+value === +unitType) {
@@ -140,6 +178,13 @@ export default class RoleHandler extends PureComponent {
         const {
           role: { permissionTree, appPermissionTree },
         } = this.props;
+        const { msgs } = this.state;
+        const msgIds = Object.entries(msgs).reduce((prev, next) => {
+          const [id, checked] = next;
+          if (checked)
+            prev.push(id);
+          return prev;
+        }, []);
         const { roleName, description, permissions, appPermissions, unitType, companyId } = values;
 
         const payload = {
@@ -150,6 +195,7 @@ export default class RoleHandler extends PureComponent {
           description,
           webPermissionIds: checkParent(permissionTree, permissions),
           appPermissionIds: checkParent(appPermissionTree, appPermissions),
+          messagePermissionIds: addParentId(msgIds, this.idMap),
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -402,11 +448,19 @@ export default class RoleHandler extends PureComponent {
   }
 
   renderMessageSubscription() {
+    const { role: { msgPermissionTree } } = this.props;
+    const { msgs } = this.state;
     const columns = [
-      { title: '消息类别', dataIndex: 'type', key: 'type' },
+      { title: '消息类别', dataIndex: 'name', key: 'name' },
+      { title: '消息示例', dataIndex: 'example', key: 'example',
+        render: txt => {
+          return txt ? txt.split('\n').map((t, i) => <p key={i} className={styles.example}>{t}</p>) : txt;
+        },
+      },
+      { title: '推荐接收人', dataIndex: 'accepter', key: 'accepter' },
       { title: '是否配置', dataIndex: 'check', key: 'check',
         render: (txt, record) => (
-          <Checkbox />
+          <Checkbox checked={msgs[record.id]} onChange={this.genHandleCheck(record.id)} />
         ),
       },
     ];
@@ -414,8 +468,11 @@ export default class RoleHandler extends PureComponent {
     return (
       <TabPane tab="消息订阅配置" key="2" className={styles.tabPane1}>
         <Table
+          rowKey="id"
           className={styles.table}
           columns={columns}
+          dataSource={msgPermissionTree}
+          pagination={false}
         />
         {this.renderButtonGroup()}
       </TabPane>

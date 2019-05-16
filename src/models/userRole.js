@@ -10,6 +10,7 @@ import {
   editRole,
   getUnits,
 } from '../services/role/userRole';
+import { removeEmptyChildren } from '@/pages/RoleAuthorization/Role/utils';
 
 export default {
   namespace: 'userRole',
@@ -18,6 +19,7 @@ export default {
     detail: {},
     permissionTree: [],
     appPermissionTree: [],
+    msgPermissionTree: [],
     data: {
       list: [],
       pagination: {
@@ -84,12 +86,14 @@ export default {
       if (code === 200) {
         const webPermissions = data && Array.isArray(data.webPermissions) ? data.webPermissions : [];
         const appPermissions = data && Array.isArray(data.appPermissions) ? data.appPermissions : [];
-        callback && callback(webPermissions, appPermissions);
+        const msgPermissions = data && Array.isArray(data.messagePermissions) ? data.messagePermissions : [];
+        removeEmptyChildren(msgPermissions);
+        callback && callback(webPermissions, appPermissions, msgPermissions);
         yield put({
           type: 'savePermissionTree',
-          payload: [webPermissions, appPermissions],
+          payload: [webPermissions, appPermissions, msgPermissions],
         });
-        callbackLater && callbackLater(webPermissions, appPermissions);
+        callbackLater && callbackLater(webPermissions, appPermissions, msgPermissions);
       }
     },
     // 获取企业对应的权限树
@@ -99,12 +103,14 @@ export default {
       if (code === 200) {
         const webPermissions = data && Array.isArray(data.webPermissions) ? data.webPermissions : [];
         const appPermissions = data && Array.isArray(data.appPermissions) ? data.appPermissions : [];
-        callback && callback(webPermissions, appPermissions);
+        const msgPermissions = data && Array.isArray(data.messagePermissions) ? data.messagePermissions : [];
+        removeEmptyChildren(msgPermissions);
+        callback && callback(webPermissions, appPermissions, msgPermissions);
         yield put({
           type: 'savePermissionTree',
-          payload: [webPermissions, appPermissions],
+          payload: [webPermissions, appPermissions, msgPermissions],
         });
-        callbackLater && callbackLater(webPermissions, appPermissions);
+        callbackLater && callbackLater(webPermissions, appPermissions, msgPermissions);
       }
     },
     /* 新增角色 */
@@ -181,11 +187,12 @@ export default {
     },
     /* 获取权限树 */
     savePermissionTree(state, action) {
-      const [webPermissions, appPermissions] = action.payload;
+      const [webPermissions, appPermissions, msgPermissions] = action.payload;
       return {
         ...state,
         permissionTree: webPermissions,
         appPermissionTree: appPermissions,
+        msgPermissionTree: msgPermissions,
       };
     },
     saveUnits(state, action) {

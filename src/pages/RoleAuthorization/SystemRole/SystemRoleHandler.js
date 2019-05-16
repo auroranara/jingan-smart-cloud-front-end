@@ -8,7 +8,7 @@ import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
 import styles1 from '../Role/Role.less';
-import { checkParent, uncheckParent, sortTree, getIdMap } from '../Role/utils';
+import { checkParent, uncheckParent, sortTree, getIdMap, getNewMsgs, addParentId, removeParentId } from '../Role/utils';
 
 const { TreeNode } = Tree;
 const { TextArea } = Input;
@@ -106,15 +106,16 @@ export default class RoleHandler extends PureComponent {
     dispatch({
       type: 'role/fetchMsgTree',
       callback: list => {
-        [this.parentIdMap, this.childIdsMap] = getIdMap(list);
-        // console.log(this.childIdMap);
+        this.idMap = getIdMap(list);
+        this.setInitMsgs();
       },
     });
-    // 根据params.id是否存在判断当前为新增还是编辑
+
     if (id) {
       // 根据id获取详情
       fetchDetail({
         payload: { id },
+        success: this.setInitMsgs,
       });
     } else {
       // 清空详情
@@ -123,28 +124,33 @@ export default class RoleHandler extends PureComponent {
     // 获取WEB权限树
     fetchPermissionTree();
     fetchAppPermissionTree();
+
+    // console.log('did mount');
   }
 
-  parentIdMap = {};
-  childIdsMap = {};
+  componentWillUnmount() {
+    const { clearDetail, dispatch } = this.props;
+    clearDetail();
+    dispatch({ type: 'role/saveMsgTree', payload: [] });
+  }
+
+  idMap = {};
+
+  setInitMsgs = () => {
+    const { role: { detail, msgTree } } = this.props;
+    const { messagePermissions } = detail || {};
+    // console.log(messagePermissions, msgTree, this.props.location.pathname);
+    const msgIds = messagePermissions ? messagePermissions.split(',').filter(id => id) : [];
+    // loading.effects靠不住，不是接口返回就认为loading变化了，貌似是整个异步函数都调用完成才会改变loading，如callback调用时，也会认为还没完成
+    if (msgIds.length && msgTree.length) { // 考察modals里的具体变量是否已经有了更靠谱
+      const handledMsgIds = removeParentId(msgIds, this.idMap);
+      this.setState({ msgs: handledMsgIds.reduce((prev, next) => { prev[next] = true; return prev; }, {}) });
+    }
+  };
 
   genHandleCheck = id => e => {
     const { msgs } = this.state;
-    const root = '0';
-    const [parentIdMap, childIdsMap] = [this.parentIdMap, this.childIdsMap];
-    const newMsgs = { ...msgs };
-    const current = newMsgs[id] = !msgs[id];
-    const parentId = parentIdMap[id];
-    const childIds = childIdsMap[id];
-    if (parentId !== root) { // 非顶层节点才要考虑父节点问题
-      if (current) // 选中时，同级节点都已经选中，则父节点选中
-        newMsgs[parentId] = childIdsMap[parentId].every(id => newMsgs[id]);
-      else // 取消选中时，父节点必然取消选中
-        newMsgs[parentId] =false;
-    }
-
-    childIds.forEach(id => newMsgs[id] = current); // 勾上则子节点全打勾，取消则子节点全取消
-
+    const newMsgs = getNewMsgs(id, msgs, this.idMap);
     this.setState({ msgs: newMsgs });
   };
 
@@ -159,6 +165,13 @@ export default class RoleHandler extends PureComponent {
         params: { id },
       },
     } = this.props;
+    const { msgs } = this.state;
+    const msgIds = Object.entries(msgs).reduce((prev, next) => {
+      const [id, checked] = next;
+      if (checked)
+        prev.push(id);
+      return prev;
+    }, []);
     // 验证表单
     validateFieldsAndScroll((error, values) => {
       if (!error) {
@@ -177,6 +190,8 @@ export default class RoleHandler extends PureComponent {
           description,
           permissions: checkParent(permissionTree, permissions).join(','),
           appPermissions: checkParent(appPermissionTree, appPermissions).join(','),
+          // messagePermissions: msgIds.join(','),
+          messagePermissions: addParentId(msgIds, this.idMap).join(','),
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -380,7 +395,7 @@ export default class RoleHandler extends PureComponent {
       { title: '消息类别', dataIndex: 'name', key: 'name' },
       { title: '消息示例', dataIndex: 'example', key: 'example',
         render: txt => {
-          return txt ? txt.split('\n').map(t => <p className={styles1.example}>{t}</p>) : txt;
+          return txt ? txt.split('\n').map((t, i) => <p key={i} className={styles1.example}>{t}</p>) : txt;
         },
       },
       { title: '推荐接收人', dataIndex: 'accepter', key: 'accepter' },
@@ -398,6 +413,7 @@ export default class RoleHandler extends PureComponent {
           className={styles1.table}
           columns={columns}
           dataSource={msgTree}
+          pagination={false}
         />
         {this.renderButtonGroup()}
       </TabPane>
