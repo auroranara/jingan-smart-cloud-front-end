@@ -54,9 +54,6 @@ const UserTypes = [
 }))
 @Form.create()
 export default class PersonalInfo extends PureComponent {
-  state = {
-    companyType: false,
-  };
 
   /* 生命周期函数 */
   componentDidMount() {
@@ -73,11 +70,6 @@ export default class PersonalInfo extends PureComponent {
       type: 'account/fetchAssociatedUnitDetail',
       payload: {
         userId: id,
-      },
-      success: ({ unitType }) => {
-        this.setState({
-          companyType: unitType === 4,
-        });
       },
       error() {
         dispatch(routerRedux.push('/exception/500'));
@@ -97,16 +89,15 @@ export default class PersonalInfo extends PureComponent {
             unitType,
             unitName,
             departmentName,
-            userType,
+            // userType,
             // roleNames,
             roleName,
           },
         },
       },
     } = this.props;
-    const { companyType } = this.state;
 
-    const userTypeObj = UserTypes.find(t => t.value === userType);
+    // const userTypeObj = UserTypes.find(t => t.value === userType);
     const phone = phoneNumber + '';
     const formatPhone = phone.substr(0, 3) + '****' + phone.substr(7);
 
@@ -126,11 +117,11 @@ export default class PersonalInfo extends PureComponent {
           <Description term="单位类型">{UnitTypes[unitType] || getEmptyData()}</Description>
           <Description term="所属单位">{unitName || getEmptyData()}</Description>
           <Description term="所属部门">{departmentName || getEmptyData()}</Description>
-          {companyType && (
+          {/* {unitType===4 && (
             <Description term="用户类型">
               {userTypeObj ? userTypeObj.label : getEmptyData()}
             </Description>
-          )}
+          )} */}
           {/* <Description term="角色">
             {roleNames
               ? roleNames.split(',').map(roleName => (
