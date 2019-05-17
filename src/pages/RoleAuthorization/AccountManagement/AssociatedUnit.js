@@ -477,7 +477,7 @@ export default class AssociatedUnit extends PureComponent {
             userName,
             phoneNumber,
             unitType,
-            unitId: unitId ? (unitTypeChecked === GOV ? unitId.value : unitId.key) : null,
+            unitId: unitId ? (unitTypeChecked === GOV ? unitId.value : unitId.key) : '',
             treeIds: treeIds ? treeIds.key : null,
             maintenacePermissions: isCheckAll ? [checkedRootKey] : maintenacePermissions,
             roleId,
