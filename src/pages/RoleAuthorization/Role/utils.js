@@ -127,18 +127,18 @@ export function transform(value) {
   return value.trim();
 }
 
-export function getSelectedTree(selected, tree) {
+export function getSelectedTree(selected, tree, childProp='childMenus') {
   if (!tree || !tree.length)
     return [];
   return tree.reduce((prev, next) => {
-    const { id, childMenus } = next;
+    const { id, [childProp]: childMenus } = next;
     if (selected.includes(id)) {
       const node = { ...next };
-      const children = getSelectedTree(selected, childMenus);
+      const children = getSelectedTree(selected, childMenus, childProp);
       if (children.length)
-        node.childMenus = children;
+        node[childProp] = children;
       else
-        delete node.childMenus;
+        delete node[childProp];
       prev.push(node);
     }
     return prev;
@@ -183,7 +183,9 @@ export function getUnitDisabled(isEdit, isCommon, isAdmin) {
 
 // 当children属性为空数组时，在对象上删除这个属性
 export function removeEmptyChildren(list) {
-  if (Array.isArray)
+  if (!Array.isArray(list))
+    return [];
+
   list.forEach(item => {
     if (!item.children)
       return;
@@ -192,6 +194,7 @@ export function removeEmptyChildren(list) {
     else
       removeEmptyChildren(item.children);
   });
+  return list;
 }
 
 function traverse(list, callback) {

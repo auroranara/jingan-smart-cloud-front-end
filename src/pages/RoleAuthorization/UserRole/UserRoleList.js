@@ -64,7 +64,7 @@ export default class CommonRoleList extends PureComponent {
 
   clearPermissionTree = () => {
     const { dispatch } = this.props;
-    dispatch({ type: 'userRole/savePermissionTree', payload: [[], []] });
+    dispatch({ type: 'userRole/savePermissionTree', payload: [[], [], []] });
   };
 
   goToDetail(id) {

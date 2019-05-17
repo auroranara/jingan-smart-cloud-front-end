@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Spin, Tree, Button } from 'antd';
+import { Form, Card, Spin, Table, Tabs, Tree, Button } from 'antd';
 import { routerRedux } from 'dva/router';
 
 import DescriptionList from '@/components/DescriptionList';
@@ -8,10 +8,12 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
-import { getEmptyData, sortTree } from '../Role/utils';
+import styles1 from '../Role/Role.less';
+import { getEmptyData, sortTree, getSelectedTree } from '../Role/utils';
 
 const { Description } = DescriptionList;
 const { TreeNode } = Tree;
+const { TabPane } = Tabs;
 
 // 标题
 const title = '角色详情';
@@ -60,6 +62,10 @@ const breadcrumbList = [
       type: 'role/fetchPermissionTree',
     });
   },
+  // 获取完整消息树
+  fetchMsgTree(action) {
+    dispatch({ type: 'role/fetchMsgTree', ...action });
+  },
   // 返回
   goBack() {
     dispatch(routerRedux.push(backUrl));
@@ -68,25 +74,33 @@ const breadcrumbList = [
   goToEdit(id) {
     dispatch(routerRedux.push(editUrl + id));
   },
-  /* 异常 */
-  goToException() {
-    dispatch(routerRedux.push('/exception/500'));
-  },
   dispatch,
 }))
 @Form.create()
 export default class RoleDetail extends PureComponent {
-  /* 挂载后 */
+  state={ msgList: [] };
+
   componentDidMount() {
-    const { dispatch, fetchDetail, fetchPermissionTree, goToException, role: { permissionTree }, match: { params: { id } } } = this.props;
+    const {
+      dispatch,
+      fetchDetail,
+      fetchPermissionTree,
+      fetchMsgTree,
+      role: { permissionTree },
+      match: { params: { id } },
+    } = this.props;
     dispatch({ type: 'account/fetchOptions' });
     // 根据id获取详情
     fetchDetail({
       payload: {
         id,
       },
-      error: () => {
-        goToException();
+      success: detail => {
+        const { messagePermissions } = detail || {};
+        const msgs = messagePermissions ? messagePermissions.split(',').filter(id => id) : [];
+        fetchMsgTree({
+          callback: list => this.setState({ msgList: getSelectedTree(msgs, list, 'children') }),
+        });
       },
     });
     // 获取权限树
@@ -143,7 +157,8 @@ export default class RoleDetail extends PureComponent {
     const isAdmin = +unitType === 3;
 
     return (
-      <Card title="权限配置" style={{ marginTop: '24px' }}>
+      <TabPane tab="权限配置" key="1" className={styles1.tabPane2}>
+      {/* <Card title="权限配置" style={{ marginTop: '24px' }}> */}
         <DescriptionList col={2} style={{ marginBottom: 16 }}>
           <Description term="WEB权限树">
             {treeMap ? (
@@ -163,7 +178,34 @@ export default class RoleDetail extends PureComponent {
           )}
         </DescriptionList>
         {this.renderButtonGroup()}
-      </Card>
+      {/* </Card> */}
+      </TabPane>
+    );
+  }
+
+  renderMessageSubscription() {
+    const { msgList } = this.state;
+    const columns = [
+      { title: '消息类别', dataIndex: 'name', key: 'name' },
+      { title: '消息示例', dataIndex: 'example', key: 'example',
+        render: txt => {
+          return txt ? txt.split('\n').map((t, i) => <p key={i} className={styles1.example}>{t}</p>) : txt;
+        },
+      },
+      { title: '推荐接收人', dataIndex: 'accepter', key: 'accepter' },
+    ];
+
+    return (
+      <TabPane tab="消息订阅配置" key="2" className={styles1.tabPane1}>
+        <Table
+          rowKey="id"
+          className={styles1.table}
+          columns={columns}
+          dataSource={msgList}
+          pagination={false}
+        />
+        {this.renderButtonGroup()}
+      </TabPane>
     );
   }
 
@@ -190,7 +232,10 @@ export default class RoleDetail extends PureComponent {
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Spin spinning={loading}>
           {this.renderBasicInfo()}
-          {this.renderAuthorizationConfiguration()}
+          <Tabs className={styles1.tabs}>
+            {this.renderAuthorizationConfiguration()}
+            {this.renderMessageSubscription()}
+          </Tabs>
         </Spin>
       </PageHeaderLayout>
     );

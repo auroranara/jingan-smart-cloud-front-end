@@ -102,6 +102,8 @@ export default class RoleHandler extends PureComponent {
         params: { id },
       },
     } = this.props;
+
+    this.clearModel();
     dispatch({ type: 'account/fetchOptions' });
     dispatch({
       type: 'role/fetchMsgTree',
@@ -128,7 +130,7 @@ export default class RoleHandler extends PureComponent {
     // console.log('did mount');
   }
 
-  componentWillUnmount() {
+  clearModel() {
     const { clearDetail, dispatch } = this.props;
     clearDetail();
     dispatch({ type: 'role/saveMsgTree', payload: [] });
@@ -399,7 +401,7 @@ export default class RoleHandler extends PureComponent {
         },
       },
       { title: '推荐接收人', dataIndex: 'accepter', key: 'accepter' },
-      { title: '是否配置', dataIndex: 'check', key: 'check',
+      { title: '是否配置', dataIndex: 'check', key: 'check', align: 'center',
         render: (txt, record) => (
           <Checkbox checked={msgs[record.id]} onChange={this.genHandleCheck(record.id)} />
         ),

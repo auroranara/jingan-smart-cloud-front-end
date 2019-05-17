@@ -48,6 +48,7 @@ export default class RoleHandler extends PureComponent {
     if (!type && fetchUnits)
       this.lazyFetchUnits = _.debounce(fetchUnits, 300);
 
+    this.clearModel();
     fetchUnitTypes();
 
     if (id) { // 编辑
@@ -85,7 +86,7 @@ export default class RoleHandler extends PureComponent {
     }
   }
 
-  componentWillUnmount() {
+  clearModel() {
     const { clearDetail, clearPermissionTree } = this.props;
     clearDetail();
     clearPermissionTree();
@@ -458,7 +459,7 @@ export default class RoleHandler extends PureComponent {
         },
       },
       { title: '推荐接收人', dataIndex: 'accepter', key: 'accepter' },
-      { title: '是否配置', dataIndex: 'check', key: 'check',
+      { title: '是否配置', dataIndex: 'check', key: 'check', align: 'center',
         render: (txt, record) => (
           <Checkbox checked={msgs[record.id]} onChange={this.genHandleCheck(record.id)} />
         ),
