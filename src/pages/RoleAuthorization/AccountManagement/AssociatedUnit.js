@@ -194,7 +194,6 @@ export default class AssociatedUnit extends PureComponent {
   /* 生命周期函数 */
   componentDidMount() {
     const {
-      dispatch,
       fetchGrids,
       fetchAccountDetail,
       fetchAssociatedUnitDetail,
@@ -212,10 +211,7 @@ export default class AssociatedUnit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
 
-    dispatch({ type: 'account/saveMaintenanceTree', payload: {} }); // 清空维保权限树
-    dispatch({ type: 'account/saveTrees', payload: {} }); // 清空权限树
-    this.clearRolePermissions(COM); // 清空所选角色的permissions
-
+    this.clearModel();
     fetchGrids(); // 获取网格点树
     fetchOptions({ // 获取单位类型和账户状态
       success: ({ unitType: unitTypes }) => {
@@ -360,6 +356,14 @@ export default class AssociatedUnit extends PureComponent {
     fetchUserType({
       error: goToException,
     });
+  }
+
+  clearModel() {
+    const { dispatch } = this.props;
+    dispatch({ type: 'account/saveMaintenanceTree', payload: {} }); // 清空维保权限树
+    dispatch({ type: 'account/saveTrees', payload: {} }); // 清空权限树
+    this.clearMsgs();
+    this.clearRolePermissions(COM); // 清空所选角色的permissions
   }
 
   childrenMap = {};
@@ -565,6 +569,7 @@ export default class AssociatedUnit extends PureComponent {
     const unitId = getFieldValue('unitId');
     fetchRoles({ payload: { unitType: id, companyId: unitId }, success: this.genRolesSuccess(id) });
     setFieldsValue({ roleId: undefined });
+    this.clearMsgs();
     this.clearRolePermissions(id);
     // if (+unitType === id && roleId) {
     //   this.fetchRolePermissions(roleId);
@@ -613,6 +618,7 @@ export default class AssociatedUnit extends PureComponent {
     }
     // 清除数据权限输入框的值
     setFieldsValue({ treeIds: undefined, departmentId: undefined, roleId: undefined });
+    this.clearMsgs();
   };
 
   // 所属单位下拉框选择
@@ -626,6 +632,7 @@ export default class AssociatedUnit extends PureComponent {
 
     // 根据value从源数组中筛选出对应的数据，获取其值
     setFieldsValue({ treeIds: value, roleId: undefined });
+    this.clearMsgs();
     fetchDepartmentList({
       payload: { companyId: value.key },
     });
@@ -663,6 +670,7 @@ export default class AssociatedUnit extends PureComponent {
       roleId: undefined,
       treeIds: { key: value, label },
     });
+    this.clearMsgs();
     fetchDepartmentList({
       payload: {
         companyId: value,
@@ -684,6 +692,7 @@ export default class AssociatedUnit extends PureComponent {
     let rolePayload;
 
     setFieldsValue({ roleId: undefined });
+    this.clearMsgs();
     if (value && value.key === value.label) { // 根据value判断是否是手动输入
       this.handleUnitIdChange.cancel();
       // 从源数组中筛选出当前值对应的数据，如果存在，则将对应的数据为所属单位下拉框重新赋值
@@ -801,7 +810,14 @@ export default class AssociatedUnit extends PureComponent {
   };
 
   handleRoleChange = value => {
+    this.setState({ msgs: {} });
     this.fetchRolePermissions(value);
+  };
+
+  clearMsgs = () => {
+    const { dispatch } = this.props;
+    this.setState({ msgs: {} });
+    dispatch({ type: 'role/saveRoleMsgTree', payload: [] });
   };
 
   clearRolePermissions = unitType => {
@@ -811,7 +827,6 @@ export default class AssociatedUnit extends PureComponent {
     const values = { permissions: this.authTreeCheckedKeys };
       this.permissions = [];
       dispatch({ type: 'role/saveRolePermissions', payload: [] });
-      dispatch({ type: 'role/saveRoleMsgTree', payload: [] });
       if (isNotAdmin) {
         values.appPermissions = this.appAuthTreeCheckedKeys;
         this.appPermissions = [];

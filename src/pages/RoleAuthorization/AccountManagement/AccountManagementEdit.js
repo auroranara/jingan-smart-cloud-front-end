@@ -44,8 +44,9 @@ import {
   getIdMaps,
   sortTree,
 } from './utils';
-import { MAI, GOV, OPE, COM } from '@/pages/RoleAuthorization/Role/utils';
+import { MAI, GOV, OPE, COM, getIdMap as getMsgIdMap, getNewAccountMsgs, convertToMsgList } from '@/pages/RoleAuthorization/Role/utils';
 import styles from './AccountManagementEdit.less';
+import styles1 from '../Role/Role.less';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -178,12 +179,12 @@ export default class AccountManagementEdit extends PureComponent {
     searchSerValue: '',
     searchSubValue: '',
     checkedRootKey: undefined,
+    msgs: {},
   };
 
   /* 生命周期函数 */
   componentDidMount() {
     const {
-      dispatch,
       fetchAccountDetail,
       match: {
         params: { id },
@@ -200,10 +201,8 @@ export default class AccountManagementEdit extends PureComponent {
     } = this.props;
 
     const isUnitUser = this.isUnitUser();
-    dispatch({ type: 'account/saveMaintenanceTree', payload: {} }); // 清空维保权限树
-    dispatch({ type: 'account/saveTrees', payload: {} }); // 清空权限树
-    this.clearRolePermissions(COM); // 清空所选角色的permissions
 
+    this.clearModel();
     fetchGrids(); // 获取网格点树
     fetchOptions({ // 获取单位类型和账户状态
       success: ({ unitType: unitTypes }) => {
@@ -260,6 +259,14 @@ export default class AccountManagementEdit extends PureComponent {
     }
   }
 
+  clearModel() {
+    const { dispatch } = this.props;
+    dispatch({ type: 'account/saveMaintenanceTree', payload: {} }); // 清空维保权限树
+    dispatch({ type: 'account/saveTrees', payload: {} }); // 清空权限树
+    this.clearMsgs();
+    this.clearRolePermissions(COM); // 清空所选角色的permissions
+  }
+
   childrenMap = {};
   idMap = {};
   parentIdMap = {};
@@ -269,6 +276,7 @@ export default class AccountManagementEdit extends PureComponent {
   appParentIdMap = {};
   appPermissions = [];
   appAuthTreeCheckedKeys = [];
+  msgIdMap = {};
 
   isUnitUser = () => {
     const { user: { currentUser: { unitId, unitType } } } = this.props;
@@ -323,7 +331,7 @@ export default class AccountManagementEdit extends PureComponent {
         params: { id },
       },
     } = this.props;
-    const { unitTypeChecked, checkedRootKey } = this.state;
+    const { unitTypeChecked, checkedRootKey, msgs } = this.state;
 
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
@@ -406,6 +414,7 @@ export default class AccountManagementEdit extends PureComponent {
                 getNoRepeat(appPermissions, this.appPermissions),
                 this.appParentIdMap
               ).join(','),
+              messagePermissions: convertToMsgList(msgs),
             };
             switch (payload.unitType) {
               case MAI: // 维保企业
@@ -454,6 +463,7 @@ export default class AccountManagementEdit extends PureComponent {
     const unitId = getFieldValue('unitId');
     fetchRoles({ payload: { unitType: id, companyId: unitId }, success: this.genRolesSuccess(id) });
     setFieldsValue({ roleId: undefined });
+    this.clearMsgs();
     this.clearRolePermissions(id);
   };
 
@@ -494,6 +504,7 @@ export default class AccountManagementEdit extends PureComponent {
     }
     // 清除数据权限输入框的值
     setFieldsValue({ treeIds: undefined, departmentId: undefined, roleId: undefined });
+    this.clearMsgs();
   };
 
   // 所属单位下拉框选择
@@ -507,6 +518,7 @@ export default class AccountManagementEdit extends PureComponent {
 
     // 根据value从源数组中筛选出对应的数据，获取其值
     setFieldsValue({ treeIds: value, roleId: undefined });
+    this.clearMsgs();
     fetchDepartmentList({
       payload: { companyId: value.key },
     });
@@ -540,6 +552,7 @@ export default class AccountManagementEdit extends PureComponent {
       roleId: undefined,
       treeIds: { key: value, label },
     });
+    this.clearMsgs();
     fetchDepartmentList({
       payload: {
         companyId: value,
@@ -561,6 +574,7 @@ export default class AccountManagementEdit extends PureComponent {
     let rolePayload;
 
     setFieldsValue({ roleId: undefined });
+    this.clearMsgs();
     if (value && value.key === value.label) { // 根据value判断是否是手动输入
       this.handleUnitIdChange.cancel();
       // 从源数组中筛选出当前值对应的数据，如果存在，则将对应的数据为所属单位下拉框重新赋值
@@ -774,7 +788,14 @@ export default class AccountManagementEdit extends PureComponent {
   // };
 
   handleRoleChange = value => {
+    this.setState({ msgs: {} });
     this.fetchRolePermissions(value);
+  };
+
+  clearMsgs = () => {
+    const { dispatch } = this.props;
+    this.setState({ msgs: {} });
+    dispatch({ type: 'role/saveRoleMsgTree', payload: [] });
   };
 
   clearRolePermissions = unitType => {
@@ -804,7 +825,8 @@ export default class AccountManagementEdit extends PureComponent {
       dispatch({
         type: 'role/fetchRolePermissions',
         payload: { id },
-        success: (permissions, appPermissions) => {
+        success: (permissions, appPermissions, msgTree) => {
+          this.msgIdMap = getMsgIdMap(msgTree);
           this.permissions = permissions;
           this.setPermissions();
           if (isNotAdmin) {
@@ -848,6 +870,12 @@ export default class AccountManagementEdit extends PureComponent {
 
   handleChangeAppAuthTreeCheckedKeys = checkedKeys => {
     this.appAuthTreeCheckedKeys = checkedKeys;
+  };
+
+  genHandleCheck = (id, i) => e => {
+    const { msgs } = this.state;
+    const newMsgs = getNewAccountMsgs(id, i, msgs, this.msgIdMap);
+    this.setState({ msgs: newMsgs });
   };
 
   /* 渲染基础信息 */
@@ -1415,20 +1443,36 @@ export default class AccountManagementEdit extends PureComponent {
   }
 
   renderMessageSubscription() {
+    const { role: { roleMsgTree } } = this.props;
+    const { msgs } = this.state;
     const columns = [
-      { title: '消息类别', dataIndex: 'type', key: 'type' },
-      { title: '是否配置', dataIndex: 'check', key: 'check',
+      { title: '消息类别', dataIndex: 'name', key: 'name' },
+      { title: '消息示例', dataIndex: 'example', key: 'example',
+        render: txt => {
+          return txt ? txt.split('\n').map((t, i) => <p key={i} className={styles1.example}>{t}</p>) : txt;
+        },
+      },
+      { title: '推荐接收人', dataIndex: 'accepter', key: 'accepter' },
+      { title: '手机状态栏通知', dataIndex: 'check', key: 'check', align: 'center',
         render: (txt, record) => (
-          <Checkbox />
+          <Checkbox checked={msgs[record.id] ? msgs[record.id][0] : undefined} onChange={this.genHandleCheck(record.id, 0)} />
+        ),
+      },
+      { title: 'app内部消息通知', dataIndex: 'check1', key: 'check1', align: 'center',
+        render: (txt, record) => (
+          <Checkbox checked={msgs[record.id] ? msgs[record.id][1] : undefined} onChange={this.genHandleCheck(record.id, 1)} />
         ),
       },
     ];
 
     return (
-      <TabPane tab="消息订阅配置" key="2" className={styles.tabPane1}>
+      <TabPane tab="消息订阅配置" key="2" className={styles1.tabPane1}>
         <Table
-          className={styles.table}
+          rowKey="id"
+          className={styles1.table}
           columns={columns}
+          dataSource={roleMsgTree}
+          pagination={false}
         />
       </TabPane>
     );
