@@ -5,10 +5,11 @@ import {
   addRole,
   editRole,
   deleteRole,
-  queryRolePermissions,
   getAppPermissionTree,
+  getMessageTree,
 } from '../services/role/role';
 import { queryDetail as queryRoleDetail } from '../services/role/commonRole';
+import { removeEmptyChildren } from '@/pages/RoleAuthorization/Role/utils';
 
 export default {
   namespace: 'role',
@@ -19,8 +20,10 @@ export default {
     },
     rolePermissions: [],
     roleAppPermissions: [],
+    roleMsgTree: [], // 某个角色对应的订阅消息树
     permissionTree: [],
     appPermissionTree: [],
+    msgTree: [], // 角色类型对应的订阅消息树
     data: {
       list: [],
       pagination: {
@@ -81,18 +84,21 @@ export default {
         error();
       }
     },
-    // 在账号菜单中(非当前的角色菜单)获取roles对应的权限
+    // 在账号模块中(在当前角色模块中并无使用)获取role对应的权限，原来用来请求多个role，现在只能选单个，作用已经与上面请求详情的一样，但考虑遗留代码，不好删除
     *fetchRolePermissions({ payload, success, error }, { call, put }) {
       const response = yield call(queryRoleDetail, payload);
       const { code, data } = response || {};
       if (code === 200) {
-        let { webPermissionIds, appPermissionIds } = data || {};
+        let { webPermissionIds, appPermissionIds, messagePermissionList } = data || {};
         webPermissionIds = webPermissionIds || [];
         appPermissionIds = appPermissionIds || [];
+        messagePermissionList = messagePermissionList || [];
+        removeEmptyChildren(messagePermissionList);
 
         yield put({ type: 'saveRolePermissions', payload: webPermissionIds });
         yield put({ type: 'saveRoleAppPermissions', payload: appPermissionIds });
-        success &&  success(webPermissionIds, appPermissionIds);
+        yield put({ type: 'saveRoleMsgTree', payload: messagePermissionList }); // 上面的权限是最小范围，这里的消息订阅是整棵树，即最大范围
+        success &&  success(webPermissionIds, appPermissionIds, messagePermissionList);
       }
       else
         error && error();
@@ -163,6 +169,17 @@ export default {
       else
         error && error(msg);
     },
+    // 获取角色类型对应的订阅消息树
+    *fetchMsgTree({ payload, callback }, { call, put }) {
+      const response = yield call(getMessageTree, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list : [];
+        removeEmptyChildren(list);
+        yield put({ type: 'saveMsgTree', payload: list });
+        callback && callback(list);
+      }
+    },
   },
 
   reducers: {
@@ -201,6 +218,9 @@ export default {
     saveRoleAppPermissions(state, action) {
       return { ...state, roleAppPermissions: action.payload };
     },
+    saveRoleMsgTree(state, action) {
+      return { ...state, roleMsgTree: action.payload };
+    },
     /* 获取权限树 */
     queryPermissionTree(state, { payload: permissionTree }) {
       return { ...state, permissionTree };
@@ -226,6 +246,9 @@ export default {
           list: state.data.list.filter(item => item.id !== id),
         },
       };
+    },
+    saveMsgTree(state, action) {
+      return { ...state, msgTree: action.payload };
     },
   },
 }

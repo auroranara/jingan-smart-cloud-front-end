@@ -650,7 +650,8 @@ export default class accountManagementList extends React.Component {
                 查看
               </AuthLink>,
               <AuthLink
-                code={isSelf ? 'codeNotExist' : codesMap.account.edit}
+                code={codesMap.account.edit}
+                // code={isSelf ? 'codeNotExist' : codesMap.account.edit}
                 to={`/role-authorization/account-management/edit/${loginId}`}
               >
                 编辑

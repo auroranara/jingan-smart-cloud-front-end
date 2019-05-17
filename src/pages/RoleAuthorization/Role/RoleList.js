@@ -31,6 +31,11 @@ export default class RoleList extends PureComponent {
       fetchPermissionTree({ payload: unitId });
   }
 
+  componentWillUnmount() {
+    const { clearPermissionTree } = this.props;
+    clearPermissionTree();
+  }
+
   form = null;
 
   /* 滚动加载 */

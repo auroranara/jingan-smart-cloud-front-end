@@ -1,19 +1,21 @@
 import React, { PureComponent } from 'react';
-import { Form, Card, Spin, Tree, Button } from 'antd';
+import { Form, Card, Spin, Table, Tabs, Tree, Button } from 'antd';
 
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
-import { COMMON_LIST_URL, PRIVATE_LIST_URL, getEmptyData, sortTree, getSelectedTree } from './utils';
+import styles from './Role.less';
+import { COMMON_LIST_URL, PRIVATE_LIST_URL, getEmptyData, sortTree, getSelectedTree, removeEmptyChildren } from './utils';
 
 const { Description } = DescriptionList;
 const { TreeNode } = Tree;
+const { TabPane } = Tabs;
 
 const TITLE = '角色详情';
 
 @Form.create()
 export default class RoleDetail extends PureComponent {
-  state = { webSelected: [], appSelected: [] };
+  state = { webSelected: [], appSelected: [], msgList: [] };
 
   componentDidMount() {
     const {
@@ -28,7 +30,8 @@ export default class RoleDetail extends PureComponent {
       payload: { id },
       success: detail => {
         if (detail && detail.unitType !== undefined && detail.unitType !== null) {
-          const { unitType, webPermissionIds, appPermissionIds } = detail;
+          const { unitType, webPermissionIds, appPermissionIds, messagePermissionList } = detail;
+          this.setState({ msgList: removeEmptyChildren(messagePermissionList) });
           fetchPermissionTree({
             payload: unitType,
             callback: (webTree, appTree) => {
@@ -42,6 +45,8 @@ export default class RoleDetail extends PureComponent {
       },
     });
   }
+
+  msgs={};
 
   /* 渲染基础信息 */
   renderBasicInfo() {
@@ -92,7 +97,8 @@ export default class RoleDetail extends PureComponent {
     const isAdmin = +unitType === 3;
 
     return (
-      <Card title="权限配置" style={{ marginTop: '24px' }}>
+      <TabPane tab="权限配置" key="1" className={styles.tabPane2}>
+      {/* <Card title="权限配置" style={{ marginTop: '24px' }}> */}
         <DescriptionList col={2} style={{ marginBottom: 16 }}>
           <Description term="WEB权限树">
             {webSelected.length ? (
@@ -112,7 +118,34 @@ export default class RoleDetail extends PureComponent {
           )}
         </DescriptionList>
         {this.renderButtonGroup()}
-      </Card>
+      {/* </Card> */}
+      </TabPane>
+    );
+  }
+
+  renderMessageSubscription() {
+    const { msgList } = this.state;
+    const columns = [
+      { title: '消息类别', dataIndex: 'name', key: 'name' },
+      { title: '消息示例', dataIndex: 'example', key: 'example',
+        render: txt => {
+          return txt ? txt.split('\n').map((t, i) => <p key={i} className={styles.example}>{t}</p>) : txt;
+        },
+      },
+      { title: '推荐接收人', dataIndex: 'accepter', key: 'accepter' },
+    ];
+
+    return (
+      <TabPane tab="消息订阅配置" key="2" className={styles.tabPane1}>
+        <Table
+          rowKey="id"
+          className={styles.table}
+          columns={columns}
+          dataSource={msgList}
+          pagination={false}
+        />
+        {this.renderButtonGroup()}
+      </TabPane>
     );
   }
 
@@ -172,7 +205,10 @@ export default class RoleDetail extends PureComponent {
       >
         <Spin spinning={loading}>
           {this.renderBasicInfo()}
-          {this.renderAuthorizationConfiguration()}
+          <Tabs className={styles.tabs}>
+            {this.renderAuthorizationConfiguration()}
+            {this.renderMessageSubscription()}
+          </Tabs>
         </Spin>
       </PageHeaderLayout>
     );

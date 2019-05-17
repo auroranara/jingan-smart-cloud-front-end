@@ -61,6 +61,7 @@ export default {
     roles: [],
     permissionTree: [],
     appPermissionTree: [],
+    msgpermissionTree: [],
     userTypes: [],
     gavUserTypes: [],
     subDepartments: [],
@@ -418,11 +419,12 @@ export default {
     },
 
     saveTrees(state, action) {
-      const { webPermissions, appPermissions } = action.payload;
+      const { webPermissions, appPermissions, messagePermissions } = action.payload;
       return {
         ...state,
         permissionTree: webPermissions || [],
         appPermissionTree: appPermissions || [],
+        msgpermissionTree: messagePermissions || [],
       };
     },
 
