@@ -18,7 +18,7 @@ import timeIcon from '../img/time.png';
 import cameraIcon from '../img/camera_new.png';
 import dotIcon from '../img/smallDot.png';
 
-const ROW_STYLE = { borderTop: '2px solid rgb(1, 152, 180)' };
+const ROW_STYLE = { borderTop: '2px solid rgb(1, 152, 180)', height: '50%', overflow: 'hidden' };
 const COL_STYLE = { paddingTop: 15 };
 
 function formatTime(t) {
@@ -27,7 +27,7 @@ function formatTime(t) {
   return `${fillZero(m)}'${fillZero(s)}"`;
 }
 
-const dot = <span className={styles.dot} style={{ backgroundImage: `url(${dotIcon})` }} />;
+// const dot = <span className={styles.dot} style={{ backgroundImage: `url(${dotIcon})` }} />;
 
 export default class UnitLookUp extends Component {
   state = { hover: false };
@@ -138,7 +138,7 @@ export default class UnitLookUp extends Component {
 
           <div className={styles.bottom}>
             <Row style={ROW_STYLE}>
-              <div className={styles.jobRate}>
+              {/* <div className={styles.jobRate}> */}
                 <Col span={6}>
                   <div className={styles.jobRateWrite}>
                     <span className={styles.dot} style={{ backgroundImage: `url(${dotIcon})` }} />
@@ -174,11 +174,11 @@ export default class UnitLookUp extends Component {
                     </p>
                   </div>
                 </Col>
-              </div>
+              {/* </div> */}
             </Row>
 
             <Row style={ROW_STYLE}>
-              <div className={styles.responsetime}>
+              {/* <div className={styles.responsetime}> */}
                 <Col span={6}>
                   <div className={styles.timeWrite}>
                     <span className={styles.dot} style={{ backgroundImage: `url(${dotIcon})` }} />
@@ -211,7 +211,7 @@ export default class UnitLookUp extends Component {
                     </p>
                   </div>
                 </Col>
-              </div>
+              {/* </div> */}
             </Row>
           </div>
         </section>
