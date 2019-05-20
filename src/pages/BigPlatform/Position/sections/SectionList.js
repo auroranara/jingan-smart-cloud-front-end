@@ -207,6 +207,7 @@ export default class SectionList extends PureComponent {
    */
   render() {
     const {
+      dispatch,
       areaInfo,
       // 表格源数据
       data=[],

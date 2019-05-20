@@ -30,7 +30,7 @@ export default class AlarmCard extends PureComponent {
                 <div className={styles.inner}>
                     <div className={styles.info} onClick={onClick}>
                       {batch && !handled && <Checkbox checked={checked} className={styles.check} />}
-                      <div className={styles[`flag${handled ? 1 : ''}`]}>{STATUS[executeStatus]}</div>
+                      {isSOS ? <div className={styles[`flag${handled ? 1 : ''}`]}>{STATUS[executeStatus]}</div> : null}
                       <div className={styles.type}>{typeName}</div>
                       <p>报警时间：{moment(warningTime).format(TIME_FORMAT)}</p>
                       <p>{isSOS ? '人员' : '报警'}信息：{desc}</p>
@@ -40,10 +40,10 @@ export default class AlarmCard extends PureComponent {
                     </div>
                     <Button
                       disabled={handled}
-                      className={styles[`btn${handled ? 1 : ''}`]}
-                      onClick={e => handleShowSubmit(id)}
+                      className={styles[`btn${isSOS ? handled ? 1 : '' : 2}`]}
+                      onClick={isSOS ? e => handleShowSubmit(id) : null}
                     >
-                      {handled ? '已': ''}处理
+                      {isSOS ? `{handled ? '已': ''}处理` : ''}
                     </Button>
                 </div>
             </div>

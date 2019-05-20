@@ -140,7 +140,7 @@ export default class AlarmList extends PureComponent {
     this.setState({ modalVisible: false });
   };
 
-  hanldeSubmit = (status) => {
+  handleSubmit = (status) => {
     const { dispatch } = this.props;
     const { handleDesc } = this.state;
     dispatch({
@@ -200,8 +200,8 @@ export default class AlarmList extends PureComponent {
 
     const footer = (
       <div className={styles.footerBtns}>
-        <Button ghost className={styles.footerBtn} onClick={e => this.hanldeSubmit(1)}>忽略</Button>
-        <Button ghost className={styles.footerBtn} onClick={e => this.hanldeSubmit(2)}>提交</Button>
+        <Button ghost className={styles.footerBtn} onClick={e => this.handleSubmit(1)}>忽略</Button>
+        <Button ghost className={styles.footerBtn} onClick={e => this.handleSubmit(2)}>提交</Button>
       </div>
     );
 
@@ -267,7 +267,7 @@ export default class AlarmList extends PureComponent {
                     onChange={this.handleInputChange}
                   />
                 </div>
-                <Select
+                {/* <Select
                   allowClear
                   mode="multiple"
                   className={styles.cardSelect1}
@@ -278,7 +278,7 @@ export default class AlarmList extends PureComponent {
                   onChange={this.handleAlarmTypeChange}
                 >
                   {TYPE_OPTIONS}
-                </Select>
+                </Select> */}
                 <Select
                   allowClear
                   className={styles.cardSelect1}
@@ -290,8 +290,6 @@ export default class AlarmList extends PureComponent {
                 >
                   {STATUS_OPTIONS}
                 </Select>
-              </div>
-              <div className={styles.selectRow}>
                 <TreeSelect
                   allowClear
                   treeDefaultExpandAll
@@ -302,6 +300,18 @@ export default class AlarmList extends PureComponent {
                   onChange={this.handleAreaChange}
                   dropdownClassName={styles.treeDropdown}
                 />
+              </div>
+              <div className={styles.selectRow}>
+                {/* <TreeSelect
+                  allowClear
+                  treeDefaultExpandAll
+                  value={selectedArea}
+                  className={styles.tree1}
+                  treeData={sectionTree}
+                  placeholder="请选择区域"
+                  onChange={this.handleAreaChange}
+                  dropdownClassName={styles.treeDropdown}
+                /> */}
                 {/* <RangePicker
                   style={{ width: '30%' }}
                   dropdownClassName={styles.rangePickerDropDown}

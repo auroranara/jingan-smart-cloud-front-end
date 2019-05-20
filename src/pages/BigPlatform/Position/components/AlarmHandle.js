@@ -36,8 +36,8 @@ export default class AlarmHandle extends PureComponent {
       alarmId,
       alarms,
       style,
-      // handleAlarm,
-      // handleSOS,
+      handleAlarm,
+      handleSOS,
       handleClose,
       ...restProps
     } = this.props;
