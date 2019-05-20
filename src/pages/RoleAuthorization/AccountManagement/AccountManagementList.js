@@ -237,6 +237,8 @@ export default class accountManagementList extends React.Component {
               },
             });
         listPayload = { pageSize, pageNum: 1, unitId: key || null, ...other };
+        if (selectedUnitType)
+          fetchRoles({ payload: { unitType: selectedUnitType, companyId: key } });
       } else { // 最初没有选择任何条件的状态
         fetchUnitsFuzzy({
           payload: {
@@ -288,6 +290,7 @@ export default class accountManagementList extends React.Component {
   handleClickToReset = () => {
     const {
       fetch,
+      clearRoles,
       fetchUnitsFuzzy,
       saveSearchInfo,
       form: { resetFields, getFieldValue },
@@ -295,6 +298,7 @@ export default class accountManagementList extends React.Component {
     } = this.props;
     const isUnitUser = this.isUnitUser();
     const payload = { pageSize, pageNum: 1 };
+    clearRoles();
     resetFields();
     if (isUnitUser) {
       payload.unitId = unitId;

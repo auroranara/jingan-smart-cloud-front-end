@@ -51,9 +51,8 @@ export default class AthorityTree extends PureComponent {
   };
 
   render() {
-    const { tree, permissions, form: { getFieldDecorator } } = this.props;
+    const { tree, permissions, disabled: allDisabled, form: { getFieldDecorator } } = this.props;
     const { expandedKeys, autoExpandParent } = this.state;
-    // console.log(permissionTree);
 
     return getFieldDecorator('permissions', { valuePropName: 'checkedKeys' })(
       <Tree
@@ -63,7 +62,7 @@ export default class AthorityTree extends PureComponent {
         expandedKeys={expandedKeys}
         autoExpandParent={autoExpandParent}
       >
-        {renderTreeNodes(tree, permissions, 'childMenus', 'showZname', 'id')}
+        {renderTreeNodes(tree, permissions, 'childMenus', 'showZname', 'id', allDisabled)}
         {/* {renderTreeNodes(permissionTree, [], 'childMenus', 'showZname', 'id')} */}
       </Tree>
     );

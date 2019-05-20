@@ -58,18 +58,18 @@ export function renderSearchedTreeNodes(data, searchValue){
   });
 }
 
-export function renderTreeNodes(data, disabledKeys, childrenProp='children', titleProp='title', keyProp='key') {
+export function renderTreeNodes(data, disabledKeys, childrenProp='children', titleProp='title', keyProp='key', allDisabled) {
   // disabledKeys也可以为数组拼接成的字符串，作用与数组同
   disabledKeys = disabledKeys || [];
   return data.map((item) => {
     const children = item[childrenProp];
-    const disabled = disabledKeys.includes(item[keyProp]);
+    const disabled = allDisabled || disabledKeys.includes(item[keyProp]); // allDisabled为true，则总返回true，为false，则返回值取决于disabledKeys
     const title = item[titleProp];
     const key = item[keyProp];
     if (children) {
       return (
         <TreeNode disabled={disabled} title={title} key={key} dataRef={item}>
-          {renderTreeNodes(children, disabledKeys, childrenProp, titleProp, keyProp)}
+          {renderTreeNodes(children, disabledKeys, childrenProp, titleProp, keyProp, allDisabled)}
         </TreeNode>
       );
     }
