@@ -32,10 +32,16 @@ const Message = function({
       </div>
       <div className={styles.messageContent}>
         {type === 32 ? (
-          <div className={styles.msgDetail}>{`${area}${location}${paramName}${realtimeVal}${unit}（${condition==='>='?'≥':'≤'}${limitVal}${unit}）`}</div>
+          <div
+            className={styles.msgDetail}
+          >{`${area}${location}${paramName}${realtimeVal}${unit}（${
+            condition === '>=' ? '≥' : '≤'
+          }${limitVal}${unit}）`}</div>
         ) : (
           <Fragment>
-            <div>{`${moment(oldWarningTime).format('HH:mm:ss')} ${area}${location}${paramName}告警`}</div>
+            <div>{`${moment(oldWarningTime).format(
+              'HH:mm:ss'
+            )} ${area}${location}${paramName}告警`}</div>
             <div>现已恢复正常！</div>
           </Fragment>
         )}
@@ -79,7 +85,7 @@ export default class WarningMessage extends PureComponent {
    */
   handleClickExpandButton = () => {
     this.setState(({ isExpanded }) => ({ isExpanded: !isExpanded }));
-  }
+  };
 
   /**
    * 渲染
@@ -91,7 +97,6 @@ export default class WarningMessage extends PureComponent {
       // 数据源
       data,
     } = this.props;
-
     // console.log(data);
     const { isExpanded } = this.state;
     // 收缩显示3个，展开最大显示100个
@@ -103,13 +108,25 @@ export default class WarningMessage extends PureComponent {
         className={className}
         style={{ display: 'flex', flexDirection: 'column', height: 'auto' }}
         titleStyle={{ flex: 'none' }}
-        contentStyle={{ flex: '1', display: 'flex', height: 'auto' /* padding: '16px 0' */ }}
+        contentStyle={{ flex: '1', display: 'flex', height: 'auto', overflow: 'hidden' }}
         scroll={{
           className: styles.scroll,
         }}
-        other={data.length > 3 && <Icon type={isExpanded?'double-left':'double-right'} className={styles.expandButton} onClick={this.handleClickExpandButton} />}
+        other={
+          data.length > 3 && (
+            <Icon
+              type={isExpanded ? 'double-left' : 'double-right'}
+              className={styles.expandButton}
+              onClick={this.handleClickExpandButton}
+            />
+          )
+        }
       >
-        {list.length > 0 ? list.map(item => <Message key={item.messageId} data={item} genHandleClick={this.genHandleClick} />) : (
+        {list.length > 0 ? (
+          list.map(item => (
+            <Message key={item.messageId} data={item} genHandleClick={this.genHandleClick} />
+          ))
+        ) : (
           <div className={styles.emptyData}>暂无消息</div>
         )}
       </NewSection>
