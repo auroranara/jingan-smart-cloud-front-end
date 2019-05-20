@@ -1,4 +1,4 @@
-# CheckPointCard
+# PointCard
 
 ## 参数列表
 
@@ -21,13 +21,14 @@
     extendedDays: 'extendedDays', // 超期天数
     expiryDays: 'expiryDays', // 距到期天数
     status: 'status', // 检查状态
+    cycle: 'every_month', // 检查周期
   };
 ```
 
 ## 示例
 
 ```jsx
-  <CheckPointCard
+  <PointCard
     className={styles.card}
     style={{ fontSize: 14 }}
     data={{
@@ -39,6 +40,7 @@
       extendedDays: 5, // 超期天数
       expiryDays: 0, // 距到期天数
       status: 4, // 检查状态
+      cycle: 'every_month', // 检查周期
     }}
     fieldNames={{
       level: 'riskLevel', // 风险等级
@@ -49,6 +51,7 @@
       extendedDays: 'extendedDays', // 超期天数
       expiryDays: 'expiryDays', // 距到期天数
       status: 'status', // 检查状态
+      cycle: 'cycle', // 检查周期
     }}
   />
 ```

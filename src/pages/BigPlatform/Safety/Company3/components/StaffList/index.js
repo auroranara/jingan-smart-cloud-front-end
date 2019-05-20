@@ -1,9 +1,11 @@
 import React, { PureComponent } from 'react';
 import { Table, Select } from 'antd'
 import moment from 'moment';
+import classNames from 'classnames';
 import Section from '../Section';
 // 引入样式文件
 import styles from './index.less';
+import selectStyles from '../../select.less';
 
 const { Option } = Select;
 const months = [...Array(12).keys()].map(month => ({
@@ -76,15 +78,12 @@ export default class StaffList extends PureComponent {
               // size="small"
               value={month}
               onSelect={this.handleSelect}
-              className={styles.select}
-              dropdownClassName={styles.dropDown}
+              className={classNames(selectStyles.select, styles.select)}
+              dropdownClassName={selectStyles.dropdown}
             >
-              {months.map(({ value }) => {
-                const isSelected = month === value;
-                return (
-                  <Option key={value} value={value} style={{ color: isSelected && '#00ffff' }}>{value}</Option>
-                );
-              })}
+              {months.map(({ value }) => (
+                <Option key={value} value={value}>{value}</Option>
+              ))}
             </Select>
             <span className={styles.inspectionCount}>共巡查 <span style={{ color: '#00ffff' }}>{total}</span> 次，异常 <span style={{ color: '#FF4848' }}>{abnormal}</span> 次</span>
           </div>

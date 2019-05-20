@@ -1,19 +1,16 @@
 .container {
   position: relative;
-  padding: 0 16px;
-}
-.countContainer {
-  height: 114px;
+  padding: 0 1em;
 }
 .scrollContainer {
-  height: calc(~'100% - 114px') !important;
+  height: calc(~'100% - 6em') !important;
 }
+/* 统计头 */
 .riskLevelList {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 30px 0;
-  font-size: 16px;
+  padding: 1em 0 2em;
 
   .riskLevelItem {
     flex: 1;
@@ -39,12 +36,20 @@
     }
 
     .riskLevelItemValue {
-      margin-bottom: 8px;
-      font-size: 30px;
+      font-size: 1.5em;
+    }
+    .riskLevelItemName  {
+      margin-top: 0.5em;
     }
   }
 }
-
+.card {
+  margin-bottom: 1em;
+  &:last-of-type {
+    margin-bottom: 1px;
+  }
+}
+/* 风险点列表 */
 .riskPointItem {
   position: relative;
   margin-bottom: 12px;

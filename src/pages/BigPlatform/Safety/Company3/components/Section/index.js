@@ -21,6 +21,8 @@ export default function Section ({
   style,
   // 标题样式
   titleStyle,
+  // 内容类名
+  contentClassName,
   // 内容样式
   contentStyle,
   // 标题
@@ -54,15 +56,13 @@ export default function Section ({
   return (
     <div className={classNames(styles.container, className)} style={style} onClick={onClick}>
       {title && (
-        <div className={styles.titleWrapper} style={titleStyle}>
-          <div className={styles.title}>
-            <div className={styles.titleIcon} />
-            {title}
-            {action && <div className={styles.action}>{action}</div>}
-          </div>
+        <div className={styles.title} style={titleStyle}>
+          <div className={styles.titleIcon} />
+          <div className={styles.titleLabel}>{title}</div>
+          {action && <div className={styles.action}>{action}</div>}
         </div>
       )}
-      <div style={{ height: title ? undefined : '100%', ...contentStyle }} className={styles.content}>
+      <div style={{ height: title ? undefined : '100%', ...contentStyle }} className={classNames(styles.content, contentClassName)}>
         {fixedContent}
         <Spin wrapperClassName={classNames(styles.spin, spinClassName)} spinning={!!loading} {...spinProps}>
           <Scroll

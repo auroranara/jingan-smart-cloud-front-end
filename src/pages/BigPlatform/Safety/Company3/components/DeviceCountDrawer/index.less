@@ -1,0 +1,30 @@
+.container {
+  padding: 0 1em;
+}
+.scrollContainer {
+  height: calc(~'100% - 6em') !important;
+}
+.toolbar {
+  display: flex;
+  padding: 0 0.5em 1em;
+  .tool {
+    flex: 1;
+    padding: 0 0.5em;
+
+    .select {
+      width: 100%;
+
+      :global {
+        .ant-select-selection {
+          border-radius: 4px;
+        }
+      }
+    }
+  }
+}
+.card {
+  margin-bottom: 1em;
+  &:last-of-type {
+    margin-bottom: 1px;
+  }
+}

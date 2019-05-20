@@ -131,14 +131,14 @@ export async function getSafeFiles(params) {
         'emergency_material',
         'special_people',
         'company_training',
-        'major_danger',
-        'material_info',
-        'dust_info',
-        'limit_space',
-        'metallurgy',
-        'ammonia',
-        'occupational',
-        'tank_info',
+        // 'major_danger',
+        // 'material_info',
+        // 'dust_info',
+        // 'limit_space',
+        // 'metallurgy',
+        // 'ammonia',
+        // 'occupational',
+        // 'tank_info',
       ],
     },
   });
@@ -180,6 +180,6 @@ export async function getPoints(params) {
 }
 
 // 获取特种设备
-export async function getSpecialEquipmentInfo(params) {
+export async function getSpecialEquipmentList(params) {
   return request(`/acloud_new/v2/sfc/specialEquipmentInfo?${stringify(params)}`);
 }

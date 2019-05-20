@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Carousel, Tooltip, Col } from 'antd';
-import debounce from 'lodash/debounce';
+import { Carousel, Tooltip } from 'antd';
+import { connect } from 'dva';
 import Section from '../Section';
 // 消防主机
 import fireEngineIcon from '../../imgs/dynamic-monitor/fire_engine.png';
@@ -37,25 +37,18 @@ const getValue = data => {
 /**
  * 动态监测
  */
+@connect(({ unitSafety }) => ({
+  unitSafety,
+}))
 export default class DynamicMonitor extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      zoom: 1,
-    };
-    this.debouncedResize = debounce(this.resize, 300);
-    this.carouselTimer = null;
-  }
+  carouselTimer = null;
 
   componentDidMount() {
     this.setCarouselTimer();
-    window.addEventListener('resize', this.debouncedResize);
-    this.resize();
   }
 
   componentWillUnmount() {
     clearTimeout(this.carouselTimer);
-    window.removeEventListener('resize', this.debouncedResize);
   }
 
   refCarousel = carousel => {
@@ -67,10 +60,6 @@ export default class DynamicMonitor extends PureComponent {
       this.carousel && this.carousel.next();
       this.setCarouselTimer();
     }, 10 * 1000);
-  };
-
-  resize = () => {
-    this.setState({ zoom: window.innerWidth / 1920 });
   };
 
   renderTooltip = (showAlarm, showTotal = true) => {
@@ -97,20 +86,21 @@ export default class DynamicMonitor extends PureComponent {
       // 点击驾驶舱按钮
       onClick,
       // 源数据
-      data: {
-        fireEngine,
-        electricalFire,
-        smokeAlarm,
-        storageTank,
-        toxicGas,
-        effluent,
-        exhaustGas,
-        videoMonitor,
-      } = {},
+      unitSafety: {
+        dynamicMonitorData: {
+          fireEngine,
+          electricalFire,
+          smokeAlarm,
+          storageTank,
+          toxicGas,
+          effluent,
+          exhaustGas,
+          videoMonitor,
+        }={},
+      },
       handleClickVideo,
       handleClickGas,
     } = this.props;
-    // const { zoom } = this.state;
 
     const list = [
       {
@@ -190,12 +180,10 @@ export default class DynamicMonitor extends PureComponent {
                 <div className={styles.listWrapper} key={index}>
                   <div
                     className={styles.list}
-                  //  style={{ zoom }}
                   >
                     {lists.map(
                       ({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }, i) => {
                         return (
-                          <Col xs={24} sm={12} md={12} lg={12} key={i}>
                             <div
                               className={styles.item}
                               style={{
@@ -220,7 +208,6 @@ export default class DynamicMonitor extends PureComponent {
                                 </Tooltip>
                               </div>
                             </div>
-                          </Col>
                         );
                       }
                     )}

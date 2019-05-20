@@ -1,5 +1,6 @@
 import React from 'react';
 import { Drawer, Icon } from 'antd';
+import classNames from 'classnames';
 import Section from '../Section';
 // 引入样式文件
 import styles from './index.less';
@@ -24,12 +25,14 @@ export default function SectionDrawer({
       closable={false}
       width="512"
       onClose={onClose}
-      className={[styles.container, className].filter(c => c).join(' ')}
+      className={classNames(styles.container, className)}
       {...drawerProps}
     >
       <Section
         title={title}
         action={<Icon type="close" className={styles.closeButton} onClick={onClose} />}
+        className={styles.sectionContainer}
+        contentClassName={styles.sectionContent}
         {...sectionProps}
       >
         {children}

@@ -348,3 +348,13 @@ export function findFirstVideo(tree) {
     return findFirstVideo(first.list)
   }
 }
+
+/**
+ * 生成枚举类型
+ */
+export function generateEnum(obj) {
+  return Object.entries(obj).reduce((result, [key, value]) => {
+    result[result[key] = value] = key;
+    return result;
+  }, {});
+}

@@ -1,0 +1,83 @@
+/* 下拉框 */
+div.select {
+  color: #fff;
+  font-size: 16px;
+
+  :global {
+    .ant-select-selection {
+      height: 2em;
+      background-color: transparent;
+      border: 1px solid #00ffff;
+      border-radius: 2em;
+    }
+    .ant-select-selection__rendered {
+      margin-top: -1px;
+      margin-left: 1em;
+      margin-right: 1em;
+      line-height: 2;
+    }
+    .ant-select-arrow {
+      right: 10px;
+      color: #00ffff;
+    }
+    .ant-select-selection-selected-value {
+      padding-right: 1em;
+    }
+  }
+}
+div.dropdown {
+  padding: 4px 0;
+  font-size: 16px;
+  background-color: rgb(3, 48, 105);
+  border: 1px solid #00ffff;
+
+  :global {
+    .ant-select-dropdown-menu {
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        background: rgba(0, 87, 169, 1);
+      }
+
+      &::-webkit-scrollbar-track {
+        border-radius: 4px;
+        background-color: transparent;
+      }
+    }
+    .ant-select-dropdown-menu-item {
+      padding-left: 1em;
+      padding-right: 1em;
+      color: #fff;
+      font-weight: normal;
+      text-overflow: inherit;
+      border-radius: 0;
+      background-color: rgb(3, 48, 105);
+
+      &.ant-select-dropdown-menu-item-selected {
+        color: #00ffff;
+      }
+
+      &:hover {
+        color: #00ffff;
+        background-color: #04407d;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1599px) and (min-width: 1400px) {
+  div.select,
+  div.dropdown {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 1399px) {
+  div.select,
+  div.dropdown {
+    font-size: 12px;
+  }
+}
