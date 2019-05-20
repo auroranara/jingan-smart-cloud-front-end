@@ -3,7 +3,6 @@ import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { stringify } from 'qs';
 import moment from 'moment';
 import { message, notification } from 'antd';
-import {findFirstVideo} from '@/utils/utils';
 import styles from './RealTime.less';
 import { AlarmHandle, AlarmMsg, MapInfo, PersonInfo, Tabs, VideoPlay } from '../components/Components';
 import { AlarmDrawer, CardList, CardSelected, LeafletMap, LowPowerDrawer, PersonDrawer, SectionList } from './Components';
@@ -17,7 +16,7 @@ const options = {
 };
 
 const SOS_TYPE = 1;
-const DELAY = 6000;
+// const DELAY = 6000;
 
 const LOCATION_MESSAGE_TYPE = "1";
 const AREA_CHANGE_TYPE = "2";

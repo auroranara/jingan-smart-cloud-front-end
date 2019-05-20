@@ -11,9 +11,10 @@ export default class AlarmHandle extends PureComponent {
   state = { value: '' };
 
   genHandleAlarm = status => e => {
-    const { alarmId, handleAlarm } = this.props;
+    const { alarmId, handleAlarm, handleSOS } = this.props;
     const { value } = this.state;
-    handleAlarm(alarmId, status, status === 1 ? '忽略' : value);
+    handleSOS(alarmId);
+    // handleAlarm(alarmId, status, status === 1 ? '忽略' : value);
     this.onClose();
   };
 
@@ -35,8 +36,8 @@ export default class AlarmHandle extends PureComponent {
       alarmId,
       alarms,
       style,
-      handleAlarm,
-      handleSOS,
+      // handleAlarm,
+      // handleSOS,
       handleClose,
       ...restProps
     } = this.props;
