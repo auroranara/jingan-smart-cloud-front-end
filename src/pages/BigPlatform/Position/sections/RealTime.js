@@ -533,6 +533,7 @@ export default class RealTime extends PureComponent {
   render() {
     const {
       dispatch,
+      fullScreen,
       labelIndex,
       companyId,
       selectedCardId,
@@ -540,6 +541,8 @@ export default class RealTime extends PureComponent {
       areaInfoCache,
       personPosition: { sectionTree, positionList, positionAggregation, alarms, beaconList },
       showBoard,
+      showFullScreen,
+      hideFullScreen,
       handleLabelClick,
       setSelectedCard,
       setHistoryRecord,
@@ -575,7 +578,7 @@ export default class RealTime extends PureComponent {
 
     return (
       <div className={styles.container}>
-        <div className={styles.left}>
+        <div className={fullScreen ? styles.left1 : styles.left}>
           <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
           <div className={styles.leftSection}>
             {!labelIndex && (
@@ -614,9 +617,10 @@ export default class RealTime extends PureComponent {
             )}
           </div>
         </div>
-        <div className={styles.right}>
+        <div className={fullScreen ? styles.right1 : styles.right}>
           <div className={styles.rightSection}>
             <LeafletMap
+              fullScreen={fullScreen}
               url={mapBackgroundUrl}
               isTrack={isTrack}
               selectedCardId={selectedCardId}
@@ -632,6 +636,8 @@ export default class RealTime extends PureComponent {
               setAreaId={this.setAreaId}
               setHighlightedAreaId={this.setHighlightedAreaId}
               showBoard={showBoard}
+              showFullScreen={showFullScreen}
+              hideFullScreen={hideFullScreen}
               handleShowVideo={this.handleShowVideo}
               handleShowPersonInfo={this.handleShowPersonInfo}
               handleShowPersonDrawer={this.handleShowPersonDrawer}

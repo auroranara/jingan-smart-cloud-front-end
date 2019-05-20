@@ -59,6 +59,7 @@ export default class LeafletMap extends PureComponent {
       'movingCards',
       'aggregation',
       'positions',
+      // 'fullScreen',
     ];
     // 状态变化对象，变化的为true
     const states = props.reduce((prev, next) => {
@@ -503,7 +504,7 @@ export default class LeafletMap extends PureComponent {
   };
 
   render() {
-    const { url, areaId, areaInfo, showBoard } = this.props;
+    const { fullScreen, url, areaId, areaInfo, showBoard, showFullScreen, hideFullScreen } = this.props;
     const { data, images, reference, beaconOn, floorIcon, positionIcons, movingIcons } = this.state;
     // const { count, inCardCount, outCardCount } = this.currentTrueSection || {};
 
@@ -537,7 +538,7 @@ export default class LeafletMap extends PureComponent {
     return (
       <div className={styles.container}>
         {imgDraw}
-        <Icon type="arrows-alt" onClick={showBoard} className={styles.board} />
+        <Icon type={fullScreen ? 'shrink' : 'arrows-alt'} onClick={fullScreen ? hideFullScreen : showFullScreen} className={styles.screen} />
         <Icon type="home" onClick={this.handleHome} className={styles.home} />
         {parentId && <Icon type="rollback" onClick={this.handleBack} className={styles.back} />}
         {/* <div className={styles.mapInfo}>

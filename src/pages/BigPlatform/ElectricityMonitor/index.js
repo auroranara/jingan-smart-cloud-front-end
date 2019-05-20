@@ -621,7 +621,6 @@ export default class ElectricityMonitor extends PureComponent {
         brandData,
       },
     } = this.props;
-    // console.log('this.props', this.props);
     const {
       setttingModalVisible,
       unitDrawerVisible,

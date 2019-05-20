@@ -24,6 +24,7 @@ export default function Gauge(props) {
   const {
     data: { desc: title, value, unit, limit=[[], []], status },
   } = props;
+  console.log(title, limit);
   const [start, end] = RANGES[title];
   const isOutOfContact = +status === -1;
   const axisLineColor = getLineColor(limit, isOutOfContact, end);
