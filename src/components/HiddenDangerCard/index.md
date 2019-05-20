@@ -8,6 +8,7 @@
 | style | 容器样式 | object | - |
 | data | 源数据 | object | - |
 | fieldNames | 自定义字段 | object | 见下面 |
+| onClickImage | 图片点击事件 | (images) => {} |- |
 
 ## fieldNames默认值
 
@@ -26,6 +27,7 @@
     actualRectificationPerson: 'actualRectificationPerson', // 实际整改人
     actualRectificationTime: 'actualRectificationTime', // 实际整改时间
     designatedReviewPerson: 'designatedReviewPerson', // 指定复查人
+    reviewTime: 'reviewTime', // 复查时间
   };
 ```
 
@@ -49,6 +51,7 @@
       actualRectificationPerson: '张三', // 实际整改人
       actualRectificationTime: 1557387345788, // 实际整改时间
       designatedReviewPerson: '张三', // 指定复查人
+      reviewTime: 'reviewTime', // 复查时间
     }}
     fieldNames={{
       status: 'status', // 隐患状态
@@ -64,6 +67,7 @@
       actualRectificationPerson: 'actualRectificationPerson', // 实际整改人
       actualRectificationTime: 'actualRectificationTime', // 实际整改时间
       designatedReviewPerson: 'designatedReviewPerson', // 指定复查人
+      reviewTime: 'reviewTime', // 复查时间
     }}
   />
 ```

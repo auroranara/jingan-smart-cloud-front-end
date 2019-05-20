@@ -1,0 +1,39 @@
+.title {
+  padding: 0.25em 0;
+}
+.row {
+  & > div:first-child {
+    width: 7em;
+    white-space: nowrap;
+  }
+
+  &.statusRow {
+    &>div:first-child {
+      &>:first-child {
+        width: 4em;
+        letter-spacing: 2em;
+      }
+    }
+    &>div:nth-child(2) {
+      display: flex;
+      flex-wrap: wrap;
+      .statusItem  {
+        flex: none;
+        display: flex;
+        align-items: center;
+        margin-right: 2em;
+
+        .statusItemIcon {
+          flex: none;
+          margin-right: 0.5em;
+          width: 0.5em;
+          height: 0.5em;
+          border-radius: 50%;
+        }
+        .statusItemLabel {
+          flex: none;
+        }
+      }
+    }
+  }
+}

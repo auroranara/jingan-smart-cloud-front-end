@@ -3,8 +3,6 @@ import {
   getCompanyMessage,
   // 特种设备
   getSpecialEquipmentCount,
-  // 获取风险点信息
-  getPointInfoList,
   // 获取隐患列表
   getHiddenDangerList,
   // 获取视频列表
@@ -42,7 +40,7 @@ import {
   // 获取点位
   getPoints,
   // 获取特种设备列表
-  getSpecialEquipmentInfo,
+  getSpecialEquipmentList,
   // 获取视频树
   fetchVideoTree,
 } from '../services/unitSafety';
@@ -61,102 +59,150 @@ function handleRiskList(response) {
   result.sort((item, item1) => item.check_date_time - item1.check_date_time);
   return result;
 }
-
-// const MONITOR_PROPS = [
-//   'prepare_elec_state', // 备电
-//   'main_elec_state', // 主电
-//   'main_line_state', // 主线
-//   'fault_state', // 故障
-//   'fire_state', // 火警
-// ];
-// function handleMonitorList(list) {
-//   const result = list.filter(item => {
-//     return MONITOR_PROPS.some(prop => item[prop] === '1');
-//     // 火警标识为报警，其他的都标识为故障
-//   }).map(item => ({ ...item, statusLabel: item.fire_state === '1' ? '报警' : '故障' }));
-
-//   result.sort((item, item1) => item1.save_time - item.save_time);
-//   return result;
-// }
-
-function getStatus(params) {
-  if (params === '故障') return 0;
-
-  if (params.includes('火警')) return 1;
-
-  return 2;
-}
-
-// 0 消防主机故障 1 消防主机火警 2 其他监测设备报警 3 失联
-function handleMonitorList(list) {
-  const loss = Array.isArray(list.lossDevice)
-    ? list.lossDevice.map(
-      ({ deviceId, relationDeviceId, area, location, statusTime, typeName }) => ({
+const WATER_SYSTEM = ['消火栓系统', '喷淋系统', '水池/水箱'];
+function handleMonitorList({ lossDevice, abnormalDevice }) {
+  const alarm = Array.isArray(abnormalDevice)
+    ? abnormalDevice.map(
+      ({ deviceId, deviceName, relationDeviceId, area, location, unormalParams, typeName, statusTime, boxNo, unitTypeName, loopNumber, partNumber }) => ({
         id: deviceId,
-        type: typeName,
-        number: relationDeviceId,
-        params: '失联',
-        status: 3,
-        time: statusTime,
-        location: `${area}${location || ''}`,
-      })
-    )
-    : [];
-  const alarm = Array.isArray(list.abnormalDevice)
-    ? list.abnormalDevice.map(
-      ({ deviceId, relationDeviceId, area, location, unormalParams, typeName }) => ({
-        id: deviceId,
-        type: typeName,
-        number: relationDeviceId,
+        monitoringType: WATER_SYSTEM.includes(typeName) ? '水系统监测' : typeName,
+        relationId: relationDeviceId,
         params: unormalParams,
-        status: getStatus(unormalParams),
-        location: `${area}${location || ''}`,
+        statuses: [2],
+        location: `${area || ''}${location || ''}`,
+        time: statusTime,
+        name: deviceName,
+        system: typeName,
+        number: boxNo,
+        partType: unitTypeName,
+        loopNumber: loopNumber,
+        partNumber: partNumber,
+      }))
+    : [];
+  const loss = Array.isArray(lossDevice)
+    ? lossDevice.map(
+      ({ deviceId, deviceName, relationDeviceId, area, location, statusTime, typeName, boxNo, unitTypeName, loopNumber, partNumber }) => ({
+        id: deviceId,
+        monitoringType: WATER_SYSTEM.includes(typeName) ? '水系统监测' : typeName,
+        relationId: relationDeviceId,
+        statuses: [-1],
+        location: `${area || ''}${location || ''}`,
+        time: statusTime,
+        name: deviceName,
+        system: typeName,
+        number: boxNo,
+        partType: unitTypeName,
+        loopNumber: loopNumber,
+        partNumber: partNumber,
       })
     )
     : [];
 
-  loss.sort((item, item1) => item1.time - item.time);
-  return [...alarm, ...loss];
+
+  alarm.sort(({ time: a }, { time: b }) => b - a);
+  loss.sort(({ time: a }, { time: b }) => b - a);
+  return { alarm, loss }
 }
 
-function handleDangerList(list) {
-  const outed = list.filter(item => item.status === '7');
-  const rectify = list.filter(item => item.status === '1' || item.status === '2');
-  const review = list.filter(item => item.status === '3');
-  [outed, rectify, review].forEach(ls =>
-    ls.sort((item, item1) => item1.report_time - item.report_time)
-  );
-
-  return [...outed, ...rectify, ...review];
-}
-
-const ITEMS = ['特种设备', '应急物资', '特种作业操作证人员', '企业安全培训信息'];
-const PROPS = {
-  特种设备: ['recheck_date', 'data_true_name'],
-  应急物资: ['end_time', 'emergency_equipment_name'],
-  特种作业操作证人员: ['nextDate', 'name'],
-  企业安全培训信息: ['nextDate', 'traineeName'],
-};
 const DAY_MS = 24 * 3600 * 1000;
 
 function handleSafeList(list) {
   const now = Date.now();
-
-  const result = list.reduce((prev, next) => {
-    if (!ITEMS.includes(next.name) || !Array.isArray(next.list)) return prev;
-
-    const ls = next.list
-      .map(({ [PROPS[next.name][0]]: expire, [PROPS[next.name][1]]: name }) => ({
-        type: next.name,
-        name,
-        expire: Math.floor((now - expire) / DAY_MS),
-      }))
-      .filter(item => item.expire >= 0);
-    return prev.concat(ls);
+  const result = list.reduce((prev, { key, list }) => {
+    if (!Array.isArray(list)) {
+      return prev;
+    }
+    switch(key) {
+      case 'special_equipment': // 特种设备
+      list.forEach(({ check_date, recheck_date, data_true_name, special_equipment_id }) => {
+        if (recheck_date < now) {
+          prev.push({
+            id: special_equipment_id,
+            infoType: '特种设备',
+            name: data_true_name,
+            expiredType: '有效期',
+            expireDate: recheck_date,
+            expiredDays: Math.floor((now - recheck_date) / DAY_MS),
+          });
+        } else if (check_date < now) {
+          prev.push({
+            id: special_equipment_id,
+            infoType: '特种设备',
+            name: data_true_name,
+            expiredType: '检验日期',
+            expireDate: check_date,
+            expiredDays: Math.floor((now - check_date) / DAY_MS),
+          });
+        }
+      });
+      break;
+      case 'emergency_material': // 应急物资
+      list.forEach(({ check_date, end_time, emergency_equipment_name, emergency_id }) => {
+        if (end_time < now) {
+          prev.push({
+            id: emergency_id,
+            infoType: '应急物资',
+            name: emergency_equipment_name,
+            expiredType: '有效期',
+            expireDate: end_time,
+            expiredDays: Math.floor((now - end_time) / DAY_MS),
+          });
+        } else if (check_date < now) {
+          prev.push({
+            id: emergency_id,
+            infoType: '应急物资',
+            name: emergency_equipment_name,
+            expiredType: '检验日期',
+            expireDate: check_date,
+            expiredDays: Math.floor((now - check_date) / DAY_MS),
+          });
+        }
+      });
+      break;
+      case 'special_people': // 特种作业操作证人员
+      list.forEach(({ endDate, nextDate, name, id }) => {
+        if (endDate < now) {
+          prev.push({
+            id,
+            infoType: '特种作业操作证人员',
+            name,
+            expiredType: '有效期',
+            expireDate: endDate,
+            expiredDays: Math.floor((now - endDate) / DAY_MS),
+          });
+        } else if (nextDate < now) {
+          prev.push({
+            id,
+            infoType: '特种作业操作证人员',
+            name,
+            expiredType: '复审日期',
+            expireDate: nextDate,
+            expiredDays: Math.floor((now - nextDate) / DAY_MS),
+          });
+        }
+      });
+      break;
+      case 'company_training': // 企业安全培训信息
+      list.forEach(({ nextDate, traineeName, id }) => {
+        if (nextDate < now) {
+          prev.push({
+            id,
+            infoType: '企业安全培训信息',
+            name: traineeName,
+            expiredType: '培训日期',
+            expireDate: nextDate,
+            expiredDays: Math.floor((now - nextDate) / DAY_MS),
+          });
+        }
+      });
+      break;
+      default:
+      break;
+    }
+    return prev;
   }, []);
 
-  result.sort((item, item1) => item1.expire - item.expire);
-  return result;
+  return result.sort(({ expiredDays: a }, { expiredDays: b }) => b - a);
 }
 
 // 格式化动态监测数据
@@ -258,7 +304,7 @@ export default {
     // 隐患排查数组
     dangerList: {},
     // 动态监测
-    monitorList: [],
+    monitorList: {},
     // 安全档案
     safeList: [],
     // 动态监测数据
@@ -278,7 +324,7 @@ export default {
     },
     // 点位
     points: {
-      // 所有点位
+      // 所有风险点位
       pointList: [],
       // 四色图点位
       fourColorImgPoints: {},
@@ -287,9 +333,11 @@ export default {
     // 隐患统计
     hiddenDangerCount: { total: 0, ycq: 0, wcq: 0, dfc: 0 },
     // 特种设备列表
-    specialData: {
-      list: [],
-    },
+    specialEquipmentList: {},
+    // 手机号是否可见
+    phoneVisible: false,
+    // 设备统计列表
+    deviceCountList: [],
   },
 
   effects: {
@@ -325,17 +373,6 @@ export default {
         callback(response.total);
       }
     },
-    // // 获取风险点信息（风险告知卡列表）
-    // *fetchPointInfoList({ payload, callback }, { call, put }) {
-    //   const response = yield call(getPointInfoList, payload);
-    //   yield put({
-    //     type: 'savePointInfoList',
-    //     payload: response.companyLetter,
-    //   });
-    //   if (callback) {
-    //     callback(response.companyLetter);
-    //   }
-    // },
     // 获取隐患列表
     *fetchHiddenDangerList({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerList, payload);
@@ -557,9 +594,8 @@ export default {
         yield put({
           type: 'save',
           // payload: { safetyIndex: response.data },
-          payload: { safetyIndex },
+          payload: { safetyIndex, safetyIndexes },
         });
-        yield put({ type: 'saveSafeIndexes', payload: safetyIndexes });
         if (callback) {
           callback(response.data);
         }
@@ -574,7 +610,7 @@ export default {
       const { code = 500, data } = response;
       // if (code === 200 && data && Array.isArray(data.list))
       //   yield put({ type: 'saveMonitorList', payload: data.list });
-      if (code === 200 && data) yield put({ type: 'saveMonitorList', payload: data });
+      if (code === 200) yield put({ type: 'save', payload: { monitorList: handleMonitorList(data || {}) } });
     },
     // 获取安全档案
     *fetchSafeFiles({ payload, callback }, { call, put }) {
@@ -664,42 +700,42 @@ export default {
       const response = yield call(getPoints, payload);
       const {
         code,
-        data: { points, pointInfo },
+        data: { pointInfo },
       } = response;
       if (code === 200) {
-        const pointInfoMap = pointInfo.reduce((o, c) => {
-          o[c.item_id] = c;
-          return o;
-        }, {});
+        const pointInfoList = pointInfo.map(({ x_mum: x_num, y_mum: y_num, ...point }) => ({ ...point, x_num, y_num })).sort(({ nextCheckDate: a }, { nextCheckDate: b }) => a - b);
         const levelDict = ['gray', 'red', 'orange', 'yellow', 'blue'];
         const statusDict = ['normal', 'normal', 'abnormal', 'pending', 'overtime'];
         const capitalStatusDict = ['Normal', 'Normal', 'Abnormal', 'Pending', 'Overtime'];
-        const result = points.reduce(
-          (obj, { itemId, xNum, yNum, fixImgId }) => {
-            const info = pointInfoMap[itemId];
-            const point = {
-              itemId,
-              xNum,
-              yNum,
-              fixImgId,
-              info,
-            };
-            const { status, risk_level } = info || {};
-            // 四色图相关点位，排除没有坐标的点位
-            if (xNum && yNum) {
-              if (fixImgId in obj.fourColorImgPoints) {
-                obj.fourColorImgPoints[fixImgId].push(point);
-              } else {
-                obj.fourColorImgPoints[fixImgId] = [point];
+        const result = pointInfoList.reduce(
+          (obj, point) => {
+            const {
+              item_type,
+              x_num,
+              y_num,
+              fix_img_id,
+              status,
+              risk_level,
+            } = point;
+            // 如果为风险点
+            if (+item_type === 2) {
+              // 四色图相关点位，排除没有坐标的点位
+              if (x_num && y_num && fix_img_id) {
+                if (fix_img_id in obj.fourColorImgPoints) {
+                  obj.fourColorImgPoints[fix_img_id].push(point);
+                } else {
+                  obj.fourColorImgPoints[fix_img_id] = [point];
+                }
               }
+              obj.pointList.push(point);
+              obj[statusDict[+status]]++;
+              obj[levelDict[+risk_level]]++;
+              obj[`${levelDict[+risk_level]}${capitalStatusDict[+status]}PointList`].push(point);
             }
-            obj.pointList.push(point);
-            obj[statusDict[+status]]++;
-            obj[levelDict[+risk_level]]++;
-            obj[`${levelDict[+risk_level]}${capitalStatusDict[+status]}PointList`].push(point);
             return obj;
           },
           {
+            abnormalPointList: pointInfoList.filter(({ status }) => +status === 4), // 包括政府监督点
             pointList: [],
             red: 0,
             orange: 0,
@@ -733,7 +769,6 @@ export default {
             fourColorImgPoints: {},
           }
         );
-
         yield put({
           type: 'save',
           payload: { points: result },
@@ -777,12 +812,33 @@ export default {
     },
 
     // 获取特种设备列表
-    *fetchSpecialEquipmentInfo({ payload, success, error }, { call, put }) {
-      const response = yield call(getSpecialEquipmentInfo, payload);
+    *fetchSpecialEquipmentList({ payload, success, error }, { call, put }) {
+      const response = yield call(getSpecialEquipmentList, payload);
       if (response.code === 200) {
         yield put({
-          type: 'saveSpecialEquipmentInfo',
-          payload: response.data,
+          type: 'save',
+          payload: {
+            specialEquipmentList: (response.data.list || [])
+            .sort(({ recheck_date: a }, { recheck_date: b }) => a - b)
+            .reduce((result, { checkStatus, recheck_date, data_true_name, linkman, factory_number, special_equipment_id }) => {
+              const { allList, expiredList, unexpiredList } = result;
+              const item = {
+                id: special_equipment_id,
+                name: data_true_name,
+                number: factory_number,
+                person: linkman,
+                expiryDate: recheck_date,
+                status: checkStatus,
+              };
+              allList.push(item);
+              if (+checkStatus === 1) {
+                expiredList.push(item);
+              } else {
+                unexpiredList.push(item);
+              }
+              return result;
+            }, { allList: [], expiredList: [], unexpiredList: [] }),
+          },
         });
         if (success) {
           success(response.data);
@@ -818,9 +874,6 @@ export default {
         ...state,
         dangerList: payload,
       };
-    },
-    saveMonitorList(state, action) {
-      return { ...state, monitorList: handleMonitorList(action.payload) };
     },
     saveSafeFiles(state, action) {
       return { ...state, safeList: action.payload };
@@ -895,11 +948,19 @@ export default {
         hiddenDangerList: payload,
       };
     },
-    // 获取特种设备列表
-    saveSpecialEquipmentInfo(state, { payload }) {
+    // 保存手机是否显示配置
+    savePhoneVisible(state, { payload: { phoneVisible }={} }) {
+      if (phoneVisible !== undefined) {
+        localStorage.setItem('phoneVisible', JSON.stringify(phoneVisible));
+      } else {
+        phoneVisible = JSON.parse(localStorage.getItem('phoneVisible')) || false;
+        if (!phoneVisible) {
+          localStorage.setItem('phoneVisible', JSON.stringify(false));
+        }
+      }
       return {
         ...state,
-        specialData: payload,
+        phoneVisible,
       };
     },
   },

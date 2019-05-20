@@ -39,7 +39,7 @@ const getStatusLabel = status => {
 /**
  * 根据颜色筛选图片
  */
-const getIconByColor = ({ risk_level, originalStatus } = {}) => {
+const getIconByColor = (risk_level, originalStatus) => {
   if (+originalStatus === 2) {
     switch (+risk_level) {
       case 1:
@@ -255,15 +255,17 @@ export default class FourColor extends PureComponent {
                 'http://data.jingan-china.cn/v2/big-platform/safety/com/default_four_color.png'})`,
             }}
           >
-            {points.map(({ itemId, xNum, yNum, info }) => {
-              const {
-                object_title,
-                originalStatus,
-                status,
-                risk_level,
-                user_name,
-                last_check_date,
-              } = info || {};
+            {points.map(({
+              item_id,
+              x_num,
+              y_num,
+              object_title,
+              originalStatus,
+              status,
+              risk_level,
+              user_name,
+              last_check_date,
+            }) => {
               // 如果风险告知卡存在，则判断颜色并统计数量，否则默认为灰色
               switch (+risk_level) {
                 case 1:
@@ -284,49 +286,45 @@ export default class FourColor extends PureComponent {
               }
               return (
                 <Tooltip
-                  key={itemId}
+                  key={item_id}
                   overlayClassName={styles.tooltip}
-                  placement={xNum > 0.5 ? 'left' : 'right'}
-                  title={
-                    info ? (
-                      <Fragment>
-                        <div>{object_title}</div>
-                        <div>
-                          有无隐患：
-                          {+originalStatus === 2 ? (
-                            <span style={{ color: '#ff4848' }}>有</span>
-                          ) : (
-                              '无'
-                            )}
-                        </div>
-                        <div>
-                          检查状态：
-                          {getStatusLabel(status)}
-                        </div>
-                        <div>
-                          最近巡查：
-                          {user_name && last_check_date
-                            ? `${user_name} ${moment(last_check_date).format('YYYY-MM-DD')}`
-                            : '暂无数据'}
-                        </div>
-                      </Fragment>
-                    ) : (
-                        <div style={{ textAlign: 'center' }}>暂无信息</div>
-                      )
-                  }
+                  placement={x_num > 0.5 ? 'left' : 'right'}
+                  title={(
+                    <Fragment>
+                      <div>{object_title}</div>
+                      <div>
+                        有无隐患：
+                        {+originalStatus === 2 ? (
+                          <span style={{ color: '#ff4848' }}>有</span>
+                        ) : (
+                          '无'
+                        )}
+                      </div>
+                      <div>
+                        检查状态：
+                        {getStatusLabel(status)}
+                      </div>
+                      <div>
+                        最近巡查：
+                        {user_name && last_check_date
+                          ? `${user_name} ${moment(last_check_date).format('YYYY-MM-DD')}`
+                          : '暂无数据'}
+                      </div>
+                    </Fragment>
+                  )}
                 >
                   <div
-                    key={itemId}
+                    key={item_id}
                     className={styles.point}
                     style={{
-                      left: `${xNum * 100}%`,
-                      bottom: `${(1 - yNum) * 100}%`,
+                      left: `${x_num * 100}%`,
+                      bottom: `${(1 - y_num) * 100}%`,
                       width: 32,
                       height: 35,
-                      backgroundImage: `url(${getIconByColor(info)})`,
+                      backgroundImage: `url(${getIconByColor(risk_level, originalStatus)})`,
                     }}
                     onClick={() => {
-                      handleClickPoint(itemId, status);
+                      handleClickPoint(item_id, status);
                     }}
                   />
                 </Tooltip>

@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Row, Col } from 'antd';
+import { connect } from 'dva';
 import SectionDrawer from '../SectionDrawer';
 // 引入样式文件
 import styles from './index.less';
@@ -7,6 +8,9 @@ import styles from './index.less';
 /**
  * 安全人员抽屉
  */
+@connect(({ unitSafety }) => ({
+  unitSafety,
+}))
 export default class SafetyOfficerDrawer extends PureComponent {
   componentDidUpdate({ visible: prevVisible }) {
     const { visible } = this.props;
@@ -24,7 +28,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
       // 抽屉是否可见
       visible,
       // 数据
-      model: {
+      unitSafety: {
         safetyOfficer: {
           legalNum = 0,
           safeChargerNum = 0,
@@ -35,6 +39,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
           safeManagerList = [],
           saferList = [],
         },
+        phoneVisible,
       },
       // 抽屉关闭事件
       onClose,
@@ -48,13 +53,10 @@ export default class SafetyOfficerDrawer extends PureComponent {
         drawerProps={{
           title: '安全人员',
           visible,
-          onClose: () => {
-            onClose('safetyOfficer');
-          },
+          onClose,
         }}
         sectionProps={{
           refScroll: this.refScroll,
-          contentStyle: { paddingBottom: 16 },
           scrollProps: { className: styles.scrollContainer },
           fixedContent: (
             <Row className={styles.personWrapper}>
@@ -88,7 +90,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
               {legalList.map(({ user_id: id, user_name: name, mobile: phone }) => (
                 <div className={styles.personItem} key={id}>
                   <div className={styles.personItemName}>{name}</div>
-                  <div className={styles.personItemPhone}>{phone}</div>
+                  <div className={styles.personItemPhone}>{phoneVisible || !phone ? phone : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}</div>
                 </div>
               ))}
             </div>
@@ -99,7 +101,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
               {safeChargerList.map(({ user_id: id, user_name: name, mobile: phone }) => (
                 <div className={styles.personItem} key={id}>
                   <div className={styles.personItemName}>{name}</div>
-                  <div className={styles.personItemPhone}>{phone}</div>
+                  <div className={styles.personItemPhone}>{phoneVisible || !phone ? phone : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}</div>
                 </div>
               ))}
             </div>
@@ -110,7 +112,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
               {safeManagerList.map(({ user_id: id, user_name: name, mobile: phone }) => (
                 <div className={styles.personItem} key={id}>
                   <div className={styles.personItemName}>{name}</div>
-                  <div className={styles.personItemPhone}>{phone}</div>
+                  <div className={styles.personItemPhone}>{phoneVisible || !phone ? phone : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}</div>
                 </div>
               ))}
             </div>
@@ -121,7 +123,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
               {saferList.map(({ user_id: id, user_name: name, mobile: phone }) => (
                 <div className={styles.personItem} key={id}>
                   <div className={styles.personItemName}>{name}</div>
-                  <div className={styles.personItemPhone}>{phone}</div>
+                  <div className={styles.personItemPhone}>{phoneVisible || !phone ? phone : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}</div>
                 </div>
               ))}
             </div>

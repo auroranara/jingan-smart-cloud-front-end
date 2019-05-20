@@ -13,8 +13,8 @@
   .jumpButtonIcon {
     display: inline-block;
     margin-left: 6px;
-    width: 16px;
-    height: 16px;
+    width: 1em;
+    height: 1em;
     background: url('../../imgs/dynamic-monitor/arrow.png') no-repeat center;
     background-size: 100% 100%;
     vertical-align: top;
@@ -28,6 +28,7 @@
   :global {
     .ant-carousel {
       height: 100%;
+      font-size: 1em;
 
       .slick-dots {
         bottom: 9px;
@@ -79,7 +80,7 @@
   position: relative;
   display: block !important;
   margin: 0 auto;
-  // padding: 16px;
+  padding: 0 1em;
   max-width: 420px;
   height: 100%;
 }
@@ -93,25 +94,23 @@
   color: #00ffff;
 
   .item {
-    // flex: none;
-    width: 100%;
-    padding-left: 64px;
+    flex: none;
+    padding-left: 4em;
+    line-height: 1.75em;
     background: no-repeat left;
-    background-size: 48px 48px;
+    background-size: 3em 3em;
 
     .itemLabel {
-      height: 20px;
-      line-height: 20px;
-      font-size: 16px;
+      width: 6em;
+      white-space: nowrap;
+      line-height: 1.25em;
       color: #fff;
     }
 
     .itemValue {
-      height: 28px;
-      line-height: 28px;
-      font-size: 24px;
-      color: #00ffff;
       position: relative;
+      font-size: 1.5em;
+      color: #00ffff;
     }
   }
 }
@@ -129,20 +128,7 @@
 .circle {
   display: inline-block;
   border-radius: 50%;
-  width: 8px;
-  height: 8px;
+  width: 0.5em;
+  height: 0.5em;
   margin-right: 5px;
-}
-
-@media screen and (max-width: 1450px) {
-  .container {
-    .itemLabel {
-      font-size: 14px;
-    }
-
-    .item {
-      padding-left: 55px;
-      background-size: 40px 40px;
-    }
-  }
 }
