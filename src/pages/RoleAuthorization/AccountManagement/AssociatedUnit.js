@@ -358,14 +358,6 @@ export default class AssociatedUnit extends PureComponent {
     });
   }
 
-  clearModel() {
-    const { dispatch } = this.props;
-    dispatch({ type: 'account/saveMaintenanceTree', payload: {} }); // 清空维保权限树
-    dispatch({ type: 'account/saveTrees', payload: {} }); // 清空权限树
-    this.clearMsgs();
-    this.clearRolePermissions(COM); // 清空所选角色的permissions
-  }
-
   childrenMap = {};
   idMap = {};
   parentIdMap = {};
@@ -376,6 +368,24 @@ export default class AssociatedUnit extends PureComponent {
   appPermissions = [];
   appAuthTreeCheckedKeys = [];
   msgIdMap = {};
+
+  clearModel() {
+    const { dispatch } = this.props;
+    dispatch({ type: 'account/saveMaintenanceTree', payload: {} }); // 清空维保权限树
+    dispatch({ type: 'account/saveTrees', payload: {} }); // 清空权限树
+    this.clearMsgs();
+    this.clearRolePermissions(COM); // 清空所选角色的permissions
+  }
+
+  isEditAndSelf() { // 是否是编辑关联单位且是自身账号
+    const {
+      match: { params: { userId } },
+      user: { currentUser: { userId: currentUserId } },
+    } = this.props;
+    const isEdit = !!userId;
+    const isSelf = currentUserId && currentUserId === userId;
+    return isEdit && isSelf;
+  }
 
   isUnitUser = () => {
     const { user: { currentUser: { unitId, unitType } } } = this.props;
@@ -1009,6 +1019,7 @@ export default class AssociatedUnit extends PureComponent {
     const { unitTypeChecked } = this.state;
 
     const isUnitUser = this.isUnitUser();
+    const isEditAndSelf = this.isEditAndSelf();
     const treeList = treeData(departments);
     const gridList = treeData(grids);
 
@@ -1077,7 +1088,7 @@ export default class AssociatedUnit extends PureComponent {
                   ],
                 })(
                   <Select
-                    disabled={isUnitUser}
+                    disabled={isUnitUser || isEditAndSelf}
                     placeholder="请选择单位类型"
                     onChange={this.handleUnitTypesChange}
                   >
@@ -1107,7 +1118,7 @@ export default class AssociatedUnit extends PureComponent {
                     <AutoComplete
                       labelInValue
                       mode="combobox"
-                      disabled={isUnitUser}
+                      disabled={isUnitUser || isEditAndSelf}
                       optionLabelProp="children"
                       placeholder="请选择所属单位"
                       notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
@@ -1142,7 +1153,7 @@ export default class AssociatedUnit extends PureComponent {
                   })(
                     <TreeSelect
                       labelInValue
-                      disabled={isUnitUser}
+                      disabled={isUnitUser || isEditAndSelf}
                       placeholder="请选择所属单位"
                       onSelect={this.handleGovSelect}
                     >
@@ -1279,6 +1290,7 @@ export default class AssociatedUnit extends PureComponent {
 
     const { getFieldDecorator } = form;
     const { subExpandedKeys, searchSerValue, searchSubValue, unitTypeChecked } = this.state;
+    const isEditAndSelf = this.isEditAndSelf();
 
     return (
       <TabPane tab="角色权限配置" key="1" className={styles.tabPane}>
@@ -1292,6 +1304,7 @@ export default class AssociatedUnit extends PureComponent {
                   rules: [{ required: true, message: '请选择一个角色' }],
                 })(
                   <Select
+                    disabled={isEditAndSelf}
                     onChange={this.handleRoleChange}
                   >
                     {roles.map(({ id, roleName }) => <Option key={id} value={id}>{roleName}</Option>)}
@@ -1304,6 +1317,7 @@ export default class AssociatedUnit extends PureComponent {
             <Col lg={12} md={12} sm={24}>
               <Form.Item label="WEB账号权限">
                 <AuthorityTree
+                  disabled={isEditAndSelf}
                   form={form}
                   tree={permissionTree}
                   permissions={rolePermissions}
@@ -1315,6 +1329,7 @@ export default class AssociatedUnit extends PureComponent {
               <Col lg={12} md={12} sm={24}>
                 <Form.Item label="APP账号权限">
                   <AppAuthorityTree
+                    disabled={isEditAndSelf}
                     form={form}
                     tree={appPermissionTree}
                     permissions={roleAppPermissions}
@@ -1365,6 +1380,7 @@ export default class AssociatedUnit extends PureComponent {
                       valuePropName: 'checked',
                     })(
                       <Checkbox
+                        disabled={isEditAndSelf}
                         onChange={e => this.handleCheckAll(e.target.checked, treeList[0].key)}
                       >
                         全选
@@ -1376,17 +1392,29 @@ export default class AssociatedUnit extends PureComponent {
                     {maintenanceSerTree.length > 0 &&
                       getFieldDecorator('isCheckAllSer', {
                         valuePropName: 'checked',
-                      })(<Checkbox onChange={this.handleCheckAllSer}>全选</Checkbox>)}
+                      })(
+                        <Checkbox
+                          disabled={isEditAndSelf}
+                          onChange={this.handleCheckAllSer}
+                        >
+                          全选
+                        </Checkbox>
+                      )}
                     {maintenanceSerTree.length > 0 ? (
                       <Fragment>
                         <Search
+                          disabled={isEditAndSelf}
                           placeholder="请输入单位名称查询"
                           onChange={e => this.onSerTreeSearch(e.target.value, maintenanceSerTree)}
                         />
                         {getFieldDecorator('serCheckedKeys', {
                           valuePropName: 'checkedKeys',
                         })(
-                          <Tree checkable onCheck={this.onSerCheck}>
+                          <Tree
+                            checkable
+                            disabled={isEditAndSelf}
+                            onCheck={this.onSerCheck}
+                          >
                             {renderSearchedTreeNodes(maintenanceSerTree, searchSerValue)}
                           </Tree>
                         )}
@@ -1400,10 +1428,18 @@ export default class AssociatedUnit extends PureComponent {
                     {maintenanceSubTree.length > 0 &&
                       getFieldDecorator('isCheckAllSub', {
                         valuePropName: 'checked',
-                      })(<Checkbox onChange={this.handleCheckAllSub}>全选</Checkbox>)}
+                      })(
+                        <Checkbox
+                          disabled={isEditAndSelf}
+                          onChange={this.handleCheckAllSub}
+                        >
+                          全选
+                        </Checkbox>
+                      )}
                     {maintenanceSubTree.length > 0 ? (
                       <Fragment>
                         <Search
+                          disabled={isEditAndSelf}
                           placeholder="请输入单位名称查询"
                           onChange={e => this.onSubTreeSearch(e.target.value, maintenanceSubTree)}
                         />
@@ -1412,6 +1448,7 @@ export default class AssociatedUnit extends PureComponent {
                         })(
                           <Tree
                             checkable
+                            disabled={isEditAndSelf}
                             onExpand={this.onSubExpand}
                             expandedKeys={subExpandedKeys}
                             onCheck={this.onSubCheck}
@@ -1519,17 +1556,17 @@ export default class AssociatedUnit extends PureComponent {
   renderFooterToolbar() {
     const {
       loading,
-      match: { params: { userId } },
-      user: { currentUser: { userId: currentUserId } },
+      // match: { params: { userId } },
+      // user: { currentUser: { userId: currentUserId } },
     } = this.props;
-    const disabled = userId === currentUserId;
+    // const disabled = userId === currentUserId;
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
         <Button
           type="primary"
           size="large"
-          disabled={disabled} // 自己无法修改自己的账号
+          // disabled={disabled} // 自己无法修改自己的账号
           onClick={this.handleClickValidate}
           loading={loading}
           style={{ fontSize: 16 }}

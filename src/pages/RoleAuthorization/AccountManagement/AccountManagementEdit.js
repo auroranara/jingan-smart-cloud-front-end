@@ -259,14 +259,6 @@ export default class AccountManagementEdit extends PureComponent {
     }
   }
 
-  clearModel() {
-    const { dispatch } = this.props;
-    dispatch({ type: 'account/saveMaintenanceTree', payload: {} }); // 清空维保权限树
-    dispatch({ type: 'account/saveTrees', payload: {} }); // 清空权限树
-    this.clearMsgs();
-    this.clearRolePermissions(COM); // 清空所选角色的permissions
-  }
-
   childrenMap = {};
   idMap = {};
   parentIdMap = {};
@@ -277,6 +269,14 @@ export default class AccountManagementEdit extends PureComponent {
   appPermissions = [];
   appAuthTreeCheckedKeys = [];
   msgIdMap = {};
+
+  clearModel() {
+    const { dispatch } = this.props;
+    dispatch({ type: 'account/saveMaintenanceTree', payload: {} }); // 清空维保权限树
+    dispatch({ type: 'account/saveTrees', payload: {} }); // 清空权限树
+    this.clearMsgs();
+    this.clearRolePermissions(COM); // 清空所选角色的permissions
+  }
 
   isUnitUser = () => {
     const { user: { currentUser: { unitId, unitType } } } = this.props;
