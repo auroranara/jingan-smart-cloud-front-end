@@ -43,7 +43,7 @@ export default class AlarmCard extends PureComponent {
                       className={styles[`btn${isSOS ? handled ? 1 : '' : 2}`]}
                       onClick={isSOS ? e => handleShowSubmit(id) : null}
                     >
-                      {isSOS ? `{handled ? '已': ''}处理` : ''}
+                      {isSOS ? `${handled ? '已': ''}处理` : ''}
                     </Button>
                 </div>
             </div>

@@ -13,12 +13,22 @@ const { TextArea } = Input;
 
 const rect = <span className={styles.rect} />;
 const TIME_FORMAT = 'HH:mm';
-const TYPES = ['SOS', '越界', '长时间逗留', '超员', '缺员'];
-const TYPE_OPTIONS = TYPES.map((t, i) => <Option key={i} value={i + 1}>{t}</Option>);
+// const TYPES = ['SOS', '越界', '长时间逗留', '超员', '缺员'];
+// const TYPE_OPTIONS = TYPES.map((t, i) => <Option key={i} value={i + 1}>{t}</Option>);
 const STATUS = { 0:'待处理', 2:'已处理' };
 const STATUS_OPTIONS = Object.entries(STATUS).map(([n, s]) => <Option key={n} value={n}>{s}</Option>);
 const GRAPH_STYLE = { position: 'absolute', top: 15, right: 15 };
 const CHART_STYLE = { height: 320 };
+
+function Circle(props) {
+  const { num, desc } = props;
+  return (
+    <div className={styles.blueCircle}>
+      <div className={styles.circleNum}>{num}</div>
+      <p className={styles.circleLabel}>{desc}</p>
+    </div>
+  );
+}
 
 export default class AlarmList extends PureComponent {
   state = {
@@ -184,6 +194,8 @@ export default class AlarmList extends PureComponent {
 
     const list = Array.isArray(monthCount) ? monthCount.map(({ warningMonth, warningNum }) => ({ name: warningMonth, value: warningNum })) : [];
     const { waitExecuteNum=0, executeNum=0 } = statusCount || {};
+    const personAlert = [{ name: 'SOS', num: 100 }, { name: '长时间静止', num: 100 }];
+    const sectionAlert = [{ name: '缺员', num: 100 }, { name: '越界', num: 100 }, { name: '超员', num: 100 }];
     let cards = <EmptyMsg />;
     if (alarms.length)
       cards = alarms.map((item, i) => (
@@ -211,13 +223,13 @@ export default class AlarmList extends PureComponent {
           <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
           <div className={styles.wrapper1}>
             <div className={styles.leftTop1}>
-              <div className={styles.redCircle}>
-                <div className={styles.circleNum}>{waitExecuteNum}</div>
-                <p className={styles.circleLabel}>待处理</p>
-              </div>
-              <div className={styles.blueCircle}>
-                <div className={styles.circleNum}>{executeNum}</div>
-                <p className={styles.circleLabel}>已处理</p>
+              <div className={styles.leftTop1Inner}>
+                <div className={styles.leftTopRow}>
+                  {personAlert.map(({ name, num }) => <Circle key={name} num={num} desc={name} />)}
+                </div>
+                <div className={styles.leftTopRow}>
+                  {sectionAlert.map(({ name, num }) => <Circle key={name} num={num} desc={name} />)}
+                </div>
               </div>
             </div>
             <div className={styles.leftMiddle1}>
@@ -358,14 +370,14 @@ export default class AlarmList extends PureComponent {
                   </div>
                   <ButtonGroup className={styles.btns}>
                     <Button ghost className={styles.searchBtn1} onClick={this.getAlarms}>搜索</Button>
-                    {batch
+                    {/* {batch
                       ? (
                       <Fragment>
                         <Button ghost className={styles.searchBtn1} onClick={this.handleShowMultiSubmit}>确定</Button>
                         <Button ghost className={styles.searchBtn1} onClick={this.hideBatch}>取消</Button>
                       </Fragment>
                       ) : <Button ghost className={styles.searchBtn1} onClick={this.handleBatch}>批量处理</Button>
-                    }
+                    } */}
                   </ButtonGroup>
                 </div>
               </div>
