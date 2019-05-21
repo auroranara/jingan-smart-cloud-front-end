@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Row, Col, Empty, Tooltip } from 'antd';
+import { Row, Col, Tooltip } from 'antd';
 import { connect } from 'dva';
 import ReactEcharts from 'echarts-for-react';
 import Lightbox from 'react-images';
@@ -82,7 +82,7 @@ export default class SafetyIndexDrawer extends PureComponent {
       payload: {
         pageNum: 1,
         pageSize: DEFAULT_PAGE_SIZE,
-        status: 7,
+        status: 5,
         company_id: companyId,
         ...restProps,
       },
