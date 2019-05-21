@@ -380,7 +380,7 @@ export default class RiskPointDrawer extends PureComponent {
                   extendedDays: getOffsetDays, // 超期天数
                   expiryDays: getOffsetDays, // 距到期天数
                   status: 'status', // 检查状态
-                  cycle: 'checkCycleCode', // 检查周期
+                  cycle: ({ checkCycleCode, check_cycle, cycle_type }) => +cycle_type === 1 ? checkCycleCode : check_cycle, // 检查周期
                   type: 'item_type', // 点位类型
                 }}
               />
