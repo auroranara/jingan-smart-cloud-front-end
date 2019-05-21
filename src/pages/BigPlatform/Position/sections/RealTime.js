@@ -546,6 +546,7 @@ export default class RealTime extends PureComponent {
       handleLabelClick,
       setSelectedCard,
       setHistoryRecord,
+      showBeacon,
     } = this.props;
     const {
       alarmId,
@@ -620,6 +621,7 @@ export default class RealTime extends PureComponent {
         <div className={fullScreen ? styles.right1 : styles.right}>
           <div className={styles.rightSection}>
             <LeafletMap
+              beaconOn={showBeacon}
               fullScreen={fullScreen}
               url={mapBackgroundUrl}
               isTrack={isTrack}

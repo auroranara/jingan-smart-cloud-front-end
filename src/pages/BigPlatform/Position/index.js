@@ -3,13 +3,15 @@ import { connect } from 'dva';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 // import styles from './index.less';
-import { AlarmList, CountBoard, History, RealTime } from './sections/Components';
+import { AlarmList, CountBoard, History, RealTime, SettingModal } from './sections/Components';
 
 const AUTOSPACE = window.innerWidth > 1366;
+const DEFAULT_TITLE = '晶安人员定位监控系统';
 
 @connect(({ personPosition, position, user }) => ({ personPosition, position, user }))
 export default class PositionIndex extends PureComponent {
   state = {
+    title: DEFAULT_TITLE,
     labelIndex: 0,
     selectedCardId: undefined,
     selectedUserId: undefined,
@@ -21,6 +23,8 @@ export default class PositionIndex extends PureComponent {
     areaInfoCache: {}, // 缓存RealTime组件中的areaInfo对象，以防切换tab时，areaInfo为空对象的问题
     boardVisible: false,
     fullScreen: false,
+    showBeacon: true,
+    setttingModalVisible: false,
   };
 
   componentDidMount() {
@@ -80,6 +84,19 @@ export default class PositionIndex extends PureComponent {
     this.setState({ fullScreen: false });
   };
 
+  handleClickSetButton = () => {
+    this.setState({ setttingModalVisible: true });
+  };
+
+  handleSettingOk = values => {
+    const { beacon, title } = values;
+    this.setState({ title, setttingModalVisible: false, showBeacon: !!+beacon });
+  };
+
+  handleSettingCancel = e => {
+    this.setState({ setttingModalVisible: false });
+  };
+
   render() {
     // 注意这里额外引了一个model
     const {
@@ -90,6 +107,7 @@ export default class PositionIndex extends PureComponent {
       user,
     } = this.props;
     const {
+      title,
       labelIndex,
       selectedCardId,
       selectedUserId,
@@ -99,6 +117,8 @@ export default class PositionIndex extends PureComponent {
       areaInfoCache,
       boardVisible,
       fullScreen,
+      showBeacon,
+      setttingModalVisible,
     } = this.state;
 
     const { sectionTree } = personPosition;
@@ -106,16 +126,19 @@ export default class PositionIndex extends PureComponent {
 
     return (
       <BigPlatformLayout
-        title="晶安人员定位监控系统"
+        settable
+        title={title}
         autoSpace={AUTOSPACE}
         extra={companyName}
         headerStyle={ fullScreen ? { display: 'none' } : { fontSize: 16 }}
         contentStyle={ fullScreen ? { height: '100%' } : null}
         titleStyle={{ fontSize: 46 }}
+        onSet={this.handleClickSetButton}
       >
         {(!labelIndex || labelIndex === 1) && (
           <RealTime
             dispatch={dispatch}
+            showBeacon={showBeacon}
             fullScreen={fullScreen}
             labelIndex={labelIndex}
             companyId={companyId}
@@ -158,6 +181,11 @@ export default class PositionIndex extends PureComponent {
           />
         )}
         {boardVisible ? <CountBoard sectionTree={sectionTree} hideBoard={this.hideBoard} /> : null}
+        <SettingModal
+          visible={setttingModalVisible}
+          handleOk={this.handleSettingOk}
+          handleCancel={this.handleSettingCancel}
+        />
       </BigPlatformLayout>
     );
   }

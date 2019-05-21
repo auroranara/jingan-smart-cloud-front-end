@@ -644,6 +644,7 @@ export default class ElectricityMonitor extends PureComponent {
 
     return (
       <BigPlatformLayout
+        settable
         title="晶安智慧用电监测平台"
         extra={extra}
         style={{ backgroundImage: 'none' }}
@@ -660,7 +661,6 @@ export default class ElectricityMonitor extends PureComponent {
         }}
         titleStyle={{ fontSize: 46 }}
         contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}
-        settable
         onSet={this.handleClickSetButton}
       >
         {/* 地图 */}

@@ -30,7 +30,7 @@ export default function MapInfo(props) {
           className={styles.first}
           onClick={e => showPersonInfoOrAlarmMsg(latest.type, latest.id, latest.cardId)}
         >
-          {getAlarmDesc(latest, areaInfo).join(' ')}，请及时处理！
+          {getAlarmDesc(latest, areaInfo).join(' ')}{+latest.type === 1 ? '，请及时处理' : ''}！
         </div>
       )}
       {latest && <span className={styles.more} onClick={e => handleShowAlarmDrawer()}>更多<Icon type="double-right" /></span>}
