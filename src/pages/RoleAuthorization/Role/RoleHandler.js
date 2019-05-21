@@ -61,7 +61,7 @@ export default class RoleHandler extends PureComponent {
 
           fetchPermissionTree({
             payload: isAdmin ? unitType : companyId,
-            callbackLater: (webTree, appTree, msgTree) => this.handleMsgTree(msgTree),
+            callbackLater: (webTree, appTree, msgTree) => this.handleMsgTree(msgTree, true),
           });
 
           companyName && this.fetchInitUnits(unitType, companyName);
@@ -75,7 +75,7 @@ export default class RoleHandler extends PureComponent {
       clearDetail();
       fetchPermissionTree({
         payload: companyId,
-        callbackLater: (webTree, appTree, msgTree) => this.handleMsgTree(msgTree),
+        callbackLater: (webTree, appTree, msgTree) => this.handleMsgTree(msgTree, true),
       });
       this.fetchInitUnits(unitType, unitName);
       setFieldsValue({ unitType, companyId });
@@ -94,9 +94,12 @@ export default class RoleHandler extends PureComponent {
 
   idMap = {};
 
-  handleMsgTree = list => {
+  handleMsgTree = (list, initial) => {
     this.idMap = getIdMap(list);
-    this.setInitMsgs();
+    if (initial)
+      this.setInitMsgs();
+    else
+      this.setState({ msgs: {} });
   };
 
   setInitMsgs = () => {
@@ -116,6 +119,7 @@ export default class RoleHandler extends PureComponent {
     this.setState({ msgs: newMsgs });
   };
 
+  // 企业用户时，角色类型和单位名称是固定不能更改的，所以不会触发这个函数，只有管理员或运营才会触发这个函数
   handleTypeChange = value => {
     const {
       fetchPermissionTree,
@@ -138,12 +142,15 @@ export default class RoleHandler extends PureComponent {
       // 在model变化前，先清空值，不然会报warning
       callback: () => { setFieldsValue({ permissions: undefined, appPermissions: undefined }); },
       // model变化后再设置值，不然当先设置值时，就会报warning，且model后变化，就没办法正确设置上值了
-      callbackLater: (tree, appTree) => {
+      callbackLater: (tree, appTree, msgTree) => {
+        let initial = false;
         if (+value === +unitType) {
+          initial = true;
           const value = webPermissionIds ? uncheckParent(tree, webPermissionIds) : [];
           const appValue = appPermissionIds ? uncheckParent(appTree, appPermissionIds) : [];
           setFieldsValue({ permissions: value, appPermissions: appValue  });
         }
+        this.handleMsgTree(msgTree, initial);
       },
     });
   };
@@ -257,7 +264,6 @@ export default class RoleHandler extends PureComponent {
           allowClear
           disabled={disabled}
           placeholder="请选择所属单位"
-          onSelect={this.handleUnitSelect}
         >
           {generateTreeNode(unitList)}
         </TreeSelect>
@@ -268,7 +274,6 @@ export default class RoleHandler extends PureComponent {
           placeholder="请选择所属单位"
           notFoundContent={unitsLoading ? <Spin size="small" /> : '暂无数据'}
           onSearch={this.handleUnitValueChange}
-          onChange={this.handleUnitChange}
           filterOption={false}
         >
           {unitList.map(item => (
