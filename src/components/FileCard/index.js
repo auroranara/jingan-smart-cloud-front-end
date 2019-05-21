@@ -37,7 +37,7 @@ export default class FileCard extends BigPlatformCard {
     },
     {
       label: '过期天数',
-      key: 'expiredDays',
+      render: ({ expiredDays }) => expiredDays && `${expiredDays}天`,
       valueContainerClassName: styles.expiredDaysValueContainer,
     },
   ];

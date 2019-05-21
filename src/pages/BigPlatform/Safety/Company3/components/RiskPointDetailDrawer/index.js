@@ -172,6 +172,24 @@ export default class RiskPointDetailDrawer extends PureComponent {
   };
 
   /**
+   * 切换上一张图片
+   */
+  handlePrevImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage - 1,
+    }));
+  };
+
+  /**
+   * 切换下一张图片
+   */
+  handleNextImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage + 1,
+    }));
+  };
+
+  /**
    * 图片详情
    */
   renderImageDetail() {
@@ -182,8 +200,8 @@ export default class RiskPointDetailDrawer extends PureComponent {
         isOpen={true}
         closeButtonTitle="关闭"
         currentImage={currentImage}
-        // onClickPrev={this.handlePrevImage}
-        // onClickNext={this.handleNextImage}
+        onClickPrev={this.handlePrevImage}
+        onClickNext={this.handleNextImage}
         onClose={this.handleClose}
         onClickThumbnail={this.handleSwitchImage}
         showThumbnails

@@ -31,6 +31,7 @@ export default class PointCard extends BigPlatformCard {
     expiryDays: 'expiryDays', // 距到期天数
     status: 'status', // 检查状态
     cycle: 'cycle', // 检查周期
+    type: 'type', // 点位类型，2为风险点
   };
 
   FIELDS = [
@@ -117,13 +118,14 @@ export default class PointCard extends BigPlatformCard {
       style, // 容器样式
     } = this.props;
     const fieldsValue = this.getFieldsValue();
+    const { level, type } = fieldsValue;
 
     return (
       <Container
         className={className}
         style={style}
       >
-        {this.renderLevel(fieldsValue.level)}
+        {+type === 2 && this.renderLevel(level)}
         {this.renderFields(fieldsValue)}
       </Container>
     );

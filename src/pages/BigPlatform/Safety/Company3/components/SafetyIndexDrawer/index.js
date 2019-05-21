@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Row, Col, Tooltip } from 'antd';
 import { connect } from 'dva';
+import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 import Lightbox from 'react-images';
 import PointCard from '@/components/PointCard';
@@ -31,7 +32,7 @@ const COMPOSITION_ICON_STYLES = [
 const lineStyle = { color: 'rgb(64, 95, 135)' };
 // 获取偏移天数
 const getOffsetDays = ({ nextCheckDate }) => {
-  return nextCheckDate ? Math.abs(Math.floor((nextCheckDate - new Date()) / (1000 * 60 * 60 * 24))) : '';
+  return nextCheckDate ? Math.abs(moment().diff(moment(+nextCheckDate), 'days')) : '';
 };
 // 默认每页显示数量
 const DEFAULT_PAGE_SIZE = 10;
@@ -313,8 +314,8 @@ export default class SafetyIndexDrawer extends PureComponent {
     const {
       unitSafety: {
         points: {
-          overtime=0,
-        },
+          abnormalPointList=[],
+        }={},
         hiddenDangerCount: {
           total=0,
           ycq=0,
@@ -330,7 +331,7 @@ export default class SafetyIndexDrawer extends PureComponent {
     let count;
     switch(currentTabIndex) {
       case 0:
-      count = `共有${overtime}个点位超时未查`;
+      count = `共有${abnormalPointList.length}个点位超时未查`;
       break;
       case 1:
       count = `共有${total}个隐患，其中${ycq}个已超期`;
@@ -388,6 +389,7 @@ export default class SafetyIndexDrawer extends PureComponent {
         expiryDays: getOffsetDays, // 距到期天数
         status: 'status', // 检查状态
         cycle: 'checkCycleCode', // 检查周期
+        type: 'item_type', // 点位类型
       };
       break;
       case 1: // 隐患有实时性问题需要考虑

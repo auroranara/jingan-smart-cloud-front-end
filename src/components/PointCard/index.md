@@ -41,6 +41,7 @@
       expiryDays: 0, // 距到期天数
       status: 4, // 检查状态
       cycle: 'every_month', // 检查周期
+      type: 'type', // 点位类型，2为风险点
     }}
     fieldNames={{
       level: 'riskLevel', // 风险等级
@@ -52,6 +53,7 @@
       expiryDays: 'expiryDays', // 距到期天数
       status: 'status', // 检查状态
       cycle: 'cycle', // 检查周期
+      type: 'type', // 点位类型，2为风险点
     }}
   />
 ```

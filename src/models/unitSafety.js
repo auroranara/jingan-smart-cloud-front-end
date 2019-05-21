@@ -44,6 +44,7 @@ import {
   // 获取视频树
   fetchVideoTree,
 } from '../services/unitSafety';
+import moment from 'moment';
 
 function handleRiskList(response) {
   if (!response) return [];
@@ -69,7 +70,7 @@ function handleMonitorList({ lossDevice, abnormalDevice }) {
         relationId: relationDeviceId,
         params: unormalParams,
         statuses: [2],
-        location: `${area || ''}${location || ''}`,
+        location: [area, location].filter(v => v).join('-'),
         time: statusTime,
         name: deviceName,
         system: typeName,
@@ -86,7 +87,7 @@ function handleMonitorList({ lossDevice, abnormalDevice }) {
         monitoringType: WATER_SYSTEM.includes(typeName) ? '水系统监测' : typeName,
         relationId: relationDeviceId,
         statuses: [-1],
-        location: `${area || ''}${location || ''}`,
+        location: [area, location].filter(v => v).join('-'),
         time: statusTime,
         name: deviceName,
         system: typeName,
@@ -104,10 +105,8 @@ function handleMonitorList({ lossDevice, abnormalDevice }) {
   return { alarm, loss }
 }
 
-const DAY_MS = 24 * 3600 * 1000;
-
 function handleSafeList(list) {
-  const now = Date.now();
+  const now = moment();
   const result = list.reduce((prev, { key, list }) => {
     if (!Array.isArray(list)) {
       return prev;
@@ -115,7 +114,8 @@ function handleSafeList(list) {
     switch(key) {
       case 'special_equipment': // 特种设备
       list.forEach(({ check_date, recheck_date, data_true_name, special_equipment_id }) => {
-        if (recheck_date < now) {
+        const expiredDays = now.diff(check_date, 'days');
+        /* if (now.diff(recheck_date, 'days') > 0) {
           prev.push({
             id: special_equipment_id,
             infoType: '特种设备',
@@ -124,21 +124,22 @@ function handleSafeList(list) {
             expireDate: recheck_date,
             expiredDays: Math.floor((now - recheck_date) / DAY_MS),
           });
-        } else if (check_date < now) {
+        } else  */if (expiredDays > 0) {
           prev.push({
             id: special_equipment_id,
             infoType: '特种设备',
             name: data_true_name,
             expiredType: '检验日期',
             expireDate: check_date,
-            expiredDays: Math.floor((now - check_date) / DAY_MS),
+            expiredDays,
           });
         }
       });
       break;
       case 'emergency_material': // 应急物资
       list.forEach(({ check_date, end_time, emergency_equipment_name, emergency_id }) => {
-        if (end_time < now) {
+        const expiredDays = now.diff(check_date, 'days');
+        /* if (now.diff(check_date, 'days') > 0) {
           prev.push({
             id: emergency_id,
             infoType: '应急物资',
@@ -147,51 +148,54 @@ function handleSafeList(list) {
             expireDate: end_time,
             expiredDays: Math.floor((now - end_time) / DAY_MS),
           });
-        } else if (check_date < now) {
+        } else  */if (expiredDays > 0) {
           prev.push({
             id: emergency_id,
             infoType: '应急物资',
             name: emergency_equipment_name,
             expiredType: '检验日期',
             expireDate: check_date,
-            expiredDays: Math.floor((now - check_date) / DAY_MS),
+            expiredDays,
           });
         }
       });
       break;
       case 'special_people': // 特种作业操作证人员
       list.forEach(({ endDate, nextDate, name, id }) => {
-        if (endDate < now) {
+        const expiredDays = now.diff(endDate, 'days');
+        const expiredDays2 = now.diff(nextDate, 'days');
+        if (expiredDays > 0) {
           prev.push({
             id,
             infoType: '特种作业操作证人员',
             name,
             expiredType: '有效期',
             expireDate: endDate,
-            expiredDays: Math.floor((now - endDate) / DAY_MS),
+            expiredDays,
           });
-        } else if (nextDate < now) {
+        } else if (expiredDays2 > 0) {
           prev.push({
             id,
             infoType: '特种作业操作证人员',
             name,
             expiredType: '复审日期',
             expireDate: nextDate,
-            expiredDays: Math.floor((now - nextDate) / DAY_MS),
+            expiredDays: expiredDays2,
           });
         }
       });
       break;
       case 'company_training': // 企业安全培训信息
       list.forEach(({ nextDate, traineeName, id }) => {
-        if (nextDate < now) {
+        const expiredDays = now.diff(nextDate, 'days');
+        if (expiredDays > 0) {
           prev.push({
             id,
             infoType: '企业安全培训信息',
             name: traineeName,
             expiredType: '培训日期',
             expireDate: nextDate,
-            expiredDays: Math.floor((now - nextDate) / DAY_MS),
+            expiredDays,
           });
         }
       });

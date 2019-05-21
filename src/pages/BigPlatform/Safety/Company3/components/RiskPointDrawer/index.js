@@ -153,7 +153,7 @@ const renderRiskPoint = ({
 );
 // 获取偏移天数
 const getOffsetDays = ({ nextCheckDate }) => {
-  return nextCheckDate ? Math.abs(Math.floor((nextCheckDate - new Date()) / (1000 * 60 * 60 * 24))) : '';
+  return nextCheckDate ? Math.abs(moment().diff(moment(+nextCheckDate), 'days')) : '';
 };
 
 /**
@@ -381,6 +381,7 @@ export default class RiskPointDrawer extends PureComponent {
                   expiryDays: getOffsetDays, // 距到期天数
                   status: 'status', // 检查状态
                   cycle: 'checkCycleCode', // 检查周期
+                  type: 'item_type', // 点位类型
                 }}
               />
             );
