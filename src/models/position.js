@@ -121,6 +121,37 @@ function getHistoryIdMap(list, idType) {
   }, {});
 }
 
+/**
+ * 处理树（去除没有range的子节点，根节点设置range）
+ * @param {array} tree
+ */
+function handleTree(tree, isRoot) {
+  return tree.reduce((obj, item) => {
+    const { children, range } = item;
+    if (isRoot) {
+      obj.push({
+        ...item,
+        range: JSON.stringify({
+          type: 'rectangle',
+          latlngs: [
+            { lat: 0, lng: 0 },
+            { lat: 1, lng: 0 },
+            { lat: 1, lng: 1 },
+            { lat: 0, lng: 1 },
+          ],
+        }),
+        children: handleTree(children || []),
+      });
+    } else if (range) {
+      obj.push({
+        ...item,
+        children: handleTree(children || []),
+      });
+    }
+    return obj;
+  }, []);
+}
+
 export default {
   namespace: 'position',
 
@@ -202,12 +233,13 @@ export default {
     *fetchTree({ payload, callback }, { call, put }) {
       const response = yield call(getTree, payload);
       if (response.code === 200) {
+        const originalTree = handleTree(response.data.list || [], true);
         yield put({
           type: 'save',
           payload: {
-            tree: formatTree(response.data.list),
-            originalTree: response.data.list,
-            sectionTree: getSelectTree(response.data.list),
+            tree: formatTree(originalTree),
+            originalTree,
+            sectionTree: getSelectTree(originalTree),
           }});
       }
       if (callback) {
