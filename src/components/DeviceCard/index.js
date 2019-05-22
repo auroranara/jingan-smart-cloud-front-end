@@ -15,6 +15,10 @@ const STATUS_DICT = {
   '0': '正常',
   '1': '报警',
   '2': '报警',
+  '报警': '报警',
+  '火警': '火警',
+  '故障': '故障',
+  '失联': '失联',
 };
 // 颜色
 const STATUS_COLOR = {
@@ -23,6 +27,10 @@ const STATUS_COLOR = {
   '0': '#37a460',
   '1': '#f83329',
   '2': '#f83329',
+  '报警': '#f83329',
+  '火警': '#f83329',
+  '故障': '#ffb400',
+  '失联': '#9f9f9f',
 };
 // 消防主机
 const FIRE_ENGINE = '消防主机监测';
@@ -110,15 +118,21 @@ export default class DeviceCard extends BigPlatformCard {
     },
     {
       label: '状态',
-      render: ({ statuses=[], params }) => statuses && statuses.length > 0 && statuses.map((status) => {
-        const label = STATUS_DICT[status];
-        return label && (
-          <div className={styles.statusItem} key={label}>
-            <div className={styles.statusItemIcon} style={{ backgroundColor: STATUS_COLOR[status] }} />
-            <div className={styles.statusItemLabel}>{label}{params && `（${params}）`}</div>
-          </div>
-        );
-      }),
+      render({ statuses=[], params, monitoringType }) {
+        if (monitoringType === FIRE_ENGINE) {
+          statuses = params && params.split('，');
+          params = null;
+        }
+        return statuses && statuses.length > 0 && statuses.map((status) => {
+          const label = STATUS_DICT[status];
+          return label && (
+            <div className={styles.statusItem} key={label}>
+              <div className={styles.statusItemIcon} style={{ backgroundColor: STATUS_COLOR[status] }} />
+              <div className={styles.statusItemLabel}>{label}{params && `（${params}）`}</div>
+            </div>
+          );
+        });
+      },
       className: classNames(styles.row, styles.statusRow),
     },
     {
