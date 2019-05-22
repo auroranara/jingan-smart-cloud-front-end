@@ -71,16 +71,20 @@ const drawVisible = {
 export function getGridId(gridId, initVal = 'index') {
   return !gridId || gridId === initVal ? undefined : gridId;
 }
+
 @connect(({ bigPlatform, bigPlatformSafetyCompany, bigFireControl, loading }) => ({
   bigPlatform,
   bigPlatformSafetyCompany,
   bigFireControl,
-  hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'] || loading.effects['bigPlatform/fetchHiddenDangerListByDateForPage'],
+  hiddenDangerLoading:
+    loading.effects['bigPlatform/fetchHiddenDangerListForPage'] ||
+    loading.effects['bigPlatform/fetchHiddenDangerListByDateForPage'],
 }))
 class GovernmentBigPlatform extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      polygons: [],
       projectName: global.PROJECT_CONFIG.projectName,
       scrollNodeTop: 0,
       label: {
@@ -162,6 +166,9 @@ class GovernmentBigPlatform extends Component {
                 type: 'bigPlatform/fetchMapLocationByParent',
                 payload: {
                   gridId: gId,
+                },
+                success: data => {
+                  this.initPolygons(data);
                 },
               });
             }
@@ -270,12 +277,14 @@ class GovernmentBigPlatform extends Component {
         gridId,
       },
     });
-
     if (gridId) {
       dispatch({
         type: 'bigPlatform/fetchMapLocationByParent',
         payload: {
           gridId,
+        },
+        success: data => {
+          this.initPolygons(data);
         },
       });
     }
@@ -332,35 +341,6 @@ class GovernmentBigPlatform extends Component {
           this.setState({ checkNum: data.fireCheckCompanyCount });
       },
     });
-
-    // // 安全检查已查
-    // dispatch({
-    //   type: 'bigPlatform/fetchCheckedCompanyInfo',
-    //   payload: {
-    //     date: month,
-    //     isChecked: '1',
-    //     isNormal: '1',
-    //     isOvertime: '1',
-    //     pageNum: 1,
-    //     pageSize: 1,
-    //   },
-    // success: num => {
-    //   if (month === moment().format('YYYY-MM')) this.checkNum = num;
-    // },
-    // });
-
-    // // 安全检查未查
-    // dispatch({
-    //   type: 'bigPlatform/fetchCheckedCompanyInfo',
-    //   payload: {
-    //     date: month,
-    //     isChecked: '0',
-    //     isNormal: '1',
-    //     isOvertime: '1',
-    //     pageNum: 1,
-    //     pageSize: 1,
-    //   },
-    // });
   };
 
   componentWillUnmount() {
@@ -602,6 +582,20 @@ class GovernmentBigPlatform extends Component {
     }
   };
 
+  initPolygons = data => {
+    let polygons = [];
+    if (data && data.children && data.children.length) {
+      polygons = data.children.map(m => {
+        if (m.mapLocation) {
+          return JSON.parse(m.mapLocation);
+        }
+      });
+    } else {
+      polygons = data.mapLocation ? [JSON.parse(data.mapLocation)] : [];
+    }
+    this.setState({ polygons });
+  };
+
   render() {
     const {
       communityCom,
@@ -646,6 +640,7 @@ class GovernmentBigPlatform extends Component {
       overHdCom,
       overHdDetail,
       companyInfoDrawer,
+      polygons,
     } = this.state;
     const {
       dispatch,
@@ -686,16 +681,6 @@ class GovernmentBigPlatform extends Component {
       hiddenDangerLoading,
     } = this.props;
     const gridId = this.getGridId();
-    let polygons = [];
-    if (mapLocation && mapLocation.children && mapLocation.children.length) {
-      polygons = mapLocation.children.map(m => {
-        if (m.mapLocation) {
-          return JSON.parse(m.mapLocation);
-        }
-      });
-    } else {
-      polygons = mapLocation.mapLocation ? [JSON.parse(mapLocation.mapLocation)] : [];
-    }
 
     return (
       <div className={styles.main}>
