@@ -26,6 +26,7 @@ const ALARM = 2;
 }))
 export default class LeafletMap extends PureComponent {
   state = {
+    drawKey: Math.random(),
     data: [],
     images: undefined,
     reference: undefined,
@@ -59,7 +60,8 @@ export default class LeafletMap extends PureComponent {
       'movingCards',
       'aggregation',
       'positions',
-      // 'fullScreen',
+      'beaconList',
+      'fullScreen',
       'beaconOn',
     ];
     // 状态变化对象，变化的为true
@@ -70,9 +72,13 @@ export default class LeafletMap extends PureComponent {
     const [prevMovingIds, currentMovingIds] = [prevProps.movingCards, currentProps.movingCards].map(cards => cards.map(({ cardId }) => cardId));
     states.movingIds = !isArraySame(prevMovingIds, currentMovingIds);
 
+    if (states.fullScreen)
+      this.setState({ drawKey: Math.random() });
+
     if (states.areaId || states.sectionTree || states.highlightedAreaId)
       this.handleMapData();
-    if (states.aggregation || states.areaId || states.areaInfo || states.isTrack || states.selectedCardId || states.positions || states.movingIds || states.beaconOn)
+    if (states.aggregation || states.areaId || states.areaInfo || states.isTrack ||states.selectedCardId
+      || states.positions || states.movingIds || states.beaconList || states.beaconOn)
       this.setState({ positionIcons: this.positionsToIcons() });
     if (states.movingCards || states.areaId || states.areaInfo || states.isTrack || states.selectedCardId)
       this.setState({ movingIcons: this.movingCardsToIcons() });
@@ -506,7 +512,7 @@ export default class LeafletMap extends PureComponent {
 
   render() {
     const { fullScreen, url, areaId, areaInfo, showBoard, showFullScreen, hideFullScreen } = this.props;
-    const { data, images, reference, floorIcon, positionIcons, movingIcons } = this.state;
+    const { drawKey, data, images, reference, floorIcon, positionIcons, movingIcons } = this.state;
     // const { count, inCardCount, outCardCount } = this.currentTrueSection || {};
 
     const currentAreaInfo = (areaId && areaInfo[areaId]) || {};
@@ -515,9 +521,11 @@ export default class LeafletMap extends PureComponent {
     const icons = [...positionIcons, ...movingIcons].concat(floorIcon || []);
     // console.log('render icons', Date(), icons);
 
+    console.log(drawKey);
     const imgDraw = (
       <Spin spinning={false} style={{ height: '100%' }}>
         <ImageDraw
+          key={drawKey}
           maxBoundsRatio={1.5}
           autoZoom
           boxZoom={false}
