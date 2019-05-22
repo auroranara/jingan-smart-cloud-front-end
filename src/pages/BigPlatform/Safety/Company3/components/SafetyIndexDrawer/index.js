@@ -32,7 +32,7 @@ const COMPOSITION_ICON_STYLES = [
 const lineStyle = { color: 'rgb(64, 95, 135)' };
 // 获取偏移天数
 const getOffsetDays = ({ nextCheckDate }) => {
-  return nextCheckDate ? Math.abs(moment().diff(moment(+nextCheckDate), 'days')) : '';
+  return nextCheckDate ? Math.abs(moment().startOf('day').diff(moment(+nextCheckDate), 'days')) : '';
 };
 // 默认每页显示数量
 const DEFAULT_PAGE_SIZE = 10;

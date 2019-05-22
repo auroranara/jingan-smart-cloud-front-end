@@ -106,7 +106,7 @@ function handleMonitorList({ lossDevice, abnormalDevice }) {
 }
 
 function handleSafeList(list) {
-  const now = moment();
+  const now = moment().startOf('day');
   const result = list.reduce((prev, { key, list }) => {
     if (!Array.isArray(list)) {
       return prev;
