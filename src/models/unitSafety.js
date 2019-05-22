@@ -113,48 +113,30 @@ function handleSafeList(list) {
     }
     switch(key) {
       case 'special_equipment': // 特种设备
-      list.forEach(({ check_date, recheck_date, data_true_name, special_equipment_id }) => {
-        const expiredDays = now.diff(check_date, 'days');
-        /* if (now.diff(recheck_date, 'days') > 0) {
-          prev.push({
-            id: special_equipment_id,
-            infoType: '特种设备',
-            name: data_true_name,
-            expiredType: '有效期',
-            expireDate: recheck_date,
-            expiredDays: Math.floor((now - recheck_date) / DAY_MS),
-          });
-        } else  */if (expiredDays > 0) {
+      list.forEach(({ recheck_date, data_true_name, special_equipment_id }) => {
+        const expiredDays = now.diff(recheck_date, 'days');
+        if (expiredDays > 0) {
           prev.push({
             id: special_equipment_id,
             infoType: '特种设备',
             name: data_true_name,
             expiredType: '检验日期',
-            expireDate: check_date,
+            expireDate: recheck_date,
             expiredDays,
           });
         }
       });
       break;
       case 'emergency_material': // 应急物资
-      list.forEach(({ check_date, end_time, emergency_equipment_name, emergency_id }) => {
-        const expiredDays = now.diff(check_date, 'days');
-        /* if (now.diff(check_date, 'days') > 0) {
-          prev.push({
-            id: emergency_id,
-            infoType: '应急物资',
-            name: emergency_equipment_name,
-            expiredType: '有效期',
-            expireDate: end_time,
-            expiredDays: Math.floor((now - end_time) / DAY_MS),
-          });
-        } else  */if (expiredDays > 0) {
+      list.forEach(({ end_time, emergency_equipment_name, emergency_id }) => {
+        const expiredDays = now.diff(end_time, 'days');
+        if (expiredDays > 0) {
           prev.push({
             id: emergency_id,
             infoType: '应急物资',
             name: emergency_equipment_name,
             expiredType: '检验日期',
-            expireDate: check_date,
+            expireDate: end_time,
             expiredDays,
           });
         }
