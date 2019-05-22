@@ -56,7 +56,7 @@ const COMPOSITION_ICON_STYLES = [
 const lineStyle = { color: 'rgb(64, 95, 135)' };
 // 获取偏移天数
 const getOffsetDays = ({ nextCheckDate }) => {
-  return nextCheckDate ? Math.abs(moment().diff(moment(+nextCheckDate), 'days')) : '';
+  return nextCheckDate ? Math.abs(moment().startOf('day').diff(moment(+nextCheckDate), 'days')) : '';
 };
 // 默认每页显示数量
 const DEFAULT_PAGE_SIZE = 10;
@@ -194,26 +194,40 @@ export default class SafetyIndexDrawer extends PureComponent {
   };
 
   /**
+   * 切换上一张图片
+   */
+  handlePrevImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage - 1,
+    }));
+  };
+
+  /**
+   * 切换下一张图片
+   */
+  handleNextImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage + 1,
+    }));
+  };
+
+  /**
    * 图片详情
    */
   renderImageDetail() {
     const { images, currentImage } = this.state;
-    return (
-      images &&
-      images.length > 0 &&
-      images[0] && (
-        <Lightbox
-          images={images.map(src => ({ src }))}
-          isOpen={true}
-          closeButtonTitle="关闭"
-          currentImage={currentImage}
-          // onClickPrev={this.handlePrevImage}
-          // onClickNext={this.handleNextImage}
-          onClose={this.handleClose}
-          onClickThumbnail={this.handleSwitchImage}
-          showThumbnails
-        />
-      )
+    return images && images.length > 0 && images[0] && (
+      <Lightbox
+        images={images.map((src) => ({ src }))}
+        isOpen={true}
+        closeButtonTitle="关闭"
+        currentImage={currentImage}
+        onClickPrev={this.handlePrevImage}
+        onClickNext={this.handleNextImage}
+        onClose={this.handleClose}
+        onClickThumbnail={this.handleSwitchImage}
+        showThumbnails
+      />
     );
   }
 

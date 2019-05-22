@@ -153,7 +153,7 @@ const renderRiskPoint = ({
 );
 // 获取偏移天数
 const getOffsetDays = ({ nextCheckDate }) => {
-  return nextCheckDate ? Math.abs(moment().diff(moment(+nextCheckDate), 'days')) : '';
+  return nextCheckDate ? Math.abs(moment().startOf('day').diff(moment(+nextCheckDate), 'days')) : '';
 };
 
 /**

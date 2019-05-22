@@ -47,7 +47,7 @@ const OFF_GUARD = 'offGuardWarning';
 const VIDEO_LOOK_UP = 'videoLookUp';
 const VIDEO_ALARM = 'videoAlarm';
 
-const DELAY = 2000;
+const DELAY = 5000;
 const LOOKING_UP_DELAY = 5000;
 
 message.config({
