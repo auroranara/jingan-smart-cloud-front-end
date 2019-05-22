@@ -166,7 +166,7 @@ const RED = '#ff4905';
 const COLORS = [RED, ORANGE, GREEN, ORANGE, RED];
 export function getLineColor1(limit, isOutOfContact, end) {
   if (isOutOfContact)
-    return [1, '#ccc'];
+    return [[1, '#ccc']];
 
   const [[warn1, warn2], [alarm1, alarm2]] = limit;
   const splits = [alarm1, warn1, warn2, alarm2].map(n => n ? n / end : null);
