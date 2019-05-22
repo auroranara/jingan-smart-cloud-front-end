@@ -364,7 +364,7 @@ export default class SafetyIndexDrawer extends PureComponent {
         count = `共有${total}个隐患，其中${ycq}个已超期`;
         break;
       case 2:
-        count = `共有${alarm.length}个报警设备，${loss.length}个失联设备`;
+        count = `共有${alarm.length}个报警设备，${loss.length}个故障设备`;
         break;
       case 3:
         count = `共有${safeList.length}个过期信息`;
@@ -394,7 +394,6 @@ export default class SafetyIndexDrawer extends PureComponent {
         safeList,
       },
     } = this.props;
-    console.log('abnormalPointList', abnormalPointList);
     const { currentTabIndex } = this.state;
     let Item,
       list = [],

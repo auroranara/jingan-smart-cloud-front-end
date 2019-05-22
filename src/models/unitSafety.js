@@ -61,10 +61,10 @@ function handleRiskList(response) {
   return result;
 }
 const WATER_SYSTEM = ['消火栓系统', '喷淋系统', '水池/水箱'];
-function handleMonitorList({ lossDevice, abnormalDevice }) {
+function handleMonitorList({ lossDevice, abnormalDevice, faultDevice }) {
   const alarm = Array.isArray(abnormalDevice)
     ? abnormalDevice.map(
-      ({ deviceId, deviceName, relationDeviceId, area, location, unormalParams, typeName, statusTime, boxNo, unitTypeName, loopNumber, partNumber }) => ({
+      ({ deviceId, deviceName, relationDeviceId, area, location, unormalParams, typeName, statusTime, boxNo, componentType, loopNumber, partNumber }) => ({
         id: deviceId,
         monitoringType: WATER_SYSTEM.includes(typeName) ? '水系统监测' : typeName,
         relationId: relationDeviceId,
@@ -75,14 +75,14 @@ function handleMonitorList({ lossDevice, abnormalDevice }) {
         name: deviceName,
         system: typeName,
         number: boxNo,
-        partType: unitTypeName,
+        partType: componentType,
         loopNumber: loopNumber,
         partNumber: partNumber,
       }))
     : [];
   const loss = Array.isArray(lossDevice)
     ? lossDevice.map(
-      ({ deviceId, deviceName, relationDeviceId, area, location, statusTime, typeName, boxNo, unitTypeName, loopNumber, partNumber }) => ({
+      ({ deviceId, deviceName, relationDeviceId, area, location, statusTime, typeName, boxNo, componentType, loopNumber, partNumber }) => ({
         id: deviceId,
         monitoringType: WATER_SYSTEM.includes(typeName) ? '水系统监测' : typeName,
         relationId: relationDeviceId,
@@ -92,13 +92,29 @@ function handleMonitorList({ lossDevice, abnormalDevice }) {
         name: deviceName,
         system: typeName,
         number: boxNo,
-        partType: unitTypeName,
+        partType: componentType,
         loopNumber: loopNumber,
         partNumber: partNumber,
       })
     )
     : [];
-
+  const fault = Array.isArray(faultDevice) ? faultDevice.map(
+    ({ deviceId, deviceName, relationDeviceId, area, location, statusTime, typeName, boxNo, componentType, loopNumber, partNumber }) => ({
+      id: deviceId,
+      monitoringType: WATER_SYSTEM.includes(typeName) ? '水系统监测' : typeName,
+      relationId: relationDeviceId,
+      statuses: [-3],
+      location: [area, location].filter(v => v).join('-'),
+      time: statusTime,
+      name: deviceName,
+      system: typeName,
+      number: boxNo,
+      partType: componentType,
+      loopNumber: loopNumber,
+      partNumber: partNumber,
+    })
+  ) : [];
+  loss.push(...fault);
 
   alarm.sort(({ time: a }, { time: b }) => b - a);
   loss.sort(({ time: a }, { time: b }) => b - a);
@@ -526,10 +542,16 @@ export default {
     // 安全人员
     *fetchSafetyOfficer({ payload, callback }, { call, put }) {
       const response = yield call(getSafetyOfficer, payload);
-      yield put({
-        type: 'save',
-        payload: { safetyOfficer: response },
-      });
+      if (response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { safetyOfficer: Object.entries(response.data.roleMap || {}).reduce((result, [key, value]) => {
+            result.keyList.push(key);
+            result.valueList.push(value || []);
+            return result;
+          }, { keyList: [], valueList: [] }) },
+        });
+      }
       if (callback) {
         callback(response);
       }

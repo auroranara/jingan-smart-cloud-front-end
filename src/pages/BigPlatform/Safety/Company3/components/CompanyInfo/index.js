@@ -30,12 +30,14 @@ export default class CompanyInfo extends PureComponent {
             headOfSecurityPhone,
             // 风险点总数
             countCheckItem,
-            // 安全人员总数
-            countCompanyUser,
           },
           // 是否是重点企业
           isImportant,
         },
+        // 安全人员
+        safetyOfficer: {
+          valueList=[],
+        }={},
         // 特种设备统计
         specialEquipmentCount,
         // 隐患列表
@@ -54,6 +56,9 @@ export default class CompanyInfo extends PureComponent {
     } = this.props;
     // 安全指数图颜色
     const color = safetyIndex >= 80 ? '#00a8ff' : '#ff4848';
+    const countCompanyUser = (valueList || []).reduce((total, value) => {
+      return total + (value ? value.length : 0);
+    }, 0);
 
     return (
       <Section extra={isImportant && <div className={styles.importantUnit}>重点单位</div>}>

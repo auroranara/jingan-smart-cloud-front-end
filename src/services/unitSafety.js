@@ -64,7 +64,7 @@ export async function getStaffRecords(params) {
 
 // 获取安全人员信息
 export async function getSafetyOfficer(params) {
-  return request(`/acloud_new/v2/sfc/showSafePerson.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/sfc/showSafePersonNew.json?${stringify(params)}`);
 }
 
 /**
