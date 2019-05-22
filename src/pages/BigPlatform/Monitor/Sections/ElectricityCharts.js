@@ -65,7 +65,7 @@ class ElectricityCharts extends PureComponent {
           .map(item => {
             return `${item.marker}<span style="color: ${
               item.color === '#e01919' ? '#e01919' : '#fff'
-            }">${item.seriesName}：${item.value[1]}</span>`;
+              }">${item.seriesName}：${item.value[1]}</span>`;
           })
           .join('<br/>')
       );
@@ -73,7 +73,7 @@ class ElectricityCharts extends PureComponent {
       return (
         `${moment(params.name).format('HH:mm')}<br/>` +
         `${params.marker}<span style="color: ${params.color === '#e01919' ? '#e01919' : '#fff'}">${
-          params.seriesName
+        params.seriesName
         }：${params.value[1]}</span><br/>`
       );
     }
@@ -600,6 +600,7 @@ class ElectricityCharts extends PureComponent {
               value={selectVal}
               onSelect={handleSelect}
               dropdownClassName={styles.selectDropDown}
+              style={{ width: '140px' }}
             >
               {list.map(({ deviceId, area, location }) => (
                 <Option key={deviceId}>{`${area}：${location}`}</Option>
@@ -618,16 +619,16 @@ class ElectricityCharts extends PureComponent {
               onChartReady={this.onChartReadyCallback}
             />
           ) : (
-            <div
-              className={styles.noCards}
-              style={{
-                background: `url(${waterBg})`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center center',
-                backgroundSize: 'auto 55%',
-              }}
-            />
-          )}
+              <div
+                className={styles.noCards}
+                style={{
+                  background: `url(${waterBg})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center center',
+                  backgroundSize: 'auto 55%',
+                }}
+              />
+            )}
         </SectionWrapper>
       </div>
     );
