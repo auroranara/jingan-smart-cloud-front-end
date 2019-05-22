@@ -28,11 +28,7 @@ const HIDDEN_DANGER_FIELDNAMES = {
   status: 'hiddenStatus', // 隐患状态
   type: 'business_type', // 隐患类型
   description: '_desc', // 隐患描述
-  images(item) {
-    let { path } = item;
-    path = (path || '').split(',');
-    return path;
-  }, // 图片地址
+  images: 'paths', // 图片地址
   name: 'object_title', // 点位名称
   source: 'report_source', // 来源
   reportPerson: '_report_user_name', // 上报人
