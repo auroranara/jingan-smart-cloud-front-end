@@ -400,7 +400,7 @@ export default {
     // 获取视频列表
     *fetchVideoList({ payload, callback }, { call, put }) {
       const response = yield call(getVideoList, payload);
-      yield put({ type: 'save', payload: { videoList: response.list } });
+      yield put({ type: 'save', payload: { videoList: (response.list || []).filter(({ x_num, y_num }) => x_num && y_num) } });
       if (callback) callback(response.list);
     },
     // 获取视频树
