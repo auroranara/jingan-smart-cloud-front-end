@@ -59,6 +59,7 @@ export default class LeafletMap extends PureComponent {
       'movingCards',
       'aggregation',
       'positions',
+      'beaconList',
     ];
     // 状态变化对象，变化的为true
     const states = props.reduce((prev, next) => {
@@ -70,7 +71,8 @@ export default class LeafletMap extends PureComponent {
 
     if (states.areaId || states.sectionTree || states.highlightedAreaId)
       this.handleMapData();
-    if (states.aggregation || states.areaId || states.areaInfo || states.isTrack || states.selectedCardId || states.positions || states.movingIds || isBeaconOnChanged)
+    if (states.aggregation || states.areaId || states.areaInfo || states.isTrack || states.selectedCardId
+      || states.positions || states.movingIds || states.beaconList || isBeaconOnChanged)
       this.setState({ positionIcons: this.positionsToIcons() });
     if (states.movingCards || states.areaId || states.areaInfo || states.isTrack || states.selectedCardId)
       this.setState({ movingIcons: this.movingCardsToIcons() });
