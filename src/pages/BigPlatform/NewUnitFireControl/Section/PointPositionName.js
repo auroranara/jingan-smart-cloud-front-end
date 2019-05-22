@@ -13,7 +13,6 @@ import DrawerContainer from '../components/DrawerContainer';
 import hasDanger from '../imgs/hasDanger.png';
 import noDanger from '../imgs/noDanger.png';
 
-
 const isVague = false;
 function nameToVague(str) {
   let newStr = '';
@@ -38,11 +37,15 @@ const columns = [
   },
   {
     title: '巡查人',
-    dataIndex: 'user_name',
-    key: 'user_name',
+    dataIndex: 'check_user_names',
+    key: 'check_user_names',
     align: 'center',
     render: val => {
-      return isVague ? nameToVague(val) : val;
+      return (
+        <Ellipsis length={5} tooltip>
+          {isVague ? nameToVague(val) : val}
+        </Ellipsis>
+      );
     },
   },
   {

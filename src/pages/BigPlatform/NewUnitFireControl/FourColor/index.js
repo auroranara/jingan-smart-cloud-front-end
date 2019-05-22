@@ -179,7 +179,7 @@ export default class FourColor extends PureComponent {
         data: { item_id: prevItemId },
       },
     } = layer;
-    const { object_title, checkName, check_date, dangerCount, originalStatus } =
+    const { object_title, checkName, checkNames, check_date, dangerCount, originalStatus } =
       this.state.points.find(({ item_id }) => prevItemId === item_id) || {};
     // 是否为异常状态
     const isAbnormal = +originalStatus === 2;
@@ -205,7 +205,7 @@ export default class FourColor extends PureComponent {
           isChecked
             ? `
           <div>
-            最近检查：${checkName ? checkName : '暂无数据'} ${
+            最近检查：${checkNames ? checkNames : checkName ? checkName : '暂无数据'} ${
                 check_date ? moment(check_date).format('YYYY-MM-DD') : ''
               }
           </div>
