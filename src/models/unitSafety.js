@@ -65,11 +65,11 @@ function handleMonitorList({ lossDevice, abnormalDevice, faultDevice }) {
   const alarm = Array.isArray(abnormalDevice)
     ? abnormalDevice.map(
       ({ deviceId, deviceName, relationDeviceId, area, location, unormalParams, typeName, statusTime, boxNo, componentType, loopNumber, partNumber }) => ({
-        id: deviceId,
+        id: `${deviceId}_alarm`,
         monitoringType: WATER_SYSTEM.includes(typeName) ? '水系统监测' : typeName,
         relationId: relationDeviceId,
         params: unormalParams,
-        statuses: [2],
+        status: 2,
         location: [area, location].filter(v => v).join('-'),
         time: statusTime,
         name: deviceName,
@@ -83,10 +83,10 @@ function handleMonitorList({ lossDevice, abnormalDevice, faultDevice }) {
   const loss = Array.isArray(lossDevice)
     ? lossDevice.map(
       ({ deviceId, deviceName, relationDeviceId, area, location, statusTime, typeName, boxNo, componentType, loopNumber, partNumber }) => ({
-        id: deviceId,
+        id: `${deviceId}_loss`,
         monitoringType: WATER_SYSTEM.includes(typeName) ? '水系统监测' : typeName,
         relationId: relationDeviceId,
-        statuses: [-1],
+        status: -1,
         location: [area, location].filter(v => v).join('-'),
         time: statusTime,
         name: deviceName,
@@ -100,10 +100,10 @@ function handleMonitorList({ lossDevice, abnormalDevice, faultDevice }) {
     : [];
   const fault = Array.isArray(faultDevice) ? faultDevice.map(
     ({ deviceId, deviceName, relationDeviceId, area, location, statusTime, typeName, boxNo, componentType, loopNumber, partNumber }) => ({
-      id: deviceId,
+      id: `${deviceId}_fault`,
       monitoringType: WATER_SYSTEM.includes(typeName) ? '水系统监测' : typeName,
       relationId: relationDeviceId,
-      statuses: [-3],
+      status: -3,
       location: [area, location].filter(v => v).join('-'),
       time: statusTime,
       name: deviceName,

@@ -111,7 +111,7 @@ export default class Dashboard extends PureComponent {
 
     // 企业url
     const safeUrl = `${window.publicPath}#/big-platform/safety/company/${companyId}`;
-    const fireUrl = `${window.publicPath}#/big-platform/fire-control/new-company/${companyId}`;
+    const fireUrl = `${window.publicPath}#/big-platform/fire-control/company/${companyId}`;
     const monitorUrl = `${window.publicPath}#/big-platform/monitor/company/${companyId}`;
     const positionUrl = `${window.publicPath}#/big-platform/position/${companyId}`;
     const fireMaintenanceUrl = `${
@@ -226,30 +226,42 @@ export default class Dashboard extends PureComponent {
 
     return (
       <div className={styles.container}>
-        {imgWrapper.reduce((result, item, index) => {
-          const i = Math.floor(index / 3);
-          if (result[i]) {
-            result[i].push(item);
-          } else {
-            result[i] = [item];
-          }
-          return result;
-        }, []).map((list) => {
-          return (
-            <div className={styles.list} key={list[0].label}>
-              {list.map(({ src, url, label }) => {
-                return (
-                  <div key={label} className={styles.itemWrapper}>
-                    <a href={url} target="_blank" rel="noopener noreferrer" className={styles.item}>
-                      <div className={styles.itemIconWrapper}><div className={styles.itemIcon} style={{ backgroundImage: `url(${src})` }} /></div>
-                      <div className={styles.itemLabel}>{label}</div>
-                    </a>
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })}
+        {imgWrapper
+          .reduce((result, item, index) => {
+            const i = Math.floor(index / 3);
+            if (result[i]) {
+              result[i].push(item);
+            } else {
+              result[i] = [item];
+            }
+            return result;
+          }, [])
+          .map(list => {
+            return (
+              <div className={styles.list} key={list[0].label}>
+                {list.map(({ src, url, label }) => {
+                  return (
+                    <div key={label} className={styles.itemWrapper}>
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.item}
+                      >
+                        <div className={styles.itemIconWrapper}>
+                          <div
+                            className={styles.itemIcon}
+                            style={{ backgroundImage: `url(${src})` }}
+                          />
+                        </div>
+                        <div className={styles.itemLabel}>{label}</div>
+                      </a>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
       </div>
     );
   }

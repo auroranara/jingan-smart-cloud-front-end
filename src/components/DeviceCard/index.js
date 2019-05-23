@@ -46,7 +46,7 @@ export default class DeviceCard extends BigPlatformCard {
     name: 'name', // 传感器名称
     relationId: 'relationId', // 传感器id或主机编号
     location: 'location', // 区域位置
-    statuses: 'statuses', // 状态
+    status: 'status', // 状态
     params: 'params', // 参数
     time: 'time', // 报警时间
     system: 'system', // 设备系统
@@ -118,34 +118,22 @@ export default class DeviceCard extends BigPlatformCard {
     },
     {
       label: '状态',
-      render({ statuses=[], params, monitoringType }) {
-        if (monitoringType === FIRE_ENGINE) {
-          statuses = params && params.split('，');
-          params = null;
+      render({ status, params, monitoringType }) {
+        if (monitoringType === FIRE_ENGINE && status === 2) {
+          status = '火警';
         }
-        return statuses && statuses.length > 0 && statuses.map((status) => {
-          const label = STATUS_DICT[status];
-          return label && (
-            <div className={styles.statusItem} key={label}>
-              <div className={styles.statusItemIcon} style={{ backgroundColor: STATUS_COLOR[status] }} />
-              <div className={styles.statusItemLabel}>{label}{params && `（${params}）`}</div>
-            </div>
-          );
-        });
+        const label = STATUS_DICT[status];
+        return label && (
+          <div className={styles.statusItem}>
+            <div className={styles.statusItemIcon} style={{ backgroundColor: STATUS_COLOR[status] }} />
+            <div className={styles.statusItemLabel}>{label}{status === 2 && params && `（${params}）`}</div>
+          </div>
+        );
       },
       className: classNames(styles.row, styles.statusRow),
     },
     {
-      label({ statuses=[] }) {
-        const labels = statuses && statuses.length > 0 ? statuses.reduce((result, status) => {
-          const label = STATUS_DICT[status];
-          if (label) {
-            result.push(label);
-          }
-          return result;
-        }, []) : [];
-        return labels.length > 0 ? `${labels.join('/')}时间` : '发生时间';
-      },
+      label: ({ status }) => STATUS_DICT[status] ? `${STATUS_DICT[status]}时间` : '发生时间',
       render: ({ time }) => time && moment(+time).format(TIME_FORMAT),
       className: styles.row,
     },
