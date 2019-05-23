@@ -593,6 +593,7 @@ export default class App extends PureComponent {
                   smokeCountData={smokeCount}
                   companyId={companyId}
                 />
+                {/* 电气火灾监测 */}
                 <Col span={11} style={{ height: '100%' }}>
                   <div style={{ height: '100%', width: '100%' }}>
                     <ElectricityCharts
@@ -611,6 +612,7 @@ export default class App extends PureComponent {
                 </Col>
               </Row>
               <Row gutter={12} style={{ paddingTop: 6, height: '50%' }}>
+                {/* 可燃/有毒气体监测 */}
                 <Col span={8} style={{ height: '100%' }}>
                   <FcModule isRotated={gasRotated} style={{ height: '100%' }}>
                     <GasSection handleClick={this.handleGasNumClick} data={gasCount} />
@@ -623,6 +625,7 @@ export default class App extends PureComponent {
                     />
                   </FcModule>
                 </Col>
+                {/* 废水监测 */}
                 <Col span={8} style={{ height: '100%' }}>
                   <EffluentMonitor
                     selectVal={waterSelectVal}
@@ -630,6 +633,7 @@ export default class App extends PureComponent {
                     data={{ waterCompanyDevicesData, waterDeviceConfig, waterRealTimeData }}
                   />
                 </Col>
+                {/* 废气监测 */}
                 <Col span={8} style={{ height: '100%' }}>
                   <ExhaustMonitor
                     selectVal={exhaustSelectVal}

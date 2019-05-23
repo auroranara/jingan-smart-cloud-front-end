@@ -84,6 +84,7 @@ export default class VideoEquipmentList extends PureComponent {
     keyId: undefined,
     checkedArray: [],
     loadingArray: [],
+    deviceId: undefined,
   };
 
   // 生命周期函数
@@ -178,13 +179,13 @@ export default class VideoEquipmentList extends PureComponent {
   };
 
   // 显示视频模态框
-  videoOnClick = keyId => {
-    this.setState({ videoVisible: true, keyId: keyId });
+  videoOnClick = (keyId, deviceId) => {
+    this.setState({ videoVisible: true, keyId: keyId, deviceId: deviceId });
   };
 
   // 关闭视频模态框
   handleVideoClose = () => {
-    this.setState({ videoVisible: false, keyId: undefined });
+    this.setState({ videoVisible: false, keyId: undefined, deviceId: undefined });
   };
 
   /* 渲染form表单 */
@@ -395,7 +396,7 @@ export default class VideoEquipmentList extends PureComponent {
                     <Col span={8} style={{ cursor: 'pointer' }}>
                       <span
                         onClick={() => {
-                          this.videoOnClick(keyId);
+                          this.videoOnClick(keyId, deviceId);
                         }}
                         className={styles.quantity}
                         style={{ backgroundImage: `url(${videoIcon})` }}
@@ -421,9 +422,7 @@ export default class VideoEquipmentList extends PureComponent {
         query: { name: equipmentListName },
       },
     } = this.props;
-
-    const { total, videoVisible, keyId } = this.state;
-
+    const { total, videoVisible, keyId, deviceId } = this.state;
     const content =
       list && list.length ? (
         <span>
@@ -446,6 +445,7 @@ export default class VideoEquipmentList extends PureComponent {
           showList={false}
           videoList={[]}
           keyId={keyId}
+          deviceId={deviceId}
           handleVideoClose={this.handleVideoClose}
         />
       </PageHeaderLayout>
