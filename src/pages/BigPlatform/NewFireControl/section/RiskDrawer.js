@@ -49,11 +49,11 @@ export default class RiskDrawer extends PureComponent {
           </div>
         </div>
         <div className={styles.cards}>
-          {list.map(({ item_id, object_title, userNames, check_date, status }) => (
+          {list.map(({ item_id, object_title, user_name, userNames, check_date, status }) => (
             <RiskCard
               key={item_id}
               point={object_title || NO_DATA}
-              examiner={userNames || NO_DATA}
+              examiner={userNames || user_name || NO_DATA}
               date={check_date || NO_DATA}
               status={status}
             />
