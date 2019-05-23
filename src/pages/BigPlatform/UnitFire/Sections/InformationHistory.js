@@ -183,6 +183,7 @@ export default class InformationHistory extends PureComponent {
       icon,
       ntype = null,
       fire_state = null,
+      isCompany = null,
     } = newItem;
     return pendingInfoType === '一键报修' ? (
       <Col key={id} span={24} className={styles.alarmItem}>
@@ -220,8 +221,8 @@ export default class InformationHistory extends PureComponent {
           </div>
         </div>
         {/* <div className={styles.topRightPurpleTag}>指派维保</div> */}
-        {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>维保处理</div>}
-        {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>业主处理</div>}
+        {ntype && +ntype === 4 && <div className={styles.topRightPurpleTag}>维保处理</div>}
+        {ntype && +ntype === 3 && <div className={styles.topRightBlueTag}>业主处理</div>}
       </Col>
     ) : (
         <Col key={id} span={24} className={styles.alarmItem}>
@@ -268,8 +269,8 @@ export default class InformationHistory extends PureComponent {
               </div>
             </div>
           </div>
-          {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>维保处理</div>}
-          {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>业主处理</div>}
+          {isCompany && +isCompany === 0 && <div className={styles.topRightPurpleTag}>维保处理</div>}
+          {isCompany && +isCompany === 1 && <div className={styles.topRightBlueTag}>业主处理</div>}
         </Col>
       );
   };
