@@ -1,0 +1,41 @@
+.container {
+  position: relative;
+  padding: 1em;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #fff;
+  background-color: #033069;
+  border: 1px solid #0ff;
+}
+.row {
+  display: flex;
+  padding: 0.25em 0;
+  .labelContainer {
+    flex: none;
+    color: #0ff;
+    .labelWrapper {
+      display: inline-block;
+      // width: 4em;
+      white-space: nowrap;
+      vertical-align: top;
+    }
+  }
+  .valueContainer {
+    flex: 1;
+    padding-left: 0.25em;
+    word-break: break-all;
+  }
+}
+
+@media screen and (max-width: 1599px) and (min-width: 1400px) {
+  .container {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 1399px) {
+  .container {
+    font-size: 12px;
+  }
+}
+

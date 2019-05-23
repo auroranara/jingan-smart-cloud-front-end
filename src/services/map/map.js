@@ -45,3 +45,8 @@ export async function updateGridPoints(params) {
     body: params,
   })
 }
+
+// 获取同级别其他网格
+export async function fetchOtherGridPoints(params) {
+  return request(`/acloud_new/v2/gridInfo/getMapLocationOther?${stringify(params)}`)
+}

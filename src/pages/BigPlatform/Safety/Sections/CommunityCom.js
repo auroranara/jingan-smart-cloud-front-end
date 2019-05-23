@@ -14,7 +14,9 @@ class CommunityCom extends PureComponent {
     this.handleInit();
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
 
   getSnapshotBeforeUpdate(prevProps, prevState) {
     return (
@@ -37,18 +39,18 @@ class CommunityCom extends PureComponent {
     const speed = 50;
     // if (this.scrollNode.clientHeight >= this.tableNode.scrollHeight) return;
 
-    let timer = window.setInterval(() => {
+    this.timer = window.setInterval(() => {
       this.scrollup(this.scrollNode);
     }, speed);
 
     this.scrollNode.onmouseover = () => {
       //清除定时器
-      clearInterval(timer);
+      clearInterval(this.timer);
     };
 
     this.scrollNode.onmouseout = () => {
       //添加定时器
-      timer = window.setInterval(() => {
+      this.timer = window.setInterval(() => {
         this.scrollup(this.scrollNode);
       }, speed);
     };
@@ -60,7 +62,7 @@ class CommunityCom extends PureComponent {
     if (scroll.scrollTop >= scroll.scrollHeight / 2) {
       scroll.scrollTop = 0;
     } else {
-      scroll.scrollTop++;
+      scroll.scrollTop += 2;
     }
   };
 
@@ -106,7 +108,7 @@ class CommunityCom extends PureComponent {
         axisLine: {
           show: false,
           lineStyle: {
-            color: ['rgb(2,28,66)'],
+            color: ['#174073'],
             width: 2,
           },
         },
@@ -141,7 +143,7 @@ class CommunityCom extends PureComponent {
         axisLine: {
           show: true,
           lineStyle: {
-            color: ['rgb(2,28,66)'],
+            color: ['#174073'],
             width: 2,
           },
         },
@@ -242,7 +244,11 @@ class CommunityCom extends PureComponent {
                 </thead>
               </table>
 
-              <div className={styles.scrollWrapper} ref={node => (this.scrollNode = node)}>
+              <div
+                className={styles.scrollWrapper}
+                id="scroll"
+                ref={node => (this.scrollNode = node)}
+              >
                 <div className={styles.tableWrapper}>
                   <table className={styles.safeTable}>
                     <tbody>{this.renderTable()}</tbody>

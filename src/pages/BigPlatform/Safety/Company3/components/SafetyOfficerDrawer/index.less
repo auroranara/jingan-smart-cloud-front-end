@@ -1,43 +1,38 @@
-.container {
-  padding: 0 16px;
-}
-.countContainer {
-  height: 112px;
-}
-.scrollContainer {
-  height: calc(~'100% - 112px') !important;
-}
-.overflow {
+.overflow() {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.container {
+  padding: 0 1em;
+}
+.scrollContainer {
+  height: calc(~'100% - 6em') !important;
+}
+/* 人员统计 */
 .personWrapper {
-  padding: 16px 0;
-}
+  padding-bottom: 1em;
+  .person {
+    display: flex;
+    padding: 0.5em 0 0.5em 2em;
 
-.person {
-  display: flex;
-  padding: 12px 0 12px 32px;
-  font-size: 16px;
-  line-height: 1;
-
-  .personName {
-    width: 92px;
-    color: #00ffff;
-    .overflow;
-  }
-  .personValue {
-    flex: 1;
-    .overflow;
+    .personName {
+      width: 6em;
+      color: #00ffff;
+      .overflow;
+    }
+    .personValue {
+      flex: 1;
+      .overflow;
+    }
   }
 }
 
+/* 人员列表 */
 .personList {
   position: relative;
-  margin-bottom: 14px;
-  padding-left: 26px;
-  padding-right: 90px;
+  margin-bottom: 1em;
+  padding-left: 1.5em;
   border-left: 6px solid #fff;
   background-color: rgb(4, 64, 125);
 
@@ -47,8 +42,7 @@
 
   .personItem {
     display: flex;
-    font-size: 16px;
-    line-height: 48px;
+    padding: 0.75em 0;
     overflow: hidden;
 
     .personItemName {
@@ -64,16 +58,15 @@
 
   .personLabel {
     position: absolute;
-    top: 12px;
-    right: 8px;
-    padding: 4px 0;
-    width: 82px;
-    height: 26px;
-    font-size: 14px;
-    line-height: 1;
+    top: 0.5em;
+    right: 0.5em;
+    padding: 0.25em;
+    min-width: 5em;
+    white-space: nowrap;
     text-align: center;
     color: #00ffff;
     border: 1px solid #00ffff;
     border-radius: 4px;
+    box-sizing: content-box;
   }
 }

@@ -25,17 +25,20 @@ export default function OverviewBackSection(props) {
         todayCount = 0,
         thisWeekCount = 0,
         thisMonthCount = 0,
-        safetyOfficer = 0,
+        // safetyOfficer = 0,
         riskPointer = 0,
         totalDanger = 0,
         overdueNum = 0,
         rectifyNum = 0,
         reviewNum = 0,
       } = {},
+      safeMan,
     },
     handleShowUnitDanger,
     handleDrawerVisibleChange,
   } = props;
+
+  const safetyOfficer = Object.values(safeMan).reduce((prev, next) => prev + (Array.isArray(next) ? next.length : 0), 0);
 
   return (
     <FcSection style={{ padding: 0 }} isBack>

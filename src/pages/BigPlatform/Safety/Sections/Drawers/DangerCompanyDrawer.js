@@ -25,26 +25,30 @@ class DangerCompanyDrawer extends PureComponent {
     const param = lastSection === 'checks' ? { date: month } : {};
     if (lastSection === 'checks') {
       dispatch({
-        type: 'bigPlatform/fetchHiddenDangerListByDate',
+        type: 'bigPlatform/fetchHiddenDangerListByDateForPage',
         payload: {
           company_id: id,
           reportUserId: checkUserId,
           ...param,
           gridId,
           status,
+          pageNum: 1,
+          pageSize: 10,
         },
       });
     } else {
       dispatch({
-        type: 'bigPlatform/fetchRiskDetail',
+        type: 'bigPlatform/fetchHiddenDangerListForPage',
         payload: {
           company_id: id,
           gridId,
           status,
+          pageNum: 1,
+          pageSize: 10,
         },
       });
     }
-    handleParentChange({ dangerInfo: true });
+    handleParentChange({ dangerInfo: true, companyId: id });
     if (document.querySelector('#hiddenDanger')) {
       document.querySelector('#hiddenDanger').scrollTop = 0;
     }

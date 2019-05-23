@@ -8,7 +8,6 @@ import styles from './index.less';
 
 const { Option } = Select;
 
-
 const isVague = false;
 function nameToVague(str) {
   let newStr = '';
@@ -20,7 +19,6 @@ function nameToVague(str) {
   } else return str;
   return newStr;
 }
-
 
 /**
  * description: 点位巡查抽屉
@@ -167,10 +165,12 @@ export default class PointInspectionDrawer extends PureComponent {
                       object_title,
                       check_date,
                       checkName,
+                      checkNames,
                       status,
                       hiddenDangerCount,
                     }) => {
                       const isAbnormal = status === 2;
+                      const check_user_name = checkNames ? checkNames : checkName ? checkName : '';
                       return (
                         <div className={styles.card} key={item_id}>
                           <div className={styles.cardItem}>
@@ -193,7 +193,7 @@ export default class PointInspectionDrawer extends PureComponent {
                             <div className={styles.cardItemLabel}>巡查人：</div>
                             <div className={styles.cardItemValue}>
                               <Ellipsis style={{ height: '1em' }} tooltip lines={1}>
-                                {isVague ? nameToVague(checkName) : checkName}
+                                {isVague ? nameToVague(check_user_name) : check_user_name}
                               </Ellipsis>
                             </div>
                           </div>

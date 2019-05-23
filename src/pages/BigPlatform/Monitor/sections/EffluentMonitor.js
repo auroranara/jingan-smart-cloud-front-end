@@ -48,7 +48,7 @@ export default function EffluentMonitor(props) {
   const sectionStyle = {
     boxShadow: `0 0 1.1em rgba(${
       status === '1' || status === '2' ? '200,70,70' : '9,103,211'
-    }, 0.9) inset`,
+      }, 0.9) inset`,
   };
 
   return (
@@ -60,6 +60,7 @@ export default function EffluentMonitor(props) {
               value={selectVal}
               onSelect={handleSelect}
               dropdownClassName={styles.selectDropDown}
+              style={{ width: '140px' }}
             >
               {list.map(({ deviceId, area, location }) => (
                 <Option key={deviceId}>{`${area}：${location}`}</Option>
@@ -103,16 +104,16 @@ export default function EffluentMonitor(props) {
           ))}
         </section>
       ) : (
-        <div
-          className={styles.noCards}
-          style={{
-            background: `url(${waterBg})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center center',
-            backgroundSize: '40% 55%',
-          }}
-        />
-      )}
+          <div
+            className={styles.noCards}
+            style={{
+              background: `url(${waterBg})`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center center',
+              backgroundSize: '40% 55%',
+            }}
+          />
+        )}
     </ExSection>
   );
 }

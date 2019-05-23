@@ -13,6 +13,7 @@ import {
   SafeCard,
   Solar,
 } from '../components/Components';
+import indexBg from '../../img/indexBg.png';
 
 const TYPE = 'index';
 const LOSS_STATUS = 3;
@@ -59,9 +60,12 @@ export default class IndexDrawer extends PureComponent {
   };
 
   handleLoadMore = () => {
-    const { getDangerList, data: { dangerList: { pagination: { pageNum=1 }={} }={} } } = this.props;
+    const {
+      getDangerList,
+      data: { dangerList: { pagination: { pageNum = 1 } = {} } = {} },
+    } = this.props;
     getDangerList({ pageNum: pageNum + 1 });
-  }
+  };
 
   render() {
     const {
@@ -71,13 +75,9 @@ export default class IndexDrawer extends PureComponent {
         safetyIndexes,
         riskList,
         dangerList: {
-          list: hiddenDangerList=[],
-          pagination: {
-            total=0,
-            pageNum=0,
-            pageSize=0,
-          }={},
-        }={},
+          list: hiddenDangerList = [],
+          pagination: { total = 0, pageNum = 0, pageSize = 0 } = {},
+        } = {},
         monitorList,
         safeList,
         hiddenDangerCount,
@@ -111,7 +111,7 @@ export default class IndexDrawer extends PureComponent {
 
     const list = [riskList, hiddenDangerList, monitorList, safeList][selected];
     const CardComponent = CARD_COMPONENTS[selected];
-    let cards = <p className={styles.empty}>暂无信息</p>;
+    let cards = <p style={{ backgroundImage: `url(${indexBg})` }} className={styles.empty} />;
     if (list.length)
       cards = list.map((item, i) => (
         <CardComponent key={item.id || item.item_id || i} data={item} />
@@ -134,9 +134,12 @@ export default class IndexDrawer extends PureComponent {
           </div>
           <p className={styles.desc}>{desc}</p>
           <div className={styles.cards}>
-              {cards}
-              {selected === 1 && pageNum * pageSize < total && (
-                <div style={{ textAlign: 'center' }}><LoadMoreButton onClick={this.handleLoadMore} /></div>
+            {cards}
+            {selected === 1 &&
+              pageNum * pageSize < total && (
+                <div style={{ textAlign: 'center' }}>
+                  <LoadMoreButton onClick={this.handleLoadMore} />
+                </div>
               )}
           </div>
         </Spin>

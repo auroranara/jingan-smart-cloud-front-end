@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
-import { Drawer } from 'antd';
+import { Drawer, Spin } from 'antd';
 import CompanyRisk from '../../Components/CompanyRisk';
+import LoadMoreButton from '../../Company3/components/LoadMoreButton';
 import styles from '../../Government.less';
 
 class DangerInfo extends PureComponent {
@@ -13,6 +14,11 @@ class DangerInfo extends PureComponent {
 
   componentWillUnmount() {}
 
+  handleLoadMore = pageNum => {
+    const { handleLoadHiddenList } = this.props;
+    handleLoadHiddenList(pageNum + 1);
+  };
+
   render() {
     const {
       visible,
@@ -20,10 +26,22 @@ class DangerInfo extends PureComponent {
       lastSection,
       hiddenDangerListByDate,
       riskDetailList,
+      loading,
     } = this.props;
-    let dataList = [];
+    let dataList = {
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+      list: [],
+    };
     if (lastSection === 'checks') dataList = hiddenDangerListByDate;
     else dataList = riskDetailList;
+    const {
+      pagination: { total, pageNum, pageSize },
+      list,
+    } = dataList;
     return (
       <div>
         <Drawer
@@ -58,7 +76,18 @@ class DangerInfo extends PureComponent {
                   <div className={styles.sectionMain}>
                     <div className={styles.sectionContent}>
                       <div className={styles.scrollContainer} id="hiddenDanger">
-                        <CompanyRisk hiddenDangerListByDate={dataList} />
+                        <Spin spinning={loading} wrapperClassName={styles.spin}>
+                          <CompanyRisk hiddenDangerListByDate={list} />
+                          {pageNum * pageSize < total && (
+                            <div className={styles.loadMoreWrapper}>
+                              <LoadMoreButton
+                                onClick={() => {
+                                  this.handleLoadMore(pageNum);
+                                }}
+                              />
+                            </div>
+                          )}
+                        </Spin>
                       </div>
                     </div>
                   </div>

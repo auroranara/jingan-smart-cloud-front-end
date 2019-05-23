@@ -307,6 +307,11 @@ export default class App extends PureComponent {
       defaultColumns.splice(1, 0, {
         title: '单位名称',
         dataIndex: 'company_name',
+        render: val => (
+          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       });
     }
     this.state = {
@@ -630,6 +635,7 @@ export default class App extends PureComponent {
       documentTypeIds,
       query_start_time,
       query_end_time,
+      company_id,
       ...rest
     } = fieldsValue;
     // 重置控件
@@ -789,6 +795,7 @@ export default class App extends PureComponent {
                       allowClear
                       dropdownStyle={{
                         maxHeight: '50vh',
+                        zIndex: 50,
                       }}
                     />
                   )}
@@ -801,8 +808,10 @@ export default class App extends PureComponent {
               <Form.Item label={fieldLabels.company_name}>
                 {getFieldDecorator('company_id')(
                   <AutoComplete
+                    allowClear
                     mode="combobox"
                     optionLabelProp="children"
+                    dropdownStyle={{ zIndex: 50 }}
                     placeholder="请选择"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                     onSearch={this.handleUnitIdChange}
@@ -830,7 +839,11 @@ export default class App extends PureComponent {
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.createTime}>
               {getFieldDecorator('createTime', {})(
-                <RangePicker getCalendarContainer={getRootChild} allowClear />
+                <RangePicker
+                  getCalendarContainer={getRootChild}
+                  popupStyle={{ zIndex: 50 }}
+                  allowClear
+                />
               )}
             </Form.Item>
           </Col>
@@ -838,7 +851,12 @@ export default class App extends PureComponent {
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.report_source}>
               {getFieldDecorator('report_source')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                <Select
+                  placeholder="请选择"
+                  getPopupContainer={getRootChild}
+                  dropdownStyle={{ zIndex: 50 }}
+                  allowClear
+                >
                   {sourceList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}
@@ -852,7 +870,12 @@ export default class App extends PureComponent {
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.reportingChannels}>
               {getFieldDecorator('source_type')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                <Select
+                  placeholder="请选择"
+                  getPopupContainer={getRootChild}
+                  dropdownStyle={{ zIndex: 50 }}
+                  allowClear
+                >
                   {reportingChannelsList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}
@@ -873,6 +896,7 @@ export default class App extends PureComponent {
                   allowClear
                   dropdownStyle={{
                     maxHeight: '50vh',
+                    zIndex: 50,
                   }}
                 />
               )}
@@ -891,6 +915,7 @@ export default class App extends PureComponent {
                   dropdownStyle={{
                     maxHeight: '50vh',
                     width: 350,
+                    zIndex: 50,
                   }}
                 />
               )}
@@ -906,6 +931,7 @@ export default class App extends PureComponent {
                   allowClear
                   dropdownStyle={{
                     maxHeight: '50vh',
+                    zIndex: 50,
                   }}
                 >
                   {generateDeptTree(hiddendeptContentList)}
@@ -922,6 +948,7 @@ export default class App extends PureComponent {
                   allowClear
                   dropdownStyle={{
                     maxHeight: '50vh',
+                    zIndex: 50,
                   }}
                 >
                   {generateTree(hiddenPositionList)}
@@ -933,7 +960,12 @@ export default class App extends PureComponent {
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.status}>
               {getFieldDecorator('status')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                <Select
+                  placeholder="请选择"
+                  getPopupContainer={getRootChild}
+                  dropdownStyle={{ zIndex: 50 }}
+                  allowClear
+                >
                   {statusList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}
@@ -953,7 +985,12 @@ export default class App extends PureComponent {
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.level}>
               {getFieldDecorator('level')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                <Select
+                  placeholder="请选择"
+                  getPopupContainer={getRootChild}
+                  dropdownStyle={{ zIndex: 50 }}
+                  allowClear
+                >
                   {levelList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}
@@ -967,7 +1004,12 @@ export default class App extends PureComponent {
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.business_type}>
               {getFieldDecorator('business_type')(
-                <Select placeholder="请选择" getPopupContainer={getRootChild} allowClear>
+                <Select
+                  placeholder="请选择"
+                  getPopupContainer={getRootChild}
+                  dropdownStyle={{ zIndex: 50 }}
+                  allowClear
+                >
                   {businessTypeList.map(({ key, value }) => (
                     <Option value={key} key={key}>
                       {value}
@@ -987,6 +1029,7 @@ export default class App extends PureComponent {
                   allowClear
                   dropdownStyle={{
                     maxHeight: '50vh',
+                    zIndex: 50,
                   }}
                 >
                   {generateDeptTree(hiddendeptContentList)}
@@ -1005,6 +1048,7 @@ export default class App extends PureComponent {
                   allowClear
                   dropdownStyle={{
                     maxHeight: '50vh',
+                    zIndex: 50,
                   }}
                 />
               )}
@@ -1015,7 +1059,12 @@ export default class App extends PureComponent {
             <Col xl={8} md={12} sm={24} xs={24}>
               <Form.Item label={fieldLabels.documentTypeIds}>
                 {getFieldDecorator('documentTypeIds')(
-                  <Select mode="multiple" placeholder="请选择" allowClear>
+                  <Select
+                    mode="multiple"
+                    placeholder="请选择"
+                    dropdownStyle={{ zIndex: 50 }}
+                    allowClear
+                  >
                     {documentTypeList.map(({ key, value }) => (
                       <Option value={key} key={key}>
                         {value}

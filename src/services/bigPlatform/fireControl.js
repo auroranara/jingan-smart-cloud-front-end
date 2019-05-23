@@ -45,6 +45,11 @@ export async function getAllCamera(params) {
   return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
 }
 
+// 视频树列表
+export async function fetchCameraTree(params) {
+  return request(`${URL_PREFIX}/hdf/getTreeCamera.json?${stringify(params)}`);
+}
+
 // 视频播放，已转移到services.videoPlay
 // export async function getStartToPlay(params) {
 //   return request(`/acloud_new/dai/startToPlayForWeb.json?${stringify(params)}`);
@@ -101,7 +106,8 @@ export async function getRiskPoints(params) {
 
 // 获取安全人员
 export async function getSafeMan(params) {
-  return request(`${URL_PREFIX}/sfc/showSafePerson.json?${stringify(params)}`);
+  // return request(`${URL_PREFIX}/sfc/showSafePerson.json?${stringify(params)}`);
+  return request(`${URL_PREFIX}/sfc/showSafePersonNew.json?${stringify(params)}`);
 }
 
 // 获取最近十二个月主机报警数量
@@ -233,6 +239,13 @@ export async function getVideoList(params) {
   return request(`/acloud_new/v2/hdf/getAllCamera.json?${stringify(params)}`);
 }
 
+/**
+ * 获取视频树列表
+ */
+export async function fetchVideoTree(params) {
+  return request(`/acloud_new/v2/hdf/getTreeCamera.json?${stringify(params)}`);
+}
+
 export async function getVideoLookUp(params) {
   return request(`${URL_PREFIX}/screenShowData/videoCheckRecords?${stringify(params)}`);
 }
@@ -294,7 +307,7 @@ export async function fetchAbnormalPatrol(params) {
 }
 // 企业信息(包含人员数量四色图等)
 export async function getCompanyMessage(params) {
-  return request(`/acloud_new/v2/sfc/companyMessage.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/sfc/companyInfo.json?${stringify(params)}`);
 }
 
 // 视频路径

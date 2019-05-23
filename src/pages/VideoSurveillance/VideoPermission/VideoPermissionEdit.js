@@ -41,11 +41,11 @@ export default class VideoPermissionEdit extends PureComponent {
     const { dispatch, match: { params: { companyId }, path } } = this.props
 
     if (companyId) {
-      // 获取企业信息
-      dispatch({
-        type: 'video/fetchCompanyDetail',
-        payload: { id: companyId },
-      })
+      // // 获取企业信息
+      // dispatch({
+      //   type: 'video/fetchCompanyDetail',
+      //   payload: { id: companyId },
+      // })
       // 获取部门树
       dispatch({
         type: 'video/fetchDepartmentList',
@@ -180,8 +180,8 @@ export default class VideoPermissionEdit extends PureComponent {
         currentUser: { unitType, departmentId } = {},
       },
     } = this.props
-    if (unitType && unitType === 3) {
-      // 运营账号
+    if (unitType && unitType === 3 || unitType === 2) {
+      // 运营账号或政府
       return true
     } else {
       // 如果是企业账号
@@ -268,9 +268,12 @@ export default class VideoPermissionEdit extends PureComponent {
   renderCompany = () => {
     const {
       optionsLoading,
-      video: { permission: { companyDetail, companyOptions } },
+      video: { permission: { companyOptions } },
       match: { params: { companyId } },
       user: { currentUser: { departmentId } = {} },
+      location: {
+        query: { name },
+      },
     } = this.props
 
     const options = (companyOptions.length && companyOptions.map(d => <Option key={d.id}>{d.name}</Option>)) || [];
@@ -279,7 +282,7 @@ export default class VideoPermissionEdit extends PureComponent {
         <Row>
           <Col span={9}>
             {companyId ? (
-              <div>单位名称：{companyDetail.name}</div>
+              <div>单位名称：{name}</div>
             ) : (
                 <Select
                   showSearch
@@ -341,11 +344,12 @@ export default class VideoPermissionEdit extends PureComponent {
             dataSource={departmentTree}
             pagination={false}
             defaultExpandAllRows={true}
-          ></Table>) : (
-            <div style={{ textAlign: 'center' }}>暂无数据</div>
-          )}
+          />
+        ) : (
+          <div style={{ textAlign: 'center' }}>暂无数据</div>
+        )}
       </Card>
-    )
+    );
   }
 
   render() {

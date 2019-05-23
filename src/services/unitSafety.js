@@ -3,7 +3,7 @@ import request from '../utils/request';
 
 // 企业信息(包含人员数量四色图等)
 export async function getCompanyMessage(params) {
-  return request(`/acloud_new/v2/sfc/companyMessage.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/sfc/companyInfo.json?${stringify(params)}`);
 }
 
 // 特种设备
@@ -24,6 +24,11 @@ export async function getHiddenDangerList(params) {
 // 获取视频liebiao
 export async function getVideoList(params) {
   return request(`/acloud_new/v2/hdf/getAllCamera.json?${stringify(params)}`);
+}
+
+// 获取视频树列表
+export async function fetchVideoTree(params) {
+  return request(`/acloud_new/v2/hdf/getTreeCamera.json?${stringify(params)}`);
 }
 
 /**
@@ -59,7 +64,7 @@ export async function getStaffRecords(params) {
 
 // 获取安全人员信息
 export async function getSafetyOfficer(params) {
-  return request(`/acloud_new/v2/sfc/showSafePerson.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/sfc/showSafePersonNew.json?${stringify(params)}`);
 }
 
 /**
@@ -126,14 +131,14 @@ export async function getSafeFiles(params) {
         'emergency_material',
         'special_people',
         'company_training',
-        'major_danger',
-        'material_info',
-        'dust_info',
-        'limit_space',
-        'metallurgy',
-        'ammonia',
-        'occupational',
-        'tank_info',
+        // 'major_danger',
+        // 'material_info',
+        // 'dust_info',
+        // 'limit_space',
+        // 'metallurgy',
+        // 'ammonia',
+        // 'occupational',
+        // 'tank_info',
       ],
     },
   });
@@ -175,6 +180,6 @@ export async function getPoints(params) {
 }
 
 // 获取特种设备
-export async function getSpecialEquipmentInfo(params) {
+export async function getSpecialEquipmentList(params) {
   return request(`/acloud_new/v2/sfc/specialEquipmentInfo?${stringify(params)}`);
 }

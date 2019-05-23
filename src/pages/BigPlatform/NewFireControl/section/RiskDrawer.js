@@ -1,17 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Col, Row } from 'antd';
 
 import styles from './RiskDrawer.less';
+import Ellipsis from '@/components/Ellipsis';
 import DrawerContainer from '../components/DrawerContainer';
 
-// const CARDS = [...Array(10).keys()].map(i => ({
-//   id: i,
-//   point: '配电柜及其输配线路',
-//   examiner: '张三',
-//   date: '2018/08/08',
-//   status: Math.random() > 0.5 ? '正常' : '异常',
-// }));
-
+const MAX = 30;
 const NORMALS = [1, 3];
 const NO_DATA = '暂无信息';
 const STATUS = ['', '正常', '异常', '待检查', '已超时'];
@@ -26,10 +19,17 @@ function RiskCard(props) {
           <span className={styles.point}>风险点</span>
           {point}
         </p>
-        <p>
-          <span className={styles.point}>检查人</span>
-          {examiner}
-        </p>
+        {examiner && examiner.length > MAX ? (
+          <Ellipsis tooltip lines={1} className={styles.ellipsis}>
+            <span className={styles.point}>检查人</span>
+            {examiner}
+          </Ellipsis>
+        ) : (
+          <p>
+            <span className={styles.point}>检查人</span>
+            {examiner}
+          </p>
+        )}
         <p>
           <span className={styles.date}>检查时间</span>
           {date}
@@ -58,11 +58,11 @@ export default class RiskDrawer extends PureComponent {
           </div>
         </div>
         <div className={styles.cards}>
-          {list.map(({ item_id, object_title, user_name, check_date, status }) => (
+          {list.map(({ item_id, object_title, user_name, userNames, check_date, status }) => (
             <RiskCard
               key={item_id}
               point={object_title || NO_DATA}
-              examiner={user_name || NO_DATA}
+              examiner={userNames || user_name || NO_DATA}
               date={check_date || NO_DATA}
               status={status}
             />

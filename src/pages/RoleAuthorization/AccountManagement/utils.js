@@ -1,7 +1,39 @@
 import React from 'react';
-import { Tree } from 'antd';
+import { Tree, TreeSelect } from 'antd';
+
+import { MAI, GOV, OPE, COM } from '@/pages/RoleAuthorization/Role/utils';
 
 const { TreeNode } = Tree;
+const { TreeNode: TreeSelectNode } = TreeSelect;
+
+export const FIELD_LABELS = {
+  loginName: '用户名',
+  password: '密码',
+  userName: '姓名',
+  phoneNumber: '手机号',
+  unitType: '单位类型',
+  unitId: '所属单位',
+  accountStatus: '账号状态',
+  treeIds: '数据权限',
+  roleId: '配置角色',
+  departmentId: '所属部门',
+  gridIds: '所属网格',
+  userType: '用户角色',
+  documentTypeId: '执法证种类',
+  execCertificateCode: '执法证编号',
+  regulatoryClassification: '业务分类',
+};
+
+export const DEFAULT_PAGE_SIZE = 20;
+
+export const SUPERVISIONS = [
+  { id: '1', label: '安全生产' },
+  { id: '2', label: '消防' },
+  { id: '3', label: '环保' },
+  { id: '4', label: '卫生' },
+];
+
+export const SUPERVISIONS_ALL = SUPERVISIONS.map(({ id }) => id);
 
 export function renderSearchedTreeNodes(data, searchValue){
   return data.map((item) => {
@@ -26,18 +58,18 @@ export function renderSearchedTreeNodes(data, searchValue){
   });
 }
 
-export function renderTreeNodes(data, disabledKeys, childrenProp='children', titleProp='title', keyProp='key') {
+export function renderTreeNodes(data, disabledKeys, childrenProp='children', titleProp='title', keyProp='key', allDisabled) {
   // disabledKeys也可以为数组拼接成的字符串，作用与数组同
   disabledKeys = disabledKeys || [];
   return data.map((item) => {
     const children = item[childrenProp];
-    const disabled = disabledKeys.includes(item[keyProp]);
+    const disabled = allDisabled || disabledKeys.includes(item[keyProp]); // allDisabled为true，则总返回true，为false，则返回值取决于disabledKeys
     const title = item[titleProp];
     const key = item[keyProp];
     if (children) {
       return (
         <TreeNode disabled={disabled} title={title} key={key} dataRef={item}>
-          {renderTreeNodes(children, disabledKeys, childrenProp, titleProp, keyProp)}
+          {renderTreeNodes(children, disabledKeys, childrenProp, titleProp, keyProp, allDisabled)}
         </TreeNode>
       );
     }
@@ -294,7 +326,7 @@ export function removeParentKey(keys, idMap) {
   const indexes = keys.reduce((prev, next, i) => {
     // 若目标节点含有子元素
     const node = idMap[next];
-    if (Array.isArray(node.childMenus) && getNotExist(node, keys, cache))
+    if (node && Array.isArray(node.childMenus) && getNotExist(node, keys, cache))
       prev.push(i);
 
     return prev;
@@ -315,55 +347,41 @@ export function handleKeysString(str, divider=',') {
   return [];
 }
 
-export const TREE = [{
-  id: '0-0',
-  title: '0-0',
-  key: '0-0',
-  children: [{
-    id: '0-0-0',
-    title: '0-0-0',
-    key: '0-0-0',
-    parentId: '0-0',
-    children: [
-      { id: '0-0-0-0', title: '0-0-0-0', key: '0-0-0-0', parentId: '0-0-0' },
-      { id: '0-0-0-1', title: '0-0-0-1', key: '0-0-0-1', parentId: '0-0-0' },
-      { id: '0-0-0-2', title: '0-0-0-2', key: '0-0-0-2', parentId: '0-0-0' },
-    ],
-  }, {
-    id: '0-0-1',
-    title: '0-0-1',
-    key: '0-0-1',
-    parentId: '0-0',
-    children: [
-      { id: '0-0-1-0', title: '0-0-1-0', key: '0-0-1-0', parentId: '0-0-1' },
-      { id: '0-0-1-1', title: '0-0-1-1', key: '0-0-1-1', parentId: '0-0-1' },
-      { id: '0-0-1-2', title: '0-0-1-2', key: '0-0-1-2', parentId: '0-0-1' },
-    ],
-  }, {
-    id: '0-0-2',
-    title: '0-0-2',
-    key: '0-0-2',
-    parentId: '0-0',
-  }],
-}, {
-  id: '0-1',
-  title: '0-1',
-  key: '0-1',
-  children: [
-    {
-      id: '0-1-0',
-      title: '0-1-0',
-      key: '0-1-0',
-      parentId: '0-1',
-      children: [
-        { id: '0-1-0-0', title: '0-1-0-0', key: '0-1-0-0', parentId: '0-1-0' },
-        { id: '0-1-0-1', title: '0-1-0-1', key: '0-1-0-1', parentId: '0-1-0' },
-        { id: '0-1-0-2', title: '0-1-0-2', key: '0-1-0-2', parentId: '0-1-0' },
-      ],
-    },
-  ],
-}, {
-  id: '0-2',
-  title: '0-2',
-  key: '0-2',
-}];
+// 将当前用户的当前账号过滤掉，不然可以修改自己的账号，当前用户为某一单位的用户，将账号中的users进行过滤，只有当前企业对应的user对其可见
+export function getListByUnitId(list, unitType, utId, userId) {
+  if (!Array.isArray(list))
+    return [];
+
+  const isAdmin = unitType === null || unitType === undefined || +unitType === OPE;
+  // const filterNotSelf = list.filter(({ users }) => {
+  //   const ids = Array.isArray(users) ? users.map(({ id }) => id) : [];
+  //   return !ids.includes(userId);
+  // });
+  return isAdmin ? list : list.map(item => ({ ...item, users: item.users.filter(({ unitId }) => unitId === utId) }));
+}
+
+export function treeData(data) {
+  return data.map(item => {
+    if (item.children) {
+      return (
+        <TreeSelectNode title={item.name || item.text} key={item.id} value={item.id}>
+          {treeData(item.children)}
+        </TreeSelectNode>
+      );
+    }
+    return <TreeSelectNode title={item.name || item.text} key={item.id} value={item.id} />;
+  });
+};
+
+export function generateUnitsTree(data) {
+  return data.map(item => {
+    if (item.child && item.child.length) {
+      return (
+        <TreeSelectNode title={item.name} key={item.id} value={item.id}>
+          {generateUnitsTree(item.child)}
+        </TreeSelectNode>
+      );
+    }
+    return <TreeSelectNode title={item.name} key={item.id} value={item.id} />;
+  });
+};

@@ -17,6 +17,7 @@ import {
   getDeviceDataHistory,
   getTankMessageList,
   getTankMessageData,
+  fetchCameraTree,
 } from '../services/bigPlatform/monitor';
 
 const DEFAULT_CODE = 500;
@@ -28,6 +29,7 @@ export default {
   state: {
     companyInfo: {},
     allCamera: [],
+    cameraTree: [],
     gasCount: {},
     gasList: [],
     smokeCount: {},
@@ -90,6 +92,11 @@ export default {
     *fetchAllCamera({ payload }, { call, put }) {
       const response = yield call(getAllCamera, payload);
       if (response && response.list) yield put({ type: 'saveAllCamera', payload: response.list });
+      if (response) yield put({ type: 'saveCompanyInfo', payload: { name: response.companyName } });
+    },
+    *fetchCameraTree({ payload }, { call, put }) {
+      const response = yield call(fetchCameraTree, payload);
+      if (response && response.list) yield put({ type: 'saveState', payload: { key: 'cameraTree', value: response.list } });
       if (response) yield put({ type: 'saveCompanyInfo', payload: { name: response.companyName } });
     },
     *fetchGasCount({ payload }, { call, put }) {
@@ -306,6 +313,10 @@ export default {
   },
 
   reducers: {
+    saveState(state, { payload: { key, value } }) {
+      state[key] = value
+      return { ...state }
+    },
     saveCompanyInfo(state, action) {
       return { ...state, companyInfo: action.payload };
     },

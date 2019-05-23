@@ -18,6 +18,8 @@ import DynamicMonitor from './DynamicMonitor';
 import RiskPointDrawer from './RiskPointDrawer';
 // 安全人员抽屉
 import SafetyOfficerDrawer from './SafetyOfficerDrawer';
+// 安全指数抽屉
+import SafetyIndexDrawer from './SafetyIndexDrawer';
 // 风险点详情抽屉
 import RiskPointDetailDrawer from './RiskPointDetailDrawer';
 // 巡查点位详情抽屉
@@ -26,6 +28,10 @@ import InspectionDetailDrawer from './InspectionDetailDrawer';
 import SpecialEquipmentDrawer from './SpecialEquipmentDrawer';
 // 可燃有毒气体监测
 import GasMonitorDrawer from './GasMonitorDrawer';
+// 设置抽屉
+import SetDrawer from './SetDrawer';
+// 设备统计
+import DeviceCountDrawer from './DeviceCountDrawer';
 
 export {
   // 企业信息
@@ -48,11 +54,18 @@ export {
   RiskPointDrawer,
   // 安全人员抽屉
   SafetyOfficerDrawer,
+  // 安全指数抽屉
+  SafetyIndexDrawer,
   // 风险点详情抽屉
   RiskPointDetailDrawer,
   // 巡查点位详情抽屉
   InspectionDetailDrawer,
+  // 特种设备抽屉
   SpecialEquipmentDrawer,
   // 可燃有毒气体监测
   GasMonitorDrawer,
+  // 设置抽屉
+  SetDrawer,
+  // 设备统计
+  DeviceCountDrawer,
 };

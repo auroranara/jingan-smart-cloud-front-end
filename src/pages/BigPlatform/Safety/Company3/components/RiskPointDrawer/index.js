@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
+import PointCard from '@/components/PointCard';
 import SectionDrawer from '../SectionDrawer';
 // 引入样式文件
 import styles from './index.less';
@@ -150,6 +151,10 @@ const renderRiskPoint = ({
     )}
   </div>
 );
+// 获取偏移天数
+const getOffsetDays = ({ nextCheckDate }) => {
+  return nextCheckDate ? Math.abs(moment().startOf('day').diff(moment(+nextCheckDate), 'days')) : '';
+};
 
 /**
  * 风险点抽屉
@@ -274,8 +279,8 @@ export default class RiskPointDrawer extends PureComponent {
     const showLevel = key !== 'level';
     // 获取标题后缀
     const titleSuffix = getTitleSuffix(key, value);
-    // 是否显示状态
-    const showStatus = !titleSuffix || !showLevel;
+    // // 是否显示状态
+    // const showStatus = !titleSuffix || !showLevel;
     // 显示未评级文本
     const showNotRated = showLevel && (red + orange + yellow + blue > 0);
     return (
@@ -293,11 +298,10 @@ export default class RiskPointDrawer extends PureComponent {
             </span>
           ),
           visible,
-          onClose: () => {onClose('riskPoint');},
+          onClose,
         }}
         sectionProps={{
           refScroll: this.refScroll,
-          contentStyle: { paddingBottom: 16 },
           scrollProps: { className: styles.scrollContainer },
           fixedContent: (
             <div className={styles.countContainer}>
@@ -355,12 +359,33 @@ export default class RiskPointDrawer extends PureComponent {
         }}
       >
         <div className={styles.container}>
-          {redPointList.map(({ info }) => renderRiskPoint(info, { level: showLevel && getLevelLabel('红'), showStatus }))}
-          {orangePointList.map(({ info }) => renderRiskPoint(info, { level: showLevel && getLevelLabel('橙'), showStatus }))}
-          {yellowPointList.map(({ info }) => renderRiskPoint(info, { level: showLevel && getLevelLabel('黄'), showStatus }))}
-          {bluePointList.map(({ info }) => renderRiskPoint(info, { level: showLevel && getLevelLabel('蓝'), showStatus }))}
-          {grayPointList.map(({ info }) => renderRiskPoint(info, { level: showNotRated && getLevelLabel('未评级'), showStatus }))}
+          {/* {redPointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('红'), showStatus }))}
+          {orangePointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('橙'), showStatus }))}
+          {yellowPointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('黄'), showStatus }))}
+          {bluePointList.map(info => renderRiskPoint(info, { level: showLevel && getLevelLabel('蓝'), showStatus }))}
+          {grayPointList.map(info => renderRiskPoint(info, { level: showNotRated && getLevelLabel('未评级'), showStatus }))} */}
           {/* {red + orange + yellow + blue + gray === 0 && <div className={styles.empty} style={{ backgroundImage: `url(${defaultRiskPoint})` }} />} */}
+          {[...redPointList, ...orangePointList, ...yellowPointList, ...bluePointList, ...grayPointList].map((point) => {
+            return (
+              <PointCard
+                key={point.item_id}
+                className={styles.card}
+                data={point}
+                fieldNames={{
+                  level: 'risk_level', // 风险等级
+                  name: 'object_title', // 点位名称
+                  lastCheckPerson: 'last_check_user_name', // 上次巡查人员
+                  lastCheckTime: 'last_check_date', // 上次巡查时间
+                  nextCheckTime: 'nextCheckDate', // 下次巡查时间
+                  extendedDays: getOffsetDays, // 超期天数
+                  expiryDays: getOffsetDays, // 距到期天数
+                  status: 'status', // 检查状态
+                  cycle: ({ checkCycleCode, check_cycle, cycle_type }) => +cycle_type === 1 ? checkCycleCode : check_cycle, // 检查周期
+                  type: 'item_type', // 点位类型
+                }}
+              />
+            );
+          })}
         </div>
       </SectionDrawer>
     );

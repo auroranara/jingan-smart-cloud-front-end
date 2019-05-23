@@ -25,8 +25,13 @@ const {
 } = titles;
 
 const crListTitle = '企业自查报表';
-const crListUrl = '/data-analysis/company-report/list';
 const crDetailtitle = '企业自查报表详情';
+const mtTitle = '维保检查报表详情';
+const govListTitle = '政府监督报表';
+const govDetailTitle = '政府监督报表详情';
+
+const crListUrl = '/data-analysis/company-report/list';
+const govListUrl = '/data-analysis/goverment-report/list';
 
 /* 头部标签列表 */
 const tabList = [
@@ -347,6 +352,14 @@ export default class App extends PureComponent {
           check_user_names,
           companyName,
           itemTypeName,
+          checkCompanyName,
+          userName,
+          checkDate,
+          status: mtStatus,
+          objectTitle,
+          newGovId,
+          companyMtName,
+          companyGovName,
         },
       },
       loading,
@@ -356,15 +369,40 @@ export default class App extends PureComponent {
     const isCompany = unitType === 4;
 
     const crDetailUrl = `/data-analysis/company-report/detail/${checkId}?companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`;
+    const mtUrl = `/data-analysis/maintenance-report/detail/${checkId}?companyName=${companyMtName}&&objectTitle=${objectTitle}&&checkCompanyName=${checkCompanyName}&&itemTypeName=${itemTypeName}&&userName=${userName}&&checkDate=${checkDate}&&status=${mtStatus}`;
+    const govDetailUrl = `/data-analysis/goverment-report/detail/${checkId}?companyName=${companyGovName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`;
 
     /* 面包屑 */
     const breadcrumbList = [
       { title: homeTitle, name: homeTitle, href: homeUrl },
       { title: menuTitle, name: menuTitle },
       {
-        title: newId ? crListTitle : object_title ? crDetailtitle : listTitle,
-        name: newId ? crListTitle : object_title ? crDetailtitle : listTitle,
-        href: newId ? crListUrl : object_title ? crDetailUrl : listUrl,
+        title: checkCompanyName ? mtTitle : listTitle,
+        name: checkCompanyName ? mtTitle : listTitle,
+        href: checkCompanyName ? mtUrl : listUrl,
+      },
+      { title, name: title },
+    ];
+
+    const crBreadList = [
+      { title: homeTitle, name: homeTitle, href: homeUrl },
+      { title: menuTitle, name: menuTitle },
+
+      {
+        title: newId ? crListTitle : crDetailtitle,
+        name: newId ? crListTitle : crDetailtitle,
+        href: newId ? crListUrl : crDetailUrl,
+      },
+      { title, name: title },
+    ];
+
+    const govBreadList = [
+      { title: homeTitle, name: homeTitle, href: homeUrl },
+      { title: menuTitle, name: menuTitle },
+      {
+        title: companyGovName ? govDetailTitle : govListTitle,
+        name: companyGovName ? govDetailTitle : govListTitle,
+        href: companyGovName ? govDetailUrl : govListUrl,
       },
       { title, name: title },
     ];
@@ -400,7 +438,13 @@ export default class App extends PureComponent {
         tabList={tabList}
         tabActiveKey={tab}
         onTabChange={this.handleTabChange}
-        breadcrumbList={breadcrumbList}
+        breadcrumbList={
+          newId || companyName
+            ? crBreadList
+            : newGovId || companyGovName
+              ? govBreadList
+              : breadcrumbList
+        }
       >
         <Spin spinning={!!loading}>
           {tab === '1' && (

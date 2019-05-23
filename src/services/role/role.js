@@ -34,12 +34,22 @@ export async function deleteRole({ id }) {
   })
 }
 
-/* 获取权限树 */
+/* 获取WEB权限树 */
 export async function queryPermissionTree() {
   return request('/acloud_new/v2/rolePermission/sysPermission');
+}
+
+// 获取APP权限树
+export async function getAppPermissionTree(params) {
+  return request(`/acloud_new/v2/appPermission/appPermission?${stringify(params)}`);
 }
 
 /* 获取角色列表 */
 export async function queryList(params) {
   return request(`/acloud_new/v2/rolePermission/sysRole?${stringify(params)}`);
+}
+
+// 获取消息类型树
+export async function getMessageTree(params) {
+  return request(`/acloud_new/v2/rolePermission/sysRole/messageTypeTree?${stringify(params)}`);
 }

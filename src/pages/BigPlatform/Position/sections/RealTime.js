@@ -3,7 +3,7 @@ import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { stringify } from 'qs';
 import moment from 'moment';
 import { message, notification } from 'antd';
-
+import {findFirstVideo} from '@/utils/utils';
 import styles from './RealTime.less';
 import { AlarmHandle, AlarmMsg, MapInfo, PersonInfo, Tabs, VideoPlay } from '../components/Components';
 import { AlarmDrawer, CardList, CardSelected, LeafletMap, LowPowerDrawer, PersonDrawer, SectionList } from './Components';

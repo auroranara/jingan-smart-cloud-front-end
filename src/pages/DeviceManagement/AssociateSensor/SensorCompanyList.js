@@ -1,5 +1,5 @@
 import { Component, Fragment } from 'react';
-import { Card, Form, Row, Col, Input, Select, Button, List, Spin, Modal } from 'antd';
+import { Card, Form, Row, Col, Input, Select, Button, List, Spin, Modal, message } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -9,7 +9,6 @@ import codes from '@/utils/codes';
 import { hasAuthority, AuthIcon } from '@/utils/customAuth';
 import router from 'umi/router';
 import styles from './SensorCompanyList.less';
-import { message } from 'antd';
 import iconWater from '@/assets/water-syatem.png'
 
 const FormItem = Form.Item;

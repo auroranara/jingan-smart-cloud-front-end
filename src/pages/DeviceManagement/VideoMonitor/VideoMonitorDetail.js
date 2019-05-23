@@ -23,22 +23,40 @@ const getEmptyData = () => {
 }))
 @Form.create()
 export default class VideoMonitorDetail extends PureComponent {
-  state = {};
+  state = {
+    buildingName: '',
+    floorName: '',
+  };
 
   /* 生命周期函数 */
   componentDidMount() {
     const {
       dispatch,
-      match: {
-        params: { id },
-      },
+      match: { params: { id, companyId } },
     } = this.props;
 
     // 获取视频设备信息详情
     dispatch({
       type: 'videoMonitor/fetchVideoDetail',
-      payload: {
-        id,
+      payload: { id },
+      callback: ({ buildingId, floorId }) => {
+        // 获取建筑列表
+        dispatch({
+          type: 'personnelPosition/fetchBuildings',
+          payload: { pageNum: 1, pageSize: 0, company_id: companyId },
+          callback: (list) => {
+            const { buildingName = null } = list.find(item => item.id === buildingId) || {}
+            this.setState({ buildingName })
+          },
+        })
+        dispatch({
+          type: 'personnelPosition/fetchFloors',
+          payload: { pageNum: 1, pageSize: 0, building_id: buildingId },
+          callback: (list) => {
+            const { floorName } = list.find(item => item.id === floorId) || {}
+            this.setState({ floorName })
+          },
+        })
       },
     });
   }
@@ -76,13 +94,14 @@ export default class VideoMonitorDetail extends PureComponent {
         },
       },
     } = this.props;
-
+    const { buildingName, floorName } = this.state
     return (
       <Card title="视频设备信息详情" bordered={false}>
         <DescriptionList col={3}>
           <Description term="设备ID">{deviceId || getEmptyData()}</Description>
           <Description term="摄像头ID">{keyId || getEmptyData()}</Description>
           <Description term="视频所属区域">{name || getEmptyData()}</Description>
+          <Description term="所属建筑楼层">{buildingName + floorName || getEmptyData()}</Description>
           <Description term="视频URL">
             <Ellipsis tooltip lines={1}>
               {rtspAddress || getEmptyData()}

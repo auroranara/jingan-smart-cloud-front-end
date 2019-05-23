@@ -16,6 +16,20 @@ export default {
     edit: 'roleAuthorization.role.edit',
     delete: 'roleAuthorization.role.delete',
   },
+  commonRole: {
+    list: 'roleAuthorization.commonRole.listView',
+    detail: 'roleAuthorization.commonRole.view',
+    add: 'roleAuthorization.commonRole.add',
+    edit: 'roleAuthorization.commonRole.edit',
+    delete: 'roleAuthorization.commonRole.delete',
+  },
+  userRole: {
+    list: 'roleAuthorization.userRole.listView',
+    detail: 'roleAuthorization.userRole.view',
+    add: 'roleAuthorization.userRole.add',
+    edit: 'roleAuthorization.userRole.edit',
+    delete: 'roleAuthorization.userRole.delete',
+  },
   account: {
     edit: 'roleAuthorization.accountManagement.edit',
     detail: 'roleAuthorization.accountManagement.view',
@@ -60,6 +74,25 @@ export default {
         unbindSensor: 'deviceManagement.associateSensor.waterSystem.unbindSensor',
       },
     },
+    sensor: {
+      listView: 'deviceManagement.sensor.listView',
+      add: 'deviceManagement.sensor.add',
+      edit: 'deviceManagement.sensor.edit',
+      delete: 'deviceManagement.sensor.delete',
+    },
+    sensorModel: {
+      listView: 'deviceManagement.sensorModel.listView',
+      add: 'deviceManagement.sensorModel.add',
+      edit: 'deviceManagement.sensorModel.edit',
+      copy: 'deviceManagement.sensorModel.copy',
+      model: {
+        listView: 'deviceManagement.sensorModel.model.listView',
+        add: 'deviceManagement.sensorModel.model.add',
+        edit: 'deviceManagement.sensorModel.model.edit',
+        delete: 'deviceManagement.sensorModel.model.delete',
+        alarmStrategy: 'deviceManagement.sensorModel.model.alarmStrategy',
+      },
+    },
   },
   videoSurveillance: {
     hikVideoTree: {
@@ -69,6 +102,10 @@ export default {
     videoPermission: {
       edit: 'videoSurveillance.videoPermission.edit',
       add: 'videoSurveillance.videoPermission.add',
+    },
+    governmentVideoPermission: {
+      edit: 'videoSurveillance.governmentVideoPermission.edit',
+      add: 'videoSurveillance.governmentVideoPermission.add',
     },
   },
   company: {
@@ -82,6 +119,27 @@ export default {
       add: 'baseInfo.company.department.add',
       delete: 'baseInfo.company.department.delete',
       edit: 'baseInfo.company.department.edit',
+    },
+    division: {
+      list: 'baseInfo.company.division.listView',
+      add: 'baseInfo.company.division.add',
+      delete: 'baseInfo.company.division.delete',
+      edit: 'baseInfo.company.division.edit',
+      detail: 'baseInfo.company.division.view',
+    },
+    // 建筑物信息
+    buildingsInfo: {
+      list: 'baseInfo.buildingsInfo.listView',
+      view: 'baseInfo.buildingsInfo.view',
+      add: 'baseInfo.buildingsInfo.add',
+      edit: 'baseInfo.buildingsInfo.edit',
+      delete: 'baseInfo.buildingsInfo.delete',
+      // 楼层
+      floorListView: 'baseInfo.buildingsInfo.floorListView',
+      floorAdd: 'baseInfo.buildingsInfo.floorAdd',
+      floorEdit: 'baseInfo.buildingsInfo.floorEdit',
+      floorView: 'baseInfo.buildingsInfo.floorView',
+      floorDelete: 'baseInfo.buildingsInfo.floorDelete',
     },
   },
   contract: {
@@ -162,20 +220,20 @@ export default {
       edit: 'personnelPosition.systemConfiguration.edit',
       delete: 'personnelPosition.systemConfiguration.delete',
     },
-    // 建筑物信息
-    buildingsInfo: {
-      list: 'personnelPosition.buildingsInfo.listView',
-      view: 'personnelPosition.buildingsInfo.view',
-      add: 'personnelPosition.buildingsInfo.add',
-      edit: 'personnelPosition.buildingsInfo.edit',
-      delete: 'personnelPosition.buildingsInfo.delete',
-      // 楼层
-      floorListView: 'personnelPosition.buildingsInfo.floorListView',
-      floorAdd: 'personnelPosition.buildingsInfo.floorAdd',
-      floorEdit: 'personnelPosition.buildingsInfo.floorEdit',
-      floorView: 'personnelPosition.buildingsInfo.floorView',
-      floorDelete: 'personnelPosition.buildingsInfo.floorDelete',
-    },
+    // // 建筑物信息
+    // buildingsInfo: {
+    //   list: 'personnelPosition.buildingsInfo.listView',
+    //   view: 'personnelPosition.buildingsInfo.view',
+    //   add: 'personnelPosition.buildingsInfo.add',
+    //   edit: 'personnelPosition.buildingsInfo.edit',
+    //   delete: 'personnelPosition.buildingsInfo.delete',
+    //   // 楼层
+    //   floorListView: 'personnelPosition.buildingsInfo.floorListView',
+    //   floorAdd: 'personnelPosition.buildingsInfo.floorAdd',
+    //   floorEdit: 'personnelPosition.buildingsInfo.floorEdit',
+    //   floorView: 'personnelPosition.buildingsInfo.floorView',
+    //   floorDelete: 'personnelPosition.buildingsInfo.floorDelete',
+    // },
     // 信标管理
     beaconManagement: {
       list: 'personnelPosition.beaconManagement.listView',

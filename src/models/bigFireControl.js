@@ -22,6 +22,7 @@ import {
   getRiskPoints,
   getSafeMan,
   getHostAlarmTrend,
+  fetchCameraTree,
 } from '../services/bigPlatform/fireControl';
 
 const DEFAULT_CODE = 500;
@@ -37,7 +38,7 @@ function handleDanger(response, isCompany = false) {
   });
 
   const { list, gridList } = response['check_map'].reduce(
-    function(prev, next) {
+    function (prev, next) {
       const { month, day, grid_check_point, self_check_point } = next;
       const key = `${month}.${day}`;
       const time = `${month}/${day}`;
@@ -136,6 +137,7 @@ export default {
     countdown: {},
     offGuard: {},
     allCamera: [],
+    cameraTree: [],
     // startToPlay: '',
     videoLookUp: [],
     lookUpCamera: [],
@@ -287,6 +289,11 @@ export default {
       const { list } = response;
       yield put({ type: 'saveAllCamera', payload: list });
     },
+    *fetchCameraTree({ payload }, { call, put }) {
+      const response = yield call(fetchCameraTree, payload);
+      const { list } = response;
+      yield put({ type: 'saveCameraTree', payload: list });
+    },
     *fetchVideoLookUp({ payload, callback }, { call, put }) {
       let response = yield call(getVideoLookUp, payload);
       response = response || EMPTY_OBJECT;
@@ -329,15 +336,16 @@ export default {
     },
     // 获取安全员
     *fetchSafeMan({ payload }, { call, put }) {
-      let response = yield call(getSafeMan, payload);
-      if (response)
-        yield put({ type: 'saveSafeMan', payload: response });
+      const response = yield call(getSafeMan, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveSafeMan', payload: data && data.roleMap ? data.roleMap : {} });
     },
     // 获取最近十二个月的主机报警数量
     *fetchHostAlarmTrend({ payload }, { call, put }) {
       let response = yield call(getHostAlarmTrend, payload);
       response = response || {};
-      const { code=DEFAULT_CODE, data={} } = response;
+      const { code = DEFAULT_CODE, data = {} } = response;
       if (code === 200)
         yield put({ type: 'saveHostAlarmTrend', payload: data || {} });
     },
@@ -439,6 +447,9 @@ export default {
     },
     saveHostAlarmTrend(state, action) {
       return { ...state, hostAlarmTrend: action.payload };
+    },
+    saveCameraTree(state, action) {
+      return { ...state, cameraTree: action.payload };
     },
   },
 };

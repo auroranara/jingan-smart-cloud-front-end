@@ -86,3 +86,36 @@ export async function editScreenPermission({ id, ...params }) {
 export async function queryAddCompanyOptions() {
   return request(`/acloud_new/v2/baseInfo/company/options`);
 }
+
+/* 单位分部列表 */
+export async function queryDivisionList(params) {
+  return request(`/acloud_new/v2/companyBranch/companyBranchForPage?${stringify(params)}`);
+}
+
+/* 新增单位分部 */
+export async function addDivision(params) {
+  return request('/acloud_new/v2/companyBranch/companyBranch', {
+    method: 'POST',
+    body: params,
+  });
+}
+
+/* 修改单位分部 */
+export async function editDivision(params) {
+  return request('/acloud_new/v2/companyBranch/companyBranch', {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+/* 删除单位分部 */
+export async function deleteDivision({ id }) {
+  return request(`/acloud_new/v2/companyBranch/companyBranch/${id}`, {
+    method: 'DELETE',
+  });
+}
+
+/* 查询单位个体 */
+export async function queryDivisionDetail({ id }) {
+  return request(`/acloud_new/v2/companyBranch/companyBranch/${id}`);
+}

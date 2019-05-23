@@ -9,8 +9,10 @@ import GasSection from './sections/GasSection';
 import GasBackSection from './sections/GasBackSection';
 import StorageTankMonitor from './sections/StorageTankMonitor';
 import StorageTankDrawer from './sections/StorageTankDrawer';
-import VideoPlay from './sections/VideoPlay';
+// import VideoPlay from './sections/VideoPlay';
+import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import { ALL } from './components/gasStatus';
+import { findFirstVideo } from '@/utils/utils';
 
 import ExhaustMonitor from './sections/ExhaustMonitor';
 import EffluentMonitor from './sections/EffluentMonitor';
@@ -60,6 +62,7 @@ export default class App extends PureComponent {
     } = this.props;
 
     // dispatch({ type: 'monitor/fetchCompanyInfo', payload: companyId });
+    dispatch({ type: 'monitor/fetchCameraTree', payload: { company_id: companyId } });
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
@@ -125,7 +128,7 @@ export default class App extends PureComponent {
     // 获取实时警报信息
     dispatch({
       type: 'monitor/fetchRealTimeAlarm',
-      payload: { companyId, overFlag: 0 },
+      payload: { companyId, overFlag: 0, screenType: 1 },
     });
 
     // 获取储罐统计
@@ -182,7 +185,7 @@ export default class App extends PureComponent {
     } = this.props;
     const { waterSelectVal, exhaustSelectVal } = this.state;
 
-    dispatch({ type: 'monitor/fetchRealTimeAlarm', payload: { companyId, overFlag: 0 } });
+    dispatch({ type: 'monitor/fetchRealTimeAlarm', payload: { companyId, overFlag: 0, screenType: 1 } });
     dispatch({ type: 'monitor/fetchCountAndExponent', payload: { companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
@@ -455,6 +458,7 @@ export default class App extends PureComponent {
       monitor: {
         companyInfo: { name: companyName },
         allCamera = [],
+        cameraTree = [],
         gasCount,
         gasList,
         waterCompanyDevicesData,
@@ -512,7 +516,7 @@ export default class App extends PureComponent {
                   backgroundSize: '100% 100%',
                   transform: 'none',
                 }}
-                onClick={() => this.handleVideoShow(allCamera[0].key_id)}
+                onClick={() => this.handleVideoShow(findFirstVideo(cameraTree).id)}
               />
             </Tooltip>
             <Col span={6} style={{ height: '100%' }}>
@@ -589,6 +593,7 @@ export default class App extends PureComponent {
                   smokeCountData={smokeCount}
                   companyId={companyId}
                 />
+                {/* 电气火灾监测 */}
                 <Col span={11} style={{ height: '100%' }}>
                   <div style={{ height: '100%', width: '100%' }}>
                     <ElectricityCharts
@@ -607,6 +612,7 @@ export default class App extends PureComponent {
                 </Col>
               </Row>
               <Row gutter={12} style={{ paddingTop: 6, height: '50%' }}>
+                {/* 可燃/有毒气体监测 */}
                 <Col span={8} style={{ height: '100%' }}>
                   <FcModule isRotated={gasRotated} style={{ height: '100%' }}>
                     <GasSection handleClick={this.handleGasNumClick} data={gasCount} />
@@ -619,6 +625,7 @@ export default class App extends PureComponent {
                     />
                   </FcModule>
                 </Col>
+                {/* 废水监测 */}
                 <Col span={8} style={{ height: '100%' }}>
                   <EffluentMonitor
                     selectVal={waterSelectVal}
@@ -626,6 +633,7 @@ export default class App extends PureComponent {
                     data={{ waterCompanyDevicesData, waterDeviceConfig, waterRealTimeData }}
                   />
                 </Col>
+                {/* 废气监测 */}
                 <Col span={8} style={{ height: '100%' }}>
                   <ExhaustMonitor
                     selectVal={exhaustSelectVal}
@@ -637,12 +645,20 @@ export default class App extends PureComponent {
             </Col>
           </Row>
         </div>
-        <VideoPlay
+        {/* <VideoPlay
           showList={true}
           videoList={allCamera}
           visible={videoVisible}
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
+        /> */}
+        <NewVideoPlay
+          showList={true}
+          videoList={cameraTree}
+          visible={videoVisible}
+          keyId={videoKeyId} // keyId
+          handleVideoClose={this.handleVideoClose}
+          isTree={true}
         />
         <StorageTankDrawer
           tankDataList={tankDataList}

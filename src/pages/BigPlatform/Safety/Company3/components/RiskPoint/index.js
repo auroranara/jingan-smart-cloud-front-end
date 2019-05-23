@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'dva';
 import ReactEcharts from 'echarts-for-react';
 import Section from '../Section';
 import RiskPointPieLegend from '../../../Components/RiskPointPieLegend';
@@ -13,6 +14,9 @@ import styles from './index.less';
 /**
  * description: 风险点
  */
+@connect(({ unitSafety }) => ({
+  unitSafety,
+}))
 export default class RiskPoint extends PureComponent {
   // 饼图实例
   pieChart = null
@@ -99,18 +103,19 @@ export default class RiskPoint extends PureComponent {
 
   render() {
     const {
-      // 模型
-      data: {
-        red=0,
-        orange=0,
-        yellow=0,
-        blue=0,
-        gray=0,
-        normal=0,
-        abnormal=0,
-        pending=0,
-        overtime=0,
-      }={},
+      unitSafety: {
+        points: {
+          red=0,
+          orange=0,
+          yellow=0,
+          blue=0,
+          gray=0,
+          normal=0,
+          abnormal=0,
+          pending=0,
+          overtime=0,
+        }={},
+      },
       // 点击事件
       handleClick,
     } = this.props;

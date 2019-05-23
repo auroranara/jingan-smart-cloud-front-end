@@ -71,15 +71,20 @@ const drawVisible = {
 export function getGridId(gridId, initVal = 'index') {
   return !gridId || gridId === initVal ? undefined : gridId;
 }
-@connect(({ bigPlatform, bigPlatformSafetyCompany, bigFireControl }) => ({
+
+@connect(({ bigPlatform, bigPlatformSafetyCompany, bigFireControl, loading }) => ({
   bigPlatform,
   bigPlatformSafetyCompany,
   bigFireControl,
+  hiddenDangerLoading:
+    loading.effects['bigPlatform/fetchHiddenDangerListForPage'] ||
+    loading.effects['bigPlatform/fetchHiddenDangerListByDateForPage'],
 }))
 class GovernmentBigPlatform extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      polygons: [],
       projectName: global.PROJECT_CONFIG.projectName,
       scrollNodeTop: 0,
       label: {
@@ -162,6 +167,9 @@ class GovernmentBigPlatform extends Component {
                 payload: {
                   gridId: gId,
                 },
+                success: data => {
+                  this.initPolygons(data);
+                },
               });
             }
           }
@@ -209,7 +217,7 @@ class GovernmentBigPlatform extends Component {
 
     // 政府监管人员列表
     dispatch({
-      type: 'bigPlatform/fetchGovFulltimeWorkerList',
+      type: 'bigPlatform/fetchGovFulltimeWorkerListNew',
       payload: { gridId },
     });
 
@@ -269,12 +277,14 @@ class GovernmentBigPlatform extends Component {
         gridId,
       },
     });
-
     if (gridId) {
       dispatch({
         type: 'bigPlatform/fetchMapLocationByParent',
         payload: {
           gridId,
+        },
+        success: data => {
+          this.initPolygons(data);
         },
       });
     }
@@ -331,35 +341,6 @@ class GovernmentBigPlatform extends Component {
           this.setState({ checkNum: data.fireCheckCompanyCount });
       },
     });
-
-    // // 安全检查已查
-    // dispatch({
-    //   type: 'bigPlatform/fetchCheckedCompanyInfo',
-    //   payload: {
-    //     date: month,
-    //     isChecked: '1',
-    //     isNormal: '1',
-    //     isOvertime: '1',
-    //     pageNum: 1,
-    //     pageSize: 1,
-    //   },
-    // success: num => {
-    //   if (month === moment().format('YYYY-MM')) this.checkNum = num;
-    // },
-    // });
-
-    // // 安全检查未查
-    // dispatch({
-    //   type: 'bigPlatform/fetchCheckedCompanyInfo',
-    //   payload: {
-    //     date: month,
-    //     isChecked: '0',
-    //     isNormal: '1',
-    //     isOvertime: '1',
-    //     pageNum: 1,
-    //     pageSize: 1,
-    //   },
-    // });
   };
 
   componentWillUnmount() {
@@ -466,11 +447,14 @@ class GovernmentBigPlatform extends Component {
     });
     // 风险点隐患
     dispatch({
-      type: 'bigPlatform/fetchRiskDetail',
+      type: 'bigPlatform/fetchHiddenDangerListForPage',
       payload: {
         company_id: id,
         // source_type: '3',
         gridId,
+        pageNum: 1,
+        pageSize: 10,
+        status: 5,
       },
     });
   };
@@ -560,33 +544,85 @@ class GovernmentBigPlatform extends Component {
     this.setState({ ...newState });
   };
 
+  handleLoadHiddenList = pageNum => {
+    const defaultPageSize = 10;
+    const { dispatch } = this.props;
+    const {
+      companyId,
+      dangerCompanyData: { status } = {},
+      dangerCompanyLast,
+      checksMonth,
+      checkUserId,
+    } = this.state;
+    const gridId = this.getGridId();
+    if (dangerCompanyLast === 'checks') {
+      dispatch({
+        type: 'bigPlatform/fetchHiddenDangerListByDateForPage',
+        payload: {
+          company_id: companyId,
+          reportUserId: checkUserId,
+          date: checksMonth,
+          gridId,
+          status,
+          pageNum,
+          pageSize: defaultPageSize,
+        },
+      });
+    } else {
+      dispatch({
+        type: 'bigPlatform/fetchHiddenDangerListForPage',
+        payload: {
+          company_id: companyId,
+          gridId,
+          status,
+          pageNum,
+          pageSize: defaultPageSize,
+        },
+      });
+    }
+  };
+
+  initPolygons = data => {
+    let polygons = [];
+    if (data && data.children && data.children.length) {
+      polygons = data.children.map(m => {
+        if (m.mapLocation) {
+          return JSON.parse(m.mapLocation);
+        }
+      });
+    } else {
+      polygons = data.mapLocation ? [JSON.parse(data.mapLocation)] : [];
+    }
+    this.setState({ polygons });
+  };
+
   render() {
     const {
       communityCom,
-      companyIn,
-      fullStaff,
-      overHd,
-      hdCom,
+      // companyIn,
+      // fullStaff,
+      // overHd,
+      // hdCom,
       comInfo,
-      riskColors,
-      hdOverDetail,
+      // riskColors,
+      // hdOverDetail,
       projectName,
       riskColorSummary,
       center,
       zoom,
       companyId,
-      hiddenDanger,
+      // hiddenDanger,
       infoWindow,
       tooltipVisible,
       tooltipName,
       tooltipPosition,
       infoWindowShow,
-      checks,
-      companyOver,
+      // checks,
+      // companyOver,
       dangerCompanyData,
       dangerCompanyLast,
       checksMonth,
-      riskOver,
+      // riskOver,
       checkUserId,
       checkNum,
       treeValue,
@@ -602,8 +638,9 @@ class GovernmentBigPlatform extends Component {
       comInDrawer,
       fullStaffDrawer,
       overHdCom,
-      overHdDetail,
+      // overHdDetail,
       companyInfoDrawer,
+      polygons,
     } = this.state;
     const {
       dispatch,
@@ -613,45 +650,39 @@ class GovernmentBigPlatform extends Component {
           companyLevelDto,
           countGridCompany,
         },
-        countDangerLocation,
+        // countDangerLocation,
         listForMapForOptimize = {},
         listForMapForOptimize: { overRectifyNum },
         govFulltimeWorkerList: { total: fulltimeWorker = 0, list: fulltimeWorkerList = [] },
         overRectifyCompany,
         searchAllCompany,
-        dangerLocationCompanyData,
+        // dangerLocationCompanyData,
         location,
         checkInfo,
         hiddenDangerCompanyAll,
         hiddenDangerCompanyMonth,
         hiddenDangerOverTime,
-        checkedCompanyInfo,
-        hiddenDangerListByDate,
+        // checkedCompanyInfo,
+        // hiddenDangerListByDate,
         selectOvertimeItemNum,
-        overtimeUncheckedCompany,
+        // overtimeUncheckedCompany,
         companyMessage,
         specialEquipment,
-        mapLocation = {},
+        // mapLocation = {},
         companyCheckCount,
-        riskDetailList,
+        // riskDetailList,
         selfCheckPoint = {},
+        govSafetyOfficer,
+        phoneVisible,
         selfCheckPoint: { total: selfCheckPointTotal },
         securityCheck,
-        riskDetailNoOrder,
+        hiddenDangerList: riskDetailNoOrder,
+        hiddenDangerListByDateForPage: hiddenDangerListByDate,
       },
       bigFireControl: { grids },
+      hiddenDangerLoading,
     } = this.props;
     const gridId = this.getGridId();
-    let polygons = [];
-    if (mapLocation && mapLocation.children && mapLocation.children.length) {
-      polygons = mapLocation.children.map(m => {
-        if (m.mapLocation) {
-          return JSON.parse(m.mapLocation);
-        }
-      });
-    } else {
-      polygons = mapLocation.mapLocation ? [JSON.parse(mapLocation.mapLocation)] : [];
-    }
 
     return (
       <div className={styles.main}>
@@ -667,6 +698,7 @@ class GovernmentBigPlatform extends Component {
               ) : (
                 <TreeSelect
                   value={treeValue}
+                  dropdownStyle={{ maxHeight: '50vh' }}
                   dropdownClassName={styles.gridDropdown}
                   treeData={grids}
                   treeDefaultExpandAll
@@ -716,6 +748,7 @@ class GovernmentBigPlatform extends Component {
                 goComponent={this.goComponent}
                 searchAllCompany={searchAllCompany}
                 fulltimeWorker={fulltimeWorker}
+                govSafetyOfficer={govSafetyOfficer}
                 overRectifyNum={overRectifyNum}
                 selfCheckPointTotal={selfCheckPointTotal}
                 selectOvertimeItemNum={selectOvertimeItemNum}
@@ -909,6 +942,7 @@ class GovernmentBigPlatform extends Component {
           handleParentChange={this.handleParentChange}
           closeAllDrawers={this.closeAllDrawers}
           companyName={riskComName}
+          companyId={companyId}
         />
 
         {/* 隐患单位统计 */}
@@ -948,6 +982,9 @@ class GovernmentBigPlatform extends Component {
           riskDetailList={riskDetailNoOrder}
           lastSection={dangerCompanyLast}
           handleParentChange={this.handleParentChange}
+          loading={!!hiddenDangerLoading}
+          dispatch={dispatch}
+          handleLoadHiddenList={this.handleLoadHiddenList}
         />
 
         {/* 已超时单位 */}
@@ -970,8 +1007,9 @@ class GovernmentBigPlatform extends Component {
         <FullStaffDrawer
           visible={fullStaffDrawer}
           goComponent={this.goComponent}
-          listData={fulltimeWorkerList}
-          fulltimeWorker={fulltimeWorker}
+          govSafetyOfficer={govSafetyOfficer}
+          phoneVisible={phoneVisible}
+          // fulltimeWorker={fulltimeWorker}
           handleParentChange={this.handleParentChange}
         />
 
@@ -997,6 +1035,7 @@ class GovernmentBigPlatform extends Component {
           hiddenDangerListByDate={riskDetailNoOrder}
           onRef={this.companyInfoRef}
           handleParentChange={this.handleParentChange}
+          handleLoadHiddenList={this.handleLoadHiddenList}
         />
       </div>
     );
