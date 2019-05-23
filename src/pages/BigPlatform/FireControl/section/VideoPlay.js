@@ -51,7 +51,7 @@ class VideoPlay extends Component {
   }
 
   handleInit = () => {
-    const { dispatch, videoList, keyId, showList } = this.props;
+    const { dispatch, videoList, keyId, showList, deviceId: propsDeviceId } = this.props;
     let videoId = '';
     let deviceId = null;
     // 如果现实列表
@@ -62,6 +62,7 @@ class VideoPlay extends Component {
       videoId = keyId || videoList[0].key_id;
     } else {
       videoId = keyId;
+      deviceId = propsDeviceId;
     }
 
     // 清空视频链接
@@ -73,8 +74,8 @@ class VideoPlay extends Component {
       this.setState({
         activeIndex: index,
       });
-      const item = videoList[index]
-      deviceId = item.device_id || item.deviceId
+      const item = videoList[index];
+      deviceId = item.device_id || item.deviceId;
     }
     dispatch({
       type: 'videoPlay/fetchStartToPlay',
@@ -119,7 +120,7 @@ class VideoPlay extends Component {
               [styles.itemActive]: activeIndex === index,
             });
             const keyId = item.key_id || item.keyId;
-            const deviceId = item.device_id || item.deviceId
+            const deviceId = item.device_id || item.deviceId;
             return (
               <li
                 className={itemStyles}
@@ -184,7 +185,13 @@ class VideoPlay extends Component {
   };
 
   renderPan = () => {
-    const { loading, style = {}, videoList = [], draggable = true, showList = true } = this.props;
+    const {
+      loading,
+      style = {},
+      // videoList = [],
+      draggable = true,
+      showList = true,
+    } = this.props;
     const { videoSrc, activeIndex } = this.state;
     const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in);
 
@@ -206,10 +213,10 @@ class VideoPlay extends Component {
             {loading ? (
               LOADING_COMPONENT
             ) : (
-                <Player>
-                  <HLSSource isVideoChild src={videoSrc} ref="source" />
-                </Player>
-              )}
+              <Player>
+                <HLSSource isVideoChild src={videoSrc} ref="source" />
+              </Player>
+            )}
           </div>
           {showList && (
             <div className={styles.videoList}>
@@ -232,8 +239,8 @@ class VideoPlay extends Component {
         {this.renderPan()}
       </Draggable>
     ) : (
-        this.renderPan()
-      );
+      this.renderPan()
+    );
   }
 }
 
