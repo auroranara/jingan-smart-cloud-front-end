@@ -30,6 +30,7 @@ export default class CurrentHiddenDanger extends PureComponent {
     this.currentHiddenDangerIndex = -1;
     // echats定时器
     this.hiddenDangerTimer = null;
+    this.selectedDangerIndex = -1;
   }
 
   componentWillUnmount() {
@@ -78,6 +79,7 @@ export default class CurrentHiddenDanger extends PureComponent {
     });
   };
 
+  // dataIndex从0开始
   onChartClick = ({ dataIndex }, chart) => {
     const { onClickChat } = this.props;
     // 如果点击已选中的区块，取消筛选
@@ -278,13 +280,13 @@ export default class CurrentHiddenDanger extends PureComponent {
                                 </span>
                               </Fragment>
                             ) : (
-                              <Fragment>
-                                {isVague ? nameToVague(rectify_user_name) : rectify_user_name}
-                                <span className={+status === 7 ? styles.warningText : styles.text}>
-                                  {moment(+plan_rectify_time).format('YYYY-MM-DD')}
-                                </span>
-                              </Fragment>
-                            ),
+                                <Fragment>
+                                  {isVague ? nameToVague(rectify_user_name) : rectify_user_name}
+                                  <span className={+status === 7 ? styles.warningText : styles.text}>
+                                    {moment(+plan_rectify_time).format('YYYY-MM-DD')}
+                                  </span>
+                                </Fragment>
+                              ),
                         },
                         { label: '检查点位', value: <span>{item_name || '暂无数据'}</span> },
                         { label: '来源', value: <span>{report_source_name || '暂无数据'}</span> },

@@ -128,7 +128,7 @@ export default class App extends PureComponent {
     // 获取实时警报信息
     dispatch({
       type: 'monitor/fetchRealTimeAlarm',
-      payload: { companyId, overFlag: 0 },
+      payload: { companyId, overFlag: 0, screenType: 1 },
     });
 
     // 获取储罐统计
@@ -185,7 +185,7 @@ export default class App extends PureComponent {
     } = this.props;
     const { waterSelectVal, exhaustSelectVal } = this.state;
 
-    dispatch({ type: 'monitor/fetchRealTimeAlarm', payload: { companyId, overFlag: 0 } });
+    dispatch({ type: 'monitor/fetchRealTimeAlarm', payload: { companyId, overFlag: 0, screenType: 1 } });
     dispatch({ type: 'monitor/fetchCountAndExponent', payload: { companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
