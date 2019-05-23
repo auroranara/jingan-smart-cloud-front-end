@@ -70,7 +70,7 @@ function handleMonitorList({ lossDevice, abnormalDevice, faultDevice }) {
         id: `${deviceId}_alarm`,
         monitoringType: WATER_SYSTEM.includes(typeName) ? '水系统监测' : typeName,
         relationId: relationDeviceId,
-        params: typeName !== FIRE_ENGINE ? unormalParams : null,
+        params: unormalParams,
         status: typeName !== FIRE_ENGINE ? 2 : (unormalParams.includes('火警') ? 2 : -3),
         location: [area, location].filter(v => v).join('-'),
         time: statusTime,

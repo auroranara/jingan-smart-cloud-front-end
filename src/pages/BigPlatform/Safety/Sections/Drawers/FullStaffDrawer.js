@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Drawer } from 'antd';
+import { Drawer, Row, Col } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import styles from '../../Government.less';
 
@@ -54,6 +54,15 @@ class FullStaffDrawer extends PureComponent {
                   />
 
                   <div className={styles.sectionContentMain}>
+                    <Row className={styles.personWrapper}>
+                      {keyList &&
+                        keyList.map((key, index) => (
+                          <Col span={12} className={styles.person} key={key}>
+                            <div className={styles.personName}>{key}</div>
+                            <div className={styles.personValue}>{valueList[index].length}</div>
+                          </Col>
+                        ))}
+                    </Row>
                     {valueList.length > 0 ? (
                       valueList.map((value, index) => (
                         <div
