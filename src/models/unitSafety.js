@@ -61,6 +61,8 @@ function handleRiskList(response) {
   return result;
 }
 const WATER_SYSTEM = ['消火栓系统', '喷淋系统', '水池/水箱'];
+// 消防主机
+const FIRE_ENGINE = '消防主机监测';
 function handleMonitorList({ lossDevice, abnormalDevice, faultDevice }) {
   const alarm = Array.isArray(abnormalDevice)
     ? abnormalDevice.map(
@@ -68,8 +70,8 @@ function handleMonitorList({ lossDevice, abnormalDevice, faultDevice }) {
         id: `${deviceId}_alarm`,
         monitoringType: WATER_SYSTEM.includes(typeName) ? '水系统监测' : typeName,
         relationId: relationDeviceId,
-        params: unormalParams,
-        status: 2,
+        params: typeName !== FIRE_ENGINE ? unormalParams : null,
+        status: typeName !== FIRE_ENGINE ? 2 : (unormalParams.includes('火警') ? 2 : -3),
         location: [area, location].filter(v => v).join('-'),
         time: statusTime,
         name: deviceName,

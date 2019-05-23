@@ -44,20 +44,17 @@ export default class SafetyOfficerDrawer extends PureComponent {
         }}
         sectionProps={{
           refScroll: this.refScroll,
-          scrollProps: { className: styles.scrollContainer },
-          fixedContent: (
-            <Row className={styles.personWrapper}>
-              {keyList &&
-                keyList.map((key, index) => (
-                  <Col span={12} className={styles.person} key={key}>
-                    <div className={styles.personName}>{key}</div>
-                    <div className={styles.personValue}>{valueList[index].length}</div>
-                  </Col>
-                ))}
-            </Row>
-          ),
         }}
       >
+        <Row className={styles.personWrapper}>
+          {keyList &&
+            keyList.map((key, index) => (
+              <Col span={12} className={styles.person} key={key}>
+                <div className={styles.personName}>{key}</div>
+                <div className={styles.personValue}>{valueList[index].length}</div>
+              </Col>
+            ))}
+        </Row>
         <div className={styles.container}>
           {valueList &&
             valueList.map((value, index) => (
