@@ -217,7 +217,7 @@ class GovernmentBigPlatform extends Component {
 
     // 政府监管人员列表
     dispatch({
-      type: 'bigPlatform/fetchGovFulltimeWorkerList',
+      type: 'bigPlatform/fetchGovFulltimeWorkerListNew',
       payload: { gridId },
     });
 
@@ -599,30 +599,30 @@ class GovernmentBigPlatform extends Component {
   render() {
     const {
       communityCom,
-      companyIn,
-      fullStaff,
-      overHd,
-      hdCom,
+      // companyIn,
+      // fullStaff,
+      // overHd,
+      // hdCom,
       comInfo,
-      riskColors,
-      hdOverDetail,
+      // riskColors,
+      // hdOverDetail,
       projectName,
       riskColorSummary,
       center,
       zoom,
       companyId,
-      hiddenDanger,
+      // hiddenDanger,
       infoWindow,
       tooltipVisible,
       tooltipName,
       tooltipPosition,
       infoWindowShow,
-      checks,
-      companyOver,
+      // checks,
+      // companyOver,
       dangerCompanyData,
       dangerCompanyLast,
       checksMonth,
-      riskOver,
+      // riskOver,
       checkUserId,
       checkNum,
       treeValue,
@@ -638,7 +638,7 @@ class GovernmentBigPlatform extends Component {
       comInDrawer,
       fullStaffDrawer,
       overHdCom,
-      overHdDetail,
+      // overHdDetail,
       companyInfoDrawer,
       polygons,
     } = this.state;
@@ -650,28 +650,30 @@ class GovernmentBigPlatform extends Component {
           companyLevelDto,
           countGridCompany,
         },
-        countDangerLocation,
+        // countDangerLocation,
         listForMapForOptimize = {},
         listForMapForOptimize: { overRectifyNum },
         govFulltimeWorkerList: { total: fulltimeWorker = 0, list: fulltimeWorkerList = [] },
         overRectifyCompany,
         searchAllCompany,
-        dangerLocationCompanyData,
+        // dangerLocationCompanyData,
         location,
         checkInfo,
         hiddenDangerCompanyAll,
         hiddenDangerCompanyMonth,
         hiddenDangerOverTime,
-        checkedCompanyInfo,
+        // checkedCompanyInfo,
         // hiddenDangerListByDate,
         selectOvertimeItemNum,
-        overtimeUncheckedCompany,
+        // overtimeUncheckedCompany,
         companyMessage,
         specialEquipment,
-        mapLocation = {},
+        // mapLocation = {},
         companyCheckCount,
-        riskDetailList,
+        // riskDetailList,
         selfCheckPoint = {},
+        govSafetyOfficer,
+        phoneVisible,
         selfCheckPoint: { total: selfCheckPointTotal },
         securityCheck,
         hiddenDangerList: riskDetailNoOrder,
@@ -746,6 +748,7 @@ class GovernmentBigPlatform extends Component {
                 goComponent={this.goComponent}
                 searchAllCompany={searchAllCompany}
                 fulltimeWorker={fulltimeWorker}
+                govSafetyOfficer={govSafetyOfficer}
                 overRectifyNum={overRectifyNum}
                 selfCheckPointTotal={selfCheckPointTotal}
                 selectOvertimeItemNum={selectOvertimeItemNum}
@@ -1004,8 +1007,9 @@ class GovernmentBigPlatform extends Component {
         <FullStaffDrawer
           visible={fullStaffDrawer}
           goComponent={this.goComponent}
-          listData={fulltimeWorkerList}
-          fulltimeWorker={fulltimeWorker}
+          govSafetyOfficer={govSafetyOfficer}
+          phoneVisible={phoneVisible}
+          // fulltimeWorker={fulltimeWorker}
           handleParentChange={this.handleParentChange}
         />
 

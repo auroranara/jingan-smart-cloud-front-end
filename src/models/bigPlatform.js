@@ -7,7 +7,7 @@ import {
   getNewHomePage,
   getLocation,
   getInfoByLocation,
-  getCompanyMessage,
+  // getCompanyMessage,
   getSpecialEquipment,
   getCoItemList,
   getCountDangerLocationForCompany,
@@ -15,7 +15,8 @@ import {
   getRiskPointInfo,
   // getHiddenDanger,
   getSafetyOfficer,
-  getGovFulltimeWorkerList,
+  // getGovFulltimeWorkerList,
+  getGovFulltimeWorkerListNew,
   getOverRectifyCompany,
   getSearchImportantCompany,
   getSearchAllCompany,
@@ -43,7 +44,7 @@ import {
   getListForMapForHidden,
   getSecurityCheck,
   getHiddenDangerListForPage,
-  hiddenDangerListByDateForPage,
+  // hiddenDangerListByDateForPage,
   getSelfCheckPointDataForPage,
   getCompanyInfo,
   getMapLocationByParent,
@@ -235,6 +236,8 @@ export default {
     // hiddenDanger: 0,
     // 安全人员信息
     safetyOfficer: {},
+    // 监管人员
+    govSafetyOfficer: {},
     govFulltimeWorkerList: {
       total: 0,
       list: [],
@@ -295,6 +298,8 @@ export default {
     listForMapForHidden: [],
     securityCheck: [],
     riskDetailNoOrder: [],
+    // 手机号是否可见
+    phoneVisible: false,
   },
 
   effects: {
@@ -682,17 +687,40 @@ export default {
         success();
       }
     },
+
     // 政府专职人员列表
-    *fetchGovFulltimeWorkerList({ payload, success }, { call, put }) {
-      const response = yield call(getGovFulltimeWorkerList, payload);
+    // *fetchGovFulltimeWorkerList({ payload, success }, { call, put }) {
+    //   const response = yield call(getGovFulltimeWorkerList, payload);
+    //   yield put({
+    //     type: 'govFulltimeWorkerList',
+    //     payload: response,
+    //   });
+    //   if (success) {
+    //     success();
+    //   }
+    // },
+
+    // 政府专职人员列表
+    *fetchGovFulltimeWorkerListNew({ payload, callback }, { call, put }) {
+      const response = yield call(getGovFulltimeWorkerListNew, payload);
       yield put({
-        type: 'govFulltimeWorkerList',
-        payload: response,
+        type: 'saveOfficer',
+        payload: {
+          govSafetyOfficer: Object.entries(response.roleMap || {}).reduce(
+            (result, [key, value]) => {
+              result.keyList.push(key);
+              result.valueList.push(value || []);
+              return result;
+            },
+            { keyList: [], valueList: [] }
+          ),
+        },
       });
-      if (success) {
-        success();
+      if (callback) {
+        callback(response);
       }
     },
+
     // 获取超期未整改隐患企业列表
     *fetchOverRectifyCompany({ payload, success, error }, { call, put }) {
       const response = yield call(getOverRectifyCompany, payload);
@@ -1481,6 +1509,29 @@ export default {
       return {
         ...state,
         selfCheckPointDataForPage: payload,
+      };
+    },
+
+    saveOfficer(state, { payload }) {
+      return {
+        ...state,
+        ...payload,
+      };
+    },
+
+    // 保存手机是否显示配置
+    savePhoneVisible(state, { payload: { phoneVisible } = {} }) {
+      if (phoneVisible !== undefined) {
+        localStorage.setItem('phoneVisible', JSON.stringify(phoneVisible));
+      } else {
+        phoneVisible = JSON.parse(localStorage.getItem('phoneVisible')) || false;
+        if (!phoneVisible) {
+          localStorage.setItem('phoneVisible', JSON.stringify(false));
+        }
+      }
+      return {
+        ...state,
+        phoneVisible,
       };
     },
   },
