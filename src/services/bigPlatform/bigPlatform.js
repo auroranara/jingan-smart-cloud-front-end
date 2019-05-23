@@ -52,6 +52,11 @@ export async function getGovFulltimeWorkerList(params) {
   return request(`/acloud_new/v2/sfg/govFulltimeWorkerList.json?${stringify(params)}`);
 }
 
+// 政府专职人员列表
+export async function getGovFulltimeWorkerListNew(params) {
+  return request(`/acloud_new/v2/sfg/govFulltimeWorkerListNew.json?${stringify(params)}`);
+}
+
 // 获取超期未整改隐患企业列表
 export async function getOverRectifyCompany(params) {
   return request(`/acloud_new/v2/sfg/overRectifyCompany.json?${stringify(params)}`);

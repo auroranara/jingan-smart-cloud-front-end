@@ -836,7 +836,7 @@ export default class FireControlBigPlatform extends PureComponent {
                 handleDrawerVisibleChange={this.handleDrawerVisibleChange}
               />
               <OverviewBackSection
-                data={{ selected: mapSelected, companyOv }}
+                data={{ selected: mapSelected, companyOv, safeMan }}
                 handleShowUnitDanger={this.handleShowUnitDanger}
                 handleDrawerVisibleChange={this.handleDrawerVisibleChange}
               />

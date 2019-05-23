@@ -336,9 +336,10 @@ export default {
     },
     // 获取安全员
     *fetchSafeMan({ payload }, { call, put }) {
-      let response = yield call(getSafeMan, payload);
-      if (response)
-        yield put({ type: 'saveSafeMan', payload: response });
+      const response = yield call(getSafeMan, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveSafeMan', payload: data && data.roleMap ? data.roleMap : {} });
     },
     // 获取最近十二个月的主机报警数量
     *fetchHostAlarmTrend({ payload }, { call, put }) {
