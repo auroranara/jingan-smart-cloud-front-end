@@ -1,8 +1,10 @@
 import React, { PureComponent } from 'react';
 
 import styles from './RiskDrawer.less';
+import Ellipsis from '@/components/Ellipsis';
 import DrawerContainer from '../components/DrawerContainer';
 
+const MAX = 30;
 const NORMALS = [1, 3];
 const NO_DATA = '暂无信息';
 const STATUS = ['', '正常', '异常', '待检查', '已超时'];
@@ -17,10 +19,17 @@ function RiskCard(props) {
           <span className={styles.point}>风险点</span>
           {point}
         </p>
-        <p>
-          <span className={styles.point}>检查人</span>
-          {examiner}
-        </p>
+        {examiner && examiner.length > MAX ? (
+          <Ellipsis tooltip lines={1} className={styles.ellipsis}>
+            <span className={styles.point}>检查人</span>
+            {examiner}
+          </Ellipsis>
+        ) : (
+          <p>
+            <span className={styles.point}>检查人</span>
+            {examiner}
+          </p>
+        )}
         <p>
           <span className={styles.date}>检查时间</span>
           {date}
