@@ -126,7 +126,7 @@ export default class DeviceCard extends BigPlatformCard {
         return label && (
           <div className={styles.statusItem}>
             <div className={styles.statusItemIcon} style={{ backgroundColor: STATUS_COLOR[status] }} />
-            <div className={styles.statusItemLabel}>{label}{status === 2 && params && `（${params}）`}</div>
+            <div className={styles.statusItemLabel}>{label}{params && `（${params}）`}</div>
           </div>
         );
       },
