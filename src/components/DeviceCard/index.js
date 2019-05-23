@@ -39,6 +39,15 @@ const isFireEngine = ({ monitoringType }) => monitoringType === FIRE_ENGINE;
 // 不是消防主机
 const notFireEngine = ({ monitoringType }) => monitoringType !== FIRE_ENGINE;
 
+/**
+ * 判断是否为Number类型
+ * @param {Any} value 判断对象
+ * @return true是Number类型，false不是Number类型
+ */
+const isNumber = value => {
+  return Object.prototype.toString.call(value) === '[object Number]';
+};
+
 export default class DeviceCard extends BigPlatformCard {
   FIELDNAMES = {
     monitoringType: 'monitoringType', // 监测类型
@@ -65,7 +74,9 @@ export default class DeviceCard extends BigPlatformCard {
     {
       label: '回路故障号',
       render: ({ loopNumber, partNumber }) =>
-        `${loopNumber ? `${loopNumber}号回路` : ''}${partNumber ? `${partNumber}号` : ''}`,
+        `${loopNumber || isNumber(loopNumber) ? `${loopNumber}号回路` : ''}${
+          partNumber || isNumber(partNumber) ? `${partNumber}号` : ''
+        }`,
       hidden: notFireEngine,
       className: styles.row,
     },
