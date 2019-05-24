@@ -1113,7 +1113,7 @@ export default class App extends PureComponent {
   };
 
   // 点击当前隐患图表进行筛选
-  handleFilterCurrentDanger = ({ dataIndex }) => {
+  handleFilterCurrentDanger = ({ dataIndex }, callback = null) => {
     const {
       dispatch,
       match: {
@@ -1129,6 +1129,7 @@ export default class App extends PureComponent {
         status:
           (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || null,
       },
+      callback,
     });
   };
 
