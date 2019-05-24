@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { Tooltip } from 'antd';
 import moment from 'moment';
 import styles from '../Government.less';
+import { log } from 'util';
 
 class TopData extends PureComponent {
   constructor(props) {
@@ -16,14 +17,19 @@ class TopData extends PureComponent {
   render() {
     const {
       searchAllCompany: { dataUnimportantCompany = [], dataImportant = [] },
-      fulltimeWorker = 0,
+      // fulltimeWorker = 0,
       overRectifyNum = 0,
       checkedCompanyInfo,
       handleParentChange,
       fetchCheckMsgs,
       selfCheckPointTotal,
       closeAllDrawers,
+      govSafetyOfficer: { valueList = [] } = {},
     } = this.props;
+
+    const officerUser = (valueList || []).reduce((total, value) => {
+      return total + (value ? value.length : 0);
+    }, 0);
 
     return (
       <section className={styles.sectionWrapper} style={{ height: 'auto' }}>
@@ -59,7 +65,7 @@ class TopData extends PureComponent {
                   >
                     <div className={styles.topName}>监管人员</div>
                     <div className={styles.topNum} style={{ color: '#00ffff' }}>
-                      {fulltimeWorker}
+                      {officerUser}
                     </div>
                   </div>
                 </Tooltip>

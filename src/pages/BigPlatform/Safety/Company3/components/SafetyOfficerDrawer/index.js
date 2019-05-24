@@ -30,13 +30,7 @@ export default class SafetyOfficerDrawer extends PureComponent {
       // 抽屉是否可见
       visible,
       // 数据
-      unitSafety: {
-        safetyOfficer: {
-          keyList=[],
-          valueList=[],
-        }={},
-        phoneVisible,
-      },
+      unitSafety: { safetyOfficer: { keyList = [], valueList = [] } = {}, phoneVisible },
       // 抽屉关闭事件
       onClose,
     } = this.props;
@@ -50,31 +44,38 @@ export default class SafetyOfficerDrawer extends PureComponent {
         }}
         sectionProps={{
           refScroll: this.refScroll,
-          scrollProps: { className: styles.scrollContainer },
-          fixedContent: (
-            <Row className={styles.personWrapper}>
-              {keyList && keyList.map((key, index) => (
-                <Col span={12} className={styles.person} key={key}>
+        }}
+      >
+        <Row className={styles.personWrapper}>
+          {keyList &&
+            keyList.map((key, index) => (
+              <Col span={12} className={styles.person} key={key}>
                 <div className={styles.personName}>{key}</div>
                 <div className={styles.personValue}>{valueList[index].length}</div>
               </Col>
-              ))}
-            </Row>
-          ),
-        }}
-      >
+            ))}
+        </Row>
         <div className={styles.container}>
-          {valueList && valueList.map((value, index) => (
-            <div className={styles.personList} style={{ borderColor: borderColorList[index%4] }} key={keyList[index]}>
-              <div className={styles.personLabel}>{keyList[index]}</div>
-              {value.map(({ id, user_name: name, phone_number: phone }) => (
-                <div className={styles.personItem} key={id}>
-                  <div className={styles.personItemName}>{name}</div>
-                  <div className={styles.personItemPhone}>{phoneVisible || !phone ? phone : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}</div>
-                </div>
-              ))}
-            </div>
-          ))}
+          {valueList &&
+            valueList.map((value, index) => (
+              <div
+                className={styles.personList}
+                style={{ borderColor: borderColorList[index % 4] }}
+                key={keyList[index]}
+              >
+                <div className={styles.personLabel}>{keyList[index]}</div>
+                {value.map(({ id, user_name: name, phone_number: phone }) => (
+                  <div className={styles.personItem} key={id}>
+                    <div className={styles.personItemName}>{name}</div>
+                    <div className={styles.personItemPhone}>
+                      {phoneVisible || !phone
+                        ? phone
+                        : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
         </div>
       </SectionDrawer>
     );

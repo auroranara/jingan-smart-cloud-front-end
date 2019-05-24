@@ -15,10 +15,10 @@ const STATUS_DICT = {
   '0': '正常',
   '1': '报警',
   '2': '报警',
-  '报警': '报警',
-  '火警': '火警',
-  '故障': '故障',
-  '失联': '失联',
+  报警: '报警',
+  火警: '火警',
+  故障: '故障',
+  失联: '失联',
 };
 // 颜色
 const STATUS_COLOR = {
@@ -27,10 +27,10 @@ const STATUS_COLOR = {
   '0': '#37a460',
   '1': '#f83329',
   '2': '#f83329',
-  '报警': '#f83329',
-  '火警': '#f83329',
-  '故障': '#ffb400',
-  '失联': '#9f9f9f',
+  报警: '#f83329',
+  火警: '#f83329',
+  故障: '#ffb400',
+  失联: '#9f9f9f',
 };
 // 消防主机
 const FIRE_ENGINE = '消防主机监测';
@@ -39,6 +39,14 @@ const isFireEngine = ({ monitoringType }) => monitoringType === FIRE_ENGINE;
 // 不是消防主机
 const notFireEngine = ({ monitoringType }) => monitoringType !== FIRE_ENGINE;
 
+/**
+ * 判断是否为Number类型
+ * @param {Any} value 判断对象
+ * @return true是Number类型，false不是Number类型
+ */
+const isNumber = value => {
+  return Object.prototype.toString.call(value) === '[object Number]';
+};
 
 export default class DeviceCard extends BigPlatformCard {
   FIELDNAMES = {
@@ -65,7 +73,10 @@ export default class DeviceCard extends BigPlatformCard {
     },
     {
       label: '回路故障号',
-      render: ({ loopNumber, partNumber }) => `${loopNumber ? `${loopNumber}号回路` : ''}${partNumber ? `${partNumber}号` : ''}`,
+      render: ({ loopNumber, partNumber }) =>
+        `${loopNumber || isNumber(loopNumber) ? `${loopNumber}号回路` : ''}${
+          partNumber || isNumber(partNumber) ? `${partNumber}号` : ''
+        }`,
       hidden: notFireEngine,
       className: styles.row,
     },
@@ -112,28 +123,39 @@ export default class DeviceCard extends BigPlatformCard {
       className: styles.row,
     },
     {
-      label: ({ monitoringType }) => monitoringType !== FIRE_ENGINE ? '区域位置' : '具体位置',
+      label: ({ monitoringType }) => (monitoringType !== FIRE_ENGINE ? '区域位置' : '具体位置'),
       key: 'location',
       className: styles.row,
     },
     {
       label: '状态',
       render({ status, params, monitoringType }) {
-        if (monitoringType === FIRE_ENGINE && status === 2) {
-          status = '火警';
+        let label = STATUS_DICT[status];
+        if (monitoringType === FIRE_ENGINE) {
+          params = null;
+          if (status === 2) {
+            label = params;
+          }
         }
-        const label = STATUS_DICT[status];
-        return label && (
-          <div className={styles.statusItem}>
-            <div className={styles.statusItemIcon} style={{ backgroundColor: STATUS_COLOR[status] }} />
-            <div className={styles.statusItemLabel}>{label}{status === 2 && params && `（${params}）`}</div>
-          </div>
+        return (
+          label && (
+            <div className={styles.statusItem}>
+              <div
+                className={styles.statusItemIcon}
+                style={{ backgroundColor: STATUS_COLOR[status] }}
+              />
+              <div className={styles.statusItemLabel}>
+                {label}
+                {params && `（${params}）`}
+              </div>
+            </div>
+          )
         );
       },
       className: classNames(styles.row, styles.statusRow),
     },
     {
-      label: ({ status }) => STATUS_DICT[status] ? `${STATUS_DICT[status]}时间` : '发生时间',
+      label: ({ status }) => (STATUS_DICT[status] ? `${STATUS_DICT[status]}时间` : '发生时间'),
       render: ({ time }) => time && moment(+time).format(TIME_FORMAT),
       className: styles.row,
     },
@@ -148,10 +170,7 @@ export default class DeviceCard extends BigPlatformCard {
     const { monitoringType } = fieldsValue;
 
     return (
-      <Container
-        className={className}
-        style={style}
-      >
+      <Container className={className} style={style}>
         <div className={styles.title}>{monitoringType}</div>
         {this.renderFields(fieldsValue)}
       </Container>
