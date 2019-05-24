@@ -27,16 +27,28 @@ export default class CurrentHiddenDanger extends PureComponent {
   constructor(props) {
     super(props);
     // 隐患高亮索引
-    this.currentHiddenDangerIndex = -1;
+    // this.currentHiddenDangerIndex = -1;
     // echats定时器
-    this.hiddenDangerTimer = null;
+    // this.hiddenDangerTimer = null;
     this.selectedDangerIndex = -1;
+    // this.hoverIndex = -1;
+    this.state = {
+      hoverIndex: -1,
+    }
   }
 
-  componentWillUnmount() {
-    clearInterval(this.hiddenDangerTimer);
+  // componentWillUnmount() {
+  //   clearInterval(this.hiddenDangerTimer);
+  // }
+  getSnapshotBeforeUpdate(preProps) {
+    return preProps.visible !== this.props.visible
   }
-
+  componentDidUpdate(preProps, preState, snapshot) {
+    if (snapshot) {
+      this.selectedDangerIndex = -1;
+      this.setState({ hoverIndex: -1 })
+    }
+  }
   handleStatusPhoto = status => {
     //2未超期   3待复查, 7  已超期
     switch (+status) {
@@ -51,7 +63,8 @@ export default class CurrentHiddenDanger extends PureComponent {
     }
   };
 
-  onMouseOver = (params, chart) => {
+  onMouseOver = ({ dataIndex }, chart) => {
+    this.setState({ hoverIndex: dataIndex })
     if (this.selectedDangerIndex >= 0) {
       chart.dispatchAction({
         type: 'downplay',
@@ -62,11 +75,12 @@ export default class CurrentHiddenDanger extends PureComponent {
     chart.dispatchAction({
       type: 'highlight',
       seriesIndex: 0,
-      dataIndex: params.dataIndex,
+      dataIndex: dataIndex,
     });
   };
 
   onMouseOut = ({ dataIndex }, chart) => {
+    this.setState({ hoverIndex: -1 })
     chart.dispatchAction({
       type: 'downplay',
       seriesIndex: 0,
@@ -89,18 +103,21 @@ export default class CurrentHiddenDanger extends PureComponent {
       chart.dispatchAction({
         type: 'downplay',
         seriesIndex: 0,
-        dataIndex: dataIndex,
+        dataIndex,
       });
     } else {
       this.selectedDangerIndex = dataIndex;
-      onClickChat({ dataIndex });
-      chart.dispatchAction({
-        type: 'highlight',
-        seriesIndex: 0,
-        dataIndex: dataIndex,
-      });
+      onClickChat({ dataIndex }, () => {
+        chart.dispatchAction({
+          type: 'highlight',
+          seriesIndex: 0,
+          dataIndex: dataIndex,
+        });
+      })
     }
   };
+
+  generateShow = (key, hoverIndex) => (this.selectedDangerIndex === key && [-1, key].includes(hoverIndex)) || hoverIndex === key
 
   render() {
     const {
@@ -113,6 +130,7 @@ export default class CurrentHiddenDanger extends PureComponent {
       totalNum: total,
       list = [],
     } = this.props;
+    const { hoverIndex } = this.state
     const legendInfo = {
       已超期: ycq,
       未超期: wcq,
@@ -179,9 +197,11 @@ export default class CurrentHiddenDanger extends PureComponent {
               name: '已超期',
               itemStyle: { color: `${redColor}` },
               labelLine: {
+                show: this.generateShow(0, hoverIndex),
                 lineStyle: { color: `${redColor}` },
               },
               label: {
+                show: this.generateShow(0, hoverIndex),
                 color: { color: `${redColor}` },
               },
             },
@@ -190,9 +210,11 @@ export default class CurrentHiddenDanger extends PureComponent {
               name: '未超期',
               itemStyle: { color: `${yellowColor}` },
               labelLine: {
+                show: this.generateShow(1, hoverIndex),
                 lineStyle: { color: `${yellowColor}` },
               },
               label: {
+                show: this.generateShow(1, hoverIndex),
                 color: { color: `${yellowColor}` },
               },
             },
@@ -201,9 +223,11 @@ export default class CurrentHiddenDanger extends PureComponent {
               name: '待复查',
               itemStyle: { color: `${blueColor}` },
               labelLine: {
+                show: this.generateShow(2, hoverIndex),
                 lineStyle: { color: `${blueColor}` },
               },
               label: {
+                show: this.generateShow(2, hoverIndex),
                 color: { color: `${blueColor}` },
               },
             },
@@ -211,6 +235,7 @@ export default class CurrentHiddenDanger extends PureComponent {
         },
       ],
     };
+
     return (
       <DrawerContainer
         title="当前隐患"
