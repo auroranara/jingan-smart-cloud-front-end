@@ -47,7 +47,7 @@ import {
   getIdMaps,
   sortTree,
 } from './utils';
-import { MAI, GOV, OPE, COM, getIdMap as getMsgIdMap, getNewAccountMsgs, covertToMsgs, convertToMsgList } from '@/pages/RoleAuthorization/Role/utils';
+import { MAI, GOV, OPE, COM, getIdMap as getMsgIdMap, getNewAccountMsgs, convertToMsgs, convertToMsgList } from '@/pages/RoleAuthorization/Role/utils';
 import styles from './AccountManagementEdit.less';
 import styles1 from '../Role/Role.less';
 
@@ -246,7 +246,10 @@ export default class AssociatedUnit extends PureComponent {
           messagePermissions,
           maintenacePermissions = [],
         }) => {
-          this.setState({ unitTypeChecked: unitType, msgs: covertToMsgs(messagePermissions) });
+          this.setState({
+            unitTypeChecked: unitType,
+            msgs: convertToMsgs(messagePermissions),
+          });
           // 根据企业类型获取对应类型的角色
           fetchRoles({
             payload: { unitType, companyId: unitId },
@@ -256,7 +259,7 @@ export default class AssociatedUnit extends PureComponent {
               if (!ids.includes(roleId)) // 处理先配置公共角色后配置私有角色时，原来的公共角色id不存在私有角色列表里的问题
                 setFieldsValue({ roleId: undefined });
               else
-                this.fetchRolePermissions(roleId);
+                this.fetchRolePermissions(roleId, () => this.setState({ msgs: convertToMsgs(messagePermissions, this.msgIdMap) }));
             },
           });
           // 若为维保单位，则获取维保权限树，并设置维保权限树初值
@@ -845,7 +848,7 @@ export default class AssociatedUnit extends PureComponent {
       setFieldsValue(values);
   };
 
-  fetchRolePermissions = id => {
+  fetchRolePermissions = (id, callback) => {
     const { dispatch } = this.props;
     const { unitTypeChecked } = this.state;
     const isNotAdmin = unitTypeChecked !== OPE;
@@ -865,6 +868,7 @@ export default class AssociatedUnit extends PureComponent {
             this.appPermissions = appPermissions;
             this.setAppPermissions();
           }
+          callback && callback()
         },
       });
   };
