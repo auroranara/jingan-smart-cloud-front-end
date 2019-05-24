@@ -75,11 +75,17 @@ export default {
       earlyWarning: 0,
       confirmWarning: 0,
       unconnect: 0,
+      list: [],
     },
     // 设备列表
     devices: [],
     // 设备实时数据
     deviceRealTimeData: {
+      status: 0,
+      deviceId: undefined,
+      deviceDataForAppList: [],
+    },
+    deviceRealTimeDataMonitor: {
       status: 0,
       deviceId: undefined,
       deviceDataForAppList: [],
@@ -208,6 +214,18 @@ export default {
         yield put({
           type: 'save',
           payload: { deviceRealTimeData: data },
+        });
+        if (callback) {
+          callback(data);
+        }
+      }
+    },
+    *fetchDeviceRealTimeDataMonitor({ payload, callback }, { call, put }) {
+      const { code, data } = yield call(getDeviceRealTimeData, payload);
+      if (code === 200) {
+        yield put({
+          type: 'save',
+          payload: { deviceRealTimeDataMonitor: data },
         });
         if (callback) {
           callback(data);
