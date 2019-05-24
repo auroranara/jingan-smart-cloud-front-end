@@ -1,0 +1,77 @@
+.container {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .cards {
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin-top: 8px;
+    margin-right: -15px;
+    padding-right: 6px;
+
+    &::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: #064c9e;
+    }
+
+    .card {
+      background-color: transparent;
+      margin-bottom: 16px;
+    }
+
+    .content {
+      position: relative;
+      margin-bottom: 14px;
+      padding: 8px 0 8px 16px;
+      border: 1px solid #00ffff;
+      color: #fff;
+
+      .label {
+        position: absolute;
+        top: 0;
+        right: 20px;
+        width: 30px;
+        padding-top: 10px;
+        padding-bottom: 15px;
+        line-height: 1;
+        text-align: center;
+        z-index: 66;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+      }
+
+      .infoWrapper {
+        display: flex;
+        position: relative;
+        align-items: center;
+        line-height: 28px;
+
+        .name {
+          width: 110px;
+          color: #00ffff;
+        }
+
+        .value {
+          .extra {
+            color: #aeaeae;
+            display: inline-block;
+            margin-left: 8px;
+          }
+        }
+      }
+    }
+  }
+}

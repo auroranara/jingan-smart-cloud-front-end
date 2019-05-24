@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Tooltip } from 'antd';
+import { Tooltip, Icon } from 'antd';
 
 import Section from '../Section';
 import SignalAnime from '../../Monitor/Components/SignalAnime';
@@ -8,6 +8,10 @@ import line from '../imgs/line.png';
 import styles from './FireMonitoring.less';
 
 export default class FireMonitoring extends PureComponent {
+  handleShowResetSection = () => {
+    this.props.handleParentChange({ resetHostsDrawerVisible: true });
+  };
+
   render() {
     const {
       // 火警
@@ -25,23 +29,36 @@ export default class FireMonitoring extends PureComponent {
       handleShowAlarm,
       handleShowAlarmHistory,
       handleShowFault,
+      hosts,
     } = this.props;
 
-    const extra = null;
-    // const extra = (
-    //   <span className={styles.extra} onClick={handleShowAlarmHistory}>历史火警>></span>
-    // );
+    const extra = (
+      <span className={styles.extra} onClick={handleShowAlarmHistory}>
+        历史>>
+      </span>
+    );
 
     return (
       <Section title="虚拟消控主机" extra={extra}>
         <div className={styles.contaniner}>
+          {hosts &&
+            hosts.length > 0 && (
+              <div className={styles.resetButton} onClick={this.handleShowResetSection}>
+                <Tooltip
+                  overlayClassName={styles.tooltip}
+                  title="一键复位功能只对平台数据进行复位，并不能控制主机复位。"
+                >
+                  <Icon type="reload" style={{ marginRight: 8 }} />
+                  一键复位
+                </Tooltip>
+              </div>
+            )}
+
           <div className={styles.top}>
             <div
               className={styles.fireHostImg}
               style={{
-                backgroundImage: `url(${fireHost})`,
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: '20% 42%',
+                background: `url(${fireHost}) center center / auto 80% no-repeat`,
               }}
             >
               <div className={styles.anime}>
@@ -55,7 +72,7 @@ export default class FireMonitoring extends PureComponent {
                   overlayClassName={styles.tooltip}
                   title="有探测器等报警设备报警检测到火警信号。"
                 >
-                  <span className={styles.fireHover}> 火警</span>{' '}
+                  <span className={styles.fireHover}> 火警</span>
                 </Tooltip>
                 <span className={styles.fireCount}>{fire || 0}</span>
               </p>
@@ -66,21 +83,15 @@ export default class FireMonitoring extends PureComponent {
                   overlayClassName={styles.tooltip}
                   title="表示控制器检测到外部探测器或模块有故障，提示用户立即对控制器进行修复。"
                 >
-                  <span className={styles.errorHover}>故障 </span>{' '}
+                  <span className={styles.errorHover}>故障 </span>
                 </Tooltip>
                 <span className={styles.errorCount}>{fault || 0}</span>
               </p>
+              <div className={styles.divider} style={{ left: '50%' }} />
             </div>
           </div>
           <div className={styles.bottom}>
-            <div
-              className={styles.linkage}
-              style={{
-                backgroundImage: `url(${line})`,
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: '2% 100%',
-              }}
-            >
+            <div className={styles.linkage}>
               <Tooltip
                 placement="bottomLeft"
                 overlayClassName={styles.tooltip}
@@ -90,14 +101,7 @@ export default class FireMonitoring extends PureComponent {
                 <p className={styles.linkageTitle}>联动</p>
               </Tooltip>
             </div>
-            <div
-              className={styles.regulation}
-              style={{
-                backgroundImage: `url(${line})`,
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: '2% 100%',
-              }}
-            >
+            <div className={styles.regulation}>
               <Tooltip
                 placement="bottomLeft"
                 overlayClassName={styles.tooltip}
@@ -107,14 +111,7 @@ export default class FireMonitoring extends PureComponent {
                 <p className={styles.regulationTitle}>监管</p>
               </Tooltip>
             </div>
-            <div
-              className={styles.shield}
-              style={{
-                backgroundImage: `url(${line})`,
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: '2% 100%',
-              }}
-            >
+            <div className={styles.shield}>
               <Tooltip
                 placement="bottomLeft"
                 overlayClassName={styles.tooltip}
@@ -134,6 +131,9 @@ export default class FireMonitoring extends PureComponent {
                 <p className={styles.feedbackTitle}>反馈</p>
               </Tooltip>
             </div>
+            <div className={styles.divider} style={{ left: '25%' }} />
+            <div className={styles.divider} style={{ left: '50%' }} />
+            <div className={styles.divider} style={{ left: '75%' }} />
           </div>
         </div>
       </Section>
