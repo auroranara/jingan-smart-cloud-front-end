@@ -586,7 +586,7 @@ export default class NewUnitFireControl extends PureComponent {
     dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId } });
 
     // 处理工单统计
-    // dispatch({ type: 'newUnitFireControl/fetchCountAllFireAndFault', payload: { companyId } });
+    dispatch({ type: 'newUnitFireControl/fetchCountAllFireAndFault', payload: { companyId } });
   }
 
   handleFetchRealTimeData = deviceId => {
@@ -1343,7 +1343,12 @@ export default class NewUnitFireControl extends PureComponent {
   };
 
   handleClickWater = (index, typeIndex) => {
-    this.setState({ waterSystemDrawerVisible: true, filterIndex: index, waterTabItem: typeIndex });
+    const { waterTabItem } = this.state;
+    this.setState({
+      waterSystemDrawerVisible: true,
+      filterIndex: index,
+      waterTabItem: typeIndex || typeIndex === 0 ? typeIndex : waterTabItem,
+    });
   };
 
   handleClickElectricity = (index, deviceId) => {
@@ -1943,6 +1948,7 @@ export default class NewUnitFireControl extends PureComponent {
           waterTabItem={waterTabItem}
           onClose={this.handleCloseWater}
           waterList={list}
+          onClick={this.handleClickWater}
           filterIndex={filterIndex}
         />
         <SmokeDrawer

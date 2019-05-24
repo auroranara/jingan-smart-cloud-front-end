@@ -24,7 +24,7 @@ function OrderCard(props) {
     workOrderStatus,
     ...restProps
   } = props;
-  const timeStr = workOrderType === 2 && type === 1 ? '报修' : TYPES[type];
+  const timeStr = workOrderType === 3 && type === 1 ? '报修' : TYPES[type];
 
   const {
     componentName, // 消防主机名称
@@ -44,6 +44,8 @@ function OrderCard(props) {
     sdeviceName,
     createByName,
     createByPhone,
+    executorName,
+    phone,
   } = data;
   const titles = [componentName, sdeviceName, sdeviceName, systemTypeValue];
   const listItems = [
@@ -96,7 +98,13 @@ function OrderCard(props) {
   } else if (workOrderType === 3) {
     if (workOrderStatus === 0) statusStr = '等待维修';
     else if (workOrderStatus === 1) statusStr = '正在维修中';
-    else if (workOrderStatus === 2) statusStr = `已维修完毕`;
+    else if (workOrderStatus === 2) {
+      statusStr = `已维修完毕`;
+      listItems[workOrderType].push({
+        name: '维修人员',
+        value: `${executorName} ${phone}`,
+      });
+    }
   }
 
   return (
@@ -105,7 +113,7 @@ function OrderCard(props) {
         {/* <div className={styles.card} {...restProps}> */}
         {workOrderType !== 3 &&
           fireChildren &&
-          fireChildren.length > 0 && (
+          fireChildren.length > 1 && (
             <div
               className={styles.number}
               style={{

@@ -27,7 +27,16 @@ export default function WaterCards(props) {
     <Col span={24} className={styles.container} onClick={onClick}>
       {isMending && <div className={styles.status}>检修</div>}
       {isNotIn && <div className={styles.status}>未接入</div>}
-      {!isMending && !isNotIn && +status !== 0 && <div className={styles.status}>异常</div>}
+      {!isMending &&
+        !isNotIn &&
+        (+status !== 0 || +status !== -1) && <div className={styles.status}>异常</div>}
+      {!isMending &&
+        !isNotIn &&
+        +status === -1 && (
+          <div className={styles.status} style={{ backgroundColor: '#9f9f9f' }}>
+            失联
+          </div>
+        )}
       <img
         src={isGray ? waterLoss : !isMending && +status === 0 ? waterNormal : waterError}
         alt="pond"
