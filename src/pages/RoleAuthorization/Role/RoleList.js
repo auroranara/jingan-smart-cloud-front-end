@@ -8,7 +8,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import InlineForm from '../../BaseInfo/Company/InlineForm';
 import { hasAuthority, AuthSpan } from '@/utils/customAuth';
 import styles from './Role.less';
-import { OPE, LIST_PAGE_SIZE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from './utils';
+import { GOV, OPE, LIST_PAGE_SIZE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform, generateTreeNode } from './utils';
 
 const { Option } = Select;
 const { TreeNode } = TreeSelect;
@@ -18,6 +18,7 @@ export default class RoleList extends PureComponent {
   state = {
     formData: {},
     unitType: undefined,
+    syncModalVisible: false,
   };
 
   componentDidMount() {
@@ -347,6 +348,62 @@ export default class RoleList extends PureComponent {
     );
   }
 
+  renderModal() { // 只有运营和超级管理员才有同步权限
+    const {
+      account: { unitTypes },
+      role: { unitList, unitsLoading },
+    } = this.props;
+    const { modalUnitType, syncModalVisible } = this.state;
+
+    const isGovernment = modalUnitType === GOV;
+    const sortedUnitTypes = unitTypes ? Array.from(unitTypes).filter(({ id }) => id !== OPE) : [];
+    sortedUnitTypes.sort((u1, u2) => u1.sort - u2.sort);
+    return (
+      <Modal
+        title="同步角色"
+        visible={syncModalVisible}
+        onOk={this.handleSyncOk}
+        onCancel={this.handleSyncCancel}
+      >
+        <p>
+          单位类型：
+          <Select
+            allowClear
+            value={modalUnitType}
+            onChange={this.handleModalTypeChange}
+          >
+            {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
+          </Select>
+        </p>
+        <p>
+          选择单位：
+          {isGovernment ? (
+            <TreeSelect
+              allowClear
+              placeholder="请选择所属单位"
+            >
+              {generateTreeNode(unitList)}
+            </TreeSelect>
+          ) : (
+            <Select
+              showSearch
+              placeholder="请选择所属单位"
+              notFoundContent={unitsLoading ? <Spin size="small" /> : '暂无数据'}
+              onSearch={this.handleUnitValueChange}
+              filterOption={false}
+            >
+              {unitList.map(item => (
+                <Option value={item.id} key={item.id}>
+                  {item.name}
+                </Option>
+              ))}
+            </Select>
+          )}
+        </p>
+      </Modal>
+    )
+  };
+
   render() {
     const {
       type,
@@ -377,6 +434,11 @@ export default class RoleList extends PureComponent {
                 : '用户(私有)角色用来单位自定义角色以配置账号权限，开通用户(私有)角色的单位不再使用公共角色'
               }
             </p>
+            {isPublic && (
+              <p className={styles.sync}>
+                同步公共角色
+              </p>
+            )}
           </div>
         }
       >
