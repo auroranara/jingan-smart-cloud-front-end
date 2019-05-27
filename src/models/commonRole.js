@@ -5,6 +5,7 @@ import {
   addRole,
   editRole,
   deleteRole,
+  cloneRoles,
 } from '../services/role/commonRole';
 import { getUnits } from '../services/role/userRole';
 import { removeEmptyChildren } from '@/pages/RoleAuthorization/Role/utils';
@@ -130,6 +131,11 @@ export default {
       const { code, data } = response || {};
       if (code === 200)
         yield put({ type: 'saveUnits', payload: data && Array.isArray(data.list) ? data.list : [] });
+    },
+    *syncRoles({ payload, callback }, { call }) {
+      const response = yield call(cloneRoles, payload);
+      const { code, msg } = response || {};
+      callback && callback(code, msg);
     },
   },
 

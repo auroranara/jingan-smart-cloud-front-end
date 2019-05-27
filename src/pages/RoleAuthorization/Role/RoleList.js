@@ -9,7 +9,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import InlineForm from '../../BaseInfo/Company/InlineForm';
 import { hasAuthority, AuthSpan } from '@/utils/customAuth';
 import styles from './Role.less';
-import { GOV, OPE, LIST_PAGE_SIZE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform, generateTreeNode } from './utils';
+import { COM, GOV, OPE, LIST_PAGE_SIZE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform, generateTreeNode } from './utils';
 
 const PAGE_SIZE = 20;
 const { Option } = Select;
@@ -20,6 +20,7 @@ export default class RoleList extends PureComponent {
   state = {
     formData: {},
     unitType: undefined,
+    modalUnitType: COM,
     syncModalVisible: false,
   };
 
@@ -39,8 +40,10 @@ export default class RoleList extends PureComponent {
     if (!isPublic && unitId)
       fetchPermissionTree({ payload: unitId });
 
-    if (fetchUnits)
+    if (fetchUnits) {
       this.lazyFetchUnits = _.debounce(fetchUnits, 300);
+      // fetchUnits({ payload: { unitType: COM, pageNum: 1, pageSize: PAGE_SIZE } });
+    }
   }
 
   componentWillUnmount() {
@@ -165,9 +168,53 @@ export default class RoleList extends PureComponent {
       clearPermissionTree();
   };
 
+  showSyncModal = e => {
+    const { fetchUnits } = this.props;
+    this.setState({ syncModalVisible: true, modalUnitType: COM });
+    fetchUnits({ payload: { unitType: COM, pageNum: 1, pageSize: PAGE_SIZE } });
+  };
+
+  handleModalTypeChange = id => {
+    const {
+      fetchUnits,
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState({ modalUnitType: +id });
+    setFieldsValue({ modalCompanyId: undefined });
+    fetchUnits({ payload: { unitType: id, pageNum: 1, pageSize: PAGE_SIZE } });
+  };
+
   handleUnitValueChange = value => {
-    const { unitType } = this.state;
-    this.lazyFetchUnits({ payload: { unitType, unitName: value, pageNum: 1, pageSize: PAGE_SIZE } });
+    const { modalUnitType } = this.state;
+    this.lazyFetchUnits({ payload: { unitType: modalUnitType, unitName: value, pageNum: 1, pageSize: PAGE_SIZE } });
+  };
+
+  handleSyncOk = () => {
+    const {
+      syncRoles,
+      form: { validateFieldsAndScroll },
+    } = this.props;
+
+    validateFieldsAndScroll((error, values) => {
+      if (!error) {
+        const { modalUnitType, modalCompanyId } = values;
+        // console.log(values);
+        // return;
+        syncRoles({
+          payload: { unitType: modalUnitType, companyId: modalCompanyId },
+          callback: (code, msg) => {
+            if (code === 200)
+              message.success('角色同步成功！');
+            else
+              message.error(msg);
+          },
+        });
+      }
+    });
+  };
+
+  handleSyncCancel = () => {
+    this.setState({ syncModalVisible: false });
   };
 
   /* 渲染表单 */
@@ -194,7 +241,7 @@ export default class RoleList extends PureComponent {
       id: 'unitType',
       render: () => {
         return (
-          <Select placeholder="请选择角色类型" onChange={this.handleUnitTypeChange} allowClear>
+          <Select placeholder="请选择角色单位类型" onChange={this.handleUnitTypeChange} allowClear>
             {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
           </Select>
         );
@@ -364,58 +411,75 @@ export default class RoleList extends PureComponent {
     );
   }
 
-  renderModal() { // 只有运营和超级管理员才有同步权限
+  renderSyncModal() { // 只有运营和超级管理员才有同步权限
     const {
+      form: { getFieldDecorator },
       account: { unitTypes },
-      role: { unitList, unitsLoading },
+      role: { unitList, unitsLoading, syncRolesLoading },
     } = this.props;
     const { modalUnitType, syncModalVisible } = this.state;
 
     const isGovernment = modalUnitType === GOV;
     const sortedUnitTypes = unitTypes ? Array.from(unitTypes).filter(({ id }) => id !== OPE) : [];
     sortedUnitTypes.sort((u1, u2) => u1.sort - u2.sort);
+    const unit = isGovernment ? (
+      <TreeSelect
+        allowClear
+        placeholder="请选择所属单位"
+      >
+        {generateTreeNode(unitList)}
+      </TreeSelect>
+    ) : (
+      <Select
+        showSearch
+        placeholder="请选择所属单位"
+        notFoundContent={unitsLoading ? <Spin size="small" /> : '暂无数据'}
+        onSearch={this.handleUnitValueChange}
+        filterOption={false}
+      >
+        {unitList.map(item => (
+          <Option value={item.id} key={item.id}>
+            {item.name}
+          </Option>
+        ))}
+      </Select>
+    );
     return (
       <Modal
-        title="同步角色"
+        destroyOnClose
+        title="同步公共角色"
         visible={syncModalVisible}
         onOk={this.handleSyncOk}
+        confirmLoading={syncRolesLoading}
         onCancel={this.handleSyncCancel}
       >
-        <p>
-          单位类型：
-          <Select
-            allowClear
-            value={modalUnitType}
-            onChange={this.handleModalTypeChange}
+        <Form>
+          <Form.Item
+            label="单位类型"
+            labelCol={{ span: 4 }}
+            wrapperCol={{ span: 18 }}
           >
-            {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
-          </Select>
-        </p>
-        <p>
-          选择单位：
-          {isGovernment ? (
-            <TreeSelect
-              allowClear
-              placeholder="请选择所属单位"
-            >
-              {generateTreeNode(unitList)}
-            </TreeSelect>
-          ) : (
-            <Select
-              showSearch
-              placeholder="请选择所属单位"
-              notFoundContent={unitsLoading ? <Spin size="small" /> : '暂无数据'}
-              onSearch={this.handleUnitValueChange}
-              filterOption={false}
-            >
-              {unitList.map(item => (
-                <Option value={item.id} key={item.id}>
-                  {item.name}
-                </Option>
-              ))}
-            </Select>
-          )}
-        </p>
+            {getFieldDecorator('modalUnitType', {
+              initialValue: COM,
+              rules: [{ required: true, message: '请选择单位类型' }],
+            })(
+              <Select
+                onChange={this.handleModalTypeChange}
+              >
+                {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
+              </Select>
+            )}
+          </Form.Item>
+          <Form.Item
+            label="单位名称"
+            labelCol={{ span: 4 }}
+            wrapperCol={{ span: 18 }}
+          >
+            {getFieldDecorator('modalCompanyId', {
+              rules: [{ required: true, message: '请选择单位' }],
+            })(unit)}
+          </Form.Item>
+        </Form>
       </Modal>
     )
   };
@@ -451,7 +515,7 @@ export default class RoleList extends PureComponent {
               }
             </p>
             {isPublic && (
-              <p className={styles.sync}>
+              <p className={styles.sync} onClick={this.showSyncModal}>
                 同步公共角色
               </p>
             )}
@@ -478,6 +542,7 @@ export default class RoleList extends PureComponent {
           }
         >
           {this.renderList()}
+          {this.renderSyncModal()}
         </InfiniteScroll>
       </PageHeaderLayout>
     );
