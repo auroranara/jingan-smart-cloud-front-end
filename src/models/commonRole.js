@@ -6,6 +6,7 @@ import {
   editRole,
   deleteRole,
 } from '../services/role/commonRole';
+import { getUnits } from '../services/role/userRole';
 import { removeEmptyChildren } from '@/pages/RoleAuthorization/Role/utils';
 
 export default {
@@ -24,6 +25,7 @@ export default {
         total: 0,
       },
     },
+    unitList: [],
     isLast: false,
   },
 
@@ -123,6 +125,12 @@ export default {
         yield put({ type: 'decreaseList', payload });
       callback && callback(code, msg);
     },
+    *fetchUnits({ payload, callback }, { call, put }) {
+      const response = yield call(getUnits, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveUnits', payload: data && Array.isArray(data.list) ? data.list : [] });
+    },
   },
 
   reducers: {
@@ -166,6 +174,9 @@ export default {
         appPermissionTree: appPermissions,
         msgPermissionTree: msgPermissions,
       };
+    },
+    saveUnits(state, action) {
+      return { ...state, unitList: action.payload };
     },
   },
 }

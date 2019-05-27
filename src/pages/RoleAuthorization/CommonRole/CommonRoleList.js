@@ -29,6 +29,7 @@ const BREADCRUMB_LIST = [
   role: commonRole,
   user,
   loading: loading.models.commonRole,
+  unitsLoading: loading.effects['commonRole/fetchUnits'],
 }))
 @Form.create()
 export default class CommonRoleList extends PureComponent {
@@ -60,6 +61,16 @@ export default class CommonRoleList extends PureComponent {
   clearPermissionTree = () => {
     const { dispatch } = this.props;
     dispatch({ type: 'commonRole/savePermissionTree', payload: [[], [], []] });
+  };
+
+  fetchUnits = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'commonRole/fetchUnits', ...action });
+  };
+
+  clearUnits = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'commonRole/saveUnits', payload: [] });
   };
 
   goToDetail(id) {
