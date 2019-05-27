@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import _ from 'lodash';
 import { Form, Input, Card, Button, Select, Spin, List, Modal, message, TreeSelect } from 'antd';
 import { Link } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -10,6 +11,7 @@ import { hasAuthority, AuthSpan } from '@/utils/customAuth';
 import styles from './Role.less';
 import { GOV, OPE, LIST_PAGE_SIZE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform, generateTreeNode } from './utils';
 
+const PAGE_SIZE = 20;
 const { Option } = Select;
 const { TreeNode } = TreeSelect;
 
@@ -22,7 +24,13 @@ export default class RoleList extends PureComponent {
   };
 
   componentDidMount() {
-    const { type, fetchUnitTypes, fetchPermissionTree, user: { currentUser: { unitId } } } = this.props;
+    const {
+      type,
+      fetchUnits,
+      fetchUnitTypes,
+      fetchPermissionTree,
+      user: { currentUser: { unitId } },
+    } = this.props;
 
     const isPublic = type;
     fetchUnitTypes();
@@ -30,6 +38,9 @@ export default class RoleList extends PureComponent {
 
     if (!isPublic && unitId)
       fetchPermissionTree({ payload: unitId });
+
+    if (fetchUnits)
+      this.lazyFetchUnits = _.debounce(fetchUnits, 300);
   }
 
   componentWillUnmount() {
@@ -152,6 +163,11 @@ export default class RoleList extends PureComponent {
       fetchPermissionTree({ payload: id });
     else
       clearPermissionTree();
+  };
+
+  handleUnitValueChange = value => {
+    const { unitType } = this.state;
+    this.lazyFetchUnits({ payload: { unitType, unitName: value, pageNum: 1, pageSize: PAGE_SIZE } });
   };
 
   /* 渲染表单 */
