@@ -329,6 +329,15 @@ export function convertToMsgList(msgs) {
   }, []);
 }
 
+// 全选的时候，将树转化为对应的msg state
+export function treeConvertToMsgs(list) {
+  const msgs = {};
+  traverse(list, ({ id }) => {
+    msgs[id] = [true, true];
+  });
+  return msgs;
+}
+
 // 补上半选的父节点，逻辑为遍历数组，加入当前节点的往上的所有父节点，避免重复添加就行
 export function addParentId(ids, idMap) {
   const root = '0';

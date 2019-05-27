@@ -47,7 +47,7 @@ import {
   getIdMaps,
   sortTree,
 } from './utils';
-import { MAI, GOV, OPE, COM, getIdMap as getMsgIdMap, getNewAccountMsgs, convertToMsgs, convertToMsgList } from '@/pages/RoleAuthorization/Role/utils';
+import { MAI, GOV, OPE, COM, getIdMap as getMsgIdMap, getNewAccountMsgs, convertToMsgs, treeConvertToMsgs, convertToMsgList } from '@/pages/RoleAuthorization/Role/utils';
 import styles from './AccountManagementEdit.less';
 import styles1 from '../Role/Role.less';
 
@@ -248,7 +248,7 @@ export default class AssociatedUnit extends PureComponent {
         }) => {
           this.setState({
             unitTypeChecked: unitType,
-            msgs: convertToMsgs(messagePermissions),
+            // msgs: convertToMsgs(messagePermissions),
           });
           // 根据企业类型获取对应类型的角色
           fetchRoles({
@@ -256,8 +256,10 @@ export default class AssociatedUnit extends PureComponent {
             success: (list, trees) => {
               this.genRolesSuccess(unitType)(list, trees);
               const ids = Array.isArray(list) ? list.map(({ id }) => id) : [];
-              if (!ids.includes(roleId)) // 处理先配置公共角色后配置私有角色时，原来的公共角色id不存在私有角色列表里的问题
+              if (!ids.includes(roleId)) { // 处理先配置公共角色后配置私有角色时，原来的公共角色id不存在私有角色列表里的问题
                 setFieldsValue({ roleId: undefined });
+                this.setState({ msgs: {} });
+              }
               else
                 this.fetchRolePermissions(roleId, () => this.setState({ msgs: convertToMsgs(messagePermissions, this.msgIdMap) }));
             },
@@ -823,8 +825,10 @@ export default class AssociatedUnit extends PureComponent {
   };
 
   handleRoleChange = value => {
-    this.setState({ msgs: {} });
-    this.fetchRolePermissions(value);
+    // this.setState({ msgs: {} });
+    this.fetchRolePermissions(value, (permissions, appPermissions, msgTree) => {
+      this.setState({ msgs: treeConvertToMsgs(msgTree) });
+    });
   };
 
   clearMsgs = () => {
@@ -868,7 +872,7 @@ export default class AssociatedUnit extends PureComponent {
             this.appPermissions = appPermissions;
             this.setAppPermissions();
           }
-          callback && callback()
+          callback && callback(permissions, appPermissions, msgTree);
         },
       });
   };
