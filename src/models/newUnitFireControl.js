@@ -1012,7 +1012,7 @@ export default {
       if (response && response.code === 200) {
         yield put({
           type: 'countAllFireAndFault',
-          payload: response.data,
+          payload: response.data || { finishNum: 0, processNum: 0, waitNum: 0 },
         });
       }
     },

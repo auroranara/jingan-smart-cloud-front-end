@@ -4,7 +4,7 @@ import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 
 import styles from './ElectricityCharts.less';
-import waterBg from '../imgs/waterBg.png';
+import waterBg from '../../Gas/imgs/no-monitor.png';
 
 const tabList = [
   {

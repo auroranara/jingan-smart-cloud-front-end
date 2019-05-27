@@ -47,7 +47,7 @@ function OrderCard(props) {
     executorName,
     phone,
   } = data;
-  const titles = [componentName, sdeviceName, sdeviceName, systemTypeValue];
+  const titles = [componentName, area + location, area + location, systemTypeValue];
   const listItems = [
     [
       {
@@ -79,15 +79,16 @@ function OrderCard(props) {
   ];
   let statusStr;
   if (workOrderType === 0) {
-    if (workOrderStatus === 0) statusStr = '待确认';
-    else if (workOrderStatus === 1) statusStr = '正在处理中';
+    if (workOrderStatus === 0) statusStr = type === 1 ? '故障发生' : '待确认';
+    else if (workOrderStatus === 1)
+      statusStr = type === 1 ? '正在处理中' : `已确认为 ${+proceType === 1 ? '误报' : '真实'}火警`;
     else if (workOrderStatus === 2) {
-      statusStr =
-        type === 1 ? '故障已处理完毕' : `已确认为 ${+proceType === 1 ? '误报' : '真实'}火警`;
+      statusStr = type === 1 ? '故障已处理完毕' : `火警处理完毕`;
     }
   } else if (workOrderType === 1) {
-    if (workOrderStatus === 0) statusStr = '待确认';
-    else if (workOrderStatus === 1) statusStr = '正在处理中';
+    if (workOrderStatus === 0) statusStr = type === 1 ? '待处理' : '待确认';
+    else if (workOrderStatus === 1)
+      statusStr = type === 1 ? '正在处理中' : `已确认为 ${+proceType === 1 ? '误报' : '真实'}火警`;
     else if (workOrderStatus === 2) {
       statusStr = `${type === 0 ? '火警' : '故障'}已处理完毕`;
     }

@@ -1943,6 +1943,7 @@ export default class NewUnitFireControl extends PureComponent {
           visible={maintenanceCheckDrawerVisible}
           onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
         />
+        {/* 水系统抽屉抽屉 */}
         <WaterSystemDrawer
           visible={waterSystemDrawerVisible}
           waterTabItem={waterTabItem}
@@ -1951,6 +1952,7 @@ export default class NewUnitFireControl extends PureComponent {
           onClick={this.handleClickWater}
           filterIndex={filterIndex}
         />
+        {/* 独立烟感监测抽屉 */}
         <SmokeDrawer
           visible={smokeDrawerVisible}
           companySmokeInfo={companySmokeInfo}
@@ -1959,6 +1961,7 @@ export default class NewUnitFireControl extends PureComponent {
           filterIndex={filterIndex}
           videoList={cameraTree}
         />
+        {/* 电气火灾监测抽屉 */}
         <ElectricityDrawer
           data={{
             deviceStatusCount,
@@ -1975,6 +1978,7 @@ export default class NewUnitFireControl extends PureComponent {
           filterIndex={filterIndex}
           onClick={this.handleClickElectricity}
         />
+        {/* 一键复位抽屉 */}
         <ResetHostsDrawer
           visible={resetHostsDrawerVisible}
           hosts={hosts}
@@ -1982,6 +1986,7 @@ export default class NewUnitFireControl extends PureComponent {
           handleResetSingleHost={this.handleResetSingleHost}
           handleResetAllHosts={this.handleResetAllHosts}
         />
+        {/* 安全巡查抽屉 */}
         <CheckDrawer
           visible={checksDrawerVisible}
           coItemList={coItemList}
@@ -1990,6 +1995,7 @@ export default class NewUnitFireControl extends PureComponent {
           onClick={this.handleClickCheck}
           filterIndex={filterIndex}
         />
+        {/* 工单抽屉 */}
         <NewWorkOrderDrawer
           handleClickTab={this.handleClickWorkOrderTab}
           workOrderType={workOrderType}
