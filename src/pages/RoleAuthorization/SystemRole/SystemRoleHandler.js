@@ -245,7 +245,7 @@ export default class RoleHandler extends PureComponent {
       <Card title="基本信息">
         <Form>
           <Form.Item
-            label="角色类型"
+            label="角色单位类型"
             labelCol={{
               sm: { span: 24 },
               md: { span: 3 },
@@ -259,7 +259,7 @@ export default class RoleHandler extends PureComponent {
           >
             {getFieldDecorator('unitType', {
               initialValue: unitType ? +unitType : unitType,
-              rules: [{ required: true, message: '请选择角色类型' }],
+              rules: [{ required: true, message: '请选择角色单位类型' }],
             })(
               <Select>
                 {sortedUnitTypes.map(({ id, label }) => <Option key={id} value={id}>{label}</Option>)}
