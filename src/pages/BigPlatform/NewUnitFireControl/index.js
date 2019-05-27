@@ -1445,6 +1445,15 @@ export default class NewUnitFireControl extends PureComponent {
     this.getDeviceRealTimeData(deviceId, callback);
     this.getDeviceHistoryData(deviceId);
     this.getDeviceConfig(deviceId);
+    this.getDeviceCamera(deviceId, 3);
+  };
+
+  getDeviceCamera = (deviceId, type) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'electricityMonitor/fetchDeviceCamera',
+      payload: { deviceId, type },
+    });
   };
 
   getDeviceRealTimeData = (deviceId, callback) => {
@@ -1547,6 +1556,7 @@ export default class NewUnitFireControl extends PureComponent {
         devices,
         deviceConfig,
         deviceHistoryData,
+        videoByDevice,
       },
       bigPlatform: { coItemList },
       unitFireControl: { hosts },
@@ -1969,7 +1979,7 @@ export default class NewUnitFireControl extends PureComponent {
             deviceRealTimeData,
             deviceConfig,
             deviceHistoryData,
-            cameraList: allCamera,
+            cameraList: videoByDevice,
           }}
           visible={electricityDrawerVisible}
           handleClose={() => this.handleDrawerVisibleChange('electricity')}

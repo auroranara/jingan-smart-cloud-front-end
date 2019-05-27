@@ -10,6 +10,7 @@ import {
   getCameraList,
   getWarningTrend,
   getFaultByBrand,
+  getVideoByDevice,
 } from '../services/electricityMonitor';
 // import { getGrids } from '../services/bigPlatform/fireControl';
 // 获取单位集
@@ -103,6 +104,7 @@ export default {
     brandData: {
       brandList: [],
     },
+    videoByDevice: [],
   },
 
   effects: {
@@ -299,6 +301,20 @@ export default {
         error(response);
       }
     },
+    *fetchDeviceCamera({ payload, success, error }, { call, put }) {
+      const response = yield call(getVideoByDevice, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'videoByDevice',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response);
+      }
+    },
   },
   reducers: {
     // 保存
@@ -338,6 +354,12 @@ export default {
       return {
         ...state,
         brandData: payload,
+      };
+    },
+    videoByDevice(state, { payload }) {
+      return {
+        ...state,
+        videoByDevice: payload.list,
       };
     },
   },

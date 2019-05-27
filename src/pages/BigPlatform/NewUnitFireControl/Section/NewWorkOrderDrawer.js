@@ -126,7 +126,7 @@ function OrderCard(props) {
             </div>
           )}
         <p className={styles.name}>
-          {titles[workOrderType]}
+          {titles[workOrderType] || ''}
           {workOrderType !== 3 && (
             <span className={styles.info}>
               {type === 0 ? LABELS[workOrderType][type] : LABELS[workOrderType][type]}
