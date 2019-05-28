@@ -645,7 +645,7 @@ export default class CompanyList extends PureComponent {
                         )}
                       </div>
                     </Col>
-                    <Col
+                    {/* <Col
                       span={8}
                       onClick={() => {
                         if (hasAuthority(codesMap.company.division.list, codes))
@@ -656,7 +656,7 @@ export default class CompanyList extends PureComponent {
                     >
                       <span className={styles.quantity}>{branchNum}</span>
                       <span className={styles.servicenum}>单位分部</span>
-                    </Col>
+                    </Col> */}
                   </Row>
                 </Card>
               </List.Item>
