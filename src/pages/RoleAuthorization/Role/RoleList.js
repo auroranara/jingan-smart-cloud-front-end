@@ -22,6 +22,7 @@ export default class RoleList extends PureComponent {
     unitType: undefined,
     modalUnitType: COM,
     syncModalVisible: false,
+    confirmLoading: false,
   };
 
   componentDidMount() {
@@ -198,15 +199,20 @@ export default class RoleList extends PureComponent {
     validateFieldsAndScroll((error, values) => {
       if (!error) {
         const { modalUnitType, modalCompanyId } = values;
+        this.setState({ confirmLoading: true });
         // console.log(values);
         // return;
         syncRoles({
           payload: { unitType: modalUnitType, companyId: modalCompanyId },
           callback: (code, msg) => {
-            if (code === 200)
+            if (code === 200) {
+              this.setState({ confirmLoading: false, syncModalVisible: false });
               message.success('角色同步成功！');
-            else
+            }
+            else {
+              this.setState({ confirmLoading: false });
               message.error(msg);
+            }
           },
         });
       }
@@ -415,9 +421,9 @@ export default class RoleList extends PureComponent {
     const {
       form: { getFieldDecorator },
       account: { unitTypes },
-      role: { unitList, unitsLoading, syncRolesLoading },
+      role: { unitList, unitsLoading },
     } = this.props;
-    const { modalUnitType, syncModalVisible } = this.state;
+    const { modalUnitType, syncModalVisible, confirmLoading } = this.state;
 
     const isGovernment = modalUnitType === GOV;
     const sortedUnitTypes = unitTypes ? Array.from(unitTypes).filter(({ id }) => id !== OPE) : [];
@@ -450,7 +456,7 @@ export default class RoleList extends PureComponent {
         title="同步公共角色"
         visible={syncModalVisible}
         onOk={this.handleSyncOk}
-        confirmLoading={syncRolesLoading}
+        confirmLoading={confirmLoading}
         onCancel={this.handleSyncCancel}
       >
         <Form>
