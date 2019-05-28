@@ -14,16 +14,19 @@
   padding-bottom: 1em;
   .person {
     display: flex;
-    padding: 0.5em 0 0.5em 2em;
+    justify-content: space-between;
+    // padding: 0.5em 0 0.5em 2em;
+    padding: 0.5em 2em;
 
     .personName {
-      width: 6em;
+      // width: 6em;
+      max-width: 10em;
       color: #00ffff;
-      .overflow;
+      white-space: nowrap;
     }
     .personValue {
-      flex: 1;
-      .overflow;
+      // flex: 1;
+      white-space: nowrap;
     }
   }
 }

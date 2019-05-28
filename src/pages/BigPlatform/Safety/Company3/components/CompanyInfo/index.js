@@ -44,6 +44,8 @@ export default class CompanyInfo extends PureComponent {
         hiddenDangerCount: { total = 0 } = {},
         // 安全指数
         safetyIndex,
+        // 手机号是否可见
+        phoneVisible,
       },
       // 点击企业名称
       handleClickUnitName,
@@ -59,6 +61,9 @@ export default class CompanyInfo extends PureComponent {
     const countCompanyUser = (valueList || []).reduce((total, value) => {
       return total + (value ? value.length : 0);
     }, 0);
+    const phone = phoneVisible || !headOfSecurityPhone
+    ? headOfSecurityPhone
+    : `${headOfSecurityPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
 
     return (
       <Section extra={isImportant && <div className={styles.importantUnit}>重点单位</div>}>
@@ -75,12 +80,12 @@ export default class CompanyInfo extends PureComponent {
                   {headOfSecurity}
                 </div>
               </div>
-              <div className={styles.unitContact} title={`联系方式：${headOfSecurityPhone}`}>
+              <div className={styles.unitContact} title={`联系方式：${phone}`}>
                 <div className={styles.cell}>
                   <span className={styles.fieldNameWrapper}>
                     <span className={styles.fieldName} style={{ letterSpacing: '0.333333em' }}>联系方式</span>：
                   </span>
-                  {headOfSecurityPhone}
+                  {phone}
                 </div>
               </div>
               <div className={styles.emptyRow} />
