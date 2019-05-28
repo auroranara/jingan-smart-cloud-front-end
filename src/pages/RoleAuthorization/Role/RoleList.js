@@ -423,7 +423,7 @@ export default class RoleList extends PureComponent {
     const {
       form: { getFieldDecorator },
       account: { unitTypes },
-      role: { unitList, unitsLoading },
+      role: { modalUnitList, modalUnitsLoading },
     } = this.props;
     const { modalUnitType, syncModalVisible, confirmLoading } = this.state;
 
@@ -435,17 +435,17 @@ export default class RoleList extends PureComponent {
         allowClear
         placeholder="请选择所属单位"
       >
-        {generateTreeNode(unitList)}
+        {generateTreeNode(modalUnitList)}
       </TreeSelect>
     ) : (
       <Select
         showSearch
         placeholder="请选择所属单位"
-        notFoundContent={unitsLoading ? <Spin size="small" /> : '暂无数据'}
+        notFoundContent={modalUnitsLoading ? <Spin size="small" /> : '暂无数据'}
         onSearch={this.handleUnitValueChange}
         filterOption={false}
       >
-        {unitList.map(item => (
+        {modalUnitList.map(item => (
           <Option value={item.id} key={item.id}>
             {item.name}
           </Option>
@@ -496,6 +496,7 @@ export default class RoleList extends PureComponent {
     const {
       type,
       title,
+      companyId,
       breadcrumbList,
       loading,
       role: {
@@ -508,6 +509,7 @@ export default class RoleList extends PureComponent {
     } = this.props;
 
     const isPublic = type;
+    const isAdmin = !companyId;
     return (
       <PageHeaderLayout
         title={title}
@@ -522,7 +524,7 @@ export default class RoleList extends PureComponent {
                 : '用户(私有)角色用来单位自定义角色以配置账号权限，开通用户(私有)角色的单位不再使用公共角色'
               }
             </p>
-            {false && !!isPublic && (
+            {isAdmin && !isPublic && (
               <p
                 className={styles.sync}
                 onClick={this.showSyncModal}
@@ -554,7 +556,7 @@ export default class RoleList extends PureComponent {
           }
         >
           {this.renderList()}
-          {this.renderSyncModal()}
+          {isAdmin && !isPublic && this.renderSyncModal()}
         </InfiniteScroll>
       </PageHeaderLayout>
     );

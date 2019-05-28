@@ -24,11 +24,12 @@ const BREADCRUMB_LIST = [
   },
 ];
 
-@connect(({ account, userRole, user, loading }) => ({
+@connect(({ account, commonRole, userRole, user, loading }) => ({ // 之前把同步角色放到了公共角色模块里，放错了，这里为了省事，就直接延用
   account,
-  role: userRole,
+  role: { ...userRole, modalUnitList: commonRole.unitList },
   user,
   loading: loading.models.userRole,
+  modalUnitsLoading: loading.effects['commonRole/fetchUnits'],
 }))
 @Form.create()
 export default class CommonRoleList extends PureComponent {
@@ -67,6 +68,16 @@ export default class CommonRoleList extends PureComponent {
     dispatch({ type: 'userRole/savePermissionTree', payload: [[], [], []] });
   };
 
+  fetchUnits = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'commonRole/fetchUnits', ...action }); // 延用commonRole里的内容
+  };
+
+  syncRoles = action => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'commonRole/syncRoles', ...action });
+  };
+
   goToDetail(id) {
     router.push(`${DETAIL_URL}/${id}`);
   }
@@ -93,6 +104,8 @@ export default class CommonRoleList extends PureComponent {
         remove={this.remove}
         fetchPermissionTree={isAdm ? this.fetchPermissionTree : this.fetchCompanyPermissionTree}
         clearPermissionTree={this.clearPermissionTree}
+        fetchUnits={this.fetchUnits}
+        syncRoles={this.syncRoles}
         goToDetail={this.goToDetail}
         goToAdd={this.goToAdd}
         {...this.props}
