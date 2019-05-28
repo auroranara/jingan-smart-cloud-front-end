@@ -825,9 +825,15 @@ export default class AssociatedUnit extends PureComponent {
   };
 
   handleRoleChange = value => {
-    // this.setState({ msgs: {} });
+    const {
+      account: { detail: { data: { roleId, messagePermissions } } },
+    } = this.props;
+
     this.fetchRolePermissions(value, (permissions, appPermissions, msgTree) => {
-      this.setState({ msgs: treeConvertToMsgs(msgTree) });
+      if (roleId && roleId === value)
+        this.setState({ msgs: convertToMsgs(messagePermissions, this.msgIdMap) });
+      else
+        this.setState({ msgs: treeConvertToMsgs(msgTree) });
     });
   };
 
