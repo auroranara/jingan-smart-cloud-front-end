@@ -197,6 +197,7 @@ export default class RoleList extends PureComponent {
       syncRoles,
       form: { validateFieldsAndScroll },
     } = this.props;
+    const { formData } = this.state;
 
     validateFieldsAndScroll((error, values) => {
       if (!error) {
@@ -210,6 +211,7 @@ export default class RoleList extends PureComponent {
             if (code === 200) {
               this.setState({ confirmLoading: false, syncModalVisible: false });
               message.success('角色同步成功！');
+              this.getRoleList({ ...formData, pageNum: 1 });
             }
             else {
               this.setState({ confirmLoading: false });
@@ -524,7 +526,7 @@ export default class RoleList extends PureComponent {
                 : '用户(私有)角色用来单位自定义角色以配置账号权限，开通用户(私有)角色的单位不再使用公共角色'
               }
             </p>
-            {isAdmin && !isPublic && (
+            {false && isAdmin && !isPublic && (
               <p
                 className={styles.sync}
                 onClick={this.showSyncModal}
