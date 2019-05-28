@@ -8,10 +8,10 @@ import styles from './index.less';
 
 // 颜色
 const color = {
-  '红': '#E86767',
-  '橙': '#FFB650',
-  '黄': '#F7E68A',
-  '蓝': '#5EBEFF',
+  红: '#E86767',
+  橙: '#FFB650',
+  黄: '#F7E68A',
+  蓝: '#5EBEFF',
 };
 // 状态文本
 const statusLabel = [undefined, '正常', '异常', '待检查', '已超时'];
@@ -49,10 +49,7 @@ export default class App extends PureComponent {
     const isValid = /(.png|.jpg)$/.test(webUrl);
 
     return (
-      <div
-        className={contianerClassName}
-        style={style}
-      >
+      <div className={contianerClassName} style={style}>
         <div className={styles.titleContainer}>
           {/* 标题 */}
           <div className={styles.title}>
@@ -60,7 +57,12 @@ export default class App extends PureComponent {
             <div className={styles.titleValue}>{name || '暂无风险点名称'}</div>
           </div>
           {/* 风险等级：当未评级时，不显示风险等级 */}
-          {riskName && <div className={styles.level}>等级：<span style={{ color: color[riskName] }}>{riskName}</span></div>}
+          {riskName && (
+            <div className={styles.level}>
+              等级：
+              <span style={{ color: color[riskName] }}>{riskName}</span>
+            </div>
+          )}
         </div>
         <div className={styles.content}>
           {/* 图片 */}
@@ -68,7 +70,15 @@ export default class App extends PureComponent {
             {isValid ? (
               <div className={styles.avatar} style={{ backgroundImage: `url(${webUrl})` }} />
             ) : (
-              <div className={styles.avatar} style={{ overflow: 'hidden', backgroundColor: 'transparent', backgroundImage: ` url(${defaultRiskCard})`, backgroundSize: '50%' }} />
+              <div
+                className={styles.avatar}
+                style={{
+                  overflow: 'hidden',
+                  backgroundColor: 'transparent',
+                  backgroundImage: ` url(${defaultRiskCard})`,
+                  backgroundSize: '50%',
+                }}
+              />
             )}
           </div>
           <div className={styles.infoContainer}>
@@ -84,11 +94,18 @@ export default class App extends PureComponent {
                 </div>
                 <div className={styles.info}>
                   <div className={styles.infoName}>检查状态</div>
-                  <div className={styles.infoValue} style={{ color: isAlert ? '#ff4848' : undefined }}>{statusLabel[status]}</div>
+                  <div
+                    className={styles.infoValue}
+                    style={{ color: isAlert ? '#ff4848' : undefined }}
+                  >
+                    {statusLabel[status]}
+                  </div>
                 </div>
                 <div className={styles.info}>
                   <div className={styles.infoName}>最近检查人</div>
-                  <div className={styles.infoValue}>{user_name} {moment && moment(last_check_date).format('YYYY-MM-DD ')}</div>
+                  <div className={styles.infoValue}>
+                    {user_name} {moment && moment(last_check_date).format('YYYY-MM-DD ')}
+                  </div>
                 </div>
               </Fragment>
             ) : (
@@ -99,7 +116,12 @@ export default class App extends PureComponent {
                 </div>
                 <div className={styles.info}>
                   <div className={styles.infoName}>检查状态</div>
-                  <div className={styles.infoValue} style={{ color: isAlert ? '#ff4848' : undefined }}>{statusLabel[status]}</div>
+                  <div
+                    className={styles.infoValue}
+                    style={{ color: isAlert ? '#ff4848' : undefined }}
+                  >
+                    {statusLabel[status]}
+                  </div>
                 </div>
                 <div className={styles.info}>
                   <div className={styles.infoName}>最近检查人</div>
@@ -107,7 +129,9 @@ export default class App extends PureComponent {
                 </div>
                 <div className={styles.info}>
                   <div className={styles.infoName}>最近检查时间</div>
-                  <div className={styles.infoValue}>{moment && moment(last_check_date).format('YYYY-MM-DD ')}</div>
+                  <div className={styles.infoValue}>
+                    {moment && moment(last_check_date).format('YYYY-MM-DD ')}
+                  </div>
                 </div>
               </Fragment>
             )}
