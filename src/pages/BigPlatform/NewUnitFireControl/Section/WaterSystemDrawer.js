@@ -137,7 +137,7 @@ export default class WaterSystemDrawer extends PureComponent {
           >
             {isMending && <div className={styles.status}>检修</div>}
             {isNotIn && <div className={styles.status}>未接入</div>}
-            {!isMending && !isNotIn && +status !== 0 && <div className={styles.status}>异常</div>}
+            {!isMending && !isNotIn && +status !== 0 && <div className={styles.status}>报警</div>}
             <div className={styles.picArea}>
               <ChartGauge
                 showName
@@ -269,11 +269,26 @@ export default class WaterSystemDrawer extends PureComponent {
             <div
               className={styles.card}
               key={deviceId}
-              style={{ border: isGray ? '1px solid #f83329' : '1px solid #04fdff' }}
+              style={{
+                border: isGray
+                  ? !isMending && +status < 0
+                    ? '1px solid #9f9f9f'
+                    : '1px solid #f83329'
+                  : '1px solid #04fdff',
+              }}
             >
               {isMending && <div className={styles.status}>检修</div>}
               {isNotIn && <div className={styles.status}>未接入</div>}
-              {!isMending && !isNotIn && +status !== 0 && <div className={styles.status}>异常</div>}
+              {!isMending &&
+                !isNotIn &&
+                (+status !== 0 || +status !== -1) && <div className={styles.status}>报警</div>}
+              {!isMending &&
+                !isNotIn &&
+                +status === -1 && (
+                  <div className={styles.status} style={{ backgroundColor: '#9f9f9f' }}>
+                    失联
+                  </div>
+                )}
               <div className={styles.picAreaPond}>
                 <img
                   className={styles.pondBg}
@@ -375,25 +390,7 @@ export default class WaterSystemDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, waterTabItem, videoKeyId, waterList, filterIndex } = this.props;
-
-    const dataList = waterList
-      .filter(item => item.deviceDataList.length > 0)
-      .map(item => item.deviceDataList);
-
-    // const newList = dataList.map(item => {
-    //   let obj = {};
-    //   for (const key in item) {
-    //     if (item.hasOwnProperty(key)) {
-    //       const element = item[key];
-    //       obj = { ...element };
-    //     }
-    //   }
-    //   return obj;
-    // });
-
-    // const normal = newList.filter(item => item && +item.status === 0).length;
-    // const abnormal = newList.filter(item => item && +item.status !== 0).length;
+    const { visible, waterTabItem, videoKeyId, waterList, filterIndex, onClick } = this.props;
 
     const { videoVisible, videoList } = this.state;
 
@@ -416,7 +413,14 @@ export default class WaterSystemDrawer extends PureComponent {
       { name: '报警', value: alarmList.length, color: '#FF4848', list: alarmList },
       { name: '失联', value: lostList.length, color: '#9f9f9f', list: lostList },
       { name: '正常', value: normalList.length, color: '#00ffff', list: normalList },
-    ];
+    ].map((item, index) => {
+      return {
+        ...item,
+        onClick: () => {
+          onClick(index);
+        },
+      };
+    });
     const newList = totalInfo[filterIndex] ? totalInfo[filterIndex].list : [];
 
     const left = (

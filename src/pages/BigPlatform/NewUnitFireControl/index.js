@@ -586,7 +586,7 @@ export default class NewUnitFireControl extends PureComponent {
     dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId } });
 
     // 处理工单统计
-    // dispatch({ type: 'newUnitFireControl/fetchCountAllFireAndFault', payload: { companyId } });
+    dispatch({ type: 'newUnitFireControl/fetchCountAllFireAndFault', payload: { companyId } });
   }
 
   handleFetchRealTimeData = deviceId => {
@@ -1343,7 +1343,12 @@ export default class NewUnitFireControl extends PureComponent {
   };
 
   handleClickWater = (index, typeIndex) => {
-    this.setState({ waterSystemDrawerVisible: true, filterIndex: index, waterTabItem: typeIndex });
+    const { waterTabItem } = this.state;
+    this.setState({
+      waterSystemDrawerVisible: true,
+      filterIndex: index,
+      waterTabItem: typeIndex || typeIndex === 0 ? typeIndex : waterTabItem,
+    });
   };
 
   handleClickElectricity = (index, deviceId) => {
@@ -1440,6 +1445,15 @@ export default class NewUnitFireControl extends PureComponent {
     this.getDeviceRealTimeData(deviceId, callback);
     this.getDeviceHistoryData(deviceId);
     this.getDeviceConfig(deviceId);
+    this.getDeviceCamera(deviceId, 3);
+  };
+
+  getDeviceCamera = (deviceId, type) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'electricityMonitor/fetchDeviceCamera',
+      payload: { deviceId, type },
+    });
   };
 
   getDeviceRealTimeData = (deviceId, callback) => {
@@ -1542,6 +1556,7 @@ export default class NewUnitFireControl extends PureComponent {
         devices,
         deviceConfig,
         deviceHistoryData,
+        videoByDevice,
       },
       bigPlatform: { coItemList },
       unitFireControl: { hosts },
@@ -1938,13 +1953,16 @@ export default class NewUnitFireControl extends PureComponent {
           visible={maintenanceCheckDrawerVisible}
           onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
         />
+        {/* 水系统抽屉抽屉 */}
         <WaterSystemDrawer
           visible={waterSystemDrawerVisible}
           waterTabItem={waterTabItem}
           onClose={this.handleCloseWater}
           waterList={list}
+          onClick={this.handleClickWater}
           filterIndex={filterIndex}
         />
+        {/* 独立烟感监测抽屉 */}
         <SmokeDrawer
           visible={smokeDrawerVisible}
           companySmokeInfo={companySmokeInfo}
@@ -1953,6 +1971,7 @@ export default class NewUnitFireControl extends PureComponent {
           filterIndex={filterIndex}
           videoList={cameraTree}
         />
+        {/* 电气火灾监测抽屉 */}
         <ElectricityDrawer
           data={{
             deviceStatusCount,
@@ -1960,7 +1979,7 @@ export default class NewUnitFireControl extends PureComponent {
             deviceRealTimeData,
             deviceConfig,
             deviceHistoryData,
-            cameraList: allCamera,
+            cameraList: videoByDevice,
           }}
           visible={electricityDrawerVisible}
           handleClose={() => this.handleDrawerVisibleChange('electricity')}
@@ -1969,6 +1988,7 @@ export default class NewUnitFireControl extends PureComponent {
           filterIndex={filterIndex}
           onClick={this.handleClickElectricity}
         />
+        {/* 一键复位抽屉 */}
         <ResetHostsDrawer
           visible={resetHostsDrawerVisible}
           hosts={hosts}
@@ -1976,6 +1996,7 @@ export default class NewUnitFireControl extends PureComponent {
           handleResetSingleHost={this.handleResetSingleHost}
           handleResetAllHosts={this.handleResetAllHosts}
         />
+        {/* 安全巡查抽屉 */}
         <CheckDrawer
           visible={checksDrawerVisible}
           coItemList={coItemList}
@@ -1984,6 +2005,7 @@ export default class NewUnitFireControl extends PureComponent {
           onClick={this.handleClickCheck}
           filterIndex={filterIndex}
         />
+        {/* 工单抽屉 */}
         <NewWorkOrderDrawer
           handleClickTab={this.handleClickWorkOrderTab}
           workOrderType={workOrderType}

@@ -44,7 +44,7 @@ import {
   getIdMaps,
   sortTree,
 } from './utils';
-import { MAI, GOV, OPE, COM, getIdMap as getMsgIdMap, getNewAccountMsgs, convertToMsgList } from '@/pages/RoleAuthorization/Role/utils';
+import { MAI, GOV, OPE, COM, getIdMap as getMsgIdMap, getNewAccountMsgs, treeConvertToMsgs, convertToMsgList } from '@/pages/RoleAuthorization/Role/utils';
 import styles from './AccountManagementEdit.less';
 import styles1 from '../Role/Role.less';
 
@@ -788,8 +788,10 @@ export default class AccountManagementEdit extends PureComponent {
   // };
 
   handleRoleChange = value => {
-    this.setState({ msgs: {} });
-    this.fetchRolePermissions(value);
+    // this.setState({ msgs: {} });
+    this.fetchRolePermissions(value, (permissions, appPermissions, msgTree) => {
+      this.setState({ msgs: treeConvertToMsgs(msgTree) });
+    });
   };
 
   clearMsgs = () => {
@@ -813,7 +815,7 @@ export default class AccountManagementEdit extends PureComponent {
       setFieldsValue(values);
   };
 
-  fetchRolePermissions = id => {
+  fetchRolePermissions = (id, callback) => {
     const { dispatch } = this.props;
     const { unitTypeChecked } = this.state;
     const isNotAdmin = unitTypeChecked !== OPE;
@@ -833,6 +835,7 @@ export default class AccountManagementEdit extends PureComponent {
             this.appPermissions = appPermissions;
             this.setAppPermissions();
           }
+          callback && callback(permissions, appPermissions, msgTree);
         },
       });
   };

@@ -308,10 +308,13 @@ function fixMsgs(state, mobileOrApp, checked) { // mobileOrApp[0 mobile 1 app] c
 }
 
 // {"messageTypeId":"id","appAcceptStatus":0,"webAcceptStatus":0} 0 不接收 1 接受
-export function covertToMsgs(list) {
+export function convertToMsgs(list, idMap) {
   if (!Array.isArray(list))
     return {};
-  return list.reduce((prev, next) => {
+  const ids = list.map(({ messageTypeId }) => messageTypeId);
+  const filteredIds = removeParentId(ids, idMap); // 过滤掉不存在的节点，以及修正父节点选中而子孙节点未全选中的情况
+  const filteredList = list.filter(({ messageTypeId }) => filteredIds.includes(messageTypeId));
+  return filteredList.reduce((prev, next) => {
     const { messageTypeId, appAcceptStatus, webAcceptStatus } = next;
     prev[messageTypeId] = [appAcceptStatus, webAcceptStatus].map(s => !!+s);
     return prev;
@@ -324,6 +327,15 @@ export function convertToMsgList(msgs) {
     prev.push({ messageTypeId: id, appAcceptStatus: +!!mobile, webAcceptStatus: +!!app });
     return prev;
   }, []);
+}
+
+// 全选的时候，将树转化为对应的msg state
+export function treeConvertToMsgs(list) {
+  const msgs = {};
+  traverse(list, ({ id }) => {
+    msgs[id] = [true, true];
+  });
+  return msgs;
 }
 
 // 补上半选的父节点，逻辑为遍历数组，加入当前节点的往上的所有父节点，避免重复添加就行
@@ -347,8 +359,16 @@ export function removeParentId(ids, idMap) {
     return [];
   const parents = []; // 需要剔除的父节点数组
   for (let id of ids) {
-    const childIds = idMap[id].childIds;
-    if (childIds.length && !childIds.every(id => ids.includes(id))) // 当前节点有子节点，且不是每个子节点都包含在数组中
+    const targetMap = idMap[id]; // 若id在树中不存在，则当前id也要过滤掉
+    if (!targetMap) {
+      parents.push(id);
+      continue;
+    }
+    // const { childIds } = targetMap;
+    // if (childIds.length && !childIds.every(id => ids.includes(id))) // 当前节点有子节点，且不是每个子节点都包含在数组中
+    //   parents.push(id);
+    const { allChildIds } = targetMap;
+    if (allChildIds.length && !allChildIds.every(id => ids.includes(id))) // 当前节点有子节点，且不是所有子孙节点都包含在数组中
       parents.push(id);
   }
   return ids.filter(id => !parents.includes(id));

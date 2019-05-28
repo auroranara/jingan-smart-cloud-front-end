@@ -43,7 +43,7 @@ export default {
     },
     *fetchExport({ payload, typeLabel, companyName }, { call, put }) {
       const blob = yield call(queryExport, payload);
-      fileDownload(blob, `${typeLabel}_${companyName}_${moment().format('YYYY-MM-DD')}.xls`);
+      fileDownload(blob, `${typeLabel}_${companyName}_${moment().format('YYYY-MM-DD')}.xlsx`);
       // response = response || EMPTY_OBJECT;
       // const { code = DEFAULT_CODE, data = EMPTY_OBJECT, msg } = response;
       // callback && callback(code, msg);

@@ -1,29 +1,17 @@
 import React, { Fragment, PureComponent } from 'react';
 import { Icon } from 'antd';
-
-import {
-  DrawerContainer,
-  // DrawerSection,
-  OvSelect,
-} from '@/pages/BigPlatform/NewFireControl/components/Components';
+import { DrawerContainer, OvSelect } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import TotalInfo from '../components/TotalInfo';
-import { DotItem, Gauge } from '../../ElectricityMonitor/components/Components';
+import { Gauge } from '../../ElectricityMonitor/components/Components';
 import GaugeLabels from '../components/GaugeLabels';
 import ElectricityCharts from '../../ElectricityMonitor/components/ElectricityCharts';
 import { getAlerted, getTargetAlerted, getLimit } from '../../ElectricityMonitor/utils';
 import styles from './ElectricityDrawer.less';
-import locationIcon from '../../ElectricityMonitor/imgs/location.png';
-import personIcon from '../../ElectricityMonitor/imgs/person.png';
 import cameraIcon from '../../ElectricityMonitor/imgs/camera.png';
-import emptyBg from '@/pages/BigPlatform/Monitor/imgs/waterBg.png';
+import emptyBg from '../../Gas/imgs/no-monitor.png';
 
-// const TYPE = 'monitor';
-// const TEMPERATURE = '温度';
-const LABELS = ['正常', '告警', '预警', '失联'];
-const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const GAUGE_LABELS = ['温度', '漏电电流', '电流', '电压'];
-// const CHART_LABELS = ['A相温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
 const CHARTS_LABELS = [
   ['A相温度', 'B相温度', 'C相温度', '零线温度'],
   ['漏电电流'],

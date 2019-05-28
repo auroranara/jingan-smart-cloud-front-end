@@ -24,7 +24,7 @@ function OrderCard(props) {
     workOrderStatus,
     ...restProps
   } = props;
-  const timeStr = workOrderType === 2 && type === 1 ? '报修' : TYPES[type];
+  const timeStr = workOrderType === 3 && type === 1 ? '报修' : TYPES[type];
 
   const {
     componentName, // 消防主机名称
@@ -44,8 +44,10 @@ function OrderCard(props) {
     sdeviceName,
     createByName,
     createByPhone,
+    executorName,
+    phone,
   } = data;
-  const titles = [componentName, sdeviceName, sdeviceName, systemTypeValue];
+  const titles = [componentName, area + location, area + location, systemTypeValue];
   const listItems = [
     [
       {
@@ -77,15 +79,16 @@ function OrderCard(props) {
   ];
   let statusStr;
   if (workOrderType === 0) {
-    if (workOrderStatus === 0) statusStr = '待确认';
-    else if (workOrderStatus === 1) statusStr = '正在处理中';
+    if (workOrderStatus === 0) statusStr = type === 1 ? '故障发生' : '待确认';
+    else if (workOrderStatus === 1)
+      statusStr = type === 1 ? '正在处理中' : `已确认为 ${+proceType === 1 ? '误报' : '真实'}火警`;
     else if (workOrderStatus === 2) {
-      statusStr =
-        type === 1 ? '故障已处理完毕' : `已确认为 ${+proceType === 1 ? '误报' : '真实'}火警`;
+      statusStr = type === 1 ? '故障已处理完毕' : `火警处理完毕`;
     }
   } else if (workOrderType === 1) {
-    if (workOrderStatus === 0) statusStr = '待确认';
-    else if (workOrderStatus === 1) statusStr = '正在处理中';
+    if (workOrderStatus === 0) statusStr = type === 1 ? '待处理' : '待确认';
+    else if (workOrderStatus === 1)
+      statusStr = type === 1 ? '正在处理中' : `已确认为 ${+proceType === 1 ? '误报' : '真实'}火警`;
     else if (workOrderStatus === 2) {
       statusStr = `${type === 0 ? '火警' : '故障'}已处理完毕`;
     }
@@ -96,7 +99,13 @@ function OrderCard(props) {
   } else if (workOrderType === 3) {
     if (workOrderStatus === 0) statusStr = '等待维修';
     else if (workOrderStatus === 1) statusStr = '正在维修中';
-    else if (workOrderStatus === 2) statusStr = `已维修完毕`;
+    else if (workOrderStatus === 2) {
+      statusStr = `已维修完毕`;
+      listItems[workOrderType].push({
+        name: '维修人员',
+        value: `${executorName} ${phone}`,
+      });
+    }
   }
 
   return (
@@ -105,7 +114,7 @@ function OrderCard(props) {
         {/* <div className={styles.card} {...restProps}> */}
         {workOrderType !== 3 &&
           fireChildren &&
-          fireChildren.length > 0 && (
+          fireChildren.length > 1 && (
             <div
               className={styles.number}
               style={{
@@ -117,7 +126,7 @@ function OrderCard(props) {
             </div>
           )}
         <p className={styles.name}>
-          {titles[workOrderType]}
+          {titles[workOrderType] || ''}
           {workOrderType !== 3 && (
             <span className={styles.info}>
               {type === 0 ? LABELS[workOrderType][type] : LABELS[workOrderType][type]}
