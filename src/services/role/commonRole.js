@@ -38,3 +38,8 @@ export async function queryPermissionTree(unitType) {
 export async function queryList(params) {
   return request(`/acloud_new/v2/role/roleForPage?${stringify(params)}`);
 }
+
+// 同步公共角色
+export async function cloneRoles(params) {
+  return request(`/acloud_new/v2/role/clonePublicRole?${stringify(params)}`);
+}

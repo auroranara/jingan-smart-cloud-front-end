@@ -125,7 +125,7 @@ export default class RoleDetail extends PureComponent {
       <Card title="基本信息">
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term="角色名称">{name || getEmptyData()}</Description>
-          <Description term="角色类型">{typeMap[unitType] || getEmptyData()}</Description>
+          <Description term="角色单位类型">{typeMap[unitType] || getEmptyData()}</Description>
           <Description term="角色描述">{<div style={{ whiteSpace: 'pre-wrap' }}>{description}</div> || getEmptyData()}</Description>
         </DescriptionList>
       </Card>
