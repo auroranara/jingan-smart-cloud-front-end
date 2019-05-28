@@ -59,10 +59,11 @@ export default class RoleList extends PureComponent {
     const {
       role: { isLast },
     } = this.props;
-    if (isLast) {
+    if (isLast)
       return;
-    }
+
     const {
+      type,
       appendList,
       role: {
         data: {
@@ -76,6 +77,7 @@ export default class RoleList extends PureComponent {
       payload: {
         pageSize,
         pageNum: pageNum + 1,
+        isPublic: type,
         ...formData,
       },
     });
@@ -520,8 +522,12 @@ export default class RoleList extends PureComponent {
                 : '用户(私有)角色用来单位自定义角色以配置账号权限，开通用户(私有)角色的单位不再使用公共角色'
               }
             </p>
-            {isPublic && (
-              <p className={styles.sync} onClick={this.showSyncModal}>
+            {!!isPublic && (
+              <p
+                className={styles.sync}
+                onClick={this.showSyncModal}
+                title="将公共角色同步成选定的单位的私有角色"
+              >
                 同步公共角色
               </p>
             )}
