@@ -346,7 +346,7 @@ export default class RoleHandler extends PureComponent {
             {getFieldDecorator('roleName', {
               initialValue: roleName,
               rules: [{ required: true, message: '请输入角色名称', whitespace: true }],
-            })(<Input maxLength={50} placeholder="请输入角色名称" />)}
+            })(<Input maxLength={10} placeholder="请输入角色名称" />)}
           </Form.Item>
           <Form.Item
             label="角色描述"
