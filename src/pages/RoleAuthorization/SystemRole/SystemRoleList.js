@@ -284,7 +284,7 @@ export default class RoleList extends PureComponent {
         id: 'unitType',
         render: () => {
           return (
-            <Select placeholder="请选择角色类型" onChange={this.handleUnitTypeChange} allowClear>
+            <Select placeholder="请选择角色单位类型" onChange={this.handleUnitTypeChange} allowClear>
               {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
             </Select>
           );

@@ -14,7 +14,6 @@ const { TabPane } = Tabs;
 
 const PAGE_SIZE = 20;
 const INLINE_FORM_STYLE = { width: '50%', marginRight: 0 };
-// 标题
 const addTitle = '新增角色';
 const editTitle = '编辑角色';
 
@@ -288,7 +287,7 @@ export default class RoleHandler extends PureComponent {
       <Card title="基本信息">
         <Form>
           <Form.Item
-            label="角色类型"
+            label="角色单位类型"
             labelCol={{
               sm: { span: 24 },
               md: { span: 3 },
@@ -302,7 +301,7 @@ export default class RoleHandler extends PureComponent {
           >
             {getFieldDecorator('unitType', {
               initialValue: unitType ? +unitType : unitType,
-              rules: [{ required: true, message: '请选择角色类型' }],
+              rules: [{ required: true, message: '请选择角色单位类型' }],
             })(
               <Select
                 disabled={disabled}
@@ -314,7 +313,7 @@ export default class RoleHandler extends PureComponent {
           </Form.Item>
           {notOperateAndNotPublic && (
             <Form.Item
-              label="单位名称"
+              label="角色所属单位"
               labelCol={{
                 sm: { span: 24 },
                 md: { span: 3 },
@@ -327,7 +326,7 @@ export default class RoleHandler extends PureComponent {
               }}
             >
               {getFieldDecorator('companyId', {
-                rules: [{ required: true, message: '请选择单位' }],
+                rules: [{ required: true, message: '请选择角色所属单位' }],
               })(unit)}
             </Form.Item>
           )}
@@ -347,7 +346,7 @@ export default class RoleHandler extends PureComponent {
             {getFieldDecorator('roleName', {
               initialValue: roleName,
               rules: [{ required: true, message: '请输入角色名称', whitespace: true }],
-            })(<Input maxLength={50} placeholder="请输入角色名称" />)}
+            })(<Input maxLength={10} placeholder="请输入角色名称" />)}
           </Form.Item>
           <Form.Item
             label="角色描述"

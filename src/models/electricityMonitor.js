@@ -10,6 +10,7 @@ import {
   getCameraList,
   getWarningTrend,
   getFaultByBrand,
+  getVideoByDevice,
 } from '../services/electricityMonitor';
 // import { getGrids } from '../services/bigPlatform/fireControl';
 // 获取单位集
@@ -75,11 +76,17 @@ export default {
       earlyWarning: 0,
       confirmWarning: 0,
       unconnect: 0,
+      list: [],
     },
     // 设备列表
     devices: [],
     // 设备实时数据
     deviceRealTimeData: {
+      status: 0,
+      deviceId: undefined,
+      deviceDataForAppList: [],
+    },
+    deviceRealTimeDataMonitor: {
       status: 0,
       deviceId: undefined,
       deviceDataForAppList: [],
@@ -97,6 +104,7 @@ export default {
     brandData: {
       brandList: [],
     },
+    videoByDevice: [],
   },
 
   effects: {
@@ -214,6 +222,18 @@ export default {
         }
       }
     },
+    *fetchDeviceRealTimeDataMonitor({ payload, callback }, { call, put }) {
+      const { code, data } = yield call(getDeviceRealTimeData, payload);
+      if (code === 200) {
+        yield put({
+          type: 'save',
+          payload: { deviceRealTimeDataMonitor: data },
+        });
+        if (callback) {
+          callback(data);
+        }
+      }
+    },
     // 获取设备配置策略
     *fetchDeviceConfig({ payload, callback }, { call, put }) {
       const {
@@ -281,6 +301,20 @@ export default {
         error(response);
       }
     },
+    *fetchDeviceCamera({ payload, success, error }, { call, put }) {
+      const response = yield call(getVideoByDevice, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'videoByDevice',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response);
+      }
+    },
   },
   reducers: {
     // 保存
@@ -320,6 +354,12 @@ export default {
       return {
         ...state,
         brandData: payload,
+      };
+    },
+    videoByDevice(state, { payload }) {
+      return {
+        ...state,
+        videoByDevice: payload.list,
       };
     },
   },

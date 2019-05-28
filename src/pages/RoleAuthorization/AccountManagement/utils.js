@@ -248,16 +248,19 @@ export function getIdMaps(tree) {
   return [parentIdMap, idMap];
 }
 
-// 在selectedKeys添加对应父节点
+// 在selectedKeys添加对应父节点，并将不存在于树中的值过滤掉
 export function addParentKey(keys, parentIdMap) {
+  // 过滤掉不存在于树中的值，由于parentId由源树处理而来，则parentId[id]为undefined的id不存在于树中
+  const filteredKeys = keys.filter(k => parentIdMap[k]);
+
   // 源数组中的所有值默认都被添加过了，所以都标记为true
-  const parentsFlag = keys.reduce((prev, next) => {
+  const parentsFlag = filteredKeys.reduce((prev, next) => {
     prev[next] = true;
     return prev;
   }, {});
 
   // 遍历源数组，生成一个要添加的父节点数组
-  const parents = keys.reduce((prev, next) => {
+  const parents = filteredKeys.reduce((prev, next) => {
     // 遍历对应的父节点，若在parentsFlag对象中，父节点key值不存在，则未被添加过，将其加入parents数组
     parentIdMap[next].forEach(p => {
       if (!parentsFlag[p]) {
@@ -269,7 +272,7 @@ export function addParentKey(keys, parentIdMap) {
     return prev;
   }, []);
 
-  return [...keys, ...parents];
+  return [...filteredKeys, ...parents];
 }
 
 // 找出树中子节点不唯一的父节点

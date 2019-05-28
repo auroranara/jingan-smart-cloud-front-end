@@ -224,18 +224,23 @@ export default class accountManagementList extends React.Component {
 
       // 如果有搜索条件，则填入并所属单位和账号列表
       if (searchInfo) {
-        const { unitId: { key } = {}, ...other } = searchInfo;
-        selectedUnitType === GOV
-          ? fetchUnitsFuzzy({
-              payload: { unitType: GOV },
-            })
-          : fetchUnitsFuzzy({
-              payload: {
-                unitType: selectedUnitType,
-                pageNum: 1,
-                pageSize: defaultPageSize,
-              },
-            });
+        const { unitId, ...other } = searchInfo;
+        let key;
+        if (selectedUnitType === GOV) {
+          key = unitId || undefined;
+          fetchUnitsFuzzy({
+            payload: { unitType: GOV },
+          });
+        } else {
+          key = unitId ? unitId.key : undefined;
+          fetchUnitsFuzzy({
+            payload: {
+              unitType: selectedUnitType,
+              pageNum: 1,
+              pageSize: defaultPageSize,
+            },
+          });
+        }
         listPayload = { pageSize, pageNum: 1, unitId: key || null, ...other };
         if (selectedUnitType)
           fetchRoles({ payload: { unitType: selectedUnitType, companyId: key } });
