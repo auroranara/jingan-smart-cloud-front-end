@@ -27,7 +27,7 @@ const dspItems = [
   },
   {
     name: 'regulatoryOrganization',
-    cName: '属地安监机构',
+    cName: '属地机构',
   },
   {
     name: 'validity',
@@ -166,7 +166,7 @@ export default class SafetyDetail extends PureComponent {
     // console.log(grid, menus.gridList, idMap);
 
     return (
-      <Card title="安监信息">
+      <Card title="安全信息">
         {/* <DescriptionList col={1} style={{ marginBottom: 13 }}>
           <Description term="所属网格">
             {grid && menus.gridList && idMap[grid]

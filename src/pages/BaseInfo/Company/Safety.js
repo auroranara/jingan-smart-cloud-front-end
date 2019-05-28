@@ -350,7 +350,7 @@ export default class Safety extends PureComponent {
       if (operation === 'add') {
         Modal.warning({
           title: '友情提示',
-          content: '请在新建企业基本信息成功后，再添加安监信息',
+          content: '请在新建企业基本信息成功后，再添加安全信息',
         });
 
         return;
@@ -557,9 +557,9 @@ export default class Safety extends PureComponent {
       },
       {
         name: 'regulatoryOrganization',
-        cName: '属地安监机构',
-        rules: generateRules('属地安监机构'),
-        component: <Input placeholder="请输入属地安监机构" />,
+        cName: '属地机构',
+        rules: generateRules('属地机构'),
+        component: <Input placeholder="请输入属地机构" />,
       },
       {
         name: 'validity',
