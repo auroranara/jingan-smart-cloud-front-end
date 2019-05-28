@@ -9,7 +9,18 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import InlineForm from '../../BaseInfo/Company/InlineForm';
 import { hasAuthority, AuthSpan } from '@/utils/customAuth';
 import styles from './Role.less';
-import { COM, GOV, OPE, LIST_PAGE_SIZE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform, generateTreeNode } from './utils';
+import {
+  COM,
+  GOV,
+  OPE,
+  LIST_PAGE_SIZE,
+  getEmptyData,
+  getRootChild,
+  getUnitTypeLabel,
+  preventDefault,
+  transform,
+  generateTreeNode,
+} from './utils';
 
 const PAGE_SIZE = 20;
 const { Option } = Select;
@@ -31,15 +42,17 @@ export default class RoleList extends PureComponent {
       fetchUnits,
       fetchUnitTypes,
       fetchPermissionTree,
-      user: { currentUser: { unitId } },
+      companyId,
+      // user: {
+      //   currentUser: { unitId },
+      // },
     } = this.props;
 
     const isPublic = type;
     fetchUnitTypes();
     this.getRoleList({ pageNum: 1 });
 
-    if (!isPublic && unitId)
-      fetchPermissionTree({ payload: unitId });
+    if (!isPublic && companyId) fetchPermissionTree({ payload: companyId });
 
     if (fetchUnits) {
       this.lazyFetchUnits = _.debounce(fetchUnits, 300);
@@ -59,8 +72,7 @@ export default class RoleList extends PureComponent {
     const {
       role: { isLast },
     } = this.props;
-    if (isLast)
-      return;
+    if (isLast) return;
 
     const {
       type,
@@ -85,8 +97,7 @@ export default class RoleList extends PureComponent {
 
   /* 查询点击事件 */
   handleSearch = values => {
-    if (!values.companyName)
-      delete values.companyName;
+    if (!values.companyName) delete values.companyName;
 
     this.getRoleList({ ...values, pageNum: 1 }, () => {
       this.setState({
@@ -99,8 +110,7 @@ export default class RoleList extends PureComponent {
   handleReset = () => {
     const { companyId, clearPermissionTree } = this.props;
     const isAdmin = !companyId;
-    if (isAdmin)
-      clearPermissionTree();
+    if (isAdmin) clearPermissionTree();
     this.getRoleList({ pageNum: 1 }, () => {
       this.setState({
         formData: {},
@@ -115,9 +125,8 @@ export default class RoleList extends PureComponent {
       pageSize: LIST_PAGE_SIZE,
       isPublic: type,
     };
-    if (companyId)
-      newPayload.companyId = companyId;
-    fetchList({ payload: newPayload, success});
+    if (companyId) newPayload.companyId = companyId;
+    fetchList({ payload: newPayload, success });
   };
 
   /* 显示删除确认提示框 */
@@ -138,10 +147,8 @@ export default class RoleList extends PureComponent {
     remove({
       payload: { id },
       callback: (code, msg) => {
-        if (code === 200)
-          message.success('删除成功');
-        else
-          message.error(msg);
+        if (code === 200) message.success('删除成功');
+        else message.error(msg);
       },
     });
   };
@@ -165,10 +172,8 @@ export default class RoleList extends PureComponent {
     const { fetchPermissionTree, clearPermissionTree } = this.props;
     this.setState({ unitType: id });
     this.form.setFieldsValue({ queryWebPermissionId: undefined, queryAppPermissionId: undefined });
-    if (id)
-      fetchPermissionTree({ payload: id });
-    else
-      clearPermissionTree();
+    if (id) fetchPermissionTree({ payload: id });
+    else clearPermissionTree();
   };
 
   showSyncModal = e => {
@@ -189,7 +194,9 @@ export default class RoleList extends PureComponent {
 
   handleUnitValueChange = value => {
     const { modalUnitType } = this.state;
-    this.lazyFetchUnits({ payload: { unitType: modalUnitType, unitName: value, pageNum: 1, pageSize: PAGE_SIZE } });
+    this.lazyFetchUnits({
+      payload: { unitType: modalUnitType, unitName: value, pageNum: 1, pageSize: PAGE_SIZE },
+    });
   };
 
   handleSyncOk = () => {
@@ -212,8 +219,7 @@ export default class RoleList extends PureComponent {
               this.setState({ confirmLoading: false, syncModalVisible: false });
               message.success('角色同步成功！');
               this.getRoleList({ ...formData, pageNum: 1 });
-            }
-            else {
+            } else {
               this.setState({ confirmLoading: false });
               message.error(msg);
             }
@@ -252,7 +258,11 @@ export default class RoleList extends PureComponent {
       render: () => {
         return (
           <Select placeholder="请选择角色单位类型" onChange={this.handleUnitTypeChange} allowClear>
-            {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
+            {sortedUnitTypes.map(({ id, label }, i) => (
+              <Option key={id} value={id}>
+                {label}
+              </Option>
+            ))}
           </Select>
         );
       },
@@ -310,21 +320,22 @@ export default class RoleList extends PureComponent {
       },
     ];
 
-    if (!isPublic && isAdmin) // 私有角色，管理员
+    if (!isPublic && isAdmin)
+      // 私有角色，管理员
       fields.unshift(companyNameField);
 
-    if (isAdmin)
-      fields.unshift(unitTypeField);
+    if (isAdmin) fields.unshift(unitTypeField);
 
-    if (+unitType === OPE)
-      fields.pop();
+    if (+unitType === OPE) fields.pop();
 
     const hasAddAuthority = hasAuthority(addCode, permissionCodes); // 是否有新增权限
 
     return (
       <Card>
         <InlineForm
-          ref={form => { this.form = form; }}
+          ref={form => {
+            this.form = form;
+          }}
           fields={fields}
           gutter={{ lg: 48, md: 24 }}
           action={
@@ -391,24 +402,29 @@ export default class RoleList extends PureComponent {
                     >
                       编辑
                     </Link>,
-                    <AuthSpan
-                      code={deleteCode}
-                      onClick={this.genHandleShowDeleteConfirm(id)}
-                    >
+                    <AuthSpan code={deleteCode} onClick={this.genHandleShowDeleteConfirm(id)}>
                       删除
                     </AuthSpan>,
                   ]}
                 >
                   <div
-                    onClick={ hasDetailAuthority ? () => goToDetail(id) : null}
+                    onClick={hasDetailAuthority ? () => goToDetail(id) : null}
                     style={hasDetailAuthority ? { cursor: 'pointer' } : null}
                   >
                     {isAdminAndPrivate && (
-                      <Ellipsis tooltip lines={1} className={isAdminAndPrivate ? styles.ellipsisUpText : styles.ellipsisText}>
-                      {companyName ? <span>{companyName}</span> : '暂无所属企业信息'}
+                      <Ellipsis
+                        tooltip
+                        lines={1}
+                        className={isAdminAndPrivate ? styles.ellipsisUpText : styles.ellipsisText}
+                      >
+                        {companyName ? <span>{companyName}</span> : '暂无所属企业信息'}
                       </Ellipsis>
                     )}
-                    <Ellipsis tooltip lines={1} className={isAdminAndPrivate ? styles.ellipsisDownText : styles.ellipsisText}>
+                    <Ellipsis
+                      tooltip
+                      lines={1}
+                      className={isAdminAndPrivate ? styles.ellipsisDownText : styles.ellipsisText}
+                    >
                       {description ? <span>{description}</span> : getEmptyData()}
                     </Ellipsis>
                   </div>
@@ -421,7 +437,8 @@ export default class RoleList extends PureComponent {
     );
   }
 
-  renderSyncModal() { // 只有运营和超级管理员才有同步权限
+  renderSyncModal() {
+    // 只有运营和超级管理员才有同步权限
     const {
       form: { getFieldDecorator },
       account: { unitTypes },
@@ -433,10 +450,7 @@ export default class RoleList extends PureComponent {
     const sortedUnitTypes = unitTypes ? Array.from(unitTypes).filter(({ id }) => id !== OPE) : [];
     sortedUnitTypes.sort((u1, u2) => u1.sort - u2.sort);
     const unit = isGovernment ? (
-      <TreeSelect
-        allowClear
-        placeholder="请选择所属单位"
-      >
+      <TreeSelect allowClear placeholder="请选择所属单位">
         {generateTreeNode(modalUnitList)}
       </TreeSelect>
     ) : (
@@ -464,35 +478,29 @@ export default class RoleList extends PureComponent {
         onCancel={this.handleSyncCancel}
       >
         <Form>
-          <Form.Item
-            label="单位类型"
-            labelCol={{ span: 4 }}
-            wrapperCol={{ span: 18 }}
-          >
+          <Form.Item label="单位类型" labelCol={{ span: 4 }} wrapperCol={{ span: 18 }}>
             {getFieldDecorator('modalUnitType', {
               initialValue: COM,
               rules: [{ required: true, message: '请选择单位类型' }],
             })(
-              <Select
-                onChange={this.handleModalTypeChange}
-              >
-                {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
+              <Select onChange={this.handleModalTypeChange}>
+                {sortedUnitTypes.map(({ id, label }, i) => (
+                  <Option key={id} value={id}>
+                    {label}
+                  </Option>
+                ))}
               </Select>
             )}
           </Form.Item>
-          <Form.Item
-            label="单位名称"
-            labelCol={{ span: 4 }}
-            wrapperCol={{ span: 18 }}
-          >
+          <Form.Item label="单位名称" labelCol={{ span: 4 }} wrapperCol={{ span: 18 }}>
             {getFieldDecorator('modalCompanyId', {
               rules: [{ required: true, message: '请选择单位' }],
             })(unit)}
           </Form.Item>
         </Form>
       </Modal>
-    )
-  };
+    );
+  }
 
   render() {
     const {
@@ -507,7 +515,9 @@ export default class RoleList extends PureComponent {
           pagination: { total },
         },
       },
-      user: { currentUser: { unitName } },
+      user: {
+        currentUser: { unitName },
+      },
     } = this.props;
 
     const isPublic = type;
@@ -518,23 +528,27 @@ export default class RoleList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            <p className={styles.desc}>角色总数：{total}</p>
+            <p className={styles.desc}>
+              角色总数：
+              {total}
+            </p>
             {unitName && <p className={styles.companyName}>{unitName}</p>}
             <p className={styles.desc}>
               {isPublic
                 ? '公共角色用来方便批量配置账号权限，没有开通用户(私有)角色的单位就应用公共角色'
-                : '用户(私有)角色用来单位自定义角色以配置账号权限，开通用户(私有)角色的单位不再使用公共角色'
-              }
+                : '用户(私有)角色用来单位自定义角色以配置账号权限，开通用户(私有)角色的单位不再使用公共角色'}
             </p>
-            {false && isAdmin && !isPublic && (
-              <p
-                className={styles.sync}
-                onClick={this.showSyncModal}
-                title="将公共角色同步成选定的单位的私有角色"
-              >
-                同步公共角色
-              </p>
-            )}
+            {false &&
+              isAdmin &&
+              !isPublic && (
+                <p
+                  className={styles.sync}
+                  onClick={this.showSyncModal}
+                  title="将公共角色同步成选定的单位的私有角色"
+                >
+                  同步公共角色
+                </p>
+              )}
           </div>
         }
       >

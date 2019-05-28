@@ -4,12 +4,7 @@ import {
   queryPermissionTree,
   deleteRole,
 } from '../services/role/commonRole';
-import {
-  queryCompanyPermissionTree,
-  addRole,
-  editRole,
-  getUnits,
-} from '../services/role/userRole';
+import { queryCompanyPermissionTree, addRole, editRole, getUnits } from '../services/role/userRole';
 import { removeEmptyChildren } from '@/pages/RoleAuthorization/Role/utils';
 
 export default {
@@ -44,8 +39,7 @@ export default {
         if (success) {
           success(response.data);
         }
-      }
-      else if (error) {
+      } else if (error) {
         error();
       }
     },
@@ -60,8 +54,7 @@ export default {
         if (success) {
           success(response.data);
         }
-      }
-      else if (error) {
+      } else if (error) {
         error();
       }
     },
@@ -75,18 +68,19 @@ export default {
           payload: data || {},
         });
         success && success(data);
-      }
-      else
-        error && error();
+      } else error && error();
     },
     // 获取单位类型对应的权限树
     *fetchPermissionTree({ payload, callback, callbackLater }, { call, put }) {
       const response = yield call(queryPermissionTree, payload);
       const { code, data } = response || {};
       if (code === 200) {
-        const webPermissions = data && Array.isArray(data.webPermissions) ? data.webPermissions : [];
-        const appPermissions = data && Array.isArray(data.appPermissions) ? data.appPermissions : [];
-        const msgPermissions = data && Array.isArray(data.messagePermissions) ? data.messagePermissions : [];
+        const webPermissions =
+          data && Array.isArray(data.webPermissions) ? data.webPermissions : [];
+        const appPermissions =
+          data && Array.isArray(data.appPermissions) ? data.appPermissions : [];
+        const msgPermissions =
+          data && Array.isArray(data.messagePermissions) ? data.messagePermissions : [];
         removeEmptyChildren(msgPermissions);
         callback && callback(webPermissions, appPermissions, msgPermissions);
         yield put({
@@ -101,9 +95,12 @@ export default {
       const response = yield call(queryCompanyPermissionTree, payload);
       const { code, data } = response || {};
       if (code === 200) {
-        const webPermissions = data && Array.isArray(data.webPermissions) ? data.webPermissions : [];
-        const appPermissions = data && Array.isArray(data.appPermissions) ? data.appPermissions : [];
-        const msgPermissions = data && Array.isArray(data.messagePermissions) ? data.messagePermissions : [];
+        const webPermissions =
+          data && Array.isArray(data.webPermissions) ? data.webPermissions : [];
+        const appPermissions =
+          data && Array.isArray(data.appPermissions) ? data.appPermissions : [];
+        const msgPermissions =
+          data && Array.isArray(data.messagePermissions) ? data.messagePermissions : [];
         removeEmptyChildren(msgPermissions);
         callback && callback(webPermissions, appPermissions, msgPermissions);
         yield put({
@@ -120,8 +117,7 @@ export default {
         if (success) {
           success(response.data);
         }
-      }
-      else if (error) {
+      } else if (error) {
         error();
       }
     },
@@ -132,8 +128,7 @@ export default {
         if (success) {
           success(response.data);
         }
-      }
-      else if (error) {
+      } else if (error) {
         error();
       }
     },
@@ -141,22 +136,26 @@ export default {
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(deleteRole, payload);
       const { code, msg } = response || {};
-      if (code === 200)
-        yield put({ type: 'decreaseList', payload });
+      if (code === 200) yield put({ type: 'decreaseList', payload });
       callback && callback(code, msg);
     },
     *fetchUnits({ payload, callback }, { call, put }) {
       const response = yield call(getUnits, payload);
       const { code, data } = response || {};
       if (code === 200)
-        yield put({ type: 'saveUnits', payload: data && Array.isArray(data.list) ? data.list : [] });
+        yield put({
+          type: 'saveUnits',
+          payload: data && Array.isArray(data.list) ? data.list : [],
+        });
     },
   },
 
   reducers: {
     /* 获取列表 */
     queryList(state, { payload }) {
-      const { pagination: { pageNum, pageSize, total } } = payload;
+      const {
+        pagination: { pageNum, pageSize, total },
+      } = payload;
       return {
         ...state,
         data: payload,
@@ -164,7 +163,12 @@ export default {
       };
     },
     /* 追加列表 */
-    pushList(state, { payload: { list, pagination } }) {
+    pushList(
+      state,
+      {
+        payload: { list, pagination },
+      }
+    ) {
       const { pageNum, pageSize, total } = pagination;
       return {
         ...state,
@@ -199,4 +203,4 @@ export default {
       return { ...state, unitList: action.payload };
     },
   },
-}
+};

@@ -5,7 +5,12 @@ import { Form } from 'antd';
 
 import RoleList from '../Role/RoleList';
 import codes from '@/utils/codes';
-import { PRIVATE_DETAIL_URL as DETAIL_URL, PRIVATE_ADD_URL as ADD_URL, PRIVATE_URLS as URLS, isAdmin } from '../Role/utils';
+import {
+  PRIVATE_DETAIL_URL as DETAIL_URL,
+  PRIVATE_ADD_URL as ADD_URL,
+  PRIVATE_URLS as URLS,
+  isAdmin,
+} from '../Role/utils';
 
 const TITLE = '用户角色';
 const BREADCRUMB_LIST = [
@@ -24,7 +29,8 @@ const BREADCRUMB_LIST = [
   },
 ];
 
-@connect(({ account, commonRole, userRole, user, loading }) => ({ // 之前把同步角色放到了公共角色模块里，放错了，这里为了省事，就直接延用
+@connect(({ account, commonRole, userRole, user, loading }) => ({
+  // 之前把同步角色放到了公共角色模块里，放错了，这里为了省事，就直接延用
   account,
   role: { ...userRole, modalUnitList: commonRole.unitList },
   user,
@@ -87,9 +93,12 @@ export default class CommonRoleList extends PureComponent {
   }
 
   render() {
-    const { user: { currentUser: { unitId, unitType } } } = this.props;
+    const {
+      user: {
+        currentUser: { unitId, unitType },
+      },
+    } = this.props;
     const isAdm = isAdmin(unitType);
-
     return (
       <RoleList
         type={0} // 0 私有角色 1 公共角色
