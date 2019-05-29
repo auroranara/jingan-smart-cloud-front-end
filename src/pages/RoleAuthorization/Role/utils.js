@@ -236,8 +236,7 @@ const CHECK_NONE = 0; // 全不选
 const CHECK_PART = 1; // 半选
 const CHECK_ALL = 2; // 全选
 export function getChecked(status) { // [indeterminate, checked] indeterminate控制半选还是全选的样式，checked表示选中状态
-  status = status ? +status : 0;
-  switch(status) {
+  switch(+status) {
     case CHECK_NONE:
       return [false, false];
     case CHECK_PART:
@@ -249,13 +248,13 @@ export function getChecked(status) { // [indeterminate, checked] indeterminate�
   }
 }
 
-function getNextStatus(status, hasChild) { // 点击时下一个状态只可能是全选或全不选
+function getNextStatus(status) { // 点击时下一个状态只可能是全选或全不选
   status = status ? +status : 0;
-  if (hasChild) { // 有子元素，则有三种状态
-    if (status === CHECK_ALL) // 全选点击时，下一个状态是全不选
-      return CHECK_NONE;
-    return CHECK_ALL; // 半选或全不选点击时，下一个状态是全选
-  }
+  // if (hasChild) { // 有子元素，则有三种状态
+  //   if (status === CHECK_ALL) // 全选点击时，下一个状态是全不选
+  //     return CHECK_NONE;
+  //   return CHECK_ALL; // 半选或全不选点击时，下一个状态是全选
+  // }
 
   // 没有子元素，只有两种状态，无半选
   if (status === CHECK_ALL)
@@ -263,37 +262,38 @@ function getNextStatus(status, hasChild) { // 点击时下一个状态只可能�
   return CHECK_ALL;
 }
 
+// export function getNewMsgs(id, state, idMap) { // msgs -> newMsgs
+//   const root = '0';
+//   const newState = { ...state };
+//   const current = newState[id] = !state[id];
+//   const { parentId, allChildIds } = idMap[id];
+//   let parent = parentId;
+//   while (parent !== root) { // 非顶层节点才要考虑所有父节点问题
+//     if (current) // 选中时，同级节点都已经选中，则父节点选中
+//       newState[parent] = idMap[parent].childIds.every(id => newState[id]);
+//     else // 取消选中时，父节点必然取消选中
+//       newState[parent] = false;
+//     parent = idMap[parent].parentId;
+//   }
+
+//   allChildIds.forEach(id => newState[id] = current); // 勾上则子节点全打勾，取消则子节点全取消
+
+//   return newState;
+// }
+
 export function getNewMsgs(id, state, idMap) { // msgs -> newMsgs
-  const root = '0';
-  const newState = { ...state };
-  const current = newState[id] = !state[id];
-  const { parentId, allChildIds } = idMap[id];
-  let parent = parentId;
-  while (parent !== root) { // 非顶层节点才要考虑所有父节点问题
-    if (current) // 选中时，同级节点都已经选中，则父节点选中
-      newState[parent] = idMap[parent].childIds.every(id => newState[id]);
-    else // 取消选中时，父节点必然取消选中
-      newState[parent] = false;
-    parent = idMap[parent].parentId;
-  }
-
-  allChildIds.forEach(id => newState[id] = current); // 勾上则子节点全打勾，取消则子节点全取消
-
-  return newState;
-}
-
-export function getNewMsgs1(id, state, idMap) { // msgs -> newMsgs
   const root = '0';
   const newState = { ...state };
   const current = newState[id] = getNextStatus(state[id]); // 点击节点的下一状态只可能是全选或全不选
   const { parentId, allChildIds } = idMap[id];
   let parent = parentId;
   while (parent !== root) { // 非顶层节点才要考虑所有父节点问题
-    const statuses = idMap[parent].childIds.map(id => !!newState[id]); // newState[id]可能为undefined，等同于0
-    if (current) // 全选时，同级节点都已经选中，则父节点选中，否则为半选
-      newState[parent] = statuses.every(s => s) ? CHECK_ALL : CHECK_PART;
-    else // 取消选中时，同级子节点都未选中，则父节点未选中，否则未半选
-      newState[parent] = statuses.every(s => !s) ? CHECK_NONE : CHECK_PART;
+    const statuses = idMap[parent].childIds.map(id => newState[id]); // newState[id]可能为undefined，等同于0
+    newState[parent] = getFatherNodeStatus(current, statuses);
+    // if (current) // 全选时，同级节点都全选，则父节点全选，否则为半选
+    //   newState[parent] = statuses.every(s => s === CHECK_ALL) ? CHECK_ALL : CHECK_PART;
+    // else // 取消选中时，同级子节点都未选中，则父节点未选中，否则未半选
+    //   newState[parent] = statuses.every(s => !s) ? CHECK_NONE : CHECK_PART;
     parent = idMap[parent].parentId;
   }
 
@@ -302,7 +302,76 @@ export function getNewMsgs1(id, state, idMap) { // msgs -> newMsgs
   return newState;
 }
 
-export function getNewAccountMsgs(id, i, state, idMap) { // msgs -> newMsgs
+// 点击时修正父节点的状态
+function getFatherNodeStatus(current, statuses) {
+  if (current) // 全选时，同级节点都全选，则父节点全选，否则为半选
+    return statuses.every(s => s === CHECK_ALL) ? CHECK_ALL : CHECK_PART;
+  // 取消选中时，同级子节点都未选中，则父节点未选中，否则未半选
+  return statuses.every(s => !s) ? CHECK_NONE : CHECK_PART;
+}
+
+export function getInitialMsgs(ids, idMap) {
+  ids = ids.filter(id => idMap[id]); // 过滤掉不存在于树中的节点
+  return ids.reduce((prev, next) => {
+    const { allChildIds } = idMap[next];
+    let status;
+    if (allChildIds.length) { // 有子节点，通过子节点选中状态判断
+      const statuses = allChildIds.map(childId => ids.includes(childId)); // 当前节点的所有子孙节点在ids中是否存在
+      status = getCurrentNodeStatus(statuses);
+    } else // 没有子节点，保留当前状态
+      status = ids.includes(next) ? CHECK_ALL : CHECK_NONE;
+    prev[next] = status;
+    return prev;
+  }, {});
+}
+
+// 初始化时当前节点的状态
+function getCurrentNodeStatus(statuses) {
+  if (statuses.every(s => s)) // 全存在
+    return CHECK_ALL;
+  if (statuses.every(s => !s)) // 全都不存在
+    return CHECK_NONE;
+  return CHECK_PART; // 部分存在
+}
+
+// export function getNewAccountMsgs(id, i, state, idMap) { // msgs -> newMsgs
+//   const root = '0';
+//   const newState = Object.entries(state).reduce((prev, next) => {
+//     const [id, [mobile, app]] = next;
+//     prev[id] = [mobile, app];
+//     return prev;
+//   }, {});
+//   let checks = newState[id];
+//   if (!checks)
+//     checks = newState[id] = [];
+//   const current = checks[i] = !checks[i];
+//   const { parentId, allChildIds } = idMap[id];
+//   let parent = parentId;
+//   while (parent !== root) { // 非顶层节点才要考虑父节点问题
+//     if (!newState[parent])
+//       newState[parent] = [];
+//     if (current) // 选中时，同级节点都已经选中，则父节点选中
+//       newState[parent][i] = idMap[parent].childIds.every(id =>  newState[id] ? newState[id][i] : false);
+//     else // 取消选中时，父节点必然取消选中
+//       newState[parent][i] = false;
+//     parent = idMap[parent].parentId;
+//   }
+
+//   allChildIds.forEach(id => {
+//     if (!newState[id])
+//       newState[id] = [];
+//     newState[id][i] = current;
+//   }); // 勾上则子节点全打勾，取消则子节点全取消
+
+//   // console.log(id, parentIdMap, state, newState);
+//   return fixMsgs(newState, i, current);
+// }
+
+function isExist(arg) {
+  return arg !== undefined && arg !== null;
+}
+
+export function getNewAccountMsgs(id, i, state, idMap, nextStatus) { // msgs -> newMsgs nextStatus只能是全选或不选状态，不可能是半选状态
   const root = '0';
   const newState = Object.entries(state).reduce((prev, next) => {
     const [id, [mobile, app]] = next;
@@ -311,71 +380,122 @@ export function getNewAccountMsgs(id, i, state, idMap) { // msgs -> newMsgs
   }, {});
   let checks = newState[id];
   if (!checks)
-    checks = newState[id] = [];
-  const current = checks[i] = !checks[i];
+    checks = newState[id] = [0, 0];
+  if (!isExist(nextStatus))
+    nextStatus = getNextStatus(checks[i]);
+  const current = checks[i] = nextStatus;
   const { parentId, allChildIds } = idMap[id];
   let parent = parentId;
   while (parent !== root) { // 非顶层节点才要考虑父节点问题
     if (!newState[parent])
-      newState[parent] = [];
-    if (current) // 选中时，同级节点都已经选中，则父节点选中
-      newState[parent][i] = idMap[parent].childIds.every(id =>  newState[id] ? newState[id][i] : false);
-    else // 取消选中时，父节点必然取消选中
-      newState[parent][i] = false;
+      newState[parent] = [0, 0];
+    const statuses = idMap[parent].childIds.map(id =>  newState[id] ? newState[id][i] : 0);
+    newState[parent][i] = getFatherNodeStatus(current, statuses);
+    // if (current) // 选中时，同级节点都全选，则父节点全选，否则半选
+    //   newState[parent][i] = statuses.every(s => s === CHECK_ALL) ? CHECK_ALL : CHECK_PART;
+    // else // 取消选中时，同级子节点都未选中，则父节点未选中，否则半选
+    //   newState[parent][i] = statuses.every(s => !s) ? CHECK_NONE : CHECK_PART;
     parent = idMap[parent].parentId;
   }
 
   allChildIds.forEach(id => {
     if (!newState[id])
-      newState[id] = [];
+      newState[id] = [0, 0];
     newState[id][i] = current;
   }); // 勾上则子节点全打勾，取消则子节点全取消
 
   // console.log(id, parentIdMap, state, newState);
-  return fixMsgs(newState, i, current);
+  return fixMsgs(id, newState, i, current, idMap);
 }
 
-function fixMsgs(state, mobileOrApp, checked) { // mobileOrApp[0 mobile 1 app] checked[0 取消 1 选中]
-  const entries = Object.entries(state);
-  if (!mobileOrApp && checked) // mobile选中则app比选中
-    return entries.reduce((prev, next) => {
-      const [id, [mobile, app]] = next;
-      if (mobile)
-        prev[id] = [true, true];
-      else
-        prev[id] = [mobile, app];
-      return prev;
-    }, {});
-  if (mobileOrApp && !checked) // app取消则mobile也取消
-    return entries.reduce((prev, next) => {
-      const [id, [mobile, app]] = next;
-      if (!app)
-        prev[id] = [false, false];
-      else
-        prev[id] = [mobile, app];
-      return prev;
-    }, {});
+// function fixMsgs(state, mobileOrApp, checked) { // mobileOrApp[0 mobile 1 app] checked[0 取消 1/2 选中]
+//   const entries = Object.entries(state);
+//   if (!mobileOrApp && checked) // mobile选中则app必选中
+//     return entries.reduce((prev, next) => {
+//       const [id, [mobile, app]] = next;
+//       if (mobile)
+//         prev[id] = [mobile, mobile];
+//       else
+//         prev[id] = [mobile, app];
+//       return prev;
+//     }, {});
+//   if (mobileOrApp && !checked) // app取消则mobile也取消
+//     return entries.reduce((prev, next) => {
+//       const [id, [mobile, app]] = next;
+//       if (!app)
+//         prev[id] = [0, 0];
+//       else
+//         prev[id] = [mobile, app];
+//       return prev;
+//     }, {});
+//   return state;
+// }
+
+function fixMsgs(id, state, mobileOrApp, status, idMap) { // mobileOrApp[0 mobile 1 app] checked[0 取消 2 全选]
+  const [mobile, app] = state[id];
+  if (!mobileOrApp && status && app !== CHECK_ALL) // mobile全选，且app未全选则将app全选
+    return getNewAccountMsgs(id, 1, state, idMap, status);
+  if (mobileOrApp && !status && mobile) // app全不选且mobile部分或全选，则将mobile也设值为全不选
+    return getNewAccountMsgs(id, 0, state, idMap, status);
   return state;
 }
 
 // {"messageTypeId":"id","appAcceptStatus":0,"webAcceptStatus":0} 0 不接收 1 接受
+// export function convertToMsgs(list, idMap) {
+//   if (!Array.isArray(list))
+//     return {};
+//   const ids = list.map(({ messageTypeId }) => messageTypeId);
+//   const filteredIds = removeParentId(ids, idMap); // 过滤掉不存在的节点，以及修正父节点选中而子孙节点未全选中的情况
+//   const filteredList = list.filter(({ messageTypeId }) => filteredIds.includes(messageTypeId));
+//   return filteredList.reduce((prev, next) => {
+//     const { messageTypeId, appAcceptStatus, webAcceptStatus } = next;
+//     prev[messageTypeId] = [appAcceptStatus, webAcceptStatus].map(s => !!+s);
+//     return prev;
+//   }, {});
+// }
+
 export function convertToMsgs(list, idMap) {
   if (!Array.isArray(list))
     return {};
-  const ids = list.map(({ messageTypeId }) => messageTypeId);
-  const filteredIds = removeParentId(ids, idMap); // 过滤掉不存在的节点，以及修正父节点选中而子孙节点未全选中的情况
-  const filteredList = list.filter(({ messageTypeId }) => filteredIds.includes(messageTypeId));
-  return filteredList.reduce((prev, next) => {
+  const filteredList = list.filter(({ messageTypeId }) => idMap[messageTypeId]); // 过滤掉不存在的节点
+  const msgs = filteredList.reduce((prev, next) => {
     const { messageTypeId, appAcceptStatus, webAcceptStatus } = next;
-    prev[messageTypeId] = [appAcceptStatus, webAcceptStatus].map(s => !!+s);
+    prev[messageTypeId] = [appAcceptStatus, webAcceptStatus].map(s => +s);
     return prev;
   }, {});
+
+  const ids = filteredList.map(({ messageTypeId }) => messageTypeId);
+  const newMsgs = {};
+  ids.forEach(id => {
+    const { allChildIds } = idMap[id];
+    let sts;
+    if (allChildIds.length) { // 当前节点有子节点，状态由子节点状态绝对
+      const statuses = allChildIds.map(childId => msgs[childId] ? msgs[childId] : [0, 0]);
+      const stsList = statuses.reduce((prev, next) => {
+        prev.forEach((lst, i) => lst.push(next[i]));
+        return prev;
+      }, [[], []]);
+      sts = [0, 1].map(i => getCurrentNodeStatus(stsList[i]));
+    } else // 当前节点无子节点 0->未选 1->全选
+      sts = msgs[id].map(s => s ? CHECK_ALL : CHECK_NONE);
+
+    newMsgs[id] = sts;
+  });
+  return newMsgs;
 }
+
+// export function convertToMsgList(msgs) {
+//   return Object.entries(msgs).reduce((prev, next) => {
+//     const [id, [mobile, app]] = next;
+//     prev.push({ messageTypeId: id, appAcceptStatus: +!!mobile, webAcceptStatus: +!!app });
+//     return prev;
+//   }, []);
+// }
 
 export function convertToMsgList(msgs) {
   return Object.entries(msgs).reduce((prev, next) => {
     const [id, [mobile, app]] = next;
-    prev.push({ messageTypeId: id, appAcceptStatus: +!!mobile, webAcceptStatus: +!!app });
+    prev.push({ messageTypeId: id, appAcceptStatus: +!!mobile, webAcceptStatus: +!!app }); // 0->0 1/2->1
     return prev;
   }, []);
 }
@@ -384,7 +504,7 @@ export function convertToMsgList(msgs) {
 export function treeConvertToMsgs(list) {
   const msgs = {};
   traverse(list, ({ id }) => {
-    msgs[id] = [true, true];
+    msgs[id] = [CHECK_ALL, CHECK_ALL];
   });
   return msgs;
 }

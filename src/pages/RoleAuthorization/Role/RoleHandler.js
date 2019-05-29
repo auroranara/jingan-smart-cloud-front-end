@@ -5,7 +5,7 @@ import { Checkbox, Form, Card, Input, Button, Select, Spin, Table, Tabs, Tree, T
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import styles from './Role.less';
 import { hasAuthority } from '@/utils/customAuth';
-import { GOV, OPE, checkParent, generateTreeNode, sortTree, uncheckParent, getUnitDisabled, getIdMap, getNewMsgs, addParentId, removeParentId } from './utils';
+import { GOV, OPE, checkParent, generateTreeNode, sortTree, uncheckParent, getUnitDisabled, getIdMap, getNewMsgs, getChecked, getInitialMsgs } from './utils';
 
 const { TreeNode } = Tree;
 const { TextArea } = Input;
@@ -107,8 +107,9 @@ export default class RoleHandler extends PureComponent {
     const msgIds = messagePermissionIds || [];
     // loading.effects靠不住，不是接口返回就认为loading变化了，貌似是整个异步函数都调用完成才会改变loading，如callback调用时，也会认为还没完成
     if (msgIds.length && msgPermissionTree.length) { // 考察modals里的具体变量是否已经有了更靠谱
-      const handledMsgIds = removeParentId(msgIds, this.idMap);
-      this.setState({ msgs: handledMsgIds.reduce((prev, next) => { prev[next] = true; return prev; }, {}) });
+      // const handledMsgIds = removeParentId(msgIds, this.idMap);
+      // this.setState({ msgs: handledMsgIds.reduce((prev, next) => { prev[next] = true; return prev; }, {}) });
+      this.setState({ msgs: getInitialMsgs(msgIds, this.idMap) });
     }
   };
 
@@ -202,7 +203,8 @@ export default class RoleHandler extends PureComponent {
           description,
           webPermissionIds: checkParent(permissionTree, permissions),
           appPermissionIds: checkParent(appPermissionTree, appPermissions),
-          messagePermissionIds: addParentId(msgIds, this.idMap),
+          messagePermissionIds: msgIds,
+          // messagePermissionIds: addParentId(msgIds, this.idMap),
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -464,9 +466,11 @@ export default class RoleHandler extends PureComponent {
       },
       { title: '推荐接收人', dataIndex: 'accepter', key: 'accepter' },
       { title: '是否配置', dataIndex: 'check', key: 'check', align: 'center',
-        render: (txt, record) => (
-          <Checkbox checked={msgs[record.id]} onChange={this.genHandleCheck(record.id)} />
-        ),
+        render: (txt, record) => {
+          const { id } = record;
+          const [indeterminate, checked] = getChecked(msgs[id]);
+          return <Checkbox indeterminate={indeterminate} checked={checked} onChange={this.genHandleCheck(id)} />;
+        },
       },
     ];
 
