@@ -24,6 +24,7 @@ import storageTankIcon from './imgs/storage-tank.png';
 import storageTankDarkIcon from './imgs/storage-tank-d.png';
 import smokeDetectorIcon from './imgs/smoke-detector.png';
 import smokeDetectorDarkIcon from './imgs/smoke-detector-d.png';
+import iconWater from '@/assets/water-syatem.png';
 
 const { Option } = Select;
 
@@ -52,8 +53,8 @@ const ICONS_URL = {
   'waste-water-d': wasteWaterDarkIcon,
   'waste-gas': wasteGasIcon,
   'waste-gas-d': wasteGasDarkIcon,
-  'storage-tank': storageTankIcon,
-  'storage-tank-d': storageTankDarkIcon,
+  'storage-tank': iconWater, //storageTankIcon,
+  'storage-tank-d': wasteWaterDarkIcon, // storageTankDarkIcon,
   'smoke-detector': smokeDetectorIcon,
   'smoke-detector-d': smokeDetectorDarkIcon,
 };
@@ -62,7 +63,7 @@ const ICONS_CN = {
   'toxic-gas': '可燃有毒气体异常数据分析',
   'waste-water': '废水异常数据分析',
   'waste-gas': '废气异常数据分析',
-  'storage-tank': '储罐异常数据分析',
+  'storage-tank': '水系统异常数据分析',
   'smoke-detector': '独立烟感异常数据分析',
 };
 const OPTIONS = [

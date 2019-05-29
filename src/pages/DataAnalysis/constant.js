@@ -14,7 +14,7 @@ export const WASTE_WATER_TYPE_LABEL = '废水异常数据分析';
 export const WASTE_GAS_TYPE = 4;
 export const WASTE_GAS_TYPE_LABEL = '废气异常数据分析';
 export const STORAGE_TANK_TYPE = 5;
-export const STORAGE_TANK_TYPE_LABEL = '储罐异常数据分析';
+export const STORAGE_TANK_TYPE_LABEL = '水系统异常数据分析';
 export const SMOKE_DETECTOR_TYPE = 6;
 export const SMOKE_DETECTOR_TYPE_LABEL = '独立烟感异常数据分析';
 
