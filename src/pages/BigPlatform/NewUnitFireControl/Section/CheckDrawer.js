@@ -6,6 +6,7 @@ import styles from './CheckDrawer.less';
 
 import PointCard from '@/components/PointCard';
 import DrawerContainer from '../components/DrawerContainer';
+import noChecking from '../imgs/noChecking.png';
 
 // 获取偏移天数
 const getOffsetDays = ({ nextCheckDate }) => {
@@ -132,7 +133,24 @@ export default class CheckDrawer extends PureComponent {
               );
             })
           ) : (
-            <div style={{ textAlign: 'center', color: '#fff', height: '200px', lineHeight: '200px' }}>{'暂无数据'}</div>
+            <div
+              style={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                textAlign: 'center',
+                color: '#4f6793',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <img
+                src={noChecking}
+                style={{ width: '36%', height: 'auto', marginTop: '-150px' }}
+                alt="noData"
+              />
+              <div style={{ marginTop: '15px' }}>暂无数据</div>
+            </div>
           )}
         </div>
       </div>

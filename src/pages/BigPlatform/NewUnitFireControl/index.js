@@ -1448,11 +1448,12 @@ export default class NewUnitFireControl extends PureComponent {
     this.getDeviceCamera(deviceId, 3);
   };
 
-  getDeviceCamera = (deviceId, type) => {
+  getDeviceCamera = (deviceId, type, callback) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'electricityMonitor/fetchDeviceCamera',
       payload: { deviceId, type },
+      callback,
     });
   };
 
@@ -1969,7 +1970,8 @@ export default class NewUnitFireControl extends PureComponent {
           onClick={this.handleClickSmoke}
           onClose={() => this.handleDrawerVisibleChange('smoke')}
           filterIndex={filterIndex}
-          videoList={cameraTree}
+          videoList={videoByDevice}
+          getDeviceCamera={this.getDeviceCamera}
         />
         {/* 电气火灾监测抽屉 */}
         <ElectricityDrawer

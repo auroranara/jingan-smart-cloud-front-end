@@ -6,10 +6,11 @@ import LoadMoreButton from '../../Safety/Company3/components/LoadMoreButton';
 import styles from './NewWorkOrderDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
 import numberBg from '../imgs/number-bg.png';
+import noData from '../imgs/noData.png';
 
 const NO_DATA = '暂无信息';
 const TYPES = ['报警', '故障'];
-const STATUS_MAP = ['待处理', '处理中', '已完成'];
+const STATUS_MAP = ['待处理', '处理中', '已处理'];
 const LABELS = [['主机报警', '主机报障'], ['独立烟感报警', '独立烟感故障'], ['可燃气体报警'], []];
 
 function formatTime(time) {
@@ -251,8 +252,23 @@ export default class NewWorkOrderDrawer extends PureComponent {
                       )}
                     </div>
                   ) : (
-                    <div style={{ color: '#fff', textAlign: 'center', marginTop: '120px' }}>
-                      暂无数据
+                    <div
+                      style={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        textAlign: 'center',
+                        color: '#4f6793',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <img
+                        src={noData}
+                        style={{ width: '36%', height: 'auto', marginTop: '-150px' }}
+                        alt="noData"
+                      />
+                      <div style={{ marginTop: '15px' }}>暂无工单</div>
                     </div>
                   )}
                 </div>

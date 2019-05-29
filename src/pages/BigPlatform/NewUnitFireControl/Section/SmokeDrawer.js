@@ -30,9 +30,12 @@ export default class SmokeDrawer extends PureComponent {
     this.setState({ searchValue: v });
   };
 
-  handleClickCamera = videoList => {
-    this.setState({
-      videoVisible: true,
+  handleClickCamera = deviceId => {
+    const { getDeviceCamera } = this.props;
+    getDeviceCamera(deviceId, 3, () => {
+      this.setState({
+        videoVisible: true,
+      });
     });
   };
 
@@ -41,11 +44,10 @@ export default class SmokeDrawer extends PureComponent {
   };
 
   renderItems = list => {
-    const { videoList } = this.props;
     return (
       <Row gutter={16}>
         {list.map((item, index) => {
-          const { area, location, add_time, status, iotId } = item;
+          const { area, location, add_time, status, iotId, device_id, hasCamera } = item;
           let occurTime = `时间：${moment(add_time).format('YYYY-MM-DD HH:mm:ss')}`;
           const devStatus = '设备状态：正常';
           const color = +status > 0 ? '#f83329' : '#ffb400';
@@ -78,11 +80,11 @@ export default class SmokeDrawer extends PureComponent {
                     </Ellipsis>
                   </div>
                   <div className={styles.extraWrapper}>
-                    {!!videoList.length && (
+                    {+hasCamera === 1 && (
                       <div
                         className={styles.camraImg}
                         style={{ backgroundImage: `url(${cameralogo})` }}
-                        onClick={e => this.handleClickCamera(videoList)}
+                        onClick={e => this.handleClickCamera(device_id)}
                       />
                     )}
                     {(+status > 0 || !status || +status < -1) && (
@@ -108,13 +110,14 @@ export default class SmokeDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, filterIndex } = this.props;
     const {
       companySmokeInfo: {
         map: { unnormal = [], fault = [], normal = [] } = { unnormal: [], fault: [], normal: [] },
       },
       onClick,
       videoList,
+      filterIndex,
+      visible,
     } = this.props;
     const { videoVisible } = this.state;
 
