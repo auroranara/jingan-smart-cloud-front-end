@@ -8,7 +8,7 @@ import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
 import styles1 from '../Role/Role.less';
-import { checkParent, uncheckParent, sortTree, getIdMap, getNewMsgs, addParentId, removeParentId } from '../Role/utils';
+import { checkParent, uncheckParent, sortTree, getIdMap, getNewMsgs, getChecked, getInitialMsgs } from '../Role/utils';
 
 const { TreeNode } = Tree;
 const { TextArea } = Input;
@@ -145,8 +145,9 @@ export default class RoleHandler extends PureComponent {
     const msgIds = messagePermissions ? messagePermissions.split(',').filter(id => id) : [];
     // loading.effects靠不住，不是接口返回就认为loading变化了，貌似是整个异步函数都调用完成才会改变loading，如callback调用时，也会认为还没完成
     if (msgIds.length && msgTree.length) { // 考察modals里的具体变量是否已经有了更靠谱
-      const handledMsgIds = removeParentId(msgIds, this.idMap);
-      this.setState({ msgs: handledMsgIds.reduce((prev, next) => { prev[next] = true; return prev; }, {}) });
+      // const handledMsgIds = removeParentId(msgIds, this.idMap);
+      // this.setState({ msgs: handledMsgIds.reduce((prev, next) => { prev[next] = true; return prev; }, {}) });
+      this.setState({ msgs: getInitialMsgs(msgIds, this.idMap) });
     }
   };
 
@@ -192,8 +193,8 @@ export default class RoleHandler extends PureComponent {
           description,
           permissions: checkParent(permissionTree, permissions).join(','),
           appPermissions: checkParent(appPermissionTree, appPermissions).join(','),
-          // messagePermissions: msgIds.join(','),
-          messagePermissions: addParentId(msgIds, this.idMap).join(','),
+          messagePermissions: msgIds.join(','),
+          // messagePermissions: addParentId(msgIds, this.idMap).join(','),
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -402,9 +403,11 @@ export default class RoleHandler extends PureComponent {
       },
       { title: '推荐接收人', dataIndex: 'accepter', key: 'accepter' },
       { title: '是否配置', dataIndex: 'check', key: 'check', align: 'center',
-        render: (txt, record) => (
-          <Checkbox checked={msgs[record.id]} onChange={this.genHandleCheck(record.id)} />
-        ),
+        render: (txt, record) => {
+          const { id } = record;
+          const [indeterminate, checked] = getChecked(msgs[id]);
+          return <Checkbox indeterminate={indeterminate} checked={checked} onChange={this.genHandleCheck(id)} />;
+        },
       },
     ];
 
