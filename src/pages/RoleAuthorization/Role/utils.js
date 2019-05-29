@@ -232,6 +232,37 @@ export function getIdMap(list) {
   return idMap;
 }
 
+const CHECK_NONE = 0; // 全不选
+const CHECK_PART = 1; // 半选
+const CHECK_ALL = 2; // 全选
+export function getChecked(status) { // [indeterminate, checked] indeterminate控制半选还是全选的样式，checked表示选中状态
+  status = status ? +status : 0;
+  switch(status) {
+    case CHECK_NONE:
+      return [false, false];
+    case CHECK_PART:
+      return [true, true];
+    case CHECK_ALL:
+      return [false, true];
+    default:
+      return [false, false];
+  }
+}
+
+function getNextStatus(status, hasChild) { // 点击时下一个状态只可能是全选或全不选
+  status = status ? +status : 0;
+  if (hasChild) { // 有子元素，则有三种状态
+    if (status === CHECK_ALL) // 全选点击时，下一个状态是全不选
+      return CHECK_NONE;
+    return CHECK_ALL; // 半选或全不选点击时，下一个状态是全选
+  }
+
+  // 没有子元素，只有两种状态，无半选
+  if (status === CHECK_ALL)
+    return CHECK_NONE;
+  return CHECK_ALL;
+}
+
 export function getNewMsgs(id, state, idMap) { // msgs -> newMsgs
   const root = '0';
   const newState = { ...state };
@@ -247,6 +278,26 @@ export function getNewMsgs(id, state, idMap) { // msgs -> newMsgs
   }
 
   allChildIds.forEach(id => newState[id] = current); // 勾上则子节点全打勾，取消则子节点全取消
+
+  return newState;
+}
+
+export function getNewMsgs1(id, state, idMap) { // msgs -> newMsgs
+  const root = '0';
+  const newState = { ...state };
+  const current = newState[id] = getNextStatus(state[id]); // 点击节点的下一状态只可能是全选或全不选
+  const { parentId, allChildIds } = idMap[id];
+  let parent = parentId;
+  while (parent !== root) { // 非顶层节点才要考虑所有父节点问题
+    const statuses = idMap[parent].childIds.map(id => !!newState[id]); // newState[id]可能为undefined，等同于0
+    if (current) // 全选时，同级节点都已经选中，则父节点选中，否则为半选
+      newState[parent] = statuses.every(s => s) ? CHECK_ALL : CHECK_PART;
+    else // 取消选中时，同级子节点都未选中，则父节点未选中，否则未半选
+      newState[parent] = statuses.every(s => !s) ? CHECK_NONE : CHECK_PART;
+    parent = idMap[parent].parentId;
+  }
+
+  allChildIds.forEach(id => newState[id] = current); // 全选则子节点全打勾，取消则子节点全取消
 
   return newState;
 }
