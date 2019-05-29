@@ -84,20 +84,24 @@ export default class VideoMonitorEdit extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
-      match: { params: { id } },
-      location: { query: { companyId, name } },
+      match: {
+        params: { id },
+      },
+      location: {
+        query: { companyId, name },
+      },
       form: { setFieldsValue },
     } = this.props;
-    this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } })
+    this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
     if (id) {
       // 根据id获取详情
       dispatch({
         type: 'videoMonitor/fetchVideoDetail',
         payload: { id },
         callback: ({ buildingId, floorId, companyId, companyName } = {}) => {
-          setFieldsValue({ buildingFloor: { buildingId, floorId } })
-          this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } })
-          this.setState({ company: { id: companyId, name: companyName } })
+          setFieldsValue({ buildingFloor: { buildingId, floorId } });
+          this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
+          this.setState({ company: { id: companyId, name: companyName } });
         },
       });
     } else {
@@ -106,11 +110,20 @@ export default class VideoMonitorEdit extends PureComponent {
     }
     // 根据id获取四色图和消防平面图
     if (id || companyId) {
-      dispatch({ type: 'safety/fetch', payload: { companyId: id ? companyId : undefined || companyId } });
-      dispatch({ type: 'company/fetchCompany', payload: { id: id ? companyId : undefined || companyId } });
-      companyId && this.setState({ company: { id: companyId, name } })
+      dispatch({
+        type: 'safety/fetch',
+        payload: { companyId: id ? companyId : undefined || companyId },
+      });
+      dispatch({
+        type: 'company/fetchCompany',
+        payload: { id: id ? companyId : undefined || companyId },
+      });
+      companyId && this.setState({ company: { id: companyId, name } });
     }
   }
+
+  /* 去除左右两边空白 */
+  handleTrim = e => e.target.value.trim();
 
   // 返回到视频企业列表页面
   goBack = () => {
@@ -128,29 +141,27 @@ export default class VideoMonitorEdit extends PureComponent {
     );
   };
 
-
   /**
    * 获取所属建筑列表
    */
-  fetchBuildings = (actions) => {
-    const { dispatch } = this.props
+  fetchBuildings = actions => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'personnelPosition/fetchBuildings',
       ...actions,
-    })
-  }
-
+    });
+  };
 
   /**
    * 获取楼层
    */
-  fetchFloors = (actions) => {
-    const { dispatch } = this.props
+  fetchFloors = actions => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'personnelPosition/fetchFloors',
       ...actions,
-    })
-  }
+    });
+  };
 
   /* 点击提交按钮验证表单信息 */
   handleClickValidate = () => {
@@ -317,7 +328,7 @@ export default class VideoMonitorEdit extends PureComponent {
         id: value.id,
       },
     });
-    this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: value.id } })
+    this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: value.id } });
     setFieldsValue({ xNum: undefined, yNum: undefined, buildingFloor: {} });
     this.handleHideCompanyModal();
   };
@@ -454,47 +465,57 @@ export default class VideoMonitorEdit extends PureComponent {
   // 验证所属建筑楼层
   validateBuildingFloor = (rule, value, callback) => {
     if (value) {
-      const { buildingId = null, floorId = null } = value
-      if (buildingId && floorId || !buildingId && !floorId) {
-        callback()
-      } else callback('请同时选择所属建筑和楼层')
-    } else callback()
-  }
-
+      const { buildingId = null, floorId = null } = value;
+      if ((buildingId && floorId) || (!buildingId && !floorId)) {
+        callback();
+      } else callback('请同时选择所属建筑和楼层');
+    } else callback();
+  };
 
   /**
    * 选择建筑物
    */
   handleSelectBuilding = value => {
-    const { form: { setFieldsValue } } = this.props
-    this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: value } })
-    setFieldsValue({ buildingFloor: { buildingId: value } })
-  }
-
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: value } });
+    setFieldsValue({ buildingFloor: { buildingId: value } });
+  };
 
   /**
    * 选择楼层
    */
   handleSelectFloor = floorId => {
-    const { form: { setFieldsValue, getFieldValue } } = this.props
-    const buildingFloor = getFieldValue('buildingFloor')
-    setFieldsValue({ buildingFloor: { ...buildingFloor, floorId } })
-  }
+    const {
+      form: { setFieldsValue, getFieldValue },
+    } = this.props;
+    const buildingFloor = getFieldValue('buildingFloor');
+    setFieldsValue({ buildingFloor: { ...buildingFloor, floorId } });
+  };
 
   handleToAddBuilding = () => {
     const {
-      location: { query: { companyId, name } },
-    } = this.props
-    const { company } = this.state
-    const cId = company.id || companyId
-    const cName = company.name || name
-    router.push(cId ? `/base-info/buildings-info/add?companyId=${cId}&&name=${cName}` : '/base-info/buildings-info/add')
-  }
+      location: {
+        query: { companyId, name },
+      },
+    } = this.props;
+    const { company } = this.state;
+    const cId = company.id || companyId;
+    const cName = company.name || name;
+    router.push(
+      cId
+        ? `/base-info/buildings-info/add?companyId=${cId}&&name=${cName}`
+        : '/base-info/buildings-info/add'
+    );
+  };
 
   // 渲染视频设备信息
   renderVideoInfo() {
     const {
-      location: { query: { name: nameCompany } },
+      location: {
+        query: { name: nameCompany },
+      },
       videoMonitor: {
         detail: {
           data: {
@@ -516,11 +537,23 @@ export default class VideoMonitorEdit extends PureComponent {
         },
       },
       form: { getFieldDecorator, getFieldValue },
-      match: { params: { id } },
-      safety: { detail: { safetyFourPicture } },
-      company: { detail: { data: { fireIchnographyUrl } } },
-      user: { currentUser: { unitType, companyName: defaultName, permissionCodes } },
-      personnelPosition: { map: { buildings = [], floors = [] } },
+      match: {
+        params: { id },
+      },
+      safety: {
+        detail: { safetyFourPicture },
+      },
+      company: {
+        detail: {
+          data: { fireIchnographyUrl },
+        },
+      },
+      user: {
+        currentUser: { unitType, companyName: defaultName, permissionCodes },
+      },
+      personnelPosition: {
+        map: { buildings = [], floors = [] },
+      },
     } = this.props;
     const {
       coordinate: { visible, fireVisible },
@@ -530,59 +563,63 @@ export default class VideoMonitorEdit extends PureComponent {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
-    const itemStyles = { style: { width: '70%', marginRight: '10px' } }
+    const itemStyles = { style: { width: '70%', marginRight: '10px' } };
     const fourColorImgs = safetyFourPicture ? JSON.parse(safetyFourPicture) : [];
 
     const fireImgs = fireIchnographyUrl ? JSON.parse(fireIchnographyUrl) : [];
-    const buildingFloor = getFieldValue('buildingFloor') || {}
-    const addBuildingAuth = hasAuthority(codes.company.buildingsInfo.add, permissionCodes)
+    const buildingFloor = getFieldValue('buildingFloor') || {};
+    const addBuildingAuth = hasAuthority(codes.company.buildingsInfo.add, permissionCodes);
     return (
       <Card className={styles.card} bordered={false}>
         <Form hideRequiredMark style={{ marginTop: 8 }}>
           <FormItem {...formItemLayout} label={fieldLabels.companyName}>
-            {id ?
-              getFieldDecorator('companyId', {
-                initialValue: companyName,
-                rules: [
-                  {
-                    required: true,
-                    message: '请选择单位',
-                  },
-                ],
-              })(
-                <Input
-                  {...itemStyles}
-                  disabled
-                  ref={input => {
-                    this.CompanyIdInput = input;
-                  }}
-                  placeholder="请选择单位"
-                />
-              ) : getFieldDecorator('companyId', {
-                initialValue:
-                  unitType === 4 || unitType === 1
-                    ? nameCompany || defaultName
-                    : nameCompany
-                      ? nameCompany
-                      : undefined,
-                rules: [
-                  {
-                    required: true,
-                    message: '请选择单位',
-                  },
-                ],
-              })(
-                <Input
-                  {...itemStyles}
-                  disabled
-                  ref={input => {
-                    this.CompanyIdInput = input;
-                  }}
-                  placeholder="请选择单位"
-                />
-              )}
+            {id
+              ? getFieldDecorator('companyId', {
+                  initialValue: companyName,
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择单位',
+                    },
+                  ],
+                })(
+                  <Input
+                    {...itemStyles}
+                    disabled
+                    ref={input => {
+                      this.CompanyIdInput = input;
+                    }}
+                    placeholder="请选择单位"
+                  />
+                )
+              : getFieldDecorator('companyId', {
+                  initialValue:
+                    unitType === 4 || unitType === 1
+                      ? nameCompany || defaultName
+                      : nameCompany
+                        ? nameCompany
+                        : undefined,
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择单位',
+                    },
+                  ],
+                })(
+                  <Input
+                    {...itemStyles}
+                    disabled
+                    ref={input => {
+                      this.CompanyIdInput = input;
+                    }}
+                    placeholder="请选择单位"
+                  />
+                )}
             {id || nameCompany || (defaultName && unitType !== 2) ? null : (
-              <Button type="primary" onClick={this.handleShowCompanyModal}> 选择单位</Button>
+              <Button type="primary" onClick={this.handleShowCompanyModal}>
+                {' '}
+                选择单位
+              </Button>
             )}
           </FormItem>
 
@@ -604,31 +641,52 @@ export default class VideoMonitorEdit extends PureComponent {
             })(
               <Fragment>
                 <div style={{ display: 'inline-block', ...itemStyles.style }}>
-                  <Select value={buildingFloor.buildingId || undefined} style={{ width: 'calc(50% - 3px)', marginRight: '6px' }} placeholder="请选择建筑物" onSelect={this.handleSelectBuilding} >
+                  <Select
+                    value={buildingFloor.buildingId || undefined}
+                    style={{ width: 'calc(50% - 3px)', marginRight: '6px' }}
+                    placeholder="请选择建筑物"
+                    onSelect={this.handleSelectBuilding}
+                  >
                     {buildings.map((item, i) => (
-                      <Select.Option key={i} value={item.id}>{item.buildingName}</Select.Option>
+                      <Select.Option key={i} value={item.id}>
+                        {item.buildingName}
+                      </Select.Option>
                     ))}
                   </Select>
-                  <Select value={buildingFloor.floorId || undefined} style={{ width: 'calc(50% - 3px)' }} placeholder="请选择楼层" onSelect={this.handleSelectFloor}>
+                  <Select
+                    value={buildingFloor.floorId || undefined}
+                    style={{ width: 'calc(50% - 3px)' }}
+                    placeholder="请选择楼层"
+                    onSelect={this.handleSelectFloor}
+                  >
                     {floors.map((item, i) => (
-                      <Select.Option key={i} value={item.id}>{item.floorName}</Select.Option>
+                      <Select.Option key={i} value={item.id}>
+                        {item.floorName}
+                      </Select.Option>
                     ))}
                   </Select>
                 </div>
-                <Button type="primary" disabled={!addBuildingAuth} onClick={this.handleToAddBuilding}>新增建筑楼层</Button>
+                <Button
+                  type="primary"
+                  disabled={!addBuildingAuth}
+                  onClick={this.handleToAddBuilding}
+                >
+                  新增建筑楼层
+                </Button>
               </Fragment>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label={fieldLabels.equipmentID}>
             {getFieldDecorator('deviceId', {
               initialValue: deviceId,
+              getValueFromEvent: this.handleTrim,
               rules: [
                 // {
                 //   required: true,
                 //   message: '请输入设备ID',
                 // },
                 {
-                  validator: this.validatorID,
+                  // validator: this.validatorID,
                 },
               ],
             })(<Input {...itemStyles} placeholder="请输入设备ID" />)}
@@ -637,13 +695,14 @@ export default class VideoMonitorEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.cameraID}>
             {getFieldDecorator('keyId', {
               initialValue: keyId,
+              getValueFromEvent: this.handleTrim,
               rules: [
                 // {
                 //   required: true,
                 //   message: '请输入摄像头ID',
                 // },
                 {
-                  validator: this.validatorID,
+                  // validator: this.validatorID,
                 },
               ],
             })(<Input {...itemStyles} placeholder="请输入摄像头ID" />)}
@@ -865,10 +924,10 @@ export default class VideoMonitorEdit extends PureComponent {
             返回
           </Button>
         ) : (
-            <Button type="primary" size="large" onClick={this.goBack}>
-              返回
+          <Button type="primary" size="large" onClick={this.goBack}>
+            返回
           </Button>
-          )}
+        )}
       </FooterToolbar>
     );
   }
