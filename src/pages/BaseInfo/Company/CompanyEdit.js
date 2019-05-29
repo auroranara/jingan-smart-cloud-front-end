@@ -86,7 +86,7 @@ const fieldLabels = {
   principalEmail: '邮箱',
   companyNature: '单位性质',
   gridId: '所属网格',
-  importantSafety: '安监重点单位',
+  importantSafety: '安全重点单位',
   importantHost: '消防重点单位',
 };
 /* root下的div */
@@ -99,7 +99,7 @@ const tabList = [
   },
   {
     key: '1',
-    tab: '安监信息',
+    tab: '安全信息',
   },
 ];
 // 默认选中一般企业
@@ -411,7 +411,7 @@ export default class CompanyDetail extends PureComponent {
     if (this.operation === 'edit')
       confirm({
         title: '提示信息',
-        content: '是否继续编辑安监信息',
+        content: '是否继续编辑安全信息',
         okText: '是',
         cancelText: '否',
         onOk: () => {
@@ -423,7 +423,7 @@ export default class CompanyDetail extends PureComponent {
     else
       confirm({
         title: '提示信息',
-        content: '是否需要添加安监信息',
+        content: '是否需要添加安全信息',
         okText: '是',
         cancelText: '否',
         onOk() {
@@ -1091,7 +1091,7 @@ export default class CompanyDetail extends PureComponent {
               <Form.Item label={fieldLabels.importantSafety} {...itemLayout}>
                 {getFieldDecorator('importantSafety', {
                   initialValue: '0',
-                  rules: [{ required: true, message: '请选择安监重点单位' }],
+                  rules: [{ required: true, message: '请选择安全重点单位' }],
                 })(
                   <RadioGroup>
                     <Radio value="1">是</Radio>

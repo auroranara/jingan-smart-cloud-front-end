@@ -43,6 +43,8 @@ export default class RiskCard extends PureComponent {
     // 是否为异常或已超期
     const isAlert = +status === 2 || +status === 4;
     const check_user_name = checkUsers ? checkUsers : user_name ? user_name : '暂无数据';
+    // console.log('TCL: render -> check_user_name', check_user_name);
+    // console.log('TCL: render -> checkUsers', checkUsers);
     return (
       <div className={styles.hack} style={style}>
         <div className={styles.container}>
@@ -135,7 +137,7 @@ export default class RiskCard extends PureComponent {
                     <div className={styles.smallInfoName}>最近检查人</div>
                     <div className={styles.infoValue}>
                       <Ellipsis lines={1} tooltip>
-                        {checkUsers}
+                        {check_user_name}
                       </Ellipsis>
                     </div>
                   </div>

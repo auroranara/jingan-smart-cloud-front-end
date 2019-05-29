@@ -132,6 +132,9 @@ export default class DeviceCard extends BigPlatformCard {
       render({ status, params, monitoringType }) {
         let label = STATUS_DICT[status];
         if (monitoringType === FIRE_ENGINE) {
+          if (status === 2) {
+            label = params;
+          }
           params = null;
           if (status === 2) {
             label = params;

@@ -27,7 +27,7 @@ const dspItems = [
   },
   {
     name: 'regulatoryOrganization',
-    cName: '属地安监机构',
+    cName: '属地机构',
   },
   {
     name: 'validity',
@@ -99,9 +99,18 @@ function renderDsp(items, detail, menus) {
           break;
         case 'safetyFourPicture':
           const list = isJSONStr(v) ? JSON.parse(v) : [];
-          val = list.map(({ id, fileName, webUrl }) =><a key={id} style={{ marginRight: 10 }} target="_blank" rel="noopener noreferrer" href={webUrl}>{fileName}</a>)
-          if (!list.length)
-            val = '暂无信息';
+          val = list.map(({ id, fileName, webUrl }) => (
+            <a
+              key={id}
+              style={{ marginRight: 10 }}
+              target="_blank"
+              rel="noopener noreferrer"
+              href={webUrl}
+            >
+              {fileName}
+            </a>
+          ));
+          if (!list.length) val = '暂无信息';
           break;
         case 'companyType':
           val = v === '1' ? '是' : '否';
@@ -122,7 +131,7 @@ function renderDsp(items, detail, menus) {
 function isJSONStr(str) {
   const first = str[0];
   const last = str[str.length - 1];
-  return first === '[' && last === ']' || first === '{' && last === '}';
+  return (first === '[' && last === ']') || (first === '{' && last === '}');
 }
 
 @connect(({ maintenanceCompany }) => ({ maintenanceCompany }))
@@ -156,7 +165,7 @@ export default class SafetyDetail extends PureComponent {
     // console.log(grid, menus.gridList, idMap);
 
     return (
-      <Card title="安监信息">
+      <Card title="安全信息">
         {/* <DescriptionList col={1} style={{ marginBottom: 13 }}>
           <Description term="所属网格">
             {grid && menus.gridList && idMap[grid]

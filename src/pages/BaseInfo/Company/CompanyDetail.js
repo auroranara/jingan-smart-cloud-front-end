@@ -83,7 +83,7 @@ const fieldLabels = {
   principalEmail: '邮箱',
   companyNature: '单位性质',
   gridId: '所属网格',
-  importantSafety: '安监重点单位',
+  importantSafety: '安全重点单位',
   importantHost: '消防重点单位',
 };
 // tab列表
@@ -94,7 +94,7 @@ const tabList = [
   },
   {
     key: '1',
-    tab: '安监信息',
+    tab: '安全信息',
   },
 ];
 // 默认选中一般企业

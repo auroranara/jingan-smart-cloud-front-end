@@ -5,7 +5,11 @@ import { Form } from 'antd';
 
 import RoleList from '../Role/RoleList';
 import codes from '@/utils/codes';
-import { COMMON_DETAIL_URL as DETAIL_URL, COMMON_ADD_URL as ADD_URL, COMMON_URLS as URLS } from '../Role/utils';
+import {
+  COMMON_DETAIL_URL as DETAIL_URL,
+  COMMON_ADD_URL as ADD_URL,
+  COMMON_URLS as URLS,
+} from '../Role/utils';
 
 const TITLE = '公共角色';
 const BREADCRUMB_LIST = [
