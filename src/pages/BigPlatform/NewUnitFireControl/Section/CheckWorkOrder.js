@@ -32,7 +32,7 @@ export default class CheckWorkOrder extends PureComponent {
       [
         { value: waitNum, name: '待处理', itemStyle: { color: '#F83329' } },
         { value: processNum, name: '处理中', itemStyle: { color: '#FFB650' } },
-        { value: finishNum, name: '已完成', itemStyle: { color: '#2A8BD5' } },
+        { value: finishNum, name: '已处理', itemStyle: { color: '#2A8BD5' } },
       ],
     ];
     const legendData = chartDatas[type].reduce((prev, next) => {
@@ -149,7 +149,7 @@ export default class CheckWorkOrder extends PureComponent {
       [
         { value: waitNum, name: '待处理', color: '#F83329' },
         { value: processNum, name: '处理中', color: '#FFB650' },
-        { value: finishNum, name: '已完成', color: '#2A8BD5' },
+        { value: finishNum, name: '已处理', color: '#2A8BD5' },
       ],
     ];
 
