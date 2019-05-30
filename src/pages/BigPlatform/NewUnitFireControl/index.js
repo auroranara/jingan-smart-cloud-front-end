@@ -41,6 +41,8 @@ import ElectricityDrawer from './Section/ElectricityDrawer';
 import ResetHostsDrawer from './Section/ResetHostsDrawer';
 import CheckDrawer from './Section/CheckDrawer';
 import NewWorkOrderDrawer from './Section/NewWorkOrderDrawer';
+import { Rotate } from 'react-transform-components';
+import StatisticsOfFireControl from './Section/StatisticsOfFireControl';
 
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
@@ -188,6 +190,8 @@ export default class NewUnitFireControl extends PureComponent {
     newWorkOrderDrawerVisible: false,
     workOrderType: 0,
     workOrderStatus: 0,
+    fireMonitorIndex: 0,
+    fireControlType: 1,
   };
 
   componentDidMount() {
@@ -587,6 +591,15 @@ export default class NewUnitFireControl extends PureComponent {
 
     // 处理工单统计
     dispatch({ type: 'newUnitFireControl/fetchCountAllFireAndFault', payload: { companyId } });
+
+    // 获取消防数据统计
+    dispatch({
+      type: 'unitFireControl/fetchFireControlCount',
+      payload: {
+        companyId,
+        t: 1,
+      },
+    });
   }
 
   handleFetchRealTimeData = deviceId => {
@@ -1510,6 +1523,30 @@ export default class NewUnitFireControl extends PureComponent {
     });
   };
 
+  handleSwitchFireControlType = fireControlType => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    this.setState({
+      fireControlType,
+    });
+    // 重新获取消防数据统计
+    dispatch({
+      type: 'unitFireControl/fetchFireControlCount',
+      payload: {
+        companyId,
+        t: fireControlType,
+      },
+    });
+  };
+
+  handleShowFireMonitor = fireMonitorIndex => {
+    this.setState({ fireMonitorIndex })
+  }
+
   render() {
     // 从props中获取数据
     const {
@@ -1560,7 +1597,7 @@ export default class NewUnitFireControl extends PureComponent {
         videoByDevice,
       },
       bigPlatform: { coItemList },
-      unitFireControl: { hosts },
+      unitFireControl: { hosts, fireControlCount },
       unitSafety: { points },
       warnDetailLoading,
       faultDetailLoading,
@@ -1612,6 +1649,8 @@ export default class NewUnitFireControl extends PureComponent {
       newWorkOrderDrawerVisible,
       workOrderType,
       workOrderStatus,
+      fireMonitorIndex,
+      fireControlType,
     } = this.state;
 
     return (
@@ -1694,20 +1733,30 @@ export default class NewUnitFireControl extends PureComponent {
           <div className={styles.bottomInner}>
             <div className={styles.item}>
               <div className={styles.inner} ref={node => (this.fireNode = node)}>
-                {/* 虚拟消控主机 */}
-                <FireMonitoring
-                  fire={fire_state}
-                  fault={fault_state}
-                  shield={shield_state}
-                  linkage={start_state}
-                  supervise={supervise_state}
-                  feedback={feedback_state}
-                  handleShowAlarm={this.handleShowAlarm}
-                  handleShowAlarmHistory={this.handleShowAlarmHistory}
-                  handleShowFault={this.handleShowFault}
-                  handleParentChange={this.handleParentChange}
-                  hosts={hosts}
-                />
+                <Rotate axis="y" frontIndex={fireMonitorIndex}>
+                  {/* 虚拟消控主机 */}
+                  <FireMonitoring
+                    fire={fire_state}
+                    fault={fault_state}
+                    shield={shield_state}
+                    linkage={start_state}
+                    supervise={supervise_state}
+                    feedback={feedback_state}
+                    handleShowAlarm={this.handleShowAlarm}
+                    // handleShowAlarmHistory={this.handleShowAlarmHistory}
+                    handleShowFault={this.handleShowFault}
+                    handleParentChange={this.handleParentChange}
+                    hosts={hosts}
+                    handleShowFireMonitor={this.handleShowFireMonitor}
+                  />
+                  {/* 消防主机监测 */}
+                  <StatisticsOfFireControl
+                    type={fireControlType}
+                    fireControlCount={fireControlCount}
+                    onSwitch={this.handleSwitchFireControlType}
+                    handleShowFireMonitor={this.handleShowFireMonitor}
+                  />
+                </Rotate>
               </div>
             </div>
             <div className={styles.item}>

@@ -1,0 +1,153 @@
+/* 消防数据统计图 */
+
+.fireControlPieChartContainer {
+  padding-bottom: 50px;
+  height: 100%;
+  position: relative;
+}
+
+.extra {
+  font-size: 14px;
+  color: #0ff;
+  cursor: pointer;
+}
+
+.select {
+  position: absolute;
+  min-width: 64px;
+  color: #fff;
+  z-index: 66;
+  font-size: 12px;
+  top: 0px;
+  left: 8px;
+
+  :global {
+    .ant-select-selection {
+      background-color: transparent;
+      border-color: #00ffff;
+      height: 26px;
+    }
+
+    .ant-select-selection__rendered {
+      margin-left: 8px;
+      margin-right: 8px;
+      line-height: 25px;
+    }
+
+    .ant-select-arrow {
+      color: #fff;
+    }
+
+    .ant-select-selection-selected-value {
+      padding-right: 16px;
+    }
+  }
+}
+
+.dropDown {
+  padding: 4px 0;
+  background-color: rgb(3, 48, 105);
+  border: 1px solid #00ffff;
+
+  :global {
+    .ant-select-dropdown-menu-item {
+      padding-left: 15px;
+      padding-right: 15px;
+      color: #fff;
+      font-weight: normal;
+      font-size: 12px;
+      border-radius: 0;
+      background-color: rgb(3, 48, 105);
+
+      &:hover {
+        color: #00ffff;
+        background-color: #04407d;
+      }
+    }
+  }
+}
+
+/* 消防数据统计图标图例 */
+
+.fireControlPieChartLegend {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  padding: 0px 12px 0px;
+  font-size: 14px;
+  overflow: hidden;
+
+  &>div {
+    display: flex;
+    align-items: center;
+    float: left;
+    padding: 2px 10px;
+    width: 33.333333%;
+
+    &> :first-child {
+      flex: none;
+      margin-right: 12px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    &> :nth-child(2) {
+      flex: none;
+    }
+
+    &> :nth-child(3) {
+      flex: 1;
+      text-align: right;
+    }
+  }
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1599px) {
+
+  /* 消防数据统计图 */
+  .fireControlPieChartContainer {
+    padding-bottom: 50px;
+  }
+
+  /* 消防数据统计图标图例 */
+  .fireControlPieChartLegend {
+    padding: 4px 0px 8px;
+    font-size: 12px;
+
+    &>div {
+      padding: 0px 8px;
+
+      &> :first-child {
+        margin-right: 10px;
+        width: 10px;
+        height: 10px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1199px) {
+
+  /* 消防数据统计图 */
+  .fireControlPieChartContainer {
+    padding-bottom: 42px;
+  }
+
+  /* 消防数据统计图标图例 */
+  .fireControlPieChartLegend {
+    padding: 4px 0px 8px;
+    font-size: 12px;
+
+    &>div {
+      padding: 0px 5px;
+
+      &> :first-child {
+        margin-right: 10px;
+        width: 10px;
+        height: 10px;
+      }
+    }
+  }
+}

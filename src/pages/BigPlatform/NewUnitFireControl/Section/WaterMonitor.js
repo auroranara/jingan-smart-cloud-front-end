@@ -131,7 +131,7 @@ export default class WaterMonitor extends PureComponent {
                 {deviceName}
               </Ellipsis>
             </div>
-            <div className={styles.info} style={{ color }}>
+            <div className={styles.info} style={{ color, fontSize: '12px' }}>
               {waterValue}
             </div>
           </div>
