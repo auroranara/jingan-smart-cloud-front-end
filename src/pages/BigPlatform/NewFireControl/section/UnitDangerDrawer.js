@@ -1,11 +1,12 @@
 import React, { Fragment } from 'react';
+import { Icon } from 'antd';
 
 import styles from './UnitDangerDrawer.less';
 import {
   DangerCard,
   DrawerContainer,
 } from '../components/Components';
-import { sortDangerRecords } from '../utils';
+// import { sortDangerRecords } from '../utils';
 
 // const LIST = [...Array(10).keys()].map(i => ({
 //   id: i,
@@ -25,6 +26,7 @@ const NO_DATA = '暂无信息';
 export default function UnitDangerDrawer(props) {
   const {
     loading,
+    hasMore,
     labelIndex=0,
     visible,
     companyId,
@@ -32,6 +34,7 @@ export default function UnitDangerDrawer(props) {
       dangerList=[],
       dangerRecords=[],
     },
+    fetchDangerRecords,
     handleLabelClick,
     handleDrawerVisibleChange,
     ...restProps
@@ -39,12 +42,13 @@ export default function UnitDangerDrawer(props) {
 
   const selected = dangerList.find(item => item.companyId === companyId) || {};
   const { companyName, total=0, hasExtended: overdue=0, afterRectification: rectify=0, toReview: review=0 } = selected;
-  const filteredRecords = labelIndex ? dangerRecords.filter(({ status }) => STATUS[labelIndex].includes(status)) : dangerRecords;
-  sortDangerRecords(filteredRecords, STATUS[labelIndex][0]);
+  // const filteredRecords = labelIndex ? dangerRecords.filter(({ status }) => STATUS[labelIndex].includes(status)) : dangerRecords;
+  // sortDangerRecords(filteredRecords, STATUS[labelIndex][0]);
 
-  let cards = '暂无隐患信息';
-  if (filteredRecords.length)
-    cards = filteredRecords.map((item, i) => (
+  let cards;
+  const list = dangerRecords;
+  if (list.length)
+    cards = list.map((item, i) => (
       <DangerCard
         key={item.id}
         data={item}
@@ -57,7 +61,7 @@ export default function UnitDangerDrawer(props) {
       <p className={styles.name}>{companyName || NO_DATA}</p>
       <div className={styles.spans}>
         {[total, overdue, rectify, review].map((n,i) => (
-          <span className={labelIndex === i ? styles.selected : styles.item} key={i} onClick={e => handleLabelClick(i)}>
+          <span className={labelIndex === i ? styles.selected : styles.item} key={i} onClick={e => handleLabelClick(companyId, i)}>
             {`${TITLES[i]}：`}
             <span style={{ color: `rgb(${COLORS[i]})` }} >
               {n}
@@ -66,7 +70,16 @@ export default function UnitDangerDrawer(props) {
           ))}
       </div>
       <div className={styles.cardContainer}>
-        {loading ? 'loading...' : cards}
+        {list.length ? cards : loading ? null : <p className={styles.none}>暂无隐患信息</p>}
+          {/* {loading ? '加载中...' : cards} */}
+          {hasMore && (
+            <p
+              className={!list.length && loading ? styles.none : loading ? styles.more : styles.more1}
+              onClick={loading ? null : e => fetchDangerRecords(companyId, labelIndex)}
+            >
+              {loading ? <Icon type="sync" spin /> : <Icon type="double-right" className={styles.doubleRight} />}
+            </p>
+          )}
       </div>
     </Fragment>
   )

@@ -233,10 +233,15 @@ export default {
       const response = yield call(queryDangerList, payload);
       yield put({ type: 'saveDangerList', payload: response || [] });
     },
-    *fetchDangerRecords({ payload }, { call, put }) {
+    *fetchDangerRecords({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerRecords, payload);
-      if (response && Array.isArray(response.hiddenDangers))
-        yield put({ type: 'saveDangerRecords', payload: response.hiddenDangers });
+      const list = response && Array.isArray(response.hiddenDangers) ? response.hiddenDangers : [];
+      yield put({
+        type: 'saveDangerRecords',
+        payload: { list, pageNum: payload.pageNum },
+      });
+      if (response)
+        callback && callback();
     },
     *fetchInitLookUp({ payload, callback }, { call, put }) {
       let response = yield call(queryLookUp, payload);
@@ -393,9 +398,8 @@ export default {
       return { ...state, dangerList };
     },
     saveDangerRecords(state, action) {
-      // 过滤掉隐患记录中的已关闭
-      return { ...state, dangerRecords: action.payload.filter(({ status }) => status !== '4') };
-      // return { ...state, dangerRecords: action.payload };
+      const { list, pageNum } = action.payload;
+      return { ...state, dangerRecords: pageNum === 1 ? list : state.dangerRecords.concat(list) };
     },
     saveAllCamera(state, action) {
       return { ...state, allCamera: action.payload };
