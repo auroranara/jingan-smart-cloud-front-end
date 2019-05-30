@@ -4,7 +4,7 @@ import { connect } from 'dva';
 import { Col, message, Modal, notification, Row } from 'antd';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
-import { myParseInt, getNewAlarms, getGridId } from './utils';
+import { myParseInt, getNewAlarms, getGridId, STATUS, DANGER_PAGE_SIZE } from './utils';
 import styles from './Government.less';
 // import Head from './Head';
 import GridSelect from './components/GridSelect';
@@ -46,6 +46,7 @@ const LOOKING_UP = 'lookingUp';
 const OFF_GUARD = 'offGuardWarning';
 const VIDEO_LOOK_UP = 'videoLookUp';
 const VIDEO_ALARM = 'videoAlarm';
+const DANGER_TOTAL_KEYS = ['total', 'hasExtended', 'afterRectification', 'toReview'];
 
 const DELAY = 5000;
 const LOOKING_UP_DELAY = 5000;
@@ -101,6 +102,7 @@ export default class FireControlBigPlatform extends PureComponent {
     dangerLabelIndex: 0, // 企业隐患列表(由隐患排名表格点击的抽屉)的小标签切换
     safeDrawerVisible: false,
     riskDrawerVisible: false,
+    dangerHasMore: false, // 隐患列表抽屉中的伸缩卡片中是否有更多项目
   };
 
   componentDidMount() {
@@ -124,6 +126,7 @@ export default class FireControlBigPlatform extends PureComponent {
   formerAlarmList = [];
   // isLookingUp = false; // 标记正在查岗状态
   companyId = '';
+  dangerPageNum = 1;
   // 将FireControlMap中的设置searchValue值的函数挂载到当前组件上，虽然违反了React的数据单项流动的规则，但是这样做可以尽量少的修改代码
   clearSearchValueInMap = null;
 
@@ -624,19 +627,35 @@ export default class FireControlBigPlatform extends PureComponent {
     );
   };
 
-  fetchDangerRecords = companyId => {
-    const { dispatch } = this.props;
+  fetchDangerRecords = (companyId, index=0, isClear) => {
+    const {
+      dispatch,
+      bigFireControl: { dangerList },
+    } = this.props;
     this.companyId = companyId;
+    const company = dangerList.find(({ companyId: cId }) => cId === companyId);
+    const total = +company[DANGER_TOTAL_KEYS[index]];
 
+    isClear && this.clearDangerList();
     dispatch({
       type: 'bigFireControl/fetchDangerRecords',
-      payload: { company_id: companyId, businessType: 2 },
-      // payload: { company_id: companyId, businessType: 2, reportSource: 2 },
+      payload: {
+        company_id: companyId,
+        businessType: 2,
+        status: STATUS[index][0],
+        pageNum: this.dangerPageNum,
+        pageSize: DANGER_PAGE_SIZE,
+      },
+      callback: () => {
+        if (this.dangerPageNum++ * DANGER_PAGE_SIZE >= total)
+          this.setState({ dangerHasMore: false });
+      },
     });
   };
 
   handleShowDangerBase = (companyId, labelIndex, type = 'danger') => {
-    this.fetchDangerRecords(companyId);
+    // this.clearDangerList();
+    this.fetchDangerRecords(companyId, labelIndex, true);
     this.handleDrawerVisibleChange(type);
     this.setState({ [`${type}LabelIndex`]: labelIndex });
   };
@@ -653,8 +672,17 @@ export default class FireControlBigPlatform extends PureComponent {
   //   this.handleShowDangerBase(companyId, labelIndex);
   // };
 
-  handleUnitDangerLabelClick = index => {
+  handleUnitDangerLabelClick = (companyId, index) => {
     this.setState({ unitDangerLabelIndex: index });
+    // this.clearDangerList();
+    this.fetchDangerRecords(companyId, index, true);
+  };
+
+  clearDangerList = () => {
+    const { dispatch } = this.props;
+    this.dangerPageNum = 1;
+    this.setState({ dangerHasMore: true });
+    dispatch({ type: 'bigFireControl/saveDangerRecords', payload: { list: [], pageNum: 1 } });
   };
 
   handleDangerLabelClick = (index, companyId) => {
@@ -675,7 +703,11 @@ export default class FireControlBigPlatform extends PureComponent {
     }
 
     this.setState({ dangerLabelIndex: index });
-    if (companyId !== formerCompanyId) this.fetchDangerRecords(companyId);
+    // 当点击不同企业或相同企业里的不同标签时，重新请求
+    if (companyId !== formerCompanyId || companyId === formerCompanyId && index !== formerLabelIndex) {
+      // this.clearDangerList();
+      this.fetchDangerRecords(companyId, index, true);
+    }
   };
 
   // 正面的概况模块的单位抽屉中点击主机状态的报警
@@ -797,6 +829,7 @@ export default class FireControlBigPlatform extends PureComponent {
       dangerDrawerVisible,
       safeDrawerVisible,
       riskDrawerVisible,
+      dangerHasMore,
     } = this.state;
 
     // console.log(user);
@@ -1015,11 +1048,13 @@ export default class FireControlBigPlatform extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <UnitDangerDrawer
+          hasMore={dangerHasMore}
           loading={dangerCardLoading}
           labelIndex={unitDangerLabelIndex}
           companyId={this.companyId}
           data={{ dangerList, dangerRecords }}
           visible={unitDangerDrawerVisible}
+          fetchDangerRecords={this.fetchDangerRecords}
           handleLabelClick={this.handleUnitDangerLabelClick}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
@@ -1047,11 +1082,13 @@ export default class FireControlBigPlatform extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         /> */}
         <DangerDrawer
+          hasMore={dangerHasMore}
           cardLoading={dangerCardLoading}
           selectedCompanyId={this.companyId}
           data={{ overview, dangerList, dangerRecords }}
           labelIndex={dangerLabelIndex}
           visible={dangerDrawerVisible}
+          fetchDangerRecords={this.fetchDangerRecords}
           handleLabelClick={this.handleDangerLabelClick}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />

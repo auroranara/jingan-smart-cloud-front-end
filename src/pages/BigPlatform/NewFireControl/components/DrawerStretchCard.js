@@ -1,34 +1,40 @@
 import React, { PureComponent } from 'react';
+import { Icon } from 'antd';
 
 import DangerCard from './DangerCard';
-
 import styles from './DrawerStretchCard.less';
-
-// const LIST = [...Array(10).keys()].map(i => ({
-//   id: i,
-//   desc: '皮带松弛，部件老化',
-//   report: '李大山 2018-7-18',
-//   reform: '周建国 2017-7-24',
-//   review: '刘琪 2019-1-1',
-// }));
 
 const TITLES = ['隐患数量', '已超期', '待整改', '待复查'];
 const COLORS = ['255,255,255', '232,103,103', '246,181,78', '42,139,213'];
 
 export default class DrawerStretchCard extends PureComponent {
+  loadMore = e => {
+    const {
+      labelIndex,
+      fetchDangerRecords,
+      data: { companyId },
+    } = this.props;
+    fetchDangerRecords(companyId, labelIndex);
+  };
+
   render() {
     const {
       loading,
+      hasMore,
       labelIndex,
       selected,
       data: { companyId, companyName: name, total=0, afterRectification: rectify=0, toReview: review=0, hasExtended: overdue=0 },
       list=[],
+      fetchDangerRecords,
       handleLabelClick,
       ...restProps
     } = this.props;
     // console.log(name, selected, labelIndex);
 
-    let cards = '暂无隐患信息';
+    // const list = [];
+    // const hasMore = true;
+    // const loading = true;
+    let cards = null;
     if (list.length)
       cards = list.map((item, i) => <DangerCard key={item.id} data={item} style={{ marginTop: i ? 14 : 0 }} />);
 
@@ -52,7 +58,16 @@ export default class DrawerStretchCard extends PureComponent {
           </div>
           {selected && labelIndex !== -1 && (
             <div className={styles.cardContainer}>
-              {loading ? 'loading...' : cards}
+              {list.length ? cards : loading ? null : <p className={styles.none}>暂无隐患信息</p>}
+              {/* {loading ? '加载中...' : cards} */}
+              {hasMore && (
+                <p
+                  className={!list.length && loading ? styles.none : loading ? styles.more : styles.more1}
+                  onClick={loading ? null : this.loadMore}
+                >
+                  {loading ? <Icon type="sync" spin /> : <Icon type="double-right" className={styles.doubleRight}/>}
+                </p>
+              )}
             </div>
           )}
         </div>
