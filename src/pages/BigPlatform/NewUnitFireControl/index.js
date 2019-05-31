@@ -1544,8 +1544,8 @@ export default class NewUnitFireControl extends PureComponent {
   };
 
   handleShowFireMonitor = fireMonitorIndex => {
-    this.setState({ fireMonitorIndex })
-  }
+    this.setState({ fireMonitorIndex });
+  };
 
   render() {
     // 从props中获取数据
@@ -2043,7 +2043,16 @@ export default class NewUnitFireControl extends PureComponent {
         <ResetHostsDrawer
           visible={resetHostsDrawerVisible}
           hosts={hosts}
-          onClose={() => this.handleDrawerVisibleChange('resetHosts')}
+          onClose={() => {
+            const { dispatch } = this.props;
+            this.handleDrawerVisibleChange('resetHosts');
+            dispatch({
+              type: 'unitFireControl/fetchHosts',
+              payload: {
+                companyId,
+              },
+            });
+          }}
           handleResetSingleHost={this.handleResetSingleHost}
           handleResetAllHosts={this.handleResetAllHosts}
         />

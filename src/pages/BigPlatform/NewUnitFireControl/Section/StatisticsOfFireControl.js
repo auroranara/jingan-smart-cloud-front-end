@@ -12,7 +12,7 @@ const options = [
   { name: '今日', value: 1 },
   { name: '本周', value: 2 },
   { name: '本月', value: 3 },
-  { name: '本年', value: 4 },
+  { name: '本年', value: 5 },
 ];
 export default class StatisticsOfFireControl extends PureComponent {
   constructor(props) {
@@ -90,7 +90,7 @@ export default class StatisticsOfFireControl extends PureComponent {
     });
   };
 
-   handleSelect = (type, { props: { data } }) => {
+  handleSelect = (type, { props: { data } }) => {
     const { onSwitch } = this.props;
     this.setState({ active: options.map(item => item.value).indexOf(type) });
     onSwitch(type);
@@ -138,19 +138,21 @@ export default class StatisticsOfFireControl extends PureComponent {
         shield_state = 0,
         feedback_state = 0,
         supervise_state = 0,
+        warn=0,
       },
       handleShowFireMonitor,
+      onSwitch,
     } = this.props;
 
     const real = warnTrue,
       misinformation = warnFalse,
-      pending = fire_state - warnTrue - warnFalse,
+      pending = warn - warnTrue - warnFalse,
       fault = fault_state,
       shield = shield_state,
       linkage = start_state,
       supervise = supervise_state,
       feedback = feedback_state;
-    const fire = real + misinformation + pending;
+    const fire = warn;
 
     const chartData = [
       {
@@ -204,6 +206,9 @@ export default class StatisticsOfFireControl extends PureComponent {
         className={styles.extra}
         onClick={() => {
           handleShowFireMonitor(0);
+          setTimeout(() => {
+            onSwitch(1);
+          }, 200);
         }}
       >
         实时>>
