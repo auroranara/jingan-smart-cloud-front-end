@@ -35,6 +35,9 @@ export default {
     list: '/data-analysis/hidden-danger-report/list',
     detail: '/data-analysis/hidden-danger-report/detail/',
   },
+  hiddenDangerCountReport: {
+    list: '/data-analysis/hidden-danger-count-report/list',
+  },
   examinationPaper: {
     list: '/training/examination-paper/list',
     detail: '/training/examination-paper/detail/',
