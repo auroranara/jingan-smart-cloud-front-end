@@ -26,7 +26,7 @@ import UnitLookUp from './section/UnitLookUp';
 import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
 // import VideoPlay from './section/VideoPlay';
-import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
+import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import UnitDrawer from './section/UnitDrawer';
 import UnitDangerDrawer from './section/UnitDangerDrawer';
 import HostDrawer from './section/HostDrawer';
@@ -85,6 +85,9 @@ export default class FireControlBigPlatform extends PureComponent {
     videoKeyId: undefined,
     showVideoList: false,
     videoState: VIDEO_ALARM,
+    alarmVideoVisible: false, // 报警时自动弹出来的视频
+    alarmVideoList: [],
+    alarmVideoKeyId: '',
     tooltipName: '',
     tooltipVisible: false,
     tooltipPosition: [0, 0],
@@ -156,7 +159,13 @@ export default class FireControlBigPlatform extends PureComponent {
     });
     // dispatch({ type: 'bigFireControl/fetchOvDangerCounts', payload: { gridId, businessType: 2, reportSource: 2 } });
     dispatch({ type: 'bigFireControl/fetchSys', payload: { gridId } });
-    dispatch({ type: 'bigFireControl/fetchAlarm', payload: { gridId } });
+    dispatch({
+      type: 'bigFireControl/fetchAlarm',
+      payload: { gridId },
+      callback: list => {
+        this.formerAlarmList = list || [];
+      },
+    });
     dispatch({ type: 'bigFireControl/fetchAlarmHistory', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchFireTrend', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchCompanyFireInfo', payload: { gridId } });
@@ -222,6 +231,7 @@ export default class FireControlBigPlatform extends PureComponent {
                 duration: null,
               });
             }
+            this.handleAlarmVideoShow(newAlarms[newAlarms.length - 1].videoList); // 多个报警时，只显示最近的一个报警的视频
           }
 
         this.formerAlarmList = list;
@@ -552,6 +562,15 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState({ videoVisible: false, videoKeyId: undefined });
   };
 
+  handleAlarmVideoShow = list => {
+    if (list.length)
+      this.setState({ alarmVideoVisible: true, alarmVideoList: list, alarmVideoKeyId: list[0].id });
+  };
+
+  handleAlarmVideoClose = () => {
+    this.setState({ alarmVideoVisible: false, alarmVideoKeyId: '' });
+  };
+
   handleVideoSelect = companyId => {
     const {
       dispatch,
@@ -812,6 +831,9 @@ export default class FireControlBigPlatform extends PureComponent {
       videoKeyId,
       showVideoList,
       videoState,
+      alarmVideoVisible,
+      alarmVideoList,
+      alarmVideoKeyId,
       tooltipName,
       tooltipVisible,
       tooltipPosition,
@@ -1020,7 +1042,7 @@ export default class FireControlBigPlatform extends PureComponent {
           </Col>
         </Row>
         {this.renderConfirmModal()}
-        <NewVideoPlay
+        <VideoPlay
           // dispatch={dispatch}
           // actionType="bigFireControl/fetchStartToPlay"
           showList={showVideoList}
@@ -1029,6 +1051,13 @@ export default class FireControlBigPlatform extends PureComponent {
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
           isTree={true}
+        />
+        <VideoPlay
+          showList={true}
+          videoList={alarmVideoList}
+          visible={alarmVideoVisible}
+          keyId={alarmVideoKeyId}
+          handleVideoClose={this.handleAlarmVideoClose}
         />
         <Tooltip
           visible={tooltipVisible}
