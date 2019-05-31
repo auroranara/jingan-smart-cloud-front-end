@@ -53,11 +53,11 @@ const FIELDS_MAP = {
   createDate({ createDate, dateType }) {
     const dateTypeName = getDateTypeMode(dateType);
     const [start, end] = createDate || [];
-    return { query_start_time: start && start.startOf(dateTypeName).format('YYYY/MM/DD HH:mm:ss'), query_end_time: end && end.startOf(dateTypeName).format('YYYY/MM/DD HH:mm:ss') };
+    return { query_start_time: start && start.startOf(dateTypeName).format('YYYY/MM/DD HH:mm:ss'), query_end_time: end && end.endOf(dateTypeName).format('YYYY/MM/DD HH:mm:ss') };
   },
   planRectifyDate({ planRectifyDate }) {
     const [start, end] = planRectifyDate || [];
-    return { plan_rectify_start_time: start && start.startOf('day').format('YYYY/MM/DD HH:mm:ss'), plan_rectify_end_time: end && end.startOf('day').format('YYYY/MM/DD HH:mm:ss') };
+    return { plan_rectify_start_time: start && start.startOf('day').format('YYYY/MM/DD HH:mm:ss'), plan_rectify_end_time: end && end.endOf('day').format('YYYY/MM/DD HH:mm:ss') };
   },
   department: 'queryDepartmentId',
   hiddenDangerType: 'hiddenType',
