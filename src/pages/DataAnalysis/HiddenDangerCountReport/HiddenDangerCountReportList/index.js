@@ -668,7 +668,7 @@ export default class HiddenDangerCountReportList extends PureComponent {
               onReset={this.handleReset}
             />
           </Card>
-          <Card title="统计图标" bordered={false} className={styles.card}>
+          <Card title="统计图表" bordered={false} className={styles.card}>
             {tabActiveKey === '1' && (
               <div className={styles.radioWrapper}>
                 <Radio.Group name="chartType" value={radioValue} onChange={this.handleChartTypeChange}>
