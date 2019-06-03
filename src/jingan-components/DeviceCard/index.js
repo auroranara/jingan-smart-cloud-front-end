@@ -136,9 +136,6 @@ export default class DeviceCard extends BigPlatformCard {
             label = params;
           }
           params = null;
-          if (status === 2) {
-            label = params;
-          }
         }
         return (
           label && (
