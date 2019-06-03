@@ -2,28 +2,14 @@ import React, { PureComponent } from 'react';
 import { Card, Form, Button, Select, DatePicker, TreeSelect, Radio, Table, Empty, Spin } from 'antd';
 import Echarts from 'echarts-for-react';
 import { connect } from 'dva';
+import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import ToolBar from '@/components/ToolBar';
-import { mapMutations } from '@/utils/utils';
-import urls from '@/utils/urls';
-import titles from '@/utils/titles';
+import { mapMutations, getMappedFields } from '@/utils/utils';
 import styles from './index.less';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 const { TreeNode } = TreeSelect;
-const {
-  home: homeUrl,
-} = urls;
-const {
-  home: homeTitle,
-  hiddenDangerCountReport: { list: title, menu: menuTitle },
-} = titles;
-/* 面包屑 */
-const breadcrumbList = [
-  { title: homeTitle, name: homeTitle, href: homeUrl },
-  { title: menuTitle, name: menuTitle },
-  { title, name: title },
-];
 /* 标签列表 */
 const tabList = [{
   key: '1',
@@ -47,7 +33,7 @@ const getDateTypeMode = (dateType=1) => {
   }
 }
 // 字段映射
-const FIELDS_MAP = {
+const FIELDNAMES = {
   countType: 'reportType',
   hiddenDangerStatus: 'status',
   createDate({ createDate, dateType }) {
@@ -64,17 +50,6 @@ const FIELDS_MAP = {
   checkType: 'inspectionType',
   dateType: 'timeType',
 };
-// 获取映射后的字段
-function getMappedFields(values) {
-  return Object.entries(FIELDS_MAP).reduce((result, [key, value]) => {
-    if (typeof value === 'function') {
-      result = { ...result, ...value(values) };
-    } else {
-      result[value] = values[key];
-    }
-    return result;
-  }, {});
-}
 // 日期格式
 const DATE_FORMAT = 'YYYY-MM-DD';
 
@@ -84,12 +59,25 @@ const DATE_FORMAT = 'YYYY-MM-DD';
   loading: loading.models.hiddenDangerCountReport,
 }))
 @Form.create()
-export default class HiddenDangerCountReportList extends PureComponent {
+export default class HiddenDangerCountReport extends PureComponent {
   constructor(props) {
     super(props);
+    const {
+      user: {
+        currentUser: {
+          companyId,
+        },
+      },
+    } = props;
+    const { id, name } = JSON.parse(sessionStorage.getItem('HIDDEN_DANGER_COUNT_REPORT') || null) || {};
+    this.companyId = id;
+    if (!(id || companyId)) {
+      router.push('/data-analysis/hidden-danger-count-report/list');
+    }
     this.state = {
       tabActiveKey: '1',
       radioValue: '1',
+      name,
     };
     this.exportButton = (
       <Button
@@ -115,14 +103,9 @@ export default class HiddenDangerCountReportList extends PureComponent {
           companyId,
         },
       },
-      location: {
-        query: {
-          companyId: companyId2,
-        },
-      },
     } = this.props;
     this.init({
-      companyId: companyId2 || companyId || 'DccBRhlrSiu9gMV7fmvizw',
+      companyId: companyId || this.companyId,
     }, () => {
       this.handleTabChange('1');
     });
@@ -135,11 +118,6 @@ export default class HiddenDangerCountReportList extends PureComponent {
           companyId,
         },
       },
-      location: {
-        query: {
-          companyId: companyId2,
-        },
-      },
     } = this.props;
     const { tabActiveKey } = this.state;
     const values = this.form.getFieldsValue();
@@ -148,8 +126,8 @@ export default class HiddenDangerCountReportList extends PureComponent {
     } else if (tabActiveKey === '3') {
       values.countType = '10';
     }
-    const fields = getMappedFields(values);
-    return { ...fields, company_id: companyId2 || companyId || 'DccBRhlrSiu9gMV7fmvizw' };
+    const fields = getMappedFields(values, FIELDNAMES);
+    return { ...fields, company_id: companyId || this.companyId };
   }
 
   getCountList = () => {
@@ -419,12 +397,41 @@ export default class HiddenDangerCountReportList extends PureComponent {
         checkTypeDict=[],
         dateTypeDict=[],
       },
+      user: {
+        currentUser: {
+          companyId,
+          // companyName,
+        },
+      },
       loading,
     } = this.props;
     const {
       tabActiveKey,
       radioValue,
+      name,
     } = this.state;
+    /* 面包屑 */
+    const breadcrumbList = [
+      { title: "首页", name: "首页", href: "/" },
+      { title: "数据分析", name: "数据分析" },
+      // { title: "隐患统计报表", name: "隐患统计报表", href: companyId ? undefined : '/data-analysis/hidden-danger-count-report/list' },
+      // { title: "单位详情", name: "单位详情" },
+    ];
+    if (!companyId) {
+      breadcrumbList.push({
+        title: "隐患统计报表",
+        name: "隐患统计报表",
+        href: '/data-analysis/hidden-danger-count-report/list',
+      }, {
+        title: "单位详情",
+        name: "单位详情",
+      });
+    } else {
+      breadcrumbList.push({
+        title: "隐患统计报表",
+        name: "隐患统计报表",
+      });
+    }
     const dateType = this.form && this.form.getFieldValue('dateType');
     let fields;
     if (tabActiveKey === '1') {
@@ -640,7 +647,8 @@ export default class HiddenDangerCountReportList extends PureComponent {
     return (
       <PageHeaderLayout
         className={styles.header}
-        title={title}
+        title={!companyId ? "单位详情" : '隐患统计报表'}
+        content={!companyId && name}
         breadcrumbList={breadcrumbList}
         tabList={tabList}
         tabActiveKey={tabActiveKey}

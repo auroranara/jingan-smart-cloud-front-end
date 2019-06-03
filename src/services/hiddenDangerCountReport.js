@@ -1,6 +1,11 @@
 import request from '@/utils/request';
 import { stringify } from 'qs';
 
+// 获取单位列表
+export async function getCompanyList(params) {
+  return request(`/acloud_new/v2/baseInfo/companies?${stringify(params)}`);
+}
+
 // 获取统计类型
 export async function getCountTypeDict(params) {
   return request(`/acloud_new/v2/hiddenDanger/reportType?${stringify(params)}`);
@@ -24,6 +29,11 @@ export async function getHiddenDangerTypeDict() {
 // 获取检查类型
 export async function getCheckTypeDict() {
   return request(`/acloud_new/v2/mobile/getHiddenContent.json?type=inspectionType`);
+}
+
+// 获取所属网格
+export async function getGridDict() {
+  return request(`/acloud_new/v2/gridInfo/getTreeDataById`);
 }
 
 // 导出
