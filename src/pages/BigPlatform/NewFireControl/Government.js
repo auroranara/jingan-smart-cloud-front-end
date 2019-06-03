@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
+import { stringify } from 'qs';
+import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { Col, message, Modal, notification, Row } from 'antd';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
@@ -50,6 +52,12 @@ const DANGER_TOTAL_KEYS = ['total', 'hasExtended', 'afterRectification', 'toRevi
 
 const DELAY = 5000;
 const LOOKING_UP_DELAY = 5000;
+const WS_OPTIONS = {
+  pingTimeout: 30000,
+  pongTimeout: 10000,
+  reconnectTimeout: 2000,
+  pingMsg: 'heartbeat',
+};
 
 message.config({
   getContainer: () => {
@@ -112,15 +120,18 @@ export default class FireControlBigPlatform extends PureComponent {
     // const { match: { params: { gridId } } } = this.props;
 
     this.initFetch();
-    this.timer = setInterval(this.polling, DELAY);
+    // this.timer = setInterval(this.polling, DELAY);
+    this.connectWebsocket();
   }
 
   componentWillUnmount() {
     clearInterval(this.timer);
     clearInterval(this.confirmTimer);
     clearInterval(this.lookingUpTimer);
+    this.ws && this.ws.close();
   }
 
+  ws = null;
   timer = null;
   confirmTimer = null;
   lookingUpTimer = null;
@@ -132,6 +143,40 @@ export default class FireControlBigPlatform extends PureComponent {
   dangerPageNum = 1;
   // 将FireControlMap中的设置searchValue值的函数挂载到当前组件上，虽然违反了React的数据单项流动的规则，但是这样做可以尽量少的修改代码
   clearSearchValueInMap = null;
+
+  connectWebsocket = () => {
+    const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
+    const params = {
+      companyId: 'companyIdAll',
+       env,
+      //env: 'dev',
+      type: 6,
+    };
+    const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+
+    const ws = this.ws = new WebsocketHeartbeatJs({ url, ...WS_OPTIONS });
+    if (!ws) return;
+
+    ws.onopen = () => {
+      console.log('connect success');
+      ws.send('heartbeat');
+    };
+
+    ws.onmessage = e => {
+      // 判断是否是心跳
+      if (!e.data || e.data.indexOf('heartbeat') > -1) return;
+      this.polling();
+      // try {
+      //   const data = JSON.parse(e.data);
+      //   this.polling();
+      // } catch (error) {
+      //   console.log('error', error);
+      // }
+    }
+    ws.onreconnect = () => {
+      console.log('reconnecting...');
+    };
+  };
 
   setClearSearchValueFnInMap = f => {
     this.clearSearchValueInMap = f;
@@ -564,7 +609,7 @@ export default class FireControlBigPlatform extends PureComponent {
 
   handleAlarmVideoShow = list => {
     if (list.length)
-      this.setState({ alarmVideoVisible: true, alarmVideoList: list, alarmVideoKeyId: list[0].id });
+      this.setState({ alarmVideoVisible: true, alarmVideoList: list, alarmVideoKeyId: list[0].key_id || list[0].keyId });
   };
 
   handleAlarmVideoClose = () => {
