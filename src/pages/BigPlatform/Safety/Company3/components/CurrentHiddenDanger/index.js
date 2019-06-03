@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Select, Tooltip } from 'antd';
 import classNames from 'classnames';
 import Lightbox from 'react-images';
-import HiddenDangerCard from '@/components/HiddenDangerCard'; // 隐患卡片
+import HiddenDangerCard from '@/jingan-components/HiddenDangerCard'; // 隐患卡片
 import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import Section from '../Section'; // 滚动条容器
 import defaultHiddenDanger from '@/assets/default_hidden_danger.png';

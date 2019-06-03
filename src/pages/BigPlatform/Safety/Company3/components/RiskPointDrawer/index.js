@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
-import PointCard from '@/components/PointCard';
+import PointCard from '@/jingan-components/PointCard';
 import SectionDrawer from '../SectionDrawer';
 // 引入样式文件
 import styles from './index.less';

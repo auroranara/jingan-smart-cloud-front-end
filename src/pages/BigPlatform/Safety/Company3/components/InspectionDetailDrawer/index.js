@@ -3,7 +3,7 @@ import { Empty } from 'antd';
 import { connect } from 'dva';
 import Lightbox from 'react-images';
 import CustomCarousel from '@/components/CustomCarousel';
-import HiddenDangerCard from '@/components/HiddenDangerCard'; // 隐患卡片
+import HiddenDangerCard from '@/jingan-components/HiddenDangerCard'; // 隐患卡片
 import SectionDrawer from '../SectionDrawer';
 import RiskCard from '../RiskCard';
 // 暂无隐患图片

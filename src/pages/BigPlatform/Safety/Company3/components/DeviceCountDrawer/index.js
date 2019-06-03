@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Select } from 'antd';
 import { connect } from 'dva';
 import classNames from 'classnames';
-import DeviceCard from '@/components/DeviceCard';
+import DeviceCard from '@/jingan-components/DeviceCard';
 import SectionDrawer from '../SectionDrawer';
 // 引入样式文件
 import styles from './index.less';

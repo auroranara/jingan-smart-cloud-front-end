@@ -4,8 +4,8 @@ import { connect } from 'dva';
 import classNames from 'classnames';
 import Lightbox from 'react-images';
 import CustomCarousel from '@/components/CustomCarousel';
-import HiddenDangerCard from '@/components/HiddenDangerCard'; // 隐患卡片
-import InspectionCard from '@/components/InspectionCard'; // 隐患卡片
+import HiddenDangerCard from '@/jingan-components/HiddenDangerCard'; // 隐患卡片
+import InspectionCard from '@/jingan-components/InspectionCard'; // 巡查卡片
 import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import SectionDrawer from '../SectionDrawer';
 import RiskCard from '../RiskCard';

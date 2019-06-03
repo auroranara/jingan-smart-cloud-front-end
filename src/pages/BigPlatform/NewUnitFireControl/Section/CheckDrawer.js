@@ -4,7 +4,7 @@ import TotalInfo from '../components/TotalInfo';
 
 import styles from './CheckDrawer.less';
 
-import PointCard from '@/components/PointCard';
+import PointCard from '@/jingan-components/PointCard';
 import DrawerContainer from '../components/DrawerContainer';
 import noChecking from '../imgs/noChecking.png';
 

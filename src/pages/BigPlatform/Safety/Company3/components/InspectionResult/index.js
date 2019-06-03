@@ -3,7 +3,7 @@ import { Icon } from 'antd';
 import { connect } from 'dva';
 import Lightbox from 'react-images';
 import CustomCarousel from '@/components/CustomCarousel';
-import HiddenDangerCard from '@/components/HiddenDangerCard';
+import HiddenDangerCard from '@/jingan-components/HiddenDangerCard';
 // 引入样式文件
 import styles from './index.less';
 

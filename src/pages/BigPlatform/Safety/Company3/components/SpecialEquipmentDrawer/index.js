@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import classNames from 'classnames';
-import SpecialEquipmentCard from '@/components/SpecialEquipmentCard';
+import SpecialEquipmentCard from '@/jingan-components/SpecialEquipmentCard';
 import SectionDrawer from '../SectionDrawer';
 // 引入样式文件
 import styles from './index.less';
