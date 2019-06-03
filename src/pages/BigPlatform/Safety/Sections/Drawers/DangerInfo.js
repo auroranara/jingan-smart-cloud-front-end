@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { Drawer, Spin } from 'antd';
 import CompanyRisk from '../../Components/CompanyRisk';
-import LoadMoreButton from '../../Company3/components/LoadMoreButton';
+// import LoadMoreButton from '../../Company3/components/LoadMoreButton';
+import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import styles from '../../Government.less';
 
 class DangerInfo extends PureComponent {
@@ -10,9 +11,9 @@ class DangerInfo extends PureComponent {
     this.state = {};
   }
 
-  componentDidMount() {}
+  componentDidMount() { }
 
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   handleLoadMore = pageNum => {
     const { handleLoadHiddenList } = this.props;
@@ -80,11 +81,7 @@ class DangerInfo extends PureComponent {
                           <CompanyRisk hiddenDangerListByDate={list} />
                           {pageNum * pageSize < total && (
                             <div className={styles.loadMoreWrapper}>
-                              <LoadMoreButton
-                                onClick={() => {
-                                  this.handleLoadMore(pageNum);
-                                }}
-                              />
+                              <LoadMore onClick={() => this.handleLoadMore(pageNum)} />
                             </div>
                           )}
                         </Spin>
