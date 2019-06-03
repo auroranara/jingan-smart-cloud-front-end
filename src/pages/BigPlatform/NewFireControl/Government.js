@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
+import { stringify } from 'qs';
+import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { Col, message, Modal, notification, Row } from 'antd';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
@@ -26,7 +28,7 @@ import UnitLookUp from './section/UnitLookUp';
 import UnitLookUpBack from './section/UnitLookUpBack';
 import AlarmHandle from './section/AlarmHandle';
 // import VideoPlay from './section/VideoPlay';
-import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
+import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import UnitDrawer from './section/UnitDrawer';
 import UnitDangerDrawer from './section/UnitDangerDrawer';
 import HostDrawer from './section/HostDrawer';
@@ -50,6 +52,12 @@ const DANGER_TOTAL_KEYS = ['total', 'hasExtended', 'afterRectification', 'toRevi
 
 const DELAY = 5000;
 const LOOKING_UP_DELAY = 5000;
+const WS_OPTIONS = {
+  pingTimeout: 30000,
+  pongTimeout: 10000,
+  reconnectTimeout: 2000,
+  pingMsg: 'heartbeat',
+};
 
 message.config({
   getContainer: () => {
@@ -85,6 +93,9 @@ export default class FireControlBigPlatform extends PureComponent {
     videoKeyId: undefined,
     showVideoList: false,
     videoState: VIDEO_ALARM,
+    alarmVideoVisible: false, // 报警时自动弹出来的视频
+    alarmVideoList: [],
+    alarmVideoKeyId: '',
     tooltipName: '',
     tooltipVisible: false,
     tooltipPosition: [0, 0],
@@ -109,15 +120,18 @@ export default class FireControlBigPlatform extends PureComponent {
     // const { match: { params: { gridId } } } = this.props;
 
     this.initFetch();
-    this.timer = setInterval(this.polling, DELAY);
+    // this.timer = setInterval(this.polling, DELAY);
+    this.connectWebsocket();
   }
 
   componentWillUnmount() {
     clearInterval(this.timer);
     clearInterval(this.confirmTimer);
     clearInterval(this.lookingUpTimer);
+    this.ws && this.ws.close();
   }
 
+  ws = null;
   timer = null;
   confirmTimer = null;
   lookingUpTimer = null;
@@ -129,6 +143,40 @@ export default class FireControlBigPlatform extends PureComponent {
   dangerPageNum = 1;
   // 将FireControlMap中的设置searchValue值的函数挂载到当前组件上，虽然违反了React的数据单项流动的规则，但是这样做可以尽量少的修改代码
   clearSearchValueInMap = null;
+
+  connectWebsocket = () => {
+    const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
+    const params = {
+      companyId: 'companyIdAll',
+       env,
+      //env: 'dev',
+      type: 6,
+    };
+    const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+
+    const ws = this.ws = new WebsocketHeartbeatJs({ url, ...WS_OPTIONS });
+    if (!ws) return;
+
+    ws.onopen = () => {
+      console.log('connect success');
+      ws.send('heartbeat');
+    };
+
+    ws.onmessage = e => {
+      // 判断是否是心跳
+      if (!e.data || e.data.indexOf('heartbeat') > -1) return;
+      this.polling();
+      // try {
+      //   const data = JSON.parse(e.data);
+      //   this.polling();
+      // } catch (error) {
+      //   console.log('error', error);
+      // }
+    }
+    ws.onreconnect = () => {
+      console.log('reconnecting...');
+    };
+  };
 
   setClearSearchValueFnInMap = f => {
     this.clearSearchValueInMap = f;
@@ -156,7 +204,13 @@ export default class FireControlBigPlatform extends PureComponent {
     });
     // dispatch({ type: 'bigFireControl/fetchOvDangerCounts', payload: { gridId, businessType: 2, reportSource: 2 } });
     dispatch({ type: 'bigFireControl/fetchSys', payload: { gridId } });
-    dispatch({ type: 'bigFireControl/fetchAlarm', payload: { gridId } });
+    dispatch({
+      type: 'bigFireControl/fetchAlarm',
+      payload: { gridId },
+      callback: list => {
+        this.formerAlarmList = list || [];
+      },
+    });
     dispatch({ type: 'bigFireControl/fetchAlarmHistory', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchFireTrend', payload: { gridId } });
     dispatch({ type: 'bigFireControl/fetchCompanyFireInfo', payload: { gridId } });
@@ -222,6 +276,7 @@ export default class FireControlBigPlatform extends PureComponent {
                 duration: null,
               });
             }
+            this.handleAlarmVideoShow(newAlarms[newAlarms.length - 1].videoList); // 多个报警时，只显示最近的一个报警的视频
           }
 
         this.formerAlarmList = list;
@@ -552,6 +607,15 @@ export default class FireControlBigPlatform extends PureComponent {
     this.setState({ videoVisible: false, videoKeyId: undefined });
   };
 
+  handleAlarmVideoShow = list => {
+    if (list.length)
+      this.setState({ alarmVideoVisible: true, alarmVideoList: list, alarmVideoKeyId: list[0].key_id || list[0].keyId });
+  };
+
+  handleAlarmVideoClose = () => {
+    this.setState({ alarmVideoVisible: false, alarmVideoKeyId: '' });
+  };
+
   handleVideoSelect = companyId => {
     const {
       dispatch,
@@ -812,6 +876,9 @@ export default class FireControlBigPlatform extends PureComponent {
       videoKeyId,
       showVideoList,
       videoState,
+      alarmVideoVisible,
+      alarmVideoList,
+      alarmVideoKeyId,
       tooltipName,
       tooltipVisible,
       tooltipPosition,
@@ -1020,7 +1087,7 @@ export default class FireControlBigPlatform extends PureComponent {
           </Col>
         </Row>
         {this.renderConfirmModal()}
-        <NewVideoPlay
+        <VideoPlay
           // dispatch={dispatch}
           // actionType="bigFireControl/fetchStartToPlay"
           showList={showVideoList}
@@ -1029,6 +1096,13 @@ export default class FireControlBigPlatform extends PureComponent {
           keyId={videoKeyId} // keyId
           handleVideoClose={this.handleVideoClose}
           isTree={true}
+        />
+        <VideoPlay
+          showList={true}
+          videoList={alarmVideoList}
+          visible={alarmVideoVisible}
+          keyId={alarmVideoKeyId}
+          handleVideoClose={this.handleAlarmVideoClose}
         />
         <Tooltip
           visible={tooltipVisible}

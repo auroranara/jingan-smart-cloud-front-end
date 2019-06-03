@@ -121,6 +121,7 @@ class VideoPlay extends Component {
     let index = videoList.findIndex(item => {
       return item.key_id === videoId;
     });
+    console.log(videoId, index, videoList);
     if (index > -1) {
       this.setState({
         activeIndex: index,
