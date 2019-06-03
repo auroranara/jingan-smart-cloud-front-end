@@ -476,14 +476,12 @@ export default class HiddenDangerCountReportList extends PureComponent {
         },
         {
           id: 'department',
-          label: '所属部门',
+          label: '部门',
           render: () => (
             <TreeSelect
               placeholder="请选择"
               allowClear
-              dropdownStyle={{
-                maxHeight: '50vh',
-              }}
+              dropdownClassName={styles.treeSelectDropDown}
             >
               {this.renderTreeNodes(departmentDict)}
             </TreeSelect>
@@ -496,9 +494,7 @@ export default class HiddenDangerCountReportList extends PureComponent {
             <TreeSelect
               placeholder="请选择"
               allowClear
-              dropdownStyle={{
-                maxHeight: '50vh',
-              }}
+              dropdownClassName={styles.treeSelectDropDown}
             >
               {this.renderTreeNodes(hiddenDangerTypeDict)}
             </TreeSelect>
@@ -521,9 +517,7 @@ export default class HiddenDangerCountReportList extends PureComponent {
             <TreeSelect
               placeholder="请选择"
               allowClear
-              dropdownStyle={{
-                maxHeight: '50vh',
-              }}
+              dropdownClassName={styles.treeSelectDropDown}
             >
               {this.renderTreeNodes(checkTypeDict)}
             </TreeSelect>
@@ -564,7 +558,7 @@ export default class HiddenDangerCountReportList extends PureComponent {
         },
         {
           id: 'createDate',
-          label: '选择日期',
+          label: '创建日期',
           render: () => {
             let /* mode,  */format;
             if (dateType === '2') {
@@ -589,14 +583,12 @@ export default class HiddenDangerCountReportList extends PureComponent {
         },
         {
           id: 'department',
-          label: '所属部门',
+          label: '发现部门',
           render: () => (
             <TreeSelect
               placeholder="请选择"
               allowClear
-              dropdownStyle={{
-                maxHeight: '50vh',
-              }}
+              dropdownClassName={styles.treeSelectDropDown}
             >
               {this.renderTreeNodes(departmentDict)}
             </TreeSelect>
@@ -609,9 +601,7 @@ export default class HiddenDangerCountReportList extends PureComponent {
             <TreeSelect
               placeholder="请选择"
               allowClear
-              dropdownStyle={{
-                maxHeight: '50vh',
-              }}
+              dropdownClassName={styles.treeSelectDropDown}
             >
               {this.renderTreeNodes(hiddenDangerTypeDict)}
             </TreeSelect>
@@ -633,14 +623,12 @@ export default class HiddenDangerCountReportList extends PureComponent {
         },
         {
           id: 'department',
-          label: '检查人所属部门',
+          label: '发现部门',
           render: () => (
             <TreeSelect
               placeholder="请选择"
               allowClear
-              dropdownStyle={{
-                maxHeight: '50vh',
-              }}
+              dropdownClassName={styles.treeSelectDropDown}
             >
               {this.renderTreeNodes(departmentDict)}
             </TreeSelect>
