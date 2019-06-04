@@ -138,7 +138,6 @@ export default class StatisticsOfFireControl extends PureComponent {
         shield_state = 0,
         feedback_state = 0,
         supervise_state = 0,
-        warn=0,
       },
       handleShowFireMonitor,
       onSwitch,
@@ -146,13 +145,13 @@ export default class StatisticsOfFireControl extends PureComponent {
 
     const real = warnTrue,
       misinformation = warnFalse,
-      pending = warn - warnTrue - warnFalse,
+      pending = fire_state - warnTrue - warnFalse,
       fault = fault_state,
       shield = shield_state,
       linkage = start_state,
       supervise = supervise_state,
       feedback = feedback_state;
-    const fire = warn;
+    const fire = real + misinformation + pending;
 
     const chartData = [
       {

@@ -106,10 +106,9 @@ export default class App extends PureComponent {
       linkage = 0,
       supervise = 0,
       feedback = 0,
-      warn = 0,
     } = this.props;
 
-    const fire = warn;
+    const fire = real + misinformation + pending;
 
     const option = {
       color: ['#E86767', '#108EFF', '#847BE6', '#01B0D1', '#FFB13A', '#BBBBBC'],
