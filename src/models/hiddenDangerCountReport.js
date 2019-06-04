@@ -9,8 +9,6 @@ import {
   exportReport,
 } from '@/services/hiddenDangerCountReport';
 import { message } from 'antd';
-import fileDownload from 'js-file-download';
-import moment from 'moment';
 
 function error(msg='请求接口失败，请稍后重试！') {
   message.error(msg);
@@ -152,9 +150,9 @@ export default {
       }
       callback && callback(response);
     },
-    *exportReport({ payload }, { call }) {
+    *exportReport({ payload, callback }, { call }) {
       const blob = yield call(exportReport, payload);
-      fileDownload(blob, `隐患统计报表_${moment().format('YYYYMMDD')}.xlsx`);
+      callback && callback(blob);
     },
   },
 
