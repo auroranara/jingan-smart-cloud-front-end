@@ -42,11 +42,11 @@ export default class CompanyList extends PureComponent {
     const {
       user: {
         currentUser: {
-          companyId,
+          unitType,
         }={},
       },
     } = props;
-    if (companyId) {
+    if (unitType === 4) {
       this.goToDetail();
     }
     mapMutations(this, {
