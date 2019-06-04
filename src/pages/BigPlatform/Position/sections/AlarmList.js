@@ -51,7 +51,8 @@ export default class AlarmList extends PureComponent {
     // this.setState({ selectedArea: sectionTree[0].value });
 
     this.getAlarms();
-    dispatch({ type: 'personPosition/fetchStatusCount', payload: { companyId } });
+    // dispatch({ type: 'personPosition/fetchStatusCount', payload: { companyId } });
+    dispatch({ type: 'personPosition/fetchStatusCountList', payload: { companyId, startTime: moment().startOf('day').format('YYYY-MM-DD HH:mm:ss') } });
     dispatch({ type: 'personPosition/fetchMonthCount', payload: { companyId } });
   }
 
@@ -174,7 +175,7 @@ export default class AlarmList extends PureComponent {
       labelIndex,
       areaInfo,
       position: { sectionTree },
-      personPosition: { alarms1: alarms, statusCount, monthCount },
+      personPosition: { alarms1: alarms, statusCountList, monthCount },
       handleLabelClick,
     } = this.props;
     const {
@@ -193,9 +194,9 @@ export default class AlarmList extends PureComponent {
     } = this.state;
 
     const list = Array.isArray(monthCount) ? monthCount.map(({ warningMonth, warningNum }) => ({ name: warningMonth, value: warningNum })) : [];
-    const { waitExecuteNum=0, executeNum=0 } = statusCount || {};
-    const personAlert = [{ name: 'SOS', num: 100 }, { name: '长时间静止', num: 100 }];
-    const sectionAlert = [{ name: '缺员', num: 100 }, { name: '越界', num: 100 }, { name: '超员', num: 100 }];
+    // const { waitExecuteNum=0, executeNum=0 } = statusCount || {};
+    const personAlert = statusCountList.slice(0, 2);
+    const sectionAlert = statusCountList.slice(2, 5);
     let cards = <EmptyMsg />;
     if (alarms.length)
       cards = alarms.map((item, i) => (
@@ -222,13 +223,17 @@ export default class AlarmList extends PureComponent {
         <div className={styles.left}>
           <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
           <div className={styles.wrapper1}>
+            <h3 className={styles.chartTitle}>
+              {rect}
+              今日报警统计
+            </h3>
             <div className={styles.leftTop1}>
               <div className={styles.leftTop1Inner}>
                 <div className={styles.leftTopRow}>
-                  {personAlert.map(({ name, num }) => <Circle key={name} num={num} desc={name} />)}
+                  {personAlert.map(({ typeName, typeCount }) => <Circle key={typeName} num={typeCount} desc={typeName} />)}
                 </div>
                 <div className={styles.leftTopRow}>
-                  {sectionAlert.map(({ name, num }) => <Circle key={name} num={num} desc={name} />)}
+                  {sectionAlert.map(({ typeName, typeCount }) => <Circle key={typeName} num={typeCount} desc={typeName} />)}
                 </div>
               </div>
             </div>

@@ -44,6 +44,11 @@ export async function getStatusCount(params) {
   return request(`${URL_PREFIX}/location/warningStatusCount?${stringify(params)}`);
 }
 
+// 获取报警状态统计
+export async function getStatusCountList(params) {
+  return request(`${URL_PREFIX}/location/warningTypeCount?${stringify(params)}`);
+}
+
 // 获取最近十二个月报警统计
 export async function getMonthCount(params) {
   return request(`${URL_PREFIX}/location/warningMonthCount?${stringify(params)}`);
