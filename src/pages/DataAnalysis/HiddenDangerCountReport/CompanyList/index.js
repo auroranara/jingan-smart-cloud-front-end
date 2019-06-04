@@ -42,11 +42,11 @@ export default class CompanyList extends PureComponent {
     const {
       user: {
         currentUser: {
-          companyId,
+          unitType,
         }={},
       },
     } = props;
-    if (companyId) {
+    if (unitType === 4) {
       this.goToDetail();
     }
     mapMutations(this, {
@@ -123,18 +123,13 @@ export default class CompanyList extends PureComponent {
       hiddenDangerCountReport: {
         gridDict=[],
       },
+      user: {
+        currentUser: {
+          unitType,
+        }={},
+      },
     } = this.props;
     const fields = [
-      {
-        id: 'gridId',
-        label: '所属网格',
-        render: () => (
-          <CustomTreeSelect
-            data={gridDict}
-            fieldNames={GRID_FIELD_NAMES}
-          />
-        ),
-      },
       {
         id: 'name',
         label: '单位名称',
@@ -145,6 +140,18 @@ export default class CompanyList extends PureComponent {
         ),
       },
     ];
+    if (unitType !== 1) { // 维保不显示网格
+      fields.unshift({
+        id: 'gridId',
+        label: '所属网格',
+        render: () => (
+          <CustomTreeSelect
+            data={gridDict}
+            fieldNames={GRID_FIELD_NAMES}
+          />
+        ),
+      });
+    }
     return (
       <Card bordered={false} className={styles.card}>
         <ToolBar

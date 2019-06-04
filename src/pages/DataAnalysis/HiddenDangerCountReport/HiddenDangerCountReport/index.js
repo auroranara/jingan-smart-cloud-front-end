@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { Card, Form, Button, Select, DatePicker, TreeSelect, Radio, Table, Empty, Spin } from 'antd';
 import Echarts from 'echarts-for-react';
+import fileDownload from 'js-file-download';
+import moment from 'moment';
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -65,19 +67,32 @@ export default class HiddenDangerCountReport extends PureComponent {
     const {
       user: {
         currentUser: {
+          unitType,
           companyId,
+          companyName,
         },
       },
     } = props;
     const { id, name } = JSON.parse(sessionStorage.getItem('HIDDEN_DANGER_COUNT_REPORT') || null) || {};
-    this.companyId = id;
-    if (!(id || companyId)) {
-      router.push('/data-analysis/hidden-danger-count-report/list');
+    if (unitType === 4) {
+      if (!companyId) {
+        router.push('/500');
+        console.log('企业没有id');
+      } else {
+        this.companyId = companyId;
+        this.companyName = companyName;
+      }
+    } else {
+      if (!id) {
+        router.push('/data-analysis/hidden-danger-count-report/list');
+      } else {
+        this.companyId = id;
+        this.companyName = name;
+      }
     }
     this.state = {
       tabActiveKey: '1',
       radioValue: '1',
-      name,
     };
     this.exportButton = (
       <Button
@@ -97,28 +112,14 @@ export default class HiddenDangerCountReport extends PureComponent {
   }
 
   componentDidMount() {
-    const {
-      user: {
-        currentUser: {
-          companyId,
-        },
-      },
-    } = this.props;
     this.init({
-      companyId: companyId || this.companyId,
+      companyId: this.companyId,
     }, () => {
       this.handleTabChange('1');
     });
   }
 
   getParams() {
-    const {
-      user: {
-        currentUser: {
-          companyId,
-        },
-      },
-    } = this.props;
     const { tabActiveKey } = this.state;
     const values = this.form.getFieldsValue();
     if (tabActiveKey === '2') {
@@ -127,7 +128,7 @@ export default class HiddenDangerCountReport extends PureComponent {
       values.countType = '10';
     }
     const fields = getMappedFields(values, FIELDNAMES);
-    return { ...fields, company_id: companyId || this.companyId };
+    return { ...fields, company_id: this.companyId };
   }
 
   getCountList = () => {
@@ -167,7 +168,9 @@ export default class HiddenDangerCountReport extends PureComponent {
 
   handleExport = () => {
     const params = this.getParams();
-    this.exportReport(params);
+    this.exportReport(params, (blob) => {
+      fileDownload(blob, `隐患统计报表_${this.companyName}_${moment().format('YYYYMMDD')}.xlsx`);
+    });
   }
 
   renderTreeNodes = dict => dict.map(({ key, value, children }) => children ? (
@@ -399,8 +402,7 @@ export default class HiddenDangerCountReport extends PureComponent {
       },
       user: {
         currentUser: {
-          companyId,
-          // companyName,
+          unitType,
         },
       },
       loading,
@@ -408,7 +410,6 @@ export default class HiddenDangerCountReport extends PureComponent {
     const {
       tabActiveKey,
       radioValue,
-      name,
     } = this.state;
     /* 面包屑 */
     const breadcrumbList = [
@@ -417,7 +418,7 @@ export default class HiddenDangerCountReport extends PureComponent {
       // { title: "隐患统计报表", name: "隐患统计报表", href: companyId ? undefined : '/data-analysis/hidden-danger-count-report/list' },
       // { title: "单位详情", name: "单位详情" },
     ];
-    if (!companyId) {
+    if (unitType !== 4) {
       breadcrumbList.push({
         title: "隐患统计报表",
         name: "隐患统计报表",
@@ -647,8 +648,8 @@ export default class HiddenDangerCountReport extends PureComponent {
     return (
       <PageHeaderLayout
         className={styles.header}
-        title={!companyId ? "单位详情" : '隐患统计报表'}
-        content={!companyId && name}
+        title={unitType !== 4 ? "单位详情" : '隐患统计报表'}
+        content={unitType !== 4 && this.companyName}
         breadcrumbList={breadcrumbList}
         tabList={tabList}
         tabActiveKey={tabActiveKey}
