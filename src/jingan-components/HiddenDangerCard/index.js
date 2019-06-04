@@ -57,7 +57,7 @@ export default class HiddenDangerCard extends BigPlatformCard {
       render: ({ reportPerson, reportTime }) => (
         <Fragment>
           <span className={styles.reportPerson}>{reportPerson}</span>
-          {reportTime && moment(+reportTime).format(TIME_FORMAT)}
+          {reportTime && moment(reportTime).format(TIME_FORMAT)}
         </Fragment>
       ),
       labelWrapperClassName: styles.reportLabelWrapper,
@@ -67,7 +67,7 @@ export default class HiddenDangerCard extends BigPlatformCard {
       render: ({ planRectificationPerson, planRectificationTime, status }) => (
         <Fragment>
           <span className={styles.planRectificationPerson}>{planRectificationPerson}</span>
-          <span className={+status === 7 ? styles.expiredPlanRectificationTime : undefined}>{planRectificationTime && moment(+planRectificationTime).format(TIME_FORMAT)}</span>
+          <span className={+status === 7 ? styles.expiredPlanRectificationTime : undefined}>{planRectificationTime && moment(planRectificationTime).format(TIME_FORMAT)}</span>
         </Fragment>
       ),
       hidden: ({ status }) => ![1, 2, 7].includes(+status),
@@ -77,7 +77,7 @@ export default class HiddenDangerCard extends BigPlatformCard {
       render: ({ actualRectificationPerson, actualRectificationTime }) => (
         <Fragment>
           <span className={styles.actualRectificationPerson}>{actualRectificationPerson}</span>
-          {actualRectificationTime && moment(+actualRectificationTime).format(TIME_FORMAT)}
+          {actualRectificationTime && moment(actualRectificationTime).format(TIME_FORMAT)}
         </Fragment>
       ),
       hidden: ({ status }) => ![3, 4].includes(+status),
@@ -92,7 +92,7 @@ export default class HiddenDangerCard extends BigPlatformCard {
       render: ({ designatedReviewPerson, reviewTime }) => (
         <Fragment>
           <span className={styles.reviewPerson}>{designatedReviewPerson}</span>
-          {reviewTime && moment(+reviewTime).format(TIME_FORMAT)}
+          {reviewTime && moment(reviewTime).format(TIME_FORMAT)}
         </Fragment>
       ),
       labelWrapperClassName: styles.reviewLabelWrapper,
@@ -106,26 +106,26 @@ export default class HiddenDangerCard extends BigPlatformCard {
    */
   renderStatus(status) {
     let label, backgroundColor;
-    switch(+status) {
+    switch (+status) {
       case 1:
       case 2:
-      label = '未超期';
-      backgroundColor = '#0967D3';
-      break;
+        label = '未超期';
+        backgroundColor = '#0967D3';
+        break;
       case 7:
-      label = '已超期';
-      backgroundColor = '#FF4848';
-      break;
+        label = '已超期';
+        backgroundColor = '#FF4848';
+        break;
       case 3:
-      label = '待复查';
-      backgroundColor = '#0967D3';
-      break;
+        label = '待复查';
+        backgroundColor = '#0967D3';
+        break;
       case 4:
-      label = '已关闭';
-      backgroundColor = '#4F6793';
-      break;
+        label = '已关闭';
+        backgroundColor = '#4F6793';
+        break;
       default:
-      break;
+        break;
     }
     return label && (
       <div className={styles.status} style={{ backgroundColor }}>
@@ -154,13 +154,13 @@ export default class HiddenDangerCard extends BigPlatformCard {
           <div className={styles.title}><Ellipsis className={styles.ellipsisTitle} lines={1} tooltip>{description}</Ellipsis></div>
         </div>
         <div className={styles.wrapper}>
-            <div className={styles.imageWrapper}>
-              {images && images.length > 0 && images[0] && <div onClick={() => onClickImage(images)} className={styles.image} style={{ backgroundImage: `url(${images[0]})` }} />}
-            </div>
-            <div className={styles.fieldsWrapper}>
-              {this.renderFields(fieldsValue)}
-            </div>
+          <div className={styles.imageWrapper}>
+            {images && images.length > 0 && images[0] && <div onClick={() => onClickImage(images)} className={styles.image} style={{ backgroundImage: `url(${images[0]})` }} />}
           </div>
+          <div className={styles.fieldsWrapper}>
+            {this.renderFields(fieldsValue)}
+          </div>
+        </div>
       </Container>
     );
   }

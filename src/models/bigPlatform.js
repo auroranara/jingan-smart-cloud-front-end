@@ -51,7 +51,7 @@ import {
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
-const getColorByRiskLevel = function(level) {
+const getColorByRiskLevel = function (level) {
   switch (+level) {
     case 1:
       return '红色';
@@ -83,6 +83,7 @@ const transformHiddenDangerFields = ({
   review_time,
   report_source_name,
   item_name,
+  report_source,
 }) => {
   let background,
     operator_name = '';
@@ -114,6 +115,7 @@ const transformHiddenDangerFields = ({
     fcsj: moment(+review_time).format('YYYY-MM-DD'),
     item_name,
     report_source_name,
+    report_source,
   };
 };
 
@@ -438,8 +440,8 @@ export default {
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
             ? JSON.parse(response.fourColorImg).filter(
-                ({ id, webUrl }) => /^http/.test(webUrl) && id
-              )
+              ({ id, webUrl }) => /^http/.test(webUrl) && id
+            )
             : [],
       };
       // if (response.code === 200) {
