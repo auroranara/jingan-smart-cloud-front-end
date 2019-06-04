@@ -692,7 +692,6 @@ export default class UnitFireControl extends PureComponent {
         shield_state = 0,
         feedback_state = 0,
         supervise_state = 0,
-        warn = 0,
       },
     } = this.props.unitFireControl;
     const { fireControlType } = this.state;
@@ -700,10 +699,9 @@ export default class UnitFireControl extends PureComponent {
     return (
       <StatisticsOfFireControl
         type={fireControlType}
-        warn={warn}
         real={warnTrue}
         misinformation={warnFalse}
-        pending={warn - warnTrue - warnFalse}
+        pending={fire_state - warnTrue - warnFalse}
         fault={fault_state}
         shield={shield_state}
         linkage={start_state}
