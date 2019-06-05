@@ -32,6 +32,7 @@ class DangerInfo extends PureComponent {
     this.state = {
       images: [],
       currentImage: 0,
+      lightBoxVisible: false,
     };
   }
 
@@ -48,7 +49,7 @@ class DangerInfo extends PureComponent {
    * 显示图片详情
    */
   handleShow = (images) => {
-    this.setState({ images, currentImage: 0 });
+    this.setState({ images, currentImage: 0, lightBoxVisible: true });
   }
 
   /**
@@ -84,6 +85,7 @@ class DangerInfo extends PureComponent {
   handleClose = () => {
     this.setState({
       images: [],
+      lightBoxVisible: false,
     });
   };
 
@@ -96,7 +98,7 @@ class DangerInfo extends PureComponent {
       riskDetailList,
       loading,
     } = this.props;
-    const { images, currentImage } = this.state
+    const { images, currentImage, lightBoxVisible } = this.state
     let dataList = {
       pagination: {
         total: 0,
@@ -174,19 +176,17 @@ class DangerInfo extends PureComponent {
             </div>
           </div>
         </Drawer>
-        {images && images.length && (
-          <Lightbox
-            images={images.map((src) => ({ src }))}
-            isOpen={true}
-            closeButtonTitle="关闭"
-            currentImage={currentImage}
-            onClickPrev={this.handlePrevImage}
-            onClickNext={this.handleNextImage}
-            onClose={this.handleClose}
-            onClickThumbnail={this.handleSwitchImage}
-            showThumbnails
-          />
-        )}
+        <Lightbox
+          images={images.map((src) => ({ src }))}
+          isOpen={lightBoxVisible}
+          closeButtonTitle="关闭"
+          currentImage={currentImage}
+          onClickPrev={this.handlePrevImage}
+          onClickNext={this.handleNextImage}
+          onClose={this.handleClose}
+          onClickThumbnail={this.handleSwitchImage}
+          showThumbnails
+        />
       </div>
     );
   }
