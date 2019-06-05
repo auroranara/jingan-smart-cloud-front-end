@@ -20,9 +20,9 @@ const FIELDNAMES = {
   source: 'report_source',  // 来源
   reportPerson: 'sbr',        // 上报人
   reportTime: 'sbsj',             // 上报时间
-  planRectificationPerson: 'zgr',  // 计划整改人
+  planRectificationPerson: 'plan_zgr',  // 计划整改人
   planRectificationTime: 'plan_zgsj', // 计划整改时间
-  actualRectificationPerson: 'zgr', // 实际整改人
+  actualRectificationPerson: 'real_zgr', // 实际整改人
   actualRectificationTime: 'real_zgsj', // 实际整改时间
   designatedReviewPerson: 'fcr', // 指定复查人
 }

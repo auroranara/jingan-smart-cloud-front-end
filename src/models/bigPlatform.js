@@ -101,6 +101,8 @@ const transformHiddenDangerFields = ({
     sbr: report_user_name,
     sbsj: moment(+report_time).format('YYYY-MM-DD'),
     zgr: rectify_user_name,
+    plan_zgr: rectify_user_name,
+    real_zgr: operator_name,
     plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
     real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
     fcr: +status === 4 ? operator_name : review_user_name, // 关闭状态下的复查人显示实际整改人
