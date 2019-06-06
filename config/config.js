@@ -64,6 +64,9 @@ export default {
         dva: {
           hmr: true,
         },
+        title: {
+          defaultTitle: '这是测试标题',
+        },
         locale: {
           enable: true, // default false
           default: 'zh-CN', // default zh-CN
