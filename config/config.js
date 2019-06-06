@@ -65,7 +65,7 @@ export default {
           hmr: true,
         },
         title: {
-          defaultTitle: '这是测试标题',
+          defaultTitle: '晶安智慧云',
         },
         locale: {
           enable: true, // default false
