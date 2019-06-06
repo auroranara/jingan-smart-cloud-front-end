@@ -132,7 +132,7 @@ export default class DeviceCard extends BigPlatformCard {
       render({ status, params, monitoringType }) {
         let label = STATUS_DICT[status];
         if (monitoringType === FIRE_ENGINE) {
-          if (status === 2) {
+          if (label === '报警') {
             label = params;
           }
           params = null;
@@ -155,7 +155,7 @@ export default class DeviceCard extends BigPlatformCard {
       className: classNames(styles.row, styles.statusRow),
     },
     {
-      label: ({ status }) => (STATUS_DICT[status] ? `${STATUS_DICT[status]}时间` : '发生时间'),
+      label: ({ status }) => (STATUS_DICT[status] ? `${STATUS_DICT[status]}时间` : '更新时间'),
       render: ({ time }) => time && moment(+time).format(TIME_FORMAT),
       className: styles.row,
     },

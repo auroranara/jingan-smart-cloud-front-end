@@ -183,3 +183,8 @@ export async function getPoints(params) {
 export async function getSpecialEquipmentList(params) {
   return request(`/acloud_new/v2/sfc/specialEquipmentInfo?${stringify(params)}`);
 }
+
+// 获取设备统计列表
+export async function getDeviceCountList(params) {
+  return request(`/acloud_new/v2/fireData/getMonitorForAll?${stringify(params)}`);
+}

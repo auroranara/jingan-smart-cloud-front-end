@@ -101,9 +101,9 @@ export default class UnitSafety extends PureComponent {
       // 设备统计抽屉是否显示
       deviceCountDrawerVisible: false,
       // 设备统计当前选中的状态
-      deviceCountSelectedStatus: '全部状态',
+      deviceCountSelectedStatus: '0',
       // 设备统计当前选中的监测类型
-      deviceCountSelectedMonitoringType: '全部监测类型',
+      deviceCountSelectedMonitoringType: '0',
     };
     // 添加变异函数
     mapMutations(this, {
@@ -439,6 +439,22 @@ export default class UnitSafety extends PureComponent {
   };
 
   /**
+   * 显示设备统计抽屉
+   */
+  showDeviceCountDrawer = (deviceCountSelectedMonitoringType) => {
+    const { match: { params: { companyId } } } = this.props;
+    this.fetchDeviceCountList({
+      companyId,
+      type: deviceCountSelectedMonitoringType,
+    });
+    this.setState({
+      deviceCountDrawerVisible: true,
+      deviceCountSelectedStatus: '0',
+      deviceCountSelectedMonitoringType,
+    });
+  }
+
+  /**
    * 根据月份获取人员列表
    */
   handleSelectStaffList = month => {
@@ -491,8 +507,8 @@ export default class UnitSafety extends PureComponent {
     this.setState({ deviceCountSelectedStatus });
     this.fetchDeviceCountList({
       companyId,
-      deviceCountSelectedStatus,
-      deviceCountSelectedMonitoringType,
+      status: deviceCountSelectedStatus === '0' ? undefined : deviceCountSelectedStatus,
+      type: deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
     });
   }
 
@@ -505,8 +521,8 @@ export default class UnitSafety extends PureComponent {
     this.setState({ deviceCountSelectedMonitoringType });
     this.fetchDeviceCountList({
       companyId,
-      deviceCountSelectedStatus,
-      deviceCountSelectedMonitoringType,
+      status: deviceCountSelectedStatus === '0' ? undefined : deviceCountSelectedStatus,
+      type: deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
     });
   }
 
@@ -633,8 +649,9 @@ export default class UnitSafety extends PureComponent {
             <div className={styles.rightBottom}>
               <DynamicMonitor
                 onClick={this.goToMonitor}
+                onShow={this.showDeviceCountDrawer}
                 handleClickVideo={this.showVideo}
-                handleClickGas={this.handleClickGas}
+                // handleClickGas={this.handleClickGas}
               />
             </div>
           </Col>
