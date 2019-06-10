@@ -12,13 +12,14 @@ export default class SearchBar extends PureComponent {
     if (!selectedIndex)
       return;
 
-    const container = this.container;
-    const target = container.children[selectedIndex];
-    const top = target.offsetTop;
-    container.scrollTo(0, top);
+    // const container = this.container;
+    // const target = container.children[selectedIndex];
+    // const top = target.offsetTop;
+    // container.scrollTo(0, top);
+    // getCardsContainer && getCardsContainer(container);
   }
 
-  container = null;
+  // container = null;
 
   render() {
     const {
@@ -29,6 +30,7 @@ export default class SearchBar extends PureComponent {
       searchStyle,
       onSearch,
       selectedIndex,
+      getCardsContainer,
       // onChange,
       // value,
       ...restProps
@@ -52,7 +54,10 @@ export default class SearchBar extends PureComponent {
             {extra}
           </Col>
         </Row>
-        <div className={styles.cardsContainer} ref={node => this.container = node}>
+        <div className={styles.cardsContainer} ref={node => {
+          this.container = node;
+          getCardsContainer && getCardsContainer(node);
+        }}>
           {children}
         </div>
       </div>

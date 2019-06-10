@@ -17,7 +17,7 @@
     status: 'status', // 隐患状态
     type: 'type', // 隐患类型
     description: 'description', // 隐患描述
-    src: 'src', // 图片地址
+    images: ['src'], // 图片地址
     name: 'name', // 点位名称
     source: 'source', // 来源
     reportPerson: 'reportPerson', // 上报人
@@ -41,7 +41,7 @@
       status: 7, // 隐患状态
       type: 1, // 隐患类型
       description: '设备年久失修', // 隐患描述
-      src: 'http://data.jingan-china.cn/hello/gsafe/hidden_danger/190426-153557-q96x.png', // 图片地址
+      images: ['http://data.jingan-china.cn/hello/gsafe/hidden_danger/190426-153557-q96x.png'], // 图片地址
       name: 'name', // 点位名称
       source: 1, // 来源
       reportPerson: '张三', // 上报人
@@ -57,7 +57,7 @@
       status: 'status', // 隐患状态
       type: 'type', // 隐患类型
       description: 'description', // 隐患描述
-      src: 'src', // 图片地址
+      images: 'images', // 图片地址
       name: 'name', // 点位名称
       source: 'source', // 来源
       reportPerson: 'reportPerson', // 上报人

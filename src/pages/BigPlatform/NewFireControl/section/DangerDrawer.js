@@ -41,6 +41,7 @@ export default class DangerDrawer extends PureComponent {
       labelIndex=0,
       fetchDangerRecords,
       handleLabelClick,
+      getCardsContainer,
       data: {
         overview: {
           overdueNum=0,
@@ -80,11 +81,9 @@ export default class DangerDrawer extends PureComponent {
     );
 
     const right = (
-        <SearchBar onSearch={this.handleSearch}>
+        <SearchBar onSearch={this.handleSearch} getCardsContainer={getCardsContainer}>
           {filteredList.map((item, i) => {
             const { companyId } = item;
-            // console.log(companyId, selectedCompanyId);
-
             return (
               <DrawerStretchCard
                 hasMore={hasMore}
