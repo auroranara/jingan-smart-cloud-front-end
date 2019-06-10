@@ -8,9 +8,9 @@ class DangerCompanyDrawer extends PureComponent {
     this.state = {};
   }
 
-  componentDidMount() {}
+  componentDidMount() { }
 
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   handleClick = id => {
     const {
@@ -68,7 +68,7 @@ class DangerCompanyDrawer extends PureComponent {
           width={500}
           closable={false}
           onClose={() => {
-            handleParentChange({ dangerCoDrawer: false });
+            handleParentChange({ dangerCoDrawer: false, dangerCompanyLast: '' });
           }}
           visible={visible}
           style={{ padding: 0 }}
@@ -153,17 +153,17 @@ class DangerCompanyDrawer extends PureComponent {
                             </tbody>
                           </table>
                         ) : (
-                          <div
-                            style={{
-                              textAlign: 'center',
-                              lineHeight: '100px',
-                              position: 'absolute',
-                              width: '100%',
-                            }}
-                          >
-                            暂无数据
+                            <div
+                              style={{
+                                textAlign: 'center',
+                                lineHeight: '100px',
+                                position: 'absolute',
+                                width: '100%',
+                              }}
+                            >
+                              暂无数据
                           </div>
-                        )}
+                          )}
                       </div>
                     </div>
                   </div>
