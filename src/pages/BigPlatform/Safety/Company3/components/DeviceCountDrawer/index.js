@@ -21,7 +21,7 @@ const statusDict = [
   },
   {
     key: '2',
-    value: '异常',
+    value: '报警',
   },
   {
     key: '3',
