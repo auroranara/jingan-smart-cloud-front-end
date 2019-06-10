@@ -390,13 +390,22 @@ export default class accountManagementList extends React.Component {
   };
 
   handleUnitSelect = value => {
-    const { fetchRoles, clearRoles, form: { setFieldsValue } } = this.props;
+    const {
+      fetchRoles,
+      clearRoles,
+      account: { unitIds },
+      form: { setFieldsValue },
+    } = this.props;
     const { unitTypeChecked } = this.state;
 
     setFieldsValue({ roleId: undefined });
     if (!unitTypeChecked && !value)
       clearRoles();
-    else
+    else if (!unitTypeChecked && value) {
+      const target = unitIds.find(({ id }) => id === value);
+      console.log(target, unitIds);
+      fetchRoles({ payload: { unitType: target.type, companyId: value.key } });
+    } else
       fetchRoles({ payload: { unitType: unitTypeChecked, companyId: value.key } });
   };
 
