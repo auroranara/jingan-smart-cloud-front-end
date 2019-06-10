@@ -108,6 +108,7 @@ const transformHiddenDangerFields = ({
     fcr: +status === 4 ? operator_name : review_user_name, // 关闭状态下的复查人显示实际整改人
     status: +status,
     background: background ? background.split(',')[0] : '',
+    backgrounds:background ? background.split(',') :[],
     source:
       (source_type_name === '网格点上报' && '监督点') ||
       (source_type_name === '风险点上报' &&

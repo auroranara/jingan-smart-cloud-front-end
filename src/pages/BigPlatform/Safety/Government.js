@@ -159,20 +159,20 @@ class GovernmentBigPlatform extends Component {
       type: 'bigFireControl/fetchGrids',
       callback: isIndex
         ? data => {
-            const gId = data && data.length ? data[0].key : '';
-            this.setState({ treeValue: gId });
-            if (gId) {
-              dispatch({
-                type: 'bigPlatform/fetchMapLocationByParent',
-                payload: {
-                  gridId: gId,
-                },
-                success: data => {
-                  this.initPolygons(data);
-                },
-              });
-            }
+          const gId = data && data.length ? data[0].key : '';
+          this.setState({ treeValue: gId });
+          if (gId) {
+            dispatch({
+              type: 'bigPlatform/fetchMapLocationByParent',
+              payload: {
+                gridId: gId,
+              },
+              success: data => {
+                this.initPolygons(data);
+              },
+            });
           }
+        }
         : null,
     });
 
@@ -379,12 +379,12 @@ class GovernmentBigPlatform extends Component {
 
   debounce = (action, delay) => {
     var timer = null;
-    return function() {
+    return function () {
       const self = this;
       const args = arguments;
 
       clearTimeout(timer);
-      timer = setTimeout(function() {
+      timer = setTimeout(function () {
         action.apply(self, args);
       }, delay);
     };
@@ -553,6 +553,7 @@ class GovernmentBigPlatform extends Component {
       dangerCompanyLast,
       checksMonth,
       checkUserId,
+      dangerCoDrawer,
     } = this.state;
     const gridId = this.getGridId();
     if (dangerCompanyLast === 'checks') {
@@ -569,12 +570,13 @@ class GovernmentBigPlatform extends Component {
         },
       });
     } else {
+      // status：如果是从隐患统计-隐患单位统计-进入隐患详情（dangerCoDrawer=true），传递state中的status；如果打开单位概况，status为5，显示企业未关闭所有隐患
       dispatch({
         type: 'bigPlatform/fetchHiddenDangerListForPage',
         payload: {
           company_id: companyId,
           gridId,
-          status,
+          status: dangerCoDrawer ? status : 5,
           pageNum,
           pageSize: defaultPageSize,
         },
@@ -696,15 +698,15 @@ class GovernmentBigPlatform extends Component {
               {grids.length === 1 ? (
                 <span>{grids[0].title}</span>
               ) : (
-                <TreeSelect
-                  value={treeValue}
-                  dropdownStyle={{ maxHeight: '50vh' }}
-                  dropdownClassName={styles.gridDropdown}
-                  treeData={grids}
-                  treeDefaultExpandAll
-                  onChange={this.onGridChange}
-                />
-              )}
+                  <TreeSelect
+                    value={treeValue}
+                    dropdownStyle={{ maxHeight: '50vh' }}
+                    dropdownClassName={styles.gridDropdown}
+                    treeData={grids}
+                    treeDefaultExpandAll
+                    onChange={this.onGridChange}
+                  />
+                )}
             </div>
           )}
         </header>
