@@ -3,6 +3,7 @@ import { Select } from 'antd';
 import { connect } from 'dva';
 import classNames from 'classnames';
 import DeviceCard from '@/jingan-components/DeviceCard';
+import defaultBackground from '@/assets/default_dynamic_monitor.png';
 import SectionDrawer from '../SectionDrawer';
 // 引入样式文件
 import styles from './index.less';
@@ -21,7 +22,7 @@ const statusDict = [
   },
   {
     key: '2',
-    value: '异常',
+    value: '报警',
   },
   {
     key: '3',
@@ -188,7 +189,7 @@ export default class DeviceCountDrawer extends PureComponent {
                 data={device}
               />
             );
-          }) : ''}
+          }) : <div className={styles.defaultBackground} style={{ backgroundImage: `url(${defaultBackground})` }} />}
         </div>
       </SectionDrawer>
     );
