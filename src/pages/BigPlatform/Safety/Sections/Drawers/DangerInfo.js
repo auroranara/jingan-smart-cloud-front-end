@@ -12,7 +12,7 @@ const FIELDNAMES = {
   type: 'businessType', // 隐患类型
   id: 'id',
   description: 'description', // 隐患描述
-  images:'backgrounds',        // 图片地址
+  images: 'backgrounds',        // 图片地址
   name: 'item_name', // 点位名称
   source: 'report_source',  // 来源
   reportPerson: 'sbr',        // 上报人
@@ -117,7 +117,7 @@ class DangerInfo extends PureComponent {
           width={500}
           closable={false}
           onClose={() => {
-            handleParentChange({ dangerInfo: false });
+            handleParentChange({ dangerInfo: false, companyId: '' });
           }}
           visible={visible}
           style={{ padding: 0 }}
@@ -139,7 +139,7 @@ class DangerInfo extends PureComponent {
                   <div
                     className={styles.backBtn}
                     onClick={() => {
-                      handleParentChange({ dangerInfo: false });
+                      handleParentChange({ dangerInfo: false, companyId: '' });
                     }}
                   />
                   <div className={styles.sectionMain}>

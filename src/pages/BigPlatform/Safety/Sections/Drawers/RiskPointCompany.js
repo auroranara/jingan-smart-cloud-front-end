@@ -190,7 +190,7 @@ class RiskPointCompany extends PureComponent {
 
   handleClose = () => {
     const { handleParentChange } = this.props;
-    handleParentChange({ riskPointCompany: false });
+    handleParentChange({ riskPointCompany: false, companyId: '' });
     setTimeout(() => {
       this.setState({ active: 0 });
     }, 300);
