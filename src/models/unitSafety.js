@@ -244,6 +244,9 @@ const formatDynamicMonitorData = list => {
       case '视频监控':
         data.videoMonitor = item;
         break;
+      case '水系统监测':
+        data.waterSystem = item;
+        break;
       default:
         break;
     }
