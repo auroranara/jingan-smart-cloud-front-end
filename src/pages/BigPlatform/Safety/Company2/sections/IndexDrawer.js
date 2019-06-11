@@ -1,6 +1,7 @@
 import React, { Fragment, PureComponent } from 'react';
 import { Spin } from 'antd';
-import LoadMoreButton from '../../Company3/components/LoadMoreButton';
+// import LoadMoreButton from '../../Company3/components/LoadMoreButton';
+import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import styles from './IndexDrawer.less';
 import {
   ChartBar,
@@ -138,7 +139,7 @@ export default class IndexDrawer extends PureComponent {
             {selected === 1 &&
               pageNum * pageSize < total && (
                 <div style={{ textAlign: 'center' }}>
-                  <LoadMoreButton onClick={this.handleLoadMore} />
+                  <LoadMore onClick={this.handleLoadMore} />
                 </div>
               )}
           </div>

@@ -2,7 +2,8 @@ import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { Spin } from 'antd';
 import TotalInfo from '../components/TotalInfo';
-import LoadMoreButton from '../../Safety/Company3/components/LoadMoreButton';
+// import LoadMoreButton from '../../Safety/Company3/components/LoadMoreButton';
+import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import styles from './NewWorkOrderDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
 import numberBg from '../imgs/number-bg.png';
@@ -241,7 +242,7 @@ export default class NewWorkOrderDrawer extends PureComponent {
                       ))}
                       {isLoadMore && (
                         <div className={styles.loadMoreWrapper}>
-                          <LoadMoreButton
+                          <LoadMore
                             onClick={() => {
                               type === 0
                                 ? getWarnDetail(workOrderStatus, workOrderType, pageNum + 1)
@@ -252,25 +253,25 @@ export default class NewWorkOrderDrawer extends PureComponent {
                       )}
                     </div>
                   ) : (
-                    <div
-                      style={{
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        textAlign: 'center',
-                        color: '#4f6793',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <img
-                        src={noData}
-                        style={{ width: '36%', height: 'auto', marginTop: '-150px' }}
-                        alt="noData"
-                      />
-                      <div style={{ marginTop: '15px' }}>暂无工单</div>
-                    </div>
-                  )}
+                      <div
+                        style={{
+                          height: '100%',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          textAlign: 'center',
+                          color: '#4f6793',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <img
+                          src={noData}
+                          style={{ width: '36%', height: 'auto', marginTop: '-150px' }}
+                          alt="noData"
+                        />
+                        <div style={{ marginTop: '15px' }}>暂无工单</div>
+                      </div>
+                    )}
                 </div>
               </Spin>
             </div>

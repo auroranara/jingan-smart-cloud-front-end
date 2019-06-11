@@ -68,7 +68,7 @@ class DangerCompanyDrawer extends PureComponent {
           width={500}
           closable={false}
           onClose={() => {
-            handleParentChange({ dangerCoDrawer: false, dangerCompanyLast: '' });
+            handleParentChange({ dangerCoDrawer: false, dangerCompanyLast: '', companyId: '' });
           }}
           visible={visible}
           style={{ padding: 0 }}
