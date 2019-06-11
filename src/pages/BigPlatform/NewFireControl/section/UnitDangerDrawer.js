@@ -54,6 +54,7 @@ export default function UnitDangerDrawer(props) {
     },
     fetchDangerRecords,
     handleLabelClick,
+    handleImageSliderShow,
     handleDrawerVisibleChange,
     ...restProps
   } = props;
@@ -67,7 +68,15 @@ export default function UnitDangerDrawer(props) {
   const list = dangerRecords;
   if (list.length) {
     // cards = list.map((item, i) => <DangerCard key={item.id} data={item} style={{ marginTop: i ? 14 : 0 }} />);
-    cards = list.map((item, i) => <DangerCard key={item.id} data={item} fieldNames={FIELD_NAMES} style={{ fontSize: 14, marginTop: i ? 14 : 0 }} />);
+    cards = list.map((item, i) => (
+      <DangerCard
+        key={item.id}
+        data={item}
+        fieldNames={FIELD_NAMES}
+        style={{ fontSize: 14, marginTop: i ? 14 : 0 }}
+        onClickImage={handleImageSliderShow}
+      />
+    ));
   }
 
   const left = (

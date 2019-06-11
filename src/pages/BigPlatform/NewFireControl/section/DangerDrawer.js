@@ -42,6 +42,7 @@ export default class DangerDrawer extends PureComponent {
       fetchDangerRecords,
       handleLabelClick,
       getCardsContainer,
+      handleImageSliderShow,
       data: {
         overview: {
           overdueNum=0,
@@ -95,6 +96,7 @@ export default class DangerDrawer extends PureComponent {
                 list={dangerRecords}
                 fetchDangerRecords={fetchDangerRecords}
                 handleLabelClick={handleLabelClick}
+                handleImageSliderShow={handleImageSliderShow}
               />
             );
           })}

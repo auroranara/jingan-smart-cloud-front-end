@@ -45,6 +45,7 @@ export default class DrawerStretchCard extends PureComponent {
       list=[],
       fetchDangerRecords,
       handleLabelClick,
+      handleImageSliderShow,
       ...restProps
     } = this.props;
     // console.log(name, selected, labelIndex);
@@ -55,7 +56,15 @@ export default class DrawerStretchCard extends PureComponent {
     let cards = null;
     if (list.length) {
       // cards = list.map((item, i) => <DangerCard key={item.id} data={item} style={{ marginTop: i ? 14 : 0 }} />);
-      cards = list.map((item, i) => <DangerCard key={item.id} data={item} fieldNames={FIELD_NAMES} style={{ fontSize: 14, marginTop: i ? 14 : 0 }} />);
+      cards = list.map((item, i) => (
+        <DangerCard
+          key={item.id}
+          data={item}
+          fieldNames={FIELD_NAMES}
+          style={{ fontSize: 14, marginTop: i ? 14 : 0 }}
+          onClickImage={handleImageSliderShow}
+        />
+      ));
     }
 
     return (
