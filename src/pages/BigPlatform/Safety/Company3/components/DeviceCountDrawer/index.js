@@ -103,6 +103,7 @@ export default class DeviceCountDrawer extends PureComponent {
           toxicGas,
           effluent,
           exhaustGas,
+          waterSystem,
         }={},
       },
       deviceCountSelectedMonitoringType,
@@ -149,11 +150,11 @@ export default class DeviceCountDrawer extends PureComponent {
         value: '消防主机监测',
         show: fireEngine && fireEngine.totalNum > 0,
       },
-      // {
-      //   key: '8',
-      //   value: '水系统监测',
-      //   show: electricalFire && electricalFire.totalNum > 0,
-      // },
+      {
+        key: '8',
+        value: '水系统监测',
+        show: waterSystem && waterSystem.totalNum > 0,
+      },
     ].filter(({ show }) => show);
 
 
