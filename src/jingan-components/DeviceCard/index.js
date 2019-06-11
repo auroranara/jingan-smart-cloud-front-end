@@ -77,13 +77,13 @@ export default class DeviceCard extends BigPlatformCard {
         `${loopNumber || isNumber(loopNumber) ? `${loopNumber}号回路` : ''}${
           partNumber || isNumber(partNumber) ? `${partNumber}号` : ''
         }`,
-      hidden: ({ monitoringType, status }) => monitoringType !== FIRE_ENGINE || STATUS_DICT[status] || STATUS_DICT[status] === '正常',
+      hidden: ({ monitoringType, status }) => monitoringType !== FIRE_ENGINE || STATUS_DICT[status] === '正常',
       className: styles.row,
     },
     {
       label: '设施部件类型',
       key: 'partType',
-      hidden: ({ monitoringType, status }) => monitoringType !== FIRE_ENGINE || STATUS_DICT[status] || STATUS_DICT[status] === '正常',
+      hidden: ({ monitoringType, status }) => monitoringType !== FIRE_ENGINE || STATUS_DICT[status] === '正常',
       className: styles.row,
     },
     {
@@ -123,7 +123,7 @@ export default class DeviceCard extends BigPlatformCard {
       className: styles.row,
     },
     {
-      label: ({ monitoringType, status }) => (monitoringType !== FIRE_ENGINE ? '区域位置' : STATUS_DICT[status] && STATUS_DICT[status] !== '正常' ? '具体位置' : '安装位置'),
+      label: ({ monitoringType, status }) => (monitoringType !== FIRE_ENGINE ? '区域位置' : STATUS_DICT[status] !== '正常' ? '具体位置' : '安装位置'),
       key: 'location',
       className: styles.row,
     },
@@ -155,7 +155,7 @@ export default class DeviceCard extends BigPlatformCard {
       className: classNames(styles.row, styles.statusRow),
     },
     {
-      label: ({ status }) => (STATUS_DICT[status] && STATUS_DICT[status] !== '正常' ? `${STATUS_DICT[status]}时间` : '更新时间'),
+      label: ({ status }) => (STATUS_DICT[status] !== '正常' ? `${STATUS_DICT[status]}时间` : '更新时间'),
       render: ({ time }) => time && moment(+time).format(TIME_FORMAT),
       className: styles.row,
     },
