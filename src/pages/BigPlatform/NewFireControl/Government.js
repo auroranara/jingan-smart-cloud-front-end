@@ -6,6 +6,7 @@ import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { Col, message, Modal, notification, Row } from 'antd';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
+import Lightbox from 'react-images';
 import { myParseInt, getNewAlarms, getGridId, STATUS, DANGER_PAGE_SIZE } from './utils';
 import styles from './Government.less';
 // import Head from './Head';
@@ -50,7 +51,7 @@ const VIDEO_LOOK_UP = 'videoLookUp';
 const VIDEO_ALARM = 'videoAlarm';
 const DANGER_TOTAL_KEYS = ['total', 'hasExtended', 'afterRectification', 'toReview'];
 
-const DELAY = 5000;
+// const DELAY = 5000;
 const LOOKING_UP_DELAY = 5000;
 const WS_OPTIONS = {
   pingTimeout: 30000,
@@ -143,6 +144,7 @@ export default class FireControlBigPlatform extends PureComponent {
   dangerPageNum = 1;
   // 将FireControlMap中的设置searchValue值的函数挂载到当前组件上，虽然违反了React的数据单项流动的规则，但是这样做可以尽量少的修改代码
   clearSearchValueInMap = null;
+  dangerDrawerCardsContainer = null; // 隐患列表抽屉中右边卡片的div元素
 
   connectWebsocket = () => {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
@@ -717,6 +719,10 @@ export default class FireControlBigPlatform extends PureComponent {
     });
   };
 
+  getDangerDrawerCardsContainer = container => {
+    this.dangerDrawerCardsContainer = container;
+  };
+
   handleShowDangerBase = (companyId, labelIndex, type = 'danger') => {
     // this.clearDangerList();
     this.fetchDangerRecords(companyId, labelIndex, true);
@@ -772,6 +778,16 @@ export default class FireControlBigPlatform extends PureComponent {
       // this.clearDangerList();
       this.fetchDangerRecords(companyId, index, true);
     }
+
+    const container = this.dangerDrawerCardsContainer;
+    const { children } = container;
+    let target;
+    for (let dom of children)
+      if (dom.dataset.id === companyId) {
+        target = dom;
+        break;
+      }
+    container.scrollTo(0, target.offsetTop);
   };
 
   // 正面的概况模块的单位抽屉中点击主机状态的报警
@@ -817,6 +833,26 @@ export default class FireControlBigPlatform extends PureComponent {
   handleSysClick = i => {
     this.setState({ hostIndex: i });
     this.handleDrawerVisibleChange('host');
+  };
+
+  handleImageSliderShow = images => { // 显示图片详情
+    this.setState({ images, currentImage: 0 });
+  };
+
+  handleImageSliderClose = () => { // 关闭图片详情
+    this.setState({ images: null });
+  };
+
+  handleSwitchImage = currentImage => { // 切换图片
+    this.setState({ currentImage });
+  };
+
+  handlePrevImage = () => { // 切换上一张图片
+    this.setState(({ currentImage }) => ({ currentImage: currentImage - 1 }));
+  };
+
+  handleNextImage = () => { // 切换下一张图片
+    this.setState(({ currentImage }) => ({ currentImage: currentImage + 1 }));
   };
 
   render() {
@@ -897,9 +933,9 @@ export default class FireControlBigPlatform extends PureComponent {
       safeDrawerVisible,
       riskDrawerVisible,
       dangerHasMore,
+      images,
+      currentImage,
     } = this.state;
-
-    // console.log(user);
 
     const gridId = this.getGridId();
     const newOffGuard = {
@@ -1130,6 +1166,7 @@ export default class FireControlBigPlatform extends PureComponent {
           visible={unitDangerDrawerVisible}
           fetchDangerRecords={this.fetchDangerRecords}
           handleLabelClick={this.handleUnitDangerLabelClick}
+          handleImageSliderShow={this.handleImageSliderShow}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <HostDrawer
@@ -1164,6 +1201,8 @@ export default class FireControlBigPlatform extends PureComponent {
           visible={dangerDrawerVisible}
           fetchDangerRecords={this.fetchDangerRecords}
           handleLabelClick={this.handleDangerLabelClick}
+          getCardsContainer={this.getDangerDrawerCardsContainer}
+          handleImageSliderShow={this.handleImageSliderShow}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <SafeDrawer
@@ -1176,6 +1215,19 @@ export default class FireControlBigPlatform extends PureComponent {
           visible={riskDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
+        {images && images.length > 0 && images[0] && (
+          <Lightbox
+            images={images.map((src) => ({ src }))}
+            isOpen={true}
+            closeButtonTitle="关闭"
+            currentImage={currentImage}
+            onClickPrev={this.handlePrevImage}
+            onClickNext={this.handleNextImage}
+            onClose={this.handleImageSliderClose}
+            onClickThumbnail={this.handleSwitchImage}
+            showThumbnails
+          />
+        )}
       </BigPlatformLayout>
     );
   }

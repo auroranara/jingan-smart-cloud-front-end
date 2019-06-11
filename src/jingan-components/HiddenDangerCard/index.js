@@ -155,7 +155,12 @@ export default class HiddenDangerCard extends BigPlatformCard {
         </div>
         <div className={styles.wrapper}>
           <div className={styles.imageWrapper}>
-            {images && images.length > 0 && images[0] && <div onClick={() => onClickImage(images)} className={styles.image} style={{ backgroundImage: `url(${images[0]})` }} />}
+            {images && images.length > 0 && images[0] && (
+              <div
+                className={styles.image}
+                style={{ backgroundImage: `url(${images[0]})`, cursor: onClickImage ? 'pointer' : 'auto' }}
+                onClick={onClickImage && (() => onClickImage(images))} />
+            )}
           </div>
           <div className={styles.fieldsWrapper}>
             {this.renderFields(fieldsValue)}

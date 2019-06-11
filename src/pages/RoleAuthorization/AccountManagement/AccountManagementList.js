@@ -390,14 +390,38 @@ export default class accountManagementList extends React.Component {
   };
 
   handleUnitSelect = value => {
-    const { fetchRoles, clearRoles, form: { setFieldsValue } } = this.props;
+    const {
+      fetchRoles,
+      clearRoles,
+      account: { unitIds },
+      form: { setFieldsValue },
+    } = this.props;
     const { unitTypeChecked } = this.state;
 
     setFieldsValue({ roleId: undefined });
     if (!unitTypeChecked && !value)
       clearRoles();
-    else
+    else if (!unitTypeChecked && value) {
+      const target = unitIds.find(({ id }) => id === value.key);
+      fetchRoles({ payload: { unitType: target.type, companyId: value.key } });
+    } else
       fetchRoles({ payload: { unitType: unitTypeChecked, companyId: value.key } });
+  };
+
+  handleUnitChange = value => {
+    const {
+      fetchRoles,
+      clearRoles,
+      form: { setFieldsValue },
+    } = this.props;
+    const { unitTypeChecked } = this.state;
+    if (!unitTypeChecked && !value) {
+      clearRoles();
+      setFieldsValue({ roleId: undefined });
+    } else if (unitTypeChecked && !value) {
+      setFieldsValue({ roleId: undefined });
+      fetchRoles({ payload: { unitType: unitTypeChecked } });
+    }
   };
 
   handleGovChange = value => {
@@ -560,6 +584,7 @@ export default class accountManagementList extends React.Component {
                     optionLabelProp="children"
                     placeholder="请选择所属单位"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    onChange={this.handleUnitChange}
                     onSelect={this.handleUnitSelect}
                     onSearch={this.handleUnitSearch}
                     onBlur={this.handleUnitIdBlur}
