@@ -33,45 +33,6 @@ const statusDict = [
     value: '失联',
   },
 ];
-// 类型字典1电气火灾，2可燃/有毒气体，3废水，4废气，5储罐，6独立烟感，7消防主机，8水系统
-const typeDict = [
-  {
-    key: '0',
-    value: '全部监测类型',
-  },
-  {
-    key: '1',
-    value: '电气火灾监测',
-  },
-  {
-    key: '2',
-    value: '可燃/有毒气体监测',
-  },
-  {
-    key: '3',
-    value: '废水监测',
-  },
-  {
-    key: '4',
-    value: '废气监测',
-  },
-  {
-    key: '5',
-    value: '储罐监测',
-  },
-  {
-    key: '6',
-    value: '独立烟感报警监测',
-  },
-  {
-    key: '7',
-    value: '消防主机监测',
-  },
-  {
-    key: '8',
-    value: '水系统监测',
-  },
-];
 
 /**
  * 设备统计抽屉
@@ -132,7 +93,70 @@ export default class DeviceCountDrawer extends PureComponent {
    * 监测类型选择器
    */
   renderMonitoringTypeSelect() {
-    const { deviceCountSelectedMonitoringType } = this.props;
+    const {
+      unitSafety: {
+        dynamicMonitorData: {
+          fireEngine,
+          electricalFire,
+          smokeAlarm,
+          storageTank,
+          toxicGas,
+          effluent,
+          exhaustGas,
+        }={},
+      },
+      deviceCountSelectedMonitoringType,
+    } = this.props;
+    // 类型字典1电气火灾，2可燃/有毒气体，3废水，4废气，5储罐，6独立烟感，7消防主机，8水系统
+    const typeDict = [
+      {
+        key: '0',
+        value: '全部监测类型',
+        show: true,
+      },
+      {
+        key: '1',
+        value: '电气火灾监测',
+        show: electricalFire && electricalFire.totalNum > 0,
+      },
+      {
+        key: '2',
+        value: '可燃/有毒气体监测',
+        show: toxicGas && toxicGas.totalNum > 0,
+      },
+      {
+        key: '3',
+        value: '废水监测',
+        show: effluent && effluent.totalNum > 0,
+      },
+      {
+        key: '4',
+        value: '废气监测',
+        show: exhaustGas && exhaustGas.totalNum > 0,
+      },
+      {
+        key: '5',
+        value: '储罐监测',
+        show: storageTank && storageTank.totalNum > 0,
+      },
+      {
+        key: '6',
+        value: '独立烟感报警监测',
+        show: smokeAlarm && smokeAlarm.totalNum > 0,
+      },
+      {
+        key: '7',
+        value: '消防主机监测',
+        show: fireEngine && fireEngine.totalNum > 0,
+      },
+      // {
+      //   key: '8',
+      //   value: '水系统监测',
+      //   show: electricalFire && electricalFire.totalNum > 0,
+      // },
+    ].filter(({ show }) => show);
+
+
     return (
       <Select
         placeholder="请选择监测类型"
