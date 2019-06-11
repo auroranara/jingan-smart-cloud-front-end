@@ -68,7 +68,7 @@ class DangerCompanyDrawer extends PureComponent {
           width={500}
           closable={false}
           onClose={() => {
-            handleParentChange({ dangerCoDrawer: false, dangerCompanyLast: '', companyId: '' });
+            handleParentChange({ dangerCoDrawer: false, dangerCompanyLast: '' });
           }}
           visible={visible}
           style={{ padding: 0 }}
@@ -90,7 +90,7 @@ class DangerCompanyDrawer extends PureComponent {
                   <div
                     className={styles.backBtn}
                     onClick={() => {
-                      handleParentChange({ dangerCoDrawer: false });
+                      handleParentChange({ dangerCoDrawer: false, dangerCompanyLast: '' });
                     }}
                   />
                   <div className={styles.sectionMain}>
