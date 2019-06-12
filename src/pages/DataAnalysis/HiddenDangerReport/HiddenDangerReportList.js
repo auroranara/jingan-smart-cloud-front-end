@@ -1136,7 +1136,7 @@ export default class App extends PureComponent {
         }}
       />
     ) : (
-      <div style={{ textAlign: 'center' }}>
+      <div style={{ textAlign: 'center' ,height:'150px',lineHeight:'150px'}}>
         <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>
       </div>
     );
