@@ -334,7 +334,7 @@ export default class SensorList extends Component {
             columns={columns}
             dataSource={list}
             bordered
-            scroll={{ x: 1500 }}
+            scroll={{ x: 'max-content' }}
             pagination={{
               current: pageNum,
               pageSize,

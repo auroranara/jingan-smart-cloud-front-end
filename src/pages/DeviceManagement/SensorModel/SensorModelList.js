@@ -457,7 +457,7 @@ export default class SensorModelList extends PureComponent {
             loading={loading}
             columns={columns}
             dataSource={list}
-            scroll={{ x: 1300 }}
+            scroll={{ x: 'max-content' }}
             bordered
             pagination={{
               current: pageNum,
