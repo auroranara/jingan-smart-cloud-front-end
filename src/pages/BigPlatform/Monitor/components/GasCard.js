@@ -13,7 +13,7 @@ const pms = [
 ];
 
 export default function GasCard(props) {
-  const { status = 0, location, time, params, style = {}, timeStyle = {}, ...restProps } = props;
+  const { status = 0, location, time, params, armStatusName = null, style = {}, timeStyle = {}, ...restProps } = props;
   const color = COLORS[status];
   const newStyle = {
     borderLeft: `4px solid ${color}`,
@@ -23,6 +23,7 @@ export default function GasCard(props) {
   return (
     <div className={styles.card} style={newStyle} {...restProps}>
       <p className={styles.location}>{location ? location : NO_DATA}</p>
+      {armStatusName && (<div className={styles.line}>机械臂状态：{armStatusName}</div>)}
       <p className={styles.time} style={{ ...timeStyle }}>
         {time ? time : NO_DATA}
       </p>

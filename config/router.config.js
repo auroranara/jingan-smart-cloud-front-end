@@ -900,6 +900,32 @@ module.exports = env => {
                 },
               ],
             },
+            // 隐患统计报表
+            {
+              path: '/data-analysis/hidden-danger-count-report',
+              code: 'dataAnalysis.hiddenDangerCountReport',
+              name: 'hiddenDangerCountReport',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/data-analysis/hidden-danger-count-report',
+                  name: 'hiddenDangerCountReport',
+                  redirect: '/data-analysis/hidden-danger-count-report/list',
+                },
+                {
+                  path: '/data-analysis/hidden-danger-count-report/list',
+                  code: 'dataAnalysis.hiddenDangerCountReport.view',
+                  name: 'list',
+                  component: './DataAnalysis/HiddenDangerCountReport/CompanyList',
+                },
+                {
+                  path: '/data-analysis/hidden-danger-count-report/detail',
+                  code: 'dataAnalysis.hiddenDangerCountReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/HiddenDangerCountReport/HiddenDangerCountReport',
+                },
+              ],
+            },
             // 企业自查报表
             {
               path: '/data-analysis/company-report',

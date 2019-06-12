@@ -44,7 +44,7 @@ import {
   getIdMaps,
   sortTree,
 } from './utils';
-import { MAI, GOV, OPE, COM, getIdMap as getMsgIdMap, getNewAccountMsgs, treeConvertToMsgs, convertToMsgList } from '@/pages/RoleAuthorization/Role/utils';
+import { MAI, GOV, OPE, COM, getIdMap as getMsgIdMap, getNewAccountMsgs, treeConvertToMsgs, convertToMsgList, getChecked } from '@/pages/RoleAuthorization/Role/utils';
 import styles from './AccountManagementEdit.less';
 import styles1 from '../Role/Role.less';
 
@@ -1457,14 +1457,18 @@ export default class AccountManagementEdit extends PureComponent {
       },
       { title: '推荐接收人', dataIndex: 'accepter', key: 'accepter' },
       { title: '手机状态栏通知', dataIndex: 'check', key: 'check', align: 'center',
-        render: (txt, record) => (
-          <Checkbox checked={msgs[record.id] ? msgs[record.id][0] : undefined} onChange={this.genHandleCheck(record.id, 0)} />
-        ),
+        render: (txt, record) => {
+          const { id } = record;
+          const [indeterminate, checked] = getChecked(msgs[id] ? msgs[id][0] : 0);
+          return <Checkbox indeterminate={indeterminate} checked={checked} onChange={this.genHandleCheck(id, 0)} />;
+        },
       },
       { title: 'app内部消息通知', dataIndex: 'check1', key: 'check1', align: 'center',
-        render: (txt, record) => (
-          <Checkbox checked={msgs[record.id] ? msgs[record.id][1] : undefined} onChange={this.genHandleCheck(record.id, 1)} />
-        ),
+        render: (txt, record) => {
+          const { id } = record;
+          const [indeterminate, checked] = getChecked(msgs[id] ? msgs[id][1] : 0);
+          return <Checkbox indeterminate={indeterminate} checked={checked} onChange={this.genHandleCheck(id, 1)} />;
+        },
       },
     ];
 

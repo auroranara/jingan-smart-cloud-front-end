@@ -111,6 +111,7 @@ export default {
     danger: {},
     dangerList: [], // 隐患企业列表
     dangerRecords: [], // 隐患巡查记录
+    dangerRecordsMap: {},
     gridDanger: {},
     companyDanger: {},
     alarmProcess: {
@@ -233,11 +234,26 @@ export default {
       const response = yield call(queryDangerList, payload);
       yield put({ type: 'saveDangerList', payload: response || [] });
     },
-    *fetchDangerRecords({ payload }, { call, put }) {
+    *fetchDangerRecords({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerRecords, payload);
-      if (response && Array.isArray(response.hiddenDangers))
-        yield put({ type: 'saveDangerRecords', payload: response.hiddenDangers });
+      const list = response && Array.isArray(response.hiddenDangers) ? response.hiddenDangers : [];
+      yield put({
+        type: 'saveDangerRecords',
+        payload: { list, pageNum: payload.pageNum },
+      });
+      if (response)
+        callback && callback();
     },
+    // *fetchDangerRecordsMap({ payload, callback }, { call, put }) {
+    //   const response = yield call(getHiddenDangerRecords, payload);
+    //   const list = response && Array.isArray(response.hiddenDangers) ? response.hiddenDangers : [];
+    //   yield put({
+    //     type: 'saveDangerRecordsMap',
+    //     payload: { list, pageNum: payload.pageNum, companyId: payload.company_id },
+    //   });
+    //   if (response)
+    //     callback && callback();
+    // },
     *fetchInitLookUp({ payload, callback }, { call, put }) {
       let response = yield call(queryLookUp, payload);
       response = response || EMPTY_OBJECT;
@@ -393,10 +409,27 @@ export default {
       return { ...state, dangerList };
     },
     saveDangerRecords(state, action) {
-      // 过滤掉隐患记录中的已关闭
-      return { ...state, dangerRecords: action.payload.filter(({ status }) => status !== '4') };
-      // return { ...state, dangerRecords: action.payload };
+      const { list, pageNum } = action.payload;
+      return { ...state, dangerRecords: pageNum === 1 ? list : state.dangerRecords.concat(list) };
     },
+    // saveDangerRecordsMap(state, action) {
+    //   const { list, pageNum, companyId } = action.payload;
+    //   const { dangerRecordsMap } = state;
+    //   const newDangerRecordsMap = { ...dangerRecordsMap };
+    //   let newList;
+    //   if (pageNum === 1)
+    //     newList = list;
+    //   else
+    //     newList = dangerRecordsMap[companyId].concat(list);
+    //   newDangerRecordsMap[companyId] = newList;
+    //   return { ...state, dangerRecordsMap: newDangerRecordsMap };
+    // },
+    // removeDangerRecordsMap(state, action) {
+    //   const companyId = action.payload;
+    //   const newDangerRecordsMap = { ...state.dangerRecordsMap };
+    //   delete newDangerRecordsMap[companyId];
+    //   return { ...state, dangerRecordsMap: newDangerRecordsMap };
+    // },
     saveAllCamera(state, action) {
       return { ...state, allCamera: action.payload };
     },

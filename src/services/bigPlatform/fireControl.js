@@ -445,3 +445,23 @@ export async function getCompanyDevicesByType(params) {
 export async function deviceWarningMessageForCompany(params) {
   return request(`/acloud_new/v2/deviceInfo/deviceWarningMessageForCompany?${stringify(params)}`);
 }
+
+// 获取火灾警报数据详情
+export async function getWarnDetail(params) {
+  return request(`/acloud_new/v2/fireManage/warnDetail?${stringify(params)}`);
+}
+
+// 获取火灾故障数据列表
+export async function getFaultDetail(params) {
+  return request(`/acloud_new/v2/fireManage/faultDetail?${stringify(params)}`);
+}
+
+// 处理工单统计
+export async function countAllFireAndFault(params) {
+  return request(`/acloud_new/v2/fireManage/countAllFireAndFault?${stringify(params)}`);
+}
+
+// 处理工单统计
+export async function countFinishByUserId(params) {
+  return request(`/acloud_new/v2/fireManage/countFinishByUserId?${stringify(params)}`);
+}

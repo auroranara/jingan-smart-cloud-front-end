@@ -58,6 +58,10 @@ import {
   queryWorkOrderMsg,
   queryDataId,
   queryWaterSystem,
+  getWarnDetail,
+  getFaultDetail,
+  countAllFireAndFault,
+  countFinishByUserId,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -347,6 +351,30 @@ export default {
       list: [],
     },
     waterAlarm: [],
+    warnDetail: {
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+        listSize: 0,
+      },
+      list: [],
+    },
+    faultDetail: {
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+        listSize: 0,
+      },
+      list: [],
+    },
+    countAllFireAndFault: {
+      finishNum: 0,
+      processNum: 0,
+      waitNum: 0,
+    },
+    countFinishByUserId: [0, 0, 0, 0],
   },
 
   subscriptions: {
@@ -936,6 +964,77 @@ export default {
       }
       if (callback) callback();
     },
+    // 获取火灾警报数据详情
+    *fetchWarnDetail({ payload, success }, { call, put }) {
+      const response = yield call(getWarnDetail, payload);
+      const {
+        code,
+        data: { list, pagination },
+      } = response;
+      if (code === 200) {
+        yield put({
+          type: 'warnDetail',
+          payload: {
+            list,
+            pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
+          },
+          append: payload.pageNum !== 1,
+        });
+        if (success) {
+          success();
+        }
+      }
+    },
+    // 获取火灾故障数据列表
+    *fetchFaultDetail({ payload, success }, { call, put }) {
+      const response = yield call(getFaultDetail, payload);
+      const {
+        code,
+        data: { list, pagination },
+      } = response;
+      if (code === 200) {
+        yield put({
+          type: 'faultDetail',
+          payload: {
+            list,
+            pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
+          },
+          append: payload.pageNum !== 1,
+        });
+        if (success) {
+          success();
+        }
+      }
+    },
+    // 处理工单统计
+    *fetchCountAllFireAndFault({ payload }, { call, put }) {
+      const response = yield call(countAllFireAndFault, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'countAllFireAndFault',
+          payload: response.data || { finishNum: 0, processNum: 0, waitNum: 0 },
+        });
+      }
+    },
+    // 处理工单统计
+    *fetchCountFinishByUserId({ payload }, { call, put }) {
+      const response = yield call(countFinishByUserId, payload);
+      if (response && response.code === 200) {
+        const { warnDetail, faultDetail } = response.data;
+
+        yield put({
+          type: 'countFinishByUserId',
+          payload: [
+            warnDetail.find(item => +item.reportType === 1).count +
+              faultDetail.find(item => +item.reportType === 1).count,
+            warnDetail.find(item => +item.reportType === 4).count +
+              faultDetail.find(item => +item.reportType === 4).count,
+            warnDetail.find(item => +item.reportType === 3).count,
+            faultDetail.find(item => +item.reportType === 2).count,
+          ],
+        });
+      }
+    },
   },
 
   reducers: {
@@ -1152,6 +1251,48 @@ export default {
       return {
         ...state,
         waterAlarm,
+      };
+    },
+    warnDetail(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          warnDetail: {
+            pagination: payload.pagination,
+            list: state.warnDetail.list.concat(payload.list),
+          },
+        };
+      }
+      return {
+        ...state,
+        warnDetail: payload,
+      };
+    },
+    faultDetail(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          faultDetail: {
+            pagination: payload.pagination,
+            list: state.faultDetail.list.concat(payload.list),
+          },
+        };
+      }
+      return {
+        ...state,
+        faultDetail: payload,
+      };
+    },
+    countAllFireAndFault(state, { payload }) {
+      return {
+        ...state,
+        countAllFireAndFault: payload,
+      };
+    },
+    countFinishByUserId(state, { payload }) {
+      return {
+        ...state,
+        countFinishByUserId: payload,
       };
     },
   },

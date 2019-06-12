@@ -2,13 +2,37 @@ import React, { PureComponent } from 'react';
 import { Select } from 'antd';
 import { connect } from 'dva';
 import classNames from 'classnames';
-import DeviceCard from '@/components/DeviceCard';
+import DeviceCard from '@/jingan-components/DeviceCard';
+import defaultBackground from '@/assets/default_dynamic_monitor.png';
 import SectionDrawer from '../SectionDrawer';
 // 引入样式文件
 import styles from './index.less';
 import selectStyles from '../../select.less';
 
 const { Option } = Select;
+// 状态字典
+const statusDict = [
+  {
+    key: '0',
+    value: '全部状态',
+  },
+  {
+    key: '1',
+    value: '正常',
+  },
+  {
+    key: '2',
+    value: '报警',
+  },
+  {
+    key: '3',
+    value: '故障',
+  },
+  {
+    key: '4',
+    value: '失联',
+  },
+];
 
 /**
  * 设备统计抽屉
@@ -50,36 +74,15 @@ export default class DeviceCountDrawer extends PureComponent {
    */
   renderStatusSelect() {
     const { deviceCountSelectedStatus } = this.props;
-    const deviceCountStatusList = [
-      {
-        key: '全部状态',
-        value: '全部状态',
-      },
-      {
-        key: '-3',
-        value: '故障',
-      },
-      {
-        key: '-1',
-        value: '失联',
-      },
-      {
-        key: '0',
-        value: '正常',
-      },
-      {
-        key: '2',
-        value: '报警',
-      },
-    ];
     return (
       <Select
+        placeholder="请选择状态"
         value={deviceCountSelectedStatus}
         onChange={this.handleStatusChange}
         className={classNames(selectStyles.select, styles.select)}
         dropdownClassName={selectStyles.dropdown}
       >
-        {deviceCountStatusList.map(({ key, value }) => (
+        {statusDict.map(({ key, value }) => (
           <Option value={key} key={key}>{value}</Option>
         ))}
       </Select>
@@ -90,53 +93,80 @@ export default class DeviceCountDrawer extends PureComponent {
    * 监测类型选择器
    */
   renderMonitoringTypeSelect() {
-    const { deviceCountSelectedMonitoringType } = this.props;
-    const deviceCountMonitoringTypeList = [
+    const {
+      unitSafety: {
+        dynamicMonitorData: {
+          fireEngine,
+          electricalFire,
+          smokeAlarm,
+          storageTank,
+          toxicGas,
+          effluent,
+          exhaustGas,
+          waterSystem,
+        }={},
+      },
+      deviceCountSelectedMonitoringType,
+    } = this.props;
+    // 类型字典1电气火灾，2可燃/有毒气体，3废水，4废气，5储罐，6独立烟感，7消防主机，8水系统
+    const typeDict = [
       {
-        key: '全部监测类型',
+        key: '0',
         value: '全部监测类型',
+        show: true,
       },
       {
-        key: '消防主机监测',
-        value: '消防主机监测',
-      },
-      {
-        key: '电气火灾监测',
+        key: '1',
         value: '电气火灾监测',
+        show: electricalFire && electricalFire.totalNum > 0,
       },
       {
-        key: '可燃/有毒气体监测',
+        key: '2',
         value: '可燃/有毒气体监测',
+        show: toxicGas && toxicGas.totalNum > 0,
       },
       {
-        key: '废水监测',
+        key: '3',
         value: '废水监测',
+        show: effluent && effluent.totalNum > 0,
       },
       {
-        key: '废气监测',
+        key: '4',
         value: '废气监测',
+        show: exhaustGas && exhaustGas.totalNum > 0,
       },
       {
-        key: '储罐监测',
+        key: '5',
         value: '储罐监测',
+        show: storageTank && storageTank.totalNum > 0,
       },
       {
-        key: '独立烟感',
-        value: '独立烟感',
+        key: '6',
+        value: '独立烟感报警监测',
+        show: smokeAlarm && smokeAlarm.totalNum > 0,
       },
       {
-        key: '水系统监测',
+        key: '7',
+        value: '消防主机监测',
+        show: fireEngine && fireEngine.totalNum > 0,
+      },
+      {
+        key: '8',
         value: '水系统监测',
+        show: waterSystem && waterSystem.totalNum > 0,
       },
-    ];
+    ].filter(({ show }) => show);
+
+
     return (
       <Select
+        placeholder="请选择监测类型"
         value={deviceCountSelectedMonitoringType}
         onChange={this.handleMonitoringTypeChange}
         className={classNames(selectStyles.select, styles.select)}
         dropdownClassName={selectStyles.dropdown}
       >
-        {deviceCountMonitoringTypeList.map(({ key, value }) => (
+        {typeDict.map(({ key, value }) => (
           <Option value={key} key={key}>{value}</Option>
         ))}
       </Select>
@@ -178,9 +208,13 @@ export default class DeviceCountDrawer extends PureComponent {
         <div className={styles.container}>
           {deviceCountList && deviceCountList.length > 0 ? deviceCountList.map((device) => {
             return (
-              <DeviceCard className={styles.card} data={device} />
+              <DeviceCard
+                key={device.id}
+                className={styles.card}
+                data={device}
+              />
             );
-          }) : ''}
+          }) : <div className={styles.defaultBackground} style={{ backgroundImage: `url(${defaultBackground})` }} />}
         </div>
       </SectionDrawer>
     );

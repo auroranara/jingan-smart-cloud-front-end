@@ -1,3 +1,8 @@
+const STATUS = [['5'], ['7'], ['2'], ['3']];
+STATUS['-1'] = ['5'];
+
+export const DANGER_PAGE_SIZE = 10;
+
 export function fillZero(n, zeroLength=2) {
   const num = Number.parseInt(n, 10);
   return `${[...Array(Math.max(zeroLength - num.toString().length, 0)).keys()].fill(0).join('')}${num}`;
@@ -84,3 +89,5 @@ export const TREE_DATA = [{
 
 //   return res;
 // }
+
+export { STATUS };

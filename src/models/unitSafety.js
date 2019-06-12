@@ -43,8 +43,14 @@ import {
   getSpecialEquipmentList,
   // 获取视频树
   fetchVideoTree,
+  // 获取设备统计列表
+  getDeviceCountList,
 } from '../services/unitSafety';
 import moment from 'moment';
+import { message } from 'antd';
+function error(msg) {
+  message.error(msg);
+}
 
 function handleRiskList(response) {
   if (!response) return [];
@@ -238,12 +244,59 @@ const formatDynamicMonitorData = list => {
       case '视频监控':
         data.videoMonitor = item;
         break;
+      case '水系统监测':
+        data.waterSystem = item;
+        break;
       default:
         break;
     }
   });
   return data;
 };
+// 判断消防主机状态
+function getFireEngineStatus(label) {
+  if (label.includes('火警')) {
+    return 2;
+  } else if (label.includes('故障')) {
+    return -3;
+  } else if (label.includes('正常')) {
+    return 0;
+  } else {
+    return;
+  }
+}
+// 格式化设备统计列表
+function formatDeviceCountList(list) {
+  return list.map(({
+    deviceId,
+    deviceName,
+    relationDeviceId,
+    area,
+    location,
+    unormalParams,
+    typeName,
+    statusTime,
+    status,
+    boxNo,
+    componentType,
+    loopNumber,
+    partNumber,
+  }) => ({
+    id: `${deviceId}_${status}`,
+    monitoringType: WATER_SYSTEM.includes(typeName) ? '水系统监测' : typeName,
+    relationId: relationDeviceId,
+    params: unormalParams,
+    status: typeName !== FIRE_ENGINE ? status : getFireEngineStatus(unormalParams),
+    location: [area, location].filter(v => v).join('-'),
+    time: statusTime,
+    name: deviceName,
+    system: typeName,
+    number: boxNo,
+    partType: componentType,
+    loopNumber: loopNumber,
+    partNumber: partNumber,
+  }));
+}
 
 export default {
   namespace: 'unitSafety',
@@ -855,6 +908,23 @@ export default {
         }
       } else if (error) {
         error(response);
+      }
+    },
+    // 获取设备统计列表
+    *fetchDeviceCountList({ payload, callback }, { call, put }) {
+      const response = yield call(getDeviceCountList, payload);
+      const { code=500, data, msg='获取设备统计失败，请稍后重试！' } = response || {};
+      if (code === 200) {
+        const deviceCountList = data && data.list ? data.list : [];
+        yield put({
+          type: 'save',
+          payload: {
+            deviceCountList: formatDeviceCountList(deviceCountList),
+          },
+        });
+        callback && callback(deviceCountList);
+      } else {
+        error(msg);
       }
     },
   },

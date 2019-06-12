@@ -3,7 +3,7 @@ import { Icon } from 'antd';
 import { connect } from 'dva';
 import Lightbox from 'react-images';
 import CustomCarousel from '@/components/CustomCarousel';
-import HiddenDangerCard from '@/components/HiddenDangerCard';
+import HiddenDangerCard from '@/jingan-components/HiddenDangerCard';
 // 引入样式文件
 import styles from './index.less';
 
@@ -19,9 +19,9 @@ const HIDDEN_DANGER_FIELDNAMES = {
   reportTime: '_report_time', // 上报时间
   planRectificationPerson: '_rectify_user_name', // 计划整改人
   planRectificationTime: '_plan_rectify_time', // 计划整改时间
-  actualRectificationPerson: '_rectify_user_name', // 实际整改人
+  actualRectificationPerson: 'real_rectify_user_name', // 实际整改人
   actualRectificationTime: '_real_rectify_time', // 实际整改时间
-  designatedReviewPerson: '_review_user_name', // 指定复查人
+  designatedReviewPerson: ({ _review_user_name, real_review_user_name, status }) => +status !== 4 ? _review_user_name : real_review_user_name, // 指定复查人
   reviewTime: '_review_time', // 复查时间
 };
 

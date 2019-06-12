@@ -1,0 +1,36 @@
+.card {
+  margin-bottom: 1.5em;
+}
+.cardList {
+  margin-bottom: -24px;
+
+  .cardItem {
+    :global {
+      .ant-card-extra {
+        display: none;
+        margin-right: -12px;
+        padding: 12px 0;
+      }
+
+      .ant-card-head-title {
+        font-weight: bold;
+      }
+
+      .ant-card-body {
+        padding: 12px 24px 0;
+      }
+
+      p {
+        margin-bottom: 12px;
+      }
+    }
+
+    .ellipsisText {
+      margin-bottom: 12px;
+      height: 1.5em;
+    }
+  }
+}
+.emptyData {
+  color: rgba(0,0,0,0.45);
+}

@@ -106,7 +106,15 @@ export default class MonitorDrawer extends PureComponent {
                     </div>
                     <div className={styles.infoWrapper}>
                       <div className={styles.position}>
-                        <Ellipsis lines={1} tooltip>{`${area}：${location}`}</Ellipsis>
+                        <Ellipsis lines={1} tooltip>
+                          {area && location
+                            ? `${area}：${location}`
+                            : area
+                              ? area
+                              : location
+                                ? location
+                                : '暂无位置信息'}
+                        </Ellipsis>
                       </div>
                       <div className={styles.infos}>
                         <Ellipsis lines={1} tooltip>
@@ -141,19 +149,19 @@ export default class MonitorDrawer extends PureComponent {
               );
             })
           ) : (
-              <div
-                style={{
-                  width: '100%',
-                  height: '135px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  color: '#4f678d',
-                }}
-              >
-                暂无相关监测数据
+            <div
+              style={{
+                width: '100%',
+                height: '135px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: '#4f678d',
+              }}
+            >
+              暂无相关监测数据
             </div>
-            )}
+          )}
         </Row>
       </div>
     );
@@ -217,8 +225,8 @@ export default class MonitorDrawer extends PureComponent {
             {devList.length > 0 ? (
               this.renderItems()
             ) : (
-                <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />
-              )}
+              <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />
+            )}
           </div>
         </div>
         <div className={styles.chartContainer}>

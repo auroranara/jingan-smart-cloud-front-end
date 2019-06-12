@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Select, Tooltip } from 'antd';
 import classNames from 'classnames';
 import Lightbox from 'react-images';
-import HiddenDangerCard from '@/components/HiddenDangerCard'; // 隐患卡片
+import HiddenDangerCard from '@/jingan-components/HiddenDangerCard'; // 隐患卡片
 import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import Section from '../Section'; // 滚动条容器
 import defaultHiddenDanger from '@/assets/default_hidden_danger.png';
@@ -26,7 +26,7 @@ const FIELDNAMES = {
   reportTime: 'report_time', // 上报时间
   planRectificationPerson: 'rectify_user_name', // 计划整改人
   planRectificationTime: 'plan_rectify_time', // 计划整改时间
-  actualRectificationPerson: 'rectify_user_name', // 实际整改人
+  actualRectificationPerson: 'real_rectify_user_name', // 实际整改人
   actualRectificationTime: 'real_rectify_time', // 实际整改时间
   designatedReviewPerson: 'review_user_name', // 指定复查人
 };

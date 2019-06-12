@@ -51,7 +51,7 @@ import {
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
-const getColorByRiskLevel = function(level) {
+const getColorByRiskLevel = function (level) {
   switch (+level) {
     case 1:
       return '红色';
@@ -83,6 +83,7 @@ const transformHiddenDangerFields = ({
   review_time,
   report_source_name,
   item_name,
+  report_source,
 }) => {
   let background,
     operator_name = '';
@@ -100,11 +101,14 @@ const transformHiddenDangerFields = ({
     sbr: report_user_name,
     sbsj: moment(+report_time).format('YYYY-MM-DD'),
     zgr: rectify_user_name,
+    plan_zgr: rectify_user_name,
+    real_zgr: operator_name,
     plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
     real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
     fcr: +status === 4 ? operator_name : review_user_name, // 关闭状态下的复查人显示实际整改人
     status: +status,
     background: background ? background.split(',')[0] : '',
+    backgrounds:background ? background.split(',') :[],
     source:
       (source_type_name === '网格点上报' && '监督点') ||
       (source_type_name === '风险点上报' &&
@@ -114,6 +118,7 @@ const transformHiddenDangerFields = ({
     fcsj: moment(+review_time).format('YYYY-MM-DD'),
     item_name,
     report_source_name,
+    report_source,
   };
 };
 
@@ -438,8 +443,8 @@ export default {
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
             ? JSON.parse(response.fourColorImg).filter(
-                ({ id, webUrl }) => /^http/.test(webUrl) && id
-              )
+              ({ id, webUrl }) => /^http/.test(webUrl) && id
+            )
             : [],
       };
       // if (response.code === 200) {

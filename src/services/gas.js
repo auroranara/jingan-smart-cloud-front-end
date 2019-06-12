@@ -10,7 +10,7 @@ export async function getBigFlatformData(params) {
 
 // 燃气--接入单位统计
 export async function getImportingTotal(params) {
-  return request(`${URL_PREFIX}/gasScreen/Importing?${stringify(params)}`);
+  return request(`${URL_PREFIX}/gasScreen/importing?${stringify(params)}`);
 }
 
 // 燃气--异常单位统计
@@ -75,10 +75,10 @@ export async function getGasForMaintenance(params) {
 
 // 单位实时监测数据
 export async function fetchRealTimeMonitor(params) {
-  return request(`${URL_PREFIX}/shg/realTimeMonitor?${stringify(params)}`)
+  return request(`${URL_PREFIX}/shg/realTimeMonitor?${stringify(params)}`);
 }
 
 // 异常趋势图数据
 export async function fetchAbnormalTrend(params) {
-  return request(`/acloud_new/v2/shg/abnormalTrend?${stringify(params)}`)
+  return request(`/acloud_new/v2/shg/abnormalTrend?${stringify(params)}`);
 }

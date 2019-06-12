@@ -85,6 +85,8 @@ export default class DynamicMonitor extends PureComponent {
     const {
       // 点击驾驶舱按钮
       onClick,
+      // 点击项
+      onShow,
       // 源数据
       unitSafety: {
         dynamicMonitorData: {
@@ -99,7 +101,7 @@ export default class DynamicMonitor extends PureComponent {
         }={},
       },
       handleClickVideo,
-      handleClickGas,
+      // handleClickGas,
     } = this.props;
 
     const list = [
@@ -108,24 +110,36 @@ export default class DynamicMonitor extends PureComponent {
         value: getValue(fireEngine),
         icon: fireEngineIcon,
         originalValue: fireEngine,
+        onClick: () => {
+          onShow('7');
+        },
       },
       {
         key: '电气火灾',
         value: getValue(electricalFire),
         icon: electricalFireIcon,
         originalValue: electricalFire,
+        onClick: () => {
+          onShow('1');
+        },
       },
       {
         key: '独立烟感',
         value: getValue(smokeAlarm),
         icon: smokeAlarmIcon,
         originalValue: smokeAlarm,
+        onClick: () => {
+          onShow('6');
+        },
       },
       {
         key: '储罐',
         value: getValue(storageTank),
         icon: storageTankIcon,
         originalValue: storageTank,
+        onClick: () => {
+          onShow('5');
+        },
       },
       {
         key: '可燃有毒气体',
@@ -133,7 +147,8 @@ export default class DynamicMonitor extends PureComponent {
         icon: toxicGasIcon,
         originalValue: toxicGas,
         onClick: () => {
-          handleClickGas();
+          // handleClickGas();
+          onShow('2');
         },
       },
       {
@@ -141,12 +156,18 @@ export default class DynamicMonitor extends PureComponent {
         value: getValue(effluent),
         icon: effluentIcon,
         originalValue: effluent,
+        onClick: () => {
+          onShow('3');
+        },
       },
       {
         key: '废气',
         value: getValue(exhaustGas),
         icon: exhaustGasIcon,
         originalValue: exhaustGas,
+        onClick: () => {
+          onShow('4');
+        },
       },
       {
         key: '视频监控设备',

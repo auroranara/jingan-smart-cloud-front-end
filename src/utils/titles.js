@@ -25,6 +25,10 @@ export default {
     list: '隐患排查报表',
     detail: '隐患详情',
   },
+  hiddenDangerCountReport: {
+    menu: '数据分析',
+    list: '隐患统计报表',
+  },
   examinationPaper: {
     menu: '教育培训',
     list: '试卷管理',

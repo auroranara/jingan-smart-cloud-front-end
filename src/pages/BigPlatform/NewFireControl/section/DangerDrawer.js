@@ -1,12 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 
 import styles from './DangerDrawer.less';
-// import DrawerContainer from '../components/DrawerContainer';
-// import DrawerSection from '../components/DrawerSection';
-// import GraphSwitch from '../components/GraphSwitch';
-// import SearchBar from '../components/SearchBar';
-// import DrawerStretchCard from '../components/DrawerStretchCard';
-// import Ring from '../components/Ring';
 import {
   DrawerContainer,
   DrawerSection,
@@ -16,19 +10,13 @@ import {
   SearchBar,
 } from '../components/Components';
 import { fillZero, sortDangerRecords } from '../utils';
-// import clockIcon from '../img/cardClock1.png';
 
 const TYPE = 'danger';
-const STATUS = [['-1'], ['7'], ['1', '2'], ['3']];
-STATUS['-1'] = ['-1'];
+// const STATUS = [['-1'], ['7'], ['1', '2'], ['3']];
+// const STATUS = [['-1'], ['7'], ['2'], ['3']];
+// STATUS['-1'] = ['-1'];
 const RING_COLORS = ['232, 103, 103', '246, 181, 78', '42, 139, 213'];
 const RING_LABELS = ['已超期', '待整改', '待复查'];
-
-// const CARDS = [...Array(10).keys()].map(i => ({
-//   id: i,
-//   name: '无锡市新吴区机械制造有限公司',
-//   total: 10,
-// }));
 
 export default class DangerDrawer extends PureComponent {
   state = { searchValue: '' };
@@ -46,11 +34,15 @@ export default class DangerDrawer extends PureComponent {
 
   render() {
     const {
+      hasMore,
       visible,
       cardLoading,
       selectedCompanyId='',
       labelIndex=0,
+      fetchDangerRecords,
       handleLabelClick,
+      getCardsContainer,
+      handleImageSliderShow,
       data: {
         overview: {
           overdueNum=0,
@@ -71,8 +63,8 @@ export default class DangerDrawer extends PureComponent {
       return { id: companyId, name: newName, value: total };
     });
     const filteredList = dangerList.filter(({ companyName }) => companyName.includes(searchValue));
-    const filteredRecords = labelIndex && labelIndex !== -1 ? dangerRecords.filter(({ status }) => STATUS[labelIndex].includes(status)) : dangerRecords;
-    sortDangerRecords(filteredRecords, STATUS[labelIndex][0]);
+    // const filteredRecords = labelIndex && labelIndex !== -1 ? dangerRecords.filter(({ status }) => STATUS[labelIndex].includes(status)) : dangerRecords;
+    // sortDangerRecords(dangerRecords, STATUS[labelIndex][0]);
 
     const left = (
       <Fragment>
@@ -90,20 +82,21 @@ export default class DangerDrawer extends PureComponent {
     );
 
     const right = (
-        <SearchBar onSearch={this.handleSearch}>
+        <SearchBar onSearch={this.handleSearch} getCardsContainer={getCardsContainer}>
           {filteredList.map((item, i) => {
             const { companyId } = item;
-            // console.log(companyId, selectedCompanyId);
-
             return (
               <DrawerStretchCard
+                hasMore={hasMore}
                 loading={cardLoading}
                 key={companyId}
                 labelIndex={labelIndex}
                 selected={companyId === selectedCompanyId}
                 data={item}
-                list={filteredRecords}
+                list={dangerRecords}
+                fetchDangerRecords={fetchDangerRecords}
                 handleLabelClick={handleLabelClick}
+                handleImageSliderShow={handleImageSliderShow}
               />
             );
           })}

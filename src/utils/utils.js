@@ -358,3 +358,17 @@ export function generateEnum(obj) {
     return result;
   }, {});
 }
+
+/**
+ * 获取映射字段
+ */
+export function getMappedFields(values, fieldNames) {
+  return Object.entries(fieldNames).reduce((result, [key, value]) => {
+    if (typeof value === 'function') {
+      result = { ...result, ...value(values) };
+    } else {
+      result[value] = values[key];
+    }
+    return result;
+  }, {});
+}

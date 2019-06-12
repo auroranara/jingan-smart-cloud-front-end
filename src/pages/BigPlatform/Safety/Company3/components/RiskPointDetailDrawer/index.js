@@ -4,8 +4,8 @@ import { connect } from 'dva';
 import classNames from 'classnames';
 import Lightbox from 'react-images';
 import CustomCarousel from '@/components/CustomCarousel';
-import HiddenDangerCard from '@/components/HiddenDangerCard'; // 隐患卡片
-import InspectionCard from '@/components/InspectionCard'; // 隐患卡片
+import HiddenDangerCard from '@/jingan-components/HiddenDangerCard'; // 隐患卡片
+import InspectionCard from '@/jingan-components/InspectionCard'; // 巡查卡片
 import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import SectionDrawer from '../SectionDrawer';
 import RiskCard from '../RiskCard';
@@ -35,7 +35,7 @@ const HIDDEN_DANGER_FIELDNAMES = {
   reportTime: '_report_time', // 上报时间
   planRectificationPerson: '_rectify_user_name', // 计划整改人
   planRectificationTime: '_plan_rectify_time', // 计划整改时间
-  actualRectificationPerson: '_rectify_user_name', // 实际整改人
+  actualRectificationPerson: 'real_rectify_user_name', // 实际整改人
   actualRectificationTime: '_real_rectify_time', // 实际整改时间
   designatedReviewPerson: '_review_user_name', // 指定复查人
 };

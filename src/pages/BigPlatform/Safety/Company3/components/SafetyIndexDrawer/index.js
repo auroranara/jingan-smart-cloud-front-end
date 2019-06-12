@@ -4,10 +4,10 @@ import { connect } from 'dva';
 import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 import Lightbox from 'react-images';
-import PointCard from '@/components/PointCard';
-import HiddenDangerCard from '@/components/HiddenDangerCard';
-import DeviceCard from '@/components/DeviceCard';
-import FileCard from '@/components/FileCard';
+import PointCard from '@/jingan-components/PointCard';
+import HiddenDangerCard from '@/jingan-components/HiddenDangerCard';
+import DeviceCard from '@/jingan-components/DeviceCard';
+import FileCard from '@/jingan-components/FileCard';
 import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import SectionDrawer from '../SectionDrawer';
 import Section from '../Section';
@@ -439,7 +439,7 @@ export default class SafetyIndexDrawer extends PureComponent {
           reportTime: 'report_time', // 上报时间
           planRectificationPerson: 'rectify_user_name', // 计划整改人
           planRectificationTime: 'plan_rectify_time', // 计划整改时间
-          actualRectificationPerson: 'rectify_user_name', // 实际整改人
+          actualRectificationPerson: 'real_rectify_user_name', // 实际整改人
           actualRectificationTime: 'real_rectify_time', // 实际整改时间
           designatedReviewPerson: 'review_user_name', // 指定复查人
         };

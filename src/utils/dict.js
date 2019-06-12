@@ -78,3 +78,13 @@ export const deviceStatus = generateEnum({
   '1': '预警',
   '2': '告警',
 });
+
+/**
+ * 单位类型
+ */
+export const unitType = generateEnum({
+  1: '维保',
+  2: '政府',
+  3: '运维',
+  4: '企业',
+});

@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import { Row, Col, Tooltip, Drawer, Spin } from 'antd';
 import { connect } from 'dva';
-import LoadMoreButton from '../../Company3/components/LoadMoreButton';
+// import LoadMoreButton from '../../Company3/components/LoadMoreButton';
+import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import classNames from 'classnames';
 import styles from '../../Government.less';
 import styleSelf from './RiskPointCompany.less';
@@ -96,11 +97,11 @@ class RiskPointCompany extends PureComponent {
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() { }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {}
+  componentDidUpdate(prevProps, prevState, snapshot) { }
 
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   renderRisk = (item, colors) => {
     const { item_id, object_title, user_name, check_date, status } = item;
@@ -160,7 +161,7 @@ class RiskPointCompany extends PureComponent {
                 pageSize: 10,
                 status: riskStatus[index] || undefined,
               },
-              success: () => {},
+              success: () => { },
             });
           }}
           key={index}
@@ -183,13 +184,13 @@ class RiskPointCompany extends PureComponent {
         pageSize: 10,
         status: riskStatus[active] || undefined,
       },
-      success: () => {},
+      success: () => { },
     });
   };
 
   handleClose = () => {
     const { handleParentChange } = this.props;
-    handleParentChange({ riskPointCompany: false });
+    handleParentChange({ riskPointCompany: false, companyId: '' });
     setTimeout(() => {
       this.setState({ active: 0 });
     }, 300);
@@ -268,7 +269,7 @@ class RiskPointCompany extends PureComponent {
                               })}
                               {pageNum * pageSize < riskNums[active] && (
                                 <div className={styles.loadMoreWrapper}>
-                                  <LoadMoreButton
+                                  <LoadMore
                                     onClick={() => {
                                       this.handleLoadMore(pageNum);
                                     }}
@@ -277,8 +278,8 @@ class RiskPointCompany extends PureComponent {
                               )}
                             </div>
                           ) : (
-                            <div style={{ textAlign: 'center', lineHeight: '100px' }}>暂无数据</div>
-                          )}
+                              <div style={{ textAlign: 'center', lineHeight: '100px' }}>暂无数据</div>
+                            )}
                         </Spin>
                       </div>
                     </div>
