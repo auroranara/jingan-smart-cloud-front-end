@@ -4,5 +4,6 @@ import ChartLine from './ChartLine';
 import BussinessChartLine from './BussinessChartLine';
 import BussinessChartBar from './BussinessChartBar';
 import GridSelect from './GridSelect';
+import Tooltip from './Tooltip';
 
-export { ChartGauge, DotItem, ChartLine, BussinessChartLine, BussinessChartBar, GridSelect };
+export { ChartGauge, DotItem, ChartLine, BussinessChartLine, BussinessChartBar, GridSelect, Tooltip };
