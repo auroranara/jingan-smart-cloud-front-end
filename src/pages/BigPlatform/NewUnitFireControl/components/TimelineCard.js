@@ -34,15 +34,15 @@ function Alarmed(props) {
   return (
     <div className={styles.card}>
       <p>{position}</p>
-      <p>{type}</p>
-      <p>
+      <p>{type} 发生报警</p>
+      {/* <p>
         消防主机：
         {deviceCode} {deviceAddress}
-      </p>
-      <p>
+      </p> */}
+      {/* <p>
         单位名称：
         {companyName}
-      </p>
+      </p> */}
       <p>
         安全管理员：
         {isVague ? nameToVague(safety) : safety} {isVague ? phoneToVague(phone) : phone}
@@ -78,7 +78,7 @@ function Handled(props) {
 
   return (
     <div className={styles.card}>
-      <p>火警处理完毕</p>
+      {/* <p>火警处理完毕</p> */}
       <p>
         处理单位：
         {companyName}
@@ -135,7 +135,7 @@ export default function TimelineCard(props) {
       <div className={styles.timeline}>
         <Timeline>
           <TimelineItem
-            label="报警"
+            label="发生"
             spans={SPANS}
             day={getTime(isStarted && startMap.startTime)}
             hour={getTime(isStarted && startMap.startTime, 1)}
@@ -168,7 +168,7 @@ export default function TimelineCard(props) {
             )}
           </TimelineItem>
           <TimelineItem
-            label="处理"
+            label="完成"
             spans={SPANS}
             day={getTime(isFinished && finishMap.endTime)}
             hour={getTime(isFinished && finishMap.endTime, 1)}

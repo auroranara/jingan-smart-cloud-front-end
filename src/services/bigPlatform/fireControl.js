@@ -465,3 +465,8 @@ export async function countAllFireAndFault(params) {
 export async function countFinishByUserId(params) {
   return request(`/acloud_new/v2/fireManage/countFinishByUserId?${stringify(params)}`);
 }
+
+// 消息人员
+export async function messageInformList(params) {
+  return request(`/acloud_new/v2/fireManage/messageInformList?${stringify(params)}`);
+}

@@ -62,6 +62,7 @@ import {
   getFaultDetail,
   countAllFireAndFault,
   countFinishByUserId,
+  messageInformList,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -375,6 +376,7 @@ export default {
       waitNum: 0,
     },
     countFinishByUserId: [0, 0, 0, 0],
+    messageInformList: [],
   },
 
   subscriptions: {
@@ -858,14 +860,15 @@ export default {
       }
     },
     // 维保工单列表或维保处理动态
-    *fetchWorkOrder({ payload }, { call, put }) {
+    *fetchWorkOrder({ payload, callback }, { call, put }) {
       const response = yield call(queryWorkOrder, payload);
       if (response && response.code === 200) {
         yield put({
-          type: payload.id ? 'saveWorkOrderDetail' : `saveWorkOrderList${payload.status}`,
+          type: payload.id || payload.dataId ? 'saveWorkOrderDetail' : `saveWorkOrderList${payload.status}`,
           payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
         });
       }
+      if(callback) callback(response);
     },
     // 获取火灾报警系统巡检记录
     *fetchCheckRecord({ payload }, { call, put }) {
@@ -1032,6 +1035,16 @@ export default {
             warnDetail.find(item => +item.reportType === 3).count,
             faultDetail.find(item => +item.reportType === 2).count,
           ],
+        });
+      }
+    },
+    // 消息人员
+    *fetchMessageInformList({ payload }, { call, put }) {
+      const response = yield call(messageInformList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'messageInformList',
+          payload: response.data|| {list:[]},
         });
       }
     },
@@ -1293,6 +1306,12 @@ export default {
       return {
         ...state,
         countFinishByUserId: payload,
+      };
+    },
+    messageInformList(state, { payload }) {
+      return {
+        ...state,
+        messageInformList: payload.list,
       };
     },
   },

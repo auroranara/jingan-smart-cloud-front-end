@@ -53,11 +53,11 @@ function Received(props) {
   return (
     <div className={styles.card}>
       <p>
-        维修单位：
+        处理单位：
         {companyName}
       </p>
       <p>
-        维修人员：
+        处理人员：
         {isVague ? nameToVague(man) : man} {isVague ? phoneToVague(phone) : phone}
       </p>
     </div>
@@ -69,13 +69,13 @@ function Handled(props) {
 
   return (
     <div className={styles.card}>
-      <p>故障已处理完毕！</p>
+      {/* <p>故障已处理完毕！</p> */}
       <p>
-        维修单位：
+        处理单位：
         {companyName}
       </p>
       <p>
-        维修人员：
+        处理人员：
         {isVague ? nameToVague(man) : man} {isVague ? phoneToVague(phone) : phone}
       </p>
       <p>
