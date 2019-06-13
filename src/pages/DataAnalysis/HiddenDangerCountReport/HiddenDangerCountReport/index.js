@@ -204,6 +204,8 @@ export default class HiddenDangerCountReport extends PureComponent {
       const countType = this.form && this.form.getFieldValue('countType');
       const countTypeName = (countType ? countTypeDict.find(({ key }) => key === countType).value : '按整改部门统计').replace(/^按(.*)统计$/, '$1');
       if (radioValue === '1') {
+        types.push('总计');
+        values.push(values.reduce((r, v) => r + v, 0))
         const option = {
           color: ['#1890FF'],
           tooltip: {},
