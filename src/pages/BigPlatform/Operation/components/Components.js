@@ -1,3 +1,4 @@
+import DeviceBar from './DeviceBar';
 import LegendDot from './LegendDot';
 import MapLegend from './MapLegend';
 import MapSearch from '@/pages/BigPlatform/Smoke/BackMap/MapSearch';
@@ -14,6 +15,7 @@ export {
 } from '@/pages/BigPlatform/Smoke/components/Components';
 
 export {
+  DeviceBar,
   LegendDot,
   MapLegend,
   MapSearch,
