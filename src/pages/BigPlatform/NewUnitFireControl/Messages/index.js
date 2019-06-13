@@ -119,20 +119,21 @@ export default class Messages extends PureComponent {
       messageContent,
       count,
       newTime,
-      realTimeData,
       component,
       unitTypeName,
       createBy,
       createByPhone,
       systemTypeValue,
       workOrder,
-      realtimeVal,
+      realtimeData,
       num,
       lastTime,
       isOver,
       cameraMessage,
       faultName,
       firstTime,
+      desc,
+      realtimeVal,
     } = msg;
     const repeatCount = +isOver === 0 ? count : num;
     const lastReportTime = moment(addTime).format('YYYY-MM-DD HH:mm');
@@ -160,6 +161,10 @@ export default class Messages extends PureComponent {
     ];
     const restParams = [repeat, cameraMessage, occurData];
     const msgFlag = messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag;
+    const param = {
+      dataId: +isOver === 0 ? msgFlag : undefined,
+      id: +isOver !== 0 ? msgFlag : undefined,
+    };
     let msgSettings = {};
     if (TYPES.indexOf(+type) < 0) return null;
     [1, 2, 3, 4].forEach(item => {
@@ -186,7 +191,7 @@ export default class Messages extends PureComponent {
       '13': {
         // 安全巡查
         items: [
-          { name: '检查点', value: installAddress },
+          { name: '检查点', value: pointName },
           { name: '检查人', value: checkUser },
           { name: '巡查结果', value: checkResult },
         ],
@@ -197,7 +202,7 @@ export default class Messages extends PureComponent {
           handleViewDangerDetail({ id: messageFlag });
         },
         items: [
-          { name: '检查点', value: installAddress },
+          { name: '检查点', value: pointName },
           { name: '隐患描述', value: dangerDesc },
           { name: '上报人', value: reportUser },
         ],
@@ -208,7 +213,7 @@ export default class Messages extends PureComponent {
           handleViewDangerDetail({ id: messageFlag });
         },
         items: [
-          { name: '检查点', value: installAddress },
+          { name: '检查点', value: pointName },
           { name: '隐患描述', value: dangerDesc },
           { name: '复查人', value: reviewUser },
           { name: '复查结果', value: reviewResult },
@@ -262,10 +267,10 @@ export default class Messages extends PureComponent {
       '39': {
         // 可燃气体报警
         onClick: () => {
-          handleClickMsgFlow({ id: msgFlag }, 2, 0, ...restParams);
+          handleClickMsgFlow(param, 2, 0, ...restParams);
         },
         items: [
-          { name: '报警值', value: `${paramName}(${realtimeVal}%)` },
+          { name: '报警值', value: `${desc || paramName}(${realtimeData || realtimeVal}%)` },
           { name: '所在区域', value: area },
           { name: '所在位置', value: location },
         ],
@@ -275,7 +280,7 @@ export default class Messages extends PureComponent {
       '11': {
         // 一键报修
         onClick: () => {
-          handleClickMsgFlow({ id: msgFlag }, 3, 1, ...restParams);
+          handleClickMsgFlow(param, 3, 1, ...restParams);
           return null;
         },
         items: [
@@ -295,8 +300,8 @@ export default class Messages extends PureComponent {
         ...msgSettings,
         [item.toString()]: {
           onClick: () => {
-            if (+item === 7) handleClickMsgFlow({ id: msgFlag }, 0, 0, ...restParams);
-            else if (+item === 9) handleClickMsgFlow({ id: msgFlag }, 0, 1, ...restParams);
+            if (+item === 7) handleClickMsgFlow(param, 0, 0, ...restParams);
+            else if (+item === 9) handleClickMsgFlow(param, 0, 1, ...restParams);
             // if (+item === 7) handleClickMessage(messageFlag, { ...msg });
             // else if (+item === 9) handleFaultClick({ ...msg });
           },
@@ -333,8 +338,8 @@ export default class Messages extends PureComponent {
         ...msgSettings,
         [item.toString()]: {
           onClick: () => {
-            if (+item === 38) handleClickMsgFlow({ id: msgFlag }, 1, 0, ...restParams);
-            else if (+item === 40) handleClickMsgFlow({ id: msgFlag }, 1, 1, ...restParams);
+            if (+item === 38) handleClickMsgFlow(param, 1, 0, ...restParams);
+            else if (+item === 40) handleClickMsgFlow(param, 1, 1, ...restParams);
           },
           items: [{ name: '所在区域', value: area }, { name: '所在位置', value: location }],
           showMsg: true,

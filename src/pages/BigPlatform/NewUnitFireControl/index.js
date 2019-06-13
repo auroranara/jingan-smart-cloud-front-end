@@ -2197,9 +2197,11 @@ export default class NewUnitFireControl extends PureComponent {
           handleParentChange={this.handleParentChange}
           onClose={() => this.handleDrawerVisibleChange('fault')}
         />
+        {/* 维保巡检抽屉 */}
         <MaintenanceCheckDrawer
           model={this.props.newUnitFireControl}
           visible={maintenanceCheckDrawerVisible}
+          phoneVisible={phoneVisible}
           onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
         />
         {/* 水系统抽屉抽屉 */}

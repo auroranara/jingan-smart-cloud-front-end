@@ -969,6 +969,14 @@ export default {
     },
     // 获取火灾警报数据详情
     *fetchWarnDetail({ payload, success }, { call, put }) {
+      yield put({
+        type: 'warnDetail',
+        payload: {
+          list: [],
+          pagination: { pageNum: 1, pageSize: 10 },
+        },
+        append: false,
+      });
       const response = yield call(getWarnDetail, payload);
       const {
         code,
