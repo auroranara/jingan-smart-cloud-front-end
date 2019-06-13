@@ -1,0 +1,21 @@
+.mapLegend {
+  padding: 0 12px;
+  background-color: rgba(0, 24, 52, 0.9);
+  position: absolute;
+  bottom: 28px;
+  right: 60px;
+  line-height: 30px;
+
+  .legendItem {
+    display: inline-block;
+    position: relative;
+
+    &+.legendItem {
+      margin-left: 15px;
+    }
+
+    .label {
+      margin-right: 5px;
+    }
+  }
+}

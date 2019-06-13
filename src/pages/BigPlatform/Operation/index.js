@@ -4,32 +4,26 @@ import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import { stringify } from 'qs';
 import moment from 'moment';
+
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import NewSection from '@/components/NewSection';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
-// 接入单位统计
-import AccessUnitStatistics from '@/pages/BigPlatform/Smoke/AccessUnitStatistics';
-// 实时火警
 import RealTimeFire from '@/pages/BigPlatform/Smoke/RealTimeFire';
-// 历史火警
-import HistoricalFire from '@/pages/BigPlatform/Smoke/HistoricalFire';
-// 设备故障统计
-import EquipmentStatistics from '@/pages/BigPlatform/Smoke/EquipmentStatistics';
-
-// 故障/火警处理动态
-// import MaintenanceDrawer from './sections/MaintenanceDrawer';
-// import FireDynamicDrawer from './sections/FireDynamicDrawer';
-// import MonitorDrawer from './sections/MonitorDrawer';
-
-import BackMap from '@/pages/BigPlatform/Smoke/BackMap';
-import MapSearch from '@/pages/BigPlatform/Smoke/BackMap/MapSearch';
-// 引入样式文件
 import styles from './index.less';
-import { SettingModal, UnitDrawer, AlarmDrawer, FireStatisticsDrawer, MonitorDrawer, FireDynamicDrawer, MaintenanceDrawer } from './sections/Components';
-
+import {
+  BackMap,
+  SettingModal,
+  UnitDrawer,
+  AlarmDrawer,
+  FireStatisticsDrawer,
+  MonitorDrawer,
+  FireDynamicDrawer,
+  MaintenanceDrawer,
+  FireStatistics,
+} from './sections/Components';
+import { GridSelect, MapSearch, Tooltip as MyTooltip } from './components/Components';
 import { genCardsInfo } from './utils';
-import { GridSelect, Tooltip as MyTooltip } from './components/Components';
 
 // websocket配置
 const options = {
@@ -70,10 +64,11 @@ export default class Operation extends PureComponent {
       // drawerType: '', // alarm,fault
       alarmIds: [],
       companyName: '',
-      type: 0,
+      dateType: 0,
       errorUnitsCardsInfo: [],
       unitDetail: {},
       importCardsInfo: [],
+      fireStatisticsDrawerVisible: false,
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -182,22 +177,10 @@ export default class Operation extends PureComponent {
       try {
         const data = JSON.parse(e.data).data;
         const { type, companyId, messageFlag } = data;
-        // const {
-        //   smoke: {
-        //     // messages,
-        //     unitIds,
-        //     // unitSet,
-        //     // unitSet: { units },
-        //   },
-        // } = this.props;
         const { alarmIds } = this.state;
         // const index = unitIds.indexOf(companyId);
         // 如果数据为告警或恢复，则将数据插入到列表的第一个
         if ([31, 32].includes(type)) {
-          // dispatch({
-          //   type: 'smoke/save',
-          //   payload: { messages: [data].concat(messages) },
-          // });
           // 如果发生告警，弹出通知框，否则关闭通知框
           this.fetchAbnormal();
           if (type === 32) {
@@ -213,33 +196,7 @@ export default class Operation extends PureComponent {
                 : [...alarmIds, { companyId, messageFlag }];
             this.setState({ alarmIds: newList });
             this.showWarningNotification(data);
-            // dispatch({
-            //   type: 'smoke/saveUnitData',
-            //   payload: {
-            //     unitSet: {
-            //       ...unitSet,
-            //       units: [
-            //         ...units.slice(0, index),
-            //         { ...units[index], unnormal: units[index].unnormal + 1 },
-            //         ...units.slice(index + 1),
-            //       ],
-            //     },
-            //   },
-            // });
           } else {
-            // dispatch({
-            //   type: 'smoke/saveUnitData',
-            //   payload: {
-            //     unitSet: {
-            //       ...unitSet,
-            //       units: [
-            //         ...units.slice(0, index),
-            //         { ...units[index], unnormal: units[index].unnormal - 1 },
-            //         ...units.slice(index + 1),
-            //       ],
-            //     },
-            //   },
-            // });
             let sameIndex;
             alarmIds.forEach((item, i) => {
               if (item.messageFlag === messageFlag) sameIndex = i;
@@ -253,19 +210,6 @@ export default class Operation extends PureComponent {
         // 如果为33，则修改单位状态
         if (type === 33) {
           this.fetchAbnormal();
-          // dispatch({
-          //   type: 'smoke/saveUnitData',
-          //   payload: {
-          //     unitSet: {
-          //       ...unitSet,
-          //       units: [
-          //         ...units.slice(0, index),
-          //         { ...units[index], faultNum: units[index].faultNum - 1 },
-          //         ...units.slice(index + 1),
-          //       ],
-          //     },
-          //   },
-          // });
         }
       } catch (error) {
         console.log('error', error);
@@ -275,10 +219,6 @@ export default class Operation extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
-
-    // setInterval(() => {
-    //   this.fetchPending();
-    // }, 10000);
   }
 
   fetchAbnormal = () => {
@@ -288,11 +228,6 @@ export default class Operation extends PureComponent {
         params: { gridId },
       },
     } = this.props;
-    const { monitorDrawerVisible } = this.state;
-    const {
-      infoWindowShow,
-      infoWindow: { companyId },
-    } = this.mapChild.state;
     // 获取单位数据
     dispatch({
       type: 'smoke/fetchUnitData',
@@ -342,11 +277,6 @@ export default class Operation extends PureComponent {
       },
     });
   };
-
-  /**
-   * 更新后
-   */
-  componentDidUpdate() { }
 
   /**
    * 销毁前
@@ -662,6 +592,14 @@ export default class Operation extends PureComponent {
     });
   };
 
+  handleDateTypeChange = v => {
+    this.setState({ dateType: v });
+  };
+
+  showFireStatisticsDrawer = dateType => {
+    this.setState({ fireStatisticsDrawerVisible: true, dateType });
+  };
+
   /**
    * 渲染
    */
@@ -708,10 +646,10 @@ export default class Operation extends PureComponent {
       type,
       errorUnitsCardsInfo,
       importCardsInfo,
+      dateType,
+      fireStatisticsDrawerVisible,
     } = this.state;
 
-    // const importCardsInfo = this.importCardsInfo;
-    // const errorUnitsCardsInfo = this.errorUnitsCardsInfo;
     const extra = <GridSelect gridId={gridId} urlBase="/big-platform/smoke" />;
     return (
       <BigPlatformLayout
@@ -730,8 +668,8 @@ export default class Operation extends PureComponent {
         }}
         titleStyle={{ fontSize: 46 }}
         contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}
-        settable
-        onSet={this.handleClickSetButton}
+        // settable
+        // onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
         <BackMap
@@ -772,14 +710,13 @@ export default class Operation extends PureComponent {
           className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
           onClick={e => this.handleDrawerVisibleChange('alarm')}
         />
-        {/* 历史火警单位统计 */}
         <NewSection
-          title="历史火警单位统计"
+          title="火警数量统计"
           className={styles.left}
           // style={{ top: 'calc(38.79% + 92px)', height: '16%', cursor: 'pointer' }}
           style={{ top: 'calc(9.62963% + 68px)', height: '16%', cursor: 'pointer' }}
         >
-          <HistoricalFire data={statisticsData} onClick={this.handleHistoricalFireClick} />
+          <FireStatistics data={statisticsData} onClick={this.showFireStatisticsDrawer} />
         </NewSection>
         {/* extra info */}
         <SettingModal
@@ -804,10 +741,11 @@ export default class Operation extends PureComponent {
           handleClickDeviceNumber={this.handleClickUnitStatistics}
         />
         <FireStatisticsDrawer
-          visible={fireDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-          type={type}
           gridId={gridId}
+          visible={fireStatisticsDrawerVisible}
+          handleDateTypeChange={this.handleDateTypeChange}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          dateType={dateType}
         />
         {/* 故障处理动态 */}
         <MaintenanceDrawer
@@ -819,13 +757,6 @@ export default class Operation extends PureComponent {
           companyName={companyName}
           onClose={() => this.handleDrawerVisibleChange('maintenance')}
         />
-        {/* 灾情事件动态 */}
-        {/* <AlarmDynamicDrawer
-          data={[]}
-          companyName={companyName}
-          visible={alarmDynamicDrawerVisible}
-          onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
-        /> */}
         <FireDynamicDrawer
           title="灾情事件动态"
           // type={drawerType}

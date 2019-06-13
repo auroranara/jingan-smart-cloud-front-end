@@ -33,13 +33,14 @@ export default class SearchBar extends PureComponent {
       getCardsContainer,
       // onChange,
       // value,
+      cols,
       ...restProps
     } = this.props;
 
     return (
       <div className={styles.container} {...restProps}>
         <Row style={{ marginBottom: 12, ...searchStyle }}>
-          <Col span={extra ? 18 : 24}>
+          <Col span={extra ? cols ? cols[0] : 18 : 24}>
               {!hideSearch && (
                 <Search
                   // value={value}
@@ -50,7 +51,7 @@ export default class SearchBar extends PureComponent {
                 />
               )}
           </Col>
-          <Col span={extra ? 6 : 0} style={{ position: 'relative', height: 32 }}>
+          <Col span={extra ? cols ? cols[1] : 6 : 0} style={{ position: 'relative', height: 32 }}>
             {extra}
           </Col>
         </Row>
