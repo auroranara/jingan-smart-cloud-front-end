@@ -8,14 +8,10 @@ import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import NewSection from '@/components/NewSection';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
-// 接入单位统计
-import AccessUnitStatistics from '@/pages/BigPlatform/Smoke/AccessUnitStatistics';
 // 实时火警
 import RealTimeFire from '@/pages/BigPlatform/Smoke/RealTimeFire';
 // 历史火警
 import HistoricalFire from '@/pages/BigPlatform/Smoke/HistoricalFire';
-// 设备故障统计
-import EquipmentStatistics from '@/pages/BigPlatform/Smoke/EquipmentStatistics';
 
 // 故障/火警处理动态
 // import MaintenanceDrawer from './sections/MaintenanceDrawer';
@@ -29,7 +25,11 @@ import styles from './index.less';
 import { SettingModal, UnitDrawer, AlarmDrawer, FireStatisticsDrawer, MonitorDrawer, FireDynamicDrawer, MaintenanceDrawer } from './sections/Components';
 
 import { genCardsInfo } from './utils';
-import { GridSelect, Tooltip as MyTooltip } from './components/Components';
+import {
+  GridSelect,
+  Tooltip as MyTooltip,
+  TaskDrawer,
+} from './components/Components';
 
 // websocket配置
 const options = {
@@ -51,6 +51,7 @@ export default class Operation extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      taskDrawerVisible: true, // 任务抽屉
       setttingModalVisible: false,
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
@@ -662,6 +663,14 @@ export default class Operation extends PureComponent {
     });
   };
 
+  handleTaskDrawerOpen = () => {
+    this.setState({ taskDrawerVisible: true });
+  }
+
+  handleTaskDrawerClose = () => {
+    this.setState({ taskDrawerVisible: false });
+  }
+
   /**
    * 渲染
    */
@@ -860,6 +869,10 @@ export default class Operation extends PureComponent {
           position={tooltipPosition}
           offset={[15, 42]}
           style={{ zIndex: 150 }}
+        />
+        <TaskDrawer
+          visible={this.state.taskDrawerVisible}
+          onClose={this.handleTaskDrawerClose}
         />
       </BigPlatformLayout>
     );

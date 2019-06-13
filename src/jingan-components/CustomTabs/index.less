@@ -1,0 +1,21 @@
+.tabList {
+  display: flex;
+
+  .tab {
+    flex: 1;
+    padding: 1em;
+    text-align: center;
+    border: 1px solid #0ff;
+    cursor: pointer;
+
+    &.active,
+    &:hover {
+      background-color: rgb(5, 71, 149);
+    }
+
+    &:not(:first-child) {
+      border-left-width: 0;
+    }
+  }
+}
+

@@ -1,3 +1,5 @@
+import TaskDrawer from './TaskDrawer';
+
 export {
   ChartGauge,
   DotItem,
@@ -7,3 +9,8 @@ export {
   GridSelect,
   Tooltip,
 } from '@/pages/BigPlatform/Smoke/components/Components';
+
+export {
+  TaskDrawer,
+}
+
