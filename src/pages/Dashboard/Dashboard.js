@@ -19,7 +19,7 @@ const monitorItem = { src: monitor, url: '', label: '动态监测驾驶舱' };
 const positionItem = { src: psoitionImg, url: '', label: '人员定位驾驶舱' };
 const electricItem = { src: electricImg, url: '', label: '智慧用电驾驶舱' };
 const gasItem = { src: gasImg, url: '', label: '智慧燃气驾驶舱' };
-const fireMaintenanceItem = { src: fireMaintenanceImg, url: '', label: '消防维保驾驶舱' };
+const fireMaintenanceItem = { src: fireMaintenanceImg, url: '', label: '消防运维驾驶舱' };
 const smokeItem = { src: smokeImg, url: '', label: '烟感驾驶舱' };
 
 // const CLASSIFICATION = { safety: 1, fireControl: 2, environmentProtection: 3 };
@@ -35,7 +35,7 @@ export default class Dashboard extends PureComponent {
     personnelPositioning: 0, // 人员定位可见
     electricityMonitor: 0, // 用电安全可见
     gasVisible: 0, // 燃气入口可见
-    fireMaintenanceVisible: 0, // 消防维保大屏可见
+    fireMaintenanceVisible: 0, // 消防运维大屏可见
     smokeVisible: 0, // 烟感大屏可见
   };
 
@@ -89,7 +89,7 @@ export default class Dashboard extends PureComponent {
     gasItem.url = `${window.publicPath}#/big-platform/gas`;
     // smokeItem.url = `${window.publicPath}#/big-platform/smoke/${companyId}`
     // electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor` // 移到render里面
-    // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
+    // unitType  1：运维企业 2：政府 3：运营 4:企事业主体
     // 政府根据companyBasicInfo的数据来
     // if (unitType === 2) {
     //   //TODO 政府大屏开启
@@ -104,7 +104,7 @@ export default class Dashboard extends PureComponent {
     //   monitorItem.url = `${window.publicPath}#/big-platform/monitor/company/${companyId}`
     //   this.setState({
     //     safetyProduction: safetyProduction && safetyAuth,
-    //     fireService: unitType === 1 ? 0 : fireService && fireControlAuth, // 这个迭代维保企业不能看消防
+    //     fireService: unitType === 1 ? 0 : fireService && fireControlAuth, // 这个迭代运维企业不能看消防
     //     monitorService: monitorService && dynamicMonitorAuth,
     //   });
     // }
@@ -118,10 +118,10 @@ export default class Dashboard extends PureComponent {
       window.publicPath
     }#/big-platform/fire-control/new-company/${companyId}`;
 
-    // 企事业主体和政府有业务分类，维保和运营没有
-    // 所以企事业主体和政府的大屏权限 = 用户业务权限 && 企事业业务分类 && 账户被配置的权限，运营和维保企业的大屏权限 = 用户业务权限 && 账户被配置的权限
+    // 企事业主体和政府有业务分类，运维和运营没有
+    // 所以企事业主体和政府的大屏权限 = 用户业务权限 && 企事业业务分类 && 账户被配置的权限，运营和运维企业的大屏权限 = 用户业务权限 && 账户被配置的权限
     switch (unitType) {
-      // 维保企业
+      // 运维企业
       case 1:
         safeItem.url = safeUrl;
         fireItem.url = fireUrl;
@@ -130,7 +130,7 @@ export default class Dashboard extends PureComponent {
         fireMaintenanceItem.url = fireMaintenanceUrl;
         this.setState({
           safetyProduction: safetyProduction && safetyAuth,
-          fireService: 0, // 这个迭代维保企业不能看消防
+          fireService: 0, // 这个迭代运维企业不能看消防
           fireMaintenanceVisible: 0,
           monitorService: monitorService && dynamicMonitorAuth,
           personnelPositioning: personnelPositioning && personnelPositionAuth,

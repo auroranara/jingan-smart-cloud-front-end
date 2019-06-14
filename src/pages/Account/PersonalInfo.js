@@ -26,7 +26,7 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
-const UnitTypes = ['', '维保企业', '政府机构', '运营企业', '企事业主体'];
+const UnitTypes = ['', '运维企业', '政府机构', '运营企业', '企事业主体'];
 
 const UserTypes = [
   {
@@ -54,7 +54,6 @@ const UserTypes = [
 }))
 @Form.create()
 export default class PersonalInfo extends PureComponent {
-
   /* 生命周期函数 */
   componentDidMount() {
     // console.log('props', this.props);

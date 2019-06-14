@@ -118,8 +118,8 @@ export default class ImportPointPosition extends PureComponent {
         href: '/',
       },
       {
-        title: '消防维保',
-        name: '消防维保',
+        title: '消防运维',
+        name: '消防运维',
       },
       {
         title: '用户传输装置',
@@ -182,7 +182,10 @@ export default class ImportPointPosition extends PureComponent {
     const description = id => {
       return (
         <div>
-          <span>主机编号：{id}</span>
+          <span>
+            主机编号：
+            {id}
+          </span>
         </div>
       );
     };
@@ -191,12 +194,33 @@ export default class ImportPointPosition extends PureComponent {
     const message = (
       <div style={{ color: '#4d4848', fontSize: '17px' }}>
         {uploadStatus !== 200 && <span>{msg}</span>}
-        {failed === 0 && uploadStatus === 200 && <span>本次导入数据共计{total}条。</span>}
-        {success > 0 && <span>新建信息{success}条。</span>}
-        {updated > 0 && <span>更新信息{updated}条。</span>}
+        {failed === 0 &&
+          uploadStatus === 200 && (
+            <span>
+              本次导入数据共计
+              {total}
+              条。
+            </span>
+          )}
+        {success > 0 && (
+          <span>
+            新建信息
+            {success}
+            条。
+          </span>
+        )}
+        {updated > 0 && (
+          <span>
+            更新信息
+            {updated}
+            条。
+          </span>
+        )}
         {failed > 0 && (
           <span>
-            错误信息共计<span style={{ color: 'red' }}>{failed}</span>条，请核对后再试。
+            错误信息共计
+            <span style={{ color: 'red' }}>{failed}</span>
+            条，请核对后再试。
           </span>
         )}
         {!showErrorLogo && <span>错误信息0条。</span>}

@@ -5,9 +5,9 @@
  */
 /****************************************************  以下为正文  ************************************************************/
 import { generateEnum } from '@/utils/utils';
- /**
-  * 隐患状态
-  */
+/**
+ * 隐患状态
+ */
 export const hiddenDangerStatus = generateEnum({
   '1': '新建',
   '2': '待整改',
@@ -44,7 +44,7 @@ export const hiddenDangerType = generateEnum({
 export const hiddenDangerSource = generateEnum({
   1: '企业自查',
   2: '政府监督',
-  3: '维保检查',
+  3: '运维检查',
 });
 
 /**
@@ -83,7 +83,7 @@ export const deviceStatus = generateEnum({
  * 单位类型
  */
 export const unitType = generateEnum({
-  1: '维保',
+  1: '运维',
   2: '政府',
   3: '运维',
   4: '企业',

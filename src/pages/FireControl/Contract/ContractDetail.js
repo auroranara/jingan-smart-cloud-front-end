@@ -15,11 +15,15 @@ import styles from './Contract.less';
 const { Description } = DescriptionList;
 
 // 标题
-const title = '查看维保合同';
+const title = '查看运维合同';
 // 获取链接地址
-const { contract: { list: backUrl, edit: editUrl } } = urls;
+const {
+  contract: { list: backUrl, edit: editUrl },
+} = urls;
 // 获取code
-const { contract: { list: listCode, edit: editCode } } = codes;
+const {
+  contract: { list: listCode, edit: editCode },
+} = codes;
 // 面包屑
 const breadcrumbList = [
   {
@@ -28,12 +32,12 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '消防维保',
-    name: '消防维保',
+    title: '消防运维',
+    name: '消防运维',
   },
   {
-    title: '维保合同管理',
-    name: '维保合同管理',
+    title: '运维合同管理',
+    name: '运维合同管理',
     href: backUrl,
   },
   {
@@ -114,7 +118,9 @@ export default class ContractDetail extends PureComponent {
           companyName,
         },
       },
-      user: { currentUser: { permissionCodes } },
+      user: {
+        currentUser: { permissionCodes },
+      },
       match: {
         params: { id },
       },
@@ -124,17 +130,17 @@ export default class ContractDetail extends PureComponent {
     // 是否有编辑权限
     const hasEditAuthority = hasAuthority(editCode, permissionCodes);
 
-
     const period = `${(startTime && moment(+startTime).format('YYYY-MM-DD')) || '?'} ~ ${(endTime &&
       moment(+endTime).format('YYYY-MM-DD')) ||
       '?'}`;
-      const contractAppendixList = contractAppendix && contractAppendix.startsWith('[') ? JSON.parse(contractAppendix) : [];
+    const contractAppendixList =
+      contractAppendix && contractAppendix.startsWith('[') ? JSON.parse(contractAppendix) : [];
 
     return (
       <Card title="合同详情" className={styles.card} bordered={false}>
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
           <Description term="合同编号">{contractCode || getEmptyData()}</Description>
-          <Description term="维保单位">{maintenanceName || getEmptyData()}</Description>
+          <Description term="运维单位">{maintenanceName || getEmptyData()}</Description>
           <Description term="服务单位">{companyName || getEmptyData()}</Description>
           <Description term="签订日期">
             {signingDate ? moment(+signingDate).format('YYYY-MM-DD') : getEmptyData()}
@@ -145,7 +151,11 @@ export default class ContractDetail extends PureComponent {
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term="服务内容">
             {serviceContent ? (
-              <pre style={{ margin: '0', color: 'inherit', font: 'inherit', whiteSpace: 'pre-wrap' }}>{serviceContent}</pre>
+              <pre
+                style={{ margin: '0', color: 'inherit', font: 'inherit', whiteSpace: 'pre-wrap' }}
+              >
+                {serviceContent}
+              </pre>
             ) : (
               getEmptyData()
             )}
@@ -153,16 +163,32 @@ export default class ContractDetail extends PureComponent {
           <Description term="合同附件">
             {contractAppendixList.length !== 0
               ? contractAppendixList.map(({ webUrl }, index) => (
-                <a style={{ display: 'block' }} href={webUrl} target="_blank" rel="noopener noreferrer" key={webUrl}>
-                  {`合同附件${index + 1}`}
-                </a>
+                  <a
+                    style={{ display: 'block' }}
+                    href={webUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    key={webUrl}
+                  >
+                    {`合同附件${index + 1}`}
+                  </a>
                 ))
               : getEmptyData()}
           </Description>
         </DescriptionList>
         <div style={{ textAlign: 'center' }}>
-          <Button disabled={!hasListAuthority} onClick={goBack} style={{ marginRight: '24px' }}>返回</Button>
-          <Button type="primary" disabled={!hasEditAuthority} onClick={() => {goToEdit(id)}}>编辑</Button>
+          <Button disabled={!hasListAuthority} onClick={goBack} style={{ marginRight: '24px' }}>
+            返回
+          </Button>
+          <Button
+            type="primary"
+            disabled={!hasEditAuthority}
+            onClick={() => {
+              goToEdit(id);
+            }}
+          >
+            编辑
+          </Button>
         </div>
       </Card>
     );

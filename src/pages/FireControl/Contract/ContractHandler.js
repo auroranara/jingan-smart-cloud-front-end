@@ -31,8 +31,8 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 // 标题
-const addTitle = '新增维保合同';
-const editTitle = '编辑维保合同';
+const addTitle = '新增运维合同';
+const editTitle = '编辑运维合同';
 // 获取链接地址
 const {
   contract: { list: backUrl },
@@ -84,7 +84,7 @@ const folder = 'firecontrol';
         type: 'contract/clearDetail',
       });
     },
-    /* 获取维保单位列表 */
+    /* 获取运维单位列表 */
     fetchMaintenanceList(action) {
       dispatch({
         type: 'contract/fetchMaintenanceList',
@@ -117,7 +117,7 @@ export default class ContractHandler extends PureComponent {
     submitting: false,
     uploading: false,
     fileList: [],
-    filterMaintenanceId: undefined, // 选中的维保单位的key
+    filterMaintenanceId: undefined, // 选中的运维单位的key
     filterCompanyId: undefined, // 选中的服务单位的key（ 企业id + 空格 + 分部id ）
   };
 
@@ -138,7 +138,14 @@ export default class ContractHandler extends PureComponent {
         payload: {
           id,
         },
-        success: ({ contractAppendix, maintenanceId, companyId, maintenanceName, companyName, companyBranchId }) => {
+        success: ({
+          contractAppendix,
+          maintenanceId,
+          companyId,
+          maintenanceName,
+          companyName,
+          companyBranchId,
+        }) => {
           const contractList = contractAppendix ? JSON.parse(contractAppendix) : [];
           if (contractList.length !== 0) {
             this.setState({
@@ -268,7 +275,7 @@ export default class ContractHandler extends PureComponent {
     });
   };
 
-  /* 模糊查询维保单位列表 */
+  /* 模糊查询运维单位列表 */
   handleSearchMaintenanceList = value => {
     const { fetchMaintenanceList } = this.props;
     const { filterCompanyId } = this.state;
@@ -300,7 +307,7 @@ export default class ContractHandler extends PureComponent {
     });
   };
 
-  /* 判断清除维保单位 */
+  /* 判断清除运维单位 */
   handleClearMaintenance = value => {
     if (value && value.key === value.label) {
       this.handleSearchMaintenanceList.cancel();
@@ -321,7 +328,7 @@ export default class ContractHandler extends PureComponent {
         });
       } else {
         const { filterCompanyId } = this.state;
-        // 否则清空维保单位输入框
+        // 否则清空运维单位输入框
         setFieldsValue({
           maintenanceId: undefined,
         });
@@ -330,7 +337,7 @@ export default class ContractHandler extends PureComponent {
         this.setState({
           filterMaintenanceId: undefined,
         });
-        // 获取维保单位列表
+        // 获取运维单位列表
         fetchMaintenanceList({
           payload: {
             pageSize: defaultPageSize,
@@ -503,7 +510,7 @@ export default class ContractHandler extends PureComponent {
       loading,
     } = this.props;
     const { filterMaintenanceId, filterCompanyId, uploading } = this.state;
-    const newFilterCompanyId = filterCompanyId ? filterCompanyId.split(' ')[0] : null
+    const newFilterCompanyId = filterCompanyId ? filterCompanyId.split(' ')[0] : null;
     const filterMaintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0];
     const filterMaintenanceCompanyId = filterMaintenance && filterMaintenance.companyId;
     const hasListAuthority = hasAuthority(listCode, permissionCodes);
@@ -521,26 +528,26 @@ export default class ContractHandler extends PureComponent {
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24} style={{ height: 83 }}>
-              <Form.Item label="维保单位">
+              <Form.Item label="运维单位">
                 {getFieldDecorator('maintenanceId', {
                   initialValue:
                     maintenanceId && maintenanceName
                       ? {
-                        key: maintenanceId,
-                        label: maintenanceName,
-                      }
+                          key: maintenanceId,
+                          label: maintenanceName,
+                        }
                       : undefined,
                   rules: [
                     {
                       required: true,
-                      message: '请选择维保单位',
+                      message: '请选择运维单位',
                       transform: value => value && value.label,
                     },
                   ],
                 })(
                   <AutoComplete
                     mode="combobox"
-                    placeholder="请选择维保单位"
+                    placeholder="请选择运维单位"
                     labelInValue
                     defaultActiveFirstOption={false}
                     filterOption={false}
@@ -568,9 +575,9 @@ export default class ContractHandler extends PureComponent {
                   initialValue:
                     companyId && companyName
                       ? {
-                        key: `${companyId} ${companyBranchId || ''}`,
-                        label: companyName,
-                      }
+                          key: `${companyId} ${companyBranchId || ''}`,
+                          label: companyName,
+                        }
                       : undefined,
                   rules: [
                     {
@@ -597,7 +604,10 @@ export default class ContractHandler extends PureComponent {
                     optionLabelProp="children"
                   >
                     {serviceList.map(item => (
-                      <Option key={`${item.id} ${item.branchId || ''}`} disabled={item.id === filterMaintenanceCompanyId}>
+                      <Option
+                        key={`${item.id} ${item.branchId || ''}`}
+                        disabled={item.id === filterMaintenanceCompanyId}
+                      >
                         {item.name}
                       </Option>
                     ))}
@@ -677,12 +687,12 @@ export default class ContractHandler extends PureComponent {
         href: '/',
       },
       {
-        title: '消防维保',
-        name: '消防维保',
+        title: '消防运维',
+        name: '消防运维',
       },
       {
-        title: '维保合同管理',
-        name: '维保合同管理',
+        title: '运维合同管理',
+        name: '运维合同管理',
         href: backUrl,
       },
       {

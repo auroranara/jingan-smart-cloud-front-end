@@ -11,7 +11,14 @@ import { hasAuthority, AuthSpan } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
 import styles from '../Role/Role.less';
-import { OPE, getEmptyData, getRootChild, getUnitTypeLabel, preventDefault, transform } from '../Role/utils';
+import {
+  OPE,
+  getEmptyData,
+  getRootChild,
+  getUnitTypeLabel,
+  preventDefault,
+  transform,
+} from '../Role/utils';
 
 const { Option } = Select;
 const { TreeNode } = TreeSelect;
@@ -56,7 +63,7 @@ const {
         ...action,
       });
     },
-    /* 追加维保合同列表 */
+    /* 追加运维合同列表 */
     appendList(action) {
       dispatch({
         type: 'role/appendList',
@@ -80,7 +87,7 @@ const {
     fetchAppPermissionTree() {
       dispatch({
         type: 'role/fetchAppPermissionTree',
-      })
+      });
     },
     /* 跳转到详情页面 */
     goToDetail(id) {
@@ -284,8 +291,16 @@ export default class RoleList extends PureComponent {
         id: 'unitType',
         render: () => {
           return (
-            <Select placeholder="请选择角色单位类型" onChange={this.handleUnitTypeChange} allowClear>
-              {sortedUnitTypes.map(({ id, label }, i) => <Option key={id} value={id}>{label}</Option>)}
+            <Select
+              placeholder="请选择角色单位类型"
+              onChange={this.handleUnitTypeChange}
+              allowClear
+            >
+              {sortedUnitTypes.map(({ id, label }, i) => (
+                <Option key={id} value={id}>
+                  {label}
+                </Option>
+              ))}
             </Select>
           );
         },
@@ -333,8 +348,7 @@ export default class RoleList extends PureComponent {
       },
     ];
 
-    if (unitType === OPE)
-      fields.pop();
+    if (unitType === OPE) fields.pop();
     // 是否有新增权限
     const hasAddAuthority = hasAuthority(addCode, permissionCodes);
 
@@ -342,7 +356,7 @@ export default class RoleList extends PureComponent {
       <Card>
         <InlineForm
           fields={fields}
-          ref={form => this.form=form}
+          ref={form => (this.form = form)}
           gutter={{ lg: 48, md: 24 }}
           action={
             <Button type="primary" onClick={goToAdd} disabled={!hasAddAuthority}>
@@ -403,26 +417,28 @@ export default class RoleList extends PureComponent {
                     >
                       编辑
                     </Link>,
-                    <AuthSpan code={deleteCode} onClick={this.genHandleShowDeleteConfirm(id)}>删除</AuthSpan>,
+                    <AuthSpan code={deleteCode} onClick={this.genHandleShowDeleteConfirm(id)}>
+                      删除
+                    </AuthSpan>,
                   ]}
-                // extra={
-                //   <Button
-                //     onClick={() => {
-                //       this.handleShowDeleteConfirm(id);
-                //     }}
-                //     shape="circle"
-                //     style={{ border: 'none', fontSize: '20px' }}
-                //   >
-                //     <Icon type="close" />
-                //   </Button>
-                // }
+                  // extra={
+                  //   <Button
+                  //     onClick={() => {
+                  //       this.handleShowDeleteConfirm(id);
+                  //     }}
+                  //     shape="circle"
+                  //     style={{ border: 'none', fontSize: '20px' }}
+                  //   >
+                  //     <Icon type="close" />
+                  //   </Button>
+                  // }
                 >
                   <div
                     onClick={
                       hasDetailAuthority
                         ? () => {
-                          goToDetail(id);
-                        }
+                            goToDetail(id);
+                          }
                         : null
                     }
                     style={hasDetailAuthority ? { cursor: 'pointer' } : null}
@@ -457,8 +473,13 @@ export default class RoleList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            <p className={styles.desc}>角色总数：{total}</p>
-            <p className={styles.desc}>系统角色是用来限定管理员或运营配置公共或用户(私有)角色时对应类型的权限树的范围，只有系统管理员才拥有管理系统角色的权限</p>
+            <p className={styles.desc}>
+              角色总数：
+              {total}
+            </p>
+            <p className={styles.desc}>
+              系统角色是用来限定管理员或运营配置公共或用户(私有)角色时对应类型的权限树的范围，只有系统管理员才拥有管理系统角色的权限
+            </p>
           </div>
         }
       >

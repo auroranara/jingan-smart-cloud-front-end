@@ -9,7 +9,6 @@ import flowImg from '../imgs/flow_m.png';
 
 const ID = 'maintenance-drawer';
 
-
 const isVague = false;
 function nameToVague(str) {
   let newStr = '';
@@ -90,7 +89,7 @@ function Handled(props) {
 
 /* step 获取第几步: -> 1-4
  * faultType 故障类型: 0 -> 主机报障(显示4步)  1 -> 一键报修(显示三步);
- * nstatus 是否进行了维保: undefined 只显示第一步，存在的话，根据status进行判断
+ * nstatus 是否进行了运维: undefined 只显示第一步，存在的话，根据status进行判断
  * status 进行到那一步: 2 -> 第二步 0 -> 第三步 1 -> 第四步
  */
 function isStepShow(step, faultType, status) {
@@ -124,7 +123,7 @@ function getTime(time, type = 0) {
 
 const SPANS = [5, 19];
 const NO_DATA = '暂无信息';
-const HOST_FAULT_DESC = '维修难度较大，指派维保';
+const HOST_FAULT_DESC = '维修难度较大，指派运维';
 
 export default function MaintenanceCard(props) {
   // type 1 已完成(处理完毕)   2 待处理(看status)   7 已超期(看status)
