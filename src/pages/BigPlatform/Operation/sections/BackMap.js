@@ -1,8 +1,8 @@
-import React, { PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { Icon } from 'antd';
 import { Map as GDMap, InfoWindow, Markers, Marker } from 'react-amap';
 import styles from './BackMap.less';
-import { MapLegend, MapTypeBar } from '../components/Components';
+import { DeviceBar, InfoStatus, MapLegend, MapTypeBar } from '../components/Components';
 
 import iconAddress from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-address.png';
 import iconMan from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-man.png';
@@ -176,6 +176,7 @@ export default class MapSection extends PureComponent {
 
   // 弹窗渲染
   renderInfoWindow = () => {
+    const { deviceType, handleAlarmClick, handleCompanyClick, handleFaultClick } = this.props;
     const {
       infoWindowShow,
       infoWindow: {
@@ -192,7 +193,7 @@ export default class MapSection extends PureComponent {
         faultNum,
       },
     } = this.state;
-    const { handleAlarmClick, handleCompanyClick, handleFaultClick } = this.props;
+
     return (
       <InfoWindow
         position={{ longitude, latitude }}
@@ -233,41 +234,53 @@ export default class MapSection extends PureComponent {
             {principalName}
             <span style={{ marginLeft: '10px' }}>{principalPhone}</span>
           </div>
-          <div style={{ borderTop: '1px solid #474747', margin: '8px 0', paddingTop: '8px' }}>
-            设备数量 {count}
-          </div>
-          <div className={styles.statusWrapper}>
-            <div className={styles.statusItem}>
-              <span className={styles.statusIcon} style={{ backgroundColor: '#37a460' }} />
-              正常 {normal}
-            </div>
-            <div
-              className={+unnormal > 0 ? styles.itemActive : styles.statusItem}
-              onClick={() => {
-                if (+unnormal > 0) {
-                  handleAlarmClick(undefined, companyId, companyName, +unnormal);
-                } else {
-                  return null;
-                }
-              }}
-            >
-              <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
-              火警 {unnormal > 0 ? unnormal : 0}
-            </div>
-            <div
-              className={+faultNum > 0 ? styles.itemActive : styles.statusItem}
-              onClick={() => {
-                if (+faultNum > 0) {
-                  handleFaultClick(undefined, companyId, companyName, +faultNum);
-                } else {
-                  return null;
-                }
-              }}
-            >
-              <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
-              故障 {faultNum}
-            </div>
-          </div>
+          {
+            deviceType ? (
+              <Fragment>
+                <div style={{ borderTop: '1px solid #474747', margin: '8px 0', paddingTop: '8px' }}>
+                  设备数量 {count}
+                </div>
+                <div className={styles.statusWrapper}>
+                  <div
+                    className={+unnormal > 0 ? styles.itemActive : styles.statusItem}
+                    onClick={() => {
+                      if (+unnormal > 0) {
+                        handleAlarmClick(undefined, companyId, companyName, +unnormal);
+                      } else {
+                        return null;
+                      }
+                    }}
+                  >
+                    <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
+                    报警 {unnormal > 0 ? unnormal : 0}
+                  </div>
+                  <div
+                    className={+faultNum > 0 ? styles.itemActive : styles.statusItem}
+                    onClick={() => {
+                      if (+faultNum > 0) {
+                        handleFaultClick(undefined, companyId, companyName, +faultNum);
+                      } else {
+                        return null;
+                      }
+                    }}
+                  >
+                    <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
+                    故障 {faultNum}
+                  </div>
+                  <div className={styles.statusItem}>
+                    <span className={styles.statusIcon} style={{ backgroundColor: '#9f9f9f' }} />
+                    失联 {normal}
+                  </div>
+                  <div className={styles.statusItem}>
+                    <span className={styles.statusIcon} style={{ backgroundColor: '#37a460' }} />
+                    正常 {normal}
+                  </div>
+                </div>
+              </Fragment>
+            ) : (
+              <InfoStatus data={[[0, 0], [0, 1, 1]]} />
+            )
+          }
         </div>
         <Icon
           type="close"
@@ -294,7 +307,7 @@ export default class MapSection extends PureComponent {
   };
 
   render() {
-    const { handleParentChange } = this.props;
+    const { deviceType, handleParentChange, handleDeviceTypeChange } = this.props;
 
     return (
       <div className={styles.mapContainer}>
@@ -339,6 +352,7 @@ export default class MapSection extends PureComponent {
             重置
           </div>
         </GDMap>
+        <DeviceBar type={deviceType} handleClick={handleDeviceTypeChange} />
         <MapLegend data={{ abnormal: 10, normal: 5 }} />
       </div>
     );

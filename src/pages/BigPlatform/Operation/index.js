@@ -64,11 +64,12 @@ export default class Operation extends PureComponent {
       // drawerType: '', // alarm,fault
       alarmIds: [],
       companyName: '',
-      dateType: 0,
       errorUnitsCardsInfo: [],
       unitDetail: {},
       importCardsInfo: [],
-      fireStatisticsDrawerVisible: false,
+      dateType: 0, // 火警统计弹框选择的日期类型
+      deviceType: 0, // 地图中间根据设备显示企业列表
+      fireStatisticsDrawerVisible: false, // 火警统计弹框
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -596,6 +597,10 @@ export default class Operation extends PureComponent {
     this.setState({ dateType: v });
   };
 
+  handleDeviceTypeChange = v => {
+    this.setState({ deviceType: v });
+  };
+
   showFireStatisticsDrawer = dateType => {
     this.setState({ fireStatisticsDrawerVisible: true, dateType });
   };
@@ -647,13 +652,14 @@ export default class Operation extends PureComponent {
       errorUnitsCardsInfo,
       importCardsInfo,
       dateType,
+      deviceType,
       fireStatisticsDrawerVisible,
     } = this.state;
 
     const extra = <GridSelect gridId={gridId} urlBase="/big-platform/smoke" />;
     return (
       <BigPlatformLayout
-        title="晶安智慧运维平台"
+        title="智慧消防运营平台"
         extra={extra}
         style={{ backgroundImage: 'none' }}
         headerStyle={{
@@ -673,6 +679,7 @@ export default class Operation extends PureComponent {
       >
         {/* 地图 */}
         <BackMap
+          deviceType={deviceType}
           units={Array.isArray(unitSet.units) ? unitSet.units : []}
           deviceStatusCount={deviceStatusCount}
           handleMapClick={this.showUnitDetail}
@@ -688,6 +695,7 @@ export default class Operation extends PureComponent {
           clearPollingMap={this.clearPollingMap}
           pollingMap={this.pollingMap}
           fetchMapInfo={this.fetchMapInfo}
+          handleDeviceTypeChange={this.handleDeviceTypeChange}
         />
         {/* 搜索框 */}
         <MapSearch

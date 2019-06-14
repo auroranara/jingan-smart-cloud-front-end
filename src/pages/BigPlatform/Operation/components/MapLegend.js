@@ -16,7 +16,7 @@ export default class MapLegend extends PureComponent{
           const num = data[next];
           if (num !== undefined)
             prev.push(
-              <div className={styles.legendItem}>
+              <div className={styles.legendItem} key={next}>
                 <LegendDot color={COLORS[i]} />
                 <span className={styles.label}>{LABELS[i]}</span>
                 {num}

@@ -1,0 +1,64 @@
+.container {
+  display: flex;
+  margin: 5px 8px 0;
+  padding-top: 10px;
+  border-top: 1px solid #474747;
+}
+
+.host {
+  width: 23px;
+  height: 25px;
+  margin-right: 20px;
+}
+
+.smoke {
+  width: 26px;
+  height: 26px;
+}
+
+.host, .smoke {
+  position: relative;
+  background-size: 100% 100%;
+}
+
+.host, .smoke {
+  .bar {
+    display: none;
+    position: absolute;
+    top: 40px;
+    left: 0;
+    padding: 2px 0;
+    border-radius: 5px;
+    justify-content: center;
+    background-color: #161616;
+  }
+}
+
+.host:hover, .smoke:hover {
+  .bar {
+    display: flex;
+  }
+}
+
+.inner>:last-child {
+  margin-right: 0;
+}
+
+.item {
+  font-size: 12px;
+  margin-right: 10px;
+}
+
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 5px;
+  border-radius: 50%;
+  position: relative;
+  top: -2px;
+}
+
+.label {
+  margin-right: 5px;
+}
