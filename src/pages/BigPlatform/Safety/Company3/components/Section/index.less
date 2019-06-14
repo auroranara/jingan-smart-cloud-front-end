@@ -4,49 +4,34 @@
 .container {
   position: relative;
   height: 100%;
-  font-size: 14px;
+  font-size: 16px;
   color: #fff;
-  line-height: 1;
+  line-height: 1.5;
   border: 1px solid rgb(2, 252, 250);
   background-color: rgb(3, 48, 105);
   box-shadow: 0px 6px 10px 0px rgba(0, 0, 0, 0.75);
   overflow: hidden;
 }
 
-.titleWrapper {
-  padding: 17px 19px;
-  font-size: 16px;
+.title {
+  padding: 1.0625em 1.125em;
+  line-height: 1;
   background-repeat: no-repeat;
   background-image: linear-gradient(to left, rgb(4, 50, 109) 0%, rgb(2, 81, 148) 81%);
   background-size: 177px 100%;
 
-  .title {
-    .titleIcon {
-      display: inline-block;
-      position: relative;
-      margin-right: 11px;
-      width: 16px;
-      height: 16px;
-      border: 1px solid #00ffff;
-      border-radius: 50%;
-      vertical-align: top;
-
-      &:after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: auto;
-        width: 10px;
-        height: 10px;
-        background-color: #00ffff;
-        border-radius: 50%;
-      }
-    }
+  .titleIcon {
+    display: inline-block;
+    margin-right: 0.625em;
+    width: 1em;
+    height: 1em;
+    background-color: #0ff;
+    vertical-align: top;
   }
-
+  .titleLabel {
+    display: inline-block;
+    vertical-align: top;
+  }
   .action {
     float: right;
   }
@@ -54,7 +39,7 @@
 
 .content {
   position: relative;
-  height: calc(~"100% - 50px");
+  height: calc(~"100% - 3.125em");
 
   .spin {
     height: 100%;
@@ -94,5 +79,17 @@
         background-color: transparent;
       }
     }
+  }
+}
+
+@media screen and (max-width: 1599px) and (min-width: 1400px) {
+  .container {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 1399px) {
+  .container {
+    font-size: 12px;
   }
 }

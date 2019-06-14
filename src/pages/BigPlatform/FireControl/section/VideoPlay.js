@@ -51,8 +51,9 @@ class VideoPlay extends Component {
   }
 
   handleInit = () => {
-    const { dispatch, videoList, keyId, showList } = this.props;
+    const { dispatch, videoList, keyId, showList, deviceId: propsDeviceId } = this.props;
     let videoId = '';
+    let deviceId = null;
     // 如果现实列表
     if (showList) {
       // 列表为空直接return
@@ -61,6 +62,7 @@ class VideoPlay extends Component {
       videoId = keyId || videoList[0].key_id;
     } else {
       videoId = keyId;
+      deviceId = propsDeviceId;
     }
 
     // 清空视频链接
@@ -72,11 +74,14 @@ class VideoPlay extends Component {
       this.setState({
         activeIndex: index,
       });
+      const item = videoList[index];
+      deviceId = item.device_id || item.deviceId;
     }
     dispatch({
       type: 'videoPlay/fetchStartToPlay',
       payload: {
         key_id: videoId,
+        device_id: deviceId,
       },
       success: response => {
         // console.log('response', response);
@@ -115,11 +120,12 @@ class VideoPlay extends Component {
               [styles.itemActive]: activeIndex === index,
             });
             const keyId = item.key_id || item.keyId;
+            const deviceId = item.device_id || item.deviceId;
             return (
               <li
                 className={itemStyles}
                 onClick={() => {
-                  this.handleItemClick(index, keyId);
+                  this.handleItemClick(index, keyId, deviceId);
                 }}
                 key={item.id}
               >
@@ -136,7 +142,7 @@ class VideoPlay extends Component {
     );
   };
 
-  handleItemClick = (index, keyId) => {
+  handleItemClick = (index, keyId, deviceId) => {
     const { dispatch, actionType } = this.props;
     this.setState(
       {
@@ -148,6 +154,7 @@ class VideoPlay extends Component {
           type: 'videoPlay/fetchStartToPlay',
           payload: {
             key_id: keyId,
+            device_id: deviceId,
           },
           success: response => {
             this.setState({
@@ -178,7 +185,13 @@ class VideoPlay extends Component {
   };
 
   renderPan = () => {
-    const { loading, style = {}, videoList = [], draggable = true, showList = true } = this.props;
+    const {
+      loading,
+      style = {},
+      // videoList = [],
+      draggable = true,
+      showList = true,
+    } = this.props;
     const { videoSrc, activeIndex } = this.state;
     const wrapperStyles = classNames(styles.videoPlay, animate.pop, animate.in);
 

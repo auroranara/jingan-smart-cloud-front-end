@@ -453,6 +453,13 @@ export default class FireControlBigPlatform extends PureComponent {
     } = this.props;
     const gridId = this.getGridId();
     dispatch({
+      type: 'bigFireControl/fetchCameraTree',
+      payload: {
+        company_id: companyId, // companyId
+        gridId,
+      },
+    });
+    dispatch({
       type: 'bigFireControl/fetchAllCamera',
       payload: {
         company_id: companyId, // companyId

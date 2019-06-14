@@ -3,12 +3,36 @@ import { Drawer, Row, Col, Icon } from 'antd';
 import styles from '../../Government.less';
 import importantIcon from '../../img/importantCompany.png';
 import CompanyRisk from '../../Components/CompanyRisk';
+// import LoadMoreButton from '../../Company3/components/LoadMoreButton';
+import LoadMore from '@/components/LoadMore'; // 加载更多按钮
+import Lightbox from 'react-images';
+import HiddenDangerCard from '@/jingan-components/HiddenDangerCard'; // 隐患卡片
+
+const FIELDNAMES = {
+  status: 'status', // 隐患状态
+  type: 'businessType', // 隐患类型
+  id: 'id',
+  description: 'description', // 隐患描述
+  images:'backgrounds',        // 图片地址
+  name: 'item_name', // 点位名称
+  source: 'report_source',  // 来源
+  reportPerson: 'sbr',        // 上报人
+  reportTime: 'sbsj',             // 上报时间
+  planRectificationPerson: 'plan_zgr',  // 计划整改人
+  planRectificationTime: 'plan_zgsj', // 计划整改时间
+  actualRectificationPerson: 'real_zgr', // 实际整改人
+  actualRectificationTime: 'real_zgsj', // 实际整改时间
+  designatedReviewPerson: 'fcr', // 指定复查人
+}
 
 class CompanyInfoDrawer extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       riskDetailFull: false,
+      images: [],
+      currentImage: 0,
+      lightBoxVisible: false,
     };
   }
 
@@ -16,14 +40,63 @@ class CompanyInfoDrawer extends PureComponent {
     this.props.onRef(this);
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   initFull = () => {
     this.setState({ riskDetailFull: false });
   };
 
+  handleLoadMore = pageNum => {
+    const { handleLoadHiddenList } = this.props;
+    handleLoadHiddenList(pageNum + 1);
+  };
+
+  /**
+   * 显示图片详情
+   */
+  handleShow = (images) => {
+    this.setState({ images, currentImage: 0, lightBoxVisible: true });
+  }
+
+  /**
+  * 切换图片
+  */
+  handleSwitchImage = currentImage => {
+    this.setState({
+      currentImage,
+    });
+  };
+
+  /**
+   * 切换上一张图片
+   */
+  handlePrevImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage - 1,
+    }));
+  };
+
+  /**
+   * 切换下一张图片
+   */
+  handleNextImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage + 1,
+    }));
+  };
+
+  /**
+ * 关闭图片详情
+ */
+  handleClose = () => {
+    this.setState({
+      images: [],
+      lightBoxVisible: false,
+    });
+  };
+
   render() {
-    const { riskDetailFull } = this.state;
+    const { riskDetailFull, images, currentImage, lightBoxVisible } = this.state;
     const {
       visible,
       handleParentChange,
@@ -43,7 +116,10 @@ class CompanyInfoDrawer extends PureComponent {
         total: hiddenDangerOver,
       },
       specialEquipment,
-      hiddenDangerListByDate,
+      hiddenDangerListByDate: {
+        pagination: { total, pageNum, pageSize },
+        list,
+      },
       // hiddenDangerListByDate: { ycq = [], wcq = [], dfc = [] },
       companyId,
     } = this.props;
@@ -153,21 +229,40 @@ class CompanyInfoDrawer extends PureComponent {
                           {riskDetailFull ? (
                             <Icon type="down" theme="outlined" />
                           ) : (
-                            <Icon type="up" theme="outlined" />
-                          )}
+                              <Icon type="up" theme="outlined" />
+                            )}
                         </div>
                         <div
                           className={styles.tableTitleWrapper}
                           style={{ borderBottom: 'none', borderTop: '1px solid #0967d3' }}
                         >
                           <span className={styles.tableTitle}>
-                            当前隐患（
-                            {hiddenDangerListByDate.length}）
+                            当前隐患（{total}）
                           </span>
                         </div>
 
                         <div className={styles.scrollContainer} id="companyRisk">
-                          <CompanyRisk hiddenDangerListByDate={hiddenDangerListByDate} />
+                          {/* <CompanyRisk hiddenDangerListByDate={list} /> */}
+                          {list && list.length ? (
+                            list.map(item => (
+                              <HiddenDangerCard
+                                className={styles.card}
+                                key={item.id}
+                                data={item}
+                                fieldNames={FIELDNAMES}
+                                onClickImage={this.handleShow}
+                              />
+                            ))
+                          ) : (
+                              <div style={{ textAlign: 'center', color: '#fff' }}>暂无隐患</div>
+                            )}
+                          {pageNum * pageSize < total && (
+                            <div className={styles.loadMoreWrapper}>
+                              <LoadMore
+                                onClick={() => this.handleLoadMore(pageNum)}
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -176,6 +271,17 @@ class CompanyInfoDrawer extends PureComponent {
               </section>
             </div>
           </div>
+          <Lightbox
+            images={images.map((src) => ({ src }))}
+            isOpen={lightBoxVisible}
+            closeButtonTitle="关闭"
+            currentImage={currentImage}
+            onClickPrev={this.handlePrevImage}
+            onClickNext={this.handleNextImage}
+            onClose={this.handleClose}
+            onClickThumbnail={this.handleSwitchImage}
+            showThumbnails
+          />
         </Drawer>
       </div>
     );

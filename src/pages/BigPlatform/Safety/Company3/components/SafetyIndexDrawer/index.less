@@ -1,41 +1,129 @@
-@red: rgb(255, 72, 72);
+@common-color: #0ff;
 
-.empty {
-  color: #FFF;
-  font-size: 16px;
-  text-align: center;
-  margin: 0;
-}
-
-.right {
+.container {
   height: 100%;
-  padding-right: 10px;
-}
+  .section {
+    border: 0;
+    box-shadow: none;
+  }
+  .scrollContainer {
+    height: calc(~'100% - 5.5em') !important;
+  }
+  .content {
+    padding: 0 1em;
+  }
 
-.labels {
-  display: flex;
-  justify-content: space-between;
-}
+  .left {
+    height: 100%;
 
-.label {
-  color: #FFF;
-  text-align: center;
-  padding: 5px 18px;
-  border-radius: 18px;
-  background-color: rgb(5, 71, 149);
-  cursor: pointer;
-}
+    .leftTitle {
+      padding: 1em 0.75em;
+      line-height: 1;
 
-.labelSelected:extend(.label) {
-  background-color: rgb(9, 103, 211);
-}
+      &:before {
+        content: '';
+        display: inline-block;
+        margin-right: 0.75em;
+        width: 3px;
+        height: 1em;
+        background-color: @common-color;
+        vertical-align: top;
+      }
+    }
+    .compositionContainer {
+      padding: 2em;
+      text-align: center;
+    }
+    .compositionWrapper {
+      position: relative;
+      display: inline-block;
+      padding: 3em;
+      border: 2px solid #e5e5e5;
+      vertical-align: top;
+      border-radius: 50%;
 
-.desc {
-  color: @red;
-  margin: 10px 0 10px 18px;
-}
+      .safetyIndex {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 5em;
+        height: 5em;
+        line-height: 1;
+        border-radius: 50%;
 
-.cards {
-  height: calc(100% - 72px);
-  overflow: auto;
+        &:after {
+          content: '安全指数';
+          display: block;
+          margin-top: 0.25em;
+          white-space: nowrap;
+        }
+        span {
+          font-size: 1.75em;
+        }
+      }
+      .compositionLabel {
+        position: absolute;
+      }
+      .compositionIcon {
+        position: absolute;
+        width: 1.5em;
+        height: 1.5em;
+        border-radius: 50%;
+      }
+    }
+  }
+  .right {
+    height: 100%;
+    .rightHeader {
+      padding: 0 1em;
+    }
+
+    .tabList {
+      display: flex;
+
+      .tab {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 2.5em;
+        border: 1px solid @common-color;
+        cursor: pointer;
+
+        &:not(:last-child) {
+          border-right-width: 0;
+        }
+        &:hover {
+          background-color: rgb(5, 71, 149);
+        }
+      }
+    }
+
+    .count {
+      padding: 0.75em;
+    }
+
+    .list {
+      .item {
+        margin-bottom: 1em;
+        &:last-of-type {
+          margin-bottom: 1px;
+        }
+      }
+    }
+    .loadMoreWrapper {
+      padding-top: 1em;
+      text-align: center;
+    }
+    .defaultBackground {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('../../../img/indexBg.png') no-repeat center;
+      background-size: 50%;
+    }
+  }
 }

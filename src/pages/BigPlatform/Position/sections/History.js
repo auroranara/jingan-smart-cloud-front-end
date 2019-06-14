@@ -76,9 +76,11 @@ export default class History extends PureComponent {
       // setUserIds,
     } = this.props;
     // 默认选中最顶层的第一个区域
-    this.setState({ selectedAreaId: originalTree[0].id }, () => {
-      this.getData(defaultRange);
-    });
+    if (originalTree && originalTree[0]) {
+      this.setState({ selectedAreaId: originalTree[0].id }, () => {
+        this.getData(defaultRange);
+      });
+    }
     // 如果是从目标跟踪过来的，则根据跟踪的人员初始化数据
     // if (userIds.length || cardIds.length) {
     //   const params = +idType ? { cardId: cardIds[0] } : { userId: userIds[0] };
@@ -307,6 +309,8 @@ export default class History extends PureComponent {
     } = this.props;
     const { range, selectedAreaId, tableList, date, startTime, endTime } = this.state;
     const [ startTimeStamp, endTimeStamp ] = timeRange;
+    console.log(tree);
+    console.log(originalTree);
 
     const historyTree = originalTree.find(({ id }) => id === selectedAreaId);
     const sectionTreeList = sectionTree.map(sec => ({ ...sec, children: [] }));

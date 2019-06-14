@@ -1,0 +1,29 @@
+.container {
+  padding: 0 1.125em;
+
+  .row {
+    display: flex;
+    padding: 0.5em 0;
+
+    .left {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+    .right {
+      flex: none;
+      display: flex;
+      align-items: center;
+
+      :global {
+        .ant-switch {
+          margin-right: 0.75em;
+          background-color: rgb(174, 174, 174);
+        }
+        .ant-switch-checked {
+          background-color: #0ff;
+        }
+      }
+    }
+  }
+}

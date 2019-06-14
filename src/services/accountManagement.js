@@ -52,8 +52,9 @@ export function checkAccountOrPhone(params) {
 }
 
 /* 获取角色列表 */
-export function queryRoles() {
-  return request(`/acloud_new/v2/rolePermission/user/role`);
+export function queryRoles(params) {
+  // return request(`/acloud_new/v2/rolePermission/user/role?${stringify(params)}`);
+  return request(`/acloud_new/v2/role/getSelRoles?${stringify(params)}`);
 }
 
 /* 查询执法证件种类 */
@@ -72,7 +73,7 @@ export async function queryDepartmentList(params) {
 }
 
 // 获取用户详情(关联企业详情)
-export async function fetchAssociatedUnitDeatil({ userId }) {
+export async function fetchAssociatedUnitDetail({ userId }) {
   return request(`/acloud_new/v2/rolePermission/user/${userId}`);
 }
 

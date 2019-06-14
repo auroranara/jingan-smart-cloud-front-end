@@ -94,17 +94,20 @@ class OverHdCom extends PureComponent {
                                       style={{ cursor: 'pointer' }}
                                       onClick={() => {
                                         dispatch({
-                                          type: 'bigPlatform/fetchRiskDetail',
+                                          type: 'bigPlatform/fetchHiddenDangerListForPage',
                                           payload: {
                                             company_id: item.companyId,
                                             status: '7',
                                             gridId,
+                                            pageNum: 1,
+                                            pageSize: 10,
                                           },
                                         });
                                         // goComponent('hdOverDetail');
                                         handleParentChange({
                                           dangerInfo: true,
                                           dangerCompanyLast: '',
+                                          companyId: item.companyId,
                                         });
                                         if (document.querySelector('#overRisk')) {
                                           document.querySelector('#overRisk').scrollTop = 0;

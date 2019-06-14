@@ -1,8 +1,10 @@
 @RiskCardBorderColor: rgba(2, 252, 250, 0.302);
+// @RiskCardBorderColor: #0ff;
 
+.hack {
+  padding-right: 1px;
+}
 .container {
-  font-size: 16px;
-  line-height: 1;
   color: #fff;
   border: 1px solid @RiskCardBorderColor;
 
@@ -10,8 +12,7 @@
   .titleContainer {
     display: flex;
     align-items: center;
-    padding: 8px 12px;
-    min-height: 48px;
+    padding: 0.75em;
 
     /* 标题 */
     .title {
@@ -39,9 +40,10 @@
 
     /* 图片容器 */
     .avatarContainer {
-      flex: 3;
+      flex: none;
       display: flex;
-      padding: 12px;
+      align-items: center;
+      padding: 0 0.75em;
       border-top: 1px solid @RiskCardBorderColor;
       border-right: 1px solid @RiskCardBorderColor;
       background: no-repeat center center;
@@ -49,7 +51,9 @@
 
       /* 图片 */
       .avatar {
-        flex: 1;
+        flex: none;
+        height: 11em;
+        width: 8.25em;
         background: no-repeat center center;
         background-size: contain;
       }
@@ -57,7 +61,7 @@
 
     /* 信息容器 */
     .infoContainer {
-      flex: 7;
+      flex: 1;
 
       /* 信息 */
       .info {
@@ -69,9 +73,9 @@
           flex: none;
           display: flex;
           align-items: center;
-          padding: 8px 12px;
+          padding: 0.75em;
           width: 8.5em;
-          min-height: 48px;
+          white-space: nowrap;
           color: #00ffff;
         }
         .smallInfoName {
@@ -84,12 +88,14 @@
           flex: 1;
           display: flex;
           align-items: center;
-          word-break: break-all;
-          padding: 8px 12px;
-          min-height: 48px;
+          padding: 0.75em;
           border-left: 1px solid @RiskCardBorderColor;
         }
       }
     }
   }
+}
+
+.checkPerson {
+  margin-right: 0.75em;
 }

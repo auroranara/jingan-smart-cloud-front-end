@@ -16,6 +16,7 @@ import {
   Cascader,
 } from 'antd';
 import { Link, routerRedux } from 'dva/router';
+import router from 'umi/router';
 import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -28,6 +29,7 @@ import safeGray from '../../../assets/safe-gray.png';
 import fire from '../../../assets/fire.png';
 import fireGray from '../../../assets/fire-gray.png';
 
+import codesMap from '@/utils/codes';
 import styles from './CompanyList.less';
 
 const FormItem = Form.Item;
@@ -96,8 +98,9 @@ const breadcrumbList = [
 ];
 
 @connect(
-  ({ company, user, loading }) => ({
+  ({ company, unitDivision, user, loading }) => ({
     company,
+    unitDivision,
     user,
     loading: loading.models.company,
   }),
@@ -186,6 +189,7 @@ const breadcrumbList = [
         ...action,
       });
     },
+    dispatch,
   })
 )
 @Form.create()
@@ -198,6 +202,7 @@ export default class CompanyList extends PureComponent {
   componentDidMount() {
     const {
       fetch,
+      dispatch,
       company: { searchInfo },
       form: { setFieldsValue },
       gsafeFetchDict,
@@ -208,6 +213,14 @@ export default class CompanyList extends PureComponent {
     // 获取行业类别
     fetchIndustryType({
       error,
+    });
+    // 获取单位列表
+    dispatch({
+      type: 'unitDivision/fetchDivisionList',
+      payload: {
+        pageSize,
+        pageNum: 1,
+      },
     });
     // 获取单位状态
     gsafeFetchDict({
@@ -328,7 +341,6 @@ export default class CompanyList extends PureComponent {
     if (isLast) {
       return;
     }
-    console.log('pageNum', pageNum);
 
     // 请求数据
     appendFetch({
@@ -366,6 +378,10 @@ export default class CompanyList extends PureComponent {
       success,
       error,
     });
+  };
+
+  handleGotoDivision = id => {
+    router.push(`/base-info/company/division/list/${id}`);
   };
 
   /* 渲染form表单 */
@@ -478,7 +494,7 @@ export default class CompanyList extends PureComponent {
     const {
       company: { list },
       user: {
-        currentUser: { permissionCodes, unitType },
+        currentUser: { permissionCodes, unitType, permissionCodes: codes },
       },
     } = this.props;
     // 是否有查看权限
@@ -509,6 +525,7 @@ export default class CompanyList extends PureComponent {
               practicalTownLabel,
               safetyProduction,
               fireService,
+              branchNum,
             } = item;
             const practicalAddressLabel =
               (practicalProvinceLabel || '') +
@@ -556,80 +573,91 @@ export default class CompanyList extends PureComponent {
                   //   </Button>
                   // ) : null}
                 >
-                  <div
-                  // onClick={hasDetailAuthority ? () => {
-                  //   goToDetail(id);
-                  // } : null}
-                  // style={hasDetailAuthority ? { cursor: 'pointer' } : null}
-                  >
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      地址：
-                      {practicalAddressLabel || getEmptyData()}
-                    </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      行业类别：
-                      {industryCategoryLabel || getEmptyData()}
-                    </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      负责人：
-                      {safetyName || getEmptyData()}
-                    </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      联系电话：
-                      {safetyPhone || getEmptyData()}
-                    </Ellipsis>
-                    {unitType === 3 ? (
-                      <Popconfirm
-                        title={`确定要${safetyProduction ? '关闭' : '开启'}安全驾驶舱权限吗？`}
-                        onConfirm={() =>
-                          this.handleScreenPermission(
-                            id,
-                            Number(!safetyProduction),
-                            fireService,
-                            list
-                          )
-                        }
-                      >
-                        <img
-                          className={styles.screenControlIcon}
-                          src={safetyProduction ? safe : safeGray}
-                          alt="safe"
-                        />
-                      </Popconfirm>
-                    ) : (
-                      <img
-                        className={styles.defaultIcon}
-                        src={safetyProduction ? safe : safeGray}
-                        alt="safe"
-                      />
-                    )}
-                    {unitType === 3 ? (
-                      <Popconfirm
-                        className={styles.ml30}
-                        title={`确定要${fireService ? '关闭' : '开启'}消防驾驶舱权限吗？`}
-                        onConfirm={() =>
-                          this.handleScreenPermission(
-                            id,
-                            safetyProduction,
-                            Number(!fireService),
-                            list
-                          )
-                        }
-                      >
-                        <img
-                          className={styles.screenControlIcon}
-                          src={fireService ? fire : fireGray}
-                          alt="fire"
-                        />
-                      </Popconfirm>
-                    ) : (
-                      <img
-                        className={`${styles.defaultIcon} ${styles.ml30}`}
-                        src={fireService ? fire : fireGray}
-                        alt="fire"
-                      />
-                    )}
-                  </div>
+                  <Row>
+                    <Col span={16}>
+                      <div>
+                        <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                          地址：
+                          {practicalAddressLabel || getEmptyData()}
+                        </Ellipsis>
+                        <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                          行业类别：
+                          {industryCategoryLabel || getEmptyData()}
+                        </Ellipsis>
+                        <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                          负责人：
+                          {safetyName || getEmptyData()}
+                        </Ellipsis>
+                        <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                          联系电话：
+                          {safetyPhone || getEmptyData()}
+                        </Ellipsis>
+                        {unitType === 3 ? (
+                          <Popconfirm
+                            title={`确定要${safetyProduction ? '关闭' : '开启'}安全驾驶舱权限吗？`}
+                            onConfirm={() =>
+                              this.handleScreenPermission(
+                                id,
+                                Number(!safetyProduction),
+                                fireService,
+                                list
+                              )
+                            }
+                          >
+                            <img
+                              className={styles.screenControlIcon}
+                              src={safetyProduction ? safe : safeGray}
+                              alt="safe"
+                            />
+                          </Popconfirm>
+                        ) : (
+                          <img
+                            className={styles.defaultIcon}
+                            src={safetyProduction ? safe : safeGray}
+                            alt="safe"
+                          />
+                        )}
+                        {unitType === 3 ? (
+                          <Popconfirm
+                            className={styles.ml30}
+                            title={`确定要${fireService ? '关闭' : '开启'}消防驾驶舱权限吗？`}
+                            onConfirm={() =>
+                              this.handleScreenPermission(
+                                id,
+                                safetyProduction,
+                                Number(!fireService),
+                                list
+                              )
+                            }
+                          >
+                            <img
+                              className={styles.screenControlIcon}
+                              src={fireService ? fire : fireGray}
+                              alt="fire"
+                            />
+                          </Popconfirm>
+                        ) : (
+                          <img
+                            className={`${styles.defaultIcon} ${styles.ml30}`}
+                            src={fireService ? fire : fireGray}
+                            alt="fire"
+                          />
+                        )}
+                      </div>
+                    </Col>
+                    {/* <Col
+                      span={8}
+                      onClick={() => {
+                        if (hasAuthority(codesMap.company.division.list, codes))
+                          this.handleGotoDivision(id);
+                        else message.warn('您没有权限访问对应页面');
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <span className={styles.quantity}>{branchNum}</span>
+                      <span className={styles.servicenum}>单位分部</span>
+                    </Col> */}
+                  </Row>
                 </Card>
               </List.Item>
             );

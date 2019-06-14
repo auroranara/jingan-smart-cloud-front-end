@@ -39,7 +39,7 @@ const getStatusLabel = status => {
 /**
  * 根据颜色筛选图片
  */
-const getIconByColor = ({ risk_level, originalStatus } = {}) => {
+const getIconByColor = (risk_level, originalStatus) => {
   if (+originalStatus === 2) {
     switch (+risk_level) {
       case 1:
@@ -99,8 +99,7 @@ export default class FourColor extends PureComponent {
     // 当四色图源数据更新后，默认获取第一个四色图作为初始值
     if (fourColorImg !== prevFourColorImg) {
       this.changeSelectedFourColorImg(fourColorImg[0] || {});
-    }
-    else if (points !==prevPoints || videoList !== prevVideoList) {
+    } else if (points !== prevPoints || videoList !== prevVideoList) {
       this.changeSelectedFourColorImg();
     }
   }
@@ -108,7 +107,7 @@ export default class FourColor extends PureComponent {
   /**
    * 设置选中的四色图并筛选出对应的点位和视频
    */
-  changeSelectedFourColorImg = (selectedFourColorImg=this.state.selectedFourColorImg) => {
+  changeSelectedFourColorImg = (selectedFourColorImg = this.state.selectedFourColorImg) => {
     const { id } = selectedFourColorImg;
     const {
       model: {
@@ -255,40 +254,42 @@ export default class FourColor extends PureComponent {
                 'http://data.jingan-china.cn/v2/big-platform/safety/com/default_four_color.png'})`,
             }}
           >
-            {points.map(({ itemId, xNum, yNum, info }) => {
-              const {
+            {points.map(
+              ({
+                item_id,
+                x_num,
+                y_num,
                 object_title,
                 originalStatus,
                 status,
                 risk_level,
-                user_name,
+                last_check_user_name,
                 last_check_date,
-              } = info || {};
-              // 如果风险告知卡存在，则判断颜色并统计数量，否则默认为灰色
-              switch (+risk_level) {
-                case 1:
-                  red++;
-                  break;
-                case 2:
-                  orange++;
-                  break;
-                case 3:
-                  yellow++;
-                  break;
-                case 4:
-                  blue++;
-                  break;
-                default:
-                  gray++;
-                  break;
-              }
-              return (
-                <Tooltip
-                  key={itemId}
-                  overlayClassName={styles.tooltip}
-                  placement={xNum > 0.5 ? 'left' : 'right'}
-                  title={
-                    info ? (
+              }) => {
+                // 如果风险告知卡存在，则判断颜色并统计数量，否则默认为灰色
+                switch (+risk_level) {
+                  case 1:
+                    red++;
+                    break;
+                  case 2:
+                    orange++;
+                    break;
+                  case 3:
+                    yellow++;
+                    break;
+                  case 4:
+                    blue++;
+                    break;
+                  default:
+                    gray++;
+                    break;
+                }
+                return (
+                  <Tooltip
+                    key={item_id}
+                    overlayClassName={styles.tooltip}
+                    placement={x_num > 0.5 ? 'left' : 'right'}
+                    title={
                       <Fragment>
                         <div>{object_title}</div>
                         <div>
@@ -305,33 +306,33 @@ export default class FourColor extends PureComponent {
                         </div>
                         <div>
                           最近巡查：
-                          {user_name && last_check_date
-                            ? `${user_name} ${moment(last_check_date).format('YYYY-MM-DD')}`
+                          {last_check_user_name && last_check_date
+                            ? `${last_check_user_name} ${moment(last_check_date).format(
+                                'YYYY-MM-DD'
+                              )}`
                             : '暂无数据'}
                         </div>
                       </Fragment>
-                    ) : (
-                      <div style={{ textAlign: 'center' }}>暂无信息</div>
-                    )
-                  }
-                >
-                  <div
-                    key={itemId}
-                    className={styles.point}
-                    style={{
-                      left: `${xNum * 100}%`,
-                      bottom: `${(1 - yNum) * 100}%`,
-                      width: 32,
-                      height: 35,
-                      backgroundImage: `url(${getIconByColor(info)})`,
-                    }}
-                    onClick={() => {
-                      handleClickPoint(itemId, status);
-                    }}
-                  />
-                </Tooltip>
-              );
-            })}
+                    }
+                  >
+                    <div
+                      key={item_id}
+                      className={styles.point}
+                      style={{
+                        left: `${x_num * 100}%`,
+                        bottom: `${(1 - y_num) * 100}%`,
+                        width: 32,
+                        height: 35,
+                        backgroundImage: `url(${getIconByColor(risk_level, originalStatus)})`,
+                      }}
+                      onClick={() => {
+                        handleClickPoint(item_id, status);
+                      }}
+                    />
+                  </Tooltip>
+                );
+              }
+            )}
             {videos.map(({ id, name, key_id: keyId, x_num, y_num }) => {
               return (
                 <Tooltip key={id} overlayClassName={styles.tooltip} placement="top" title={name}>
@@ -347,7 +348,7 @@ export default class FourColor extends PureComponent {
                       boxShadow: '0px 1px 5px 0px rgba(0, 0, 0, 0.35)',
                     }}
                     onClick={() => {
-                      handleClickVideo(keyId);
+                      handleClickVideo(id);
                     }}
                   />
                 </Tooltip>

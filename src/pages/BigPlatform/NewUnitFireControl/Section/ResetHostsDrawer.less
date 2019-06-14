@@ -1,0 +1,137 @@
+.overflow() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.content {
+  position: relative;
+  color: #fff;
+  height: 100%;
+
+  .scrollContainer {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-bottom: 50px;
+    position: relative;
+
+    &::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: #064c9e;
+    }
+
+    .hostSectionBottom {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      left: 0;
+      padding-top: 12px;
+      height: 48px;
+      font-size: 14px;
+      z-index: 66;
+
+      .hostNumber {
+        flex: 1;
+        margin-left: 16px;
+      }
+
+      .resetAllHostsButton {
+        flex: none;
+        width: 100px;
+        height: 36px;
+        line-height: 36px;
+        text-align: center;
+        background-color: #0967d3;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .hostContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #0967d3;
+
+    .hostIconContainer {
+      flex: none;
+      margin: 0 24px;
+      width: 24px;
+      height: 39px;
+    }
+
+    .hostInfoContainer {
+      flex: 1;
+      padding: 12px 0;
+
+      .hostInfoItem {
+        display: flex;
+        font-size: 14px;
+
+        &.fireHostInfoItem {
+          &> :first-child {
+            color: #ff6464;
+          }
+
+          &> :nth-child(2) {
+            color: #ff6464;
+          }
+        }
+
+        &:first-child {
+          margin-bottom: 10px;
+        }
+
+        &> :first-child {
+          flex: none;
+          width: 72px;
+          color: #00a8ff;
+        }
+
+        &> :nth-child(2) {
+          flex: 1;
+          .overflow;
+        }
+      }
+    }
+
+    .hostResetButton {
+      margin-right: 32px;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .hostIsEmpty {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 14px;
+  }
+}

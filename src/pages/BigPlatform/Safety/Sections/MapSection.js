@@ -15,6 +15,28 @@ import govdotGray from '../img/govdot-gray.png';
 
 const { region } = global.PROJECT_CONFIG;
 const zooms = [3, 20];
+const colors = [
+  '#dc3912',
+  '#ff9900',
+  '#109618',
+  '#990099',
+  '#0099c6',
+  '#dd4477',
+  '#66aa00',
+  '#b82e2e',
+  '#316395',
+  '#994499',
+  '#22aa99',
+  '#aaaa11',
+  '#6633cc',
+  '#e67300',
+  '#8b0707',
+  '#651067',
+  '#329262',
+  '#5574a6',
+  '#3b3eac',
+  '#3366cc',
+];
 let fitView = true;
 @connect(({ bigPlatformSafetyCompany }) => ({ bigPlatformSafetyCompany }))
 class MapSection extends PureComponent {
@@ -247,6 +269,28 @@ class MapSection extends PureComponent {
     );
   };
 
+  // 渲染多边形
+  renderPolygons = () => {
+    const { polygons } = this.props;
+    return polygons.map((p, i) => {
+      if (p && p.length) {
+        return (
+          <Polygon
+            key={i}
+            path={p}
+            visible={p.length}
+            style={{
+              strokeColor: colors[i % 20],
+              strokeOpacity: 1,
+              strokeWeight: 0.5,
+              fillColor: colors[i % 20],
+              fillOpacity: 0.5,
+            }}
+          />
+        );
+      }
+    });
+  };
   handleHideInfoWindow = () => {
     this.props.handleHideInfoWindow();
   };
@@ -355,11 +399,11 @@ class MapSection extends PureComponent {
   };
 
   render() {
-    const { center, zoom, polygon, handleParentChange } = this.props;
+    const { center, zoom, handleParentChange } = this.props;
 
     return (
       <section className={styles2.sectionWrapper} style={{ marginTop: '12px', flex: 1 }}>
-        <div className={styles2.sectionWrapperIn}>
+        <div className={styles2.sectionWrapperIn} style={{ padding: 0, marginTop: '1px' }}>
           <div className={styles2.sectionMain} style={{ border: 'none' }}>
             <div className={styles.mapContainer}>
               <GDMap
@@ -373,7 +417,7 @@ class MapSection extends PureComponent {
                   keyboardEnable: false,
                 }}
                 useAMapUI
-                mapStyle="amap://styles/88a73b344f8608540c84a2d7acd75f18"
+                mapStyle="amap://styles/b9d9da96da6ba2487d60019876b26fc5"
                 center={center}
                 zoom={zoom}
                 pitch={60}
@@ -386,16 +430,7 @@ class MapSection extends PureComponent {
                   },
                 }}
               >
-                <Polygon
-                  path={polygon}
-                  visible={polygon.length}
-                  style={{
-                    strokeColor: '#5ebeff',
-                    strokeOpacity: 1,
-                    fillColor: '#5ebeff',
-                    fillOpacity: 0.5,
-                  }}
-                />
+                {this.renderPolygons()}
                 {this.renderInfoWindow()}
                 {this.renderMarkers()}
                 <MapTypeBar />
@@ -409,15 +444,7 @@ class MapSection extends PureComponent {
                       legendActive: null,
                       searchValue: '',
                     });
-                    // if (this.mapInstance) {
-                    //   this.mapInstance.setFitView();
-                    //   // this.mapInstance.setZoomAndCenter(locationDefault.zoom, [
-                    //   //   locationDefault.x,
-                    //   //   locationDefault.y,
-                    //   // ]);
-                    // }
                     if (this.props.comInfo) {
-                      // this.props.goBack();
                       handleParentChange({ companyInfoDrawer: false });
                     }
                   }}
@@ -426,20 +453,10 @@ class MapSection extends PureComponent {
                   重置
                 </div>
               </GDMap>
-              {/* <MapSearch
-          style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
-          selectList={selectList}
-          value={searchValue}
-          handleChange={this.handleInputChange}
-          handleSelect={this.handleSearchSelect}
-        /> */}
+
               <MapSearch
                 style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 666 }}
                 handleSelect={this.handleSearchSelect}
-                // selectList={selectList}
-                // value={searchValue}
-                // handleChange={this.handleInputChange}
-                // handleSelect={this.handleSearchSelect}
               />
               {this.renderMapLegend()}
             </div>

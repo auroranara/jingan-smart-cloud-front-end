@@ -8,6 +8,7 @@ import {
   getStatusCount,
   getMonthCount,
   getServerTime,
+  clearPosByArea,
 } from '../services/bigPlatform/personPosition';
 import { genAggregation, getSectionTree } from '@/pages/BigPlatform/Position/utils';
 
@@ -95,6 +96,11 @@ export default {
       if (code === 200)
         yield put({ type: 'saveServerTime', payload: data });
       callback && callback(code, data);
+    },
+    *clearPositions({ payload, callback }, { call, put }) {
+      const response = yield call(clearPosByArea, payload);
+      const { code=500, msg } = response || {};
+      callback && callback(code, msg);
     },
   },
 

@@ -22,6 +22,7 @@ import {
   getRiskPoints,
   getSafeMan,
   getHostAlarmTrend,
+  fetchCameraTree,
 } from '../services/bigPlatform/fireControl';
 
 const DEFAULT_CODE = 500;
@@ -37,7 +38,7 @@ function handleDanger(response, isCompany = false) {
   });
 
   const { list, gridList } = response['check_map'].reduce(
-    function(prev, next) {
+    function (prev, next) {
       const { month, day, grid_check_point, self_check_point } = next;
       const key = `${month}.${day}`;
       const time = `${month}/${day}`;
@@ -110,6 +111,7 @@ export default {
     danger: {},
     dangerList: [], // 隐患企业列表
     dangerRecords: [], // 隐患巡查记录
+    dangerRecordsMap: {},
     gridDanger: {},
     companyDanger: {},
     alarmProcess: {
@@ -136,6 +138,7 @@ export default {
     countdown: {},
     offGuard: {},
     allCamera: [],
+    cameraTree: [],
     // startToPlay: '',
     videoLookUp: [],
     lookUpCamera: [],
@@ -231,11 +234,26 @@ export default {
       const response = yield call(queryDangerList, payload);
       yield put({ type: 'saveDangerList', payload: response || [] });
     },
-    *fetchDangerRecords({ payload }, { call, put }) {
+    *fetchDangerRecords({ payload, callback }, { call, put }) {
       const response = yield call(getHiddenDangerRecords, payload);
-      if (response && Array.isArray(response.hiddenDangers))
-        yield put({ type: 'saveDangerRecords', payload: response.hiddenDangers });
+      const list = response && Array.isArray(response.hiddenDangers) ? response.hiddenDangers : [];
+      yield put({
+        type: 'saveDangerRecords',
+        payload: { list, pageNum: payload.pageNum },
+      });
+      if (response)
+        callback && callback();
     },
+    // *fetchDangerRecordsMap({ payload, callback }, { call, put }) {
+    //   const response = yield call(getHiddenDangerRecords, payload);
+    //   const list = response && Array.isArray(response.hiddenDangers) ? response.hiddenDangers : [];
+    //   yield put({
+    //     type: 'saveDangerRecordsMap',
+    //     payload: { list, pageNum: payload.pageNum, companyId: payload.company_id },
+    //   });
+    //   if (response)
+    //     callback && callback();
+    // },
     *fetchInitLookUp({ payload, callback }, { call, put }) {
       let response = yield call(queryLookUp, payload);
       response = response || EMPTY_OBJECT;
@@ -287,6 +305,11 @@ export default {
       const { list } = response;
       yield put({ type: 'saveAllCamera', payload: list });
     },
+    *fetchCameraTree({ payload }, { call, put }) {
+      const response = yield call(fetchCameraTree, payload);
+      const { list } = response;
+      yield put({ type: 'saveCameraTree', payload: list });
+    },
     *fetchVideoLookUp({ payload, callback }, { call, put }) {
       let response = yield call(getVideoLookUp, payload);
       response = response || EMPTY_OBJECT;
@@ -329,15 +352,16 @@ export default {
     },
     // 获取安全员
     *fetchSafeMan({ payload }, { call, put }) {
-      let response = yield call(getSafeMan, payload);
-      if (response)
-        yield put({ type: 'saveSafeMan', payload: response });
+      const response = yield call(getSafeMan, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveSafeMan', payload: data && data.roleMap ? data.roleMap : {} });
     },
     // 获取最近十二个月的主机报警数量
     *fetchHostAlarmTrend({ payload }, { call, put }) {
       let response = yield call(getHostAlarmTrend, payload);
       response = response || {};
-      const { code=DEFAULT_CODE, data={} } = response;
+      const { code = DEFAULT_CODE, data = {} } = response;
       if (code === 200)
         yield put({ type: 'saveHostAlarmTrend', payload: data || {} });
     },
@@ -385,10 +409,27 @@ export default {
       return { ...state, dangerList };
     },
     saveDangerRecords(state, action) {
-      // 过滤掉隐患记录中的已关闭
-      return { ...state, dangerRecords: action.payload.filter(({ status }) => status !== '4') };
-      // return { ...state, dangerRecords: action.payload };
+      const { list, pageNum } = action.payload;
+      return { ...state, dangerRecords: pageNum === 1 ? list : state.dangerRecords.concat(list) };
     },
+    // saveDangerRecordsMap(state, action) {
+    //   const { list, pageNum, companyId } = action.payload;
+    //   const { dangerRecordsMap } = state;
+    //   const newDangerRecordsMap = { ...dangerRecordsMap };
+    //   let newList;
+    //   if (pageNum === 1)
+    //     newList = list;
+    //   else
+    //     newList = dangerRecordsMap[companyId].concat(list);
+    //   newDangerRecordsMap[companyId] = newList;
+    //   return { ...state, dangerRecordsMap: newDangerRecordsMap };
+    // },
+    // removeDangerRecordsMap(state, action) {
+    //   const companyId = action.payload;
+    //   const newDangerRecordsMap = { ...state.dangerRecordsMap };
+    //   delete newDangerRecordsMap[companyId];
+    //   return { ...state, dangerRecordsMap: newDangerRecordsMap };
+    // },
     saveAllCamera(state, action) {
       return { ...state, allCamera: action.payload };
     },
@@ -439,6 +480,9 @@ export default {
     },
     saveHostAlarmTrend(state, action) {
       return { ...state, hostAlarmTrend: action.payload };
+    },
+    saveCameraTree(state, action) {
+      return { ...state, cameraTree: action.payload };
     },
   },
 };

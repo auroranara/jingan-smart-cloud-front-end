@@ -1,4 +1,7 @@
 import moment from 'moment';
+import { TreeSelect } from 'antd';
+
+const { TreeNode: TreeSelectNode } = TreeSelect;
 
 export const OPTIONS_RED = '#FF0019';
 export const OPTIONS_BLUE = '#0FF';
@@ -85,14 +88,17 @@ const ALARM = 2;
 export function genTreeList(list, callback, deep = 0, parent = null) {
   return list.map(item => {
     const { children, ...restProps } = item;
-    const newItem = callback(restProps);
+    const newItem = callback(restProps); // range不存在，就返回null，最后再过滤掉
+    if (!newItem)
+      return null;
     newItem.indentLevel = deep;
     newItem.parent = parent;
-    newItem.range.options.color = newItem.status === ALARM ? OPTIONS_RED : OPTIONS_BLUE;
+    if (newItem.range)
+      newItem.range.options.color = newItem.status === ALARM ? OPTIONS_RED : OPTIONS_BLUE;
     if (children && children.length)
       newItem.children = genTreeList(children, callback, deep + 1, newItem);
     return newItem;
-  });
+  }).filter(itm => itm);
 }
 
 // export function handleSectionTree(list) {
@@ -117,9 +123,14 @@ export function getSectionTree(list) {
       tlongStatus,
       mapPhoto,
       range,
+      children,
       ...restProps
     } = item;
     const status = lackStatus || outstripStatus || overstepStatus || tlongStatus ? 2 : 1;
+
+    if (!range)
+      return;
+
     const parsedRange = JSON.parse(range);
     parsedRange.id = `${id}_@@section`;
     // parsedRange.options.fill = false; // 无法点击
@@ -553,4 +564,20 @@ export function getDefaultRange() {
 
 export function getHourFromMoment(m, date) {
   return Math.ceil((+m - +date) / 3600000);
+}
+
+export function renderTreeNodes(list, childrenProp='children', titleProp='name', keyProp='id') {
+  return list.map(item => {
+    const children = item[childrenProp];
+    const title = item[titleProp];
+    const key = item[keyProp];
+    if (children) {
+      return (
+        <TreeSelectNode title={title} value={key} key={key} dataRef={item}>
+          {renderTreeNodes(children, childrenProp, titleProp, keyProp)}
+        </TreeSelectNode>
+      );
+    }
+    return <TreeSelectNode title={title} value={key} key={key} dataRef={item}/>;
+  });
 }

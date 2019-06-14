@@ -8,9 +8,9 @@ class DangerCompanyDrawer extends PureComponent {
     this.state = {};
   }
 
-  componentDidMount() {}
+  componentDidMount() { }
 
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   handleClick = id => {
     const {
@@ -25,26 +25,30 @@ class DangerCompanyDrawer extends PureComponent {
     const param = lastSection === 'checks' ? { date: month } : {};
     if (lastSection === 'checks') {
       dispatch({
-        type: 'bigPlatform/fetchHiddenDangerListByDate',
+        type: 'bigPlatform/fetchHiddenDangerListByDateForPage',
         payload: {
           company_id: id,
           reportUserId: checkUserId,
           ...param,
           gridId,
           status,
+          pageNum: 1,
+          pageSize: 10,
         },
       });
     } else {
       dispatch({
-        type: 'bigPlatform/fetchRiskDetail',
+        type: 'bigPlatform/fetchHiddenDangerListForPage',
         payload: {
           company_id: id,
           gridId,
           status,
+          pageNum: 1,
+          pageSize: 10,
         },
       });
     }
-    handleParentChange({ dangerInfo: true });
+    handleParentChange({ dangerInfo: true, companyId: id });
     if (document.querySelector('#hiddenDanger')) {
       document.querySelector('#hiddenDanger').scrollTop = 0;
     }
@@ -64,7 +68,7 @@ class DangerCompanyDrawer extends PureComponent {
           width={500}
           closable={false}
           onClose={() => {
-            handleParentChange({ dangerCoDrawer: false });
+            handleParentChange({ dangerCoDrawer: false, dangerCompanyLast: '' });
           }}
           visible={visible}
           style={{ padding: 0 }}
@@ -86,7 +90,7 @@ class DangerCompanyDrawer extends PureComponent {
                   <div
                     className={styles.backBtn}
                     onClick={() => {
-                      handleParentChange({ dangerCoDrawer: false });
+                      handleParentChange({ dangerCoDrawer: false, dangerCompanyLast: '' });
                     }}
                   />
                   <div className={styles.sectionMain}>
@@ -149,17 +153,17 @@ class DangerCompanyDrawer extends PureComponent {
                             </tbody>
                           </table>
                         ) : (
-                          <div
-                            style={{
-                              textAlign: 'center',
-                              lineHeight: '100px',
-                              position: 'absolute',
-                              width: '100%',
-                            }}
-                          >
-                            暂无数据
+                            <div
+                              style={{
+                                textAlign: 'center',
+                                lineHeight: '100px',
+                                position: 'absolute',
+                                width: '100%',
+                              }}
+                            >
+                              暂无数据
                           </div>
-                        )}
+                          )}
                       </div>
                     </div>
                   </div>

@@ -117,8 +117,8 @@ export default class ContractHandler extends PureComponent {
     submitting: false,
     uploading: false,
     fileList: [],
-    filterMaintenanceId: undefined,
-    filterCompanyId: undefined,
+    filterMaintenanceId: undefined, // 选中的维保单位的key
+    filterCompanyId: undefined, // 选中的服务单位的key（ 企业id + 空格 + 分部id ）
   };
 
   /* 挂载后 */
@@ -138,7 +138,7 @@ export default class ContractHandler extends PureComponent {
         payload: {
           id,
         },
-        success: ({ contractAppendix, maintenanceId, companyId, maintenanceName, companyName }) => {
+        success: ({ contractAppendix, maintenanceId, companyId, maintenanceName, companyName, companyBranchId }) => {
           const contractList = contractAppendix ? JSON.parse(contractAppendix) : [];
           if (contractList.length !== 0) {
             this.setState({
@@ -153,7 +153,7 @@ export default class ContractHandler extends PureComponent {
           }
           this.setState({
             filterMaintenanceId: maintenanceId,
-            filterCompanyId: companyId,
+            filterCompanyId: `${companyId} ` + (companyBranchId || ''),
           });
           fetchMaintenanceList({
             payload: {
@@ -220,7 +220,8 @@ export default class ContractHandler extends PureComponent {
         const payload = {
           contractCode: contractCode.trim(),
           maintenanceId: maintenanceId.key,
-          companyId: companyId.key,
+          companyId: companyId.key.split(' ')[0],
+          companyBranchId: companyId.key.split(' ')[1],
           signingDate: signingDate.format('YYYY-MM-DD'),
           signingAddr: signingAddr.trim(),
           startTime: startTime.format('YYYY-MM-DD'),
@@ -276,7 +277,7 @@ export default class ContractHandler extends PureComponent {
         name: value && value.trim(),
         pageSize: defaultPageSize,
         pageNum: 1,
-        companyId: filterCompanyId,
+        companyId: filterCompanyId ? filterCompanyId.split(' ')[0] : null,
       },
     });
   };
@@ -334,7 +335,7 @@ export default class ContractHandler extends PureComponent {
           payload: {
             pageSize: defaultPageSize,
             pageNum: 1,
-            companyId: filterCompanyId,
+            companyId: filterCompanyId ? filterCompanyId.split(' ')[0] : null,
           },
         });
       }
@@ -356,7 +357,7 @@ export default class ContractHandler extends PureComponent {
         // 如果筛选出的数据存在的话，则设置选中对应的下拉框选项
         setFieldsValue({
           companyId: {
-            key: service.id,
+            key: `${service.id} ${service.branchId}`,
             label: service.name,
           },
         });
@@ -492,6 +493,7 @@ export default class ContractHandler extends PureComponent {
           startTime,
           endTime,
           serviceContent,
+          companyBranchId = null,
         },
       },
       user: {
@@ -501,6 +503,7 @@ export default class ContractHandler extends PureComponent {
       loading,
     } = this.props;
     const { filterMaintenanceId, filterCompanyId, uploading } = this.state;
+    const newFilterCompanyId = filterCompanyId ? filterCompanyId.split(' ')[0] : null
     const filterMaintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0];
     const filterMaintenanceCompanyId = filterMaintenance && filterMaintenance.companyId;
     const hasListAuthority = hasAuthority(listCode, permissionCodes);
@@ -523,9 +526,9 @@ export default class ContractHandler extends PureComponent {
                   initialValue:
                     maintenanceId && maintenanceName
                       ? {
-                          key: maintenanceId,
-                          label: maintenanceName,
-                        }
+                        key: maintenanceId,
+                        label: maintenanceName,
+                      }
                       : undefined,
                   rules: [
                     {
@@ -551,7 +554,7 @@ export default class ContractHandler extends PureComponent {
                     optionLabelProp="children"
                   >
                     {maintenanceList.map(item => (
-                      <Option key={item.id} disabled={item.companyId === filterCompanyId}>
+                      <Option key={item.id} disabled={item.companyId === newFilterCompanyId}>
                         {item.name}
                       </Option>
                     ))}
@@ -565,9 +568,9 @@ export default class ContractHandler extends PureComponent {
                   initialValue:
                     companyId && companyName
                       ? {
-                          key: companyId,
-                          label: companyName,
-                        }
+                        key: `${companyId} ${companyBranchId || ''}`,
+                        label: companyName,
+                      }
                       : undefined,
                   rules: [
                     {
@@ -594,7 +597,7 @@ export default class ContractHandler extends PureComponent {
                     optionLabelProp="children"
                   >
                     {serviceList.map(item => (
-                      <Option key={item.id} disabled={item.id === filterMaintenanceCompanyId}>
+                      <Option key={`${item.id} ${item.branchId || ''}`} disabled={item.id === filterMaintenanceCompanyId}>
                         {item.name}
                       </Option>
                     ))}

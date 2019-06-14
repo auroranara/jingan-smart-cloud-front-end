@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Carousel, Tooltip, Col } from 'antd';
-import debounce from 'lodash/debounce';
+import { Carousel, Tooltip } from 'antd';
+import { connect } from 'dva';
 import Section from '../Section';
 // 消防主机
 import fireEngineIcon from '../../imgs/dynamic-monitor/fire_engine.png';
@@ -37,25 +37,18 @@ const getValue = data => {
 /**
  * 动态监测
  */
+@connect(({ unitSafety }) => ({
+  unitSafety,
+}))
 export default class DynamicMonitor extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      zoom: 1,
-    };
-    this.debouncedResize = debounce(this.resize, 300);
-    this.carouselTimer = null;
-  }
+  carouselTimer = null;
 
   componentDidMount() {
     this.setCarouselTimer();
-    window.addEventListener('resize', this.debouncedResize);
-    this.resize();
   }
 
   componentWillUnmount() {
     clearTimeout(this.carouselTimer);
-    window.removeEventListener('resize', this.debouncedResize);
   }
 
   refCarousel = carousel => {
@@ -69,23 +62,21 @@ export default class DynamicMonitor extends PureComponent {
     }, 10 * 1000);
   };
 
-  resize = () => {
-    this.setState({ zoom: window.innerWidth / 1920 });
-  };
-
-  renderTooltip = showTotal => {
+  renderTooltip = (showAlarm, showTotal = true) => {
     return (
       <div>
-        {!!showTotal && (
+        {!!showAlarm && (
           <div>
             <div className={styles.circle} style={{ backgroundColor: '#ff4848' }} />
             报警设备
           </div>
         )}
-        <div>
-          <div className={styles.circle} style={{ backgroundColor: '#00ffff' }} />
-          设备总数
-        </div>
+        {!!showTotal && (
+          <div>
+            <div className={styles.circle} style={{ backgroundColor: '#00ffff' }} />
+            设备总数
+          </div>
+        )}
       </div>
     );
   };
@@ -94,21 +85,24 @@ export default class DynamicMonitor extends PureComponent {
     const {
       // 点击驾驶舱按钮
       onClick,
+      // 点击项
+      onShow,
       // 源数据
-      data: {
-        fireEngine,
-        electricalFire,
-        smokeAlarm,
-        storageTank,
-        toxicGas,
-        effluent,
-        exhaustGas,
-        videoMonitor,
-      } = {},
+      unitSafety: {
+        dynamicMonitorData: {
+          fireEngine,
+          electricalFire,
+          smokeAlarm,
+          storageTank,
+          toxicGas,
+          effluent,
+          exhaustGas,
+          videoMonitor,
+        }={},
+      },
       handleClickVideo,
-      handleClickGas,
+      // handleClickGas,
     } = this.props;
-    // const { zoom } = this.state;
 
     const list = [
       {
@@ -116,24 +110,36 @@ export default class DynamicMonitor extends PureComponent {
         value: getValue(fireEngine),
         icon: fireEngineIcon,
         originalValue: fireEngine,
+        onClick: () => {
+          onShow('7');
+        },
       },
       {
         key: '电气火灾',
         value: getValue(electricalFire),
         icon: electricalFireIcon,
         originalValue: electricalFire,
+        onClick: () => {
+          onShow('1');
+        },
       },
       {
         key: '独立烟感',
         value: getValue(smokeAlarm),
         icon: smokeAlarmIcon,
         originalValue: smokeAlarm,
+        onClick: () => {
+          onShow('6');
+        },
       },
       {
         key: '储罐',
         value: getValue(storageTank),
         icon: storageTankIcon,
         originalValue: storageTank,
+        onClick: () => {
+          onShow('5');
+        },
       },
       {
         key: '可燃有毒气体',
@@ -141,7 +147,8 @@ export default class DynamicMonitor extends PureComponent {
         icon: toxicGasIcon,
         originalValue: toxicGas,
         onClick: () => {
-          handleClickGas();
+          // handleClickGas();
+          onShow('2');
         },
       },
       {
@@ -149,12 +156,18 @@ export default class DynamicMonitor extends PureComponent {
         value: getValue(effluent),
         icon: effluentIcon,
         originalValue: effluent,
+        onClick: () => {
+          onShow('3');
+        },
       },
       {
         key: '废气',
         value: getValue(exhaustGas),
         icon: exhaustGasIcon,
         originalValue: exhaustGas,
+        onClick: () => {
+          onShow('4');
+        },
       },
       {
         key: '视频监控设备',
@@ -166,7 +179,11 @@ export default class DynamicMonitor extends PureComponent {
         },
       },
     ].filter(({ originalValue: { totalNum } = {} }) => totalNum);
-
+    const newList = [];
+    for (let index = 0; index < list.length / 4; index++) {
+      let item = list.slice(4 * index, 4 * (index + 1));
+      newList.push(item);
+    }
     return (
       <Section
         title="动态监测"
@@ -179,55 +196,15 @@ export default class DynamicMonitor extends PureComponent {
       >
         <div className={styles.container}>
           <Carousel className={styles.carousel} ref={this.refCarousel}>
-            <div className={styles.listWrapper}>
-              <div
-                className={styles.list}
-                //  style={{ zoom }}
-              >
-                {list
-                  .slice(0, 4)
-                  .map(({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }) => {
-                    return (
-                      <Col xs={24} sm={12} md={12} lg={12}>
-                        <div
-                          className={styles.item}
-                          style={{
-                            backgroundImage: `url(${icon})`,
-                            cursor: onClick ? 'pointer' : 'default',
-                          }}
-                          key={key}
-                          onClick={onClick || undefined}
-                        >
-                          <div className={styles.itemLabel}>{key}</div>
-
-                          <div className={styles.itemValue}>
-                            <Tooltip
-                              placement="right"
-                              title={this.renderTooltip(warningNum !== undefined)}
-                            >
-                              {value}
-                              {warningNum !== undefined && `/${totalNum}`}
-                            </Tooltip>
-                          </div>
-                        </div>
-                      </Col>
-                    );
-                  })}
-              </div>
-              {list.length === 0 && <div className={styles.default} />}
-            </div>
-            {list.length > 4 && (
-              <div className={styles.listWrapper}>
-                <div
-                  className={styles.list}
-                  //  style={{ zoom }}
-                >
-                  {list
-                    .slice(4, 8)
-                    .map(
-                      ({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }) => {
+            {newList.map((lists, index) => {
+              return (
+                <div className={styles.listWrapper} key={index}>
+                  <div
+                    className={styles.list}
+                  >
+                    {lists.map(
+                      ({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }, i) => {
                         return (
-                          <Col xs={24} sm={12} md={12} lg={12}>
                             <div
                               className={styles.item}
                               style={{
@@ -238,23 +215,27 @@ export default class DynamicMonitor extends PureComponent {
                               onClick={onClick || undefined}
                             >
                               <div className={styles.itemLabel}>{key}</div>
+
                               <div className={styles.itemValue}>
                                 <Tooltip
                                   placement="right"
-                                  title={this.renderTooltip(warningNum !== undefined)}
+                                  title={this.renderTooltip(
+                                    warningNum !== undefined,
+                                    key !== '消防主机'
+                                  )}
                                 >
                                   {value}
-                                  {warningNum !== undefined && `/${totalNum}`}
+                                  {warningNum !== undefined && key !== '消防主机' && `/${totalNum}`}
                                 </Tooltip>
                               </div>
                             </div>
-                          </Col>
                         );
                       }
                     )}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })}
           </Carousel>
         </div>
       </Section>

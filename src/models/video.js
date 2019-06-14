@@ -9,6 +9,7 @@ import {
   fetchCompanyList,
   fetchCompanyOptions,
   synchronizeDirectory,
+  fetchGovList,
 } from '../services/video';
 // import { queryVideoList, bindVideo, queryFolderTree, queryVideoDetail, queryVideoUrl } from '../services/video';
 // import { getIdMap } from '../pages/DeviceManagement/HikVideoTree/FolderTree';
@@ -44,8 +45,22 @@ export default {
       departmentTree: [],
       companyList: [],
       companyOptions: [],
+      govIsLast: false,
+      govList: [],
+      govPagination: {
+        pageNum: 1,
+        pageSize: 18,
+        total: 0,
+      },
     },
     companyData: {
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 30,
+      },
+    },
+    govData: {
       pagination: {
         total: 0,
         pageNum: 1,
@@ -190,6 +205,25 @@ export default {
         if (success) success();
       } else if (error) error();
     },
+    // videoPermissionList页-获取企业列表
+    *fetchGovList({ payload, callback }, { call, put }) {
+      const response = yield call(fetchGovList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveGovList',
+          payload: response.data,
+        });
+      }
+    },
+    *fetchGovListByScorll({ payload, callback }, { call, put }) {
+      const response = yield call(fetchGovList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveGovListByScroll',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -300,6 +334,47 @@ export default {
           isLast: pageNum * pageSize >= total,
           list: [...state.list, ...list],
           pagination: { pageNum, pageSize, total },
+        },
+      };
+    },
+    saveGovList(
+      state,
+      {
+        payload: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
+      return {
+        ...state,
+        permission: {
+          ...state.permission,
+          govIsLast: pageNum * pageSize >= total,
+          govList: list,
+          govPagination: { pageNum, pageSize, total },
+        },
+        govData: {
+          pagination: { pageNum, pageSize, total },
+        },
+      };
+    },
+    saveGovListByScroll(
+      state,
+      {
+        payload: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
+      return {
+        ...state,
+        permission: {
+          ...state.permission,
+          govIsLast: pageNum * pageSize >= total,
+          govList: [...state.permission.govList, ...list],
+          govPagination: { pageNum, pageSize, total },
         },
       };
     },

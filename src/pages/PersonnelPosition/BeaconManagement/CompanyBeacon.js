@@ -442,7 +442,7 @@ export default class CompanyBeacon extends PureComponent {
         title: '电量',
         dataIndex: 'battery',
         align: 'center',
-        render: val => <span>{val ? `${val}%` : '暂无数据'}</span>,
+        render: val => <span>{Array.isArray(val) ? `${val}%` : '0%'}</span>,
         width: 120,
       },
       {
@@ -456,8 +456,8 @@ export default class CompanyBeacon extends PureComponent {
                 <a>删除</a>
               </Popconfirm>
             ) : (
-              <a style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</a>
-            )}
+                <a style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</a>
+              )}
             <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.goToEdit(row)}>
               编辑
@@ -537,10 +537,10 @@ export default class CompanyBeacon extends PureComponent {
               }}
             />
           ) : (
-            <div style={{ textAlign: 'center' }}>
-              <span>暂无数据</span>
-            </div>
-          )}
+              <div style={{ textAlign: 'center' }}>
+                <span>暂无数据</span>
+              </div>
+            )}
         </Card>
         {/* 添加、编辑信标弹窗 */}
         <Modal
@@ -621,13 +621,13 @@ export default class CompanyBeacon extends PureComponent {
                       <img src={selectedMap.url} alt={selectedMap.name} />
                     </div>
                   ) : (
-                    <div
-                      className={styles.selectMap}
-                      onClick={() => this.setState({ unitModalVisible: true })}
-                    >
-                      <Icon type="plus" />
-                    </div>
-                  )}
+                      <div
+                        className={styles.selectMap}
+                        onClick={() => this.setState({ unitModalVisible: true })}
+                      >
+                        <Icon type="plus" />
+                      </div>
+                    )}
                 </Fragment>
               )}
             </Form.Item>
@@ -691,10 +691,10 @@ export default class CompanyBeacon extends PureComponent {
               ))}
             </div>
           ) : (
-            <div className={styles.emptyContent}>
-              <span>暂无数据</span>
-            </div>
-          )}
+              <div className={styles.emptyContent}>
+                <span>暂无数据</span>
+              </div>
+            )}
         </Modal>
       </PageHeaderLayout>
     );

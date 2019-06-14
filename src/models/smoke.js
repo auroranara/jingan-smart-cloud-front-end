@@ -10,9 +10,10 @@ import {
   getSmokeForMaintenance,
   getMapList,
   getCompanySmokeInfo,
+  fetchCameraTree,
 } from '../services/smoke';
 // 获取单位集
-const getUnitSet = function(units) {
+const getUnitSet = function (units) {
   // 告警单位
   const alarmUnit = [];
   // 预警单位
@@ -135,6 +136,8 @@ export default {
     },
     // 摄像头列表
     cameraList: [],
+    // 摄像头树列表
+    cameraTree: [],
     // 报警处理流程
     gasForMaintenance: [],
     // 公司烟感具体监测数据
@@ -371,6 +374,11 @@ export default {
       const response = yield call(getCameraList, payload);
       const { list } = response;
       yield put({ type: 'saveCameraList', payload: list });
+    },
+    *fetchCameraTree({ payload }, { call, put }) {
+      const response = yield call(fetchCameraTree, payload);
+      const { list } = response;
+      yield put({ type: 'save', payload: { cameraTree: list } });
     },
     // 报警处理流程
     *fetchSmokeForMaintenance({ payload, success, error }, { call, put }) {

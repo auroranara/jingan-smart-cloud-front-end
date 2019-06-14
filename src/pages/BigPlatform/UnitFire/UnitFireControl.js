@@ -7,6 +7,7 @@ import StatisticsOfMaintenance from './components/StatisticsOfMaintenance/Statis
 import StatisticsOfFireControl from './components/StatisticsOfFireControl/StatisticsOfFireControl';
 import Rotate from 'components/Rotate';
 import VideoPlay from '../FireControl/section/VideoPlay';
+import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import resetKeyIcon from './images/resetKey.png';
 import resetKeyPressIcon from './images/resetKeyPress.png';
 import hostIcon from './images/hostIcon.png';
@@ -235,6 +236,12 @@ export default class UnitFireControl extends PureComponent {
     // 获取视频列表
     dispatch({
       type: 'unitFireControl/fetchVideoList',
+      payload: {
+        company_id: companyId,
+      },
+    });
+    dispatch({
+      type: 'unitFireControl/fetchVideoTree',
       payload: {
         company_id: companyId,
       },
@@ -1234,10 +1241,10 @@ export default class UnitFireControl extends PureComponent {
               );
             })
           ) : (
-            <div className={styles.hostIsEmpty}>
-              <span>暂无主机</span>
-            </div>
-          )}
+              <div className={styles.hostIsEmpty}>
+                <span>暂无主机</span>
+              </div>
+            )}
         </Section>
       </Rotate>
     );
@@ -1267,6 +1274,7 @@ export default class UnitFireControl extends PureComponent {
         hiddenDangerRecords,
         // 视频列表
         videoList,
+        videoTree,
         fireAlarmSystem,
         informationHistory: { list },
         companyDevicesByType,
@@ -1368,17 +1376,19 @@ export default class UnitFireControl extends PureComponent {
               </Col>
             </Row>
           </div>
-          <VideoPlay
+          <NewVideoPlay
             showList={true}
-            videoList={videoList}
+            videoList={videoTree}
             visible={videoVisible}
             handleVideoClose={this.handleVideoClose}
+            isTree={true}
           />
           <VideoPlay
             showList={true}
             videoList={msgVideoList}
             visible={msgVideoVisible}
             handleVideoClose={this.handleMsgVideoClose}
+            isTree={true}
           />
           {/* 隐患统计数据下钻抽屉 */}
           <DrawerOfHiddenDanger

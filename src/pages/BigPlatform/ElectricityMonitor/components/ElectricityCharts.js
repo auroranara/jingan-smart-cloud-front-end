@@ -4,7 +4,7 @@ import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
 
 import styles from './ElectricityCharts.less';
-import waterBg from '../imgs/waterBg.png';
+import waterBg from '../../Gas/imgs/no-monitor.png';
 
 const tabList = [
   {
@@ -611,32 +611,32 @@ export default class ElectricityCharts extends PureComponent {
 
   render() {
     const { noData } = this.props;
-
     return (
       <div
         className={styles.ElectricityCharts}
         style={{ height: '300px', width: '100%', display: 'flex', flexDirection: 'column' }}
       >
         {/* {this.renderTabs()} */}
-        {noData ? (
-          <ReactEcharts
-            option={this.getOptions()}
-            style={{ flex: 1, width: '100%' }}
-            className="echarts-for-echarts"
-            notMerge={true}
-            onChartReady={this.onChartReadyCallback}
-          />
-        ) : (
-          <div
-            className={styles.noCards}
-            style={{
-              background: `url(${waterBg})`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center center',
-              backgroundSize: 'auto 55%',
-            }}
-          />
-        )}
+        {/* {noData ? ( */}
+        <ReactEcharts
+          option={this.getOptions()}
+          style={{ flex: 1, width: '100%', minWidth: '50px', display: noData ? 'block' : 'none' }}
+          className="echarts-for-echarts"
+          notMerge={true}
+          onChartReady={this.onChartReadyCallback}
+        />
+        {/* ) : ( */}
+        <div
+          className={styles.noCards}
+          style={{
+            background: `url(${waterBg})`,
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center center',
+            backgroundSize: 'auto 55%',
+            display: noData ? 'none' : 'block',
+          }}
+        />
+        {/* )} */}
       </div>
     );
   }

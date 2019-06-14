@@ -179,6 +179,7 @@ export default class ElectricityMonitor extends PureComponent {
                 this.getDeviceRealTimeData(deviceId);
                 this.getDeviceHistoryData(deviceId);
                 this.getDeviceConfig(deviceId);
+                this.getDeviceCamera(deviceId, 3);
               }
             }
           }
@@ -344,6 +345,7 @@ export default class ElectricityMonitor extends PureComponent {
       this.deviceConfigTimer = setInterval(() => {
         this.getDeviceConfig(deviceId);
       }, 30 * 60 * 1000);
+      this.getDeviceCamera(deviceId, 3);
     }
     // 否则为点击企业，取第一个设备id
     else {
@@ -370,6 +372,7 @@ export default class ElectricityMonitor extends PureComponent {
             this.deviceConfigTimer = setInterval(() => {
               this.getDeviceConfig(deviceId);
             }, 30 * 60 * 1000);
+            this.getDeviceCamera(deviceId, 3);
           } else {
             dispatch({
               type: 'electricityMonitor/save',
@@ -550,6 +553,15 @@ export default class ElectricityMonitor extends PureComponent {
     this.getDeviceRealTimeData(deviceId, callback);
     this.getDeviceHistoryData(deviceId);
     this.getDeviceConfig(deviceId);
+    this.getDeviceCamera(deviceId, 3);
+  };
+
+  getDeviceCamera = (deviceId, type) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'electricityMonitor/fetchDeviceCamera',
+      payload: { deviceId, type },
+    });
   };
 
   getCameraList = id => {
@@ -615,13 +627,14 @@ export default class ElectricityMonitor extends PureComponent {
         deviceRealTimeData,
         deviceConfig,
         deviceHistoryData,
-        cameraList,
+        // cameraList,
+        videoByDevice,
         warningTrendList, // 12个月报警趋势
         warningTrendList1, // 6个月报警趋势
         brandData,
       },
     } = this.props;
-    console.log('this.props', this.props);
+    // console.log('this.props', this.props);
     const {
       setttingModalVisible,
       unitDrawerVisible,
@@ -756,7 +769,7 @@ export default class ElectricityMonitor extends PureComponent {
             deviceRealTimeData,
             deviceConfig,
             deviceHistoryData,
-            cameraList,
+            cameraList: videoByDevice,
           }}
           titleIndex={monitorDrawerTitleIndex}
           visible={monitorDrawerVisible}

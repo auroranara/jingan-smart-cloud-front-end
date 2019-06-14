@@ -213,10 +213,10 @@ export default class Smoke extends PureComponent {
             const newList =
               sameIndex >= 0
                 ? [
-                    ...alarmIds.slice(0, sameIndex),
-                    { companyId, messageFlag },
-                    ...alarmIds.slice(sameIndex + 1),
-                  ]
+                  ...alarmIds.slice(0, sameIndex),
+                  { companyId, messageFlag },
+                  ...alarmIds.slice(sameIndex + 1),
+                ]
                 : [...alarmIds, { companyId, messageFlag }];
             this.setState({ alarmIds: newList });
             this.showWarningNotification(data);
@@ -353,7 +353,7 @@ export default class Smoke extends PureComponent {
   /**
    * 更新后
    */
-  componentDidUpdate() {}
+  componentDidUpdate() { }
 
   /**
    * 销毁前
@@ -599,7 +599,7 @@ export default class Smoke extends PureComponent {
 
   handleCompanyClick = companyId => {
     const { dispatch } = this.props;
-    dispatch({ type: 'smoke/fetchCameraList', payload: { company_id: companyId } });
+    dispatch({ type: 'smoke/fetchCameraTree', payload: { company_id: companyId } });
     dispatch({
       type: 'smoke/fetchCompanySmokeInfo',
       payload: { company_id: companyId },
@@ -619,7 +619,7 @@ export default class Smoke extends PureComponent {
     const { dispatch } = this.props;
     const { companyId } = unitDetail;
     this.setState({ unitDetail });
-    dispatch({ type: 'smoke/fetchCameraList', payload: { company_id: companyId } });
+    dispatch({ type: 'smoke/fetchCameraTree', payload: { company_id: companyId } });
     dispatch({
       type: 'smoke/fetchCompanySmokeInfo',
       payload: { company_id: companyId },
@@ -686,7 +686,8 @@ export default class Smoke extends PureComponent {
         deviceStatusCount,
         gasForMaintenance = [],
         companySmokeInfo: { dataByCompany, map: devMap = { unnormal: [], fault: [], normal: [] } },
-        cameraList,
+        // cameraList,
+        cameraTree,
       },
       match: {
         params: { gridId },
@@ -880,7 +881,7 @@ export default class Smoke extends PureComponent {
         <MonitorDrawer
           data={{
             unitDetail,
-            cameraList,
+            cameraTree,
             dataByCompany,
             companySmokeInfo: this.props.smoke.companySmokeInfo,
             devList: [...devMap.unnormal, ...devMap.fault, ...devMap.normal],

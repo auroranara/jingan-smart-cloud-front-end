@@ -6,7 +6,8 @@ import { Rotate } from 'react-transform-components';
 import { mapMutations } from '@/utils/utils';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 // 视频播放
-import VideoPlay from '@/pages/BigPlatform/FireControl/section/VideoPlay';
+// import VideoPlay from '@/pages/BigPlatform/FireControl/section/VideoPlay';
+import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import {
   // 企业信息
   CompanyInfo,
@@ -28,6 +29,8 @@ import {
   RiskPointDrawer,
   // 安全人员抽屉
   SafetyOfficerDrawer,
+  // 安全指数抽屉
+  SafetyIndexDrawer,
   // 风险点详情抽屉
   RiskPointDetailDrawer,
   // 巡查点位详情抽屉
@@ -36,8 +39,12 @@ import {
   SpecialEquipmentDrawer,
   // 可燃有毒气体监测
   GasMonitorDrawer,
+  // 设置抽屉
+  SetDrawer,
+  // 设备统计
+  DeviceCountDrawer,
 } from './components';
-import IndexDrawer from '../Company2/sections/IndexDrawer';
+// import IndexDrawer from '../Company2/sections/IndexDrawer';
 // 引入样式文件
 import styles from './index.less';
 
@@ -49,11 +56,9 @@ const DEFAULT_PAGE_SIZE = 10;
  */
 @connect(({ unitSafety, loading, monitor }) => ({
   unitSafety,
-  loadingSafetyIndex: loading.effects['unitSafety/fetchSafetyIndex'],
-  loadingRiskPointInspectionList: loading.effects['unitSafety/fetchRiskPointInspectionList'],
-  loadingRiskPointHiddenDangerList: loading.effects['unitSafety/fetchRiskPointHiddenDangerList'],
   loadingHiddenDangerList: loading.effects['unitSafety/fetchHiddenDangerList'],
   loadingDangerList: loading.effects['unitSafety/fetchDangerList'],
+  loadingStaffRecords: loading.effects['unitSafety/fetchStaffRecords'],
   monitor,
 }))
 export default class UnitSafety extends PureComponent {
@@ -91,6 +96,14 @@ export default class UnitSafety extends PureComponent {
       // specialStatus: undefined,
       // 可燃有毒气体监测
       gasMonitorDrawerVisible: false,
+      // 设置抽屉是否显示
+      setDrawerVisible: false,
+      // 设备统计抽屉是否显示
+      deviceCountDrawerVisible: false,
+      // 设备统计当前选中的状态
+      deviceCountSelectedStatus: '0',
+      // 设备统计当前选中的监测类型
+      deviceCountSelectedMonitoringType: '0',
     };
     // 添加变异函数
     mapMutations(this, {
@@ -104,10 +117,12 @@ export default class UnitSafety extends PureComponent {
         'fetchHiddenDangerList',
         // 获取视频列表
         'fetchVideoList',
+        // 获取视频树列表
+        'fetchVideoTree',
         // 获取监控数据
         'fetchMonitorData',
-        // 获取四色风险点
-        'fetchCountDangerLocation',
+        // // 获取四色风险点
+        // 'fetchCountDangerLocation',
         // 获取安全人员信息
         'fetchSafetyOfficer',
         // 获取安全指数
@@ -143,7 +158,11 @@ export default class UnitSafety extends PureComponent {
         // 获取弹窗的隐患列表
         'fetchDangerList',
         // 获取特种设备列表
-        'fetchSpecialEquipmentInfo',
+        'fetchSpecialEquipmentList',
+        // 获取手机是否显示配置
+        'savePhoneVisible',
+        // 获取设备统计列表
+        'fetchDeviceCountList',
       ],
     });
   }
@@ -168,10 +187,12 @@ export default class UnitSafety extends PureComponent {
     this.fetchHiddenDangerCount({ company_id: companyId });
     // 获取视频列表
     this.fetchVideoList({ company_id: companyId });
+    // 获取视频树列表
+    this.fetchVideoTree({ company_id: companyId });
     // 获取监控数据
     this.fetchMonitorData({ companyId });
     // // 获取四色风险点
-    this.fetchCountDangerLocation({ company_id: companyId });
+    // this.fetchCountDangerLocation({ company_id: companyId });
     // 获取安全人员信息（安全人员信息卡片源数据）
     this.fetchSafetyOfficer({ company_id: companyId });
     // 获取安全指数
@@ -181,7 +202,9 @@ export default class UnitSafety extends PureComponent {
     // 获取点位
     this.fetchPoints({ companyId });
     // 获取特种设备列表
-    this.fetchSpecialEquipmentInfo({ companyId });
+    this.fetchSpecialEquipmentList({ companyId });
+    // 获取手机是否显示配置
+    this.savePhoneVisible();
 
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
@@ -366,7 +389,7 @@ export default class UnitSafety extends PureComponent {
         itemId,
         status,
         month,
-        checkUserId,
+        // checkUserId,
       },
       () => {
         this.setDrawerVisible('inspectionDetail');
@@ -374,19 +397,19 @@ export default class UnitSafety extends PureComponent {
     );
   };
 
-  /**
-   * 显示安全指数抽屉
-   */
-  showIndexDrawer = e => {
-    const {
-      match: {
-        params: { companyId },
-      },
-    } = this.props;
-    this.setDrawerVisible('index');
-    this.fetchSafeFiles({ companyId });
-    this.fetchMonitorList({ companyId });
-  };
+  // /**
+  //  * 显示安全指数抽屉
+  //  */
+  // showIndexDrawer = e => {
+  //   const {
+  //     match: {
+  //       params: { companyId },
+  //     },
+  //   } = this.props;
+  //   this.setDrawerVisible('index');
+  //   this.fetchSafeFiles({ companyId });
+  //   this.fetchMonitorList({ companyId });
+  // };
 
   /**
    * 显示单位巡查
@@ -414,6 +437,22 @@ export default class UnitSafety extends PureComponent {
     this.handleSelectStaffRecords(this.state.selectedStaffListMonth, checkUserId);
     this.setState({ inspectionIndex: 2, checkUserId });
   };
+
+  /**
+   * 显示设备统计抽屉
+   */
+  showDeviceCountDrawer = (deviceCountSelectedMonitoringType) => {
+    const { match: { params: { companyId } } } = this.props;
+    this.fetchDeviceCountList({
+      companyId,
+      type: deviceCountSelectedMonitoringType,
+    });
+    this.setState({
+      deviceCountDrawerVisible: true,
+      deviceCountSelectedStatus: '0',
+      deviceCountSelectedMonitoringType,
+    });
+  }
 
   /**
    * 根据月份获取人员列表
@@ -446,60 +485,107 @@ export default class UnitSafety extends PureComponent {
   };
 
   /**
+   * 显示设置抽屉
+   */
+  handleShowSetDrawer = () => {
+    this.setDrawerVisible('set');
+  }
+
+  /**
+   * 隐藏设置抽屉
+   */
+  handleHideSetDrawer = () => {
+    this.setDrawerVisible('set');
+  }
+
+  /**
+   * 设备统计状态改变
+   */
+  handleDeviceCountStatusChange = (deviceCountSelectedStatus) => {
+    const { match: { params: { companyId } } } = this.props;
+    const { deviceCountSelectedMonitoringType } = this.state;
+    this.setState({ deviceCountSelectedStatus });
+    this.fetchDeviceCountList({
+      companyId,
+      status: deviceCountSelectedStatus === '0' ? undefined : deviceCountSelectedStatus,
+      type: deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
+    });
+  }
+
+  /**
+   * 设备统计状态改变
+   */
+  handleDeviceCountMonitoringTypeChange = (deviceCountSelectedMonitoringType) => {
+    const { match: { params: { companyId } } } = this.props;
+    const { deviceCountSelectedStatus } = this.state;
+    this.setState({ deviceCountSelectedMonitoringType });
+    this.fetchDeviceCountList({
+      companyId,
+      status: deviceCountSelectedStatus === '0' ? undefined : deviceCountSelectedStatus,
+      type: deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
+    });
+  }
+
+  /**
    * 渲染
    */
   render() {
     const {
       unitSafety,
-      loadingSafetyIndex,
-      loadingRiskPointInspectionList,
-      loadingRiskPointHiddenDangerList,
       loadingHiddenDangerList,
-      loadingDangerList,
+      loadingStaffRecords,
       monitor: { gasCount = {}, gasList = [] },
+      match: {
+        params: { companyId },
+      },
     } = this.props;
     const {
       riskPointDrawerVisible,
       riskPointType,
       // specialStatus,
       safetyOfficerDrawerVisible,
+      safetyIndexDrawerVisible,
       specialEquipmentDrawerVisible,
       riskPointDetailDrawerVisible,
       inspectionDetailDrawerVisible,
-      indexDrawerVisible,
       videoVisible,
       videoKeyId,
       inspectionIndex,
       selectedStaffListMonth,
       selectedStaffRecordsMonth,
       gasMonitorDrawerVisible,
+      setDrawerVisible, // 设置抽屉是否显示
+      deviceCountDrawerVisible,
+      // 设备统计当前选中的状态
+      deviceCountSelectedStatus,
+      // 设备统计当前选中的监测类型
+      deviceCountSelectedMonitoringType,
     } = this.state;
     const {
       videoList,
+      videoTree,
       hiddenDangerList,
       hiddenDangerCount,
-      dynamicMonitorData,
       companyMessage,
       staffList,
       staffRecords,
       inspectionRecordData,
-      inspectionPointData,
-      riskPointDetail,
       points,
-      specialData,
     } = unitSafety;
     return (
-      <BigPlatformLayout title={global.PROJECT_CONFIG.projectName}>
+      <BigPlatformLayout
+        title={global.PROJECT_CONFIG.projectName}
+        settable
+        onSet={this.handleShowSetDrawer}
+      >
         <Row gutter={16} className={styles.row}>
           {/* 左边 */}
           <Col span={6} className={styles.col}>
             <div className={styles.leftTop}>
               {/* 企业信息 */}
               <CompanyInfo
-                model={unitSafety}
-                loading={loadingSafetyIndex}
                 handleClickUnitName={this.goToCompanyIndex}
-                handleClickSafetyIndex={this.showIndexDrawer}
+                handleClickSafetyIndex={() => { this.setDrawerVisible('safetyIndex'); }}
                 handleClickCount={this.setDrawerVisible}
               />
             </div>
@@ -539,6 +625,7 @@ export default class UnitSafety extends PureComponent {
                 <StaffRecords
                   data={staffRecords}
                   inspectionRecordData={inspectionRecordData}
+                  loading={loadingStaffRecords}
                   month={selectedStaffRecordsMonth}
                   onBack={this.showStaffList}
                   onSelect={this.handleSelectStaffRecords}
@@ -561,10 +648,10 @@ export default class UnitSafety extends PureComponent {
             </div>
             <div className={styles.rightBottom}>
               <DynamicMonitor
-                data={dynamicMonitorData}
                 onClick={this.goToMonitor}
+                onShow={this.showDeviceCountDrawer}
                 handleClickVideo={this.showVideo}
-                handleClickGas={this.handleClickGas}
+                // handleClickGas={this.handleClickGas}
               />
             </div>
           </Col>
@@ -572,34 +659,24 @@ export default class UnitSafety extends PureComponent {
         {/* 风险点抽屉 */}
         <RiskPointDrawer
           visible={riskPointDrawerVisible}
-          onClose={this.setDrawerVisible}
+          onClose={() => { this.setDrawerVisible('riskPoint'); }}
           data={points}
           riskPointType={riskPointType}
         />
         {/* 安全人员抽屉 */}
         <SafetyOfficerDrawer
           visible={safetyOfficerDrawerVisible}
-          onClose={this.setDrawerVisible}
-          model={unitSafety}
+          onClose={() => { this.setDrawerVisible('safetyOfficer'); }}
         />
         {/* 特种设备抽屉 */}
         <SpecialEquipmentDrawer
           visible={specialEquipmentDrawerVisible}
-          onClose={() => {
-            this.setState({
-              specialEquipmentDrawerVisible: false,
-            });
-          }}
-          // specialStatus={specialStatus}
-          specialData={specialData}
+          onClose={() => { this.setDrawerVisible('specialEquipment'); }}
         />
         {/* 风险点详情抽屉 */}
         <RiskPointDetailDrawer
           visible={riskPointDetailDrawerVisible}
-          onClose={this.setDrawerVisible}
-          data={riskPointDetail}
-          loadingRiskPointInspectionList={loadingRiskPointInspectionList}
-          loadingRiskPointHiddenDangerList={loadingRiskPointHiddenDangerList}
+          onClose={() => { this.setDrawerVisible('riskPointDetail'); }}
           getRiskPointInspectionList={this.getRiskPointInspectionList}
           getRiskPointHiddenDangerList={this.getRiskPointHiddenDangerList}
           getRiskPointHiddenDangerCount={this.getRiskPointHiddenDangerCount}
@@ -608,31 +685,51 @@ export default class UnitSafety extends PureComponent {
         {/* 巡查点位详情抽屉 */}
         <InspectionDetailDrawer
           visible={inspectionDetailDrawerVisible}
-          onClose={this.setDrawerVisible}
-          data={inspectionPointData}
+          onClose={() => this.setDrawerVisible('inspectionDetail')}
         />
         {/* 安全指数抽屉 */}
-        <IndexDrawer
-          data={unitSafety}
-          getDangerList={this.getDangerList}
-          loading={loadingDangerList}
-          visible={indexDrawerVisible}
-          handleDrawerVisibleChange={this.setDrawerVisible}
+        <SafetyIndexDrawer
+          visible={safetyIndexDrawerVisible}
+          onClose={() => { this.setDrawerVisible('safetyIndex'); }}
+          companyId={companyId}
         />
         {/* 视频播放 */}
-        <VideoPlay
+        {/* <VideoPlay
           style={{ zIndex: 99999999 }}
           videoList={videoList}
           visible={videoVisible}
           showList={true}
           keyId={videoKeyId}
           handleVideoClose={this.hideVideo}
+        /> */}
+        <NewVideoPlay
+          style={{ zIndex: 99999999 }}
+          videoList={videoTree}
+          visible={videoVisible}
+          showList={true}
+          keyId={videoKeyId}
+          handleVideoClose={this.hideVideo}
+          isTree={true}
         />
         <GasMonitorDrawer
           visible={gasMonitorDrawerVisible}
           onClose={this.setDrawerVisible}
           data={gasCount}
           gasList={gasList}
+        />
+        {/* 设置抽屉 */}
+        <SetDrawer
+          visible={setDrawerVisible}
+          onClose={this.handleHideSetDrawer}
+        />
+        {/* 设备统计 */}
+        <DeviceCountDrawer
+          visible={deviceCountDrawerVisible}
+          onClose={() => { this.setDrawerVisible('deviceCount'); }}
+          deviceCountSelectedStatus={deviceCountSelectedStatus}
+          deviceCountSelectedMonitoringType={deviceCountSelectedMonitoringType}
+          onStatusChange={this.handleDeviceCountStatusChange}
+          onMonitoringTypeChange={this.handleDeviceCountMonitoringTypeChange}
         />
       </BigPlatformLayout>
     );

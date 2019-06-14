@@ -6,8 +6,8 @@ module.exports = env => {
       // component: '../layouts/UserLayout',
       routes: [
         { path: '/user', redirect: '/user/login' },
-        { path: '/user/login', component: './User/NanXiaoLogin' },
-        { path: '/user/download', component: './User/NanXiaoDownload' },
+        { path: '/user/login', component: './User/Login' },
+        { path: '/user/download', component: './User/Download' },
         { path: '/user/redirect-login', component: './User/RedirectLogin' },
         { path: '/user/register', component: './User/Register' },
         { path: '/user/register-result', component: './User/RegisterResult' },
@@ -61,55 +61,29 @@ module.exports = env => {
         },
       ],
     },
-    // // 南消
-    // {
-    //   path: '/nanxiao',
-    //   routes: [
-    //     { path: '/nanxiao', redirect: '/nanxiao/user/login' },
-    //     {
-    //       path: '/nanxiao/user/login',
-    //       component: './User/NanXiaoLogin',
-    //     },
-    //     {
-    //       path: '/nanxiao/download',
-    //       component: './User/NanXiaoDownload',
-    //     },
-    //   ],
-    // },
-    // // 利民
-    // {
-    //   path: '/limin',
-    //   routes: [
-    //     { path: '/limin', redirect: '/limin/user/login' },
-    //     {
-    //       path: '/limin/user/login',
-    //       component: './User/LiMinLogin',
-    //     },
-    //     {
-    //       path: '/limin/download',
-    //       component: './User/LiMinDownload',
-    //     },
-    //   ],
-    // },
     //big platform
     {
       path: '/big-platform',
+      component: '../layouts/BigPlatformAuthLayout',
       routes: [
         { path: '/big-platform', redirect: '/big-platform/safety/government/index' },
         {
           path: '/big-platform/safety/government/:gridId',
+          code: 'dashboard.safetyView',
           component: './BigPlatform/Safety/Government',
         },
         {
           path: '/big-platform/safety/company/:companyId',
+          code: 'dashboard.safetyView',
           component: './BigPlatform/Safety/Company3',
         },
-        {
-          path: '/big-platform/fire-control/government/:gridId',
-          component: './BigPlatform/FireControl/Government',
-        },
+        // {
+        //   path: '/big-platform/fire-control/government/:gridId',
+        //   component: './BigPlatform/FireControl/Government',
+        // },
         {
           path: '/big-platform/new-fire-control/government/:gridId',
+          code: 'dashboard.fireControlView',
           component: './BigPlatform/NewFireControl/Government',
         },
         // {
@@ -118,22 +92,26 @@ module.exports = env => {
         // },
         {
           path: '/big-platform/fire-control/company/:unitId',
+          code: 'dashboard.fireControlView',
           component: './BigPlatform/UnitFire/UnitFireControl',
         },
         {
           path: '/big-platform/fire-control/new-company/:unitId',
+          code: 'dashboard.fireMaintenanceView',
           component: './BigPlatform/NewUnitFireControl',
         },
         {
           path: '/big-platform/monitor/company/:companyId',
+          code: 'dashboard.dynamicMonitorView',
           component: './BigPlatform/Monitor/Company',
         },
-        {
-          path: '/big-platform/video',
-          component: './BigPlatform/Video',
-        },
+        // {
+        //   path: '/big-platform/video',
+        //   component: './BigPlatform/Video',
+        // },
         {
           path: '/big-platform/position/:companyId',
+          code: 'dashboard.personnelPositioningView',
           component: './BigPlatform/Position/index',
         },
         // {
@@ -142,14 +120,17 @@ module.exports = env => {
         // },
         {
           path: '/big-platform/electricity-monitor/:gridId',
+          code: 'dashboard.electricityMonitorView',
           component: './BigPlatform/ElectricityMonitor',
         },
         {
           path: '/big-platform/gas/:gridId',
+          code: 'dashboard.gasView',
           component: './BigPlatform/Gas',
         },
         {
           path: '/big-platform/smoke/:gridId',
+          code: 'dashboard.smokeView',
           component: './BigPlatform/Smoke',
         },
       ],
@@ -160,6 +141,7 @@ module.exports = env => {
     //   component: './Demo',
     // },
     // 档案分析报告
+    // TODO 由于iframe原因
     {
       path: '/training/myFile/analysisReport/:id',
       code: 'training.myFile.view',
@@ -317,6 +299,93 @@ module.exports = env => {
                   name: 'department',
                   component: './BaseInfo/Company/DepartmentList',
                 },
+                // 单位分部
+                {
+                  path: '/base-info/company/division/list/:id',
+                  code: 'baseInfo.company.division.listView',
+                  name: 'divisionList',
+                  component: './BaseInfo/Company/UnitDivision/UnitDivisionList',
+                },
+                {
+                  path: '/base-info/company/division/add',
+                  code: 'baseInfo.company.division.add',
+                  name: 'divisionAdd',
+                  component: './BaseInfo/Company/UnitDivision/UnitDivisionEdit',
+                },
+                {
+                  path: '/base-info/company/division/edit/:id',
+                  code: 'baseInfo.company.division.edit',
+                  name: 'divisionEdit',
+                  component: './BaseInfo/Company/UnitDivision/UnitDivisionEdit',
+                },
+                {
+                  path: '/base-info/company/division/detail/:id',
+                  code: 'baseInfo.company.division.view',
+                  name: 'divisionDetail',
+                  component: './BaseInfo/Company/UnitDivision/UnitDivisionDetail',
+                },
+              ],
+            },
+            /* 建筑物信息 */
+            {
+              name: 'buildingsInfo',
+              path: '/base-info/buildings-info',
+              code: 'baseInfo.buildingsInfo',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/buildings-info',
+                  redirect: '/base-info/buildings-info/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.buildingsInfo.listView',
+                  path: '/base-info/buildings-info/list',
+                  component: './BaseInfo/BuildingsInfo/CompanyList',
+                },
+                {
+                  name: 'view',
+                  code: 'baseInfo.buildingsInfo.view',
+                  path: '/base-info/buildings-info/detail/:id',
+                  component: './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoList',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.buildingsInfo.add',
+                  path: '/base-info/buildings-info/add',
+                  component: './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.buildingsInfo.edit',
+                  path: '/base-info/buildings-info/edit/:id',
+                  component: './BaseInfo/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+                },
+                {
+                  name: 'floorList',
+                  code: 'baseInfo.buildingsInfo.floorListView',
+                  path: '/base-info/buildings-info/floor/list/:id',
+                  component: './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementList',
+                },
+                {
+                  name: 'floorAdd',
+                  code: 'baseInfo.buildingsInfo.floorAdd',
+                  path: '/base-info/buildings-info/floor/add',
+                  component: './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementEdit',
+                },
+                {
+                  name: 'floorEdit',
+                  code: 'baseInfo.buildingsInfo.floorEdit',
+                  path: '/base-info/buildings-info/floor/edit/:id',
+                  component: './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementEdit',
+                },
+                {
+                  name: 'floorDetail',
+                  code: 'baseInfo.buildingsInfo.floorView',
+                  path: '/base-info/buildings-info/floor/detail/:id',
+                  component: './BaseInfo/BuildingsInfo/FloorManagement/FloorManagementDetail',
+                },
               ],
             },
           ],
@@ -467,13 +536,13 @@ module.exports = env => {
                   component: './RoleAuthorization/AccountManagement/AccountManagementList',
                 },
                 {
-                  path: '/role-authorization/account-management/add',
+                  path: '/role-authorization/account-management/add', // 新增账号基本信息和第一个关联单位
                   code: 'roleAuthorization.accountManagement.add',
                   name: 'add',
                   component: './RoleAuthorization/AccountManagement/AccountManagementEdit',
                 },
                 {
-                  path: '/role-authorization/account-management/edit/:id',
+                  path: '/role-authorization/account-management/edit/:id', // 编辑账号基本信息
                   code: 'roleAuthorization.accountManagement.edit',
                   name: 'edit',
                   component: './RoleAuthorization/AccountManagement/AccountManagementEdit',
@@ -485,13 +554,13 @@ module.exports = env => {
                   component: './RoleAuthorization/AccountManagement/AccountManagementDetail',
                 },
                 {
-                  path: '/role-authorization/account-management/associated-unit/add/:id',
+                  path: '/role-authorization/account-management/associated-unit/add/:id', // 新增关联单位
                   code: 'roleAuthorization.accountManagement.associatedUnit.add',
                   name: 'addAssociatedUnit',
                   component: './RoleAuthorization/AccountManagement/AssociatedUnit',
                 },
                 {
-                  path: '/role-authorization/account-management/associated-unit/edit/:userId',
+                  path: '/role-authorization/account-management/associated-unit/edit/:userId', // 编辑关联单位
                   code: 'roleAuthorization.accountManagement.associatedUnit.edit',
                   name: 'editAssociatedUnit',
                   component: './RoleAuthorization/AccountManagement/AssociatedUnit',
@@ -512,25 +581,97 @@ module.exports = env => {
                   path: '/role-authorization/role/list',
                   name: 'list',
                   code: 'roleAuthorization.role.listView',
-                  component: './RoleAuthorization/Role/RoleList',
+                  component: './RoleAuthorization/SystemRole/SystemRoleList',
                 },
                 {
                   path: '/role-authorization/role/detail/:id',
                   name: 'detail',
                   code: 'roleAuthorization.role.view',
-                  component: './RoleAuthorization/Role/RoleDetail',
+                  component: './RoleAuthorization/SystemRole/SystemRoleDetail',
                 },
                 {
                   path: '/role-authorization/role/add',
                   name: 'add',
                   code: 'roleAuthorization.role.add',
-                  component: './RoleAuthorization/Role/RoleHandler',
+                  component: './RoleAuthorization/SystemRole/SystemRoleHandler',
                 },
                 {
                   path: '/role-authorization/role/edit/:id',
                   name: 'edit',
                   code: 'roleAuthorization.role.edit',
-                  component: './RoleAuthorization/Role/RoleHandler',
+                  component: './RoleAuthorization/SystemRole/SystemRoleHandler',
+                },
+              ],
+            },
+            {
+              path: '/role-authorization/commonRole',
+              code: 'roleAuthorization.commonRole',
+              name: 'commonRole',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/role-authorization/commonRole',
+                  redirect: 'list',
+                },
+                {
+                  path: '/role-authorization/commonRole/list',
+                  name: 'list',
+                  code: 'roleAuthorization.commonRole.listView',
+                  component: './RoleAuthorization/CommonRole/CommonRoleList',
+                },
+                {
+                  path: '/role-authorization/commonRole/detail/:id',
+                  name: 'detail',
+                  code: 'roleAuthorization.commonRole.view',
+                  component: './RoleAuthorization/CommonRole/CommonRoleDetail',
+                },
+                {
+                  path: '/role-authorization/commonRole/add',
+                  name: 'add',
+                  code: 'roleAuthorization.commonRole.add',
+                  component: './RoleAuthorization/CommonRole/CommonRoleHandler',
+                },
+                {
+                  path: '/role-authorization/commonRole/edit/:id',
+                  name: 'edit',
+                  code: 'roleAuthorization.commonRole.edit',
+                  component: './RoleAuthorization/CommonRole/CommonRoleHandler',
+                },
+              ],
+            },
+            {
+              path: '/role-authorization/userRole',
+              code: 'roleAuthorization.userRole',
+              name: 'userRole',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/role-authorization/userRole',
+                  redirect: 'list',
+                },
+                {
+                  path: '/role-authorization/userRole/list',
+                  name: 'list',
+                  code: 'roleAuthorization.userRole.listView',
+                  component: './RoleAuthorization/UserRole/UserRoleList',
+                },
+                {
+                  path: '/role-authorization/userRole/detail/:id',
+                  name: 'detail',
+                  code: 'roleAuthorization.userRole.view',
+                  component: './RoleAuthorization/UserRole/UserRoleDetail',
+                },
+                {
+                  path: '/role-authorization/userRole/add',
+                  name: 'add',
+                  code: 'roleAuthorization.userRole.add',
+                  component: './RoleAuthorization/UserRole/UserRoleHandler',
+                },
+                {
+                  path: '/role-authorization/userRole/edit/:id',
+                  name: 'edit',
+                  code: 'roleAuthorization.userRole.edit',
+                  component: './RoleAuthorization/UserRole/UserRoleHandler',
                 },
               ],
             },
@@ -759,44 +900,128 @@ module.exports = env => {
                 },
               ],
             },
+            // 隐患统计报表
+            {
+              path: '/data-analysis/hidden-danger-count-report',
+              code: 'dataAnalysis.hiddenDangerCountReport',
+              name: 'hiddenDangerCountReport',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/data-analysis/hidden-danger-count-report',
+                  name: 'hiddenDangerCountReport',
+                  redirect: '/data-analysis/hidden-danger-count-report/list',
+                },
+                {
+                  path: '/data-analysis/hidden-danger-count-report/list',
+                  code: 'dataAnalysis.hiddenDangerCountReport.view',
+                  name: 'list',
+                  component: './DataAnalysis/HiddenDangerCountReport/CompanyList',
+                },
+                {
+                  path: '/data-analysis/hidden-danger-count-report/detail',
+                  code: 'dataAnalysis.hiddenDangerCountReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/HiddenDangerCountReport/HiddenDangerCountReport',
+                },
+              ],
+            },
             // 企业自查报表
-            // {
-            //   path: '/data-analysis/company-report',
-            //   code: 'dataAnalysis.companyReport',
-            //   name: 'companyReport',
-            //   hideChildrenInMenu: true,
-            //   routes: [
-            //     {
-            //       path: '/data-analysis/company-report',
-            //       name: 'companyReport',
-            //       redirect: '/data-analysis/company-report/list',
-            //     },
-            //     {
-            //       path: '/data-analysis/company-report/list',
-            //       code: 'dataAnalysis.companyReport.view',
-            //       name: 'list',
-            //       component: './DataAnalysis/CompanyReport/CompanyReportList',
-            //     },
-            //     {
-            //       path: '/data-analysis/company-report/detail/:id',
-            //       code: 'dataAnalysis.companyReport.view',
-            //       name: 'detail',
-            //       component: './DataAnalysis/CompanyReport/CompanyReportDetail',
-            //     },
-            //     {
-            //       path: '/data-analysis/company-report/convenientlyDetail/:id',
-            //       code: 'dataAnalysis.companyReport.view',
-            //       name: 'detail',
-            //       component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
-            //     },
-            //     {
-            //       path: '/data-analysis/company-report/checkDetail/:id',
-            //       code: 'dataAnalysis.companyReport.view',
-            //       name: 'detail',
-            //       component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
-            //     },
-            //   ],
-            // },
+            {
+              path: '/data-analysis/company-report',
+              code: 'dataAnalysis.companyReport',
+              name: 'companyReport',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/data-analysis/company-report',
+                  name: 'companyReport',
+                  redirect: '/data-analysis/company-report/list',
+                },
+                {
+                  path: '/data-analysis/company-report/list',
+                  code: 'dataAnalysis.companyReport.view',
+                  name: 'list',
+                  component: './DataAnalysis/CompanyReport/CompanyReportList',
+                },
+                {
+                  path: '/data-analysis/company-report/detail/:id',
+                  code: 'dataAnalysis.companyReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/CompanyReport/CompanyReportDetail',
+                },
+                {
+                  path: '/data-analysis/company-report/checkDetail/:id',
+                  code: 'dataAnalysis.companyReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+                },
+              ],
+            },
+            // 维保检查报表
+            {
+              path: '/data-analysis/maintenance-report',
+              code: 'dataAnalysis.maintenanceReport',
+              name: 'maintenanceReport',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/data-analysis/maintenance-report',
+                  name: 'maintenanceReport',
+                  redirect: '/data-analysis/maintenance-report/list',
+                },
+                {
+                  path: '/data-analysis/maintenance-report/list',
+                  code: 'dataAnalysis.maintenanceReport.view',
+                  name: 'list',
+                  component: './DataAnalysis/MaintenanceReport/MaintenanceReportList',
+                },
+                {
+                  path: '/data-analysis/maintenance-report/detail/:id',
+                  code: 'dataAnalysis.maintenanceReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/MaintenanceReport/MaintenanceReportDetail',
+                },
+                {
+                  path: '/data-analysis/maintenance-report/maintenanCheckDetail/:id',
+                  code: 'dataAnalysis.maintenanceReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+                },
+              ],
+            },
+            // 政府监督报表
+            {
+              path: '/data-analysis/goverment-report',
+              code: 'dataAnalysis.govermentReport',
+              name: 'govermentReport',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/data-analysis/goverment-report',
+                  name: 'govermentReport',
+                  redirect: '/data-analysis/goverment-report/list',
+                },
+                {
+                  path: '/data-analysis/goverment-report/list',
+                  code: 'dataAnalysis.govermentReport.view',
+                  name: 'list',
+                  component: './DataAnalysis/GovermentReport/GovermentReportList',
+                },
+                {
+                  path: '/data-analysis/goverment-report/detail/:id',
+                  code: 'dataAnalysis.govermentReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/GovermentReport/GovermentReportDetail',
+                },
+                {
+                  path: '/data-analysis/goverment-report/govermentCheckDetail/:id',
+                  code: 'dataAnalysis.govermentReport.view',
+                  name: 'detail',
+                  component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+                },
+              ],
+            },
           ],
         },
 
@@ -1073,6 +1298,40 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/video-surveillance/government-video-permission',
+              code: 'videoSurveillance.governmentVideoPermission',
+              name: 'governmentVideoPermission',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/video-surveillance/government-video-permission',
+                  name: 'governmentVideoPermission',
+                  redirect: '/video-surveillance/government-video-permission/list',
+                },
+                {
+                  path: '/video-surveillance/government-video-permission/list',
+                  code: 'videoSurveillance.governmentVideoPermission.listView',
+                  name: 'list',
+                  component:
+                    './VideoSurveillance/GovernmentVideoPermission/GovernmentVideoPermissionList',
+                },
+                {
+                  path: '/video-surveillance/government-video-permission/edit/:companyId',
+                  code: 'videoSurveillance.governmentVideoPermission.edit',
+                  name: 'edit',
+                  component:
+                    './VideoSurveillance/GovernmentVideoPermission/GovernmentVideoPermissionEdit',
+                },
+                {
+                  path: '/video-surveillance/government-video-permission/add',
+                  code: 'videoSurveillance.governmentVideoPermission.add',
+                  name: 'add',
+                  component:
+                    './VideoSurveillance/GovernmentVideoPermission/GovernmentVideoPermissionEdit',
+                },
+              ],
+            },
           ],
         },
         {
@@ -1129,6 +1388,31 @@ module.exports = env => {
                   code: 'systemManagement.pageAuthority.edit',
                   name: 'sort',
                   component: './SystemManagement/PageAuthority/PageAuthoritySort',
+                },
+              ],
+            },
+            {
+              path: '/system-management/app-authority',
+              code: 'systemManagement.appAuthority',
+              name: 'appAuthority',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/system-management/app-authority',
+                  name: 'appAuthority',
+                  redirect: '/system-management/app-authority/index',
+                },
+                {
+                  path: '/system-management/app-authority/index',
+                  code: 'systemManagement.appAuthority.view',
+                  name: 'view',
+                  component: './SystemManagement/AppAuthority/AppAuthority',
+                },
+                {
+                  path: '/system-management/app-authority/add-or-edit/:id',
+                  code: 'systemManagement.appAuthority.edit',
+                  name: 'edit',
+                  component: './SystemManagement/AppAuthority/AppAuthorityAddOrEdit',
                 },
               ],
             },
@@ -1605,74 +1889,74 @@ module.exports = env => {
               ],
             },
             /* 建筑物信息 */
-            {
-              name: 'buildingsInfo',
-              path: '/personnel-position/buildings-info',
-              code: 'personnelPosition.buildingsInfo',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  name: 'list',
-                  path: '/personnel-position/buildings-info',
-                  redirect: '/personnel-position/buildings-info/list',
-                },
-                {
-                  name: 'list',
-                  code: 'personnelPosition.buildingsInfo.listView',
-                  path: '/personnel-position/buildings-info/list',
-                  component: './PersonnelPosition/BuildingsInfo/CompanyList',
-                },
-                {
-                  name: 'view',
-                  code: 'personnelPosition.buildingsInfo.view',
-                  path: '/personnel-position/buildings-info/detail/:id',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoList',
-                },
-                {
-                  name: 'add',
-                  code: 'personnelPosition.buildingsInfo.add',
-                  path: '/personnel-position/buildings-info/add',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
-                },
-                {
-                  name: 'edit',
-                  code: 'personnelPosition.buildingsInfo.edit',
-                  path: '/personnel-position/buildings-info/edit/:id',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
-                },
-                {
-                  name: 'floorList',
-                  code: 'personnelPosition.buildingsInfo.floorListView',
-                  path: '/personnel-position/buildings-info/floor/list/:id',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementList',
-                },
-                {
-                  name: 'floorAdd',
-                  code: 'personnelPosition.buildingsInfo.floorAdd',
-                  path: '/personnel-position/buildings-info/floor/add',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
-                },
-                {
-                  name: 'floorEdit',
-                  code: 'personnelPosition.buildingsInfo.floorEdit',
-                  path: '/personnel-position/buildings-info/floor/edit/:id',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
-                },
-                {
-                  name: 'floorDetail',
-                  code: 'personnelPosition.buildingsInfo.floorView',
-                  path: '/personnel-position/buildings-info/floor/detail/:id',
-                  component:
-                    './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementDetail',
-                },
-              ],
-            },
+            // {
+            //   name: 'buildingsInfo',
+            //   path: '/personnel-position/buildings-info',
+            //   code: 'personnelPosition.buildingsInfo',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       name: 'list',
+            //       path: '/personnel-position/buildings-info',
+            //       redirect: '/personnel-position/buildings-info/list',
+            //     },
+            //     {
+            //       name: 'list',
+            //       code: 'personnelPosition.buildingsInfo.listView',
+            //       path: '/personnel-position/buildings-info/list',
+            //       component: './PersonnelPosition/BuildingsInfo/CompanyList',
+            //     },
+            //     {
+            //       name: 'view',
+            //       code: 'personnelPosition.buildingsInfo.view',
+            //       path: '/personnel-position/buildings-info/detail/:id',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoList',
+            //     },
+            //     {
+            //       name: 'add',
+            //       code: 'personnelPosition.buildingsInfo.add',
+            //       path: '/personnel-position/buildings-info/add',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+            //     },
+            //     {
+            //       name: 'edit',
+            //       code: 'personnelPosition.buildingsInfo.edit',
+            //       path: '/personnel-position/buildings-info/edit/:id',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/CompanyBuildingInfo/BuildingInfoEdit',
+            //     },
+            //     {
+            //       name: 'floorList',
+            //       code: 'personnelPosition.buildingsInfo.floorListView',
+            //       path: '/personnel-position/buildings-info/floor/list/:id',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementList',
+            //     },
+            //     {
+            //       name: 'floorAdd',
+            //       code: 'personnelPosition.buildingsInfo.floorAdd',
+            //       path: '/personnel-position/buildings-info/floor/add',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
+            //     },
+            //     {
+            //       name: 'floorEdit',
+            //       code: 'personnelPosition.buildingsInfo.floorEdit',
+            //       path: '/personnel-position/buildings-info/floor/edit/:id',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementEdit',
+            //     },
+            //     {
+            //       name: 'floorDetail',
+            //       code: 'personnelPosition.buildingsInfo.floorView',
+            //       path: '/personnel-position/buildings-info/floor/detail/:id',
+            //       component:
+            //         './PersonnelPosition/BuildingsInfo/FloorManagement/FloorManagementDetail',
+            //     },
+            //   ],
+            // },
             /* 信标管理 */
             {
               name: 'beaconManagement',

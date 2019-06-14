@@ -1,0 +1,65 @@
+/**
+ * 容器
+ */
+.container {
+  height: 100%;
+}
+
+.extra {
+  float: right;
+}
+
+.tabs {
+  display: flex;
+  position: relative;
+  z-index: 0;
+}
+
+.title {
+  padding-left: 10px;
+  height: 26px;
+  line-height: 26px;
+  font-size: 16px;
+  background: no-repeat center center;
+  background-size: 100% 100%;
+  padding-right: 32px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.title:not(:first-child) {
+  margin-left: -18px;
+}
+
+.content {
+  height: calc(~"100% - 26px");
+  padding: 8px 0;
+  border: 1px solid #4ccef0;
+  border-radius: 0 10px 10px 10px;
+  background: no-repeat center center;
+  background-color: rgba(17, 58, 112, 0.9);
+  background-size: 100% 100%;
+  box-shadow: 0px 5px 4px 0px rgba(0, 0, 0, 0.75);
+}
+
+.scroll::-webkit-scrollbar {
+  width: 8px;
+  background-color: transparent;
+}
+
+.scroll::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: rgba(9, 103, 211, 0.5);
+}
+
+.scroll::-webkit-scrollbar-track {
+  // box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+  background-color: transparent;
+}
+
+@media screen and (max-width: 1450px) {
+  .title {
+    font-size: 13px;
+    padding-right: 22px;
+  }
+}

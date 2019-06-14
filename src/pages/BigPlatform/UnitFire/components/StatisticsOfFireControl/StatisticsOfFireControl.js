@@ -85,12 +85,12 @@ export default class App extends PureComponent {
    */
   renderSwitchers() {
     const { type, onSwitch } = this.props;
-
+    const types = [1, 2, 3, 5];
     return (
       <div className={styles.switcherContainer}>
         {['今日', '本周', '本月', '本年'].map((item, index) => {
-          const isSelected = type===(index+1);
-          return <Switcher style={{ top: index*56, zIndex: isSelected?5:(4-index) }} isSelected={isSelected} content={item} key={item} onClick={() => {onSwitch(index+1);}} />;
+          const isSelected = type=== types[index];
+          return <Switcher style={{ top: index*56, zIndex: isSelected?5:(4-index) }} isSelected={isSelected} content={item} key={item} onClick={() => {onSwitch(types[index]);}} />;
         })}
       </div>
     );
@@ -108,7 +108,7 @@ export default class App extends PureComponent {
       feedback = 0,
     } = this.props;
 
-    const fire = real+misinformation+pending;
+    const fire = real + misinformation + pending;
 
     const option = {
       color: ['#E86767', '#108EFF', '#847BE6', '#01B0D1', '#FFB13A', '#BBBBBC'],

@@ -333,3 +333,42 @@ export function mapMutations(instance, { namespace, types }) {
     }
   }
 }
+
+/**
+    * 返回列表中第一个视频
+    * @param {Array} tree
+    */
+export function findFirstVideo(tree) {
+  // type不存在为视频
+  if (tree.length === 0) return {}
+  const first = tree[0]
+  if (!first.type) {
+    return first
+  } else if (first.list && first.list.length > 0) {
+    return findFirstVideo(first.list)
+  }
+}
+
+/**
+ * 生成枚举类型
+ */
+export function generateEnum(obj) {
+  return Object.entries(obj).reduce((result, [key, value]) => {
+    result[result[key] = value] = key;
+    return result;
+  }, {});
+}
+
+/**
+ * 获取映射字段
+ */
+export function getMappedFields(values, fieldNames) {
+  return Object.entries(fieldNames).reduce((result, [key, value]) => {
+    if (typeof value === 'function') {
+      result = { ...result, ...value(values) };
+    } else {
+      result[value] = values[key];
+    }
+    return result;
+  }, {});
+}

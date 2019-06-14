@@ -4,7 +4,7 @@ import router from 'umi/router';
 import { Button, Card, TreeSelect, Select, Input, Form, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { METHODS, NODE_TYPES, formItemLayout, tailFormItemLayout, getIdMap, sortTree, addProps } from './utils';
+import { METHODS, NODE_TYPES, formItemLayout, tailFormItemLayout, getIdMap, sortTree, addProps, getSortValue } from './utils';
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
@@ -56,14 +56,14 @@ export default class PageAuthorityAdd extends Component {
   codeMap = {};
 
   handleSubmit = e => {
-    const { dispatch, match: { params: { id } } } = this.props;
+    const { dispatch, match: { params: { id } }, pageAuth: { tree=[] } } = this.props;
     const isAdd = id === 'undefined';
 
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         // console.log('Received values of form: ', values);
-        const { parentId, code } = values;
+        const { parentId, code, sort } = values;
         const parentCode = this.codeMap[parentId];
         const newVals = {
           ...values,
@@ -72,11 +72,16 @@ export default class PageAuthorityAdd extends Component {
           parentIds: [...this.idMap[parentId], parentId].join(','),
         };
 
-        // 编辑时，传id，新增时不传
-        if (!isAdd)
+        // 新增时自己计算sort值
+        const [nextSort, sorts] = getSortValue(parentId, tree, id);
+        if (isAdd)
+          newVals.sort = nextSort;
+        // 编辑时，传id，目标节点中已有当前sort，自动校正
+        else {
           newVals.id = id;
-
-        // console.log(newVals);
+          if (sorts.includes(+sort))
+            newVals.sort = nextSort;
+        }
 
         dispatch({
           type: `pageAuth/${isAdd ? 'postAuth' :'putAuth'}`,
@@ -150,11 +155,13 @@ export default class PageAuthorityAdd extends Component {
                   <Input placeholder="请输入中文名称(显示)" />
                 )}
               </FormItem>
-              <FormItem label="排序优先级" {...formItemLayout}>
-                {getFieldDecorator('sort', { rules: [{ required: true, message: '请输入排序优先级' }] })(
-                  <Input placeholder="请输入排序优先级" />
-                )}
-              </FormItem>
+              {!isAdd && (
+                <FormItem label="排序优先级" {...formItemLayout}>
+                  {getFieldDecorator('sort', { rules: [{ required: true, message: '请输入排序优先级' }] })(
+                    <Input placeholder="请输入排序优先级" />
+                  )}
+                </FormItem>
+              )}
               <FormItem label="节点类型" {...formItemLayout}>
                 {getFieldDecorator('type', {})(
                   <Select placeholder="请选择节点类型">

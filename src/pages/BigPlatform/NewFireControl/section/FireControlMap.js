@@ -28,8 +28,8 @@ function handleCompanyBasicInfoList(alarmList, companyList) {
   return companyList.map(item => {
     const { id } = item;
     const alarmed = alarmList.find(({ companyId }) => companyId === id);
-    if (alarmed) return { address: alarmed.searchArea, ...item, isFire: true };
-    return { ...item, isFire: false };
+    if (alarmed) return { address: alarmed.searchArea, ...item, isFire: true, status: '异常' };
+    return { ...item, isFire: false, status: '正常' };
   });
 }
 

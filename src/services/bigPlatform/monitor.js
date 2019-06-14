@@ -92,3 +92,8 @@ export async function getTankMessageData(params) {
 export async function getTankMessageList(params) {
   return request(`/acloud_new/v2/hdf/tankMessageData?${stringify(params)}`);
 }
+
+// 获取视频树
+export async function fetchCameraTree(params) {
+  return request(`${URL_PREFIX}/hdf/getTreeCamera.json?${stringify(params)}`)
+}

@@ -1,0 +1,53 @@
+.container {
+  width: 100%;
+  position: relative;
+
+  .tabs {
+    .tab {
+      display: inline-block;
+      color: #0ff;
+      border-bottom: 1px solid #0ff;
+      margin-right: 20px;
+      cursor: pointer;
+    }
+
+    .active {
+      .tab;
+      color: #fff;
+      border-bottom: 1px solid transparent;
+      cursor: default;
+    }
+  }
+
+  .users {
+    color: #fff;
+    // display: flex;
+    // align-items: center;
+    // justify-content: center;
+    width: 100%;
+    overflow: hidden;
+    font-size: 12px;
+
+    .userWrapper {
+      // flex: 1;
+      float: left;
+      min-width: 55px;
+      text-align: center;
+      padding: 10px 0;
+
+      .userIcon {
+        width: 36px;
+        height: 36px;
+        margin: 0 auto;
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  .more {
+    color: #0ff;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
+}

@@ -217,10 +217,10 @@ export default class Gas extends PureComponent {
             const newList =
               sameIndex !== undefined
                 ? [
-                    ...alarmIds.slice(0, sameIndex),
-                    { companyId, messageFlag },
-                    ...alarmIds.slice(sameIndex + 1),
-                  ]
+                  ...alarmIds.slice(0, sameIndex),
+                  { companyId, messageFlag },
+                  ...alarmIds.slice(sameIndex + 1),
+                ]
                 : [...alarmIds, { companyId, messageFlag }];
             this.setState({ alarmIds: newList });
             this.showWarningNotification(data);
@@ -360,12 +360,12 @@ export default class Gas extends PureComponent {
   /**
    * 更新后
    */
-  componentDidUpdate() {}
+  componentDidUpdate() { }
 
   /**
    * 销毁前
    */
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   cardsInfo = [];
   importCardsInfo = [];
@@ -579,6 +579,7 @@ export default class Gas extends PureComponent {
     });
     // 获取视频
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
+    dispatch({ type: 'monitor/fetchCameraTree', payload: { company_id: companyId } });
     // 获取异常趋势图数据
     dispatch({
       type: 'gas/fetchAbnormalTrend',
@@ -629,7 +630,7 @@ export default class Gas extends PureComponent {
       match: {
         params: { gridId },
       },
-      monitor: { allCamera: cameraList = [] },
+      monitor: { allCamera: cameraList = [], cameraTree },
     } = this.props;
 
     const {
@@ -788,6 +789,7 @@ export default class Gas extends PureComponent {
           status={unitMonitorStatus}
           handleViewVideo={this.handleViewVideo}
           cameraList={cameraList}
+          cameraTree={cameraTree}
         />
       </BigPlatformLayout>
     );

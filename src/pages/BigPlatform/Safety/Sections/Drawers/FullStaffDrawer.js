@@ -1,6 +1,9 @@
 import React, { PureComponent } from 'react';
-import { Drawer } from 'antd';
+import { Drawer, Row, Col } from 'antd';
+import Ellipsis from '@/components/Ellipsis';
 import styles from '../../Government.less';
+
+const borderColorList = ['#FF4848', '#C6C181', '#00A8FF', '#0967D3'];
 
 class FullStaffDrawer extends PureComponent {
   constructor(props) {
@@ -13,8 +16,12 @@ class FullStaffDrawer extends PureComponent {
   componentWillUnmount() {}
 
   render() {
-    const { visible, handleParentChange, fulltimeWorker, listData = [] } = this.props;
-
+    const {
+      visible,
+      handleParentChange,
+      govSafetyOfficer: { keyList = [], valueList = [] } = {},
+      phoneVisible,
+    } = this.props;
     return (
       <div>
         <Drawer
@@ -45,40 +52,50 @@ class FullStaffDrawer extends PureComponent {
                       handleParentChange({ fullStaffDrawer: false });
                     }}
                   />
-                  <div className={styles.sectionMain}>
-                    <div className={styles.sectionContent}>
-                      <div className={styles.tableTitleWrapper}>
-                        <span className={styles.tableTitle}>
-                          {' '}
-                          监管人员（
-                          {fulltimeWorker}）
-                        </span>
-                      </div>
-                      <div className={styles.scrollContainer}>
-                        <table className={styles.scrollTable}>
-                          <thead>
-                            <tr>
-                              <th />
-                              <th style={{ width: '26%' }}>姓名</th>
-                              <th style={{ width: '35%' }}>电话</th>
-                              <th>管辖社区</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {listData.map((item, index) => {
-                              return (
-                                <tr key={index}>
-                                  <td>{index + 1}</td>
-                                  <td>{item.user_name}</td>
-                                  <td>{item.phone_number}</td>
-                                  <td>{item.gridName ? item.gridName.split(',').join('/') : ''}</td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+
+                  <div className={styles.sectionContentMain}>
+                    <Row className={styles.personWrapper}>
+                      {keyList &&
+                        keyList.map((key, index) => (
+                          <Col span={12} className={styles.person} key={key}>
+                            <div className={styles.personName}>{key}</div>
+                            <div className={styles.personValue}>{valueList[index].length}</div>
+                          </Col>
+                        ))}
+                    </Row>
+                    {valueList.length > 0 ? (
+                      valueList.map((value, index) => (
+                        <div
+                          className={styles.personList}
+                          style={{ borderColor: borderColorList[index % 4] }}
+                          key={keyList[index]}
+                        >
+                          <div className={styles.personLabel}>{keyList[index]}</div>
+                          {value.map(({ id, user_name: name, phone_number: phone, gridName }) => (
+                            <div className={styles.personItem} key={id}>
+                              <div className={styles.personItemName}>
+                                <Ellipsis tooltip length={6} style={{ overflow: 'visible' }}>
+                                  {name}
+                                </Ellipsis>
+                              </div>
+
+                              <div className={styles.personItemPhone}>
+                                {phoneVisible || !phone
+                                  ? phone
+                                  : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}
+                              </div>
+                              <div className={styles.gridName}>
+                                <Ellipsis tooltip length={12} style={{ overflow: 'visible' }}>
+                                  {gridName}
+                                </Ellipsis>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ))
+                    ) : (
+                      <div style={{ textAlign: 'center' }}>暂无数据</div>
+                    )}
                   </div>
                 </div>
               </section>

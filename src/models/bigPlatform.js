@@ -7,7 +7,7 @@ import {
   getNewHomePage,
   getLocation,
   getInfoByLocation,
-  getCompanyMessage,
+  // getCompanyMessage,
   getSpecialEquipment,
   getCoItemList,
   getCountDangerLocationForCompany,
@@ -15,7 +15,8 @@ import {
   getRiskPointInfo,
   // getHiddenDanger,
   getSafetyOfficer,
-  getGovFulltimeWorkerList,
+  // getGovFulltimeWorkerList,
+  getGovFulltimeWorkerListNew,
   getOverRectifyCompany,
   getSearchImportantCompany,
   getSearchAllCompany,
@@ -42,10 +43,15 @@ import {
   getSelfCheckPointDataByCompanyId,
   getListForMapForHidden,
   getSecurityCheck,
+  getHiddenDangerListForPage,
+  hiddenDangerListByDateForPage,
+  getSelfCheckPointDataForPage,
+  getCompanyInfo,
+  getMapLocationByParent,
 } from '../services/bigPlatform/bigPlatform.js';
 import moment from 'moment';
 
-const getColorByRiskLevel = function(level) {
+const getColorByRiskLevel = function (level) {
   switch (+level) {
     case 1:
       return '红色';
@@ -77,6 +83,7 @@ const transformHiddenDangerFields = ({
   review_time,
   report_source_name,
   item_name,
+  report_source,
 }) => {
   let background,
     operator_name = '';
@@ -94,11 +101,14 @@ const transformHiddenDangerFields = ({
     sbr: report_user_name,
     sbsj: moment(+report_time).format('YYYY-MM-DD'),
     zgr: rectify_user_name,
+    plan_zgr: rectify_user_name,
+    real_zgr: operator_name,
     plan_zgsj: moment(+plan_rectify_time).format('YYYY-MM-DD'),
     real_zgsj: moment(+real_rectify_time).format('YYYY-MM-DD'),
     fcr: +status === 4 ? operator_name : review_user_name, // 关闭状态下的复查人显示实际整改人
     status: +status,
     background: background ? background.split(',')[0] : '',
+    backgrounds:background ? background.split(',') :[],
     source:
       (source_type_name === '网格点上报' && '监督点') ||
       (source_type_name === '风险点上报' &&
@@ -108,6 +118,7 @@ const transformHiddenDangerFields = ({
     fcsj: moment(+review_time).format('YYYY-MM-DD'),
     item_name,
     report_source_name,
+    report_source,
   };
 };
 
@@ -195,10 +206,43 @@ export default {
       wcq: [],
       dfc: [],
     },
+    hiddenDangerList: {
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+      list: [],
+    },
+    hiddenDangerListByDateForPage: {
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+      list: [],
+    },
+    selfCheckPointDataForPage: {
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+      },
+      list: [],
+    },
+    selfCheckPointDataByCompanyId: {
+      abnormal: 0,
+      all: 0,
+      normal: 0,
+      overTime: 0,
+      rectify: 0,
+    },
     // 隐患总数
     // hiddenDanger: 0,
     // 安全人员信息
     safetyOfficer: {},
+    // 监管人员
+    govSafetyOfficer: {},
     govFulltimeWorkerList: {
       total: 0,
       list: [],
@@ -236,7 +280,7 @@ export default {
     staffRecords: [],
     selectOvertimeItemNum: 0,
     overtimeUncheckedCompany: [],
-    mapLocation: [],
+    mapLocation: {},
     companyCheckCount: {
       companyNum: 0,
       fireCheckCompanyCount: 0,
@@ -259,6 +303,8 @@ export default {
     listForMapForHidden: [],
     securityCheck: [],
     riskDetailNoOrder: [],
+    // 手机号是否可见
+    phoneVisible: false,
   },
 
   effects: {
@@ -383,7 +429,7 @@ export default {
       // }
     },
     *fetchCompanyMessage({ payload, success, error }, { call, put }) {
-      const response = yield call(getCompanyMessage, payload);
+      const response = yield call(getCompanyInfo, payload);
       const res = {
         ...response,
         point:
@@ -397,8 +443,8 @@ export default {
         fourColorImg:
           response.fourColorImg && response.fourColorImg.startsWith('[')
             ? JSON.parse(response.fourColorImg).filter(
-                ({ id, webUrl }) => /^http/.test(webUrl) && id
-              )
+              ({ id, webUrl }) => /^http/.test(webUrl) && id
+            )
             : [],
       };
       // if (response.code === 200) {
@@ -512,6 +558,9 @@ export default {
     },
     *fetchRiskDetail({ payload, success }, { call, put }) {
       const response = yield call(getRiskDetail, payload);
+      if (!response.hiddenDangers || !response.hiddenDangers.length) {
+        return;
+      }
       const ycq = response.hiddenDangers
         .filter(({ status }) => +status === 7)
         .sort((a, b) => {
@@ -555,6 +604,74 @@ export default {
         });
       }
     },
+    *fetchHiddenDangerListForPage({ payload, success }, { call, put }) {
+      const response = yield call(getHiddenDangerListForPage, payload);
+      const {
+        code,
+        data: { list, pagination },
+      } = response;
+      if (code === 200) {
+        yield put({
+          type: 'saveHiddenDangerList',
+          payload: {
+            list: list
+              .filter(
+                ({ status }) => +status === 7 || +status === 1 || +status === 2 || +status === 3
+              )
+              .map(transformHiddenDangerFields),
+            pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
+          },
+          append: payload.pageNum !== 1,
+        });
+        if (success) {
+          success();
+        }
+      }
+    },
+    *fetchHiddenDangerListByDateForPage({ payload, success }, { call, put }) {
+      const response = yield call(getHiddenDangerListByDate, payload);
+      const {
+        code,
+        data: { list, total },
+      } = response;
+      if (code === 200) {
+        yield put({
+          type: 'saveHiddenDangerListByDate',
+          payload: {
+            list: list
+              .filter(
+                ({ status }) => +status === 7 || +status === 1 || +status === 2 || +status === 3
+              )
+              .map(transformHiddenDangerFields),
+            pagination: { total, pageNum: payload.pageNum, pageSize: payload.pageSize },
+          },
+          append: payload.pageNum !== 1,
+        });
+        if (success) {
+          success();
+        }
+      }
+    },
+    *fetchSelfCheckPointDataForPage({ payload, success }, { call, put }) {
+      const response = yield call(getSelfCheckPointDataForPage, payload);
+      const {
+        code,
+        data: { list, pagination },
+      } = response;
+      if (code === 200) {
+        yield put({
+          type: 'saveSelfCheckPointDataForPage',
+          payload: {
+            list,
+            pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
+          },
+          append: payload.pageNum !== 1,
+        });
+        if (success) {
+          success();
+        }
+      }
+    },
     // *fetchHiddenDanger({ payload, success }, { call, put }) {
     //   const response = yield call(getHiddenDanger, payload);
     //   yield put({
@@ -575,17 +692,40 @@ export default {
         success();
       }
     },
+
     // 政府专职人员列表
-    *fetchGovFulltimeWorkerList({ payload, success }, { call, put }) {
-      const response = yield call(getGovFulltimeWorkerList, payload);
+    // *fetchGovFulltimeWorkerList({ payload, success }, { call, put }) {
+    //   const response = yield call(getGovFulltimeWorkerList, payload);
+    //   yield put({
+    //     type: 'govFulltimeWorkerList',
+    //     payload: response,
+    //   });
+    //   if (success) {
+    //     success();
+    //   }
+    // },
+
+    // 政府专职人员列表
+    *fetchGovFulltimeWorkerListNew({ payload, callback }, { call, put }) {
+      const response = yield call(getGovFulltimeWorkerListNew, payload);
       yield put({
-        type: 'govFulltimeWorkerList',
-        payload: response,
+        type: 'saveOfficer',
+        payload: {
+          govSafetyOfficer: Object.entries(response.roleMap || {}).reduce(
+            (result, [key, value]) => {
+              result.keyList.push(key);
+              result.valueList.push(value || []);
+              return result;
+            },
+            { keyList: [], valueList: [] }
+          ),
+        },
       });
-      if (success) {
-        success();
+      if (callback) {
+        callback(response);
       }
     },
+
     // 获取超期未整改隐患企业列表
     *fetchOverRectifyCompany({ payload, success, error }, { call, put }) {
       const response = yield call(getOverRectifyCompany, payload);
@@ -871,6 +1011,21 @@ export default {
     // 获取网格区域
     *fetchMapLocation({ payload, success, error }, { call, put }) {
       const response = yield call(getMapLocation, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'mapLocation',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 获取网格区域以及它的子区域
+    *fetchMapLocationByParent({ payload, success, error }, { call, put }) {
+      const response = yield call(getMapLocationByParent, payload);
       if (response.code === 200) {
         yield put({
           type: 'mapLocation',
@@ -1271,7 +1426,7 @@ export default {
     mapLocation(state, { payload }) {
       return {
         ...state,
-        mapLocation: payload ? JSON.parse(payload) : [],
+        mapLocation: payload,
       };
     },
     companyCheckCount(state, { payload }) {
@@ -1301,7 +1456,7 @@ export default {
     selfCheckPointDataByCompanyId(state, { payload }) {
       return {
         ...state,
-        selfCheckPointData: { ...state.selfCheckPointData, ...payload },
+        selfCheckPointDataByCompanyId: { ...payload },
       };
     },
     listForMapForHidden(state, { payload }) {
@@ -1314,6 +1469,74 @@ export default {
       return {
         ...state,
         securityCheck: payload.list,
+      };
+    },
+    saveHiddenDangerList(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          hiddenDangerList: {
+            pagination: payload.pagination,
+            list: state.hiddenDangerList.list.concat(payload.list),
+          },
+        };
+      }
+      return {
+        ...state,
+        hiddenDangerList: payload,
+      };
+    },
+    saveHiddenDangerListByDate(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          hiddenDangerListByDateForPage: {
+            pagination: payload.pagination,
+            list: state.hiddenDangerListByDateForPage.list.concat(payload.list),
+          },
+        };
+      }
+      return {
+        ...state,
+        hiddenDangerListByDateForPage: payload,
+      };
+    },
+    saveSelfCheckPointDataForPage(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          selfCheckPointDataForPage: {
+            pagination: payload.pagination,
+            list: state.selfCheckPointDataForPage.list.concat(payload.list),
+          },
+        };
+      }
+      return {
+        ...state,
+        selfCheckPointDataForPage: payload,
+      };
+    },
+
+    saveOfficer(state, { payload }) {
+      return {
+        ...state,
+        ...payload,
+      };
+    },
+
+    // 保存手机是否显示配置
+    savePhoneVisible(state, { payload: { phoneVisible } = {} }) {
+      if (phoneVisible !== undefined) {
+        localStorage.setItem('phoneVisible', JSON.stringify(phoneVisible));
+      } else {
+        phoneVisible = JSON.parse(localStorage.getItem('phoneVisible')) || false;
+        if (!phoneVisible) {
+          localStorage.setItem('phoneVisible', JSON.stringify(false));
+        }
+      }
+      return {
+        ...state,
+        phoneVisible,
       };
     },
   },

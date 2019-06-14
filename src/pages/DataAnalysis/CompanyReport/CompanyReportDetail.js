@@ -53,7 +53,6 @@ export default class App extends PureComponent {
     super(props);
     this.state = {
       tab: '1',
-      i: '0',
     };
   }
 
@@ -110,78 +109,76 @@ export default class App extends PureComponent {
       },
       loading,
     } = this.props;
-    const { tab, i } = this.state;
+    const { tab } = this.state;
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
+
+    const newList = [];
+    list.forEach(element => {
+      element.list.forEach((detail, index) => {
+        const item = { ...detail, ...element, rowSpan: index === 0 ? element.list.length : 0 };
+        newList.push(item);
+      });
+    });
+
+    const renderContent = (value, row, index) => {
+      const obj = {
+        children: value,
+        props: {},
+      };
+      obj.props.rowSpan = row.rowSpan;
+      return obj;
+    };
 
     const columns = [
       {
         title: '检查项',
         dataIndex: 'object_title',
+        key: 'object_title',
+        render: renderContent,
       },
       {
         title: '业务分类',
         dataIndex: 'businessTypeName',
+        key: 'businessTypeName',
+        render: renderContent,
       },
       {
         title: '检查内容',
-        dataIndex: 'list',
+        dataIndex: 'flow_name',
+        key: 'flow_name',
         width: 280,
         render: val => {
-          return val && val.length > 0
-            ? val.map((v, i) => {
-                return (
-                  <div key={i}>
-                    <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
-                      {v.flow_name}
-                    </Ellipsis>
-                  </div>
-                );
-              })
-            : '';
+          return (
+            <div>
+              <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+                {val}
+              </Ellipsis>
+            </div>
+          );
         },
       },
       {
         title: '检查结果',
         dataIndex: 'conclusion_name',
-        render: (text, val) => {
-          const { list } = val;
-          return list && list.length > 0
-            ? list.map((v, i) => {
-                return (
-                  <div key={i}>
-                    <span>{v.conclusion_name}</span>
-                  </div>
-                );
-              })
-            : '';
-        },
+        key: 'conclusion_name',
       },
       {
         title: '相关隐患',
         dataIndex: 'statusName',
+        key: 'statusName',
         render: (text, val) => {
-          const { list } = val;
-          return list && list.length > 0
-            ? list.map((v, index) => {
-                return (
-                  <div>
-                    <Link
-                      key={index}
-                      to={`/data-analysis/company-report/checkDetail/${
-                        v._id
-                      }?checkId=${id}&&companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
-                    >
-                      {v.statusName ? (
-                        <span style={{ color: '#40a9ff' }}> {v.statusName} </span>
-                      ) : (
-                        <span className={styles.statusName}>''</span>
-                      )}
-                    </Link>
-                  </div>
-                );
-              })
-            : '';
+          return (
+            <div>
+              <Link
+                to={`/data-analysis/company-report/checkDetail/${
+                  val._id
+                }?checkId=${id}&&companyName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+              >
+                <span style={{ color: '#40a9ff' }}> {val.statusName} </span>
+              </Link>
+            </div>
+          );
         },
       },
     ];
@@ -193,7 +190,7 @@ export default class App extends PureComponent {
             {!isCompany && <div className={styles.content}>{`单位名称：${companyName}`}</div>}
             <div className={styles.content}>{`检查人：${check_user_names}`}</div>
             <div className={styles.content}>{`检查时间：${moment(+check_date).format(
-              'YYYY-MM-DD'
+              'YYYY-MM-DD HH:mm'
             )}`}</div>
           </Fragment>
         }
@@ -214,9 +211,9 @@ export default class App extends PureComponent {
             <Card title="检查内容" className={styles.card}>
               <Table
                 className={styles.table}
-                dataSource={list}
+                dataSource={newList}
                 columns={columns}
-                rowKey={i}
+                rowKey={'detail_id'}
                 scroll={{
                   x: true,
                 }}

@@ -9,7 +9,7 @@ import {
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import { DotItem, Gauge, GaugeLabels } from '../components/Components';
 import ElectricityCharts from '../components/ElectricityCharts';
-import { getAlerted, getTargetAlerted } from '../utils';
+import { getAlerted, getTargetAlerted, getLimit } from '../utils';
 import styles from './MonitorDrawer.less';
 import locationIcon from '../imgs/location.png';
 import personIcon from '../imgs/person.png';
@@ -119,12 +119,7 @@ export default class MonitorDrawer extends PureComponent {
     deviceDataForAppList.forEach(({ desc, code, value, unit, status }) => {
       const index = CHARTS_LABELS[labelIndex].indexOf(desc);
       if (index > -1) {
-        const limit = [null, null];
-        deviceConfig.forEach(({ code: code2, level, limitValue }) => {
-          if (code2 === code) {
-            limit[level - 1] = limitValue;
-          }
-        });
+        const limit = getLimit(deviceConfig, code);
         list[index] = {
           desc,
           value,

@@ -54,9 +54,6 @@ const UserTypes = [
 }))
 @Form.create()
 export default class PersonalInfo extends PureComponent {
-  state = {
-    companyType: false,
-  };
 
   /* 生命周期函数 */
   componentDidMount() {
@@ -66,18 +63,13 @@ export default class PersonalInfo extends PureComponent {
       match: {
         params: { id },
       },
-      user: { currentUser },
+      // user: { currentUser },
     } = this.props;
     // 获取详情
     dispatch({
-      type: 'account/fetchAssociatedUnitDeatil',
+      type: 'account/fetchAssociatedUnitDetail',
       payload: {
         userId: id,
-      },
-      success: ({ unitType }) => {
-        this.setState({
-          companyType: unitType === 4,
-        });
       },
       error() {
         dispatch(routerRedux.push('/exception/500'));
@@ -97,15 +89,15 @@ export default class PersonalInfo extends PureComponent {
             unitType,
             unitName,
             departmentName,
-            userType,
-            roleNames,
+            // userType,
+            // roleNames,
+            roleName,
           },
         },
       },
     } = this.props;
-    const { companyType } = this.state;
 
-    const userTypeObj = UserTypes.find(t => t.value === userType);
+    // const userTypeObj = UserTypes.find(t => t.value === userType);
     const phone = phoneNumber + '';
     const formatPhone = phone.substr(0, 3) + '****' + phone.substr(7);
 
@@ -125,20 +117,21 @@ export default class PersonalInfo extends PureComponent {
           <Description term="单位类型">{UnitTypes[unitType] || getEmptyData()}</Description>
           <Description term="所属单位">{unitName || getEmptyData()}</Description>
           <Description term="所属部门">{departmentName || getEmptyData()}</Description>
-          {companyType && (
+          {/* {unitType===4 && (
             <Description term="用户类型">
               {userTypeObj ? userTypeObj.label : getEmptyData()}
             </Description>
-          )}
-          <Description term="角色">
+          )} */}
+          {/* <Description term="角色">
             {roleNames
               ? roleNames.split(',').map(roleName => (
-                  <p key={roleName} style={{ margin: 0, padding: 0 }}>
-                    {roleName}
-                  </p>
-                ))
+                <p key={roleName} style={{ margin: 0, padding: 0 }}>
+                  {roleName}
+                </p>
+              ))
               : getEmptyData()}
-          </Description>
+          </Description> */}
+          {roleName && <Description term="角色">{roleName || getEmptyData()}</Description>}
         </DescriptionList>
       </Card>
     );

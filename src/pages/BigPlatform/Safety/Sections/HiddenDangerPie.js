@@ -133,14 +133,14 @@ class HiddenDangerPie extends PureComponent {
         splitLine: {
           show: true,
           lineStyle: {
-            color: '#394456',
+            color: '#174073',
             width: 2,
           },
         },
         axisLine: {
           show: false,
           lineStyle: {
-            color: '#394456',
+            color: '#174073',
             width: 2,
           },
         },
@@ -158,7 +158,7 @@ class HiddenDangerPie extends PureComponent {
         axisLine: {
           show: true,
           lineStyle: {
-            color: '#394456',
+            color: '#174073',
             width: 2,
           },
         },
@@ -268,18 +268,18 @@ class HiddenDangerPie extends PureComponent {
 
   handleHdComClick = () => {
     const {
-      dispatch,
+      // dispatch,
       listForMap: { dangerCompany = [], total: dangerCount = 0, dangerCompanyNum = 0 },
       handleParentChange,
-      gridId,
+      // gridId,
     } = this.props;
-    dispatch({
-      type: 'bigPlatform/fetchHiddenDangerCompany',
-      payload: {
-        gridId,
-        reportSource: 2,
-      },
-      success: () => {
+    // dispatch({
+    //   type: 'bigPlatform/fetchHiddenDangerCompany',
+    //   payload: {
+    //     gridId,
+    //     reportSource: 2,
+    //   },
+    //   success: () => {
         handleParentChange({
           dangerCompanyData: { dangerCompanyNum, dangerCompany, dangerCount },
           dangerCompanyLast: '',
@@ -287,9 +287,9 @@ class HiddenDangerPie extends PureComponent {
           dangerCoTitle: '隐患单位统计',
           dangerCoDrawer: true,
         });
-        handleParentChange({ dangerCoDrawer: true });
-      },
-    });
+        // handleParentChange({ dangerCoDrawer: true });
+    //   },
+    // });
   };
 
   handleDataClick = (params, index) => {
@@ -339,7 +339,7 @@ class HiddenDangerPie extends PureComponent {
             }}
           >
             隐患单位
-            <span className={styles.hdCompanyNum} style={{ color: '#00baff' }}>
+            <span className={styles.hdCompanyNum} style={{ color: '#00ffff' }}>
               {dangerCompanyNum || 0}
             </span>
           </div>

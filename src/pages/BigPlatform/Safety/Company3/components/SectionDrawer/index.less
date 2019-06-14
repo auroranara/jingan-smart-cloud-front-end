@@ -1,18 +1,36 @@
 .container {
+  font-size: 16px;
   :global {
     .ant-drawer-body {
       padding: 0;
       height: 100%;
+      font-size: 1em;
     }
   }
 }
+.sectionContent {
+  padding: 1em 0;
+}
 /* 关闭按钮 */
 .closeButton {
-  font-size: 20px;
+  font-size: 1.25em;
   color: #fff;
   cursor: pointer;
 
   &:hover {
     color: #00ffff;
+  }
+}
+
+
+@media screen and (max-width: 1599px) and (min-width: 1400px) {
+  .container {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 1399px) {
+  .container {
+    font-size: 12px;
   }
 }

@@ -32,7 +32,7 @@ export default class VideoSection extends PureComponent {
     const { showVideo, data: list, ...restProps } = this.props;
     const { chosen } = this.state;
 
-    const srcs = list.map(({ name, photo, key_id: keyId }) => ({ name, photo, keyId }));
+    const srcs = list.map(({ name, photo, key_id: keyId, id }) => ({ name, photo, keyId, id }));
 
     // const srcs = ['http://58.215.171.233:10080/hls/tonghe_zhiyao/zhutongdao/zhutongdao.png', 'http://58.215.171.233:10080/hls/tonghe_zhiyao/erdaomenchukou/erdaomenchukou.png'];
     // const videos = srcs.map(i => {
@@ -56,12 +56,12 @@ export default class VideoSection extends PureComponent {
 
     const srcList = [...Array(4).keys()].map(i => srcs[i % srcs.length]).filter(item => item);
 
-    const videos = srcList.map(({ name, photo, keyId }, i) => (
+    const videos = srcList.map(({ name, photo, keyId, id }, i) => (
       <div
-        key={keyId}
+        key={id}
         className={i === chosen ? styles.coverChosen : styles.cover}
         onClick={() => {
-          showVideo(keyId);
+          showVideo(id);
           this.setIndex(i);
         }}
         style={{ backgroundImage: `url(${photo})` }}

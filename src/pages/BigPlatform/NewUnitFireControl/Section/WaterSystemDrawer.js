@@ -5,6 +5,7 @@ import Ellipsis from 'components/Ellipsis';
 import { OvProgress, SearchBar } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import DrawerContainer from '../components/DrawerContainer';
 import ChartGauge from '../components/ChartGauge';
+import TotalInfo from '../components/TotalInfo';
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
 import styles from './WaterSystemDrawer.less';
@@ -122,15 +123,21 @@ export default class WaterSystemDrawer extends PureComponent {
       const normalRange = [normalLower, normalUpper];
       const isGray = isMending || isNotIn || (!isMending && +status < 0);
       return (
-        <Col span={12}>
+        <Col span={12} key={deviceId}>
           <div
             className={styles.card}
             key={deviceId}
-            style={{ border: isGray ? '1px solid #f83329' : '1px solid #04fdff' }}
+            style={{
+              border: isGray
+                ? '1px solid #f83329'
+                : +status !== 0
+                  ? '1px solid #f83329'
+                  : '1px solid #04fdff',
+            }}
           >
             {isMending && <div className={styles.status}>检修</div>}
             {isNotIn && <div className={styles.status}>未接入</div>}
-            {!isMending && !isNotIn && +status !== 0 && <div className={styles.status}>异常</div>}
+            {!isMending && !isNotIn && +status !== 0 && <div className={styles.status}>报警</div>}
             <div className={styles.picArea}>
               <ChartGauge
                 showName
@@ -258,15 +265,28 @@ export default class WaterSystemDrawer extends PureComponent {
       const isGray = isMending || isNotIn || (!isMending && +status < 0);
       return (
         <div>
-          <Col span={12}>
+          <Col span={12} key={deviceId}>
             <div
               className={styles.card}
               key={deviceId}
-              style={{ border: isGray ? '1px solid #f83329' : '1px solid #04fdff' }}
+              style={{
+                border: isGray
+                  ? !isMending && +status < 0
+                    ? '1px solid #9f9f9f'
+                    : '1px solid #f83329'
+                  : '1px solid #04fdff',
+              }}
             >
               {isMending && <div className={styles.status}>检修</div>}
               {isNotIn && <div className={styles.status}>未接入</div>}
-              {!isMending && !isNotIn && +status !== 0 && <div className={styles.status}>异常</div>}
+              {!isMending && !isNotIn && +status > 0 && <div className={styles.status}>报警</div>}
+              {!isMending &&
+                !isNotIn &&
+                +status === -1 && (
+                  <div className={styles.status} style={{ backgroundColor: '#9f9f9f' }}>
+                    失联
+                  </div>
+                )}
               <div className={styles.picAreaPond}>
                 <img
                   className={styles.pondBg}
@@ -368,32 +388,43 @@ export default class WaterSystemDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, waterTabItem, videoKeyId, waterList } = this.props;
-
-    const dataList = waterList
-      .filter(item => item.deviceDataList.length > 0)
-      .map(item => item.deviceDataList);
-
-    const newList = dataList.map(item => {
-      let obj = {};
-      for (const key in item) {
-        if (item.hasOwnProperty(key)) {
-          const element = item[key];
-          obj = { ...element };
-        }
-      }
-      return obj;
-    });
-
-    const normal = newList.filter(item => item && +item.status === 0).length;
-    const abnormal = newList.filter(item => item && +item.status !== 0).length;
+    const { visible, waterTabItem, videoKeyId, waterList, filterIndex, onClick } = this.props;
 
     const { videoVisible, videoList } = this.state;
+
+    const alarmList = waterList.filter(item => {
+      const { deviceDataList } = item;
+      const [{ status } = { deviceParamsInfo: {} }] = deviceDataList;
+      return +status > 0;
+    });
+    const normalList = waterList.filter(item => {
+      const { deviceDataList } = item;
+      const [{ status } = { deviceParamsInfo: {} }] = deviceDataList;
+      return +status === 0;
+    });
+    const lostList = waterList.filter(item => {
+      const { deviceDataList } = item;
+      const [{ status } = { deviceParamsInfo: {} }] = deviceDataList;
+      return +status < 0;
+    });
+    const totalInfo = [
+      { name: '报警', value: alarmList.length, color: '#FF4848', list: alarmList },
+      { name: '失联', value: lostList.length, color: '#9f9f9f', list: lostList },
+      { name: '正常', value: normalList.length, color: '#00ffff', list: normalList },
+    ].map((item, index) => {
+      return {
+        ...item,
+        onClick: () => {
+          onClick(index);
+        },
+      };
+    });
+    const newList = totalInfo[filterIndex] ? totalInfo[filterIndex].list : [];
 
     const left = (
       <div className={styles.content}>
         {/* 统计数据 */}
-        <div className={styles.totalInfo}>
+        {/* <div className={styles.totalInfo}>
           <div className={styles.title}>{title(waterTabItem) + '统计数据'}</div>
           <div className={styles.progress}>
             <Col span={16}>
@@ -422,7 +453,9 @@ export default class WaterSystemDrawer extends PureComponent {
               />
             </Col>
           </div>
-        </div>
+        </div> */}
+        <TotalInfo data={totalInfo} active={filterIndex} />
+
         {/* 实时监测数据 */}
         <div className={styles.realTimeMonitor}>
           <div className={styles.titleLine}>
@@ -433,9 +466,9 @@ export default class WaterSystemDrawer extends PureComponent {
           </div>
           {newList && newList.length > 0 ? (
             <div className={styles.listContainer}>
-              {waterTabItem === 0 && this.renderFireCards(waterList)}
-              {waterTabItem === 1 && this.renderFireCards(waterList)}
-              {waterTabItem === 2 && this.renderPondCards(waterList)}
+              {waterTabItem === 0 && this.renderFireCards(newList)}
+              {waterTabItem === 1 && this.renderFireCards(newList)}
+              {waterTabItem === 2 && this.renderPondCards(newList)}
             </div>
           ) : (
             <div

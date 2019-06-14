@@ -45,6 +45,11 @@ export async function getAllCamera(params) {
   return request(`${URL_PREFIX}/hdf/getAllCamera.json?${stringify(params)}`);
 }
 
+// 视频树列表
+export async function fetchCameraTree(params) {
+  return request(`${URL_PREFIX}/hdf/getTreeCamera.json?${stringify(params)}`);
+}
+
 // 视频播放，已转移到services.videoPlay
 // export async function getStartToPlay(params) {
 //   return request(`/acloud_new/dai/startToPlayForWeb.json?${stringify(params)}`);
@@ -84,6 +89,11 @@ export async function getMapLocation(params) {
   return request(`${URL_PREFIX}/gridInfo/getMapLocation?${stringify(params)}`);
 }
 
+// 获取网格区域以及它的子区域
+export async function getMapLocationByParent(params) {
+  return request(`${URL_PREFIX}/gridInfo/getMapLocationByParent?${stringify(params)}`);
+}
+
 // 获取网格列表
 export async function getGrids(params) {
   return request(`${URL_PREFIX}/sfc/getGridData.json`);
@@ -96,7 +106,8 @@ export async function getRiskPoints(params) {
 
 // 获取安全人员
 export async function getSafeMan(params) {
-  return request(`${URL_PREFIX}/sfc/showSafePerson.json?${stringify(params)}`);
+  // return request(`${URL_PREFIX}/sfc/showSafePerson.json?${stringify(params)}`);
+  return request(`${URL_PREFIX}/sfc/showSafePersonNew.json?${stringify(params)}`);
 }
 
 // 获取最近十二个月主机报警数量
@@ -228,6 +239,13 @@ export async function getVideoList(params) {
   return request(`/acloud_new/v2/hdf/getAllCamera.json?${stringify(params)}`);
 }
 
+/**
+ * 获取视频树列表
+ */
+export async function fetchVideoTree(params) {
+  return request(`/acloud_new/v2/hdf/getTreeCamera.json?${stringify(params)}`);
+}
+
 export async function getVideoLookUp(params) {
   return request(`${URL_PREFIX}/screenShowData/videoCheckRecords?${stringify(params)}`);
 }
@@ -289,7 +307,7 @@ export async function fetchAbnormalPatrol(params) {
 }
 // 企业信息(包含人员数量四色图等)
 export async function getCompanyMessage(params) {
-  return request(`/acloud_new/v2/sfc/companyMessage.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/sfc/companyInfo.json?${stringify(params)}`);
 }
 
 // 视频路径
@@ -426,4 +444,29 @@ export async function getCompanyDevicesByType(params) {
 // 获取报警信息
 export async function deviceWarningMessageForCompany(params) {
   return request(`/acloud_new/v2/deviceInfo/deviceWarningMessageForCompany?${stringify(params)}`);
+}
+
+// 获取火灾警报数据详情
+export async function getWarnDetail(params) {
+  return request(`/acloud_new/v2/fireManage/warnDetail?${stringify(params)}`);
+}
+
+// 获取火灾故障数据列表
+export async function getFaultDetail(params) {
+  return request(`/acloud_new/v2/fireManage/faultDetail?${stringify(params)}`);
+}
+
+// 处理工单统计
+export async function countAllFireAndFault(params) {
+  return request(`/acloud_new/v2/fireManage/countAllFireAndFault?${stringify(params)}`);
+}
+
+// 处理工单统计
+export async function countFinishByUserId(params) {
+  return request(`/acloud_new/v2/fireManage/countFinishByUserId?${stringify(params)}`);
+}
+
+// 消息人员
+export async function messageInformList(params) {
+  return request(`/acloud_new/v2/fireManage/messageInformList?${stringify(params)}`);
 }

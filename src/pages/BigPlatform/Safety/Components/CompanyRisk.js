@@ -96,10 +96,8 @@ class CompanyRisk extends PureComponent {
               style={{
                 position: 'relative',
                 marginBottom: '12px',
-                boxShadow: '3px 3px 3px #000',
-                background: `rgba(1, 21, 57, 0.9) url(${getSeal(
-                  item[status]
-                )}) no-repeat right bottom / 120px`,
+                // boxShadow: '3px 3px 3px #000',
+                background: `#04407d url(${getSeal(item[status])}) no-repeat right bottom / 120px`,
               }}
             >
               <div style={{ display: 'flex', padding: '12px 0' }}>
@@ -166,7 +164,7 @@ class CompanyRisk extends PureComponent {
                       lineHeight: '24px',
                     }}
                   >
-                    <span style={{ color: '#00A8FF' }}>
+                    <span style={{ color: '#00ffff' }}>
                       上<span style={{ opacity: 0 }}>啊啊</span>
                       报：
                     </span>
@@ -184,7 +182,7 @@ class CompanyRisk extends PureComponent {
                       lineHeight: '24px',
                     }}
                   >
-                    <span style={{ color: '#00A8FF' }}>
+                    <span style={{ color: '#00ffff' }}>
                       {+item.status === 3 || +item.status === 4 ? '实际' : '计划'}
                       整改：
                     </span>
@@ -205,7 +203,7 @@ class CompanyRisk extends PureComponent {
                         lineHeight: '24px',
                       }}
                     >
-                      <span style={{ color: '#00A8FF' }}>
+                      <span style={{ color: '#00ffff' }}>
                         复<span style={{ opacity: 0 }}>啊啊</span>
                         查：
                       </span>
@@ -224,7 +222,7 @@ class CompanyRisk extends PureComponent {
                       lineHeight: '24px',
                     }}
                   >
-                    <span style={{ color: '#00A8FF' }}>
+                    <span style={{ color: '#00ffff' }}>
                       来<span style={{ opacity: 0 }}>啊啊</span>
                       源：
                     </span>
@@ -243,7 +241,7 @@ class CompanyRisk extends PureComponent {
                       lineHeight: '24px',
                     }}
                   >
-                    <span style={{ color: '#00A8FF' }}>检查点位：</span>
+                    <span style={{ color: '#00ffff' }}>检查点位：</span>
                     <Ellipsis lines={1} style={{ flex: 1, color: '#fff' }} tooltip>
                       <span style={{ marginRight: '20px' }}>{item.item_name || '- -'}</span>
                     </Ellipsis>

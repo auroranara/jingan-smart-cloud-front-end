@@ -30,6 +30,8 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import styles from './AccountManagementList.less';
 import { AuthLink, AuthButton, AuthSpan } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
+import{ getListByUnitId } from './utils';
+import { MAI, GOV, OPE, COM } from '@/pages/RoleAuthorization/Role/utils';
 
 const { TreeNode } = TreeSelect;
 // 标题
@@ -41,8 +43,8 @@ const breadcrumbList = [
     name: '首页',
   },
   {
-    title: '权限管理',
-    name: '权限管理',
+    title: '角色权限',
+    name: '角色权限',
   },
   {
     title,
@@ -57,16 +59,6 @@ const pageSize = 18;
 
 // 默认的所属单位长度
 const defaultPageSize = 20;
-
-// 默认表单值
-// const defaultFormData = {
-//   loginName: undefined,
-//   userName: undefined,
-//   phoneNumber: undefined,
-//   unitType: undefined,
-//   unitId: undefined,
-//   // accountStatus: undefined,
-// };
 
 /* 账号状态 */
 const statusList = {
@@ -118,9 +110,6 @@ const getEmptyData = () => {
         ...action,
       });
     },
-    /* goToDetail(url) {
-      dispatch(routerRedux.push(url));
-    }, */
     saveAccounts(action) {
       dispatch({
         type: 'account/saveAccounts',
@@ -133,7 +122,6 @@ const getEmptyData = () => {
         ...action,
       });
     },
-    // 异常
     goToException() {
       dispatch(routerRedux.push('/exception/500'));
     },
@@ -161,71 +149,90 @@ const getEmptyData = () => {
         ...action,
       });
     },
+    fetchRoles(action) {
+      dispatch({ type: 'account/fetchRoles', ...action });
+    },
+    clearRoles() {
+      dispatch({ type: 'account/queryRoles', payload: [] });
+    },
+    clearUnits() {
+      dispatch({ type: 'account/queryUnits', payload: [] });
+    },
   })
 )
 @Form.create()
 export default class accountManagementList extends React.Component {
   constructor(props) {
     super(props);
-    // this.formData = defaultFormData;
-    this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
     this.state = {
       modalVisible: false,
       associatedUnits: [],
       currentLoginId: null,
-      unitTypeChecked: 4,
+      unitTypeChecked: undefined,
     };
   }
 
   // 生命周期函数
   componentDidMount() {
     const {
-      fetch,
       fetchOptions,
-      fetchUnitsFuzzy,
-      // fetchGavUserTypes,
       fetchUserType,
-      account: { searchInfo },
-      form: { setFieldsValue },
+      clearRoles,
+      clearUnits,
+      fetchUnitsFuzzy,
     } = this.props;
 
-    // fetchGavUserTypes()
-    fetchUserType({
-      success: () => {},
-    });
-    // 获取单位类型和账户状态
-    fetchOptions({
-      success: ({ unitType }) => {
-        const selectedUnitType =
-          (searchInfo && searchInfo.unitType) ||
-          (unitType && unitType.length && unitType[0].id) ||
-          undefined;
-        this.setState({ unitTypeChecked: selectedUnitType });
+    clearRoles();
+    clearUnits();
+    fetchUserType();
+    fetchOptions(); // 获取单位类型和账户状态
+    this.getInitValues();
+    this.fetchLazyUnitsFuzzy = debounce(fetchUnitsFuzzy, 500);
+  }
 
-        // 如果有搜索条件，则填入并所属单位和账号列表
-        if (searchInfo) {
-          const { unitId: { key } = {}, ...other } = searchInfo;
-          selectedUnitType === 2
-            ? fetchUnitsFuzzy({
-                payload: { unitType: 2 },
-              })
-            : fetchUnitsFuzzy({
-                payload: {
-                  unitType: selectedUnitType,
-                  pageNum: 1,
-                  pageSize: defaultPageSize,
-                },
-              });
-          setFieldsValue(searchInfo);
-          fetch({
-            payload: {
-              pageSize,
-              pageNum: 1,
-              unitId: key || null,
-              ...other,
-            },
+  componentWillUnmount() {
+    const { initPageNum } = this.props;
+    initPageNum();
+  }
+
+  isUnitUser() { // 是否是非运营的单位用户
+    const { user: { currentUser: { unitId, unitType } } } = this.props;
+    return unitId && +unitType !== OPE;
+  }
+
+  getInitValues = () => {
+    const {
+      fetch,
+      fetchUnitsFuzzy,
+      fetchRoles,
+      account: { searchInfo },
+      form: { setFieldsValue },
+      user: { currentUser: { unitId, unitType } },
+    } = this.props;
+
+    const isUnitUser = this.isUnitUser();
+    let listPayload;
+    if (isUnitUser) {
+      fetchRoles({ payload: { unitType, companyId: unitId } });
+      listPayload = { pageSize, pageNum: 1, unitId };
+    } else {
+      let selectedUnitType;
+      if (searchInfo) // 上次缓存在model里的筛选条件
+        selectedUnitType = searchInfo.unitType;
+
+      this.setState({ unitTypeChecked: selectedUnitType });
+
+      // 如果有搜索条件，则填入并所属单位和账号列表
+      if (searchInfo) {
+        const { unitId, ...other } = searchInfo;
+        let key;
+        if (selectedUnitType === GOV) {
+          key = unitId || undefined;
+          fetchUnitsFuzzy({
+            payload: { unitType: GOV },
           });
         } else {
+          key = unitId ? unitId.key : undefined;
           fetchUnitsFuzzy({
             payload: {
               unitType: selectedUnitType,
@@ -233,23 +240,25 @@ export default class accountManagementList extends React.Component {
               pageSize: defaultPageSize,
             },
           });
-          fetch({
-            payload: {
-              pageSize,
-              pageNum: 1,
-              // 初始获取企事业主页的列表
-              unitType: 4,
-            },
-          });
         }
-      },
-    });
-  }
+        listPayload = { pageSize, pageNum: 1, unitId: key || null, ...other };
+        if (selectedUnitType)
+          fetchRoles({ payload: { unitType: selectedUnitType, companyId: key } });
+      } else { // 最初没有选择任何条件的状态
+        fetchUnitsFuzzy({
+          payload: {
+            unitType: selectedUnitType,
+            pageNum: 1,
+            pageSize: defaultPageSize,
+          },
+        });
+        listPayload = { pageSize, pageNum: 1 };
+      }
+    }
 
-  componentWillUnmount() {
-    const { initPageNum } = this.props;
-    initPageNum();
-  }
+    searchInfo && setFieldsValue(searchInfo);
+    fetch({ payload: listPayload });
+  };
 
   /* 去除输入框里左右两边空白 */
   handleTrim = e => e.target.value.trim();
@@ -260,11 +269,14 @@ export default class accountManagementList extends React.Component {
       fetch,
       saveSearchInfo,
       form: { getFieldsValue },
+      user: { currentUser: { unitId } },
     } = this.props;
+
+    const isUnitUser = this.isUnitUser();
     const data = getFieldsValue();
     const { unitId: { key } = {}, ...other } = data;
-    // 修改表单数据
-    // this.formData = data;
+    if (isUnitUser)
+      other.unitId = unitId;
     // 重新请求数据
     fetch({
       payload: {
@@ -283,33 +295,32 @@ export default class accountManagementList extends React.Component {
   handleClickToReset = () => {
     const {
       fetch,
+      clearRoles,
       fetchUnitsFuzzy,
       saveSearchInfo,
-      // goToException,
-      // fetchOptions,
       form: { resetFields, getFieldValue },
+      user: { currentUser: { unitId } },
     } = this.props;
-    // 清除筛选条件
+    const isUnitUser = this.isUnitUser();
+    const payload = { pageSize, pageNum: 1 };
+    clearRoles();
     resetFields();
-    // 修改表单数据
-    // this.formData = defaultFormData;
-    // 重新请求数据
-    fetch({
-      payload: {
-        pageSize,
-        pageNum: 1,
-      },
-    });
-    const unitType = getFieldValue('unitType');
-    this.setState({ unitTypeChecked: unitType }, () => {
-      fetchUnitsFuzzy({
-        payload: {
-          unitType,
-          pageNum: 1,
-          pageSize: defaultPageSize,
-        },
+    if (isUnitUser) {
+      payload.unitId = unitId;
+    } else {
+      const unitType = getFieldValue('unitType');
+      this.setState({ unitTypeChecked: unitType }, () => {
+        fetchUnitsFuzzy({
+          payload: {
+            unitType,
+            pageNum: 1,
+            pageSize: defaultPageSize,
+          },
+        });
       });
-    });
+    }
+
+    fetch({ payload });
     saveSearchInfo();
   };
 
@@ -337,16 +348,24 @@ export default class accountManagementList extends React.Component {
   };
 
   // 单位类型下拉框选择
-  handleUnitTypeSelect = value => {
+  handleUnitTypeChange = value => {
     const {
+      fetchRoles,
+      clearRoles,
       fetchUnitsFuzzy,
-      form: { setFieldsValue, getFieldValue },
+      form: { setFieldsValue },
     } = this.props;
-    const selectedUnitType = getFieldValue('unitType');
-    setFieldsValue({ unitId: undefined, userType: [] });
-    this.setState({ unitTypeChecked: value || selectedUnitType });
+
+    setFieldsValue({ unitId: undefined, roleId: undefined });
+    this.setState({ unitTypeChecked: value });
+
+    if (value !== undefined && value !== null)
+      fetchRoles({ payload: { unitType: value } });
+    else
+      clearRoles();
+
     // 根据当前选中的单位类型获取对应的所属单位列表
-    if (value === 2) {
+    if (value === GOV) {
       fetchUnitsFuzzy({
         payload: {
           unitType: value,
@@ -355,7 +374,8 @@ export default class accountManagementList extends React.Component {
     } else if (value === null || value === undefined) {
       fetchUnitsFuzzy({
         payload: {
-          unitType: selectedUnitType,
+          pageNum: 1,
+          pageSize: defaultPageSize,
         },
       });
     } else {
@@ -369,13 +389,55 @@ export default class accountManagementList extends React.Component {
     }
   };
 
-  // 所属单位下拉框输入
-  handleUnitIdChange = value => {
+  handleUnitSelect = value => {
     const {
-      fetchUnitsFuzzy,
+      fetchRoles,
+      clearRoles,
+      account: { unitIds },
+      form: { setFieldsValue },
+    } = this.props;
+    const { unitTypeChecked } = this.state;
+
+    setFieldsValue({ roleId: undefined });
+    if (!unitTypeChecked && !value)
+      clearRoles();
+    else if (!unitTypeChecked && value) {
+      const target = unitIds.find(({ id }) => id === value.key);
+      fetchRoles({ payload: { unitType: target.type, companyId: value.key } });
+    } else
+      fetchRoles({ payload: { unitType: unitTypeChecked, companyId: value.key } });
+  };
+
+  handleUnitChange = value => {
+    const {
+      fetchRoles,
+      clearRoles,
+      form: { setFieldsValue },
+    } = this.props;
+    const { unitTypeChecked } = this.state;
+    if (!unitTypeChecked && !value) {
+      clearRoles();
+      setFieldsValue({ roleId: undefined });
+    } else if (unitTypeChecked && !value) {
+      setFieldsValue({ roleId: undefined });
+      fetchRoles({ payload: { unitType: unitTypeChecked } });
+    }
+  };
+
+  handleGovChange = value => {
+    const {
+      fetchRoles,
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ roleId: undefined });
+    fetchRoles({ payload: { unitType: GOV, companyId: value } });
+  };
+
+  handleUnitSearch = value => {
+    const {
       form: { getFieldValue },
     } = this.props;
-    fetchUnitsFuzzy({
+    this.fetchLazyUnitsFuzzy({
       payload: {
         unitType: getFieldValue('unitType'),
         unitName: value && value.trim(),
@@ -451,12 +513,12 @@ export default class accountManagementList extends React.Component {
     });
   };
 
-  generateTressNode = data => {
+  generateTreeNode = data => {
     return data.map(item => {
       if (item.child && item.child.length) {
         return (
           <TreeNode title={item.name} key={item.id} value={item.id}>
-            {this.generateTressNode(item.child)}
+            {this.generateTreeNode(item.child)}
           </TreeNode>
         );
       }
@@ -467,11 +529,12 @@ export default class accountManagementList extends React.Component {
   /* 渲染form表单 */
   renderForm() {
     const {
-      account: { unitTypes, unitIdes, userTypes, gavUserTypes },
+      account: { unitTypes, unitIds, roles },
       form: { getFieldDecorator },
       loading,
     } = this.props;
 
+    const isUnitUser =this.isUnitUser(); // 单位用户且不为运营
     const { unitTypeChecked } = this.state;
     const { Option } = Select;
 
@@ -484,26 +547,27 @@ export default class accountManagementList extends React.Component {
                 getValueFromEvent: this.handleTrim,
               })(<Input placeholder="用户名/姓名/手机号" style={{ width: 180 }} />)}
             </FormItem>
-            <FormItem label="单位类型">
-              {getFieldDecorator('unitType', {
-                initialValue: unitTypes.length === 0 ? undefined : unitTypes[0].id,
-              })(
-                <Select
-                  placeholder="请选择单位类型"
-                  allowClear
-                  onChange={this.handleUnitTypeSelect}
-                  style={{ width: 180 }}
-                >
-                  {unitTypes.map(item => (
-                    <Option value={item.id} key={item.id}>
-                      {item.label}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </FormItem>
+            {!isUnitUser && (
+              <FormItem label="单位类型">
+                {getFieldDecorator('unitType', {
+                })(
+                  <Select
+                    placeholder="请选择单位类型"
+                    allowClear
+                    onChange={this.handleUnitTypeChange}
+                    style={{ width: 180 }}
+                  >
+                    {unitTypes.map(item => (
+                      <Option value={item.id} key={item.id}>
+                        {item.label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            )}
 
-            {unitTypeChecked !== 2 && (
+            {!isUnitUser && unitTypeChecked !== GOV && (
               <FormItem label="所属单位">
                 {getFieldDecorator('unitId', {
                   rules: [
@@ -520,12 +584,14 @@ export default class accountManagementList extends React.Component {
                     optionLabelProp="children"
                     placeholder="请选择所属单位"
                     notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                    onSearch={this.handleUnitIdChange}
+                    onChange={this.handleUnitChange}
+                    onSelect={this.handleUnitSelect}
+                    onSearch={this.handleUnitSearch}
                     onBlur={this.handleUnitIdBlur}
                     filterOption={false}
                     style={{ width: 230 }}
                   >
-                    {unitIdes.map(item => (
+                    {unitIds.map(item => (
                       <Option value={item.id} key={item.id}>
                         {item.name}
                       </Option>
@@ -535,48 +601,31 @@ export default class accountManagementList extends React.Component {
               </FormItem>
             )}
 
-            {unitTypeChecked === 2 && (
+            {!isUnitUser && unitTypeChecked === GOV && (
               <FormItem label="所属单位">
                 {getFieldDecorator('unitId')(
                   <TreeSelect
                     allowClear
                     placeholder="请选择所属单位"
-                    // labelInValue
+                    onChange={this.handleGovChange}
                     style={{ width: 230 }}
                   >
-                    {this.generateTressNode(unitIdes)}
+                    {this.generateTreeNode(unitIds)}
                   </TreeSelect>
                 )}
               </FormItem>
             )}
-            {unitTypeChecked &&
-              unitTypeChecked === 4 && (
-                <FormItem label="用户角色">
-                  {getFieldDecorator('userType')(
-                    <Select placeholder="请选择用户角色" style={{ width: 152 }} allowClear>
-                      {userTypes.map(item => (
-                        <Option value={item.value} key={item.value}>
-                          {item.label}
-                        </Option>
-                      ))}
-                    </Select>
-                  )}
-                </FormItem>
+            <FormItem label="角色">
+              {getFieldDecorator('roleId')(
+                <Select placeholder="请选择角色" style={{ width: 180 }} allowClear>
+                  {roles.map(item => (
+                    <Option value={item.id} key={item.id}>
+                      {item.roleName}
+                    </Option>
+                  ))}
+                </Select>
               )}
-            {unitTypeChecked &&
-              unitTypeChecked === 2 && (
-                <FormItem label="用户角色">
-                  {getFieldDecorator('userType')(
-                    <Select placeholder="请选择用户角色" style={{ width: 152 }} allowClear>
-                      {gavUserTypes.map(item => (
-                        <Option value={item.id} key={item.id}>
-                          {item.label}
-                        </Option>
-                      ))}
-                    </Select>
-                  )}
-                </FormItem>
-              )}
+            </FormItem>
           </Col>
 
           {/* 按钮 */}
@@ -607,44 +656,59 @@ export default class accountManagementList extends React.Component {
   /* 渲染列表 */
   renderList() {
     const {
+      user: { currentUser: { unitId, userId, unitType } },
       account: { list },
     } = this.props;
+
+    const filteredList = getListByUnitId(list, unitType, unitId);
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
           rowKey="loginId"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
-          dataSource={list}
+          dataSource={filteredList}
           renderItem={item => {
-            const { loginId, loginName, status } = item;
+            const { loginId, loginName, userName, phoneNumber, status, users } = item;
+            const isUsersExist = Array.isArray(users) && users.length;
+            let isSelf = false;
+            if (isUsersExist) {
+              const ids = users.map(({ id }) => id);
+              isSelf = ids.includes(userId);
+            }
+            const actions = [
+              <AuthLink
+                code={codesMap.account.detail}
+                to={`/role-authorization/account-management/detail/${loginId}`}
+              >
+                查看
+              </AuthLink>,
+              <AuthLink
+                code={codesMap.account.edit}
+                // code={isSelf ? 'codeNotExist' : codesMap.account.edit}
+                to={`/role-authorization/account-management/edit/${loginId}`}
+              >
+                编辑
+              </AuthLink>,
+              <AuthLink
+                code={codesMap.account.addAssociatedUnit}
+                to={`/role-authorization/account-management/associated-unit/add/${
+                  loginId
+                }`}
+              >
+                关联单位
+              </AuthLink>,
+            ];
+
+            if (unitId) // 有单位id则不能再关联其他单位
+              actions.pop();
+
             return (
               <List.Item key={loginId}>
                 <Card
                   title={loginName}
                   className={styles.card}
-                  actions={[
-                    <AuthLink
-                      code={codesMap.account.detail}
-                      to={`/role-authorization/account-management/detail/${item.loginId}`}
-                    >
-                      查看
-                    </AuthLink>,
-                    <AuthLink
-                      code={codesMap.account.edit}
-                      to={`/role-authorization/account-management/edit/${item.loginId}`}
-                    >
-                      编辑
-                    </AuthLink>,
-                    <AuthLink
-                      code={codesMap.account.addAssociatedUnit}
-                      to={`/role-authorization/account-management/associated-unit/add/${
-                        item.loginId
-                      }`}
-                    >
-                      关联单位
-                    </AuthLink>,
-                  ]}
+                  actions={actions}
                   // extra={
                   //   <Button
                   //     onClick={() => {
@@ -662,64 +726,66 @@ export default class accountManagementList extends React.Component {
                       <Col span={12}>
                         <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                           姓名：
-                          {item.userName || getEmptyData()}
+                          {userName || getEmptyData()}
                         </Ellipsis>
                       </Col>
                       <Col span={12}>
-                        <p>电话: {item.phoneNumber || getEmptyData()}</p>
+                        <p>电话: {phoneNumber || getEmptyData()}</p>
                       </Col>
                     </Row>
-                    {item.users && item.users.length ? (
+                    {isUsersExist ? (
                       <Row>
                         <Col span={16}>
                           <Ellipsis tooltip lines={1} className={styles.ellipsisText} length={13}>
-                            {unitTypeList[item.users[0].unitType]}
-                            {item.users[0].unitName && `，${item.users[0].unitName}`}
+                            {unitTypeList[users[0].unitType]}
+                            {users[0].unitName && `，${users[0].unitName}`}
                           </Ellipsis>
                         </Col>
                         <Col span={3}>
                           <AuthSpan
                             code={codesMap.account.editAssociatedUnit}
-                            onClick={() => this.handleToEdit(item.users[0].id)}
+                            onClick={() => this.handleToEdit(users[0].id)}
                             style={{ cursor: 'pointer' }}
                           >
                             <Icon type="edit" />
                           </AuthSpan>
                         </Col>
-                        <Col span={3}>
-                          <Popconfirm
-                            title={`确定要${
-                              !!item.users[0].accountStatus ? '解绑' : '开启'
-                            }关联企业吗？`}
-                            onConfirm={() =>
-                              this.handleAccountStatus({
-                                accountStatus: Number(!item.users[0].accountStatus),
-                                id: item.users[0].id,
-                                users: item.users,
-                                loginId: item.loginId,
-                              })
-                            }
-                          >
-                            <AuthSpan
-                              code={codesMap.account.bindAssociatedUnit}
-                              style={{ cursor: 'pointer' }}
+                        {users[0].id !== userId && (
+                          <Col span={3}>
+                            <Popconfirm
+                              title={`确定要${
+                                !!users[0].accountStatus ? '解绑' : '开启'
+                              }关联企业吗？`}
+                              onConfirm={() =>
+                                this.handleAccountStatus({
+                                  accountStatus: Number(!users[0].accountStatus),
+                                  id: users[0].id,
+                                  users: users,
+                                  loginId: loginId,
+                                })
+                              }
                             >
-                              {!!item.users[0].accountStatus ? (
-                                <Icon type="link" />
-                              ) : (
-                                <Icon style={{ color: 'red' }} type="disconnect" />
-                              )}
-                            </AuthSpan>
-                          </Popconfirm>
-                        </Col>
+                              <AuthSpan
+                                code={codesMap.account.bindAssociatedUnit}
+                                style={{ cursor: 'pointer' }}
+                              >
+                                {!!users[0].accountStatus ? (
+                                  <Icon type="link" />
+                                ) : (
+                                  <Icon style={{ color: 'red' }} type="disconnect" />
+                                )}
+                              </AuthSpan>
+                            </Popconfirm>
+                          </Col>
+                        )}
                       </Row>
                     ) : (
                       <p>{getEmptyData()}</p>
                     )}
                     <p
-                      onClick={() => this.handleViewMore(item.users, item.loginId)}
+                      onClick={() => this.handleViewMore(users, loginId)}
                       style={{
-                        visibility: item.users && item.users.length > 1 ? 'visible' : 'hidden',
+                        visibility: users && users.length > 1 ? 'visible' : 'hidden',
                       }}
                       className={styles.more}
                     >
@@ -737,6 +803,7 @@ export default class accountManagementList extends React.Component {
   }
 
   renderModal = () => {
+    const { user: { currentUser: { userId } } } = this.props;
     const { modalVisible, associatedUnits, currentLoginId } = this.state;
     const columns = [
       {
@@ -772,26 +839,30 @@ export default class accountManagementList extends React.Component {
               >
                 <Icon type="edit" />
               </AuthSpan>
-              <Divider type="vertical" />
-              <Popconfirm
-                title={`确定要${!!row.accountStatus ? '解绑' : '开启'}关联企业吗？`}
-                onConfirm={() =>
-                  this.handleAccountStatus({
-                    accountStatus: Number(!row.accountStatus),
-                    id: row.id,
-                    users: associatedUnits,
-                    loginId: currentLoginId,
-                  })
-                }
-              >
-                <AuthSpan code={codesMap.account.bindAssociatedUnit} style={{ cursor: 'pointer' }}>
-                  {!!row.accountStatus ? (
-                    <Icon type="link" />
-                  ) : (
-                    <Icon style={{ color: 'red' }} type="disconnect" />
-                  )}
-                </AuthSpan>
-              </Popconfirm>
+              {row.id !== userId && (
+                <Fragment>
+                  <Divider type="vertical" />
+                  <Popconfirm
+                    title={`确定要${!!row.accountStatus ? '解绑' : '开启'}关联企业吗？`}
+                    onConfirm={() =>
+                      this.handleAccountStatus({
+                        accountStatus: Number(!row.accountStatus),
+                        id: row.id,
+                        users: associatedUnits,
+                        loginId: currentLoginId,
+                      })
+                    }
+                  >
+                    <AuthSpan code={codesMap.account.bindAssociatedUnit} style={{ cursor: 'pointer' }}>
+                      {!!row.accountStatus ? (
+                        <Icon type="link" />
+                      ) : (
+                        <Icon style={{ color: 'red' }} type="disconnect" />
+                      )}
+                    </AuthSpan>
+                  </Popconfirm>
+                </Fragment>
+              )}
             </Fragment>
           );
         },
@@ -827,7 +898,6 @@ export default class accountManagementList extends React.Component {
         data: {
           pagination: { total },
         },
-        /*   list, */
         isLast,
       },
       loading,
@@ -835,12 +905,11 @@ export default class accountManagementList extends React.Component {
 
     const content = (
       <div>
-        <p>对账号进行增删改查，并对账号赋予角色，使得账号获得相关菜单、操作按钮以及数据权限等。</p>
-        <p>
+        <p className={styles.desc}>
           账号总数：
           {total}
-          {''}
         </p>
+        <p className={styles.desc}>对账号进行增删改查，关联单位，并对账号赋予角色，使得账号获得相关菜单、操作按钮以及数据权限等</p>
       </div>
     );
 

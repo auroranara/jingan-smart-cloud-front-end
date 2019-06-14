@@ -323,7 +323,7 @@ export default class SensorModelList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('serMonitoringTypeId')(
-                  <Select placeholder="监测类型">
+                  <Select placeholder="监测类型" dropdownStyle={{ zIndex: 50 }}>
                     {monitoringTypeDict.map(({ value, key }) => (
                       <Option key={key} value={key}>{value}</Option>
                     ))}
@@ -334,7 +334,7 @@ export default class SensorModelList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('serBrand')(
-                  <Select placeholder="品牌">
+                  <Select placeholder="品牌" dropdownStyle={{ zIndex: 50 }}>
                     {brandDict.map(({ value, key }) => (
                       <Option key={key} value={key}>{value}</Option>
                     ))}
@@ -457,7 +457,7 @@ export default class SensorModelList extends PureComponent {
             loading={loading}
             columns={columns}
             dataSource={list}
-            scroll={{ x: 1300 }}
+            scroll={{ x: 'max-content' }}
             bordered
             pagination={{
               current: pageNum,
@@ -546,7 +546,7 @@ export default class SensorModelList extends PureComponent {
               ],
               validateTrigger: 'onBlur',
             })(
-              <Input placeholder="请输入" />
+              <Input placeholder="请输入" disabled={modalType === 'edit'} />
             )}
           </FormItem>
         </Form>

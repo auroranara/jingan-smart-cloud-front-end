@@ -1,10 +1,9 @@
 /* 企业信息 */
 .container {
-  margin: 0 auto;
-  padding: 16px;
-  max-width: 380px;
+  // margin: 0 auto;
+  padding: 1em 10%;
+  // max-width: 380px;
   height: 100%;
-  font-size: 16px;
   line-height: 1;
 }
 .top {
@@ -20,19 +19,25 @@
   .unitName {
     display: table-row;
     height: 42.222222%; // 28*2+20
-    font-size: 20px;
+    font-size: 1.25em;
     cursor: pointer;
   }
   .unitContact {
     display: table-row;
     height: 20%; // 36
   }
-  .fieldName {
+  .fieldNameWrapper {
     display: inline-block;
-    width: 96px;
+    width: 6em;
     color: #00ffff;
     white-space: nowrap;
     vertical-align: top;
+    .fieldName {
+      display: inline-block;
+      width: 5em;
+      white-space: nowrap;
+      vertical-align: top;
+    }
   }
   .cell {
     display: table-cell;
@@ -51,19 +56,16 @@
 
   & > div {
     flex: none;
-    padding-left: 68px;
+    padding-left: 4.25em;
+    line-height: 1.75em;
     background: no-repeat left;
-    background-size: 48px 48px;
+    background-size: 3em 3em;
 
     .countLabel {
-      height: 20px;
-      line-height: 20px;
-      font-size: 16px;
+      line-height: 1.25em;
     }
     .countValue {
-      height: 28px;
-      line-height: 28px;
-      font-size: 24px;
+      font-size: 1.5em;
       color: #00ffff;
     }
   }
@@ -89,12 +91,11 @@
 /* 重要单位 */
 .importantUnit {
   position: absolute;
-  top: 18px;
-  left: 18px;
+  top: 1.25em;
+  left: 1.25em;
   width: 100%;
-  height: 28px;
-  line-height: 28px;
-  font-size: 16px;
+  height: 1.75em;
+  line-height: 1.75em;
   color: #fff;
   background-color: #ff4848;
   text-align: center;

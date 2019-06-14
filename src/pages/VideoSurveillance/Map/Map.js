@@ -44,9 +44,9 @@ export default class Map extends PureComponent {
     },
     isLabelShow: false,
     loading: false,
-  }
+  };
 
-  timer = null
+  timer = null;
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -64,11 +64,11 @@ export default class Map extends PureComponent {
   }
 
   /* 播放视频点击事件 */
-  handlePlayButtonClick = (id) => {
+  handlePlayButtonClick = id => {
     if (this.timer !== null) {
       return;
     }
-    const url = 'http://p92lxg7ga.bkt.clouddn.com/VideoClientSetup.exe.zip';
+    const url = 'http://data.jingan-china.cn/VideoClientSetup.exe';
     this.props.dispatch({
       type: 'map/fetchVideoUrl',
       payload: {
@@ -78,13 +78,17 @@ export default class Map extends PureComponent {
         this.timer = setTimeout(() => {
           Modal.warning({
             title: '请安装播放器！',
-            content: (<a href={url} style={{ textDecoration: 'none' }}>点击下载</a>),
+            content: (
+              <a href={url} style={{ textDecoration: 'none' }}>
+                点击下载
+              </a>
+            ),
             okText: '关闭',
           });
         }, 1000);
       },
     });
-  }
+  };
 
   /* 播放按钮失焦事件 */
   handlePlayButtonBlur = () => {
@@ -93,7 +97,7 @@ export default class Map extends PureComponent {
     this.props.dispatch({
       type: 'map/deleteVideoUrl',
     });
-  }
+  };
 
   /* 显示其他在线用户复选框点击事件 */
   handleShowUsers = () => {
@@ -120,7 +124,7 @@ export default class Map extends PureComponent {
         });
       },
     });
-  }
+  };
 
   /* 显示视频复选框点击事件 */
   handleShowVideos = () => {
@@ -146,7 +150,7 @@ export default class Map extends PureComponent {
         });
       },
     });
-  }
+  };
 
   /* 显示用户标注 */
   handleShowUserLabel(user) {
@@ -175,7 +179,7 @@ export default class Map extends PureComponent {
     this.setState({
       isLabelShow: false,
     });
-  }
+  };
 
   /* 左上角信息面板渲染 */
   renderInfoPanel() {
@@ -183,11 +187,24 @@ export default class Map extends PureComponent {
     const { isUsersShow, isVideosShow } = this.state;
     return (
       <div className={styles.customComponent}>
-        <div><span>当前在线总数：</span><span>{currentCount}</span></div>
-        <div><span>今日在线总数：</span><span>{todayCount}</span></div>
-        <div><span>故障视频：</span><span style={{ color: '#ED7D31' }}>{faultVideoCount}</span></div>
+        <div>
+          <span>当前在线总数：</span>
+          <span>{currentCount}</span>
+        </div>
+        <div>
+          <span>今日在线总数：</span>
+          <span>{todayCount}</span>
+        </div>
+        <div>
+          <span>故障视频：</span>
+          <span style={{ color: '#ED7D31' }}>{faultVideoCount}</span>
+        </div>
         {/* <div><span>在线用户：</span><input type="checkbox" checked={isUsersShow} onChange={this.handleShowUsers} /><span>显示</span></div> */}
-        <div><span>视频资源：</span><input type="checkbox" checked={isVideosShow} onChange={this.handleShowVideos} /><span>显示</span></div>
+        <div>
+          <span>视频资源：</span>
+          <input type="checkbox" checked={isVideosShow} onChange={this.handleShowVideos} />
+          <span>显示</span>
+        </div>
       </div>
     );
   }
@@ -196,7 +213,7 @@ export default class Map extends PureComponent {
   /* 用户坐标不需要转换坐标系 */
   renderUserList() {
     const { userList } = this.props.map;
-    return userList.map((user) => {
+    return userList.map(user => {
       return (
         <Marker
           position={{ longitude: user.longitude, latitude: user.latitude }}
@@ -205,7 +222,11 @@ export default class Map extends PureComponent {
             click: this.handleShowUserLabel.bind(this, user),
           }}
         >
-          <img src="http://p92lxg7ga.bkt.clouddn.com/icon-user.png" alt="" style={{ display: 'block', width: '19px', height: '33px' }} />
+          <img
+            src="http://p92lxg7ga.bkt.clouddn.com/icon-user.png"
+            alt=""
+            style={{ display: 'block', width: '19px', height: '33px' }}
+          />
         </Marker>
       );
     });
@@ -214,7 +235,7 @@ export default class Map extends PureComponent {
   /* 视频组渲染 */
   renderVideoList() {
     const { videoList } = this.props.map;
-    return videoList.map((video) => {
+    return videoList.map(video => {
       const position = coordtransform.wgs84togcj02(video.longitude, video.latitude);
       return (
         <Marker
@@ -224,7 +245,11 @@ export default class Map extends PureComponent {
             click: this.handleShowVideoLabel.bind(this, video),
           }}
         >
-          <img src="http://p92lxg7ga.bkt.clouddn.com/icon-video.png" alt="" style={{ display: 'block', width: '19px', height: '33px' }} />
+          <img
+            src="http://p92lxg7ga.bkt.clouddn.com/icon-video.png"
+            alt=""
+            style={{ display: 'block', width: '19px', height: '33px' }}
+          />
         </Marker>
       );
     });
@@ -234,14 +259,41 @@ export default class Map extends PureComponent {
   renderLabel(label, flag) {
     return flag ? (
       <div className={styles.videoLabel}>
-        <div><span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>视频名称：</span>{label.name}</div>
-        <div><span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>经度：</span>{parseFloat(label.longitude).toFixed(3)}</div>
-        <div><span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>纬度：</span>{parseFloat(label.latitude).toFixed(3)}</div>
-        <div><span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>视频状态：</span><Badge status={statusMap[label.status]} text={status[label.status]} /></div>
-        <div><span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>操作：</span><Button type="primary" size="small" onClick={() => { this.handlePlayButtonClick(label.id); }} onBlur={this.handlePlayButtonBlur}>播放</Button></div>
+        <div>
+          <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>视频名称：</span>
+          {label.name}
+        </div>
+        <div>
+          <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>经度：</span>
+          {parseFloat(label.longitude).toFixed(3)}
+        </div>
+        <div>
+          <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>纬度：</span>
+          {parseFloat(label.latitude).toFixed(3)}
+        </div>
+        <div>
+          <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>视频状态：</span>
+          <Badge status={statusMap[label.status]} text={status[label.status]} />
+        </div>
+        <div>
+          <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>操作：</span>
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => {
+              this.handlePlayButtonClick(label.id);
+            }}
+            onBlur={this.handlePlayButtonBlur}
+          >
+            播放
+          </Button>
+        </div>
       </div>
     ) : (
-      <div className={styles.userLabel}>{label.userName}正在使用天翼云眼</div>
+      <div className={styles.userLabel}>
+        {label.userName}
+        正在使用天翼云眼
+      </div>
     );
   }
 
@@ -298,7 +350,14 @@ export default class Map extends PureComponent {
                 {isVideosShow && this.renderVideoList()}
                 {this.renderInfoWindow()}
               </GDMap>
-              <iframe src={videoUrl} title="视频播放" style={{ display: 'none' }} frameBorder="0" width="0" height="0" />
+              <iframe
+                src={videoUrl}
+                title="视频播放"
+                style={{ display: 'none' }}
+                frameBorder="0"
+                width="0"
+                height="0"
+              />
             </div>
           </Spin>
         </Card>

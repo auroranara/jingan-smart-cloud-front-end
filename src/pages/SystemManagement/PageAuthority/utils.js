@@ -113,3 +113,56 @@ export function renderTreeNodes(data) {
     return <TreeNode {...item} />;
   });
 }
+
+// 返回目标项目的children数组
+function findTargetInTree(targetId, tree) {
+  if (!tree || !Array.isArray(tree) || !tree.length)
+    return;
+
+  if (targetId === '0')
+    return tree;
+
+  let result;
+  for(const { id, children } of tree) {
+    if (targetId === id)
+      result = children;
+    else
+      result = findTargetInTree(targetId, children);
+
+    if (result)
+      return result;
+  }
+}
+
+// 获取sort值，编辑时sorts数组要先把当前项目对应的sort排除，以保证其位置不会变化
+export function getSortValue(parentId, tree, currentId) {
+  const target = findTargetInTree(parentId, tree);
+  if (!target)
+    return [0, []];
+  const sorts = target.filter(({ id }) => id !== currentId).map(({ sort }) => +sort).filter(sort => typeof sort === 'number');
+  let sort = 0;
+  while (sorts.includes(sort))
+    sort++;
+  return [sort, sorts];
+}
+
+function getBase64Image(img) {
+  const canvas = document.createElement("canvas");
+  canvas.width = img.width;
+  canvas.height = img.height;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0, img.width, img.height);
+  const ext = img.src.substring(img.src.lastIndexOf(".")+1).toLowerCase();
+  const dataURL = canvas.toDataURL("image/"+ext);
+  return dataURL;
+}
+
+export function getBase64FromUrl(src, callback) {
+  const tempImage = new Image();
+  tempImage.crossOrigin = "*";
+  tempImage.onload = function(){
+    const base64 = getBase64Image(tempImage);
+    callback(base64);
+  };
+  tempImage.src = src;
+}

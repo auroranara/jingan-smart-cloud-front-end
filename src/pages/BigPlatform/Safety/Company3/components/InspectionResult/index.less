@@ -1,0 +1,38 @@
+.container {
+  position: fixed;
+  bottom: 1em;
+  left: 25%;
+  width: 50%;
+
+  :global {
+    .slick-dots {
+      bottom: 3px;
+    }
+  }
+}
+.closeButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 0 0.5em 0.5em;
+  width: 2em;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25em;
+  color: #4d4d4d;
+  background-color: rgba(22, 22, 22, 0.8);
+  border-bottom-left-radius: 100%;
+  z-index: 9;
+  transition: opacity 0.5s;
+  opacity: 0;
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+  }
+}
+.hack {
+  padding-right: 1px;
+}

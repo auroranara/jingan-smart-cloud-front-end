@@ -14,7 +14,6 @@ import Authorized from '@/utils/Authorized';
 // import SettingDrawer from '@/components/SettingDrawer';
 // import logo from '../assets/logo.svg';
 
-// import nanxiaoLogo from '../assets/nanxiao-logo.svg';
 import Footer from './Footer';
 import Header from './Header';
 import Context from './MenuContext';
