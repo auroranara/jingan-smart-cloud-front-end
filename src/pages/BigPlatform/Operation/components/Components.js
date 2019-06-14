@@ -1,3 +1,7 @@
+import TaskDrawer from './TaskDrawer';
+import TaskCount from './TaskCount';
+import FireCount from './FireCount';
+
 import DeviceBar from './DeviceBar';
 import InfoStatus from './InfoStatus';
 import LegendDot from './LegendDot';
@@ -22,4 +26,7 @@ export {
   MapLegend,
   MapSearch,
   MapTypeBar,
+  TaskDrawer,
+  TaskCount,
+  FireCount,
 }

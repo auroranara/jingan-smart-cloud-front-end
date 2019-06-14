@@ -6,10 +6,8 @@ import { stringify } from 'qs';
 import moment from 'moment';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
-import NewSection from '@/components/NewSection';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
-import RealTimeFire from '@/pages/BigPlatform/Smoke/RealTimeFire';
 import styles from './index.less';
 import {
   BackMap,
@@ -20,10 +18,16 @@ import {
   MonitorDrawer,
   FireDynamicDrawer,
   MaintenanceDrawer,
-  FireStatistics,
 } from './sections/Components';
-import { GridSelect, MapSearch, Tooltip as MyTooltip } from './components/Components';
 import { genCardsInfo } from './utils';
+import {
+  GridSelect,
+  MapSearch,
+  Tooltip as MyTooltip,
+  TaskDrawer,
+  TaskCount,
+  FireCount,
+} from './components/Components';
 
 // websocket配置
 const options = {
@@ -45,6 +49,10 @@ export default class Operation extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      taskDrawerVisible: false, // 任务抽屉
+      taskDrawerProcess: undefined, // 任务处理状态
+      fireStatisticsDrawerVisible: false, // 火警抽屉
+      dateType: undefined, // 火警抽屉日期类型
       setttingModalVisible: false,
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
@@ -67,9 +75,7 @@ export default class Operation extends PureComponent {
       errorUnitsCardsInfo: [],
       unitDetail: {},
       importCardsInfo: [],
-      dateType: 0, // 火警统计弹框选择的日期类型
       deviceType: 0, // 地图中间根据设备显示企业列表
-      fireStatisticsDrawerVisible: false, // 火警统计弹框
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -593,16 +599,33 @@ export default class Operation extends PureComponent {
     });
   };
 
-  handleDateTypeChange = v => {
-    this.setState({ dateType: v });
-  };
+  handleFireDrawerOpen = (dateType) => {
+    const dict = {
+      今日: 0,
+      本周: 1,
+      本月: 2,
+    };
+    this.setState({ fireStatisticsDrawerVisible: true, dateType: dict[dateType] });
+  }
+
+  handleDateTypeChange = (dateType) => {
+    this.setState({ dateType });
+  }
+
+  handleTaskDrawerOpen = (taskDrawerProcess) => {
+    this.setState({ taskDrawerVisible: true, taskDrawerProcess });
+  }
+
+  handleTaskDrawerClose = () => {
+    this.setState({ taskDrawerVisible: false });
+  }
+
+  handleTaskCardClick = (id) => {
+    console.log(id);
+  }
 
   handleDeviceTypeChange = v => {
     this.setState({ deviceType: v });
-  };
-
-  showFireStatisticsDrawer = dateType => {
-    this.setState({ fireStatisticsDrawerVisible: true, dateType });
   };
 
   /**
@@ -634,7 +657,6 @@ export default class Operation extends PureComponent {
       setttingModalVisible,
       unitDrawerVisible,
       alarmDrawerVisible,
-      fireDrawerVisible,
       selectList,
       searchValue,
       unitDetail,
@@ -648,7 +670,6 @@ export default class Operation extends PureComponent {
       // drawerType,
       alarmIds,
       companyName,
-      type,
       errorUnitsCardsInfo,
       importCardsInfo,
       dateType,
@@ -712,20 +733,12 @@ export default class Operation extends PureComponent {
           handleChange={this.handleMapSearchChange}
           handleSelect={this.showUnitDetail}
         />
-        {/* 异常单位统计 */}
-        <RealTimeFire
-          data={unNormalCount}
-          className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
-          onClick={e => this.handleDrawerVisibleChange('alarm')}
-        />
-        <NewSection
-          title="火警数量统计"
-          className={styles.left}
-          // style={{ top: 'calc(38.79% + 92px)', height: '16%', cursor: 'pointer' }}
-          style={{ top: 'calc(9.62963% + 68px)', height: '16%', cursor: 'pointer' }}
-        >
-          <FireStatistics data={statisticsData} onClick={this.showFireStatisticsDrawer} />
-        </NewSection>
+        <div className={styles.leftContainer}>
+          {/* 火警数量统计 */}
+          <FireCount onClick={this.handleFireDrawerOpen} />
+          {/* 运维任务统计 */}
+          <TaskCount onClick={this.handleTaskDrawerOpen} />
+        </div>
         {/* extra info */}
         <SettingModal
           visible={setttingModalVisible}
@@ -799,6 +812,13 @@ export default class Operation extends PureComponent {
           position={tooltipPosition}
           offset={[15, 42]}
           style={{ zIndex: 150 }}
+        />
+        {/* 任务抽屉 */}
+        <TaskDrawer
+          visible={this.state.taskDrawerVisible}
+          process={this.state.taskDrawerProcess}
+          onClose={this.handleTaskDrawerClose}
+          onJump={this.handleTaskCardClick}
         />
       </BigPlatformLayout>
     );
