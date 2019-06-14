@@ -6,31 +6,37 @@ import { DeviceBar, InfoStatus, MapLegend, MapTypeBar } from '../components/Comp
 
 import iconAddress from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-address.png';
 import iconMan from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-man.png';
-import { pointNormal, pointAlarm, pointPreAlarm } from '../imgs/links';
+import { dotRed, dotGreen } from '../imgs/links';
+import { HOST, SMOKE, getMapLegendData } from '../utils';
 
 const { region } = global.PROJECT_CONFIG;
 const zooms = [3, 20];
 let fitView = true;
+const INIT_INFO = {
+  companyId: '',
+  companyName: '',
+  address: '',
+  longitude: 120.366011,
+  latitude: 31.544389,
+  saferName: '',
+  saferPhone: '',
+  fireDeviceCount: 0,
+  fireDeviceCountForFire: 0,
+  fireDeviceCountForFault: 0,
+  fireDeviceCountForNormal: 0,
+  smokeDeviceCount: 0,
+  smokeDeviceCountForFire: 0,
+  smokeDeviceCountForFault: 0,
+  smokeDeviceCountForUnConnect: 0,
+  smokeDeviceCountForNormal: 0,
+};
 
 export default class MapSection extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       infoWindowShow: false,
-      infoWindow: {
-        companyId: '',
-        companyName: '',
-        principalName: '',
-        principalPhone: '',
-        count: 0,
-        normal: 0,
-        unnormal: 0,
-        faultNum: 0,
-        outContact: 0,
-        address: '',
-        longitude: 120.366011,
-        latitude: 31.544389,
-      },
+      infoWindow: INIT_INFO,
     };
   }
 
@@ -89,14 +95,14 @@ export default class MapSection extends PureComponent {
 
   renderMarkerLayout = extData => {
     const { companyName, companyId, unnormal, faultNum } = extData;
-    let imgSrc = pointNormal;
+    let imgSrc = dotGreen;
 
     if (+unnormal > 0) {
-      imgSrc = pointAlarm;
+      imgSrc = dotRed;
     } else if (+faultNum > 0) {
-      imgSrc = pointPreAlarm;
+      imgSrc = dotRed;
     } else {
-      imgSrc = pointNormal;
+      imgSrc = dotGreen;
     }
     return (
       <div
@@ -126,8 +132,6 @@ export default class MapSection extends PureComponent {
   handleMapClick = extData => {
     if (extData.companyId === this.state.infoWindow.companyId && this.state.infoWindowShow) return;
     const { fetchMapInfo } = this.props;
-    // clearPollingMap();
-    // pollingMap();
     fetchMapInfo();
     this.setState({
       infoWindowShow: true,
@@ -137,42 +141,42 @@ export default class MapSection extends PureComponent {
     });
   };
 
-  renderTips = () => {
-    const { units = [], alarmIds = [], handleAlarmClick } = this.props;
-    const tips = alarmIds.map(data => {
-      return {
-        ...units.find(item => item.companyId === data.companyId),
-        messageFlag: data.messageFlag,
-      };
-    });
-    return tips.map((item, index) => {
-      return item.unnormal > 0 ? (
-        <Marker
-          key={index}
-          offset={[-100, -72]}
-          position={[item.longitude, item.latitude]}
-          zIndex={1000}
-          extData={item}
-          events={{
-            click: e => {
-              const { messageFlag, companyId, companyName } = item;
-              handleAlarmClick(messageFlag, companyId, companyName);
-              const newIds = [...alarmIds.slice(0, index), ...alarmIds.slice(index + 1)];
-              this.props.handleParentChange({ alarmIds: newIds });
-            },
-          }}
-          render={() => {
-            return (
-              <div className={styles.alarmTip}>
-                有一条火警信息！
-                <span className={styles.tipMore}>详情>></span>
-              </div>
-            );
-          }}
-        />
-      ) : null;
-    });
-  };
+  // renderTips = () => {
+  //   const { units = [], alarmIds = [], handleAlarmClick } = this.props;
+  //   const tips = alarmIds.map(data => {
+  //     return {
+  //       ...units.find(item => item.companyId === data.companyId),
+  //       messageFlag: data.messageFlag,
+  //     };
+  //   });
+  //   return tips.map((item, index) => {
+  //     return item.unnormal > 0 ? (
+  //       <Marker
+  //         key={index}
+  //         offset={[-100, -72]}
+  //         position={[item.longitude, item.latitude]}
+  //         zIndex={1000}
+  //         extData={item}
+  //         events={{
+  //           click: e => {
+  //             const { messageFlag, companyId, companyName } = item;
+  //             handleAlarmClick(messageFlag, companyId, companyName);
+  //             const newIds = [...alarmIds.slice(0, index), ...alarmIds.slice(index + 1)];
+  //             this.props.handleParentChange({ alarmIds: newIds });
+  //           },
+  //         }}
+  //         render={() => {
+  //           return (
+  //             <div className={styles.alarmTip}>
+  //               有一条火警信息！
+  //               <span className={styles.tipMore}>详情>></span>
+  //             </div>
+  //           );
+  //         }}
+  //       />
+  //     ) : null;
+  //   });
+  // };
 
   // 弹窗渲染
   renderInfoWindow = () => {
@@ -180,19 +184,56 @@ export default class MapSection extends PureComponent {
     const {
       infoWindowShow,
       infoWindow: {
-        address,
-        principalName,
-        principalPhone,
-        companyName,
         companyId,
+        companyName,
+        address,
         longitude,
         latitude,
-        count,
-        normal,
-        unnormal,
-        faultNum,
+        saferName,
+        saferPhone,
+        fireDeviceCount,
+        fireDeviceCountForFire,
+        fireDeviceCountForFault,
+        fireDeviceCountForNormal,
+        smokeDeviceCount,
+        smokeDeviceCountForFire,
+        smokeDeviceCountForFault,
+        smokeDeviceCountForUnConnect,
+        smokeDeviceCountForNormal,
       },
     } = this.state;
+
+    let statuses;
+    let deviceCount;
+    switch(deviceType) {
+      case HOST:
+        deviceCount = fireDeviceCount;
+        statuses = [fireDeviceCountForFire, +fireDeviceCountForFault, 0, fireDeviceCountForNormal];
+        break;
+      case SMOKE:
+        deviceCount = smokeDeviceCount;
+        statuses = [smokeDeviceCountForFire, smokeDeviceCountForFault, smokeDeviceCountForUnConnect, smokeDeviceCountForNormal];
+        break;
+      default:
+        deviceCount = 0;
+        statuses = [0, 0, 0, 0];
+    }
+    const [fire, fault, loss, normal] = statuses.map(n => +n);
+
+    const alarmClick = () => {
+      if (fire) {
+        handleAlarmClick(undefined, companyId, companyName, fire);
+      } else {
+        return null;
+      }
+    };
+    const faultClick = () => {
+      if (fault > 0) {
+        handleFaultClick(undefined, companyId, companyName, fault);
+      } else {
+        return null;
+      }
+    };
 
     return (
       <InfoWindow
@@ -207,9 +248,7 @@ export default class MapSection extends PureComponent {
           <h3
             className={styles.comapnyName}
             style={{ cursor: 'pointer' }}
-            onClick={() => {
-              handleCompanyClick(companyId);
-            }}
+            onClick={() => { handleCompanyClick(companyId); }}
           >
             {companyName}
           </h3>
@@ -231,45 +270,33 @@ export default class MapSection extends PureComponent {
                 backgroundSize: '100% 100%',
               }}
             />
-            {principalName}
-            <span style={{ marginLeft: '10px' }}>{principalPhone}</span>
+            {saferName}
+            <span style={{ marginLeft: '10px' }}>{saferPhone}</span>
           </div>
           {
             deviceType ? (
               <Fragment>
                 <div style={{ borderTop: '1px solid #474747', margin: '8px 0', paddingTop: '8px' }}>
-                  设备数量 {count}
+                  设备数量 {deviceCount}
                 </div>
                 <div className={styles.statusWrapper}>
                   <div
-                    className={+unnormal > 0 ? styles.itemActive : styles.statusItem}
-                    onClick={() => {
-                      if (+unnormal > 0) {
-                        handleAlarmClick(undefined, companyId, companyName, +unnormal);
-                      } else {
-                        return null;
-                      }
-                    }}
+                    className={fire > 0 ? styles.itemActive : styles.statusItem}
+                    onClick={alarmClick}
                   >
                     <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
-                    报警 {unnormal > 0 ? unnormal : 0}
+                    报警 {fire > 0 ? fire : 0}
                   </div>
                   <div
-                    className={+faultNum > 0 ? styles.itemActive : styles.statusItem}
-                    onClick={() => {
-                      if (+faultNum > 0) {
-                        handleFaultClick(undefined, companyId, companyName, +faultNum);
-                      } else {
-                        return null;
-                      }
-                    }}
+                    className={fault > 0 ? styles.itemActive : styles.statusItem}
+                    onClick={faultClick}
                   >
                     <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
-                    故障 {faultNum}
+                    故障 {fault}
                   </div>
                   <div className={styles.statusItem}>
                     <span className={styles.statusIcon} style={{ backgroundColor: '#9f9f9f' }} />
-                    失联 {normal}
+                    失联 {loss}
                   </div>
                   <div className={styles.statusItem}>
                     <span className={styles.statusIcon} style={{ backgroundColor: '#37a460' }} />
@@ -285,8 +312,6 @@ export default class MapSection extends PureComponent {
         <Icon
           type="close"
           onClick={() => {
-            // const { clearPollingMap } = this.props;
-            // clearPollingMap();
             this.setState({ infoWindowShow: false });
           }}
           style={{
@@ -307,7 +332,8 @@ export default class MapSection extends PureComponent {
   };
 
   render() {
-    const { deviceType, handleParentChange, handleDeviceTypeChange } = this.props;
+    const { deviceType, handleParentChange, handleDeviceTypeChange, unitList } = this.props;
+    const mapLegendData = getMapLegendData(unitList);
 
     return (
       <div className={styles.mapContainer}>
@@ -337,7 +363,7 @@ export default class MapSection extends PureComponent {
         >
           {this.renderInfoWindow()}
           {this.renderMarkers()}
-          {this.renderTips()}
+          {/* {this.renderTips()} */}
           <MapTypeBar />
           <div
             className={styles.allPoint}
@@ -353,7 +379,7 @@ export default class MapSection extends PureComponent {
           </div>
         </GDMap>
         <DeviceBar type={deviceType} handleClick={handleDeviceTypeChange} />
-        <MapLegend data={{ abnormal: 10, normal: 5 }} />
+        <MapLegend data={mapLegendData} />
       </div>
     );
   }

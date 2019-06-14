@@ -2,6 +2,7 @@ import {
   getTaskList,
   getTaskCount,
   getFireCount,
+  getUnitList,
 } from '@/services/operation';
 import { message } from 'antd';
 function error(msg) {
@@ -26,6 +27,7 @@ export default {
       week: 0,
       month: 0,
     },
+    unitList: [],
   },
 
   effects: {
@@ -123,6 +125,15 @@ export default {
         error(msg);
       }
     },
+    *fetchUnitList({ payload, callback }, { call, put }) {
+      const response = yield call(getUnitList, payload);
+      const { code, list } = response || {};
+      if (code === 200) {
+        const lst = Array.isArray(list) ? list : [];
+        yield put({ type: 'saveUnitList', payload: lst });
+        callback && callback(lst);
+      }
+    },
   },
 
   reducers: {
@@ -131,6 +142,9 @@ export default {
         ...state,
         ...payload,
       };
+    },
+    saveUnitList(state, payload) {
+      return { ...state, unitList: payload.action };
     },
   },
 }

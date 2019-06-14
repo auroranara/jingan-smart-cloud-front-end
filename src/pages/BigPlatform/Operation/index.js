@@ -14,7 +14,6 @@ import {
   SettingModal,
   FireStatisticsDrawer,
 } from './sections/Components';
-import { genCardsInfo } from './utils';
 import {
   GridSelect,
   MapSearch,
@@ -23,22 +22,18 @@ import {
   TaskCount,
   FireCount,
 } from './components/Components';
+import { genCardsInfo } from './utils';
 
-// websocket配置
-const options = {
+const options = { // websocket配置
   pingTimeout: 30000,
   pongTimeout: 10000,
   reconnectTimeout: 2000,
   pingMsg: 'heartbeat',
 };
 
-/**
- * description: 智能烟感
- * author:
- * date: 2019年01月08日
- */
-@connect(({ smoke }) => ({
+@connect(({ smoke, operation }) => ({
   smoke,
+  operation,
 }))
 export default class Operation extends PureComponent {
   constructor(props) {
@@ -49,39 +44,21 @@ export default class Operation extends PureComponent {
       fireStatisticsDrawerVisible: false, // 火警抽屉
       dateType: undefined, // 火警抽屉日期类型
       setttingModalVisible: false,
-      unitDrawerVisible: false,
-      alarmDrawerVisible: false,
-      fireDrawerVisible: false,
-      monitorDrawerVisible: false,
-      monitorDrawerTitleIndex: 0,
       videoVisible: false,
       selectList: [],
       searchValue: '',
       mapInstance: undefined,
-      // 企业详情
       tooltipName: '',
       tooltipVisible: false,
       tooltipPosition: [0, 0],
-      maintenanceDrawerVisible: false,
-      alarmDynamicDrawerVisible: false,
-      // drawerType: '', // alarm,fault
       alarmIds: [],
       companyName: '',
       errorUnitsCardsInfo: [],
       unitDetail: {},
-      importCardsInfo: [],
+      // importCardsInfo: [],
       deviceType: 0, // 地图中间根据设备显示企业列表
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
-    // 设备状态统计数定时器
-    this.deviceStatusCountTimer = null;
-    // 设备实时数据定时器
-    this.deviceRealTimeDataTimer = null;
-    // 设备历史数据定时器
-    this.deviceHistoryDataTimer = null;
-    // 设备配置策略定时器
-    this.deviceConfigTimer = null;
-    this.number = 0;
   }
 
   /**
@@ -97,30 +74,29 @@ export default class Operation extends PureComponent {
     } = this.props;
 
     // 获取单位数据
-    dispatch({
-      type: 'smoke/fetchUnitData',
-      payload: { gridId },
-    });
+    // dispatch({
+    //   type: 'smoke/fetchUnitData',
+    //   payload: { gridId },
+    // });
 
     // 烟感地图数据
     this.fetchMapInfo();
 
     // 获取接入单位统计列表
-    dispatch({
-      type: 'smoke/fetchImportingTotal',
-      payload: {
-        status,
-        gridId,
-      },
-      callback: data => {
-        if (!data) return;
-        const {
-          gasUnitSet: { importingUnits = [] },
-        } = data;
-        // this.importCardsInfo = genCardsInfo(importingUnits);
-        this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
-      },
-    });
+    // dispatch({
+    //   type: 'smoke/fetchImportingTotal',
+    //   payload: {
+    //     status,
+    //     gridId,
+    //   },
+    //   callback: data => {
+    //     if (!data) return;
+    //     const {
+    //       gasUnitSet: { importingUnits = [] },
+    //     } = data;
+    //     this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
+    //   },
+    // });
 
     const params = {
       companyId: gridId,
@@ -212,7 +188,6 @@ export default class Operation extends PureComponent {
         const {
           gasUnitSet: { importingUnits = [] },
         } = data;
-        // this.importCardsInfo = genCardsInfo(importingUnits);
         this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
       },
     });
@@ -243,7 +218,6 @@ export default class Operation extends PureComponent {
     clearInterval(this.pollCompanyInfo);
   }
 
-  // cardsInfo = [];
   importCardsInfo = [];
   errorUnitsCardsInfo = [];
 
@@ -269,7 +243,7 @@ export default class Operation extends PureComponent {
    * 2.隐藏弹出框
    */
   hideUnitDetail = () => {
-    this.setState({ monitorDrawerVisible: false });
+    // this.setState({ monitorDrawerVisible: false });
   };
 
   /**
@@ -475,28 +449,26 @@ export default class Operation extends PureComponent {
   fetchMapInfo = () => {
     const {
       dispatch,
-      match: {
-        params: { gridId },
-      },
+      match: { params: { gridId } },
     } = this.props;
     // 烟感地图数据
     dispatch({
-      type: 'smoke/fetchMapList',
-      payload: { gridId },
+      type: 'operation/fetchUnitList',
+      // payload: { gridId },
     });
   };
 
-  pollingMap = () => {
-    this.poMap = setInterval(() => {
-      this.fetchMapInfo();
-    }, 2000);
-  };
+  // pollingMap = () => {
+  //   this.poMap = setInterval(() => {
+  //     this.fetchMapInfo();
+  //   }, 2000);
+  // };
 
-  clearPollingMap = () => {
-    clearInterval(this.poMap);
-  };
+  // clearPollingMap = () => {
+  //   clearInterval(this.poMap);
+  // };
 
-  handleFireDrawerOpen = (dateType) => {
+  handleFireDrawerOpen = dateType => {
     const dict = {
       今日: 0,
       本周: 1,
@@ -534,6 +506,7 @@ export default class Operation extends PureComponent {
         unitSet,
         deviceStatusCount,
       },
+      operation: { unitList },
       match: {
         params: { gridId },
       },
@@ -577,20 +550,21 @@ export default class Operation extends PureComponent {
         {/* 地图 */}
         <BackMap
           deviceType={deviceType}
-          units={Array.isArray(unitSet.units) ? unitSet.units : []}
-          deviceStatusCount={deviceStatusCount}
+          // units={Array.isArray(unitSet.units) ? unitSet.units : []}
+          units={unitList}
+          // deviceStatusCount={deviceStatusCount}
           handleMapClick={this.showUnitDetail}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
           unitDetail={unitDetail}
           alarmIds={alarmIds}
           handleParentChange={this.handleMapParentChange}
-          handleAlarmClick={this.handleAlarmClick}
-          handleFaultClick={this.handleFaultClick}
+          // handleAlarmClick={this.handleAlarmClick}
+          // handleFaultClick={this.handleFaultClick}
           onRef={this.onRef}
           handleCompanyClick={this.handleCompanyClick}
-          clearPollingMap={this.clearPollingMap}
-          pollingMap={this.pollingMap}
+          // clearPollingMap={this.clearPollingMap}
+          // pollingMap={this.pollingMap}
           fetchMapInfo={this.fetchMapInfo}
           handleDeviceTypeChange={this.handleDeviceTypeChange}
         />

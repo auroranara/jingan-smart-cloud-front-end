@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import styles from './MapLegend.less';
 import { LegendDot } from './Components';
 
-const PROPS = ['abnormal', 'alarm', 'fault', 'loss', 'normal'];
+const PROPS = ['abnormal', 'fire', 'fault', 'loss', 'normal'];
 const LABELS = ['异常', '报警', '故障', '失联', '正常'];
 const COLORS = ['#f83329', '#f83329', '#ffb400', '#9f9f9f', '#37a460'];
 

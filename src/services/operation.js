@@ -16,3 +16,8 @@ export async function getTaskCount(params) {
 export async function getFireCount(params) {
   return request(`/acloud_new/v2/statistics/maintenanceCheck?${stringify(params)}`);
 }
+
+// 获取企业列表
+export async function getUnitList(params) {
+  return request(`/acloud_new/v2/sdf/companyList?${stringify(params)}`);
+}
