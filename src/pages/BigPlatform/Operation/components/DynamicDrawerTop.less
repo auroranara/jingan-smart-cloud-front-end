@@ -1,4 +1,5 @@
 .dynamicDrawerTop {
+  font-size: 15px;
 
   .companyInfoContainer,
   .messageSendingContainer {
@@ -32,6 +33,10 @@
         cursor: pointer;
         width: 43px;
         height: 44px;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        background-position: center center;
+        transition: all .3s;
 
         &>div {
           position: absolute;
@@ -45,14 +50,14 @@
       .desc {
         text-align: center;
         color: #9F9F9F;
-        font-size: 10px;
+        font-size: 13px;
         margin-top: 5px;
       }
     }
 
     .repeatDesc {
       position: absolute;
-      font-size: 10px;
+      font-size: 13px;
       color: #00FFFF;
       visibility: hidden;
 
@@ -72,6 +77,18 @@
     .topLine {
       display: flex;
       justify-content: space-between;
+      margin-bottom: 8px;
+
+      span:first-of-type {
+        font-size: 17px;
+      }
+    }
+
+    .avtive {
+      color: #00FFFF;
+      text-decoration-line: underline;
+      font-size: 15px;
+      cursor: pointer;
     }
   }
 }

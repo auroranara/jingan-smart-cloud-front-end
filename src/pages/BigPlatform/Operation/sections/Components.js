@@ -1,6 +1,7 @@
 import BackMap from './BackMap';
 import FireStatistics from './FireStatistics';
 import FireStatisticsDrawer from './FireStatisticsDrawer';
+import AlarmDynamicDrawer from './AlarmDynamicDrawer';
 
 export {
   AlarmDrawer,
@@ -16,4 +17,5 @@ export {
   BackMap,
   FireStatistics,
   FireStatisticsDrawer,
+  AlarmDynamicDrawer,
 }

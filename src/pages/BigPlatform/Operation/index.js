@@ -13,6 +13,7 @@ import {
   BackMap,
   SettingModal,
   FireStatisticsDrawer,
+  AlarmDynamicDrawer,
 } from './sections/Components';
 import { genCardsInfo } from './utils';
 import {
@@ -641,6 +642,10 @@ export default class Operation extends PureComponent {
           process={this.state.taskDrawerProcess}
           onClose={this.handleTaskDrawerClose}
           onJump={this.handleTaskCardClick}
+        />
+        <AlarmDynamicDrawer
+          data={[]}
+          visible={true}
         />
       </BigPlatformLayout>
     );

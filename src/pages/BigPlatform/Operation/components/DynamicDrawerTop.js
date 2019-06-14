@@ -1,13 +1,30 @@
 import { Component } from 'react';
+import MsgRead from './MsgRead';
 import styles from './DynamicDrawerTop.less'
 
 import bakFlag from '@/assets/bac-flag.png'
 import bakFlagFill from '@/assets/bac-flag-fill.png'
 
+const users = new Array(17).fill({
+  id: '1',
+  name: '张三丰',
+});
+
+const users2 = new Array(11).fill({
+  id: '2',
+  name: '张丰',
+});
+
 export default class DynamicDrawerTop extends Component {
 
   state = {
-    showRepeatDesc: false,
+    showRepeatDesc: false,// 重复上报次数是否hover
+  }
+
+  handleReadChange = (showReaded) => {
+    this.setState({
+      showReaded,
+    })
   }
   render() {
     const { showRepeatDesc } = this.state
@@ -22,12 +39,13 @@ export default class DynamicDrawerTop extends Component {
             <div
               className={styles.logo}
               style={{
-                backgroundImage: `url(${showRepeatDesc ? bakFlagFill : bakFlag}) center center no-repeat`,
+                backgroundImage: `url(${showRepeatDesc ? bakFlagFill : bakFlag})`,
+                backgroundSize: '100%',
+                backgroundPosition: 'center center',
+                backgroundRepeat: 'no-repeat',
               }}
               onMouseEnter={() => this.setState({ showRepeatDesc: true })}
               onMouseLeave={() => this.setState({ showRepeatDesc: false })}>
-              {/* <FlagLogo width={43} height={44} isStroke={!showRepeatDesc} isFill={showRepeatDesc} /> */}
-
               <div>5</div>
             </div>
             <div className={styles.desc}>重复上报次数</div>
@@ -42,7 +60,7 @@ export default class DynamicDrawerTop extends Component {
             <span>报警消息已发送成功！</span>
             <span>共发送 12 人</span>
           </div>
-
+          <MsgRead read={users} unread={users2} />
         </div>
       </div>
     )
