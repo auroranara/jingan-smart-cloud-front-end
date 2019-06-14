@@ -12,12 +12,7 @@ import styles from './index.less';
 import {
   BackMap,
   SettingModal,
-  UnitDrawer,
-  AlarmDrawer,
   FireStatisticsDrawer,
-  MonitorDrawer,
-  FireDynamicDrawer,
-  MaintenanceDrawer,
 } from './sections/Components';
 import { genCardsInfo } from './utils';
 import {
@@ -108,16 +103,7 @@ export default class Operation extends PureComponent {
     });
 
     // 烟感地图数据
-    dispatch({
-      type: 'smoke/fetchMapList',
-      payload: { gridId },
-    });
-
-    // 获取异常单位统计数据
-    dispatch({
-      type: 'smoke/fetchUnNormalCount',
-      payload: { gridId },
-    });
+    this.fetchMapInfo();
 
     // 获取接入单位统计列表
     dispatch({
@@ -133,32 +119,6 @@ export default class Operation extends PureComponent {
         } = data;
         // this.importCardsInfo = genCardsInfo(importingUnits);
         this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
-      },
-    });
-
-    // 获取异常单位统计列表
-    dispatch({
-      type: 'smoke/fetchAbnormalingTotal',
-      payload: {
-        status,
-        gridId,
-      },
-      callback: data => {
-        if (!data) return;
-        const {
-          gasErrorUnitSet: { errorUnits = [] },
-        } = data;
-        this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
-        this.setState({ errorUnitsCardsInfo: this.errorUnitsCardsInfo });
-      },
-    });
-
-    // 品牌故障统计
-    dispatch({
-      type: 'smoke/fetchFaultByBrand',
-      payload: {
-        gridId,
-        classType: 6,
       },
     });
 
@@ -257,16 +217,7 @@ export default class Operation extends PureComponent {
       },
     });
     // 烟感地图数据
-    dispatch({
-      type: 'smoke/fetchMapList',
-      payload: { gridId },
-    });
-
-    // 获取异常单位统计数据
-    dispatch({
-      type: 'smoke/fetchUnNormalCount',
-      payload: { gridId },
-    });
+    this.fetchMapInfo();
 
     dispatch({
       type: 'smoke/fetchAbnormalingTotal',
@@ -318,10 +269,6 @@ export default class Operation extends PureComponent {
    * 2.隐藏弹出框
    */
   hideUnitDetail = () => {
-    // clearInterval(this.deviceStatusCountTimer);
-    // clearInterval(this.deviceRealTimeDataTimer);
-    // clearInterval(this.deviceHistoryDataTimer);
-    // clearInterval(this.deviceConfigTimer);
     this.setState({ monitorDrawerVisible: false });
   };
 
@@ -433,19 +380,19 @@ export default class Operation extends PureComponent {
     this.showUnitDetail(units.filter(item => item.companyId === companyId)[0]);
   };
 
-  handleClickCamera = () => {
-    const {
-      smoke: { cameraList },
-    } = this.props;
-    this.setState({
-      videoVisible: true,
-      videoKeyId: cameraList.length ? cameraList[0].key_id : '',
-    });
-  };
+  // handleClickCamera = () => {
+  //   const {
+  //     smoke: { cameraList },
+  //   } = this.props;
+  //   this.setState({
+  //     videoVisible: true,
+  //     videoKeyId: cameraList.length ? cameraList[0].key_id : '',
+  //   });
+  // };
 
-  handleVideoClose = () => {
-    this.setState({ videoVisible: false });
-  };
+  // handleVideoClose = () => {
+  //   this.setState({ videoVisible: false });
+  // };
 
   showTooltip = (e, name) => {
     const offset = e.target.getBoundingClientRect();
@@ -466,26 +413,6 @@ export default class Operation extends PureComponent {
 
   handleMapParentChange = newState => {
     this.setState({ ...newState });
-  };
-
-  handleHistoricalFireClick = type => {
-    const {
-      dispatch,
-      match: {
-        params: { gridId },
-      },
-    } = this.props;
-    dispatch({
-      type: 'smoke/fetchFireHistory',
-      payload: {
-        type,
-        gridId,
-      },
-      success: () => {
-        this.handleDrawerVisibleChange('fire');
-      },
-    });
-    this.setState({ type: type });
   };
 
   handleAlarmClick = (id, companyId, companyName, num) => {
@@ -545,46 +472,6 @@ export default class Operation extends PureComponent {
     });
   };
 
-  handleClickUnitStatistics = unitDetail => {
-    const { dispatch } = this.props;
-    const { companyId } = unitDetail;
-    this.setState({ unitDetail });
-    dispatch({ type: 'smoke/fetchCameraTree', payload: { company_id: companyId } });
-    dispatch({
-      type: 'smoke/fetchCompanySmokeInfo',
-      payload: { company_id: companyId },
-      success: () => {
-        this.handleDrawerVisibleChange('monitor');
-        this.pollCompanyInfo = setInterval(() => {
-          dispatch({
-            type: 'smoke/fetchCompanySmokeInfo',
-            payload: { company_id: companyId },
-          });
-        }, 2000);
-      },
-    });
-  };
-
-  pollingMap = () => {
-    const {
-      dispatch,
-      match: {
-        params: { gridId },
-      },
-    } = this.props;
-    this.poMap = setInterval(() => {
-      // 烟感地图数据
-      dispatch({
-        type: 'smoke/fetchMapList',
-        payload: { gridId },
-      });
-    }, 2000);
-  };
-
-  clearPollingMap = () => {
-    clearInterval(this.poMap);
-  };
-
   fetchMapInfo = () => {
     const {
       dispatch,
@@ -597,6 +484,16 @@ export default class Operation extends PureComponent {
       type: 'smoke/fetchMapList',
       payload: { gridId },
     });
+  };
+
+  pollingMap = () => {
+    this.poMap = setInterval(() => {
+      this.fetchMapInfo();
+    }, 2000);
+  };
+
+  clearPollingMap = () => {
+    clearInterval(this.poMap);
   };
 
   handleFireDrawerOpen = (dateType) => {
@@ -634,19 +531,8 @@ export default class Operation extends PureComponent {
   render() {
     const {
       smoke: {
-        statisticsData,
-        unNormalCount,
-        AccessStatistics,
-        AccessCount,
-        companyStatus,
-        AbnormalTrend,
-        brandData,
         unitSet,
         deviceStatusCount,
-        gasForMaintenance = [],
-        companySmokeInfo: { dataByCompany, map: devMap = { unnormal: [], fault: [], normal: [] } },
-        // cameraList,
-        cameraTree,
       },
       match: {
         params: { gridId },
@@ -655,23 +541,13 @@ export default class Operation extends PureComponent {
 
     const {
       setttingModalVisible,
-      unitDrawerVisible,
-      alarmDrawerVisible,
       selectList,
       searchValue,
       unitDetail,
       tooltipName,
       tooltipVisible,
       tooltipPosition,
-      maintenanceDrawerVisible,
-      monitorDrawerVisible,
-      alarmDynamicDrawerVisible,
-      // videoVisible,
-      // drawerType,
       alarmIds,
-      companyName,
-      errorUnitsCardsInfo,
-      importCardsInfo,
       dateType,
       deviceType,
       fireStatisticsDrawerVisible,
@@ -739,72 +615,18 @@ export default class Operation extends PureComponent {
           {/* 运维任务统计 */}
           <TaskCount onClick={this.handleTaskDrawerOpen} />
         </div>
-        {/* extra info */}
         <SettingModal
           visible={setttingModalVisible}
           handleOk={this.handleSettingOk}
           handleCancel={this.handleSettingCancel}
         />
-        <UnitDrawer
-          data={{ list: importCardsInfo, AccessStatistics, AccessCount }}
-          visible={unitDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-          handleAlarmClick={this.handleAlarmClick}
-          handleFaultClick={this.handleFaultClick}
-          handleClickUnitStatistics={this.handleClickUnitStatistics}
-        />
-        <AlarmDrawer
-          data={{ list: errorUnitsCardsInfo, companyStatus, graphList: AbnormalTrend }}
-          visible={alarmDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-          handleAlarmClick={this.handleAlarmClick}
-          handleFaultClick={this.handleFaultClick}
-          handleClickDeviceNumber={this.handleClickUnitStatistics}
-        />
+        {/* 火警统计抽屉 */}
         <FireStatisticsDrawer
           gridId={gridId}
           visible={fireStatisticsDrawerVisible}
           handleDateTypeChange={this.handleDateTypeChange}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           dateType={dateType}
-        />
-        {/* 故障处理动态 */}
-        <MaintenanceDrawer
-          title="故障处理动态"
-          // type={drawerType}
-          type={'fault'}
-          data={gasForMaintenance}
-          visible={maintenanceDrawerVisible}
-          companyName={companyName}
-          onClose={() => this.handleDrawerVisibleChange('maintenance')}
-        />
-        <FireDynamicDrawer
-          title="灾情事件动态"
-          // type={drawerType}
-          type={'alarm'}
-          data={gasForMaintenance}
-          visible={alarmDynamicDrawerVisible}
-          companyName={companyName}
-          onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
-        />
-        {/* 单位监测数据 */}
-        <MonitorDrawer
-          data={{
-            unitDetail,
-            cameraTree,
-            dataByCompany,
-            companySmokeInfo: this.props.smoke.companySmokeInfo,
-            devList: [...devMap.unnormal, ...devMap.fault, ...devMap.normal],
-          }}
-          visible={monitorDrawerVisible}
-          handleClose={() => {
-            this.hideUnitDetail();
-            clearInterval(this.pollCompanyInfo);
-          }}
-          handleSelect={this.handleSelectDevice}
-          handleClickCamera={this.handleClickCamera}
-          handleFaultClick={this.handleFaultClick}
-          handleAlarmClick={this.handleAlarmClick}
         />
         <MyTooltip
           visible={tooltipVisible}
