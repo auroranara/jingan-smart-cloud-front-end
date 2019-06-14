@@ -1,4 +1,6 @@
 import TaskDrawer from './TaskDrawer';
+import TaskCount from './TaskCount';
+import FireCount from './FireCount';
 
 export {
   ChartGauge,
@@ -12,5 +14,7 @@ export {
 
 export {
   TaskDrawer,
+  TaskCount,
+  FireCount,
 }
 

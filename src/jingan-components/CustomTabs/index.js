@@ -14,8 +14,8 @@ export default class CustomTabs extends PureComponent {
 
   handleClick = (e) => {
     const { onClick } = this.props;
-    console.log(e);
-    onClick && onClick();
+    const key = e.currentTarget.getAttribute('data-key');
+    onClick && onClick(key);
   }
 
   render() {
@@ -37,7 +37,8 @@ export default class CustomTabs extends PureComponent {
           <div
             className={classNames(styles.tab, activeKey === k ? styles.active : undefined)}
             key={k}
-            data-key={key}
+            data-key={k}
+            onClick={this.handleClick}
           >
             {v}
           </div>

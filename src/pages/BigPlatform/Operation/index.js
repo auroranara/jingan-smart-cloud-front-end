@@ -29,6 +29,8 @@ import {
   GridSelect,
   Tooltip as MyTooltip,
   TaskDrawer,
+  TaskCount,
+  FireCount,
 } from './components/Components';
 
 // websocket配置
@@ -51,7 +53,10 @@ export default class Operation extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      taskDrawerVisible: true, // 任务抽屉
+      taskDrawerVisible: false, // 任务抽屉
+      taskDrawerProcess: undefined, // 任务处理状态
+      fireStatisticsDrawerVisible: false, // 火警抽屉
+      dateType: undefined, // 火警抽屉日期类型
       setttingModalVisible: false,
       unitDrawerVisible: false,
       alarmDrawerVisible: false,
@@ -663,12 +668,29 @@ export default class Operation extends PureComponent {
     });
   };
 
-  handleTaskDrawerOpen = () => {
-    this.setState({ taskDrawerVisible: true });
+  handleFireDrawerOpen = (dateType) => {
+    const dict = {
+      今日: 0,
+      本周: 1,
+      本月: 2,
+    };
+    this.setState({ fireStatisticsDrawerVisible: true, dateType: dict[dateType] });
+  }
+
+  handleDateTypeChange = (dateType) => {
+    this.setState({ dateType });
+  }
+
+  handleTaskDrawerOpen = (taskDrawerProcess) => {
+    this.setState({ taskDrawerVisible: true, taskDrawerProcess });
   }
 
   handleTaskDrawerClose = () => {
     this.setState({ taskDrawerVisible: false });
+  }
+
+  handleTaskCardClick = (id) => {
+    console.log(id);
   }
 
   /**
@@ -775,21 +797,12 @@ export default class Operation extends PureComponent {
           handleChange={this.handleMapSearchChange}
           handleSelect={this.showUnitDetail}
         />
-        {/* 异常单位统计 */}
-        <RealTimeFire
-          data={unNormalCount}
-          className={`${styles.left} ${styles.realTimeAlarmStatistics}`}
-          onClick={e => this.handleDrawerVisibleChange('alarm')}
-        />
-        {/* 历史火警单位统计 */}
-        <NewSection
-          title="历史火警单位统计"
-          className={styles.left}
-          // style={{ top: 'calc(38.79% + 92px)', height: '16%', cursor: 'pointer' }}
-          style={{ top: 'calc(9.62963% + 68px)', height: '16%', cursor: 'pointer' }}
-        >
-          <HistoricalFire data={statisticsData} onClick={this.handleHistoricalFireClick} />
-        </NewSection>
+        <div className={styles.leftContainer}>
+          {/* 火警数量统计 */}
+          <FireCount onClick={this.handleFireDrawerOpen} />
+          {/* 运维任务统计 */}
+          <TaskCount onClick={this.handleTaskDrawerOpen} />
+        </div>
         {/* extra info */}
         <SettingModal
           visible={setttingModalVisible}
@@ -872,7 +885,9 @@ export default class Operation extends PureComponent {
         />
         <TaskDrawer
           visible={this.state.taskDrawerVisible}
+          process={this.state.taskDrawerProcess}
           onClose={this.handleTaskDrawerClose}
+          onJump={this.handleTaskCardClick}
         />
       </BigPlatformLayout>
     );
