@@ -266,6 +266,15 @@ export default class NewWorkOrderDrawer extends PureComponent {
           });
           handleClickTab(index);
         },
+        // warnDetailLoading || faultDetailLoading
+        //   ? undefined
+        //   : () => {
+        //       [0, 1].forEach(item => {
+        //         if (document.getElementById(`workOrderScroll${item}`))
+        //           document.getElementById(`workOrderScroll${item}`).scrollTop = 0;
+        //       });
+        //       handleClickTab(index);
+        //     },
       };
     });
 
@@ -312,25 +321,25 @@ export default class NewWorkOrderDrawer extends PureComponent {
                       )}
                     </div>
                   ) : (
-                      <div
-                        style={{
-                          height: '100%',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          textAlign: 'center',
-                          color: '#4f6793',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <img
-                          src={noData}
-                          style={{ width: '36%', height: 'auto', marginTop: '-150px' }}
-                          alt="noData"
-                        />
-                        <div style={{ marginTop: '15px' }}>暂无工单</div>
-                      </div>
-                    )}
+                    <div
+                      style={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        textAlign: 'center',
+                        color: '#4f6793',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <img
+                        src={noData}
+                        style={{ width: '36%', height: 'auto', marginTop: '-150px' }}
+                        alt="noData"
+                      />
+                      <div style={{ marginTop: '15px' }}>暂无工单</div>
+                    </div>
+                  )}
                 </div>
               </Spin>
             </div>

@@ -63,6 +63,7 @@ import {
   countAllFireAndFault,
   countFinishByUserId,
   messageInformList,
+  countNumAndTimeById,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -377,6 +378,7 @@ export default {
     },
     countFinishByUserId: [0, 0, 0, 0],
     messageInformList: [],
+    countNumAndTimeById: {},
   },
 
   subscriptions: {
@@ -864,11 +866,14 @@ export default {
       const response = yield call(queryWorkOrder, payload);
       if (response && response.code === 200) {
         yield put({
-          type: payload.id || payload.dataId ? 'saveWorkOrderDetail' : `saveWorkOrderList${payload.status}`,
+          type:
+            payload.id || payload.dataId
+              ? 'saveWorkOrderDetail'
+              : `saveWorkOrderList${payload.status}`,
           payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
         });
       }
-      if(callback) callback(response);
+      if (callback) callback(response);
     },
     // 获取火灾报警系统巡检记录
     *fetchCheckRecord({ payload }, { call, put }) {
@@ -998,6 +1003,14 @@ export default {
     },
     // 获取火灾故障数据列表
     *fetchFaultDetail({ payload, success }, { call, put }) {
+      yield put({
+        type: 'faultDetail',
+        payload: {
+          list: [],
+          pagination: { pageNum: 1, pageSize: 10 },
+        },
+        append: false,
+      });
       const response = yield call(getFaultDetail, payload);
       const {
         code,
@@ -1052,9 +1065,20 @@ export default {
       if (response && response.code === 200) {
         yield put({
           type: 'messageInformList',
-          payload: response.data|| {list:[]},
+          payload: response.data || { list: [] },
         });
       }
+    },
+    // 重复上报次数和最后一次时间
+    *fetchCountNumAndTimeById({ payload, callback }, { call, put }) {
+      const response = yield call(countNumAndTimeById, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'countNumAndTimeById',
+          payload: response.data,
+        });
+      }
+      if (callback) callback(response.data);
     },
   },
 
@@ -1320,6 +1344,12 @@ export default {
       return {
         ...state,
         messageInformList: payload.list,
+      };
+    },
+    countNumAndTimeById(state, { payload }) {
+      return {
+        ...state,
+        countNumAndTimeById: payload,
       };
     },
   },

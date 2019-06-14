@@ -86,8 +86,8 @@ export default function NewTimelineCard(props) {
                       })}
                     {repeat &&
                       repeat.repeatCount > 1 && (
-                        <div className={styles.repeat}>
-                          <Icon type="right" className={styles.arrow} />
+                        <div className={styles.repeat} style={{ cursor: 'default' }}>
+                          {/* <Icon type="right" className={styles.arrow} /> */}
                           该点位设备重复上报
                           {repeat.repeatCount}
                           次，

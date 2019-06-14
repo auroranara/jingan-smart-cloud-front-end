@@ -470,3 +470,8 @@ export async function countFinishByUserId(params) {
 export async function messageInformList(params) {
   return request(`/acloud_new/v2/fireManage/messageInformList?${stringify(params)}`);
 }
+
+// 重复上报次数和最后一次时间
+export async function countNumAndTimeById(params) {
+  return request(`/acloud_new/v2/fireManage/countNumAndTimeById?${stringify(params)}`);
+}

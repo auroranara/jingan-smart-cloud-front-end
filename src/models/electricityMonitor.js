@@ -301,7 +301,7 @@ export default {
         error(response);
       }
     },
-    *fetchDeviceCamera({ payload, success, error }, { call, put }) {
+    *fetchDeviceCamera({ payload, success, error, callback }, { call, put }) {
       const response = yield call(getVideoByDevice, payload);
       if (response.code === 200) {
         yield put({
@@ -314,6 +314,7 @@ export default {
       } else if (error) {
         error(response);
       }
+      if (callback) callback(response);
     },
   },
   reducers: {

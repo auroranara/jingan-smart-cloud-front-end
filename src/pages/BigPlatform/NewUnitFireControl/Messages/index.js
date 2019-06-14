@@ -6,7 +6,31 @@ import { vaguePhone } from '../utils';
 // import DescriptionList from 'components/DescriptionList';
 import styles from './index.less';
 
-const TYPES = [1, 2, 3, 4, 7, 9, 11, 13, 14, 15, 16, 17, 18, 36, 37, 38, 39, 40, 41];
+const TYPES = [
+  1,
+  2,
+  3,
+  4,
+  7,
+  9,
+  11,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  31,
+  32,
+  36,
+  37,
+  38,
+  39,
+  40,
+  41,
+  42,
+  43,
+];
 const formatTime = time => {
   const diff = moment().diff(moment(time));
   if (diff > 2 * 24 * 60 * 60 * 1000) {
@@ -134,6 +158,9 @@ export default class Messages extends PureComponent {
       firstTime,
       desc,
       realtimeVal,
+      enterSign,
+      unit,
+      limitVal,
     } = msg;
     const repeatCount = +isOver === 0 ? count : num;
     const lastReportTime = moment(addTime).format('YYYY-MM-DD HH:mm');
@@ -299,12 +326,15 @@ export default class Messages extends PureComponent {
       msgSettings = {
         ...msgSettings,
         [item.toString()]: {
-          onClick: () => {
-            if (+item === 7) handleClickMsgFlow(param, 0, 0, ...restParams);
-            else if (+item === 9) handleClickMsgFlow(param, 0, 1, ...restParams);
-            // if (+item === 7) handleClickMessage(messageFlag, { ...msg });
-            // else if (+item === 9) handleFaultClick({ ...msg });
-          },
+          onClick:
+            enterSign === '1'
+              ? () => {
+                  if (+item === 7) handleClickMsgFlow(param, 0, 0, ...restParams);
+                  else if (+item === 9) handleClickMsgFlow(param, 0, 1, ...restParams);
+                  // if (+item === 7) handleClickMessage(messageFlag, { ...msg });
+                  // else if (+item === 9) handleFaultClick({ ...msg });
+                }
+              : undefined,
           items: [
             { name: '位置', value: address },
             { name: '回路号', value: component },
@@ -324,7 +354,7 @@ export default class Messages extends PureComponent {
             handleViewDangerDetail({ id: messageFlag });
           },
           items: [
-            { name: '检查点', value: installAddress },
+            { name: '检查点', value: pointName },
             { name: '隐患描述', value: dangerDesc },
             { name: '整改人', value: rectifyUser },
             { name: '整改措施', value: rectifyMeasures },
@@ -347,6 +377,37 @@ export default class Messages extends PureComponent {
         },
       };
     });
+
+    if (type === 31 || type === 32) {
+      const elecMsg = {
+        31: { elecTitle: '电气火灾报警', elecContent: `${paramName}告警现已恢复正常` },
+        32: {
+          elecTitle: '电气火灾报警',
+          elecContent: `${paramName}告警${realtimeVal + unit}（参考值≦${limitVal + unit}）`,
+        },
+        42: { elecTitle: '电气火灾失联', elecContent: `设备状态失联` },
+        43: { elecTitle: '电气火灾失联', elecContent: `设备状态已恢复正常` },
+      };
+      return (
+        <div className={styles.msgItem}>
+          <a className={styles.detailBtn} onClick={() => {}}>
+            详情
+            <Icon type="double-right" />
+          </a>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgType}>【{elecMsg[type].elecTitle}】</div>
+          <div className={styles.msgType}>{elecMsg[type].elecContent}</div>
+          <div className={styles.msgBody}>
+            所在区域：
+            {area}
+          </div>
+          <div className={styles.msgBody}>
+            所在位置：
+            {location}
+          </div>
+        </div>
+      );
+    }
 
     const { onClick, items, isRepeat, showMsg } = msgSettings[type.toString()] || { items: [] };
     return (
@@ -831,7 +892,7 @@ export default class Messages extends PureComponent {
         }
         planB
       >
-        {list.length > 0 ? (
+        {list.length > 0 && list.filter(item => TYPES.indexOf(+item.type) >= 0) ? (
           list.map((item, index) => {
             return this.renderMsg(item, index);
           })
