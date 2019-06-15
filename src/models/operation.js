@@ -3,6 +3,7 @@ import {
   getTaskCount,
   getFireCount,
 } from '@/services/operation';
+import {getScreenMessage} from '@/services/bigPlatform/fireControl';
 import { message } from 'antd';
 function error(msg) {
   message.error(msg);
@@ -26,6 +27,8 @@ export default {
       week: 0,
       month: 0,
     },
+    // 大屏消息
+    screenMessage: [],
     // 火警消息
     alarmHandleMessage: [],
     // 火警动态
@@ -136,6 +139,35 @@ export default {
         error(msg);
       }
     },
+    // 获取大屏消息
+    *fetchScreenMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getScreenMessage, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'screenMessage',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    *fetchWebsocketScreenMessage({ payload, success, error }, { call, put }) {
+      console.log('fetchWebsocketScreenMessage', payload);
+      if (payload.code === 200) {
+        yield put({
+          type: 'saveScreenMessage',
+          payload: payload.data,
+        });
+        if (success) {
+          success(payload.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
     // 火警动态列表或火警消息
     //  *fetchAlarmHandle({ payload, callback }, { call, put }) {
     //   const response = yield call(queryAlarmHandleList, payload);
@@ -156,6 +188,18 @@ export default {
       return {
         ...state,
         ...payload,
+      };
+    },
+    saveScreenMessage(state, { payload }) {
+      return {
+        ...state,
+        screenMessage: [payload, ...state.screenMessage],
+      };
+    },
+    screenMessage(state, { payload }) {
+      return {
+        ...state,
+        screenMessage: payload.list,
       };
     },
     saveAlarmHandleMessage(state, action) {

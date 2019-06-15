@@ -13,7 +13,6 @@ import {
   BackMap,
   SettingModal,
   FireStatisticsDrawer,
-  AlarmDynamicDrawer,
   Messages,
 } from './sections/Components';
 import { genCardsInfo } from './utils';
@@ -25,7 +24,12 @@ import {
   TaskCount,
   FireCount,
 } from './components/Components';
-
+import {
+  FireFlowDrawer,
+  SmokeFlowDrawer,
+  OnekeyFlowDrawer,
+  GasFlowDrawer,
+} from './sections/DynamicDrawer'
 // websocket配置
 const options = {
   pingTimeout: 30000,
@@ -66,8 +70,9 @@ const popupVisible = {
  * author:
  * date: 2019年01月08日
  */
-@connect(({ smoke }) => ({
+@connect(({ smoke,operation }) => ({
   smoke,
+  operation,
 }))
 export default class Operation extends PureComponent {
   constructor(props) {
@@ -127,7 +132,6 @@ export default class Operation extends PureComponent {
         params: { gridId },
       },
     } = this.props;
-
     // 获取单位数据
     dispatch({
       type: 'smoke/fetchUnitData',
@@ -174,42 +178,200 @@ export default class Operation extends PureComponent {
       // 判断是否是心跳
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
-        const data = JSON.parse(e.data).data;
-        const { type, companyId, messageFlag } = data;
-        const { alarmIds } = this.state;
-        // const index = unitIds.indexOf(companyId);
-        // 如果数据为告警或恢复，则将数据插入到列表的第一个
-        if ([31, 32].includes(type)) {
-          // 如果发生告警，弹出通知框，否则关闭通知框
-          this.fetchAbnormal();
-          if (type === 32) {
-            // const sameItem = alarmIds.find(item=>item.companyId===companyId);
-            const sameIndex = alarmIds.map(item => item.companyId).indexOf(companyId);
-            const newList =
-              sameIndex >= 0
-                ? [
-                  ...alarmIds.slice(0, sameIndex),
-                  { companyId, messageFlag },
-                  ...alarmIds.slice(sameIndex + 1),
-                ]
-                : [...alarmIds, { companyId, messageFlag }];
-            this.setState({ alarmIds: newList });
-            this.showWarningNotification(data);
-          } else {
-            let sameIndex;
-            alarmIds.forEach((item, i) => {
-              if (item.messageFlag === messageFlag) sameIndex = i;
-            });
-            if (sameIndex !== undefined) {
-              const newIds = [...alarmIds.slice(0, sameIndex), ...alarmIds.slice(sameIndex + 1)];
-              this.setState({ alarmIds: newIds });
+        const companyId='DccBRhlrSiu9gMV7fmvizw'
+        const checkItemId=''
+
+        const data = JSON.parse(e.data);
+        dispatch({
+          type: 'operation/fetchWebsocketScreenMessage',
+          payload: data,
+          success: result => {
+            // 显示火警障碍弹窗
+            const {
+              itemId,
+              messageFlag,
+              type,
+              checkResult,
+              pointId,
+              pointStatus,
+              deviceType,
+              isOver,
+            } = result;
+
+            if (
+              type === 7 ||
+              type === 9 ||
+              type === 38 ||
+              type === 39 ||
+              type === 40 ||
+              type === 41
+            ) {
+              if (+isOver === 0) {
+                this.showFireMsg(result);
+              }
+              this.fetchScreenMessage(dispatch, companyId);
             }
-          }
-        }
-        // 如果为33，则修改单位状态
-        if (type === 33) {
-          this.fetchAbnormal();
-        }
+
+            if (
+              type === 1 ||
+              type === 2 ||
+              type === 3 ||
+              type === 4 ||
+              type === 9 ||
+              type === 7 ||
+              type === 21
+            ) {
+              // 获取消防主机监测
+              this.fetchFireAlarmSystem();
+            }
+
+            if (type === 14 || type === 15 || type === 16 || type === 17) {
+              // 更新当前隐患总数
+              dispatch({
+                type: 'newUnitFireControl/fetchHiddenDangerNum',
+                payload: { companyId },
+              });
+            }
+
+            if (type === 31 || type === 32 || type === 42 || type === 43) {
+              // 电气火灾监测
+              dispatch({
+                type: 'electricityMonitor/fetchDeviceStatusCount',
+                payload: { companyId },
+              });
+              this.getDeviceRealTimeData(this.elecDrawerDeviceId);
+              this.handleFetchRealTimeData(this.elecMonitorDeviceId);
+            }
+
+            // 获取水系统---消火栓系统
+            if (type === 36 || type === 37) {
+              // if (+deviceType === +waterTab) this.fetchWaterSystem(deviceType);
+              dispatch({
+                type: 'newUnitFireControl/fetchWaterAlarm',
+                payload: {
+                  companyId,
+                },
+              });
+            }
+
+            // if (type === 18) {
+            //   // 获取消防设施评分
+            //   dispatch({
+            //     type: 'newUnitFireControl/fetchSystemScore',
+            //     payload: {
+            //       companyId,
+            //     },
+            //   });
+            //   if (this.state.fireAlarmVisible) this.fetchViewFireAlarm();
+            // }
+
+            // 四色图隐患
+            const { fourColorTips, deletedFourColorTips } = this.state;
+            // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
+            if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
+              // 如果前一条隐患还没消失，则移除前一条隐患
+              if (fourColorTips[itemId] === messageFlag) {
+                return;
+              } else if (fourColorTips[itemId]) {
+                this.setState({
+                  fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+                  latestHiddenDangerId: itemId,
+                  deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
+                });
+              } else {
+                this.setState({
+                  fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+                  latestHiddenDangerId: itemId,
+                });
+              }
+            }
+
+            if (type === 14) {
+              // 获取点位
+              dispatch({
+                type: 'newUnitFireControl/fetchPointList',
+                payload: {
+                  companyId,
+                },
+              });
+
+              // 获取当前隐患列表
+              dispatch({
+                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+                payload: {
+                  company_id: companyId,
+                  businessType: 2,
+                },
+              });
+
+              //获取巡查记录
+              dispatch({
+                type: 'newUnitFireControl/fetchPointRecord',
+                payload: {
+                  itemId: checkItemId,
+                  item_type: 2,
+                },
+              });
+            }
+            if (type === 15 || type === 16 || type === 17) {
+              if (fourColorTips[pointId] === messageFlag)
+                this.removeFourColorTip(pointId, messageFlag);
+              // 获取点位
+              dispatch({
+                type: 'newUnitFireControl/fetchPointList',
+                payload: {
+                  companyId,
+                },
+              });
+
+              // 获取当前隐患列表
+              dispatch({
+                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+                payload: {
+                  company_id: companyId,
+                  businessType: 2,
+                },
+              });
+
+              //获取巡查记录
+              dispatch({
+                type: 'newUnitFireControl/fetchPointRecord',
+                payload: {
+                  itemId: checkItemId,
+                  item_type: 2,
+                },
+              });
+            }
+            if (type === 13) {
+              // 获取点位
+              dispatch({
+                type: 'newUnitFireControl/fetchPointList',
+                payload: {
+                  companyId,
+                },
+              });
+
+              // 获取当前隐患列表
+              dispatch({
+                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+                payload: {
+                  company_id: companyId,
+                  businessType: 2,
+                },
+              });
+
+              //获取巡查记录
+              dispatch({
+                type: 'newUnitFireControl/fetchPointRecord',
+                payload: {
+                  itemId: checkItemId,
+                  item_type: 2,
+                },
+              });
+              if (checkResult === '无隐患') this.removeFourColorTip2(pointId);
+            }
+          },
+        });
       } catch (error) {
         console.log('error', error);
       }
@@ -688,7 +850,7 @@ export default class Operation extends PureComponent {
           onJump={this.handleTaskCardClick}
         />
         {/* 实时消息 */}
-        {/* <Messages
+        <Messages
           className={styles.realTimeMessage}
           model={this.props.operation}
           handleParentChange={this.handleMapParentChange}
@@ -699,33 +861,7 @@ export default class Operation extends PureComponent {
           handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
           handleFireMessage={this.handleFireMessage}
           handleViewWater={this.handleViewWater}
-        /> */}
-        {/* <AlarmDynamicDrawer
-          data={alarmHandleMessage}
-          visible={alarmMessageDrawerVisible}
-          onClose={() => this.setState({ alarmMessageDrawerVisible: false })}
-          handleParentChange={this.handleMapParentChange}
         />
-        <FaultMessageDrawer
-          data={faultMessage}
-          model={this.props.operation}
-          visible={faultMessageDrawerVisible}
-          onClose={() => this.setState({ faultMessageDrawerVisible: false })}
-        />
-        <AlarmDynamicDrawer
-          data={alarmHandleList}
-          visible={alarmDynamicDrawerVisible}
-          handleParentChange={this.handleParentChange}
-          onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
-        />
-        <AlarmDynamicDrawer
-          // data={alarmHandleHistory}
-          data={
-            alarmHandleHistory.length > 20 ? alarmHandleHistory.slice(0, 20) : alarmHandleHistory
-          }
-          visible={alarmHistoryDrawerVisible}
-          onClose={() => this.handleDrawerVisibleChange('alarmHistory')}
-        /> */}
       </BigPlatformLayout>
     );
   }

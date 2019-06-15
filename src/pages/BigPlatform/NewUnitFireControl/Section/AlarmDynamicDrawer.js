@@ -44,7 +44,7 @@ export default class AlarmDynamicDrawer extends PureComponent {
         length === 1 ? (
           <Fragment>
             {head}
-            <TimelineCard phoneVisible={phoneVisible} showHead={!!head} {...list[0]} />
+            <TimelineCard phoneVisible={phoneVisible} showHead={!head} {...list[0]} />
           </Fragment>
         ) : (
             <Fragment>
@@ -62,6 +62,7 @@ export default class AlarmDynamicDrawer extends PureComponent {
                     <TimelineCard
                       key={i}
                       phoneVisible={phoneVisible}
+                      showHead={!head}
                       style={{ width: `calc(100% / ${length})` }}
                       {...item}
                     />
