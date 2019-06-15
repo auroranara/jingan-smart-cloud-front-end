@@ -14,6 +14,7 @@ import {
   SettingModal,
   FireStatisticsDrawer,
   AlarmDynamicDrawer,
+  Messages,
 } from './sections/Components';
 import { genCardsInfo } from './utils';
 import {
@@ -31,6 +32,33 @@ const options = {
   pongTimeout: 10000,
   reconnectTimeout: 2000,
   pingMsg: 'heartbeat',
+};
+
+const popupVisible = {
+  videoVisible: false, // 重点部位监控视频弹窗
+  riskDrawerVisible: false, // 是否显示对应弹框
+  workOrderDrawerVisible: false,
+  alarmMessageDrawerVisible: false,
+  faultMessageDrawerVisible: false,
+  alarmDynamicDrawerVisible: false,
+  alarmHistoryDrawerVisible: false,
+  maintenanceDrawerVisible: false,
+  checkDrawerVisible: false, // 检查点抽屉是否显示
+  pointDrawerVisible: false, // 点位名称抽屉是否显示
+  faultDrawerVisible: false,
+  currentDrawerVisible: false, // 当前隐患抽屉可见
+  dangerDetailVisible: false, // 隐患详情抽屉可见
+  // 点位巡查抽屉是否显示
+  pointInspectionDrawerVisible: false,
+  maintenanceMsgDrawerVisible: false,
+  alarmDynamicMsgDrawerVisible: false,
+  fireAlarmVisible: false,
+  maintenanceCheckDrawerVisible: false,
+  smokeDrawerVisible: false,
+  electricityDrawerVisible: false,
+  resetHostsDrawerVisible: false,
+  checksDrawerVisible: false,
+  newWorkOrderDrawerVisible: false,
 };
 
 /**
@@ -72,6 +100,9 @@ export default class Operation extends PureComponent {
       unitDetail: {},
       importCardsInfo: [],
       deviceType: 0, // 地图中间根据设备显示企业列表
+      alarmMessageDrawerVisible: false,
+      faultMessageDrawerVisible: false,
+      alarmHistoryDrawerVisible: false,
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -235,6 +266,10 @@ export default class Operation extends PureComponent {
         this.setState({ errorUnitsCardsInfo: this.errorUnitsCardsInfo });
       },
     });
+  };
+
+  hiddeAllPopup = () => {
+    this.setState({ ...popupVisible });
   };
 
   /**
@@ -538,6 +573,11 @@ export default class Operation extends PureComponent {
       match: {
         params: { gridId },
       },
+      operation: {
+        alarmHandleMessage,
+        alarmHandleList,
+        alarmHandleHistory,
+      },
     } = this.props;
 
     const {
@@ -552,6 +592,10 @@ export default class Operation extends PureComponent {
       dateType,
       deviceType,
       fireStatisticsDrawerVisible,
+      alarmMessageDrawerVisible,
+      faultMessageDrawerVisible,
+      alarmDynamicDrawerVisible,
+      alarmHistoryDrawerVisible,
     } = this.state;
 
     const extra = <GridSelect gridId={gridId} urlBase="/big-platform/smoke" />;
@@ -572,8 +616,8 @@ export default class Operation extends PureComponent {
         }}
         titleStyle={{ fontSize: 46 }}
         contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}
-        // settable
-        // onSet={this.handleClickSetButton}
+      // settable
+      // onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
         <BackMap
@@ -643,10 +687,45 @@ export default class Operation extends PureComponent {
           onClose={this.handleTaskDrawerClose}
           onJump={this.handleTaskCardClick}
         />
-        <AlarmDynamicDrawer
-          data={[]}
-          visible={true}
+        {/* 实时消息 */}
+        {/* <Messages
+          className={styles.realTimeMessage}
+          model={this.props.operation}
+          handleParentChange={this.handleMapParentChange}
+          handleViewDangerDetail={this.handleViewDangerDetail}
+          fetchData={this.fetchMaintenanceCheck}
+          handleClickMessage={this.handleClickMessage}
+          handleFaultClick={this.handleFaultClick}
+          handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
+          handleFireMessage={this.handleFireMessage}
+          handleViewWater={this.handleViewWater}
+        /> */}
+        {/* <AlarmDynamicDrawer
+          data={alarmHandleMessage}
+          visible={alarmMessageDrawerVisible}
+          onClose={() => this.setState({ alarmMessageDrawerVisible: false })}
+          handleParentChange={this.handleMapParentChange}
         />
+        <FaultMessageDrawer
+          data={faultMessage}
+          model={this.props.operation}
+          visible={faultMessageDrawerVisible}
+          onClose={() => this.setState({ faultMessageDrawerVisible: false })}
+        />
+        <AlarmDynamicDrawer
+          data={alarmHandleList}
+          visible={alarmDynamicDrawerVisible}
+          handleParentChange={this.handleParentChange}
+          onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
+        />
+        <AlarmDynamicDrawer
+          // data={alarmHandleHistory}
+          data={
+            alarmHandleHistory.length > 20 ? alarmHandleHistory.slice(0, 20) : alarmHandleHistory
+          }
+          visible={alarmHistoryDrawerVisible}
+          onClose={() => this.handleDrawerVisibleChange('alarmHistory')}
+        /> */}
       </BigPlatformLayout>
     );
   }
