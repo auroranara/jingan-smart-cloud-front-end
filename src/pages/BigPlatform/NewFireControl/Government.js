@@ -150,7 +150,7 @@ export default class FireControlBigPlatform extends PureComponent {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const params = {
       companyId: 'companyIdAll',
-       env,
+      env,
       //env: 'dev',
       type: 6,
     };
@@ -693,7 +693,7 @@ export default class FireControlBigPlatform extends PureComponent {
     );
   };
 
-  fetchDangerRecords = (companyId, index=0, isClear) => {
+  fetchDangerRecords = (companyId, index = 0, isClear) => {
     const {
       dispatch,
       bigFireControl: { dangerList },
@@ -947,7 +947,7 @@ export default class FireControlBigPlatform extends PureComponent {
     const extra = <GridSelect dispatch={dispatch} data={grids} gridId={gridId} />;
 
     return (
-      <BigPlatformLayout extra={extra} className={styles.root}>
+      <BigPlatformLayout title="政府消防主机联网驾驶舱" extra={extra} className={styles.root}>
         {/* <div
         className={styles.root}
         style={{ overflow: 'hidden', position: 'relative', width: '100%' }}
