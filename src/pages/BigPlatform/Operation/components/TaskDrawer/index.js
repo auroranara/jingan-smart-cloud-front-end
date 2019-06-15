@@ -4,24 +4,35 @@ import CustomDrawer from '@/jingan-components/CustomDrawer';
 import CustomTabs from '@/jingan-components/CustomTabs';
 import CustomSelect from '@/jingan-components/CustomSelect';
 import TaskCard from '@/jingan-components/TaskCard';
+import LoadMore from '@/jingan-components/LoadMore';
 // 引入样式文件
 import styles from './index.less';
 
 const typeDict = {
   消防主机: 1,
-  独立烟感: 2,
-  报修: 3,
+  独立烟感: 4,
+  报修: 2,
 };
 const processDict = {
-  待处理: 1,
-  处理中: 2,
-  已处理: 3,
+  待处理: 2,
+  处理中: 0,
+  已处理: 1,
 };
-// 状态
 const statusDict = {
-  1: '火警',
-  2: '故障',
+  火警: 1,
+  故障: 2,
 };
+const statusList = [
+  {
+    key: '火警',
+    value: '火警',
+  },
+  {
+    key: '故障',
+    value: '故障',
+  },
+];
+const DEFAULT_PAGE_SIZE = 20;
 
 @connect(({ operation, loading }) => ({
   operation,
@@ -30,7 +41,7 @@ const statusDict = {
 export default class TaskDrawer extends PureComponent {
   state = {
     activeType: '消防主机',
-    activeStatus: '0',
+    activeStatus: '火警',
   }
 
   scroll = null;
@@ -49,6 +60,7 @@ export default class TaskDrawer extends PureComponent {
   getTaskList = ({
     activeType=this.state.activeType,
     activeStatus=this.state.activeStatus,
+    pageNum=1,
   }) => {
     const {
       dispatch,
@@ -57,16 +69,19 @@ export default class TaskDrawer extends PureComponent {
     dispatch({
       type: 'operation/fetchTaskList',
       payload: {
-        process: processDict[process],
-        type: typeDict[activeType],
-        status: activeStatus !== 0 && activeStatus,
+        pageNum,
+        pageSize: DEFAULT_PAGE_SIZE,
+        status: processDict[process],
+        reportType: typeDict[activeType],
+        type: statusDict[activeStatus],
       },
     });
   }
 
   handleTabClick = (activeType) => {
-    this.setState({ activeType, status: activeType !== '报修' ? '0' : undefined });
-    this.getTaskList({ activeType });
+    const payload = { activeType, activeStatus: activeType !== '报修' ? '火警' : '故障' };
+    this.setState(payload);
+    this.getTaskList(payload);
     this.scroll && this.scroll.scrollTop();
   }
 
@@ -81,10 +96,30 @@ export default class TaskDrawer extends PureComponent {
     onJump && onJump(id);
   }
 
+  handleLoadMore = () => {
+    const {
+      operation: {
+        taskList: {
+          pagination: {
+            pageNum=1,
+          }={},
+        }={},
+      },
+    } = this.props;
+    this.getTaskList({ pageNum: pageNum + 1 });
+  }
+
   render() {
     const {
       operation: {
-        taskList=[],
+        taskList: {
+          list=[],
+          pagination: {
+            pageNum=1,
+            pageSize=DEFAULT_PAGE_SIZE,
+            total=0,
+          }={},
+        }={},
       }={},
       loading,
       visible,
@@ -95,29 +130,15 @@ export default class TaskDrawer extends PureComponent {
     const tabs = [
       {
         key: '消防主机',
-        value: `消防主机 (${2})`,
+        value: `消防主机${activeType === '消防主机' ? ` (${total})` : ''}`,
       },
       {
         key: '独立烟感',
-        value: `独立烟感 (${1})`,
+        value: `独立烟感${activeType === '独立烟感' ? ` (${total})` : ''}`,
       },
       {
         key: '报修',
-        value: `报修 (${2})`,
-      },
-    ];
-    const options = [
-      {
-        key: '0',
-        value: '全部状态',
-      },
-      {
-        key: '1',
-        value: '报警',
-      },
-      {
-        key: '2',
-        value: '故障',
+        value: `报修${activeType === '报修' ? ` (${total})` : ''}`,
       },
     ];
 
@@ -139,7 +160,7 @@ export default class TaskDrawer extends PureComponent {
               <div>
                 {activeType !== tabs[2].key && (
                   <CustomSelect
-                    data={options}
+                    data={statusList}
                     value={activeStatus}
                     onSelect={this.handleSelect}
                   />
@@ -157,30 +178,32 @@ export default class TaskDrawer extends PureComponent {
         }}
       >
         <div className={styles.container}>
-          {Array.isArray(taskList) && taskList.map(item => (
+          {Array.isArray(list) && list.map(item => (
             <TaskCard
               className={styles.card}
-              key={item.id}
+              key={item.id || item.proceId}
               data={item}
               fieldNames={{
+                id: ({ id, proceId }) => activeType !== '报修' ? id : proceId,
                 type: () => activeType, // 类型
-                companyName: 'companyName', // 企业名称
-                partType: 'partType', // 设施部件类型
-                loopNumber: 'loopNumber', // 回路号
-                partNumber: 'partNumber', // 故障号
-                area: 'area', // 区域
-                location: 'location', // 位置
-                startTime: 'startTime', // 报警/报修时间
-                endTime: 'endTime', // 结束时间
-                status: ({ status }) => statusDict[status], // 状态
-                wordOrderNumber: 'wordOrderNumber', // 工单编号
-                repairPersonName: 'repairPersonName', // 报修人员名称
-                repairPersonPhone: 'repairPersonPhone', // 报修人员手机号
+                companyName: ({ companyName, rcompanyName }) => activeType !== '报修' ? companyName : rcompanyName, // 企业名称
+                partType: 'componentName', // 设施部件类型
+                loopNumber: 'componentRegion', // 回路号
+                partNumber: 'componentNo', // 故障号
+                area: ({ area }) => activeType === '消防主机' ? undefined : area, // 区域
+                location: ({ installAddress, location }) => activeType === '消防主机' ? installAddress : location, // 位置
+                startTime: ({ createTime, realtime, createDate }) => ({ 消防主机: createTime, 独立烟感: realtime, 报修: createDate })[activeType], // 报警/报修时间
+                endTime: 'endDate', // 结束时间
+                status: () => activeStatus, // 状态
+                wordOrderNumber: 'workOrder', // 工单编号
+                repairPersonName: 'createByName', // 报修人员名称
+                repairPersonPhone: 'createByPhone', // 报修人员手机号
                 process: () => process, // 处理状态
               }}
               onClick={this.handleCardClick}
             />
           ))}
+          {total > pageNum * pageSize && <LoadMore className={styles.loadMore} onClick={this.handleLoadMore} />}
         </div>
       </CustomDrawer>
     );

@@ -19,7 +19,13 @@
   height: calc(~'100% - 3.5em') !important;
 }
 .card {
-  &:not(:last-child) {
+  &:not(:last-of-type) {
     margin-bottom: 1em;
   }
+  &:last-of-type {
+    margin-bottom: 1px;
+  }
+}
+.loadMore {
+  padding-top: 1em;
 }
