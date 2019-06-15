@@ -105,6 +105,7 @@ export default class Messages extends PureComponent {
       handleViewWater,
       handleClickMsgFlow,
       phoneVisible,
+      handleClickElecMsg,
     } = this.props;
     const {
       type,
@@ -161,6 +162,7 @@ export default class Messages extends PureComponent {
       enterSign,
       unit,
       limitVal,
+      deviceId,
     } = msg;
     const repeatCount = +isOver === 0 ? count : num;
     const lastReportTime = moment(addTime).format('YYYY-MM-DD HH:mm');
@@ -187,7 +189,8 @@ export default class Messages extends PureComponent {
       },
     ];
     const restParams = [repeat, cameraMessage, occurData];
-    const msgFlag = messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag;
+    const msgFlag =
+      messageFlag && messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag;
     const param = {
       dataId: +isOver === 0 ? msgFlag : undefined,
       id: +isOver !== 0 ? msgFlag : undefined,
@@ -383,14 +386,19 @@ export default class Messages extends PureComponent {
         31: { elecTitle: '电气火灾报警', elecContent: `${paramName}告警现已恢复正常` },
         32: {
           elecTitle: '电气火灾报警',
-          elecContent: `${paramName}告警${realtimeVal + unit}（参考值≦${limitVal + unit}）`,
+          elecContent: `${paramName}告警${realtimeVal + unit}（参考值<${limitVal + unit}）`,
         },
         42: { elecTitle: '电气火灾失联', elecContent: `设备状态失联` },
         43: { elecTitle: '电气火灾失联', elecContent: `设备状态已恢复正常` },
       };
       return (
         <div className={styles.msgItem}>
-          <a className={styles.detailBtn} onClick={() => {}}>
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleClickElecMsg(deviceId);
+            }}
+          >
             详情
             <Icon type="double-right" />
           </a>

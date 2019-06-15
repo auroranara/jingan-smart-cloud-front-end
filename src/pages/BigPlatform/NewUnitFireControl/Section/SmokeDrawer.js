@@ -44,10 +44,11 @@ export default class SmokeDrawer extends PureComponent {
   };
 
   renderItems = list => {
+    const { handleClickMsgFlow } = this.props;
     return (
       <Row gutter={16}>
         {list.map((item, index) => {
-          const { area, location, add_time, status, iotId, device_id, hasCamera } = item;
+          const { area, location, add_time, status, iotId, device_id, hasCamera, faultName } = item;
           let occurTime = `时间：${moment(add_time).format('YYYY-MM-DD HH:mm:ss')}`;
           const devStatus = '设备状态：正常';
           const color = +status > 0 ? '#f83329' : '#ffb400';
@@ -91,9 +92,23 @@ export default class SmokeDrawer extends PureComponent {
                       <div
                         className={styles.status}
                         onClick={() => {
-                          // +status > 0
-                          //   ? handleAlarmClick(iotId, companyId, companyName, undefined)
-                          //   : handleFaultClick(iotId, companyId, companyName, undefined);
+                          const param = { dataId: iotId };
+                          const occurData = [
+                            {
+                              area,
+                              location,
+                              faultName,
+                            },
+                          ];
+                          handleClickMsgFlow(
+                            param,
+                            1,
+                            +status > 0 ? 0 : 1,
+                            {},
+                            [],
+                            occurData,
+                            false
+                          );
                         }}
                       >
                         处理动态>>

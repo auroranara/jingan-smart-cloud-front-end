@@ -129,15 +129,22 @@ export default class WaterSystemDrawer extends PureComponent {
             key={deviceId}
             style={{
               border: isGray
-                ? '1px solid #f83329'
-                : +status !== 0
-                  ? '1px solid #f83329'
-                  : '1px solid #04fdff',
+                ? !isMending && +status < 0
+                  ? '1px solid #9f9f9f'
+                  : '1px solid #f83329'
+                : '1px solid #04fdff',
             }}
           >
             {isMending && <div className={styles.status}>检修</div>}
             {isNotIn && <div className={styles.status}>未接入</div>}
-            {!isMending && !isNotIn && +status !== 0 && <div className={styles.status}>报警</div>}
+            {!isMending && !isNotIn && +status > 0 && <div className={styles.status}>报警</div>}
+            {!isMending &&
+              !isNotIn &&
+              +status === -1 && (
+                <div className={styles.status} style={{ backgroundColor: '#9f9f9f' }}>
+                  失联
+                </div>
+              )}
             <div className={styles.picArea}>
               <ChartGauge
                 showName

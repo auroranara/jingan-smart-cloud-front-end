@@ -253,6 +253,7 @@ export default class NewUnitFireControl extends PureComponent {
               pointStatus,
               deviceType,
               isOver,
+              enterSign,
             } = result;
 
             if (
@@ -264,9 +265,23 @@ export default class NewUnitFireControl extends PureComponent {
               type === 41
             ) {
               if (+isOver === 0) {
-                this.showFireMsg(result);
+                if (type === 7 || type === 9) {
+                  if (enterSign === '1') this.showFireMsg(result);
+                } else {
+                  this.showFireMsg(result);
+                }
               }
               this.fetchScreenMessage(dispatch, companyId);
+            }
+
+            if (type === 38 || type === 40) {
+              // 烟感列表
+              dispatch({
+                type: 'smoke/fetchCompanySmokeInfo',
+                payload: {
+                  company_id: companyId,
+                },
+              });
             }
 
             if (
@@ -1708,7 +1723,15 @@ export default class NewUnitFireControl extends PureComponent {
     this.setState({ [drawerVisibles[type]]: true, msgFlow: flow, flowRepeat: repeat });
   };
 
-  handleClickMsgFlow = (param, type, flow, repeat, cameraMessage = [], occurData) => {
+  handleClickMsgFlow = (
+    param,
+    type,
+    flow,
+    repeat,
+    cameraMessage = [],
+    occurData,
+    isHidePopups = true
+  ) => {
     // type 0/1/2/3 主机/烟感/燃气/一键报修
     // flow 0/1 报警/故障
     const {
@@ -1724,7 +1747,7 @@ export default class NewUnitFireControl extends PureComponent {
       'onekeyFlowDrawerVisible',
     ];
     const reportTypes = [1, 4, 3, 2];
-    this.hiddeAllPopup();
+    isHidePopups && this.hiddeAllPopup();
     dispatch({
       type: 'newUnitFireControl/fetchCountNumAndTimeById',
       payload: { id: param.dataId || param.id, reportType: reportTypes[type], fireType: flow + 1 },
@@ -1764,6 +1787,16 @@ export default class NewUnitFireControl extends PureComponent {
     // });
     this.setState({ [drawerVisibles[type]]: true, msgFlow: flow });
     this.handleShowFireVideo(cameraMessage);
+  };
+
+  handleClickElecMsg = deviceId => {
+    const {
+      electricityMonitor: {
+        deviceStatusCount: { list: deviceList },
+      },
+    } = this.props;
+    const deviceStatus = deviceList.find(item => item.deviceId === deviceId).status;
+    this.handleClickElectricity(+deviceStatus > 0 ? 0 : +deviceStatus === -1 ? 1 : 2, deviceId);
   };
 
   render() {
@@ -1964,6 +1997,7 @@ export default class NewUnitFireControl extends PureComponent {
           handleViewWater={this.handleViewWater}
           handleClickMsgFlow={this.handleClickMsgFlow}
           phoneVisible={phoneVisible}
+          handleClickElecMsg={this.handleClickElecMsg}
         />
         <div className={styles.bottom}>
           <div className={styles.bottomInner}>
@@ -2263,6 +2297,7 @@ export default class NewUnitFireControl extends PureComponent {
           filterIndex={filterIndex}
           videoList={videoByDevice}
           getDeviceCamera={this.getDeviceCamera}
+          handleClickMsgFlow={this.handleClickMsgFlow}
         />
         {/* 电气火灾监测抽屉 */}
         <ElectricityDrawer
