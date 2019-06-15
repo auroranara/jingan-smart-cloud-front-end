@@ -30,6 +30,7 @@ export default class AlarmDynamicDrawer extends PureComponent {
       data: list,
       head = null,
       drawerTitle = "火警动态",
+      phoneVisible,
       // data,
       ...restProps
     } = this.props;
@@ -43,7 +44,7 @@ export default class AlarmDynamicDrawer extends PureComponent {
         length === 1 ? (
           <Fragment>
             {head}
-            <TimelineCard {...list[0]} showHead={!!head} />
+            <TimelineCard phoneVisible={phoneVisible} showHead={!!head} {...list[0]} />
           </Fragment>
         ) : (
             <Fragment>
@@ -58,12 +59,17 @@ export default class AlarmDynamicDrawer extends PureComponent {
               <div className={styles.sliderContainer}>
                 <Slider index={index} length={length} size={1}>
                   {list.map((item, i) => (
-                    <TimelineCard key={i} style={{ width: `calc(100% / ${length})` }} {...item} />
+                    <TimelineCard
+                      key={i}
+                      phoneVisible={phoneVisible}
+                      style={{ width: `calc(100% / ${length})` }}
+                      {...item}
+                    />
                   ))}
                 </Slider>
               </div>
             </Fragment>
-          );
+          )
 
     return <DrawerContainer title={drawerTitle} width={535} left={left} {...restProps} />;
   }

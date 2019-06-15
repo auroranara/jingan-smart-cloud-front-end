@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import moment from 'moment';
 import { Spin } from 'antd';
 import TotalInfo from '../components/TotalInfo';
+import { vaguePhone } from '../utils';
 // import LoadMoreButton from '../../Safety/Company3/components/LoadMoreButton';
 import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import styles from './NewWorkOrderDrawer.less';
@@ -24,7 +25,10 @@ function OrderCard(props) {
     data,
     workOrderType = 0,
     workOrderStatus,
-    ...restProps
+    // onClick,
+    phoneVisible,
+    showWorkOrderDetail,
+    // ...restProps
   } = props;
   const timeStr = workOrderType === 3 && type === 1 ? '报修' : TYPES[type];
 
@@ -43,11 +47,17 @@ function OrderCard(props) {
     workOrder, // 工单编号
     systemTypeValue, // 一键报修名称
     fireChildren,
-    sdeviceName,
+    // sdeviceName,
     createByName,
     createByPhone,
     executorName,
     phone,
+    id,
+    gasId,
+    firstTime,
+    lastTime,
+    faultName,
+    proceId,
   } = data;
   const titles = [componentName, area + location, area + location, systemTypeValue];
   const listItems = [
@@ -76,7 +86,7 @@ function OrderCard(props) {
     [
       { name: '工单编号', value: workOrder },
       { name: `${timeStr}时间`, value: formatTime(createDate) },
-      { name: '报修人员', value: `${createByName} ${createByPhone}` },
+      { name: '报修人员', value: `${createByName} ${vaguePhone(createByPhone, phoneVisible)}` },
     ],
   ];
   let statusStr;
@@ -105,7 +115,7 @@ function OrderCard(props) {
       statusStr = `已维修完毕`;
       listItems[workOrderType].push({
         name: '维修人员',
-        value: `${executorName} ${phone}`,
+        value: `${executorName} ${vaguePhone(phone, phoneVisible)}`,
       });
     }
   }
@@ -147,7 +157,55 @@ function OrderCard(props) {
         <p>
           <span className={styles.left}>当前状态：</span>
           <span style={{ color: '#00ffff' }}>{statusStr}</span>
-          <span className={styles.moreDetail}>处理动态>></span>
+          <span
+            className={styles.moreDetail}
+            onClick={() => {
+              const param = {
+                id: workOrderType === 3 ? proceId : undefined,
+                dataId:
+                  workOrderType !== 3
+                    ? workOrderType === 2 || workOrderType === 1
+                      ? gasId
+                      : id
+                    : undefined,
+              };
+              const repeat = {
+                times: fireChildren && fireChildren.length,
+                lastreportTime: lastTime,
+              };
+              const occurData = [
+                {
+                  create_time: createTime,
+                  create_date: createDate,
+                  firstTime,
+                  lastTime,
+                  area,
+                  location,
+                  install_address: installAddress,
+                  label: componentName || systemTypeValue,
+                  work_order: workOrder,
+                  systemTypeValue,
+                  createByName,
+                  createByPhone,
+                  faultName,
+                  realtime,
+                },
+              ];
+
+              showWorkOrderDetail(
+                param,
+                workOrderType,
+                type,
+                repeat,
+                workOrderStatus === 0 ? occurData : undefined
+              );
+            }}
+            // onClick={() => {
+            //   showWorkOrderDetail(data, workOrderType, type);
+            // }}
+          >
+            处理动态>>
+          </span>
         </p>
       </div>
     </div>
@@ -155,8 +213,6 @@ function OrderCard(props) {
 }
 
 export default class NewWorkOrderDrawer extends PureComponent {
-  state = { isWarned: false };
-
   render() {
     const {
       warnDetail: {
@@ -168,7 +224,6 @@ export default class NewWorkOrderDrawer extends PureComponent {
         list: faultDetailList,
       },
       countFinishByUserId,
-      handleCardClick,
       data,
       onClose,
       handleClickTab,
@@ -179,6 +234,8 @@ export default class NewWorkOrderDrawer extends PureComponent {
       faultDetailLoading,
       getWarnDetail,
       getFaultDetail,
+      showWorkOrderDetail,
+      phoneVisible,
       ...restProps
     } = this.props;
 
@@ -209,6 +266,15 @@ export default class NewWorkOrderDrawer extends PureComponent {
           });
           handleClickTab(index);
         },
+        // warnDetailLoading || faultDetailLoading
+        //   ? undefined
+        //   : () => {
+        //       [0, 1].forEach(item => {
+        //         if (document.getElementById(`workOrderScroll${item}`))
+        //           document.getElementById(`workOrderScroll${item}`).scrollTop = 0;
+        //       });
+        //       handleClickTab(index);
+        //     },
       };
     });
 
@@ -237,7 +303,9 @@ export default class NewWorkOrderDrawer extends PureComponent {
                           data={item}
                           workOrderType={workOrderType}
                           workOrderStatus={workOrderStatus}
-                          onClick={e => handleCardClick(item)}
+                          // onClick={e => showWorkOrderDetail(item, workOrderType)}
+                          showWorkOrderDetail={showWorkOrderDetail}
+                          phoneVisible={phoneVisible}
                         />
                       ))}
                       {isLoadMore && (
@@ -253,25 +321,25 @@ export default class NewWorkOrderDrawer extends PureComponent {
                       )}
                     </div>
                   ) : (
-                      <div
-                        style={{
-                          height: '100%',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          textAlign: 'center',
-                          color: '#4f6793',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <img
-                          src={noData}
-                          style={{ width: '36%', height: 'auto', marginTop: '-150px' }}
-                          alt="noData"
-                        />
-                        <div style={{ marginTop: '15px' }}>暂无工单</div>
-                      </div>
-                    )}
+                    <div
+                      style={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        textAlign: 'center',
+                        color: '#4f6793',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <img
+                        src={noData}
+                        style={{ width: '36%', height: 'auto', marginTop: '-150px' }}
+                        alt="noData"
+                      />
+                      <div style={{ marginTop: '15px' }}>暂无工单</div>
+                    </div>
+                  )}
                 </div>
               </Spin>
             </div>
@@ -286,6 +354,7 @@ export default class NewWorkOrderDrawer extends PureComponent {
         width={535}
         left={left}
         destroyOnClose={true}
+        zIndex={1040}
         onClose={() => {
           onClose();
           setTimeout(() => {

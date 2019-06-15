@@ -1,0 +1,70 @@
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card {
+  position: relative;
+
+  p {
+    color: #FFF;
+    // margin-left: 10px;
+    margin-bottom: 8px;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  .title {
+    font-size: 16px;
+  }
+
+  .extra {
+    display: inline-block;
+    margin-left: 8px;
+  }
+
+  .repeat {
+    position: relative;
+    border-top: 1px solid #04fdff;
+    color: #04fdff;
+    margin: 10px -10px 0;
+    padding: 10px 10px 0;
+    line-height: 26px;
+    cursor: pointer;
+
+    .arrow {
+      position: absolute;
+      right: 10px;
+      top: 28px;
+    }
+  }
+}
+
+.flow {
+  width: 464px;
+  height: 133px;
+  margin: 0 auto;
+  background-size: 100% 100%;
+}
+
+.timeline {
+  flex: 1;
+  overflow: auto;
+  margin-top: 40px;
+  padding: 35px 0 0 5px;
+  border-top: 1px solid rgb(2, 148, 170);
+
+  :global {
+    .ant-timeline-item-head {
+      width: 11px;
+      height: 11px;
+    }
+
+    .ant-timeline-item-tail {
+      border-color: rgba(0, 186, 255);
+    }
+  }
+}

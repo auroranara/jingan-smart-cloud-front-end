@@ -90,11 +90,11 @@ export default class SmokeDrawer extends PureComponent {
                     {(+status > 0 || !status || +status < -1) && (
                       <div
                         className={styles.status}
-                        // onClick={() => {
-                        //   +status > 0
-                        //     ? handleAlarmClick(iotId, companyId, companyName, undefined)
-                        //     : handleFaultClick(iotId, companyId, companyName, undefined);
-                        // }}
+                        onClick={() => {
+                          // +status > 0
+                          //   ? handleAlarmClick(iotId, companyId, companyName, undefined)
+                          //   : handleFaultClick(iotId, companyId, companyName, undefined);
+                        }}
                       >
                         处理动态>>
                       </div>

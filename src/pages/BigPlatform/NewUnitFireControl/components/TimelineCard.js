@@ -5,10 +5,10 @@ import { Timeline } from 'antd';
 import styles from './TimelineCard.less';
 import TimelineItem from './TimelineItem';
 import ImgSlider from './ImgSlider';
+import { vaguePhone } from '../utils';
 import flowImg from '../imgs/flow.png';
 
 const STATUS = { 1: '误报火警', 2: '真实火警' };
-
 
 const isVague = false;
 function nameToVague(str) {
@@ -29,30 +29,39 @@ function phoneToVague(str) {
 }
 
 function Alarmed(props) {
-  const { deviceCode, deviceAddress, position, type, safety, phone, companyName } = props;
+  const {
+    deviceCode,
+    deviceAddress,
+    position,
+    type,
+    safety,
+    phone,
+    companyName,
+    phoneVisible,
+  } = props;
 
   return (
     <div className={styles.card}>
       <p>{position}</p>
-      <p>{type}</p>
-      <p>
+      <p>{type} 发生报警</p>
+      {/* <p>
         消防主机：
         {deviceCode} {deviceAddress}
-      </p>
-      <p>
+      </p> */}
+      {/* <p>
         单位名称：
         {companyName}
-      </p>
+      </p> */}
       <p>
         安全管理员：
-        {isVague ? nameToVague(safety) : safety} {isVague ? phoneToVague(phone) : phone}
+        {isVague ? nameToVague(safety) : safety} {vaguePhone(phone, phoneVisible)}
       </p>
     </div>
   );
 }
 
 function Confirmed(props) {
-  const { status, reporter, phone, companyName } = props;
+  const { status, reporter, phone, companyName, phoneVisible } = props;
   const isTrueAlarm = Number(status) === 2;
 
   return (
@@ -67,25 +76,25 @@ function Confirmed(props) {
       </p>
       <p>
         处理人员：
-        {isVague ? nameToVague(reporter) : reporter} {isVague ? phoneToVague(phone) : phone}
+        {isVague ? nameToVague(reporter) : reporter} {vaguePhone(phone, phoneVisible)}
       </p>
     </div>
   );
 }
 
 function Handled(props) {
-  const { reporter, phone, feedback, picture = [], companyName } = props;
+  const { reporter, phone, feedback, picture = [], companyName, phoneVisible } = props;
 
   return (
     <div className={styles.card}>
-      <p>火警处理完毕</p>
+      {/* <p>火警处理完毕</p> */}
       <p>
         处理单位：
         {companyName}
       </p>
       <p>
         处理人员：
-        {isVague ? nameToVague(reporter) : reporter} {isVague ? phoneToVague(phone) : phone}
+        {isVague ? nameToVague(reporter) : reporter} {vaguePhone(phone, phoneVisible)}
       </p>
       <p>
         结果反馈：
@@ -116,6 +125,7 @@ export default function TimelineCard(props) {
     finishCompanyName,
     startCompanyName,
     showHead = true,
+    phoneVisible,
     ...restProps
   } = props;
   const [isStarted, isHandling, isFinished] = [startMap, handleMap, finishMap].map(
@@ -138,7 +148,7 @@ export default function TimelineCard(props) {
       <div className={styles.timeline}>
         <Timeline>
           <TimelineItem
-            label="报警"
+            label="发生"
             spans={SPANS}
             day={getTime(isStarted && startMap.startTime)}
             hour={getTime(isStarted && startMap.startTime, 1)}
@@ -152,6 +162,7 @@ export default function TimelineCard(props) {
                 safety={startMap.safetyMan || NO_DATA}
                 phone={startMap.safetyPhone || NO_DATA}
                 companyName={startMap.companyName || createCompanyName || NO_DATA}
+                phoneVisible={phoneVisible}
               />
             )}
           </TimelineItem>
@@ -167,11 +178,12 @@ export default function TimelineCard(props) {
                 reporter={handleMap.reportMan || NO_DATA}
                 phone={handleMap.reportPhone || NO_DATA}
                 companyName={startCompanyName || NO_DATA}
+                phoneVisible={phoneVisible}
               />
             )}
           </TimelineItem>
           <TimelineItem
-            label="处理"
+            label="完成"
             spans={SPANS}
             day={getTime(isFinished && finishMap.endTime)}
             hour={getTime(isFinished && finishMap.endTime, 1)}
@@ -183,6 +195,7 @@ export default function TimelineCard(props) {
                 companyName={finishCompanyName || NO_DATA}
                 feedback={finishMap.disasterDesc || NO_DATA}
                 picture={finishMap.picture || []}
+                phoneVisible={phoneVisible}
               />
             )}
           </TimelineItem>
