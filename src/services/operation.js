@@ -12,12 +12,27 @@ export async function getTaskCount(params) {
   return request(`/acloud_new/v2/statistics/maintenanceCheck?${stringify(params)}`);
 }
 
-// 获取火警统计
-export async function getFireCount(params) {
-  return request(`/acloud_new/v2/statistics/maintenanceCheck?${stringify(params)}`);
-}
-
 // 获取企业列表
 export async function getUnitList(params) {
   return request(`/acloud_new/v2/sdf/companyList?${stringify(params)}`);
+}
+
+// 火警数量统计
+export async function getFireCount() {
+  return request(`/acloud_new/v2/sdf/getFireData`);
+}
+
+// 火警状态统计 饼图
+export async function getFirePie(params) {
+  return request(`/acloud_new/v2/sdf/getFireDealData?${stringify(params)}`);
+}
+
+// 火警状态统计 趋势图
+export async function getFireTrend() {
+  return request(`/acloud_new/v2/sdf/getFireTrend`);
+}
+
+// 火警统计列表
+export async function getFireList(params) {
+  return request(`/acloud_new/v2/sdf/getFireList?${stringify(params)}`);
 }

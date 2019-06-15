@@ -1,5 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import ReactEcharts from 'echarts-for-react';
+import moment from 'moment';
+import { Icon } from 'antd';
+
 import styles from './FireStatisticsDrawer.less';
 import {
   ChartRing,
@@ -10,7 +13,6 @@ import {
   OvSelect,
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
-import moment from 'moment';
 import { ChartLine } from '@/pages/BigPlatform/Smoke/components/Components';
 
 const TYPE = 'fireStatistics';
@@ -18,7 +20,7 @@ const NO_DATA = '暂无信息';
 const [DATE_OPTIONS, DEVICE_OPTIONS, TYPE_OPTIONS] = [
   ['本日', '本周', '本月'],
   ['全部设备', '消防主机', '独立烟感'],
-  ['全部火警', '未确认', '真实火警', '误报火警'],
+  ['全部火警', '真实火警', '误报火警', '未确认'],
 ].map(arr => arr.map((d, i) => ({ value: i, desc: d })));
 const RING_LABELS = ['未确认', '真实', '误报'];
 const RING_COLORS = ['188, 188, 189', '248, 51, 41', '255, 180, 0'];
@@ -29,35 +31,59 @@ const INFO_STYLE = {
   borderRadius: 15,
 };
 
-export default class AlarmDrawer extends PureComponent {
+export default class FireStatisticsDrawer extends PureComponent {
   state = { graph: 0, typeSelected: 0, deviceSelected: 0, searchValue: '' };
+
+  pageNum=1;
 
   handleSwitch = i => {
     this.setState({ graph: i });
   };
 
-  handleTypeSelectChange = i => {
-    this.setState({ typeSelected: i });
+  onDateTypeChange = i => {
+    const { handleDateTypeChange, getFirePie, getFireList } = this.props;
+    // const { deviceSelected, typeSelected, searchValue } = this.state;
+    handleDateTypeChange(i);
+    getFirePie(i);
+    // getFireList(deviceSelected, typeSelected, searchValue);
   };
 
   handleDeviceSelectChange = i => {
+    const { typeSelected, searchValue } = this.state;
     this.setState({ deviceSelected: i });
+    this.getFireList({ deviceType: i, fireType: typeSelected, searchValue });
   };
 
-  genProgressClick = v => {
-    return e => {
-      this.handleSelectChange(v);
-    };
+  handleTypeSelectChange = i => {
+    const { deviceSelected, searchValue } = this.state;
+    this.setState({ typeSelected: i });
+    this.getFireList({ deviceType: deviceSelected, fireType: i, searchValue });
+  };
+
+  genProgressClick = v => e => {
+    this.handleSelectChange(v);
   };
 
   handleSearch = v => {
+    const { deviceSelected, typeSelected } = this.state;
     this.setState({ searchValue: v });
+    this.getFireList({ deviceType: deviceSelected, fireType: typeSelected, searchValue: v });
+  };
+
+  getFireList = (options, initial=true) => {
+    const { getFireList } = this.props;
+    getFireList(options, initial);
+  };
+
+  getMoreFireList = e => {
+    const { deviceSelected, typeSelected, searchValue } = this.state;
+    this.getFireList({ deviceType: deviceSelected, fireType: typeSelected, searchValue }, false);
   };
 
   handleClose = () => {
     const { handleDrawerVisibleChange } = this.props;
     handleDrawerVisibleChange(TYPE);
-    this.setState({ searchValue: '', grahp: 0, selected: 0 });
+    this.setState({ searchValue: '', grahp: 0, typeSelected: 0, deviceSelected: 0 });
   };
 
   getOption = graphList => {
@@ -168,60 +194,39 @@ export default class AlarmDrawer extends PureComponent {
   render() {
     const {
       visible,
+      loading,
+      hasMore,
       dateType,
-      data: { list = [], graphList = [] } = {},
-      handleDateTypeChange,
+      data: {
+        firePie: { trueFire=0, falseFire=0, unConfirm=0 },
+        fireTrend,
+        fireList,
+        graphList = [],
+      },
     } = this.props;
+    const { graph, typeSelected, deviceSelected } = this.state;
 
-    const { graph, typeSelected, deviceSelected, searchValue } = this.state;
-
-    // const filteredList = list
-    //   .filter(({ company_name }) => company_name.includes(searchValue))
-    //   .filter(item => {
-    //     switch (selected) {
-    //       case 0:
-    //         return true;
-    //       case 1:
-    //         return item.unnormal;
-    //       case 2:
-    //         return item.faultNum;
-    //       case 3:
-    //         return item.outContact;
-    //       default:
-    //         return false;
-    //     }
-    //   });
-    const filteredList = [{
-      companyId: 1,
-      companyName: '晶安',
-      address: '城管大队',
-      person: '陈圆圆',
-      phone: '13288888888',
-      status: Math.floor(Math.random()*3),
-    }];
-
-    const rings = [2, 6, 12].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
-
+    const rings = [unConfirm, trueFire, falseFire].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
     const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
     const dateSelect = (
-      <OvSelect options={DATE_OPTIONS} value={dateType} handleChange={handleDateTypeChange} />
+      <OvSelect options={DATE_OPTIONS} value={dateType} handleChange={this.onDateTypeChange} />
     );
     const selects = (
       <div className={styles.selects}>
         <OvSelect
           cssType={2}
-          options={TYPE_OPTIONS}
-          style={{ marginRight: 10 }}
-          value={typeSelected}
-          dropdownMatchSelectWidth={false}
-          handleChange={this.handleTypeSelectChange}
-        />
-        <OvSelect
-          cssType={2}
           options={DEVICE_OPTIONS}
+          style={{ marginRight: 10 }}
           value={deviceSelected}
           dropdownMatchSelectWidth={false}
           handleChange={this.handleDeviceSelectChange}
+        />
+        <OvSelect
+          cssType={2}
+          options={TYPE_OPTIONS}
+          value={typeSelected}
+          dropdownMatchSelectWidth={false}
+          handleChange={this.handleTypeSelectChange}
         />
       </div>
     );
@@ -236,47 +241,55 @@ export default class AlarmDrawer extends PureComponent {
             graphList.length > 0 ? (
               <ReactEcharts option={this.getOption(graphList)} className="echarts-for-echarts" />
             ) : (
-                <span style={{ textAlign: 'center' }}>暂无数据</span>
+                <div style={{ textAlign: 'center' }}>暂无数据</div>
               )
           ) : graphList.length > 0 ? (
             <ChartLine data={graphList} labelRotate={0} />
           ) : (
-                <span style={{ textAlign: 'center' }}>暂无数据</span>
+                <div style={{ textAlign: 'center' }}>暂无数据</div>
               )}
         </DrawerSection>
       </Fragment>
     );
 
+    let cards = null;
+    if (fireList.length)
+      cards = fireList.map(({ company_id, proce_id, relation_id, time, name, location, safety_name, safety_phone, fireType, deviceType }) => {
+        const info = TYPE_OPTIONS[fireType] ? TYPE_OPTIONS[fireType].desc : '';
+        const corner = DEVICE_OPTIONS[deviceType] ? DEVICE_OPTIONS[deviceType].desc.slice(-2) : '';
+        return (
+          <DrawerCard
+            key={proce_id || relation_id || time}
+            name={name || NO_DATA}
+            location={location || NO_DATA}
+            person={safety_name || NO_DATA}
+            phone={safety_phone || NO_DATA}
+            style={{ cursor: 'auto' }}
+            clickName={() => {}}
+            info={info}
+            infoStyle={{ ...INFO_STYLE, color: `rgb(${RING_COLORS[fireType]})`, borderColor: `rgb(${RING_COLORS[fireType]})`}}
+            cornerLabel={corner}
+            more={
+              <p className={styles.more}>
+                <span className={styles.clockIcon} />
+                <span className={styles.moreTime}>{moment(time).format('YYYY-MM-DD HH:mm:ss')}</span>
+              </p>
+            }
+          />
+        );
+      }
+    )
+
     const right = (
       <SearchBar onSearch={this.handleSearch} cols={[12, 12]} extra={selects}>
-        {filteredList.map(
-          ({
-            companyId,
-            companyName,
-            address,
-            person,
-            phone,
-            status,
-          }) => (
-              <DrawerCard
-                key={companyId}
-                name={companyName || NO_DATA}
-                location={address || NO_DATA}
-                person={person || NO_DATA}
-                phone={phone || NO_DATA}
-                style={{ cursor: 'auto' }}
-                clickName={() => {}}
-                info="真实火警"
-                infoStyle={{ ...INFO_STYLE, color: `rgb(${RING_COLORS[status]})`, borderColor: `rgb(${RING_COLORS[status]})`}}
-                cornerLabel="主机"
-                more={
-                  <p className={styles.more}>
-                    <span className={styles.clockIcon} />
-                    <span className={styles.moreTime}>{moment().format('YYYY-MM-DD HH:mm:ss')}</span>
-                  </p>
-                }
-              />
-            )
+        {fireList.length ? cards : loading ? null : <p className={styles.none}>暂无隐患信息</p>}
+        {hasMore && (
+          <p
+            className={!fireList.length && loading ? styles.none : loading ? styles.hasMore : styles.hasMore1}
+            onClick={loading ? null : this.getMoreFireList}
+          >
+            {loading ? <Icon type="sync" spin className={styles.sync} /> : <Icon type="double-right" className={styles.doubleRight}/>}
+          </p>
         )}
       </SearchBar>
     );

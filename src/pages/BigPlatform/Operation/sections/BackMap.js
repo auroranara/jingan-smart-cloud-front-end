@@ -6,8 +6,14 @@ import { DeviceBar, InfoStatus, MapLegend, MapTypeBar } from '../components/Comp
 
 import iconAddress from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-address.png';
 import iconMan from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-man.png';
-import { dotRed, dotGreen } from '../imgs/links';
-import { HOST, SMOKE, getMapLegendData } from '../utils';
+import { dotRed, dotGreen, dotHostGreen, dotHostRed, dotHostYellow, dotSmokeGreen, dotSmokeRed, dotSmokeYellow, dotSmokeGrey } from '../imgs/links';
+import { HOST, SMOKE, getMapLegendData, getMapItemStatus } from '../utils';
+
+const IMGS = [
+  [dotGreen, dotRed],
+  [dotHostGreen, dotHostRed, dotHostYellow],
+  [dotSmokeGreen, dotSmokeRed, dotSmokeYellow, dotSmokeGrey],
+];
 
 const { region } = global.PROJECT_CONFIG;
 const zooms = [3, 20];
@@ -94,25 +100,24 @@ export default class MapSection extends PureComponent {
   };
 
   renderMarkerLayout = extData => {
-    const { companyName, companyId, unnormal, faultNum } = extData;
-    let imgSrc = dotGreen;
+    const { deviceType } =  this.props;
+    const { companyName, companyId, fireDeviceCount, smokeDeviceCount } = extData;
+    const status = getMapItemStatus(extData, deviceType);
+    const imgSrc = IMGS[deviceType][status];
+    const deviceCount = deviceType === HOST ? +fireDeviceCount : +smokeDeviceCount;
 
-    if (+unnormal > 0) {
-      imgSrc = dotRed;
-    } else if (+faultNum > 0) {
-      imgSrc = dotRed;
-    } else {
-      imgSrc = dotGreen;
-    }
     return (
       <div
         style={{ position: 'relative' }}
-        className={+unnormal > 0 ? styles.imgAnimate : styles.imgContainer}
+        className={status ? styles.imgAnimate : styles.imgContainer}
         key={companyId}
       >
+        {!!deviceType && !!deviceCount && (
+          <div className={styles[`imgDot${deviceCount < 100 ? '' : 1}`]}>{deviceCount}</div>
+        )}
         <img
           src={imgSrc}
-          alt=""
+          alt="dot"
           style={{ display: 'block', width: '32px', height: '42px' }}
           onClick={() => {
             this.props.handleMapClick(extData);
@@ -205,20 +210,22 @@ export default class MapSection extends PureComponent {
 
     let statuses;
     let deviceCount;
+    const hostStatuses = [fireDeviceCountForFire, fireDeviceCountForFault, 0, fireDeviceCountForNormal].map(n => +n);
+    const smokeStatuses = [smokeDeviceCountForFire, smokeDeviceCountForFault, smokeDeviceCountForUnConnect, smokeDeviceCountForNormal].map(n => +n);
     switch(deviceType) {
       case HOST:
         deviceCount = fireDeviceCount;
-        statuses = [fireDeviceCountForFire, +fireDeviceCountForFault, 0, fireDeviceCountForNormal];
+        statuses = hostStatuses;
         break;
       case SMOKE:
         deviceCount = smokeDeviceCount;
-        statuses = [smokeDeviceCountForFire, smokeDeviceCountForFault, smokeDeviceCountForUnConnect, smokeDeviceCountForNormal];
+        statuses = smokeStatuses;
         break;
       default:
         deviceCount = 0;
         statuses = [0, 0, 0, 0];
     }
-    const [fire, fault, loss, normal] = statuses.map(n => +n);
+    const [fire, fault, loss, normal] = statuses;
 
     const alarmClick = () => {
       if (fire) {
@@ -305,7 +312,7 @@ export default class MapSection extends PureComponent {
                 </div>
               </Fragment>
             ) : (
-              <InfoStatus data={[[0, 0], [0, 1, 1]]} />
+              <InfoStatus data={[hostStatuses.slice(0, 2), smokeStatuses.slice(0, 3)]} />
             )
           }
         </div>
@@ -332,8 +339,8 @@ export default class MapSection extends PureComponent {
   };
 
   render() {
-    const { deviceType, handleParentChange, handleDeviceTypeChange, unitList } = this.props;
-    const mapLegendData = getMapLegendData(unitList);
+    const { deviceType, handleParentChange, handleDeviceTypeChange, units } = this.props;
+    const mapLegendData = getMapLegendData(units, deviceType);
 
     return (
       <div className={styles.mapContainer}>

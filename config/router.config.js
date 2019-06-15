@@ -134,7 +134,7 @@ module.exports = env => {
           component: './BigPlatform/Smoke',
         },
         {
-          path: '/big-platform/operation/:gridId',
+          path: '/big-platform/operation',
           code: 'dashboard.operationView',
           component: './BigPlatform/Operation',
         },

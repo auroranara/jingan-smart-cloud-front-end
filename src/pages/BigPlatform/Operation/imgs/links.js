@@ -3,6 +3,13 @@ import companyIcon from './company.png';
 import companyIcon1 from './company1.png';
 import dotGreen from './dotGreen.png';
 import dotRed from './dotRed.png';
+import dotHostGreen from './dotHostGreen.png';
+import dotHostRed from './dotHostRed.png';
+import dotHostYellow from './dotHostYellow.png';
+import dotSmokeGreen from './dotSmokeGreen.png';
+import dotSmokeRed from './dotSmokeRed.png';
+import dotSmokeYellow from './dotSmokeYellow.png';
+import dotSmokeGrey from './dotSmokeGrey.png';
 import hostIcon from './host.png';
 import hostIcon1 from './host1.png';
 import hostGreen from './hostGreen.png';
@@ -24,6 +31,13 @@ export {
   companyIcon1,
   dotGreen,
   dotRed,
+  dotHostGreen,
+  dotHostRed,
+  dotHostYellow,
+  dotSmokeGreen,
+  dotSmokeRed,
+  dotSmokeYellow,
+  dotSmokeGrey,
   hostIcon,
   hostIcon1,
   hostGreen,

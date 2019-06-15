@@ -15,14 +15,13 @@ import {
   FireStatisticsDrawer,
 } from './sections/Components';
 import {
-  GridSelect,
   MapSearch,
   Tooltip as MyTooltip,
   TaskDrawer,
   TaskCount,
   FireCount,
 } from './components/Components';
-import { genCardsInfo } from './utils';
+import { PAGE_SIZE } from './utils';
 
 const options = { // websocket配置
   pingTimeout: 30000,
@@ -31,9 +30,17 @@ const options = { // websocket配置
   pingMsg: 'heartbeat',
 };
 
-@connect(({ smoke, operation }) => ({
-  smoke,
+const FIRE_DICT = {
+  今日: 0,
+  本周: 1,
+  本月: 2,
+};
+
+@connect(({ loading, operation, user }) => ({
+  loading: loading.models.operation,
+  fireListLoading: loading.effects['operation/fetchFireList'],
   operation,
+  user,
 }))
 export default class Operation extends PureComponent {
   constructor(props) {
@@ -55,8 +62,8 @@ export default class Operation extends PureComponent {
       companyName: '',
       errorUnitsCardsInfo: [],
       unitDetail: {},
-      // importCardsInfo: [],
       deviceType: 0, // 地图中间根据设备显示企业列表
+      fireListHasMore: true, // 火警统计抽屉右边列表是否有更多
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
   }
@@ -68,9 +75,7 @@ export default class Operation extends PureComponent {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
     const {
       dispatch,
-      match: {
-        params: { gridId },
-      },
+      // match: { params: { gridId } },
     } = this.props;
 
     // 获取单位数据
@@ -98,118 +103,118 @@ export default class Operation extends PureComponent {
     //   },
     // });
 
-    const params = {
-      companyId: gridId,
-      env,
-      type: 5,
-    };
-    const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
-    // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
+    // const params = {
+    //   // companyId: gridId,
+    //   env,
+    //   type: 5,
+    // };
+    // const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+    // // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
 
-    // 链接webscoket
-    const ws = new WebsocketHeartbeatJs({ url, ...options });
+    // // 链接webscoket
+    // const ws = new WebsocketHeartbeatJs({ url, ...options });
 
-    ws.onopen = () => {
-      console.log('connect success');
-      ws.send('heartbeat');
-    };
+    // ws.onopen = () => {
+    //   console.log('connect success');
+    //   ws.send('heartbeat');
+    // };
 
-    ws.onmessage = e => {
-      // 判断是否是心跳
-      if (!e.data || e.data.indexOf('heartbeat') > -1) return;
-      try {
-        const data = JSON.parse(e.data).data;
-        const { type, companyId, messageFlag } = data;
-        const { alarmIds } = this.state;
-        // const index = unitIds.indexOf(companyId);
-        // 如果数据为告警或恢复，则将数据插入到列表的第一个
-        if ([31, 32].includes(type)) {
-          // 如果发生告警，弹出通知框，否则关闭通知框
-          this.fetchAbnormal();
-          if (type === 32) {
-            // const sameItem = alarmIds.find(item=>item.companyId===companyId);
-            const sameIndex = alarmIds.map(item => item.companyId).indexOf(companyId);
-            const newList =
-              sameIndex >= 0
-                ? [
-                  ...alarmIds.slice(0, sameIndex),
-                  { companyId, messageFlag },
-                  ...alarmIds.slice(sameIndex + 1),
-                ]
-                : [...alarmIds, { companyId, messageFlag }];
-            this.setState({ alarmIds: newList });
-            this.showWarningNotification(data);
-          } else {
-            let sameIndex;
-            alarmIds.forEach((item, i) => {
-              if (item.messageFlag === messageFlag) sameIndex = i;
-            });
-            if (sameIndex !== undefined) {
-              const newIds = [...alarmIds.slice(0, sameIndex), ...alarmIds.slice(sameIndex + 1)];
-              this.setState({ alarmIds: newIds });
-            }
-          }
-        }
-        // 如果为33，则修改单位状态
-        if (type === 33) {
-          this.fetchAbnormal();
-        }
-      } catch (error) {
-        console.log('error', error);
-      }
-    };
+    // ws.onmessage = e => {
+    //   // 判断是否是心跳
+    //   if (!e.data || e.data.indexOf('heartbeat') > -1) return;
+    //   try {
+    //     const data = JSON.parse(e.data).data;
+    //     const { type, companyId, messageFlag } = data;
+    //     const { alarmIds } = this.state;
+    //     // const index = unitIds.indexOf(companyId);
+    //     // 如果数据为告警或恢复，则将数据插入到列表的第一个
+    //     if ([31, 32].includes(type)) {
+    //       // 如果发生告警，弹出通知框，否则关闭通知框
+    //       this.fetchAbnormal();
+    //       if (type === 32) {
+    //         // const sameItem = alarmIds.find(item=>item.companyId===companyId);
+    //         const sameIndex = alarmIds.map(item => item.companyId).indexOf(companyId);
+    //         const newList =
+    //           sameIndex >= 0
+    //             ? [
+    //               ...alarmIds.slice(0, sameIndex),
+    //               { companyId, messageFlag },
+    //               ...alarmIds.slice(sameIndex + 1),
+    //             ]
+    //             : [...alarmIds, { companyId, messageFlag }];
+    //         this.setState({ alarmIds: newList });
+    //         this.showWarningNotification(data);
+    //       } else {
+    //         let sameIndex;
+    //         alarmIds.forEach((item, i) => {
+    //           if (item.messageFlag === messageFlag) sameIndex = i;
+    //         });
+    //         if (sameIndex !== undefined) {
+    //           const newIds = [...alarmIds.slice(0, sameIndex), ...alarmIds.slice(sameIndex + 1)];
+    //           this.setState({ alarmIds: newIds });
+    //         }
+    //       }
+    //     }
+    //     // 如果为33，则修改单位状态
+    //     if (type === 33) {
+    //       this.fetchAbnormal();
+    //     }
+    //   } catch (error) {
+    //     console.log('error', error);
+    //   }
+    // };
 
-    ws.onreconnect = () => {
-      console.log('reconnecting...');
-    };
+    // ws.onreconnect = () => {
+    //   console.log('reconnecting...');
+    // };
   }
 
-  fetchAbnormal = () => {
-    const {
-      dispatch,
-      match: {
-        params: { gridId },
-      },
-    } = this.props;
-    // 获取单位数据
-    dispatch({
-      type: 'smoke/fetchUnitData',
-      payload: { gridId },
-    });
-    // 获取接入单位统计列表
-    dispatch({
-      type: 'smoke/fetchImportingTotal',
-      payload: {
-        status,
-        gridId,
-      },
-      callback: data => {
-        if (!data) return;
-        const {
-          gasUnitSet: { importingUnits = [] },
-        } = data;
-        this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
-      },
-    });
-    // 烟感地图数据
-    this.fetchMapInfo();
+  // fetchAbnormal = () => {
+  //   const {
+  //     dispatch,
+  //     match: {
+  //       params: { gridId },
+  //     },
+  //   } = this.props;
+  //   // 获取单位数据
+  //   dispatch({
+  //     type: 'smoke/fetchUnitData',
+  //     payload: { gridId },
+  //   });
+  //   // 获取接入单位统计列表
+  //   dispatch({
+  //     type: 'smoke/fetchImportingTotal',
+  //     payload: {
+  //       status,
+  //       gridId,
+  //     },
+  //     callback: data => {
+  //       if (!data) return;
+  //       const {
+  //         gasUnitSet: { importingUnits = [] },
+  //       } = data;
+  //       this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
+  //     },
+  //   });
+  //   // 烟感地图数据
+  //   this.fetchMapInfo();
 
-    dispatch({
-      type: 'smoke/fetchAbnormalingTotal',
-      payload: {
-        status,
-        gridId,
-      },
-      callback: data => {
-        if (!data) return;
-        const {
-          gasErrorUnitSet: { errorUnits = [] },
-        } = data;
-        this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
-        this.setState({ errorUnitsCardsInfo: this.errorUnitsCardsInfo });
-      },
-    });
-  };
+  //   dispatch({
+  //     type: 'smoke/fetchAbnormalingTotal',
+  //     payload: {
+  //       status,
+  //       gridId,
+  //     },
+  //     callback: data => {
+  //       if (!data) return;
+  //       const {
+  //         gasErrorUnitSet: { errorUnits = [] },
+  //       } = data;
+  //       this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
+  //       this.setState({ errorUnitsCardsInfo: this.errorUnitsCardsInfo });
+  //     },
+  //   });
+  // };
 
   /**
    * 销毁前
@@ -220,13 +225,9 @@ export default class Operation extends PureComponent {
 
   importCardsInfo = [];
   errorUnitsCardsInfo = [];
+  fireListPageNum = 1;
 
-  /**
-   * 1.获取接口数据
-   * 2.显示弹出框
-   * 3.添加定时器
-   */
-  showUnitDetail = (unitDetail, deviceId) => {
+  showUnitDetail = (unitDetail, deviceId) => { // 地图显示某个企业详情
     if (!unitDetail) {
       return;
     }
@@ -238,18 +239,11 @@ export default class Operation extends PureComponent {
     this.hideTooltip();
   };
 
-  /**
-   * 1.取消定时器
-   * 2.隐藏弹出框
-   */
   hideUnitDetail = () => {
     // this.setState({ monitorDrawerVisible: false });
   };
 
-  /**
-   * 显示告警通知提醒框
-   */
-  showWarningNotification = ({
+  showWarningNotification = ({ // 显示告警通知提醒框
     companyId,
     addTime,
     companyName,
@@ -347,11 +341,11 @@ export default class Operation extends PureComponent {
 
   handleClickNotification = companyId => {
     const {
-      smoke: {
-        unitSet: { units },
+      operation: {
+        unitList,
       },
     } = this.props;
-    this.showUnitDetail(units.filter(item => item.companyId === companyId)[0]);
+    this.showUnitDetail(unitList.filter(item => item.companyId === companyId)[0]);
   };
 
   // handleClickCamera = () => {
@@ -389,67 +383,67 @@ export default class Operation extends PureComponent {
     this.setState({ ...newState });
   };
 
-  handleAlarmClick = (id, companyId, companyName, num) => {
-    const {
-      dispatch,
-      match: {
-        params: { gridId },
-      },
-    } = this.props;
-    this.setState({ companyName });
-    dispatch({
-      type: 'smoke/fetchSmokeForMaintenance',
-      payload: { companyId, id, gridId, num, type: '1' },
-      success: () => {
-        this.handleDrawerVisibleChange('alarmDynamic');
-      },
-    });
-  };
+  // handleAlarmClick = (id, companyId, companyName, num) => {
+  //   const {
+  //     dispatch,
+  //     match: {
+  //       params: { gridId },
+  //     },
+  //   } = this.props;
+  //   this.setState({ companyName });
+  //   dispatch({
+  //     type: 'smoke/fetchSmokeForMaintenance',
+  //     payload: { companyId, id, gridId, num, type: '1' },
+  //     success: () => {
+  //       this.handleDrawerVisibleChange('alarmDynamic');
+  //     },
+  //   });
+  // };
 
-  handleFaultClick = (id, companyId, companyName, num) => {
-    // return null;
-    const {
-      dispatch,
-      match: {
-        params: { gridId },
-      },
-    } = this.props;
-    this.setState({ companyName });
-    dispatch({
-      type: 'smoke/fetchSmokeForMaintenance',
-      payload: { companyId, id, gridId, num, type: '2' },
-      success: () => {
-        this.handleDrawerVisibleChange('maintenance');
-      },
-    });
-  };
+  // handleFaultClick = (id, companyId, companyName, num) => {
+  //   // return null;
+  //   const {
+  //     dispatch,
+  //     match: {
+  //       params: { gridId },
+  //     },
+  //   } = this.props;
+  //   this.setState({ companyName });
+  //   dispatch({
+  //     type: 'smoke/fetchSmokeForMaintenance',
+  //     payload: { companyId, id, gridId, num, type: '2' },
+  //     success: () => {
+  //       this.handleDrawerVisibleChange('maintenance');
+  //     },
+  //   });
+  // };
 
   onRef = ref => {
     this.mapChild = ref;
   };
 
-  handleCompanyClick = companyId => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'smoke/fetchCameraTree', payload: { company_id: companyId } });
-    dispatch({
-      type: 'smoke/fetchCompanySmokeInfo',
-      payload: { company_id: companyId },
-      success: () => {
-        this.handleDrawerVisibleChange('monitor');
-        this.pollCompanyInfo = setInterval(() => {
-          dispatch({
-            type: 'smoke/fetchCompanySmokeInfo',
-            payload: { company_id: companyId },
-          });
-        }, 2000);
-      },
-    });
-  };
+  // handleCompanyClick = companyId => {
+  //   const { dispatch } = this.props;
+  //   dispatch({ type: 'smoke/fetchCameraTree', payload: { company_id: companyId } });
+  //   dispatch({
+  //     type: 'smoke/fetchCompanySmokeInfo',
+  //     payload: { company_id: companyId },
+  //     success: () => {
+  //       this.handleDrawerVisibleChange('monitor');
+  //       this.pollCompanyInfo = setInterval(() => {
+  //         dispatch({
+  //           type: 'smoke/fetchCompanySmokeInfo',
+  //           payload: { company_id: companyId },
+  //         });
+  //       }, 2000);
+  //     },
+  //   });
+  // };
 
   fetchMapInfo = () => {
     const {
       dispatch,
-      match: { params: { gridId } },
+      // match: { params: { gridId } },
     } = this.props;
     // 烟感地图数据
     dispatch({
@@ -458,24 +452,42 @@ export default class Operation extends PureComponent {
     });
   };
 
-  // pollingMap = () => {
-  //   this.poMap = setInterval(() => {
-  //     this.fetchMapInfo();
-  //   }, 2000);
-  // };
-
-  // clearPollingMap = () => {
-  //   clearInterval(this.poMap);
-  // };
-
   handleFireDrawerOpen = dateType => {
-    const dict = {
-      今日: 0,
-      本周: 1,
-      本月: 2,
-    };
-    this.setState({ fireStatisticsDrawerVisible: true, dateType: dict[dateType] });
+    const dType = FIRE_DICT[dateType];
+    this.setState({ fireStatisticsDrawerVisible: true, dateType: dType });
+    this.getFirePie(dType);
+    this.getFireTrend();
+    this.getFireList();
   }
+
+  getFirePie = dateType => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'operation/fetchFirePie', payload: { type: dateType + 1 } });
+  };
+
+  getFireTrend = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'operation/fetchFireTrend' });
+  };
+
+  getFireList = ({ deviceType, fireType, searchValue }={}, initial=true) => {
+    const { dispatch } = this.props;
+    const [dType, fType, name] = [deviceType, fireType, searchValue].map(v => v ? v : undefined);
+
+    if (initial) {
+      this.fireListPageNum = 1;
+      this.setState({ fireListHasMore: true });
+    }
+
+    dispatch({
+      type: 'operation/fetchFireList',
+      payload: { name, deviceType: dType, fireType: fType, pageNum: this.fireListPageNum, pageSize: PAGE_SIZE },
+      callback: total => {
+        if (this.fireListPageNum++ * PAGE_SIZE >= total)
+          this.setState({ fireListHasMore: false });
+      },
+    });
+  };
 
   handleDateTypeChange = (dateType) => {
     this.setState({ dateType });
@@ -502,14 +514,14 @@ export default class Operation extends PureComponent {
    */
   render() {
     const {
-      smoke: {
-        unitSet,
-        deviceStatusCount,
+      fireListLoading,
+      operation: {
+        unitList,
+        firePie,
+        fireTrend,
+        fireList,
       },
-      operation: { unitList },
-      match: {
-        params: { gridId },
-      },
+      user: { currentUser: { unitName } },
     } = this.props;
 
     const {
@@ -523,14 +535,15 @@ export default class Operation extends PureComponent {
       alarmIds,
       dateType,
       deviceType,
+      fireListHasMore,
       fireStatisticsDrawerVisible,
     } = this.state;
 
-    const extra = <GridSelect gridId={gridId} urlBase="/big-platform/smoke" />;
+    // const extra = <GridSelect gridId={gridId} urlBase="/big-platform/smoke" />;
     return (
       <BigPlatformLayout
         title="智慧消防运营平台"
-        extra={extra}
+        extra={unitName}
         style={{ backgroundImage: 'none' }}
         headerStyle={{
           position: 'absolute',
@@ -596,11 +609,16 @@ export default class Operation extends PureComponent {
         />
         {/* 火警统计抽屉 */}
         <FireStatisticsDrawer
-          gridId={gridId}
-          visible={fireStatisticsDrawerVisible}
-          handleDateTypeChange={this.handleDateTypeChange}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           dateType={dateType}
+          loading={fireListLoading}
+          hasMore={fireListHasMore}
+          data={{ firePie, fireTrend, fireList }}
+          visible={fireStatisticsDrawerVisible}
+          getFirePie={this.getFirePie}
+          getFireList={this.getFireList}
+          handleDateTypeChange={this.handleDateTypeChange}
+          handleClose={this.handleFireStatisticsDrawerClose}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <MyTooltip
           visible={tooltipVisible}

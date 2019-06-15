@@ -3,6 +3,7 @@ export { genCardsInfo } from '@/pages/BigPlatform/Smoke/utils';
 export const ALL_DEVICES = 0;
 export const HOST = 1;
 export const SMOKE = 2;
+export const PAGE_SIZE = 10;
 
 export function getStatusImg(list, imgs) {
   let i = 0;
@@ -51,7 +52,7 @@ export function getMapItemStatus(item, deviceType) { // 0 正常 1 报警 2 故�
 
 export function getMapLegendData(list, deviceType) {
   function lambda(prev, next) {
-    const status = getMapItemStatus(next);
+    const status = getMapItemStatus(next, deviceType);
     prev[status] += 1;
     return prev;
   };
