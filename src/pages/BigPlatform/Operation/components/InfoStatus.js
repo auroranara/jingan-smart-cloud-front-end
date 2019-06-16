@@ -33,16 +33,20 @@ function StatusBar(props) {
 
 export default class InfoStatus extends PureComponent {
   render() {
-    const { data } = this.props;
+    const { data, devices } = this.props;
     data[0].push(0); // 为主机的失联补0，反正0对最后结果无影响
     return(
       <div className={styles.container}>
-        <div className={styles.host} style={{ backgroundImage: `url(${getStatusImg(data[0], [hostRed, hostYellow, undefined, hostGreen])})` }}>
-          <StatusBar data={data[0]} />
-        </div>
-        <div className={styles.smoke} style={{ backgroundImage: `url(${getStatusImg(data[1], [smokeRed, smokeYellow, smokeGrey, smokeGreen])})` }}>
+        {!!devices[0] && (
+          <div className={styles.host} style={{ backgroundImage: `url(${getStatusImg(data[0], [hostRed, hostYellow, undefined, hostGreen])})` }}>
+            <StatusBar data={data[0]} />
+          </div>
+        )}
+        {!!devices[1] && (
+          <div className={styles.smoke} style={{ backgroundImage: `url(${getStatusImg(data[1], [smokeRed, smokeYellow, smokeGrey, smokeGreen])})` }}>
           <StatusBar data={data[1]} />
         </div>
+        )}
       </div>
     )
   }

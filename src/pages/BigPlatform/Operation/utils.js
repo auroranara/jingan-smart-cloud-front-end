@@ -74,3 +74,16 @@ export function getMapLegendData(list, deviceType) {
 
   return {};
 }
+
+export function getUnitList(list, deviceType) {
+  switch(deviceType) {
+    case ALL_DEVICES:
+      return list;
+    case HOST:
+      return list.filter(({ fireDeviceCount }) => fireDeviceCount);
+    case SMOKE:
+      return list.filter(({ smokeDeviceCount }) => smokeDeviceCount);
+    default:
+      return [];
+  }
+}
