@@ -395,7 +395,15 @@ export default class WaterSystemDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, waterTabItem, videoKeyId, waterDrawer, filterIndex, onClick } = this.props;
+    const {
+      visible,
+      waterTabItem,
+      videoKeyId,
+      waterDrawer,
+      filterIndex,
+      onClick,
+      handleParentChange,
+    } = this.props;
 
     const { videoVisible, videoList } = this.state;
 
@@ -422,7 +430,8 @@ export default class WaterSystemDrawer extends PureComponent {
       return {
         ...item,
         onClick: () => {
-          onClick(index);
+          // onClick(index);
+          handleParentChange({ filterIndex: index });
         },
       };
     });

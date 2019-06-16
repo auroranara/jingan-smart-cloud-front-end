@@ -2347,6 +2347,7 @@ export default class NewUnitFireControl extends PureComponent {
           waterDrawer={waterDrawerList}
           onClick={this.handleClickWater}
           filterIndex={filterIndex}
+          handleParentChange={this.handleParentChange}
         />
         {/* 独立烟感监测抽屉 */}
         <SmokeDrawer
