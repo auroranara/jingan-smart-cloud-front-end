@@ -24,12 +24,8 @@ import {
   TaskCount,
   FireCount,
 } from './components/Components';
-import {
-  FireFlowDrawer,
-  SmokeFlowDrawer,
-  OnekeyFlowDrawer,
-  GasFlowDrawer,
-} from './sections/DynamicDrawer'
+import FireFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/FireFlowDrawer'
+import SmokeFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/SmokeFlowDrawer'
 // websocket配置
 const options = {
   pingTimeout: 30000,
@@ -70,9 +66,12 @@ const popupVisible = {
  * author:
  * date: 2019年01月08日
  */
-@connect(({ smoke,operation }) => ({
+@connect(({ smoke, operation, user, unitSafety,newUnitFireControl }) => ({
   smoke,
   operation,
+  user,
+  unitSafety,
+  newUnitFireControl,
 }))
 export default class Operation extends PureComponent {
   constructor(props) {
@@ -108,6 +107,15 @@ export default class Operation extends PureComponent {
       alarmMessageDrawerVisible: false,
       faultMessageDrawerVisible: false,
       alarmHistoryDrawerVisible: false,
+      fireFlowDrawerVisible: false,
+      flowRepeat: {
+        times: 0,
+        lastreportTime: 0,
+      },
+      msgFlow: 0, // 0报警 1故障
+      smokeFlowDrawerVisible:false,
+      fireVideoVisible:false,
+      videoList:[],
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -131,6 +139,7 @@ export default class Operation extends PureComponent {
       match: {
         params: { gridId },
       },
+      user: { currentUser: { userId } },
     } = this.props;
     // 获取单位数据
     dispatch({
@@ -159,9 +168,9 @@ export default class Operation extends PureComponent {
     });
 
     const params = {
-      companyId: gridId,
+      companyId: userId,
       env,
-      type: 5,
+      type: 7,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
     // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
@@ -178,12 +187,9 @@ export default class Operation extends PureComponent {
       // 判断是否是心跳
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
-        const companyId='DccBRhlrSiu9gMV7fmvizw'
-        const checkItemId=''
-
         const data = JSON.parse(e.data);
         dispatch({
-          type: 'operation/fetchWebsocketScreenMessage',
+          type: 'newUnitFireControl/fetchWebsocketScreenMessage',
           payload: data,
           success: result => {
             // 显示火警障碍弹窗
@@ -209,7 +215,7 @@ export default class Operation extends PureComponent {
               if (+isOver === 0) {
                 this.showFireMsg(result);
               }
-              this.fetchScreenMessage(dispatch, companyId);
+              this.fetchScreenMessage(dispatch);
             }
 
             if (
@@ -223,152 +229,6 @@ export default class Operation extends PureComponent {
             ) {
               // 获取消防主机监测
               this.fetchFireAlarmSystem();
-            }
-
-            if (type === 14 || type === 15 || type === 16 || type === 17) {
-              // 更新当前隐患总数
-              dispatch({
-                type: 'newUnitFireControl/fetchHiddenDangerNum',
-                payload: { companyId },
-              });
-            }
-
-            if (type === 31 || type === 32 || type === 42 || type === 43) {
-              // 电气火灾监测
-              dispatch({
-                type: 'electricityMonitor/fetchDeviceStatusCount',
-                payload: { companyId },
-              });
-              this.getDeviceRealTimeData(this.elecDrawerDeviceId);
-              this.handleFetchRealTimeData(this.elecMonitorDeviceId);
-            }
-
-            // 获取水系统---消火栓系统
-            if (type === 36 || type === 37) {
-              // if (+deviceType === +waterTab) this.fetchWaterSystem(deviceType);
-              dispatch({
-                type: 'newUnitFireControl/fetchWaterAlarm',
-                payload: {
-                  companyId,
-                },
-              });
-            }
-
-            // if (type === 18) {
-            //   // 获取消防设施评分
-            //   dispatch({
-            //     type: 'newUnitFireControl/fetchSystemScore',
-            //     payload: {
-            //       companyId,
-            //     },
-            //   });
-            //   if (this.state.fireAlarmVisible) this.fetchViewFireAlarm();
-            // }
-
-            // 四色图隐患
-            const { fourColorTips, deletedFourColorTips } = this.state;
-            // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
-            if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
-              // 如果前一条隐患还没消失，则移除前一条隐患
-              if (fourColorTips[itemId] === messageFlag) {
-                return;
-              } else if (fourColorTips[itemId]) {
-                this.setState({
-                  fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
-                  latestHiddenDangerId: itemId,
-                  deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
-                });
-              } else {
-                this.setState({
-                  fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
-                  latestHiddenDangerId: itemId,
-                });
-              }
-            }
-
-            if (type === 14) {
-              // 获取点位
-              dispatch({
-                type: 'newUnitFireControl/fetchPointList',
-                payload: {
-                  companyId,
-                },
-              });
-
-              // 获取当前隐患列表
-              dispatch({
-                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-                payload: {
-                  company_id: companyId,
-                  businessType: 2,
-                },
-              });
-
-              //获取巡查记录
-              dispatch({
-                type: 'newUnitFireControl/fetchPointRecord',
-                payload: {
-                  itemId: checkItemId,
-                  item_type: 2,
-                },
-              });
-            }
-            if (type === 15 || type === 16 || type === 17) {
-              if (fourColorTips[pointId] === messageFlag)
-                this.removeFourColorTip(pointId, messageFlag);
-              // 获取点位
-              dispatch({
-                type: 'newUnitFireControl/fetchPointList',
-                payload: {
-                  companyId,
-                },
-              });
-
-              // 获取当前隐患列表
-              dispatch({
-                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-                payload: {
-                  company_id: companyId,
-                  businessType: 2,
-                },
-              });
-
-              //获取巡查记录
-              dispatch({
-                type: 'newUnitFireControl/fetchPointRecord',
-                payload: {
-                  itemId: checkItemId,
-                  item_type: 2,
-                },
-              });
-            }
-            if (type === 13) {
-              // 获取点位
-              dispatch({
-                type: 'newUnitFireControl/fetchPointList',
-                payload: {
-                  companyId,
-                },
-              });
-
-              // 获取当前隐患列表
-              dispatch({
-                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-                payload: {
-                  company_id: companyId,
-                  businessType: 2,
-                },
-              });
-
-              //获取巡查记录
-              dispatch({
-                type: 'newUnitFireControl/fetchPointRecord',
-                payload: {
-                  itemId: checkItemId,
-                  item_type: 2,
-                },
-              });
-              if (checkResult === '无隐患') this.removeFourColorTip2(pointId);
             }
           },
         });
@@ -723,6 +583,99 @@ export default class Operation extends PureComponent {
     this.setState({ deviceType: v });
   };
 
+  handleClickMessage = (dataId, msg) => {
+    // const {
+    //   monitor: { allCamera },
+    // } = this.props;
+    const { cameraMessage } = msg;
+    this.hiddeAllPopup();
+    this.handleFetchAlarmHandle(dataId);
+    this.setState({ alarmMessageDrawerVisible: true });
+    // this.handleShowVideo(allCamera.length ? allCamera[0].key_id : '', true);
+    this.handleShowFireVideo(cameraMessage);
+  };
+
+  handleFetchAlarmHandle = (dataId, historyType, callback) => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+
+    dispatch({
+      type: 'newUnitFireControl/fetchAlarmHandle',
+      payload: { companyId, dataId, historyType },
+      callback,
+    });
+  };
+
+  handleClickMsgFlow = (param, type, flow, repeat, cameraMessage = [], occurData) => {
+    // type 0/1/2/3 主机/烟感/燃气/一键报修
+    // flow 0/1 报警/故障
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    const drawerVisibles = [
+      'fireFlowDrawerVisible',
+      'smokeFlowDrawerVisible',
+      'gasFlowDrawerVisible',
+      'onekeyFlowDrawerVisible',
+    ];
+    const reportTypes = [1, 4, 3, 2];
+    this.hiddeAllPopup();
+    dispatch({
+      type: 'newUnitFireControl/fetchCountNumAndTimeById',
+      payload: { id: param.dataId || param.id, reportType: reportTypes[type], fireType: flow + 1 },
+      callback: res => {
+        if (res) {
+          const { num, lastTime, firstTime } = res;
+          this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+          dispatch({
+            type: 'newUnitFireControl/saveWorkOrderDetail',
+            payload: [{ ...occurData[0], firstTime }],
+          });
+        } else {
+          dispatch({
+            type: 'newUnitFireControl/fetchWorkOrder',
+            payload: { companyId, reportType: reportTypes[type], ...param },
+            callback: res => {
+              if (res.data.list.length === 0) return;
+              const { num, lastTime } = res.data.list[0];
+              this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+            },
+          });
+        }
+      },
+    });
+    // dispatch({
+    //   type: 'newUnitFireControl/fetchWorkOrder',
+    //   payload: { companyId, reportType: reportTypes[type], ...param },
+    //   callback: res => {
+    //     if (!(res.data && Array.isArray(res.data.list))) return;
+    //     if (res.data.list.length === 0) {
+    //       dispatch({
+    //         type: 'newUnitFireControl/saveWorkOrderDetail',
+    //         payload: occurData,
+    //       });
+    //     }
+    //   },
+    // });
+    this.setState({ [drawerVisibles[type]]: true, msgFlow: flow });
+    this.handleShowFireVideo(cameraMessage);
+  };
+
+   /**
+   *  点击播放重点部位监控
+   */
+  handleShowFireVideo = videoList => {
+    if (!Array.isArray(videoList) || videoList.length === 0) return null;
+    this.setState({ fireVideoVisible: true, videoList });
+  };
+
   /**
    * 渲染
    */
@@ -735,11 +688,18 @@ export default class Operation extends PureComponent {
       match: {
         params: { gridId },
       },
-      operation: {
+      newUnitFireControl: {
         alarmHandleMessage,
         alarmHandleList,
         alarmHandleHistory,
+        workOrderDetail, // 只有一个元素的数组
+        maintenanceCompany: {
+          name: maintenanceCompanys = [],
+          PrincipalName = '', // 安全管理员
+          PrincipalPhone = '', // 安全管理员电话
+        },
       },
+      unitSafety: { points, phoneVisible },
     } = this.props;
 
     const {
@@ -754,10 +714,10 @@ export default class Operation extends PureComponent {
       dateType,
       deviceType,
       fireStatisticsDrawerVisible,
-      alarmMessageDrawerVisible,
-      faultMessageDrawerVisible,
-      alarmDynamicDrawerVisible,
-      alarmHistoryDrawerVisible,
+      flowRepeat,
+      fireFlowDrawerVisible,
+      msgFlow,
+      smokeFlowDrawerVisible,
     } = this.state;
 
     const extra = <GridSelect gridId={gridId} urlBase="/big-platform/smoke" />;
@@ -852,15 +812,47 @@ export default class Operation extends PureComponent {
         {/* 实时消息 */}
         <Messages
           className={styles.realTimeMessage}
-          model={this.props.operation}
+           model={this.props.newUnitFireControl}
+           handleParentChange={this.handleMapParentChange}
+          //  handleViewDangerDetail={this.handleViewDangerDetail}
+          //  fetchData={this.fetchMaintenanceCheck}
+          //  handleClickMessage={this.handleClickMessage}
+          //  handleFaultClick={this.handleFaultClick}
+          //  handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
+          //  handleFireMessage={this.handleFireMessage}
+          //  handleViewWater={this.handleViewWater}
+           handleClickMsgFlow={this.handleClickMsgFlow}
+           phoneVisible={phoneVisible}
+        />
+        {/* 消防主机处理动态 */}
+        <FireFlowDrawer
+          // data={occurData}
+          data={workOrderDetail}
+          flowRepeat={flowRepeat}
+          // fireData={occurData}
+          // faultData={occurData}
+          visible={fireFlowDrawerVisible}
           handleParentChange={this.handleMapParentChange}
-          handleViewDangerDetail={this.handleViewDangerDetail}
-          fetchData={this.fetchMaintenanceCheck}
-          handleClickMessage={this.handleClickMessage}
-          handleFaultClick={this.handleFaultClick}
-          handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
-          handleFireMessage={this.handleFireMessage}
-          handleViewWater={this.handleViewWater}
+          onClose={() => this.handleDrawerVisibleChange('fireFlow')}
+          PrincipalName={PrincipalName}
+          PrincipalPhone={PrincipalPhone}
+          msgFlow={msgFlow}
+          phoneVisible={phoneVisible}
+        />
+        {/* 独立烟感处理动态 */}
+        <SmokeFlowDrawer
+          // data={occurData}
+          flowRepeat={flowRepeat}
+          data={workOrderDetail}
+          // fireData={occurData}
+          // faultData={occurData}
+          visible={smokeFlowDrawerVisible}
+          handleParentChange={this.handleMapParentChange}
+          onClose={() => this.handleDrawerVisibleChange('smokeFlow')}
+          PrincipalName={PrincipalName}
+          PrincipalPhone={PrincipalPhone}
+          msgFlow={msgFlow}
+          phoneVisible={phoneVisible}
         />
       </BigPlatformLayout>
     );

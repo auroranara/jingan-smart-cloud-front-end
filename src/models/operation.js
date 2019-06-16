@@ -2,8 +2,13 @@ import {
   getTaskList,
   getTaskCount,
   getFireCount,
+  getScreenMessage,
 } from '@/services/operation';
-import {getScreenMessage} from '@/services/bigPlatform/fireControl';
+import {
+  queryAlarmHandleList,
+  queryWorkOrderMsg,
+  queryDataId,
+}from '@/services/bigPlatform/fireControl'
 import { message } from 'antd';
 function error(msg) {
   message.error(msg);
@@ -34,8 +39,14 @@ export default {
     // 火警动态
     alarmHandleList: [],
     alarmHandleHistory: [],
+    maintenanceCompany: {
+      name: [],
+      PrincipalName: '', // 安全管理员
+      PrincipalPhone: '', // 安全管理员电话
+    },
+    // 维保处理动态详情
+    workOrderDetail: [],
   },
-
   effects: {
     *fetchTaskList({ payload }, { call, put }) {
       // const response = yield call(getTaskList, payload);
@@ -169,18 +180,38 @@ export default {
       }
     },
     // 火警动态列表或火警消息
-    //  *fetchAlarmHandle({ payload, callback }, { call, put }) {
-    //   const response = yield call(queryAlarmHandleList, payload);
-    //   if (response && response.code === 200) {
-    //     yield put({
-    //       type: `saveAlarmHandle${
-    //         payload.dataId ? 'Message' : payload.historyType ? 'History' : 'List'
-    //       }`,
-    //       payload: response.data ? response.data.list : [],
-    //     });
-    //     if (callback) callback(response);
-    //   }
-    // },
+     *fetchAlarmHandle({ payload, callback }, { call, put }) {
+      const response = yield call(queryAlarmHandleList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: `saveAlarmHandle${
+            payload.dataId ? 'Message' : payload.historyType ? 'History' : 'List'
+          }`,
+          payload: response.data ? response.data.list : [],
+        });
+        if (callback) callback(response);
+      }
+    },
+     // 消息故障详情
+     *fetchMaintenanceMsg({ payload, callback }, { call, put }) {
+      const response = yield call(queryWorkOrderMsg, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveWorkOrderDetail',
+          payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
+        });
+      }
+      if (callback) callback(response);
+    },
+     // 根据processId查dataId
+     *fetchDataId({ payload, success, error }, { call, put }) {
+      const response = yield call(queryDataId, payload);
+      if (response && response.code === 200) {
+        if (success) success(response);
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -210,6 +241,9 @@ export default {
     },
     saveAlarmHandleHistory(state, action) {
       return { ...state, alarmHandleHistory: action.payload || [] };
+    },
+    saveWorkOrderDetail(state, action) {
+      return { ...state, workOrderDetail: action.payload };
     },
   },
 }
