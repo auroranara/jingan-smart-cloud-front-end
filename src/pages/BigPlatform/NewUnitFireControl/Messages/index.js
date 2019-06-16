@@ -20,7 +20,6 @@ const TYPES = [
   16,
   17,
   18,
-  31,
   32,
   36,
   37,
@@ -30,6 +29,13 @@ const TYPES = [
   41,
   42,
   43,
+  44, // 电器火灾告警恢复
+  45, // 燃气告警恢复
+  46, // 独立烟感失联
+  47, // 独立烟感失联恢复
+  48, // 水系统失联
+  49, // 水系统失联恢复
+  50, // 独立烟感告警恢复
 ];
 const formatTime = time => {
   const diff = moment().diff(moment(time));
@@ -45,24 +51,6 @@ const formatTime = time => {
     return `刚刚`;
   }
 };
-
-const isVague = false;
-function nameToVague(str) {
-  let newStr = '';
-  if (str && str.length === 1) return str;
-  else if (str && str.length === 2) {
-    newStr = str.substr(0, 1) + '*';
-  } else if (str && str.length > 2) {
-    newStr = str.substr(0, 1) + '*' + str.substr(-1);
-  } else return str;
-  return newStr;
-}
-
-function phoneToVague(str) {
-  if (!str) return str;
-  const newStr = str.substr(0, 3) + '****' + str.substr(-4);
-  return newStr;
-}
 
 const getEmptyData = () => {
   return '暂无数据';
@@ -106,6 +94,8 @@ export default class Messages extends PureComponent {
       handleClickMsgFlow,
       phoneVisible,
       handleClickElecMsg,
+      handleClickSmoke,
+      handleClickWater,
     } = this.props;
     const {
       type,
@@ -268,7 +258,8 @@ export default class Messages extends PureComponent {
       '36': {
         // 水系统报警
         onClick: () => {
-          handleViewWater([101, 102, 103].indexOf(+deviceType), deviceType);
+          handleClickWater(0, [101, 102, 103].indexOf(+deviceType));
+          // handleViewWater([101, 102, 103].indexOf(+deviceType), deviceType);
         },
         items: [
           {
@@ -284,7 +275,8 @@ export default class Messages extends PureComponent {
       '37': {
         // 水系统恢复
         onClick: () => {
-          handleViewWater([101, 102, 103].indexOf(+deviceType), deviceType);
+          handleClickWater(2, [101, 102, 103].indexOf(+deviceType));
+          // handleViewWater([101, 102, 103].indexOf(+deviceType), deviceType);
         },
         items: [
           {
@@ -380,9 +372,9 @@ export default class Messages extends PureComponent {
       };
     });
 
-    if (type === 31 || type === 32) {
+    if (type === 44 || type === 32 || type === 42 || type === 43) {
       const elecMsg = {
-        31: { elecTitle: '电气火灾报警', elecContent: `${paramName}告警现已恢复正常` },
+        44: { elecTitle: '电气火灾报警', elecContent: `${paramName}告警现已恢复正常` },
         32: {
           elecTitle: '电气火灾报警',
           elecContent: `${paramName}告警${realtimeVal + unit}（参考值<${limitVal + unit}）`,
@@ -412,6 +404,70 @@ export default class Messages extends PureComponent {
             所在位置：
             {location}
           </div>
+        </div>
+      );
+    }
+
+    if (type === 46 || type === 47 || type === 50) {
+      // 46 独立烟感失联 47 独立烟感失联恢复 50 独立烟感告警恢复
+      const smokeTitle = {
+        46: '独立烟感失联',
+        47: '独立烟感失联恢复',
+        50: '独立烟感告警恢复',
+      };
+      return (
+        <div className={styles.msgItem}>
+          {type === 46 ||
+            (type === 50 && (
+              <a
+                className={styles.detailBtn}
+                onClick={() => {
+                  handleClickSmoke(type === 46 ? 2 : 3);
+                }}
+              >
+                详情
+                <Icon type="double-right" />
+              </a>
+            ))}
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgType}>【{smokeTitle[type]}】</div>
+          <div className={styles.msgBody}>
+            所在区域：
+            {area}
+          </div>
+          <div className={styles.msgBody}>
+            所在位置：
+            {location}
+          </div>
+        </div>
+      );
+    }
+
+    if (type === 48 || type === 49) {
+      // 48 水系统失联 49 水系统失联恢复
+      const waterMsg = {
+        48: { title: '水系统失联', content: '失联' },
+        49: { title: '水系统失联恢复', content: '从失联中恢复' },
+      };
+      return (
+        <div className={styles.msgItem}>
+          {type === 48 && (
+            <a
+              className={styles.detailBtn}
+              onClick={() => {
+                handleClickWater(1, [101, 102, 103].indexOf(+deviceType));
+              }}
+            >
+              详情
+              <Icon type="double-right" />
+            </a>
+          )}
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgType}>【{waterMsg[type].title}】</div>
+          <div className={styles.msgBody}>
+            {+deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱'}
+          </div>
+          <div className={styles.msgBody}>{virtualName + waterMsg[type].content}</div>
         </div>
       );
     }

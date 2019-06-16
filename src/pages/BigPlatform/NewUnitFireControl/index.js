@@ -305,7 +305,7 @@ export default class NewUnitFireControl extends PureComponent {
               });
             }
 
-            if (type === 31 || type === 32 || type === 42 || type === 43) {
+            if (type === 44 || type === 32 || type === 42 || type === 43) {
               // 电气火灾监测
               dispatch({
                 type: 'electricityMonitor/fetchDeviceStatusCount',
@@ -316,12 +316,32 @@ export default class NewUnitFireControl extends PureComponent {
             }
 
             // 获取水系统---消火栓系统
-            if (type === 36 || type === 37) {
+            if (type === 36 || type === 37 || type === 48 || type === 49) {
+              // 36 水系统报警 37 水系统报警恢复 48水系统失联 49 水系统失联恢复
               if (+deviceType === +waterTab) this.fetchWaterSystem(deviceType);
+              if (this.state.waterSystemDrawerVisible) {
+                dispatch({
+                  type: 'newUnitFireControl/fetchWaterDrawer',
+                  payload: {
+                    companyId,
+                    type: [101, 102, 103][this.state.waterTabItem],
+                  },
+                });
+              }
+              // dispatch({
+              //   type: 'newUnitFireControl/fetchWaterAlarm',
+              //   payload: {
+              //     companyId,
+              //   },
+              // });
+            }
+
+            if (type === 38 || type === 40 || type === 46 || type === 47 || type === 50) {
+              // 烟感列表
               dispatch({
-                type: 'newUnitFireControl/fetchWaterAlarm',
+                type: 'smoke/fetchCompanySmokeInfo',
                 payload: {
-                  companyId,
+                  company_id: companyId,
                 },
               });
             }
@@ -1470,10 +1490,25 @@ export default class NewUnitFireControl extends PureComponent {
 
   handleClickWater = (index, typeIndex) => {
     const { waterTabItem } = this.state;
-    this.setState({
-      waterSystemDrawerVisible: true,
-      filterIndex: index,
-      waterTabItem: typeIndex || typeIndex === 0 ? typeIndex : waterTabItem,
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchWaterDrawer',
+      payload: {
+        companyId,
+        type: [101, 102, 103][typeIndex],
+      },
+      callback: () => {
+        this.setState({
+          waterSystemDrawerVisible: true,
+          filterIndex: index,
+          waterTabItem: typeIndex || typeIndex === 0 ? typeIndex : waterTabItem,
+        });
+      },
     });
   };
 
@@ -1839,6 +1874,7 @@ export default class NewUnitFireControl extends PureComponent {
         fireAlarm,
         faultList,
         waterSystemData: { list },
+        waterDrawer: { list: waterDrawerList },
         waterAlarm,
         maintenanceCompany: {
           name: maintenanceCompanys = [],
@@ -2006,6 +2042,8 @@ export default class NewUnitFireControl extends PureComponent {
           handleClickMsgFlow={this.handleClickMsgFlow}
           phoneVisible={phoneVisible}
           handleClickElecMsg={this.handleClickElecMsg}
+          handleClickSmoke={this.handleClickSmoke}
+          handleClickWater={this.handleClickWater}
         />
         <div className={styles.bottom}>
           <div className={styles.bottomInner}>
@@ -2293,6 +2331,7 @@ export default class NewUnitFireControl extends PureComponent {
           waterTabItem={waterTabItem}
           onClose={this.handleCloseWater}
           waterList={list}
+          waterDrawer={waterDrawerList}
           onClick={this.handleClickWater}
           filterIndex={filterIndex}
         />
@@ -2371,11 +2410,8 @@ export default class NewUnitFireControl extends PureComponent {
         />
         {/* 消防主机处理动态 */}
         <FireFlowDrawer
-          // data={occurData}
           data={workOrderDetail}
           flowRepeat={flowRepeat}
-          // fireData={occurData}
-          // faultData={occurData}
           visible={fireFlowDrawerVisible}
           handleParentChange={this.handleParentChange}
           onClose={() => this.handleDrawerVisibleChange('fireFlow')}
@@ -2386,11 +2422,8 @@ export default class NewUnitFireControl extends PureComponent {
         />
         {/* 独立烟感处理动态 */}
         <SmokeFlowDrawer
-          // data={occurData}
           flowRepeat={flowRepeat}
           data={workOrderDetail}
-          // fireData={occurData}
-          // faultData={occurData}
           visible={smokeFlowDrawerVisible}
           handleParentChange={this.handleParentChange}
           onClose={() => this.handleDrawerVisibleChange('smokeFlow')}
@@ -2402,9 +2435,6 @@ export default class NewUnitFireControl extends PureComponent {
         {/* 一键报修处理动态 */}
         <OnekeyFlowDrawer
           data={workOrderDetail}
-          // data={occurData}
-          // fireData={occurData}
-          // faultData={occurData}
           visible={onekeyFlowDrawerVisible}
           handleParentChange={this.handleParentChange}
           onClose={() => this.handleDrawerVisibleChange('onekeyFlow')}
@@ -2416,8 +2446,6 @@ export default class NewUnitFireControl extends PureComponent {
         <GasFlowDrawer
           data={workOrderDetail}
           flowRepeat={flowRepeat}
-          // fireData={occurData}
-          // faultData={occurData}
           visible={gasFlowDrawerVisible}
           handleParentChange={this.handleParentChange}
           onClose={() => this.handleDrawerVisibleChange('gasFlow')}

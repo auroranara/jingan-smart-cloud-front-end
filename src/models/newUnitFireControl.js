@@ -352,6 +352,9 @@ export default {
     waterSystemData: {
       list: [],
     },
+    waterDrawer: {
+      list: [],
+    },
     waterAlarm: [],
     warnDetail: {
       pagination: {
@@ -953,6 +956,17 @@ export default {
       }
     },
     // 水系统
+    *fetchWaterDrawer({ payload, callback }, { call, put }) {
+      const response = yield call(queryWaterSystem, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveWaterDrawer',
+          payload: response.data,
+        });
+      }
+      if (callback) callback(response.data);
+    },
+    // 水系统
     *fetchWaterAlarm({ payload, callback }, { call, put }) {
       const response1 = yield call(queryWaterSystem, { ...payload, type: 101 });
       const response2 = yield call(queryWaterSystem, { ...payload, type: 102 });
@@ -974,14 +988,6 @@ export default {
     },
     // 获取火灾警报数据详情
     *fetchWarnDetail({ payload, success }, { call, put }) {
-      yield put({
-        type: 'warnDetail',
-        payload: {
-          list: [],
-          pagination: { pageNum: 1, pageSize: 10 },
-        },
-        append: false,
-      });
       const response = yield call(getWarnDetail, payload);
       const {
         code,
@@ -1003,14 +1009,6 @@ export default {
     },
     // 获取火灾故障数据列表
     *fetchFaultDetail({ payload, success }, { call, put }) {
-      yield put({
-        type: 'faultDetail',
-        payload: {
-          list: [],
-          pagination: { pageNum: 1, pageSize: 10 },
-        },
-        append: false,
-      });
       const response = yield call(getFaultDetail, payload);
       const {
         code,
@@ -1281,6 +1279,12 @@ export default {
       return {
         ...state,
         waterSystemData: payload,
+      };
+    },
+    saveWaterDrawer(state, { payload }) {
+      return {
+        ...state,
+        waterDrawer: payload,
       };
     },
     waterAlarm(state, { payload }) {
