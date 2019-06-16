@@ -192,6 +192,9 @@ export default class Messages extends PureComponent {
     const param = {
       dataId: +isOver === 0 ? msgFlag : undefined,
       id: +isOver !== 0 ? msgFlag : undefined,
+      companyName: companyName || undefined,
+      component: component || undefined,
+      unitTypeName: unitTypeName || undefined,
     };
     let msgSettings = {};
     if (TYPES.indexOf(+type) < 0) return null;
@@ -201,7 +204,7 @@ export default class Messages extends PureComponent {
         ...msgSettings,
         [item.toString()]: {
           items: [
-            {name:'单位',value:companyName},
+            { name: '单位', value: companyName },
             { name: '位置', value: installAddress },
             {
               name: '回路号',
@@ -331,14 +334,14 @@ export default class Messages extends PureComponent {
           onClick:
             enterSign === '1'
               ? () => {
-                  if (+item === 7) handleClickMsgFlow(param, 0, 0, ...restParams);
-                  else if (+item === 9) handleClickMsgFlow(param, 0, 1, ...restParams);
-                  // if (+item === 7) handleClickMessage(messageFlag, { ...msg });
-                  // else if (+item === 9) handleFaultClick({ ...msg });
-                }
+                if (+item === 7) handleClickMsgFlow(param, 0, 0, ...restParams);
+                else if (+item === 9) handleClickMsgFlow(param, 0, 1, ...restParams);
+                // if (+item === 7) handleClickMessage(messageFlag, { ...msg });
+                // else if (+item === 9) handleFaultClick({ ...msg });
+              }
               : undefined,
           items: [
-            {name:'单位',value:companyName},
+            { name: '单位', value: companyName },
             { name: '位置', value: address },
             { name: '回路号', value: component },
             { name: '部件类型', value: unitTypeName },
@@ -393,7 +396,7 @@ export default class Messages extends PureComponent {
       };
       return (
         <div className={styles.msgItem}>
-          <a className={styles.detailBtn} onClick={() => {}}>
+          <a className={styles.detailBtn} onClick={() => { }}>
             详情
             <Icon type="double-right" />
           </a>
@@ -900,8 +903,8 @@ export default class Messages extends PureComponent {
             return this.renderMsg(item, index);
           })
         ) : (
-          <div className={styles.emptyData}>暂无消息</div>
-        )}
+            <div className={styles.emptyData}>暂无消息</div>
+          )}
       </NewSection>
     );
   }
