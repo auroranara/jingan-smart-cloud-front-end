@@ -148,6 +148,7 @@ const configs = {
     logo: fireLogo,
     code: fireCode,
     layer: 'http://image.jingan-china.cn/v2/login/fire_download_layer.png',
+    serviceSupport: '',
   },
   xiaoyuan: {
     projectKey: 'v2_test',

@@ -113,7 +113,7 @@ export default class TaskCard extends BigPlatformCard {
       <Container className={className} style={{ paddingTop: '0.5em', paddingBottom: '0.5em', ...style }}>
         <div className={styles.title}>{companyName}</div>
         {type !== '报修' && color && <div className={styles.status} style={{ color, borderColor: color }}>{status}</div>}
-        <div className={styles.action} data-id={id} onClick={this.handleClick}>处理动态>></div>
+        {/* <div className={styles.action} data-id={id} onClick={this.handleClick}>处理动态>></div> */}
         {this.renderFields(fieldsValue)}
       </Container>
     );
