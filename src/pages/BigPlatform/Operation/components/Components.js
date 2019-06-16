@@ -10,6 +10,11 @@ import MapSearch from '@/pages/BigPlatform/Smoke/BackMap/MapSearch';
 import MapTypeBar from '@/pages/BigPlatform/Smoke/BackMap/MapTypeBar';
 
 export {
+  ChartBar,
+  chartLine,
+} from '@/pages/BigPlatform/NewFireControl/components/Components';
+
+export {
   ChartGauge,
   DotItem,
   ChartLine,

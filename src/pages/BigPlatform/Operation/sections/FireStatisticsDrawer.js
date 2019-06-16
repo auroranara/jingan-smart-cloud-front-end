@@ -5,6 +5,8 @@ import { Icon } from 'antd';
 
 import styles from './FireStatisticsDrawer.less';
 import {
+  ChartBar,
+  ChartLine,
   ChartRing,
   DrawerCard,
   DrawerContainer,
@@ -13,7 +15,7 @@ import {
   OvSelect,
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
-import { ChartLine } from '@/pages/BigPlatform/Smoke/components/Components';
+// import { ChartLine } from '@/pages/BigPlatform/Smoke/components/Components';
 
 const TYPE = 'fireStatistics';
 const NO_DATA = '暂无信息';
@@ -86,110 +88,110 @@ export default class FireStatisticsDrawer extends PureComponent {
     this.setState({ searchValue: '', grahp: 0, typeSelected: 0, deviceSelected: 0 });
   };
 
-  getOption = graphList => {
-    const newGraphList = graphList.map(item => {
-      let obj = {};
-      for (const key in item) {
-        if (item.hasOwnProperty(key)) {
-          const element = item[key];
-          obj = { ...element, month: key };
-        }
-      }
-      return obj;
-    });
+  // getOption = graphList => {
+  //   const newGraphList = graphList.map(item => {
+  //     let obj = {};
+  //     for (const key in item) {
+  //       if (item.hasOwnProperty(key)) {
+  //         const element = item[key];
+  //         obj = { ...element, month: key };
+  //       }
+  //     }
+  //     return obj;
+  //   });
 
-    const option = {
-      textStyle: {
-        color: '#fff',
-      },
-      grid: { left: 0, right: '12%', top: 40, containLabel: true },
-      color: ['#e86767', '#5ebeff'],
-      tooltip: {
-        show: true,
-        trigger: 'axis',
-        axisPointer: {
-          // 坐标轴指示器，坐标轴触发有效
-          type: 'shadow', // 默认为直线，可选为：'line' | 'shadow'
-          shadowStyle: {
-            color: 'rgba(46,78,111,0.5)',
-            opacity: 0.6,
-          },
-        },
-        backgroundColor: 'rgba(46,78,111,0.5)',
-        padding: [5, 15, 5, 15],
-      },
-      legend: {
-        data: ['火警', '故障', '失联'],
-        textStyle: {
-          color: '#fff',
-        },
-        orient: 'horizontal',
-        bottom: 20,
-        left: 'center',
-        icon: 'rect',
-      },
-      yAxis: {
-        type: 'value',
-        axisTick: { show: true, inside: true },
-        splitLine: {
-          show: false,
-          lineStyle: {
-            color: '#394456',
-            width: 2,
-          },
-        },
-        axisLine: {
-          show: true,
-          lineStyle: {
-            color: '#394456',
-            width: 2,
-          },
-        },
-        axisLabel: {
-          formatter: function (value, index) {
-            if (parseInt(value, 10) !== value) return '';
-            return parseInt(value, 10);
-          },
-        },
-      },
-      xAxis: {
-        type: 'category',
-        axisTick: { show: false },
-        axisLine: {
-          show: true,
-          lineStyle: {
-            color: '#394456',
-            width: 2,
-          },
-        },
-        axisLabel: {
-          color: '#fff',
-          fontSize: 14,
-        },
-        data: newGraphList.map(item => {
-          const newMonth = item.month;
-          return moment(newMonth).format('MM');
-        }),
-      },
-      series: [
-        {
-          name: '火警',
-          color: '#ff4848',
-          type: 'bar',
-          barWidth: 5,
-          data: newGraphList.map(item => item.unnormal),
-        },
-        {
-          name: '故障',
-          type: 'bar',
-          color: '#f6b54e',
-          barWidth: 5,
-          data: newGraphList.map(item => item.faultNum),
-        },
-      ],
-    };
-    return option;
-  };
+  //   const option = {
+  //     textStyle: {
+  //       color: '#fff',
+  //     },
+  //     grid: { left: 0, right: '12%', top: 40, containLabel: true },
+  //     color: ['#e86767', '#5ebeff'],
+  //     tooltip: {
+  //       show: true,
+  //       trigger: 'axis',
+  //       axisPointer: {
+  //         // 坐标轴指示器，坐标轴触发有效
+  //         type: 'shadow', // 默认为直线，可选为：'line' | 'shadow'
+  //         shadowStyle: {
+  //           color: 'rgba(46,78,111,0.5)',
+  //           opacity: 0.6,
+  //         },
+  //       },
+  //       backgroundColor: 'rgba(46,78,111,0.5)',
+  //       padding: [5, 15, 5, 15],
+  //     },
+  //     legend: {
+  //       data: ['火警', '故障', '失联'],
+  //       textStyle: {
+  //         color: '#fff',
+  //       },
+  //       orient: 'horizontal',
+  //       bottom: 20,
+  //       left: 'center',
+  //       icon: 'rect',
+  //     },
+  //     yAxis: {
+  //       type: 'value',
+  //       axisTick: { show: true, inside: true },
+  //       splitLine: {
+  //         show: false,
+  //         lineStyle: {
+  //           color: '#394456',
+  //           width: 2,
+  //         },
+  //       },
+  //       axisLine: {
+  //         show: true,
+  //         lineStyle: {
+  //           color: '#394456',
+  //           width: 2,
+  //         },
+  //       },
+  //       axisLabel: {
+  //         formatter: function (value, index) {
+  //           if (parseInt(value, 10) !== value) return '';
+  //           return parseInt(value, 10);
+  //         },
+  //       },
+  //     },
+  //     xAxis: {
+  //       type: 'category',
+  //       axisTick: { show: false },
+  //       axisLine: {
+  //         show: true,
+  //         lineStyle: {
+  //           color: '#394456',
+  //           width: 2,
+  //         },
+  //       },
+  //       axisLabel: {
+  //         color: '#fff',
+  //         fontSize: 14,
+  //       },
+  //       data: newGraphList.map(item => {
+  //         const newMonth = item.month;
+  //         return moment(newMonth).format('MM');
+  //       }),
+  //     },
+  //     series: [
+  //       {
+  //         name: '火警',
+  //         color: '#ff4848',
+  //         type: 'bar',
+  //         barWidth: 5,
+  //         data: newGraphList.map(item => item.unnormal),
+  //       },
+  //       {
+  //         name: '故障',
+  //         type: 'bar',
+  //         color: '#f6b54e',
+  //         barWidth: 5,
+  //         data: newGraphList.map(item => item.faultNum),
+  //       },
+  //     ],
+  //   };
+  //   return option;
+  // };
 
   render() {
     const {
@@ -201,12 +203,12 @@ export default class FireStatisticsDrawer extends PureComponent {
         firePie: { trueFire=0, falseFire=0, unConfirm=0 },
         fireTrend,
         fireList,
-        graphList = [],
       },
     } = this.props;
     const { graph, typeSelected, deviceSelected } = this.state;
 
     const rings = [unConfirm, trueFire, falseFire].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
+    const trendList = fireTrend.map(({ month, count }) => ({ name: month, value: count }));
     const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
     const dateSelect = (
       <OvSelect options={DATE_OPTIONS} value={dateType} handleChange={this.onDateTypeChange} />
@@ -236,8 +238,8 @@ export default class FireStatisticsDrawer extends PureComponent {
         <DrawerSection title="处理状态统计" extra={dateSelect}>
           <ChartRing data={rings} />
         </DrawerSection>
-        <DrawerSection title="火警趋势图" titleInfo="最近12个月" extra={extra}>
-          {graph ? (
+        <DrawerSection title="火警趋势图" titleInfo="最近12个月" style={{ marginTop: 10 }} extra={extra}>
+          {/* {graph ? (
             graphList.length > 0 ? (
               <ReactEcharts option={this.getOption(graphList)} className="echarts-for-echarts" />
             ) : (
@@ -247,7 +249,8 @@ export default class FireStatisticsDrawer extends PureComponent {
             <ChartLine data={graphList} labelRotate={0} />
           ) : (
                 <div style={{ textAlign: 'center' }}>暂无数据</div>
-              )}
+              )} */}
+          {graph ? <ChartBar data={trendList} /> : <ChartLine data={trendList} />}
         </DrawerSection>
       </Fragment>
     );

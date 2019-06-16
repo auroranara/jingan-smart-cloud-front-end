@@ -159,7 +159,9 @@ export default {
       return { ...state, firePie: action.payload };
     },
     saveFireTrend(state, action) {
-      return { ...state, fireTrend: action.payload };
+      const fireTrend = action.payload;
+      fireTrend.reverse();
+      return { ...state, fireTrend };
     },
     saveFireList(state, action) {
       const { pageNum, list } = action.payload;
