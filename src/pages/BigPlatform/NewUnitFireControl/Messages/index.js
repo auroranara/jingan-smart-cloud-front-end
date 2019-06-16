@@ -36,6 +36,7 @@ const TYPES = [
   48, // 水系统失联
   49, // 水系统失联恢复
   50, // 独立烟感告警恢复
+  51, // 独立烟感故障恢复
 ];
 const formatTime = time => {
   const diff = moment().diff(moment(time));
@@ -356,14 +357,15 @@ export default class Messages extends PureComponent {
         },
       };
     });
-    [38, 40].forEach(item => {
+    [38, 40, 51].forEach(item => {
       // 独立烟感报警, 故障
       msgSettings = {
         ...msgSettings,
         [item.toString()]: {
           onClick: () => {
-            if (+item === 38) handleClickMsgFlow(param, 1, 0, ...restParams);
-            else if (+item === 40) handleClickMsgFlow(param, 1, 1, ...restParams);
+            // if (+item === 38) handleClickMsgFlow(param, 1, 0, ...restParams);
+            // else if (+item === 40)
+            handleClickMsgFlow(param, 1, +item === 38 ? 0 : 1, ...restParams);
           },
           items: [{ name: '所在区域', value: area }, { name: '所在位置', value: location }],
           showMsg: true,
