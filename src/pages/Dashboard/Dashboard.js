@@ -21,6 +21,7 @@ const electricItem = { src: electricImg, url: '', label: '智慧用电驾驶舱'
 const gasItem = { src: gasImg, url: '', label: '智慧燃气驾驶舱' };
 const fireMaintenanceItem = { src: fireMaintenanceImg, url: '', label: '企业运营驾驶舱' };
 const smokeItem = { src: smokeImg, url: '', label: '烟感驾驶舱' };
+const operationItem = { src: fire, url: '', label: '智慧消防运营驾驶舱' };
 
 // const CLASSIFICATION = { safety: 1, fireControl: 2, environmentProtection: 3 };
 
@@ -37,6 +38,7 @@ export default class Dashboard extends PureComponent {
     gasVisible: 0, // 燃气入口可见
     fireMaintenanceVisible: 0, // 消防运维大屏可见
     smokeVisible: 0, // 烟感大屏可见
+    operationVisible: 0, // 智慧消防运营大屏
   };
 
   componentDidMount() {
@@ -75,6 +77,7 @@ export default class Dashboard extends PureComponent {
       gasAuth,
       fireMaintenanceAuth,
       smokeAuth,
+      operationAuth,
     ] = Object.entries(codes.dashboard).map(([k, v]) => permissionCodes.includes(v));
 
     // 1=>安全生产(安全大屏和动态监测大屏) 2=>消防(消防大屏) 3=>环保(暂时没有大屏对应) 4=>卫生(暂时没有大屏对应)
@@ -87,6 +90,7 @@ export default class Dashboard extends PureComponent {
     // fireItem.url = `${window.publicPath}#/big-platform/fire-control/government/index`
     fireItem.url = `${window.publicPath}#/big-platform/new-fire-control/government/index`;
     gasItem.url = `${window.publicPath}#/big-platform/gas`;
+    operationItem.url = `${window.publicPath}#/big-platform/operation`;
     // smokeItem.url = `${window.publicPath}#/big-platform/smoke/${companyId}`
     // electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor` // 移到render里面
     // unitType  1：运维企业 2：政府 3：运营 4:企事业主体
@@ -114,9 +118,7 @@ export default class Dashboard extends PureComponent {
     const fireUrl = `${window.publicPath}#/big-platform/fire-control/company/${companyId}`;
     const monitorUrl = `${window.publicPath}#/big-platform/monitor/company/${companyId}`;
     const positionUrl = `${window.publicPath}#/big-platform/position/${companyId}`;
-    const fireMaintenanceUrl = `${
-      window.publicPath
-    }#/big-platform/fire-control/new-company/${companyId}`;
+    const fireMaintenanceUrl = `${window.publicPath}#/big-platform/fire-control/new-company/${companyId}`;
 
     // 企事业主体和政府有业务分类，运维和运营没有
     // 所以企事业主体和政府的大屏权限 = 用户业务权限 && 企事业业务分类 && 账户被配置的权限，运营和运维企业的大屏权限 = 用户业务权限 && 账户被配置的权限
@@ -136,6 +138,7 @@ export default class Dashboard extends PureComponent {
           fireMaintenanceVisible: 0,
           monitorService: monitorService && dynamicMonitorAuth,
           personnelPositioning: personnelPositioning && personnelPositionAuth,
+          operationVisible: operationAuth,
         });
         break;
 
@@ -221,6 +224,7 @@ export default class Dashboard extends PureComponent {
       gasItem,
       fireMaintenanceItem,
       smokeItem,
+      operationItem,
     ];
     // 如果state中不全是控制大屏显示的参数，则需要修改
     const imgWrapper = Object.entries(this.state).reduce((prev, [, value], i) => {

@@ -321,7 +321,7 @@ export default class MapSection extends PureComponent {
                 </div>
               </Fragment>
             ) : (
-              <InfoStatus data={[hostStatuses.slice(0, 2), smokeStatuses.slice(0, 3)]} />
+              <InfoStatus data={[hostStatuses.slice(0, 2), smokeStatuses.slice(0, 3)]} devices={[fireDeviceCount, smokeDeviceCount]} />
             )
           }
         </div>
@@ -347,8 +347,16 @@ export default class MapSection extends PureComponent {
     this.props.handleHideInfoWindow();
   };
 
+  onDeviceTypeChange = v => {
+    const { handleDeviceTypeChange } = this.props;
+    handleDeviceTypeChange(v, isInList => {
+      if (!isInList)
+        this.setState({ infoWindowShow: false });
+    });
+  };
+
   render() {
-    const { deviceType, handleParentChange, handleDeviceTypeChange, units } = this.props;
+    const { deviceType, handleParentChange, units } = this.props;
     const mapLegendData = getMapLegendData(units, deviceType);
 
     return (
@@ -394,7 +402,7 @@ export default class MapSection extends PureComponent {
             重置
           </div>
         </GDMap>
-        <DeviceBar type={deviceType} handleClick={handleDeviceTypeChange} />
+        <DeviceBar type={deviceType} handleClick={this.onDeviceTypeChange} />
         <MapLegend data={mapLegendData} />
       </div>
     );

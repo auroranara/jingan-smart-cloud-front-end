@@ -21,7 +21,9 @@ import {
   TaskCount,
   FireCount,
 } from './components/Components';
-import { PAGE_SIZE } from './utils';
+import { PAGE_SIZE, getUnitList } from './utils';
+import iconFire from '@/assets/icon-fire-msg.png';
+import iconFault from '@/assets/icon-fault-msg.png';
 
 const options = { // websocket配置
   pingTimeout: 30000,
@@ -35,6 +37,52 @@ const FIRE_DICT = {
   本周: 1,
   本月: 2,
 };
+
+const MAP_SEARCH_STYLE = {
+  top: 'calc(9.62963% + 24px)',
+  position: 'absolute',
+  left: '24px',
+  width: '25.46875%',
+  zIndex: 9999,
+};
+
+const HEADER_STYLE = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  fontSize: 16,
+  zIndex: 99,
+  backgroundImage: `url(${headerBg})`,
+  backgroundSize: '100% 100%',
+};
+
+const CONTENT_STYLE = { position: 'relative', height: '100%', zIndex: 0 };
+
+const MSG_INFO = {
+  '5': {
+    title: '火警提示',
+    icon: iconFire,
+    color: '#f83329',
+    body: '发生报警，',
+    bottom: '情况危急，请立即处理！',
+    animation: styles.redShadow,
+  },
+  '6': {
+    title: '故障提示',
+    icon: iconFault,
+    color: '#f4710f',
+    body: '发生故障，',
+    bottom: '请及时维修！',
+    animation: styles.orangeShadow,
+  },
+};
+
+notification.config({
+  placement: 'bottomLeft',
+  duration: null,
+  bottom: 8,
+});
 
 @connect(({ loading, operation, user }) => ({
   loading: loading.models.operation,
@@ -60,7 +108,7 @@ export default class Operation extends PureComponent {
       tooltipPosition: [0, 0],
       alarmIds: [],
       companyName: '',
-      errorUnitsCardsInfo: [],
+      unitList: [], // 地图显示的企业列表
       unitDetail: {},
       deviceType: 0, // 地图中间根据设备显示企业列表
       fireListHasMore: true, // 火警统计抽屉右边列表是否有更多
@@ -73,35 +121,10 @@ export default class Operation extends PureComponent {
    */
   componentDidMount() {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
-    const {
-      dispatch,
-      // match: { params: { gridId } },
-    } = this.props;
-
-    // 获取单位数据
-    // dispatch({
-    //   type: 'smoke/fetchUnitData',
-    //   payload: { gridId },
-    // });
+    const { dispatch } = this.props;
 
     // 烟感地图数据
     this.fetchMapInfo();
-
-    // 获取接入单位统计列表
-    // dispatch({
-    //   type: 'smoke/fetchImportingTotal',
-    //   payload: {
-    //     status,
-    //     gridId,
-    //   },
-    //   callback: data => {
-    //     if (!data) return;
-    //     const {
-    //       gasUnitSet: { importingUnits = [] },
-    //     } = data;
-    //     this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
-    //   },
-    // });
 
     // const params = {
     //   // companyId: gridId,
@@ -169,65 +192,13 @@ export default class Operation extends PureComponent {
     // };
   }
 
-  // fetchAbnormal = () => {
-  //   const {
-  //     dispatch,
-  //     match: {
-  //       params: { gridId },
-  //     },
-  //   } = this.props;
-  //   // 获取单位数据
-  //   dispatch({
-  //     type: 'smoke/fetchUnitData',
-  //     payload: { gridId },
-  //   });
-  //   // 获取接入单位统计列表
-  //   dispatch({
-  //     type: 'smoke/fetchImportingTotal',
-  //     payload: {
-  //       status,
-  //       gridId,
-  //     },
-  //     callback: data => {
-  //       if (!data) return;
-  //       const {
-  //         gasUnitSet: { importingUnits = [] },
-  //       } = data;
-  //       this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
-  //     },
-  //   });
-  //   // 烟感地图数据
-  //   this.fetchMapInfo();
-
-  //   dispatch({
-  //     type: 'smoke/fetchAbnormalingTotal',
-  //     payload: {
-  //       status,
-  //       gridId,
-  //     },
-  //     callback: data => {
-  //       if (!data) return;
-  //       const {
-  //         gasErrorUnitSet: { errorUnits = [] },
-  //       } = data;
-  //       this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
-  //       this.setState({ errorUnitsCardsInfo: this.errorUnitsCardsInfo });
-  //     },
-  //   });
-  // };
-
-  /**
-   * 销毁前
-   */
   componentWillUnmount() {
     clearInterval(this.pollCompanyInfo);
   }
 
-  importCardsInfo = [];
-  errorUnitsCardsInfo = [];
   fireListPageNum = 1;
 
-  showUnitDetail = (unitDetail, deviceId) => { // 地图显示某个企业详情
+  showUnitDetail = unitDetail => { // 地图显示某个企业详情
     if (!unitDetail) {
       return;
     }
@@ -294,6 +265,89 @@ export default class Operation extends PureComponent {
     notification.close(`${messageFlag}_${paramCode}`);
   };
 
+  showFireMsg = item => {
+    const { type, messageId } = item;
+    if (type === 5 || type === 6) {
+      // 5 火警， 6 故障
+      const msgItem = MSG_INFO[type.toString()];
+      const style = {
+        boxShadow: `0px 0px 20px ${msgItem.color}`,
+      };
+      const styleAnimation = {
+        ...style,
+        animation: `${msgItem.animation} 2s linear 0s infinite alternate`,
+      };
+      const options = {
+        key: messageId,
+        className: styles.notification,
+        message: this.renderNotificationTitle(item),
+        description: this.renderNotificationMsg(item),
+        style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
+      };
+      notification.open({
+        ...options,
+      });
+
+      setTimeout(() => {
+        // 解决加入animation覆盖notification自身显示动效时长问题
+        notification.open({
+          ...options,
+          style: this.fireNode
+            ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 }
+            : { ...styleAnimation },
+          onClose: () => {
+            notification.open({
+              ...options,
+            });
+            setTimeout(() => {
+              notification.close(messageId);
+            }, 200);
+          },
+        });
+      }, 800);
+    }
+  };
+
+  renderNotificationTitle = item => {
+    const { type } = item;
+    const msgItem = MSG_INFO[type.toString()];
+    return (
+      <div className={styles.notificationTitle} style={{ color: msgItem.color }}>
+        <span className={styles.iconFire}>
+          <img src={msgItem.icon} alt="fire" />
+        </span>
+        {msgItem.title}
+      </div>
+    );
+  };
+
+  renderNotificationMsg = item => {
+    const { type, addTime, installAddress, componentType, messageFlag } = item;
+    const msgItem = MSG_INFO[type.toString()];
+    return (
+      <div
+        className={styles.notificationBody}
+        onClick={() => {
+          if (type === 5) this.handleClickMessage(messageFlag, item);
+          else this.handleFaultClick({ ...item });
+        }}
+      >
+        <div>
+          <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '}
+          {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
+          <span className={styles.address}>{installAddress}</span>
+        </div>
+        <div>
+          <span className={styles.device} style={{ color: msgItem.color }}>
+            【{componentType}】
+          </span>
+          {msgItem.body}
+        </div>
+        <div>{msgItem.bottom}</div>
+      </div>
+    );
+  };
+
   /**
    * 点击设置按钮
    */
@@ -319,12 +373,9 @@ export default class Operation extends PureComponent {
 
   // 地图搜索
   fetchMapSearchData = value => {
-    const {
-      smoke: {
-        unitSet: { units },
-      },
-    } = this.props;
-    const list = units;
+    // const { operation: { unitList } } = this.props;
+    const { unitList } = this.state;
+    const list = unitList;
     const selectList = value ? list.filter(item => item.companyName.includes(value)) : [];
     this.setState({
       searchValue: value,
@@ -422,33 +473,15 @@ export default class Operation extends PureComponent {
     this.mapChild = ref;
   };
 
-  // handleCompanyClick = companyId => {
-  //   const { dispatch } = this.props;
-  //   dispatch({ type: 'smoke/fetchCameraTree', payload: { company_id: companyId } });
-  //   dispatch({
-  //     type: 'smoke/fetchCompanySmokeInfo',
-  //     payload: { company_id: companyId },
-  //     success: () => {
-  //       this.handleDrawerVisibleChange('monitor');
-  //       this.pollCompanyInfo = setInterval(() => {
-  //         dispatch({
-  //           type: 'smoke/fetchCompanySmokeInfo',
-  //           payload: { company_id: companyId },
-  //         });
-  //       }, 2000);
-  //     },
-  //   });
-  // };
+  handleCompanyClick = companyId => {
+    window.open(`${window.publicPath}#/big-platform/fire-control/new-company/${companyId}`)
+  };
 
   fetchMapInfo = () => {
-    const {
-      dispatch,
-      // match: { params: { gridId } },
-    } = this.props;
-    // 烟感地图数据
+    const { dispatch } = this.props;
     dispatch({
       type: 'operation/fetchUnitList',
-      // payload: { gridId },
+      callback: list => { this.setState({ unitList: list }) },
     });
   };
 
@@ -505,8 +538,12 @@ export default class Operation extends PureComponent {
     console.log(id);
   }
 
-  handleDeviceTypeChange = v => {
-    this.setState({ deviceType: v });
+  handleDeviceTypeChange = (v, callback) => {
+    const { operation: { unitList } } = this.props;
+    const { unitDetail } = this.state;
+    const list = getUnitList(unitList, v);
+    this.setState({ deviceType: v, unitList: list });
+    callback(!!list.find(({ companyId }) => companyId === unitDetail.companyId));
   };
 
   /**
@@ -516,7 +553,7 @@ export default class Operation extends PureComponent {
     const {
       fireListLoading,
       operation: {
-        unitList,
+        // unitList,
         firePie,
         fireTrend,
         fireList,
@@ -533,39 +570,28 @@ export default class Operation extends PureComponent {
       tooltipVisible,
       tooltipPosition,
       alarmIds,
+      unitList,
       dateType,
       deviceType,
       fireListHasMore,
       fireStatisticsDrawerVisible,
     } = this.state;
 
-    // const extra = <GridSelect gridId={gridId} urlBase="/big-platform/smoke" />;
     return (
       <BigPlatformLayout
         title="智慧消防运营平台"
         extra={unitName}
         style={{ backgroundImage: 'none' }}
-        headerStyle={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          fontSize: 16,
-          zIndex: 99,
-          backgroundImage: `url(${headerBg})`,
-          backgroundSize: '100% 100%',
-        }}
+        headerStyle={HEADER_STYLE}
         titleStyle={{ fontSize: 46 }}
-        contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}
+        contentStyle={CONTENT_STYLE}
         // settable
         // onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
         <BackMap
           deviceType={deviceType}
-          // units={Array.isArray(unitSet.units) ? unitSet.units : []}
           units={unitList}
-          // deviceStatusCount={deviceStatusCount}
           handleMapClick={this.showUnitDetail}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
@@ -576,21 +602,13 @@ export default class Operation extends PureComponent {
           // handleFaultClick={this.handleFaultClick}
           onRef={this.onRef}
           handleCompanyClick={this.handleCompanyClick}
-          // clearPollingMap={this.clearPollingMap}
-          // pollingMap={this.pollingMap}
           fetchMapInfo={this.fetchMapInfo}
           handleDeviceTypeChange={this.handleDeviceTypeChange}
         />
         {/* 搜索框 */}
         <MapSearch
           className={styles.mapSearch}
-          style={{
-            top: 'calc(9.62963% + 24px)',
-            position: 'absolute',
-            left: '24px',
-            width: '25.46875%',
-            zIndex: 9999,
-          }}
+          style={MAP_SEARCH_STYLE}
           selectList={selectList}
           value={searchValue}
           handleChange={this.handleMapSearchChange}
