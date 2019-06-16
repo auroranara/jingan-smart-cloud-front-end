@@ -64,6 +64,7 @@ import {
   countFinishByUserId,
   messageInformList,
   countNumAndTimeById,
+  getAllScreenMessage,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -825,6 +826,21 @@ export default {
     // 获取大屏消息
     *fetchScreenMessage({ payload, success, error }, { call, put }) {
       const response = yield call(getScreenMessage, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'screenMessage',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 获取大屏消息
+    *fetchAllScreenMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getAllScreenMessage, payload);
       if (response.code === 200) {
         yield put({
           type: 'screenMessage',

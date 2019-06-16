@@ -475,3 +475,7 @@ export async function messageInformList(params) {
 export async function countNumAndTimeById(params) {
   return request(`/acloud_new/v2/fireManage/countNumAndTimeById?${stringify(params)}`);
 }
+
+export async function getAllScreenMessage(params) {
+  return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`)
+}

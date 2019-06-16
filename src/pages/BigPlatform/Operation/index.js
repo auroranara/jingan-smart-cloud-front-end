@@ -260,7 +260,7 @@ export default class Operation extends PureComponent {
     };
 
     dispatch({
-      type: 'newUnitFireControl/fetchScreenMessage',
+      type: 'newUnitFireControl/fetchAllScreenMessage',
       success: res => {
         const {
           list: [{ itemId, messageFlag, type } = {}],
@@ -305,7 +305,7 @@ export default class Operation extends PureComponent {
    */
   fetchScreenMessage = dispatch => {
     dispatch({
-      type: 'newUnitFireControl/fetchScreenMessage',
+      type: 'newUnitFireControl/fetchAllScreenMessage',
     });
   };
 
@@ -738,7 +738,7 @@ export default class Operation extends PureComponent {
   handleClickMsgFlow = (param, type, flow, repeat, cameraMessage = [], occurData, cId) => {
     // type 0/1/2/3 主机/烟感/燃气/一键报修
     // flow 0/1 报警/故障
-    // console.log(param)
+    console.log(param)
     const {
       dispatch,
       operation: { unitList },
