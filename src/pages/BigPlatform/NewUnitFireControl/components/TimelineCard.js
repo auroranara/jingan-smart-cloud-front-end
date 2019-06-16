@@ -115,6 +115,7 @@ export default function TimelineCard(props) {
     createCompanyName,
     finishCompanyName,
     startCompanyName,
+    showHead = true,
     ...restProps
   } = props;
   const [isStarted, isHandling, isFinished] = [startMap, handleMap, finishMap].map(
@@ -123,15 +124,17 @@ export default function TimelineCard(props) {
 
   return (
     <div className={styles.container} {...restProps}>
-      <div className={styles.head}>
-        <div
-          style={{
-            background: `url(${flowImg}) no-repeat center center`,
-            backgroundSize: '99% auto',
-          }}
-          className={styles.flow}
-        />
-      </div>
+      {showHead && (
+        <div className={styles.head}>
+          <div
+            style={{
+              background: `url(${flowImg}) no-repeat center center`,
+              backgroundSize: '99% auto',
+            }}
+            className={styles.flow}
+          />
+        </div>
+      )}
       <div className={styles.timeline}>
         <Timeline>
           <TimelineItem
