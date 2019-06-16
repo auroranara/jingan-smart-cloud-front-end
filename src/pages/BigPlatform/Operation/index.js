@@ -9,6 +9,7 @@ import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
 import styles from './index.less';
+import styles1 from '@/pages/BigPlatform/NewUnitFireControl/index.less';
 import {
   BackMap,
   SettingModal,
@@ -62,8 +63,8 @@ const HEADER_STYLE = {
 
 const CONTENT_STYLE = { position: 'relative', height: '100%', zIndex: 0 };
 
-const MSG_INFO = {
-  '5': {
+const MSG_INFO = [
+  {
     title: '火警提示',
     icon: iconFire,
     color: '#f83329',
@@ -71,7 +72,7 @@ const MSG_INFO = {
     bottom: '情况危急，请立即处理！',
     animation: styles.redShadow,
   },
-  '6': {
+  {
     title: '故障提示',
     icon: iconFault,
     color: '#f4710f',
@@ -79,6 +80,13 @@ const MSG_INFO = {
     bottom: '请及时维修！',
     animation: styles.orangeShadow,
   },
+];
+
+const switchMsgType = type => {
+  const alarmTypes = [7, 38, 39];
+  const faultTypes = [9, 40];
+  if (alarmTypes.indexOf(type) >= 0) return MSG_INFO[0];
+  else if (faultTypes.indexOf(type) >= 0) return MSG_INFO[1];
 };
 
 notification.config({
@@ -203,6 +211,7 @@ export default class Operation extends PureComponent {
               pointId,
               pointStatus,
               deviceType,
+              enterSign,
               isOver,
             } = result;
 
@@ -215,7 +224,11 @@ export default class Operation extends PureComponent {
               type === 41
             ) {
               if (+isOver === 0) {
-                this.showFireMsg(result);
+                if (type === 7 || type === 9) {
+                  if (enterSign === '1') this.showFireMsg(result);
+                } else {
+                  this.showFireMsg(result);
+                }
               }
               // this.fetchScreenMessage(dispatch);
             }
@@ -230,7 +243,7 @@ export default class Operation extends PureComponent {
               type === 21
             ) {
               // 获取消防主机监测
-              this.fetchFireAlarmSystem();
+              // this.fetchFireAlarmSystem();
             }
           },
         });
@@ -270,106 +283,60 @@ export default class Operation extends PureComponent {
     // this.setState({ monitorDrawerVisible: false });
   };
 
-  showWarningNotification = ({ // 显示告警通知提醒框
-    companyId,
-    addTime,
-    companyName,
-    area,
-    location,
-    paramName,
-    messageFlag,
-    paramCode,
-  }) => {
-    const options = {
-      key: `${messageFlag}_${paramCode}`,
-      duration: null,
-      placement: 'bottomLeft',
-      className: styles.notification,
-      message: (
-        <div className={styles.notificationTitle}>
-          <Icon type="warning" theme="filled" className={styles.notificationIcon} />
-          警情提示
-        </div>
-      ),
-      description: (
-        <div
-          className={styles.notificationContent}
-          onClick={() => {
-            this.setState({ companyName });
-            this.handleClickNotification(companyId);
-            this.handleAlarmClick(messageFlag, companyId, companyName);
-          }}
-        >
-          <div className={styles.notificationText}>
-            <div className={styles.notificationTextFirst}>{moment(addTime).format('HH:mm:ss')}</div>
-            <div className={styles.notificationTextSecond}>{companyName}</div>
-          </div>
-          <div className={styles.notificationText}>
-            <div className={styles.notificationTextFirst}>{`${area}${location}${paramName}`}</div>
-            <div className={styles.notificationTextSecond}>发生火警！</div>
-          </div>
-        </div>
-      ),
-    };
-    notification.open(options);
-  };
-
-  /**
-   * 关闭通知框
-   */
   hideWarningNotification = ({ messageFlag, paramCode }) => {
     notification.close(`${messageFlag}_${paramCode}`);
   };
 
   showFireMsg = item => {
-    const { type, messageId } = item;
-    if (type === 5 || type === 6) {
-      // 5 火警， 6 故障
-      const msgItem = MSG_INFO[type.toString()];
-      const style = {
-        boxShadow: `0px 0px 20px ${msgItem.color}`,
-      };
-      const styleAnimation = {
-        ...style,
-        animation: `${msgItem.animation} 2s linear 0s infinite alternate`,
-      };
-      const options = {
-        key: messageId,
-        className: styles.notification,
-        message: this.renderNotificationTitle(item),
-        description: this.renderNotificationMsg(item),
-        style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
-      };
-      notification.open({
-        ...options,
-      });
-
-      setTimeout(() => {
-        // 解决加入animation覆盖notification自身显示动效时长问题
+    const { type, messageId, isOver } = item;
+    if (type === 7 || type === 9 || type === 38 || type === 39 || type === 40 || type === 41) {
+      if (+isOver === 0) {
+        const msgItem = switchMsgType(+type);
+        const style = {
+          boxShadow: `0px 0px 20px ${msgItem.color}`,
+        };
+        const styleAnimation = {
+          ...style,
+          animation: `${msgItem.animation} 2s linear 0s infinite alternate`,
+        };
+        const options = {
+          key: messageId,
+          className: styles1.notification,
+          message: this.renderNotificationTitle(item),
+          description: this.renderNotificationMsg(item),
+          style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
+        };
         notification.open({
           ...options,
-          style: this.fireNode
-            ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 }
-            : { ...styleAnimation },
-          onClose: () => {
-            notification.open({
-              ...options,
-            });
-            setTimeout(() => {
-              notification.close(messageId);
-            }, 200);
-          },
         });
-      }, 800);
+
+        setTimeout(() => {
+          // 解决加入animation覆盖notification自身显示动效时长问题
+          notification.open({
+            ...options,
+            style: this.fireNode
+              ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 }
+              : { ...styleAnimation },
+            onClose: () => {
+              notification.open({
+                ...options,
+              });
+              setTimeout(() => {
+                notification.close(messageId);
+              }, 200);
+            },
+          });
+        }, 800);
+      }
     }
   };
 
   renderNotificationTitle = item => {
     const { type } = item;
-    const msgItem = MSG_INFO[type.toString()];
+    const msgItem = switchMsgType(+type);
     return (
-      <div className={styles.notificationTitle} style={{ color: msgItem.color }}>
-        <span className={styles.iconFire}>
+      <div className={styles1.notificationTitle} style={{ color: msgItem.color }}>
+        <span className={styles1.iconFire}>
           <img src={msgItem.icon} alt="fire" />
         </span>
         {msgItem.title}
@@ -378,25 +345,85 @@ export default class Operation extends PureComponent {
   };
 
   renderNotificationMsg = item => {
-    const { type, addTime, installAddress, componentType, messageFlag } = item;
-    const msgItem = MSG_INFO[type.toString()];
+    const {
+      companyId,
+      type,
+      addTime,
+      installAddress,
+      unitTypeName,
+      messageFlag,
+      area,
+      location,
+      cameraMessage,
+      isOver,
+      count,
+      num,
+      newTime,
+      lastTime,
+      componentType,
+      workOrder,
+      systemTypeValue,
+      createBy,
+      createByPhone,
+      faultName,
+      firstTime,
+    } = item;
+    const msgItem = switchMsgType(+type);
+    const repeat = {
+      times: +isOver === 0 ? count : num,
+      lastreportTime: addTime,
+    };
+    const occurData = [
+      {
+        create_time: addTime,
+        create_date: addTime,
+        firstTime: addTime,
+        lastTime: addTime,
+        area,
+        location,
+        install_address: installAddress,
+        label: componentType,
+        work_order: workOrder,
+        systemTypeValue,
+        createByName: createBy,
+        createByPhone,
+        faultName,
+        realtime: addTime,
+      },
+    ];
+    const msgFlag = messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag;
+    const restParams = [repeat, cameraMessage, occurData, companyId];
+    const param = { dataId: msgFlag };
     return (
       <div
-        className={styles.notificationBody}
+        className={styles1.notificationBody}
         onClick={() => {
-          if (type === 5) this.handleClickMessage(messageFlag, item);
-          else this.handleFaultClick({ ...item });
+          if (type === 7) this.handleClickMsgFlow(param, 0, 0, ...restParams);
+          else if (type === 9) this.handleClickMsgFlow(param, 0, 1, ...restParams);
+          else if (type === 38) this.handleClickMsgFlow(param, 1, 0, ...restParams);
+          else if (type === 39) this.handleClickMsgFlow(param, 2, 0, ...restParams);
+          else if (type === 40) this.handleClickMsgFlow(param, 1, 1, ...restParams);
+          // if (type === 7 || type === 38 || type === 39) this.handleClickMessage(messageFlag, item);
+          // else this.handleFaultClick({ ...item });
         }}
       >
         <div>
-          <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '}
+          <span className={styles1.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '}
           {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
-          <span className={styles.address}>{installAddress}</span>
+          <span className={styles1.address}>{installAddress || area + location}</span>
         </div>
         <div>
-          <span className={styles.device} style={{ color: msgItem.color }}>
-            【{componentType}】
-          </span>
+          {(type === 7 || type === 9) &&
+            unitTypeName && (
+              <span className={styles1.device} style={{ color: msgItem.color }}>
+                【{unitTypeName}】
+              </span>
+            )}
+          {(type === 38 || type === 39 || type === 40) && (
+            <span className={styles1.device} style={{ color: msgItem.color }}>
+              {type === 39 ? `【可燃气体探测器】` : `【独立烟感探测器】`}
+            </span>
+          )}
           {msgItem.body}
         </div>
         <div>{msgItem.bottom}</div>
@@ -446,14 +473,14 @@ export default class Operation extends PureComponent {
     });
   };
 
-  handleClickNotification = companyId => {
-    const {
-      operation: {
-        unitList,
-      },
-    } = this.props;
-    this.showUnitDetail(unitList.filter(item => item.companyId === companyId)[0]);
-  };
+  // handleClickNotification = companyId => {
+  //   const {
+  //     operation: {
+  //       unitList,
+  //     },
+  //   } = this.props;
+  //   this.showUnitDetail(unitList.filter(item => item.companyId === companyId)[0]);
+  // };
 
   // handleClickCamera = () => {
   //   const {
@@ -629,11 +656,12 @@ export default class Operation extends PureComponent {
     });
   };
 
-  handleClickMsgFlow = (param, type, flow, repeat, cameraMessage = [], occurData) => {
+  handleClickMsgFlow = (param, type, flow, repeat, cameraMessage = [], occurData, cId) => {
     // type 0/1/2/3 主机/烟感/燃气/一键报修
     // flow 0/1 报警/故障
     const {
       dispatch,
+      operation: { unitList },
       match: {
         params: { unitId: companyId },
       },
@@ -685,6 +713,11 @@ export default class Operation extends PureComponent {
     // });
     this.setState({ [drawerVisibles[type]]: true, msgFlow: flow });
     this.handleShowFireVideo(cameraMessage);
+
+    const detail = unitList.find(({ companyId }) => companyId === cId);
+    this.setState({ deviceType: type + 1 });
+    this.showUnitDetail(detail);
+    this.hideTooltip();
   };
 
    /**
