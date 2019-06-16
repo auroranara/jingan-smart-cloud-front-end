@@ -10,12 +10,7 @@ import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
 import styles from './index.less';
 import styles1 from '@/pages/BigPlatform/NewUnitFireControl/index.less';
-import {
-  BackMap,
-  SettingModal,
-  FireStatisticsDrawer,
-  Messages,
-} from './sections/Components';
+import { BackMap, SettingModal, FireStatisticsDrawer, Messages } from './sections/Components';
 import {
   MapSearch,
   Tooltip as MyTooltip,
@@ -163,7 +158,7 @@ export default class Operation extends PureComponent {
       smokeFlowDrawerVisible: false,
       fireVideoVisible: false,
       videoVisible: false,
-      videoList:[],
+      videoList: [],
       videoKeyId: undefined,
       dynamicType: null,
       company: {},
@@ -176,7 +171,12 @@ export default class Operation extends PureComponent {
    */
   componentDidMount() {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
-    const { dispatch, user: { currentUser: { userId } } } = this.props;
+    const {
+      dispatch,
+      user: {
+        currentUser: { userId },
+      },
+    } = this.props;
 
     // 烟感地图数据
     this.fetchMapInfo();
@@ -303,7 +303,7 @@ export default class Operation extends PureComponent {
   /**
    * 获取大屏消息
    */
-  fetchScreenMessage = (dispatch) => {
+  fetchScreenMessage = dispatch => {
     dispatch({
       type: 'newUnitFireControl/fetchScreenMessage',
     });
@@ -311,7 +311,8 @@ export default class Operation extends PureComponent {
 
   fireListPageNum = 1;
 
-  showUnitDetail = unitDetail => { // 地图显示某个企业详情
+  showUnitDetail = unitDetail => {
+    // 地图显示某个企业详情
     if (!unitDetail) {
       return;
     }
@@ -437,15 +438,16 @@ export default class Operation extends PureComponent {
         realtime: addTime,
       },
     ];
-    const msgFlag = messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag;
+    const msgFlag =
+      messageFlag && (messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
     const restParams = [repeat, cameraMessage, occurData, companyId];
-    const param = { 
+    const param = {
       dataId: msgFlag,
       companyName: companyName || undefined,
       component: component || undefined,
       unitTypeName: unitTypeName || undefined,
-      companyId:companyId||undefined,
-     };
+      companyId: companyId || undefined,
+    };
     return (
       <div
         className={styles1.notificationBody}
@@ -535,12 +537,10 @@ export default class Operation extends PureComponent {
   // };
 
   handleVideoOpen = () => {
-    const {
-      dispatch,
-    } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'operation/fetchVideoList',
-      callback: (response) => {
+      callback: response => {
         console.log(response);
         // this.setState({
         //   videoVisible: true,
@@ -616,14 +616,16 @@ export default class Operation extends PureComponent {
   };
 
   handleCompanyClick = companyId => {
-    window.open(`${window.publicPath}#/big-platform/fire-control/new-company/${companyId}`)
+    window.open(`${window.publicPath}#/big-platform/fire-control/new-company/${companyId}`);
   };
 
   fetchMapInfo = () => {
     const { dispatch } = this.props;
     dispatch({
       type: 'operation/fetchUnitList',
-      callback: list => { this.setState({ unitList: list }) },
+      callback: list => {
+        this.setState({ unitList: list });
+      },
     });
   };
 
@@ -633,7 +635,7 @@ export default class Operation extends PureComponent {
     this.getFirePie(dType);
     this.getFireTrend();
     this.getFireList();
-  }
+  };
 
   getFirePie = dateType => {
     const { dispatch } = this.props;
@@ -647,7 +649,7 @@ export default class Operation extends PureComponent {
 
   getFireList = ({ deviceType, fireType, searchValue } = {}, initial = true) => {
     const { dispatch } = this.props;
-    const [dType, fType, name] = [deviceType, fireType, searchValue].map(v => v ? v : undefined);
+    const [dType, fType, name] = [deviceType, fireType, searchValue].map(v => (v ? v : undefined));
 
     if (initial) {
       this.fireListPageNum = 1;
@@ -656,32 +658,39 @@ export default class Operation extends PureComponent {
 
     dispatch({
       type: 'operation/fetchFireList',
-      payload: { name, deviceType: dType, fireType: fType, pageNum: this.fireListPageNum, pageSize: PAGE_SIZE },
+      payload: {
+        name,
+        deviceType: dType,
+        fireType: fType,
+        pageNum: this.fireListPageNum,
+        pageSize: PAGE_SIZE,
+      },
       callback: total => {
-        if (this.fireListPageNum++ * PAGE_SIZE >= total)
-          this.setState({ fireListHasMore: false });
+        if (this.fireListPageNum++ * PAGE_SIZE >= total) this.setState({ fireListHasMore: false });
       },
     });
   };
 
-  handleDateTypeChange = (dateType) => {
+  handleDateTypeChange = dateType => {
     this.setState({ dateType });
-  }
+  };
 
-  handleTaskDrawerOpen = (taskDrawerProcess) => {
+  handleTaskDrawerOpen = taskDrawerProcess => {
     this.setState({ taskDrawerVisible: true, taskDrawerProcess });
-  }
+  };
 
   handleTaskDrawerClose = () => {
     this.setState({ taskDrawerVisible: false });
-  }
+  };
 
-  handleTaskCardClick = (id) => {
+  handleTaskCardClick = id => {
     console.log(id);
-  }
+  };
 
   handleDeviceTypeChange = (v, callback) => {
-    const { operation: { unitList } } = this.props;
+    const {
+      operation: { unitList },
+    } = this.props;
     const { unitDetail } = this.state;
     const list = getUnitList(unitList, v);
     this.setState({ deviceType: v, unitList: list });
@@ -770,7 +779,12 @@ export default class Operation extends PureComponent {
     //     }
     //   },
     // });
-    this.setState({ [drawerVisibles[type]]: true, msgFlow: flow, dynamicType: type, company: { ...param } });
+    this.setState({
+      [drawerVisibles[type]]: true,
+      msgFlow: flow,
+      dynamicType: type,
+      company: { ...param },
+    });
     this.handleShowFireVideo(cameraMessage);
 
     const detail = unitList.find(({ companyId }) => companyId === cId);
@@ -780,8 +794,8 @@ export default class Operation extends PureComponent {
   };
 
   /**
-  *  点击播放重点部位监控
-  */
+   *  点击播放重点部位监控
+   */
   handleShowFireVideo = videoList => {
     if (!Array.isArray(videoList) || videoList.length === 0) return null;
     this.setState({ fireVideoVisible: true, videoList });
@@ -799,7 +813,9 @@ export default class Operation extends PureComponent {
         fireTrend,
         fireList,
       },
-      user: { currentUser: { unitName } },
+      user: {
+        currentUser: { unitName },
+      },
       newUnitFireControl: {
         alarmHandleMessage,
         alarmHandleList,
@@ -843,7 +859,7 @@ export default class Operation extends PureComponent {
       flowRepeat,
       dynamicType,
       ...company,
-    }
+    };
     return (
       <BigPlatformLayout
         title="智慧消防运营平台"
@@ -852,8 +868,8 @@ export default class Operation extends PureComponent {
         headerStyle={HEADER_STYLE}
         titleStyle={{ fontSize: 46 }}
         contentStyle={CONTENT_STYLE}
-      // settable
-      // onSet={this.handleClickSetButton}
+        // settable
+        // onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
         <BackMap
