@@ -7,6 +7,7 @@ import {
   getFireTrend,
   getFireList,
   getScreenMessage,
+  getVideoList,
 } from '@/services/operation';
 import {
   queryAlarmHandleList,
@@ -190,8 +191,8 @@ export default {
         if (callback) callback(response);
       }
     },
-     // 消息故障详情
-     *fetchMaintenanceMsg({ payload, callback }, { call, put }) {
+    // 消息故障详情
+    *fetchMaintenanceMsg({ payload, callback }, { call, put }) {
       const response = yield call(queryWorkOrderMsg, payload);
       if (response && response.code === 200) {
         yield put({
@@ -201,14 +202,18 @@ export default {
       }
       if (callback) callback(response);
     },
-     // 根据processId查dataId
-     *fetchDataId({ payload, success, error }, { call, put }) {
+    // 根据processId查dataId
+    *fetchDataId({ payload, success, error }, { call, put }) {
       const response = yield call(queryDataId, payload);
       if (response && response.code === 200) {
         if (success) success(response);
       } else if (error) {
         error();
       }
+    },
+    *fetchVideoList({ payload, callback }, { call }) {
+      const response = yield call(queryDataId, payload);
+      callback && callback(response);
     },
   },
 

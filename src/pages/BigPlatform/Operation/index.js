@@ -4,7 +4,7 @@ import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import { stringify } from 'qs';
 import moment from 'moment';
-
+import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
@@ -139,7 +139,6 @@ export default class Operation extends PureComponent {
       fireStatisticsDrawerVisible: false, // 火警抽屉
       dateType: undefined, // 火警抽屉日期类型
       setttingModalVisible: false,
-      videoVisible: false,
       selectList: [],
       searchValue: '',
       mapInstance: undefined,
@@ -163,7 +162,9 @@ export default class Operation extends PureComponent {
       msgFlow: 0, // 0报警 1故障
       smokeFlowDrawerVisible: false,
       fireVideoVisible: false,
-      videoList: [],
+      videoVisible: false,
+      videoList:[],
+      videoKeyId: undefined,
       dynamicType: null,
       company: {},
     };
@@ -533,19 +534,26 @@ export default class Operation extends PureComponent {
   //   this.showUnitDetail(unitList.filter(item => item.companyId === companyId)[0]);
   // };
 
-  // handleClickCamera = () => {
-  //   const {
-  //     smoke: { cameraList },
-  //   } = this.props;
-  //   this.setState({
-  //     videoVisible: true,
-  //     videoKeyId: cameraList.length ? cameraList[0].key_id : '',
-  //   });
-  // };
+  handleVideoOpen = () => {
+    const {
+      dispatch,
+    } = this.props;
+    dispatch({
+      type: 'operation/fetchVideoList',
+      callback: (response) => {
+        console.log(response);
+        // this.setState({
+        //   videoVisible: true,
+        //   videoList: [],
+        //   videoKeyId: undefined,
+        // });
+      },
+    });
+  };
 
-  // handleVideoClose = () => {
-  //   this.setState({ videoVisible: false });
-  // };
+  handleVideoClose = () => {
+    this.setState({ videoVisible: false });
+  };
 
   showTooltip = (e, name) => {
     const offset = e.target.getBoundingClientRect();
@@ -826,6 +834,9 @@ export default class Operation extends PureComponent {
       smokeFlowDrawerVisible,
       dynamicType,
       company = {},
+      videoVisible,
+      videoList,
+      videoKeyId,
     } = this.state;
     const headProps = {
       ...workOrderDetail[0],
@@ -939,6 +950,7 @@ export default class Operation extends PureComponent {
           phoneVisible={phoneVisible}
           headProps={headProps}
           head={true}
+          onVideoClick={this.handleVideoOpen}
         />
         {/* 独立烟感处理动态 */}
         <SmokeFlowDrawer
@@ -956,6 +968,15 @@ export default class Operation extends PureComponent {
           phoneVisible={phoneVisible}
           headProps={headProps}
           head={true}
+          onVideoClick={this.handleVideoOpen}
+        />
+        <VideoPlay
+          showList={false}
+          videoList={videoList}
+          visible={videoVisible}
+          keyId={videoKeyId}
+          style={{ position: 'fixed', zIndex: 99999 }}
+          handleVideoClose={this.handleVideoClose}
         />
       </BigPlatformLayout>
     );

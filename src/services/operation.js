@@ -40,3 +40,8 @@ export async function getFireList(params) {
 export async function getScreenMessage(params) {
   return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`)
 }
+
+// 获取视频列表
+export async function getVideoList(params) {
+  return request(`/acloud_new/v2/hdf/getAllCamera.json?${stringify(params)}`)
+}
