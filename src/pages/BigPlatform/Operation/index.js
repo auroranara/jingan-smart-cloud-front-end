@@ -25,8 +25,8 @@ import {
 import { PAGE_SIZE, getUnitList } from './utils';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
-import FireFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/FireFlowDrawer'
-import SmokeFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/SmokeFlowDrawer'
+import FireFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/FireFlowDrawer';
+import SmokeFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/SmokeFlowDrawer';
 // websocket配置
 const options = {
   pingTimeout: 30000,
@@ -114,7 +114,7 @@ const popupVisible = {
   newWorkOrderDrawerVisible: false,
 };
 
-@connect(({ loading, operation, user, unitSafety,newUnitFireControl }) => ({
+@connect(({ loading, operation, user, unitSafety, newUnitFireControl }) => ({
   operation,
   user,
   unitSafety,
@@ -153,9 +153,11 @@ export default class Operation extends PureComponent {
         lastreportTime: 0,
       },
       msgFlow: 0, // 0报警 1故障
-      smokeFlowDrawerVisible:false,
-      fireVideoVisible:false,
-      videoList:[],
+      smokeFlowDrawerVisible: false,
+      fireVideoVisible: false,
+      videoList: [],
+      dynamicType: null,
+      company: {},
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
   }
@@ -230,7 +232,7 @@ export default class Operation extends PureComponent {
               type === 21
             ) {
               // 获取消防主机监测
-              this.fetchFireAlarmSystem();
+              // this.fetchFireAlarmSystem();
             }
           },
         });
@@ -559,7 +561,7 @@ export default class Operation extends PureComponent {
     dispatch({ type: 'operation/fetchFireTrend' });
   };
 
-  getFireList = ({ deviceType, fireType, searchValue }={}, initial=true) => {
+  getFireList = ({ deviceType, fireType, searchValue } = {}, initial = true) => {
     const { dispatch } = this.props;
     const [dType, fType, name] = [deviceType, fireType, searchValue].map(v => v ? v : undefined);
 
@@ -683,13 +685,13 @@ export default class Operation extends PureComponent {
     //     }
     //   },
     // });
-    this.setState({ [drawerVisibles[type]]: true, msgFlow: flow });
+    this.setState({ [drawerVisibles[type]]: true, msgFlow: flow, dynamicType: type, company: { ...param } });
     this.handleShowFireVideo(cameraMessage);
   };
 
-   /**
-   *  点击播放重点部位监控
-   */
+  /**
+  *  点击播放重点部位监控
+  */
   handleShowFireVideo = videoList => {
     if (!Array.isArray(videoList) || videoList.length === 0) return null;
     this.setState({ fireVideoVisible: true, videoList });
@@ -740,8 +742,15 @@ export default class Operation extends PureComponent {
       fireFlowDrawerVisible,
       msgFlow,
       smokeFlowDrawerVisible,
+      dynamicType,
+      company = {},
     } = this.state;
-
+    const headProps = {
+      ...workOrderDetail[0],
+      flowRepeat,
+      dynamicType,
+      ...company,
+    }
     return (
       <BigPlatformLayout
         title="智慧消防运营平台"
@@ -750,8 +759,8 @@ export default class Operation extends PureComponent {
         headerStyle={HEADER_STYLE}
         titleStyle={{ fontSize: 46 }}
         contentStyle={CONTENT_STYLE}
-        // settable
-        // onSet={this.handleClickSetButton}
+      // settable
+      // onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
         <BackMap
@@ -820,8 +829,8 @@ export default class Operation extends PureComponent {
         {/* 实时消息 */}
         <Messages
           className={styles.realTimeMessage}
-           model={this.props.newUnitFireControl}
-           handleParentChange={this.handleMapParentChange}
+          model={this.props.newUnitFireControl}
+          handleParentChange={this.handleMapParentChange}
           //  handleViewDangerDetail={this.handleViewDangerDetail}
           //  fetchData={this.fetchMaintenanceCheck}
           //  handleClickMessage={this.handleClickMessage}
@@ -829,8 +838,8 @@ export default class Operation extends PureComponent {
           //  handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
           //  handleFireMessage={this.handleFireMessage}
           //  handleViewWater={this.handleViewWater}
-           handleClickMsgFlow={this.handleClickMsgFlow}
-           phoneVisible={phoneVisible}
+          handleClickMsgFlow={this.handleClickMsgFlow}
+          phoneVisible={phoneVisible}
         />
         {/* 消防主机处理动态 */}
         <FireFlowDrawer
@@ -846,6 +855,8 @@ export default class Operation extends PureComponent {
           PrincipalPhone={PrincipalPhone}
           msgFlow={msgFlow}
           phoneVisible={phoneVisible}
+          headProps={headProps}
+          head={true}
         />
         {/* 独立烟感处理动态 */}
         <SmokeFlowDrawer
@@ -861,6 +872,8 @@ export default class Operation extends PureComponent {
           PrincipalPhone={PrincipalPhone}
           msgFlow={msgFlow}
           phoneVisible={phoneVisible}
+          headProps={headProps}
+          head={true}
         />
       </BigPlatformLayout>
     );
