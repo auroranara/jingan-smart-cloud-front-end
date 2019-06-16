@@ -262,7 +262,7 @@ export default class FireStatisticsDrawer extends PureComponent {
         const corner = DEVICE_OPTIONS[deviceType] ? DEVICE_OPTIONS[deviceType].desc.slice(-2) : '';
         return (
           <DrawerCard
-            key={proce_id || relation_id || time}
+            key={proce_id || relation_id || Math.random()}
             name={name || NO_DATA}
             location={location || NO_DATA}
             person={safety_name || NO_DATA}
