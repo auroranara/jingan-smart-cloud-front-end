@@ -22,10 +22,10 @@ const NO_DATA = '暂无信息';
 const [DATE_OPTIONS, DEVICE_OPTIONS, TYPE_OPTIONS] = [
   ['本日', '本周', '本月'],
   ['全部设备', '消防主机', '独立烟感'],
-  ['全部火警', '真实火警', '误报火警', '未确认'],
+  ['全部火警', '误报火警', '真实火警', '未确认'],
 ].map(arr => arr.map((d, i) => ({ value: i, desc: d })));
-const RING_LABELS = ['未确认', '真实', '误报'];
-const RING_COLORS = ['188, 188, 189', '248, 51, 41', '255, 180, 0'];
+const RING_LABELS = ['误报', '真实', '未确认'];
+const RING_COLORS = ['255, 180, 0', '248, 51, 41', '188, 188, 189'];
 const INFO_STYLE = {
   bottom: 15,
   padding: '2px 10px',
@@ -207,7 +207,7 @@ export default class FireStatisticsDrawer extends PureComponent {
     } = this.props;
     const { graph, typeSelected, deviceSelected } = this.state;
 
-    const rings = [unConfirm, trueFire, falseFire].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
+    const rings = [falseFire, trueFire, unConfirm].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
     const trendList = fireTrend.map(({ month, count }) => ({ name: month, value: count }));
     const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
     const dateSelect = (
@@ -260,6 +260,7 @@ export default class FireStatisticsDrawer extends PureComponent {
       cards = fireList.map(({ company_id, proce_id, relation_id, time, name, location, safety_name, safety_phone, fireType, deviceType }) => {
         const info = TYPE_OPTIONS[fireType] ? TYPE_OPTIONS[fireType].desc : '';
         const corner = DEVICE_OPTIONS[deviceType] ? DEVICE_OPTIONS[deviceType].desc.slice(-2) : '';
+        const color = RING_COLORS[+fireType - 1];
         return (
           <DrawerCard
             key={proce_id || relation_id || Math.random()}
@@ -270,7 +271,7 @@ export default class FireStatisticsDrawer extends PureComponent {
             style={{ cursor: 'auto' }}
             clickName={() => {}}
             info={info}
-            infoStyle={{ ...INFO_STYLE, color: `rgb(${RING_COLORS[fireType]})`, borderColor: `rgb(${RING_COLORS[fireType]})`}}
+            infoStyle={{ ...INFO_STYLE, color: `rgb(${color})`, borderColor: `rgb(${color})`}}
             cornerLabel={corner}
             more={
               <p className={styles.more}>
