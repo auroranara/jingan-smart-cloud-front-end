@@ -1,6 +1,9 @@
 import React, { Fragment, PureComponent } from 'react';
 import { Icon } from 'antd';
-import { DrawerContainer, OvSelect } from '@/pages/BigPlatform/NewFireControl/components/Components';
+import {
+  DrawerContainer,
+  OvSelect,
+} from '@/pages/BigPlatform/NewFireControl/components/Components';
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import TotalInfo from '../components/TotalInfo';
 import { Gauge } from '../../ElectricityMonitor/components/Components';
@@ -217,7 +220,7 @@ export default class ElectricityDrawer extends PureComponent {
           </div>
         </div>
         <VideoPlay
-          showList={false}
+          showList={true}
           videoList={cameraList}
           visible={videoVisible}
           keyId={videoKeyId}

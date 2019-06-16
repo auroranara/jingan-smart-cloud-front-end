@@ -30,7 +30,7 @@ export default class MaintenanceDrawer extends PureComponent {
   };
 
   render() {
-    const { title, type, data, ...restProps } = this.props;
+    const { title, type, data, phoneVisible, ...restProps } = this.props;
     const { index } = this.state;
     const list = Array.isArray(data) ? data : [];
     const length = list.length;
@@ -43,7 +43,7 @@ export default class MaintenanceDrawer extends PureComponent {
     if (length)
       left =
         length === 1 ? (
-          <MaintenanceCard type={type} data={list[0]} />
+          <MaintenanceCard type={type} phoneVisible={phoneVisible} data={list[0]} />
         ) : (
           <Fragment>
             <SwitchHead
@@ -60,6 +60,7 @@ export default class MaintenanceDrawer extends PureComponent {
                     key={i}
                     type={type}
                     data={item}
+                    phoneVisible={phoneVisible}
                     style={{ width: `calc(100% / ${length})` }}
                   />
                 ))}

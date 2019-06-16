@@ -63,6 +63,7 @@ import {
   countAllFireAndFault,
   countFinishByUserId,
   messageInformList,
+  countNumAndTimeById,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -377,6 +378,7 @@ export default {
     },
     countFinishByUserId: [0, 0, 0, 0],
     messageInformList: [],
+    countNumAndTimeById: {},
   },
 
   subscriptions: {
@@ -1001,6 +1003,14 @@ export default {
     },
     // 获取火灾故障数据列表
     *fetchFaultDetail({ payload, success }, { call, put }) {
+      yield put({
+        type: 'faultDetail',
+        payload: {
+          list: [],
+          pagination: { pageNum: 1, pageSize: 10 },
+        },
+        append: false,
+      });
       const response = yield call(getFaultDetail, payload);
       const {
         code,
@@ -1058,6 +1068,17 @@ export default {
           payload: response.data || { list: [] },
         });
       }
+    },
+    // 重复上报次数和最后一次时间
+    *fetchCountNumAndTimeById({ payload, callback }, { call, put }) {
+      const response = yield call(countNumAndTimeById, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'countNumAndTimeById',
+          payload: response.data,
+        });
+      }
+      if (callback) callback(response.data);
     },
   },
 
@@ -1323,6 +1344,12 @@ export default {
       return {
         ...state,
         messageInformList: payload.list,
+      };
+    },
+    countNumAndTimeById(state, { payload }) {
+      return {
+        ...state,
+        countNumAndTimeById: payload,
       };
     },
   },

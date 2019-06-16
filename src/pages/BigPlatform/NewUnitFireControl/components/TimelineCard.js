@@ -5,10 +5,10 @@ import { Timeline } from 'antd';
 import styles from './TimelineCard.less';
 import TimelineItem from './TimelineItem';
 import ImgSlider from './ImgSlider';
+import { vaguePhone } from '../utils';
 import flowImg from '../imgs/flow.png';
 
 const STATUS = { 1: '误报火警', 2: '真实火警' };
-
 
 const isVague = false;
 function nameToVague(str) {
@@ -29,7 +29,16 @@ function phoneToVague(str) {
 }
 
 function Alarmed(props) {
-  const { deviceCode, deviceAddress, position, type, safety, phone, companyName } = props;
+  const {
+    deviceCode,
+    deviceAddress,
+    position,
+    type,
+    safety,
+    phone,
+    companyName,
+    phoneVisible,
+  } = props;
 
   return (
     <div className={styles.card}>
@@ -45,14 +54,14 @@ function Alarmed(props) {
       </p> */}
       <p>
         安全管理员：
-        {isVague ? nameToVague(safety) : safety} {isVague ? phoneToVague(phone) : phone}
+        {isVague ? nameToVague(safety) : safety} {vaguePhone(phone, phoneVisible)}
       </p>
     </div>
   );
 }
 
 function Confirmed(props) {
-  const { status, reporter, phone, companyName } = props;
+  const { status, reporter, phone, companyName, phoneVisible } = props;
   const isTrueAlarm = Number(status) === 2;
 
   return (
@@ -67,14 +76,14 @@ function Confirmed(props) {
       </p>
       <p>
         处理人员：
-        {isVague ? nameToVague(reporter) : reporter} {isVague ? phoneToVague(phone) : phone}
+        {isVague ? nameToVague(reporter) : reporter} {vaguePhone(phone, phoneVisible)}
       </p>
     </div>
   );
 }
 
 function Handled(props) {
-  const { reporter, phone, feedback, picture = [], companyName } = props;
+  const { reporter, phone, feedback, picture = [], companyName, phoneVisible } = props;
 
   return (
     <div className={styles.card}>
@@ -85,7 +94,7 @@ function Handled(props) {
       </p>
       <p>
         处理人员：
-        {isVague ? nameToVague(reporter) : reporter} {isVague ? phoneToVague(phone) : phone}
+        {isVague ? nameToVague(reporter) : reporter} {vaguePhone(phone, phoneVisible)}
       </p>
       <p>
         结果反馈：
@@ -115,6 +124,7 @@ export default function TimelineCard(props) {
     createCompanyName,
     finishCompanyName,
     startCompanyName,
+    phoneVisible,
     showHead = true,
     ...restProps
   } = props;
@@ -152,6 +162,7 @@ export default function TimelineCard(props) {
                 safety={startMap.safetyMan || NO_DATA}
                 phone={startMap.safetyPhone || NO_DATA}
                 companyName={startMap.companyName || createCompanyName || NO_DATA}
+                phoneVisible={phoneVisible}
               />
             )}
           </TimelineItem>
@@ -167,6 +178,7 @@ export default function TimelineCard(props) {
                 reporter={handleMap.reportMan || NO_DATA}
                 phone={handleMap.reportPhone || NO_DATA}
                 companyName={startCompanyName || NO_DATA}
+                phoneVisible={phoneVisible}
               />
             )}
           </TimelineItem>
@@ -183,6 +195,7 @@ export default function TimelineCard(props) {
                 companyName={finishCompanyName || NO_DATA}
                 feedback={finishMap.disasterDesc || NO_DATA}
                 picture={finishMap.picture || []}
+                phoneVisible={phoneVisible}
               />
             )}
           </TimelineItem>
