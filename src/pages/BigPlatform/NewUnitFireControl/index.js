@@ -336,7 +336,14 @@ export default class NewUnitFireControl extends PureComponent {
               // });
             }
 
-            if (type === 38 || type === 40 || type === 46 || type === 47 || type === 50 || type === 51) {
+            if (
+              type === 38 ||
+              type === 40 ||
+              type === 46 ||
+              type === 47 ||
+              type === 50 ||
+              type === 51
+            ) {
               // 烟感列表
               dispatch({
                 type: 'smoke/fetchCompanySmokeInfo',
@@ -791,7 +798,8 @@ export default class NewUnitFireControl extends PureComponent {
         realtime: addTime,
       },
     ];
-    const msgFlag = messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag;
+    const msgFlag =
+      messageFlag && (messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
     const restParams = [repeat, cameraMessage, occurData];
     const param = { dataId: msgFlag };
     return (
