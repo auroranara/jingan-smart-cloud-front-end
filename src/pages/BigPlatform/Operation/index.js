@@ -486,10 +486,19 @@ export default class Operation extends PureComponent {
   // };
 
   handleVideoOpen = () => {
-    this.setState({
-      videoVisible: true,
-      videoList: [],
-      videoKeyId: undefined,
+    const {
+      dispatch,
+    } = this.props;
+    dispatch({
+      type: 'operation/fetchVideoList',
+      callback: (response) => {
+        console.log(response);
+        // this.setState({
+        //   videoVisible: true,
+        //   videoList: [],
+        //   videoKeyId: undefined,
+        // });
+      },
     });
   };
 
