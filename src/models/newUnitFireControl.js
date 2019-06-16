@@ -17,7 +17,7 @@ import {
   getFireControlCount,
   // 获取隐患巡查统计
   getHiddenDangerCount,
-  // 获取维保情况统计
+  // 获取运维情况统计
   getMaintenanceCount,
   // 获取复位主机
   getHosts,
@@ -227,7 +227,7 @@ export default {
     },
     // 隐患巡查统计
     hiddenDangerCount: {},
-    // 维保情况统计
+    // 运维情况统计
     maintenanceCount: {
       needRepairNum: 0,
       selfNoNum: 0,
@@ -323,13 +323,13 @@ export default {
     // 火警动态
     alarmHandleList: [],
     alarmHandleHistory: [],
-    // 已完成维保工单
+    // 已完成运维工单
     workOrderList1: [],
-    // 待处理维保工单
+    // 待处理运维工单
     workOrderList2: [],
-    // 已超期维保工单
+    // 已超期运维工单
     workOrderList7: [],
-    // 维保处理动态详情
+    // 运维处理动态详情
     workOrderDetail: [],
     // 火灾报警系统
     fireAlarm: {
@@ -340,7 +340,7 @@ export default {
         total: 0,
       },
     },
-    // 维保巡查详情
+    // 运维巡查详情
     maintenanceDetail: {},
     maintenanceCompany: {
       name: [],
@@ -538,7 +538,7 @@ export default {
         callback(response);
       }
     },
-    // 获取维保情况统计
+    // 获取运维情况统计
     *fetchMaintenanceCount({ payload, callback }, { call, put }) {
       const response = yield call(getMaintenanceCount, payload);
       if (response.code === 200) {
@@ -861,7 +861,7 @@ export default {
         if (callback) callback(response);
       }
     },
-    // 维保工单列表或维保处理动态
+    // 运维工单列表或运维处理动态
     *fetchWorkOrder({ payload, callback }, { call, put }) {
       const response = yield call(queryWorkOrder, payload);
       if (response && response.code === 200) {
@@ -895,7 +895,7 @@ export default {
         if (callback) callback(response);
       }
     },
-    // 维保巡查详情
+    // 运维巡查详情
     *fetchMaintenanceDetail({ payload, success, error }, { call, put }) {
       const response = yield call(queryMaintenanceRecordDetail, payload);
       if (response.code === 200) {
@@ -908,7 +908,7 @@ export default {
         error();
       }
     },
-    // 企业负责人和维保员信息
+    // 企业负责人和运维员信息
     *fetchMaintenanceCompany({ payload, success, error }, { call, put }) {
       const response = yield call(queryCheckUsers, payload);
       if (response.code === 200) {

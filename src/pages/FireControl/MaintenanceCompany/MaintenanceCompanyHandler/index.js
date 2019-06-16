@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, Spin, message } from 'antd';
-import router from "umi/router";
+import router from 'umi/router';
 import debounce from 'lodash/debounce';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import SubmitBar from '@/components/SubmitBar';
@@ -42,13 +42,9 @@ const fieldLabels = {
 };
 
 /**
- * 维保单位新增及编辑
+ * 运维单位新增及编辑
  */
-@connect(({
-  maintenanceCompany,
-  user,
-  loading,
-}) => ({
+@connect(({ maintenanceCompany, user, loading }) => ({
   maintenanceCompany,
   user,
   loading: loading.models.maintenanceCompany,
@@ -57,7 +53,14 @@ const fieldLabels = {
 export default class App extends PureComponent {
   constructor(props) {
     super(props);
-    const { user: { currentUser: { unitType, unitId, unitName } }, match: { params: { id } } } = props;
+    const {
+      user: {
+        currentUser: { unitType, unitId, unitName },
+      },
+      match: {
+        params: { id },
+      },
+    } = props;
     this.state = {
       // 是否在提交中
       submitting: false,
@@ -67,7 +70,7 @@ export default class App extends PureComponent {
       uploading: false,
       // 是否为分公司
       isBranch: false,
-      // 是否为维保人员
+      // 是否为运维人员
       isMaintenanceUser: unitType === 1 && unitId !== id,
       // 默认总公司对象
       defaultParentCompany: {
@@ -87,7 +90,12 @@ export default class App extends PureComponent {
    * 挂载后
    */
   componentDidMount() {
-    const { dispatch, match: { params: { id } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
 
     // 如果id存在的话，则为编辑，否则为新增
     if (id) {
@@ -115,7 +123,7 @@ export default class App extends PureComponent {
             isBranch: !!+isBranch,
           });
 
-          // 获取维保单位列表
+          // 获取运维单位列表
           if (+isBranch) {
             dispatch({
               type: 'maintenanceCompany/fetchExtraMaintenanceCompanies',
@@ -148,8 +156,7 @@ export default class App extends PureComponent {
           });
         },
       });
-    }
-    else {
+    } else {
       // 清空详情
       dispatch({
         type: 'maintenanceCompany/save',
@@ -246,7 +253,7 @@ export default class App extends PureComponent {
     const coordinate = getFieldValue('coordinate');
     const temp = coordinate && coordinate.split(',');
     return temp && { longitude: +temp[0], latitude: +temp[1] };
-  }
+  };
 
   /**
    * 判断选中的单位性质是否为一般企业
@@ -255,14 +262,19 @@ export default class App extends PureComponent {
     this.setState({
       isCompany: option.props.children === defaultCompanyNature,
     });
-  }
+  };
 
   /**
    * 修改是否为分公司
    */
-  handleChangeIsBranch = (value) => {
-    const { dispatch, match: { params: { id } } } = this.props;
-    const isBranch = !!+value
+  handleChangeIsBranch = value => {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    const isBranch = !!+value;
     this.setState({
       isBranch,
     });
@@ -276,22 +288,27 @@ export default class App extends PureComponent {
         },
       });
     }
-  }
+  };
 
   /**
    * 修改上传状态
    */
-  handleChangeUploading = (uploading) => {
+  handleChangeUploading = uploading => {
     this.setState({
       uploading,
     });
-  }
+  };
 
   /**
    * 查询总公司列表
    */
-  handleSearchParentIdList = (value) => {
-    const { dispatch, match: { params: { id } } } = this.props;
+  handleSearchParentIdList = value => {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     dispatch({
       type: 'maintenanceCompany/fetchExtraMaintenanceCompanies',
       payload: {
@@ -301,7 +318,7 @@ export default class App extends PureComponent {
         companyId: id,
       },
     });
-  }
+  };
 
   /**
    * 加载选中的地址列表
@@ -380,14 +397,18 @@ export default class App extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const { map: { point: { longitude, latitude } } } = this.state;
+    const {
+      map: {
+        point: { longitude, latitude },
+      },
+    } = this.state;
     // 将选中点的坐标放入输入框
     setFieldsValue({
       coordinate: `${longitude},${latitude}`,
     });
     // 隐藏地图模态框
     this.handleHideMap();
-  }
+  };
 
   /**
    * 重置地图
@@ -402,12 +423,12 @@ export default class App extends PureComponent {
         point: coord,
       },
     }));
-  }
+  };
 
   /**
    * 搜索地图
    */
-  handleSearchMap = (point) => {
+  handleSearchMap = point => {
     this.setState(({ map }) => ({
       map: {
         ...map,
@@ -415,33 +436,33 @@ export default class App extends PureComponent {
         point,
       },
     }));
-  }
+  };
 
   /**
    * 点击地图
    */
-  handleClickMap = (point) => {
+  handleClickMap = point => {
     this.setState(({ map }) => ({
       map: {
         ...map,
         point,
       },
     }));
-  }
+  };
 
   /**
    * 提交
    */
-  handleSubmit = (values) => {
-    const { dispatch, match: { params: { id } } } = this.props;
+  handleSubmit = values => {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
     const {
       registerAddressList: [registerProvince, registerCity, registerDistrict, registerTown],
-      practicalAddressList: [
-        practicalProvince,
-        practicalCity,
-        practicalDistrict,
-        practicalTown,
-      ],
+      practicalAddressList: [practicalProvince, practicalCity, practicalDistrict, practicalTown],
       createTime,
       // industryCategory,
       coordinate,
@@ -475,7 +496,7 @@ export default class App extends PureComponent {
       longitude,
       latitude,
       parentId: parentId && parentId.key,
-      principalName: restFields.safetyName,     // 为防止麻烦，safetyName和principalName都给
+      principalName: restFields.safetyName, // 为防止麻烦，safetyName和principalName都给
       principalPhone: restFields.safetyPhone,
       principalEmail: restFields.safetyEmail,
     };
@@ -488,8 +509,7 @@ export default class App extends PureComponent {
           // this.handleConfirm(companyId);
           router.push('/fire-control/maintenance-company/list');
         });
-      }
-      else {
+      } else {
         message.error(msg);
         this.setState({
           submitting: false,
@@ -504,8 +524,7 @@ export default class App extends PureComponent {
         payload,
         callback,
       });
-    }
-    else {
+    } else {
       // 新增
       dispatch({
         type: 'maintenanceCompany/addMaintenanceCompany',
@@ -513,7 +532,7 @@ export default class App extends PureComponent {
         callback,
       });
     }
-  }
+  };
 
   render() {
     const {
@@ -524,8 +543,16 @@ export default class App extends PureComponent {
       form,
       maintenanceCompany,
     } = this.props;
-    const { submitting, isCompany, uploading, isBranch, isMaintenanceUser, defaultParentCompany, map: { visible, center, point } } = this.state;
-    const title = id ? '编辑维保单位' : '新增维保单位';
+    const {
+      submitting,
+      isCompany,
+      uploading,
+      isBranch,
+      isMaintenanceUser,
+      defaultParentCompany,
+      map: { visible, center, point },
+    } = this.state;
+    const title = id ? '编辑运维单位' : '新增运维单位';
     const spinning = loading || submitting || uploading;
 
     // 面包屑
@@ -536,12 +563,12 @@ export default class App extends PureComponent {
         href: '/',
       },
       {
-        title: '消防维保',
-        name: '消防维保',
+        title: '消防运维',
+        name: '消防运维',
       },
       {
-        title: '维保单位',
-        name: '维保单位',
+        title: '运维单位',
+        name: '运维单位',
         href: '/fire-control/maintenance-company/list',
       },
       {
@@ -551,7 +578,11 @@ export default class App extends PureComponent {
     ];
 
     return (
-      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList} wrapperClassName={styles.advancedForm}>
+      <PageHeaderLayout
+        title={title}
+        breadcrumbList={breadcrumbList}
+        wrapperClassName={styles.advancedForm}
+      >
         <Spin spinning={spinning}>
           <BasicInfo
             form={form}

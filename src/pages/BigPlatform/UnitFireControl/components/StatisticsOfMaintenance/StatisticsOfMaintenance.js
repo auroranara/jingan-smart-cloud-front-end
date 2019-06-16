@@ -5,7 +5,7 @@ import Switcher from '../Switcher/Switcher';
 import styles from './StatisticsOfMaintenance.less';
 
 /**
- * 维保情况统计
+ * 运维情况统计
  */
 export default class App extends PureComponent {
   renderSwitchers() {
@@ -33,7 +33,17 @@ export default class App extends PureComponent {
       <div className={styles.switcherContainer}>
         {list.map(({ label, value }, index) => {
           const isSelected = type === value;
-          return <Switcher style={{ top: index * 56, zIndex: isSelected ? 5 : (4 - index) }} isSelected={isSelected} content={label} key={label} onClick={() => { onSwitch(value); }} />;
+          return (
+            <Switcher
+              style={{ top: index * 56, zIndex: isSelected ? 5 : 4 - index }}
+              isSelected={isSelected}
+              content={label}
+              key={label}
+              onClick={() => {
+                onSwitch(value);
+              }}
+            />
+          );
         })}
       </div>
     );
@@ -60,13 +70,13 @@ export default class App extends PureComponent {
       } = {},
     } = this.props;
 
-    // 总维保数颜色
+    // 总运维数颜色
     const totalColor = '#01A4CA';
-    // 已维保颜色
+    // 已运维颜色
     const repairedColor = '#2787D5';
-    // 待维保颜色
+    // 待运维颜色
     const unrepairedColor = '#D16772';
-    // 维保中颜色
+    // 运维中颜色
     const repairingColor = '#DEAD5C';
 
     // 配置项
@@ -132,7 +142,7 @@ export default class App extends PureComponent {
       },
       series: [
         {
-          name: '总维保数',
+          name: '总运维数',
           type: 'bar',
           data: [maintenanceTotal, localTotal],
           label: {
@@ -144,7 +154,7 @@ export default class App extends PureComponent {
           },
         },
         {
-          name: '已维保',
+          name: '已运维',
           type: 'bar',
           data: [maintenanceRepaired, localRepaired],
           label: {
@@ -156,7 +166,7 @@ export default class App extends PureComponent {
           },
         },
         {
-          name: '待维保',
+          name: '待运维',
           type: 'bar',
           data: [maintenanceUnrepaired, localUnrepaired],
           label: {
@@ -168,7 +178,7 @@ export default class App extends PureComponent {
           },
         },
         {
-          name: '维保中',
+          name: '运维中',
           type: 'bar',
           data: [maintenanceRepairing, localRepairing],
           label: {
@@ -183,39 +193,39 @@ export default class App extends PureComponent {
     };
 
     return (
-      <Section title="维保情况统计" fixedContent={(
-        <Fragment>
-          <div className={styles.detailContainer}>
-            <div>
-              <div className={styles.detailItem}>
-                <div>平均响应时长</div>
-                <div style={{ color: '#04D8DD' }}>{maintenanceDuration || '--'}</div>
+      <Section
+        title="运维情况统计"
+        fixedContent={
+          <Fragment>
+            <div className={styles.detailContainer}>
+              <div>
+                <div className={styles.detailItem}>
+                  <div>平均响应时长</div>
+                  <div style={{ color: '#04D8DD' }}>{maintenanceDuration || '--'}</div>
+                </div>
+                <div className={styles.detailItem}>
+                  <div>完成率</div>
+                  <div style={{ color: '#FFCC54' }}>{maintenanceRate}</div>
+                </div>
               </div>
-              <div className={styles.detailItem}>
-                <div>完成率</div>
-                <div style={{ color: '#FFCC54' }}>{maintenanceRate}</div>
+              <div>
+                <div className={styles.detailItem}>
+                  <div>平均响应时长</div>
+                  <div style={{ color: '#04D8DD' }}>{localDuration || '--'}</div>
+                </div>
+                <div className={styles.detailItem}>
+                  <div>完成率</div>
+                  <div style={{ color: '#FFCC54' }}>{localRate}</div>
+                </div>
               </div>
             </div>
-            <div>
-              <div className={styles.detailItem}>
-                <div>平均响应时长</div>
-                <div style={{ color: '#04D8DD' }}>{localDuration || '--'}</div>
-              </div>
-              <div className={styles.detailItem}>
-                <div>完成率</div>
-                <div style={{ color: '#FFCC54' }}>{localRate}</div>
-              </div>
-            </div>
-          </div>
-          {this.renderSwitchers()}
-        </Fragment>
-      )}>
+            {this.renderSwitchers()}
+          </Fragment>
+        }
+      >
         <div style={{ height: '100%' }}>
           <div className={styles.chartContainer}>
-            <ReactEcharts
-              style={{ height: '100%' }}
-              option={option}
-            />
+            <ReactEcharts style={{ height: '100%' }} option={option} />
           </div>
         </div>
       </Section>

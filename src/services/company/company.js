@@ -39,7 +39,7 @@ export async function updateCompany({ id, ...restParams }) {
   });
 }
 
-/* 获取维保单位列表 */
+/* 获取运维单位列表 */
 export async function queryMaintenanceCompanies(params) {
   return request(`/acloud_new/v2/baseInfo/maintenanceCompanies?${stringify(params)}`);
 }

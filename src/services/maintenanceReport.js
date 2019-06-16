@@ -1,5 +1,5 @@
 /**
- * 维保检查报表
+ * 运维检查报表
  */
 import { stringify } from 'qs';
 import request from '@/utils/request';

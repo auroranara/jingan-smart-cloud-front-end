@@ -22,7 +22,7 @@ const TYPE = 'unit';
 const NO_DATA = '暂无信息';
 // const STATUS_LABELS = ['正常', '异常'];
 const STATUS = ['正常', '--', '报警'];
-const STATUS_CLASS = ['normal', 'not', 'fire']
+const STATUS_CLASS = ['normal', 'not', 'fire'];
 const FIRE = '2';
 const SWITCH_LABELS = ['管辖单位', '重点单位'];
 
@@ -38,7 +38,7 @@ const SWITCH_LABELS = ['管辖单位', '重点单位'];
 // }));
 
 export default class UnitDrawer extends PureComponent {
-  state={ searchValue: '' };
+  state = { searchValue: '' };
 
   handleSwitch = i => {
     const { handleSwitch } = this.props;
@@ -59,11 +59,20 @@ export default class UnitDrawer extends PureComponent {
   render() {
     const {
       visible,
-      labelIndex=0,
+      labelIndex = 0,
       // handleSearch,
       handleShowUnitDanger,
       handleAlarmClick,
-      data: { allCompanyList=[], importCompanyList=[], fireNum=0, commonNum=0, noAccessNum=0, impFireNum=0, impCommonNum=0, impNoAccessNum=0 },
+      data: {
+        allCompanyList = [],
+        importCompanyList = [],
+        fireNum = 0,
+        commonNum = 0,
+        noAccessNum = 0,
+        impFireNum = 0,
+        impCommonNum = 0,
+        impNoAccessNum = 0,
+      },
     } = this.props;
     const { searchValue } = this.state;
 
@@ -73,17 +82,22 @@ export default class UnitDrawer extends PureComponent {
     newList.sort((item, item1) => item1.hiddenCount - item.hiddenCount);
     const chartList = newList.slice(0, 10).map(({ companyId, name, hiddenCount }, i) => {
       let newName = name;
-      if (i === 9 && name.length > 10)
-        newName = `${name.slice(0, 10)}...`;
+      if (i === 9 && name.length > 10) newName = `${name.slice(0, 10)}...`;
       return { id: companyId, name: newName, value: hiddenCount };
     });
-    // const chartList = [...Array(10).keys()].map(i => ({ id: i, name: '无锡晶安智慧科技有限公司', value: 10 - i }));
+
     const filteredList = list.filter(({ name }) => name.includes(searchValue));
 
     const total = fireNum + commonNum + noAccessNum;
-    const [firePercent, commonPercent, noAccessPercent] = [fireNum, commonNum, noAccessNum].map(n => total ? n / total * 100 : 0);
+    const [firePercent, commonPercent, noAccessPercent] = [fireNum, commonNum, noAccessNum].map(
+      n => (total ? (n / total) * 100 : 0)
+    );
     const impTotal = impFireNum + impCommonNum + impNoAccessNum;
-    const [impFirePercent, impCommonPercent, impNoAccessPercent] = [impFireNum, impCommonNum, impNoAccessNum].map(n => impTotal ? n / impTotal * 100 : 0);
+    const [impFirePercent, impCommonPercent, impNoAccessPercent] = [
+      impFireNum,
+      impCommonNum,
+      impNoAccessNum,
+    ].map(n => (impTotal ? (n / impTotal) * 100 : 0));
 
     const top = (
       <SwitchHead value={labelIndex} labels={SWITCH_LABELS} onSwitch={this.handleSwitch} />
@@ -98,21 +112,36 @@ export default class UnitDrawer extends PureComponent {
             quantity={isImpUnit ? impFireNum : fireNum}
             strokeColor="rgb(255,72,72)"
             style={{ marginTop: 40 }}
-            iconStyle={{ backgroundImage: `url(${unitRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            iconStyle={{
+              backgroundImage: `url(${unitRedIcon})`,
+              width: ICON_WIDTH,
+              height: ICON_HEIGHT,
+              bottom: ICON_BOTTOM,
+            }}
           />
           <OvProgress
             title="正常单位"
             percent={isImpUnit ? impCommonPercent : commonPercent}
             quantity={isImpUnit ? impCommonNum : commonNum}
             strokeColor="rgb(0,251,252)"
-            iconStyle={{ backgroundImage: `url(${unitBlueIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            iconStyle={{
+              backgroundImage: `url(${unitBlueIcon})`,
+              width: ICON_WIDTH,
+              height: ICON_HEIGHT,
+              bottom: ICON_BOTTOM,
+            }}
           />
           <OvProgress
             title="未接入单位"
             percent={isImpUnit ? impNoAccessPercent : noAccessPercent}
             quantity={isImpUnit ? impNoAccessNum : noAccessNum}
             strokeColor="rgb(163,163,163)"
-            iconStyle={{ backgroundImage: `url(${unitGreyIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
+            iconStyle={{
+              backgroundImage: `url(${unitGreyIcon})`,
+              width: ICON_WIDTH,
+              height: ICON_HEIGHT,
+              bottom: ICON_BOTTOM,
+            }}
           />
         </DrawerSection>
         <DrawerSection title="隐患数量排名">
@@ -122,14 +151,24 @@ export default class UnitDrawer extends PureComponent {
     );
 
     const right = (
-        <SearchBar
-          // value={value}
-          key={labelIndex}
-          onSearch={this.handleSearch}
-          // onChange={this.handleChange}
-          // style={{ paddingTop: 50 }}
-        >
-          {filteredList.map(({ companyId, name, address, safetyMan, safetyPhone, itemCount, hiddenCount, isFire }) => (
+      <SearchBar
+        // value={value}
+        key={labelIndex}
+        onSearch={this.handleSearch}
+        // onChange={this.handleChange}
+        // style={{ paddingTop: 50 }}
+      >
+        {filteredList.map(
+          ({
+            companyId,
+            name,
+            address,
+            safetyMan,
+            safetyPhone,
+            itemCount,
+            hiddenCount,
+            isFire,
+          }) => (
             <DrawerCard
               key={companyId}
               name={name || NO_DATA}
@@ -148,27 +187,35 @@ export default class UnitDrawer extends PureComponent {
               more={
                 <p className={styles.more}>
                   <span className={styles.point} style={{ backgroundImage: `url(${pointIcon})` }} />
-                  检查点位：{itemCount || 0}
+                  检查点位：
+                  {itemCount || 0}
                   <span
                     className={hiddenCount ? styles.hiddenDanger : styles.hiddenDangerZero}
                     onClick={hiddenCount ? e => handleShowUnitDanger(companyId) : null}
                   >
-                    <span className={styles.danger} style={{ backgroundImage: `url(${dangerIcon})` }} />
+                    <span
+                      className={styles.danger}
+                      style={{ backgroundImage: `url(${dangerIcon})` }}
+                    />
                     隐患数量：
                     {/* <span className={styles.dangerDesc}>隐患数量：</span> */}
                     {hiddenCount || 0}
                   </span>
                   <span className={styles.status}>
                     主机状态：
-                    <span className={styles[STATUS_CLASS[isFire]]} onClick={isFire === FIRE ? e => handleAlarmClick(companyId) : null}>
+                    <span
+                      className={styles[STATUS_CLASS[isFire]]}
+                      onClick={isFire === FIRE ? e => handleAlarmClick(companyId) : null}
+                    >
                       {STATUS[isFire]}
                     </span>
                   </span>
                 </p>
               }
             />
-          ))}
-        </SearchBar>
+          )
+        )}
+      </SearchBar>
     );
 
     return (

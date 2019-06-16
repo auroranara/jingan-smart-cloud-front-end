@@ -9,7 +9,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import hiddenIcon from '@/assets/hiddenIcon.png';
 
 import styles from './MaintenanceReport.less';
-const title = '维保检查报表详情';
+const title = '运维检查报表详情';
 
 /* 面包屑 */
 const breadcrumbList = [
@@ -23,13 +23,13 @@ const breadcrumbList = [
     name: '数据分析',
   },
   {
-    title: '维保检查报表',
-    name: '维保检查报表',
+    title: '运维检查报表',
+    name: '运维检查报表',
     href: '/data-analysis/maintenance-report/list',
   },
   {
     title,
-    name: '维保检查报表详情',
+    name: '运维检查报表详情',
   },
 ];
 /* 头部标签列表 */
@@ -41,7 +41,7 @@ const tabList = [
 ];
 
 /**
- * 维保检查报表详情
+ * 运维检查报表详情
  */
 @connect(({ maintenanceReport, user, loading }) => ({
   maintenanceReport,
@@ -191,7 +191,7 @@ export default class App extends PureComponent {
           <Fragment>
             {itemTypeName}:{objectTitle}
             {!isCompany && <div className={styles.content}>{`单位名称：${companyName}`}</div>}
-            <div className={styles.content}>{`维保单位：${checkCompanyName}`}</div>
+            <div className={styles.content}>{`运维单位：${checkCompanyName}`}</div>
             <div className={styles.content}>{`检查人：${userName}`}</div>
             <div className={styles.content}>{`检查时间：${moment(+checkDate).format(
               'YYYY-MM-DD HH:mm'

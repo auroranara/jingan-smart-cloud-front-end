@@ -63,17 +63,18 @@ export default function Download({
           </div>
           {isFromMobile && (
             <div className={styles.buttonWrapper}>
-              <div className={styles.downloadButton} onClick={() => {
-                if (isIOS() && ios) {
-                  window.location.href = ios + Math.random();
-                }
-                else if (isAndroid() && android) {
-                  window.location.href = android + Math.random();
-                }
-                else {
-                  // 这里是做个提示还是什么的
-                }
-              }}>
+              <div
+                className={styles.downloadButton}
+                onClick={() => {
+                  if (isIOS() && ios) {
+                    window.location.href = ios + Math.random();
+                  } else if (isAndroid() && android) {
+                    window.location.href = android + Math.random();
+                  } else {
+                    // 这里是做个提示还是什么的
+                  }
+                }}
+              >
                 APP下载
               </div>
               <div

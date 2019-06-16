@@ -251,15 +251,15 @@ export default class Messages extends PureComponent {
         ],
       },
       '18': {
-        // 维保巡检
+        // 运维巡检
         onClick: () => {
           handleParentChange({ maintenanceCheckDrawerVisible: true });
           fetchData(messageFlag);
         },
         items: [
-          { name: '维保单位', value: maintenanceCompany },
+          { name: '运维单位', value: maintenanceCompany },
           {
-            name: '维保人',
+            name: '运维人',
             value: Array.isArray(maintenanceUser) ? maintenanceUser.join('，') : maintenanceUser,
           },
           { name: '消防设施评分', value: score },
@@ -591,7 +591,7 @@ export default class Messages extends PureComponent {
     //     </div>
     //   );
     // } else if (type === 10 || type === 11) {
-    //   // 故障指派维修, 维保开始维修
+    //   // 故障指派维修, 运维开始维修
     //   msgItem = (
     //     <div className={styles.msgItem} key={index}>
     //       <a
@@ -771,7 +771,7 @@ export default class Messages extends PureComponent {
     //     </div>
     //   );
     // } else if (type === 18) {
-    //   // 维保巡检
+    //   // 运维巡检
     //   msgItem = (
     //     <div className={styles.msgItem} key={index}>
     //       <a
@@ -787,11 +787,11 @@ export default class Messages extends PureComponent {
     //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
     //       <div className={styles.msgType}>{title}</div>
     //       <div className={styles.msgBody}>
-    //         维保单位：
+    //         运维单位：
     //         {maintenanceCompany}
     //       </div>
     //       <div className={styles.msgBody}>
-    //         维保人：
+    //         运维人：
     //         {Array.isArray(maintenanceUser)
     //           ? maintenanceUser
     //               .map(item => {

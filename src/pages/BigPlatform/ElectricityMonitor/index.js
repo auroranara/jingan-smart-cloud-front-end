@@ -658,7 +658,7 @@ export default class ElectricityMonitor extends PureComponent {
 
     return (
       <BigPlatformLayout
-        title="晶安智慧用电监测平台"
+        title="智慧用电监测平台"
         extra={extra}
         style={{ backgroundImage: 'none' }}
         extraStyle={{ padding: '10px 0' }}

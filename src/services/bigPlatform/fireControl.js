@@ -205,7 +205,7 @@ export async function getHiddenDangerCount(params) {
 }
 
 /**
- * 获取维保情况统计
+ * 获取运维情况统计
  */
 export async function getMaintenanceCount(params) {
   return request(`/acloud_new/v2/fireManage/faultScreen?${stringify(params)}`);
@@ -389,7 +389,7 @@ export async function queryAlarmHandleList({ companyId, dataId, ...rest }) {
   );
 }
 
-// 维保工单或维保动态详情
+// 运维工单或运维动态详情
 export async function queryWorkOrder(params) {
   return request(`${URL_PREFIX}/nanxiao/fire/getFaultForMaintenance?${stringify(params)}`);
 }
@@ -399,7 +399,7 @@ export async function fetchCheckRecord(params) {
   return request(`/acloud_new/v2/maintenanceCheck/getCheckRecordByType?${stringify(params)}`);
 }
 
-// 企业负责人和维保员信息
+// 企业负责人和运维员信息
 export async function queryCheckUsers(params) {
   return request(`/acloud_new/v2/maintenanceCheck/getCheckUsersForNanXiao?${stringify(params)}`);
 }

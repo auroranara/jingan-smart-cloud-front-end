@@ -133,6 +133,11 @@ module.exports = env => {
           code: 'dashboard.smokeView',
           component: './BigPlatform/Smoke',
         },
+        {
+          path: '/big-platform/operation',
+          code: 'dashboard.operationView',
+          component: './BigPlatform/Operation',
+        },
       ],
     },
 
@@ -958,7 +963,7 @@ module.exports = env => {
                 },
               ],
             },
-            // 维保检查报表
+            // 运维检查报表
             {
               path: '/data-analysis/maintenance-report',
               code: 'dataAnalysis.maintenanceReport',

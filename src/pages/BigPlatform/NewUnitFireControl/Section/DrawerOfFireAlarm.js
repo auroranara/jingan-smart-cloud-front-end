@@ -45,7 +45,7 @@ export default class DrawerOfFireAlarm extends PureComponent {
       <div className={styles.fireAlarmItem} key={index}>
         <div className={styles.line}>
           <div className={styles.label}>
-            <span>维保单位：</span>
+            <span>运维单位：</span>
           </div>
           <div className={styles.value}>
             <span>{checkCompanyName || getEmptyValue()}</span>
@@ -53,7 +53,7 @@ export default class DrawerOfFireAlarm extends PureComponent {
         </div>
         <div className={styles.line}>
           <div className={styles.label}>
-            <span>维保时间：</span>
+            <span>运维时间：</span>
           </div>
           <div className={styles.value}>
             <span>{checkDate || getEmptyValue()}</span>
@@ -61,7 +61,7 @@ export default class DrawerOfFireAlarm extends PureComponent {
         </div>
         <div className={styles.line}>
           <div className={styles.label}>
-            <span>维保人员：</span>
+            <span>运维人员：</span>
           </div>
           <div className={styles.listValue}>
             {checkUsers && checkUsers.length > 0
@@ -137,11 +137,11 @@ export default class DrawerOfFireAlarm extends PureComponent {
               if (+sysStatus === 1) {
                 return (
                   <div className={styles.fireAlarmItem} key={index}>
-                    {this.renderLine('维保单位：', checkCompanyName)}
-                    {this.renderLine('维保时间：', checkDate)}
+                    {this.renderLine('运维单位：', checkCompanyName)}
+                    {this.renderLine('运维时间：', checkDate)}
                     <div className={styles.line}>
                       <div className={styles.label}>
-                        <span>维保人员：</span>
+                        <span>运维人员：</span>
                       </div>
                       <div className={styles.listValue}>
                         {checkUsers && checkUsers.length > 0

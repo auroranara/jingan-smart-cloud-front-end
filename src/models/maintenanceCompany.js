@@ -16,7 +16,7 @@ import {
   queryServiceSafetyInfo,
   queryServiceMenus,
 } from '../services/maintenanceCompany.js';
-import router from "umi/router";
+import router from 'umi/router';
 import urls from '@/utils/urls';
 const {
   exception: { 500: exceptionUrl },
@@ -81,7 +81,7 @@ export default {
   },
 
   effects: {
-    // 维保单位列表
+    // 运维单位列表
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryMaintenanceCompanies, payload);
       if (response.code === 200) {
@@ -91,7 +91,7 @@ export default {
         });
       }
     },
-    // 查询维保单位列表
+    // 查询运维单位列表
     *appendFetch({ payload }, { call, put }) {
       const response = yield call(queryMaintenanceCompany, payload);
       if (response.code === 200) {
@@ -101,7 +101,7 @@ export default {
         });
       }
     },
-    // 删除维保单位信息
+    // 删除运维单位信息
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(deleteMaintenanceCompany, payload);
       if (response.code === 200) {
@@ -112,7 +112,7 @@ export default {
         if (callback) callback(response);
       }
     },
-    //  查看指定维保单位信息
+    //  查看指定运维单位信息
     *fetchDetail({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceCompanyinfo, payload.id);
       if (response.code === 200) {
@@ -124,22 +124,21 @@ export default {
           },
         });
         if (callback) callback(response.data);
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
-    // 修改维保单位信息
+    // 修改运维单位信息
     *updateMaintenanceCompany({ payload, callback }, { call, put }) {
       const response = yield call(updateMaintenanceCompany, payload);
       if (callback) callback(response);
     },
-    // 新增维保单位信息
+    // 新增运维单位信息
     *addMaintenanceCompany({ payload, callback }, { call, put }) {
       const response = yield call(addMaintenanceCompany, payload);
       if (callback) callback(response);
     },
-    // 根据维保单位id查询服务单位列表
+    // 根据运维单位id查询服务单位列表
     *fetchServiceUnit({ payload }, { call, put }) {
       const response = yield call(queryServiceUnit, payload);
       if (response.code === 200) {
@@ -163,8 +162,7 @@ export default {
         if (callback) {
           callback();
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
@@ -182,8 +180,7 @@ export default {
         if (success) {
           success();
         }
-      }
-      else if (error) {
+      } else if (error) {
         error(response.msg);
       }
     },
@@ -201,13 +198,18 @@ export default {
         if (success) {
           success();
         }
-      }
-      else if (error) {
+      } else if (error) {
         error(response.msg);
       }
     },
     /* acloud版获取字典 */
-    *fetchDict({ payload: { type, key }, callback }, { call, put }) {
+    *fetchDict(
+      {
+        payload: { type, key },
+        callback,
+      },
+      { call, put }
+    ) {
       const response = yield call(queryDict, { type });
       if (response.code === 200) {
         yield put({
@@ -220,13 +222,18 @@ export default {
         if (callback) {
           callback();
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
     /* gsafe版获取字典 */
-    *gsafeFetchDict({ payload: { type, key }, callback }, { call, put }) {
+    *gsafeFetchDict(
+      {
+        payload: { type, key },
+        callback,
+      },
+      { call, put }
+    ) {
       const response = yield call(gsafeQueryDict, { type });
       if (response.code === 200) {
         yield put({
@@ -239,8 +246,7 @@ export default {
         if (callback) {
           callback();
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
@@ -258,12 +264,11 @@ export default {
         if (callback) {
           callback();
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
-    /* 查询除自己以外的维保单位 */
+    /* 查询除自己以外的运维单位 */
     *fetchExtraMaintenanceCompanies({ payload, callback }, { call, put }) {
       const response = yield call(queryExtraMaintenanceCompanies, payload);
       if (response.code === 200) {
@@ -277,8 +282,7 @@ export default {
         if (callback) {
           callback();
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
@@ -296,8 +300,7 @@ export default {
         if (callback) {
           callback(response.data);
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
@@ -315,8 +318,7 @@ export default {
         if (callback) {
           callback(response.data);
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
@@ -334,15 +336,14 @@ export default {
         if (callback) {
           callback(response.data);
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
   },
 
   reducers: {
-    // 维保单位列表
+    // 运维单位列表
     queryMaintenanceCompanyList(state, { payload }) {
       const {
         list,
@@ -355,7 +356,7 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
-    // 查询维保单位列表
+    // 查询运维单位列表
     appendList(
       state,
       {
@@ -372,14 +373,14 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
-    // 删除维保单位信息
+    // 删除运维单位信息
     delete(state, { payload }) {
       return {
         ...state,
         list: state.list.filter(item => item.id !== payload),
       };
     },
-    // 根据维保单位id查询服务单位列表
+    // 根据运维单位id查询服务单位列表
     queryServiceUnit(
       state,
       {
@@ -397,7 +398,12 @@ export default {
       };
     },
     /* 保存字段 */
-    save(state, { payload: { key, value } }) {
+    save(
+      state,
+      {
+        payload: { key, value },
+      }
+    ) {
       return {
         ...state,
         [key]: value,
@@ -408,7 +414,7 @@ export default {
       return {
         ...state,
         searchInfo: payload || null,
-      }
+      };
     },
     initPageNum(state, { payload }) {
       return {
@@ -422,7 +428,7 @@ export default {
             pageNum: 1,
           },
         },
-      }
+      };
     },
   },
 };

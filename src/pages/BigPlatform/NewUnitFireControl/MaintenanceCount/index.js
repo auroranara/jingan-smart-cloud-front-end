@@ -5,7 +5,7 @@ import Section from '../Section';
 import styles from './index.less';
 
 /**
- * description: 维保统计
+ * description: 运维统计
  * author: sunkai
  * date: 2018年12月03日
  */
@@ -20,9 +20,9 @@ export default class App extends PureComponent {
     const percent = total === 0 ? 0 : Math.round((workOrderList1.length / total) * 100);
 
     return (
-      <Section title="维保统计">
+      <Section title="运维统计">
         <div className={styles.top}>
-          <span className={styles.topName}>维保完成率</span>
+          <span className={styles.topName}>运维完成率</span>
           {workOrderList1.length === 0 ? (
             '--'
           ) : (

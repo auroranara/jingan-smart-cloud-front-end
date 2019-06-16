@@ -215,8 +215,7 @@ export default {
         yield put({ type: 'queryRoles', payload: list });
         yield put({ type: 'saveTrees', payload: trees });
         success && success(list, trees);
-      } else
-      error && error();
+      } else error && error();
     },
 
     // 查询执法证件种类
@@ -295,7 +294,7 @@ export default {
         error(response.msg);
       }
     },
-    // 维保权限树
+    // 运维权限树
     *fetchMaintenanceTree({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceTree, payload);
       if (response && response.code === 200) {
@@ -321,8 +320,7 @@ export default {
       const { code, data } = response || {};
       if (code === 200) {
         let list = data && data.gridList ? data.gridList : [];
-        if (!Array.isArray(list))
-          list = JSON.parse(list);
+        if (!Array.isArray(list)) list = JSON.parse(list);
         yield put({ type: 'saveGrids', payload: list });
       }
     },

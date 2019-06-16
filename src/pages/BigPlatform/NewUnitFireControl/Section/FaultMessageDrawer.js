@@ -7,7 +7,6 @@ import DrawerContainer from '../components/DrawerContainer';
 import TimelineItem from '../components/TimelineItem';
 import flowImg from '../imgs/flow_m.png';
 
-
 const isVague = false;
 function nameToVague(str) {
   let newStr = '';
@@ -63,7 +62,7 @@ const NO_DATA = '暂无信息';
 export default function FaultMessageDrawer(props) {
   const { data, model, ...restProps } = props;
 
-  // status "2" -> 指派维保   "0" -> 受理中
+  // status "2" -> 指派运维   "0" -> 受理中
   const { faultType = 0, addTime, installAddress, loopNumber, partNumber, componentType } = data;
 
   const isOneKey = faultType ? 1 : 0; // 是否为一键报修
@@ -98,7 +97,7 @@ export default function FaultMessageDrawer(props) {
           )}
           <TimelineItem
             spans={SPANS}
-            label={isOneKey ? '故障报修' : '指派维保'}
+            label={isOneKey ? '故障报修' : '指派运维'}
             day={getTime(addTime)}
             hour={getTime(addTime, 1)}
           >

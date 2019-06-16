@@ -145,7 +145,7 @@ export default {
       },
       {
         key: '3',
-        value: '维保检查',
+        value: '运维检查',
       },
     ],
     /* 隐患状态列表 */

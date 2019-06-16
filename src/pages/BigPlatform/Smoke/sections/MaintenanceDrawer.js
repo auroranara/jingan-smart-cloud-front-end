@@ -25,10 +25,10 @@ export default class MaintenanceDrawer extends PureComponent {
     const list = Array.isArray(data) ? data : [];
     const length = list.length;
 
-    // 判断是否是维保处理，维保处理动态时，显示流程图，故障处理动态时不显示流程图
-    // const isMaintenance = title.includes('维保');
+    // 判断是否是运维处理，运维处理动态时，显示流程图，故障处理动态时不显示流程图
+    // const isMaintenance = title.includes('运维');
 
-    // 维保只有一个，故障可能是一个或多个
+    // 运维只有一个，故障可能是一个或多个
     let left = null;
     if (length)
       left =

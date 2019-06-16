@@ -661,7 +661,7 @@ export default class Gas extends PureComponent {
     const extra = <GridSelect gridId={gridId} urlBase="/big-platform/gas" />;
     return (
       <BigPlatformLayout
-        title="晶安智慧燃气平台"
+        title="智慧燃气平台"
         extra={extra}
         style={{ backgroundImage: 'none' }}
         headerStyle={{

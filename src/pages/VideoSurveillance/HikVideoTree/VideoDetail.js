@@ -44,7 +44,7 @@ export default class VideoDetail extends Component {
         key: 'content',
       },
     ],
-  }
+  };
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -63,34 +63,51 @@ export default class VideoDetail extends Component {
   }
 
   render() {
-    const { video: { detail }, loading } = this.props;
+    const {
+      video: { detail },
+      loading,
+    } = this.props;
     return (
-      <PageHeaderLayout title="视频详情" breadcrumbList={breadcrumbList} >
+      <PageHeaderLayout title="视频详情" breadcrumbList={breadcrumbList}>
         <Card bordered={false}>
           <DescriptionList size="large" title="视频基础信息" style={{ marginBottom: 32 }}>
             <Description term="视频名称">{detail.name}</Description>
             <Description term="视频编号">{detail.indexCode}</Description>
             <Description term="所属目录">{detail.dirName}</Description>
-            <Description term="摄像头类型">{detail.type || <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>}</Description>
+            <Description term="摄像头类型">
+              {detail.type || <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>}
+            </Description>
             <Description term="设备IP地址">{detail.innerIp}</Description>
             <Description term="所属区域">{detail.dirName}</Description>
-            <Description term="经度">{detail.longitude === 'null' ? <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span> : (detail.longitude || detail.longitude)}</Description>
-            <Description term="纬度">{detail.latitude === 'null' ? <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span> : (detail.latitude || detail.latitude)}</Description>
+            <Description term="经度">
+              {detail.longitude === 'null' ? (
+                <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>
+              ) : (
+                detail.longitude || detail.longitude
+              )}
+            </Description>
+            <Description term="纬度">
+              {detail.latitude === 'null' ? (
+                <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>
+              ) : (
+                detail.latitude || detail.latitude
+              )}
+            </Description>
             <Description term="视频状态">
               <Badge status={statusMap[detail.status]} text={status[detail.status]} />
             </Description>
           </DescriptionList>
           {/* <Divider style={{ marginBottom: 32 }} />
           {detail.repairCompany ? (
-            <DescriptionList size="large" title="维保信息" style={{ marginBottom: 32 }}>
-              <Description term="维保公司">{detail.repairCompany.company}</Description>
+            <DescriptionList size="large" title="运维信息" style={{ marginBottom: 32 }}>
+              <Description term="运维公司">{detail.repairCompany.company}</Description>
               <Description term="联系电话">{detail.repairCompany.phone}</Description>
               <Description term="公司地址">{detail.repairCompany.address}</Description>
               <Description term="联系人">{detail.repairCompany.contact}</Description>
             </DescriptionList>
           ) :
             (
-              <DescriptionList size="large" title="维保信息" style={{ marginBottom: 32 }}>
+              <DescriptionList size="large" title="运维信息" style={{ marginBottom: 32 }}>
                 <div style={{ padding: '16px', fontSize: '14px', color: 'rgba(0,0,0,0.45)', textAlign: 'center' }}>暂无数据</div>
               </DescriptionList>
             )} */}

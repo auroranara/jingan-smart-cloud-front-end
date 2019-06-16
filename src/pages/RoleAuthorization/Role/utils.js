@@ -4,7 +4,7 @@ const { TreeNode } = TreeSelect;
 
 export const LIST_PAGE_SIZE = 24;
 
-export const MAI = 1; // 维保
+export const MAI = 1; // 运维
 export const GOV = 2; // 政府
 export const OPE = 3; // 运营
 export const COM = 4; // 企事业
@@ -32,11 +32,9 @@ export const PRIVATE_URLS = {
 };
 
 export function getUnitTypeLabel(type, types) {
-  if (!types || !types.length || !type)
-    return;
+  if (!types || !types.length || !type) return;
   const target = types.find(({ id }) => type === id);
-  if (!target)
-    return;
+  if (!target) return;
   return target.label;
 }
 
@@ -56,7 +54,7 @@ export function checkParent(list, permissions) {
     }
   });
   return newList;
-};
+}
 
 /* 移除子元素未全部选中的父元素 */
 export function uncheckParent(list, permissions) {
@@ -75,7 +73,7 @@ export function uncheckParent(list, permissions) {
     }
   });
   return newList;
-};
+}
 
 /* 对树排序 */
 export function sortTree(list) {
@@ -105,12 +103,12 @@ export function sortTree(list) {
     }
   }
   return newList;
-};
+}
 
 /* 获取无数据 */
 export function getEmptyData() {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
-};
+}
 
 /* 设置相对定位 */
 export function getRootChild() {
@@ -120,25 +118,22 @@ export function getRootChild() {
 // 阻止默认行为
 export function preventDefault(e) {
   e.preventDefault();
-};
+}
 
 /* 去除两边空格 */
 export function transform(value) {
   return value.trim();
 }
 
-export function getSelectedTree(selected, tree, childProp='childMenus') {
-  if (!tree || !tree.length)
-    return [];
+export function getSelectedTree(selected, tree, childProp = 'childMenus') {
+  if (!tree || !tree.length) return [];
   return tree.reduce((prev, next) => {
     const { id, [childProp]: childMenus } = next;
     if (selected.includes(id)) {
       const node = { ...next };
       const children = getSelectedTree(selected, childMenus, childProp);
-      if (children.length)
-        node[childProp] = children;
-      else
-        delete node[childProp];
+      if (children.length) node[childProp] = children;
+      else delete node[childProp];
       prev.push(node);
     }
     return prev;
@@ -147,8 +142,7 @@ export function getSelectedTree(selected, tree, childProp='childMenus') {
 
 // 根据unitType判断是否是管理员
 export function isAdmin(unitType) {
-  if (unitType === undefined || unitType === null || +unitType === 3)
-    return true;
+  if (unitType === undefined || unitType === null || +unitType === 3) return true;
   return false;
 }
 
@@ -164,35 +158,30 @@ export function generateTreeNode(list) {
     }
     return <TreeNode title={item.name} key={item.id} value={item.id} />;
   });
-};
+}
 
 // 获取RoleHandler组件中企业和单位类型是否可以编辑
 export function getUnitDisabled(isEdit, isCommon, isAdmin) {
-  if (isCommon) // 公共角色
+  if (isCommon)
+    // 公共角色
     return false;
 
   // 以下皆为私有角色
-  if (isEdit)
-    return true;
+  if (isEdit) return true;
   // 以下皆为私有角色新增
-  if (!isAdmin)
-    return true;
+  if (!isAdmin) return true;
 
   return false;
 }
 
 // 当children属性为空数组时，在对象上删除这个属性
 export function removeEmptyChildren(list) {
-  if (!Array.isArray(list))
-    return [];
+  if (!Array.isArray(list)) return [];
 
   list.forEach(item => {
-    if (!item.children)
-      return;
-    if (!item.children.length)
-      delete item.children;
-    else
-      removeEmptyChildren(item.children);
+    if (!item.children) return;
+    if (!item.children.length) delete item.children;
+    else removeEmptyChildren(item.children);
   });
   return list;
 }
@@ -208,8 +197,7 @@ function traverse(list, callback) {
 function getChildIds(item, cache) {
   const { id, children } = item;
   const cachedIds = cache[id];
-  if (cachedIds)
-    return cachedIds;
+  if (cachedIds) return cachedIds;
   let childIds = [];
   if (Array.isArray(children))
     childIds = children.reduce((prev, next) => [...prev, next.id, ...getChildIds(next, cache)], []);
@@ -235,8 +223,9 @@ export function getIdMap(list) {
 const CHECK_NONE = 0; // 全不选
 const CHECK_PART = 1; // 半选
 const CHECK_ALL = 2; // 全选
-export function getChecked(status) { // [indeterminate, checked] indeterminate控制半选还是全选的样式，checked表示选中状态
-  switch(+status) {
+export function getChecked(status) {
+  // [indeterminate, checked] indeterminate控制半选还是全选的样式，checked表示选中状态
+  switch (+status) {
     case CHECK_NONE:
       return [false, false];
     case CHECK_PART:
@@ -248,7 +237,8 @@ export function getChecked(status) { // [indeterminate, checked] indeterminate�
   }
 }
 
-function getNextStatus(status) { // 点击时下一个状态只可能是全选或全不选
+function getNextStatus(status) {
+  // 点击时下一个状态只可能是全选或全不选
   status = status ? +status : 0;
   // if (hasChild) { // 有子元素，则有三种状态
   //   if (status === CHECK_ALL) // 全选点击时，下一个状态是全不选
@@ -257,8 +247,7 @@ function getNextStatus(status) { // 点击时下一个状态只可能是全选�
   // }
 
   // 没有子元素，只有两种状态，无半选
-  if (status === CHECK_ALL)
-    return CHECK_NONE;
+  if (status === CHECK_ALL) return CHECK_NONE;
   return CHECK_ALL;
 }
 
@@ -281,13 +270,15 @@ function getNextStatus(status) { // 点击时下一个状态只可能是全选�
 //   return newState;
 // }
 
-export function getNewMsgs(id, state, idMap) { // msgs -> newMsgs
+export function getNewMsgs(id, state, idMap) {
+  // msgs -> newMsgs
   const root = '0';
   const newState = { ...state };
-  const current = newState[id] = getNextStatus(state[id]); // 点击节点的下一状态只可能是全选或全不选
+  const current = (newState[id] = getNextStatus(state[id])); // 点击节点的下一状态只可能是全选或全不选
   const { parentId, allChildIds } = idMap[id];
   let parent = parentId;
-  while (parent !== root) { // 非顶层节点才要考虑所有父节点问题
+  while (parent !== root) {
+    // 非顶层节点才要考虑所有父节点问题
     const statuses = idMap[parent].childIds.map(id => newState[id]); // newState[id]可能为undefined，等同于0
     newState[parent] = getFatherNodeStatus(current, statuses);
     // if (current) // 全选时，同级节点都全选，则父节点全选，否则为半选
@@ -297,14 +288,15 @@ export function getNewMsgs(id, state, idMap) { // msgs -> newMsgs
     parent = idMap[parent].parentId;
   }
 
-  allChildIds.forEach(id => newState[id] = current); // 全选则子节点全打勾，取消则子节点全取消
+  allChildIds.forEach(id => (newState[id] = current)); // 全选则子节点全打勾，取消则子节点全取消
 
   return newState;
 }
 
 // 点击时修正父节点的状态
 function getFatherNodeStatus(current, statuses) {
-  if (current) // 全选时，同级节点都全选，则父节点全选，否则为半选
+  if (current)
+    // 全选时，同级节点都全选，则父节点全选，否则为半选
     return statuses.every(s => s === CHECK_ALL) ? CHECK_ALL : CHECK_PART;
   // 取消选中时，同级子节点都未选中，则父节点未选中，否则未半选
   return statuses.every(s => !s) ? CHECK_NONE : CHECK_PART;
@@ -315,11 +307,12 @@ export function getInitialMsgs(ids, idMap) {
   return ids.reduce((prev, next) => {
     const { allChildIds } = idMap[next];
     let status;
-    if (allChildIds.length) { // 有子节点，通过子节点选中状态判断
+    if (allChildIds.length) {
+      // 有子节点，通过子节点选中状态判断
       const statuses = allChildIds.map(childId => ids.includes(childId)); // 当前节点的所有子孙节点在ids中是否存在
       status = getCurrentNodeStatus(statuses);
-    } else // 没有子节点，保留当前状态
-      status = ids.includes(next) ? CHECK_ALL : CHECK_NONE;
+    } // 没有子节点，保留当前状态
+    else status = ids.includes(next) ? CHECK_ALL : CHECK_NONE;
     prev[next] = status;
     return prev;
   }, {});
@@ -327,9 +320,11 @@ export function getInitialMsgs(ids, idMap) {
 
 // 初始化时当前节点的状态
 function getCurrentNodeStatus(statuses) {
-  if (statuses.every(s => s)) // 全存在
+  if (statuses.every(s => s))
+    // 全存在
     return CHECK_ALL;
-  if (statuses.every(s => !s)) // 全都不存在
+  if (statuses.every(s => !s))
+    // 全都不存在
     return CHECK_NONE;
   return CHECK_PART; // 部分存在
 }
@@ -371,7 +366,8 @@ function isExist(arg) {
   return arg !== undefined && arg !== null;
 }
 
-export function getNewAccountMsgs(id, i, state, idMap, nextStatus) { // msgs -> newMsgs nextStatus只能是全选或不选状态，不可能是半选状态
+export function getNewAccountMsgs(id, i, state, idMap, nextStatus) {
+  // msgs -> newMsgs nextStatus只能是全选或不选状态，不可能是半选状态
   const root = '0';
   const newState = Object.entries(state).reduce((prev, next) => {
     const [id, [mobile, app]] = next;
@@ -379,17 +375,15 @@ export function getNewAccountMsgs(id, i, state, idMap, nextStatus) { // msgs -> 
     return prev;
   }, {});
   let checks = newState[id];
-  if (!checks)
-    checks = newState[id] = [0, 0];
-  if (!isExist(nextStatus))
-    nextStatus = getNextStatus(checks[i]);
-  const current = checks[i] = nextStatus;
+  if (!checks) checks = newState[id] = [0, 0];
+  if (!isExist(nextStatus)) nextStatus = getNextStatus(checks[i]);
+  const current = (checks[i] = nextStatus);
   const { parentId, allChildIds } = idMap[id];
   let parent = parentId;
-  while (parent !== root) { // 非顶层节点才要考虑父节点问题
-    if (!newState[parent])
-      newState[parent] = [0, 0];
-    const statuses = idMap[parent].childIds.map(id =>  newState[id] ? newState[id][i] : 0);
+  while (parent !== root) {
+    // 非顶层节点才要考虑父节点问题
+    if (!newState[parent]) newState[parent] = [0, 0];
+    const statuses = idMap[parent].childIds.map(id => (newState[id] ? newState[id][i] : 0));
     newState[parent][i] = getFatherNodeStatus(current, statuses);
     // if (current) // 选中时，同级节点都全选，则父节点全选，否则半选
     //   newState[parent][i] = statuses.every(s => s === CHECK_ALL) ? CHECK_ALL : CHECK_PART;
@@ -399,8 +393,7 @@ export function getNewAccountMsgs(id, i, state, idMap, nextStatus) { // msgs -> 
   }
 
   allChildIds.forEach(id => {
-    if (!newState[id])
-      newState[id] = [0, 0];
+    if (!newState[id]) newState[id] = [0, 0];
     newState[id][i] = current;
   }); // 勾上则子节点全打勾，取消则子节点全取消
 
@@ -431,11 +424,14 @@ export function getNewAccountMsgs(id, i, state, idMap, nextStatus) { // msgs -> 
 //   return state;
 // }
 
-function fixMsgs(id, state, mobileOrApp, status, idMap) { // mobileOrApp[0 mobile 1 app] checked[0 取消 2 全选]
+function fixMsgs(id, state, mobileOrApp, status, idMap) {
+  // mobileOrApp[0 mobile 1 app] checked[0 取消 2 全选]
   const [mobile, app] = state[id];
-  if (!mobileOrApp && status && app !== CHECK_ALL) // mobile全选，且app未全选则将app全选
+  if (!mobileOrApp && status && app !== CHECK_ALL)
+    // mobile全选，且app未全选则将app全选
     return getNewAccountMsgs(id, 1, state, idMap, status);
-  if (mobileOrApp && !status && mobile) // app全不选且mobile部分或全选，则将mobile也设值为全不选
+  if (mobileOrApp && !status && mobile)
+    // app全不选且mobile部分或全选，则将mobile也设值为全不选
     return getNewAccountMsgs(id, 0, state, idMap, status);
   return state;
 }
@@ -455,8 +451,7 @@ function fixMsgs(id, state, mobileOrApp, status, idMap) { // mobileOrApp[0 mobil
 // }
 
 export function convertToMsgs(list, idMap) {
-  if (!Array.isArray(list))
-    return {};
+  if (!Array.isArray(list)) return {};
   const filteredList = list.filter(({ messageTypeId }) => idMap[messageTypeId]); // 过滤掉不存在的节点
   const msgs = filteredList.reduce((prev, next) => {
     const { messageTypeId, appAcceptStatus, webAcceptStatus } = next;
@@ -469,15 +464,19 @@ export function convertToMsgs(list, idMap) {
   ids.forEach(id => {
     const { allChildIds } = idMap[id];
     let sts;
-    if (allChildIds.length) { // 当前节点有子节点，状态由子节点状态绝对
-      const statuses = allChildIds.map(childId => msgs[childId] ? msgs[childId] : [0, 0]);
-      const stsList = statuses.reduce((prev, next) => {
-        prev.forEach((lst, i) => lst.push(next[i]));
-        return prev;
-      }, [[], []]);
+    if (allChildIds.length) {
+      // 当前节点有子节点，状态由子节点状态绝对
+      const statuses = allChildIds.map(childId => (msgs[childId] ? msgs[childId] : [0, 0]));
+      const stsList = statuses.reduce(
+        (prev, next) => {
+          prev.forEach((lst, i) => lst.push(next[i]));
+          return prev;
+        },
+        [[], []]
+      );
       sts = [0, 1].map(i => getCurrentNodeStatus(stsList[i]));
-    } else // 当前节点无子节点 0->未选 1->全选
-      sts = msgs[id].map(s => s ? CHECK_ALL : CHECK_NONE);
+    } // 当前节点无子节点 0->未选 1->全选
+    else sts = msgs[id].map(s => (s ? CHECK_ALL : CHECK_NONE));
 
     newMsgs[id] = sts;
   });
@@ -513,10 +512,12 @@ export function treeConvertToMsgs(list) {
 export function addParentId(ids, idMap) {
   const root = '0';
   let parents = []; // 需要添加的父节点数组
-  for(let id of ids) {
+  for (let id of ids) {
     let parent = idMap[id].parentId;
-    while(parent !== root) { // 添加当前节点的所有父节点
-      if (!parents.includes(parent) && !ids.includes(parent)) // 当父节点已经存在于需要添加的数组或本身就包含时，不需要重复添加
+    while (parent !== root) {
+      // 添加当前节点的所有父节点
+      if (!parents.includes(parent) && !ids.includes(parent))
+        // 当父节点已经存在于需要添加的数组或本身就包含时，不需要重复添加
         parents.push(parent);
       parent = idMap[parent].parentId;
     }
@@ -526,8 +527,7 @@ export function addParentId(ids, idMap) {
 
 // 剔除半选的父节点，逻辑为遍历数组，查看当前节点的所有子节点是否存在于数组中，不存在就删除，存在就保留
 export function removeParentId(ids, idMap) {
-  if (!Array.isArray(ids))
-    return [];
+  if (!Array.isArray(ids)) return [];
   const parents = []; // 需要剔除的父节点数组
   for (let id of ids) {
     const targetMap = idMap[id]; // 若id在树中不存在，则当前id也要过滤掉
@@ -539,7 +539,8 @@ export function removeParentId(ids, idMap) {
     // if (childIds.length && !childIds.every(id => ids.includes(id))) // 当前节点有子节点，且不是每个子节点都包含在数组中
     //   parents.push(id);
     const { allChildIds } = targetMap;
-    if (allChildIds.length && !allChildIds.every(id => ids.includes(id))) // 当前节点有子节点，且不是所有子孙节点都包含在数组中
+    if (allChildIds.length && !allChildIds.every(id => ids.includes(id)))
+      // 当前节点有子节点，且不是所有子孙节点都包含在数组中
       parents.push(id);
   }
   return ids.filter(id => !parents.includes(id));

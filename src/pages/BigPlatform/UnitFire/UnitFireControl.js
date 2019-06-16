@@ -65,7 +65,7 @@ const Host = ({ data, onClick }) => {
 const defaultFireControlType = 1;
 /* 默认选中的隐患巡查统计类型 */
 const defaultHiddenDangerType = 1;
-/* 默认选中的维保情况统计类型 */
+/* 默认选中的运维情况统计类型 */
 const defaultMaintenanceType = 6;
 /* 默认每页显示数量 */
 const defaultPageSize = 10;
@@ -213,7 +213,7 @@ export default class UnitFireControl extends PureComponent {
       },
     });
 
-    // 获取维保情况统计
+    // 获取运维情况统计
     dispatch({
       type: 'unitFireControl/fetchMaintenanceCount',
       payload: {
@@ -358,7 +358,7 @@ export default class UnitFireControl extends PureComponent {
       },
     }); */
 
-    // 获取维保情况统计 2-4
+    // 获取运维情况统计 2-4
     /* dispatch({
       type: 'unitFireControl/fetchMaintenanceCount',
       payload: {
@@ -417,7 +417,7 @@ export default class UnitFireControl extends PureComponent {
   };
 
   /**
-   * 维保情况统计tab切换事件
+   * 运维情况统计tab切换事件
    */
   handleSwitchMaintenanceType = maintenanceType => {
     const {
@@ -760,7 +760,7 @@ export default class UnitFireControl extends PureComponent {
             from_grid_point = 0, */
             company_self_check = 0, // 企业自查
             gov_check = 0, // 政府监督
-            maintenance_check = 0, // 维保检查
+            maintenance_check = 0, // 运维检查
           } = {},
         ] = [],
         dangerDto: {
@@ -1074,7 +1074,7 @@ export default class UnitFireControl extends PureComponent {
   };
 
   /**
-   * 维保情况统计
+   * 运维情况统计
    */
   renderStatisticsOfMaintenance() {
     const {
@@ -1101,7 +1101,7 @@ export default class UnitFireControl extends PureComponent {
         type={maintenanceType}
         onSwitch={this.handleSwitchMaintenanceType}
         maintenance={{
-          name: unitName && unitName.length > 0 ? unitName[0].name : '维保单位',
+          name: unitName && unitName.length > 0 ? unitName[0].name : '运维单位',
           total: assignAllNum,
           repaired: assignFinishNum,
           unrepaired: assignNoNum,
@@ -1241,10 +1241,10 @@ export default class UnitFireControl extends PureComponent {
               );
             })
           ) : (
-              <div className={styles.hostIsEmpty}>
-                <span>暂无主机</span>
-              </div>
-            )}
+            <div className={styles.hostIsEmpty}>
+              <span>暂无主机</span>
+            </div>
+          )}
         </Section>
       </Rotate>
     );
@@ -1369,7 +1369,7 @@ export default class UnitFireControl extends PureComponent {
                     {this.renderStatisticsOfFireControl()}
                   </Col>
                   {/* <Col span={8} style={{ height: '100%' }}>
-                     维保情况统计
+                     运维情况统计
                     {this.renderStatisticsOfMaintenance()}
                   </Col> */}
                 </Row>

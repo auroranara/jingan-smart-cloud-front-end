@@ -9,7 +9,7 @@ const CLASSNAME = ['zero', 'one', 'two'];
 
 export default class OvSelect extends PureComponent {
   render() {
-    const { options, cssType=0, value, handleChange, ...restProps } = this.props;
+    const { options, cssType=0, value, handleChange, dropdownMatchSelectWidth, ...restProps } = this.props;
 
     return (
       <div className={styles[CLASSNAME[cssType]]} {...restProps}>
@@ -18,6 +18,7 @@ export default class OvSelect extends PureComponent {
           value={value}
           // defaultValue={0}
           onChange={handleChange}
+          dropdownMatchSelectWidth={dropdownMatchSelectWidth === undefined ? true : dropdownMatchSelectWidth}
         >
           {options.map(({ value, desc }) => <Option value={value} key={value}>{desc}</Option>)}
         </Select>

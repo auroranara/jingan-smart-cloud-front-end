@@ -15,7 +15,7 @@ const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
 
 // 标题
-const title = '维保记录';
+const title = '运维记录';
 
 //面包屑
 const breadcrumbList = [
@@ -30,7 +30,7 @@ const breadcrumbList = [
   },
   {
     title,
-    name: '维保记录',
+    name: '运维记录',
   },
 ];
 
@@ -38,7 +38,7 @@ const breadcrumbList = [
 const defaultColumns = fuc => {
   return [
     {
-      title: '维保时间',
+      title: '运维时间',
       dataIndex: 'checkDate',
       key: 'checkDate',
       align: 'center',
@@ -48,7 +48,7 @@ const defaultColumns = fuc => {
       },
     },
     {
-      title: '维保人员',
+      title: '运维人员',
       dataIndex: 'checkUsers',
       key: 'checkUserIds',
       align: 'center',
@@ -164,7 +164,7 @@ export default class MaintenanceRecordList extends PureComponent {
     currentImage: 0, // 展示附件大图下标
     columns: [
       {
-        title: '维保时间',
+        title: '运维时间',
         dataIndex: 'checkDate',
         key: 'checkDate',
         align: 'center',
@@ -174,7 +174,7 @@ export default class MaintenanceRecordList extends PureComponent {
         },
       },
       {
-        title: '维保人员',
+        title: '运维人员',
         dataIndex: 'checkUsers',
         key: 'checkUserIds',
         align: 'center',
@@ -279,7 +279,7 @@ export default class MaintenanceRecordList extends PureComponent {
     if (!isBranch) {
       const newColumns = [
         {
-          title: '维保单位',
+          title: '运维单位',
           dataIndex: 'checkCompanyName',
           key: 'checkCompanyId',
           align: 'center',
@@ -445,7 +445,7 @@ export default class MaintenanceRecordList extends PureComponent {
               {getFieldDecorator('checkCompanyName', {
                 initialValue: defaultFormData.checkCompanyName,
                 getValueFromEvent: e => e.target.value.trim(),
-              })(<Input placeholder="请输入维保单位名称" />)}
+              })(<Input placeholder="请输入运维单位名称" />)}
             </FormItem>
           )}
           <FormItem>

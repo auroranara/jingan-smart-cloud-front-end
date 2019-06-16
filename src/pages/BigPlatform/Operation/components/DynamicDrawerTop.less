@@ -1,0 +1,77 @@
+.dynamicDrawerTop {
+
+  .companyInfoContainer,
+  .messageSendingContainer {
+    border: 1px solid #04fdff;
+    padding: 16px;
+    color: #fff;
+    position: relative;
+  }
+
+  .companyInfoContainer {
+    .title {
+      font-size: 17px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .line {
+      width: calc(100% - 220px);
+      margin-bottom: 6px;
+    }
+
+    .logoContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: absolute;
+
+      .logo {
+        position: relative;
+        color: #fff;
+        cursor: pointer;
+        width: 43px;
+        height: 44px;
+
+        &>div {
+          position: absolute;
+          top: 39%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 21px;
+        }
+      }
+
+      .desc {
+        text-align: center;
+        color: #9F9F9F;
+        font-size: 10px;
+        margin-top: 5px;
+      }
+    }
+
+    .repeatDesc {
+      position: absolute;
+      font-size: 10px;
+      color: #00FFFF;
+      visibility: hidden;
+
+      div {
+        margin-bottom: 7px;
+      }
+
+      div:last-of-type {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .messageSendingContainer {
+    border-top: none;
+
+    .topLine {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+}

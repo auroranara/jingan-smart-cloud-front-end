@@ -8,7 +8,9 @@ function UnitCard(props) {
   const { index, loading, companyName, alerted, onClick } = props;
   const parsedAlerted = myParseInt(alerted);
 
-  const style = parsedAlerted ? { color: '#4092fa', border: '1px solid #4092fa', backgroundColor: 'transparent' } : { backgroundColor: '#053d84', color: '#fff', border: '1px solid #053d84' };
+  const style = parsedAlerted
+    ? { color: '#4092fa', border: '1px solid #4092fa', backgroundColor: 'transparent' }
+    : { backgroundColor: '#053d84', color: '#fff', border: '1px solid #053d84' };
 
   return (
     <Row style={{ borderBottom: '1px rgb(9, 103, 211) solid' }}>
@@ -32,14 +34,10 @@ function UnitCard(props) {
   );
 }
 
-// const list = [...Array(20).keys()].map(i => ({
-//   unit: '无锡晶安智慧科技有限公司',
-// }));
-
 export default class OffGuardWarning extends Component {
   handleClick = item => {
     const { gridId, dispatch, data: offGuard } = this.props;
-    const { unitName, list=[] } = offGuard;
+    const { unitName, list = [] } = offGuard;
     if (!list.length) {
       message.warn('企业列表为空，无法一键警告');
       return;
@@ -47,7 +45,9 @@ export default class OffGuardWarning extends Component {
 
     const isWarnAll = !item;
     const recordsId = isWarnAll ? list[0].recordsId : item.recordsId;
-    const companyIds = isWarnAll ? list.map(({ companyId }) => companyId).join(',') : item.companyId;
+    const companyIds = isWarnAll
+      ? list.map(({ companyId }) => companyId).join(',')
+      : item.companyId;
 
     dispatch({
       type: 'bigFireControl/offGuardWarn',
@@ -76,12 +76,13 @@ export default class OffGuardWarning extends Component {
       //   }
       // },
       callback(code, msg) {
-        if (code !== 200)
-          message.warn(msg);
+        if (code !== 200) message.warn(msg);
         else {
           message.info('警告成功');
           const index = list.indexOf(item);
-          const newList = isWarnAll ? list.map(item => ({ ...item, alertFlag: 1 })) : list.map((item, i) => i === index ? { ...item, alertFlag: 1 } : item);
+          const newList = isWarnAll
+            ? list.map(item => ({ ...item, alertFlag: 1 }))
+            : list.map((item, i) => (i === index ? { ...item, alertFlag: 1 } : item));
           dispatch({
             type: 'bigFireControl/saveOffGuard',
             payload: { ...offGuard, list: newList },
@@ -89,17 +90,23 @@ export default class OffGuardWarning extends Component {
         }
       },
     });
-  }
+  };
 
   render() {
-    const { showed, loading, data: { list=[] } } = this.props;
+    const {
+      showed,
+      loading,
+      data: { list = [] },
+    } = this.props;
 
     return (
       <section style={{ display: showed ? 'block' : 'none' }} className={styles.container}>
         <Row span={24} style={{ height: '20%' }}>
           <Col span={12} style={{ height: '100%' }}>
             <div className={styles.left}>
-              <Button type="primary" loading={loading} onClick={() => this.handleClick()}>一键警告</Button>
+              <Button type="primary" loading={loading} onClick={() => this.handleClick()}>
+                一键警告
+              </Button>
             </div>
           </Col>
           <Col span={12} style={{ height: '100%' }}>
@@ -114,7 +121,16 @@ export default class OffGuardWarning extends Component {
         <div className={styles.table}>
           {list.map((item, index) => {
             const { id, companyName, alertFlag } = item;
-            return <UnitCard key={id} index={index + 1} loading={loading} companyName={companyName} alerted={alertFlag} onClick={e => this.handleClick(item)} />
+            return (
+              <UnitCard
+                key={id}
+                index={index + 1}
+                loading={loading}
+                companyName={companyName}
+                alerted={alertFlag}
+                onClick={e => this.handleClick(item)}
+              />
+            );
           })}
         </div>
       </section>

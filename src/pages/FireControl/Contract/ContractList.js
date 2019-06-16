@@ -18,7 +18,7 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 /* 标题 */
-const title = '维保合同管理';
+const title = '运维合同管理';
 // 获取链接地址
 const {
   contract: { detail: detailUrl, edit: editUrl, add: addUrl },
@@ -67,7 +67,7 @@ const markLabelList = {
         ...action,
       });
     },
-    /* 追加维保合同列表 */
+    /* 追加运维合同列表 */
     appendList(action) {
       dispatch({
         type: 'contract/appendList',
@@ -297,7 +297,7 @@ export default class ContractList extends PureComponent {
       {
         id: 'maintenanceName',
         render() {
-          return <Input placeholder="请输入维保单位名称" />;
+          return <Input placeholder="请输入运维单位名称" />;
         },
         transform,
       },
@@ -453,7 +453,7 @@ export default class ContractList extends PureComponent {
                     style={hasDetailAuthority ? { cursor: 'pointer' } : null}
                   >
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      维保单位：
+                      运维单位：
                       {maintenanceName || getEmptyData()}
                     </Ellipsis>
 
@@ -513,8 +513,8 @@ export default class ContractList extends PureComponent {
         href: '/',
       },
       {
-        title: '消防维保',
-        name: '消防维保',
+        title: '消防运维',
+        name: '消防运维',
       },
       {
         title,
@@ -528,7 +528,7 @@ export default class ContractList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            维保合同总数：
+            运维合同总数：
             {total}{' '}
           </div>
         }

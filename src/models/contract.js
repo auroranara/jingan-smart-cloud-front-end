@@ -1,4 +1,12 @@
-import { queryContractList, queryStatusList, queryContract, addContract, queryMaintenanceList, queryServiceList, editContract } from '../services/contract/contract.js';
+import {
+  queryContractList,
+  queryStatusList,
+  queryContract,
+  addContract,
+  queryMaintenanceList,
+  queryServiceList,
+  editContract,
+} from '../services/contract/contract.js';
 
 export default {
   namespace: 'contract',
@@ -36,7 +44,7 @@ export default {
         error(response.msg);
       }
     },
-    /* 追加维保合同列表 */
+    /* 追加运维合同列表 */
     *appendList({ payload, success, error }, { call, put }) {
       const response = yield call(queryContractList, payload);
       if (response.code === 200) {
@@ -144,7 +152,9 @@ export default {
   reducers: {
     /* 获取合同列表 */
     queryList(state, { payload }) {
-      const { pagination: { pageNum, pageSize, total } } = payload;
+      const {
+        pagination: { pageNum, pageSize, total },
+      } = payload;
       return {
         ...state,
         data: payload,
@@ -152,7 +162,12 @@ export default {
       };
     },
     /* 追加合同列表 */
-    pushList(state, { payload: { list, pagination } }) {
+    pushList(
+      state,
+      {
+        payload: { list, pagination },
+      }
+    ) {
       const { pageNum, pageSize, total } = pagination;
       return {
         ...state,
@@ -198,14 +213,14 @@ export default {
         detail: {},
       };
     },
-    /* 获取维保单位列表 */
+    /* 获取运维单位列表 */
     queryMaintenanceList(state, { payload }) {
       return {
         ...state,
         maintenanceList: payload,
       };
     },
-    /* 获取维保单位列表 */
+    /* 获取运维单位列表 */
     queryServiceList(state, { payload }) {
       return {
         ...state,
@@ -217,7 +232,7 @@ export default {
       return {
         ...state,
         searchInfo: payload || null,
-      }
+      };
     },
     // 初始化列表页码
     initPageNum(state, action) {
@@ -228,7 +243,7 @@ export default {
           ...state.pagination,
           pageNum: 1,
         },
-      }
+      };
     },
   },
-}
+};

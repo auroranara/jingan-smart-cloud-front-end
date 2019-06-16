@@ -8,6 +8,7 @@ export default {
     gas: 'dashboard.gasView',
     fireMaintenance: 'dashboard.fireMaintenanceView',
     smoke: 'dashboard.smokeView',
+    operation: 'dashboard.operationView',
   },
   role: {
     list: 'roleAuthorization.role.listView',
