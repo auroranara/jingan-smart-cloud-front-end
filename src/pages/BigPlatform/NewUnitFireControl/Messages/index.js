@@ -383,7 +383,7 @@ export default class Messages extends PureComponent {
         43: { elecTitle: '电气火灾失联', elecContent: `设备状态已恢复正常` },
       };
       return (
-        <div className={styles.msgItem}>
+        <div className={styles.msgItem} key={index}>
           <a
             className={styles.detailBtn}
             onClick={() => {
@@ -416,7 +416,7 @@ export default class Messages extends PureComponent {
         50: '独立烟感告警恢复',
       };
       return (
-        <div className={styles.msgItem}>
+        <div className={styles.msgItem} key={index}>
           {(type === 46 || type === 50) && (
             <a
               className={styles.detailBtn}
@@ -449,7 +449,7 @@ export default class Messages extends PureComponent {
         49: { title: '水系统失联恢复', content: '从失联中恢复' },
       };
       return (
-        <div className={styles.msgItem}>
+        <div className={styles.msgItem} key={index}>
           {type === 48 && (
             <a
               className={styles.detailBtn}
@@ -473,7 +473,7 @@ export default class Messages extends PureComponent {
 
     if (type === 45) {
       return (
-        <div className={styles.msgItem}>
+        <div className={styles.msgItem} key={index}>
           <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>【可燃气体报警恢复】</div>
           <div className={styles.msgBody}>
