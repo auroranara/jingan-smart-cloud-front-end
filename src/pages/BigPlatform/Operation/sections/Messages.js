@@ -189,7 +189,7 @@ export default class Messages extends PureComponent {
       },
     ];
     const restParams = [repeat, cameraMessage, occurData];
-    const msgFlag = messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag;
+    const msgFlag = messageFlag&&(messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
     const param = {
       dataId: +isOver === 0 ? msgFlag : undefined,
       id: +isOver !== 0 ? msgFlag : undefined,
