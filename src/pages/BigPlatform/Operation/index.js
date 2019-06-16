@@ -21,7 +21,7 @@ import {
   TaskCount,
   FireCount,
 } from './components/Components';
-import { PAGE_SIZE } from './utils';
+import { PAGE_SIZE, getUnitList } from './utils';
 
 const options = { // websocket配置
   pingTimeout: 30000,
@@ -35,6 +35,27 @@ const FIRE_DICT = {
   本周: 1,
   本月: 2,
 };
+
+const MAP_SEARCH_STYLE = {
+  top: 'calc(9.62963% + 24px)',
+  position: 'absolute',
+  left: '24px',
+  width: '25.46875%',
+  zIndex: 9999,
+};
+
+const HEADER_STYLE = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  fontSize: 16,
+  zIndex: 99,
+  backgroundImage: `url(${headerBg})`,
+  backgroundSize: '100% 100%',
+};
+
+const CONTENT_STYLE = { position: 'relative', height: '100%', zIndex: 0 };
 
 @connect(({ loading, operation, user }) => ({
   loading: loading.models.operation,
@@ -60,7 +81,7 @@ export default class Operation extends PureComponent {
       tooltipPosition: [0, 0],
       alarmIds: [],
       companyName: '',
-      errorUnitsCardsInfo: [],
+      unitList: [], // 地图显示的企业列表
       unitDetail: {},
       deviceType: 0, // 地图中间根据设备显示企业列表
       fireListHasMore: true, // 火警统计抽屉右边列表是否有更多
@@ -73,35 +94,10 @@ export default class Operation extends PureComponent {
    */
   componentDidMount() {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
-    const {
-      dispatch,
-      // match: { params: { gridId } },
-    } = this.props;
-
-    // 获取单位数据
-    // dispatch({
-    //   type: 'smoke/fetchUnitData',
-    //   payload: { gridId },
-    // });
+    const { dispatch } = this.props;
 
     // 烟感地图数据
     this.fetchMapInfo();
-
-    // 获取接入单位统计列表
-    // dispatch({
-    //   type: 'smoke/fetchImportingTotal',
-    //   payload: {
-    //     status,
-    //     gridId,
-    //   },
-    //   callback: data => {
-    //     if (!data) return;
-    //     const {
-    //       gasUnitSet: { importingUnits = [] },
-    //     } = data;
-    //     this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
-    //   },
-    // });
 
     // const params = {
     //   // companyId: gridId,
@@ -169,65 +165,13 @@ export default class Operation extends PureComponent {
     // };
   }
 
-  // fetchAbnormal = () => {
-  //   const {
-  //     dispatch,
-  //     match: {
-  //       params: { gridId },
-  //     },
-  //   } = this.props;
-  //   // 获取单位数据
-  //   dispatch({
-  //     type: 'smoke/fetchUnitData',
-  //     payload: { gridId },
-  //   });
-  //   // 获取接入单位统计列表
-  //   dispatch({
-  //     type: 'smoke/fetchImportingTotal',
-  //     payload: {
-  //       status,
-  //       gridId,
-  //     },
-  //     callback: data => {
-  //       if (!data) return;
-  //       const {
-  //         gasUnitSet: { importingUnits = [] },
-  //       } = data;
-  //       this.setState({ importCardsInfo: genCardsInfo(importingUnits) });
-  //     },
-  //   });
-  //   // 烟感地图数据
-  //   this.fetchMapInfo();
-
-  //   dispatch({
-  //     type: 'smoke/fetchAbnormalingTotal',
-  //     payload: {
-  //       status,
-  //       gridId,
-  //     },
-  //     callback: data => {
-  //       if (!data) return;
-  //       const {
-  //         gasErrorUnitSet: { errorUnits = [] },
-  //       } = data;
-  //       this.errorUnitsCardsInfo = genCardsInfo(errorUnits);
-  //       this.setState({ errorUnitsCardsInfo: this.errorUnitsCardsInfo });
-  //     },
-  //   });
-  // };
-
-  /**
-   * 销毁前
-   */
   componentWillUnmount() {
     clearInterval(this.pollCompanyInfo);
   }
 
-  importCardsInfo = [];
-  errorUnitsCardsInfo = [];
   fireListPageNum = 1;
 
-  showUnitDetail = (unitDetail, deviceId) => { // 地图显示某个企业详情
+  showUnitDetail = unitDetail => { // 地图显示某个企业详情
     if (!unitDetail) {
       return;
     }
@@ -319,12 +263,9 @@ export default class Operation extends PureComponent {
 
   // 地图搜索
   fetchMapSearchData = value => {
-    const {
-      smoke: {
-        unitSet: { units },
-      },
-    } = this.props;
-    const list = units;
+    // const { operation: { unitList } } = this.props;
+    const { unitList } = this.state;
+    const list = unitList;
     const selectList = value ? list.filter(item => item.companyName.includes(value)) : [];
     this.setState({
       searchValue: value,
@@ -441,14 +382,10 @@ export default class Operation extends PureComponent {
   // };
 
   fetchMapInfo = () => {
-    const {
-      dispatch,
-      // match: { params: { gridId } },
-    } = this.props;
-    // 烟感地图数据
+    const { dispatch } = this.props;
     dispatch({
       type: 'operation/fetchUnitList',
-      // payload: { gridId },
+      callback: list => { this.setState({ unitList: list }) },
     });
   };
 
@@ -505,8 +442,12 @@ export default class Operation extends PureComponent {
     console.log(id);
   }
 
-  handleDeviceTypeChange = v => {
-    this.setState({ deviceType: v });
+  handleDeviceTypeChange = (v, callback) => {
+    const { operation: { unitList } } = this.props;
+    const { unitDetail } = this.state;
+    const list = getUnitList(unitList, v);
+    this.setState({ deviceType: v, unitList: list });
+    callback(!!list.find(({ companyId }) => companyId === unitDetail.companyId));
   };
 
   /**
@@ -516,7 +457,7 @@ export default class Operation extends PureComponent {
     const {
       fireListLoading,
       operation: {
-        unitList,
+        // unitList,
         firePie,
         fireTrend,
         fireList,
@@ -533,39 +474,28 @@ export default class Operation extends PureComponent {
       tooltipVisible,
       tooltipPosition,
       alarmIds,
+      unitList,
       dateType,
       deviceType,
       fireListHasMore,
       fireStatisticsDrawerVisible,
     } = this.state;
 
-    // const extra = <GridSelect gridId={gridId} urlBase="/big-platform/smoke" />;
     return (
       <BigPlatformLayout
         title="智慧消防运营平台"
         extra={unitName}
         style={{ backgroundImage: 'none' }}
-        headerStyle={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          fontSize: 16,
-          zIndex: 99,
-          backgroundImage: `url(${headerBg})`,
-          backgroundSize: '100% 100%',
-        }}
+        headerStyle={HEADER_STYLE}
         titleStyle={{ fontSize: 46 }}
-        contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}
+        contentStyle={CONTENT_STYLE}
         // settable
         // onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
         <BackMap
           deviceType={deviceType}
-          // units={Array.isArray(unitSet.units) ? unitSet.units : []}
           units={unitList}
-          // deviceStatusCount={deviceStatusCount}
           handleMapClick={this.showUnitDetail}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
@@ -576,21 +506,13 @@ export default class Operation extends PureComponent {
           // handleFaultClick={this.handleFaultClick}
           onRef={this.onRef}
           handleCompanyClick={this.handleCompanyClick}
-          // clearPollingMap={this.clearPollingMap}
-          // pollingMap={this.pollingMap}
           fetchMapInfo={this.fetchMapInfo}
           handleDeviceTypeChange={this.handleDeviceTypeChange}
         />
         {/* 搜索框 */}
         <MapSearch
           className={styles.mapSearch}
-          style={{
-            top: 'calc(9.62963% + 24px)',
-            position: 'absolute',
-            left: '24px',
-            width: '25.46875%',
-            zIndex: 9999,
-          }}
+          style={MAP_SEARCH_STYLE}
           selectList={selectList}
           value={searchValue}
           handleChange={this.handleMapSearchChange}
