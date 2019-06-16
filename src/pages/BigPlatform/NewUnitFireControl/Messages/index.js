@@ -315,6 +315,13 @@ export default class Messages extends PureComponent {
         ],
         showMsg: true,
       },
+      '51': {
+        // 独立烟感故障恢复
+        onClick: () => {
+          handleClickSmoke(3);
+        },
+        items: [{ name: '所在区域', value: area }, { name: '所在位置', value: location }],
+      },
     };
     [7, 9].forEach(item => {
       // 主机报警, 报障
@@ -324,10 +331,7 @@ export default class Messages extends PureComponent {
           onClick:
             enterSign === '1'
               ? () => {
-                  if (+item === 7) handleClickMsgFlow(param, 0, 0, ...restParams);
-                  else if (+item === 9) handleClickMsgFlow(param, 0, 1, ...restParams);
-                  // if (+item === 7) handleClickMessage(messageFlag, { ...msg });
-                  // else if (+item === 9) handleFaultClick({ ...msg });
+                  handleClickMsgFlow(param, 0, +item === 7 ? 0 : 1, ...restParams);
                 }
               : undefined,
           items: [
@@ -357,7 +361,7 @@ export default class Messages extends PureComponent {
         },
       };
     });
-    [38, 40, 51].forEach(item => {
+    [38, 40].forEach(item => {
       // 独立烟感报警, 故障
       msgSettings = {
         ...msgSettings,
