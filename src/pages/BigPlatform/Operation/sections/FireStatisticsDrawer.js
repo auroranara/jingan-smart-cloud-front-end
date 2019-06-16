@@ -286,7 +286,7 @@ export default class FireStatisticsDrawer extends PureComponent {
 
     const right = (
       <SearchBar onSearch={this.handleSearch} cols={[12, 12]} extra={selects}>
-        {fireList.length ? cards : loading ? null : <p className={styles.none}>暂无隐患信息</p>}
+        {fireList.length ? cards : loading ? null : <p className={styles.none}>暂无信息</p>}
         {hasMore && (
           <p
             className={!fireList.length && loading ? styles.none : loading ? styles.hasMore : styles.hasMore1}
