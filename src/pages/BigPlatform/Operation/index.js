@@ -232,7 +232,7 @@ export default class Operation extends PureComponent {
                   this.showFireMsg(result);
                 }
               }
-              // this.fetchScreenMessage(dispatch);
+              this.fetchScreenMessage(dispatch);
             }
 
             if (
@@ -257,6 +257,38 @@ export default class Operation extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
+
+    dispatch({
+      type: 'newUnitFireControl/fetchScreenMessage',
+      success: res => {
+        const {
+          list: [{ itemId, messageFlag, type } = {}],
+        } = res;
+        const { fourColorTips, deletedFourColorTips } = this.state;
+        // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
+        if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
+          if (fourColorTips[itemId] === messageFlag) {
+            return;
+          }
+          // 如果前一条隐患还没消失，则移除前一条隐患
+          else if (fourColorTips[itemId]) {
+            this.setState({
+              fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+              latestHiddenDangerId: itemId,
+              deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
+            });
+          } else {
+            this.setState({
+              fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+              latestHiddenDangerId: itemId,
+            });
+          }
+        }
+
+        // 记录最新的一条消息id
+        this.topId = res.list[0] ? res.list[0].messageId : undefined;
+      },
+    });
   }
 
   hiddeAllPopup = () => {
@@ -266,6 +298,15 @@ export default class Operation extends PureComponent {
   componentWillUnmount() {
     clearInterval(this.pollCompanyInfo);
   }
+
+  /**
+   * 获取大屏消息
+   */
+  fetchScreenMessage = (dispatch) => {
+    dispatch({
+      type: 'newUnitFireControl/fetchScreenMessage',
+    });
+  };
 
   fireListPageNum = 1;
 
@@ -369,6 +410,8 @@ export default class Operation extends PureComponent {
       createByPhone,
       faultName,
       firstTime,
+      companyName,
+      component,
     } = item;
     const msgItem = switchMsgType(+type);
     const repeat = {
@@ -395,7 +438,13 @@ export default class Operation extends PureComponent {
     ];
     const msgFlag = messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag;
     const restParams = [repeat, cameraMessage, occurData, companyId];
-    const param = { dataId: msgFlag };
+    const param = { 
+      dataId: msgFlag,
+      companyName: companyName || undefined,
+      component: component || undefined,
+      unitTypeName: unitTypeName || undefined,
+      companyId:companyId||undefined,
+     };
     return (
       <div
         className={styles1.notificationBody}

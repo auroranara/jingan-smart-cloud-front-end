@@ -162,6 +162,7 @@ export default class Messages extends PureComponent {
       unit,
       limitVal,
       companyName,
+      companyId,
     } = msg;
     const repeatCount = +isOver === 0 ? count : num;
     const lastReportTime = moment(addTime).format('YYYY-MM-DD HH:mm');
@@ -195,6 +196,7 @@ export default class Messages extends PureComponent {
       companyName: companyName || undefined,
       component: component || undefined,
       unitTypeName: unitTypeName || undefined,
+      companyId:companyId||undefined,
     };
     let msgSettings = {};
     if (TYPES.indexOf(+type) < 0) return null;
@@ -377,7 +379,11 @@ export default class Messages extends PureComponent {
             if (+item === 38) handleClickMsgFlow(param, 1, 0, ...restParams);
             else if (+item === 40) handleClickMsgFlow(param, 1, 1, ...restParams);
           },
-          items: [{ name: '所在区域', value: area }, { name: '所在位置', value: location }],
+          items: [
+            {name:'单位',value:companyName},
+            { name: '所在区域', value: area },
+             { name: '所在位置', value: location },
+            ],
           showMsg: true,
           isRepeat: true,
         },
