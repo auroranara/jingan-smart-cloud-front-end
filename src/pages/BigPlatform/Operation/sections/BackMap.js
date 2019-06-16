@@ -263,8 +263,9 @@ export default class MapSection extends PureComponent {
             <span
               className={styles.infoIcon}
               style={{
-                background: `url(${iconAddress}) no-repeat center center`,
-                backgroundSize: '100% 100%',
+                backgroundImage: `url(${iconAddress})`,
+                // background: `url(${iconAddress}) no-repeat center center`,
+                // backgroundSize: '100% 100%',
               }}
             />
             {address}
@@ -273,30 +274,38 @@ export default class MapSection extends PureComponent {
             <span
               className={styles.infoIcon}
               style={{
-                background: `url(${iconMan}) no-repeat center center`,
-                backgroundSize: '100% 100%',
+                backgroundImage: `url(${iconMan})`,
+                // backgroundSize: '100% 100%',
               }}
             />
             {saferName}
-            <span style={{ marginLeft: '10px' }}>{saferPhone}</span>
+            <span
+              className={styles.saferPhone}
+              // style={{ marginLeft: '10px' }}
+            >
+              {saferPhone}
+            </span>
           </div>
           {
             deviceType ? (
               <Fragment>
-                <div style={{ borderTop: '1px solid #474747', margin: '8px 0', paddingTop: '8px' }}>
+                <div
+                  className={styles.device}
+                  // style={{ borderTop: '1px solid #474747', margin: '8px 0', paddingTop: '8px' }}
+                >
                   设备数量 {deviceCount}
                 </div>
                 <div className={styles.statusWrapper}>
                   <div
                     className={fire > 0 ? styles.itemActive : styles.statusItem}
-                    onClick={alarmClick}
+                    // onClick={alarmClick}
                   >
                     <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
                     报警 {fire > 0 ? fire : 0}
                   </div>
                   <div
                     className={fault > 0 ? styles.itemActive : styles.statusItem}
-                    onClick={faultClick}
+                    // onClick={faultClick}
                   >
                     <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
                     故障 {fault}
