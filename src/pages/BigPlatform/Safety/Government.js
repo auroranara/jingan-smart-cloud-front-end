@@ -85,7 +85,8 @@ class GovernmentBigPlatform extends Component {
     super(props);
     this.state = {
       polygons: [],
-      projectName: global.PROJECT_CONFIG.projectName,
+      // projectName: global.PROJECT_CONFIG.projectName,
+      projectName:'政府安全驾驶舱',
       scrollNodeTop: 0,
       label: {
         longitude: 120.366011,

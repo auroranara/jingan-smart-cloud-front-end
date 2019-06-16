@@ -574,7 +574,8 @@ export default class UnitSafety extends PureComponent {
     } = unitSafety;
     return (
       <BigPlatformLayout
-        title={global.PROJECT_CONFIG.projectName}
+        // title={global.PROJECT_CONFIG.projectName}
+        title="企业安全驾驶舱"
         settable
         onSet={this.handleShowSetDrawer}
       >
@@ -651,7 +652,7 @@ export default class UnitSafety extends PureComponent {
                 onClick={this.goToMonitor}
                 onShow={this.showDeviceCountDrawer}
                 handleClickVideo={this.showVideo}
-                // handleClickGas={this.handleClickGas}
+              // handleClickGas={this.handleClickGas}
               />
             </div>
           </Col>

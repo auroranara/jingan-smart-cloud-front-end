@@ -1849,7 +1849,7 @@ export default class NewUnitFireControl extends PureComponent {
 
     return (
       <BigPlatformLayout
-        title={'智慧消防云平台'}
+        title={'企业运营驾驶舱'}
         style={{
           // backgroundImage: 'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg2.png)',
           backgroundImage: 'none',

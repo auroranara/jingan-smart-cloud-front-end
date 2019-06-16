@@ -13,13 +13,13 @@ const electricImg = 'http://data.jingan-china.cn/v2/dashboard/dashboard-electric
 const fireMaintenanceImg = 'http://data.jingan-china.cn/new-fire-control.png';
 const smokeImg = 'http://data.jingan-china.cn/smoke.png';
 
-const safeItem = { src: safe, url: '', label: '安全驾驶舱' };
-const fireItem = { src: fire, url: '', label: '消防驾驶舱' };
+const safeItem = { src: safe, url: '', label: '政府安全驾驶舱' };
+const fireItem = { src: fire, url: '', label: '消防主机联网驾驶舱' };
 const monitorItem = { src: monitor, url: '', label: '动态监测驾驶舱' };
 const positionItem = { src: psoitionImg, url: '', label: '人员定位驾驶舱' };
 const electricItem = { src: electricImg, url: '', label: '智慧用电驾驶舱' };
 const gasItem = { src: gasImg, url: '', label: '智慧燃气驾驶舱' };
-const fireMaintenanceItem = { src: fireMaintenanceImg, url: '', label: '消防运维驾驶舱' };
+const fireMaintenanceItem = { src: fireMaintenanceImg, url: '', label: '企业运营驾驶舱' };
 const smokeItem = { src: smokeImg, url: '', label: '烟感驾驶舱' };
 
 // const CLASSIFICATION = { safety: 1, fireControl: 2, environmentProtection: 3 };
@@ -124,7 +124,9 @@ export default class Dashboard extends PureComponent {
       // 运维企业
       case 1:
         safeItem.url = safeUrl;
+        safeItem.label = '企业安全驾驶舱';
         fireItem.url = fireUrl;
+        fireItem.label = '消防驾驶舱';
         monitorItem.url = monitorUrl;
         positionItem.url = positionUrl;
         fireMaintenanceItem.url = fireMaintenanceUrl;
@@ -162,7 +164,9 @@ export default class Dashboard extends PureComponent {
       // 企事业
       case 4:
         safeItem.url = safeUrl;
+        safeItem.label = '企业安全驾驶舱';
         fireItem.url = fireUrl;
+        fireItem.label = '消防驾驶舱';
         monitorItem.url = monitorUrl;
         positionItem.url = positionUrl;
         fireMaintenanceItem.url = fireMaintenanceUrl;
