@@ -31,7 +31,7 @@ export default {
   },
 
   effects: {
-    *fetchTaskList({ payload }, { call, put }) {
+    *fetchTaskList({ payload, callback }, { call, put }) {
       const response = yield call(getTaskList, payload);
       const { code=500, msg='获取任务失败，请稍后重试', data } = response || {};
       if (code === 200) {
@@ -45,6 +45,7 @@ export default {
             pagination: { pageSize, pageNum, total: total || 0 },
           },
         });
+        callback && callback();
       } else {
         error(msg);
       }

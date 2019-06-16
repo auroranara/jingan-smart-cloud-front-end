@@ -61,7 +61,7 @@ export default class TaskDrawer extends PureComponent {
     activeType=this.state.activeType,
     activeStatus=this.state.activeStatus,
     pageNum=1,
-  }) => {
+  }, callback) => {
     const {
       dispatch,
       process,
@@ -75,19 +75,22 @@ export default class TaskDrawer extends PureComponent {
         reportType: typeDict[activeType],
         type: statusDict[activeStatus],
       },
+      callback,
     });
   }
 
   handleTabClick = (activeType) => {
     const payload = { activeType, activeStatus: activeType !== '报修' ? '火警' : '故障' };
-    this.setState(payload);
-    this.getTaskList(payload);
+    this.getTaskList(payload, () => {
+      this.setState(payload);
+    });
     this.scroll && this.scroll.scrollTop();
   }
 
   handleSelect = (activeStatus) => {
-    this.setState({ activeStatus });
-    this.getTaskList({ activeStatus });
+    this.getTaskList({ activeStatus }, () => {
+      this.setState({ activeStatus });
+    });
     this.scroll && this.scroll.scrollTop();
   }
 
@@ -178,7 +181,7 @@ export default class TaskDrawer extends PureComponent {
         }}
       >
         <div className={styles.container}>
-          {Array.isArray(list) && list.map(item => (
+          {Array.isArray(list) && list.map((item) => (
             <TaskCard
               className={styles.card}
               key={item.id || item.proceId}

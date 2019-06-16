@@ -69,7 +69,7 @@ export default class TaskCard extends BigPlatformCard {
     },
     {
       label: '报修人员',
-      render: ({ repairPersonName, repairPersonPhone }) => <span className={styles.multipleValue}>{[repairPersonName, repairPersonPhone].filter(v => v).map(v => <span>{v}</span>)}</span>,
+      render: ({ repairPersonName, repairPersonPhone }) => <span className={styles.multipleValue}>{[repairPersonName, repairPersonPhone].filter(v => v).map((v, i) => <span key={i}>{v}</span>)}</span>,
       hidden: isNotRepair,
     },
     {
@@ -85,11 +85,11 @@ export default class TaskCard extends BigPlatformCard {
           return '报警时间';
         }
       },
-      render: ({ startTime }) => <span className={styles.multipleValue}>{startTime && moment(+startTime).format(TIME_FORMAT).split(' ').map(v => <span>{v}</span>)}</span>,
+      render: ({ startTime }) => <span className={styles.multipleValue}>{startTime && moment(+startTime).format(TIME_FORMAT).split(' ').map((v, i) => <span key={i}>{v}</span>)}</span>,
     },
     {
       label: '结束时间',
-      render: ({ endTime }) => <span className={styles.multipleValue}>{endTime && moment(+endTime).format(TIME_FORMAT).split(' ').map(v => <span>{v}</span>)}</span>,
+      render: ({ endTime }) => <span className={styles.multipleValue}>{endTime && moment(+endTime).format(TIME_FORMAT).split(' ').map((v, i) => <span key={i}>{v}</span>)}</span>,
       hidden: ({ process }) => process !== '已处理',
     },
   ];
