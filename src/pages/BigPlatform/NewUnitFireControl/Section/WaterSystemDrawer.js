@@ -395,21 +395,21 @@ export default class WaterSystemDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, waterTabItem, videoKeyId, waterList, filterIndex, onClick } = this.props;
+    const { visible, waterTabItem, videoKeyId, waterDrawer, filterIndex, onClick } = this.props;
 
     const { videoVisible, videoList } = this.state;
 
-    const alarmList = waterList.filter(item => {
+    const alarmList = waterDrawer.filter(item => {
       const { deviceDataList } = item;
       const [{ status } = { deviceParamsInfo: {} }] = deviceDataList;
       return +status > 0;
     });
-    const normalList = waterList.filter(item => {
+    const normalList = waterDrawer.filter(item => {
       const { deviceDataList } = item;
       const [{ status } = { deviceParamsInfo: {} }] = deviceDataList;
       return +status === 0;
     });
-    const lostList = waterList.filter(item => {
+    const lostList = waterDrawer.filter(item => {
       const { deviceDataList } = item;
       const [{ status } = { deviceParamsInfo: {} }] = deviceDataList;
       return +status < 0;
