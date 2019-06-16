@@ -40,6 +40,7 @@ export default class GasFlowDrawer extends PureComponent {
       visible,
       phoneVisible,
       flowRepeat,
+      head=null,
       ...restProps
     } = this.props;
     const { index } = this.state;
@@ -123,14 +124,19 @@ export default class GasFlowDrawer extends PureComponent {
             flowImg={flowImg}
             dataList={timelineList}
             style={{ width: `calc(100% / ${length})` }}
+            showHead={!head}
           />
         );
       });
       left =
         length === 1 ? (
-          cards
+          <Fragment>
+          {head}
+          {cards}
+        </Fragment>
         ) : (
           <Fragment>
+            {head}
             <SwitchHead
               index={index}
               title="故障"

@@ -297,14 +297,16 @@ export default class MapSection extends PureComponent {
                 </div>
                 <div className={styles.statusWrapper}>
                   <div
-                    className={fire > 0 ? styles.itemActive : styles.statusItem}
+                    className={styles.statusItem}
+                    // className={fire > 0 ? styles.itemActive : styles.statusItem}
                     // onClick={alarmClick}
                   >
                     <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
                     报警 {fire > 0 ? fire : 0}
                   </div>
                   <div
-                    className={fault > 0 ? styles.itemActive : styles.statusItem}
+                    className={styles.statusItem}
+                    // className={fault > 0 ? styles.itemActive : styles.statusItem}
                     // onClick={faultClick}
                   >
                     <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />

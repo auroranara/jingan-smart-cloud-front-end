@@ -9,10 +9,12 @@ import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
 import styles from './index.less';
+import styles1 from '@/pages/BigPlatform/NewUnitFireControl/index.less';
 import {
   BackMap,
   SettingModal,
   FireStatisticsDrawer,
+  Messages,
 } from './sections/Components';
 import {
   MapSearch,
@@ -24,8 +26,10 @@ import {
 import { PAGE_SIZE, getUnitList } from './utils';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
-
-const options = { // websocket配置
+import FireFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/FireFlowDrawer'
+import SmokeFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/SmokeFlowDrawer'
+// websocket配置
+const options = {
   pingTimeout: 30000,
   pongTimeout: 10000,
   reconnectTimeout: 2000,
@@ -59,8 +63,8 @@ const HEADER_STYLE = {
 
 const CONTENT_STYLE = { position: 'relative', height: '100%', zIndex: 0 };
 
-const MSG_INFO = {
-  '5': {
+const MSG_INFO = [
+  {
     title: '火警提示',
     icon: iconFire,
     color: '#f83329',
@@ -68,7 +72,7 @@ const MSG_INFO = {
     bottom: '情况危急，请立即处理！',
     animation: styles.redShadow,
   },
-  '6': {
+  {
     title: '故障提示',
     icon: iconFault,
     color: '#f4710f',
@@ -76,6 +80,13 @@ const MSG_INFO = {
     bottom: '请及时维修！',
     animation: styles.orangeShadow,
   },
+];
+
+const switchMsgType = type => {
+  const alarmTypes = [7, 38, 39];
+  const faultTypes = [9, 40];
+  if (alarmTypes.indexOf(type) >= 0) return MSG_INFO[0];
+  else if (faultTypes.indexOf(type) >= 0) return MSG_INFO[1];
 };
 
 notification.config({
@@ -84,11 +95,40 @@ notification.config({
   bottom: 8,
 });
 
-@connect(({ loading, operation, user }) => ({
-  loading: loading.models.operation,
-  fireListLoading: loading.effects['operation/fetchFireList'],
+const popupVisible = {
+  videoVisible: false, // 重点部位监控视频弹窗
+  riskDrawerVisible: false, // 是否显示对应弹框
+  workOrderDrawerVisible: false,
+  alarmMessageDrawerVisible: false,
+  faultMessageDrawerVisible: false,
+  alarmDynamicDrawerVisible: false,
+  alarmHistoryDrawerVisible: false,
+  maintenanceDrawerVisible: false,
+  checkDrawerVisible: false, // 检查点抽屉是否显示
+  pointDrawerVisible: false, // 点位名称抽屉是否显示
+  faultDrawerVisible: false,
+  currentDrawerVisible: false, // 当前隐患抽屉可见
+  dangerDetailVisible: false, // 隐患详情抽屉可见
+  // 点位巡查抽屉是否显示
+  pointInspectionDrawerVisible: false,
+  maintenanceMsgDrawerVisible: false,
+  alarmDynamicMsgDrawerVisible: false,
+  fireAlarmVisible: false,
+  maintenanceCheckDrawerVisible: false,
+  smokeDrawerVisible: false,
+  electricityDrawerVisible: false,
+  resetHostsDrawerVisible: false,
+  checksDrawerVisible: false,
+  newWorkOrderDrawerVisible: false,
+};
+
+@connect(({ loading, operation, user, unitSafety,newUnitFireControl }) => ({
   operation,
   user,
+  unitSafety,
+  newUnitFireControl,
+  loading: loading.models.operation,
+  fireListLoading: loading.effects['operation/fetchFireList'],
 }))
 export default class Operation extends PureComponent {
   constructor(props) {
@@ -112,6 +152,18 @@ export default class Operation extends PureComponent {
       unitDetail: {},
       deviceType: 0, // 地图中间根据设备显示企业列表
       fireListHasMore: true, // 火警统计抽屉右边列表是否有更多
+      alarmMessageDrawerVisible: false,
+      faultMessageDrawerVisible: false,
+      alarmHistoryDrawerVisible: false,
+      fireFlowDrawerVisible: false,
+      flowRepeat: {
+        times: 0,
+        lastreportTime: 0,
+      },
+      msgFlow: 0, // 0报警 1故障
+      smokeFlowDrawerVisible:false,
+      fireVideoVisible:false,
+      videoList:[],
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
   }
@@ -121,76 +173,93 @@ export default class Operation extends PureComponent {
    */
   componentDidMount() {
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
-    const { dispatch } = this.props;
+    const { dispatch, user: { currentUser: { userId } } } = this.props;
 
     // 烟感地图数据
     this.fetchMapInfo();
 
-    // const params = {
-    //   // companyId: gridId,
-    //   env,
-    //   type: 5,
-    // };
-    // const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
-    // // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
+    const params = {
+      companyId: userId,
+      env,
+      type: 7,
+    };
+    const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+    // const url = `ws://192.168.10.19:10036/websocket?${stringify(params)}`;
 
-    // // 链接webscoket
-    // const ws = new WebsocketHeartbeatJs({ url, ...options });
+    const ws = new WebsocketHeartbeatJs({ url, ...options });
 
-    // ws.onopen = () => {
-    //   console.log('connect success');
-    //   ws.send('heartbeat');
-    // };
+    ws.onopen = () => {
+      console.log('connect success');
+      ws.send('heartbeat');
+    };
 
-    // ws.onmessage = e => {
-    //   // 判断是否是心跳
-    //   if (!e.data || e.data.indexOf('heartbeat') > -1) return;
-    //   try {
-    //     const data = JSON.parse(e.data).data;
-    //     const { type, companyId, messageFlag } = data;
-    //     const { alarmIds } = this.state;
-    //     // const index = unitIds.indexOf(companyId);
-    //     // 如果数据为告警或恢复，则将数据插入到列表的第一个
-    //     if ([31, 32].includes(type)) {
-    //       // 如果发生告警，弹出通知框，否则关闭通知框
-    //       this.fetchAbnormal();
-    //       if (type === 32) {
-    //         // const sameItem = alarmIds.find(item=>item.companyId===companyId);
-    //         const sameIndex = alarmIds.map(item => item.companyId).indexOf(companyId);
-    //         const newList =
-    //           sameIndex >= 0
-    //             ? [
-    //               ...alarmIds.slice(0, sameIndex),
-    //               { companyId, messageFlag },
-    //               ...alarmIds.slice(sameIndex + 1),
-    //             ]
-    //             : [...alarmIds, { companyId, messageFlag }];
-    //         this.setState({ alarmIds: newList });
-    //         this.showWarningNotification(data);
-    //       } else {
-    //         let sameIndex;
-    //         alarmIds.forEach((item, i) => {
-    //           if (item.messageFlag === messageFlag) sameIndex = i;
-    //         });
-    //         if (sameIndex !== undefined) {
-    //           const newIds = [...alarmIds.slice(0, sameIndex), ...alarmIds.slice(sameIndex + 1)];
-    //           this.setState({ alarmIds: newIds });
-    //         }
-    //       }
-    //     }
-    //     // 如果为33，则修改单位状态
-    //     if (type === 33) {
-    //       this.fetchAbnormal();
-    //     }
-    //   } catch (error) {
-    //     console.log('error', error);
-    //   }
-    // };
+    ws.onmessage = e => {
+      // 判断是否是心跳
+      if (!e.data || e.data.indexOf('heartbeat') > -1) return;
+      try {
+        const data = JSON.parse(e.data);
+        dispatch({
+          type: 'newUnitFireControl/fetchWebsocketScreenMessage',
+          payload: data,
+          success: result => {
+            // 显示火警障碍弹窗
+            const {
+              itemId,
+              messageFlag,
+              type,
+              checkResult,
+              pointId,
+              pointStatus,
+              deviceType,
+              enterSign,
+              isOver,
+            } = result;
 
-    // ws.onreconnect = () => {
-    //   console.log('reconnecting...');
-    // };
+            if (
+              type === 7 ||
+              type === 9 ||
+              type === 38 ||
+              type === 39 ||
+              type === 40 ||
+              type === 41
+            ) {
+              if (+isOver === 0) {
+                if (type === 7 || type === 9) {
+                  if (enterSign === '1') this.showFireMsg(result);
+                } else {
+                  this.showFireMsg(result);
+                }
+              }
+              // this.fetchScreenMessage(dispatch);
+            }
+
+            if (
+              type === 1 ||
+              type === 2 ||
+              type === 3 ||
+              type === 4 ||
+              type === 9 ||
+              type === 7 ||
+              type === 21
+            ) {
+              // 获取消防主机监测
+              // this.fetchFireAlarmSystem();
+            }
+          },
+        });
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    ws.onreconnect = () => {
+      console.log('reconnecting...');
+    };
   }
+
+  hiddeAllPopup = () => {
+    this.setState({ ...popupVisible });
+  };
 
   componentWillUnmount() {
     clearInterval(this.pollCompanyInfo);
@@ -214,106 +283,60 @@ export default class Operation extends PureComponent {
     // this.setState({ monitorDrawerVisible: false });
   };
 
-  showWarningNotification = ({ // 显示告警通知提醒框
-    companyId,
-    addTime,
-    companyName,
-    area,
-    location,
-    paramName,
-    messageFlag,
-    paramCode,
-  }) => {
-    const options = {
-      key: `${messageFlag}_${paramCode}`,
-      duration: null,
-      placement: 'bottomLeft',
-      className: styles.notification,
-      message: (
-        <div className={styles.notificationTitle}>
-          <Icon type="warning" theme="filled" className={styles.notificationIcon} />
-          警情提示
-        </div>
-      ),
-      description: (
-        <div
-          className={styles.notificationContent}
-          onClick={() => {
-            this.setState({ companyName });
-            this.handleClickNotification(companyId);
-            this.handleAlarmClick(messageFlag, companyId, companyName);
-          }}
-        >
-          <div className={styles.notificationText}>
-            <div className={styles.notificationTextFirst}>{moment(addTime).format('HH:mm:ss')}</div>
-            <div className={styles.notificationTextSecond}>{companyName}</div>
-          </div>
-          <div className={styles.notificationText}>
-            <div className={styles.notificationTextFirst}>{`${area}${location}${paramName}`}</div>
-            <div className={styles.notificationTextSecond}>发生火警！</div>
-          </div>
-        </div>
-      ),
-    };
-    notification.open(options);
-  };
-
-  /**
-   * 关闭通知框
-   */
   hideWarningNotification = ({ messageFlag, paramCode }) => {
     notification.close(`${messageFlag}_${paramCode}`);
   };
 
   showFireMsg = item => {
-    const { type, messageId } = item;
-    if (type === 5 || type === 6) {
-      // 5 火警， 6 故障
-      const msgItem = MSG_INFO[type.toString()];
-      const style = {
-        boxShadow: `0px 0px 20px ${msgItem.color}`,
-      };
-      const styleAnimation = {
-        ...style,
-        animation: `${msgItem.animation} 2s linear 0s infinite alternate`,
-      };
-      const options = {
-        key: messageId,
-        className: styles.notification,
-        message: this.renderNotificationTitle(item),
-        description: this.renderNotificationMsg(item),
-        style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
-      };
-      notification.open({
-        ...options,
-      });
-
-      setTimeout(() => {
-        // 解决加入animation覆盖notification自身显示动效时长问题
+    const { type, messageId, isOver } = item;
+    if (type === 7 || type === 9 || type === 38 || type === 39 || type === 40 || type === 41) {
+      if (+isOver === 0) {
+        const msgItem = switchMsgType(+type);
+        const style = {
+          boxShadow: `0px 0px 20px ${msgItem.color}`,
+        };
+        const styleAnimation = {
+          ...style,
+          animation: `${msgItem.animation} 2s linear 0s infinite alternate`,
+        };
+        const options = {
+          key: messageId,
+          className: styles1.notification,
+          message: this.renderNotificationTitle(item),
+          description: this.renderNotificationMsg(item),
+          style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
+        };
         notification.open({
           ...options,
-          style: this.fireNode
-            ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 }
-            : { ...styleAnimation },
-          onClose: () => {
-            notification.open({
-              ...options,
-            });
-            setTimeout(() => {
-              notification.close(messageId);
-            }, 200);
-          },
         });
-      }, 800);
+
+        setTimeout(() => {
+          // 解决加入animation覆盖notification自身显示动效时长问题
+          notification.open({
+            ...options,
+            style: this.fireNode
+              ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 }
+              : { ...styleAnimation },
+            onClose: () => {
+              notification.open({
+                ...options,
+              });
+              setTimeout(() => {
+                notification.close(messageId);
+              }, 200);
+            },
+          });
+        }, 800);
+      }
     }
   };
 
   renderNotificationTitle = item => {
     const { type } = item;
-    const msgItem = MSG_INFO[type.toString()];
+    const msgItem = switchMsgType(+type);
     return (
-      <div className={styles.notificationTitle} style={{ color: msgItem.color }}>
-        <span className={styles.iconFire}>
+      <div className={styles1.notificationTitle} style={{ color: msgItem.color }}>
+        <span className={styles1.iconFire}>
           <img src={msgItem.icon} alt="fire" />
         </span>
         {msgItem.title}
@@ -322,25 +345,85 @@ export default class Operation extends PureComponent {
   };
 
   renderNotificationMsg = item => {
-    const { type, addTime, installAddress, componentType, messageFlag } = item;
-    const msgItem = MSG_INFO[type.toString()];
+    const {
+      companyId,
+      type,
+      addTime,
+      installAddress,
+      unitTypeName,
+      messageFlag,
+      area,
+      location,
+      cameraMessage,
+      isOver,
+      count,
+      num,
+      newTime,
+      lastTime,
+      componentType,
+      workOrder,
+      systemTypeValue,
+      createBy,
+      createByPhone,
+      faultName,
+      firstTime,
+    } = item;
+    const msgItem = switchMsgType(+type);
+    const repeat = {
+      times: +isOver === 0 ? count : num,
+      lastreportTime: addTime,
+    };
+    const occurData = [
+      {
+        create_time: addTime,
+        create_date: addTime,
+        firstTime: addTime,
+        lastTime: addTime,
+        area,
+        location,
+        install_address: installAddress,
+        label: componentType,
+        work_order: workOrder,
+        systemTypeValue,
+        createByName: createBy,
+        createByPhone,
+        faultName,
+        realtime: addTime,
+      },
+    ];
+    const msgFlag = messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag;
+    const restParams = [repeat, cameraMessage, occurData, companyId];
+    const param = { dataId: msgFlag };
     return (
       <div
-        className={styles.notificationBody}
+        className={styles1.notificationBody}
         onClick={() => {
-          if (type === 5) this.handleClickMessage(messageFlag, item);
-          else this.handleFaultClick({ ...item });
+          if (type === 7) this.handleClickMsgFlow(param, 0, 0, ...restParams);
+          else if (type === 9) this.handleClickMsgFlow(param, 0, 1, ...restParams);
+          else if (type === 38) this.handleClickMsgFlow(param, 1, 0, ...restParams);
+          else if (type === 39) this.handleClickMsgFlow(param, 2, 0, ...restParams);
+          else if (type === 40) this.handleClickMsgFlow(param, 1, 1, ...restParams);
+          // if (type === 7 || type === 38 || type === 39) this.handleClickMessage(messageFlag, item);
+          // else this.handleFaultClick({ ...item });
         }}
       >
         <div>
-          <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '}
+          <span className={styles1.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '}
           {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
-          <span className={styles.address}>{installAddress}</span>
+          <span className={styles1.address}>{installAddress || area + location}</span>
         </div>
         <div>
-          <span className={styles.device} style={{ color: msgItem.color }}>
-            【{componentType}】
-          </span>
+          {(type === 7 || type === 9) &&
+            unitTypeName && (
+              <span className={styles1.device} style={{ color: msgItem.color }}>
+                【{unitTypeName}】
+              </span>
+            )}
+          {(type === 38 || type === 39 || type === 40) && (
+            <span className={styles1.device} style={{ color: msgItem.color }}>
+              {type === 39 ? `【可燃气体探测器】` : `【独立烟感探测器】`}
+            </span>
+          )}
           {msgItem.body}
         </div>
         <div>{msgItem.bottom}</div>
@@ -390,14 +473,14 @@ export default class Operation extends PureComponent {
     });
   };
 
-  handleClickNotification = companyId => {
-    const {
-      operation: {
-        unitList,
-      },
-    } = this.props;
-    this.showUnitDetail(unitList.filter(item => item.companyId === companyId)[0]);
-  };
+  // handleClickNotification = companyId => {
+  //   const {
+  //     operation: {
+  //       unitList,
+  //     },
+  //   } = this.props;
+  //   this.showUnitDetail(unitList.filter(item => item.companyId === companyId)[0]);
+  // };
 
   // handleClickCamera = () => {
   //   const {
@@ -546,6 +629,105 @@ export default class Operation extends PureComponent {
     callback(!!list.find(({ companyId }) => companyId === unitDetail.companyId));
   };
 
+  handleClickMessage = (dataId, msg) => {
+    // const {
+    //   monitor: { allCamera },
+    // } = this.props;
+    const { cameraMessage } = msg;
+    this.hiddeAllPopup();
+    this.handleFetchAlarmHandle(dataId);
+    this.setState({ alarmMessageDrawerVisible: true });
+    // this.handleShowVideo(allCamera.length ? allCamera[0].key_id : '', true);
+    this.handleShowFireVideo(cameraMessage);
+  };
+
+  handleFetchAlarmHandle = (dataId, historyType, callback) => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+
+    dispatch({
+      type: 'newUnitFireControl/fetchAlarmHandle',
+      payload: { companyId, dataId, historyType },
+      callback,
+    });
+  };
+
+  handleClickMsgFlow = (param, type, flow, repeat, cameraMessage = [], occurData, cId) => {
+    // type 0/1/2/3 主机/烟感/燃气/一键报修
+    // flow 0/1 报警/故障
+    const {
+      dispatch,
+      operation: { unitList },
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    const drawerVisibles = [
+      'fireFlowDrawerVisible',
+      'smokeFlowDrawerVisible',
+      'gasFlowDrawerVisible',
+      'onekeyFlowDrawerVisible',
+    ];
+    const reportTypes = [1, 4, 3, 2];
+    this.hiddeAllPopup();
+    dispatch({
+      type: 'newUnitFireControl/fetchCountNumAndTimeById',
+      payload: { id: param.dataId || param.id, reportType: reportTypes[type], fireType: flow + 1 },
+      callback: res => {
+        if (res) {
+          const { num, lastTime, firstTime } = res;
+          this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+          dispatch({
+            type: 'newUnitFireControl/saveWorkOrderDetail',
+            payload: [{ ...occurData[0], firstTime }],
+          });
+        } else {
+          dispatch({
+            type: 'newUnitFireControl/fetchWorkOrder',
+            payload: { companyId, reportType: reportTypes[type], ...param },
+            callback: res => {
+              if (res.data.list.length === 0) return;
+              const { num, lastTime } = res.data.list[0];
+              this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+            },
+          });
+        }
+      },
+    });
+    // dispatch({
+    //   type: 'newUnitFireControl/fetchWorkOrder',
+    //   payload: { companyId, reportType: reportTypes[type], ...param },
+    //   callback: res => {
+    //     if (!(res.data && Array.isArray(res.data.list))) return;
+    //     if (res.data.list.length === 0) {
+    //       dispatch({
+    //         type: 'newUnitFireControl/saveWorkOrderDetail',
+    //         payload: occurData,
+    //       });
+    //     }
+    //   },
+    // });
+    this.setState({ [drawerVisibles[type]]: true, msgFlow: flow });
+    this.handleShowFireVideo(cameraMessage);
+
+    const detail = unitList.find(({ companyId }) => companyId === cId);
+    this.setState({ deviceType: type + 1 });
+    this.showUnitDetail(detail);
+    this.hideTooltip();
+  };
+
+   /**
+   *  点击播放重点部位监控
+   */
+  handleShowFireVideo = videoList => {
+    if (!Array.isArray(videoList) || videoList.length === 0) return null;
+    this.setState({ fireVideoVisible: true, videoList });
+  };
+
   /**
    * 渲染
    */
@@ -559,6 +741,18 @@ export default class Operation extends PureComponent {
         fireList,
       },
       user: { currentUser: { unitName } },
+      newUnitFireControl: {
+        alarmHandleMessage,
+        alarmHandleList,
+        alarmHandleHistory,
+        workOrderDetail, // 只有一个元素的数组
+        maintenanceCompany: {
+          name: maintenanceCompanys = [],
+          PrincipalName = '', // 安全管理员
+          PrincipalPhone = '', // 安全管理员电话
+        },
+      },
+      unitSafety: { points, phoneVisible },
     } = this.props;
 
     const {
@@ -575,6 +769,10 @@ export default class Operation extends PureComponent {
       deviceType,
       fireListHasMore,
       fireStatisticsDrawerVisible,
+      flowRepeat,
+      fireFlowDrawerVisible,
+      msgFlow,
+      smokeFlowDrawerVisible,
     } = this.state;
 
     return (
@@ -651,6 +849,51 @@ export default class Operation extends PureComponent {
           process={this.state.taskDrawerProcess}
           onClose={this.handleTaskDrawerClose}
           onJump={this.handleTaskCardClick}
+        />
+        {/* 实时消息 */}
+        <Messages
+          className={styles.realTimeMessage}
+           model={this.props.newUnitFireControl}
+           handleParentChange={this.handleMapParentChange}
+          //  handleViewDangerDetail={this.handleViewDangerDetail}
+          //  fetchData={this.fetchMaintenanceCheck}
+          //  handleClickMessage={this.handleClickMessage}
+          //  handleFaultClick={this.handleFaultClick}
+          //  handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
+          //  handleFireMessage={this.handleFireMessage}
+          //  handleViewWater={this.handleViewWater}
+           handleClickMsgFlow={this.handleClickMsgFlow}
+           phoneVisible={phoneVisible}
+        />
+        {/* 消防主机处理动态 */}
+        <FireFlowDrawer
+          // data={occurData}
+          data={workOrderDetail}
+          flowRepeat={flowRepeat}
+          // fireData={occurData}
+          // faultData={occurData}
+          visible={fireFlowDrawerVisible}
+          handleParentChange={this.handleMapParentChange}
+          onClose={() => this.handleDrawerVisibleChange('fireFlow')}
+          PrincipalName={PrincipalName}
+          PrincipalPhone={PrincipalPhone}
+          msgFlow={msgFlow}
+          phoneVisible={phoneVisible}
+        />
+        {/* 独立烟感处理动态 */}
+        <SmokeFlowDrawer
+          // data={occurData}
+          flowRepeat={flowRepeat}
+          data={workOrderDetail}
+          // fireData={occurData}
+          // faultData={occurData}
+          visible={smokeFlowDrawerVisible}
+          handleParentChange={this.handleMapParentChange}
+          onClose={() => this.handleDrawerVisibleChange('smokeFlow')}
+          PrincipalName={PrincipalName}
+          PrincipalPhone={PrincipalPhone}
+          msgFlow={msgFlow}
+          phoneVisible={phoneVisible}
         />
       </BigPlatformLayout>
     );
