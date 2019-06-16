@@ -1748,43 +1748,51 @@ export default class NewUnitFireControl extends PureComponent {
     ];
     const reportTypes = [1, 4, 3, 2];
     isHidePopups && this.hiddeAllPopup();
-    dispatch({
-      type: 'newUnitFireControl/fetchCountNumAndTimeById',
-      payload: { id: param.dataId || param.id, reportType: reportTypes[type], fireType: flow + 1 },
-      callback: res => {
-        if (res) {
-          const { num, lastTime, firstTime } = res;
-          this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
-          dispatch({
-            type: 'newUnitFireControl/saveWorkOrderDetail',
-            payload: [{ ...occurData[0], firstTime }],
-          });
-        } else {
-          dispatch({
-            type: 'newUnitFireControl/fetchWorkOrder',
-            payload: { companyId, reportType: reportTypes[type], ...param },
-            callback: res => {
-              if (res.data.list.length === 0) return;
-              const { num, lastTime } = res.data.list[0];
-              this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
-            },
-          });
-        }
-      },
-    });
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchWorkOrder',
-    //   payload: { companyId, reportType: reportTypes[type], ...param },
-    //   callback: res => {
-    //     if (!(res.data && Array.isArray(res.data.list))) return;
-    //     if (res.data.list.length === 0) {
-    //       dispatch({
-    //         type: 'newUnitFireControl/saveWorkOrderDetail',
-    //         payload: occurData,
-    //       });
-    //     }
-    //   },
-    // });
+    if (type !== 3) {
+      dispatch({
+        type: 'newUnitFireControl/fetchCountNumAndTimeById',
+        payload: {
+          id: param.dataId || param.id,
+          reportType: reportTypes[type],
+          fireType: flow + 1,
+        },
+        callback: res => {
+          if (res) {
+            const { num, lastTime, firstTime } = res;
+            this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+            dispatch({
+              type: 'newUnitFireControl/saveWorkOrderDetail',
+              payload: [{ ...occurData[0], firstTime }],
+            });
+          } else {
+            dispatch({
+              type: 'newUnitFireControl/fetchWorkOrder',
+              payload: { companyId, reportType: reportTypes[type], ...param },
+              callback: res => {
+                if (res.data.list.length === 0) return;
+                const { num, lastTime } = res.data.list[0];
+                this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+              },
+            });
+          }
+        },
+      });
+    } else {
+      // 一键报修没有重复上报
+      dispatch({
+        type: 'newUnitFireControl/fetchWorkOrder',
+        payload: { companyId, reportType: reportTypes[type], ...param },
+        callback: res => {
+          if (!(res.data && Array.isArray(res.data.list))) return;
+          if (res.data.list.length === 0) {
+            dispatch({
+              type: 'newUnitFireControl/saveWorkOrderDetail',
+              payload: occurData,
+            });
+          }
+        },
+      });
+    }
     this.setState({ [drawerVisibles[type]]: true, msgFlow: flow });
     this.handleShowFireVideo(cameraMessage);
   };

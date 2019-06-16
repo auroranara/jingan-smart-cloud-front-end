@@ -173,7 +173,7 @@ export default class Messages extends PureComponent {
     const occurData = [
       {
         create_time: firstTime,
-        create_date: firstTime,
+        create_date: addTime,
         firstTime,
         lastTime: addTime,
         area,
@@ -190,7 +190,7 @@ export default class Messages extends PureComponent {
     ];
     const restParams = [repeat, cameraMessage, occurData];
     const msgFlag =
-      messageFlag && messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag;
+      messageFlag && (messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
     const param = {
       dataId: +isOver === 0 ? msgFlag : undefined,
       id: +isOver !== 0 ? msgFlag : undefined,
@@ -310,8 +310,7 @@ export default class Messages extends PureComponent {
       '11': {
         // 一键报修
         onClick: () => {
-          handleClickMsgFlow(param, 3, 1, ...restParams);
-          return null;
+          handleClickMsgFlow({ id: msgFlag }, 3, 1, ...restParams);
         },
         items: [
           { value: systemTypeValue },
