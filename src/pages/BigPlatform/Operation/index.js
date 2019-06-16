@@ -363,23 +363,9 @@ export default class Operation extends PureComponent {
     this.mapChild = ref;
   };
 
-  // handleCompanyClick = companyId => {
-  //   const { dispatch } = this.props;
-  //   dispatch({ type: 'smoke/fetchCameraTree', payload: { company_id: companyId } });
-  //   dispatch({
-  //     type: 'smoke/fetchCompanySmokeInfo',
-  //     payload: { company_id: companyId },
-  //     success: () => {
-  //       this.handleDrawerVisibleChange('monitor');
-  //       this.pollCompanyInfo = setInterval(() => {
-  //         dispatch({
-  //           type: 'smoke/fetchCompanySmokeInfo',
-  //           payload: { company_id: companyId },
-  //         });
-  //       }, 2000);
-  //     },
-  //   });
-  // };
+  handleCompanyClick = companyId => {
+    window.open(`${window.publicPath}#/big-platform/fire-control/new-company/${companyId}`)
+  };
 
   fetchMapInfo = () => {
     const { dispatch } = this.props;
