@@ -14,7 +14,7 @@ const fireMaintenanceImg = 'http://data.jingan-china.cn/new-fire-control.png';
 const smokeImg = 'http://data.jingan-china.cn/smoke.png';
 
 const safeItem = { src: safe, url: '', label: '政府安全驾驶舱' };
-const fireItem = { src: fire, url: '', label: '政府消防主机联网驾驶舱' };
+const fireItem = { src: fire, url: '', label: '消防主机联网驾驶舱' };
 const monitorItem = { src: monitor, url: '', label: '动态监测驾驶舱' };
 const positionItem = { src: psoitionImg, url: '', label: '人员定位驾驶舱' };
 const electricItem = { src: electricImg, url: '', label: '智慧用电驾驶舱' };
@@ -116,7 +116,7 @@ export default class Dashboard extends PureComponent {
     const positionUrl = `${window.publicPath}#/big-platform/position/${companyId}`;
     const fireMaintenanceUrl = `${
       window.publicPath
-      }#/big-platform/fire-control/new-company/${companyId}`;
+    }#/big-platform/fire-control/new-company/${companyId}`;
 
     // 企事业主体和政府有业务分类，维保和运营没有
     // 所以企事业主体和政府的大屏权限 = 用户业务权限 && 企事业业务分类 && 账户被配置的权限，运营和维保企业的大屏权限 = 用户业务权限 && 账户被配置的权限
@@ -124,9 +124,9 @@ export default class Dashboard extends PureComponent {
       // 维保企业
       case 1:
         safeItem.url = safeUrl;
-        safeItem.label = '企业安全驾驶舱'
+        safeItem.label = '企业安全驾驶舱';
         fireItem.url = fireUrl;
-        fireItem.label = '消防驾驶舱'
+        fireItem.label = '消防驾驶舱';
         monitorItem.url = monitorUrl;
         positionItem.url = positionUrl;
         fireMaintenanceItem.url = fireMaintenanceUrl;
@@ -164,9 +164,9 @@ export default class Dashboard extends PureComponent {
       // 企事业
       case 4:
         safeItem.url = safeUrl;
-        safeItem.label = '企业安全驾驶舱'
+        safeItem.label = '企业安全驾驶舱';
         fireItem.url = fireUrl;
-        fireItem.label = '消防驾驶舱'
+        fireItem.label = '消防驾驶舱';
         monitorItem.url = monitorUrl;
         positionItem.url = positionUrl;
         fireMaintenanceItem.url = fireMaintenanceUrl;
@@ -203,13 +203,13 @@ export default class Dashboard extends PureComponent {
     } = this.props;
     electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor/${
       grids.length ? grids[0].value : 'index'
-      }`;
+    }`;
     gasItem.url = `${window.publicPath}#/big-platform/gas/${
       grids.length ? grids[0].value : 'index'
-      }`;
+    }`;
     smokeItem.url = `${window.publicPath}#/big-platform/smoke/${
       grids.length ? grids[0].value : 'index'
-      }`;
+    }`;
 
     // items中的参数必须与state中一一对应
     const items = [

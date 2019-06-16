@@ -156,7 +156,7 @@ export default class FireControlBigPlatform extends PureComponent {
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
 
-    const ws = this.ws = new WebsocketHeartbeatJs({ url, ...WS_OPTIONS });
+    const ws = (this.ws = new WebsocketHeartbeatJs({ url, ...WS_OPTIONS }));
     if (!ws) return;
 
     ws.onopen = () => {
@@ -174,7 +174,7 @@ export default class FireControlBigPlatform extends PureComponent {
       // } catch (error) {
       //   console.log('error', error);
       // }
-    }
+    };
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
@@ -611,7 +611,11 @@ export default class FireControlBigPlatform extends PureComponent {
 
   handleAlarmVideoShow = list => {
     if (list.length)
-      this.setState({ alarmVideoVisible: true, alarmVideoList: list, alarmVideoKeyId: list[0].key_id || list[0].keyId });
+      this.setState({
+        alarmVideoVisible: true,
+        alarmVideoList: list,
+        alarmVideoKeyId: list[0].key_id || list[0].keyId,
+      });
   };
 
   handleAlarmVideoClose = () => {
@@ -774,7 +778,10 @@ export default class FireControlBigPlatform extends PureComponent {
 
     this.setState({ dangerLabelIndex: index });
     // 当点击不同企业或相同企业里的不同标签时，重新请求
-    if (companyId !== formerCompanyId || companyId === formerCompanyId && index !== formerLabelIndex) {
+    if (
+      companyId !== formerCompanyId ||
+      (companyId === formerCompanyId && index !== formerLabelIndex)
+    ) {
       // this.clearDangerList();
       this.fetchDangerRecords(companyId, index, true);
     }
@@ -835,23 +842,28 @@ export default class FireControlBigPlatform extends PureComponent {
     this.handleDrawerVisibleChange('host');
   };
 
-  handleImageSliderShow = images => { // 显示图片详情
+  handleImageSliderShow = images => {
+    // 显示图片详情
     this.setState({ images, currentImage: 0 });
   };
 
-  handleImageSliderClose = () => { // 关闭图片详情
+  handleImageSliderClose = () => {
+    // 关闭图片详情
     this.setState({ images: null });
   };
 
-  handleSwitchImage = currentImage => { // 切换图片
+  handleSwitchImage = currentImage => {
+    // 切换图片
     this.setState({ currentImage });
   };
 
-  handlePrevImage = () => { // 切换上一张图片
+  handlePrevImage = () => {
+    // 切换上一张图片
     this.setState(({ currentImage }) => ({ currentImage: currentImage - 1 }));
   };
 
-  handleNextImage = () => { // 切换下一张图片
+  handleNextImage = () => {
+    // 切换下一张图片
     this.setState(({ currentImage }) => ({ currentImage: currentImage + 1 }));
   };
 
@@ -947,7 +959,7 @@ export default class FireControlBigPlatform extends PureComponent {
     const extra = <GridSelect dispatch={dispatch} data={grids} gridId={gridId} />;
 
     return (
-      <BigPlatformLayout title="政府消防主机联网驾驶舱" extra={extra} className={styles.root}>
+      <BigPlatformLayout title="消防主机联网驾驶舱" extra={extra} className={styles.root}>
         {/* <div
         className={styles.root}
         style={{ overflow: 'hidden', position: 'relative', width: '100%' }}
@@ -1215,19 +1227,21 @@ export default class FireControlBigPlatform extends PureComponent {
           visible={riskDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
-        {images && images.length > 0 && images[0] && (
-          <Lightbox
-            images={images.map((src) => ({ src }))}
-            isOpen={true}
-            closeButtonTitle="关闭"
-            currentImage={currentImage}
-            onClickPrev={this.handlePrevImage}
-            onClickNext={this.handleNextImage}
-            onClose={this.handleImageSliderClose}
-            onClickThumbnail={this.handleSwitchImage}
-            showThumbnails
-          />
-        )}
+        {images &&
+          images.length > 0 &&
+          images[0] && (
+            <Lightbox
+              images={images.map(src => ({ src }))}
+              isOpen={true}
+              closeButtonTitle="关闭"
+              currentImage={currentImage}
+              onClickPrev={this.handlePrevImage}
+              onClickNext={this.handleNextImage}
+              onClose={this.handleImageSliderClose}
+              onClickThumbnail={this.handleSwitchImage}
+              showThumbnails
+            />
+          )}
       </BigPlatformLayout>
     );
   }
