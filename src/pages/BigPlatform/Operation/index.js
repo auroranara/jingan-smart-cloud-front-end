@@ -464,6 +464,7 @@ export default class Operation extends PureComponent {
           {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
           <span className={styles1.address}>{installAddress || area + location}</span>
         </div>
+        {companyName&&<div>【{companyName}】</div>}
         <div>
           {(type === 7 || type === 9) &&
             unitTypeName && (
@@ -718,6 +719,7 @@ export default class Operation extends PureComponent {
   handleClickMsgFlow = (param, type, flow, repeat, cameraMessage = [], occurData, cId) => {
     // type 0/1/2/3 主机/烟感/燃气/一键报修
     // flow 0/1 报警/故障
+    // console.log(param)
     const {
       dispatch,
       operation: { unitList },
@@ -755,6 +757,13 @@ export default class Operation extends PureComponent {
             },
           });
         }
+      },
+    });
+    // 企业负责人和运维员信息
+    dispatch({
+      type: 'newUnitFireControl/fetchMaintenanceCompany',
+      payload: {
+        companyId:param.companyId,
       },
     });
     // dispatch({
