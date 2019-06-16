@@ -19,7 +19,7 @@ const SPANS = [5, 19];
 const NO_DATA = '暂无信息';
 
 export default function NewTimelineCard(props) {
-  const { dataList, style, flowImg, ...restProps } = props;
+  const { dataList, style, flowImg,showHead = true, ...restProps } = props;
 
   const users = new Array(17).fill({
     id: '1',
@@ -37,7 +37,8 @@ export default function NewTimelineCard(props) {
       style={{ height: '100%', display: 'flex', flexDirection: 'column', ...style }}
       {...restProps}
     >
-      <div className={styles.head}>
+      {showHead&&(
+        <div className={styles.head}>
         <div
           style={{
             background: `url(${flowImg}) no-repeat center center`,
@@ -46,6 +47,7 @@ export default function NewTimelineCard(props) {
           className={styles.flow}
         />
       </div>
+      )}
       <div className={styles.timeline}>
         <Timeline>
           {dataList.map((item, index) => {

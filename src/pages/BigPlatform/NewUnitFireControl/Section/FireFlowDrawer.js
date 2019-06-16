@@ -43,6 +43,7 @@ export default class FireFlowDrawer extends PureComponent {
       msgFlow,
       flowRepeat,
       phoneVisible,
+      head=null,
       ...restProps
     } = this.props;
     const { index } = this.state;
@@ -135,15 +136,20 @@ export default class FireFlowDrawer extends PureComponent {
             key={i}
             flowImg={msgFlow === 0 ? flowImg : flowFaultImg}
             dataList={timelineList}
+            showHead={!head}
             style={{ width: `calc(100% / ${length})` }}
           />
         );
       });
       left =
         length === 1 ? (
-          cards
+          <Fragment>
+            {head}
+            {cards}
+          </Fragment>
         ) : (
           <Fragment>
+            {head}
             <SwitchHead
               index={index}
               title={TITLES[msgFlow]}

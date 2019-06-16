@@ -124,8 +124,8 @@ export default function TimelineCard(props) {
     createCompanyName,
     finishCompanyName,
     startCompanyName,
-    phoneVisible,
     showHead = true,
+    phoneVisible,
     ...restProps
   } = props;
   const [isStarted, isHandling, isFinished] = [startMap, handleMap, finishMap].map(

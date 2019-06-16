@@ -43,6 +43,7 @@ export default class SmokeFlowDrawer extends PureComponent {
       msgFlow,
       flowRepeat,
       phoneVisible,
+      head=null,
       ...restProps
     } = this.props;
     const { index } = this.state;
@@ -141,14 +142,19 @@ export default class SmokeFlowDrawer extends PureComponent {
             flowImg={msgFlow === 0 ? flowImg : flowFaultImg}
             dataList={timelineList}
             style={{ width: `calc(100% / ${length})` }}
+            showHead={!head}
           />
         );
       });
       left =
         length === 1 ? (
-          cards
+          <Fragment>
+          {head}
+          {cards}
+        </Fragment>
         ) : (
           <Fragment>
+            {head}
             <SwitchHead
               index={index}
               title={TITLES[msgFlow]}

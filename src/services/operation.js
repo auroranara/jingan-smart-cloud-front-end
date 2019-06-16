@@ -36,3 +36,7 @@ export async function getFireTrend() {
 export async function getFireList(params) {
   return request(`/acloud_new/v2/sdf/getFireList?${stringify(params)}`);
 }
+// 获取大屏消息
+export async function getScreenMessage(params) {
+  return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`)
+}

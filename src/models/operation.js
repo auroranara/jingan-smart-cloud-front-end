@@ -6,7 +6,13 @@ import {
   getFirePie,
   getFireTrend,
   getFireList,
+  getScreenMessage,
 } from '@/services/operation';
+import {
+  queryAlarmHandleList,
+  queryWorkOrderMsg,
+  queryDataId,
+}from '@/services/bigPlatform/fireControl'
 import { message } from 'antd';
 function error(msg) {
   message.error(msg);
@@ -34,8 +40,21 @@ export default {
     firePie: {},
     fireTrend: [],
     fireList: [],
+    // 大屏消息
+    screenMessage: [],
+    // 火警消息
+    alarmHandleMessage: [],
+    // 火警动态
+    alarmHandleList: [],
+    alarmHandleHistory: [],
+    maintenanceCompany: {
+      name: [],
+      PrincipalName: '', // 安全管理员
+      PrincipalPhone: '', // 安全管理员电话
+    },
+    // 维保处理动态详情
+    workOrderDetail: [],
   },
-
   effects: {
     *fetchTaskList({ payload, callback }, { call, put }) {
       const response = yield call(getTaskList, payload);
@@ -77,14 +96,9 @@ export default {
     },
     *fetchFireCount({ payload }, { call, put }) {
       const response = yield call(getFireCount, payload);
-      // const response = { code: 200, data: {
-      //   day: 10, // 待处理
-      //   month: 10, // 处理中
-      //   week: 10, // 已处理
-      // } };
       const { code=500, msg='获取火警数量统计失败，请稍后重试', data } = response || {};
       if (code === 200) {
-        const { day=0, month=0, week=0 } = data || {};
+        const { day = 0, month = 0, week = 0 } = data || {};
         yield put({
           type: 'save',
           payload: {
@@ -134,6 +148,68 @@ export default {
         callback && callback(total);
       }
     },
+    // 获取大屏消息
+    *fetchScreenMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getScreenMessage, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'screenMessage',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    *fetchWebsocketScreenMessage({ payload, success, error }, { call, put }) {
+      console.log('fetchWebsocketScreenMessage', payload);
+      if (payload.code === 200) {
+        yield put({
+          type: 'saveScreenMessage',
+          payload: payload.data,
+        });
+        if (success) {
+          success(payload.data);
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 火警动态列表或火警消息
+     *fetchAlarmHandle({ payload, callback }, { call, put }) {
+      const response = yield call(queryAlarmHandleList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: `saveAlarmHandle${
+            payload.dataId ? 'Message' : payload.historyType ? 'History' : 'List'
+          }`,
+          payload: response.data ? response.data.list : [],
+        });
+        if (callback) callback(response);
+      }
+    },
+     // 消息故障详情
+     *fetchMaintenanceMsg({ payload, callback }, { call, put }) {
+      const response = yield call(queryWorkOrderMsg, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveWorkOrderDetail',
+          payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
+        });
+      }
+      if (callback) callback(response);
+    },
+     // 根据processId查dataId
+     *fetchDataId({ payload, success, error }, { call, put }) {
+      const response = yield call(queryDataId, payload);
+      if (response && response.code === 200) {
+        if (success) success(response);
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -166,6 +242,30 @@ export default {
     saveFireList(state, action) {
       const { pageNum, list } = action.payload;
       return { ...state, fireList: pageNum === 1 ? list : state.fireList.concat(list) };
+    },
+    saveScreenMessage(state, { payload }) {
+      return {
+        ...state,
+        screenMessage: [payload, ...state.screenMessage],
+      };
+    },
+    screenMessage(state, { payload }) {
+      return {
+        ...state,
+        screenMessage: payload.list,
+      };
+    },
+    saveAlarmHandleMessage(state, action) {
+      return { ...state, alarmHandleMessage: action.payload || [] };
+    },
+    saveAlarmHandleList(state, action) {
+      return { ...state, alarmHandleList: action.payload || [] };
+    },
+    saveAlarmHandleHistory(state, action) {
+      return { ...state, alarmHandleHistory: action.payload || [] };
+    },
+    saveWorkOrderDetail(state, action) {
+      return { ...state, workOrderDetail: action.payload };
     },
   },
 }
