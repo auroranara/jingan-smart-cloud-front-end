@@ -212,7 +212,7 @@ export default {
       }
     },
     *fetchVideoList({ payload, callback }, { call }) {
-      const response = yield call(queryDataId, payload);
+      const response = yield call(getVideoList, payload);
       callback && callback(response);
     },
   },

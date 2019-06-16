@@ -31,6 +31,12 @@ export default class DynamicDrawerTop extends Component {
       showReaded,
     })
   }
+
+  handleCameraClick = () => {
+    const { headProps: { onCameraClick }={} } = this.props;
+    onCameraClick && onCameraClick();
+  }
+
   render() {
     const { showRepeatDesc } = this.state
     // console.log('headProps', this.props.headProps)
@@ -48,7 +54,6 @@ export default class DynamicDrawerTop extends Component {
         firstTime,
         lastTime,
       } = {},
-      onCameraClick=null,
     } = this.props
     const scTime = moment(firstTime).format('YYYY-MM-DD HH:mm');
     const zjTime = moment(lastTime).format('YYYY-MM-DD HH:mm');
@@ -89,7 +94,7 @@ export default class DynamicDrawerTop extends Component {
             </div>
           )}
           <div
-          onClick={onCameraClick}
+          onClick={this.handleCameraClick}
            className={styles.cameraContainer}
           style={{
             top:'10px',

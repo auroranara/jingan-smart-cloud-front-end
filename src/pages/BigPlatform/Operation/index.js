@@ -439,7 +439,7 @@ export default class Operation extends PureComponent {
     ];
     const msgFlag = messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag;
     const restParams = [repeat, cameraMessage, occurData, companyId];
-    const param = { 
+    const param = {
       dataId: msgFlag,
       companyName: companyName || undefined,
       component: component || undefined,
@@ -538,15 +538,25 @@ export default class Operation extends PureComponent {
     const {
       dispatch,
     } = this.props;
+    const {
+      company: {
+        companyId,
+      },
+    } = this.state;
+    console.log(this.state.company);
+    console.log(companyId);
     dispatch({
       type: 'operation/fetchVideoList',
+      payload: {
+        company_id: companyId,
+      },
       callback: (response) => {
-        console.log(response);
-        // this.setState({
-        //   videoVisible: true,
-        //   videoList: [],
-        //   videoKeyId: undefined,
-        // });
+        const { list=[] } = response || {};
+        this.setState({
+          videoVisible: true,
+          videoList: list,
+          videoKeyId: list && list[0] && list[0].key_id,
+        });
       },
     });
   };
@@ -842,6 +852,7 @@ export default class Operation extends PureComponent {
       ...workOrderDetail[0],
       flowRepeat,
       dynamicType,
+      onCameraClick: this.handleVideoOpen,
       ...company,
     }
     return (
@@ -950,7 +961,6 @@ export default class Operation extends PureComponent {
           phoneVisible={phoneVisible}
           headProps={headProps}
           head={true}
-          onVideoClick={this.handleVideoOpen}
         />
         {/* 独立烟感处理动态 */}
         <SmokeFlowDrawer
@@ -968,7 +978,6 @@ export default class Operation extends PureComponent {
           phoneVisible={phoneVisible}
           headProps={headProps}
           head={true}
-          onVideoClick={this.handleVideoOpen}
         />
         <VideoPlay
           showList={false}
