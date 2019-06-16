@@ -95,7 +95,7 @@ export default class SmokeFlowDrawer extends PureComponent {
                 value: `${PrincipalName} ${vaguePhone(PrincipalPhone, phoneVisible)}`,
               },
             ],
-            repeat: { repeatCount: times || 0, lastTime: lastreportTime },
+            // repeat: { repeatCount: times || 0, lastTime: lastreportTime },
           },
           // { label: '消息发送', time: 1569548522158, msgInfo: true },
           {

@@ -417,18 +417,17 @@ export default class Messages extends PureComponent {
       };
       return (
         <div className={styles.msgItem}>
-          {type === 46 ||
-            (type === 50 && (
-              <a
-                className={styles.detailBtn}
-                onClick={() => {
-                  handleClickSmoke(type === 46 ? 2 : 3);
-                }}
-              >
-                详情
-                <Icon type="double-right" />
-              </a>
-            ))}
+          {(type === 46 || type === 50) && (
+            <a
+              className={styles.detailBtn}
+              onClick={() => {
+                handleClickSmoke(type === 46 ? 2 : 3);
+              }}
+            >
+              详情
+              <Icon type="double-right" />
+            </a>
+          )}
           <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>【{smokeTitle[type]}】</div>
           <div className={styles.msgBody}>
@@ -468,6 +467,23 @@ export default class Messages extends PureComponent {
             {+deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱'}
           </div>
           <div className={styles.msgBody}>{virtualName + waterMsg[type].content}</div>
+        </div>
+      );
+    }
+
+    if (type === 45) {
+      return (
+        <div className={styles.msgItem}>
+          <div className={styles.msgTime}>{formatTime(addTime)}</div>
+          <div className={styles.msgType}>【可燃气体报警恢复】</div>
+          <div className={styles.msgBody}>
+            所在区域：
+            {area}
+          </div>
+          <div className={styles.msgBody}>
+            所在位置：
+            {location}
+          </div>
         </div>
       );
     }
