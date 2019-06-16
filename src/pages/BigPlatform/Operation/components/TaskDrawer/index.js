@@ -33,6 +33,10 @@ const statusList = [
   },
 ];
 const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_STATE = {
+  activeType: '消防主机',
+  activeStatus: '火警',
+};
 
 @connect(({ operation, loading }) => ({
   operation,
@@ -40,16 +44,19 @@ const DEFAULT_PAGE_SIZE = 20;
 }))
 export default class TaskDrawer extends PureComponent {
   state = {
-    activeType: '消防主机',
-    activeStatus: '火警',
+    ...DEFAULT_STATE,
   }
 
   scroll = null;
 
+  lastActiveStatus = '火警';
+
   componentDidUpdate({ visible: prevVisible }) {
     const { visible } = this.props;
     if (!prevVisible && visible) {
-      this.handleTabClick('消防主机');
+      this.getTaskList(DEFAULT_STATE, () => {
+        this.setState(DEFAULT_STATE);
+      });
     }
   }
 
@@ -75,23 +82,34 @@ export default class TaskDrawer extends PureComponent {
         reportType: typeDict[activeType],
         type: statusDict[activeStatus],
       },
-      callback,
+      callback: () => {
+        callback && callback();
+        this.scroll && this.scroll.scrollTop();
+      },
     });
   }
 
   handleTabClick = (activeType) => {
-    const payload = { activeType, activeStatus: activeType !== '报修' ? '火警' : '故障' };
+    const { activeStatus: prevActiveStatus, activeType: prevActiveType } = this.state;
+    let activeStatus = prevActiveStatus;
+    if (prevActiveType === '报修') {
+      if (activeType !== '报修') {
+        activeStatus = this.lastActiveStatus;
+      }
+    } else if (activeType === '报修') {
+      this.lastActiveStatus = prevActiveStatus;
+      activeStatus = '故障';
+    }
+    const payload = { activeType, activeStatus };
     this.getTaskList(payload, () => {
       this.setState(payload);
     });
-    this.scroll && this.scroll.scrollTop();
   }
 
   handleSelect = (activeStatus) => {
     this.getTaskList({ activeStatus }, () => {
       this.setState({ activeStatus });
     });
-    this.scroll && this.scroll.scrollTop();
   }
 
   handleCardClick = (id) => {
