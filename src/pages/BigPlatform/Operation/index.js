@@ -22,6 +22,8 @@ import {
   FireCount,
 } from './components/Components';
 import { PAGE_SIZE, getUnitList } from './utils';
+import iconFire from '@/assets/icon-fire-msg.png';
+import iconFault from '@/assets/icon-fault-msg.png';
 
 const options = { // websocket配置
   pingTimeout: 30000,
@@ -56,6 +58,31 @@ const HEADER_STYLE = {
 };
 
 const CONTENT_STYLE = { position: 'relative', height: '100%', zIndex: 0 };
+
+const MSG_INFO = {
+  '5': {
+    title: '火警提示',
+    icon: iconFire,
+    color: '#f83329',
+    body: '发生报警，',
+    bottom: '情况危急，请立即处理！',
+    animation: styles.redShadow,
+  },
+  '6': {
+    title: '故障提示',
+    icon: iconFault,
+    color: '#f4710f',
+    body: '发生故障，',
+    bottom: '请及时维修！',
+    animation: styles.orangeShadow,
+  },
+};
+
+notification.config({
+  placement: 'bottomLeft',
+  duration: null,
+  bottom: 8,
+});
 
 @connect(({ loading, operation, user }) => ({
   loading: loading.models.operation,
@@ -238,6 +265,89 @@ export default class Operation extends PureComponent {
     notification.close(`${messageFlag}_${paramCode}`);
   };
 
+  showFireMsg = item => {
+    const { type, messageId } = item;
+    if (type === 5 || type === 6) {
+      // 5 火警， 6 故障
+      const msgItem = MSG_INFO[type.toString()];
+      const style = {
+        boxShadow: `0px 0px 20px ${msgItem.color}`,
+      };
+      const styleAnimation = {
+        ...style,
+        animation: `${msgItem.animation} 2s linear 0s infinite alternate`,
+      };
+      const options = {
+        key: messageId,
+        className: styles.notification,
+        message: this.renderNotificationTitle(item),
+        description: this.renderNotificationMsg(item),
+        style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
+      };
+      notification.open({
+        ...options,
+      });
+
+      setTimeout(() => {
+        // 解决加入animation覆盖notification自身显示动效时长问题
+        notification.open({
+          ...options,
+          style: this.fireNode
+            ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 }
+            : { ...styleAnimation },
+          onClose: () => {
+            notification.open({
+              ...options,
+            });
+            setTimeout(() => {
+              notification.close(messageId);
+            }, 200);
+          },
+        });
+      }, 800);
+    }
+  };
+
+  renderNotificationTitle = item => {
+    const { type } = item;
+    const msgItem = MSG_INFO[type.toString()];
+    return (
+      <div className={styles.notificationTitle} style={{ color: msgItem.color }}>
+        <span className={styles.iconFire}>
+          <img src={msgItem.icon} alt="fire" />
+        </span>
+        {msgItem.title}
+      </div>
+    );
+  };
+
+  renderNotificationMsg = item => {
+    const { type, addTime, installAddress, componentType, messageFlag } = item;
+    const msgItem = MSG_INFO[type.toString()];
+    return (
+      <div
+        className={styles.notificationBody}
+        onClick={() => {
+          if (type === 5) this.handleClickMessage(messageFlag, item);
+          else this.handleFaultClick({ ...item });
+        }}
+      >
+        <div>
+          <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '}
+          {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
+          <span className={styles.address}>{installAddress}</span>
+        </div>
+        <div>
+          <span className={styles.device} style={{ color: msgItem.color }}>
+            【{componentType}】
+          </span>
+          {msgItem.body}
+        </div>
+        <div>{msgItem.bottom}</div>
+      </div>
+    );
+  };
+
   /**
    * 点击设置按钮
    */
@@ -363,23 +473,9 @@ export default class Operation extends PureComponent {
     this.mapChild = ref;
   };
 
-  // handleCompanyClick = companyId => {
-  //   const { dispatch } = this.props;
-  //   dispatch({ type: 'smoke/fetchCameraTree', payload: { company_id: companyId } });
-  //   dispatch({
-  //     type: 'smoke/fetchCompanySmokeInfo',
-  //     payload: { company_id: companyId },
-  //     success: () => {
-  //       this.handleDrawerVisibleChange('monitor');
-  //       this.pollCompanyInfo = setInterval(() => {
-  //         dispatch({
-  //           type: 'smoke/fetchCompanySmokeInfo',
-  //           payload: { company_id: companyId },
-  //         });
-  //       }, 2000);
-  //     },
-  //   });
-  // };
+  handleCompanyClick = companyId => {
+    window.open(`${window.publicPath}#/big-platform/fire-control/new-company/${companyId}`)
+  };
 
   fetchMapInfo = () => {
     const { dispatch } = this.props;
