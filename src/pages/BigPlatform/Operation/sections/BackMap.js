@@ -318,10 +318,10 @@ export default class MapSection extends PureComponent {
                       失联 {loss}
                     </div>
                   )}
-                  <div className={styles.statusItem}>
+                  {/* <div className={styles.statusItem}>
                     <span className={styles.statusIcon} style={{ backgroundColor: '#37a460' }} />
                     正常 {normal}
-                  </div>
+                  </div> */}
                 </div>
               </Fragment>
             ) : (
