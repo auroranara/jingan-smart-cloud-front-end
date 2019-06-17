@@ -112,9 +112,9 @@ export default class MapSection extends PureComponent {
         className={status ? styles.imgAnimate : styles.imgContainer}
         key={companyId}
       >
-        {!!deviceType && !!deviceCount && (
+        {/* {!!deviceType && !!deviceCount && (
           <div className={styles[`imgDot${deviceCount < 100 ? '' : 1}`]}>{deviceCount}</div>
-        )}
+        )} */}
         <img
           src={imgSrc}
           alt="dot"
@@ -136,8 +136,8 @@ export default class MapSection extends PureComponent {
 
   handleMapClick = extData => {
     if (extData.companyId === this.state.infoWindow.companyId && this.state.infoWindowShow) return;
-    const { fetchMapInfo } = this.props;
-    fetchMapInfo();
+    // const { fetchMapInfo } = this.props;
+    // fetchMapInfo();
     this.setState({
       infoWindowShow: true,
       infoWindow: {
@@ -289,12 +289,12 @@ export default class MapSection extends PureComponent {
           {
             deviceType ? (
               <Fragment>
-                <div
+                {/* <div
                   className={styles.device}
                   // style={{ borderTop: '1px solid #474747', margin: '8px 0', paddingTop: '8px' }}
                 >
                   设备数量 {deviceCount}
-                </div>
+                </div> */}
                 <div className={styles.statusWrapper}>
                   <div
                     className={styles.statusItem}
