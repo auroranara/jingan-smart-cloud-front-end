@@ -10,7 +10,6 @@ import flowImg from '../imgs/flow.png';
 import flowFaultImg from '../imgs/flow_m.png';
 import DynamicDrawerTop from '@/pages/BigPlatform/Operation/components/DynamicDrawerTop';
 
-
 const ID = 'fire-flow-drawer';
 const TITLES = ['报警', '故障'];
 const LABELS = [['发生', '确认', '完成'], ['故障发生', '开始处理', '处理完毕']];
@@ -79,8 +78,10 @@ export default class FireFlowDrawer extends PureComponent {
           disaster_desc,
           create_time,
           firstTime,
+          num,
+          lastTime,
         } = item;
-        const { times, lastreportTime } = flowRepeat;
+        // const { times, lastreportTime } = flowRepeat;
         const timelineList = [
           {
             label: LABELS[msgFlow][0],
@@ -93,7 +94,7 @@ export default class FireFlowDrawer extends PureComponent {
                 value: `${PrincipalName} ${vaguePhone(PrincipalPhone, phoneVisible)}`,
               },
             ],
-            // repeat: { repeatCount: times || 0, lastTime: lastreportTime },
+            repeat: { repeatCount: +num || 0, lastTime: lastTime },
           },
           // { label: '消息发送', time: 1569548522158, msgInfo: true },
           {
@@ -102,19 +103,19 @@ export default class FireFlowDrawer extends PureComponent {
             cardItems:
               nstatus === '0' || nstatus === '1'
                 ? [
-                  msgFlow === 0
-                    ? {
-                      name: '确认该火警为',
-                      value: +type === 1 ? '误报火警' : '真实火警',
-                      style: { color: +type === 1 ? '#fff' : '#ff4848' },
-                    }
-                    : undefined,
-                  { name: '处理单位', value: startCompanyName },
-                  {
-                    name: '处理人员',
-                    value: `${startByName} ${vaguePhone(startByPhone, phoneVisible)}`,
-                  },
-                ]
+                    msgFlow === 0
+                      ? {
+                          name: '确认该火警为',
+                          value: +type === 1 ? '误报火警' : '真实火警',
+                          style: { color: +type === 1 ? '#fff' : '#ff4848' },
+                        }
+                      : undefined,
+                    { name: '处理单位', value: startCompanyName },
+                    {
+                      name: '处理人员',
+                      value: `${startByName} ${vaguePhone(startByPhone, phoneVisible)}`,
+                    },
+                  ]
                 : undefined,
           },
           {
@@ -123,14 +124,14 @@ export default class FireFlowDrawer extends PureComponent {
             cardItems:
               nstatus === '1'
                 ? [
-                  { name: '处理单位', value: finishCompanyName },
-                  {
-                    name: '处理人员',
-                    value: `${finishByName} ${vaguePhone(finishByPhone, phoneVisible)}`,
-                  },
-                  { name: '结果反馈', value: disaster_desc },
-                  { imgs: sitePhotos || [] },
-                ]
+                    { name: '处理单位', value: finishCompanyName },
+                    {
+                      name: '处理人员',
+                      value: `${finishByName} ${vaguePhone(finishByPhone, phoneVisible)}`,
+                    },
+                    { name: '结果反馈', value: disaster_desc },
+                    { imgs: sitePhotos || [] },
+                  ]
                 : undefined,
           },
         ];
@@ -151,22 +152,22 @@ export default class FireFlowDrawer extends PureComponent {
             {cards}
           </Fragment>
         ) : (
-            <Fragment>
-              {head && <DynamicDrawerTop headProps={headProps} />}
-              <SwitchHead
-                index={index}
-                title={TITLES[msgFlow]}
-                lastIndex={length - 1}
-                handleLeftClick={this.handleLeftClick}
-                handleRightClick={this.handleRightClick}
-              />
-              <div className={styles.sliderContainer}>
-                <Slider index={index} length={length} size={1}>
-                  {cards}
-                </Slider>
-              </div>
-            </Fragment>
-          );
+          <Fragment>
+            {head && <DynamicDrawerTop headProps={headProps} />}
+            <SwitchHead
+              index={index}
+              title={TITLES[msgFlow]}
+              lastIndex={length - 1}
+              handleLeftClick={this.handleLeftClick}
+              handleRightClick={this.handleRightClick}
+            />
+            <div className={styles.sliderContainer}>
+              <Slider index={index} length={length} size={1}>
+                {cards}
+              </Slider>
+            </div>
+          </Fragment>
+        );
     }
     return (
       <DrawerContainer

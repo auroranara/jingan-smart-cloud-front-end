@@ -776,10 +776,10 @@ export default class NewUnitFireControl extends PureComponent {
       firstTime,
     } = item;
     const msgItem = switchMsgType(+type);
-    const repeat = {
-      times: +isOver === 0 ? count : num,
-      lastreportTime: addTime,
-    };
+    // const repeat = {
+    //   times: +isOver === 0 ? count : num,
+    //   lastreportTime: addTime,
+    // };
     const occurData = [
       {
         create_time: addTime,
@@ -800,7 +800,7 @@ export default class NewUnitFireControl extends PureComponent {
     ];
     const msgFlag =
       messageFlag && (messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
-    const restParams = [repeat, cameraMessage, occurData];
+    const restParams = [cameraMessage, occurData];
     const param = { dataId: msgFlag };
     return (
       <div
@@ -1565,6 +1565,7 @@ export default class NewUnitFireControl extends PureComponent {
   };
 
   getWarnDetail = (status, type = 1, pageNum) => {
+    // status 0 待处理 1 处理中 2 已处理
     const {
       dispatch,
       match: {
@@ -1586,6 +1587,7 @@ export default class NewUnitFireControl extends PureComponent {
   };
 
   getFaultDetail = (status, type = 1, pageNum) => {
+    // status 0 待处理 1 处理中 2 已处理
     const {
       dispatch,
       match: {
@@ -1770,7 +1772,7 @@ export default class NewUnitFireControl extends PureComponent {
     param,
     type,
     flow,
-    repeat,
+    // repeat,
     cameraMessage = [],
     occurData,
     isHidePopups = true
@@ -1791,64 +1793,68 @@ export default class NewUnitFireControl extends PureComponent {
     ];
     const reportTypes = [1, 4, 3, 2];
     isHidePopups && this.hiddeAllPopup();
-    // if (type !== 3) {
-    //   dispatch({
-    //     type: 'newUnitFireControl/fetchCountNumAndTimeById',
-    //     payload: {
-    //       id: param.dataId || param.id,
-    //       reportType: reportTypes[type],
-    //       fireType: flow + 1,
-    //     },
-    //     callback: res => {
-    //       if (res) {
-    //         const { num, lastTime, firstTime } = res;
-    //         this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
-    //         dispatch({
-    //           type: 'newUnitFireControl/saveWorkOrderDetail',
-    //           payload: [{ ...occurData[0], firstTime }],
-    //         });
-    //       } else {
-    //         dispatch({
-    //           type: 'newUnitFireControl/fetchWorkOrder',
-    //           payload: { companyId, reportType: reportTypes[type], ...param },
-    //           callback: res => {
-    //             if (res.data.list.length === 0) return;
-    //             const { num, lastTime } = res.data.list[0];
-    //             this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
-    //           },
-    //         });
-    //       }
-    //     },
-    //   });
-    // } else {
-    //   // 一键报修没有重复上报
-    //   dispatch({
-    //     type: 'newUnitFireControl/fetchWorkOrder',
-    //     payload: { companyId, reportType: reportTypes[type], ...param },
-    //     callback: res => {
-    //       if (!(res.data && Array.isArray(res.data.list))) return;
-    //       if (res.data.list.length === 0) {
-    //         dispatch({
-    //           type: 'newUnitFireControl/saveWorkOrderDetail',
-    //           payload: occurData,
-    //         });
-    //       }
-    //     },
-    //   });
-    // }
-    dispatch({
-      type: 'newUnitFireControl/fetchWorkOrder',
-      payload: { companyId, reportType: reportTypes[type], ...param },
-      callback: res => {
-        if (!(res.data && Array.isArray(res.data.list))) return;
-        if (res.data.list.length === 0) {
-          dispatch({
-            type: 'newUnitFireControl/saveWorkOrderDetail',
-            payload: occurData,
-          });
-        }
-      },
-    });
+    if (type !== 3) {
+      // 待处理请求重复上报次数，第一次、最后一次上报时间
+      // 返回null则状态已到处理中或已完成
+      dispatch({
+        type: 'newUnitFireControl/fetchCountNumAndTimeById',
+        payload: {
+          id: param.dataId || param.id,
+          reportType: reportTypes[type],
+          fireType: flow + 1,
+        },
+        callback: res => {
+          if (res) {
+            // 待处理自行拼
+            const { num, lastTime, firstTime } = res;
+            // this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+            dispatch({
+              type: 'newUnitFireControl/saveWorkOrderDetail',
+              payload: [{ ...occurData[0], firstTime, num, lastTime }],
+            });
+          } else {
+            // 处理中，已完成请求接口流程信息
+            dispatch({
+              type: 'newUnitFireControl/fetchWorkOrder',
+              payload: { companyId, reportType: reportTypes[type], ...param },
+              // callback: res => {
+              //   if (res.data.list.length === 0) return;
+              //   const { num, lastTime } = res.data.list[0];
+              //   this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+              // },
+            });
+          }
+        },
+      });
+    } else {
+      // 一键报修没有重复上报
+      dispatch({
+        type: 'newUnitFireControl/fetchWorkOrder',
+        payload: { companyId, reportType: reportTypes[type], ...param },
+        callback: res => {
+          if (!(res.data && Array.isArray(res.data.list))) return;
+          if (res.data.list.length === 0) {
+            dispatch({
+              type: 'newUnitFireControl/saveWorkOrderDetail',
+              payload: occurData,
+            });
+          }
+        },
+      });
+    }
+    // dispatch({
+    //   type: 'newUnitFireControl/fetchWorkOrder',
+    //   payload: { companyId, reportType: reportTypes[type], ...param },
+    //   callback: res => {
+    //     if (!(res.data && Array.isArray(res.data.list))) return;
+    //     if (res.data.list.length === 0) {
+    //       dispatch({
+    //         type: 'newUnitFireControl/saveWorkOrderDetail',
+    //         payload: occurData,
+    //       });
+    //     }
+    //   },
+    // });
     this.setState({ [drawerVisibles[type]]: true, msgFlow: flow });
     this.handleShowFireVideo(cameraMessage);
   };
@@ -2427,7 +2433,6 @@ export default class NewUnitFireControl extends PureComponent {
           getFaultDetail={this.getFaultDetail}
           countFinishByUserId={countFinishByUserId}
           showWorkOrderDetail={this.showWorkOrderDetail}
-          handleClickMsgFlow={this.handleClickMsgFlow}
           phoneVisible={phoneVisible}
         />
         {/* 消防主机处理动态 */}
