@@ -56,13 +56,13 @@ export default function CustomSection2 ({
       <div className="custom-section2-content-container">
         {fixedContent}
         <Spin
-          wrapperClassName="custom-section2-spin"
+          wrapperClassName={classNames('custom-section2-spin', spinClassName)}
           spinning={!!loading}
           {...spinProps}
         >
           <Scroll
             ref={scroll => setScrollReference && setScrollReference(scroll && scroll.dom)}
-            className="custom-section2-scroll"
+            className={classNames('custom-section2-scroll', scrollClassName)}
             thumbStyle={thumbStyle}
             renderThumbHorizontal={renderHorizontal}
             renderTrackHorizontal={renderHorizontal}

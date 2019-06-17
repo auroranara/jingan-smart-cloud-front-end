@@ -15,11 +15,7 @@ export default function CustomDrawer({
   onClose,
   closable,
   // Section相关参数
-  sectionProps: {
-    className: sectionClassName,
-    style: sectionStyle,
-    ...sectionProps
-  }={},
+  sectionProps,
   children,
   ...drawerProps
 }) {
@@ -33,9 +29,7 @@ export default function CustomDrawer({
     >
       <CustomSection
         title={title}
-        style={{ fontSize: '1em', ...sectionStyle }}
         action={<Icon type="close" className={styles.closeButton} onClick={onClose} />}
-        contentClassName={styles.sectionContent}
         {...sectionProps}
       >
         {children}

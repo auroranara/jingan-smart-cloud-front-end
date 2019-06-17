@@ -3,7 +3,7 @@ import { Spin } from 'antd';
 import classNames from 'classnames';
 import { Scroll } from 'react-transform-components';
 // 引入样式文件
-import styles from './index.less';
+import './index.less';
 
 const renderHorizontal = ({ style }) => <div style={{ ...style, display: 'none' }} />;
 const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)' };
@@ -16,14 +16,6 @@ export default function CustomSection ({
   className,
   // 容器样式
   style,
-  // 标题类名
-  titleClassName,
-  // 标题样式
-  titleStyle,
-  // 内容类名
-  contentClassName,
-  // 内容样式
-  contentStyle,
   // 标题
   title,
   // 显示在右上角的内容
@@ -37,6 +29,7 @@ export default function CustomSection ({
   // 滚动条相关设置属性，请查看Scroll组件
   scrollProps: {
     className: scrollClassName,
+    ref: setScrollReference,
     ...scrollProps
   }={},
   // spin组件相关参数
@@ -54,6 +47,7 @@ export default function CustomSection ({
   // 滚动条相关设置属性，请查看Scroll组件
   scrollProps2: {
     className: scrollClassName2,
+    ref: setScrollReference2,
     ...scrollProps2
   }={},
   // spin组件相关参数
@@ -67,19 +61,24 @@ export default function CustomSection ({
   ...restProps
 }) {
   return (
-    <div className={classNames(styles.container, className)} style={style} {...restProps}>
+    <div className={classNames('custom-section-container', className)} style={style} {...restProps}>
       {title && (
-        <div className={classNames(styles.title, titleClassName)} style={titleStyle}>
-          <div className={styles.titleIcon} />
-          <div className={styles.titleLabel}>{title}</div>
-          {action && <div className={styles.action}>{action}</div>}
+        <div className="custom-section-title-container">
+          <div className="custom-section-title-icon"></div>
+          <div className="custom-section-title-wrapper">{title}</div>
+          {action && <div className="custom-section-action-wrapper">{action}</div>}
         </div>
       )}
-      <div className={classNames(styles.content, contentClassName)} style={contentStyle}>
+      <div className="custom-section-content-container">
         {fixedContent}
-        <Spin wrapperClassName={classNames(styles.spin, spinClassName)} spinning={!!loading} {...spinProps}>
+        <Spin
+          wrapperClassName={classNames('custom-section-spin', spinClassName)}
+          spinning={!!loading}
+          {...spinProps}
+        >
           <Scroll
-            className={classNames(styles.scroll, scrollClassName)}
+            ref={scroll => setScrollReference && setScrollReference(scroll && scroll.dom)}
+            className={classNames('custom-section-scroll', scrollClassName)}
             thumbStyle={thumbStyle}
             renderThumbHorizontal={renderHorizontal}
             renderTrackHorizontal={renderHorizontal}
@@ -89,9 +88,14 @@ export default function CustomSection ({
           </Scroll>
         </Spin>
         {mode !== 'single' && (
-          <Spin wrapperClassName={classNames(styles.spin, spinClassName2)} spinning={!!loading2} {...spinProps2}>
+          <Spin
+            wrapperClassName={classNames('custom-section-spin', spinClassName2)}
+            spinning={!!loading2}
+            {...spinProps2}
+          >
             <Scroll
-              className={classNames(styles.scroll, scrollClassName2)}
+              ref={scroll => setScrollReference2 && setScrollReference2(scroll && scroll.dom)}
+              className={classNames('custom-section-scroll', scrollClassName2)}
               thumbStyle={thumbStyle}
               renderThumbHorizontal={renderHorizontal}
               renderTrackHorizontal={renderHorizontal}
