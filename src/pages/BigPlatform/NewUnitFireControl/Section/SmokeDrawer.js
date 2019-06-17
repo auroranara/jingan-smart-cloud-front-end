@@ -104,7 +104,7 @@ export default class SmokeDrawer extends PureComponent {
                             param,
                             1,
                             +status > 0 ? 0 : 1,
-                            {},
+                            // {},
                             [],
                             occurData,
                             false

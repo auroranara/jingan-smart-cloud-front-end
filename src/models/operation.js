@@ -135,11 +135,12 @@ export default {
       }
     },
     *fetchUnitList({ payload, callback }, { call, put }) {
+      const { unitId } = payload || {};
       const response = yield call(getUnitList, payload);
       const { code, data } = response || {};
       if (code === 200) {
         const lst = data && Array.isArray(data.list) ? data.list : [];
-        yield put({ type: 'saveUnitList', payload: lst });
+        yield put({ type: 'saveUnitList', payload: { unitId, list: lst} });
         callback && callback(lst);
       }
     },
@@ -263,7 +264,16 @@ export default {
       };
     },
     saveUnitList(state, action) {
-      return { ...state, unitList: action.payload };
+      const { unitList } = state;
+      const { unitId, list } = action.payload
+      let newUnitList;
+      if (unitId && list.length) {
+        newUnitList = Array.from(unitList);
+        const index = unitList.findIndex(({ companyId }) => companyId === unitId);
+        newUnitList[index] = list[0];
+      } else
+        newUnitList = list;
+      return { ...state, unitList: newUnitList };
     },
     saveFirePie(state, action) {
       return { ...state, firePie: action.payload };

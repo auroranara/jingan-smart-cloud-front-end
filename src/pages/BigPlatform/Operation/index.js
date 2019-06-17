@@ -142,7 +142,7 @@ export default class Operation extends PureComponent {
       tooltipPosition: [0, 0],
       alarmIds: [],
       companyName: '',
-      unitList: [], // 地图显示的企业列表
+      // unitList: [], // 地图显示的企业列表
       unitDetail: {},
       deviceType: 0, // 地图中间根据设备显示企业列表
       fireListHasMore: true, // 火警统计抽屉右边列表是否有更多
@@ -179,7 +179,7 @@ export default class Operation extends PureComponent {
     } = this.props;
 
     // 烟感地图数据
-    this.fetchMapInfo();
+    this.fetchMapUnitList();
 
     const params = {
       companyId: userId,
@@ -199,8 +199,11 @@ export default class Operation extends PureComponent {
     ws.onmessage = e => {
       // 判断是否是心跳
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
+
       try {
         const data = JSON.parse(e.data);
+        this.fetchStatistics();
+        this.fetchMapUnitList(data.data.companyId);
         dispatch({
           type: 'newUnitFireControl/fetchWebsocketScreenMessage',
           payload: data,
@@ -296,9 +299,11 @@ export default class Operation extends PureComponent {
     this.setState({ ...popupVisible });
   };
 
-  componentWillUnmount() {
-    clearInterval(this.pollCompanyInfo);
-  }
+  fetchStatistics = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'operation/fetchFireCount' });
+    dispatch({ type: 'operation/fetchTaskCount' });
+  };
 
   /**
    * 获取大屏消息
@@ -324,13 +329,13 @@ export default class Operation extends PureComponent {
     this.hideTooltip();
   };
 
-  hideUnitDetail = () => {
-    // this.setState({ monitorDrawerVisible: false });
-  };
+  // hideUnitDetail = () => {
+  //   // this.setState({ monitorDrawerVisible: false });
+  // };
 
-  hideWarningNotification = ({ messageFlag, paramCode }) => {
-    notification.close(`${messageFlag}_${paramCode}`);
-  };
+  // hideWarningNotification = ({ messageFlag, paramCode }) => {
+  //   notification.close(`${messageFlag}_${paramCode}`);
+  // };
 
   showFireMsg = item => {
     const { type, messageId, isOver } = item;
@@ -511,9 +516,9 @@ export default class Operation extends PureComponent {
 
   // 地图搜索
   fetchMapSearchData = value => {
-    // const { operation: { unitList } } = this.props;
-    const { unitList } = this.state;
-    const list = unitList;
+    const { operation: { unitList } } = this.props;
+    const { deviceType } = this.state;
+    const list = getUnitList(unitList, deviceType);
     const selectList = value ? list.filter(item => item.companyName.includes(value)) : [];
     this.setState({
       searchValue: value,
@@ -630,13 +635,14 @@ export default class Operation extends PureComponent {
     window.open(`${window.publicPath}#/big-platform/fire-control/new-company/${companyId}`);
   };
 
-  fetchMapInfo = () => {
+  fetchMapUnitList = unitId => {
     const { dispatch } = this.props;
     dispatch({
       type: 'operation/fetchUnitList',
-      callback: list => {
-        this.setState({ unitList: list });
-      },
+      payload: { unitId },
+      // callback: list => {
+      //   this.setState({ unitList: list });
+      // },
     });
   };
 
@@ -704,7 +710,7 @@ export default class Operation extends PureComponent {
     } = this.props;
     const { unitDetail } = this.state;
     const list = getUnitList(unitList, v);
-    this.setState({ deviceType: v, unitList: list });
+    this.setState({ deviceType: v });
     callback(!!list.find(({ companyId }) => companyId === unitDetail.companyId));
   };
 
@@ -738,7 +744,7 @@ export default class Operation extends PureComponent {
   handleClickMsgFlow = (param, type, flow, repeat, cameraMessage = [], occurData, cId) => {
     // type 0/1/2/3 主机/烟感/燃气/一键报修
     // flow 0/1 报警/故障
-    console.log(param)
+    // console.log(param)
     const {
       dispatch,
       operation: { unitList },
@@ -827,7 +833,7 @@ export default class Operation extends PureComponent {
     const {
       fireListLoading,
       operation: {
-        // unitList,
+        unitList,
         firePie,
         fireTrend,
         fireList,
@@ -858,7 +864,6 @@ export default class Operation extends PureComponent {
       tooltipVisible,
       tooltipPosition,
       alarmIds,
-      unitList,
       dateType,
       deviceType,
       fireListHasMore,
@@ -882,7 +887,7 @@ export default class Operation extends PureComponent {
     };
     return (
       <BigPlatformLayout
-        title="智慧消防运营平台"
+        title="智慧消防运营驾驶舱"
         extra={unitName}
         style={{ backgroundImage: 'none' }}
         headerStyle={HEADER_STYLE}
@@ -894,7 +899,7 @@ export default class Operation extends PureComponent {
         {/* 地图 */}
         <BackMap
           deviceType={deviceType}
-          units={unitList}
+          units={getUnitList(unitList, deviceType)}
           handleMapClick={this.showUnitDetail}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
@@ -905,7 +910,7 @@ export default class Operation extends PureComponent {
           // handleFaultClick={this.handleFaultClick}
           onRef={this.onRef}
           handleCompanyClick={this.handleCompanyClick}
-          fetchMapInfo={this.fetchMapInfo}
+          // fetchMapInfo={this.fetchMapInfo}
           handleDeviceTypeChange={this.handleDeviceTypeChange}
         />
         {/* 搜索框 */}
