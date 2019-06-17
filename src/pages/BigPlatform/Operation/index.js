@@ -142,7 +142,7 @@ export default class Operation extends PureComponent {
       tooltipPosition: [0, 0],
       alarmIds: [],
       companyName: '',
-      // unitList: [], // 地图显示的企业列表
+      unitList: [], // 地图显示的企业列表
       unitDetail: {},
       deviceType: 0, // 地图中间根据设备显示企业列表
       fireListHasMore: true, // 火警统计抽屉右边列表是否有更多
@@ -293,6 +293,16 @@ export default class Operation extends PureComponent {
         this.topId = res.list[0] ? res.list[0].messageId : undefined;
       },
     });
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const { operation: { unitList } } = this.props;
+    const { deviceType } = this.state;
+    const { operation: { unitList: prevUnitList } } = prevProps;
+    const { deviceType: prevDeviceType } = prevState;
+    if (unitList !== prevUnitList || deviceType !== prevDeviceType ) {
+      this.setState({ unitList: getUnitList(unitList, deviceType) });
+    }
   }
 
   hiddeAllPopup = () => {
@@ -533,15 +543,6 @@ export default class Operation extends PureComponent {
     });
   };
 
-  // handleClickNotification = companyId => {
-  //   const {
-  //     operation: {
-  //       unitList,
-  //     },
-  //   } = this.props;
-  //   this.showUnitDetail(unitList.filter(item => item.companyId === companyId)[0]);
-  // };
-
   handleVideoOpen = () => {
     const {
       dispatch,
@@ -744,7 +745,7 @@ export default class Operation extends PureComponent {
   handleClickMsgFlow = (param, type, flow, repeat, cameraMessage = [], occurData, cId) => {
     // type 0/1/2/3 主机/烟感/燃气/一键报修
     // flow 0/1 报警/故障
-    // console.log(param)
+
     const {
       dispatch,
       operation: { unitList },
@@ -833,7 +834,7 @@ export default class Operation extends PureComponent {
     const {
       fireListLoading,
       operation: {
-        unitList,
+        // unitList,
         firePie,
         fireTrend,
         fireList,
@@ -877,6 +878,7 @@ export default class Operation extends PureComponent {
       videoVisible,
       videoList,
       videoKeyId,
+      unitList,
     } = this.state;
     const headProps = {
       ...workOrderDetail[0],
@@ -899,7 +901,8 @@ export default class Operation extends PureComponent {
         {/* 地图 */}
         <BackMap
           deviceType={deviceType}
-          units={getUnitList(unitList, deviceType)}
+          // units={getUnitList(unitList, deviceType)}
+          units={unitList}
           handleMapClick={this.showUnitDetail}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}

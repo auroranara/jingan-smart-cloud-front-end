@@ -712,7 +712,7 @@ export default class NewUnitFireControl extends PureComponent {
           className: styles.notification,
           message: this.renderNotificationTitle(item),
           description: this.renderNotificationMsg(item),
-          style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
+          style: { ...style, width: (screen.availWidth - 40) / 5 - 8 },
         };
         notification.open({
           ...options,
@@ -722,9 +722,7 @@ export default class NewUnitFireControl extends PureComponent {
           // 解决加入animation覆盖notification自身显示动效时长问题
           notification.open({
             ...options,
-            style: this.fireNode
-              ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 }
-              : { ...styleAnimation },
+            style: { ...styleAnimation, width: (screen.availWidth - 40) / 5 - 8 },
             onClose: () => {
               notification.open({
                 ...options,
