@@ -202,6 +202,7 @@ export default class Operation extends PureComponent {
 
       try {
         const data = JSON.parse(e.data);
+        this.fetchStatistics();
         this.fetchMapUnitList(data.data.companyId);
         dispatch({
           type: 'newUnitFireControl/fetchWebsocketScreenMessage',
@@ -298,9 +299,11 @@ export default class Operation extends PureComponent {
     this.setState({ ...popupVisible });
   };
 
-  // componentWillUnmount() {
-  //   clearInterval(this.pollCompanyInfo);
-  // }
+  fetchStatistics = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'operation/fetchFireCount' });
+    dispatch({ type: 'operation/fetchTaskCount' });
+  };
 
   /**
    * 获取大屏消息
