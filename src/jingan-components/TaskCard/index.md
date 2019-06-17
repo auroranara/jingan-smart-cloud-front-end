@@ -1,4 +1,4 @@
-# DeviceCard
+# TaskCard
 
 ## 参数列表
 
@@ -8,44 +8,69 @@
 | style | 容器样式 | object | - |
 | data | 源数据 | object | - |
 | fieldNames | 自定义字段 | object | 见下面 |
+| onClick | 处理动态按钮点击事件 | () => ... | - |
 
 ## fieldNames默认值
 
 ```js
   {
-    monitoringType: 'monitoringType', // 监测类型
-    name: 'name', // 传感器名称
-    relationId: 'relationId', // 传感器id
-    location: 'location', // 区域位置
-    statuses: 'statuses', // 状态
-    params: 'params', // 参数
-    time: 'time', // 报警时间
+    id: 'id', // 主键
+    type: 'type', // 类型
+    companyName: 'companyName', // 企业名称
+    partType: 'partType', // 设施部件类型
+    loopNumber: 'loopNumber', // 回路号
+    partNumber: 'partNumber', // 故障号
+    area: 'area', // 区域
+    location: 'location', // 位置
+    startTime: 'startTime', // 报警/报修时间
+    endTime: 'endTime', // 结束时间
+    status: 'status', // 状态
+    wordOrderNumber: 'wordOrderNumber', // 工单编号
+    repairPersonName: 'repairPersonName', // 报修人员名称
+    repairPersonPhone: 'repairPersonPhone', // 报修人员手机号
+    process: 'process', // 处理状态
   };
 ```
 
 ## 示例
 
 ```jsx
-  <DeviceCard
+  <TaskCard
     className={styles.card}
     style={{ fontSize: 14 }}
     data={{
-      monitoringType: 'monitoringType', // 监测类型
-      name: 'name', // 传感器名称
-      relationId: 'relationId', // 传感器id
-      location: 'location', // 区域位置
-      statuses: 'statuses', // 状态
-      params: 'params', // 参数
-      time: 'time', // 报警时间
+      id: 'id', // 主键
+      type: 'type', // 类型
+      companyName: 'companyName', // 企业名称
+      partType: 'partType', // 设施部件类型
+      loopNumber: 'loopNumber', // 回路号
+      partNumber: 'partNumber', // 故障号
+      area: 'area', // 区域
+      location: 'location', // 位置
+      startTime: 'startTime', // 报警/报修时间
+      endTime: 'endTime', // 结束时间
+      status: 'status', // 状态
+      wordOrderNumber: 'wordOrderNumber', // 工单编号
+      repairPersonName: 'repairPersonName', // 报修人员名称
+      repairPersonPhone: 'repairPersonPhone', // 报修人员手机号
+      process: 'process', // 处理状态
     }}
     fieldNames={{
-      monitoringType: 'monitoringType', // 监测类型
-      name: 'name', // 传感器名称
-      relationId: 'relationId', // 传感器id
-      location: 'location', // 区域位置
-      statuses: 'statuses', // 状态
-      params: 'params', // 参数
-      time: 'time', // 报警时间
+      id: 'id', // 主键
+      type: 'type', // 类型
+      companyName: 'companyName', // 企业名称
+      partType: 'partType', // 设施部件类型
+      loopNumber: 'loopNumber', // 回路号
+      partNumber: 'partNumber', // 故障号
+      area: 'area', // 区域
+      location: 'location', // 位置
+      startTime: 'startTime', // 报警/报修时间
+      endTime: 'endTime', // 结束时间
+      status: 'status', // 状态
+      wordOrderNumber: 'wordOrderNumber', // 工单编号
+      repairPersonName: 'repairPersonName', // 报修人员名称
+      repairPersonPhone: 'repairPersonPhone', // 报修人员手机号
+      process: 'process', // 处理状态
     }}
   />
 ```

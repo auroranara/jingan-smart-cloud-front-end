@@ -25,8 +25,9 @@ export default {
   state: {
     // 任务列表
     taskList: {},
+    taskList2: {},
     // 运维任务统计
-    count: {
+    taskCount: {
       pending: 0, // 待处理
       processing: 0, // 处理中
       processed: 0, // 已处理
@@ -66,6 +67,25 @@ export default {
         const { listSize: total } = pagination || {};
         yield put({
           type: 'saveTaskList',
+          payload: {
+            list: list || [],
+            pagination: { pageSize, pageNum, total: total || 0 },
+          },
+        });
+        callback && callback();
+      } else {
+        error(msg);
+      }
+    },
+    *fetchTaskList2({ payload, callback }, { call, put }) {
+      const response = yield call(getTaskList, payload);
+      const { code=500, msg='获取任务失败，请稍后重试', data } = response || {};
+      if (code === 200) {
+        const { pageSize, pageNum } = payload;
+        const { list, pagination } = data || {};
+        const { listSize: total } = pagination || {};
+        yield put({
+          type: 'saveTaskList2',
           payload: {
             list: list || [],
             pagination: { pageSize, pageNum, total: total || 0 },
@@ -229,6 +249,15 @@ export default {
         ...state,
         taskList: {
           list: pagination.pageNum === 1 ? list : [...state.taskList.list, ...list],
+          pagination,
+        },
+      };
+    },
+    saveTaskList2(state, { payload: { list, pagination } }) {
+      return {
+        ...state,
+        taskList2: {
+          list: pagination.pageNum === 1 ? list : [...state.taskList2.list, ...list],
           pagination,
         },
       };
