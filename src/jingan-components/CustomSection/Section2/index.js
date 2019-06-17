@@ -9,11 +9,12 @@ import './index.less';
 
 const renderHorizontal = ({ style }) => <div style={{ ...style, display: 'none' }} />;
 const thumbStyle = { backgroundColor: 'rgb(0, 87, 169)' };
+const backgroundStyle = { backgroundImage: `url(${titleBackground})` };
 
 /**
  * 容器
  */
-export function CustomSection2 ({
+export default function CustomSection2 ({
   // 容器类名
   className,
   // 容器样式
@@ -31,6 +32,7 @@ export function CustomSection2 ({
   // 滚动条相关设置属性，请查看Scroll组件
   scrollProps: {
     className: scrollClassName,
+    ref: setScrollReference,
     ...scrollProps
   }={},
   // spin组件相关参数
@@ -44,30 +46,23 @@ export function CustomSection2 ({
   ...restProps
 }) {
   return (
-    <div className={classNames('section2-container', className)} style={style} {...restProps}>
-      {/* <div className={styles.title} style={{ ...(planB?{ backgroundImage: `url(${titleBg})`, backgroundSize: '100% 100%' }:{ backgroundImage: `url(${titleBg2})` }), ...titleStyle }}>
-        {title}
-        {extra && <span className={styles.extra}>{extra}</span>}
-      </div>
-      <div className={styles.content} style={{ ...(planB?{ backgroundColor: 'rgba(17, 58, 112, 0.502)' }:{}), ...contentStyle  }}>
-        {scroll ? (
-          <Scroll {...scroll}>
-            {children}
-          </Scroll>
-        ) : children}
-      </div>
+    <div className={classNames('custom-section2-container', className)} style={style} {...restProps}>
       {title && (
-        <div className={classNames(styles.titleContainer, titleClassName)} style={titleStyle}>
-          <div className={styles.titleIcon} />
-          <div className={styles.titleLabel}>{title}</div>
-          {action && <div className={styles.action}>{action}</div>}
+        <div className="custom-section2-title-container" style={backgroundStyle}>
+          <div className="custom-section2-title-wrapper">{title}</div>
+          {action && <div className="custom-section2-action-wrapper">{action}</div>}
         </div>
       )}
-      <div className={classNames(styles.content, contentClassName)} style={contentStyle}>
+      <div className="custom-section2-content-container">
         {fixedContent}
-        <Spin wrapperClassName={classNames(styles.spin, spinClassName)} spinning={!!loading} {...spinProps}>
+        <Spin
+          wrapperClassName="custom-section2-spin"
+          spinning={!!loading}
+          {...spinProps}
+        >
           <Scroll
-            className={classNames(styles.scroll, scrollClassName)}
+            ref={scroll => setScrollReference && setScrollReference(scroll && scroll.dom)}
+            className="custom-section2-scroll"
             thumbStyle={thumbStyle}
             renderThumbHorizontal={renderHorizontal}
             renderTrackHorizontal={renderHorizontal}
@@ -76,7 +71,7 @@ export function CustomSection2 ({
             {children}
           </Scroll>
         </Spin>
-      </div> */}
+      </div>
       {extra}
     </div>
   );

@@ -1,17 +1,82 @@
 :global {
-  .section2-container {
+  .custom-section2-container {
     position: relative;
     height: 100%;
     font-size: 16px;
     color: #fff;
     line-height: 1.5;
   }
+  .custom-section2-title-container {
+    padding: 1px 0 0 1px;
+    height: calc(1.5em + 1px);
+    background: no-repeat left;
+    background-size: auto 100%;
+    overflow: hidden;
+  }
+  .custom-section2-title-wrapper {
+    float: left;
+    padding-left: 1em;
+    height: 100%;
+  }
+  .custom-section2-action-wrapper {
+    float: right;
+    height: 100%;
+  }
+  .custom-section2-content-container {
+    padding: 0.5em 0;
+    height: calc(~'100% - 1.5em - 1px');
+    background-color: rgba(3, 48, 105, 0.902);
+    border: 1px solid rgb(76, 206, 240);
+    border-radius: 0.5em;
+    border-top-left-radius: 0;
+    box-shadow: 0.25em 0.25em 0px rgba(0, 0, 0, 0.75);
+
+    &:first-child {
+      height: 100%;
+    }
+  }
+  .custom-section2-spin {
+    height: 100%;
+
+    .ant-spin-container {
+      height: 100%;
+
+      &:after {
+        background-color: transparent;
+      }
+    }
+  }
+  .custom-section2-scroll {
+    height: 100%;
+
+    & > div {
+      &::-webkit-scrollbar {
+        background-color: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: transparent;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
+
+      &::-webkit-scrollbar-corner {
+        background-color: transparent;
+      }
+
+      &::-webkit-resizer {
+        background-color: transparent;
+      }
+    }
+  }
 }
 
 
 @media screen and (max-width: 1599px) and (min-width: 1400px) {
 :global {
-  .section2-container {
+  .custom-section2-container {
     font-size: 14px;
   }
 }
@@ -19,7 +84,7 @@
 
 @media screen and (max-width: 1399px) {
 :global {
-  .section2-container {
+  .custom-section2-container {
     font-size: 12px;
   }
 }
