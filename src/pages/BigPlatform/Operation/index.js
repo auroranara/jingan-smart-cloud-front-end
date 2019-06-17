@@ -200,9 +200,9 @@ export default class Operation extends PureComponent {
       // 判断是否是心跳
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
 
-      this.fetchMapUnitList();
       try {
         const data = JSON.parse(e.data);
+        this.fetchMapUnitList(data.data.companyId);
         dispatch({
           type: 'newUnitFireControl/fetchWebsocketScreenMessage',
           payload: data,
@@ -632,10 +632,11 @@ export default class Operation extends PureComponent {
     window.open(`${window.publicPath}#/big-platform/fire-control/new-company/${companyId}`);
   };
 
-  fetchMapUnitList = () => {
+  fetchMapUnitList = unitId => {
     const { dispatch } = this.props;
     dispatch({
       type: 'operation/fetchUnitList',
+      payload: { unitId },
       // callback: list => {
       //   this.setState({ unitList: list });
       // },
