@@ -40,7 +40,7 @@ export default class GasFlowDrawer extends PureComponent {
       visible,
       phoneVisible,
       flowRepeat,
-      head=null,
+      head = null,
       ...restProps
     } = this.props;
     const { index } = this.state;
@@ -70,8 +70,10 @@ export default class GasFlowDrawer extends PureComponent {
           sitePhotos,
           disaster_desc,
           firstTime,
+          num,
+          lastTime,
         } = item;
-        const { times, lastreportTime } = flowRepeat;
+        // const { times, lastreportTime } = flowRepeat;
         const timelineList = [
           {
             label: '报警发生',
@@ -84,7 +86,7 @@ export default class GasFlowDrawer extends PureComponent {
                 value: `${PrincipalName} ${vaguePhone(PrincipalPhone, phoneVisible)}`,
               },
             ],
-            // repeat: { repeatCount: times || 0, lastTime: lastreportTime },
+            repeat: { repeatCount: +num || 0, lastTime: lastTime },
           },
           // { label: '消息发送', time: 1569548522158, msgInfo: true },
           {
@@ -131,9 +133,9 @@ export default class GasFlowDrawer extends PureComponent {
       left =
         length === 1 ? (
           <Fragment>
-          {head}
-          {cards}
-        </Fragment>
+            {head}
+            {cards}
+          </Fragment>
         ) : (
           <Fragment>
             {head}

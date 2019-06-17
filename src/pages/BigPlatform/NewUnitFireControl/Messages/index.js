@@ -157,10 +157,10 @@ export default class Messages extends PureComponent {
     } = msg;
     const repeatCount = +isOver === 0 ? count : num;
     const lastReportTime = moment(addTime).format('YYYY-MM-DD HH:mm');
-    const repeat = {
-      times: repeatCount,
-      lastreportTime: addTime,
-    };
+    // const repeat = {
+    //   times: repeatCount,
+    //   lastreportTime: addTime,
+    // };
     const occurData = [
       {
         create_time: firstTime,
@@ -179,7 +179,7 @@ export default class Messages extends PureComponent {
         realtime: firstTime,
       },
     ];
-    const restParams = [repeat, cameraMessage, occurData];
+    const restParams = [cameraMessage, occurData];
     const msgFlag =
       messageFlag && (messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
     const param = {
