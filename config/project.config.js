@@ -144,6 +144,7 @@ const configs = {
   },
   eye: {},
   fire: {
+    projectKey: 'zx_pro',
     projectShortName: '智慧消防云',
     logo: fireLogo,
     code: fireCode,
