@@ -312,10 +312,12 @@ export default class MapSection extends PureComponent {
                     <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
                     故障 {fault}
                   </div>
-                  <div className={styles.statusItem}>
-                    <span className={styles.statusIcon} style={{ backgroundColor: '#9f9f9f' }} />
-                    失联 {loss}
-                  </div>
+                  {deviceType === SMOKE && (
+                    <div className={styles.statusItem}>
+                      <span className={styles.statusIcon} style={{ backgroundColor: '#9f9f9f' }} />
+                      失联 {loss}
+                    </div>
+                  )}
                   <div className={styles.statusItem}>
                     <span className={styles.statusIcon} style={{ backgroundColor: '#37a460' }} />
                     正常 {normal}
