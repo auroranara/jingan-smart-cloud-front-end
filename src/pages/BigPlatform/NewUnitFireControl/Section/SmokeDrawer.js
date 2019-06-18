@@ -24,7 +24,7 @@ export default class SmokeDrawer extends PureComponent {
     searchValue: '',
   };
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   handleSearch = v => {
     this.setState({ searchValue: v });
@@ -179,14 +179,14 @@ export default class SmokeDrawer extends PureComponent {
           {newList && newList.length > 0 ? (
             <div className={styles.listContainer}>{this.renderItems(newList)}</div>
           ) : (
-            <div
-              className={styles.emptyContainer}
-              style={{
-                background: `url(${noMonitorImg}) no-repeat center center`,
-                backgroundSize: '35% 80%',
-              }}
-            />
-          )}
+              <div
+                className={styles.emptyContainer}
+                style={{
+                  background: `url(${noMonitorImg}) no-repeat center center`,
+                  backgroundSize: '35% 80%',
+                }}
+              />
+            )}
         </div>
         <NewVideoPlay
           showList={true}
@@ -211,7 +211,7 @@ export default class SmokeDrawer extends PureComponent {
         onClose={() => {
           this.props.onClose();
           this.setState({
-            visible: false,
+            // visible: false,
             videoVisible: false,
             searchValue: '',
           });
