@@ -23,10 +23,6 @@ export default function CustomSection2 ({
   title,
   // 显示在右上角的内容
   action,
-  // 不属于内容的内容
-  extra,
-  // 固定元素
-  fixedContent,
   // 子元素
   children,
   // 滚动条相关设置属性，请查看Scroll组件
@@ -54,7 +50,6 @@ export default function CustomSection2 ({
         </div>
       )}
       <div className="custom-section2-content-container">
-        {fixedContent}
         <Spin
           wrapperClassName={classNames('custom-section2-spin', spinClassName)}
           spinning={!!loading}
@@ -72,7 +67,6 @@ export default function CustomSection2 ({
           </Scroll>
         </Spin>
       </div>
-      {extra}
     </div>
   );
 }
