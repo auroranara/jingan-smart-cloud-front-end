@@ -87,3 +87,7 @@ export function getUnitList(list, deviceType) {
       return [];
   }
 }
+
+export function hidePhone(phone) {
+  return `${phone.slice(0, 3)}****${phone.slice(-4)}`;
+}

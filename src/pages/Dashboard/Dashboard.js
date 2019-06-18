@@ -20,7 +20,7 @@ const monitorItem = { src: monitor, url: '', label: '动态监测驾驶舱' };
 const positionItem = { src: psoitionImg, url: '', label: '人员定位驾驶舱' };
 const electricItem = { src: electricImg, url: '', label: '智慧用电驾驶舱' };
 const gasItem = { src: gasImg, url: '', label: '智慧燃气驾驶舱' };
-const fireMaintenanceItem = { src: fireMaintenanceImg, url: '', label: '企业运营驾驶舱' };
+const fireMaintenanceItem = { src: fireMaintenanceImg, url: '', label: '企业消防运营驾驶舱' };
 const smokeItem = { src: smokeImg, url: '', label: '烟感驾驶舱' };
 const operationItem = { src: operationImg, url: '', label: '智慧消防运营驾驶舱' };
 
