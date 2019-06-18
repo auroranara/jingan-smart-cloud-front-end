@@ -16,6 +16,7 @@ import {
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 // import { ChartLine } from '@/pages/BigPlatform/Smoke/components/Components';
+import { hidePhone } from '../utils';
 
 function Empty(props) {
   return <div className={styles.empty}>暂无信息</div>;
@@ -267,13 +268,14 @@ export default class FireStatisticsDrawer extends PureComponent {
         const info = TYPE_OPTIONS[fireType] ? TYPE_OPTIONS[fireType].desc : '';
         const corner = DEVICE_OPTIONS[deviceType] ? DEVICE_OPTIONS[deviceType].desc.slice(-2) : '';
         const color = RING_COLORS[+fireType - 1];
+        const phone = safety_phone ? hidePhone(safety_phone) : NO_DATA;
         return (
           <DrawerCard
             key={proce_id || relation_id || Math.random()}
             name={name || NO_DATA}
             location={location || NO_DATA}
             person={safety_name || NO_DATA}
-            // phone={safety_phone || NO_DATA}
+            phone={phone}
             style={{ cursor: 'auto' }}
             // clickName={() => {}}
             info={info}
