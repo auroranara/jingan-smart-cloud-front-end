@@ -17,6 +17,10 @@ import {
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 // import { ChartLine } from '@/pages/BigPlatform/Smoke/components/Components';
 
+function Empty(props) {
+  return <div className={styles.empty}>暂无信息</div>;
+}
+
 const TYPE = 'fireStatistics';
 const NO_DATA = '暂无信息';
 const [DATE_OPTIONS, DEVICE_OPTIONS, TYPE_OPTIONS] = [
@@ -236,7 +240,7 @@ export default class FireStatisticsDrawer extends PureComponent {
     const left = (
       <Fragment>
         <DrawerSection title="处理状态统计" extra={dateSelect}>
-          <ChartRing data={rings} />
+          {rings.every(n => !n) ? <Empty /> : <ChartRing data={rings} />}
         </DrawerSection>
         <DrawerSection title="火警趋势图" titleInfo="最近12个月" style={{ marginTop: 10 }} extra={extra}>
           {/* {graph ? (
@@ -250,7 +254,7 @@ export default class FireStatisticsDrawer extends PureComponent {
           ) : (
                 <div style={{ textAlign: 'center' }}>暂无数据</div>
               )} */}
-          {graph ? <ChartBar data={trendList} /> : <ChartLine data={trendList} />}
+          {trendList.length ? graph ? <ChartBar data={trendList} /> : <ChartLine data={trendList} /> : <Empty />}
         </DrawerSection>
       </Fragment>
     );
