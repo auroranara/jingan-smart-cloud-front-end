@@ -103,19 +103,19 @@ export default class FireFlowDrawer extends PureComponent {
             cardItems:
               nstatus === '0' || nstatus === '1'
                 ? [
-                    msgFlow === 0
-                      ? {
-                          name: '确认该火警为',
-                          value: +type === 1 ? '误报火警' : '真实火警',
-                          style: { color: +type === 1 ? '#fff' : '#ff4848' },
-                        }
-                      : undefined,
-                    { name: '处理单位', value: startCompanyName },
-                    {
-                      name: '处理人员',
-                      value: `${startByName} ${vaguePhone(startByPhone, phoneVisible)}`,
-                    },
-                  ]
+                  msgFlow === 0
+                    ? {
+                      name: '确认该火警为',
+                      value: +type === 1 ? '误报火警' : '真实火警',
+                      style: { color: +type === 1 ? '#fff' : '#ff4848' },
+                    }
+                    : undefined,
+                  { name: '处理单位', value: startCompanyName },
+                  {
+                    name: '处理人员',
+                    value: `${startByName} ${vaguePhone(startByPhone, phoneVisible)}`,
+                  },
+                ]
                 : undefined,
           },
           {
@@ -124,14 +124,14 @@ export default class FireFlowDrawer extends PureComponent {
             cardItems:
               nstatus === '1'
                 ? [
-                    { name: '处理单位', value: finishCompanyName },
-                    {
-                      name: '处理人员',
-                      value: `${finishByName} ${vaguePhone(finishByPhone, phoneVisible)}`,
-                    },
-                    { name: '结果反馈', value: disaster_desc },
-                    { imgs: sitePhotos || [] },
-                  ]
+                  { name: '处理单位', value: finishCompanyName },
+                  {
+                    name: '处理人员',
+                    value: `${finishByName} ${vaguePhone(finishByPhone, phoneVisible)}`,
+                  },
+                  { name: '结果反馈', value: disaster_desc },
+                  { imgs: sitePhotos || [] },
+                ]
                 : undefined,
           },
         ];
@@ -148,26 +148,26 @@ export default class FireFlowDrawer extends PureComponent {
       left =
         length === 1 ? (
           <Fragment>
-            {head && <DynamicDrawerTop headProps={headProps} />}
+            {head && <DynamicDrawerTop {...headProps} {...data[0]} />}
             {cards}
           </Fragment>
         ) : (
-          <Fragment>
-            {head && <DynamicDrawerTop headProps={headProps} />}
-            <SwitchHead
-              index={index}
-              title={TITLES[msgFlow]}
-              lastIndex={length - 1}
-              handleLeftClick={this.handleLeftClick}
-              handleRightClick={this.handleRightClick}
-            />
-            <div className={styles.sliderContainer}>
-              <Slider index={index} length={length} size={1}>
-                {cards}
-              </Slider>
-            </div>
-          </Fragment>
-        );
+            <Fragment>
+              {head && <DynamicDrawerTop {...headProps} {...data[0]} />}
+              <SwitchHead
+                index={index}
+                title={TITLES[msgFlow]}
+                lastIndex={length - 1}
+                handleLeftClick={this.handleLeftClick}
+                handleRightClick={this.handleRightClick}
+              />
+              <div className={styles.sliderContainer}>
+                <Slider index={index} length={length} size={1}>
+                  {cards}
+                </Slider>
+              </div>
+            </Fragment>
+          );
     }
     return (
       <DrawerContainer
@@ -177,6 +177,7 @@ export default class FireFlowDrawer extends PureComponent {
         width={535}
         left={left}
         visible={visible}
+        leftParStyle={{ display: 'flex', flexDirection: 'column' }}
         {...restProps}
       />
     );
