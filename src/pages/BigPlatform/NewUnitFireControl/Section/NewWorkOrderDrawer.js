@@ -189,6 +189,7 @@ function OrderCard(props) {
                   createByPhone,
                   faultName,
                   realtime,
+                  num: fireChildren && fireChildren.length,
                 },
               ];
 
@@ -196,13 +197,9 @@ function OrderCard(props) {
                 param,
                 workOrderType,
                 type,
-                repeat,
                 workOrderStatus === 0 ? occurData : undefined
               );
             }}
-            // onClick={() => {
-            //   showWorkOrderDetail(data, workOrderType, type);
-            // }}
           >
             处理动态>>
           </span>
@@ -303,7 +300,6 @@ export default class NewWorkOrderDrawer extends PureComponent {
                           data={item}
                           workOrderType={workOrderType}
                           workOrderStatus={workOrderStatus}
-                          // onClick={e => showWorkOrderDetail(item, workOrderType)}
                           showWorkOrderDetail={showWorkOrderDetail}
                           phoneVisible={phoneVisible}
                         />

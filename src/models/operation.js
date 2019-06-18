@@ -8,11 +8,15 @@ import {
   getFireList,
   getScreenMessage,
   getVideoList,
+  getAllScreenMessage,
 } from '@/services/operation';
 import {
   queryAlarmHandleList,
   queryWorkOrderMsg,
   queryDataId,
+  queryWorkOrder,
+  countNumAndTimeById,
+  queryCheckUsers,
 }from '@/services/bigPlatform/fireControl'
 import { message } from 'antd';
 function error(msg) {
@@ -56,6 +60,13 @@ export default {
     },
     // 维保处理动态详情
     workOrderDetail: [],
+    countNumAndTimeById: {},
+    // 已完成运维工单
+    workOrderList1: [],
+    // 待处理运维工单
+    workOrderList2: [],
+    // 已超期运维工单
+    workOrderList7: [],
   },
   effects: {
     *fetchTaskList({ payload, callback }, { call, put }) {
@@ -236,6 +247,59 @@ export default {
       const response = yield call(getVideoList, payload);
       callback && callback(response);
     },
+    // 获取大屏消息
+    *fetchAllScreenMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getAllScreenMessage, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'screenMessage',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    // 重复上报次数和最后一次时间
+    *fetchCountNumAndTimeById({ payload, callback }, { call, put }) {
+      const response = yield call(countNumAndTimeById, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'countNumAndTimeById',
+          payload: response.data,
+        });
+      }
+      if (callback) callback(response.data);
+    },
+    // 运维工单列表或运维处理动态
+    *fetchWorkOrder({ payload, callback }, { call, put }) {
+      const response = yield call(queryWorkOrder, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type:
+            payload.id || payload.dataId
+              ? 'saveWorkOrderDetail'
+              : `saveWorkOrderList${payload.status}`,
+          payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
+        });
+      }
+      if (callback) callback(response);
+    },
+    // 企业负责人和运维员信息
+    *fetchMaintenanceCompany({ payload, success, error }, { call, put }) {
+      const response = yield call(queryCheckUsers, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'maintenanceCompany',
+          payload: response.data,
+        });
+        if (success) success(response);
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -310,6 +374,31 @@ export default {
     },
     saveWorkOrderDetail(state, action) {
       return { ...state, workOrderDetail: action.payload };
+    },
+    countNumAndTimeById(state, { payload }) {
+      return {
+        ...state,
+        countNumAndTimeById: payload,
+      };
+    },
+    saveWorkOrderList1(state, action) {
+      const list = action.payload;
+      list.sort((item, item1) => item1.update_date - item.update_date); // 已完成工单，按照完成时间排序
+      return { ...state, workOrderList1: list };
+    },
+    saveWorkOrderList2(state, action) {
+      return { ...state, workOrderList2: action.payload }; // 待处理工单，按照报修时间排序，后台已处理
+    },
+    saveWorkOrderList7(state, action) {
+      const list = action.payload;
+      list.sort((item, item1) => item.plan_finish_date - item1.plan_finish_date); // 已超期工单，按照超期天数排序
+      return { ...state, workOrderList7: list };
+    },
+    maintenanceCompany(state, { payload }) {
+      return {
+        ...state,
+        maintenanceCompany: payload,
+      };
     },
   },
 }
