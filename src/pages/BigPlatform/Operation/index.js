@@ -32,6 +32,8 @@ const options = {
   pingMsg: 'heartbeat',
 };
 
+const NOTIFICATION_MAX = 4;
+
 const FIRE_DICT = {
   今日: 0,
   本周: 1,
@@ -306,6 +308,10 @@ export default class Operation extends PureComponent {
     }
   }
 
+  messageIds = [];
+  messageTimers = [];
+  messageCloseTimers = [];
+
   hiddeAllPopup = () => {
     this.setState({ ...popupVisible });
   };
@@ -371,7 +377,7 @@ export default class Operation extends PureComponent {
           ...options,
         });
 
-        setTimeout(() => {
+        const timer = setTimeout(() => {
           // 解决加入animation覆盖notification自身显示动效时长问题
           notification.open({
             ...options,
@@ -383,13 +389,37 @@ export default class Operation extends PureComponent {
                 ...options,
               });
               setTimeout(() => {
-                notification.close(messageId);
+                this.closeNotification(messageId);
               }, 200);
             },
           });
         }, 800);
+
+        const closeTimer = setTimeout(() => {
+          this.closeNotification(messageId);
+        }, 30000);
+
+        this.messageIds.push(messageId);
+        this.messageTimers.push(timer);
+        this.messageCloseTimers.push(closeTimer);
+        this.closeExcessNotification();
       }
     }
+  };
+
+  closeNotification = id => {
+    notification.close(id);
+    const index = this.messageIds.indexOf(id);
+    [this.messageIds, this.messageTimers, this.messageCloseTimers] = [this.messageIds, this.messageTimers, this.messageCloseTimers].map(list => list.filter((n, i) => i !== index));
+  };
+
+  closeExcessNotification = () => {
+    if (this.messageIds.length <= NOTIFICATION_MAX)
+      return;
+
+    const [restId, restTimer, restCloseTimer] = [this.messageIds, this.messageTimers, this.messageCloseTimers].map(list => list[NOTIFICATION_MAX]);
+    this.closeNotification(restId);
+    [restTimer, restCloseTimer].forEach(timer => clearTimeout(timer));
   };
 
   renderNotificationTitle = item => {
