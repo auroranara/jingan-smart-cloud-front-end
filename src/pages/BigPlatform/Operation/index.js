@@ -301,7 +301,7 @@ export default class Operation extends PureComponent {
     const { deviceType } = this.state;
     const { operation: { unitList: prevUnitList } } = prevProps;
     const { deviceType: prevDeviceType } = prevState;
-    if (unitList !== prevUnitList || deviceType !== prevDeviceType ) {
+    if (unitList !== prevUnitList || deviceType !== prevDeviceType) {
       this.setState({ unitList: getUnitList(unitList, deviceType) });
     }
   }
@@ -552,7 +552,17 @@ export default class Operation extends PureComponent {
       company: {
         companyId,
       },
+      videoList = [],
     } = this.state;
+    // 如果后台没给绑定的视频列表，显示全部
+    if (videoList && videoList.length) {
+      this.setState({
+        videoVisible: true,
+        videoList,
+        videoKeyId: videoList && videoList[0] && videoList[0].key_id,
+      });
+      return
+    }
     dispatch({
       type: 'operation/fetchVideoList',
       payload: {

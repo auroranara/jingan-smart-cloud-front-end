@@ -26,11 +26,11 @@ export default class DynamicDrawerTop extends Component {
     showRepeatDesc: false,// 重复上报次数是否hover
   }
 
-  handleReadChange = (showReaded) => {
-    this.setState({
-      showReaded,
-    })
-  }
+  // handleReadChange = (showReaded) => {
+  //   this.setState({
+  //     showReaded,
+  //   })
+  // }
 
   handleCameraClick = () => {
     const { onCameraClick } = this.props;
