@@ -183,7 +183,7 @@ export default class Messages extends PureComponent {
         realtime: firstTime,
       },
     ];
-    const restParams = [cameraMessage, occurData];
+    const restParams = [cameraMessage, occurData, companyId];
     const msgFlag =
       messageFlag && (messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
     const param = {
@@ -316,6 +316,7 @@ export default class Messages extends PureComponent {
         // },
         items: [
           { value: systemTypeValue },
+          { name: '单位', value: companyName },
           { name: '工单编号', value: workOrder },
           {
             name: '报修人员',
@@ -329,7 +330,11 @@ export default class Messages extends PureComponent {
         // onClick: () => {
         //   handleClickSmoke(3);
         // },
-        items: [{ name: '所在区域', value: area }, { name: '所在位置', value: location }],
+        items: [
+          { name: '单位', value: companyName },
+          { name: '所在区域', value: area },
+          { name: '所在位置', value: location },
+        ],
       },
     };
     [7, 9].forEach(item => {
@@ -450,6 +455,10 @@ export default class Messages extends PureComponent {
           )} */}
           <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>【{smokeTitle[type]}】</div>
+          <div className={styles.msgBody}>
+            单位：
+            {companyName}
+          </div>
           <div className={styles.msgBody}>
             所在区域：
             {area}

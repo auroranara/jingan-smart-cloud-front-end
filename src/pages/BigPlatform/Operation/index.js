@@ -770,9 +770,6 @@ export default class Operation extends PureComponent {
     const {
       dispatch,
       operation: { unitList },
-      match: {
-        params: { unitId: companyId },
-      },
     } = this.props;
     const drawerVisibles = [
       'fireFlowDrawerVisible',
@@ -788,17 +785,17 @@ export default class Operation extends PureComponent {
       callback: res => {
         if (res) {
           const { num, lastTime, firstTime } = res;
-          // this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
           dispatch({
             type: 'operation/saveWorkOrderDetail',
             payload: [{ ...occurData[0], firstTime, num, lastTime }],
           });
-        } else {
-          dispatch({
-            type: 'operation/fetchWorkOrder',
-            payload: { companyId, reportType: reportTypes[type], ...param },
-          });
         }
+        //  else {
+        //   dispatch({
+        //     type: 'operation/fetchWorkOrder',
+        //     payload: { companyId, reportType: reportTypes[type], ...param },
+        //   });
+        // }
       },
     });
     // 企业负责人和运维员信息
