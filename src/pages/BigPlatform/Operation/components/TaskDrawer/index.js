@@ -325,7 +325,7 @@ export default class TaskDrawer extends PureComponent {
                     status: () => '故障', // 状态
                     wordOrderNumber: 'workOrder', // 工单编号
                     repairPersonName: 'createByName', // 报修人员名称
-                    repairPersonPhone: 'createByPhone', // 报修人员手机号
+                    repairPersonPhone: ({ createByPhone }) => createByPhone && `${createByPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'), // 报修人员手机号
                     process: () => process, // 处理状态
                   }}
                   onClick={this.handleCardClick}
@@ -356,7 +356,7 @@ export default class TaskDrawer extends PureComponent {
                 status: () => '火警', // 状态
                 wordOrderNumber: 'workOrder', // 工单编号
                 repairPersonName: 'createByName', // 报修人员名称
-                repairPersonPhone: 'createByPhone', // 报修人员手机号
+                repairPersonPhone: ({ createByPhone }) => createByPhone && `${createByPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'), // 报修人员手机号
                 process: () => process, // 处理状态
               }}
               onClick={this.handleCardClick}
