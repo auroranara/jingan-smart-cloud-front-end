@@ -155,7 +155,8 @@ export default class Messages extends PureComponent {
       limitVal,
       deviceId,
     } = msg;
-    const repeatCount = +isOver === 0 ? count : num;
+    // const repeatCount = +isOver === 0 ? count : num;
+    const repeatCount = num;
     const lastReportTime = moment(addTime).format('YYYY-MM-DD HH:mm');
     // const repeat = {
     //   times: repeatCount,
