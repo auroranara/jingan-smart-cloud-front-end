@@ -309,9 +309,9 @@ export default class Messages extends PureComponent {
       },
       '11': {
         // 一键报修
-        onClick: () => {
-          handleClickMsgFlow({ id: msgFlag }, 3, 1, ...restParams);
-        },
+        // onClick: () => {
+        //   handleClickMsgFlow({ id: msgFlag }, 3, 1, ...restParams);
+        // },
         items: [
           { value: systemTypeValue },
           { name: '工单编号', value: workOrder },
