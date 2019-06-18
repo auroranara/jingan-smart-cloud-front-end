@@ -156,8 +156,8 @@ export default class Messages extends PureComponent {
       deviceId,
     } = msg;
     // const repeatCount = +isOver === 0 ? count : num;
-    const repeatCount = num;
-    const lastReportTime = moment(addTime).format('YYYY-MM-DD HH:mm');
+    const repeatCount = count;
+    const lastReportTime = moment(+isOver === 0 ? addTime : lastTime).format('YYYY-MM-DD HH:mm');
     // const repeat = {
     //   times: repeatCount,
     //   lastreportTime: addTime,
@@ -332,8 +332,8 @@ export default class Messages extends PureComponent {
           onClick:
             enterSign === '1'
               ? () => {
-                handleClickMsgFlow(param, 0, +item === 7 ? 0 : 1, ...restParams);
-              }
+                  handleClickMsgFlow(param, 0, +item === 7 ? 0 : 1, ...restParams);
+                }
               : undefined,
           items: [
             { name: '位置', value: address },
@@ -424,17 +424,15 @@ export default class Messages extends PureComponent {
       };
       return (
         <div className={styles.msgItem} key={index}>
-          {(type === 46 || type === 50) && (
-            <a
-              className={styles.detailBtn}
-              onClick={() => {
-                handleClickSmoke(type === 46 ? 2 : 3);
-              }}
-            >
-              详情
-              <Icon type="double-right" />
-            </a>
-          )}
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleClickSmoke(type === 46 ? 2 : 3);
+            }}
+          >
+            详情
+            <Icon type="double-right" />
+          </a>
           <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>【{smokeTitle[type]}】</div>
           <div className={styles.msgBody}>
@@ -457,17 +455,15 @@ export default class Messages extends PureComponent {
       };
       return (
         <div className={styles.msgItem} key={index}>
-          {type === 48 && (
-            <a
-              className={styles.detailBtn}
-              onClick={() => {
-                handleClickWater(1, [101, 102, 103].indexOf(+deviceType));
-              }}
-            >
-              详情
-              <Icon type="double-right" />
-            </a>
-          )}
+          <a
+            className={styles.detailBtn}
+            onClick={() => {
+              handleClickWater(type === 48 ? 1 : 2, [101, 102, 103].indexOf(+deviceType));
+            }}
+          >
+            详情
+            <Icon type="double-right" />
+          </a>
           <div className={styles.msgTime}>{formatTime(addTime)}</div>
           <div className={styles.msgType}>【{waterMsg[type].title}】</div>
           <div className={styles.msgBody}>
@@ -983,8 +979,8 @@ export default class Messages extends PureComponent {
             return this.renderMsg(item, index);
           })
         ) : (
-            <div className={styles.emptyData}>暂无消息</div>
-          )}
+          <div className={styles.emptyData}>暂无消息</div>
+        )}
       </NewSection>
     );
   }
