@@ -157,8 +157,10 @@ export default class Messages extends PureComponent {
       companyName,
       companyId,
     } = msg;
-    const repeatCount = +isOver === 0 ? count : num;
-    const lastReportTime = moment(addTime).format('YYYY-MM-DD HH:mm');
+    // const repeatCount = +isOver === 0 ? count : num;
+    // const lastReportTime = moment(addTime).format('YYYY-MM-DD HH:mm');
+    const repeatCount = count;
+    const lastReportTime = moment(+isOver === 0 ? addTime : lastTime).format('YYYY-MM-DD HH:mm');
     // const repeat = {
     //   times: repeatCount,
     //   lastreportTime: addTime,
@@ -955,12 +957,14 @@ export default class Messages extends PureComponent {
 
   render() {
     const {
-      model: { screenMessage },
+      model: { screenMessage = [] },
       className,
     } = this.props;
     const { isExpanded } = this.state;
+    // 过滤掉有其他type的
+    const list = screenMessage.filter(item => TYPES.indexOf(+item.type) >= 0)
     // 收缩显示3个，展开最大显示100个
-    const list = isExpanded ? screenMessage.slice(0, 100) : screenMessage.slice(0, 3);
+    const newList = isExpanded ? list.slice(0, 100) : list.slice(0, 3);
 
     return (
       <NewSection
@@ -979,7 +983,7 @@ export default class Messages extends PureComponent {
           className: styles.scroll,
         }}
         other={
-          screenMessage && screenMessage.length > 3 && (
+          list && list.length > 3 && (
             <Icon
               type={isExpanded ? 'double-left' : 'double-right'}
               className={styles.expandButton}
@@ -989,8 +993,8 @@ export default class Messages extends PureComponent {
         }
         planB
       >
-        {list.length > 0 && list.filter(item => TYPES.indexOf(+item.type) >= 0) ? (
-          list.map((item, index) => {
+        {newList.length > 0 ? (
+          newList.map((item, index) => {
             return this.renderMsg(item, index);
           })
         ) : (
