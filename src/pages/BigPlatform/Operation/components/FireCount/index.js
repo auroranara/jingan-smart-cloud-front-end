@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import Section from '@/components/NewSection';
+import { Section2 as CustomSection } from '@/jingan-components/CustomSection';
 // 引入样式文件
 import styles from './index.less';
 
@@ -60,10 +60,9 @@ export default class FireCount extends PureComponent {
     ];
 
     return (
-      <Section
+      <CustomSection
         className={styles.container}
         title="火警数量统计"
-        contentStyle={{ padding: 0 }}
       >
         <div className={styles.list}>
           {list.map(({ label, value, borderColor }) => (
@@ -73,7 +72,7 @@ export default class FireCount extends PureComponent {
             </div>
           ))}
         </div>
-      </Section>
+      </CustomSection>
     );
   }
 }
