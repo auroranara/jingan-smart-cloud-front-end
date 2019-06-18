@@ -12,6 +12,7 @@ const gasImg = 'http://data.jingan-china.cn/v2/dashboard/gas.png';
 const electricImg = 'http://data.jingan-china.cn/v2/dashboard/dashboard-electricity.png';
 const fireMaintenanceImg = 'http://data.jingan-china.cn/new-fire-control.png';
 const smokeImg = 'http://data.jingan-china.cn/smoke.png';
+const operationImg = 'http://data.jingan-china.cn/v2/dashboard/operation.png';
 
 const safeItem = { src: safe, url: '', label: '政府安全驾驶舱' };
 const fireItem = { src: fire, url: '', label: '消防主机联网驾驶舱' };
@@ -21,7 +22,7 @@ const electricItem = { src: electricImg, url: '', label: '智慧用电驾驶舱'
 const gasItem = { src: gasImg, url: '', label: '智慧燃气驾驶舱' };
 const fireMaintenanceItem = { src: fireMaintenanceImg, url: '', label: '企业运营驾驶舱' };
 const smokeItem = { src: smokeImg, url: '', label: '烟感驾驶舱' };
-const operationItem = { src: fire, url: '', label: '智慧消防运营驾驶舱' };
+const operationItem = { src: operationImg, url: '', label: '智慧消防运营驾驶舱' };
 
 // const CLASSIFICATION = { safety: 1, fireControl: 2, environmentProtection: 3 };
 
@@ -118,7 +119,9 @@ export default class Dashboard extends PureComponent {
     const fireUrl = `${window.publicPath}#/big-platform/fire-control/company/${companyId}`;
     const monitorUrl = `${window.publicPath}#/big-platform/monitor/company/${companyId}`;
     const positionUrl = `${window.publicPath}#/big-platform/position/${companyId}`;
-    const fireMaintenanceUrl = `${window.publicPath}#/big-platform/fire-control/new-company/${companyId}`;
+    const fireMaintenanceUrl = `${
+      window.publicPath
+    }#/big-platform/fire-control/new-company/${companyId}`;
 
     // 企事业主体和政府有业务分类，运维和运营没有
     // 所以企事业主体和政府的大屏权限 = 用户业务权限 && 企事业业务分类 && 账户被配置的权限，运营和运维企业的大屏权限 = 用户业务权限 && 账户被配置的权限
