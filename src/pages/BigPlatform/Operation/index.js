@@ -120,11 +120,10 @@ const popupVisible = {
   newWorkOrderDrawerVisible: false,
 };
 
-@connect(({ loading, operation, user, unitSafety, newUnitFireControl }) => ({
+@connect(({ loading, operation, user, unitSafety }) => ({
   operation,
   user,
   unitSafety,
-  newUnitFireControl,
   loading: loading.models.operation,
   fireListLoading: loading.effects['operation/fetchFireList'],
 }))
@@ -208,7 +207,7 @@ export default class Operation extends PureComponent {
         this.fetchStatistics();
         this.fetchMapUnitList(data.data.companyId);
         dispatch({
-          type: 'newUnitFireControl/fetchWebsocketScreenMessage',
+          type: 'operation/fetchWebsocketScreenMessage',
           payload: data,
           success: result => {
             // 显示火警障碍弹窗
@@ -266,7 +265,7 @@ export default class Operation extends PureComponent {
     };
 
     dispatch({
-      type: 'newUnitFireControl/fetchAllScreenMessage',
+      type: 'operation/fetchAllScreenMessage',
       success: res => {
         const {
           list: [{ itemId, messageFlag, type } = {}],
@@ -327,7 +326,7 @@ export default class Operation extends PureComponent {
    */
   fetchScreenMessage = dispatch => {
     dispatch({
-      type: 'newUnitFireControl/fetchAllScreenMessage',
+      type: 'operation/fetchAllScreenMessage',
     });
   };
 
@@ -756,33 +755,6 @@ export default class Operation extends PureComponent {
     callback(!!list.find(({ companyId }) => companyId === unitDetail.companyId));
   };
 
-  handleClickMessage = (dataId, msg) => {
-    // const {
-    //   monitor: { allCamera },
-    // } = this.props;
-    const { cameraMessage } = msg;
-    this.hiddeAllPopup();
-    this.handleFetchAlarmHandle(dataId);
-    this.setState({ alarmMessageDrawerVisible: true });
-    // this.handleShowVideo(allCamera.length ? allCamera[0].key_id : '', true);
-    this.handleShowFireVideo(cameraMessage);
-  };
-
-  handleFetchAlarmHandle = (dataId, historyType, callback) => {
-    const {
-      dispatch,
-      match: {
-        params: { unitId: companyId },
-      },
-    } = this.props;
-
-    dispatch({
-      type: 'newUnitFireControl/fetchAlarmHandle',
-      payload: { companyId, dataId, historyType },
-      callback,
-    });
-  };
-
   handleClickMsgFlow = (
     param,
     type,
@@ -811,32 +783,27 @@ export default class Operation extends PureComponent {
     const reportTypes = [1, 4, 3, 2];
     this.hiddeAllPopup();
     dispatch({
-      type: 'newUnitFireControl/fetchCountNumAndTimeById',
+      type: 'operation/fetchCountNumAndTimeById',
       payload: { id: param.dataId || param.id, reportType: reportTypes[type], fireType: flow + 1 },
       callback: res => {
         if (res) {
           const { num, lastTime, firstTime } = res;
           // this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
           dispatch({
-            type: 'newUnitFireControl/saveWorkOrderDetail',
+            type: 'operation/saveWorkOrderDetail',
             payload: [{ ...occurData[0], firstTime, num, lastTime }],
           });
         } else {
           dispatch({
-            type: 'newUnitFireControl/fetchWorkOrder',
+            type: 'operation/fetchWorkOrder',
             payload: { companyId, reportType: reportTypes[type], ...param },
-            // callback: res => {
-            // if (res.data.list.length === 0) return;
-            // const { num, lastTime } = res.data.list[0];
-            // this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
-            // },
           });
         }
       },
     });
     // 企业负责人和运维员信息
     dispatch({
-      type: 'newUnitFireControl/fetchMaintenanceCompany',
+      type: 'operation/fetchMaintenanceCompany',
       payload: {
         companyId: param.companyId,
       },
@@ -859,6 +826,7 @@ export default class Operation extends PureComponent {
       msgFlow: flow,
       dynamicType: type,
       company: { ...param },
+      videoList: cameraMessage,
     });
     this.handleShowFireVideo(cameraMessage);
 
@@ -873,7 +841,7 @@ export default class Operation extends PureComponent {
    */
   handleShowFireVideo = videoList => {
     if (!Array.isArray(videoList) || videoList.length === 0) return null;
-    this.setState({ fireVideoVisible: true, videoList });
+    this.setState({ fireVideoVisible: true });
   };
 
   /**
@@ -891,10 +859,7 @@ export default class Operation extends PureComponent {
       user: {
         currentUser: { unitName },
       },
-      newUnitFireControl: {
-        alarmHandleMessage,
-        alarmHandleList,
-        alarmHandleHistory,
+      operation: {
         workOrderDetail, // 只有一个元素的数组
         maintenanceCompany: {
           name: maintenanceCompanys = [],
@@ -1014,7 +979,7 @@ export default class Operation extends PureComponent {
         {/* 实时消息 */}
         <Messages
           className={styles.realTimeMessage}
-          model={this.props.newUnitFireControl}
+          model={this.props.operation}
           handleParentChange={this.handleMapParentChange}
           handleClickMsgFlow={this.handleClickMsgFlow}
           phoneVisible={phoneVisible}

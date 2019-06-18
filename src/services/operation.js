@@ -45,3 +45,9 @@ export async function getScreenMessage(params) {
 export async function getVideoList(params) {
   return request(`/acloud_new/v2/hdf/getAllCamera.json?${stringify(params)}`)
 }
+
+// 获取所有企业的实时消息
+export async function getAllScreenMessage(params) {
+  return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`)
+}
+
