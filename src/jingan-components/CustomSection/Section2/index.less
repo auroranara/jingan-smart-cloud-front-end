@@ -1,0 +1,111 @@
+:global {
+  .custom-section2-container {
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    color: #fff;
+    line-height: 1.5;
+  }
+  .custom-section2-title-container {
+    flex: none;
+    display: flex;
+    padding: 1px 0 0 1px;
+    height: 25px;
+    background: no-repeat left;
+    background-size: auto 100%;
+    overflow: hidden;
+  }
+  .custom-section2-title-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding-left: 1em;
+    height: 100%;
+  }
+  .custom-section2-action-wrapper {
+    flex: none;
+    display: flex;
+    align-items: center;
+    padding-right: 1em;
+    height: 100%;
+  }
+  .custom-section2-content-container {
+    flex: 1;
+    display: flex;
+    padding: 0.5em 0;
+    // height: calc(~'100% - 25px');
+    background-color: rgba(3, 48, 105, 0.902);
+    border: 1px solid rgb(76, 206, 240);
+    border-radius: 0.5em;
+    border-top-left-radius: 0;
+    box-shadow: 0.25em 0.25em 0.25em rgba(0, 0, 0, 0.75);
+    overflow: hidden;
+
+    // &:first-child {
+    //   height: 100%;
+    // }
+
+    .custom-section2-spin {
+      flex: 1;
+      display: flex;
+      // height: 100%;
+
+      .ant-spin-container {
+        flex: 1;
+        display: flex;
+        // height: 100%;
+
+        &:after {
+          background-color: transparent;
+        }
+      }
+    }
+    .custom-section2-scroll {
+      flex: 1;
+      display: flex;
+      // height: 100%;
+
+      & > div:first-child {
+        position: static !important;
+        flex: 1;
+
+        &::-webkit-scrollbar {
+          background-color: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background-color: transparent;
+        }
+
+        &::-webkit-scrollbar-track {
+          background-color: transparent;
+        }
+
+        &::-webkit-scrollbar-corner {
+          background-color: transparent;
+        }
+
+        &::-webkit-resizer {
+          background-color: transparent;
+        }
+      }
+    }
+  }
+}
+
+
+@media screen and (max-width: 1599px) and (min-width: 1400px) {
+:global {
+  .custom-section2-container {
+    font-size: 14px;
+  }
+}
+}
+
+@media screen and (max-width: 1399px) {
+:global {
+  .custom-section2-container {
+    font-size: 12px;
+  }
+}
+}

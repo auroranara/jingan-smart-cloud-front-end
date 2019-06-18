@@ -32,7 +32,7 @@ export default {
           });
           if (handleMoreUser) handleMoreUser();
         } else {
-          const { unitType } = response.data;
+          // const { unitType } = response.data;
           // 如果不是多用户，直接登录进去
           yield put({
             type: 'changeLoginStatus',
@@ -41,15 +41,16 @@ export default {
           // 登录1.0
           yield call(accountLoginGsafe, payload);
           reloadAuthorized();
-          router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
+          router.replace('/');
+          // router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
         }
-        success && success ();
+        success && success();
       } else error(response.msg);
     },
 
     *loginWithUserId({ payload }, { call, put }) {
       const response = yield call(accountLogin, payload);
-      const { unitType } = response.data;
+      // const { unitType } = response.data;
       if (response && response.code === 200) {
         yield put({
           type: 'changeLoginStatus',
@@ -58,7 +59,8 @@ export default {
         // 登录1.0
         yield call(accountLoginGsafe, payload);
         reloadAuthorized();
-        router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
+        router.replace('/');
+        // router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
       }
     },
 

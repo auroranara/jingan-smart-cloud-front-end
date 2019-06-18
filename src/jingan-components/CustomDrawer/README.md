@@ -1,6 +1,6 @@
 # CustomDrawer
 
-## 属性 
+## 属性
 
 | 参数 | 说明 | 类型 | 默认值 |
 | -- | -- | -- | -- |
@@ -13,6 +13,7 @@
 | sectionProps | Section组件相关参数 | object | - |
 
 ## 示例
+
 ```jsx
   <CustomDrawer
     title={标题}

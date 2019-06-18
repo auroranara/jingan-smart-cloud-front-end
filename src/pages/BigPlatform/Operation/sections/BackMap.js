@@ -54,6 +54,7 @@ export default class MapSection extends PureComponent {
     const { units } = this.props;
     const { units: prevUnits } = prevProps;
     const { infoWindowShow, infoWindow } = this.state;
+
     if (JSON.stringify(units) !== JSON.stringify(prevUnits) && infoWindowShow) {
       const { companyId } = infoWindow;
       this.setState({
@@ -100,11 +101,11 @@ export default class MapSection extends PureComponent {
   };
 
   renderMarkerLayout = extData => {
-    const { deviceType } =  this.props;
+    const { deviceType, handleMapClick, showTooltip, hideTooltip } =  this.props;
     const { companyName, companyId, fireDeviceCount, smokeDeviceCount } = extData;
     const status = getMapItemStatus(extData, deviceType);
     const imgSrc = IMGS[deviceType][status];
-    const deviceCount = deviceType === HOST ? +fireDeviceCount : +smokeDeviceCount;
+    // const deviceCount = deviceType === HOST ? +fireDeviceCount : +smokeDeviceCount;
 
     return (
       <div
@@ -118,17 +119,18 @@ export default class MapSection extends PureComponent {
         <img
           src={imgSrc}
           alt="dot"
-          style={{ display: 'block', width: '32px', height: '42px' }}
+          className={styles.dot}
+          // style={{ display: 'block', width: '32px', height: '42px' }}
           onClick={() => {
-            this.props.handleMapClick(extData);
-            this.props.hideTooltip();
+            handleMapClick(extData);
+            hideTooltip();
           }}
           onMouseEnter={e => {
-            if (this.target === e.target) return;
-            this.target = e.target;
-            this.props.showTooltip(e, companyName);
+            // if (this.target === e.target) return;
+            // this.target = e.target;
+            showTooltip(e, companyName);
           }}
-          onMouseLeave={this.props.hideTooltip}
+          onMouseLeave={hideTooltip}
         />
       </div>
     );
@@ -312,14 +314,16 @@ export default class MapSection extends PureComponent {
                     <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
                     故障 {fault}
                   </div>
-                  <div className={styles.statusItem}>
-                    <span className={styles.statusIcon} style={{ backgroundColor: '#9f9f9f' }} />
-                    失联 {loss}
-                  </div>
-                  <div className={styles.statusItem}>
+                  {deviceType === SMOKE && (
+                    <div className={styles.statusItem}>
+                      <span className={styles.statusIcon} style={{ backgroundColor: '#9f9f9f' }} />
+                      失联 {loss}
+                    </div>
+                  )}
+                  {/* <div className={styles.statusItem}>
                     <span className={styles.statusIcon} style={{ backgroundColor: '#37a460' }} />
                     正常 {normal}
-                  </div>
+                  </div> */}
                 </div>
               </Fragment>
             ) : (

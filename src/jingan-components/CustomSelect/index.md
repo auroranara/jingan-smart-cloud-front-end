@@ -24,5 +24,9 @@
     className={styles.container}
     style={{ fontSize: 14 }}
     data={[{ key: 1, value: 1 },{ key: 2, value: 2 }]}
+    fieldNames={{
+      key: 'key',
+      value: 'value',
+    }}
   />
 ```
