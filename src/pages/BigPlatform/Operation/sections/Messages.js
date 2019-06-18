@@ -535,7 +535,7 @@ export default class Messages extends PureComponent {
           );
         })}
         {isRepeat &&
-          repeatCount &&
+          // repeatCount &&
           +repeatCount > 1 && (
             <div className={styles.msgType}>
               重复上报
