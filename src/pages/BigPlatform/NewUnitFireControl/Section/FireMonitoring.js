@@ -9,7 +9,8 @@ import styles from './FireMonitoring.less';
 
 export default class FireMonitoring extends PureComponent {
   handleShowResetSection = () => {
-    this.props.handleParentChange({ resetHostsDrawerVisible: true });
+    // this.props.handleParentChange({ resetHostsDrawerVisible: true });
+    this.props.handleShowResetSection();
   };
 
   render() {

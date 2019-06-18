@@ -213,6 +213,8 @@ export default class FireStatisticsDrawer extends PureComponent {
 
     const rings = [falseFire, trueFire, unConfirm].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
     const trendList = fireTrend.map(({ month, count }) => ({ name: month, value: count }));
+    console.log(rings);
+
     const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
     const dateSelect = (
       <OvSelect options={DATE_OPTIONS} value={dateType} handleChange={this.onDateTypeChange} />
@@ -240,7 +242,7 @@ export default class FireStatisticsDrawer extends PureComponent {
     const left = (
       <Fragment>
         <DrawerSection title="处理状态统计" extra={dateSelect}>
-          {rings.every(n => !n) ? <Empty /> : <ChartRing data={rings} />}
+          {rings.every(item => !item.value) ? <Empty /> : <ChartRing data={rings} />}
         </DrawerSection>
         <DrawerSection title="火警趋势图" titleInfo="最近12个月" style={{ marginTop: 10 }} extra={extra}>
           {/* {graph ? (
@@ -271,9 +273,9 @@ export default class FireStatisticsDrawer extends PureComponent {
             name={name || NO_DATA}
             location={location || NO_DATA}
             person={safety_name || NO_DATA}
-            phone={safety_phone || NO_DATA}
+            // phone={safety_phone || NO_DATA}
             style={{ cursor: 'auto' }}
-            clickName={() => {}}
+            // clickName={() => {}}
             info={info}
             infoStyle={{ ...INFO_STYLE, color: `rgb(${color})`, borderColor: `rgb(${color})`}}
             cornerLabel={corner}
