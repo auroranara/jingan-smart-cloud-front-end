@@ -33,7 +33,7 @@ export default class DynamicDrawerTop extends Component {
   }
 
   handleCameraClick = () => {
-    const { headProps: { onCameraClick }={} } = this.props;
+    const { onCameraClick } = this.props;
     onCameraClick && onCameraClick();
   }
 
@@ -41,24 +41,24 @@ export default class DynamicDrawerTop extends Component {
     const { showRepeatDesc } = this.state
     // console.log('headProps', this.props.headProps)
     const {
-      headProps: {
-        companyName = null,
-        component = null, // 回路号
-        unitTypeName = null, // 部件类型
-        area = null, // 所在区域
-        location = null, // 所在位置
-        install_address = null, // 详细位置
-        address, // 位置
-        dynamicType,
-        flowRepeat = {},
-        firstTime,
-        lastTime,
-      } = {},
+      companyName = null,
+      component = null, // 回路号
+      unitTypeName = null, // 部件类型
+      area = null, // 所在区域
+      location = null, // 所在位置
+      install_address = null, // 详细位置
+      address, // 位置
+      dynamicType,
+      // flowRepeat = {},
+      firstTime,
+      lastTime,
+      num,
+      style = {},
     } = this.props
     const scTime = moment(firstTime).format('YYYY-MM-DD HH:mm');
     const zjTime = moment(lastTime).format('YYYY-MM-DD HH:mm');
     return (
-      <div className={styles.dynamicDrawerTop}>
+      <div className={styles.dynamicDrawerTop} style={style}>
         <div className={styles.companyInfoContainer}>
           <div className={styles.title}>{companyName}</div>
 
@@ -76,7 +76,7 @@ export default class DynamicDrawerTop extends Component {
               <div className={styles.line}>位置：{location || getEmptyData()}</div>
             </Fragment>
           )}
-          {+flowRepeat.times > 0 && (
+          {+num > 0 && (
             <div className={styles.logoContainer} style={{ top: 0, right: '24px' }}>
               <div
                 className={styles.logo}
@@ -88,22 +88,22 @@ export default class DynamicDrawerTop extends Component {
                 }}
                 onMouseEnter={() => this.setState({ showRepeatDesc: true })}
                 onMouseLeave={() => this.setState({ showRepeatDesc: false })}>
-                <div>{flowRepeat.times}</div>
+                <div>{num}</div>
               </div>
               <div className={styles.desc}>重复上报次数</div>
             </div>
           )}
           <div
-          onClick={this.handleCameraClick}
-           className={styles.cameraContainer}
-          style={{
-            top:'10px',
-            right:'104px',
-            backgroundImage: `url(${cameraImg})`,
-                  backgroundSize: '100%',
-                  backgroundPosition: 'center center',
-                  backgroundRepeat: 'no-repeat',
-          }}
+            onClick={this.handleCameraClick}
+            className={styles.cameraContainer}
+            style={{
+              top: '10px',
+              right: '104px',
+              backgroundImage: `url(${cameraImg})`,
+              backgroundSize: '100%',
+              backgroundPosition: 'center center',
+              backgroundRepeat: 'no-repeat',
+            }}
           ></div>
           <div className={styles.repeatDesc} style={{ bottom: '16px', right: '22px', visibility: showRepeatDesc ? 'visible' : 'hidden' }}>
             <div>首次发生事件：{scTime}</div>

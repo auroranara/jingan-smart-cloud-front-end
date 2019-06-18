@@ -9,7 +9,7 @@ const WIDTH = 960;
 
 export default class DrawerContainer extends PureComponent {
   render() {
-    const { title, width, visible, onClose, left=null, right=null, id, style, ...restProps } = this.props;
+    const { title, width, visible, onClose, left=null, right=null, id, style,leftParStyle={}, ...restProps } = this.props;
 
     // right不存在时，默认全部渲染left
     return (
@@ -29,7 +29,7 @@ export default class DrawerContainer extends PureComponent {
             {title}
           </h3>
           <Row style={{ height: 'calc(100% - 51px)' }}>
-            <Col span={right ? 12 : 24} style={COL_STYLE}>
+            <Col span={right ? 12 : 24} style={{...COL_STYLE,...leftParStyle}}>
               {left}
             </Col>
             {right && (

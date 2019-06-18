@@ -23,7 +23,7 @@ import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import FireFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/FireFlowDrawer';
 import SmokeFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/SmokeFlowDrawer';
-import { clear } from '_size-sensor@0.2.4@size-sensor';
+
 // websocket配置
 const options = {
   pingTimeout: 30000,
@@ -486,7 +486,7 @@ export default class Operation extends PureComponent {
     ];
     const msgFlag =
       messageFlag && (messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
-    const restParams = [repeat, cameraMessage, occurData, companyId];
+    const restParams = [cameraMessage, occurData, companyId];
     const param = {
       dataId: msgFlag,
       companyName: companyName || undefined,
@@ -512,7 +512,7 @@ export default class Operation extends PureComponent {
           {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
           <span className={styles1.address}>{installAddress || area + location}</span>
         </div>
-        {companyName&&<div>【{companyName}】</div>}
+        {companyName && <div>【{companyName}】</div>}
         <div>
           {(type === 7 || type === 9) &&
             unitTypeName && (
@@ -589,7 +589,7 @@ export default class Operation extends PureComponent {
         company_id: companyId,
       },
       callback: (response) => {
-        const { list=[] } = response || {};
+        const { list = [] } = response || {};
         this.setState({
           videoVisible: true,
           videoList: list,
@@ -773,7 +773,15 @@ export default class Operation extends PureComponent {
     });
   };
 
-  handleClickMsgFlow = (param, type, flow, repeat, cameraMessage = [], occurData, cId) => {
+  handleClickMsgFlow = (
+    param,
+    type,
+    flow,
+    // repeat,
+    cameraMessage = [],
+    occurData,
+    cId,
+  ) => {
     // type 0/1/2/3 主机/烟感/燃气/一键报修
     // flow 0/1 报警/故障
 
@@ -798,20 +806,20 @@ export default class Operation extends PureComponent {
       callback: res => {
         if (res) {
           const { num, lastTime, firstTime } = res;
-          this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+          // this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
           dispatch({
             type: 'newUnitFireControl/saveWorkOrderDetail',
-            payload: [{ ...occurData[0], firstTime }],
+            payload: [{ ...occurData[0], firstTime, num, lastTime }],
           });
         } else {
           dispatch({
             type: 'newUnitFireControl/fetchWorkOrder',
             payload: { companyId, reportType: reportTypes[type], ...param },
-            callback: res => {
-              if (res.data.list.length === 0) return;
-              const { num, lastTime } = res.data.list[0];
-              this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
-            },
+            // callback: res => {
+            // if (res.data.list.length === 0) return;
+            // const { num, lastTime } = res.data.list[0];
+            // this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+            // },
           });
         }
       },
@@ -820,7 +828,7 @@ export default class Operation extends PureComponent {
     dispatch({
       type: 'newUnitFireControl/fetchMaintenanceCompany',
       payload: {
-        companyId:param.companyId,
+        companyId: param.companyId,
       },
     });
     // dispatch({
@@ -913,7 +921,6 @@ export default class Operation extends PureComponent {
     } = this.state;
     const headProps = {
       ...workOrderDetail[0],
-      flowRepeat,
       dynamicType,
       onCameraClick: this.handleVideoOpen,
       ...company,
@@ -926,8 +933,8 @@ export default class Operation extends PureComponent {
         headerStyle={HEADER_STYLE}
         titleStyle={{ fontSize: 46 }}
         contentStyle={CONTENT_STYLE}
-        // settable
-        // onSet={this.handleClickSetButton}
+      // settable
+      // onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
         <BackMap
@@ -999,13 +1006,6 @@ export default class Operation extends PureComponent {
           className={styles.realTimeMessage}
           model={this.props.newUnitFireControl}
           handleParentChange={this.handleMapParentChange}
-          //  handleViewDangerDetail={this.handleViewDangerDetail}
-          //  fetchData={this.fetchMaintenanceCheck}
-          //  handleClickMessage={this.handleClickMessage}
-          //  handleFaultClick={this.handleFaultClick}
-          //  handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
-          //  handleFireMessage={this.handleFireMessage}
-          //  handleViewWater={this.handleViewWater}
           handleClickMsgFlow={this.handleClickMsgFlow}
           phoneVisible={phoneVisible}
         />
