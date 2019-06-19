@@ -94,7 +94,9 @@ export default class FireMonitorFlowDrawer extends PureComponent {
               { value: `${componentName} 发生${TITLES[msgFlow]}` },
               {
                 name: '安全管理员',
-                value: `${PrincipalName} ${vaguePhone(PrincipalPhone, phoneVisible)}`,
+                value: PrincipalName
+                  ? [PrincipalName, vaguePhone(PrincipalPhone, phoneVisible)].join(' ')
+                  : null,
               },
             ],
             repeat: { repeatCount: fireChildren ? fireChildren.length : 0, lastTime },

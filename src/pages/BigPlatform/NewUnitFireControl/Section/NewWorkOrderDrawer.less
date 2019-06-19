@@ -108,6 +108,15 @@
         font-weight: bold;
         height: 24px;
 
+        .cardName {
+          display: inline-block;
+          width: 55%;
+          overflow: hidden;
+          white-space: nowrap;
+          text-emphasis: ellipsis;
+          text-overflow: ellipsis;
+        }
+
         .info {
           padding: 2px 10px;
           border-radius: 15px;
@@ -134,6 +143,7 @@
       }
     }
   }
+
   .scrollContainer {
     overflow-x: hidden;
     overflow-y: auto;

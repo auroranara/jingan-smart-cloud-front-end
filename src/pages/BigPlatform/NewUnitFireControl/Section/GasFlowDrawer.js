@@ -83,7 +83,9 @@ export default class GasFlowDrawer extends PureComponent {
               { value: `${`可燃气体探测器`} 发生报警` },
               {
                 name: '安全管理员',
-                value: `${PrincipalName} ${vaguePhone(PrincipalPhone, phoneVisible)}`,
+                value: PrincipalName
+                  ? [PrincipalName, vaguePhone(PrincipalPhone, phoneVisible)].join(' ')
+                  : null,
               },
             ],
             repeat: { repeatCount: +num || 0, lastTime: lastTime },

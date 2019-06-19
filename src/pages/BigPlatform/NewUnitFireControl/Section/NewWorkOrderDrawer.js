@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
-import { Spin } from 'antd';
+import { Spin, Tooltip } from 'antd';
 import TotalInfo from '../components/TotalInfo';
 import { vaguePhone } from '../utils';
 // import LoadMoreButton from '../../Safety/Company3/components/LoadMoreButton';
@@ -138,7 +138,9 @@ function OrderCard(props) {
             </div>
           )}
         <p className={styles.name}>
-          {titles[workOrderType] || ''}
+          <Tooltip placement={'bottomLeft'} title={titles[workOrderType]}>
+            <span className={styles.cardName}>{titles[workOrderType] || ''}</span>
+          </Tooltip>
           {workOrderType !== 3 && (
             <span className={styles.info}>
               {type === 0 ? LABELS[workOrderType][type] : LABELS[workOrderType][type]}
@@ -281,7 +283,7 @@ export default class NewWorkOrderDrawer extends PureComponent {
     const isLoadMore = pageNum * pageSize < total;
     const left = (
       <div className={styles.container}>
-        <TotalInfo data={topData} active={workOrderType} />
+        <TotalInfo data={topData} active={workOrderType} loading={allDetailLoading} />
         <div className={styles.cards}>
           <Spin spinning={allDetailLoading} wrapperClassName={styles.spin}>
             <div className={styles.scrollContainer} id={`workOrderScroll`}>
