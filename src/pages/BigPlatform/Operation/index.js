@@ -556,7 +556,6 @@ export default class Operation extends PureComponent {
       },
       videoList = [],
     } = this.state;
-    // 如果后台没给绑定的视频列表，显示全部
     if (videoList && videoList.length) {
       this.setState({
         videoVisible: true,
@@ -565,20 +564,20 @@ export default class Operation extends PureComponent {
       });
       return
     }
-    dispatch({
-      type: 'operation/fetchVideoList',
-      payload: {
-        company_id: companyId,
-      },
-      callback: (response) => {
-        const { list = [] } = response || {};
-        this.setState({
-          videoVisible: true,
-          videoList: list,
-          videoKeyId: list && list[0] && list[0].key_id,
-        });
-      },
-    });
+    // dispatch({
+    //   type: 'operation/fetchVideoList',
+    //   payload: {
+    //     company_id: companyId,
+    //   },
+    //   callback: (response) => {
+    //     const { list = [] } = response || {};
+    //     this.setState({
+    //       videoVisible: true,
+    //       videoList: list,
+    //       videoKeyId: list && list[0] && list[0].key_id,
+    //     });
+    //   },
+    // });
   };
 
   handleVideoClose = () => {
@@ -781,10 +780,10 @@ export default class Operation extends PureComponent {
         },
         callback: res => {
           if (res) {
-            const { num, lastTime, firstTime } = res;
+            const { num, lastTime, firstTime, sdeviceName = null } = res;
             dispatch({
               type: 'operation/saveWorkOrderDetail',
-              payload: [{ ...occurData[0], firstTime, num, lastTime }],
+              payload: [{ ...occurData[0], firstTime, num, lastTime, sdeviceName }],
             });
           } else {
             dispatch({
@@ -908,6 +907,7 @@ export default class Operation extends PureComponent {
       dynamicType,
       onCameraClick: this.handleVideoOpen,
       ...company,
+      videoList,
     };
     return (
       <BigPlatformLayout
