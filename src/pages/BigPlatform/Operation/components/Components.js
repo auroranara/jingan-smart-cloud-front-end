@@ -1,6 +1,7 @@
 import TaskDrawer from './TaskDrawer';
 import TaskCount from './TaskCount';
 import FireCount from './FireCount';
+import Message from './Message';
 
 import DeviceBar from './DeviceBar';
 import InfoStatus from './InfoStatus';
@@ -34,4 +35,5 @@ export {
   TaskDrawer,
   TaskCount,
   FireCount,
+  Message,
 }

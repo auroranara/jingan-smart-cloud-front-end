@@ -180,6 +180,8 @@ export default class Operation extends PureComponent {
 
     // 烟感地图数据
     this.fetchMapUnitList();
+    // 获取实时消息
+    this.fetchScreenMessage();
 
     const params = {
       companyId: userId,
@@ -236,7 +238,7 @@ export default class Operation extends PureComponent {
                   this.showFireMsg(result);
                 }
               }
-              this.fetchScreenMessage(dispatch);
+              this.fetchScreenMessage();
             }
 
             if (
@@ -261,38 +263,6 @@ export default class Operation extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
-
-    dispatch({
-      type: 'newUnitFireControl/fetchAllScreenMessage',
-      success: res => {
-        const {
-          list: [{ itemId, messageFlag, type } = {}],
-        } = res;
-        const { fourColorTips, deletedFourColorTips } = this.state;
-        // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
-        if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
-          if (fourColorTips[itemId] === messageFlag) {
-            return;
-          }
-          // 如果前一条隐患还没消失，则移除前一条隐患
-          else if (fourColorTips[itemId]) {
-            this.setState({
-              fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
-              latestHiddenDangerId: itemId,
-              deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
-            });
-          } else {
-            this.setState({
-              fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
-              latestHiddenDangerId: itemId,
-            });
-          }
-        }
-
-        // 记录最新的一条消息id
-        this.topId = res.list[0] ? res.list[0].messageId : undefined;
-      },
-    });
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -318,7 +288,8 @@ export default class Operation extends PureComponent {
   /**
    * 获取大屏消息
    */
-  fetchScreenMessage = dispatch => {
+  fetchScreenMessage = () => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchAllScreenMessage',
     });
