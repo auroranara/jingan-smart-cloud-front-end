@@ -8,6 +8,7 @@
 | style | 容器样式 | object | - |
 | title | 标题栏 | ReactNode | - |
 | action | 显示在右上角的内容 | ReactNode | - |
+| extra | 额外的内容 | ReactNode | - |
 | scrollProps | 滚动条相关设置属性，请查看Scroll组件 | object | - |
 | spinProps | spin相关设置属性，请查看Spin组件 | object | - |
 

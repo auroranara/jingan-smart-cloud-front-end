@@ -1,0 +1,40 @@
+.item {
+  padding: 1em;
+}
+.timerWrapper {
+  display: flex;
+  padding-bottom: 0.5em;
+  color: #0ff;
+  .time {
+    flex: 1;
+  }
+  .detail {
+    flex: none;
+    &>span {
+      cursor: pointer;
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+}
+.titleWrapper {
+  padding: 0.125em 0;
+  color: #0ff;
+}
+.field {
+  display: flex;
+  padding: 0.125em 0;
+  .fieldLabel {
+    flex: none;
+  }
+  .fieldValue {
+    flex: 1;
+  }
+}
+.mark {
+  padding-top: 0.75em;
+  .repeatCount {
+    margin: 0 0.25em;
+  }
+}

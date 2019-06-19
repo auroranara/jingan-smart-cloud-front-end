@@ -1,6 +1,7 @@
 import TaskDrawer from './TaskDrawer';
 import TaskCount from './TaskCount';
 import FireCount from './FireCount';
+import Message from './Message';
 
 import DeviceBar from './DeviceBar';
 import InfoStatus from './InfoStatus';
@@ -11,13 +12,21 @@ import MapTypeBar from '@/pages/BigPlatform/Smoke/BackMap/MapTypeBar';
 
 export {
   ChartBar,
-  chartLine,
+  ChartLine,
+  ChartRing,
+  DrawerCard,
+  DrawerContainer,
+  DrawerSection,
+  EmptyChart,
+  GraphSwitch,
+  OvSelect,
+  SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 
 export {
   ChartGauge,
   DotItem,
-  ChartLine,
+  // ChartLine,
   BussinessChartLine,
   BussinessChartBar,
   GridSelect,
@@ -34,4 +43,5 @@ export {
   TaskDrawer,
   TaskCount,
   FireCount,
+  Message,
 }

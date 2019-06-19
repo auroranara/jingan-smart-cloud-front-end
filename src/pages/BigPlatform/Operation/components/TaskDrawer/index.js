@@ -40,7 +40,6 @@ const EmptyData = ({ msg, ...props }) => <div className={styles.emptyData} {...p
 @connect(({ operation, loading }) => ({
   operation,
   loading: loading.effects['operation/fetchTaskList'],
-  loading2: loading.effects['operation/fetchTaskList2'],
 }))
 export default class TaskDrawer extends PureComponent {
   state = {
@@ -64,19 +63,11 @@ export default class TaskDrawer extends PureComponent {
           activeStatus: '火警',
         });
       });
-      this.getTaskList2({
-        activeType: '消防主机',
-        activeStatus: '故障',
-      });
     }
   }
 
   setScrollReference = (scroll) => {
     this.scroll = scroll && scroll.dom;
-  }
-
-  setScroll2Reference = (scroll) => {
-    this.scroll2 = scroll && scroll.dom;
   }
 
   getTaskList = ({
@@ -104,71 +95,21 @@ export default class TaskDrawer extends PureComponent {
     });
   }
 
-  getTaskList2 = ({
-    activeType=this.state.activeType,
-    activeStatus=this.state.activeStatus,
-    pageNum=1,
-  }, callback) => {
-    const {
-      dispatch,
-      process,
-    } = this.props;
-    dispatch({
-      type: 'operation/fetchTaskList2',
-      payload: {
-        pageNum,
-        pageSize: DEFAULT_PAGE_SIZE,
-        status: processDict[process],
-        reportType: typeDict[activeType],
-        type: statusDict[activeStatus],
-      },
-      callback: () => {
-        callback && callback();
-        pageNum === 1 && this.scroll2 && this.scroll2.scrollTop();
-      },
-    });
-  }
-
   handleTabClick = (activeType) => {
-    // const { activeStatus: prevActiveStatus, activeType: prevActiveType } = this.state;
-    // let activeStatus = prevActiveStatus;
-    // if (prevActiveType === '报修') {
-    //   if (activeType !== '报修') {
-    //     activeStatus = this.lastActiveStatus;
-    //   }
-    // } else if (activeType === '报修') {
-    //   this.lastActiveStatus = prevActiveStatus;
-    //   activeStatus = '故障';
-    // }
-    // const payload = { activeType, activeStatus };
-    // this.getTaskList(payload, () => {
-    //   this.setState(payload);
-    // });
-    if (activeType !== '报修') {
-      this.getTaskList({
-        activeType,
-        activeStatus: '火警',
-      }, () => {
-        this.setState({
-          activeType,
-          activeStatus: '火警',
-        });
-      });
-      this.getTaskList2({
-        activeType,
-        activeStatus: '故障',
-      });
-    } else {
-      this.getTaskList({
-        activeType,
-        activeStatus: '故障',
-      }, () => {
-        this.setState({
-          activeType,
-          activeStatus: '故障',
-        });
-      });
+    const { activeStatus: prevActiveStatus, activeType: prevActiveType } = this.state;
+    let activeStatus = prevActiveStatus;
+    if (prevActiveType === '报修') {
+      if (activeType !== '报修') {
+        activeStatus = this.lastActiveStatus;
+      }
+    } else if (activeType === '报修') {
+      this.lastActiveStatus = prevActiveStatus;
+      activeStatus = '故障';
     }
+    const payload = { activeType, activeStatus };
+    this.getTaskList(payload, () => {
+      this.setState(payload);
+    });
   }
 
   handleSelect = (activeStatus) => {
@@ -192,33 +133,7 @@ export default class TaskDrawer extends PureComponent {
         }={},
       },
     } = this.props;
-    const { activeType } = this.state;
-    if (activeType !== '报修') {
-      this.getTaskList({
-        activeType,
-        activeStatus: '火警',
-        pageNum: pageNum + 1,
-      });
-    } else {
-      this.getTaskList({
-        activeType,
-        activeStatus: '故障',
-        pageNum: pageNum + 1,
-      });
-    }
-  }
-
-  handleLoadMore2 = () => {
-    const {
-      operation: {
-        taskList2: {
-          pagination: {
-            pageNum=1,
-          }={},
-        }={},
-      },
-    } = this.props;
-    this.getTaskList2({ activeStatus: '故障', pageNum: pageNum + 1 });
+    this.getTaskList({ pageNum: pageNum + 1 });
   }
 
   render() {
@@ -231,18 +146,14 @@ export default class TaskDrawer extends PureComponent {
             pageSize=DEFAULT_PAGE_SIZE,
             total=0,
           }={},
-        }={},
-        taskList2: {
-          list: list2=[],
-          pagination: {
-            pageNum: pageNum2=1,
-            pageSize: pageSize2=DEFAULT_PAGE_SIZE,
-            total: total2=0,
+          count: {
+            消防主机: fire=0,
+            独立烟感: gas=0,
+            报修: repair=0,
           }={},
         }={},
       }={},
       loading,
-      loading2,
       visible,
       onClose,
       process,
@@ -251,15 +162,15 @@ export default class TaskDrawer extends PureComponent {
     const tabs = [
       {
         key: '消防主机',
-        value: `消防主机${activeType === '消防主机' ? ` (${total+total2})` : ''}`,
+        value: `消防主机 (${fire})`,
       },
       {
         key: '独立烟感',
-        value: `独立烟感${activeType === '独立烟感' ? ` (${total+total2})` : ''}`,
+        value: `独立烟感 (${gas})`,
       },
       {
         key: '报修',
-        value: `报修${activeType === '报修' ? ` (${total})` : ''}`,
+        value: `报修 (${repair})`,
       },
     ];
 
@@ -279,13 +190,13 @@ export default class TaskDrawer extends PureComponent {
                 />
               </div>
               <div>
-                {/* {activeType !== tabs[2].key && (
+                {activeType !== tabs[2].key && (
                   <CustomSelect
                     data={statusList}
                     value={activeStatus}
                     onSelect={this.handleSelect}
                   />
-                )} */}
+                )}
               </div>
             </div>
           ),
@@ -294,46 +205,8 @@ export default class TaskDrawer extends PureComponent {
           },
           spinProps: {
             loading,
-            wrapperClassName: activeType === '报修' ? styles.spin : styles.topSpin,
+            wrapperClassName: styles.spin,
           },
-          scrollProps2: {
-            ref: this.setScroll2Reference,
-          },
-          spinProps2: {
-            loading: loading2,
-            wrapperClassName: styles.bottomSpin,
-          },
-          mode: activeType !== '报修' ? "multiple" : 'single',
-          children2: (
-            <div className={styles.container}>
-              {Array.isArray(list2) && list2.length > 0 ? list2.map((item) => (
-                <TaskCard
-                  className={styles.card}
-                  key={item.id || item.proceId}
-                  data={item}
-                  fieldNames={{
-                    id: ({ id, proceId }) => activeType !== '报修' ? id : proceId,
-                    type: () => activeType, // 类型
-                    companyName: ({ companyName, rcompanyName }) => activeType !== '报修' ? companyName : rcompanyName, // 企业名称
-                    partType: 'componentName', // 设施部件类型
-                    loopNumber: 'componentRegion', // 回路号
-                    partNumber: 'componentNo', // 故障号
-                    area: ({ area }) => activeType === '消防主机' ? undefined : area, // 区域
-                    location: ({ installAddress, location }) => activeType === '消防主机' ? installAddress : location, // 位置
-                    startTime: ({ createTime, realtime, createDate }) => ({ 消防主机: createTime, 独立烟感: realtime, 报修: createDate })[activeType], // 报警/报修时间
-                    endTime: 'endDate', // 结束时间
-                    status: () => '故障', // 状态
-                    wordOrderNumber: 'workOrder', // 工单编号
-                    repairPersonName: 'createByName', // 报修人员名称
-                    repairPersonPhone: ({ createByPhone }) => createByPhone && `${createByPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'), // 报修人员手机号
-                    process: () => process, // 处理状态
-                  }}
-                  onClick={this.handleCardClick}
-                />
-              )) : <EmptyData msg={`暂无故障${activeType}${process}任务`} />}
-              {total2 > pageNum2 * pageSize2 && <LoadMore className={styles.loadMore} onClick={this.handleLoadMore2} />}
-            </div>
-          ),
         }}
       >
         <div className={styles.container}>
@@ -353,7 +226,7 @@ export default class TaskDrawer extends PureComponent {
                 location: ({ installAddress, location }) => activeType === '消防主机' ? installAddress : location, // 位置
                 startTime: ({ createTime, realtime, createDate }) => ({ 消防主机: createTime, 独立烟感: realtime, 报修: createDate })[activeType], // 报警/报修时间
                 endTime: 'endDate', // 结束时间
-                status: () => '火警', // 状态
+                status: () => activeStatus, // 状态
                 wordOrderNumber: 'workOrder', // 工单编号
                 repairPersonName: 'createByName', // 报修人员名称
                 repairPersonPhone: ({ createByPhone }) => createByPhone && `${createByPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'), // 报修人员手机号

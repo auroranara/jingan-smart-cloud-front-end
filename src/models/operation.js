@@ -8,6 +8,7 @@ import {
   getFireList,
   getScreenMessage,
   getVideoList,
+  getMessages,
   getAllScreenMessage,
 } from '@/services/operation';
 import {
@@ -28,8 +29,13 @@ export default {
 
   state: {
     // 任务列表
-    taskList: {},
-    taskList2: {},
+    taskList: {
+      count: {
+        消防主机: 0,
+        独立烟感: 0,
+        报修: 0,
+      },
+    },
     // 运维任务统计
     taskCount: {
       pending: 0, // 待处理
@@ -60,6 +66,8 @@ export default {
     },
     // 维保处理动态详情
     workOrderDetail: [],
+    // 消息列表
+    messages: [],
     countNumAndTimeById: {},
     // 已完成运维工单
     workOrderList1: [],
@@ -69,47 +77,46 @@ export default {
     workOrderList7: [],
   },
   effects: {
-    *fetchTaskList({ payload, callback }, { call, put }) {
-      const response = yield call(getTaskList, payload);
-      const { code=500, msg='获取任务失败，请稍后重试', data } = response || {};
-      if (code === 200) {
-        const { pageSize, pageNum } = payload;
-        const { list, pagination } = data || {};
+    *fetchTaskList({ payload, callback }, { call, put, all }) {
+      const { pageSize, pageNum } = payload;
+      let response, isSuccess, count;
+      if (pageNum === 1) {
+        const responseList = yield all([
+          call(getTaskList, payload),
+          call(getTaskList, { ...payload, pageNum: 1, pageSize: 1, reportType: 1 }),
+          call(getTaskList, { ...payload, pageNum: 1, pageSize: 1, reportType: 4 }),
+          call(getTaskList, { ...payload, pageNum: 1, pageSize: 1, reportType: 2 }),
+        ]);
+        response = responseList[0];
+        isSuccess = responseList.every((res) => res && res.code === 200);
+        count = {
+          消防主机: responseList[1] && responseList[1].data && responseList[1].data.pagination && responseList[1].data.pagination.listSize,
+          独立烟感: responseList[2] && responseList[2].data && responseList[2].data.pagination && responseList[2].data.pagination.listSize,
+          报修: responseList[3] && responseList[3].data && responseList[3].data.pagination && responseList[3].data.pagination.listSize,
+        };
+      } else {
+        response = yield call(getTaskList, payload);
+        isSuccess = response && response.code === 200;
+      }
+      if (isSuccess) {
+        const { list, pagination } = response.data || {};
         const { listSize: total } = pagination || {};
         yield put({
           type: 'saveTaskList',
           payload: {
             list: list || [],
             pagination: { pageSize, pageNum, total: total || 0 },
+            count,
           },
         });
         callback && callback();
       } else {
-        error(msg);
-      }
-    },
-    *fetchTaskList2({ payload, callback }, { call, put }) {
-      const response = yield call(getTaskList, payload);
-      const { code=500, msg='获取任务失败，请稍后重试', data } = response || {};
-      if (code === 200) {
-        const { pageSize, pageNum } = payload;
-        const { list, pagination } = data || {};
-        const { listSize: total } = pagination || {};
-        yield put({
-          type: 'saveTaskList2',
-          payload: {
-            list: list || [],
-            pagination: { pageSize, pageNum, total: total || 0 },
-          },
-        });
-        callback && callback();
-      } else {
-        error(msg);
+        error('获取任务失败，请稍后重试！');
       }
     },
     *fetchTaskCount({ payload }, { call, put }) {
       const response = yield call(getTaskCount, payload);
-      const { code=500, msg='获取运维任务统计失败，请稍后重试', data } = response || {};
+      const { code=500, msg='获取运维任务统计失败，请稍后重试！', data } = response || {};
       if (code === 200) {
         const { pendingFire: pending=0, processFire: processing=0, finishFire: processed=0 } = data || {};
         yield put({
@@ -128,7 +135,7 @@ export default {
     },
     *fetchFireCount({ payload }, { call, put }) {
       const response = yield call(getFireCount, payload);
-      const { code=500, msg='获取火警数量统计失败，请稍后重试', data } = response || {};
+      const { code=500, msg='获取火警数量统计失败，请稍后重试！', data } = response || {};
       if (code === 200) {
         const { day = 0, month = 0, week = 0 } = data || {};
         yield put({
@@ -300,6 +307,22 @@ export default {
         error();
       }
     },
+    *fetchMessages({ payload, callback }, { call, put }) {
+      const response = yield call(getMessages, payload);
+      const { code=500, data, msg="获取实时消息失败，请稍后重试!" } = response || {};
+      if (code === 200) {
+        const messages = data && data.list ? data.list : [];
+        yield put({
+          type: 'save',
+          payload: {
+            messages,
+          },
+        });
+        callback && callback(messages);
+      } else {
+        error(msg);
+      }
+    },
   },
 
   reducers: {
@@ -309,21 +332,13 @@ export default {
         ...payload,
       };
     },
-    saveTaskList(state, { payload: { list, pagination } }) {
+    saveTaskList(state, { payload: { list, pagination, count } }) {
       return {
         ...state,
         taskList: {
           list: pagination.pageNum === 1 ? list : [...state.taskList.list, ...list],
           pagination,
-        },
-      };
-    },
-    saveTaskList2(state, { payload: { list, pagination } }) {
-      return {
-        ...state,
-        taskList2: {
-          list: pagination.pageNum === 1 ? list : [...state.taskList2.list, ...list],
-          pagination,
+          count: pagination.pageNum === 1 ? count : state.taskList.count,
         },
       };
     },
@@ -398,6 +413,12 @@ export default {
       return {
         ...state,
         maintenanceCompany: payload,
+      };
+    },
+    appendMessages(state, { payload }) {
+      return {
+        ...state,
+        messages: [payload, ...state.messages],
       };
     },
   },

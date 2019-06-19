@@ -1,0 +1,28 @@
+:global {
+  .real-time-message-container {
+    .custom-section2-content-container {
+      padding-bottom: 1em;
+    }
+  }
+  .real-time-message-empty {
+    padding: 2em 0 1.5em;
+    text-align: center;
+  }
+  .real-time-message-list {
+    & > :not(:first-child) {
+      border-top: 1px solid rgba(9, 103, 211, 0.4);
+    }
+  }
+  .real-time-message-button {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    color: #0ff;
+    transform: translateX(-50%) rotate(90deg);
+    cursor: pointer;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+}

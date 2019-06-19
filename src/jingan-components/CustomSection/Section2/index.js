@@ -23,6 +23,8 @@ export default function CustomSection2 ({
   title,
   // 显示在右上角的内容
   action,
+  // 额外的内容
+  extra,
   // 子元素
   children,
   // 滚动条相关设置属性，请查看Scroll组件
@@ -66,6 +68,7 @@ export default function CustomSection2 ({
             {children}
           </Scroll>
         </Spin>
+        {extra}
       </div>
     </div>
   );
