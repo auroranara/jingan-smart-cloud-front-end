@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import ReactEcharts from 'echarts-for-react';
+// import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import { Icon } from 'antd';
 
@@ -11,16 +11,19 @@ import {
   DrawerCard,
   DrawerContainer,
   DrawerSection,
+  EmptyChart,
   GraphSwitch,
   OvSelect,
   SearchBar,
-} from '@/pages/BigPlatform/NewFireControl/components/Components';
+} from '../components/Components';
 // import { ChartLine } from '@/pages/BigPlatform/Smoke/components/Components';
 import { hidePhone } from '../utils';
 
-function Empty(props) {
-  return <div className={styles.empty}>暂无信息</div>;
-}
+// function Empty(props) {
+//   return <div className={styles.empty}>暂无信息</div>;
+// }
+
+const empty = <EmptyChart style={{ height: 300 }} title="暂无信息" />;
 
 const TYPE = 'fireStatistics';
 const NO_DATA = '暂无信息';
@@ -214,7 +217,7 @@ export default class FireStatisticsDrawer extends PureComponent {
 
     const rings = [falseFire, trueFire, unConfirm].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
     const trendList = fireTrend.map(({ month, count }) => ({ name: month, value: count }));
-    console.log(rings);
+    // console.log(rings);
 
     const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
     const dateSelect = (
@@ -243,7 +246,7 @@ export default class FireStatisticsDrawer extends PureComponent {
     const left = (
       <Fragment>
         <DrawerSection title="处理状态统计" extra={dateSelect}>
-          {rings.every(item => !item.value) ? <Empty /> : <ChartRing data={rings} />}
+          {rings.every(item => !item.value) ? empty : <ChartRing data={rings} />}
         </DrawerSection>
         <DrawerSection title="火警趋势图" titleInfo="最近12个月" style={{ marginTop: 10 }} extra={extra}>
           {/* {graph ? (
@@ -257,7 +260,7 @@ export default class FireStatisticsDrawer extends PureComponent {
           ) : (
                 <div style={{ textAlign: 'center' }}>暂无数据</div>
               )} */}
-          {trendList.length ? graph ? <ChartBar data={trendList} /> : <ChartLine data={trendList} /> : <Empty />}
+          {trendList.length ? graph ? <ChartBar data={trendList} /> : <ChartLine data={trendList} /> : empty}
         </DrawerSection>
       </Fragment>
     );
@@ -294,7 +297,14 @@ export default class FireStatisticsDrawer extends PureComponent {
 
     const right = (
       <SearchBar onSearch={this.handleSearch} cols={[12, 12]} extra={selects}>
-        {fireList.length ? cards : loading ? null : <p className={styles.none}>暂无信息</p>}
+        {
+          fireList.length ?
+            cards :
+            loading ?
+              null :
+              // <p className={styles.none}>暂无信息</p>
+              empty
+        }
         {hasMore && (
           <p
             className={!fireList.length && loading ? styles.none : loading ? styles.hasMore : styles.hasMore1}
