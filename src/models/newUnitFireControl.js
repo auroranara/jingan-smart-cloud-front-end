@@ -65,6 +65,8 @@ import {
   messageInformList,
   countNumAndTimeById,
   getAllScreenMessage,
+  getAllDetail,
+  getDangerChartId,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -375,6 +377,15 @@ export default {
       },
       list: [],
     },
+    allDetail: {
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+        listSize: 0,
+      },
+      list: [],
+    },
     countAllFireAndFault: {
       finishNum: 0,
       processNum: 0,
@@ -383,6 +394,10 @@ export default {
     countFinishByUserId: [0, 0, 0, 0],
     messageInformList: [],
     countNumAndTimeById: {},
+    dangerChartId: {
+      fireId: [],
+      faultId: [],
+    },
   },
 
   subscriptions: {
@@ -1044,6 +1059,38 @@ export default {
         }
       }
     },
+    // 获取警报,故障数据详情
+    *fetchAllDetail({ payload, success }, { call, put }) {
+      const response = yield call(getAllDetail, payload);
+      const {
+        code,
+        data: { list, pagination },
+      } = response;
+      if (code === 200) {
+        yield put({
+          type: 'allDetail',
+          payload: {
+            list,
+            pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
+          },
+          append: payload.pageNum !== 1,
+        });
+        if (success) {
+          success();
+        }
+      }
+    },
+    // 消防主机当前火警和故障ids
+    *fetchDangerChartId({ payload, callback }, { call, put }) {
+      const response = yield call(getDangerChartId, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'dangerChartId',
+          payload: response.data,
+        });
+      }
+      if (callback) callback(response.data);
+    },
     // 处理工单统计
     *fetchCountAllFireAndFault({ payload }, { call, put }) {
       const response = yield call(countAllFireAndFault, payload);
@@ -1370,6 +1417,27 @@ export default {
       return {
         ...state,
         countNumAndTimeById: payload,
+      };
+    },
+    allDetail(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          allDetail: {
+            pagination: payload.pagination,
+            list: state.allDetail.list.concat(payload.list),
+          },
+        };
+      }
+      return {
+        ...state,
+        allDetail: payload,
+      };
+    },
+    dangerChartId(state, { payload }) {
+      return {
+        ...state,
+        dangerChartId: payload,
       };
     },
   },
