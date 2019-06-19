@@ -54,6 +54,8 @@ export default class DynamicDrawerTop extends Component {
       lastTime,
       num,
       style = {},
+      sdeviceName = null,
+      videoList = [],
     } = this.props
     const scTime = moment(firstTime).format('YYYY-MM-DD HH:mm');
     const zjTime = moment(lastTime).format('YYYY-MM-DD HH:mm');
@@ -61,7 +63,7 @@ export default class DynamicDrawerTop extends Component {
       <div className={styles.dynamicDrawerTop} style={style}>
         <div className={styles.companyInfoContainer}>
           <div className={styles.title}>{companyName}</div>
-
+          {/* 主机 */}
           {dynamicType === 0 && (
             <Fragment>
               <div className={styles.line}>详细位置：{install_address || getEmptyData()}</div>
@@ -69,13 +71,15 @@ export default class DynamicDrawerTop extends Component {
               <div className={styles.line} style={{ marginBottom: 0 }}>部件类型：{unitTypeName || getEmptyData()}</div>
             </Fragment>
           )}
+          {/* 烟感 */}
           {dynamicType === 1 && (
             <Fragment>
-              {/* <div className={styles.line}>名称：{install_address||getEmptyData()}</div> */}
+              {sdeviceName && (<div className={styles.line}>名称：{sdeviceName}</div>)}
               <div className={styles.line}>所在区域：{area || getEmptyData()}</div>
               <div className={styles.line}>位置：{location || getEmptyData()}</div>
             </Fragment>
           )}
+          {/* 重复上报 */}
           {+num > 0 && (
             <div className={styles.logoContainer} style={{ top: 0, right: '24px' }}>
               <div
@@ -93,18 +97,21 @@ export default class DynamicDrawerTop extends Component {
               <div className={styles.desc}>重复上报次数</div>
             </div>
           )}
-          <div
-            onClick={this.handleCameraClick}
-            className={styles.cameraContainer}
-            style={{
-              top: '10px',
-              right: '104px',
-              backgroundImage: `url(${cameraImg})`,
-              backgroundSize: '100%',
-              backgroundPosition: 'center center',
-              backgroundRepeat: 'no-repeat',
-            }}
-          ></div>
+          {/* 视频 */}
+          {videoList && videoList.length > 0 && (
+            <div
+              onClick={this.handleCameraClick}
+              className={styles.cameraContainer}
+              style={{
+                top: '10px',
+                right: '104px',
+                backgroundImage: `url(${cameraImg})`,
+                backgroundSize: '100%',
+                backgroundPosition: 'center center',
+                backgroundRepeat: 'no-repeat',
+              }}
+            ></div>
+          )}
           <div className={styles.repeatDesc} style={{ bottom: '16px', right: '22px', visibility: showRepeatDesc ? 'visible' : 'hidden' }}>
             <div>首次发生事件：{scTime}</div>
             <div>最近发生事件：{zjTime}</div>

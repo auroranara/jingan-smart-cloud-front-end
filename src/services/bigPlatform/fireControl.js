@@ -477,5 +477,15 @@ export async function countNumAndTimeById(params) {
 }
 
 export async function getAllScreenMessage(params) {
-  return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`)
+  return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`);
+}
+
+// 获取警报,故障数据详情
+export async function getAllDetail(params) {
+  return request(`/acloud_new/v2/fireManage/allDetail?${stringify(params)}`);
+}
+
+// 消防主机当前火警和故障ids
+export async function getDangerChartId(params) {
+  return request(`/acloud_new/v2/fireData/countDangerId.json?${stringify(params)}`);
 }

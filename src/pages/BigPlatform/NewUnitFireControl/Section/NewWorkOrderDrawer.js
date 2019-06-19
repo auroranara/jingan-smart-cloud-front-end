@@ -70,18 +70,18 @@ function OrderCard(props) {
             : componentNo,
       },
       { name: '详细位置', value: installAddress },
-      { name: `${timeStr}时间`, value: formatTime(createTime) },
+      { name: `${timeStr}时间`, value: formatTime(firstTime) },
     ],
     [
       { name: '所在区域', value: area },
       { name: '所在位置', value: location },
-      { name: `${timeStr}时间`, value: formatTime(realtime) },
+      { name: `${timeStr}时间`, value: formatTime(firstTime) },
     ],
     [
       { name: '报警值', value: `LEL(${realTimeData}%)` },
       { name: '所在区域', value: area },
       { name: '所在位置', value: location },
-      { name: `${timeStr}时间`, value: formatTime(realtime) },
+      { name: `${timeStr}时间`, value: formatTime(firstTime) },
     ],
     [
       { name: '工单编号', value: workOrder },
@@ -212,14 +212,14 @@ function OrderCard(props) {
 export default class NewWorkOrderDrawer extends PureComponent {
   render() {
     const {
-      warnDetail: {
-        pagination: { listSize: total, pageNum, pageSize },
-        list: warnDetailList,
-      },
-      faultDetail: {
-        pagination: { listSize: totalFault, pageNum: pageNumFault, pageSize: pageSizeFault },
-        list: faultDetailList,
-      },
+      // warnDetail: {
+      //   pagination: { listSize: total, pageNum, pageSize },
+      //   list: warnDetailList,
+      // },
+      // faultDetail: {
+      //   pagination: { listSize: totalFault, pageNum: pageNumFault, pageSize: pageSizeFault },
+      //   list: faultDetailList,
+      // },
       countFinishByUserId,
       data,
       onClose,
@@ -233,6 +233,12 @@ export default class NewWorkOrderDrawer extends PureComponent {
       getFaultDetail,
       showWorkOrderDetail,
       phoneVisible,
+      allDetailLoading,
+      allDetail: {
+        pagination: { listSize: total, pageNum, pageSize },
+        list: allDetailList,
+      },
+      getAllDetail,
       ...restProps
     } = this.props;
 
@@ -257,10 +263,8 @@ export default class NewWorkOrderDrawer extends PureComponent {
         color: '#fff',
         value: countFinishByUserId[index],
         onClick: () => {
-          [0, 1].forEach(item => {
-            if (document.getElementById(`workOrderScroll${item}`))
-              document.getElementById(`workOrderScroll${item}`).scrollTop = 0;
-          });
+          if (document.getElementById(`workOrderScroll`))
+            document.getElementById(`workOrderScroll`).scrollTop = 0;
           handleClickTab(index);
         },
         // warnDetailLoading || faultDetailLoading
@@ -274,73 +278,62 @@ export default class NewWorkOrderDrawer extends PureComponent {
         //     },
       };
     });
-
+    const isLoadMore = pageNum * pageSize < total;
     const left = (
       <div className={styles.container}>
         <TotalInfo data={topData} active={workOrderType} />
-        {[0, 1].map(type => {
-          if (type === 0 && workOrderType === 3) return null;
-          if (type === 1 && workOrderType === 2) return null;
-          const newList = type === 0 ? warnDetailList : faultDetailList;
-          const isLoadMore =
-            type === 0 ? pageNum * pageSize < total : pageNumFault * pageSizeFault < totalFault;
-          return (
-            <div className={styles.cards} key={type}>
-              <Spin
-                spinning={type === 0 ? warnDetailLoading : faultDetailLoading}
-                wrapperClassName={styles.spin}
-              >
-                <div className={styles.scrollContainer} id={`workOrderScroll${type}`}>
-                  {newList.length > 0 ? (
-                    <div style={{ height: '100%' }}>
-                      {newList.map((item, index) => (
-                        <OrderCard
-                          key={index}
-                          type={type}
-                          data={item}
-                          workOrderType={workOrderType}
-                          workOrderStatus={workOrderStatus}
-                          showWorkOrderDetail={showWorkOrderDetail}
-                          phoneVisible={phoneVisible}
-                        />
-                      ))}
-                      {isLoadMore && (
-                        <div className={styles.loadMoreWrapper}>
-                          <LoadMore
-                            onClick={() => {
-                              type === 0
-                                ? getWarnDetail(workOrderStatus, workOrderType, pageNum + 1)
-                                : getFaultDetail(workOrderStatus, workOrderType, pageNumFault + 1);
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div
-                      style={{
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        textAlign: 'center',
-                        color: '#4f6793',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <img
-                        src={noData}
-                        style={{ width: '36%', height: 'auto', marginTop: '-150px' }}
-                        alt="noData"
+        <div className={styles.cards}>
+          <Spin spinning={allDetailLoading} wrapperClassName={styles.spin}>
+            <div className={styles.scrollContainer} id={`workOrderScroll`}>
+              {allDetailList.length > 0 ? (
+                <div style={{ height: '100%' }}>
+                  {allDetailList.map((item, index) => {
+                    const { fireType } = item;
+                    return (
+                      <OrderCard
+                        key={index}
+                        type={+fireType - 1}
+                        data={item}
+                        workOrderType={workOrderType}
+                        workOrderStatus={workOrderStatus}
+                        showWorkOrderDetail={showWorkOrderDetail}
+                        phoneVisible={phoneVisible}
                       />
-                      <div style={{ marginTop: '15px' }}>暂无工单</div>
+                    );
+                  })}
+                  {isLoadMore && (
+                    <div className={styles.loadMoreWrapper}>
+                      <LoadMore
+                        onClick={() => {
+                          getAllDetail(workOrderStatus, workOrderType, pageNum + 1);
+                        }}
+                      />
                     </div>
                   )}
                 </div>
-              </Spin>
+              ) : (
+                <div
+                  style={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    textAlign: 'center',
+                    color: '#4f6793',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <img
+                    src={noData}
+                    style={{ width: '36%', height: 'auto', marginTop: '-150px' }}
+                    alt="noData"
+                  />
+                  <div style={{ marginTop: '15px' }}>暂无工单</div>
+                </div>
+              )}
             </div>
-          );
-        })}
+          </Spin>
+        </div>
       </div>
     );
 

@@ -27,9 +27,9 @@ export default class FireMonitoring extends PureComponent {
       supervise = 0,
       // 反馈
       feedback = 0,
-      handleShowAlarm,
+      handleShowAlarmFlows,
       handleShowFireMonitor,
-      handleShowFault,
+      // handleShowFault,
       hosts,
     } = this.props;
 
@@ -72,7 +72,16 @@ export default class FireMonitoring extends PureComponent {
               </div>
             </div>
             <div className={styles.twoTotal}>
-              <p className={styles.fireTitle} onClick={fire ? handleShowAlarm : null}>
+              <p
+                className={styles.fireTitle}
+                onClick={
+                  fire
+                    ? () => {
+                        handleShowAlarmFlows(0);
+                      }
+                    : null
+                }
+              >
                 <Tooltip
                   placement="bottomLeft"
                   overlayClassName={styles.tooltip}
@@ -83,7 +92,16 @@ export default class FireMonitoring extends PureComponent {
                 <span className={styles.fireCount}>{fire || 0}</span>
               </p>
 
-              <p className={styles.errorTitle} onClick={fault ? handleShowFault : null}>
+              <p
+                className={styles.errorTitle}
+                onClick={
+                  fault
+                    ? () => {
+                        handleShowAlarmFlows(1);
+                      }
+                    : null
+                }
+              >
                 <Tooltip
                   placement="bottomLeft"
                   overlayClassName={styles.tooltip}

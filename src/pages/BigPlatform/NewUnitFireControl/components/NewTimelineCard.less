@@ -67,4 +67,18 @@
       border-color: rgba(0, 186, 255);
     }
   }
+
+  .spin {
+    height: 100%;
+
+    :global {
+      .ant-spin-container {
+        height: 100%;
+
+        &:after {
+          background-color: transparent;
+        }
+      }
+    }
+  }
 }
