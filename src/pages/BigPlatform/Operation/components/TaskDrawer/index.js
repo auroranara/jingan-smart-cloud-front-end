@@ -24,6 +24,21 @@ const statusDict = {
   火警: 1,
   故障: 2,
 };
+const statusDict2 = {
+  1: '火警',
+  2: '故障',
+};
+const proceDict = {
+  null: '待处理',
+  undefined: '待处理',
+  0: '处理中',
+  1: '已处理',
+};
+const typeDict2 = {
+  1: '消防主机',
+  2: '报修',
+  4: '独立烟感',
+};
 const statusList = [
   {
     key: '全部状态',
@@ -40,6 +55,23 @@ const statusList = [
 ];
 const DEFAULT_PAGE_SIZE = 20;
 const EmptyData = ({ msg, ...props }) => <div className={styles.emptyData} {...props}><img src={emptyDataBackground} alt="空数据"/><div>{msg}</div></div>;
+const FIELDNAMES = {
+  id: ({ id, gasId, proceId, reportType }) => ({ 消防主机: id, 独立烟感: gasId, 报修: proceId })[typeDict2[reportType]],
+  type: ({ reportType }) => typeDict2[reportType], // 类型
+  companyName: ({ companyName, rcompanyName, reportType }) => typeDict2[reportType] !== '报修' ? companyName : rcompanyName, // 企业名称
+  partType: 'componentName', // 设施部件类型
+  loopNumber: 'componentRegion', // 回路号
+  partNumber: 'componentNo', // 故障号
+  area: ({ area, reportType }) => typeDict2[reportType] === '消防主机' ? undefined : area, // 区域
+  location: ({ installAddress, location, reportType }) => typeDict2[reportType] === '消防主机' ? installAddress : location, // 位置
+  startTime: ({ createTime, realtime, createDate, reportType }) => ({ 消防主机: createTime, 独立烟感: realtime, 报修: createDate })[typeDict2[reportType]], // 报警/报修时间
+  endTime: 'endDate', // 结束时间
+  status: ({ fireType }) => statusDict2[fireType], // 状态
+  wordOrderNumber: 'workOrder', // 工单编号
+  repairPersonName: 'createByName', // 报修人员名称
+  repairPersonPhone: ({ createByPhone }) => createByPhone && `${createByPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'), // 报修人员手机号
+  process: ({ proceStatus }) => proceDict[proceStatus], // 处理状态
+};
 
 @connect(({ operation, loading }) => ({
   operation,
@@ -221,23 +253,7 @@ export default class TaskDrawer extends PureComponent {
               className={styles.card}
               key={item.id || item.gasId || item.proceId}
               data={item}
-              fieldNames={{
-                id: ({ id, gasId, proceId }) => ({ 消防主机: id, 独立烟感: gasId, 报修: proceId })[activeType],
-                type: () => activeType, // 类型
-                companyName: ({ companyName, rcompanyName }) => activeType !== '报修' ? companyName : rcompanyName, // 企业名称
-                partType: 'componentName', // 设施部件类型
-                loopNumber: 'componentRegion', // 回路号
-                partNumber: 'componentNo', // 故障号
-                area: ({ area }) => activeType === '消防主机' ? undefined : area, // 区域
-                location: ({ installAddress, location }) => activeType === '消防主机' ? installAddress : location, // 位置
-                startTime: ({ createTime, realtime, createDate }) => ({ 消防主机: createTime, 独立烟感: realtime, 报修: createDate })[activeType], // 报警/报修时间
-                endTime: 'endDate', // 结束时间
-                status: () => activeStatus, // 状态
-                wordOrderNumber: 'workOrder', // 工单编号
-                repairPersonName: 'createByName', // 报修人员名称
-                repairPersonPhone: ({ createByPhone }) => createByPhone && `${createByPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'), // 报修人员手机号
-                process: () => process, // 处理状态
-              }}
+              fieldNames={FIELDNAMES}
               onClick={this.handleCardClick}
             />
           )) : <EmptyData msg={`暂无${activeType !== '报修' && activeStatus !== '全部状态' ? activeStatus : ''}${activeType}${process}任务`} />}
