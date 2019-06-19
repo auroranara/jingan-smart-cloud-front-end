@@ -13,6 +13,7 @@ const electricImg = 'http://data.jingan-china.cn/v2/dashboard/dashboard-electric
 const fireMaintenanceImg = 'http://data.jingan-china.cn/new-fire-control.png';
 const smokeImg = 'http://data.jingan-china.cn/smoke.png';
 const operationImg = 'http://data.jingan-china.cn/v2/dashboard/operation.png';
+// http://data.jingan-china.cn/v2/dashboard/3dgis.png
 
 const safeItem = { src: safe, url: '', label: '政府安全驾驶舱' };
 const fireItem = { src: fire, url: '', label: '消防主机联网驾驶舱' };

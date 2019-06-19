@@ -99,12 +99,13 @@ export default {
     },
     *changerUser({ payload, success, error }, { call, put }) {
       const response = yield call(changerUser, payload);
-      const { unitType } = response.data;
+      // const { unitType } = response.data;
       if (response && response.code === 200 && response.data && response.data.webToken) {
         yield setToken(response.data.webToken);
         yield put({ type: 'user/saveCurrentUser' });
         reloadAuthorized();
-        router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
+        // router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
+        router.replace('/');
         if (success) success();
       } else if (error) error();
     },

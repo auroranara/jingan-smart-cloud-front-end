@@ -50,7 +50,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.gj}`,
+      target: `http://${hosts.show}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
@@ -65,7 +65,7 @@ export default {
           hmr: true,
         },
         title: {
-          defaultTitle: '晶安智慧云',
+          defaultTitle: '智慧消防云',
         },
         locale: {
           enable: true, // default false
@@ -94,7 +94,7 @@ export default {
     ie: 11,
   },
   // 如果是演示环境 publicPath目录为xshow
-  publicPath: process.env.PROJECT_ENV === 'show' ? '/xshow/' : '/',
+  publicPath: process.env.PROJECT_ENV === 'show' ? '/xshow/' : '/acloud_new/',
   // publicPath: '/acloud_new/',
   theme: {
     'card-actions-background': '#f5f8fa',
