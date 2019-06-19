@@ -56,7 +56,7 @@ export default class TaskCard extends BigPlatformCard {
     {
       label: '回路号',
       render: ({ loopNumber, partNumber }) =>
-        `${loopNumber || isNumber(loopNumber) ? `${loopNumber}号回路` : ''}${
+        `${loopNumber || isNumber(loopNumber) ? `${loopNumber}回路` : ''}${
           partNumber || isNumber(partNumber) ? `${partNumber}号` : ''
         }`,
       hidden: isNotFireEngine,
@@ -112,7 +112,7 @@ export default class TaskCard extends BigPlatformCard {
       <Container className={className} style={{ paddingTop: '0.5em', paddingBottom: '0.5em', ...style }}>
         <div className={styles.title}>{companyName}</div>
         {type !== '报修' && color && <div className={styles.status} style={{ color, borderColor: color }}>{status}</div>}
-        {/* {type !== '报修' && <div className={styles.action} onClick={this.handleClick}>处理动态>></div>} */}
+        {type !== '报修' && <div className={styles.action} onClick={this.handleClick}>处理动态>></div>}
         {this.renderFields(fieldsValue)}
       </Container>
     );

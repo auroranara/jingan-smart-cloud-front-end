@@ -715,26 +715,80 @@ export default class Operation extends PureComponent {
   };
 
   handleTaskCardClick = data => {
-    console.log(data);
+    // console.log(data);
+    const { dispatch } = this.props;
     const {
       id,
+      gasId,
+      proceId,
       companyName,
       companyId,
+      componentRegion,
+      componentNo,
+      componentName,
+      reportType,
+      // proceStatus,
+      fireType,
+      installAddress,
+      area,
+      location,
+      workOrder,
+      faultName,
+      createByName,
+      createByPhone,
+      systemTypeValue,
+      realtime,
+      createDate,
+      firstTime,
+      lastTime,
+      createTime,
     } = data;
-    // const param = {
-    //   dataId: id,
-    //   companyName: companyName || undefined,
-    //   component: component || undefined,
-    //   unitTypeName: unitTypeName || undefined,
-    //   companyId: companyId || undefined,
-    // };
-    // type,
-    // flow,
-    // // repeat,
-    // cameraMessage = [],
-    // occurData,
-    // cId,
-    // this.handleClickMsgFlow();
+    const dataId = ({ 1: id, 4: id || gasId, 2: proceId })[reportType];
+    dispatch({
+      type: 'operation/fetchCameraMessage',
+      payload: {
+        id: dataId,
+        reportType,
+      },
+      callback: (cameraMessage) => {
+        const param = {
+          dataId,
+          id: dataId,
+          companyName: companyName || undefined,
+          component: `${componentRegion || typeof componentRegion === 'number' ? `${componentRegion}回路` : ''}${
+            componentNo || typeof componentNo === 'number' ? `${componentNo}号` : ''
+          }` || undefined,
+          unitTypeName: componentName || undefined,
+          companyId: companyId || undefined,
+        };
+        const type = ({ 1: 0, 4: 1, 2: 3 })[reportType];
+        const flow = fireType - 1;
+        const occurData = [
+          {
+            create_time: createTime,
+            create_date: createDate,
+            firstTime,
+            lastTime,
+            area,
+            location,
+            install_address: installAddress,
+            label: componentName,
+            work_order: workOrder,
+            systemTypeValue,
+            createByName,
+            createByPhone,
+            faultName,
+            realtime,
+          },
+        ];
+        // console.log('param:',param);
+        // console.log('type:',type);
+        // console.log('flow:',flow);
+        // console.log('occurData:',occurData);
+        // console.log('companyId:',companyId);
+        this.handleClickMsgFlow(param, type, flow, cameraMessage, occurData, companyId);
+      },
+    });
   };
 
   handleDeviceTypeChange = (v, callback) => {
@@ -840,7 +894,9 @@ export default class Operation extends PureComponent {
     this.handleShowFireVideo(cameraMessage);
 
     const detail = unitList.find(({ companyId }) => companyId === cId);
-    this.setState({ deviceType: type + 1 });
+    if (type <= 1) {
+      this.setState({ deviceType: type + 1 });
+    }
     this.showUnitDetail(detail);
     this.hideTooltip();
   };

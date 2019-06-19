@@ -74,7 +74,7 @@ export default class DeviceCard extends BigPlatformCard {
     {
       label: '回路故障号',
       render: ({ loopNumber, partNumber }) =>
-        `${loopNumber || isNumber(loopNumber) ? `${loopNumber}号回路` : ''}${
+        `${loopNumber || isNumber(loopNumber) ? `${loopNumber}回路` : ''}${
           partNumber || isNumber(partNumber) ? `${partNumber}号` : ''
         }`,
       hidden: ({ monitoringType, status }) => monitoringType !== FIRE_ENGINE || STATUS_DICT[status] === '正常',

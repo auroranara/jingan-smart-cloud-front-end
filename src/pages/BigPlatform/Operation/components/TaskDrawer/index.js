@@ -56,7 +56,7 @@ const statusList = [
 const DEFAULT_PAGE_SIZE = 20;
 const EmptyData = ({ msg, ...props }) => <div className={styles.emptyData} {...props}><img src={emptyDataBackground} alt="空数据"/><div>{msg}</div></div>;
 const FIELDNAMES = {
-  id: ({ id, gasId, proceId, reportType }) => ({ 消防主机: id, 独立烟感: gasId, 报修: proceId })[typeDict2[reportType]],
+  id: ({ id, gasId, proceId, reportType }) => ({ 消防主机: id, 独立烟感: id || gasId, 报修: proceId })[typeDict2[reportType]],
   type: ({ reportType }) => typeDict2[reportType], // 类型
   companyName: ({ companyName, rcompanyName, reportType }) => typeDict2[reportType] !== '报修' ? companyName : rcompanyName, // 企业名称
   partType: 'componentName', // 设施部件类型
@@ -76,6 +76,7 @@ const FIELDNAMES = {
 @connect(({ operation, loading }) => ({
   operation,
   loading: loading.effects['operation/fetchTaskList'],
+  jumping: loading.effects['operation/fetchCameraMessage'],
 }))
 export default class TaskDrawer extends PureComponent {
   state = {
@@ -192,6 +193,7 @@ export default class TaskDrawer extends PureComponent {
         }={},
       }={},
       loading,
+      jumping,
       visible,
       onClose,
       process,
@@ -242,7 +244,7 @@ export default class TaskDrawer extends PureComponent {
             ref: this.setScrollReference,
           },
           spinProps: {
-            loading,
+            loading: loading || jumping,
             wrapperClassName: styles.spin,
           },
         }}

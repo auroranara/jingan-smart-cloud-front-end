@@ -10,6 +10,7 @@ import {
   getVideoList,
   getMessages,
   getAllScreenMessage,
+  getCameraMessage,
 } from '@/services/operation';
 import {
   queryAlarmHandleList,
@@ -318,6 +319,16 @@ export default {
             messages,
           },
         });
+        callback && callback(messages);
+      } else {
+        error(msg);
+      }
+    },
+    *fetchCameraMessage({ payload, callback }, { call }) {
+      const response = yield call(getCameraMessage, payload);
+      const { code=500, data, msg="获取数据失败，请稍后重试！" } = response || {};
+      if (code === 200) {
+        const messages = data && data.list ? data.list : [];
         callback && callback(messages);
       } else {
         error(msg);

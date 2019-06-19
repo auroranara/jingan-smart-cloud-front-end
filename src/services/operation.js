@@ -56,3 +56,7 @@ export async function getAllScreenMessage(params) {
   return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`)
 }
 
+// 获取视频
+export async function getCameraMessage(params) {
+  return request(`/acloud_new/v2/fireManage/getCameraMessage?${stringify(params)}`)
+}
