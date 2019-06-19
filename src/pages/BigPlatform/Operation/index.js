@@ -779,25 +779,45 @@ export default class Operation extends PureComponent {
     ];
     const reportTypes = [1, 4, 3, 2];
     this.hiddeAllPopup();
-    dispatch({
-      type: 'operation/fetchCountNumAndTimeById',
-      payload: { id: param.dataId || param.id, reportType: reportTypes[type], fireType: flow + 1 },
-      callback: res => {
-        if (res) {
-          const { num, lastTime, firstTime } = res;
-          dispatch({
-            type: 'operation/saveWorkOrderDetail',
-            payload: [{ ...occurData[0], firstTime, num, lastTime }],
-          });
-        }
-        //  else {
-        //   dispatch({
-        //     type: 'operation/fetchWorkOrder',
-        //     payload: { companyId, reportType: reportTypes[type], ...param },
-        //   });
-        // }
-      },
-    });
+    if (type !== 3) {
+      dispatch({
+        type: 'operation/fetchCountNumAndTimeById',
+        payload: {
+          id: param.dataId || param.id,
+          reportType: reportTypes[type],
+          fireType: flow + 1,
+        },
+        callback: res => {
+          if (res) {
+            const { num, lastTime, firstTime } = res;
+            dispatch({
+              type: 'operation/saveWorkOrderDetail',
+              payload: [{ ...occurData[0], firstTime, num, lastTime }],
+            });
+          } else {
+            dispatch({
+              type: 'operation/fetchWorkOrder',
+              payload: { companyId: cId, reportType: reportTypes[type], ...param },
+            });
+          }
+        },
+      });
+    } else {
+      // 一键报修没有重复上报
+      dispatch({
+        type: 'newUnitFireControl/fetchWorkOrder',
+        payload: { companyId: cId, reportType: reportTypes[type], ...param },
+        callback: res => {
+          if (!(res.data && Array.isArray(res.data.list))) return;
+          if (res.data.list.length === 0) {
+            dispatch({
+              type: 'newUnitFireControl/saveWorkOrderDetail',
+              payload: occurData,
+            });
+          }
+        },
+      });
+    }
     // 企业负责人和运维员信息
     dispatch({
       type: 'operation/fetchMaintenanceCompany',
