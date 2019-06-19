@@ -1736,7 +1736,7 @@ export default class NewUnitFireControl extends PureComponent {
   };
 
   // 处理工单处理动态
-  showWorkOrderDetail = (param, type, flow, repeat, occurData) => {
+  showWorkOrderDetail = (param, type, flow, occurData) => {
     // type 0/1/2/3 主机/烟感/燃气/一键报修
     // flow 0/1 报警/故障
     const {
@@ -1763,7 +1763,7 @@ export default class NewUnitFireControl extends PureComponent {
         payload: { companyId, reportType: reportTypes[type], ...param },
       });
     }
-    this.setState({ [drawerVisibles[type]]: true, msgFlow: flow, flowRepeat: repeat });
+    this.setState({ [drawerVisibles[type]]: true, msgFlow: flow });
   };
 
   handleClickMsgFlow = (
@@ -1865,6 +1865,22 @@ export default class NewUnitFireControl extends PureComponent {
     } = this.props;
     const deviceStatus = deviceList.find(item => item.deviceId === deviceId).status;
     this.handleClickElectricity(+deviceStatus > 0 ? 0 : +deviceStatus === -1 ? 1 : 2, deviceId);
+  };
+
+  handleShowResetSection = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'unitFireControl/fetchHosts',
+      payload: {
+        companyId,
+      },
+    });
+    this.setState({ resetHostsDrawerVisible: true });
   };
 
   render() {
@@ -1988,7 +2004,7 @@ export default class NewUnitFireControl extends PureComponent {
 
     return (
       <BigPlatformLayout
-        title={'企业运营驾驶舱'}
+        title={'企业消防运营驾驶舱'}
         style={{
           // backgroundImage: 'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg2.png)',
           backgroundImage: 'none',
@@ -2089,6 +2105,7 @@ export default class NewUnitFireControl extends PureComponent {
                     handleParentChange={this.handleParentChange}
                     hosts={hosts}
                     handleShowFireMonitor={this.handleShowFireMonitor}
+                    handleShowResetSection={this.handleShowResetSection}
                   />
                   {/* 消防主机监测 */}
                   <StatisticsOfFireControl
@@ -2394,14 +2411,14 @@ export default class NewUnitFireControl extends PureComponent {
           visible={resetHostsDrawerVisible}
           hosts={hosts}
           onClose={() => {
-            const { dispatch } = this.props;
+            // const { dispatch } = this.props;
             this.handleDrawerVisibleChange('resetHosts');
-            dispatch({
-              type: 'unitFireControl/fetchHosts',
-              payload: {
-                companyId,
-              },
-            });
+            // dispatch({
+            //   type: 'unitFireControl/fetchHosts',
+            //   payload: {
+            //     companyId,
+            //   },
+            // });
           }}
           handleResetSingleHost={this.handleResetSingleHost}
           handleResetAllHosts={this.handleResetAllHosts}

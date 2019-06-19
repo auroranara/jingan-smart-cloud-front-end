@@ -12,13 +12,21 @@ import MapTypeBar from '@/pages/BigPlatform/Smoke/BackMap/MapTypeBar';
 
 export {
   ChartBar,
-  chartLine,
+  ChartLine,
+  ChartRing,
+  DrawerCard,
+  DrawerContainer,
+  DrawerSection,
+  EmptyChart,
+  GraphSwitch,
+  OvSelect,
+  SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 
 export {
   ChartGauge,
   DotItem,
-  ChartLine,
+  // ChartLine,
   BussinessChartLine,
   BussinessChartBar,
   GridSelect,

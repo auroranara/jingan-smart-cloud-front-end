@@ -6,6 +6,7 @@ import DrawerCard from './DrawerCard';
 import DrawerContainer from './DrawerContainer';
 import DrawerSection from './DrawerSection';
 import DrawerStretchCard from './DrawerStretchCard';
+import EmptyChart from './EmptyChart';
 import GraphSwitch from './GraphSwitch';
 import OvProgress from './OvProgress';
 import OvSelect from './OvSelect';
@@ -20,6 +21,7 @@ export {
   DrawerContainer,
   DrawerSection,
   DrawerStretchCard,
+  EmptyChart,
   GraphSwitch,
   OvProgress,
   OvSelect,
