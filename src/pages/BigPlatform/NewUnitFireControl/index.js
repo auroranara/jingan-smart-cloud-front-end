@@ -772,6 +772,7 @@ export default class NewUnitFireControl extends PureComponent {
       createByPhone,
       faultName,
       firstTime,
+      trueOver = null,
     } = item;
     const msgItem = switchMsgType(+type);
     // const repeat = {
@@ -799,7 +800,10 @@ export default class NewUnitFireControl extends PureComponent {
     const msgFlag =
       messageFlag && (messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
     const restParams = [cameraMessage, occurData];
-    const param = { dataId: msgFlag };
+    const param = {
+      dataId: +trueOver === 0 ? msgFlag : undefined,
+      id: +trueOver !== 0 ? msgFlag : undefined,
+    };
     return (
       <div
         className={styles.notificationBody}

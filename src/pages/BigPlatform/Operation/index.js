@@ -430,6 +430,7 @@ export default class Operation extends PureComponent {
       firstTime,
       companyName,
       component,
+      trueOver = null,
     } = item;
     const msgItem = switchMsgType(+type);
     const repeat = {
@@ -458,7 +459,8 @@ export default class Operation extends PureComponent {
       messageFlag && (messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
     const restParams = [cameraMessage, occurData, companyId];
     const param = {
-      dataId: msgFlag,
+      dataId: +trueOver === 0 ? msgFlag : undefined,
+      id: +trueOver !== 0 ? msgFlag : undefined,
       companyName: companyName || undefined,
       component: component || undefined,
       unitTypeName: unitTypeName || undefined,
