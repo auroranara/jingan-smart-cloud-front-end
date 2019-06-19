@@ -26,6 +26,10 @@ const statusDict = {
 };
 const statusList = [
   {
+    key: '全部状态',
+    value: '全部状态',
+  },
+  {
     key: '火警',
     value: '火警',
   },
@@ -44,7 +48,7 @@ const EmptyData = ({ msg, ...props }) => <div className={styles.emptyData} {...p
 export default class TaskDrawer extends PureComponent {
   state = {
     activeType: '消防主机',
-    activeStatus: '火警',
+    activeStatus: '全部状态',
   }
 
   scroll = null;
@@ -56,11 +60,11 @@ export default class TaskDrawer extends PureComponent {
     if (!prevVisible && visible) {
       this.getTaskList({
         activeType: '消防主机',
-        activeStatus: '火警',
+        activeStatus: '全部状态',
       }, () => {
         this.setState({
           activeType: '消防主机',
-          activeStatus: '火警',
+          activeStatus: '全部状态',
         });
       });
     }
@@ -98,13 +102,15 @@ export default class TaskDrawer extends PureComponent {
   handleTabClick = (activeType) => {
     const { activeStatus: prevActiveStatus, activeType: prevActiveType } = this.state;
     let activeStatus = prevActiveStatus;
-    if (prevActiveType === '报修') {
-      if (activeType !== '报修') {
-        activeStatus = this.lastActiveStatus;
+    if (activeStatus !== '全部状态') {
+      if (prevActiveType === '报修') {
+        if (activeType !== '报修') {
+          activeStatus = this.lastActiveStatus;
+        }
+      } else if (activeType === '报修') {
+        this.lastActiveStatus = prevActiveStatus;
+        activeStatus = '故障';
       }
-    } else if (activeType === '报修') {
-      this.lastActiveStatus = prevActiveStatus;
-      activeStatus = '故障';
     }
     const payload = { activeType, activeStatus };
     this.getTaskList(payload, () => {
@@ -118,9 +124,9 @@ export default class TaskDrawer extends PureComponent {
     });
   }
 
-  handleCardClick = (id) => {
+  handleCardClick = (data) => {
     const { onJump } = this.props;
-    onJump && onJump(id);
+    onJump && onJump(data);
   }
 
   handleLoadMore = () => {
@@ -162,15 +168,15 @@ export default class TaskDrawer extends PureComponent {
     const tabs = [
       {
         key: '消防主机',
-        value: `消防主机 (${fire})`,
+        value: `消防主机${process !== '已处理' ? ` (${fire})` : ''}`,
       },
       {
         key: '独立烟感',
-        value: `独立烟感 (${gas})`,
+        value: `独立烟感${process !== '已处理' ? ` (${gas})` : ''}`,
       },
       {
         key: '报修',
-        value: `报修 (${repair})`,
+        value: `报修${process !== '已处理' ? ` (${repair})` : ''}`,
       },
     ];
 
@@ -213,10 +219,10 @@ export default class TaskDrawer extends PureComponent {
           {Array.isArray(list) && list.length > 0 ? list.map((item) => (
             <TaskCard
               className={styles.card}
-              key={item.id || item.proceId}
+              key={item.id || item.gasId || item.proceId}
               data={item}
               fieldNames={{
-                id: ({ id, proceId }) => activeType !== '报修' ? id : proceId,
+                id: ({ id, gasId, proceId }) => ({ 消防主机: id, 独立烟感: gasId, 报修: proceId })[activeType],
                 type: () => activeType, // 类型
                 companyName: ({ companyName, rcompanyName }) => activeType !== '报修' ? companyName : rcompanyName, // 企业名称
                 partType: 'componentName', // 设施部件类型
@@ -234,7 +240,7 @@ export default class TaskDrawer extends PureComponent {
               }}
               onClick={this.handleCardClick}
             />
-          )) : <EmptyData msg={`暂无${activeType !== '报修' ? '火警' : ''}${activeType}${process}任务`} />}
+          )) : <EmptyData msg={`暂无${activeType !== '报修' && activeStatus !== '全部状态' ? activeStatus : ''}${activeType}${process}任务`} />}
           {total > pageNum * pageSize && <LoadMore className={styles.loadMore} onClick={this.handleLoadMore} />}
         </div>
       </CustomDrawer>

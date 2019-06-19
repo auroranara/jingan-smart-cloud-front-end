@@ -78,9 +78,9 @@ export default {
   },
   effects: {
     *fetchTaskList({ payload, callback }, { call, put, all }) {
-      const { pageSize, pageNum } = payload;
+      const { pageSize, pageNum, status } = payload;
       let response, isSuccess, count;
-      if (pageNum === 1) {
+      if (pageNum === 1 && status !== 1) {
         const responseList = yield all([
           call(getTaskList, payload),
           call(getTaskList, { ...payload, pageNum: 1, pageSize: 1, reportType: 1 }),

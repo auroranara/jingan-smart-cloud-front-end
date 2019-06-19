@@ -712,8 +712,27 @@ export default class Operation extends PureComponent {
     this.setState({ taskDrawerVisible: false });
   };
 
-  handleTaskCardClick = id => {
-    console.log(id);
+  handleTaskCardClick = data => {
+    console.log(data);
+    const {
+      id,
+      companyName,
+      companyId,
+    } = data;
+    // const param = {
+    //   dataId: id,
+    //   companyName: companyName || undefined,
+    //   component: component || undefined,
+    //   unitTypeName: unitTypeName || undefined,
+    //   companyId: companyId || undefined,
+    // };
+    // type,
+    // flow,
+    // // repeat,
+    // cameraMessage = [],
+    // occurData,
+    // cId,
+    // this.handleClickMsgFlow();
   };
 
   handleDeviceTypeChange = (v, callback) => {

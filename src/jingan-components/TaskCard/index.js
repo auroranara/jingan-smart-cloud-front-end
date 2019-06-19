@@ -94,10 +94,9 @@ export default class TaskCard extends BigPlatformCard {
     },
   ];
 
-  handleClick = (e) => {
-    const { onClick } = this.props;
-    const id = e.currentTarget.getAttribute('data-id');
-    onClick && onClick(id);
+  handleClick = () => {
+    const { onClick, data } = this.props;
+    onClick && onClick(data);
   }
 
   render() {
@@ -106,14 +105,14 @@ export default class TaskCard extends BigPlatformCard {
       style, // 容器样式
     } = this.props;
     const fieldsValue = this.getFieldsValue();
-    const { id, companyName, status, type } = fieldsValue;
+    const { companyName, status, type } = fieldsValue;
     const color = statusColor[status];
 
     return (
       <Container className={className} style={{ paddingTop: '0.5em', paddingBottom: '0.5em', ...style }}>
         <div className={styles.title}>{companyName}</div>
         {type !== '报修' && color && <div className={styles.status} style={{ color, borderColor: color }}>{status}</div>}
-        {/* <div className={styles.action} data-id={id} onClick={this.handleClick}>处理动态>></div> */}
+        {/* {type !== '报修' && <div className={styles.action} onClick={this.handleClick}>处理动态>></div>} */}
         {this.renderFields(fieldsValue)}
       </Container>
     );
