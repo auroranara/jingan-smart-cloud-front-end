@@ -19,7 +19,7 @@ import {
   queryWorkOrder,
   countNumAndTimeById,
   queryCheckUsers,
-}from '@/services/bigPlatform/fireControl'
+} from '@/services/bigPlatform/fireControl';
 import { message } from 'antd';
 function error(msg) {
   message.error(msg);
@@ -37,7 +37,7 @@ export default {
         报修: 0,
       },
     },
-    // 运维任务统计
+    // 维保任务统计
     taskCount: {
       pending: 0, // 待处理
       processing: 0, // 处理中
@@ -70,11 +70,11 @@ export default {
     // 消息列表
     messages: [],
     countNumAndTimeById: {},
-    // 已完成运维工单
+    // 已完成维保工单
     workOrderList1: [],
-    // 待处理运维工单
+    // 待处理维保工单
     workOrderList2: [],
-    // 已超期运维工单
+    // 已超期维保工单
     workOrderList7: [],
   },
   effects: {
@@ -89,11 +89,23 @@ export default {
           call(getTaskList, { ...payload, pageNum: 1, pageSize: 1, reportType: 2 }),
         ]);
         response = responseList[0];
-        isSuccess = responseList.every((res) => res && res.code === 200);
+        isSuccess = responseList.every(res => res && res.code === 200);
         count = {
-          消防主机: responseList[1] && responseList[1].data && responseList[1].data.pagination && responseList[1].data.pagination.listSize,
-          独立烟感: responseList[2] && responseList[2].data && responseList[2].data.pagination && responseList[2].data.pagination.listSize,
-          报修: responseList[3] && responseList[3].data && responseList[3].data.pagination && responseList[3].data.pagination.listSize,
+          消防主机:
+            responseList[1] &&
+            responseList[1].data &&
+            responseList[1].data.pagination &&
+            responseList[1].data.pagination.listSize,
+          独立烟感:
+            responseList[2] &&
+            responseList[2].data &&
+            responseList[2].data.pagination &&
+            responseList[2].data.pagination.listSize,
+          报修:
+            responseList[3] &&
+            responseList[3].data &&
+            responseList[3].data.pagination &&
+            responseList[3].data.pagination.listSize,
         };
       } else {
         response = yield call(getTaskList, payload);
@@ -117,9 +129,10 @@ export default {
     },
     *fetchTaskCount({ payload }, { call, put }) {
       const response = yield call(getTaskCount, payload);
-      const { code=500, msg='获取运维任务统计失败，请稍后重试！', data } = response || {};
+      const { code = 500, msg = '获取维保任务统计失败，请稍后重试！', data } = response || {};
       if (code === 200) {
-        const { pendingFire: pending=0, processFire: processing=0, finishFire: processed=0 } = data || {};
+        const { pendingFire: pending = 0, processFire: processing = 0, finishFire: processed = 0 } =
+          data || {};
         yield put({
           type: 'save',
           payload: {
@@ -136,7 +149,7 @@ export default {
     },
     *fetchFireCount({ payload }, { call, put }) {
       const response = yield call(getFireCount, payload);
-      const { code=500, msg='获取火警数量统计失败，请稍后重试！', data } = response || {};
+      const { code = 500, msg = '获取火警数量统计失败，请稍后重试！', data } = response || {};
       if (code === 200) {
         const { day = 0, month = 0, week = 0 } = data || {};
         yield put({
@@ -159,21 +172,23 @@ export default {
       const { code, data } = response || {};
       if (code === 200) {
         const lst = data && Array.isArray(data.list) ? data.list : [];
-        yield put({ type: 'saveUnitList', payload: { unitId, list: lst} });
+        yield put({ type: 'saveUnitList', payload: { unitId, list: lst } });
         callback && callback(lst);
       }
     },
     *fetchFirePie({ payload }, { call, put }) {
       const response = yield call(getFirePie, payload);
       const { code, data } = response || {};
-      if (code === 200)
-        yield put({ type: 'saveFirePie', payload: data || {} });
+      if (code === 200) yield put({ type: 'saveFirePie', payload: data || {} });
     },
     *fetchFireTrend({ payload }, { call, put }) {
       const response = yield call(getFireTrend);
       const { code, data } = response || {};
       if (code === 200)
-        yield put({ type: 'saveFireTrend', payload: data && Array.isArray(data.list) ? data.list : [] });
+        yield put({
+          type: 'saveFireTrend',
+          payload: data && Array.isArray(data.list) ? data.list : [],
+        });
     },
     *fetchFireList({ payload, callback }, { call, put }) {
       const response = yield call(getFireList, payload);
@@ -219,7 +234,7 @@ export default {
       }
     },
     // 火警动态列表或火警消息
-     *fetchAlarmHandle({ payload, callback }, { call, put }) {
+    *fetchAlarmHandle({ payload, callback }, { call, put }) {
       const response = yield call(queryAlarmHandleList, payload);
       if (response && response.code === 200) {
         yield put({
@@ -281,7 +296,7 @@ export default {
       }
       if (callback) callback(response.data);
     },
-    // 运维工单列表或运维处理动态
+    // 维保工单列表或维保处理动态
     *fetchWorkOrder({ payload, callback }, { call, put }) {
       const response = yield call(queryWorkOrder, payload);
       if (response && response.code === 200) {
@@ -295,7 +310,7 @@ export default {
       }
       if (callback) callback(response);
     },
-    // 企业负责人和运维员信息
+    // 企业负责人和维保员信息
     *fetchMaintenanceCompany({ payload, success, error }, { call, put }) {
       const response = yield call(queryCheckUsers, payload);
       if (response.code === 200) {
@@ -310,7 +325,7 @@ export default {
     },
     *fetchMessages({ payload, callback }, { call, put }) {
       const response = yield call(getMessages, payload);
-      const { code=500, data, msg="获取实时消息失败，请稍后重试!" } = response || {};
+      const { code = 500, data, msg = '获取实时消息失败，请稍后重试!' } = response || {};
       if (code === 200) {
         const messages = data && data.list ? data.list : [];
         yield put({
@@ -326,7 +341,7 @@ export default {
     },
     *fetchCameraMessage({ payload, callback }, { call }) {
       const response = yield call(getCameraMessage, payload);
-      const { code=500, data, msg="获取数据失败，请稍后重试！" } = response || {};
+      const { code = 500, data, msg = '获取数据失败，请稍后重试！' } = response || {};
       if (code === 200) {
         const messages = data && data.list ? data.list : [];
         callback && callback(messages);
@@ -343,7 +358,12 @@ export default {
         ...payload,
       };
     },
-    saveTaskList(state, { payload: { list, pagination, count } }) {
+    saveTaskList(
+      state,
+      {
+        payload: { list, pagination, count },
+      }
+    ) {
       return {
         ...state,
         taskList: {
@@ -355,14 +375,13 @@ export default {
     },
     saveUnitList(state, action) {
       const { unitList } = state;
-      const { unitId, list } = action.payload
+      const { unitId, list } = action.payload;
       let newUnitList;
       if (unitId && list.length) {
         newUnitList = Array.from(unitList);
         const index = unitList.findIndex(({ companyId }) => companyId === unitId);
         newUnitList[index] = list[0];
-      } else
-        newUnitList = list;
+      } else newUnitList = list;
       return { ...state, unitList: newUnitList };
     },
     saveFirePie(state, action) {
@@ -433,4 +452,4 @@ export default {
       };
     },
   },
-}
+};

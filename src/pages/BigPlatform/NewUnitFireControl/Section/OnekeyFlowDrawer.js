@@ -39,17 +39,17 @@ export default class OnekeyFlowDrawer extends PureComponent {
       PrincipalName,
       visible,
       phoneVisible,
-      head=null,
+      head = null,
       ...restProps
     } = this.props;
     const { index } = this.state;
     const list = (Array.isArray(data) ? data : []).slice(0, 1);
     const length = list.length;
 
-    // 判断是否是运维处理，运维处理动态时，显示流程图，故障处理动态时不显示流程图
-    // const isMaintenance = title.includes('运维');
+    // 判断是否是维保处理，维保处理动态时，显示流程图，故障处理动态时不显示流程图
+    // const isMaintenance = title.includes('维保');
 
-    // 运维只有一个，故障可能是一个或多个
+    // 维保只有一个，故障可能是一个或多个
     let left = null;
     if (length) {
       const cards = list.map((item, i) => {
@@ -129,9 +129,9 @@ export default class OnekeyFlowDrawer extends PureComponent {
       left =
         length === 1 ? (
           <Fragment>
-          {head}
-          {cards}
-        </Fragment>
+            {head}
+            {cards}
+          </Fragment>
         ) : (
           <Fragment>
             {head}

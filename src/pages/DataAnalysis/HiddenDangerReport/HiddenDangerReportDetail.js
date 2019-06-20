@@ -26,7 +26,7 @@ const {
 
 const crListTitle = '企业自查报表';
 const crDetailtitle = '企业自查报表详情';
-const mtTitle = '运维检查报表详情';
+const mtTitle = '维保检查报表详情';
 const govListTitle = '政府监督报表';
 const govDetailTitle = '政府监督报表详情';
 

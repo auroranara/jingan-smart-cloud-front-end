@@ -17,7 +17,7 @@ import {
   getFireControlCount,
   // 获取隐患巡查统计
   getHiddenDangerCount,
-  // 获取运维情况统计
+  // 获取维保情况统计
   getMaintenanceCount,
   // 获取复位主机
   getHosts,
@@ -181,7 +181,7 @@ export default {
     },
     // 隐患巡查统计
     hiddenDangerCount: {},
-    // 运维情况统计
+    // 维保情况统计
     maintenanceCount: {
       needRepairNum: 0,
       selfNoNum: 0,
@@ -381,7 +381,7 @@ export default {
         success(response);
       }
     },
-    // 获取运维情况统计
+    // 获取维保情况统计
     *fetchMaintenanceCount({ payload, success, error }, { call, put }) {
       const response = yield call(getMaintenanceCount, payload);
       if (response.code === 200) {
@@ -727,7 +727,7 @@ export default {
         hiddenDangerCount,
       };
     },
-    // 运维情况统计
+    // 维保情况统计
     saveMaintenanceCount(state, { payload: maintenanceCount }) {
       return {
         ...state,

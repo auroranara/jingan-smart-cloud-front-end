@@ -42,7 +42,7 @@ const fieldLabels = {
 };
 
 /**
- * 运维单位新增及编辑
+ * 维保单位新增及编辑
  */
 @connect(({ maintenanceCompany, user, loading }) => ({
   maintenanceCompany,
@@ -70,7 +70,7 @@ export default class App extends PureComponent {
       uploading: false,
       // 是否为分公司
       isBranch: false,
-      // 是否为运维人员
+      // 是否为维保人员
       isMaintenanceUser: unitType === 1 && unitId !== id,
       // 默认总公司对象
       defaultParentCompany: {
@@ -123,7 +123,7 @@ export default class App extends PureComponent {
             isBranch: !!+isBranch,
           });
 
-          // 获取运维单位列表
+          // 获取维保单位列表
           if (+isBranch) {
             dispatch({
               type: 'maintenanceCompany/fetchExtraMaintenanceCompanies',
@@ -552,7 +552,7 @@ export default class App extends PureComponent {
       defaultParentCompany,
       map: { visible, center, point },
     } = this.state;
-    const title = id ? '编辑运维单位' : '新增运维单位';
+    const title = id ? '编辑维保单位' : '新增维保单位';
     const spinning = loading || submitting || uploading;
 
     // 面包屑
@@ -563,12 +563,12 @@ export default class App extends PureComponent {
         href: '/',
       },
       {
-        title: '消防运维',
-        name: '消防运维',
+        title: '消防维保',
+        name: '消防维保',
       },
       {
-        title: '运维单位',
-        name: '运维单位',
+        title: '维保单位',
+        name: '维保单位',
         href: '/fire-control/maintenance-company/list',
       },
       {

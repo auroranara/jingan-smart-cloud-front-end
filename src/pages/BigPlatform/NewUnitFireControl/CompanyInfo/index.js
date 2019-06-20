@@ -100,10 +100,10 @@ export default class CompanyInfo extends PureComponent {
             />
             <div className={styles.infoWrapper} style={{ marginTop: '15px', marginBottom: '5px' }}>
               <DescriptionList col={1}>
-                <Description term="运维单位">
+                <Description term="维保单位">
                   {companyNames.map(data => data.name).join(',')}
                 </Description>
-                <Description term="运维人员">
+                <Description term="维保人员">
                   {newUsers.map((data, index) => {
                     return (
                       <div className={styles.manWrapper} key={index}>

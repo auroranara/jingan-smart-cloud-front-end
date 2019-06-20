@@ -15,7 +15,7 @@ import styles from './Contract.less';
 const { Description } = DescriptionList;
 
 // 标题
-const title = '查看运维合同';
+const title = '查看维保合同';
 // 获取链接地址
 const {
   contract: { list: backUrl, edit: editUrl },
@@ -32,12 +32,12 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '消防运维',
-    name: '消防运维',
+    title: '消防维保',
+    name: '消防维保',
   },
   {
-    title: '运维合同管理',
-    name: '运维合同管理',
+    title: '维保合同管理',
+    name: '维保合同管理',
     href: backUrl,
   },
   {
@@ -140,7 +140,7 @@ export default class ContractDetail extends PureComponent {
       <Card title="合同详情" className={styles.card} bordered={false}>
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
           <Description term="合同编号">{contractCode || getEmptyData()}</Description>
-          <Description term="运维单位">{maintenanceName || getEmptyData()}</Description>
+          <Description term="维保单位">{maintenanceName || getEmptyData()}</Description>
           <Description term="服务单位">{companyName || getEmptyData()}</Description>
           <Description term="签订日期">
             {signingDate ? moment(+signingDate).format('YYYY-MM-DD') : getEmptyData()}

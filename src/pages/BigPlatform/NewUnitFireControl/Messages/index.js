@@ -243,15 +243,15 @@ export default class Messages extends PureComponent {
         ],
       },
       '18': {
-        // 运维巡检
+        // 维保巡检
         onClick: () => {
           handleParentChange({ maintenanceCheckDrawerVisible: true });
           fetchData(messageFlag);
         },
         items: [
-          { name: '运维单位', value: maintenanceCompany },
+          { name: '维保单位', value: maintenanceCompany },
           {
-            name: '运维人',
+            name: '维保人',
             value: Array.isArray(maintenanceUser) ? maintenanceUser.join('，') : maintenanceUser,
           },
           { name: '消防设施评分', value: score },
@@ -666,7 +666,7 @@ export default class Messages extends PureComponent {
     //     </div>
     //   );
     // } else if (type === 10 || type === 11) {
-    //   // 故障指派维修, 运维开始维修
+    //   // 故障指派维修, 维保开始维修
     //   msgItem = (
     //     <div className={styles.msgItem} key={index}>
     //       <a
@@ -846,7 +846,7 @@ export default class Messages extends PureComponent {
     //     </div>
     //   );
     // } else if (type === 18) {
-    //   // 运维巡检
+    //   // 维保巡检
     //   msgItem = (
     //     <div className={styles.msgItem} key={index}>
     //       <a
@@ -862,11 +862,11 @@ export default class Messages extends PureComponent {
     //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
     //       <div className={styles.msgType}>{title}</div>
     //       <div className={styles.msgBody}>
-    //         运维单位：
+    //         维保单位：
     //         {maintenanceCompany}
     //       </div>
     //       <div className={styles.msgBody}>
-    //         运维人：
+    //         维保人：
     //         {Array.isArray(maintenanceUser)
     //           ? maintenanceUser
     //               .map(item => {
@@ -940,12 +940,12 @@ export default class Messages extends PureComponent {
 
   render() {
     const {
-      model: { screenMessage=[] },
+      model: { screenMessage = [] },
       className,
     } = this.props;
     const { isExpanded } = this.state;
     // 过滤掉有其他type的
-    const list = screenMessage.filter(item => TYPES.indexOf(+item.type) >= 0)
+    const list = screenMessage.filter(item => TYPES.indexOf(+item.type) >= 0);
     // 收缩显示3个，展开最大显示100个
     const newList = isExpanded ? list.slice(0, 100) : list.slice(0, 3);
 

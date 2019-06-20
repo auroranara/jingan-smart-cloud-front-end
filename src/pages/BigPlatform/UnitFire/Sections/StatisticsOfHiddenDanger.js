@@ -305,7 +305,7 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
             },
           },
           data: [
-            { value: wbjc, name: '运维检查', itemStyle: { color: '#00ABC9' }, source_type: 2 },
+            { value: wbjc, name: '维保检查', itemStyle: { color: '#00ABC9' }, source_type: 2 },
             { value: qyzc, name: '企业自查', itemStyle: { color: '#E86767' }, source_type: 3 },
             { value: zfjd, name: '政府监督', itemStyle: { color: '#2787D5' }, source_type: 4 },
           ],
@@ -372,7 +372,7 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
                   </div>
                   <div className={styles.text}>
                     <div>
-                      <span>运维检查</span>
+                      <span>维保检查</span>
                     </div>
                     <div>
                       <span>{wbjc}</span>

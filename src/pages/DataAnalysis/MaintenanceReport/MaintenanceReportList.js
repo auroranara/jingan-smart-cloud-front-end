@@ -24,7 +24,7 @@ import Ellipsis from '@/components/Ellipsis';
 import styles from './MaintenanceReport.less';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-const title = '运维检查报表';
+const title = '维保检查报表';
 
 /* 面包屑 */
 const breadcrumbList = [
@@ -39,7 +39,7 @@ const breadcrumbList = [
   },
   {
     title,
-    name: '运维检查报表',
+    name: '维保检查报表',
   },
 ];
 
@@ -200,7 +200,7 @@ export default class App extends PureComponent {
     };
     // 是否是企业
     this.isCompany = isCompany;
-    // 是否是运维
+    // 是否是维保
     this.isWbCompany = isWbCompany;
     // 默认表格字段
     this.defaultColumns = defaultColumns;

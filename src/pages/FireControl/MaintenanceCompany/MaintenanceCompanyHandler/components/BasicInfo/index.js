@@ -125,13 +125,13 @@ export default class App extends PureComponent {
           },
         });
       } else {
-        // 否则清空运维单位输入框
+        // 否则清空维保单位输入框
         setFieldsValue({
           parentId: undefined,
         });
         // 提示验证信息
         validateFields(['parentId']);
-        // 获取运维单位列表
+        // 获取维保单位列表
         handleSearchParentIdList();
       }
     }
@@ -204,7 +204,7 @@ export default class App extends PureComponent {
       loading,
       // 查询总公司列表
       handleSearchParentIdList,
-      // 是否为运维人员
+      // 是否为维保人员
       isMaintenanceUser = false,
       // 默认总公司对象
       defaultParentCompany,
