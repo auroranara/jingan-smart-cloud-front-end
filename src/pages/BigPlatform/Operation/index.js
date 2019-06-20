@@ -23,6 +23,7 @@ import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import FireFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/FireFlowDrawer';
 import SmokeFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/SmokeFlowDrawer';
+import OnekeyFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/OnekeyFlowDrawer';
 
 // websocket配置
 const options = {
@@ -118,6 +119,7 @@ const popupVisible = {
   resetHostsDrawerVisible: false,
   checksDrawerVisible: false,
   newWorkOrderDrawerVisible: false,
+  onekeyFlowDrawerVisible: false,
 };
 
 @connect(({ loading, operation, user, unitSafety }) => ({
@@ -160,6 +162,7 @@ export default class Operation extends PureComponent {
       smokeFlowDrawerVisible: false,
       fireVideoVisible: false,
       videoVisible: false,
+      onekeyFlowDrawerVisible: false,
       videoList: [],
       videoKeyId: undefined,
       dynamicType: null,
@@ -765,7 +768,7 @@ export default class Operation extends PureComponent {
           companyName: companyName || undefined,
           component:
             `${
-              componentRegion || typeof componentRegion === 'number' ? `${componentRegion}回路` : ''
+            componentRegion || typeof componentRegion === 'number' ? `${componentRegion}回路` : ''
             }${componentNo || typeof componentNo === 'number' ? `${componentNo}号` : ''}` ||
             undefined,
           unitTypeName: componentName || undefined,
@@ -822,7 +825,6 @@ export default class Operation extends PureComponent {
   ) => {
     // type 0/1/2/3 主机/烟感/燃气/一键报修
     // flow 0/1 报警/故障
-
     const {
       dispatch,
       operation: { unitList },
@@ -861,13 +863,13 @@ export default class Operation extends PureComponent {
     } else {
       // 一键报修没有重复上报
       dispatch({
-        type: 'newUnitFireControl/fetchWorkOrder',
+        type: 'operation/fetchWorkOrder',
         payload: { companyId: cId, reportType: reportTypes[type], ...param },
         callback: res => {
           if (!(res.data && Array.isArray(res.data.list))) return;
           if (res.data.list.length === 0) {
             dispatch({
-              type: 'newUnitFireControl/saveWorkOrderDetail',
+              type: 'operation/saveWorkOrderDetail',
               payload: occurData,
             });
           }
@@ -878,7 +880,7 @@ export default class Operation extends PureComponent {
     dispatch({
       type: 'operation/fetchMaintenanceCompany',
       payload: {
-        companyId: param.companyId,
+        companyId: cId,
       },
     });
     // dispatch({
@@ -968,6 +970,7 @@ export default class Operation extends PureComponent {
       videoList,
       videoKeyId,
       unitList,
+      onekeyFlowDrawerVisible,
     } = this.state;
     const headProps = {
       ...workOrderDetail[0],
@@ -984,8 +987,8 @@ export default class Operation extends PureComponent {
         headerStyle={HEADER_STYLE}
         titleStyle={{ fontSize: 46 }}
         contentStyle={CONTENT_STYLE}
-        // settable
-        // onSet={this.handleClickSetButton}
+      // settable
+      // onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
         <BackMap
@@ -1090,6 +1093,18 @@ export default class Operation extends PureComponent {
           PrincipalName={PrincipalName}
           PrincipalPhone={PrincipalPhone}
           msgFlow={msgFlow}
+          phoneVisible={phoneVisible}
+          headProps={headProps}
+          head={true}
+        />
+        {/* 一键报修处理动态 */}
+        <OnekeyFlowDrawer
+          data={workOrderDetail}
+          visible={onekeyFlowDrawerVisible}
+          handleParentChange={this.handleMapParentChange}
+          onClose={() => this.handleDrawerVisibleChange('onekeyFlow')}
+          PrincipalName={PrincipalName}
+          PrincipalPhone={PrincipalPhone}
           phoneVisible={phoneVisible}
           headProps={headProps}
           head={true}

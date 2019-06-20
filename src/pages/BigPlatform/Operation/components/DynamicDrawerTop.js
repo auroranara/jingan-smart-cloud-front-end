@@ -56,6 +56,9 @@ export default class DynamicDrawerTop extends Component {
       style = {},
       sdeviceName = null,
       videoList = [],
+      // createCompanyName = null,
+      work_order = null,
+      systemTypeValue = null,
     } = this.props
     const scTime = moment(firstTime).format('YYYY-MM-DD HH:mm');
     const zjTime = moment(lastTime).format('YYYY-MM-DD HH:mm');
@@ -77,6 +80,13 @@ export default class DynamicDrawerTop extends Component {
               {sdeviceName && (<div className={styles.line}>名称：{sdeviceName}</div>)}
               <div className={styles.line}>所在区域：{area || getEmptyData()}</div>
               <div className={styles.line}>位置：{location || getEmptyData()}</div>
+            </Fragment>
+          )}
+          {/* 一键报修 */}
+          {dynamicType === 3 && (
+            <Fragment>
+              <div className={styles.line}>报修系统：{systemTypeValue || getEmptyData()}</div>
+              <div className={styles.line}>工单编号：{work_order || getEmptyData()}</div>
             </Fragment>
           )}
           {/* 重复上报 */}

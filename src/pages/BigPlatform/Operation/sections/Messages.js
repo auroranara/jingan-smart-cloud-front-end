@@ -311,9 +311,9 @@ export default class Messages extends PureComponent {
       },
       '11': {
         // 一键报修
-        // onClick: () => {
-        //   handleClickMsgFlow({ id: msgFlag }, 3, 1, ...restParams);
-        // },
+        onClick: () => {
+          handleClickMsgFlow({ id: msgFlag, companyName }, 3, 1, ...restParams);
+        },
         items: [
           { value: systemTypeValue },
           { name: '单位', value: companyName },
@@ -345,8 +345,8 @@ export default class Messages extends PureComponent {
           onClick:
             enterSign === '1'
               ? () => {
-                  handleClickMsgFlow(param, 0, +item === 7 ? 0 : 1, ...restParams);
-                }
+                handleClickMsgFlow(param, 0, +item === 7 ? 0 : 1, ...restParams);
+              }
               : undefined,
           items: [
             { name: '单位', value: companyName },
@@ -1008,8 +1008,8 @@ export default class Messages extends PureComponent {
             return this.renderMsg(item, index);
           })
         ) : (
-          <div className={styles.emptyData}>暂无消息</div>
-        )}
+            <div className={styles.emptyData}>暂无消息</div>
+          )}
       </NewSection>
     );
   }
