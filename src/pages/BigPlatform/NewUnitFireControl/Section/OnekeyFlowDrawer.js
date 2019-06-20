@@ -160,6 +160,7 @@ export default class OnekeyFlowDrawer extends PureComponent {
         width={535}
         left={left}
         visible={visible}
+        leftParStyle={{ display: 'flex', flexDirection: 'column' }}
         {...restProps}
       />
     );
