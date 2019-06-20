@@ -736,6 +736,7 @@ export default class Operation extends PureComponent {
       gasId,
       proceId,
       companyName,
+      rcompanyName,
       companyId,
       componentRegion,
       componentNo,
@@ -768,7 +769,7 @@ export default class Operation extends PureComponent {
         const param = {
           dataId,
           id: dataId,
-          companyName: companyName || undefined,
+          companyName: (+reportType !== 2 ? companyName : rcompanyName) || undefined,
           component:
             `${
             componentRegion || typeof componentRegion === 'number' ? `${componentRegion}回路` : ''
