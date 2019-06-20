@@ -55,6 +55,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       faultDetail,
       warnDetailLoading,
       faultDetailLoading,
+      onClose,
       ...restProps
     } = this.props;
     const { index } = this.state;
@@ -183,9 +184,10 @@ export default class FireMonitorFlowDrawer extends PureComponent {
         width={535}
         left={left}
         visible={visible}
+        destroyOnClose
         leftParStyle={{ display: 'flex', flexDirection: 'column' }}
         onClose={() => {
-          this.props.onClose();
+          onClose();
           setTimeout(() => {
             this.setState({ index: 0 });
           }, 200);
