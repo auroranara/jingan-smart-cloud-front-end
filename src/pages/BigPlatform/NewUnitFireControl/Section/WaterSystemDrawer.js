@@ -129,15 +129,22 @@ export default class WaterSystemDrawer extends PureComponent {
             key={deviceId}
             style={{
               border: isGray
-                ? '1px solid #f83329'
-                : +status !== 0
-                  ? '1px solid #f83329'
-                  : '1px solid #04fdff',
+                ? !isMending && +status < 0
+                  ? '1px solid #9f9f9f'
+                  : '1px solid #f83329'
+                : '1px solid #04fdff',
             }}
           >
             {isMending && <div className={styles.status}>检修</div>}
             {isNotIn && <div className={styles.status}>未接入</div>}
-            {!isMending && !isNotIn && +status !== 0 && <div className={styles.status}>报警</div>}
+            {!isMending && !isNotIn && +status > 0 && <div className={styles.status}>报警</div>}
+            {!isMending &&
+              !isNotIn &&
+              +status === -1 && (
+                <div className={styles.status} style={{ backgroundColor: '#9f9f9f' }}>
+                  失联
+                </div>
+              )}
             <div className={styles.picArea}>
               <ChartGauge
                 showName
@@ -388,21 +395,29 @@ export default class WaterSystemDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, waterTabItem, videoKeyId, waterList, filterIndex, onClick } = this.props;
+    const {
+      visible,
+      waterTabItem,
+      videoKeyId,
+      waterDrawer,
+      filterIndex,
+      onClick,
+      handleParentChange,
+    } = this.props;
 
     const { videoVisible, videoList } = this.state;
 
-    const alarmList = waterList.filter(item => {
+    const alarmList = waterDrawer.filter(item => {
       const { deviceDataList } = item;
       const [{ status } = { deviceParamsInfo: {} }] = deviceDataList;
       return +status > 0;
     });
-    const normalList = waterList.filter(item => {
+    const normalList = waterDrawer.filter(item => {
       const { deviceDataList } = item;
       const [{ status } = { deviceParamsInfo: {} }] = deviceDataList;
       return +status === 0;
     });
-    const lostList = waterList.filter(item => {
+    const lostList = waterDrawer.filter(item => {
       const { deviceDataList } = item;
       const [{ status } = { deviceParamsInfo: {} }] = deviceDataList;
       return +status < 0;
@@ -415,7 +430,8 @@ export default class WaterSystemDrawer extends PureComponent {
       return {
         ...item,
         onClick: () => {
-          onClick(index);
+          // onClick(index);
+          handleParentChange({ filterIndex: index });
         },
       };
     });

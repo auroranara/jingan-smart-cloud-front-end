@@ -23,7 +23,12 @@ export default class PositionIndex extends PureComponent {
   };
 
   componentDidMount() {
-    const { dispatch, match: { params: { companyId } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     dispatch({ type: 'position/fetchTree', payload: { companyId } });
     dispatch({ type: 'position/fetchPeople', payload: { companyId } });
     dispatch({ type: 'position/fetchCards', payload: { companyId, pageNum: 1, pageSize: 0 } });
@@ -44,10 +49,8 @@ export default class PositionIndex extends PureComponent {
   setHistoryRecord = (cardId, userId) => {
     // this.setState({ historyRecord });
     let state;
-    if (userId)
-      state = { historyIdType: '0', historyUserIds: [userId] };
-    else
-      state = { historyIdType: '1', historyCardIds: [cardId] };
+    if (userId) state = { historyIdType: '0', historyUserIds: [userId] };
+    else state = { historyIdType: '1', historyCardIds: [cardId] };
     this.setState(state);
   };
 
@@ -75,7 +78,9 @@ export default class PositionIndex extends PureComponent {
     // 注意这里额外引了一个model
     const {
       dispatch,
-      match: { params: { companyId } },
+      match: {
+        params: { companyId },
+      },
       position,
       personPosition,
       user,
@@ -92,11 +97,13 @@ export default class PositionIndex extends PureComponent {
     } = this.state;
 
     const { sectionTree } = personPosition;
-    const { currentUser: { companyName } } = user;
+    const {
+      currentUser: { companyName },
+    } = user;
 
     return (
       <BigPlatformLayout
-        title="晶安人员定位监控系统"
+        title="人员定位监控系统"
         autoSpace={AUTOSPACE}
         extra={companyName}
         headerStyle={{ fontSize: 16 }}

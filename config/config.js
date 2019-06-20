@@ -66,7 +66,7 @@ export default {
           hmr: true,
         },
         title: {
-          defaultTitle: '晶安智慧云',
+          defaultTitle: '智慧消防云',
         },
         locale: {
           enable: true, // default false
@@ -76,12 +76,12 @@ export default {
         dynamicImport: true,
         ...(os.platform() === 'darwin'
           ? {
-            dll: {
-              include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-              exclude: ['@babel/runtime'],
-            },
-            hardSource: false,
-          }
+              dll: {
+                include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+                exclude: ['@babel/runtime'],
+              },
+              hardSource: false,
+            }
           : {}),
       },
     ],

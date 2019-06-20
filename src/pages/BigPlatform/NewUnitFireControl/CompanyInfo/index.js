@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Row, Col } from 'antd';
 import { connect } from 'dva';
+import { vaguePhone } from '../utils';
 
 import Section from '../Section';
 import DescriptionList from 'components/DescriptionList';
@@ -39,8 +40,8 @@ export default class CompanyInfo extends PureComponent {
           PrincipalPhone = '',
         },
       },
+      phoneVisible,
     } = this.props;
-    // console.log('currentHiddenDanger',this.props.model.currentHiddenDanger);
 
     // TODO: 为了常州二院过滤掉第一个人
     const newUsers = userList
@@ -67,7 +68,9 @@ export default class CompanyInfo extends PureComponent {
                   <Description term="安全管理员">
                     <div className={styles.manWrapper} style={{ width: '165px' }}>
                       {PrincipalName}
-                      <span className={styles.phone}>{PrincipalPhone}</span>
+                      <span className={styles.phone}>
+                        {vaguePhone(PrincipalPhone, phoneVisible)}
+                      </span>
                     </div>
                   </Description>
                 )}
@@ -75,7 +78,9 @@ export default class CompanyInfo extends PureComponent {
                   <Description term="值班人员">
                     <div className={styles.manWrapper} style={{ width: '165px' }}>
                       朱文琴
-                      <span className={styles.phone}>13861080705</span>
+                      <span className={styles.phone}>
+                        {vaguePhone('13861080705', phoneVisible)}
+                      </span>
                     </div>
                   </Description>
                 )}
@@ -103,7 +108,9 @@ export default class CompanyInfo extends PureComponent {
                     return (
                       <div className={styles.manWrapper} key={index}>
                         {data.userName}
-                        <span className={styles.phone}>{data.phoneNumber}</span>
+                        <span className={styles.phone}>
+                          {vaguePhone(data.phoneNumber, phoneVisible)}
+                        </span>
                       </div>
                     );
                   })}

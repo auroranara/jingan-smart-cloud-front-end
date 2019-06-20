@@ -44,7 +44,17 @@ import {
   getIdMaps,
   sortTree,
 } from './utils';
-import { MAI, GOV, OPE, COM, getIdMap as getMsgIdMap, getNewAccountMsgs, treeConvertToMsgs, convertToMsgList, getChecked } from '@/pages/RoleAuthorization/Role/utils';
+import {
+  MAI,
+  GOV,
+  OPE,
+  COM,
+  getIdMap as getMsgIdMap,
+  getNewAccountMsgs,
+  treeConvertToMsgs,
+  convertToMsgList,
+  getChecked,
+} from '@/pages/RoleAuthorization/Role/utils';
 import styles from './AccountManagementEdit.less';
 import styles1 from '../Role/Role.less';
 
@@ -197,21 +207,24 @@ export default class AccountManagementEdit extends PureComponent {
       fetchRoles,
       fetchExecCertificateType,
       fetchUserType,
-      user: { currentUser: { unitType, unitId } },
+      user: {
+        currentUser: { unitType, unitId },
+      },
     } = this.props;
 
     const isUnitUser = this.isUnitUser();
 
     this.clearModel();
     fetchGrids(); // 获取网格点树
-    fetchOptions({ // 获取单位类型和账户状态
+    fetchOptions({
+      // 获取单位类型和账户状态
       success: ({ unitType: unitTypes }) => {
         if (isUnitUser) {
           this.setState({ unitTypeChecked: +unitType });
-        }
-        else if (unitTypes && unitTypes.length) {
+        } else if (unitTypes && unitTypes.length) {
           this.setState({ unitTypeChecked: COM }); // 默认选取第一个类型
-          fetchUnitsFuzzy({ // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+          fetchUnitsFuzzy({
+            // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
             payload: {
               unitType: COM,
               pageNum: 1,
@@ -222,7 +235,8 @@ export default class AccountManagementEdit extends PureComponent {
       },
     });
 
-    if (id) { // 编辑账号基础信息
+    if (id) {
+      // 编辑账号基础信息
       fetchAccountDetail({
         payload: {
           id,
@@ -231,7 +245,8 @@ export default class AccountManagementEdit extends PureComponent {
           goToException();
         },
       });
-    } else { // 新增账号及第一个关联单位
+    } else {
+      // 新增账号及第一个关联单位
       clearDetail();
       // 获取角色列表
       let actions;
@@ -279,7 +294,11 @@ export default class AccountManagementEdit extends PureComponent {
   }
 
   isUnitUser = () => {
-    const { user: { currentUser: { unitId, unitType } } } = this.props;
+    const {
+      user: {
+        currentUser: { unitId, unitType },
+      },
+    } = this.props;
     return unitId && +unitType !== OPE;
   };
 
@@ -372,7 +391,8 @@ export default class AccountManagementEdit extends PureComponent {
           const checkedKeys = [...serCheckedKeys, ...subCheckedKeys];
           const maintenacePermissions = handleMtcTree(checkedKeys, this.childrenMap);
 
-          if (id) { // 编辑账号基本信息
+          if (id) {
+            // 编辑账号基本信息
             updateAccountDetail({
               payload: {
                 loginId: id,
@@ -384,7 +404,8 @@ export default class AccountManagementEdit extends PureComponent {
               success,
               error,
             });
-          } else { // 新增账号及第一个关联企业
+          } else {
+            // 新增账号及第一个关联企业
             const payload = {
               id,
               loginName,
@@ -445,19 +466,15 @@ export default class AccountManagementEdit extends PureComponent {
     // 不同的地方在于，再次选择时，若选择了和上次一样的选项，则会出发onselect，但是由于Select框的值并未发生改变，所以不会触发onchange事件
     this.handleUnitTypeSelect(id);
 
-    this.setState(
-      { unitTypeChecked: id },
-      () => {
-        if (id === COM) {
-          setFieldsValue({ userType: 'company_legal_person' });
-        } else {
-          setFieldsValue({ userType: undefined });
-        }
-
-        if (id === COM || id === GOV)
-          setFieldsValue({ regulatoryClassification: SUPERVISIONS_ALL });
+    this.setState({ unitTypeChecked: id }, () => {
+      if (id === COM) {
+        setFieldsValue({ userType: 'company_legal_person' });
+      } else {
+        setFieldsValue({ userType: undefined });
       }
-    );
+
+      if (id === COM || id === GOV) setFieldsValue({ regulatoryClassification: SUPERVISIONS_ALL });
+    });
 
     // 单位类型改变时，清空已选角色及已选权限
     const unitId = getFieldValue('unitId');
@@ -539,7 +556,10 @@ export default class AccountManagementEdit extends PureComponent {
     // 只有类型是维保单位的时候才请求维保树
     unitTypeChecked === MAI && this.getMaintenanceTree(value.key);
     // 单位类型和所属单位变化时角色列表都会发生变化
-    fetchRoles({ payload: { unitType: unitTypeChecked, companyId: value.key }, success: this.genRolesSuccess(unitTypeChecked) });
+    fetchRoles({
+      payload: { unitType: unitTypeChecked, companyId: value.key },
+      success: this.genRolesSuccess(unitTypeChecked),
+    });
   };
 
   handleGovSelect = ({ value, label }) => {
@@ -558,7 +578,10 @@ export default class AccountManagementEdit extends PureComponent {
         companyId: value,
       },
     });
-    fetchRoles({ payload: { unitType: GOV, companyId: value }, success: this.genRolesSuccess(GOV) });
+    fetchRoles({
+      payload: { unitType: GOV, companyId: value },
+      success: this.genRolesSuccess(GOV),
+    });
   };
 
   /** 所属单位下拉框失焦 */
@@ -575,7 +598,8 @@ export default class AccountManagementEdit extends PureComponent {
 
     setFieldsValue({ roleId: undefined });
     this.clearMsgs();
-    if (value && value.key === value.label) { // 根据value判断是否是手动输入
+    if (value && value.key === value.label) {
+      // 根据value判断是否是手动输入
       this.handleUnitIdChange.cancel();
       // 从源数组中筛选出当前值对应的数据，如果存在，则将对应的数据为所属单位下拉框重新赋值
       const unitId = unitIds.filter(item => item.name === value.label)[0];
@@ -588,8 +612,7 @@ export default class AccountManagementEdit extends PureComponent {
           unitId: treeIds,
           treeIds,
         });
-        if (isUnitTypeExist)
-          rolePayload = { unitType, companyId: unitId };
+        if (isUnitTypeExist) rolePayload = { unitType, companyId: unitId };
       } else {
         setFieldsValue({
           unitId: undefined,
@@ -801,18 +824,21 @@ export default class AccountManagementEdit extends PureComponent {
   };
 
   clearRolePermissions = unitType => {
-    const { dispatch, form: { setFieldsValue } } = this.props;
+    const {
+      dispatch,
+      form: { setFieldsValue },
+    } = this.props;
     const isNotAdmin = unitType !== OPE;
 
     const values = { permissions: this.authTreeCheckedKeys };
-      this.permissions = [];
-      dispatch({ type: 'role/saveRolePermissions', payload: [] });
-      if (isNotAdmin) {
-        values.appPermissions = this.appAuthTreeCheckedKeys;
-        this.appPermissions = [];
-        dispatch({ type: 'role/saveRoleAppPermissions', payload: [] });
-      }
-      setFieldsValue(values);
+    this.permissions = [];
+    dispatch({ type: 'role/saveRolePermissions', payload: [] });
+    if (isNotAdmin) {
+      values.appPermissions = this.appAuthTreeCheckedKeys;
+      this.appPermissions = [];
+      dispatch({ type: 'role/saveRoleAppPermissions', payload: [] });
+    }
+    setFieldsValue(values);
   };
 
   fetchRolePermissions = (id, callback) => {
@@ -821,8 +847,7 @@ export default class AccountManagementEdit extends PureComponent {
     const isNotAdmin = unitTypeChecked !== OPE;
 
     // ids不为数组或者ids的长度为0，则本地清空
-    if (!id)
-      this.clearRolePermissions(unitTypeChecked);
+    if (!id) this.clearRolePermissions(unitTypeChecked);
     else
       dispatch({
         type: 'role/fetchRolePermissions',
@@ -859,12 +884,13 @@ export default class AccountManagementEdit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     const isloaded = !loadingEffects['account/fetchRoles'] && !loadingEffects['role/fetchDetail'];
-    isloaded && setFieldsValue({
-      appPermissions: removeParentKey(
-        mergeArrays(this.appPermissions, this.appAuthTreeCheckedKeys),
-        this.appIdMap
-      ),
-    });
+    isloaded &&
+      setFieldsValue({
+        appPermissions: removeParentKey(
+          mergeArrays(this.appPermissions, this.appAuthTreeCheckedKeys),
+          this.appIdMap
+        ),
+      });
   };
 
   handleChangeAuthTreeCheckedKeys = checkedKeys => {
@@ -886,12 +912,7 @@ export default class AccountManagementEdit extends PureComponent {
     const {
       account: {
         detail: {
-          data: {
-            loginName,
-            userName,
-            phoneNumber,
-            accountStatus,
-          },
+          data: { loginName, userName, phoneNumber, accountStatus },
         },
         unitTypes,
         accountStatuses,
@@ -901,7 +922,9 @@ export default class AccountManagementEdit extends PureComponent {
         grids,
       },
       form: { getFieldDecorator },
-      user: { currentUser: { unitId: userUnitId, unitName: userUnitName, unitType: userUnitType } },
+      user: {
+        currentUser: { unitId: userUnitId, unitName: userUnitName, unitType: userUnitType },
+      },
       match: {
         params: { id },
       },
@@ -910,7 +933,8 @@ export default class AccountManagementEdit extends PureComponent {
     const { unitTypeChecked } = this.state;
 
     const isUnitUser = this.isUnitUser();
-    const unitIdInitValue = userUnitId && userUnitName ? { key: userUnitId, label: userUnitName } : undefined;
+    const unitIdInitValue =
+      userUnitId && userUnitName ? { key: userUnitId, label: userUnitName } : undefined;
     const isValidateLoginName = id ? [] : [{ validator: this.validateUserName }];
     const treeList = treeData(departments);
     const gridList = treeData(grids);
@@ -1025,7 +1049,11 @@ export default class AccountManagementEdit extends PureComponent {
               <Col lg={8} md={12} sm={24}>
                 <Form.Item label={fieldLabels.unitType}>
                   {getFieldDecorator('unitType', {
-                    initialValue: isUnitUser ? userUnitType : unitTypes.length ? unitTypes[0].id : undefined,
+                    initialValue: isUnitUser
+                      ? userUnitType
+                      : unitTypes.length
+                        ? unitTypes[0].id
+                        : undefined,
                     rules: [
                       {
                         required: true,
@@ -1201,24 +1229,24 @@ export default class AccountManagementEdit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
-            {!id && unitTypeChecked === GOV && (
-              <Col lg={24} md={24} sm={24}>
-                <Form.Item label={fieldLabels.gridIds}>
-                  {getFieldDecorator('gridIds', {
-                  })(
-                    <TreeSelect
-                      allowClear
-                      treeCheckable
-                      showCheckedStrategy={TreeSelect.SHOW_PARENT}
-                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                      placeholder="请选择所属网格"
-                    >
-                      {gridList}
-                    </TreeSelect>
-                  )}
-                </Form.Item>
-              </Col>
-            )}
+            {!id &&
+              unitTypeChecked === GOV && (
+                <Col lg={24} md={24} sm={24}>
+                  <Form.Item label={fieldLabels.gridIds}>
+                    {getFieldDecorator('gridIds', {})(
+                      <TreeSelect
+                        allowClear
+                        treeCheckable
+                        showCheckedStrategy={TreeSelect.SHOW_PARENT}
+                        dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                        placeholder="请选择所属网格"
+                      >
+                        {gridList}
+                      </TreeSelect>
+                    )}
+                  </Form.Item>
+                </Col>
+              )}
           </Row>
         </Form>
       </Card>
@@ -1249,7 +1277,7 @@ export default class AccountManagementEdit extends PureComponent {
 
     return (
       <TabPane tab="角色权限配置" key="1" className={styles.tabPane}>
-      {/* <Card title="角色权限配置" className={styles.card} bordered={false}> */}
+        {/* <Card title="角色权限配置" className={styles.card} bordered={false}> */}
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col sm={24} md={12} lg={8}>
@@ -1258,10 +1286,12 @@ export default class AccountManagementEdit extends PureComponent {
                   initialValue: roleId,
                   rules: [{ required: true, message: '请选择一个角色' }],
                 })(
-                  <Select
-                    onChange={this.handleRoleChange}
-                  >
-                    {roles.map(({ id, roleName }) => <Option key={id} value={id}>{roleName}</Option>)}
+                  <Select onChange={this.handleRoleChange}>
+                    {roles.map(({ id, roleName }) => (
+                      <Option key={id} value={id}>
+                        {roleName}
+                      </Option>
+                    ))}
                   </Select>
                 )}
               </Form.Item>
@@ -1396,7 +1426,7 @@ export default class AccountManagementEdit extends PureComponent {
             </Row>
           ) : null}
         </Form>
-      {/* </Card> */}
+        {/* </Card> */}
       </TabPane>
     );
   }
@@ -1446,35 +1476,68 @@ export default class AccountManagementEdit extends PureComponent {
   }
 
   renderMessageSubscription() {
-    const { role: { roleMsgTree } } = this.props;
+    const {
+      role: { roleMsgTree },
+    } = this.props;
     const { msgs } = this.state;
     const columns = [
       { title: '消息类别', dataIndex: 'name', key: 'name' },
-      { title: '消息示例', dataIndex: 'example', key: 'example',
+      {
+        title: '消息示例',
+        dataIndex: 'example',
+        key: 'example',
         render: txt => {
-          return txt ? txt.split('\n').map((t, i) => <p key={i} className={styles1.example}>{t}</p>) : txt;
+          return txt
+            ? txt.split('\n').map((t, i) => (
+                <p key={i} className={styles1.example}>
+                  {t}
+                </p>
+              ))
+            : txt;
         },
       },
       { title: '推荐接收人', dataIndex: 'accepter', key: 'accepter' },
-      { title: '手机状态栏通知', dataIndex: 'check', key: 'check', align: 'center',
+      {
+        title: '手机状态栏通知',
+        dataIndex: 'check',
+        key: 'check',
+        align: 'center',
         render: (txt, record) => {
           const { id } = record;
           const [indeterminate, checked] = getChecked(msgs[id] ? msgs[id][0] : 0);
-          return <Checkbox indeterminate={indeterminate} checked={checked} onChange={this.genHandleCheck(id, 0)} />;
+          return (
+            <Checkbox
+              indeterminate={indeterminate}
+              checked={checked}
+              onChange={this.genHandleCheck(id, 0)}
+            />
+          );
         },
       },
-      { title: 'app内部消息通知', dataIndex: 'check1', key: 'check1', align: 'center',
+      {
+        title: 'app内部消息通知',
+        dataIndex: 'check1',
+        key: 'check1',
+        align: 'center',
         render: (txt, record) => {
           const { id } = record;
           const [indeterminate, checked] = getChecked(msgs[id] ? msgs[id][1] : 0);
-          return <Checkbox indeterminate={indeterminate} checked={checked} onChange={this.genHandleCheck(id, 1)} />;
+          return (
+            <Checkbox
+              indeterminate={indeterminate}
+              checked={checked}
+              onChange={this.genHandleCheck(id, 1)}
+            />
+          );
         },
       },
     ];
 
     return (
       <TabPane tab="消息订阅配置" key="2" className={styles1.tabPane1}>
-        <p>若勾选手机状态栏通知，则app内部消息通知必选；若app内部消息通知未勾选，则手机状态栏通知也不能勾选。</p>
+        <p>
+          若勾选手机状态栏通知，则app内部消息通知必选；若app内部消息通知未勾选，则手机状态栏通知也不能勾选。
+        </p>
         <Table
           rowKey="id"
           className={styles1.table}
@@ -1516,9 +1579,7 @@ export default class AccountManagementEdit extends PureComponent {
     const content = (
       <div>
         <p className={styles.desc}>
-          {id
-            ? '编辑账号基本信息'
-            : '创建账号基本信息及新建第一个关联单位，并赋予角色权限'}
+          {id ? '编辑账号基本信息' : '创建账号基本信息及新建第一个关联单位，并赋予角色权限'}
         </p>
       </div>
     );

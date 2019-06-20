@@ -249,9 +249,7 @@ export default class ServiceUnitList extends PureComponent {
                   style={{ dispaly: 'block' }}
                   hoverable={![3, 4].includes(status)}
                 >
-                  <div
-                    onClick={[3, 4].includes(status) ? null : () => this.goToCompany(companyId)}
-                  >
+                  <div onClick={[3, 4].includes(status) ? null : () => this.goToCompany(companyId)}>
                     <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                       地址：
                       {searchArea || getEmptyData()}
@@ -271,20 +269,23 @@ export default class ServiceUnitList extends PureComponent {
                     <div style={{ marginBottom: '12px' }}>
                       <Button
                         disabled={[3, 4].includes(status)}
-                        onClick={[3, 4].includes(status) ? null : (e) => {
-                          e.stopPropagation()
-                          this.goToCompanyScreen(companyId)
-                        }}
+                        onClick={
+                          [3, 4].includes(status)
+                            ? null
+                            : e => {
+                                e.stopPropagation();
+                                this.goToCompanyScreen(companyId);
+                              }
+                        }
                         type="primary"
-                        ghost>
+                        ghost
+                      >
                         驾驶舱
                       </Button>
                     </div>
                   </div>
                   {status && (
-                    <div className={styles[markList[status]]}>
-                      {markLabelList[status]}
-                    </div>
+                    <div className={styles[markList[status]]}>{markLabelList[status]}</div>
                   )}
                 </Card>
               </List.Item>

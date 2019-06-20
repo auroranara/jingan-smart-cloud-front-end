@@ -1,13 +1,17 @@
 .content {
   height: 100%;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .realTimeMonitor {
   width: 100%;
   padding-top: 16px;
-  height: calc(100% - 220px);
+  flex: 1;
   color: #fff;
+  display: flex;
+  flex-direction: column;
 
   .titleLine {
     height: 32px;
@@ -26,7 +30,7 @@
   }
 
   .listContainer {
-    height: calc(100% - 52px);
+    flex: 1;
     margin-top: 20px;
     overflow-x: hidden;
     overflow-y: auto;

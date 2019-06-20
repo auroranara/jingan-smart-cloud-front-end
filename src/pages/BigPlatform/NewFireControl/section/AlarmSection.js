@@ -8,8 +8,6 @@ import styles from './AlarmSection.less';
 
 // const DELAY = 2000;
 
-// const alarms = [...Array(10).keys()].map(i => ({ company: '无锡晶安智慧有限公司', address: '无锡市新吴区汉江路5号', time: Date.now() - Math.floor(Math.random()*10)*60000 }));
-
 export default class AlarmSection extends PureComponent {
   node = null; // ref函数获取的node为antd的Input组件实例，需要再访问其对应的input属性才是原生dom
   // timer = null; // 该模块的轮询定时器

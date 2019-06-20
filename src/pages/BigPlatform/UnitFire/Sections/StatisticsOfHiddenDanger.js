@@ -16,7 +16,7 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
     super(props);
     this.state = {
       currentIndex: 0, // 右侧日期页码
-    }
+    };
     // 隐患高亮索引
     this.currentHiddenDangerIndex = -1;
     // 隐患定时器
@@ -28,10 +28,10 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
   }
 
   /**
- * 隐患巡查统计图表加载完毕
- */
+   * 隐患巡查统计图表加载完毕
+   */
   handleChartReady = (chart, option) => {
-    const { handleClickChat } = this.props
+    const { handleClickChat } = this.props;
     const changeHighLight = () => {
       var length = option.series[0].data.length;
       // 取消之前高亮的图形
@@ -86,31 +86,31 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
       // 添加定时器循环
       this.hiddenDangerTimer = setInterval(changeHighLight, 2000);
     });
-    chart.on('click', handleClickChat)
-  }
+    chart.on('click', handleClickChat);
+  };
 
   /**
- * 隐患巡查上一页分页按钮
- */
+   * 隐患巡查上一页分页按钮
+   */
   handlePrev = () => {
     this.setState(({ currentIndex }) => ({
       currentIndex: currentIndex - 1,
     }));
-  }
+  };
 
   /**
-  * 隐患巡查下一页分页按钮
-  */
+   * 隐患巡查下一页分页按钮
+   */
   handleNext = () => {
     this.setState(({ currentIndex }) => ({
       currentIndex: currentIndex + 1,
     }));
-  }
+  };
 
   renderSwitchers() {
     const { type, onSwitch } = this.props;
     const { currentIndex } = this.state;
-    const year = moment().year()
+    const year = moment().year();
     const monthsList = [
       { label: '1月', value: `${year}-01` },
       { label: '2月', value: `${year}-02` },
@@ -124,10 +124,14 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
       { label: '10月', value: `${year}-10` },
       { label: '11月', value: `${year}-11` },
       { label: '12月', value: `${year}-12` },
-    ]
+    ];
     // 当前月份 0-11
     const currentMonth = moment().get('month');
-    const list = [...monthsList.slice(0, currentMonth), { label: '本月', value: moment().format('YYYY-MM') }, { label: '实时', value: 'realTime' }].reverse();
+    const list = [
+      ...monthsList.slice(0, currentMonth),
+      { label: '本月', value: moment().format('YYYY-MM') },
+      { label: '实时', value: 'realTime' },
+    ].reverse();
 
     const pageSize = 4;
     // 总页数
@@ -135,7 +139,7 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
     // 是否为第一页
     const isFirst = currentIndex === 0;
     // 是否为最后一页
-    const isLast = currentIndex === (pageCount - 1);
+    const isLast = currentIndex === pageCount - 1;
     // 当前页的第一个元素
     const currentFirstIndex = currentIndex * pageSize;
 
@@ -148,20 +152,30 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
           const isSelected = type === value;
           return (
             <Switcher
-              style={{ top: (index - currentFirstIndex) * 56, zIndex: isSelected ? (pageSize + 1) : (pageSize + currentFirstIndex - index) }}
+              style={{
+                top: (index - currentFirstIndex) * 56,
+                zIndex: isSelected ? pageSize + 1 : pageSize + currentFirstIndex - index,
+              }}
               isSelected={isSelected}
               content={label}
               key={index}
-              onClick={() => { onSwitch(value); }} />
+              onClick={() => {
+                onSwitch(value);
+              }}
+            />
           );
         })}
         {pageCount > 1 && (
           <Pagination
-            style={{ top: Math.min(pageSize, (list.length - currentFirstIndex) || 1) * 56, zIndex: 0 }}
+            style={{
+              top: Math.min(pageSize, list.length - currentFirstIndex || 1) * 56,
+              zIndex: 0,
+            }}
             onNext={this.handleNext}
             onPrev={this.handlePrev}
             isFirst={isFirst}
-            isLast={isLast} />
+            isLast={isLast}
+          />
         )}
       </div>
     );
@@ -179,16 +193,19 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
       type,
       handleClickChat,
     } = this.props;
-    const legendInfo = type === 'realTime' ? [
-      { label: '已超期', value: cqwzg, iconColor: '#D16772', status: 7 },
-      { label: '待复查', value: dfc, iconColor: '#2787D5', status: 3 },
-      { label: '未超期', value: dzg, iconColor: '#DEAD5C', status: 2 },
-    ] : [
-        { label: '已超期', value: cqwzg, iconColor: '#D16772', status: 7 },
-        { label: '待复查', value: dfc, iconColor: '#2787D5', status: 3 },
-        { label: '未超期', value: dzg, iconColor: '#DEAD5C', status: 2 },
-        { label: '已关闭', value: ygb, iconColor: '#A9B2BE', status: 4 },
-      ]
+    const legendInfo =
+      type === 'realTime'
+        ? [
+            { label: '已超期', value: cqwzg, iconColor: '#D16772', status: 7 },
+            { label: '待复查', value: dfc, iconColor: '#2787D5', status: 3 },
+            { label: '未超期', value: dzg, iconColor: '#DEAD5C', status: 2 },
+          ]
+        : [
+            { label: '已超期', value: cqwzg, iconColor: '#D16772', status: 7 },
+            { label: '待复查', value: dfc, iconColor: '#2787D5', status: 3 },
+            { label: '未超期', value: dzg, iconColor: '#DEAD5C', status: 2 },
+            { label: '已关闭', value: ygb, iconColor: '#A9B2BE', status: 4 },
+          ];
     const option = {
       /* legend: {
         selectedMode:false,
@@ -247,16 +264,19 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
               color: '#fff',
             },
           },
-          data: type === 'realTime' ? [
-            { value: cqwzg, name: '已超期', itemStyle: { color: '#D16772' }, status: 7 },
-            { value: dfc, name: '待复查', itemStyle: { color: '#2787D5' }, status: 3 },
-            { value: dzg, name: '未超期', itemStyle: { color: '#DEAD5C' }, status: 2 },
-          ] : [
-              { value: cqwzg, name: '已超期', itemStyle: { color: '#D16772' }, status: 7 },
-              { value: dfc, name: '待复查', itemStyle: { color: '#2787D5' }, status: 3 },
-              { value: dzg, name: '未超期', itemStyle: { color: '#DEAD5C' }, status: 2 },
-              { value: ygb, name: '已关闭', itemStyle: { color: '#A9B2BE' }, status: 4 },
-            ],
+          data:
+            type === 'realTime'
+              ? [
+                  { value: cqwzg, name: '已超期', itemStyle: { color: '#D16772' }, status: 7 },
+                  { value: dfc, name: '待复查', itemStyle: { color: '#2787D5' }, status: 3 },
+                  { value: dzg, name: '未超期', itemStyle: { color: '#DEAD5C' }, status: 2 },
+                ]
+              : [
+                  { value: cqwzg, name: '已超期', itemStyle: { color: '#D16772' }, status: 7 },
+                  { value: dfc, name: '待复查', itemStyle: { color: '#2787D5' }, status: 3 },
+                  { value: dzg, name: '未超期', itemStyle: { color: '#DEAD5C' }, status: 2 },
+                  { value: ygb, name: '已关闭', itemStyle: { color: '#A9B2BE' }, status: 4 },
+                ],
         },
         {
           type: 'pie',
@@ -273,9 +293,7 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
               lineHeight: 20,
               formatter: '{b}：{c}',
               position: 'inner',
-              rich: {
-
-              },
+              rich: {},
             },
             emphasis: {
               show: true,
@@ -296,10 +314,12 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
     };
 
     return (
-      <Section title="隐患统计" fixedContent={(
-        <Fragment>
-          <div className={styles.hiddenDangerChartLegend}>
-            {/* <div className={styles.hiddenDangerChartLegendLeft}>
+      <Section
+        title="隐患统计"
+        fixedContent={
+          <Fragment>
+            <div className={styles.hiddenDangerChartLegend}>
+              {/* <div className={styles.hiddenDangerChartLegendLeft}>
               <div><div style={{ backgroundImage: `url(${triangleIcon})` }}></div><div>隐患来源</div></div>
               <div>
                 <div><div style={{ backgroundColor: '#00ABC9' }}></div><div>随手拍</div><div>{ssp}</div></div>
@@ -315,42 +335,56 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
                 <div><div style={{ backgroundColor: '#A9B2BE' }}></div><div>已关闭</div><div>{ygb}</div></div>
               </div>
             </div> */}
-            <div className={styles.firstLine}>
-              <div style={{ backgroundImage: `url(${triangleIcon})`, backgroundSize: '100%' }}></div>
-              <div>隐患来源</div>
-            </div>
-            <div className={styles.content}>
-              <div className={styles.item}>
-                <div className={styles.iconContainer}>
-                  <div className={styles.blueIcon}></div>
+              <div className={styles.firstLine}>
+                <div style={{ backgroundImage: `url(${triangleIcon})`, backgroundSize: '100%' }} />
+                <div>隐患来源</div>
+              </div>
+              <div className={styles.content}>
+                <div className={styles.item}>
+                  <div className={styles.iconContainer}>
+                    <div className={styles.blueIcon} />
+                  </div>
+                  <div className={styles.text}>
+                    <div>
+                      <span>政府监督</span>
+                    </div>
+                    <div>
+                      <span>{zfjd}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className={styles.text}>
-                  <div><span>政府监督</span></div>
-                  <div><span>{zfjd}</span></div>
+                <div className={styles.item}>
+                  <div className={styles.iconContainer}>
+                    <div className={styles.redIcon} />
+                  </div>
+                  <div className={styles.text}>
+                    <div>
+                      <span>企业自查</span>
+                    </div>
+                    <div>
+                      <span>{qyzc}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.item}>
+                  <div className={styles.iconContainer}>
+                    <div className={styles.ligntBlueIcon} />
+                  </div>
+                  <div className={styles.text}>
+                    <div>
+                      <span>维保检查</span>
+                    </div>
+                    <div>
+                      <span>{wbjc}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className={styles.item}>
-                <div className={styles.iconContainer}>
-                  <div className={styles.redIcon}></div>
-                </div>
-                <div className={styles.text}>
-                  <div><span>企业自查</span></div>
-                  <div><span>{qyzc}</span></div>
-                </div>
-              </div><div className={styles.item}>
-                <div className={styles.iconContainer}>
-                  <div className={styles.ligntBlueIcon}></div>
-                </div>
-                <div className={styles.text}>
-                  <div><span>维保检查</span></div>
-                  <div><span>{wbjc}</span></div>
-                </div>
-              </div>
             </div>
-          </div>
-          {this.renderSwitchers()}
-        </Fragment>
-      )}>
+            {this.renderSwitchers()}
+          </Fragment>
+        }
+      >
         <div className={styles.hiddenDangerChartContainer}>
           <Col span={16} style={{ height: '100%' }}>
             <ReactEcharts
@@ -363,8 +397,12 @@ export default class StatisticsOfHiddenDanger extends PureComponent {
           </Col>
           <Col span={8} className={styles.legendContainer}>
             {legendInfo.map(({ label, value, iconColor, status }, i) => (
-              <div key={i} className={styles.line} onClick={() => handleClickChat({ data: { status, name: label } })}>
-                <div className={styles.icon} style={{ backgroundColor: iconColor }}></div>
+              <div
+                key={i}
+                className={styles.line}
+                onClick={() => handleClickChat({ data: { status, name: label } })}
+              >
+                <div className={styles.icon} style={{ backgroundColor: iconColor }} />
                 <div className={styles.label}>{label}</div>
                 <div className={styles.value}>{value}</div>
               </div>

@@ -810,10 +810,10 @@ export default {
       const newList =
         list && list.length > 0
           ? list.map(item => ({
-            ...item,
-            typeName: getPendingInfoType(item),
-            icon: getPendingInfoType(item, 'icon'),
-          }))
+              ...item,
+              typeName: getPendingInfoType(item),
+              icon: getPendingInfoType(item, 'icon'),
+            }))
           : [];
       return {
         ...state,

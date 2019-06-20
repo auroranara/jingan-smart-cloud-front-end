@@ -125,14 +125,14 @@ const getRootChild = () => document.querySelector('#root>div');
       dispatch({
         type: 'maintenanceCompany/saveSearchInfo',
         ...action,
-      })
+      });
     },
     // 初始化页码
     initPageNum(action) {
       dispatch({
         type: 'maintenanceCompany/initPageNum',
         ...action,
-      })
+      });
     },
   })
 )
@@ -150,12 +150,8 @@ export default class MaintenanceCompanyList extends PureComponent {
       gsafeFetchDict,
       fetchOptions,
       goToException: error,
-      maintenanceCompany: {
-        searchInfo,
-      },
-      form: {
-        setFieldsValue,
-      },
+      maintenanceCompany: { searchInfo },
+      form: { setFieldsValue },
     } = this.props;
 
     // 获取行业类别
@@ -181,8 +177,8 @@ export default class MaintenanceCompanyList extends PureComponent {
     // 判断是存了查询信息，并获取维保单位列表
     if (searchInfo) {
       // const { industryCategory } = searchInfo
-      setFieldsValue(searchInfo)
-      this.formData = searchInfo
+      setFieldsValue(searchInfo);
+      this.formData = searchInfo;
       fetch({
         payload: {
           pageSize,
@@ -203,8 +199,8 @@ export default class MaintenanceCompanyList extends PureComponent {
   }
 
   componentWillUnmount() {
-    const { initPageNum } = this.props
-    initPageNum()
+    const { initPageNum } = this.props;
+    initPageNum();
   }
 
   /* 显示删除确认提示框 */
@@ -255,7 +251,7 @@ export default class MaintenanceCompanyList extends PureComponent {
     });
     saveSearchInfo({
       payload: data,
-    })
+    });
   };
 
   /* 重置按钮点击事件 */
@@ -276,7 +272,7 @@ export default class MaintenanceCompanyList extends PureComponent {
         pageNum: 1,
       },
     });
-    saveSearchInfo()
+    saveSearchInfo();
   };
 
   /* 滚动加载 */
@@ -446,17 +442,17 @@ export default class MaintenanceCompanyList extends PureComponent {
                     编辑
                   </AuthLink>,
                 ]}
-              // extra={
-              //   <Button
-              //     onClick={() => {
-              //       this.handleShowDeleteConfirm(item.id);
-              //     }}
-              //     shape="circle"
-              //     style={{ border: 'none', fontSize: '20px' }}
-              //   >
-              //     <Icon type="close" />
-              //   </Button>
-              // }
+                // extra={
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(item.id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // }
               >
                 <Row>
                   <Col

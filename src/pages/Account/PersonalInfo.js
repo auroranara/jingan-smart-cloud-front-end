@@ -54,7 +54,6 @@ const UserTypes = [
 }))
 @Form.create()
 export default class PersonalInfo extends PureComponent {
-
   /* 生命周期函数 */
   componentDidMount() {
     // console.log('props', this.props);

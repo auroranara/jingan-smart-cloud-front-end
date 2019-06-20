@@ -465,3 +465,27 @@ export async function countAllFireAndFault(params) {
 export async function countFinishByUserId(params) {
   return request(`/acloud_new/v2/fireManage/countFinishByUserId?${stringify(params)}`);
 }
+
+// 消息人员
+export async function messageInformList(params) {
+  return request(`/acloud_new/v2/fireManage/messageInformList?${stringify(params)}`);
+}
+
+// 重复上报次数和最后一次时间
+export async function countNumAndTimeById(params) {
+  return request(`/acloud_new/v2/fireManage/countNumAndTimeById?${stringify(params)}`);
+}
+
+export async function getAllScreenMessage(params) {
+  return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`);
+}
+
+// 获取警报,故障数据详情
+export async function getAllDetail(params) {
+  return request(`/acloud_new/v2/fireManage/allDetail?${stringify(params)}`);
+}
+
+// 消防主机当前火警和故障ids
+export async function getDangerChartId(params) {
+  return request(`/acloud_new/v2/fireData/countDangerId.json?${stringify(params)}`);
+}

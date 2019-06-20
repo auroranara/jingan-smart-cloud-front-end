@@ -3,7 +3,9 @@ import request from '../../utils/request';
 
 /* 查询合同列表 */
 export async function queryContractList(params) {
-  return request(`/acloud_new/v2/maintenanceBusiness/maintenanceContractForPage?${stringify(params)}`);
+  return request(
+    `/acloud_new/v2/maintenanceBusiness/maintenanceContractForPage?${stringify(params)}`
+  );
 }
 
 /* 查询合同详情 */
@@ -45,4 +47,3 @@ export async function queryMaintenanceList(params) {
 export async function queryServiceList(params) {
   return request(`/acloud_new/v2/maintenanceBusiness/serviceCompanies?${stringify(params)}`);
 }
-

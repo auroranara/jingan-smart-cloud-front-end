@@ -80,7 +80,7 @@ export default class InformationHistory extends PureComponent {
       isLast ||
       loading ||
       this.historyList.scrollHeight - this.historyList.scrollTop - this.historyList.clientHeight >
-      250
+        250
     ) {
       return;
     }
@@ -225,54 +225,54 @@ export default class InformationHistory extends PureComponent {
         {ntype && +ntype === 3 && <div className={styles.topRightBlueTag}>业主处理</div>}
       </Col>
     ) : (
-        <Col key={id} span={24} className={styles.alarmItem}>
-          <div className={styles.innerItem}>
-            <div className={styles.alarmTitle}>
-              <div className={styles.title}>
-                <div
-                  className={styles.icon}
-                  style={{
-                    backgroundImage: `url(${icon})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center center',
-                    backgroundSize: '65% 65%',
-                  }}
-                />
-                {+fire_state === 1 ? (
-                  <div className={styles.redText}>
-                    {(+ntype === 1 && '误报火警') || (+ntype === 2 && '真实火警')}
-                  </div>
-                ) : (
-                    <div className={styles.blueText}>{pendingInfoType}</div>
-                  )}
-              </div>
+      <Col key={id} span={24} className={styles.alarmItem}>
+        <div className={styles.innerItem}>
+          <div className={styles.alarmTitle}>
+            <div className={styles.title}>
+              <div
+                className={styles.icon}
+                style={{
+                  backgroundImage: `url(${icon})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center center',
+                  backgroundSize: '65% 65%',
+                }}
+              />
+              {+fire_state === 1 ? (
+                <div className={styles.redText}>
+                  {(+ntype === 1 && '误报火警') || (+ntype === 2 && '真实火警')}
+                </div>
+              ) : (
+                <div className={styles.blueText}>{pendingInfoType}</div>
+              )}
             </div>
-            <div className={styles.alarmDetail}>
-              {component_region}
-              回路
+          </div>
+          <div className={styles.alarmDetail}>
+            {component_region}
+            回路
             {component_no}号
           </div>
-            <div className={styles.alarmDetail}>
-              <Tooltip placement="bottom" title={label}>
-                <span>{label}</span>
-              </Tooltip>
-            </div>
-            <div className={styles.lastLine}>
-              <span>
-                <Icon type="environment" theme="outlined" />
-              </span>
-              <Tooltip placement="bottom" title={install_address}>
-                <span className={styles.location}>{install_address}</span>
-              </Tooltip>
-              <div className={styles.time}>
-                <span>{t}</span>
-              </div>
+          <div className={styles.alarmDetail}>
+            <Tooltip placement="bottom" title={label}>
+              <span>{label}</span>
+            </Tooltip>
+          </div>
+          <div className={styles.lastLine}>
+            <span>
+              <Icon type="environment" theme="outlined" />
+            </span>
+            <Tooltip placement="bottom" title={install_address}>
+              <span className={styles.location}>{install_address}</span>
+            </Tooltip>
+            <div className={styles.time}>
+              <span>{t}</span>
             </div>
           </div>
-          {isCompany && +isCompany === 0 && <div className={styles.topRightPurpleTag}>维保处理</div>}
-          {isCompany && +isCompany === 1 && <div className={styles.topRightBlueTag}>业主处理</div>}
-        </Col>
-      );
+        </div>
+        {isCompany && +isCompany === 0 && <div className={styles.topRightPurpleTag}>维保处理</div>}
+        {isCompany && +isCompany === 1 && <div className={styles.topRightBlueTag}>业主处理</div>}
+      </Col>
+    );
   };
 
   render() {

@@ -1,4 +1,5 @@
 import logo from '../src/assets/logo_jingan.svg';
+import fireLogo from '../src/assets/fire_logo.svg';
 import code from '../src/assets/jingan_download_code.png';
 import czeyLogo from '../src/assets/logo_czey.svg';
 import nanxiaoLogo from '../src/assets/logo_nanxiao.svg';
@@ -7,6 +8,7 @@ import liminLogo from '../src/assets/logo_limin.svg';
 import liminCode from '../src/assets/limin_download_code.jpg';
 import changshuCode from '../src/assets/changshu_download_code.png';
 import shanxiCode from '../src/assets/shanxi_download_code.png';
+import fireCode from '../src/assets/fire_download_code.jpg';
 import yanshiCode from '../src/assets/yanshi_download_code.png';
 import xiaoyuanCode from '../src/assets/xiaoyuan_download_code.png';
 import xuzhouCode from '../src/assets/xuzhou_download_code.png';
@@ -141,6 +143,14 @@ const configs = {
       'http://58.215.178.100:12080/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
   eye: {},
+  fire: {
+    projectKey: 'zx_pro',
+    projectShortName: '智慧消防云',
+    logo: fireLogo,
+    code: fireCode,
+    layer: 'http://image.jingan-china.cn/v2/login/fire_download_layer.png',
+    serviceSupport: '',
+  },
   xiaoyuan: {
     projectKey: 'v2_test',
     projectShortName: '校园智慧安全云',

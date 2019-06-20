@@ -1,0 +1,24 @@
+.tabList {
+  display: flex;
+
+  .tab {
+    flex: 1;
+    display: flex;
+    // height: 3em;
+    height: 2.5em;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #0ff;
+    cursor: pointer;
+
+    &.active,
+    &:hover {
+      background-color: rgb(5, 71, 149);
+    }
+
+    &:not(:first-child) {
+      border-left-width: 0;
+    }
+  }
+}
+

@@ -129,11 +129,14 @@
 .container {
   padding: 2em;
   background: rgb(92, 156, 217);
+  min-height: 80vh;
 }
+
 .list {
   display: flex;
   flex-wrap: wrap;
 }
+
 .itemWrapper {
   flex: none;
   display: flex;
@@ -141,6 +144,7 @@
   width: 33.333333%;
   padding: 2em;
 }
+
 .item {
   flex: 1;
   display: flex;
@@ -155,6 +159,7 @@
   overflow: hidden;
   cursor: pointer;
 }
+
 .item:hover {
   box-shadow: 0 0 20px rgba(51, 51, 51, 0.2);
 
@@ -166,6 +171,7 @@
     color: #1890ff;
   }
 }
+
 .itemIconWrapper {
   flex: none;
   position: relative;
@@ -173,6 +179,7 @@
   padding-bottom: 93.9759%;
   overflow: hidden;
 }
+
 .itemIcon {
   position: absolute;
   top: 0;
@@ -183,6 +190,7 @@
   background-size: cover;
   transition: all 0.5s;
 }
+
 .itemLabel {
   flex: 1;
   padding: 1em 0.5em;
@@ -198,6 +206,7 @@
   .itemWrapper {
     width: 100%;
   }
+
   .itemLabel {
     font-size: 20px;
     letter-spacing: 0;

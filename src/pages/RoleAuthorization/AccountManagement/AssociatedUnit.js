@@ -47,7 +47,18 @@ import {
   getIdMaps,
   sortTree,
 } from './utils';
-import { MAI, GOV, OPE, COM, getIdMap as getMsgIdMap, getNewAccountMsgs, convertToMsgs, treeConvertToMsgs, convertToMsgList, getChecked } from '@/pages/RoleAuthorization/Role/utils';
+import {
+  MAI,
+  GOV,
+  OPE,
+  COM,
+  getIdMap as getMsgIdMap,
+  getNewAccountMsgs,
+  convertToMsgs,
+  treeConvertToMsgs,
+  convertToMsgList,
+  getChecked,
+} from '@/pages/RoleAuthorization/Role/utils';
 import styles from './AccountManagementEdit.less';
 import styles1 from '../Role/Role.less';
 
@@ -213,14 +224,15 @@ export default class AssociatedUnit extends PureComponent {
 
     this.clearModel();
     fetchGrids(); // 获取网格点树
-    fetchOptions({ // 获取单位类型和账户状态
+    fetchOptions({
+      // 获取单位类型和账户状态
       success: ({ unitType: unitTypes }) => {
-        if (userId)
-          return;
+        if (userId) return;
 
         if (unitTypes && unitTypes.length) {
           this.setState({ unitTypeChecked: unitTypes[0].id }); // 默认选取第一个类型
-          fetchUnitsFuzzy({ // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
+          fetchUnitsFuzzy({
+            // 获取单位类型成功以后根据第一个单位类型获取对应的所属单位列表
             payload: {
               unitType: unitTypes[0].id,
               pageNum: 1,
@@ -231,7 +243,8 @@ export default class AssociatedUnit extends PureComponent {
       },
     });
 
-    if (userId) { // 编辑关联单位
+    if (userId) {
+      // 编辑关联单位
       fetchAssociatedUnitDetail({
         payload: {
           userId,
@@ -256,12 +269,14 @@ export default class AssociatedUnit extends PureComponent {
             success: (list, trees) => {
               this.genRolesSuccess(unitType)(list, trees);
               const ids = Array.isArray(list) ? list.map(({ id }) => id) : [];
-              if (!ids.includes(roleId)) { // 处理先配置公共角色后配置私有角色时，原来的公共角色id不存在私有角色列表里的问题
+              if (!ids.includes(roleId)) {
+                // 处理先配置公共角色后配置私有角色时，原来的公共角色id不存在私有角色列表里的问题
                 setFieldsValue({ roleId: undefined });
                 this.setState({ msgs: {} });
-              }
-              else
-                this.fetchRolePermissions(roleId, () => this.setState({ msgs: convertToMsgs(messagePermissions, this.msgIdMap) }));
+              } else
+                this.fetchRolePermissions(roleId, () =>
+                  this.setState({ msgs: convertToMsgs(messagePermissions, this.msgIdMap) })
+                );
             },
           });
           // 若为维保单位，则获取维保权限树，并设置维保权限树初值
@@ -347,7 +362,8 @@ export default class AssociatedUnit extends PureComponent {
           }
         },
       });
-    } else { // 新增关联单位
+    } else {
+      // 新增关联单位
       fetchAccountDetail({ payload: { id } });
       initValue();
     }
@@ -382,10 +398,15 @@ export default class AssociatedUnit extends PureComponent {
     this.clearRolePermissions(COM); // 清空所选角色的permissions
   }
 
-  isEditAndSelf() { // 是否是编辑关联单位且是自身账号
+  isEditAndSelf() {
+    // 是否是编辑关联单位且是自身账号
     const {
-      match: { params: { userId } },
-      user: { currentUser: { userId: currentUserId } },
+      match: {
+        params: { userId },
+      },
+      user: {
+        currentUser: { userId: currentUserId },
+      },
     } = this.props;
     const isEdit = !!userId;
     const isSelf = currentUserId && currentUserId === userId;
@@ -393,7 +414,11 @@ export default class AssociatedUnit extends PureComponent {
   }
 
   isUnitUser = () => {
-    const { user: { currentUser: { unitId, unitType } } } = this.props;
+    const {
+      user: {
+        currentUser: { unitId, unitType },
+      },
+    } = this.props;
     return unitId && +unitType !== OPE;
   };
 
@@ -515,7 +540,9 @@ export default class AssociatedUnit extends PureComponent {
             ).join(','),
             messagePermissions: convertToMsgList(msgs),
           };
-          switch (payload.unitType) { // 设值用户角色
+          switch (
+            payload.unitType // 设值用户角色
+          ) {
             case MAI: // 维保企业
               payload.userType = 'company_safer';
               break;
@@ -533,14 +560,16 @@ export default class AssociatedUnit extends PureComponent {
             message.error(err, 1);
           };
 
-          if (userId) { // 编辑关联企业
+          if (userId) {
+            // 编辑关联企业
             payload = { ...payload, active, id: userId, loginId };
             editAssociatedUnit({
               payload,
               successCallback,
               errorCallback,
             });
-          } else { // 新增关联企业
+          } else {
+            // 新增关联企业
             payload.loginId = id;
             addAssociatedUnit({
               payload,
@@ -568,17 +597,14 @@ export default class AssociatedUnit extends PureComponent {
     // const { data } = detail || {};
     // const { unitType, roleId } = data || {};
 
-    this.setState(
-      { unitTypeChecked: id },
-      () => {
-        setFieldsValue({
-          userType: null,
-          regulatoryClassification: id === COM || id === GOV ? SUPERVISIONS_ALL : [],
-          documentTypeId: null,
-          execCertificateCode: null,
-        });
-      }
-    );
+    this.setState({ unitTypeChecked: id }, () => {
+      setFieldsValue({
+        userType: null,
+        regulatoryClassification: id === COM || id === GOV ? SUPERVISIONS_ALL : [],
+        documentTypeId: null,
+        execCertificateCode: null,
+      });
+    });
 
     // 单位类型改变时，清空已选角色及已选权限
     const unitId = getFieldValue('unitId');
@@ -672,7 +698,10 @@ export default class AssociatedUnit extends PureComponent {
       });
 
     // 单位类型和所属单位变化时角色列表都会发生变化
-    fetchRoles({ payload: { unitType: unitTypeChecked, companyId: value.key }, success: this.genRolesSuccess(unitTypeChecked) });
+    fetchRoles({
+      payload: { unitType: unitTypeChecked, companyId: value.key },
+      success: this.genRolesSuccess(unitTypeChecked),
+    });
   };
 
   handleGovSelect = ({ value, label }) => {
@@ -691,7 +720,10 @@ export default class AssociatedUnit extends PureComponent {
         companyId: value,
       },
     });
-    fetchRoles({ payload: { unitType: GOV, companyId: value }, success: this.genRolesSuccess(GOV) });
+    fetchRoles({
+      payload: { unitType: GOV, companyId: value },
+      success: this.genRolesSuccess(GOV),
+    });
   };
 
   /** 所属单位下拉框失焦 */
@@ -708,7 +740,8 @@ export default class AssociatedUnit extends PureComponent {
 
     setFieldsValue({ roleId: undefined });
     this.clearMsgs();
-    if (value && value.key === value.label) { // 根据value判断是否是手动输入
+    if (value && value.key === value.label) {
+      // 根据value判断是否是手动输入
       this.handleUnitIdChange.cancel();
       // 从源数组中筛选出当前值对应的数据，如果存在，则将对应的数据为所属单位下拉框重新赋值
       const unitId = unitIds.filter(item => item.name === value.label)[0];
@@ -721,8 +754,7 @@ export default class AssociatedUnit extends PureComponent {
           unitId: treeIds,
           treeIds,
         });
-        if (isUnitTypeExist)
-          rolePayload = { unitType, companyId: unitId };
+        if (isUnitTypeExist) rolePayload = { unitType, companyId: unitId };
       } else {
         setFieldsValue({
           unitId: undefined,
@@ -826,14 +858,17 @@ export default class AssociatedUnit extends PureComponent {
 
   handleRoleChange = value => {
     const {
-      account: { detail: { data: { roleId, messagePermissions } } },
+      account: {
+        detail: {
+          data: { roleId, messagePermissions },
+        },
+      },
     } = this.props;
 
     this.fetchRolePermissions(value, (permissions, appPermissions, msgTree) => {
       if (roleId && roleId === value)
         this.setState({ msgs: convertToMsgs(messagePermissions, this.msgIdMap) });
-      else
-        this.setState({ msgs: treeConvertToMsgs(msgTree) });
+      else this.setState({ msgs: treeConvertToMsgs(msgTree) });
     });
   };
 
@@ -844,18 +879,21 @@ export default class AssociatedUnit extends PureComponent {
   };
 
   clearRolePermissions = unitType => {
-    const { dispatch, form: { setFieldsValue } } = this.props;
+    const {
+      dispatch,
+      form: { setFieldsValue },
+    } = this.props;
     const isNotAdmin = unitType !== OPE;
 
     const values = { permissions: this.authTreeCheckedKeys };
-      this.permissions = [];
-      dispatch({ type: 'role/saveRolePermissions', payload: [] });
-      if (isNotAdmin) {
-        values.appPermissions = this.appAuthTreeCheckedKeys;
-        this.appPermissions = [];
-        dispatch({ type: 'role/saveRoleAppPermissions', payload: [] });
-      }
-      setFieldsValue(values);
+    this.permissions = [];
+    dispatch({ type: 'role/saveRolePermissions', payload: [] });
+    if (isNotAdmin) {
+      values.appPermissions = this.appAuthTreeCheckedKeys;
+      this.appPermissions = [];
+      dispatch({ type: 'role/saveRoleAppPermissions', payload: [] });
+    }
+    setFieldsValue(values);
   };
 
   fetchRolePermissions = (id, callback) => {
@@ -864,8 +902,7 @@ export default class AssociatedUnit extends PureComponent {
     const isNotAdmin = unitTypeChecked !== OPE;
 
     // id不存在，则本地清空
-    if (!id)
-      this.clearRolePermissions(unitTypeChecked);
+    if (!id) this.clearRolePermissions(unitTypeChecked);
     else
       dispatch({
         type: 'role/fetchRolePermissions',
@@ -902,12 +939,13 @@ export default class AssociatedUnit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     const isloaded = !loadingEffects['account/fetchRoles'] && !loadingEffects['role/fetchDetail'];
-    isloaded && setFieldsValue({
-      appPermissions: removeParentKey(
-        mergeArrays(this.appPermissions, this.appAuthTreeCheckedKeys),
-        this.appIdMap
-      ),
-    });
+    isloaded &&
+      setFieldsValue({
+        appPermissions: removeParentKey(
+          mergeArrays(this.appPermissions, this.appAuthTreeCheckedKeys),
+          this.appIdMap
+        ),
+      });
   };
 
   handleChangeAuthTreeCheckedKeys = checkedKeys => {
@@ -917,7 +955,6 @@ export default class AssociatedUnit extends PureComponent {
   handleChangeAppAuthTreeCheckedKeys = checkedKeys => {
     this.appAuthTreeCheckedKeys = checkedKeys;
   };
-
 
   /* 维保权限全选 */
   handleCheckAll = (isCheckAll, checkedRootKey) => {
@@ -1258,25 +1295,26 @@ export default class AssociatedUnit extends PureComponent {
                   </Form.Item>
                 </Col>
               )}
-            {unitTypes.length !== 0 && unitTypeChecked === GOV && (
-              <Col lg={24} md={24} sm={24}>
-                <Form.Item label={fieldLabels.gridIds}>
-                  {getFieldDecorator('gridIds', {
-                    initialValue: gridIds ? gridIds.split(',').filter(id => id) : [],
-                  })(
-                    <TreeSelect
-                      allowClear
-                      treeCheckable
-                      showCheckedStrategy={TreeSelect.SHOW_PARENT}
-                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                      placeholder="请选择所属网格"
-                    >
-                      {gridList}
-                    </TreeSelect>
-                  )}
-                </Form.Item>
-              </Col>
-            )}
+            {unitTypes.length !== 0 &&
+              unitTypeChecked === GOV && (
+                <Col lg={24} md={24} sm={24}>
+                  <Form.Item label={fieldLabels.gridIds}>
+                    {getFieldDecorator('gridIds', {
+                      initialValue: gridIds ? gridIds.split(',').filter(id => id) : [],
+                    })(
+                      <TreeSelect
+                        allowClear
+                        treeCheckable
+                        showCheckedStrategy={TreeSelect.SHOW_PARENT}
+                        dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                        placeholder="请选择所属网格"
+                      >
+                        {gridList}
+                      </TreeSelect>
+                    )}
+                  </Form.Item>
+                </Col>
+              )}
           </Row>
         </Form>
       </Card>
@@ -1308,7 +1346,7 @@ export default class AssociatedUnit extends PureComponent {
 
     return (
       <TabPane tab="角色权限配置" key="1" className={styles.tabPane}>
-      {/* <Card title="角色权限配置" className={styles.card} bordered={false}> */}
+        {/* <Card title="角色权限配置" className={styles.card} bordered={false}> */}
         <Form layout="vertical">
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col sm={24} md={12} lg={8}>
@@ -1317,11 +1355,12 @@ export default class AssociatedUnit extends PureComponent {
                   initialValue: roleId,
                   rules: [{ required: true, message: '请选择一个角色' }],
                 })(
-                  <Select
-                    disabled={isEditAndSelf}
-                    onChange={this.handleRoleChange}
-                  >
-                    {roles.map(({ id, roleName }) => <Option key={id} value={id}>{roleName}</Option>)}
+                  <Select disabled={isEditAndSelf} onChange={this.handleRoleChange}>
+                    {roles.map(({ id, roleName }) => (
+                      <Option key={id} value={id}>
+                        {roleName}
+                      </Option>
+                    ))}
                   </Select>
                 )}
               </Form.Item>
@@ -1407,10 +1446,7 @@ export default class AssociatedUnit extends PureComponent {
                       getFieldDecorator('isCheckAllSer', {
                         valuePropName: 'checked',
                       })(
-                        <Checkbox
-                          disabled={isEditAndSelf}
-                          onChange={this.handleCheckAllSer}
-                        >
+                        <Checkbox disabled={isEditAndSelf} onChange={this.handleCheckAllSer}>
                           全选
                         </Checkbox>
                       )}
@@ -1424,11 +1460,7 @@ export default class AssociatedUnit extends PureComponent {
                         {getFieldDecorator('serCheckedKeys', {
                           valuePropName: 'checkedKeys',
                         })(
-                          <Tree
-                            checkable
-                            disabled={isEditAndSelf}
-                            onCheck={this.onSerCheck}
-                          >
+                          <Tree checkable disabled={isEditAndSelf} onCheck={this.onSerCheck}>
                             {renderSearchedTreeNodes(maintenanceSerTree, searchSerValue)}
                           </Tree>
                         )}
@@ -1443,10 +1475,7 @@ export default class AssociatedUnit extends PureComponent {
                       getFieldDecorator('isCheckAllSub', {
                         valuePropName: 'checked',
                       })(
-                        <Checkbox
-                          disabled={isEditAndSelf}
-                          onChange={this.handleCheckAllSub}
-                        >
+                        <Checkbox disabled={isEditAndSelf} onChange={this.handleCheckAllSub}>
                           全选
                         </Checkbox>
                       )}
@@ -1480,41 +1509,74 @@ export default class AssociatedUnit extends PureComponent {
             </Row>
           ) : null}
         </Form>
-      {/* </Card> */}
+        {/* </Card> */}
       </TabPane>
     );
   }
 
   renderMessageSubscription() {
-    const { role: { roleMsgTree } } = this.props;
+    const {
+      role: { roleMsgTree },
+    } = this.props;
     const { msgs } = this.state;
     const columns = [
       { title: '消息类别', dataIndex: 'name', key: 'name' },
-      { title: '消息示例', dataIndex: 'example', key: 'example',
+      {
+        title: '消息示例',
+        dataIndex: 'example',
+        key: 'example',
         render: txt => {
-          return txt ? txt.split('\n').map((t, i) => <p key={i} className={styles1.example}>{t}</p>) : txt;
+          return txt
+            ? txt.split('\n').map((t, i) => (
+                <p key={i} className={styles1.example}>
+                  {t}
+                </p>
+              ))
+            : txt;
         },
       },
       { title: '推荐接收人', dataIndex: 'accepter', key: 'accepter' },
-      { title: '手机状态栏通知', dataIndex: 'check', key: 'check', align: 'center',
+      {
+        title: '手机状态栏通知',
+        dataIndex: 'check',
+        key: 'check',
+        align: 'center',
         render: (txt, record) => {
           const { id } = record;
           const [indeterminate, checked] = getChecked(msgs[id] ? msgs[id][0] : 0);
-          return <Checkbox indeterminate={indeterminate} checked={checked} onChange={this.genHandleCheck(id, 0)} />;
+          return (
+            <Checkbox
+              indeterminate={indeterminate}
+              checked={checked}
+              onChange={this.genHandleCheck(id, 0)}
+            />
+          );
         },
       },
-      { title: 'app内部消息通知', dataIndex: 'check1', key: 'check1', align: 'center',
+      {
+        title: 'app内部消息通知',
+        dataIndex: 'check1',
+        key: 'check1',
+        align: 'center',
         render: (txt, record) => {
           const { id } = record;
           const [indeterminate, checked] = getChecked(msgs[id] ? msgs[id][1] : 0);
-          return <Checkbox indeterminate={indeterminate} checked={checked} onChange={this.genHandleCheck(id, 1)} />;
+          return (
+            <Checkbox
+              indeterminate={indeterminate}
+              checked={checked}
+              onChange={this.genHandleCheck(id, 1)}
+            />
+          );
         },
       },
     ];
 
     return (
       <TabPane tab="消息订阅配置" key="2" className={styles1.tabPane1}>
-        <p>若勾选手机状态栏通知，则app内部消息通知必选；若app内部消息通知未勾选，则手机状态栏通知也不能勾选。</p>
+        <p>
+          若勾选手机状态栏通知，则app内部消息通知必选；若app内部消息通知未勾选，则手机状态栏通知也不能勾选。
+        </p>
         <Table
           rowKey="id"
           className={styles1.table}
@@ -1598,12 +1660,16 @@ export default class AssociatedUnit extends PureComponent {
   render() {
     const {
       loading,
-      match: { params: { userId } },
+      match: {
+        params: { userId },
+      },
     } = this.props;
     const title = userId ? editTitle : addTitle;
     const content = (
       <div>
-        <p className={styles.desc}>{userId ? '编辑关联单位信息' : '新增账号关联单位，一个账号可关联多家单位'}</p>
+        <p className={styles.desc}>
+          {userId ? '编辑关联单位信息' : '新增账号关联单位，一个账号可关联多家单位'}
+        </p>
       </div>
     );
 

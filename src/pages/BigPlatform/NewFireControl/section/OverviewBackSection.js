@@ -52,10 +52,7 @@ export default function OverviewBackSection(props) {
             }
           >
             <Ellipsis lines={1} tooltip>
-              {/* <a className={styles.link} href={`${window.publicPath}#/big-platform/fire-control/company/${id}`} target="_blank" rel="noopener noreferrer"> */}
-              {/* 无锡晶安智慧科技有限公司无锡晶安智慧科技有限公司 */}
               {name ? name : NO_DATA}
-              {/* </a> */}
             </Ellipsis>
           </div>
           <p className={styles.safety}>

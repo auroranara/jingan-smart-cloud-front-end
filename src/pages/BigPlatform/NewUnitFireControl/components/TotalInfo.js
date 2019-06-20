@@ -15,7 +15,7 @@ export default class TotalInfo extends PureComponent {
   }
 
   render() {
-    const { data = [] } = this.props;
+    const { data = [], loading = false } = this.props;
     const { active } = this.state;
     return (
       <div className={styles.totalInfo}>
@@ -25,10 +25,12 @@ export default class TotalInfo extends PureComponent {
             <div
               className={active === index ? styles.active : styles.infoItem}
               onClick={() => {
+                if (loading || active === index) return null;
                 this.setState({ active: index });
                 onClick && onClick();
               }}
               key={index}
+              style={{ cursor: loading ? 'wait' : 'pointer' }}
             >
               {name}
               <span className={styles.infoNum} style={{ color }}>

@@ -17,6 +17,7 @@
   position: relative;
   background-color: transparent;
   border: 1px solid rgb(4, 253, 255);
+  overflow: hidden;
 }
 
 .containerNoHover:extend(.container) {
@@ -101,4 +102,18 @@
 .abnormal:extend(.normal) {
   color: @red;
   border-color: @red;
+}
+
+.corner {
+  color: #FFF;
+  width: 100px;
+  height: 20px;
+  line-height: 20px;
+  font-size: 12px;
+  text-align: center;
+  position: absolute;
+  top: 8px;
+  right: -32px;
+  transform: rotateZ(45deg);
+  background-color: rgb(26, 106, 194);
 }

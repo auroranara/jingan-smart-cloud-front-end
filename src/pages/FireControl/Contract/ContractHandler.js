@@ -138,7 +138,14 @@ export default class ContractHandler extends PureComponent {
         payload: {
           id,
         },
-        success: ({ contractAppendix, maintenanceId, companyId, maintenanceName, companyName, companyBranchId }) => {
+        success: ({
+          contractAppendix,
+          maintenanceId,
+          companyId,
+          maintenanceName,
+          companyName,
+          companyBranchId,
+        }) => {
           const contractList = contractAppendix ? JSON.parse(contractAppendix) : [];
           if (contractList.length !== 0) {
             this.setState({
@@ -503,7 +510,7 @@ export default class ContractHandler extends PureComponent {
       loading,
     } = this.props;
     const { filterMaintenanceId, filterCompanyId, uploading } = this.state;
-    const newFilterCompanyId = filterCompanyId ? filterCompanyId.split(' ')[0] : null
+    const newFilterCompanyId = filterCompanyId ? filterCompanyId.split(' ')[0] : null;
     const filterMaintenance = maintenanceList.filter(item => item.id === filterMaintenanceId)[0];
     const filterMaintenanceCompanyId = filterMaintenance && filterMaintenance.companyId;
     const hasListAuthority = hasAuthority(listCode, permissionCodes);
@@ -526,9 +533,9 @@ export default class ContractHandler extends PureComponent {
                   initialValue:
                     maintenanceId && maintenanceName
                       ? {
-                        key: maintenanceId,
-                        label: maintenanceName,
-                      }
+                          key: maintenanceId,
+                          label: maintenanceName,
+                        }
                       : undefined,
                   rules: [
                     {
@@ -568,9 +575,9 @@ export default class ContractHandler extends PureComponent {
                   initialValue:
                     companyId && companyName
                       ? {
-                        key: `${companyId} ${companyBranchId || ''}`,
-                        label: companyName,
-                      }
+                          key: `${companyId} ${companyBranchId || ''}`,
+                          label: companyName,
+                        }
                       : undefined,
                   rules: [
                     {
@@ -597,7 +604,10 @@ export default class ContractHandler extends PureComponent {
                     optionLabelProp="children"
                   >
                     {serviceList.map(item => (
-                      <Option key={`${item.id} ${item.branchId || ''}`} disabled={item.id === filterMaintenanceCompanyId}>
+                      <Option
+                        key={`${item.id} ${item.branchId || ''}`}
+                        disabled={item.id === filterMaintenanceCompanyId}
+                      >
                         {item.name}
                       </Option>
                     ))}

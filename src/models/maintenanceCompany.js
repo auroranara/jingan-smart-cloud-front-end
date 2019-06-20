@@ -16,7 +16,7 @@ import {
   queryServiceSafetyInfo,
   queryServiceMenus,
 } from '../services/maintenanceCompany.js';
-import router from "umi/router";
+import router from 'umi/router';
 import urls from '@/utils/urls';
 const {
   exception: { 500: exceptionUrl },
@@ -124,8 +124,7 @@ export default {
           },
         });
         if (callback) callback(response.data);
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
@@ -163,8 +162,7 @@ export default {
         if (callback) {
           callback();
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
@@ -182,8 +180,7 @@ export default {
         if (success) {
           success();
         }
-      }
-      else if (error) {
+      } else if (error) {
         error(response.msg);
       }
     },
@@ -201,13 +198,18 @@ export default {
         if (success) {
           success();
         }
-      }
-      else if (error) {
+      } else if (error) {
         error(response.msg);
       }
     },
     /* acloud版获取字典 */
-    *fetchDict({ payload: { type, key }, callback }, { call, put }) {
+    *fetchDict(
+      {
+        payload: { type, key },
+        callback,
+      },
+      { call, put }
+    ) {
       const response = yield call(queryDict, { type });
       if (response.code === 200) {
         yield put({
@@ -220,13 +222,18 @@ export default {
         if (callback) {
           callback();
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
     /* gsafe版获取字典 */
-    *gsafeFetchDict({ payload: { type, key }, callback }, { call, put }) {
+    *gsafeFetchDict(
+      {
+        payload: { type, key },
+        callback,
+      },
+      { call, put }
+    ) {
       const response = yield call(gsafeQueryDict, { type });
       if (response.code === 200) {
         yield put({
@@ -239,8 +246,7 @@ export default {
         if (callback) {
           callback();
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
@@ -258,8 +264,7 @@ export default {
         if (callback) {
           callback();
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
@@ -277,8 +282,7 @@ export default {
         if (callback) {
           callback();
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
@@ -296,8 +300,7 @@ export default {
         if (callback) {
           callback(response.data);
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
@@ -315,8 +318,7 @@ export default {
         if (callback) {
           callback(response.data);
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
@@ -334,8 +336,7 @@ export default {
         if (callback) {
           callback(response.data);
         }
-      }
-      else {
+      } else {
         router.push(exceptionUrl);
       }
     },
@@ -397,7 +398,12 @@ export default {
       };
     },
     /* 保存字段 */
-    save(state, { payload: { key, value } }) {
+    save(
+      state,
+      {
+        payload: { key, value },
+      }
+    ) {
       return {
         ...state,
         [key]: value,
@@ -408,7 +414,7 @@ export default {
       return {
         ...state,
         searchInfo: payload || null,
-      }
+      };
     },
     initPageNum(state, { payload }) {
       return {
@@ -422,7 +428,7 @@ export default {
             pageNum: 1,
           },
         },
-      }
+      };
     },
   },
 };

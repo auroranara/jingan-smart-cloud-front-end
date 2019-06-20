@@ -1241,10 +1241,10 @@ export default class UnitFireControl extends PureComponent {
               );
             })
           ) : (
-              <div className={styles.hostIsEmpty}>
-                <span>暂无主机</span>
-              </div>
-            )}
+            <div className={styles.hostIsEmpty}>
+              <span>暂无主机</span>
+            </div>
+          )}
         </Section>
       </Rotate>
     );

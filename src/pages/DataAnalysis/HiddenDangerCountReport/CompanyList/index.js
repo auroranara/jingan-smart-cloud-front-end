@@ -40,21 +40,14 @@ export default class CompanyList extends PureComponent {
   constructor(props) {
     super(props);
     const {
-      user: {
-        currentUser: {
-          unitType,
-        }={},
-      },
+      user: { currentUser: { unitType } = {} },
     } = props;
     if (unitType === 4) {
       this.goToDetail();
     }
     mapMutations(this, {
       namespace: 'hiddenDangerCountReport',
-      types: [
-        'fetchCompanyList',
-        'fetchGridDict',
-      ],
+      types: ['fetchCompanyList', 'fetchGridDict'],
     });
   }
 
@@ -63,9 +56,9 @@ export default class CompanyList extends PureComponent {
     this.getCompanyList();
   }
 
-  setFormReference = (toobar) => {
+  setFormReference = toobar => {
     this.form = toobar && toobar.props && toobar.props.form;
-  }
+  };
 
   getValues() {
     const values = this.form.getFieldsValue();
@@ -73,7 +66,7 @@ export default class CompanyList extends PureComponent {
     return fields;
   }
 
-  getCompanyList = (params) => {
+  getCompanyList = params => {
     const values = this.getValues();
     this.fetchCompanyList({
       pageNum: 1,
@@ -81,33 +74,27 @@ export default class CompanyList extends PureComponent {
       ...values,
       ...params,
     });
-  }
+  };
 
-  goToDetail = (data) => {
+  goToDetail = data => {
     if (data) {
       sessionStorage.setItem('HIDDEN_DANGER_COUNT_REPORT', JSON.stringify(data));
     }
     router.push('/data-analysis/hidden-danger-count-report/detail');
-  }
+  };
 
   handleSearch = () => {
     this.getCompanyList();
-  }
+  };
 
   handleReset = () => {
     this.getCompanyList();
-  }
+  };
 
   /* 滚动加载 */
   handleLoadMore = () => {
     const {
-      hiddenDangerCountReport: {
-        companyList: {
-          pagination: {
-            pageNum=1,
-          }={},
-        }={},
-      },
+      hiddenDangerCountReport: { companyList: { pagination: { pageNum = 1 } = {} } = {} },
     } = this.props;
     this.getCompanyList({
       pageNum: pageNum + 1,
@@ -116,40 +103,26 @@ export default class CompanyList extends PureComponent {
 
   handleCardClick = ({ id, name }) => {
     this.goToDetail({ id, name });
-  }
+  };
 
   renderForm() {
     const {
-      hiddenDangerCountReport: {
-        gridDict=[],
-      },
-      user: {
-        currentUser: {
-          unitType,
-        }={},
-      },
+      hiddenDangerCountReport: { gridDict = [] },
+      user: { currentUser: { unitType } = {} },
     } = this.props;
     const fields = [
       {
         id: 'name',
         label: '单位名称',
-        render: () => (
-          <Input
-            placeholder="请输入"
-          />
-        ),
+        render: () => <Input placeholder="请输入" />,
       },
     ];
-    if (unitType !== 1) { // 维保不显示网格
+    if (unitType !== 1) {
+      // 维保不显示网格
       fields.unshift({
         id: 'gridId',
         label: '所属网格',
-        render: () => (
-          <CustomTreeSelect
-            data={gridDict}
-            fieldNames={GRID_FIELD_NAMES}
-          />
-        ),
+        render: () => <CustomTreeSelect data={gridDict} fieldNames={GRID_FIELD_NAMES} />,
       });
     }
     return (
@@ -167,11 +140,7 @@ export default class CompanyList extends PureComponent {
   /* 渲染列表 */
   renderList() {
     const {
-      hiddenDangerCountReport: {
-        companyList: {
-          list=[],
-        }={},
-      },
+      hiddenDangerCountReport: { companyList: { list = [] } = {} },
     } = this.props;
     return (
       <div className={styles.cardList}>
@@ -199,7 +168,9 @@ export default class CompanyList extends PureComponent {
               practicalDistrictLabel,
               practicalTownLabel,
               practicalAddress,
-            ].filter(v => v).join('');
+            ]
+              .filter(v => v)
+              .join('');
             return (
               <List.Item key={id}>
                 <Card
@@ -239,12 +210,8 @@ export default class CompanyList extends PureComponent {
     const {
       hiddenDangerCountReport: {
         companyList: {
-          pagination: {
-            pageNum=1,
-            pageSize=DEFAULT_PAGE_SIZE,
-            total=0,
-          }={},
-        }={},
+          pagination: { pageNum = 1, pageSize = DEFAULT_PAGE_SIZE, total = 0 } = {},
+        } = {},
       },
       loading,
     } = this.props;

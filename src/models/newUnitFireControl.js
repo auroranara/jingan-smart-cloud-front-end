@@ -62,6 +62,11 @@ import {
   getFaultDetail,
   countAllFireAndFault,
   countFinishByUserId,
+  messageInformList,
+  countNumAndTimeById,
+  getAllScreenMessage,
+  getAllDetail,
+  getDangerChartId,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -350,6 +355,9 @@ export default {
     waterSystemData: {
       list: [],
     },
+    waterDrawer: {
+      list: [],
+    },
     waterAlarm: [],
     warnDetail: {
       pagination: {
@@ -369,12 +377,27 @@ export default {
       },
       list: [],
     },
+    allDetail: {
+      pagination: {
+        total: 0,
+        pageNum: 1,
+        pageSize: 10,
+        listSize: 0,
+      },
+      list: [],
+    },
     countAllFireAndFault: {
       finishNum: 0,
       processNum: 0,
       waitNum: 0,
     },
     countFinishByUserId: [0, 0, 0, 0],
+    messageInformList: [],
+    countNumAndTimeById: {},
+    dangerChartId: {
+      fireId: [],
+      faultId: [],
+    },
   },
 
   subscriptions: {
@@ -830,6 +853,21 @@ export default {
         error();
       }
     },
+    // 获取大屏消息
+    *fetchAllScreenMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getAllScreenMessage, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'screenMessage',
+          payload: response.data || { list: [] },
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
     *fetchWebsocketScreenMessage({ payload, success, error }, { call, put }) {
       console.log('fetchWebsocketScreenMessage', payload);
       if (payload.code === 200) {
@@ -858,14 +896,18 @@ export default {
       }
     },
     // 维保工单列表或维保处理动态
-    *fetchWorkOrder({ payload }, { call, put }) {
+    *fetchWorkOrder({ payload, callback }, { call, put }) {
       const response = yield call(queryWorkOrder, payload);
       if (response && response.code === 200) {
         yield put({
-          type: payload.id ? 'saveWorkOrderDetail' : `saveWorkOrderList${payload.status}`,
+          type:
+            payload.id || payload.dataId
+              ? 'saveWorkOrderDetail'
+              : `saveWorkOrderList${payload.status}`,
           payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
         });
       }
+      if (callback) callback(response);
     },
     // 获取火灾报警系统巡检记录
     *fetchCheckRecord({ payload }, { call, put }) {
@@ -945,6 +987,17 @@ export default {
       }
     },
     // 水系统
+    *fetchWaterDrawer({ payload, callback }, { call, put }) {
+      const response = yield call(queryWaterSystem, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveWaterDrawer',
+          payload: response.data,
+        });
+      }
+      if (callback) callback(response.data);
+    },
+    // 水系统
     *fetchWaterAlarm({ payload, callback }, { call, put }) {
       const response1 = yield call(queryWaterSystem, { ...payload, type: 101 });
       const response2 = yield call(queryWaterSystem, { ...payload, type: 102 });
@@ -1006,6 +1059,38 @@ export default {
         }
       }
     },
+    // 获取警报,故障数据详情
+    *fetchAllDetail({ payload, success }, { call, put }) {
+      const response = yield call(getAllDetail, payload);
+      const {
+        code,
+        data: { list, pagination },
+      } = response;
+      if (code === 200) {
+        yield put({
+          type: 'allDetail',
+          payload: {
+            list,
+            pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
+          },
+          append: payload.pageNum !== 1,
+        });
+        if (success) {
+          success();
+        }
+      }
+    },
+    // 消防主机当前火警和故障ids
+    *fetchDangerChartId({ payload, callback }, { call, put }) {
+      const response = yield call(getDangerChartId, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'dangerChartId',
+          payload: response.data,
+        });
+      }
+      if (callback) callback(response.data);
+    },
     // 处理工单统计
     *fetchCountAllFireAndFault({ payload }, { call, put }) {
       const response = yield call(countAllFireAndFault, payload);
@@ -1034,6 +1119,27 @@ export default {
           ],
         });
       }
+    },
+    // 消息人员
+    *fetchMessageInformList({ payload }, { call, put }) {
+      const response = yield call(messageInformList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'messageInformList',
+          payload: response.data || { list: [] },
+        });
+      }
+    },
+    // 重复上报次数和最后一次时间
+    *fetchCountNumAndTimeById({ payload, callback }, { call, put }) {
+      const response = yield call(countNumAndTimeById, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'countNumAndTimeById',
+          payload: response.data,
+        });
+      }
+      if (callback) callback(response.data);
     },
   },
 
@@ -1238,6 +1344,12 @@ export default {
         waterSystemData: payload,
       };
     },
+    saveWaterDrawer(state, { payload }) {
+      return {
+        ...state,
+        waterDrawer: payload,
+      };
+    },
     waterAlarm(state, { payload }) {
       const waterAlarm = payload.map(item => {
         return !!item.filter(item => {
@@ -1293,6 +1405,39 @@ export default {
       return {
         ...state,
         countFinishByUserId: payload,
+      };
+    },
+    messageInformList(state, { payload }) {
+      return {
+        ...state,
+        messageInformList: payload.list,
+      };
+    },
+    countNumAndTimeById(state, { payload }) {
+      return {
+        ...state,
+        countNumAndTimeById: payload,
+      };
+    },
+    allDetail(state, { payload, append }) {
+      if (append) {
+        return {
+          ...state,
+          allDetail: {
+            pagination: payload.pagination,
+            list: state.allDetail.list.concat(payload.list),
+          },
+        };
+      }
+      return {
+        ...state,
+        allDetail: payload,
+      };
+    },
+    dangerChartId(state, { payload }) {
+      return {
+        ...state,
+        dangerChartId: payload,
       };
     },
   },

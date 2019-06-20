@@ -4,6 +4,7 @@ import DescriptionList from 'components/DescriptionList';
 import DrawerContainer from '../components/DrawerContainer';
 import ImgSlider from '../components/ImgSlider';
 import ReactEcharts from 'echarts-for-react';
+import { vaguePhone } from '../utils';
 import styles from './MaintenanceCheckDrawer.less';
 
 const getEmptyData = () => {
@@ -11,7 +12,6 @@ const getEmptyData = () => {
 };
 const { Description } = DescriptionList;
 const statusColor = ['#ff4848', '#ffb650', '#04fdff'];
-
 
 const isVague = false;
 function nameToVague(str) {
@@ -109,6 +109,7 @@ export default class MaintenanceCheckDrawer extends PureComponent {
           score = '',
         },
       },
+      phoneVisible,
     } = this.props;
 
     return (
@@ -134,9 +135,7 @@ export default class MaintenanceCheckDrawer extends PureComponent {
                   return (
                     <Col span={12}>
                       {isVague ? nameToVague(userName) : userName}
-                      <span className={styles.phone}>
-                        {isVague ? phoneToVague(phoneNumber) : phoneNumber}
-                      </span>
+                      <span className={styles.phone}>{vaguePhone(phoneNumber, phoneVisible)}</span>
                     </Col>
                   );
                 })}

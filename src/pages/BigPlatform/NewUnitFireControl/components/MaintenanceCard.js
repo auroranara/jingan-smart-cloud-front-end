@@ -5,10 +5,10 @@ import { Timeline } from 'antd';
 import styles from './MaintenanceCard.less';
 import TimelineItem from './TimelineItem';
 import ImgSlider from './ImgSlider';
+import { vaguePhone } from '../utils';
 import flowImg from '../imgs/flow_m.png';
 
 const ID = 'maintenance-drawer';
-
 
 const isVague = false;
 function nameToVague(str) {
@@ -33,7 +33,7 @@ function getContainer() {
 }
 
 function Occured(props) {
-  const { position, type, safety, phone } = props;
+  const { position, type, safety, phone, phoneVisible } = props;
 
   return (
     <div className={styles.card}>
@@ -41,42 +41,42 @@ function Occured(props) {
       <p>{type} 发生故障</p>
       <p>
         安全管理员：
-        {isVague ? nameToVague(safety) : safety} {isVague ? phoneToVague(phone) : phone}
+        {isVague ? nameToVague(safety) : safety} {vaguePhone(phone, phoneVisible)}
       </p>
     </div>
   );
 }
 
 function Received(props) {
-  const { man, phone, companyName } = props;
+  const { man, phone, companyName, phoneVisible } = props;
 
   return (
     <div className={styles.card}>
       <p>
-        维修单位：
+        处理单位：
         {companyName}
       </p>
       <p>
-        维修人员：
-        {isVague ? nameToVague(man) : man} {isVague ? phoneToVague(phone) : phone}
+        处理人员：
+        {isVague ? nameToVague(man) : man} {vaguePhone(phone, phoneVisible)}
       </p>
     </div>
   );
 }
 
 function Handled(props) {
-  const { man, phone, feedback, imgs, companyName } = props;
+  const { man, phone, feedback, imgs, companyName, phoneVisible } = props;
 
   return (
     <div className={styles.card}>
-      <p>故障已处理完毕！</p>
+      {/* <p>故障已处理完毕！</p> */}
       <p>
-        维修单位：
+        处理单位：
         {companyName}
       </p>
       <p>
-        维修人员：
-        {isVague ? nameToVague(man) : man} {isVague ? phoneToVague(phone) : phone}
+        处理人员：
+        {isVague ? nameToVague(man) : man} {vaguePhone(phone, phoneVisible)}
       </p>
       <p>
         结果反馈：
@@ -128,7 +128,7 @@ const HOST_FAULT_DESC = '维修难度较大，指派维保';
 
 export default function MaintenanceCard(props) {
   // type 1 已完成(处理完毕)   2 待处理(看status)   7 已超期(看status)
-  const { type, data, isMaintenance, ...restProps } = props;
+  const { type, data, isMaintenance, phoneVisible, ...restProps } = props;
   const {
     nstatus, // undefined -> 第一步 '2' -> 待处理  '0' -> 处理中  '1' -> 已处理
     reportPhotos,
@@ -188,6 +188,7 @@ export default function MaintenanceCard(props) {
               type={label || systemTypeValue || NO_DATA}
               safety={safetyPerson || NO_DATA}
               phone={safetyPhone || NO_DATA}
+              phoneVisible={phoneVisible}
             />
           </TimelineItem>
 
@@ -202,6 +203,7 @@ export default function MaintenanceCard(props) {
                 man={startByName || NO_DATA}
                 phone={startByPhone || NO_DATA}
                 companyName={startCompanyName || NO_DATA}
+                phoneVisible={phoneVisible}
               />
             )}
           </TimelineItem>
@@ -219,6 +221,7 @@ export default function MaintenanceCard(props) {
                 feedback={disaster_desc || NO_DATA}
                 companyName={finishCompanyName || NO_DATA}
                 imgs={sitePhotos}
+                phoneVisible={phoneVisible}
               />
             )}
           </TimelineItem>

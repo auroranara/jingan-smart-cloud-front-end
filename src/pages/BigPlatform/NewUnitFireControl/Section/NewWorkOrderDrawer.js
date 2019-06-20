@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
-import { Spin } from 'antd';
+import { Spin, Tooltip } from 'antd';
 import TotalInfo from '../components/TotalInfo';
+import { vaguePhone } from '../utils';
 // import LoadMoreButton from '../../Safety/Company3/components/LoadMoreButton';
 import LoadMore from '@/components/LoadMore'; // 加载更多按钮
 import styles from './NewWorkOrderDrawer.less';
@@ -24,7 +25,10 @@ function OrderCard(props) {
     data,
     workOrderType = 0,
     workOrderStatus,
-    ...restProps
+    // onClick,
+    phoneVisible,
+    showWorkOrderDetail,
+    // ...restProps
   } = props;
   const timeStr = workOrderType === 3 && type === 1 ? '报修' : TYPES[type];
 
@@ -43,11 +47,17 @@ function OrderCard(props) {
     workOrder, // 工单编号
     systemTypeValue, // 一键报修名称
     fireChildren,
-    sdeviceName,
+    // sdeviceName,
     createByName,
     createByPhone,
     executorName,
     phone,
+    id,
+    gasId,
+    firstTime,
+    lastTime,
+    faultName,
+    proceId,
   } = data;
   const titles = [componentName, area + location, area + location, systemTypeValue];
   const listItems = [
@@ -60,23 +70,23 @@ function OrderCard(props) {
             : componentNo,
       },
       { name: '详细位置', value: installAddress },
-      { name: `${timeStr}时间`, value: formatTime(createTime) },
+      { name: `${timeStr}时间`, value: formatTime(firstTime) },
     ],
     [
       { name: '所在区域', value: area },
       { name: '所在位置', value: location },
-      { name: `${timeStr}时间`, value: formatTime(realtime) },
+      { name: `${timeStr}时间`, value: formatTime(firstTime) },
     ],
     [
       { name: '报警值', value: `LEL(${realTimeData}%)` },
       { name: '所在区域', value: area },
       { name: '所在位置', value: location },
-      { name: `${timeStr}时间`, value: formatTime(realtime) },
+      { name: `${timeStr}时间`, value: formatTime(firstTime) },
     ],
     [
       { name: '工单编号', value: workOrder },
       { name: `${timeStr}时间`, value: formatTime(createDate) },
-      { name: '报修人员', value: `${createByName} ${createByPhone}` },
+      { name: '报修人员', value: `${createByName} ${vaguePhone(createByPhone, phoneVisible)}` },
     ],
   ];
   let statusStr;
@@ -105,7 +115,7 @@ function OrderCard(props) {
       statusStr = `已维修完毕`;
       listItems[workOrderType].push({
         name: '维修人员',
-        value: `${executorName} ${phone}`,
+        value: `${executorName} ${vaguePhone(phone, phoneVisible)}`,
       });
     }
   }
@@ -128,7 +138,9 @@ function OrderCard(props) {
             </div>
           )}
         <p className={styles.name}>
-          {titles[workOrderType] || ''}
+          <Tooltip placement={'bottomLeft'} title={titles[workOrderType]}>
+            <span className={styles.cardName}>{titles[workOrderType] || ''}</span>
+          </Tooltip>
           {workOrderType !== 3 && (
             <span className={styles.info}>
               {type === 0 ? LABELS[workOrderType][type] : LABELS[workOrderType][type]}
@@ -147,7 +159,52 @@ function OrderCard(props) {
         <p>
           <span className={styles.left}>当前状态：</span>
           <span style={{ color: '#00ffff' }}>{statusStr}</span>
-          <span className={styles.moreDetail}>处理动态>></span>
+          <span
+            className={styles.moreDetail}
+            onClick={() => {
+              const param = {
+                id: workOrderType === 3 ? proceId : undefined,
+                dataId:
+                  workOrderType !== 3
+                    ? workOrderType === 2 || workOrderType === 1
+                      ? gasId
+                      : id
+                    : undefined,
+              };
+              const repeat = {
+                times: fireChildren && fireChildren.length,
+                lastreportTime: lastTime,
+              };
+              const occurData = [
+                {
+                  create_time: createTime,
+                  create_date: createDate,
+                  firstTime,
+                  lastTime,
+                  area,
+                  location,
+                  install_address: installAddress,
+                  label: componentName || systemTypeValue,
+                  work_order: workOrder,
+                  systemTypeValue,
+                  createByName,
+                  createByPhone,
+                  faultName,
+                  realtime,
+                  num: fireChildren && fireChildren.length,
+                },
+              ];
+
+              showWorkOrderDetail(
+                param,
+                workOrderType,
+                type,
+                workOrderStatus === 0 ? occurData : undefined
+              );
+            }}
+          >
+            处理动态>>
+          </span>
         </p>
       </div>
     </div>
@@ -155,20 +212,17 @@ function OrderCard(props) {
 }
 
 export default class NewWorkOrderDrawer extends PureComponent {
-  state = { isWarned: false };
-
   render() {
     const {
-      warnDetail: {
-        pagination: { listSize: total, pageNum, pageSize },
-        list: warnDetailList,
-      },
-      faultDetail: {
-        pagination: { listSize: totalFault, pageNum: pageNumFault, pageSize: pageSizeFault },
-        list: faultDetailList,
-      },
+      // warnDetail: {
+      //   pagination: { listSize: total, pageNum, pageSize },
+      //   list: warnDetailList,
+      // },
+      // faultDetail: {
+      //   pagination: { listSize: totalFault, pageNum: pageNumFault, pageSize: pageSizeFault },
+      //   list: faultDetailList,
+      // },
       countFinishByUserId,
-      handleCardClick,
       data,
       onClose,
       handleClickTab,
@@ -179,6 +233,14 @@ export default class NewWorkOrderDrawer extends PureComponent {
       faultDetailLoading,
       getWarnDetail,
       getFaultDetail,
+      showWorkOrderDetail,
+      phoneVisible,
+      allDetailLoading,
+      allDetail: {
+        pagination: { listSize: total, pageNum, pageSize },
+        list: allDetailList,
+      },
+      getAllDetail,
       ...restProps
     } = this.props;
 
@@ -203,80 +265,77 @@ export default class NewWorkOrderDrawer extends PureComponent {
         color: '#fff',
         value: countFinishByUserId[index],
         onClick: () => {
-          [0, 1].forEach(item => {
-            if (document.getElementById(`workOrderScroll${item}`))
-              document.getElementById(`workOrderScroll${item}`).scrollTop = 0;
-          });
+          if (document.getElementById(`workOrderScroll`))
+            document.getElementById(`workOrderScroll`).scrollTop = 0;
           handleClickTab(index);
         },
+        // warnDetailLoading || faultDetailLoading
+        //   ? undefined
+        //   : () => {
+        //       [0, 1].forEach(item => {
+        //         if (document.getElementById(`workOrderScroll${item}`))
+        //           document.getElementById(`workOrderScroll${item}`).scrollTop = 0;
+        //       });
+        //       handleClickTab(index);
+        //     },
       };
     });
-
+    const isLoadMore = pageNum * pageSize < total;
     const left = (
       <div className={styles.container}>
-        <TotalInfo data={topData} active={workOrderType} />
-        {[0, 1].map(type => {
-          if (type === 0 && workOrderType === 3) return null;
-          if (type === 1 && workOrderType === 2) return null;
-          const newList = type === 0 ? warnDetailList : faultDetailList;
-          const isLoadMore =
-            type === 0 ? pageNum * pageSize < total : pageNumFault * pageSizeFault < totalFault;
-          return (
-            <div className={styles.cards} key={type}>
-              <Spin
-                spinning={type === 0 ? warnDetailLoading : faultDetailLoading}
-                wrapperClassName={styles.spin}
-              >
-                <div className={styles.scrollContainer} id={`workOrderScroll${type}`}>
-                  {newList.length > 0 ? (
-                    <div style={{ height: '100%' }}>
-                      {newList.map((item, index) => (
-                        <OrderCard
-                          key={index}
-                          type={type}
-                          data={item}
-                          workOrderType={workOrderType}
-                          workOrderStatus={workOrderStatus}
-                          onClick={e => handleCardClick(item)}
-                        />
-                      ))}
-                      {isLoadMore && (
-                        <div className={styles.loadMoreWrapper}>
-                          <LoadMore
-                            onClick={() => {
-                              type === 0
-                                ? getWarnDetail(workOrderStatus, workOrderType, pageNum + 1)
-                                : getFaultDetail(workOrderStatus, workOrderType, pageNumFault + 1);
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                      <div
-                        style={{
-                          height: '100%',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          textAlign: 'center',
-                          color: '#4f6793',
-                          alignItems: 'center',
-                          justifyContent: 'center',
+        <TotalInfo data={topData} active={workOrderType} loading={allDetailLoading} />
+        <div className={styles.cards}>
+          <Spin spinning={allDetailLoading} wrapperClassName={styles.spin}>
+            <div className={styles.scrollContainer} id={`workOrderScroll`}>
+              {allDetailList.length > 0 ? (
+                <div style={{ height: '100%' }}>
+                  {allDetailList.map((item, index) => {
+                    const { fireType } = item;
+                    return (
+                      <OrderCard
+                        key={index}
+                        type={+fireType - 1}
+                        data={item}
+                        workOrderType={workOrderType}
+                        workOrderStatus={workOrderStatus}
+                        showWorkOrderDetail={showWorkOrderDetail}
+                        phoneVisible={phoneVisible}
+                      />
+                    );
+                  })}
+                  {isLoadMore && (
+                    <div className={styles.loadMoreWrapper}>
+                      <LoadMore
+                        onClick={() => {
+                          getAllDetail(workOrderStatus, workOrderType, pageNum + 1);
                         }}
-                      >
-                        <img
-                          src={noData}
-                          style={{ width: '36%', height: 'auto', marginTop: '-150px' }}
-                          alt="noData"
-                        />
-                        <div style={{ marginTop: '15px' }}>暂无工单</div>
-                      </div>
-                    )}
+                      />
+                    </div>
+                  )}
                 </div>
-              </Spin>
+              ) : (
+                <div
+                  style={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    textAlign: 'center',
+                    color: '#4f6793',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <img
+                    src={noData}
+                    style={{ width: '36%', height: 'auto', marginTop: '-150px' }}
+                    alt="noData"
+                  />
+                  <div style={{ marginTop: '15px' }}>暂无工单</div>
+                </div>
+              )}
             </div>
-          );
-        })}
+          </Spin>
+        </div>
       </div>
     );
 
@@ -286,6 +345,7 @@ export default class NewWorkOrderDrawer extends PureComponent {
         width={535}
         left={left}
         destroyOnClose={true}
+        zIndex={1040}
         onClose={() => {
           onClose();
           setTimeout(() => {

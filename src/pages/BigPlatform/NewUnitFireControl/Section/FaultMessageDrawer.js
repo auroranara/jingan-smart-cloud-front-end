@@ -7,7 +7,6 @@ import DrawerContainer from '../components/DrawerContainer';
 import TimelineItem from '../components/TimelineItem';
 import flowImg from '../imgs/flow_m.png';
 
-
 const isVague = false;
 function nameToVague(str) {
   let newStr = '';
