@@ -7,15 +7,15 @@ import bakFlag from '@/assets/bac-flag.png'
 import bakFlagFill from '@/assets/bac-flag-fill.png'
 import cameraImg from '@/pages/BigPlatform/NewUnitFireControl/imgs/cameralogo.png'
 
-const users = new Array(17).fill({
-  id: '1',
-  name: '张三丰',
-});
+// const users = new Array(17).fill({
+//   id: '1',
+//   name: '张三丰',
+// });
 
-const users2 = new Array(11).fill({
-  id: '2',
-  name: '张丰',
-});
+// const users2 = new Array(11).fill({
+//   id: '2',
+//   name: '张丰',
+// });
 const getEmptyData = () => {
   return '暂无数据';
 };
@@ -108,7 +108,7 @@ export default class DynamicDrawerTop extends Component {
             </div>
           )}
           {/* 视频 */}
-          {videoList && videoList.length > 0 && (
+          {dynamicType !== 3&&videoList && videoList.length > 0 && (
             <div
               onClick={this.handleCameraClick}
               className={styles.cameraContainer}
