@@ -4,7 +4,7 @@ const { TreeNode } = TreeSelect;
 
 export const LIST_PAGE_SIZE = 24;
 
-export const MAI = 1; // 运维
+export const MAI = 1; // 维保
 export const GOV = 2; // 政府
 export const OPE = 3; // 运营
 export const COM = 4; // 企事业

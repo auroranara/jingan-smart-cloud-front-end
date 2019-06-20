@@ -126,9 +126,9 @@ export default class MaintenanceCheckDrawer extends PureComponent {
 
         <div className={styles.content} style={{ marginTop: '20px' }}>
           <DescriptionList col={1}>
-            <Description term="运维单位">{checkCompanyName}</Description>
-            <Description term="运维时间">{checkDate}</Description>
-            <Description term="运维人员">
+            <Description term="维保单位">{checkCompanyName}</Description>
+            <Description term="维保时间">{checkDate}</Description>
+            <Description term="维保人员">
               <Row>
                 {checkUsers.map(data => {
                   const { userName, phoneNumber } = data;
@@ -147,7 +147,7 @@ export default class MaintenanceCheckDrawer extends PureComponent {
 
         <div className={styles.content}>
           <DescriptionList col={1}>
-            <Description term="运维内容">
+            <Description term="维保内容">
               {items.map(data => {
                 const { content, statusName, status } = data;
                 const statusStyle = {
@@ -185,7 +185,7 @@ export default class MaintenanceCheckDrawer extends PureComponent {
     const { ...restProps } = this.props;
 
     return (
-      <DrawerContainer title="运维巡检" width={535} left={this.renderContent()} {...restProps} />
+      <DrawerContainer title="维保巡检" width={535} left={this.renderContent()} {...restProps} />
     );
   }
 }

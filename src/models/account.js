@@ -294,7 +294,7 @@ export default {
         error(response.msg);
       }
     },
-    // 运维权限树
+    // 维保权限树
     *fetchMaintenanceTree({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceTree, payload);
       if (response && response.code === 200) {

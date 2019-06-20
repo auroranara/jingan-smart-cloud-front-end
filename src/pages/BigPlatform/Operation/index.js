@@ -268,9 +268,13 @@ export default class Operation extends PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const { operation: { unitList } } = this.props;
+    const {
+      operation: { unitList },
+    } = this.props;
     const { deviceType } = this.state;
-    const { operation: { unitList: prevUnitList } } = prevProps;
+    const {
+      operation: { unitList: prevUnitList },
+    } = prevProps;
     const { deviceType: prevDeviceType } = prevState;
     if (unitList !== prevUnitList || deviceType !== prevDeviceType) {
       this.setState({ unitList: getUnitList(unitList, deviceType) });
@@ -380,14 +384,21 @@ export default class Operation extends PureComponent {
   closeNotification = id => {
     notification.close(id);
     const index = this.messageIds.indexOf(id);
-    [this.messageIds, this.messageTimers, this.messageCloseTimers] = [this.messageIds, this.messageTimers, this.messageCloseTimers].map(list => list.filter((n, i) => i !== index));
+    [this.messageIds, this.messageTimers, this.messageCloseTimers] = [
+      this.messageIds,
+      this.messageTimers,
+      this.messageCloseTimers,
+    ].map(list => list.filter((n, i) => i !== index));
   };
 
   closeExcessNotification = () => {
-    if (this.messageIds.length <= NOTIFICATION_MAX)
-      return;
+    if (this.messageIds.length <= NOTIFICATION_MAX) return;
 
-    const [restId, restTimer, restCloseTimer] = [this.messageIds, this.messageTimers, this.messageCloseTimers].map(list => list[NOTIFICATION_MAX]);
+    const [restId, restTimer, restCloseTimer] = [
+      this.messageIds,
+      this.messageTimers,
+      this.messageCloseTimers,
+    ].map(list => list[NOTIFICATION_MAX]);
     this.closeNotification(restId);
     [restTimer, restCloseTimer].forEach(timer => clearTimeout(timer));
   };
@@ -532,7 +543,9 @@ export default class Operation extends PureComponent {
 
   // 地图搜索
   fetchMapSearchData = value => {
-    const { operation: { unitList } } = this.props;
+    const {
+      operation: { unitList },
+    } = this.props;
     const { deviceType } = this.state;
     const list = getUnitList(unitList, deviceType);
     const selectList = value ? list.filter(item => item.companyName.includes(value)) : [];
@@ -550,13 +563,9 @@ export default class Operation extends PureComponent {
   };
 
   handleVideoOpen = () => {
+    const { dispatch } = this.props;
     const {
-      dispatch,
-    } = this.props;
-    const {
-      company: {
-        companyId,
-      },
+      company: { companyId },
       videoList = [],
     } = this.state;
     if (videoList && videoList.length) {
@@ -565,7 +574,7 @@ export default class Operation extends PureComponent {
         videoList,
         videoKeyId: videoList && videoList[0] && videoList[0].key_id,
       });
-      return
+      return;
     }
     // dispatch({
     //   type: 'operation/fetchVideoList',
@@ -745,25 +754,27 @@ export default class Operation extends PureComponent {
       lastTime,
       createTime,
     } = data;
-    const dataId = ({ 1: id, 4: id || gasId, 2: proceId })[reportType];
+    const dataId = { 1: id, 4: id || gasId, 2: proceId }[reportType];
     dispatch({
       type: 'operation/fetchCameraMessage',
       payload: {
         id: dataId,
         reportType,
       },
-      callback: (cameraMessage) => {
+      callback: cameraMessage => {
         const param = {
           dataId,
           id: dataId,
           companyName: companyName || undefined,
-          component: `${componentRegion || typeof componentRegion === 'number' ? `${componentRegion}回路` : ''}${
-            componentNo || typeof componentNo === 'number' ? `${componentNo}号` : ''
-          }` || undefined,
+          component:
+            `${
+              componentRegion || typeof componentRegion === 'number' ? `${componentRegion}回路` : ''
+            }${componentNo || typeof componentNo === 'number' ? `${componentNo}号` : ''}` ||
+            undefined,
           unitTypeName: componentName || undefined,
           companyId: companyId || undefined,
         };
-        const type = ({ 1: 0, 4: 1, 2: 3 })[reportType];
+        const type = { 1: 0, 4: 1, 2: 3 }[reportType];
         const flow = fireType - 1;
         const occurData = [
           {
@@ -810,7 +821,7 @@ export default class Operation extends PureComponent {
     // repeat,
     cameraMessage = [],
     occurData,
-    cId,
+    cId
   ) => {
     // type 0/1/2/3 主机/烟感/燃气/一键报修
     // flow 0/1 报警/故障
@@ -866,7 +877,7 @@ export default class Operation extends PureComponent {
         },
       });
     }
-    // 企业负责人和运维员信息
+    // 企业负责人和维保员信息
     dispatch({
       type: 'operation/fetchMaintenanceCompany',
       payload: {
@@ -976,8 +987,8 @@ export default class Operation extends PureComponent {
         headerStyle={HEADER_STYLE}
         titleStyle={{ fontSize: 46 }}
         contentStyle={CONTENT_STYLE}
-      // settable
-      // onSet={this.handleClickSetButton}
+        // settable
+        // onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
         <BackMap
@@ -1009,7 +1020,7 @@ export default class Operation extends PureComponent {
         <div className={styles.leftContainer}>
           {/* 火警数量统计 */}
           <FireCount onClick={this.handleFireDrawerOpen} />
-          {/* 运维任务统计 */}
+          {/* 维保任务统计 */}
           <TaskCount onClick={this.handleTaskDrawerOpen} />
         </div>
         <SettingModal

@@ -63,7 +63,7 @@ const {
         ...action,
       });
     },
-    /* 追加运维合同列表 */
+    /* 追加维保合同列表 */
     appendList(action) {
       dispatch({
         type: 'role/appendList',

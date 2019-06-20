@@ -968,7 +968,7 @@ module.exports = env => {
                 },
               ],
             },
-            // 运维检查报表
+            // 维保检查报表
             {
               path: '/data-analysis/maintenance-report',
               code: 'dataAnalysis.maintenanceReport',

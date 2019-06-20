@@ -26,7 +26,7 @@ const ITEM_MAP = {
   device_address: '详细位置',
   install_address: '详细位置',
   report_desc: '故障描述',
-  unit_name: '运维公司',
+  unit_name: '维保公司',
   number: '回路故障号',
   assign: '维修人员',
 };
@@ -57,7 +57,7 @@ function phoneToVague(str) {
 //   position: '5号楼5楼消防展示厅东侧',
 //   number: '001回路001号 点型光电烟感报警器',
 //   person: '张大龙 13212341234',
-//   companyName: '南京消防运维有限公司',
+//   companyName: '南京消防维保有限公司',
 //   type: Math.random() > 0.5 ? 0 : 1,
 // }));
 

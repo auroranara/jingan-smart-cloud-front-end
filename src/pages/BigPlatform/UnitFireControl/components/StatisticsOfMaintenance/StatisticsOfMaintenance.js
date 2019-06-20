@@ -5,7 +5,7 @@ import Switcher from '../Switcher/Switcher';
 import styles from './StatisticsOfMaintenance.less';
 
 /**
- * 运维情况统计
+ * 维保情况统计
  */
 export default class App extends PureComponent {
   renderSwitchers() {
@@ -70,13 +70,13 @@ export default class App extends PureComponent {
       } = {},
     } = this.props;
 
-    // 总运维数颜色
+    // 总维保数颜色
     const totalColor = '#01A4CA';
-    // 已运维颜色
+    // 已维保颜色
     const repairedColor = '#2787D5';
-    // 待运维颜色
+    // 待维保颜色
     const unrepairedColor = '#D16772';
-    // 运维中颜色
+    // 维保中颜色
     const repairingColor = '#DEAD5C';
 
     // 配置项
@@ -142,7 +142,7 @@ export default class App extends PureComponent {
       },
       series: [
         {
-          name: '总运维数',
+          name: '总维保数',
           type: 'bar',
           data: [maintenanceTotal, localTotal],
           label: {
@@ -154,7 +154,7 @@ export default class App extends PureComponent {
           },
         },
         {
-          name: '已运维',
+          name: '已维保',
           type: 'bar',
           data: [maintenanceRepaired, localRepaired],
           label: {
@@ -166,7 +166,7 @@ export default class App extends PureComponent {
           },
         },
         {
-          name: '待运维',
+          name: '待维保',
           type: 'bar',
           data: [maintenanceUnrepaired, localUnrepaired],
           label: {
@@ -178,7 +178,7 @@ export default class App extends PureComponent {
           },
         },
         {
-          name: '运维中',
+          name: '维保中',
           type: 'bar',
           data: [maintenanceRepairing, localRepairing],
           label: {
@@ -194,7 +194,7 @@ export default class App extends PureComponent {
 
     return (
       <Section
-        title="运维情况统计"
+        title="维保情况统计"
         fixedContent={
           <Fragment>
             <div className={styles.detailContainer}>

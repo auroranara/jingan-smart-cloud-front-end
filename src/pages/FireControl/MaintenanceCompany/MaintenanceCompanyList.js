@@ -35,12 +35,12 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '消防运维',
-    name: '消防运维',
+    title: '消防维保',
+    name: '消防维保',
   },
   {
-    title: '运维单位管理',
-    name: '运维单位管理',
+    title: '维保单位管理',
+    name: '维保单位管理',
   },
 ];
 
@@ -71,28 +71,28 @@ const getRootChild = () => document.querySelector('#root>div');
     loading: loading.models.maintenanceCompany,
   }),
   dispatch => ({
-    // 运维单位列表
+    // 维保单位列表
     fetch(action) {
       dispatch({
         type: 'maintenanceCompany/fetch',
         ...action,
       });
     },
-    // 查询运维单位
+    // 查询维保单位
     appendFetch(action) {
       dispatch({
         type: 'maintenanceCompany/appendFetch',
         ...action,
       });
     },
-    // 删除运维单位
+    // 删除维保单位
     remove(action) {
       dispatch({
         type: 'maintenanceCompany/remove',
         ...action,
       });
     },
-    // 跳转到运维单位详情页
+    // 跳转到维保单位详情页
     goToDetail(url) {
       dispatch(routerRedux.push(url));
     },
@@ -174,7 +174,7 @@ export default class MaintenanceCompanyList extends PureComponent {
       },
       error,
     });
-    // 判断是存了查询信息，并获取运维单位列表
+    // 判断是存了查询信息，并获取维保单位列表
     if (searchInfo) {
       // const { industryCategory } = searchInfo
       setFieldsValue(searchInfo);
@@ -207,8 +207,8 @@ export default class MaintenanceCompanyList extends PureComponent {
   // handleShowDeleteConfirm = id => {
   //   const { remove } = this.props;
   //   Modal.confirm({
-  //     title: '你确定要删除这个运维单位吗?',
-  //     content: '如果你确定要删除这个运维单位，点击确定按钮',
+  //     title: '你确定要删除这个维保单位吗?',
+  //     content: '如果你确定要删除这个维保单位，点击确定按钮',
   //     okText: '确定',
   //     cancelText: '取消',
   //     onOk: () => {
@@ -220,7 +220,7 @@ export default class MaintenanceCompanyList extends PureComponent {
   //           if (res.code === 200) {
   //             message.success('删除成功！');
   //           } else {
-  //             message.error('删除失败，该运维单位正为企业服务中！');
+  //             message.error('删除失败，该维保单位正为企业服务中！');
   //           }
   //         },
   //       });
@@ -516,11 +516,11 @@ export default class MaintenanceCompanyList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="运维单位管理"
+        title="维保单位管理"
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            运维单位总数：
+            维保单位总数：
             {total}{' '}
           </div>
         }
