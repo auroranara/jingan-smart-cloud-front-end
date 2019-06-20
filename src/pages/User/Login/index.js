@@ -400,7 +400,7 @@ export default class Login extends PureComponent {
         renderItem={({ userId, unitName }) => (
           <List.Item key={userId} className={styles.listItem}>
             <Card.Grid onClick={() => this.handleSelectUser(userId)} className={styles.cardGrid}>
-              {unitName ? unitName : '运营企业'}
+              {unitName ? unitName : '平台管理'}
             </Card.Grid>
           </List.Item>
         )}

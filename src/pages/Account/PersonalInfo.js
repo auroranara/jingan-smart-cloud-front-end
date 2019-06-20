@@ -26,7 +26,7 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
-const UnitTypes = ['', '维保企业', '政府机构', '运营企业', '企事业主体'];
+const UnitTypes = ['', '维保企业', '政府机构', '平台管理', '企事业主体'];
 
 const UserTypes = [
   {

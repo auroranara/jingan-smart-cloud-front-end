@@ -53,7 +53,7 @@ const fieldLabels = {
   documentTypeId: '执法证种类',
   execCertificateCode: '执法证编号',
 };
-const UnitTypes = ['', '维保企业', '政府机构', '运营企业', '企事业主体'];
+const UnitTypes = ['', '维保企业', '政府机构', '平台管理', '企事业主体'];
 
 /* 获取无数据 */
 const getEmptyData = () => {
