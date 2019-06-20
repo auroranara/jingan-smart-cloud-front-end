@@ -61,7 +61,7 @@ const { projectName } = global.PROJECT_CONFIG;
 
 notification.config({
   placement: 'bottomLeft',
-  duration: null,
+  duration: 30,
   bottom: 8,
 });
 
@@ -822,7 +822,8 @@ export default class NewUnitFireControl extends PureComponent {
         }}
       >
         <div>
-          <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '}
+          <span className={styles.time}>刚刚</span>{' '}
+          {/* <span className={styles.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '} */}
           {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
           <span className={styles.address}>{installAddress || area + location}</span>
         </div>

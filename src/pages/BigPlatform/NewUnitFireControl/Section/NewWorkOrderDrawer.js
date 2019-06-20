@@ -13,7 +13,12 @@ import noData from '../imgs/noData.png';
 const NO_DATA = '暂无信息';
 const TYPES = ['报警', '故障'];
 const STATUS_MAP = ['待处理', '处理中', '已处理'];
-const LABELS = [['主机报警', '主机报障'], ['独立烟感报警', '独立烟感故障'], ['可燃气体报警'], []];
+const LABELS = [
+  ['主机报警', '主机报障'],
+  ['独立烟感报警', '独立烟感故障'],
+  ['可燃气体报警', '可燃气体报警'],
+  [],
+];
 
 function formatTime(time) {
   return moment(time).format('YYYY-MM-DD HH:mm:ss');
