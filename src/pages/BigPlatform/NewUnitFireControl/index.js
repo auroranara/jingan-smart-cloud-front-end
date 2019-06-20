@@ -191,7 +191,7 @@ export default class NewUnitFireControl extends PureComponent {
     checkPointName: '',
     maintenanceCheckDrawerVisible: false,
     fireAlarmTitle: '',
-    maintenanceTitle: '运维处理动态',
+    maintenanceTitle: '维保处理动态',
     processIds: [],
     fireProcessIds: [],
     waterSystemDrawerVisible: false, // 水系统抽屉是否显示
@@ -526,7 +526,7 @@ export default class NewUnitFireControl extends PureComponent {
     // 获取警情动态详情及历史
     [0, 1].forEach(i => this.handleFetchAlarmHandle(0, i));
 
-    // 初始化运维工单
+    // 初始化维保工单
     // this.handleFetchAllWorkOrder();
 
     // 获取故障
@@ -599,7 +599,7 @@ export default class NewUnitFireControl extends PureComponent {
       },
     });
 
-    // 企业负责人和运维员信息
+    // 企业负责人和维保员信息
     dispatch({
       type: 'newUnitFireControl/fetchMaintenanceCompany',
       payload: {
@@ -1223,7 +1223,7 @@ export default class NewUnitFireControl extends PureComponent {
     });
   };
 
-  // 获取运维工单或运维动态详情
+  // 获取维保工单或维保动态详情
   handleFetchWorkOrder = (status, id) => {
     const {
       dispatch,
@@ -2229,7 +2229,7 @@ export default class NewUnitFireControl extends PureComponent {
             </div>
             <div className={styles.item}>
               <div className={styles.inner}>
-                {/* 运维统计 */}
+                {/* 维保统计 */}
                 {/* <MaintenanceCount
                   model={this.props.newUnitFireControl}
                   handleShowOrder={this.handleDrawerVisibleChange}
@@ -2375,7 +2375,7 @@ export default class NewUnitFireControl extends PureComponent {
           handleCardClick={this.handleWorkOrderCardClick}
         />
         <MaintenanceDrawer
-          title="运维处理动态"
+          title="维保处理动态"
           type={drawerType}
           data={workOrderDetail}
           visible={maintenanceDrawerVisible}
@@ -2391,7 +2391,7 @@ export default class NewUnitFireControl extends PureComponent {
           onClose={() => {
             this.handleDrawerVisibleChange('maintenanceMsg');
             setTimeout(() => {
-              this.setState({ maintenanceTitle: '运维处理动态' });
+              this.setState({ maintenanceTitle: '维保处理动态' });
             }, 200);
           }}
         />
@@ -2418,7 +2418,7 @@ export default class NewUnitFireControl extends PureComponent {
           onClose={() => this.handleDrawerVisibleChange('fault')}
           phoneVisible={phoneVisible}
         />
-        {/* 运维巡检抽屉 */}
+        {/* 维保巡检抽屉 */}
         <MaintenanceCheckDrawer
           model={this.props.newUnitFireControl}
           visible={maintenanceCheckDrawerVisible}

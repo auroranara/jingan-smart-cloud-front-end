@@ -44,7 +44,7 @@ export const hiddenDangerType = generateEnum({
 export const hiddenDangerSource = generateEnum({
   1: '企业自查',
   2: '政府监督',
-  3: '运维检查',
+  3: '维保检查',
 });
 
 /**
@@ -83,9 +83,9 @@ export const deviceStatus = generateEnum({
  * 单位类型
  */
 export const unitType = generateEnum({
-  1: '运维',
+  1: '维保',
   2: '政府',
-  3: '运维',
+  3: '维保',
   4: '企业',
 });
 
@@ -110,7 +110,7 @@ export const websocketType = generateEnum({
   15: '【整改隐患】',
   16: '【重新整改隐患】',
   17: '【复查隐患】',
-  18: '【运维巡检】',
+  18: '【维保巡检】',
   19: '【误报火警处理】',
   20: '【关闭隐患】',
   21: '【复位】',

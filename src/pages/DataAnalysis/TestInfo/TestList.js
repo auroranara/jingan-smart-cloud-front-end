@@ -171,12 +171,12 @@ export default class TestList extends PureComponent {
         currentUser: { companyBasicInfo: { isBranch } = {} },
       },
     } = this.props;
-    // 判断是否是运维子公司
+    // 判断是否是维保子公司
     const { columns } = this.state;
 
     if (!isBranch) {
       columns.splice(6, 0, {
-        title: '运维单位',
+        title: '维保单位',
         dataIndex: 'unitCompanyName',
         key: 'unitCompanyName',
         align: 'center',
@@ -271,7 +271,7 @@ export default class TestList extends PureComponent {
       {
         id: 'unitCompanyName',
         render() {
-          return <Input placeholder="请输入运维单位名称" />;
+          return <Input placeholder="请输入维保单位名称" />;
         },
         transform,
       },

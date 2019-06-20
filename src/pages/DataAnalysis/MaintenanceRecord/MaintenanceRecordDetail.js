@@ -13,7 +13,7 @@ import styles from './MaintenanceRecord.less';
 const { Description } = DescriptionList;
 
 /* 标题*/
-const title = '运维记录详情';
+const title = '维保记录详情';
 
 /* 面包屑*/
 const breadcrumbList = [
@@ -27,27 +27,27 @@ const breadcrumbList = [
     name: '数据分析',
   },
   {
-    title: '运维记录',
-    name: '运维记录',
+    title: '维保记录',
+    name: '维保记录',
     href: '/data-analysis/maintenance-record/list',
   },
   {
     title,
-    name: '运维记录详情',
+    name: '维保记录详情',
   },
 ];
 
 /* 表单标签 */
 const fieldLabels = {
-  maintenanceUnits: '运维单位',
-  maintenanceTime: '运维时间',
-  maintenancePerson: '运维人员',
+  maintenanceUnits: '维保单位',
+  maintenanceTime: '维保时间',
+  maintenancePerson: '维保人员',
   maintenancePhone: '联系电话',
   serviceUnit: '服务单位',
   unitAddress: '单位地址',
   safetyPerson: '安全管理员',
   servicePhone: '联系电话',
-  maintenanceContent: '运维内容',
+  maintenanceContent: '维保内容',
   syntheticalMark: '综合评分',
   syntheticalEvaluation: '综合评价',
   rectifyOpinions: '整改意见',
@@ -59,7 +59,7 @@ const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
 
-// 运维内容列表
+// 维保内容列表
 function ContentCard(props) {
   const { content, statusName } = props;
   return (
@@ -157,14 +157,14 @@ export default class MaintenanceRecordDetail extends PureComponent {
     this.setState({ currentImage: i });
   };
 
-  /* 渲染运维单位信息*/
+  /* 渲染维保单位信息*/
   renderUnitInfo() {
     const {
       maintenanceRecord: { detail },
     } = this.props;
 
     return (
-      <Card title="运维单位信息" className={styles.card} bordered={false}>
+      <Card title="维保单位信息" className={styles.card} bordered={false}>
         <DescriptionList col={1}>
           <Description term={fieldLabels.maintenanceUnits}>
             {detail.checkCompanyName || getEmptyData()}
@@ -211,7 +211,7 @@ export default class MaintenanceRecordDetail extends PureComponent {
     );
   }
 
-  /* 渲染运维服务详情*/
+  /* 渲染维保服务详情*/
   renderUnitDetail() {
     const {
       maintenanceRecord: {
@@ -235,7 +235,7 @@ export default class MaintenanceRecordDetail extends PureComponent {
     ));
 
     return (
-      <Card title="运维服务详情" className={styles.card} bordered={false}>
+      <Card title="维保服务详情" className={styles.card} bordered={false}>
         <DescriptionList col={1}>
           <Description term={fieldLabels.maintenanceContent}>
             {items.map((item, index) => {

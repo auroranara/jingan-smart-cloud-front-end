@@ -118,7 +118,7 @@ export default class CompanyList extends PureComponent {
       },
     ];
     if (unitType !== 1) {
-      // 运维不显示网格
+      // 维保不显示网格
       fields.unshift({
         id: 'gridId',
         label: '所属网格',

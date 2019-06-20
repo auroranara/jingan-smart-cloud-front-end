@@ -99,15 +99,15 @@ export default class VideoDetail extends Component {
           </DescriptionList>
           {/* <Divider style={{ marginBottom: 32 }} />
           {detail.repairCompany ? (
-            <DescriptionList size="large" title="运维信息" style={{ marginBottom: 32 }}>
-              <Description term="运维公司">{detail.repairCompany.company}</Description>
+            <DescriptionList size="large" title="维保信息" style={{ marginBottom: 32 }}>
+              <Description term="维保公司">{detail.repairCompany.company}</Description>
               <Description term="联系电话">{detail.repairCompany.phone}</Description>
               <Description term="公司地址">{detail.repairCompany.address}</Description>
               <Description term="联系人">{detail.repairCompany.contact}</Description>
             </DescriptionList>
           ) :
             (
-              <DescriptionList size="large" title="运维信息" style={{ marginBottom: 32 }}>
+              <DescriptionList size="large" title="维保信息" style={{ marginBottom: 32 }}>
                 <div style={{ padding: '16px', fontSize: '14px', color: 'rgba(0,0,0,0.45)', textAlign: 'center' }}>暂无数据</div>
               </DescriptionList>
             )} */}

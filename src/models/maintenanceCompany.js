@@ -81,7 +81,7 @@ export default {
   },
 
   effects: {
-    // 运维单位列表
+    // 维保单位列表
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryMaintenanceCompanies, payload);
       if (response.code === 200) {
@@ -91,7 +91,7 @@ export default {
         });
       }
     },
-    // 查询运维单位列表
+    // 查询维保单位列表
     *appendFetch({ payload }, { call, put }) {
       const response = yield call(queryMaintenanceCompany, payload);
       if (response.code === 200) {
@@ -101,7 +101,7 @@ export default {
         });
       }
     },
-    // 删除运维单位信息
+    // 删除维保单位信息
     *remove({ payload, callback }, { call, put }) {
       const response = yield call(deleteMaintenanceCompany, payload);
       if (response.code === 200) {
@@ -112,7 +112,7 @@ export default {
         if (callback) callback(response);
       }
     },
-    //  查看指定运维单位信息
+    //  查看指定维保单位信息
     *fetchDetail({ payload, callback }, { call, put }) {
       const response = yield call(queryMaintenanceCompanyinfo, payload.id);
       if (response.code === 200) {
@@ -128,17 +128,17 @@ export default {
         router.push(exceptionUrl);
       }
     },
-    // 修改运维单位信息
+    // 修改维保单位信息
     *updateMaintenanceCompany({ payload, callback }, { call, put }) {
       const response = yield call(updateMaintenanceCompany, payload);
       if (callback) callback(response);
     },
-    // 新增运维单位信息
+    // 新增维保单位信息
     *addMaintenanceCompany({ payload, callback }, { call, put }) {
       const response = yield call(addMaintenanceCompany, payload);
       if (callback) callback(response);
     },
-    // 根据运维单位id查询服务单位列表
+    // 根据维保单位id查询服务单位列表
     *fetchServiceUnit({ payload }, { call, put }) {
       const response = yield call(queryServiceUnit, payload);
       if (response.code === 200) {
@@ -268,7 +268,7 @@ export default {
         router.push(exceptionUrl);
       }
     },
-    /* 查询除自己以外的运维单位 */
+    /* 查询除自己以外的维保单位 */
     *fetchExtraMaintenanceCompanies({ payload, callback }, { call, put }) {
       const response = yield call(queryExtraMaintenanceCompanies, payload);
       if (response.code === 200) {
@@ -343,7 +343,7 @@ export default {
   },
 
   reducers: {
-    // 运维单位列表
+    // 维保单位列表
     queryMaintenanceCompanyList(state, { payload }) {
       const {
         list,
@@ -356,7 +356,7 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
-    // 查询运维单位列表
+    // 查询维保单位列表
     appendList(
       state,
       {
@@ -373,14 +373,14 @@ export default {
         isLast: pageNum * pageSize >= total,
       };
     },
-    // 删除运维单位信息
+    // 删除维保单位信息
     delete(state, { payload }) {
       return {
         ...state,
         list: state.list.filter(item => item.id !== payload),
       };
     },
-    // 根据运维单位id查询服务单位列表
+    // 根据维保单位id查询服务单位列表
     queryServiceUnit(
       state,
       {

@@ -227,7 +227,7 @@ export default class PendingInformation extends PureComponent {
             </div>
           </div>
         </div>
-        {/* <div className={styles.topRightPurpleTag}>指派运维</div> */}
+        {/* <div className={styles.topRightPurpleTag}>指派维保</div> */}
         <div
           className={styles.videoPlayButton}
           onClick={() => {
@@ -284,7 +284,7 @@ export default class PendingInformation extends PureComponent {
         </div>
         {status !== '实时消息' &&
           ntype &&
-          ntype === '4' && <div className={styles.topRightPurpleTag}>运维处理</div>}
+          ntype === '4' && <div className={styles.topRightPurpleTag}>维保处理</div>}
         {status !== '实时消息' &&
           ntype &&
           ntype === '3' && <div className={styles.topRightBlueTag}>业主处理</div>}
@@ -356,8 +356,8 @@ export default class PendingInformation extends PureComponent {
                 </div>
               </div>
             </div>
-            {/* <div className={styles.topRightPurpleTag}>指派运维</div> */}
-            {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>运维处理</div>}
+            {/* <div className={styles.topRightPurpleTag}>指派维保</div> */}
+            {ntype && ntype === '4' && <div className={styles.topRightPurpleTag}>维保处理</div>}
             {ntype && ntype === '3' && <div className={styles.topRightBlueTag}>业主处理</div>}
             <div className={styles.videoPlayButton} onClick={handleClick}>
               <img src={videoIcon} alt="" />
@@ -415,7 +415,7 @@ export default class PendingInformation extends PureComponent {
               </div>
             </div>
             {isCompany &&
-              +isCompany === 0 && <div className={styles.topRightPurpleTag}>运维处理</div>}
+              +isCompany === 0 && <div className={styles.topRightPurpleTag}>维保处理</div>}
             {isCompany &&
               +isCompany === 1 && <div className={styles.topRightBlueTag}>业主处理</div>}
             <div className={styles.videoPlayButton} onClick={handleClick}>

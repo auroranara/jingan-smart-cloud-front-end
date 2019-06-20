@@ -38,7 +38,7 @@ export async function queryStatusList() {
   return request(`/acloud_new/v2/maintenanceBusiness/contractStatus`);
 }
 
-/* 查询运维单位列表 */
+/* 查询维保单位列表 */
 export async function queryMaintenanceList(params) {
   return request(`/acloud_new/v2/baseInfo/maintenanceCompanies?${stringify(params)}`);
 }

@@ -279,7 +279,7 @@ export default class AssociatedUnit extends PureComponent {
                 );
             },
           });
-          // 若为运维单位，则获取运维权限树，并设置运维权限树初值
+          // 若为维保单位，则获取维保权限树，并设置维保权限树初值
           unitType === MAI &&
             this.getMaintenanceTree({
               payload: { companyId: unitId },
@@ -392,7 +392,7 @@ export default class AssociatedUnit extends PureComponent {
 
   clearModel() {
     const { dispatch } = this.props;
-    dispatch({ type: 'account/saveMaintenanceTree', payload: {} }); // 清空运维权限树
+    dispatch({ type: 'account/saveMaintenanceTree', payload: {} }); // 清空维保权限树
     dispatch({ type: 'account/saveTrees', payload: {} }); // 清空权限树
     this.clearMsgs();
     this.clearRolePermissions(COM); // 清空所选角色的permissions
@@ -447,7 +447,7 @@ export default class AssociatedUnit extends PureComponent {
     return first.sort().join(',') === second.sort().join(',');
   };
 
-  //获取运维权限树
+  //获取维保权限树
   getMaintenanceTree = actions => {
     const { dispatch } = this.props;
     dispatch({
@@ -543,7 +543,7 @@ export default class AssociatedUnit extends PureComponent {
           switch (
             payload.unitType // 设值用户角色
           ) {
-            case MAI: // 运维企业
+            case MAI: // 维保企业
               payload.userType = 'company_safer';
               break;
             case OPE: // 运营企业
@@ -677,7 +677,7 @@ export default class AssociatedUnit extends PureComponent {
     fetchDepartmentList({
       payload: { companyId: value.key },
     });
-    // 清空运维权限数据
+    // 清空维保权限数据
     this.setState({
       subExpandedKeys: [],
       searchSerValue: '',
@@ -691,7 +691,7 @@ export default class AssociatedUnit extends PureComponent {
       'isCheckAllSub',
       'isCheckAllSer',
     ]);
-    // 只有类型是运维单位的时候才请求运维树
+    // 只有类型是维保单位的时候才请求维保树
     unitTypeChecked === MAI &&
       this.getMaintenanceTree({
         payload: { companyId: value.key },
@@ -956,7 +956,7 @@ export default class AssociatedUnit extends PureComponent {
     this.appAuthTreeCheckedKeys = checkedKeys;
   };
 
-  /* 运维权限全选 */
+  /* 维保权限全选 */
   handleCheckAll = (isCheckAll, checkedRootKey) => {
     const {
       form: { setFieldsValue },
@@ -1422,7 +1422,7 @@ export default class AssociatedUnit extends PureComponent {
           {unitTypeChecked === MAI && treeList.length > 0 ? (
             <Row gutter={{ lg: 48, md: 24 }}>
               <Col lg={8} md={12} sm={24}>
-                <p className={styles.dpTitle}>运维权限</p>
+                <p className={styles.dpTitle}>维保权限</p>
                 <div className={styles.dpContent}>
                   <div className={styles.line}>
                     <span>

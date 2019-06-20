@@ -14,12 +14,12 @@ const menuData = [
     ],
   },
   {
-    name: '消防运维',
+    name: '消防维保',
     icon: 'table',
     path: 'fire-control',
     children: [
       {
-        name: '运维公司',
+        name: '维保公司',
         path: 'maintenance-company/list',
       },
       {
@@ -27,7 +27,7 @@ const menuData = [
         path: 'user-transmission-device/list',
       },
       {
-        name: '运维合同管理',
+        name: '维保合同管理',
         path: 'contract/list',
       },
     ],

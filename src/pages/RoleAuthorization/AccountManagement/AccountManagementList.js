@@ -68,7 +68,7 @@ const statusLabelList = {
   0: '已禁用',
 };
 const unitTypeList = {
-  1: '运维企业',
+  1: '维保企业',
   2: '政府机构',
   3: '运营企业',
   4: '企事业主体',

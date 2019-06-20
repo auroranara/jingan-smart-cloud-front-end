@@ -44,7 +44,7 @@ export default {
         error(response.msg);
       }
     },
-    /* 追加运维合同列表 */
+    /* 追加维保合同列表 */
     *appendList({ payload, success, error }, { call, put }) {
       const response = yield call(queryContractList, payload);
       if (response.code === 200) {
@@ -213,14 +213,14 @@ export default {
         detail: {},
       };
     },
-    /* 获取运维单位列表 */
+    /* 获取维保单位列表 */
     queryMaintenanceList(state, { payload }) {
       return {
         ...state,
         maintenanceList: payload,
       };
     },
-    /* 获取运维单位列表 */
+    /* 获取维保单位列表 */
     queryServiceList(state, { payload }) {
       return {
         ...state,

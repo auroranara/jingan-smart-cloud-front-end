@@ -20,7 +20,7 @@ export default {
   },
 
   effects: {
-    // 运维记录列表
+    // 维保记录列表
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryMaintenanceCheck, payload);
       if (response.code === 200) {
@@ -45,7 +45,7 @@ export default {
   },
 
   reducers: {
-    // 运维记录列表
+    // 维保记录列表
     saveList(state, { payload }) {
       const { list } = payload;
       return {

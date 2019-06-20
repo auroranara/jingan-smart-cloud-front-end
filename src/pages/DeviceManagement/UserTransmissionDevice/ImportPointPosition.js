@@ -118,8 +118,8 @@ export default class ImportPointPosition extends PureComponent {
         href: '/',
       },
       {
-        title: '消防运维',
-        name: '消防运维',
+        title: '消防维保',
+        name: '消防维保',
       },
       {
         title: '用户传输装置',
