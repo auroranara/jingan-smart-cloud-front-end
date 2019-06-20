@@ -441,7 +441,7 @@ export default class AccountManagementEdit extends PureComponent {
               case MAI: // 维保企业
                 payload.userType = 'company_safer';
                 break;
-              case OPE: // 运营企业
+              case OPE: // 平台管理
                 payload.userType = 'admin';
                 break;
               default:
@@ -1084,7 +1084,7 @@ export default class AccountManagementEdit extends PureComponent {
                       initialValue: unitIdInitValue,
                       rules: [
                         {
-                          required: unitTypeChecked !== OPE, // 如果是运营企业 不需要必填,
+                          required: unitTypeChecked !== OPE, // 如果是平台管理 不需要必填,
                           transform: value => value && value.label,
                           message: '请选择所属单位',
                         },
@@ -1121,7 +1121,7 @@ export default class AccountManagementEdit extends PureComponent {
                       initialValue: unitIdInitValue,
                       rules: [
                         {
-                          required: true, // 如果是运营企业 不需要必填,
+                          required: true, // 如果是平台管理 不需要必填,
                           message: '请选择所属单位',
                         },
                       ],
