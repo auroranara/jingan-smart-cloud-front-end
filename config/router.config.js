@@ -138,6 +138,11 @@ module.exports = env => {
           code: 'dashboard.operationView',
           component: './BigPlatform/Operation',
         },
+        {
+          path: '/big-platform/3d-gis',
+          code: 'dashboard.threedgis',
+          component: './BigPlatform/Threedgis',
+        },
       ],
     },
 

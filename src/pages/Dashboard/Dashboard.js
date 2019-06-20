@@ -7,23 +7,32 @@ import styles from './Dashboard.less';
 const fire = 'http://data.jingan-china.cn/v2/dashboard/home-fire.png';
 const safe = 'http://data.jingan-china.cn/v2/dashboard/home-safety.png';
 const monitor = 'http://data.jingan-china.cn/v2/dashboard/home-monitor.png';
-const psoitionImg = 'http://data.jingan-china.cn/v2/dashboard/personnel-positioning.png';
+const posoitionImg = 'http://data.jingan-china.cn/v2/dashboard/personnel-positioning.png';
 const gasImg = 'http://data.jingan-china.cn/v2/dashboard/gas.png';
 const electricImg = 'http://data.jingan-china.cn/v2/dashboard/dashboard-electricity.png';
 const fireMaintenanceImg = 'http://data.jingan-china.cn/new-fire-control.png';
 const smokeImg = 'http://data.jingan-china.cn/smoke.png';
 const operationImg = 'http://data.jingan-china.cn/v2/dashboard/operation.png';
-// http://data.jingan-china.cn/v2/dashboard/3dgis.png
+const threedgisImg = 'http://data.jingan-china.cn/v2/dashboard/3dgis.png';
 
-const safeItem = { src: safe, url: '', label: '政府安全驾驶舱' };
-const fireItem = { src: fire, url: '', label: '消防主机联网驾驶舱' };
-const monitorItem = { src: monitor, url: '', label: '动态监测驾驶舱' };
-const positionItem = { src: psoitionImg, url: '', label: '人员定位驾驶舱' };
-const electricItem = { src: electricImg, url: '', label: '智慧用电驾驶舱' };
-const gasItem = { src: gasImg, url: '', label: '智慧燃气驾驶舱' };
-const fireMaintenanceItem = { src: fireMaintenanceImg, url: '', label: '企业消防运营驾驶舱' };
-const smokeItem = { src: smokeImg, url: '', label: '烟感驾驶舱' };
-const operationItem = { src: operationImg, url: '', label: '智慧消防运营驾驶舱' };
+// const safeItem = { src: safe, url: '', label: '政府安全驾驶舱' };
+// const fireItem = { src: fire, url: '', label: '消防主机联网驾驶舱' };
+// const monitorItem = { src: monitor, url: '', label: '动态监测驾驶舱' };
+// const positionItem = { src: posoitionImg, url: '', label: '人员定位驾驶舱' };
+// const electricItem = { src: electricImg, url: '', label: '智慧用电驾驶舱' };
+// const gasItem = { src: gasImg, url: '', label: '智慧燃气驾驶舱' };
+// const fireMaintenanceItem = { src: fireMaintenanceImg, url: '', label: '企业消防运营驾驶舱' };
+// const smokeItem = { src: smokeImg, url: '', label: '烟感驾驶舱' };
+// const operationItem = { src: operationImg, url: '', label: '智慧消防运营驾驶舱' };
+// const threedgisItem = { src: threedgisImg, url: '', label: '3D-GIS驾驶舱' };
+
+const IMGS = [fire, safe, monitor, posoitionImg, gasImg, electricImg, fireMaintenanceImg, smokeImg, operationImg, threedgisImg];
+const LABELS = ['政府安全', '消防主机联网', '动态监测', '人员定位', '智慧用电', '智慧燃气', '企业消防运营', '烟感', '智慧消防运营', '3D-GIS'];
+const [safeItem, fireItem, monitorItem, positionItem, electricItem, gasItem, fireMaintenanceItem, smokeItem, operationItem, threedgisItem] = IMGS.map((img, i) => ({
+  src: img,
+  url: '',
+  label: `${LABELS[i]}驾驶舱`,
+}));
 
 // const CLASSIFICATION = { safety: 1, fireControl: 2, environmentProtection: 3 };
 
@@ -41,6 +50,7 @@ export default class Dashboard extends PureComponent {
     fireMaintenanceVisible: 0, // 消防运维大屏可见
     smokeVisible: 0, // 烟感大屏可见
     operationVisible: 0, // 智慧消防运营大屏
+    threedgisVisible: 0, // 3D-GIS
   };
 
   componentDidMount() {
@@ -80,6 +90,7 @@ export default class Dashboard extends PureComponent {
       fireMaintenanceAuth,
       smokeAuth,
       operationAuth,
+      threedgisAuth,
     ] = Object.entries(codes.dashboard).map(([k, v]) => permissionCodes.includes(v));
 
     // 1=>安全生产(安全大屏和动态监测大屏) 2=>消防(消防大屏) 3=>环保(暂时没有大屏对应) 4=>卫生(暂时没有大屏对应)
@@ -93,6 +104,7 @@ export default class Dashboard extends PureComponent {
     fireItem.url = `${window.publicPath}#/big-platform/new-fire-control/government/index`;
     gasItem.url = `${window.publicPath}#/big-platform/gas`;
     operationItem.url = `${window.publicPath}#/big-platform/operation`;
+    threedgisItem.url = `${window.publicPath}#/big-platform/3d-gis`;
     // smokeItem.url = `${window.publicPath}#/big-platform/smoke/${companyId}`
     // electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor` // 移到render里面
     // unitType  1：运维企业 2：政府 3：运营 4:企事业主体
@@ -123,6 +135,9 @@ export default class Dashboard extends PureComponent {
     const fireMaintenanceUrl = `${
       window.publicPath
     }#/big-platform/fire-control/new-company/${companyId}`;
+
+    if (threedgisAuth)
+      this.setState({ threedgisVisible: 1 });
 
     // 企事业主体和政府有业务分类，运维和运营没有
     // 所以企事业主体和政府的大屏权限 = 用户业务权限 && 企事业业务分类 && 账户被配置的权限，运营和运维企业的大屏权限 = 用户业务权限 && 账户被配置的权限
@@ -229,12 +244,14 @@ export default class Dashboard extends PureComponent {
       fireMaintenanceItem,
       smokeItem,
       operationItem,
+      threedgisItem,
     ];
     // 如果state中不全是控制大屏显示的参数，则需要修改
     const imgWrapper = Object.entries(this.state).reduce((prev, [, value], i) => {
       value && prev.push(items[i]);
       return prev;
     }, []);
+    console.log(imgWrapper);
 
     return (
       <div className={styles.container}>
