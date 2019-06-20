@@ -494,7 +494,10 @@ export default class Operation extends PureComponent {
         }}
       >
         <div>
-          <span className={styles1.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '}
+          <span className={styles1.time}>
+            {/* {moment(addTime).format('YYYY-MM-DD HH:mm')} */}
+            刚刚
+          </span>{' '}
           {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
           <span className={styles1.address}>{installAddress || area + location}</span>
         </div>
