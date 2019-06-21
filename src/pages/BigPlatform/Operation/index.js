@@ -757,8 +757,10 @@ export default class Operation extends PureComponent {
       firstTime,
       lastTime,
       createTime,
+      rcompanyId = null,
     } = data;
     const dataId = { 1: id, 4: id || gasId, 2: proceId }[reportType];
+    const cId = (+reportType !== 2 ? companyId : rcompanyId) || undefined;
     dispatch({
       type: 'operation/fetchCameraMessage',
       payload: {
@@ -776,7 +778,7 @@ export default class Operation extends PureComponent {
             }${componentNo || typeof componentNo === 'number' ? `${componentNo}号` : ''}` ||
             undefined,
           unitTypeName: componentName || undefined,
-          companyId: companyId || undefined,
+          companyId: cId,
         };
         const type = { 1: 0, 4: 1, 2: 3 }[reportType];
         const flow = fireType - 1;
@@ -803,7 +805,7 @@ export default class Operation extends PureComponent {
         // console.log('flow:',flow);
         // console.log('occurData:',occurData);
         // console.log('companyId:',companyId);
-        this.handleClickMsgFlow(param, type, flow, cameraMessage, occurData, companyId);
+        this.handleClickMsgFlow(param, type, flow, cameraMessage, occurData, cId);
       },
     });
   };
@@ -841,6 +843,7 @@ export default class Operation extends PureComponent {
     ];
     const reportTypes = [1, 4, 3, 2];
     this.hiddeAllPopup();
+
     if (type !== 3) {
       dispatch({
         type: 'operation/fetchCountNumAndTimeById',
