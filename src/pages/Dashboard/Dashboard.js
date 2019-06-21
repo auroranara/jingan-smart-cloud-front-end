@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { message } from 'antd';
+
 import codes from '@/utils/codes';
 import styles from './Dashboard.less';
 
@@ -137,7 +139,7 @@ export default class Dashboard extends PureComponent {
     fireItem.url = `${window.publicPath}#/big-platform/new-fire-control/government/index`;
     gasItem.url = `${window.publicPath}#/big-platform/gas`;
     operationItem.url = `${window.publicPath}#/big-platform/operation`;
-    threedgisItem.url = `${window.publicPath}#/big-platform/3d-gis`;
+    // threedgisItem.url = `${window.publicPath}#/big-platform/3d-gis`;
     // smokeItem.url = `${window.publicPath}#/big-platform/smoke/${companyId}`
     // electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor` // 移到render里面
     // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
@@ -251,6 +253,11 @@ export default class Dashboard extends PureComponent {
     }
   };
 
+  notice = e => {
+    e.preventDefault();
+    message.info('抱歉，网站建设中...');
+  };
+
   render() {
     const {
       user: { grids },
@@ -283,7 +290,7 @@ export default class Dashboard extends PureComponent {
       value && prev.push(items[i]);
       return prev;
     }, []);
-    console.log(imgWrapper);
+    // console.log(imgWrapper);
 
     return (
       <div className={styles.container}>
@@ -308,6 +315,7 @@ export default class Dashboard extends PureComponent {
                         target="_blank"
                         rel="noopener noreferrer"
                         className={styles.item}
+                        onClick={url ? null : this.notice}
                       >
                         <div className={styles.itemIconWrapper}>
                           <div
