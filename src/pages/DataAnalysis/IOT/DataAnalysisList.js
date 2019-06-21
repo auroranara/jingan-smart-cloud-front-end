@@ -6,24 +6,28 @@ import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './DataAnalysisList.less';
-import InlineForm from '../BaseInfo/Company/InlineForm';
+import InlineForm from '@/pages/BaseInfo/Company/InlineForm';
 import CODES from '@/utils/codes';
 import { AuthIcon } from '@/utils/customAuth';
-import { INPUT_SPAN, LABEL_COL_6, LABEL_COL_8, WRAPPER_COL_1 as WRAPPER_COL } from './constant';
+import { INPUT_SPAN, LABEL_COL_8, WRAPPER_COL_1 as WRAPPER_COL } from './constant';
 import { handleListFormVals } from './utils';
 
-import electricityIcon from './imgs/electricity.png';
-import electricityDarkIcon from './imgs/electricity-d.png';
-import toxicGasIcon from './imgs/toxic-gas.png';
-import toxicGasDarkIcon from './imgs/toxic-gas-d.png';
-import wasteWaterIcon from './imgs/waste-water.png';
-import wasteWaterDarkIcon from './imgs/waste-water-d.png';
-import wasteGasIcon from './imgs/waste-gas.png';
-import wasteGasDarkIcon from './imgs/waste-gas-d.png';
-import storageTankIcon from './imgs/storage-tank.png';
-import storageTankDarkIcon from './imgs/storage-tank-d.png';
-import smokeDetectorIcon from './imgs/smoke-detector.png';
-import smokeDetectorDarkIcon from './imgs/smoke-detector-d.png';
+import {
+  electricityIcon,
+  electricityDarkIcon,
+  fireIcon,
+  fireDarkIcon,
+  toxicGasIcon,
+  toxicGasDarkIcon,
+  wasteWaterIcon,
+  wasteWaterDarkIcon,
+  wasteGasIcon,
+  wasteGasDarkIcon,
+  storageTankIcon,
+  storageTankDarkIcon,
+  smokeDetectorIcon,
+  smokeDetectorDarkIcon,
+} from '../imgs/links';
 
 const { Option } = Select;
 
@@ -35,6 +39,13 @@ const breadcrumbList = [
 
 const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
+const ICON_STYLE = {
+  width: 30,
+  height: 30,
+  marginRight: 15,
+  backgroundSize: '100% 100%',
+};
+
 const ICONS = [
   'electricity',
   'toxic-gas',
@@ -42,6 +53,7 @@ const ICONS = [
   'waste-gas',
   'storage-tank',
   'smoke-detector',
+  'fire',
 ];
 const ICONS_URL = {
   electricity: electricityIcon,
@@ -56,6 +68,8 @@ const ICONS_URL = {
   'storage-tank-d': storageTankDarkIcon,
   'smoke-detector': smokeDetectorIcon,
   'smoke-detector-d': smokeDetectorDarkIcon,
+  fire: fireIcon,
+  'fire-d': fireDarkIcon,
 };
 const ICONS_CN = {
   electricity: '电气火灾异常数据分析',
@@ -64,6 +78,7 @@ const ICONS_CN = {
   'waste-gas': '废气异常数据分析',
   'storage-tank': '储罐异常数据分析',
   'smoke-detector': '独立烟感异常数据分析',
+  fire: '火灾自动报警系统',
 };
 const OPTIONS = [
   { name: '全部', key: 0 },
@@ -73,6 +88,7 @@ const OPTIONS = [
   { name: '废气', key: 4 },
   { name: '储罐', key: 5 },
   { name: '独立烟感', key: 6 },
+  { name: '火灾自动报警系统', key: 7 },
 ];
 // const INPUT_SPAN = { lg: 6, md: 12, sm: 24 };
 
@@ -238,6 +254,7 @@ export default class DataAnalysisList extends PureComponent {
               'waste-gas': pollutionGasNum,
               'storage-tank': opcNum,
               'smoke-detector': smokeNum,
+              fire: 1,
             };
 
             return (
@@ -272,15 +289,8 @@ export default class DataAnalysisList extends PureComponent {
                         //   pathname: `/data-analysis/IOT-abnormal-data/${icon}/${id}`,
                         //   num: iconNums[icon],
                         // }}
-                        to={`/data-analysis/IOT-abnormal-data/${icon}/${id}/count/${
-                          iconNums[icon]
-                        }`}
-                        style={{
-                          width: 30,
-                          height: 30,
-                          marginRight: 15,
-                          backgroundSize: '100% 100%',
-                        }}
+                        to={`/data-analysis/IOT-abnormal-data/${icon === 'fire' ? `fire-alarm/company/${id}` : `${icon}/${id}/count/${iconNums[icon]}`}`}
+                        style={ICON_STYLE}
                       />
                     ))}
                   </p>

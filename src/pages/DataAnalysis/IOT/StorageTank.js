@@ -1,21 +1,19 @@
 import React, { PureComponent } from 'react';
-// import moment from 'moment';
 import { connect } from 'dva';
 import { Button, Card, message, notification, Table } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
-// import InlineForm from '../BaseInfo/Company/InlineForm';
-import ToolBar from '@/components/ToolBar';
+import InlineForm from '@/pages/BaseInfo/Company/InlineForm';
 import {
-  WASTE_WATER_TYPE as TYPE,
-  WASTE_WATER_TYPE_LABEL as TYPE_LABEL,
-  WASTE_WATER_PARAMS as PARAMS,
-  WASTE_WATER_COLUMNS as COLUMNS,
+  STORAGE_TANK_TYPE as TYPE,
+  STORAGE_TANK_TYPE_LABEL as TYPE_LABEL,
+  STORAGE_TANK_PARAMS as PARAMS,
+  STORAGE_TANK_COLUMNS as COLUMNS,
   PAGE_SIZE,
   getFields,
 } from './constant';
-import { addAlign, getThisMonth, handleFormVals, handleTableData, isDateDisabled } from './utils';
+import { addAlign, getThisMonth, handleFormVals, handleTableData } from './utils';
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -28,16 +26,12 @@ const breadcrumbList = [
   { title: TYPE_LABEL, name: TYPE_LABEL },
 ];
 
-// const list = [...Array(20).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', area: '厂区九车间', location: '氯乙烷压缩机东', status: 1, parameter: 'c2h5oh', value: '19.6|mg/m3', limitValue: '18', condition: 1 }));
-// const total = list.length;
-
 @connect(({ loading, dataAnalysis }) => ({
   dataAnalysis,
   loading: loading.effects['dataAnalysis/fetchData'],
 }))
-export default class WasteWater extends PureComponent {
+export default class StorageTank extends PureComponent {
   state = {
-    // moments: null,
     formVals: null,
     currentPage: 1,
   };
@@ -134,16 +128,6 @@ export default class WasteWater extends PureComponent {
     this.fetchData(current, formVals, (code, msg) => this.setPage(code, current, msg));
   };
 
-  // onCalendarChange = (dates, dateStrings) => {
-  //   // console.log(dates);
-  //   this.setState({ moments: dates });
-  // };
-
-  // disabledDate = (current) => {
-  //   const { moments } = this.state;
-  //   return isDateDisabled(current, moments);
-  // };
-
   render() {
     const {
       loading,
@@ -159,10 +143,6 @@ export default class WasteWater extends PureComponent {
     const { currentPage } = this.state;
     const indexBase = (currentPage - 1) * PAGE_SIZE;
 
-    // const methods = {
-    //   disabledDate: this.disabledDate,
-    //   onCalendarChange: this.onCalendarChange,
-    // };
     const fields = getFields(TYPE, PARAMS);
 
     return (
@@ -180,21 +160,12 @@ export default class WasteWater extends PureComponent {
         }
       >
         <Card className={styles.search}>
-          {/* <InlineForm
+          <InlineForm
             fields={fields}
             action={this.renderExportButton()}
             buttonSpan={{ xl: 6, md: 12, sm: 24 }}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
-          /> */}
-          <ToolBar
-            fields={fields}
-            action={this.renderExportButton()}
-            // buttonSpan={{ xl: 8, md: 12, sm: 24 }}
-            onSearch={this.handleSearch}
-            onReset={this.handleReset}
-            buttonStyle={{ textAlign: 'right' }}
-            buttonSpan={{ xl: 12, sm: 24, xs: 24 }}
           />
         </Card>
         <div className={styles.container}>

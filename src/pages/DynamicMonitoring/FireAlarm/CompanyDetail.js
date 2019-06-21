@@ -15,7 +15,7 @@ const { Description } = DescriptionList;
 
 // const PAGE_SIZE = 10;
 // const WEBSOCKT_URL = 'ws://192.168.10.50:3000/test';
-const DELAY = 3 * 1000;
+// const DELAY = 3 * 1000;
 const ALARM_ITEMS = ['fire', 'fault', 'start', 'supervise', 'shield', 'feedback'];
 const ALARM_ITEMS_CHINESE = ['火警', '故障', '联动', '监管', '屏蔽', '反馈'];
 
@@ -46,14 +46,26 @@ const DETAIL_ITEMS_CHINESE = [
   '联系电话',
 ];
 
+// const breadcrumbList = [
+//   { title: '首页', name: '首页', href: '/' },
+//   {
+//     title: '火灾自动报警系统',
+//     name: '火灾自动报警系统',
+//     href: '/dynamic-monitoring/fire-alarm/index',
+//   },
+//   { title: '单位页面', name: '单位页面' },
+// ];
+
+const LABEL = '火灾自动报警系统';
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
+  { title: '数据分析', name: '数据分析' },
   {
-    title: '火灾自动报警系统',
-    name: '火灾自动报警系统',
-    href: '/dynamic-monitoring/fire-alarm/index',
+    title: 'IOT异常数据分析',
+    name: 'IOT异常数据分析',
+    href: '/data-analysis/IOT-abnormal-data/list',
   },
-  { title: '单位页面', name: '单位页面' },
+  { title: LABEL, name: LABEL },
 ];
 
 const CustomTab = ({ num, itemName, tabKey, currentTabKey }) => (
@@ -110,9 +122,9 @@ export default class CompanyDetail extends PureComponent {
     // socket.onclose = () => message.info('socket closed');
 
     dispatch({ type: 'fireAlarm/fetchAlarmData', payload: companyId });
-    this.timer = setInterval(() => {
-      dispatch({ type: 'fireAlarm/fetchAlarmData', payload: companyId });
-    }, DELAY);
+    // this.timer = setInterval(() => {
+    //   dispatch({ type: 'fireAlarm/fetchAlarmData', payload: companyId });
+    // }, DELAY);
   }
 
   componentWillUnmount() {
@@ -195,7 +207,10 @@ export default class CompanyDetail extends PureComponent {
       </Button>
     );
     const action = (
-      <Link to={`/dynamic-monitoring/fire-alarm/history-record/${companyId}`}>
+      <Link
+        // to={`/dynamic-monitoring/fire-alarm/history-record/${companyId}`}
+        to={`/data-analysis/IOT-abnormal-data/fire-alarm/history-record/${companyId}`}
+      >
         <AuthButton code={codesMap.dynamicMonitoring.historyRecordView}>
           历史记录
           <Icon type="double-right" />

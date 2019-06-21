@@ -69,6 +69,8 @@ export default {
   'menu.dataAnalysis.IOTAbnormalData.wasteGas': '废气异常数据分析',
   'menu.dataAnalysis.IOTAbnormalData.storageTank': '储罐异常数据分析',
   'menu.dataAnalysis.IOTAbnormalData.smokeDetector': '独立烟感异常数据分析',
+  'menu.dataAnalysis.IOTAbnormalData.companyDetail': '火灾自动报警系统',
+  'menu.dataAnalysis.IOTAbnormalData.historyRecord': '火灾自动报警系统历史记录',
   'menu.dataAnalysis.maintenanceRecord': '消防维保记录',
   'menu.dataAnalysis.maintenanceRecord.maintenanceRecord': '消防维保记录',
   'menu.dataAnalysis.maintenanceRecord.listView': '维保记录',

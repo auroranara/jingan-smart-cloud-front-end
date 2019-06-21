@@ -12,9 +12,7 @@ import {
   DatePicker,
   Pagination,
   Modal,
-  Tooltip,
 } from 'antd';
-// import styles from './HistoryRecord.less';
 import Ellipsis from '@/components/Ellipsis';
 
 const FormItem = Form.Item;
@@ -220,17 +218,32 @@ export default class HistoryRecord extends PureComponent {
         historyDetail,
       },
     } = this.props;
+    // const breadcrumbList = [
+    //   { title: '首页', name: '首页', href: '/' },
+    //   {
+    //     title: '火灾自动报警系统',
+    //     name: '火灾自动报警系统',
+    //     href: '/dynamic-monitoring/fire-alarm/index',
+    //   },
+    //   {
+    //     title: '单位页面',
+    //     name: '单位页面',
+    //     href: `/dynamic-monitoring/fire-alarm/company/${companyId}`,
+    //   },
+    //   { title: '历史记录', name: '历史记录' },
+    // ];
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
+      { title: '数据分析', name: '数据分析' },
+      {
+        title: 'IOT异常数据分析',
+        name: 'IOT异常数据分析',
+        href: '/data-analysis/IOT-abnormal-data/list',
+      },
       {
         title: '火灾自动报警系统',
         name: '火灾自动报警系统',
-        href: '/dynamic-monitoring/fire-alarm/index',
-      },
-      {
-        title: '单位页面',
-        name: '单位页面',
-        href: `/dynamic-monitoring/fire-alarm/company/${companyId}`,
+        href: `/data-analysis/IOT-abnormal-data/fire-alarm/company/${companyId}`,
       },
       { title: '历史记录', name: '历史记录' },
     ];

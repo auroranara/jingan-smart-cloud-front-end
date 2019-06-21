@@ -172,6 +172,7 @@ export default {
       'waste-gas': 'dataAnalysis.IOTAbnormalData.wasteGas',
       'storage-tank': 'dataAnalysis.IOTAbnormalData.storageTank',
       'smoke-detector': 'dataAnalysis.IOTAbnormalData.smokeDetector',
+      fire: 'dataAnalysis.IOTAbnormalData.fireDetailView',
     },
     MaintenanceRecord: {
       view: 'dataAnalysis.maintenanceRecord.view',

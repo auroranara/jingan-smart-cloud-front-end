@@ -1,16 +1,15 @@
 import React, { PureComponent } from 'react';
-// import moment from 'moment';
 import { connect } from 'dva';
 import { Button, Card, message, notification, Table } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
-import InlineForm from '../BaseInfo/Company/InlineForm';
+import ToolBar from '@/components/ToolBar';
 import {
-  STORAGE_TANK_TYPE as TYPE,
-  STORAGE_TANK_TYPE_LABEL as TYPE_LABEL,
-  STORAGE_TANK_PARAMS as PARAMS,
-  STORAGE_TANK_COLUMNS as COLUMNS,
+  ELECTRICITY_TYPE as TYPE,
+  ELECTRICITY_TYPE_LABEL as TYPE_LABEL,
+  ELECTRICITY_PARAMS as PARAMS,
+  ELECTRICITY_COLUMNS as COLUMNS,
   PAGE_SIZE,
   getFields,
 } from './constant';
@@ -27,15 +26,13 @@ const breadcrumbList = [
   { title: TYPE_LABEL, name: TYPE_LABEL },
 ];
 
-// const list = [...Array(20).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', area: '厂区九车间', location: '氯乙烷压缩机东', status: 1, parameter: 'c2h5oh', value: '19.6|mg/m3', limitValue: '18', condition: 1 }));
-// const total = list.length;
-
 @connect(({ loading, dataAnalysis }) => ({
   dataAnalysis,
   loading: loading.effects['dataAnalysis/fetchData'],
 }))
-export default class StorageTank extends PureComponent {
+export default class Electricity extends PureComponent {
   state = {
+    // moments: null,
     formVals: null,
     currentPage: 1,
   };
@@ -65,6 +62,7 @@ export default class StorageTank extends PureComponent {
     );
   }
 
+  // 先查询后才能记录form表单的状态，然后导出，不能选完就导出，那样并不会记录form表单的状态
   handleExport = () => {
     const {
       dispatch,
@@ -94,6 +92,7 @@ export default class StorageTank extends PureComponent {
   };
 
   handleSearch = values => {
+    // console.log(values);
     this.setState({ formVals: values });
     this.fetchData(1, values, (code, msg) => this.setPage(code, 1, msg));
   };
@@ -132,6 +131,16 @@ export default class StorageTank extends PureComponent {
     this.fetchData(current, formVals, (code, msg) => this.setPage(code, current, msg));
   };
 
+  // onCalendarChange = (dates, dateStrings) => {
+  //   // console.log(dates);
+  //   this.setState({ moments: dates });
+  // };
+
+  // disabledDate = (current) => {
+  //   const { moments } = this.state;
+  //   return isDateDisabled(current, moments);
+  // };
+
   render() {
     const {
       loading,
@@ -142,11 +151,16 @@ export default class StorageTank extends PureComponent {
         companyInfo: { name: companyName },
         analysis: { list = [], pagination: { total } = { total: 0 } },
       },
+      // location: { num },
     } = this.props;
 
     const { currentPage } = this.state;
     const indexBase = (currentPage - 1) * PAGE_SIZE;
 
+    // const methods = {
+    //   disabledDate: this.disabledDate,
+    //   onCalendarChange: this.onCalendarChange,
+    // };
     const fields = getFields(TYPE, PARAMS);
 
     return (
@@ -164,12 +178,21 @@ export default class StorageTank extends PureComponent {
         }
       >
         <Card className={styles.search}>
-          <InlineForm
+          {/* <InlineForm
             fields={fields}
             action={this.renderExportButton()}
             buttonSpan={{ xl: 6, md: 12, sm: 24 }}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
+          /> */}
+          <ToolBar
+            fields={fields}
+            action={this.renderExportButton()}
+            // buttonSpan={{ xl: 8, md: 12, sm: 24 }}
+            onSearch={this.handleSearch}
+            onReset={this.handleReset}
+            buttonStyle={{ textAlign: 'right' }}
+            buttonSpan={{ xl: 12, sm: 24, xs: 24 }}
           />
         </Card>
         <div className={styles.container}>
@@ -181,7 +204,6 @@ export default class StorageTank extends PureComponent {
             rowKey="id"
             loading={loading}
             columns={addAlign(COLUMNS)}
-            // dataSource={list}
             dataSource={handleTableData(list, indexBase)}
             onChange={this.onTableChange}
             pagination={{ pageSize: PAGE_SIZE, total, current: currentPage }}
