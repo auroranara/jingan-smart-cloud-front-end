@@ -1,0 +1,188 @@
+@BorderColor: rgb(0, 0, 0);
+
+.mian {
+  width: 100%;
+  height: 100%;
+  padding: 20px 65px 0 65px;
+  color: @BorderColor;
+}
+
+// 标题
+.titleContainer {
+  margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: bold;
+
+  .level {
+    float: right;
+  }
+}
+
+// 表格
+.tableContainer {
+  width: 100%;
+  height: 285px;
+  display: flex;
+  background-color: rgb(255, 255, 255);
+  border-top: 1px solid @BorderColor;
+  border-right: 1px solid @BorderColor;
+  border-left: 1px solid @BorderColor;
+  margin-bottom: 15px;
+
+  .tableTitle {
+    width: 5%;
+    border-right: 1px solid @BorderColor;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+
+    .tableValue {
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      font-weight: bold;
+      writing-mode: tb-rl;
+      letter-spacing: 8px;
+      font-size: 18px;
+
+    }
+  }
+
+  .loacalpicLabel {
+    width: 36%;
+    border-right: 1px solid @BorderColor;
+
+    .loacalpic {
+      width: 100%;
+      height: 100%;
+      flex: none;
+      background: no-repeat center center;
+      background-size: contain;
+    }
+  }
+
+  .dangerInfoLabel {
+    width: 54%;
+
+    .infoType {
+      display: flex;
+      font-weight: bold;
+    }
+
+    .info {
+      display: flex;
+      border-top: 1px solid @BorderColor;
+      font-weight: bold;
+    }
+
+    .infoName {
+      display: flex;
+      align-items: center;
+      padding: 0.9em 0.7em;
+      width: 8em;
+      white-space: nowrap;
+      font-size: 17px;
+    }
+
+    .infoValue {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 0.75em;
+      font-size: 16px;
+    }
+
+    .tabTop {
+      display: flex;
+
+      .tabLeft {
+        width: 75%;
+      }
+
+      .tabRight {
+        width: 25%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-left: 1px solid @BorderColor;
+      }
+
+      .tabRightSpan {
+        text-align: center;
+        position: absolute;
+        top: 225px;
+      }
+    }
+  }
+}
+
+.areaContainerTitle {
+  border-left: 12px solid @BorderColor;
+
+  .titleValue {
+    font-weight: bold;
+    padding-left: 1em;
+    font-size: 16px;
+  }
+}
+
+.contentValue {
+  height: auto;
+  background-color: rgb(255, 255, 255);
+  padding: 10px;
+  margin: 10px 0;
+  text-indent: 24px;
+}
+
+.riskResultContainer {
+  width: 100%;
+  display: flex;
+
+  .left {
+    width: 48%;
+
+    .contentLeftValue {
+      display: flex;
+      align-items: center;
+      height: 120px;
+      font-size: 24px;
+      color: red;
+      background-color: rgb(255, 255, 255);
+      padding: 10px;
+      margin: 10px 0;
+      text-indent: 24px;
+      font-weight: bold;
+    }
+  }
+
+  .right {
+    width: 48%;
+    margin-left: 4%;
+
+    .contentRightValue {
+      height: auto;
+      background-color: rgb(255, 255, 255);
+      padding: 10px;
+      margin: 10px 0;
+      text-indent: 24px;
+      display: flex;
+
+      .signImg {
+        width: 100px;
+        height: 100px;
+      }
+    }
+  }
+}
+
+.companyInfoContainer {
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.code {
+  position: absolute;
+  right: 64px;
+  font-weight: bold;
+  color: #000
+}

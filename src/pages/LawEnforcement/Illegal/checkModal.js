@@ -89,11 +89,11 @@ export default class CompanyModal extends PureComponent {
   };
 
   handleContentTable = record => {
-    const { flows, business_type, industry } = record;
+    const { flows, object_title, business_type, industry } = record;
     this.setState({
       clickContent: true,
       checkList: flows.map(d => {
-        return { ...d, business_type, industry };
+        return { ...d, business_type, object_title, industry };
       }),
     });
   };

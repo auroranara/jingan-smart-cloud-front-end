@@ -284,4 +284,15 @@ export default {
       view: 'personnelPosition.alarmManagement.view',
     },
   },
+  /** 风险管控 */
+  riskControl: {
+    // 风险点管理
+    riskPointManage: {
+      listView: 'riskControl.riskPointManage.listView',
+      view: 'riskControl.riskPointManage.view',
+      add: 'riskControl.riskPointManage.add',
+      edit: 'riskControl.riskPointManage.edit',
+      delete: 'riskControl.riskPointManage.delete',
+    },
+  },
 };

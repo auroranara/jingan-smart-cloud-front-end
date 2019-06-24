@@ -182,6 +182,14 @@ module.exports = env => {
       name: 'mySynthesis',
       component: './Training/GeneralFile/MyFile/SynthesisReport',
     },
+    // 风险告知卡
+    // TODO 由于iframe原因
+    {
+      path: '/risk-control/risk-point-manage/card-printer-content/:id',
+      code: 'riskControl.riskPointManage.view',
+      name: 'riskCardPinter',
+      component: './RiskControl/RiskPointManage/PrinterContent',
+    },
 
     //404
     {
@@ -2172,6 +2180,83 @@ module.exports = env => {
                   code: 'personnelPosition.sectionManagement.divide',
                   path: '/personnel-position/section-management/company/:companyId/zoning/:id',
                   component: './PersonnelPosition/SectionManagement/Zoning',
+                },
+              ],
+            },
+          ],
+        },
+
+        // 风险管控
+        {
+          path: '/risk-control',
+          code: 'riskControl',
+          icon: 'audit',
+          name: 'riskControl',
+          routes: [
+            {
+              path: '/risk-control/risk-point-manage',
+              code: 'riskControl.riskPointManage',
+              name: 'riskPointManage',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/risk-point-manage',
+                  name: 'riskPointManage',
+                  redirect: '/risk-control/risk-point-manage/index',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/index',
+                  code: 'riskControl.riskPointManage.listView',
+                  name: 'listView',
+                  component: './RiskControl/RiskPointManage/index',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-point-List/:id',
+                  code: 'riskControl.riskPointManage.view',
+                  name: 'view',
+                  component: './RiskControl/RiskPointManage/RiskPointList',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/:type/list/:id',
+                  code: 'riskControl.riskPointManage.view',
+                  name: 'view',
+                  component: './RiskControl/RiskPointManage/RiskPointList',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-point-add',
+                  code: 'riskControl.riskPointManage.add',
+                  name: 'add',
+                  component: './RiskControl/RiskPointManage/RiskPointEdit',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-point-edit/:id',
+                  code: 'riskControl.riskPointManage.edit',
+                  name: 'edit',
+                  component: './RiskControl/RiskPointManage/RiskPointEdit',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-card-list/:id',
+                  code: 'riskControl.riskPointManage.view',
+                  name: 'riskCard',
+                  component: './RiskControl/RiskPointManage/RiskCard',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-card-add',
+                  code: 'riskControl.riskPointManage.view',
+                  name: 'riskCardAdd',
+                  component: './RiskControl/RiskPointManage/RiskCardEdit',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-card-edit/:id',
+                  code: 'riskControl.riskPointManage.view',
+                  name: 'riskCardEdit',
+                  component: './RiskControl/RiskPointManage/RiskCardEdit',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-card-printer/:id',
+                  code: 'riskControl.riskPointManage.view',
+                  name: 'riskCardPinter',
+                  component: './RiskControl/RiskPointManage/RiskCardPrinter',
                 },
               ],
             },
