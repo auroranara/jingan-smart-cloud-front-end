@@ -306,13 +306,18 @@ export default {
     },
 
     // 追加风险点列表
-    *appendRiskList({ payload }, { call, put }) {
+    *appendRiskList({ payload, success, error }, { call, put }) {
       const response = yield call(queryRiskPointList, payload);
       if (response && response.code === 200) {
         yield put({
           type: 'saveRiskLoadMoreList',
           payload: response.data,
         });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
       }
     },
 

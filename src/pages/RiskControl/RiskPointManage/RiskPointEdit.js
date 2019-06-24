@@ -466,7 +466,7 @@ export default class RiskPointEdit extends PureComponent {
         render() {
           return (
             <Select placeholder="请选择所属行业">
-              {businessTypes.map(item => (
+              {[].map(item => (
                 <Option value={item.id} key={item.id}>
                   {item.label}
                 </Option>
@@ -998,7 +998,7 @@ export default class RiskPointEdit extends PureComponent {
                     {getFieldDecorator('recommendCycle', {
                       getValueFromEvent: this.handleTrim,
                       initialValue: getCycleType(checkCycleData),
-                      rules: [{ message: '推荐检查周期' }],
+                      rules: [{ required: true, message: '推荐检查周期' }],
                     })(<Input placeholder="推荐检查周期" disabled />)}
                   </Form.Item>
                 </Col>
@@ -1006,7 +1006,7 @@ export default class RiskPointEdit extends PureComponent {
                   <Form.Item label={fieldLabels.cycleType}>
                     {getFieldDecorator('checkCycle', {
                       initialValue: data.checkCycle,
-                      rules: [{ message: '请选择自定义检查周期' }],
+                      rules: [{ required: true, message: '请选择自定义检查周期' }],
                     })(
                       <Select allowClear placeholder="请选择自定义检查周期">
                         {cycleTypeList.map(({ key, value }) => (
@@ -1022,7 +1022,7 @@ export default class RiskPointEdit extends PureComponent {
                   <Form.Item label={fieldLabels.checkCycle}>
                     {getFieldDecorator('cycleType', {
                       initialValue: data.cycleType,
-                      rules: [{ message: '请选择检查周期方案' }],
+                      rules: [{ required: true, message: '请选择检查周期方案' }],
                     })(
                       <Select allowClear placeholder="请选择检查周期方案">
                         {checkCycleList.map(({ key, value }) => (

@@ -215,7 +215,7 @@ export default class CheckContent extends PureComponent {
   // 滚动加载
   handleLoadMore = () => {
     const {
-      riskPointManage: { isLast },
+      riskPointManage: { isLast, pageNum },
       companyId,
       tabActiveKey,
       dispatch,
@@ -223,20 +223,30 @@ export default class CheckContent extends PureComponent {
     if (isLast) {
       return;
     }
-    const {
-      riskPointManage: { pageNum },
-    } = this.props;
     // 请求数据
-    dispatch({
-      type: 'riskPointManage/appendRiskList',
-      payload: {
-        companyId,
-        realCheckCycle: tabActiveKey,
-        pageSize,
-        pageNum: pageNum + 1,
-        ...this.formData,
-      },
-    });
+    if (tabActiveKey === 'all') {
+      dispatch({
+        type: 'riskPointManage/appendRiskList',
+        payload: {
+          companyId,
+          pageSize,
+          pageNum: pageNum + 1,
+          ...this.formData,
+        },
+      });
+    } else {
+      // 重新请求数据
+      dispatch({
+        type: 'riskPointManage/appendRiskList',
+        payload: {
+          companyId,
+          realCheckCycle: tabActiveKey,
+          pageSize,
+          pageNum: pageNum + 1,
+          ...this.formData,
+        },
+      });
+    }
   };
 
   // 查看二维码
@@ -354,15 +364,27 @@ export default class CheckContent extends PureComponent {
             ids: id,
           },
           success: () => {
-            dispatch({
-              type: 'riskPointManage/fetchRiskList',
-              payload: {
-                pageSize,
-                pageNum: 1,
-                companyId,
-                realCheckCycle: tabActiveKey,
-              },
-            });
+            if (tabActiveKey === 'all') {
+              dispatch({
+                type: 'riskPointManage/fetchRiskList',
+                payload: {
+                  pageSize,
+                  pageNum: 1,
+                  companyId,
+                },
+              });
+            } else {
+              // 重新请求数据
+              dispatch({
+                type: 'riskPointManage/fetchRiskList',
+                payload: {
+                  pageSize,
+                  pageNum: 1,
+                  companyId,
+                  realCheckCycle: tabActiveKey,
+                },
+              });
+            }
             message.success('删除成功！');
           },
           error: () => {
@@ -476,6 +498,7 @@ export default class CheckContent extends PureComponent {
       riskPointList: list = [],
       companyId,
       companyName,
+      tabActiveKey,
     } = this.props;
 
     return (
@@ -494,6 +517,7 @@ export default class CheckContent extends PureComponent {
               riskLevelDesc,
               riskLevelColor,
               qrCode,
+              realCheckCycle,
             } = item;
             return (
               <List.Item key={id}>
@@ -522,19 +546,14 @@ export default class CheckContent extends PureComponent {
                     >
                       风险告知卡
                     </AuthLink>,
-                    // <AuthLink
-                    //   code={codesMap.riskControl.riskPointManage.view}
-                    //   codes={codes}
-                    //   to={''}
-                    // >
-                    //   关联
-                    // </AuthLink>,
                   ]}
                   extra={
                     <div>
-                      {/* <span style={{ border: '1px solid #b4aeae', padding: '2px' }}>
-                          {getCheckCycle(checkCycle)}
-                        </span> */}
+                      {tabActiveKey === 'all' && (
+                        <span style={{ border: '1px solid #b4aeae', padding: '2px' }}>
+                          {getCheckCycle(realCheckCycle)}
+                        </span>
+                      )}
                       <AuthButton
                         code={codesMap.riskControl.riskPointManage.delete}
                         codes={codes}
