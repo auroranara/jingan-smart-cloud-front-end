@@ -317,15 +317,29 @@ export default class CheckContent extends PureComponent {
     const success = () => {
       message.success('保存成功');
       this.setState({ riskVisible: false }, () => {
-        dispatch({
-          type: 'riskPointManage/fetchRiskList',
-          payload: {
-            pageSize,
-            pageNum: 1,
-            companyId,
-            realCheckCycle: tabActiveKey,
-          },
-        });
+        if (tabActiveKey === 'all') {
+          dispatch({
+            type: 'riskPointManage/fetchRiskList',
+            payload: {
+              companyId,
+              pageSize,
+              pageNum: 1,
+              ...this.formData,
+            },
+          });
+        } else {
+          // 重新请求数据
+          dispatch({
+            type: 'riskPointManage/fetchRiskList',
+            payload: {
+              companyId,
+              realCheckCycle: tabActiveKey,
+              pageSize,
+              pageNum: 1,
+              ...this.formData,
+            },
+          });
+        }
       });
     };
     const error = () => {
@@ -334,7 +348,6 @@ export default class CheckContent extends PureComponent {
     validateFields((errors, values) => {
       if (!errors) {
         const { count, ...others } = values;
-        console.log('values', values);
         const payload = {
           itemId: riskAssessId,
           level: getCountStatus(count),
@@ -528,7 +541,7 @@ export default class CheckContent extends PureComponent {
               id,
               itemId,
               objectTitle,
-              checkStatus,
+              checkStatusDesc,
               locationCode,
               riskLevelDesc,
               riskLevelColor,
@@ -618,7 +631,7 @@ export default class CheckContent extends PureComponent {
                       </p>
                       <p>
                         检查状态：
-                        {getStatus(checkStatus) || getEmptyData()}
+                        {checkStatusDesc || getEmptyData()}
                       </p>
                     </Col>
                     <Col

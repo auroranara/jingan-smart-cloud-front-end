@@ -83,12 +83,16 @@
 }
 
 .extraButton {
-  display: none,
+  display: none;
+
+  &:hover {
+    .dispalyButton {
+      display: block;
+    }
+  }
+
 }
 
-.dispalyButton {
-  display: block,
-}
 
 .tabs {
   :global {
