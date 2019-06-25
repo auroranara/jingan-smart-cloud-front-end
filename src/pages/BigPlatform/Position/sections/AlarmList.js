@@ -21,9 +21,9 @@ const GRAPH_STYLE = { position: 'absolute', top: 15, right: 15 };
 const CHART_STYLE = { height: 320 };
 
 function Circle(props) {
-  const { num, desc } = props;
+  const { num, desc, onClick, ...restProps } = props;
   return (
-    <div className={styles.blueCircle}>
+    <div className={styles.blueCircle} onClick={onClick} {...restProps}>
       <div className={styles.circleNum}>{num}</div>
       <p className={styles.circleLabel}>{desc}</p>
     </div>
@@ -62,7 +62,7 @@ export default class AlarmList extends PureComponent {
     this.setState({ graph: i });
   };
 
-  getAlarms = () => {
+  getAlarms = type => {
     const { dispatch, companyId } = this.props;
     const { searchValue, date, startTime, endTime, selectedArea, alarmType, alarmStatus } = this.state;
     const typeList = !alarmType || !alarmType.length ? undefined : alarmType.join(',');
@@ -70,7 +70,7 @@ export default class AlarmList extends PureComponent {
     const day = date.format('YYYY-MM-DD');
     const start = `${day} ${startTime.format('HH:mm:ss')}`;
     const end = `${day} ${endTime.format('HH:mm:ss')}`;
-    const payload = { startTime: start, endTime: end, typeList, executeStatus: alarmStatus, pageSize: 0, pageNum: 1, companyId };
+    const payload = { startTime: start, endTime: end, typeList, executeStatus: alarmStatus, pageSize: 0, pageNum: 1, companyId, type };
     if (searchValue)
       payload.userName = searchValue;
     if (selectedArea)
@@ -111,6 +111,12 @@ export default class AlarmList extends PureComponent {
 
   handleEndChange = time => {
     this.setState({ endTime: time });
+  };
+
+  genHandleBlueCardClick = type => e => {
+    this.setState({ date: moment(), startTime: moment().startOf('day'), endTime: moment().endOf('day') }, () => {
+      this.getAlarms(type);
+    });
   };
 
   genHandleSelectCard = index => e => {
@@ -186,7 +192,7 @@ export default class AlarmList extends PureComponent {
       startTime,
       endTime,
       selectedArea,
-      alarmType,
+      // alarmType,
       alarmStatus,
       selectedCards,
       handleDesc,
@@ -230,10 +236,26 @@ export default class AlarmList extends PureComponent {
             <div className={styles.leftTop1}>
               <div className={styles.leftTop1Inner}>
                 <div className={styles.leftTopRow}>
-                  {personAlert.map(({ typeName, typeCount }) => <Circle key={typeName} num={typeCount} desc={typeName} />)}
+                  {personAlert.map(({ type, typeName, typeCount }) => (
+                    <Circle
+                      key={typeName}
+                      num={typeCount}
+                      desc={typeName}
+                      style={{ cursor: 1 ? 'pointer' : 'auto' }}
+                      onClick={1 ? this.genHandleBlueCardClick(type) : null}
+                    />
+                  ))}
                 </div>
                 <div className={styles.leftTopRow}>
-                  {sectionAlert.map(({ typeName, typeCount }) => <Circle key={typeName} num={typeCount} desc={typeName} />)}
+                  {sectionAlert.map(({ type, typeName, typeCount }) => (
+                    <Circle
+                      key={typeName}
+                      num={typeCount}
+                      desc={typeName}
+                      style={{ cursor: typeCount ? 'pointer' : 'auto' }}
+                      onClick={type ? this.genHandleBlueCardClick(type) : null}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
@@ -374,7 +396,7 @@ export default class AlarmList extends PureComponent {
                     />
                   </div>
                   <ButtonGroup className={styles.btns}>
-                    <Button ghost className={styles.searchBtn1} onClick={this.getAlarms}>搜索</Button>
+                    <Button ghost className={styles.searchBtn1} onClick={e => this.getAlarms()}>搜索</Button>
                     {/* {batch
                       ? (
                       <Fragment>

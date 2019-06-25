@@ -521,7 +521,7 @@ export default class LeafletMap extends PureComponent {
     const icons = [...positionIcons, ...movingIcons].concat(floorIcon || []);
     // console.log('render icons', Date(), icons);
 
-    console.log(drawKey);
+    // console.log(drawKey);
     const imgDraw = (
       <Spin spinning={false} style={{ height: '100%' }}>
         <ImageDraw
