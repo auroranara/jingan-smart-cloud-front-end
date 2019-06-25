@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 const DATE_FORMAT = 'YYYY/M/D H:m';
-const CONDITION_MAP = { 1: '≥', 2: '≤' };
+// const CONDITION_MAP = { 1: '≥', 2: '≤' };
 
 export function addAlign(columns, align = 'center') {
   if (!columns) return;
