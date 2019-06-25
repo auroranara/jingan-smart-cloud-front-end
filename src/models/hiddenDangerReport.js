@@ -315,7 +315,7 @@ export default {
      */
     *exportData({ payload, callback }, { call, put }) {
       const blob = yield call(exportData, payload);
-      fileDownload(blob, `隐患排查报表_${moment().format('YYYYMMDD')}.xlsx`);
+      fileDownload(blob, `隐患排查报表_${moment().format('YYYYMMDD')}.xls`);
     },
     /**
      * 获取文书列表

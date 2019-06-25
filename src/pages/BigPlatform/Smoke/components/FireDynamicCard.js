@@ -58,6 +58,7 @@ function Occured(props) {
 
 function Received(props) {
   const { man, phone, companyName, type } = props;
+
   return (
     <div className={styles.card}>
       <p>
