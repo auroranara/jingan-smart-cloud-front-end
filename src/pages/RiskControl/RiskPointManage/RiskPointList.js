@@ -110,7 +110,10 @@ export default class riskPointList extends PureComponent {
     const {
       loading,
       riskPointManage: {
-        riskPointData: { list: riskPointList },
+        riskPointData: {
+          list: riskPointList,
+          pagination: { total },
+        },
         riskCountData: { list = [] },
         lecData,
       },
@@ -120,23 +123,20 @@ export default class riskPointList extends PureComponent {
       location: {
         query: { companyName },
       },
-      user: {
-        currentUser: { permissionCodes: codes },
-      },
     } = this.props;
 
     const { activeKey } = this.state;
 
     // 检查点统计
     const tabCount = list.map(t => t.pointCount);
-    const tabTotal = (list || []).reduce((total, value) => {
-      return total + (value ? value.pointCount : 0);
-    }, 0);
+    // const tabTotal = (list || []).reduce((total, value) => {
+    //   return total + (value ? value.pointCount : 0);
+    // }, 0);
 
     const tabList = [
       {
         key: 'all',
-        tab: `全部(${tabTotal})`,
+        tab: `全部(${total})`,
       },
       {
         key: 'every_day',
@@ -174,7 +174,7 @@ export default class riskPointList extends PureComponent {
             <span>{companyName}</span>
             <span style={{ paddingLeft: 15 }}>
               风险点总数：
-              {tabTotal}
+              {total}
             </span>
           </div>
         }

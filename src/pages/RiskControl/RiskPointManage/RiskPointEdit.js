@@ -312,7 +312,6 @@ export default class RiskPointEdit extends PureComponent {
       type: 'riskPointManage/fetchLabelDict',
       payload: {
         companyId,
-        itemType: 2,
         pageNum: 1,
         pageSize: 10,
       },
@@ -413,7 +412,6 @@ export default class RiskPointEdit extends PureComponent {
         industryData: { list = [] },
       },
     } = this.props;
-    console.log('this.propsthis.props', this.props);
     const { checkVisible, flowList } = this.state;
 
     const checkCOLUMNS = [

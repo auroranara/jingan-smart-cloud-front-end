@@ -20,6 +20,7 @@ import {
   Tooltip,
 } from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
+import Ellipsis from '@/components/Ellipsis';
 
 import QRCode from 'qrcode.react';
 import styles from './CheckContent.less';
@@ -54,19 +55,6 @@ const getEmptyData = () => {
 // 获取root下的div
 const getRootChild = () => document.querySelector('#root>div');
 
-// 检查状态
-const getStatus = status => {
-  switch (+status) {
-    case 1:
-      return '待检查';
-    case 2:
-      return '已检查';
-    case 3:
-      return '已超时';
-    default:
-      break;
-  }
-};
 const getCount = i => {
   switch (+i) {
     case 1:
@@ -134,6 +122,7 @@ export default class CheckContent extends PureComponent {
     riskVisible: false, // 风险评估模态框是否可见
     activeKey: null,
     riskAssessId: '', // 风险评估对应ItemId
+    filterList: [],
   };
 
   // 生命周期函数
@@ -261,7 +250,23 @@ export default class CheckContent extends PureComponent {
 
   // 显示风险评估告知卡模态框
   handleRiskModal = id => {
-    this.setState({ riskVisible: true, riskAssessId: id });
+    const {
+      dispatch,
+      riskPointList: list = [],
+      // form: { setFieldsValue },
+    } = this.props;
+    const filterList = list.filter(item => item.itemId === id);
+    this.setState({ riskVisible: true, riskAssessId: id, filterList: filterList });
+    const [{ l: hasL, e: hasE, c: hanC } = { filterList: {} }] = filterList;
+    const hasRiskValue = (hasL * hasE * hanC).toFixed(2);
+    if (hasL && hasRiskValue) {
+      dispatch({
+        type: 'riskPointManage/fetchCountLevel',
+        payload: {
+          levelValue: hasRiskValue,
+        },
+      });
+    }
   };
 
   // 关闭风险评估告知卡模态框
@@ -280,6 +285,7 @@ export default class CheckContent extends PureComponent {
       form: { getFieldValue, setFieldsValue },
       dispatch,
     } = this.props;
+
     const {
       target: { value },
     } = item;
@@ -423,6 +429,7 @@ export default class CheckContent extends PureComponent {
       },
     });
   };
+
   /* 渲染form表单 */
   renderForm() {
     const {
@@ -533,12 +540,11 @@ export default class CheckContent extends PureComponent {
     return (
       <div className={styles.cardList} style={{ margin: '24px 0 0 0' }}>
         <List
-          rowKey="id"
+          rowKey="itemId"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
             const {
-              id,
               itemId,
               objectTitle,
               checkStatusDesc,
@@ -549,9 +555,19 @@ export default class CheckContent extends PureComponent {
               realCheckCycle,
             } = item;
             return (
-              <List.Item key={id}>
+              <List.Item key={itemId}>
                 <Card
-                  title={objectTitle}
+                  title={
+                    <div>
+                      <Ellipsis tooltip length={8} style={{ overflow: 'visible' }}>
+                        {objectTitle}
+                      </Ellipsis>
+                      {tabActiveKey === 'all' &&
+                        realCheckCycle && (
+                          <span className={styles.titleSpan}>{getCheckCycle(realCheckCycle)}</span>
+                        )}
+                    </div>
+                  }
                   className={styles.card}
                   actions={[
                     <AuthLink
@@ -581,34 +597,23 @@ export default class CheckContent extends PureComponent {
                     </AuthSpan>,
                   ]}
                   extra={
-                    <div>
-                      {tabActiveKey === 'all' &&
-                        realCheckCycle && (
-                          <span style={{ border: '1px solid #b4aeae', padding: '2px' }}>
-                            {getCheckCycle(realCheckCycle)}
-                          </span>
-                        )}
-                      <div className={styles.extraButton}>
-                        <AuthButton
-                          code={codesMap.riskControl.riskPointManage.delete}
-                          className={styles.dispalyButton}
-                          codes={codes}
-                          onClick={() => {
-                            this.handleShowDeleteConfirm(itemId);
-                          }}
-                          shape="circle"
-                          style={{
-                            border: 'none',
-                            fontSize: '16px',
-                            position: 'absolute',
-                            right: '8px',
-                            top: '12px',
-                          }}
-                        >
-                          <Icon type="close" />
-                        </AuthButton>
-                      </div>
-                    </div>
+                    <AuthButton
+                      code={codesMap.riskControl.riskPointManage.delete}
+                      codes={codes}
+                      onClick={() => {
+                        this.handleShowDeleteConfirm(itemId);
+                      }}
+                      shape="circle"
+                      style={{
+                        border: 'none',
+                        fontSize: '16px',
+                        position: 'absolute',
+                        right: '8px',
+                        top: '12px',
+                      }}
+                    >
+                      <Icon type="close" />
+                    </AuthButton>
                   }
                 >
                   <Row>
@@ -666,8 +671,9 @@ export default class CheckContent extends PureComponent {
       riskPointManage: { isLast, count, riskGrade = [] },
       lecData: { llist = [], elist = [], clist = [] },
     } = this.props;
+    const { riskVisible, activeKey, showImg, qrCode, filterList = [] } = this.state;
 
-    const { riskVisible, activeKey, showImg, qrCode } = this.state;
+    const [{ l, e, c } = { filterList: {} }] = filterList;
 
     const formItemLayout = {
       labelCol: { span: 8 },
@@ -718,7 +724,7 @@ export default class CheckContent extends PureComponent {
                 <Form>
                   <FormItem {...formItemLayout} label="时间发生的可能性(L)">
                     {getFieldDecorator('l', {
-                      initialValue: defaultFormData.l,
+                      initialValue: l,
                     })(
                       <Radio.Group
                         onChange={e => {
@@ -737,7 +743,7 @@ export default class CheckContent extends PureComponent {
                   </FormItem>
                   <FormItem {...formItemLayout} label="频繁程度(E)">
                     {getFieldDecorator('e', {
-                      initialValue: defaultFormData.e,
+                      initialValue: e,
                     })(
                       <Radio.Group
                         onChange={e => {
@@ -756,7 +762,7 @@ export default class CheckContent extends PureComponent {
                   </FormItem>
                   <FormItem {...formItemLayout} label="后果(C)">
                     {getFieldDecorator('c', {
-                      initialValue: defaultFormData.c,
+                      initialValue: c,
                     })(
                       <Radio.Group
                         onChange={e => {
@@ -774,11 +780,13 @@ export default class CheckContent extends PureComponent {
                     )}
                   </FormItem>
                   <FormItem {...formItemLayout} label="计算风险值(D)">
-                    {getFieldDecorator('riskValue')(<Input disabled style={{ width: 120 }} />)}
+                    {getFieldDecorator('riskValue', {
+                      initialValue: (l * e * c).toFixed(2),
+                    })(<Input disabled style={{ width: 120 }} />)}
                   </FormItem>
                   <FormItem {...formItemLayout} label="对应风险等级">
                     {getFieldDecorator('count', {
-                      initialValue: getCount(count) || '',
+                      initialValue: l ? getCount(count) : undefined,
                     })(<Input disabled placeholder="计算中..." style={{ width: 180 }} />)}
                   </FormItem>
                 </Form>
@@ -787,7 +795,7 @@ export default class CheckContent extends PureComponent {
             {/* <TabPane tab="自定义" key="2">
               <FormItem {...formItemLayout} label="风险等级">
                 {getFieldDecorator('count', {
-                  initialValue: getCount(count),
+                  initialValue: l ? getCount(count) : undefined,
                 })(
                   <Select
                     placeholder="请选择风险等级"
