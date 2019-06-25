@@ -70,7 +70,7 @@ const statusLabelList = {
 const unitTypeList = {
   1: '维保企业',
   2: '政府机构',
-  3: '平台管理',
+  3: '运营企业',
   4: '企事业主体',
 };
 
@@ -827,7 +827,7 @@ export default class accountManagementList extends React.Component {
             </Fragment>
           ) : (
             <Fragment>
-              <span>平台管理</span>
+              <span>运营企业</span>
             </Fragment>
           );
         },

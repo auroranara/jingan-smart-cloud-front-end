@@ -682,7 +682,8 @@ export default class VideoMonitorEdit extends PureComponent {
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
-                  // validator: this.validatorID,
+                  required: true,
+                  message: '请输入设备ID',
                 },
                 {
                   // validator: this.validatorID,
@@ -697,7 +698,8 @@ export default class VideoMonitorEdit extends PureComponent {
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
-                  // validator: this.validatorID,
+                  required: true,
+                  message: '请输入摄像头ID',
                 },
                 {
                   // validator: this.validatorID,

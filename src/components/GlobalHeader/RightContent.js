@@ -121,7 +121,7 @@ export default class GlobalHeaderRight extends PureComponent {
               onClick={() => this.handleChangeUser(item.userId)}
               key={item.userId}
             >
-              {item.unitName || '平台管理'}
+              {item.unitName || '运营企业'}
             </Menu.Item>
           ))}
       </Menu>

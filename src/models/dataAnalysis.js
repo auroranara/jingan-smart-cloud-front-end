@@ -1,10 +1,4 @@
-import {
-  queryCompanies,
-  queryData,
-  queryExport,
-  getCompanyName,
-  fetchRepairRecords,
-} from '../services/dataAnalysis';
+import { queryCompanies, queryData, queryExport, getCompanyName, fetchRepairRecords } from '../services/dataAnalysis';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
 
@@ -26,7 +20,7 @@ export default {
         pageSize: 10,
       },
     },
-    repairRecordDetail: { realStatus: '' },
+    repairRecordDetail: {realStatus:''},
   },
 
   effects: {
@@ -49,7 +43,7 @@ export default {
     },
     *fetchExport({ payload, typeLabel, companyName }, { call, put }) {
       const blob = yield call(queryExport, payload);
-      fileDownload(blob, `${typeLabel}_${companyName}_${moment().format('YYYY-MM-DD')}.xls`);
+      fileDownload(blob, `${typeLabel}_${companyName}_${moment().format('YYYY-MM-DD')}.xlsx`);
       // response = response || EMPTY_OBJECT;
       // const { code = DEFAULT_CODE, data = EMPTY_OBJECT, msg } = response;
       // callback && callback(code, msg);
@@ -60,7 +54,8 @@ export default {
       let response = yield call(getCompanyName, payload);
       response = response || EMPTY_OBJECT;
       const { code = DEFAULT_CODE, data = EMPTY_OBJECT } = response;
-      if (code === 200) yield put({ type: 'saveCompanyInfo', payload: { name: data } });
+      if (code === 200)
+        yield put({ type: 'saveCompanyInfo', payload: { name: data } });
     },
     // 获取一键报修记录列表
     *fetchRepairRecords({ payload }, { call, put }) {
@@ -69,7 +64,7 @@ export default {
         yield put({
           type: 'saveRepairRecords',
           payload: response.data,
-        });
+        })
       }
     },
     // 获取一键报修记录详情
@@ -77,9 +72,9 @@ export default {
       const response = yield call(fetchRepairRecords, payload);
       if (response && response.code === 200) {
         yield put({
-          type: 'saveRepairRecordDetail',
+          type: "saveRepairRecordDetail",
           payload: response.data,
-        });
+        })
       }
     },
   },
@@ -91,7 +86,8 @@ export default {
       const { pageNum = 1 } = pagination;
       let newList = list;
       // 第一页list就为获取的list，第二页就要在之前list上增加新获取的list
-      if (pageNum !== 1) newList = [...state.companies.list, ...list];
+      if (pageNum !== 1)
+        newList = [...state.companies.list, ...list];
       const companies = { ...data, list: newList };
 
       return { ...state, companies };
@@ -103,32 +99,29 @@ export default {
       return { ...state, companyInfo: action.payload };
     },
     saveRepairRecords(state, action) {
-      const { list, pageNum, pageSize, total } = action.payload;
+      const { list, pageNum, pageSize, total } = action.payload
       return {
         ...state,
         repairRecord: {
           ...state.repairRecord,
           repairRecords: list,
           pagination: {
-            pageNum,
-            pageSize,
-            total,
+            pageNum, pageSize, total,
           },
         },
-      };
+      }
     },
     saveRepairRecordDetail(state, action) {
-      const { list } = action.payload;
+      const { list } = action.payload
       if (list && list.length) {
         return {
           ...state,
           repairRecordDetail: list[0],
-        };
-      } else
-        return {
-          ...state,
-          repairRecordDetail: { realStatus: '' },
-        };
+        }
+      } else return {
+        ...state,
+        repairRecordDetail: {realStatus:''},
+      }
     },
   },
 };

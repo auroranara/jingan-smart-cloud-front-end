@@ -77,7 +77,6 @@ export default class FireMonitorFlowDrawer extends PureComponent {
           startCompanyName,
           endDate,
           type,
-          proceType,
           executorName,
           phone,
           executorCompanyName,
@@ -113,8 +112,8 @@ export default class FireMonitorFlowDrawer extends PureComponent {
                     msgFlow === 0
                       ? {
                           name: '确认该火警为',
-                          value: +proceType === 1 ? '误报火警' : '真实火警',
-                          style: { color: +proceType === 1 ? '#fff' : '#ff4848' },
+                          value: +type === 1 ? '误报火警' : '真实火警',
+                          style: { color: +type === 1 ? '#fff' : '#ff4848' },
                         }
                       : undefined,
                     { name: '处理单位', value: startCompanyName },
