@@ -232,6 +232,7 @@ export default class DataAnalysisList extends PureComponent {
               pollutionWaterNum,
               pollutionGasNum,
               opcNum,
+              transmissionNum,
               industryCategoryLabel,
               practicalProvinceLabel,
               practicalCityLabel,
@@ -254,7 +255,7 @@ export default class DataAnalysisList extends PureComponent {
               'waste-gas': pollutionGasNum,
               'storage-tank': opcNum,
               'smoke-detector': smokeNum,
-              fire: 1,
+              fire: transmissionNum,
             };
 
             return (
