@@ -136,3 +136,8 @@ export async function deleteHdLetter({ ids }) {
 export async function queryShowLetter({ id }) {
   return request(`${URL_PREFIX}/pointManage/showLetter/${id}`);
 }
+
+// 获取行业类别字典
+export async function queryIndustryDict(params) {
+  return request(`${URL_PREFIX}/pointManage/industryDict?${stringify(params)}`);
+}

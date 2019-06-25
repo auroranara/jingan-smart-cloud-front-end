@@ -16,6 +16,7 @@ import {
   queryRiskTypeDict,
   queryAccidentTypeDict,
   queryWarningSignDict,
+  queryIndustryDict,
   /* 风险告知卡 */
   queryHdLetterAdd,
   updateHdLetter,
@@ -217,6 +218,7 @@ export default {
       list: [],
     },
     checkCycleData: {},
+    industryData: {},
     // 风险告知卡列表
     riskCardData: {
       list: [],
@@ -374,6 +376,17 @@ export default {
       if (response.code === 200) {
         yield put({
           type: 'saveLabelDict',
+          payload: response.data,
+        });
+      }
+    },
+
+    // 获取行业类别字典
+    *fetchIndustryDict({ payload }, { call, put }) {
+      const response = yield call(queryIndustryDict, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveIndustryDict',
           payload: response.data,
         });
       }
@@ -673,6 +686,14 @@ export default {
         ...state,
         list,
         labelModal: payload,
+      };
+    },
+
+    // 获取行业字典
+    saveIndustryDict(state, { payload }) {
+      return {
+        ...state,
+        industryData: payload,
       };
     },
 

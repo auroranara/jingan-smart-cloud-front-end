@@ -255,7 +255,7 @@ export default class RiskPointManage extends PureComponent {
                   <Row>
                     <Col span={16}>
                       <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                        安全负责人：
+                        安全管理员：
                         {safetyName || getEmptyData()}
                       </Ellipsis>
                       <p>

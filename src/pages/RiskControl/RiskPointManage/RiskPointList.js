@@ -5,6 +5,8 @@ import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './CheckContent.less';
 import CheckContent from './CheckContent';
+import codesMap from '@/utils/codes';
+import { AuthButton } from '@/utils/customAuth';
 
 // 默认页面显示数量
 const pageSize = 18;
@@ -117,6 +119,9 @@ export default class riskPointList extends PureComponent {
       },
       location: {
         query: { companyName },
+      },
+      user: {
+        currentUser: { permissionCodes: codes },
       },
     } = this.props;
 

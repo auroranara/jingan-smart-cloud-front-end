@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { routerRedux } from 'dva/router';
 import {
   Form,
   List,
@@ -349,6 +350,21 @@ export default class CheckContent extends PureComponent {
     });
   };
 
+  // 跳转到风险告知卡
+  goToRiskCard = (itemId, companyName, companyId) => {
+    const { dispatch } = this.props;
+    dispatch(
+      routerRedux.push(
+        `/risk-control/risk-point-manage/risk-card-list/${itemId}?companyName=${companyName}&companyId=${companyId}`
+      )
+    );
+  };
+
+  // 无风险等级,不能点击风险告知卡
+  goToMessage = () => {
+    message.error('请先评估风险等级');
+  };
+
   // 删除风险点
   handleShowDeleteConfirm = id => {
     const { dispatch, companyId, tabActiveKey } = this.props;
@@ -539,38 +555,46 @@ export default class CheckContent extends PureComponent {
                     >
                       风险评估
                     </AuthSpan>,
-                    <AuthLink
+                    <AuthSpan
                       code={codesMap.riskControl.riskPointManage.view}
                       codes={codes}
-                      to={`/risk-control/risk-point-manage/risk-card-list/${itemId}?companyName=${companyName}&companyId=${companyId}`}
+                      onClick={() =>
+                        riskLevelDesc
+                          ? this.goToRiskCard(itemId, companyName, companyId)
+                          : this.goToMessage()
+                      }
                     >
                       风险告知卡
-                    </AuthLink>,
+                    </AuthSpan>,
                   ]}
                   extra={
                     <div>
-                      {tabActiveKey === 'all' && (
-                        <span style={{ border: '1px solid #b4aeae', padding: '2px' }}>
-                          {getCheckCycle(realCheckCycle)}
-                        </span>
-                      )}
-                      <AuthButton
-                        code={codesMap.riskControl.riskPointManage.delete}
-                        codes={codes}
-                        onClick={() => {
-                          this.handleShowDeleteConfirm(itemId);
-                        }}
-                        shape="circle"
-                        style={{
-                          border: 'none',
-                          fontSize: '16px',
-                          position: 'absolute',
-                          right: '8px',
-                          top: '12px',
-                        }}
-                      >
-                        <Icon type="close" />
-                      </AuthButton>
+                      {tabActiveKey === 'all' &&
+                        realCheckCycle && (
+                          <span style={{ border: '1px solid #b4aeae', padding: '2px' }}>
+                            {getCheckCycle(realCheckCycle)}
+                          </span>
+                        )}
+                      <div className={styles.extraButton}>
+                        <AuthButton
+                          code={codesMap.riskControl.riskPointManage.delete}
+                          className={styles.dispalyButton}
+                          codes={codes}
+                          onClick={() => {
+                            this.handleShowDeleteConfirm(itemId);
+                          }}
+                          shape="circle"
+                          style={{
+                            border: 'none',
+                            fontSize: '16px',
+                            position: 'absolute',
+                            right: '8px',
+                            top: '12px',
+                          }}
+                        >
+                          <Icon type="close" />
+                        </AuthButton>
+                      </div>
                     </div>
                   }
                 >

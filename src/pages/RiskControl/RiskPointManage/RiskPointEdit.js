@@ -195,6 +195,7 @@ export default class RiskPointEdit extends PureComponent {
         type: 'riskPointManage/clearDetail',
       });
     }
+    // 获取推荐检查周期
     dispatch({
       type: 'riskPointManage/fetchCheckCycle',
       payload: {
@@ -202,7 +203,14 @@ export default class RiskPointEdit extends PureComponent {
         type: 2,
       },
     });
-    this.fetchPointLabel({ payload });
+    // 获取业务分类
+    dispatch({
+      type: 'illegalDatabase/fetchOptions',
+    });
+    // 获取行业类别
+    dispatch({
+      type: 'riskPointManage/fetchIndustryDict',
+    });
     this.fetchCheckContent({ payload });
   }
 
@@ -289,14 +297,25 @@ export default class RiskPointEdit extends PureComponent {
   handleFocus = e => {
     e.target.blur();
     this.setState({ rfidVisible: true });
+    this.fetchPointLabel();
   };
 
   // 获取内容(RFID)
-  fetchPointLabel = ({ payload }) => {
-    const { dispatch } = this.props;
+  fetchPointLabel = () => {
+    const {
+      dispatch,
+      location: {
+        query: { companyId },
+      },
+    } = this.props;
     dispatch({
       type: 'riskPointManage/fetchLabelDict',
-      payload,
+      payload: {
+        companyId,
+        itemType: 2,
+        pageNum: 1,
+        pageSize: 10,
+      },
     });
   };
 
@@ -390,7 +409,11 @@ export default class RiskPointEdit extends PureComponent {
     const {
       illegalDatabase: { checkModal, businessTypes },
       loading,
+      riskPointManage: {
+        industryData: { list = [] },
+      },
     } = this.props;
+    console.log('this.propsthis.props', this.props);
     const { checkVisible, flowList } = this.state;
 
     const checkCOLUMNS = [
@@ -466,9 +489,9 @@ export default class RiskPointEdit extends PureComponent {
         render() {
           return (
             <Select placeholder="请选择所属行业">
-              {[].map(item => (
-                <Option value={item.id} key={item.id}>
-                  {item.label}
+              {list.map(item => (
+                <Option value={item.value} key={item.value}>
+                  {item.desc}
                 </Option>
               ))}
             </Select>
@@ -683,9 +706,6 @@ export default class RiskPointEdit extends PureComponent {
         buildingData: { list: buildingList = [] },
         floorData: { list: floorList = [] },
       },
-      // match: {
-      //   params: { id },
-      // },
     } = this.props;
     const { picModalVisible, picList } = this.state;
 
@@ -959,6 +979,51 @@ export default class RiskPointEdit extends PureComponent {
             </Col>
             <Col span={24}>
               <Row gutter={12}>
+                <Col span={8}>
+                  <Form.Item label={fieldLabels.RecommendCycle}>
+                    {getFieldDecorator('recommendCycle', {
+                      getValueFromEvent: this.handleTrim,
+                      initialValue: getCycleType(checkCycleData),
+                      rules: [{ required: true, message: '推荐检查周期' }],
+                    })(<Input placeholder="推荐检查周期" disabled />)}
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item label={fieldLabels.cycleType}>
+                    {getFieldDecorator('checkCycle', {
+                      initialValue: data.checkCycle,
+                      rules: [{ message: '请选择自定义检查周期' }],
+                    })(
+                      <Select allowClear placeholder="请选择自定义检查周期">
+                        {cycleTypeList.map(({ key, value }) => (
+                          <Option value={key} key={key}>
+                            {value}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item label={fieldLabels.checkCycle}>
+                    {getFieldDecorator('cycleType', {
+                      initialValue: data.cycleType,
+                      rules: [{ required: true, message: '请选择检查周期方案' }],
+                    })(
+                      <Select allowClear placeholder="请选择检查周期方案">
+                        {checkCycleList.map(({ key, value }) => (
+                          <Option value={key} key={key}>
+                            {value}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+            <Col span={24}>
+              <Row gutter={12}>
                 <Col span={6}>
                   <Form.Item label={fieldLabels.bindRFID}>
                     {getFieldDecorator('locationCode', {
@@ -987,51 +1052,6 @@ export default class RiskPointEdit extends PureComponent {
                       getValueFromEvent: this.handleTrim,
                       rules: [{ required: true, message: '请选择NFC' }],
                     })(<Input placeholder="请选择NFC" disabled />)}
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Col>
-            <Col span={24}>
-              <Row gutter={12}>
-                <Col span={8}>
-                  <Form.Item label={fieldLabels.RecommendCycle}>
-                    {getFieldDecorator('recommendCycle', {
-                      getValueFromEvent: this.handleTrim,
-                      initialValue: getCycleType(checkCycleData),
-                      rules: [{ required: true, message: '推荐检查周期' }],
-                    })(<Input placeholder="推荐检查周期" disabled />)}
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item label={fieldLabels.cycleType}>
-                    {getFieldDecorator('checkCycle', {
-                      initialValue: data.checkCycle,
-                      rules: [{ required: true, message: '请选择自定义检查周期' }],
-                    })(
-                      <Select allowClear placeholder="请选择自定义检查周期">
-                        {cycleTypeList.map(({ key, value }) => (
-                          <Option value={key} key={key}>
-                            {value}
-                          </Option>
-                        ))}
-                      </Select>
-                    )}
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item label={fieldLabels.checkCycle}>
-                    {getFieldDecorator('cycleType', {
-                      initialValue: data.cycleType,
-                      rules: [{ required: true, message: '请选择检查周期方案' }],
-                    })(
-                      <Select allowClear placeholder="请选择检查周期方案">
-                        {checkCycleList.map(({ key, value }) => (
-                          <Option value={key} key={key}>
-                            {value}
-                          </Option>
-                        ))}
-                      </Select>
-                    )}
                   </Form.Item>
                 </Col>
               </Row>
