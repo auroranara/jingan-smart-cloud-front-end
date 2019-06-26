@@ -557,7 +557,7 @@ export default class AddSensor extends Component {
               </FormItem>
             </Col> */}
             <Col span={10}>
-              <FormItem style={{ display: 'inline-block' }} label="预警阈值"></FormItem>
+              <FormItem style={{ display: 'inline-block' }} label="报警阈值"></FormItem>
               <FormItem style={{ width: '180px', display: 'inline-block' }}>
                 {getFieldDecorator('normalLower', {
                   rules: [{ validator: this.validateNormalLower }],

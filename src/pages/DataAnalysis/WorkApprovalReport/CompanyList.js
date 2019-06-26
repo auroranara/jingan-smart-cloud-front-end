@@ -99,6 +99,30 @@ export default class CompanyList extends PureComponent {
     });
   }
 
+  // 点击查询
+  handleQuery = (pageNum = 1, pageSize = PAGESIZE) => {
+    const {
+      form: { getFieldsValue },
+    } = this.props
+    const values = getFieldsValue()
+    this.fetchCompanies({
+      payload: {
+        pageNum,
+        pageSize,
+        ...values,
+      },
+    })
+  }
+
+  // 点击重置
+  handleReset = () => {
+    const {
+      form: { resetFields },
+    } = this.props
+    resetFields()
+    this.handleQuery()
+  }
+
 
   /**
    * 点击卡片
@@ -119,22 +143,15 @@ export default class CompanyList extends PureComponent {
         <Row gutter={16}>
           <Col {...colWrapper}>
             <Form.Item {...formItemStyle}>
-              {getFieldDecorator('aa')(
-                <Input placeholder="创建时间" />
+              {getFieldDecorator('name')(
+                <Input placeholder="单位名称" />
               )}
             </Form.Item>
           </Col>
           <Col {...colWrapper}>
             <Form.Item {...formItemStyle}>
-              {getFieldDecorator('bb')(
-                <Input placeholder="隐患编号" />
-              )}
-            </Form.Item>
-          </Col>
-          <Col {...colWrapper}>
-            <Form.Item {...formItemStyle}>
-              <Button style={{ marginRight: '10px' }} type="primary"> 查询</Button>
-              <Button>重置</Button>
+              <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}> 查询</Button>
+              <Button onClick={this.handleReset}>重置</Button>
             </Form.Item>
           </Col>
         </Row>
@@ -163,24 +180,35 @@ export default class CompanyList extends PureComponent {
             const {
               id,
               name, // 公司名称
-              principalName = null,
-              principalPhone = null,
               practicalAddress = null, // 地址
+              practicalProvinceLabel,
+              practicalCityLabel,
+              practicalDistrictLabel,
+              practicalTownLabel,
+              industryCategoryLabel,
+              safetyName,
+              safetyPhone,
             } = item
+            const practicalAddressLabel =
+              (practicalProvinceLabel || '') +
+              (practicalCityLabel || '') +
+              (practicalDistrictLabel || '') +
+              (practicalTownLabel || '') +
+              (practicalAddress || '');
             return (
               <List.Item key={id}>
                 <Card title={name} className={styles.card} style={{ cursor: viewListAuth ? 'pointer' : 'inherit' }} onClick={() => viewListAuth ? this.handleCardClick(id, name) : null}>
                   <Ellipsis tooltip className={styles.ellipsisText} lines={1}>
-                    地址：{practicalAddress || '暂无信息'}
+                    地址：{practicalAddressLabel || '暂无信息'}
                   </Ellipsis>
                   <Ellipsis tooltip className={styles.ellipsisText} lines={1}>
-                    行业类别：{principalName || '暂无信息'}
+                    行业类别：{industryCategoryLabel || '暂无信息'}
                   </Ellipsis>
                   <Ellipsis tooltip className={styles.ellipsisText} lines={1}>
-                    安全负责人：{principalName || '暂无信息'}
+                    安全管理员：{safetyName || '暂无信息'}
                   </Ellipsis>
                   <Ellipsis tooltip className={styles.ellipsisText} lines={1}>
-                    联系电话：{principalPhone || '暂无信息'}
+                    联系电话：{safetyPhone || '暂无信息'}
                   </Ellipsis>
                 </Card>
               </List.Item>

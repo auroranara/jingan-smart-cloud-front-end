@@ -263,12 +263,12 @@ export default class WorkApprovalList extends PureComponent {
       address: sxkjmc || dhdd || zydd,
       jobUsers: zyr || dhr || dzr,
       level: zyjb || zylb,
-      query_start_time: this.formatDate(query_start_time),
-      query_end_time: this.formatDate(query_end_time),
-      work_start_time: this.formatDate(work_start_time),
-      work_end_time: this.formatDate(work_end_time),
-      finish_start_time: this.formatDate(finish_start_time),
-      finish_end_time: this.formatDate(finish_end_time),
+      query_start_time: this.formatDateToMs(query_start_time),
+      query_end_time: this.formatDateToMs(query_end_time),
+      work_start_time: this.formatDateToMs(work_start_time),
+      work_end_time: this.formatDateToMs(work_end_time),
+      finish_start_time: this.formatDateToMs(finish_start_time),
+      finish_end_time: this.formatDateToMs(finish_end_time),
     }
     // 筛选掉空数据
     filterValues = Object.fromEntries(Object.entries(filterValues).filter(([, value]) => value))
@@ -281,8 +281,12 @@ export default class WorkApprovalList extends PureComponent {
 
   }
 
-  formatDate = date => {
+  formatDateToMs = date => {
     return date && moment(date).format('YYYY-MM-DD HH:mm:ss')
+  }
+
+  formatDateToMin = date => {
+    return date && moment(date).format('YYYY-MM-DD HH:mm')
   }
 
 
@@ -290,12 +294,18 @@ export default class WorkApprovalList extends PureComponent {
    * 点击重置
    */
   handleReset = () => {
-    this.setState({ filterValues: {} })
     this.saveAataAnalysisState({
       payload: { supplierUnits: [] },
     })
+    this.setState({ filterValues: {} }, () => {
+      this.handleFetch()
+    })
   }
 
+
+  /**
+   * 渲染筛选栏
+   */
   renderFilter = () => {
     const {
       match: { params: { type: activeKey } },
@@ -420,8 +430,8 @@ export default class WorkApprovalList extends PureComponent {
             placeholder={['作业', '时间']}
             style={{ width: '100%' }}
             ranges={{
-              Today: [moment(), moment()],
-              'This Month': [moment().startOf('month'), moment().endOf('month')],
+              '当天': [moment(), moment()],
+              '本月': [moment().startOf('month'), moment().endOf('month')],
             }}
           />
         ),
@@ -449,8 +459,8 @@ export default class WorkApprovalList extends PureComponent {
             placeholder={['完工验收', '时间']}
             style={{ width: '100%' }}
             ranges={{
-              Today: [moment(), moment()],
-              'This Month': [moment().startOf('month'), moment().endOf('month')],
+              '当天': [moment(), moment()],
+              '本月': [moment().startOf('month'), moment().endOf('month')],
             }}
           />
         ),
@@ -492,6 +502,10 @@ export default class WorkApprovalList extends PureComponent {
     )
   }
 
+
+  /**
+   * 渲染列表
+   */
   renderTable = () => {
     const {
       dataAnalysis: {
@@ -514,7 +528,7 @@ export default class WorkApprovalList extends PureComponent {
         key: 'sqsj',
         align: 'center',
         width: 300,
-        render: (val, row) => <span>{row.applyTime}</span>,
+        render: (val, row) => <span>{this.formatDateToMin(row.applyTime)}</span>,
       },
       {
         title: '申请人',
@@ -597,12 +611,14 @@ export default class WorkApprovalList extends PureComponent {
         dataIndex: 'startTime',
         align: 'center',
         width: 150,
+        render: (val, row) => <span>{this.formatDateToMin(val)}</span>,
       },
       {
         title: '作业结束时间',
         dataIndex: 'endTime',
         align: 'center',
         width: 150,
+        render: (val, row) => <span>{this.formatDateToMin(val)}</span>,
       },
       {
         title: '动火地点',
@@ -630,7 +646,7 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         title: '受限空间名称',
-        dataIndex: 'adress',
+        dataIndex: 'address',
         align: 'center',
         width: 150,
       },
@@ -639,6 +655,7 @@ export default class WorkApprovalList extends PureComponent {
         dataIndex: 'jobFinishTime',
         align: 'center',
         width: 150,
+        render: (val, row) => <span style={{ color: row.endTime > row.jobFinishTime ? 'red' : 'inherit' }}>{this.formatDateToMin(val)}</span>,
       },
       {
         title: '作业人',
@@ -684,7 +701,7 @@ export default class WorkApprovalList extends PureComponent {
             total,
             showQuickJumper: true,
             showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            pageSizeOptions: ['10', '15', '20', '30'],
             onChange: this.handleFetch,
             onShowSizeChange: (num, size) => {
               this.handleFetch(1, size);
@@ -699,6 +716,14 @@ export default class WorkApprovalList extends PureComponent {
     const {
       match: { params: { type: activeKey } },
       location: { query: { companyName } },
+      dataAnalysis: {
+        workApproval: {
+          list = [],
+          pagination: {
+            total = 0,
+          },
+        },
+      },
     } = this.props
 
     return (
@@ -709,9 +734,10 @@ export default class WorkApprovalList extends PureComponent {
         onTabChange={this.handleTabChange}
         tabActiveKey={activeKey}
         wrapperClassName={styles.workApprovalHead}
+        content={<span>检查记录总数：{total}</span>}
       >
         {this.renderFilter()}
-        {this.renderTable()}
+        {list.length > 0 ? this.renderTable() : <div className={styles.emptyContainer}><span>暂无数据</span></div>}
       </PageHeaderLayout>
     )
   }
