@@ -66,7 +66,7 @@ export default {
           hmr: true,
         },
         title: {
-          defaultTitle: '晶安智慧云',
+          defaultTitle: '鹅湖智慧云',
         },
         locale: {
           enable: true, // default false
