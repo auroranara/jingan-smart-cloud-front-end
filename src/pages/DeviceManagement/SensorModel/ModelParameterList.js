@@ -432,14 +432,14 @@ export default class ModelParameterList extends PureComponent {
       >
         <Card className={styles.alarmStrategyModalCard}>
           <Form>
-            <Col span={7}>
+            {/* <Col span={7}>
               <FormItem>
                 <span className={styles.labelText}>报警等级：</span>
                 预警
               </FormItem>
-            </Col>
-            <Col span={11}>
-              <FormItem style={{ display: 'inline-block' }} label="预警阈值"></FormItem>
+            </Col> */}
+            <Col span={10}>
+              <FormItem style={{ display: 'inline-block' }} label="报警阈值"></FormItem>
               <FormItem style={{ width: '180px', display: 'inline-block' }}>
                 {getFieldDecorator('normalLower', {
                   rules: [{ validator: this.validateNum }],
@@ -449,7 +449,7 @@ export default class ModelParameterList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col span={6}>
+            <Col span={10}>
               <FormItem>
                 {getFieldDecorator('normalUpper', {
                   rules: [{ validator: this.validateNum }],

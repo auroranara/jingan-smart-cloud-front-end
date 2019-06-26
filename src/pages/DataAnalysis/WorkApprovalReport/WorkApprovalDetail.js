@@ -21,11 +21,11 @@ const fieldsConfig = {
   '1': ['申请人', '申请部门', '申请时间', '作业级别', '作业证编号', '作业开始时间', '作业结束时间', '动火地点', '动火人', '图片', '属地负责人审批', '安全管理部门审批', '动火审批人审批', '抄送人'],
   '2': ['申请人', '申请部门', '申请时间', '作业证编号', '作业空间名称', '作业开始时间', '作业结束时间', '完工验收时间', '作业人', '图片', '申请单位审批', '受限空间所属单位审批', '审批单位审批', '抄送人'],
   '3': ['申请人', '申请部门', '申请时间', '作业证编号', '盲板编号', '作业开始时间', '作业结束时间', '作业人', '图片', '生产车间审批', '作业单位审批-2', '审批单位审批', '抄送人'],
-  '4': ['申请人', '申请部门', '申请时间', '作业类别', '作业证编号', '作业开始时间', '作业结束时间', '完工验收时间', '作业地点', '作业人', '图片', '生产单位作业负责人审批', '作业单位负责人审批-2', '审核部门审批', '抄送人'],
-  '5': ['申请人', '申请部门', '申请时间', '作业类别', '作业证编号', '作业开始时间', '作业结束时间', '作业地点', '作业人', '图片', '生产单位安全部门负责人审批', '生产单位负责人审批', '作业单位安全部门负责人审批', '作业单位负责人审批-4', '审批部门审批-5', '抄送人'],
-  '6': ['申请人', '申请部门', '申请时间', '作业证编号', '作业地点', '作业人', '作业开始时间', '作业结束时间', '完工验收时间', '图片', '作业单位审批-1', '配送店单位审批', '审批部门审批-3', '抄送人'],
-  '7': ['申请人', '申请部门', '申请时间', '作业证编号', '作业地点', '作业开始时间', '作业结束时间', '完工验收时间', '图片', '申请单位审批', '作业单位审批-2', '有关水、电、汽、工艺、消防、安全等部门审批', '审批部门审批-4', '抄送人'],
-  '8': ['申请人', '申请部门', '申请时间', '作业证编号', '作业开始时间', '作业结束时间', '完工验收时间', '图片', '申请单位审批', '作业单位审批-2', '有关水、电、汽、工艺、消防、安全等部门审批', '审批部门审批-4', '抄送人'],
+  '4': ['申请人', '申请部门', '申请时间', '作业类别', '作业证编号', '作业开始时间', '作业结束时间', '完工验收时间', '作业地点', '作业人', '图片', '生产单位作业负责人审批', '作业单位负责人审批-2', '审核部门审批', '审批部门审批-4', '抄送人'],
+  '5': ['申请人', '申请部门', '申请时间', '作业级别', '作业证编号', '作业开始时间', '作业结束时间', '作业地点', '作业人', '图片', '生产单位安全部门负责人审批', '生产单位负责人审批', '作业单位安全部门负责人审批', '作业单位负责人审批-4', '审批部门审批-5', '抄送人'],
+  '6': ['申请人', '申请部门', '申请时间', '作业证编号', '作业地点', '作业人', '作业开始时间', '作业结束时间', '完工验收时间', '图片', '作业单位审批-1', '配送电单位审批', '审批部门审批-3', '抄送人'],
+  '7': ['申请人', '申请部门', '申请时间', '作业证编号', '作业地点', '作业开始时间', '作业结束时间', '完工验收时间', '图片', '申请单位审批', '作业单位审批-2', '审批部门审批-4', '抄送人', '有关水、电、汽、工艺、设备、消防、安全等部门审批'],
+  '8': ['申请人', '申请部门', '申请时间', '作业证编号', '作业开始时间', '作业结束时间', '完工验收时间', '图片', '申请单位审批', '作业单位审批-2', '审批部门审批-4', '抄送人', '有关水、电、汽、工艺、设备、消防、安全等部门审批'],
 }
 const TYPE_LABEL = {
   '0': '准卸证',
@@ -39,20 +39,22 @@ const TYPE_LABEL = {
   '8': '断路作业',
 }
 const APPROVALS = [
-  ['车间主任审批', '安全科审批'],
-  ['属地负责人审批', '安全管理部门审批', '动火审批人审批'],
-  ['申请单位审批', '受限空间所属单位审批', '审批单位审批'],
-  ['生产车间审批', '作业单位审批', '审批单位审批'],
-  ['生产单位安全部门负责人审批', '生产单位负责人审批', '作业单位安全部门负责人审批', '作业单位负责人审批', '审批部门审批'],
-  ['作业单位审批', '配送店单位审批', '审批部门审批'],
-  ['申请单位审批', '作业单位审批', '有关水、电、汽、工艺、消防、安全等部门审批', '审批部门审批'],
-  ['申请单位审批', '作业单位审批', '有关水、电、汽、工艺、消防、安全等部门审批', '审批部门审批'],
+  ['车间主任', '安全科'], // 准卸证
+  ['属地负责人', '安全管理部门', '动火审批人'], // 动火作业
+  ['申请单位', '受限空间所属单位', '审批单位'], // 受限空间作业
+  ['生产车间', '作业单位', '审批单位'],        // 盲板抽堵作业
+  ['生产单位作业负责人', '作业单位负责人', '审核部门', '审批部门'],  // 高处作业
+  ['生产单位安全部门负责人', '生产单位负责人', '作业单位安全部门负责人', '作业单位负责人', '审批部门'],      // 吊装作业
+  ['作业单位', '配送电单位', '审批部门'],    //  // 临时用电作业
+  ['申请单位', '作业单位', '有关水、电、汽、工艺、设备、消防、安全等部门', '审批部门'], // 动土作业
+  ['申请单位', '作业单位', '有关水、电、汽、工艺、设备、消防、安全等部门', '审批部门'], // 断路作业
 ]
 const contentStyle = { fontSize: '14px', color: 'rgba(0, 0, 0, 0.65)', paddingTop: '8px' }
 
 @Form.create()
-@connect(({ dataAnalysis }) => ({
+@connect(({ dataAnalysis, user }) => ({
   dataAnalysis,
+  user,
 }))
 export default class WorkApprovalDetail extends PureComponent {
 
@@ -81,8 +83,8 @@ export default class WorkApprovalDetail extends PureComponent {
 
   // 附件图片的点击翻入下一页
   handleNextImage = () => {
-    let { currentImage, imgUrl } = this.state;
-    if (currentImage >= imgUrl.length - 1) return;
+    let { currentImage, images } = this.state;
+    if (currentImage >= images.length - 1) return;
     this.setState({ currentImage: ++currentImage });
   };
 
@@ -108,6 +110,8 @@ export default class WorkApprovalDetail extends PureComponent {
     )
   }
 
+  formatDate = date => date ? moment(date).format('YYYY-MM-DD HH:mm') : ''
+
   /**
    * 渲染流程进度
    */
@@ -124,24 +128,35 @@ export default class WorkApprovalDetail extends PureComponent {
     const length = jobApproveHistories.length
     const approvals = APPROVALS[+type] // 当前type下所有审批
     // 当最后一个审批状态为已通过，且当前type下还有剩余审批，则显示下一级审批
-    const hasNext = +approveStatus === 2 && (length < approvals.length + 1)
+    const hasNext = [1, 2].includes(+approveStatus) && (length < approvals.length + 1)
     return (
       <Card title="流程进度">
         <Steps progressDot current={length - 1}>
-          {jobApproveHistories.map(({ approveStatusName, userName, approveTime, id }, index) => (
-            <Step key={id} title={index === 0 ? approveStatusName : approvals[index - 1] + approveStatusName} description={this.renderDesscription(userName, moment(approveTime).format('YYYY-MM-DD HH-mm'))} />
+          {jobApproveHistories.map(({ approveStatusName, userName, approveTime, id, remark = '' }, index) => (
+            <Step
+              key={id}
+              title={this.renderTitle(index === 0 || (+approveStatus === 0 && index === length - 1) ? approveStatusName : approvals[index - 1] + approveStatusName, remark)}
+              description={this.renderDesscription(userName, this.formatDate(approveTime))}
+            />
           ))}
-          {hasNext && (<Step key={approvals[length - 1]} title={approvals[length - 1]} />)}
+          {hasNext && (<Step key={approvals[length - 1]} title={`${approvals[length - 1]}审批`} />)}
         </Steps>
       </Card>
     )
   }
 
-  renderText = value => (
-    <Ellipsis tooltip={!!value} lines={1} style={{ height: 22 }}>
-      {value || getEmptyData()}
-    </Ellipsis>
+  renderTitle = (title, remark) => (
+    <span>
+      {title}
+      {remark && remark.replace(/\s/g, '') && <span style={{ color: 'rgba(0, 0, 0, 0.45)', fontSize: '14px' }}>（{remark}）</span>}
+    </span>
   )
+
+  renderText = value => value ? (
+    <Ellipsis tooltip={true} lines={1} style={{ height: 22 }}>
+      {value}
+    </Ellipsis>
+  ) : getEmptyData()
 
 
   /**
@@ -170,61 +185,87 @@ export default class WorkApprovalDetail extends PureComponent {
         workApprovalDetail,
         workApprovalDetail: {
           photoList = [],
-        },
+          applyTime = null,
+          startTime = null,
+          endTime = null,
+          jobFinishTime = null,
+          allApproverUsers = [],
+          applyUserName = null,
+          applyDepartmentName = null,
+          levelName = null,
+          address = null,
+          jobUsers = null,
+          code = null,
+          typeName = null,
+          mbbh = null,
+        } = {},
       },
     } = this.props
+    const unload = workApprovalDetail.unloadCertificate || {}
+    const {
+      chemicalName = null,
+      weight = null,
+      qualified = null,
+      supplyCompanyName = null,
+      supplyPerson = null,
+      idNumber = null,
+      carNumber = null,
+      useCompanyName = null,
+      guardian = null,
+      trainee = null,
+    } = unload
     const allFields = {
       '申请人': {
-        dataIndex: 'applyUserName',
         term: '申请人',
+        value: applyUserName,
       },
       '申请部门': {
-        dataIndex: 'applyDepartmentName',
         term: '申请部门',
+        value: applyDepartmentName,
       },
       '申请时间': {
-        dataIndex: 'applyTime',
         term: '申请时间',
+        render: () => this.renderText(this.formatDate(applyTime)),
       },
       '危险化学品': {
         term: '危险化学品',
-        render: ({ unloadCertificate: { chemicalName } = {} }) => this.renderText(chemicalName),
+        render: () => this.renderText(chemicalName),
       },
       '重量(吨)': {
         term: '重量(吨)',
-        render: ({ unloadCertificate: { weight } = {} }) => this.renderText(weight),
+        render: () => this.renderText(weight),
       },
       '是否合格': {
         term: '是否合格',
-        render: ({ unloadCertificate: { qualified } = {} }) => this.renderText(qualified),
+        render: () => this.renderText(+qualified === 1 ? '是' : '否'),
       },
       '供货方信息': {
         term: '供货方信息',
-        render: ({ unloadCertificate: { supplyCompany } = {} }) => this.renderText(supplyCompany),
+        render: () => this.renderText(supplyCompanyName),
       },
       '货主或相关人员': {
         term: '货主或相关人员',
-        render: ({ unloadCertificate: { supplyPerson } = {} }) => this.renderText(supplyPerson),
+        render: () => this.renderText(supplyPerson),
       },
       '身份证号': {
         term: '身份证号',
-        render: ({ unloadCertificate: { idNumber } = {} }) => this.renderText(idNumber),
+        render: () => this.renderText(idNumber),
       },
       '车牌号': {
         term: '车牌号',
-        render: ({ unloadCertificate: { carNumber } = {} }) => this.renderText(carNumber),
+        render: () => this.renderText(carNumber),
       },
       '使用单位': {
         term: '使用单位',
-        render: ({ unloadCertificate: { useCompany } = {} }) => this.renderText(useCompany),
+        render: () => this.renderText(useCompanyName),
       },
       '卸货监护人': {
         term: '卸货监护人',
-        render: ({ unloadCertificate: { guardian } = {} }) => this.renderText(guardian),
+        render: () => this.renderText(guardian),
       },
       '受训人员认识': {
         term: '受训人员认识',
-        render: ({ unloadCertificate: { trainee } = {} }) => this.renderText(trainee),
+        render: () => this.renderText(trainee),
       },
       '图片': {
         term: '图片',
@@ -243,149 +284,149 @@ export default class WorkApprovalDetail extends PureComponent {
       },
       '车间主任审批': {
         term: '车间主任审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 1),
+        render: () => this.renderApproval(allApproverUsers, 1),
       },
       '安全科审批': {
         term: '安全科审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 2),
+        render: () => this.renderApproval(allApproverUsers, 2),
       },
       '抄送人': {
-        dataIndex: 'csr',
         term: '抄送人',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 0),
+        render: () => this.renderApproval(allApproverUsers, 0),
       },
       '作业级别': {
-        dataIndex: 'levelName',
         term: '作业级别',
+        value: levelName,
       },
       '作业证编号': {
-        dataIndex: 'code',
         term: '作业证编号',
+        value: code,
       },
       '作业开始时间': {
-        dataIndex: 'startTime',
         term: '作业开始时间',
+        render: () => this.renderText(this.formatDate(startTime)),
       },
       '作业结束时间': {
-        dataIndex: 'endTime',
         term: '作业结束时间',
+        render: () => this.renderText(this.formatDate(endTime)),
       },
       '动火地点': {
-        dataIndex: 'address',
         term: '动火地点',
+        value: address,
       },
       '动火人': {
-        dataIndex: 'jobUsers',
         term: '动火人',
+        value: jobUsers,
       },
       '属地负责人审批': {
         term: '属地负责人审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 1),
+        render: () => this.renderApproval(allApproverUsers, 1),
       },
       '安全管理部门审批': {
         term: '安全管理部门审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 2),
+        render: () => this.renderApproval(allApproverUsers, 2),
       },
       '动火审批人审批': {
         term: '动火审批人审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 3),
+        render: () => this.renderApproval(allApproverUsers, 3),
       },
       '作业空间名称': {
-        dataIndex: 'adress',
         term: '作业空间名称',
+        value: address,
       },
       '完工验收时间': {
-        dataIndex: 'jobFinishTime',
         term: '完工验收时间',
+        render: () => this.renderText(this.formatDate(jobFinishTime)),
       },
       '作业人': {
-        dataIndex: 'jobUsers',
         term: '作业人',
+        value: jobUsers,
       },
       '生产车间审批': {
         term: '生产车间审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 1),
+        render: () => this.renderApproval(allApproverUsers, 1),
       },
       '作业单位审批-1': {
         term: '作业单位审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 1),
+        render: () => this.renderApproval(allApproverUsers, 1),
       },
       '作业单位审批-2': {
         term: '作业单位审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 2),
+        render: () => this.renderApproval(allApproverUsers, 2),
       },
       '作业类别': {
-        dataIndex: 'typeName',
         term: '作业类别',
+        value: levelName,
       },
       '作业地点': {
-        dataIndex: 'address',
         term: '作业地点',
+        value: address,
       },
-      '配送店单位审批': {
-        term: '配送店单位审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 2),
+      '配送电单位审批': {
+        term: '配送电单位审批',
+        render: () => this.renderApproval(allApproverUsers, 2),
       },
       '审批部门审批-3': {
         term: '审批部门审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 3),
+        render: () => this.renderApproval(allApproverUsers, 3),
       },
       '审批部门审批-4': {
         term: '审批部门审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 4),
+        render: () => this.renderApproval(allApproverUsers, 4),
       },
       '审批部门审批-5': {
         term: '审批部门审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 5),
+        render: () => this.renderApproval(allApproverUsers, 5),
       },
       '申请单位审批': {
         term: '申请单位审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 1),
+        render: () => this.renderApproval(allApproverUsers, 1),
       },
       '受限空间所属单位审批': {
         term: '受限空间所属单位审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 2),
+        render: () => this.renderApproval(allApproverUsers, 2),
       },
       '审批单位审批': {
         key: 'spdwsp',
         term: '审批单位审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 3),
+        render: () => this.renderApproval(allApproverUsers, 3),
       },
-      '有关水、电、汽、工艺、消防、安全等部门审批': {
-        term: '有关水、电、汽、工艺、消防、安全等部门审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 3),
+      '有关水、电、汽、工艺、设备、消防、安全等部门审批': {
+        term: '有关水、电、汽、工艺、设备、消防、安全等部门审批',
+        colWrapper: { xs: 16 },
+        render: () => this.renderApproval(allApproverUsers, 3),
       },
       '盲板编号': {
-        dataIndex: 'mbbh',
         term: '盲板编号',
+        value: mbbh,
       },
       '生产单位作业负责人审批': {
         term: '生产单位作业负责人审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 1),
+        render: () => this.renderApproval(allApproverUsers, 1),
       },
       '作业单位负责人审批-2': {
         term: '作业单位负责人审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 2),
+        render: () => this.renderApproval(allApproverUsers, 2),
       },
       '作业单位负责人审批-4': {
         term: '作业单位负责人审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 4),
+        render: () => this.renderApproval(allApproverUsers, 4),
       },
       '审核部门审批': {
         term: '审核部门审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 3),
+        render: () => this.renderApproval(allApproverUsers, 3),
       },
       '生产单位安全部门负责人审批': {
         term: '生产单位安全部门负责人审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 1),
+        render: () => this.renderApproval(allApproverUsers, 1),
       },
       '生产单位负责人审批': {
         term: '生产单位负责人审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 2),
+        render: () => this.renderApproval(allApproverUsers, 2),
       },
       '作业单位安全部门负责人审批': {
         term: '作业单位安全部门负责人审批',
-        render: ({ allApproverUsers = [] }) => this.renderApproval(allApproverUsers, 3),
+        render: () => this.renderApproval(allApproverUsers, 3),
       },
     }
     const fields = fieldsConfig[type].map(item => allFields[item])
@@ -393,12 +434,12 @@ export default class WorkApprovalDetail extends PureComponent {
       <Card style={{ marginTop: '24px' }} title="作业审批信息">
         <DescriptionList style={{ marginBottom: 16 }}>
           {fields.map((item) => {
-            const { term, render = null, colWrapper = null, dataIndex } = item
+            const { term, render = null, colWrapper = null, value = null } = item
             return (
               <Description term={term} key={term} colWrapper={colWrapper} >
-                {render ? render(workApprovalDetail) : (
-                  <Ellipsis tooltip={!!workApprovalDetail[dataIndex]} lines={1} style={{ height: 22 }}>
-                    {workApprovalDetail[dataIndex] || getEmptyData()}
+                {render ? render() : (
+                  <Ellipsis tooltip={!!value} lines={1} style={{ height: 22 }}>
+                    {value || getEmptyData()}
                   </Ellipsis>
                 )}
               </Description>
@@ -410,7 +451,7 @@ export default class WorkApprovalDetail extends PureComponent {
   }
 
   /**
-   * 渲染图片详情
+   * 渲染图片弹窗
    */
   renderImageDetail() {
     const { images, currentImage } = this.state;
@@ -442,6 +483,7 @@ export default class WorkApprovalDetail extends PureComponent {
           applyUserName = null,
         } = {},
       },
+      user: { currentUser: { unitType } = {} },
     } = this.props
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
@@ -455,7 +497,7 @@ export default class WorkApprovalDetail extends PureComponent {
         title={(
           <Fragment>
             {TYPE_LABEL[type]}
-            <div style={contentStyle}>单位名称：{companyName || '暂无数据'}</div>
+            {unitType !== 4 && <div style={contentStyle}>单位名称：{companyName || '暂无数据'}</div>}
             <div style={contentStyle}>申请人：{applyUserName || '暂无数据'}</div>
           </Fragment>
         )}

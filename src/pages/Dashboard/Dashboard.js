@@ -142,7 +142,7 @@ export default class Dashboard extends PureComponent {
     // threedgisItem.url = `${window.publicPath}#/big-platform/3d-gis`;
     // smokeItem.url = `${window.publicPath}#/big-platform/smoke/${companyId}`
     // electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor` // 移到render里面
-    // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
+    // unitType  1：维保企业 2：政府 3：运营 4:社会单位
     // 政府根据companyBasicInfo的数据来
     // if (unitType === 2) {
     //   //TODO 政府大屏开启
@@ -173,8 +173,8 @@ export default class Dashboard extends PureComponent {
 
     if (threedgisAuth) this.setState({ threedgisVisible: 1 });
 
-    // 企事业主体和政府有业务分类，维保和运营没有
-    // 所以企事业主体和政府的大屏权限 = 用户业务权限 && 企事业业务分类 && 账户被配置的权限，运营和维保企业的大屏权限 = 用户业务权限 && 账户被配置的权限
+    // 社会单位和政府有业务分类，维保和运营没有
+    // 所以社会单位和政府的大屏权限 = 用户业务权限 && 企事业业务分类 && 账户被配置的权限，运营和维保企业的大屏权限 = 用户业务权限 && 账户被配置的权限
     switch (unitType) {
       // 维保企业
       case 1:

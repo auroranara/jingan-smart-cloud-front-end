@@ -8,12 +8,12 @@ import waterBg from '../../Gas/imgs/no-monitor.png';
 
 const tabList = [
   {
-    desc: '温度',
-    code: 'temp',
-  },
-  {
     desc: '漏电电流',
     code: 'v1',
+  },
+  {
+    desc: '温度',
+    code: 'temp',
   },
   {
     desc: '电流',
@@ -25,7 +25,7 @@ const tabList = [
   },
 ];
 
-const defaultTabs = ['temp', 'v1', 'ampere', 'volte'];
+const defaultTabs = ['v1', 'temp', 'ampere', 'volte'];
 
 const calcItemColor = (item, pieces) => {
   const value = item.value[1];
@@ -89,6 +89,7 @@ export default class ElectricityCharts extends PureComponent {
         }
       });
     });
+    return val ? `报警值：≥${val}${unit}（'报警'）` : null;
     return val ? `报警值：≥${val}${unit}（${+lvl === 1 ? '预警' : '告警'}）` : null;
   };
 
