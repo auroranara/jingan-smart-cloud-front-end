@@ -248,7 +248,17 @@ export default class RiskPointManage extends PureComponent {
               safetyPhone,
               pointCount,
               companyStatus,
+              practicalProvince,
+              practicalCity,
+              practicalDistrict,
+              practicalTown,
             } = item;
+            const practicalAddressLabel =
+              (practicalProvince || '') +
+              (practicalCity || '') +
+              (practicalDistrict || '') +
+              (practicalTown + '') +
+              (practicalAddress || '');
             return (
               <List.Item key={companyId}>
                 <Card title={companyName} className={styles.card}>
@@ -264,7 +274,7 @@ export default class RiskPointManage extends PureComponent {
                       </p>
                       <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                         地址：
-                        {practicalAddress || getEmptyData()}
+                        {practicalAddressLabel.replace('null', '') || getEmptyData()}
                       </Ellipsis>
                     </Col>
                     <Col

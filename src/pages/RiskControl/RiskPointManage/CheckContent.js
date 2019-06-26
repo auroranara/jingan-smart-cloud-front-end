@@ -255,13 +255,13 @@ export default class CheckContent extends PureComponent {
     const {
       dispatch,
       riskPointList: list = [],
-      form: { setFieldsValue },
+      // form: { setFieldsValue },
     } = this.props;
     const filterList = list.filter(item => item.itemId === id);
     this.setState({ riskVisible: true, riskAssessId: id, filterList: filterList });
     const [{ l: hasL, e: hasE, c: hanC } = { filterList: {} }] = filterList;
     const hasRiskValue = (hasL * hasE * hanC).toFixed(2);
-    if (hasL && hasRiskValue) {
+    if (hasL) {
       dispatch({
         type: 'riskPointManage/fetchCountLevel',
         payload: {
@@ -470,7 +470,9 @@ export default class CheckContent extends PureComponent {
             })(<Input placeholder="请输入风险点名称" />)}
           </FormItem>
           <FormItem>
-            {getFieldDecorator('riskLevel')(
+            {getFieldDecorator('riskLevel', {
+              initialValue: defaultFormData.riskLevel,
+            })(
               <Select
                 placeholder="风险点等级"
                 getPopupContainer={getRootChild}
@@ -487,7 +489,9 @@ export default class CheckContent extends PureComponent {
             )}
           </FormItem>
           <FormItem>
-            {getFieldDecorator('checkStatus')(
+            {getFieldDecorator('checkStatus', {
+              initialValue: defaultFormData.checkStatus,
+            })(
               <Select
                 placeholder="检查状态"
                 getPopupContainer={getRootChild}
@@ -504,7 +508,9 @@ export default class CheckContent extends PureComponent {
             )}
           </FormItem>
           <FormItem>
-            {getFieldDecorator('hasHiddenDanger')(
+            {getFieldDecorator('hasHiddenDanger', {
+              initialValue: defaultFormData.hasHiddenDanger,
+            })(
               <Select
                 placeholder="有无隐患"
                 getPopupContainer={getRootChild}
@@ -680,8 +686,10 @@ export default class CheckContent extends PureComponent {
       lecData: { llist = [], elist = [], clist = [] },
     } = this.props;
     const { riskVisible, activeKey, showImg, qrCode, filterList = [] } = this.state;
+    console.log('filterList', filterList);
 
     const [{ l, e, c, riskLevel } = { filterList: {} }] = filterList;
+    const riskValue = (l * e * c).toFixed(2);
 
     const formItemLayout = {
       labelCol: { span: 8 },
@@ -792,12 +800,12 @@ export default class CheckContent extends PureComponent {
                   </FormItem>
                   <FormItem {...formItemLayout} label="计算风险值(D)">
                     {getFieldDecorator('riskValue', {
-                      initialValue: (l * e * c).toFixed(2),
+                      initialValue: riskValue,
                     })(<Input disabled style={{ width: 120 }} />)}
                   </FormItem>
                   <FormItem {...formItemLayout} label="对应风险等级">
                     {getFieldDecorator('count', {
-                      initialValue: getCount(count),
+                      initialValue: l ? getCount(count) : '',
                     })(<Input disabled placeholder="计算中..." style={{ width: 180 }} />)}
                   </FormItem>
                 </Form>

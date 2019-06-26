@@ -128,6 +128,7 @@ export default class RiskPointEdit extends PureComponent {
     isDisabled: false, // 平面图新增按钮是否启用
     isEdit: true,
     pointFixInfoList: [],
+    selectedRowKeys: [],
   };
 
   // 返回到列表页面
@@ -398,10 +399,12 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   // 删除检查内容添加项
-  handleDeleteCheck = key => {
+  handleDeleteCheck = (id, index) => {
     const flowList = [...this.state.flowList];
-    this.setState({ flowList: flowList.filter(item => item.flow_id !== key) });
-    flow_id = flow_id.filter(d => d !== key);
+    this.setState({
+      flowList: flowList.filter((item, i) => i !== index),
+    });
+    flow_id = flow_id.filter(d => d.flow_id_data !== id);
   };
 
   // 渲染模态框(检查内容)
@@ -642,6 +645,7 @@ export default class RiskPointEdit extends PureComponent {
     this.foloorId = id;
   };
 
+  // 平面图保存
   handlePicSave = index => {
     const {
       form: { getFieldValue },
@@ -664,11 +668,20 @@ export default class RiskPointEdit extends PureComponent {
       },
       ...picList.slice(index + 1),
     ];
-    this.setState({
-      picList: newList,
-      isEdit: false,
-      isDisabled: false,
-    });
+    if (getFieldValue(`type${index}`) === undefined) {
+      message.error('请先选择平面图！');
+      this.setState({
+        isDisabled: true,
+        isEdit: true,
+      });
+    } else {
+      this.setState({
+        picList: newList,
+        isEdit: false,
+        isDisabled: false,
+      });
+    }
+
     imgTypes = newList.map(item => item.imgType);
   };
 
@@ -835,6 +848,26 @@ export default class RiskPointEdit extends PureComponent {
     );
   }
 
+  // 选择更换
+  handleSelectChange = selectedRowKeys => {
+    this.setState({
+      selectedRowKeys,
+    });
+  };
+
+  // 批量删除检查内容
+  handleDeleteContent = () => {
+    const { selectedRowKeys } = this.state;
+    // console.log('selectedRowKeys', selectedRowKeys);
+    const flowList = [...this.state.flowList];
+    // console.log('flowList', flowList);
+    this.setState({
+      flowList: flowList.filter(item => selectedRowKeys.indexOf(item.flow_id) < 0),
+    });
+    flow_id = flow_id.filter(d => selectedRowKeys.indexOf(d.flow_id_data) < 0);
+    // console.log('flow_id', flow_id);
+  };
+
   /* 渲染table(检查内容) */
   renderCheckTable() {
     const {
@@ -843,7 +876,7 @@ export default class RiskPointEdit extends PureComponent {
         params: { id },
       },
     } = this.props;
-    const { flowList: list } = this.state;
+    const { flowList: list, selectedRowKeys } = this.state;
     const BusinessType = ['安全生产', '消防', '环保', '卫生'];
 
     /* 配置描述 */
@@ -892,16 +925,23 @@ export default class RiskPointEdit extends PureComponent {
         key: 'operation',
         align: 'center',
         width: 50,
-        render: (text, record) => (
-          <span>
-            <Popconfirm
-              title="确认要删除该检查内容吗？"
-              onConfirm={() => this.handleDeleteCheck(record.flow_id)}
-            >
-              <a>删除</a>
-            </Popconfirm>
-          </span>
-        ),
+        render: (text, record, index) => {
+          return (
+            <span>
+              <Popconfirm
+                title="确认要删除该检查内容吗？"
+                onConfirm={() =>
+                  this.handleDeleteCheck(
+                    id ? record.flow_id_data || record.flow_id : record.flow_id,
+                    index
+                  )
+                }
+              >
+                <a>删除</a>
+              </Popconfirm>
+            </span>
+          );
+        },
       },
     ];
 
@@ -910,10 +950,16 @@ export default class RiskPointEdit extends PureComponent {
         {list && list.length ? (
           <Table
             loading={tableLoading}
-            rowKey="object_id"
+            rowKey={'flow_id'}
             columns={COLUMNS}
             dataSource={list}
             pagination={false}
+            rowSelection={{
+              selectedRowKeys,
+              onChange: this.handleSelectChange,
+              hideDefaultSelections: true,
+              type: 'checkbox',
+            }}
             bordered
             width={500}
           />
@@ -1067,11 +1113,21 @@ export default class RiskPointEdit extends PureComponent {
         </Form>
 
         <Form style={{ marginTop: 30 }}>
-          <Form.Item {...formItemLayout} label={fieldLabels.checkContent}>
-            <Button type="primary" onClick={this.handleContentModal}>
-              添加
-            </Button>
-          </Form.Item>
+          <Form.Item {...formItemLayout} label={fieldLabels.checkContent} />
+          <Button
+            type="primary"
+            style={{ float: 'right', marginLeft: 10, marginBottom: 10 }}
+            onClick={this.handleDeleteContent}
+          >
+            删除
+          </Button>
+          <Button
+            type="primary"
+            style={{ float: 'right', marginBottom: 10 }}
+            onClick={this.handleContentModal}
+          >
+            添加
+          </Button>
           <Divider style={{ marginTop: '-20px' }} />
           {this.renderCheckTable()}
         </Form>

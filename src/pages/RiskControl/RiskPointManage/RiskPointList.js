@@ -110,10 +110,7 @@ export default class riskPointList extends PureComponent {
     const {
       loading,
       riskPointManage: {
-        riskPointData: {
-          list: riskPointList,
-          pagination: { total },
-        },
+        riskPointData: { list: riskPointList },
         riskCountData: { list = [] },
         lecData,
       },
@@ -129,41 +126,36 @@ export default class riskPointList extends PureComponent {
     } = this.props;
 
     const { activeKey } = this.state;
-
-    // 检查点统计
-    const tabCount = list.map(t => t.pointCount);
-    // const tabTotal = (list || []).reduce((total, value) => {
-    //   return total + (value ? value.pointCount : 0);
-    // }, 0);
+    const count = list.map(item => item.pointCount);
 
     const tabList = [
       {
         key: 'all',
-        tab: `全部(${total})`,
+        tab: `全部(${count[0]})`,
       },
       {
         key: 'every_day',
-        tab: `日检查点(${tabCount[0]})`,
+        tab: `日检查点(${count[1]})`,
       },
       {
         key: 'every_week',
-        tab: `周检查点(${tabCount[1]})`,
+        tab: `周检查点(${count[2]})`,
       },
       {
         key: 'every_month',
-        tab: `月检查点(${tabCount[2]})`,
+        tab: `月检查点(${count[3]})`,
       },
       {
         key: 'every_quarter',
-        tab: `季度检查点(${tabCount[3]})`,
+        tab: `季度检查点(${count[4]})`,
       },
       {
         key: 'every_half_year',
-        tab: `半年检查点(${tabCount[4]})`,
+        tab: `半年检查点(${count[5]})`,
       },
       {
         key: 'every_year',
-        tab: `年检查点(${tabCount[5]})`,
+        tab: `年检查点(${count[6]})`,
       },
     ];
 
@@ -177,7 +169,7 @@ export default class riskPointList extends PureComponent {
             <span>{companyName}</span>
             <span style={{ paddingLeft: 15 }}>
               风险点总数：
-              {total}
+              {count[0]}
             </span>
             <AuthButton
               code={codesMap.riskControl.riskPointManage.add}
