@@ -103,6 +103,8 @@ const getCheckCycle = s => {
       break;
   }
 };
+/* session前缀 */
+const sessionPrefix = 'risk_point';
 
 @connect(({ riskPointManage, user, loading }) => ({
   riskPointManage,
@@ -253,7 +255,7 @@ export default class CheckContent extends PureComponent {
     const {
       dispatch,
       riskPointList: list = [],
-      // form: { setFieldsValue },
+      form: { setFieldsValue },
     } = this.props;
     const filterList = list.filter(item => item.itemId === id);
     this.setState({ riskVisible: true, riskAssessId: id, filterList: filterList });
@@ -276,7 +278,16 @@ export default class CheckContent extends PureComponent {
 
   // 风险评估Tab切换
   handleTabs = key => {
+    // const {
+    //   user: {
+    //     currentUser: { id },
+    //   },
+    //   form: { setFieldsValue },
+    // } = this.props;
     this.setState({ activeKey: key });
+    // const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
+    // setFieldsValue({
+    // });
   };
 
   // 计算风险值
@@ -284,6 +295,9 @@ export default class CheckContent extends PureComponent {
     const {
       form: { getFieldValue, setFieldsValue },
       dispatch,
+      user: {
+        currentUser: { id },
+      },
     } = this.props;
 
     const {
@@ -294,6 +308,8 @@ export default class CheckContent extends PureComponent {
     const e = getFieldValue('e') || 1;
     const c = getFieldValue('c') || 1;
     const riskValue = getFieldValue('riskValue') || 1;
+
+    // const fieldsValue = { l, e, c, riskValue };
 
     setFieldsValue({
       riskValue: ((l * e * c * value) / (getFieldValue(name) || 1)).toFixed(2),
@@ -307,6 +323,13 @@ export default class CheckContent extends PureComponent {
         },
       });
     }
+    // 保存选中条件
+    // sessionStorage.setItem(
+    //   `${sessionPrefix}${id}`,
+    //   JSON.stringify({
+    //     ...fieldsValue,
+    //   })
+    // );
   };
 
   // 风险评估保存
@@ -353,10 +376,10 @@ export default class CheckContent extends PureComponent {
     };
     validateFields((errors, values) => {
       if (!errors) {
-        const { count, ...others } = values;
+        const { count, customCount, ...others } = values;
         const payload = {
           itemId: riskAssessId,
-          level: getCountStatus(count),
+          level: customCount ? getCountStatus(customCount) : getCountStatus(count),
           ...others,
         };
         dispatch({
@@ -434,12 +457,7 @@ export default class CheckContent extends PureComponent {
   renderForm() {
     const {
       form: { getFieldDecorator },
-      user: {
-        currentUser: { permissionCodes: codes },
-      },
       riskPointManage: { riskGradeList, checkStatusList, isDangerList },
-      companyId,
-      companyName,
     } = this.props;
 
     return (
@@ -509,16 +527,6 @@ export default class CheckContent extends PureComponent {
           </FormItem>
           <FormItem>
             <Button onClick={this.handleClickToReset}>重置</Button>
-          </FormItem>
-          <FormItem style={{ float: 'right' }}>
-            <AuthButton
-              code={codesMap.riskControl.riskPointManage.add}
-              codes={codes}
-              type="primary"
-              href={`#/risk-control/risk-point-manage/risk-point-add?companyId=${companyId}&companyName=${companyName}`}
-            >
-              新增
-            </AuthButton>
           </FormItem>
         </Form>
       </Card>
@@ -673,7 +681,7 @@ export default class CheckContent extends PureComponent {
     } = this.props;
     const { riskVisible, activeKey, showImg, qrCode, filterList = [] } = this.state;
 
-    const [{ l, e, c } = { filterList: {} }] = filterList;
+    const [{ l, e, c, riskLevel } = { filterList: {} }] = filterList;
 
     const formItemLayout = {
       labelCol: { span: 8 },
@@ -725,6 +733,7 @@ export default class CheckContent extends PureComponent {
                   <FormItem {...formItemLayout} label="时间发生的可能性(L)">
                     {getFieldDecorator('l', {
                       initialValue: l,
+                      rules: [{ required: true, message: '请选择时间发生的可能性(L)' }],
                     })(
                       <Radio.Group
                         onChange={e => {
@@ -744,6 +753,7 @@ export default class CheckContent extends PureComponent {
                   <FormItem {...formItemLayout} label="频繁程度(E)">
                     {getFieldDecorator('e', {
                       initialValue: e,
+                      rules: [{ required: true, message: '请选择频繁程度(E)' }],
                     })(
                       <Radio.Group
                         onChange={e => {
@@ -763,6 +773,7 @@ export default class CheckContent extends PureComponent {
                   <FormItem {...formItemLayout} label="后果(C)">
                     {getFieldDecorator('c', {
                       initialValue: c,
+                      rules: [{ required: true, message: '请选择后果(C)' }],
                     })(
                       <Radio.Group
                         onChange={e => {
@@ -786,7 +797,7 @@ export default class CheckContent extends PureComponent {
                   </FormItem>
                   <FormItem {...formItemLayout} label="对应风险等级">
                     {getFieldDecorator('count', {
-                      initialValue: l ? getCount(count) : undefined,
+                      initialValue: getCount(count),
                     })(<Input disabled placeholder="计算中..." style={{ width: 180 }} />)}
                   </FormItem>
                 </Form>
@@ -794,8 +805,8 @@ export default class CheckContent extends PureComponent {
             </TabPane>
             {/* <TabPane tab="自定义" key="2">
               <FormItem {...formItemLayout} label="风险等级">
-                {getFieldDecorator('count', {
-                  initialValue: l ? getCount(count) : undefined,
+                {getFieldDecorator('customCount', {
+                  initialValue: riskLevel ? riskLevel : '',
                 })(
                   <Select
                     placeholder="请选择风险等级"
