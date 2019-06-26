@@ -1052,6 +1052,38 @@ module.exports = env => {
                 },
               ],
             },
+            // 作业审批报表
+            {
+              path: '/data-analysis/work-approval-report',
+              code: 'dataAnalysis.workApprovalReport',
+              name: 'workApprovalReport',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/data-analysis/work-approval-report',
+                  name: 'workApprovalReport',
+                  redirect: '/data-analysis/work-approval-report/list',
+                },
+                {
+                  path: '/data-analysis/work-approval-report/list',
+                  code: 'dataAnalysis.workApprovalReport.listView',
+                  name: 'list',
+                  component: './DataAnalysis/WorkApprovalReport/CompanyList',
+                },
+                {
+                  path: '/data-analysis/work-approval-report/company/:companyId/:type',
+                  name: 'workApprovalList',
+                  code: 'dataAnalysis.workApprovalReport.workApprovalList',
+                  component: './DataAnalysis/WorkApprovalReport/WorkApprovalList',
+                },
+                {
+                  path: '/data-analysis/work-approval-report/company/:companyId/:type/detail/:id',
+                  name: 'detail',
+                  code: 'dataAnalysis.workApprovalReport.detail',
+                  component: './DataAnalysis/WorkApprovalReport/WorkApprovalDetail',
+                },
+              ],
+            },
           ],
         },
 

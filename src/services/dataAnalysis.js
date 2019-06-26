@@ -3,6 +3,7 @@ import request from '@/utils/request';
 
 const URL_PREFIX = '/acloud_new/v2/iot';
 const URL_REPAIR = '/acloud_new/v2'
+const URL_WH = '/acloud_new/v2/wh'
 
 // 公司列表
 export async function queryCompanies(params) {
@@ -28,4 +29,29 @@ export async function getCompanyName(params) {
 // 获取一键报修记录列表
 export async function fetchRepairRecords(params) {
   return request(`${URL_REPAIR}/fireManage/selectFaultReport?${stringify(params)}`);
+}
+
+// 获取作业审批报表列表
+export async function fetchWorkApprovalList(params) {
+  return request(`${URL_WH}/eightJob/queryEightJobList?${stringify(params)}`)
+}
+
+// 获取作业审批报表详情
+export async function fetchWorkApprovalDetail(params) {
+  return request(`${URL_WH}/eightJob/detailEightJob/${params.id}`)
+}
+
+// 获取审批状态列表
+export async function fetchApprovalStatus() {
+  return request(`${URL_REPAIR}/eightJob/approveStatusList`)
+}
+
+// 获取作业级别列表
+export async function fetchJobLevel(params) {
+  return request(`${URL_REPAIR}/eightJob/jobLevelList?${stringify(params)}`)
+}
+
+// 获取危险化学品/供货方单位
+export async function fetchDangerChemicals(params) {
+  return request(`${URL_REPAIR}/mobile/getCerItemsList.json?${stringify(params)}`)
 }
