@@ -1126,7 +1126,7 @@ export default class RiskPointEdit extends PureComponent {
             style={{ float: 'right', marginBottom: 10 }}
             onClick={this.handleContentModal}
           >
-            添加
+            新增
           </Button>
           <Divider style={{ marginTop: '-20px' }} />
           {this.renderCheckTable()}
