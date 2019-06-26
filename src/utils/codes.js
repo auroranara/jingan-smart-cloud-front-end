@@ -177,6 +177,11 @@ export default {
     MaintenanceRecord: {
       view: 'dataAnalysis.maintenanceRecord.view',
     },
+    workApprovalReport: {
+      listView: 'dataAnalysis.workApprovalReport.listView',
+      workApprovalList: 'dataAnalysis.workApprovalReport.workApprovalList',
+      detail: 'dataAnalysis.workApprovalReport.detail',
+    },
   },
   lawEnforcement: {
     laws: {

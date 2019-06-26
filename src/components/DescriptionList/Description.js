@@ -5,10 +5,11 @@ import { Col } from 'antd';
 import styles from './index.less';
 import responsive from './responsive';
 
-const Description = ({ term, column, className, children, ...restProps }) => {
+const Description = ({ term, column, className, children, colWrapper, ...restProps }) => {
   const clsString = classNames(styles.description, className);
+  const wrapper = colWrapper || responsive[column]
   return (
-    <Col className={clsString} {...responsive[column]} {...restProps}>
+    <Col className={clsString} {...wrapper} {...restProps}>
       {term && <div className={styles.term}>{term}</div>}
       {children !== null &&
         children !== undefined && <div className={styles.detail}>{children}</div>}

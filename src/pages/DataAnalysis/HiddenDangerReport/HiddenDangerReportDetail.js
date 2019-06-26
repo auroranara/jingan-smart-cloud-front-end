@@ -47,7 +47,7 @@ const tabList = [
 /* 获取页面宽度 */
 const getWindowWidth = () => window.innerWidth || document.documentElement.clientWidth;
 /* 根据status获取名称 */
-const getLabelByStatus = function(status) {
+const getLabelByStatus = function (status) {
   switch (+status) {
     case 3:
       return '待复查';
@@ -128,8 +128,8 @@ export default class App extends PureComponent {
               查看
             </span>
           ) : (
-            <span style={{ color: 'rgba(0,0,0,0.45)' }}>未上传</span>
-          ),
+              <span style={{ color: 'rgba(0,0,0,0.45)' }}>未上传</span>
+            ),
       },
       // {
       //   title: '类型',
@@ -462,8 +462,8 @@ export default class App extends PureComponent {
                             <div>{time}</div>
                           </div>
                         ) : (
-                          undefined
-                        )
+                            undefined
+                          )
                       }
                     />
                   ))}
@@ -545,16 +545,16 @@ export default class App extends PureComponent {
                   <Description term="隐患图片">
                     {images.length > 0
                       ? images.map(({ key, src }, index) => (
-                          <img
-                            src={src}
-                            key={key}
-                            alt=""
-                            style={{ marginRight: 10, width: 30, height: 40, cursor: 'pointer' }}
-                            onClick={() => {
-                              this.setState({ images, currentImage: index });
-                            }}
-                          />
-                        ))
+                        <img
+                          src={src}
+                          key={key}
+                          alt=""
+                          style={{ marginRight: 10, width: 30, height: 40, cursor: 'pointer' }}
+                          onClick={() => {
+                            this.setState({ images, currentImage: index });
+                          }}
+                        />
+                      ))
                       : getEmptyData()}
                   </Description>
                   {audios.length > 0 && (
@@ -675,21 +675,21 @@ export default class App extends PureComponent {
                           <Description term="整改图片">
                             {images.length > 0
                               ? images.map(({ key, src }, index) => (
-                                  <img
-                                    src={src}
-                                    key={key}
-                                    alt=""
-                                    style={{
-                                      marginRight: 10,
-                                      width: 30,
-                                      height: 40,
-                                      cursor: 'pointer',
-                                    }}
-                                    onClick={() => {
-                                      this.setState({ images, currentImage: index });
-                                    }}
-                                  />
-                                ))
+                                <img
+                                  src={src}
+                                  key={key}
+                                  alt=""
+                                  style={{
+                                    marginRight: 10,
+                                    width: 30,
+                                    height: 40,
+                                    cursor: 'pointer',
+                                  }}
+                                  onClick={() => {
+                                    this.setState({ images, currentImage: index });
+                                  }}
+                                />
+                              ))
                               : getEmptyData()}
                           </Description>
                           {audios.length > 0 && (
@@ -735,21 +735,21 @@ export default class App extends PureComponent {
                           <Description term="复查图片">
                             {images.length > 0
                               ? images.map(({ key, src }, index) => (
-                                  <img
-                                    src={src}
-                                    key={key}
-                                    alt=""
-                                    style={{
-                                      marginRight: 10,
-                                      width: 30,
-                                      height: 40,
-                                      cursor: 'pointer',
-                                    }}
-                                    onClick={() => {
-                                      this.setState({ images, currentImage: index });
-                                    }}
-                                  />
-                                ))
+                                <img
+                                  src={src}
+                                  key={key}
+                                  alt=""
+                                  style={{
+                                    marginRight: 10,
+                                    width: 30,
+                                    height: 40,
+                                    cursor: 'pointer',
+                                  }}
+                                  onClick={() => {
+                                    this.setState({ images, currentImage: index });
+                                  }}
+                                />
+                              ))
                               : getEmptyData()}
                           </Description>
                           {audios.length > 0 && (
