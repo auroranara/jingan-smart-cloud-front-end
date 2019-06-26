@@ -630,19 +630,22 @@ export default {
     },
 
     // 获取更多风险点
-    saveRiskLoadMoreList(
-      state,
-      {
-        payload: {
-          list,
-          pagination: { pageNum, pageSize, total },
-        },
-      }
-    ) {
+    saveRiskLoadMoreList(state, { payload }) {
+      const {
+        list,
+        pagination,
+        pagination: { pageNum, pageSize, total },
+      } = payload;
+      let nextList = list;
+      if (pageNum !== 1) nextList = state.list.concat(list);
       return {
         ...state,
-        list: [...state.list, ...list],
+        riskPointData: {
+          list: nextList,
+          pagination,
+        },
         pageNum,
+        list: nextList,
         isLast: pageNum * pageSize >= total,
       };
     },

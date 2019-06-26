@@ -211,6 +211,7 @@ export default class RiskPointEdit extends PureComponent {
     dispatch({
       type: 'riskPointManage/fetchIndustryDict',
     });
+    this.fetchPointLabel({ payload });
     this.fetchCheckContent({ payload });
   }
 
@@ -293,15 +294,8 @@ export default class RiskPointEdit extends PureComponent {
     });
   };
 
-  // 显示模态框(RFID)
-  handleFocus = e => {
-    e.target.blur();
-    this.setState({ rfidVisible: true });
-    this.fetchPointLabel();
-  };
-
   // 获取内容(RFID)
-  fetchPointLabel = () => {
+  fetchPointLabel = ({ payload }) => {
     const {
       dispatch,
       location: {
@@ -312,10 +306,17 @@ export default class RiskPointEdit extends PureComponent {
       type: 'riskPointManage/fetchLabelDict',
       payload: {
         companyId,
-        pageNum: 1,
-        pageSize: 10,
+        ...payload,
       },
     });
+  };
+
+  // 显示模态框(RFID)
+  handleFocus = e => {
+    const payload = { pageSize: PageSize, pageNum: 1 };
+    e.target.blur();
+    this.setState({ rfidVisible: true });
+    this.fetchPointLabel({ payload });
   };
 
   // 选择按钮点击事件(RFID)
@@ -524,7 +525,6 @@ export default class RiskPointEdit extends PureComponent {
     return (
       <CheckModal
         title="选择检查内容"
-        rowKey="object_id"
         loading={loading}
         visible={checkVisible}
         columns={checkCOLUMNS}

@@ -150,7 +150,7 @@ export default class RiskCardPrinter extends PureComponent {
               <span className={styles.titleValue}>主要危险因素</span>
             </div>
             <div className={styles.contentValue} style={{ minHeight: '50px' }}>
-              {dangerFactor.replace(/<br\/>/g, ' \n ') || ''}
+              {dangerFactor ? dangerFactor.replace(/<br\/>/g, ' \n ') : ''}
             </div>
           </div>
 
@@ -159,7 +159,7 @@ export default class RiskCardPrinter extends PureComponent {
               <span className={styles.titleValue}>风险管控措施</span>
             </div>
             <div className={styles.contentValue} style={{ minHeight: '110px' }}>
-              {preventMeasures.replace(/<br\/>/g, ' \n ') || ''}
+              {preventMeasures ? preventMeasures.replace(/<br\/>/g, ' \n ') : ''}
             </div>
           </div>
 
@@ -168,7 +168,7 @@ export default class RiskCardPrinter extends PureComponent {
               <span className={styles.titleValue}>应急处置措施</span>
             </div>
             <div className={styles.contentValue} style={{ minHeight: '227px' }}>
-              {emergencyMeasures.replace(/<br\/>/g, ' \n ') || ''}
+              {emergencyMeasures ? emergencyMeasures.replace(/<br\/>/g, ' \n ') : ''}
             </div>
           </div>
 

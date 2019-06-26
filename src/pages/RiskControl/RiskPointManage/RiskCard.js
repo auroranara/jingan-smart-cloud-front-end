@@ -12,6 +12,7 @@ import {
   Col,
   Button,
   message,
+  Pagination,
 } from 'antd';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
@@ -126,18 +127,22 @@ export default class RiskCard extends PureComponent {
   /**
    * 加载更多
    */
-  handleLoadMore = (num, size) => {
+  onPageChange = (num, size) => {
     const {
       dispatch,
       form: { getFieldsValue },
+      match: {
+        params: { id },
+      },
     } = this.props;
     const data = getFieldsValue();
     // 获取列表
     dispatch({
       type: 'riskPointManage/fetchRiskCardList',
       payload: {
-        num,
-        size,
+        itemId: id,
+        pageSize: size,
+        pageNum: num,
         ...data,
       },
     });
@@ -278,29 +283,32 @@ export default class RiskCard extends PureComponent {
     ];
 
     return list.length > 0 ? (
-      <Table
-        bordered={true}
-        className={styles.table}
-        rowKey="check_id"
-        dataSource={list}
-        columns={defaultColumns}
-        scroll={{
-          x: 1800,
-        }}
-        pagination={{
-          current: pageNum,
-          pageSize,
-          total,
-          pageSizeOptions: ['5', '10', '15', '20'],
-          // showTotal: (total) => `共 ${total} 条`,
-          showQuickJumper: true,
-          showSizeChanger: true,
-          onChange: this.handleLoadMore,
-          onShowSizeChange: (num, size) => {
-            this.handleLoadMore(1, size);
-          },
-        }}
-      />
+      <div>
+        <Table
+          bordered={true}
+          className={styles.table}
+          rowKey="check_id"
+          dataSource={list}
+          columns={defaultColumns}
+          scroll={{
+            x: 1800,
+          }}
+          pagination={false}
+        />
+        <Pagination
+          style={{ marginTop: '20px', float: 'right' }}
+          showQuickJumper
+          showSizeChanger
+          current={pageNum}
+          pageSize={pageSize}
+          pageSizeOptions={['5', '10', '15', '20']}
+          total={total}
+          onChange={this.onPageChange}
+          onShowSizeChange={(num, size) => {
+            this.onPageChange(1, size);
+          }}
+        />
+      </div>
     ) : (
       <div style={{ textAlign: 'center', paddingTop: 50 }}>
         <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>

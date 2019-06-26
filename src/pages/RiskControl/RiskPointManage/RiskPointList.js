@@ -123,6 +123,9 @@ export default class riskPointList extends PureComponent {
       location: {
         query: { companyName },
       },
+      user: {
+        currentUser: { permissionCodes: codes },
+      },
     } = this.props;
 
     const { activeKey } = this.state;
@@ -176,6 +179,15 @@ export default class riskPointList extends PureComponent {
               风险点总数：
               {total}
             </span>
+            <AuthButton
+              code={codesMap.riskControl.riskPointManage.add}
+              style={{ position: 'absolute', right: '66px', top: '209px' }}
+              codes={codes}
+              type="primary"
+              href={`#/risk-control/risk-point-manage/risk-point-add?companyId=${companyId}&companyName=${companyName}`}
+            >
+              新增
+            </AuthButton>
           </div>
         }
         tabList={tabList}
