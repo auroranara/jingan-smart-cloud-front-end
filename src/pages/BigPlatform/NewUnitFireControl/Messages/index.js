@@ -29,13 +29,13 @@ const TYPES = [
   41,
   42,
   43,
-  44, // 电器火灾告警恢复
-  45, // 燃气告警恢复
+  44, // 电器火灾报警恢复
+  45, // 燃气报警恢复
   46, // 独立烟感失联
   47, // 独立烟感失联恢复
   48, // 水系统失联
   49, // 水系统失联恢复
-  50, // 独立烟感告警恢复
+  50, // 独立烟感报警恢复
   51, // 独立烟感故障恢复
 ];
 const formatTime = time => {
@@ -67,7 +67,7 @@ export default class Messages extends PureComponent {
     super(props);
     this.state = {
       thisMin: '',
-      // 是否展开告警信息
+      // 是否展开报警信息
       isExpanded: false,
     };
   }
@@ -381,10 +381,10 @@ export default class Messages extends PureComponent {
 
     if (type === 44 || type === 32 || type === 42 || type === 43) {
       const elecMsg = {
-        44: { elecTitle: '电气火灾报警', elecContent: `${paramName}告警现已恢复正常` },
+        44: { elecTitle: '电气火灾报警', elecContent: `${paramName}报警现已恢复正常` },
         32: {
           elecTitle: '电气火灾报警',
-          elecContent: `${paramName}告警${realtimeVal + unit}（参考值<${limitVal + unit}）`,
+          elecContent: `${paramName}报警${realtimeVal + unit}（参考值<${limitVal + unit}）`,
         },
         42: { elecTitle: '电气火灾失联', elecContent: `设备状态失联` },
         43: { elecTitle: '电气火灾失联', elecContent: `设备状态已恢复正常` },
@@ -416,11 +416,11 @@ export default class Messages extends PureComponent {
     }
 
     if (type === 46 || type === 47 || type === 50) {
-      // 46 独立烟感失联 47 独立烟感失联恢复 50 独立烟感告警恢复
+      // 46 独立烟感失联 47 独立烟感失联恢复 50 独立烟感报警恢复
       const smokeTitle = {
         46: '独立烟感失联',
         47: '独立烟感失联恢复',
-        50: '独立烟感告警恢复',
+        50: '独立烟感报警恢复',
       };
       return (
         <div className={styles.msgItem} key={index}>
