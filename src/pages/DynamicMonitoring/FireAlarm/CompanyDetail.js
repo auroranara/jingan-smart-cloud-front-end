@@ -211,7 +211,7 @@ export default class CompanyDetail extends PureComponent {
         // to={`/dynamic-monitoring/fire-alarm/history-record/${companyId}`}
         to={`/data-analysis/IOT-abnormal-data/fire-alarm/history-record/${companyId}`}
       >
-        <AuthButton code={codesMap.dynamicMonitoring.historyRecordView}>
+        <AuthButton code={codesMap.dataAnalysis.IOTAbnormalData.history}>
           历史记录
           <Icon type="double-right" />
         </AuthButton>

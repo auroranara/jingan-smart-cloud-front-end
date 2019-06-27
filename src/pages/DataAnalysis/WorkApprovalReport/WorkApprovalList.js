@@ -1,5 +1,5 @@
 import { PureComponent } from 'react';
-import { Card, Form, Input, DatePicker, Select, Table, Badge } from 'antd';
+import { Card, Form, Input, DatePicker, Select, Table, Badge, TreeSelect, Spin } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import InlineForm from '@/pages/BaseInfo/Company/InlineForm'
@@ -11,6 +11,7 @@ import codes from '@/utils/codes'
 
 const { RangePicker } = DatePicker
 const { Option } = Select
+const { TreeNode } = TreeSelect;
 
 const {
   dataAnalysis: {
@@ -44,8 +45,8 @@ const TABLIST = [
   {
     key: '1',
     tab: '动火作业',
-    fields: ['申请部门', '申请人', '申请时间', '作业级别', '作业证编号', '作业时间', '动火地点', '动火人', '审批状态'],
-    columns: ['申请时间', '申请人', '申请部门', '作业级别', '作业证编号', '作业开始时间', '作业结束时间', '动火地点', '动火人', '审批状态', '操作'],
+    fields: ['申请部门', '申请人', '申请时间', '作业级别', '作业证编号', '作业时间', '动火地点', '动火人', '完工验收时间', '审批状态'],
+    columns: ['申请时间', '申请人', '申请部门', '作业级别', '作业证编号', '作业开始时间', '作业结束时间', '动火地点', '动火人', '完工验收时间', '审批状态', '操作'],
   },
   {
     key: '2',
@@ -69,7 +70,7 @@ const TABLIST = [
     key: '5',
     tab: '吊装作业',
     fields: ['申请部门', '申请人', '申请时间', '作业级别', '作业证编号', '作业时间', '作业地点', '吊装人', '审批状态'],
-    columns: ['申请时间', '申请人', '申请部门', '作业级别', '作业证编号', '作业开始时间', '作业结束时间', '作业地点', '作业人', '审批状态', '操作'],
+    columns: ['申请时间', '申请人', '申请部门', '作业级别', '作业证编号', '作业开始时间', '作业结束时间', '作业地点', '吊装人', '审批状态', '操作'],
   },
   {
     key: '6',
@@ -94,9 +95,10 @@ const TABLIST = [
 // TODO:将所有情况下的筛选栏配置放在数组中，根据当前activeKey下的TABLIST数据filter筛选下
 
 @Form.create()
-@connect(({ dataAnalysis, account }) => ({
+@connect(({ dataAnalysis, account, loading }) => ({
   dataAnalysis,
   account,
+  listLoading: loading.effects['dataAnalysis/fetchWorkApprovalList'],
 }))
 export default class WorkApprovalList extends PureComponent {
 
@@ -271,8 +273,12 @@ export default class WorkApprovalList extends PureComponent {
       finish_end_time: this.formatDateToMs(finish_end_time),
     }
     // 筛选掉空数据
-    filterValues = Object.fromEntries(Object.entries(filterValues).filter(([, value]) => value))
-    // console.log('filterValues', filterValues);
+    // const filterValues = Object.fromEntries(Object.entries(filterValues).filter(([, value]) => value))
+    for (const key in filterValues) {
+      if (!filterValues[key] && filterValues[key] !== 0) {
+        delete filterValues[key]
+      }
+    }
 
     // 保存筛选栏数据
     this.setState({ filterValues }, () => {
@@ -302,6 +308,19 @@ export default class WorkApprovalList extends PureComponent {
     })
   }
 
+  generateTreeNode = data => {
+    return data.map(({ id, name, children = null }) => {
+      if (children && children.length) {
+        return (
+          <TreeNode title={name} key={id} value={id}>
+            {this.generateTreeNode(children)}
+          </TreeNode>
+        );
+      }
+      return <TreeNode title={name} key={id} value={id} />;
+    });
+  };
+
 
   /**
    * 渲染筛选栏
@@ -324,11 +343,13 @@ export default class WorkApprovalList extends PureComponent {
         id: 'applyDepartment',
         key: '申请部门',
         render: () => (
-          <Select placeholder="申请部门" >
-            {departments.map(({ id, name }) => (
-              <Option key={id} value={id}>{name}</Option>
-            ))}
-          </Select>
+          <TreeSelect
+            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+            placeholder="申请部门"
+            allowClear
+          >
+            {this.generateTreeNode(departments)}
+          </TreeSelect>
         ),
       },
       {
@@ -342,11 +363,11 @@ export default class WorkApprovalList extends PureComponent {
         render: () => (
           <RangePicker
             placeholder={['申请', '时间']}
-            showTime={{ format: 'HH:mm:ss' }}
+            showTime={{ format: 'HH:mm:ss', defaultValue: [moment().startOf('day'), moment().endOf('day')] }}
             format="YYYY-MM-DD HH:mm:ss"
             style={{ width: '100%' }}
             ranges={{
-              '当天': [moment(), moment()],
+              '当天': [moment().startOf('day'), moment().endOf('day')],
               '本月': [moment().startOf('month'), moment().endOf('month')],
             }}
           />
@@ -383,11 +404,13 @@ export default class WorkApprovalList extends PureComponent {
         id: 'useCompany',
         key: '使用单位',
         render: () => (
-          <Select placeholder="使用单位" >
-            {departments.map(({ id, name }) => (
-              <Option key={id} value={id}>{name}</Option>
-            ))}
-          </Select>
+          <TreeSelect
+            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+            placeholder="使用单位"
+            allowClear
+          >
+            {this.generateTreeNode(departments)}
+          </TreeSelect>
         ),
       },
       {
@@ -428,9 +451,10 @@ export default class WorkApprovalList extends PureComponent {
         render: () => (
           <RangePicker
             placeholder={['作业', '时间']}
+            showTime={{ format: 'HH:mm:ss', defaultValue: [moment().startOf('day'), moment().endOf('day')] }}
             style={{ width: '100%' }}
             ranges={{
-              '当天': [moment(), moment()],
+              '当天': [moment().startOf('day'), moment().endOf('day')],
               '本月': [moment().startOf('month'), moment().endOf('month')],
             }}
           />
@@ -457,9 +481,10 @@ export default class WorkApprovalList extends PureComponent {
         render: () => (
           <RangePicker
             placeholder={['完工验收', '时间']}
+            showTime={{ format: 'HH:mm:ss', defaultValue: [moment().startOf('day'), moment().endOf('day')] }}
             style={{ width: '100%' }}
             ranges={{
-              '当天': [moment(), moment()],
+              '当天': [moment().startOf('day'), moment().endOf('day')],
               '本月': [moment().startOf('month'), moment().endOf('month')],
             }}
           />
@@ -481,7 +506,7 @@ export default class WorkApprovalList extends PureComponent {
         render: () => <Input placeholder="作业地点" />,
       },
       {
-        id: 'mbbh',
+        id: 'diskCode',
         key: '盲板编号',
         render: () => <Input placeholder="盲板编号" />,
       },
@@ -603,6 +628,7 @@ export default class WorkApprovalList extends PureComponent {
       {
         title: '作业证编号',
         dataIndex: 'code',
+        key: '作业证编号',
         align: 'center',
         width: 150,
       },
@@ -655,7 +681,7 @@ export default class WorkApprovalList extends PureComponent {
         dataIndex: 'jobFinishTime',
         align: 'center',
         width: 150,
-        render: (val, row) => <span style={{ color: row.endTime > row.jobFinishTime ? 'red' : 'inherit' }}>{this.formatDateToMin(val)}</span>,
+        render: (val, row) => <span style={{ color: row.endTime < row.jobFinishTime ? 'red' : 'inherit' }}>{this.formatDateToMin(val)}</span>,
       },
       {
         title: '作业人',
@@ -672,14 +698,20 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         title: '盲板编号',
-        dataIndex: 'mbbh',
-        key: 'mbbh',
+        dataIndex: 'code',
+        key: '盲板编号',
         align: 'center',
         width: 150,
       },
       {
         title: '作业类别',
         dataIndex: 'levelName',
+        align: 'center',
+        width: 150,
+      },
+      {
+        title: '吊装人',
+        dataIndex: 'jobUsers',
         align: 'center',
         width: 150,
       },
@@ -714,6 +746,7 @@ export default class WorkApprovalList extends PureComponent {
 
   render() {
     const {
+      listLoading,
       match: { params: { type: activeKey } },
       location: { query: { companyName } },
       dataAnalysis: {
@@ -725,7 +758,6 @@ export default class WorkApprovalList extends PureComponent {
         },
       },
     } = this.props
-
     return (
       <PageHeaderLayout
         title={companyName}
@@ -734,10 +766,12 @@ export default class WorkApprovalList extends PureComponent {
         onTabChange={this.handleTabChange}
         tabActiveKey={activeKey}
         wrapperClassName={styles.workApprovalHead}
-        content={<span>检查记录总数：{total}</span>}
+        content={<span>列表记录：{total}</span>}
       >
         {this.renderFilter()}
-        {list.length > 0 ? this.renderTable() : <div className={styles.emptyContainer}><span>暂无数据</span></div>}
+        <Spin spinning={listLoading}>
+          {list.length > 0 ? this.renderTable() : <div className={styles.emptyContainer}><span>暂无数据</span></div>}
+        </Spin>
       </PageHeaderLayout>
     )
   }
