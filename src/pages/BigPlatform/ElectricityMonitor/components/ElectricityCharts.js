@@ -90,7 +90,7 @@ export default class ElectricityCharts extends PureComponent {
       });
     });
     return val ? `报警值：≥${val}${unit}（'报警'）` : null;
-    return val ? `报警值：≥${val}${unit}（${+lvl === 1 ? '预警' : '告警'}）` : null;
+    // return val ? `报警值：≥${val}${unit}（${+lvl === 1 ? '预警' : '告警'}）` : null;
   };
 
   getOptions = () => {

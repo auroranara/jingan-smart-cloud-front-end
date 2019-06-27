@@ -148,11 +148,11 @@ export default class TestList extends PureComponent {
       },
       {
         title: '操作',
-        dataIndex: '操作',
-        key: '操作',
-        align: 'center',
+        dataIndex: 'operation',
+        key: 'operation',
         fixed: 'right',
-        width: 120,
+        align: 'center',
+        width: 100,
         render: (val, record) => (
           <span>
             <a onClick={() => handleViewDetail(record.detailId)}>查看</a>
@@ -185,7 +185,7 @@ export default class TestList extends PureComponent {
           return val ? val : '暂无数据';
         },
       });
-      this.setState({ columns: [...columns], scrollX: 1600 });
+      this.setState({ columns: [...columns] });
     }
 
     /* 获取测试火灾自动报警系统历史记录(web) */
