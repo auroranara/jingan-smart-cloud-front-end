@@ -1,5 +1,5 @@
 import { PureComponent } from 'react';
-import { Card, Form, Input, DatePicker, Select, Table, Badge, TreeSelect } from 'antd';
+import { Card, Form, Input, DatePicker, Select, Table, Badge, TreeSelect, Spin } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import InlineForm from '@/pages/BaseInfo/Company/InlineForm'
@@ -95,9 +95,10 @@ const TABLIST = [
 // TODO:将所有情况下的筛选栏配置放在数组中，根据当前activeKey下的TABLIST数据filter筛选下
 
 @Form.create()
-@connect(({ dataAnalysis, account }) => ({
+@connect(({ dataAnalysis, account, loading }) => ({
   dataAnalysis,
   account,
+  listLoading: loading.effects['dataAnalysis/fetchWorkApprovalList'],
 }))
 export default class WorkApprovalList extends PureComponent {
 
@@ -745,6 +746,7 @@ export default class WorkApprovalList extends PureComponent {
 
   render() {
     const {
+      listLoading,
       match: { params: { type: activeKey } },
       location: { query: { companyName } },
       dataAnalysis: {
@@ -756,7 +758,6 @@ export default class WorkApprovalList extends PureComponent {
         },
       },
     } = this.props
-
     return (
       <PageHeaderLayout
         title={companyName}
@@ -768,7 +769,9 @@ export default class WorkApprovalList extends PureComponent {
         content={<span>列表记录：{total}</span>}
       >
         {this.renderFilter()}
-        {list.length > 0 ? this.renderTable() : <div className={styles.emptyContainer}><span>暂无数据</span></div>}
+        <Spin spinning={listLoading}>
+          {list.length > 0 ? this.renderTable() : <div className={styles.emptyContainer}><span>暂无数据</span></div>}
+        </Spin>
       </PageHeaderLayout>
     )
   }

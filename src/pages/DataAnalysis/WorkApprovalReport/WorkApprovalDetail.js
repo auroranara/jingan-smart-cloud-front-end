@@ -52,9 +52,10 @@ const APPROVALS = [
 const contentStyle = { fontSize: '14px', color: 'rgba(0, 0, 0, 0.65)', paddingTop: '8px' }
 
 @Form.create()
-@connect(({ dataAnalysis, user }) => ({
+@connect(({ dataAnalysis, user, loading }) => ({
   dataAnalysis,
   user,
+  loading: loading.effects['dataAnalysis/fetchWorkApprovalDetail'],
 }))
 export default class WorkApprovalDetail extends PureComponent {
 
@@ -484,6 +485,7 @@ export default class WorkApprovalDetail extends PureComponent {
 
   render() {
     const {
+      loading,
       match: { params: { companyId, type } },
       location: { query: { companyName } },
       dataAnalysis: {
@@ -519,9 +521,11 @@ export default class WorkApprovalDetail extends PureComponent {
           </Fragment>
         )}
       >
-        {this.renderProgress()}
-        {this.renderApprovalInfo()}
-        {this.renderImageDetail()}
+        <Spin spinning={loading}>
+          {this.renderProgress()}
+          {this.renderApprovalInfo()}
+          {this.renderImageDetail()}
+        </Spin>
       </PageHeaderLayout>
     )
   }
