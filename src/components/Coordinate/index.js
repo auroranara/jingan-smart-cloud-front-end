@@ -3,7 +3,7 @@ import { Modal } from 'antd';
 import styles from './index.less';
 import Thumbnail from '../Thumbnail';
 import videoIcon from '@/assets/icon-video.png';
-
+import Dot from './dot.png';
 /**
  * 四色图坐标定位
  */
@@ -95,6 +95,7 @@ export default class App extends PureComponent {
       width,
       ratio = '75%',
       noClick = true,
+      riskStyle,
     } = this.props;
     const { position, index, pageNum } = this.state;
 
@@ -131,7 +132,7 @@ export default class App extends PureComponent {
                     style={{
                       left: `calc(${position.x * 100}% - 16px)`,
                       top: `calc(${position.y * 100}% - 35px)`,
-                      backgroundImage: `url(${videoIcon})`,
+                      backgroundImage: `url(${riskStyle ? Dot : videoIcon})`,
                     }}
                   />
                 )}

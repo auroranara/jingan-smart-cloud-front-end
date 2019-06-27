@@ -173,6 +173,7 @@ export default {
       'storage-tank': 'dataAnalysis.IOTAbnormalData.storageTank',
       'smoke-detector': 'dataAnalysis.IOTAbnormalData.smokeDetector',
       fire: 'dataAnalysis.IOTAbnormalData.fireDetailView',
+      history: 'dataAnalysis.IOTAbnormalData.fireHistoryRecordView',
     },
     MaintenanceRecord: {
       view: 'dataAnalysis.maintenanceRecord.view',

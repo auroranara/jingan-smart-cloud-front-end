@@ -173,14 +173,15 @@ export default class RiskPointEdit extends PureComponent {
           id,
         },
         callback: response => {
-          const flows = response.itemFlowList;
+          const { itemFlowList, pointFixInfoList } = response;
+          const flows = itemFlowList;
           this.setState({ flowList: flows });
           flow_id = flows.map(d => {
             return { flow_id_data: d.flow_id_data };
           });
 
           this.setState({
-            picList: response.pointFixInfoList.map(item => {
+            picList: pointFixInfoList.map(item => {
               return {
                 ...item,
                 isEdit: false,
@@ -719,7 +720,6 @@ export default class RiskPointEdit extends PureComponent {
       },
     } = this.props;
     const { picModalVisible, picList } = this.state;
-
     return (
       <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative' }}>
         {picList.map((item, index) => {
@@ -728,7 +728,7 @@ export default class RiskPointEdit extends PureComponent {
               <Row gutter={12}>
                 <Col span={4}>
                   {getFieldDecorator(`type${index}`, {
-                    initialValue: getImgType(item.imgType),
+                    initialValue: item.imgType,
                   })(
                     <Select
                       allowClear
@@ -843,6 +843,7 @@ export default class RiskPointEdit extends PureComponent {
               picModalVisible: false,
             });
           }}
+          riskStyle
         />
       </Row>
     );
@@ -858,14 +859,18 @@ export default class RiskPointEdit extends PureComponent {
   // 批量删除检查内容
   handleDeleteContent = () => {
     const { selectedRowKeys } = this.state;
-    // console.log('selectedRowKeys', selectedRowKeys);
     const flowList = [...this.state.flowList];
-    // console.log('flowList', flowList);
     this.setState({
       flowList: flowList.filter(item => selectedRowKeys.indexOf(item.flow_id) < 0),
     });
-    flow_id = flow_id.filter(d => selectedRowKeys.indexOf(d.flow_id_data) < 0);
-    // console.log('flow_id', flow_id);
+    const filterList = flowList.filter(item => selectedRowKeys.includes(item.flow_id));
+    const filterFlowId = filterList.map(item => item.flow_id_data);
+    if (filterFlowId) {
+      flow_id = flow_id.filter(d => filterFlowId.indexOf(d.flow_id_data) < 0);
+      flow_id = flow_id.filter(d => selectedRowKeys.indexOf(d.flow_id_data) < 0);
+    } else {
+      flow_id = flow_id.filter(d => selectedRowKeys.indexOf(d.flow_id_data) < 0);
+    }
   };
 
   /* 渲染table(检查内容) */
