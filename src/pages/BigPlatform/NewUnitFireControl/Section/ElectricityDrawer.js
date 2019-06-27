@@ -14,10 +14,10 @@ import styles from './ElectricityDrawer.less';
 import cameraIcon from '../../ElectricityMonitor/imgs/camera.png';
 import emptyBg from '../../Gas/imgs/no-monitor.png';
 
-const GAUGE_LABELS = ['温度', '漏电电流', '电流', '电压'];
+const GAUGE_LABELS = ['漏电电流', '温度', '电流', '电压'];
 const CHARTS_LABELS = [
-  ['A相温度', 'B相温度', 'C相温度', '零线温度'],
   ['漏电电流'],
+  ['A相温度', 'B相温度', 'C相温度', '零线温度'],
   ['A相电流', 'B相电流', 'C相电流'],
   ['A相电压', 'B相电压', 'C相电压'],
 ];
