@@ -172,13 +172,13 @@ export default class App extends PureComponent {
             object_title,
             itemTypeName,
           } = text;
-          return (
-            <Link
-              to={`/data-analysis/maintenance-report/detail/${check_id}?companyName=${company_name}&&objectTitle=${object_title}&&checkCompanyName=${checkCompanyName}&&itemTypeName=${itemTypeName}&&userName=${check_user_names}&&checkDate=${check_date}&&status=${status}`}
-            >
-              查看
-            </Link>
-          );
+          const uri = `/data-analysis/maintenance-report/detail/${check_id}?companyName=${encodeURIComponent(
+            company_name
+          )}&&objectTitle=${encodeURIComponent(
+            object_title
+          )}&&checkCompanyName=${checkCompanyName}&&itemTypeName=${itemTypeName}&&userName=${check_user_names}&&checkDate=${check_date}&&status=${status}`;
+
+          return <Link to={uri}>查看</Link>;
         },
       },
     ];

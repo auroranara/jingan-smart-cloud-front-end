@@ -173,7 +173,9 @@ export default class App extends PureComponent {
               <Link
                 to={`/data-analysis/goverment-report/govermentCheckDetail/${
                   val._id
-                }?checkId=${id}&&companyGovName=${companyName}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+                }?checkId=${id}&&companyGovName=${companyName}&&object_title=${encodeURIComponent(
+                  object_title
+                )}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
               >
                 <span style={{ color: '#40a9ff' }}> {val.statusName} </span>
               </Link>

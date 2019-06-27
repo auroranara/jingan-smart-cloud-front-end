@@ -71,7 +71,7 @@ export default {
 
     // 详情
     *fetchCheckDetail({ payload }, { call, put }) {
-      console.log('payload', payload);
+      // console.log('payload', payload);
       const response = yield call(getSelfCheckDetail, payload);
       if (response.code === 200) {
         yield put({
