@@ -431,6 +431,12 @@ export default class CheckContent extends PureComponent {
                   companyId,
                 },
               });
+              dispatch({
+                type: 'riskPointManage/fetchRiskCount',
+                payload: {
+                  companyId: companyId,
+                },
+              });
             } else {
               // 重新请求数据
               dispatch({
@@ -440,6 +446,12 @@ export default class CheckContent extends PureComponent {
                   pageNum: 1,
                   companyId,
                   realCheckCycle: tabActiveKey,
+                },
+              });
+              dispatch({
+                type: 'riskPointManage/fetchRiskCount',
+                payload: {
+                  companyId: companyId,
                 },
               });
             }
