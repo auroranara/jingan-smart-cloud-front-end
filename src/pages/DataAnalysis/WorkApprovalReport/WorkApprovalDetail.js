@@ -52,9 +52,10 @@ const APPROVALS = [
 const contentStyle = { fontSize: '14px', color: 'rgba(0, 0, 0, 0.65)', paddingTop: '8px' }
 
 @Form.create()
-@connect(({ dataAnalysis, user }) => ({
+@connect(({ dataAnalysis, user, loading }) => ({
   dataAnalysis,
   user,
+  loading: loading.effects['dataAnalysis/fetchWorkApprovalDetail'],
 }))
 export default class WorkApprovalDetail extends PureComponent {
 
@@ -132,11 +133,15 @@ export default class WorkApprovalDetail extends PureComponent {
     } = this.props
     const length = jobApproveHistories.length
     const approvals = APPROVALS[+type] // 当前type下所有审批
-    // 当最后一个审批状态为已通过，且当前type下还有剩余审批，则显示下一级审批
-    const hasNext = [1, 2].includes(+approveStatus) && (length < approvals.length + 1)
+    // 当最后一个审批状态为已通过，且当前type下还有剩余审批，则显示剩余审批
+    const hasNext = [1, 2].includes(+approveStatus) && (length - 1 < approvals.length)
+    // 剩余申请步骤数组
+    const resApprovals = approvals.slice(length - 1)
+    // 当前所在步骤
+    const current = length - 1
     return (
       <Card title="流程进度">
-        <Steps progressDot current={length - 1}>
+        <Steps progressDot current={current}>
           {jobApproveHistories.map(({ approveStatusName, userName, approveTime, id, remark = '' }, index) => (
             <Step
               key={id}
@@ -144,7 +149,9 @@ export default class WorkApprovalDetail extends PureComponent {
               description={this.renderDesscription(userName, this.formatDate(approveTime), remark)}
             />
           ))}
-          {hasNext && (<Step key={approvals[length - 1]} title={`${approvals[length - 1]}审批`} />)}
+          {hasNext && resApprovals.map(item => (
+            <Step key={item} title={`${item}审批`} />
+          ))}
         </Steps>
       </Card>
     )
@@ -478,6 +485,7 @@ export default class WorkApprovalDetail extends PureComponent {
 
   render() {
     const {
+      loading,
       match: { params: { companyId, type } },
       location: { query: { companyName } },
       dataAnalysis: {
@@ -513,9 +521,11 @@ export default class WorkApprovalDetail extends PureComponent {
           </Fragment>
         )}
       >
-        {this.renderProgress()}
-        {this.renderApprovalInfo()}
-        {this.renderImageDetail()}
+        <Spin spinning={loading}>
+          {this.renderProgress()}
+          {this.renderApprovalInfo()}
+          {this.renderImageDetail()}
+        </Spin>
       </PageHeaderLayout>
     )
   }
