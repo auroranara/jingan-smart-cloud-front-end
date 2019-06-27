@@ -70,7 +70,7 @@ const TABLIST = [
     key: '5',
     tab: '吊装作业',
     fields: ['申请部门', '申请人', '申请时间', '作业级别', '作业证编号', '作业时间', '作业地点', '吊装人', '审批状态'],
-    columns: ['申请时间', '申请人', '申请部门', '作业级别', '作业证编号', '作业开始时间', '作业结束时间', '作业地点', '作业人', '审批状态', '操作'],
+    columns: ['申请时间', '申请人', '申请部门', '作业级别', '作业证编号', '作业开始时间', '作业结束时间', '作业地点', '吊装人', '审批状态', '操作'],
   },
   {
     key: '6',
@@ -362,11 +362,11 @@ export default class WorkApprovalList extends PureComponent {
         render: () => (
           <RangePicker
             placeholder={['申请', '时间']}
-            showTime={{ format: 'HH:mm:ss' }}
+            showTime={{ format: 'HH:mm:ss', defaultValue: [moment().startOf('day'), moment().endOf('day')] }}
             format="YYYY-MM-DD HH:mm:ss"
             style={{ width: '100%' }}
             ranges={{
-              '当天': [moment(), moment()],
+              '当天': [moment().startOf('day'), moment().endOf('day')],
               '本月': [moment().startOf('month'), moment().endOf('month')],
             }}
           />
@@ -450,9 +450,10 @@ export default class WorkApprovalList extends PureComponent {
         render: () => (
           <RangePicker
             placeholder={['作业', '时间']}
+            showTime={{ format: 'HH:mm:ss', defaultValue: [moment().startOf('day'), moment().endOf('day')] }}
             style={{ width: '100%' }}
             ranges={{
-              '当天': [moment(), moment()],
+              '当天': [moment().startOf('day'), moment().endOf('day')],
               '本月': [moment().startOf('month'), moment().endOf('month')],
             }}
           />
@@ -479,9 +480,10 @@ export default class WorkApprovalList extends PureComponent {
         render: () => (
           <RangePicker
             placeholder={['完工验收', '时间']}
+            showTime={{ format: 'HH:mm:ss', defaultValue: [moment().startOf('day'), moment().endOf('day')] }}
             style={{ width: '100%' }}
             ranges={{
-              '当天': [moment(), moment()],
+              '当天': [moment().startOf('day'), moment().endOf('day')],
               '本月': [moment().startOf('month'), moment().endOf('month')],
             }}
           />
@@ -503,7 +505,7 @@ export default class WorkApprovalList extends PureComponent {
         render: () => <Input placeholder="作业地点" />,
       },
       {
-        id: 'mbbh',
+        id: 'diskCode',
         key: '盲板编号',
         render: () => <Input placeholder="盲板编号" />,
       },
@@ -625,6 +627,7 @@ export default class WorkApprovalList extends PureComponent {
       {
         title: '作业证编号',
         dataIndex: 'code',
+        key: '作业证编号',
         align: 'center',
         width: 150,
       },
@@ -694,14 +697,20 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         title: '盲板编号',
-        dataIndex: 'mbbh',
-        key: 'mbbh',
+        dataIndex: 'code',
+        key: '盲板编号',
         align: 'center',
         width: 150,
       },
       {
         title: '作业类别',
         dataIndex: 'levelName',
+        align: 'center',
+        width: 150,
+      },
+      {
+        title: '吊装人',
+        dataIndex: 'jobUsers',
         align: 'center',
         width: 150,
       },
