@@ -30,10 +30,10 @@ const OPTIONS = [
   { value: -1, desc: '失联', img: gasLossImg, color: '#9F9F9F' },
 ];
 
-const VIDEO_STYLE = {
-  width: '90%',
-  marginLeft: '-43%',
-};
+// const VIDEO_STYLE = {
+//   width: '90%',
+//   marginLeft: '-43%',
+// };
 
 const DEFAULT = '暂无数据';
 
@@ -106,9 +106,9 @@ export default class UnitMonitorDrawer extends PureComponent {
       unitAbnormalTrend = [],
       handleChangeStatus,
       status,
-      handleViewVideo,
+      // handleViewVideo,
       gas: { unitRealTimeMonitor },
-      cameraList,
+      // cameraList,
       cameraTree,
     } = this.props;
     const {
