@@ -47,7 +47,7 @@ const getRootChild = () => document.querySelector('#root>div');
 @Form.create()
 export default class RiskPointEdit extends PureComponent {
   state = {
-    emergencyList: [], // 当前应急处置措施
+    emergencyList: '', // 当前应急处置措施
     picList: [], // 当前国际标志列表
     signId: '',
     typeId: '',
@@ -66,7 +66,14 @@ export default class RiskPointEdit extends PureComponent {
         params: { id },
       },
     } = this.props;
-
+    // 获取风险分类字典
+    dispatch({
+      type: 'riskPointManage/fetchRiskTypeDict',
+    });
+    // 获取易导致的事故类型字典
+    dispatch({
+      type: 'riskPointManage/fetchAccidentTypeDict',
+    });
     // 如果存在Id，则为编辑，否则为新增
     if (id) {
       // 获取详情
@@ -75,7 +82,7 @@ export default class RiskPointEdit extends PureComponent {
         payload: {
           id,
         },
-        callback: ({ localPictureList, warningSignList }) => {
+        callback: ({ localPictureList, warningSignList, emergencyMeasures }) => {
           const localPicture = localPictureList ? localPictureList : [];
           const warningSign = warningSignList ? warningSignList : [];
           this.setState({
@@ -87,6 +94,7 @@ export default class RiskPointEdit extends PureComponent {
               dbUrl,
             })),
             picList: warningSign,
+            emergencyList: emergencyMeasures,
           });
         },
       });
@@ -96,14 +104,7 @@ export default class RiskPointEdit extends PureComponent {
         type: 'riskPointManage/clearHdLetterDetail',
       });
     }
-    // 获取风险分类字典
-    dispatch({
-      type: 'riskPointManage/fetchRiskTypeDict',
-    });
-    // 获取易导致的事故类型字典
-    dispatch({
-      type: 'riskPointManage/fetchAccidentTypeDict',
-    });
+
     // 获取风险标志字典
     this.fetchPointLabel();
   }
@@ -431,13 +432,13 @@ export default class RiskPointEdit extends PureComponent {
   renderInfo() {
     const {
       form: { getFieldDecorator },
-      match: {
-        params: { id },
-      },
       riskPointManage: {
         riskTypeDict,
         accidentTypeDict: { list = [] },
         detailHdLetter: { data = {} },
+      },
+      match: {
+        params: { id },
       },
     } = this.props;
 
@@ -472,29 +473,49 @@ export default class RiskPointEdit extends PureComponent {
             <Col span={24}>
               <Row gutter={12}>
                 <Col span={8}>
-                  <Form.Item label={fieldLabels.riskType}>
-                    {getFieldDecorator('riskType', {
-                      initialValue: data.riskType,
-                      rules: [{ required: true, message: '请选择风险分类' }],
-                    })(
-                      <Select
-                        allowClear
-                        getPopupContainer={getRootChild}
-                        placeholder="请选择风险分类"
-                      >
-                        {riskTypeDict.map(({ value, desc }) => (
-                          <Option value={value} key={value}>
-                            {desc}
-                          </Option>
-                        ))}
-                      </Select>
-                    )}
-                  </Form.Item>
+                  {id ? (
+                    <Form.Item label={fieldLabels.riskType}>
+                      {getFieldDecorator('riskType', {
+                        initialValue: +data.riskType,
+                        rules: [{ required: true, message: '请选择风险分类' }],
+                      })(
+                        <Select
+                          allowClear
+                          getPopupContainer={getRootChild}
+                          placeholder="请选择风险分类"
+                        >
+                          {riskTypeDict.map(({ value, desc }) => (
+                            <Option value={value} key={value}>
+                              {desc}
+                            </Option>
+                          ))}
+                        </Select>
+                      )}
+                    </Form.Item>
+                  ) : (
+                    <Form.Item label={fieldLabels.riskType}>
+                      {getFieldDecorator('riskType', {
+                        rules: [{ required: true, message: '请选择风险分类' }],
+                      })(
+                        <Select
+                          allowClear
+                          getPopupContainer={getRootChild}
+                          placeholder="请选择风险分类"
+                        >
+                          {riskTypeDict.map(({ value, desc }) => (
+                            <Option value={value} key={value}>
+                              {desc}
+                            </Option>
+                          ))}
+                        </Select>
+                      )}
+                    </Form.Item>
+                  )}
                 </Col>
                 <Col span={8}>
                   <Form.Item label={fieldLabels.accidentTypeCode}>
                     {getFieldDecorator('accidentTypeCode', {
-                      initialValue: data.accidentTypeCode,
+                      initialValue: data.accidentTypeCode && data.accidentTypeCode.split(','),
                       rules: [{ required: true, message: '请选择易导致的事故类型' }],
                     })(
                       <Select
@@ -544,7 +565,7 @@ export default class RiskPointEdit extends PureComponent {
                 <Col span={16}>
                   <Form.Item label={fieldLabels.emergencyMeasures}>
                     {getFieldDecorator('emergencyMeasures', {
-                      initialValue: id ? data.emergencyMeasures : emergencyList,
+                      initialValue: emergencyList,
                       rules: [{ message: '应急处置措施' }],
                     })(<TextArea rows={10} placeholder="应急处置措施" maxLength="2000" />)}
                   </Form.Item>

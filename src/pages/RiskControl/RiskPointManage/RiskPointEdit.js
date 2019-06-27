@@ -589,7 +589,7 @@ export default class RiskPointEdit extends PureComponent {
         query: { companyId },
       },
     } = this.props;
-    if (key === '1' || key === '3' || key === '4') {
+    if (key === 1 || key === 3 || key === 4) {
       dispatch({
         type: 'riskPointManage/fetchFixImgInfo',
         payload: {
@@ -598,7 +598,7 @@ export default class RiskPointEdit extends PureComponent {
         },
       });
     }
-    if (key === '2') {
+    if (key === 2) {
       dispatch({
         type: 'buildingsInfo/fetchBuildingList',
         payload: {
@@ -719,6 +719,7 @@ export default class RiskPointEdit extends PureComponent {
         floorData: { list: floorList = [] },
       },
     } = this.props;
+
     const { picModalVisible, picList } = this.state;
     return (
       <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative' }}>
@@ -746,7 +747,7 @@ export default class RiskPointEdit extends PureComponent {
                     </Select>
                   )}
                 </Col>
-                {getFieldValue(`type${index}`) === '2' && (
+                {getFieldValue(`type${index}`) === 2 && (
                   <Col span={4}>
                     {getFieldDecorator(`buildingName${index}`, {
                       initialValue: item.buildingId,
@@ -766,7 +767,7 @@ export default class RiskPointEdit extends PureComponent {
                     )}
                   </Col>
                 )}
-                {getFieldValue(`type${index}`) === '2' && (
+                {getFieldValue(`type${index}`) === 2 && (
                   <Col span={4}>
                     {getFieldDecorator(`floorName${index}`, {
                       initialValue: item.fixImgId,
@@ -798,7 +799,12 @@ export default class RiskPointEdit extends PureComponent {
                   )}
                 </Col>
                 <Col span={4}>
-                  <Button onClick={() => this.showModalCoordinate(index)}>定位</Button>
+                  <Button
+                    onClick={() => this.showModalCoordinate(index)}
+                    disabled={item.isDisabled}
+                  >
+                    定位
+                  </Button>
                   {item.isEdit ? (
                     <span>
                       <span
@@ -834,7 +840,7 @@ export default class RiskPointEdit extends PureComponent {
           );
         })}
         <Coordinate
-          width="760px"
+          width="920px"
           visible={picModalVisible}
           urls={imgList}
           onOk={this.handleCoordinateOk}

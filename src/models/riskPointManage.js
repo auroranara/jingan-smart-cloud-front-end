@@ -64,19 +64,19 @@ export default {
     // 平面图类型
     picType: [
       {
-        key: '1',
+        key: 1,
         value: '单位平面图',
       },
       {
-        key: '2',
+        key: 2,
         value: '楼层平面图',
       },
       {
-        key: '3',
+        key: 3,
         value: '安全四色图',
       },
       {
-        key: '4',
+        key: 4,
         value: '消防平面图',
       },
     ],
