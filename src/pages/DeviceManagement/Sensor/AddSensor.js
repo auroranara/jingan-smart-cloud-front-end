@@ -136,7 +136,7 @@ export default class AddSensor extends Component {
       match: { params: { id } },
     } = this.props
 
-    validateFields((error, { normalLower, normalUpper, smallLower, largeUpper, ...formData }) => {
+    validateFields((error, { normalLower, normalUpper, ...formData }) => {
       if (!error) {
         const payload = { ...formData, monitoringParameters }
         // console.log('提交',payload)
@@ -263,6 +263,8 @@ export default class AddSensor extends Component {
           ...currentParameter,
           normalLower,
           normalUpper,
+          smallLower: 0,
+          largeUpper: 0,
         }
         const newMonitoringParameters = monitoringParameters.map(item => {
           return item.id === currentParameter.id ? currentParameter : item
