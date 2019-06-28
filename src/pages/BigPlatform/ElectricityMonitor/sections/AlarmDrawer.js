@@ -24,9 +24,11 @@ const ICON_HEIGHT = 40;
 const ICON_BOTTOM = 5;
 const TYPE = 'alarm';
 const NO_DATA = '暂无信息';
-const LABELS = ['正常', '告警', '预警', '失联'];
+// const LABELS = ['正常', '告警', '预警', '失联'];
+const LABELS = ['正常', '报警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
-const OPTIONS = ['全部', '正常', '告警', '预警', '失联'].map((d, i) => ({ value: i, desc: d }));
+// const OPTIONS = ['全部', '正常', '告警', '预警', '失联'].map((d, i) => ({ value: i, desc: d }));
+const OPTIONS = ['全部', '正常', '报警', '预警', '失联'].map((d, i) => ({ value: i, desc: d })).filter(op => op.desc !== '预警');
 const SELECTED_PROPS = ['equipment', 'common', 'alarm', 'warn', 'noAccess'];
 
 export default class AlarmDrawer extends PureComponent {
@@ -104,7 +106,8 @@ export default class AlarmDrawer extends PureComponent {
       <Fragment>
         <DrawerSection title="单位状态统计">
           <OvProgress
-            title="告警单位"
+            // title="告警单位"
+            title="报警单位"
             percent={alarmPercent}
             quantity={alarmNum}
             strokeColor="rgb(255,72,72)"
@@ -115,7 +118,7 @@ export default class AlarmDrawer extends PureComponent {
             iconStyle={{ backgroundImage: `url(${unitRedIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
             // onClick={this.genProgressClick(2)}
           />
-          <OvProgress
+          {/* <OvProgress
             title="预警单位"
             percent={warnPercent}
             quantity={warnNum}
@@ -123,7 +126,7 @@ export default class AlarmDrawer extends PureComponent {
             // style={{ cursor: 'pointer' }}
             iconStyle={{ backgroundImage: `url(${unitYellowIcon})`, width: ICON_WIDTH, height: ICON_HEIGHT, bottom: ICON_BOTTOM }}
             // onClick={this.genProgressClick(3)}
-          />
+          /> */}
           <OvProgress
             title="正常单位"
             percent={commonPercent}
@@ -134,7 +137,12 @@ export default class AlarmDrawer extends PureComponent {
             // onClick={this.genProgressClick(1)}
           />
         </DrawerSection>
-        <DrawerSection title="告警趋势图" titleInfo="最近12个月" extra={extra}>
+        <DrawerSection
+          // title="告警趋势图"
+          title="报警趋势图"
+          titleInfo="最近12个月"
+          extra={extra}
+        >
           {graph ? <ChartBar data={handledGraphList} labelRotate={0} sameColor /> : <ChartLine data={handledGraphList} labelRotate={0} />}
         </DrawerSection>
       </Fragment>
@@ -160,7 +168,7 @@ export default class AlarmDrawer extends PureComponent {
                   color={`rgb(${COLORS[i]})`} quantity={n}
                   onClick={e => showUnitDetail(companyId, getFirstDeviceId(deviceList, i), i === 0 || i === 3 ? 0 : 1)}
                 />
-              ))}
+              )).filter((c, i) => i !== 2)}
             </p>
           }
         />

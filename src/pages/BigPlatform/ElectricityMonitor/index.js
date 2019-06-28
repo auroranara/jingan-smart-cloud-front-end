@@ -719,7 +719,8 @@ export default class ElectricityMonitor extends PureComponent {
         />
         {/* 近半年内告警统计 */}
         <NewSection
-          title="近半年内告警统计"
+          // title="近半年内告警统计"
+          title="近半年内报警统计"
           className={styles.left}
           style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}
         >

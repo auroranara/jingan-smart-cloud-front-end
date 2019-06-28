@@ -27,14 +27,15 @@ function MapLegend(props) {
         <div className={styles.legendIcon}>
           <div className={styles.legendColor} style={{ backgroundColor: '#f83329' }} />
         </div>
-        告警单位
+        {/* 告警单位 */}
+        报警单位
       </div>
-      <div className={styles.legendItem}>
+      {/* <div className={styles.legendItem}>
         <div className={styles.legendIcon}>
           <div className={styles.legendColor} style={{ backgroundColor: '#ffb400' }} />
         </div>
         预警单位
-      </div>
+      </div> */}
     </div>
   );
 }
@@ -199,12 +200,13 @@ export default class MapSection extends PureComponent {
             </div>
             <div className={styles.statusItem}>
               <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
-              告警 {confirmWarning}
+              {/* 告警 {confirmWarning} */}
+              报警 {confirmWarning}
             </div>
-            <div className={styles.statusItem}>
+            {/* <div className={styles.statusItem}>
               <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
               预警 {earlyWarning}
-            </div>
+            </div> */}
             <div className={styles.statusItem}>
               <span className={styles.statusIcon} style={{ backgroundColor: '#9f9f9f' }} />
               失联 {unconnect}
