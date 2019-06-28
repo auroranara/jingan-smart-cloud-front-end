@@ -714,46 +714,46 @@ module.exports = env => {
         //   ],
         // },
         // dynamicMonitoring
-        {
-          path: '/dynamic-monitoring',
-          code: 'dynamicMonitoring',
-          icon: 'dashboard',
-          name: 'dynamicMonitoring',
-          routes: [
-            {
-              path: '/dynamic-monitoring/fire-alarm',
-              code: 'dynamicMonitoring.fireAlarm',
-              name: 'fireAlarm',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/dynamic-monitoring/fire-alarm',
-                  name: 'fireAlarm',
-                  redirect: '/dynamic-monitoring/fire-alarm/index',
-                },
-                {
-                  path: '/dynamic-monitoring/fire-alarm/index',
-                  code: 'dynamicMonitoring.fireAlarm.listView',
-                  name: 'index',
-                  component: './DynamicMonitoring/FireAlarm/index',
-                },
-                {
-                  path: '/dynamic-monitoring/fire-alarm/company/:companyId',
-                  code: 'dynamicMonitoring.fireAlarm.comanyDetailView',
-                  name: 'companyDetail',
-                  component: './DynamicMonitoring/FireAlarm/CompanyDetail',
-                },
-                {
-                  path: '/dynamic-monitoring/fire-alarm/history-record/:companyId',
-                  name: 'historyRecord',
-                  code: 'dynamicMonitoring.fireAlarm.historyRecordView',
-                  component: './DynamicMonitoring/FireAlarm/HistoryRecord',
-                },
-                // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
-              ],
-            },
-          ],
-        },
+        // {
+        //   path: '/dynamic-monitoring',
+        //   code: 'dynamicMonitoring',
+        //   icon: 'dashboard',
+        //   name: 'dynamicMonitoring',
+        //   routes: [
+        //     {
+        //       path: '/dynamic-monitoring/fire-alarm',
+        //       code: 'dynamicMonitoring.fireAlarm',
+        //       name: 'fireAlarm',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/dynamic-monitoring/fire-alarm',
+        //           name: 'fireAlarm',
+        //           redirect: '/dynamic-monitoring/fire-alarm/index',
+        //         },
+        //         {
+        //           path: '/dynamic-monitoring/fire-alarm/index',
+        //           code: 'dynamicMonitoring.fireAlarm.listView',
+        //           name: 'index',
+        //           component: './DynamicMonitoring/FireAlarm/index',
+        //         },
+        //         {
+        //           path: '/dynamic-monitoring/fire-alarm/company/:companyId',
+        //           code: 'dynamicMonitoring.fireAlarm.comanyDetailView',
+        //           name: 'companyDetail',
+        //           component: './DynamicMonitoring/FireAlarm/CompanyDetail',
+        //         },
+        //         {
+        //           path: '/dynamic-monitoring/fire-alarm/history-record/:companyId',
+        //           name: 'historyRecord',
+        //           code: 'dynamicMonitoring.fireAlarm.historyRecordView',
+        //           component: './DynamicMonitoring/FireAlarm/HistoryRecord',
+        //         },
+        //         // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
+        //       ],
+        //     },
+        //   ],
+        // },
 
         // data analysis
         {

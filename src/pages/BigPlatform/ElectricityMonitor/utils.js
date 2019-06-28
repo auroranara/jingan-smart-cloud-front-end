@@ -191,3 +191,11 @@ export function getLimit(deviceConfig, code) {
   });
   return limit;
 }
+
+export function getLimit1(params) {
+  if (!params)
+    return [[], []];
+
+  const { normalLower, normalUpper } = params;
+  return [[], [normalLower, normalUpper]];
+}
