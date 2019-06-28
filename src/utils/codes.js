@@ -300,6 +300,8 @@ export default {
       add: 'riskControl.riskPointManage.add',
       edit: 'riskControl.riskPointManage.edit',
       delete: 'riskControl.riskPointManage.delete',
+      riskAssessmentView: 'riskControl.riskPointManage.riskAssessmentView',
+      riskCardView: 'riskControl.riskPointManage.riskCardView',
     },
   },
 };

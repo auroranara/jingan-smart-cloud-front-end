@@ -93,21 +93,6 @@ const getCycleType = i => {
   }
 };
 
-const getImgType = i => {
-  switch (+i) {
-    case 1:
-      return '单位平面图';
-    case 2:
-      return '楼层平面图';
-    case 3:
-      return '安全四色图';
-    case 4:
-      return '消防平面图';
-    default:
-      break;
-  }
-};
-
 let imgTypes = [];
 
 @connect(({ illegalDatabase, buildingsInfo, riskPointManage, user, loading }) => ({
@@ -161,6 +146,24 @@ export default class RiskPointEdit extends PureComponent {
       },
     } = this.props;
     const payload = { pageSize: PageSize, pageNum: 1 };
+    // 获取推荐检查周期
+    dispatch({
+      type: 'riskPointManage/fetchCheckCycle',
+      payload: {
+        companyId,
+        type: 2,
+      },
+    });
+    // 获取业务分类
+    dispatch({
+      type: 'illegalDatabase/fetchOptions',
+    });
+    // 获取行业类别
+    dispatch({
+      type: 'riskPointManage/fetchIndustryDict',
+    });
+    this.fetchPointLabel({ payload });
+    this.fetchCheckContent({ payload });
 
     // 清空
     flow_id = [];
@@ -175,6 +178,8 @@ export default class RiskPointEdit extends PureComponent {
         callback: response => {
           const { itemFlowList, pointFixInfoList } = response;
           const flows = itemFlowList;
+          // const imgType = pointFixInfoList.map(i => i.imgType);
+
           this.setState({ flowList: flows });
           flow_id = flows.map(d => {
             return { flow_id_data: d.flow_id_data };
@@ -197,24 +202,6 @@ export default class RiskPointEdit extends PureComponent {
         type: 'riskPointManage/clearDetail',
       });
     }
-    // 获取推荐检查周期
-    dispatch({
-      type: 'riskPointManage/fetchCheckCycle',
-      payload: {
-        companyId,
-        type: 2,
-      },
-    });
-    // 获取业务分类
-    dispatch({
-      type: 'illegalDatabase/fetchOptions',
-    });
-    // 获取行业类别
-    dispatch({
-      type: 'riskPointManage/fetchIndustryDict',
-    });
-    this.fetchPointLabel({ payload });
-    this.fetchCheckContent({ payload });
   }
 
   // 点击提交按钮验证表单信息
@@ -548,11 +535,58 @@ export default class RiskPointEdit extends PureComponent {
       riskPointManage: {
         imgData: { list },
       },
+      match: {
+        params: { id },
+      },
+      location: {
+        query: { companyId },
+      },
+      dispatch,
     } = this.props;
-    if (list.length === 0) {
+
+    const { picList, typeIndex } = this.state;
+    const imgType = picList.map(i => i.imgType);
+    const imgIndex = imgType[index];
+
+    if (!id && list.length === 0) {
       message.error('该单位暂无图片！');
-      return;
     }
+
+    if (id && imgIndex && typeIndex) {
+      dispatch({
+        type: 'riskPointManage/fetchFixImgInfo',
+        payload: {
+          companyId,
+          type: typeIndex,
+        },
+      });
+    } else {
+      if (id || typeIndex || imgIndex === 1 || imgIndex === 3 || imgIndex === 4) {
+        dispatch({
+          type: 'riskPointManage/fetchFixImgInfo',
+          payload: {
+            companyId,
+            type: imgIndex || typeIndex,
+          },
+        });
+      } else {
+        if (id || imgIndex === 2 || typeIndex === 2) {
+          dispatch({
+            type: 'buildingsInfo/fetchBuildingList',
+            payload: {
+              company_id: companyId,
+              pageSize: 0,
+              pageNum: 1,
+            },
+          });
+        } else {
+          if (id && list.length === 0) {
+            message.error('该单位暂无图片！');
+          }
+        }
+      }
+    }
+
     this.coordIndex = index;
     this.setState({
       picModalVisible: true,
@@ -609,6 +643,19 @@ export default class RiskPointEdit extends PureComponent {
       });
     }
     this.setState({ typeIndex: key });
+  };
+
+  // 清空当前平面图信息
+  handleImgIndex = index => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({
+      [`xnum${index}`]: undefined,
+      [`ynum${index}`]: undefined,
+      [`buildingName${index}`]: undefined,
+      [`floorName${index}`]: undefined,
+    });
   };
 
   // 获取楼层
@@ -735,6 +782,7 @@ export default class RiskPointEdit extends PureComponent {
                       allowClear
                       placeholder="请选择平面图类型"
                       onChange={this.getImgInfo}
+                      onSelect={() => this.handleImgIndex(index)}
                       disabled={item.isDisabled}
                     >
                       {picType

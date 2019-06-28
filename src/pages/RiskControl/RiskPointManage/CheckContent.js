@@ -604,14 +604,14 @@ export default class CheckContent extends PureComponent {
                       编辑
                     </AuthLink>,
                     <AuthSpan
-                      code={codesMap.riskControl.riskPointManage.view}
+                      code={codesMap.riskControl.riskPointManage.riskAssessmentView}
                       codes={codes}
                       onClick={() => this.handleRiskModal(itemId)}
                     >
                       风险评估
                     </AuthSpan>,
                     <AuthSpan
-                      code={codesMap.riskControl.riskPointManage.view}
+                      code={codesMap.riskControl.riskPointManage.riskCardView}
                       codes={codes}
                       onClick={() =>
                         riskLevelDesc

@@ -527,10 +527,10 @@ export default class VideoMonitorEdit extends PureComponent {
             rtspAddress,
             photoAddress,
             isInspection,
-            xNum,
-            yNum,
-            xFire,
-            yFire,
+            xnum,
+            ynum,
+            xfire,
+            yfire,
             buildingId,
             floorId,
           },
@@ -766,7 +766,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 <Col span={8}>
                   <Form.Item label={fieldLabels.fourPictureX}>
                     {getFieldDecorator('xNum', {
-                      initialValue: xNum,
+                      initialValue: xfire,
                       rules: [{ message: '请输入四色图坐标—X' }],
                     })(<Input placeholder="请输入四色图坐标—X" />)}
                   </Form.Item>
@@ -774,7 +774,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 <Col span={8}>
                   <Form.Item label={fieldLabels.fourPictureY}>
                     {getFieldDecorator('yNum', {
-                      initialValue: yNum,
+                      initialValue: ynum,
                       rules: [{ message: '请输入四色图坐标—Y' }],
                     })(<Input placeholder="请输入四色图坐标—Y" />)}
                   </Form.Item>
@@ -807,7 +807,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 <Col span={8}>
                   <Form.Item label={fieldLabels.firePictureX}>
                     {getFieldDecorator('xFire', {
-                      initialValue: xFire,
+                      initialValue: xfire,
                       rules: [{ message: '请输入消防平面图坐标—X' }],
                     })(<Input placeholder="请输入消防平面图坐标—X" />)}
                   </Form.Item>
@@ -815,7 +815,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 <Col span={8}>
                   <Form.Item label={fieldLabels.firePictureY}>
                     {getFieldDecorator('yFire', {
-                      initialValue: yFire,
+                      initialValue: yfire,
                       rules: [{ message: '请输入消防平面图坐标—Y' }],
                     })(<Input placeholder="请输入消防平面图坐标—Y" />)}
                   </Form.Item>
