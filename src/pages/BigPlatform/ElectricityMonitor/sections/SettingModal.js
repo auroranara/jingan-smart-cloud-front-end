@@ -95,7 +95,7 @@ export default class SettingModal extends PureComponent {
                   报警时短信提醒
                 </Checkbox>
                 <Checkbox value={2}>
-                  告警时系统自动拨打电话提醒
+                  报警时系统自动拨打电话提醒
                 </Checkbox>
                 {/* <Checkbox value={3} style={{ marginLeft: 0 }}>
                   连续报警3次后短信提醒
