@@ -17,7 +17,7 @@ import { DotItem } from '../components/Components';
 import { sortList, getFirstDeviceId } from '../utils';
 import unitRedIcon from '../imgs/unitRed.png';
 import unitBlueIcon from '../imgs/unitBlue.png';
-import unitYellowIcon from '../imgs/unitYellow.png';
+// import unitYellowIcon from '../imgs/unitYellow.png';
 
 const ICON_WIDTH = 42;
 const ICON_HEIGHT = 40;

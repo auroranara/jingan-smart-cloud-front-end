@@ -4,12 +4,13 @@ import classnames from 'classnames';
 import styles from './GaugeLabels.less';
 
 export default function GaugeLabels(props) {
-  const { labels=[], alerted=[], value, handleLabelClick, ...restProps } = props;
-  const labelStyle = labels.length ? { width: `${100 / labels.length - 1}%` } : {};
+  const { labels=[], labelObjs, alerted=[], value, handleLabelClick, ...restProps } = props;
+  const lbls = labelObjs || labels.map((label, index) => ({ label, index }));
+  const labelStyle = lbls.length ? { width: `${100 / lbls.length - 1}%` } : {};
 
   return (
     <div className={styles.container} {...restProps}>
-      {labels.map((label, i) => (
+      {lbls.map(({ label, index: i }) => (
         <div
           key={label}
           style={labelStyle}
