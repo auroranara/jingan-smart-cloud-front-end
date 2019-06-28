@@ -66,12 +66,13 @@ export default class RealTimeAlarmStatistics extends PureComponent {
         <div className={styles.list}>
           {[{
             color: '#ff4848',
-            name: '告警单位',
+            // name: '告警单位',
+            name: '报警单位',
             value: alarmUnit.length,
-          }, {
-            color: '#f6ba38',
-            name: '预警单位',
-            value: earlyWarningUnit.length,
+          // }, {
+          //   color: '#f6ba38',
+          //   name: '预警单位',
+          //   value: earlyWarningUnit.length,
           }, {
             color: '#00fbfc',
             name: '正常单位',

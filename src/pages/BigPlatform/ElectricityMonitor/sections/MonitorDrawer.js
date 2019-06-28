@@ -19,7 +19,8 @@ import emptyBg from '@/pages/BigPlatform/Monitor/imgs/waterBg.png';
 // const TYPE = 'monitor';
 // const TEMPERATURE = '温度';
 const TITLES = ['单位监测信息', '报警信息'];
-const LABELS = ['正常', '告警', '预警', '失联'];
+// const LABELS = ['正常', '告警', '预警', '失联'];
+const LABELS = ['正常', '报警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const GAUGE_LABELS = ['温度', '漏电电流', '电流', '电压'];
 // const CHART_LABELS = ['A相温度', 'B相温度', 'C相温度', '零线温度', '漏电电流'];
@@ -149,7 +150,7 @@ export default class MonitorDrawer extends PureComponent {
           <p className={styles.dots}>
             {[normal, confirmWarning, earlyWarning, unconnect].map((n, i) => (
               <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
-            ))}
+            )).filter((c, i) => i !== 2)}
           </p>
         </div>
         <div className={styles.chartContainer}>

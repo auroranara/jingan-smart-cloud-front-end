@@ -15,7 +15,8 @@ import { sortCardList, getChartLabels, getFirstDeviceId } from '../utils';
 
 const TYPE = 'unit';
 const NO_DATA = '暂无信息';
-const LABELS = ['正常', '告警', '预警', '失联'];
+// const LABELS = ['正常', '告警', '预警', '失联'];
+const LABELS = ['正常', '报警', '预警', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 const OPTIONS = ['全部', '未接入', '已接入'].map((d, i) => ({ value: i, desc: d }));
 const RING_COLORS = ['159,159,159', '0,255,255'];
@@ -167,7 +168,7 @@ export default class UnitDrawer extends PureComponent {
                           )
                         }
                       />
-                    ))
+                    )).filter((c, i) => i !== 2)
                   : ' '}
               </p>
             }
