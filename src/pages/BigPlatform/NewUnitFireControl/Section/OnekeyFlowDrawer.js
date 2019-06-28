@@ -47,7 +47,7 @@ export default class OnekeyFlowDrawer extends PureComponent {
     const { index } = this.state;
     const list = (Array.isArray(data) ? data : []).slice(0, 1);
     const length = list.length;
-
+    const dataItem = list[0] || {};
     // 判断是否是维保处理，维保处理动态时，显示流程图，故障处理动态时不显示流程图
     // const isMaintenance = title.includes('维保');
 
@@ -78,12 +78,13 @@ export default class OnekeyFlowDrawer extends PureComponent {
             label: '报修',
             time: create_date,
             cardItems: [
-              { title: systemTypeValue },
-              { name: '工单编号', value: work_order },
-              {
-                name: '报修人员',
-                value: `${createByName} ${vaguePhone(createByPhone, phoneVisible)}`,
-              },
+              // { title: systemTypeValue },
+              // { name: '工单编号', value: work_order },
+              // {
+              //   name: '报修人员',
+              //   value: `${createByName} ${vaguePhone(createByPhone, phoneVisible)}`,
+              // },
+              { title: `已报修成功` },
             ],
           },
           // { label: '消息发送', time: 1569548522158, msgInfo: true },
@@ -93,12 +94,13 @@ export default class OnekeyFlowDrawer extends PureComponent {
             cardItems:
               nstatus === '0' || nstatus === '1'
                 ? [
-                  { name: '处理单位', value: startCompanyName },
-                  {
-                    name: '处理人员',
-                    value: `${startByName} ${vaguePhone(startByPhone, phoneVisible)}`,
-                  },
-                ]
+                    { title: `该工单已开始处理` },
+                    { name: '处理单位', value: startCompanyName },
+                    {
+                      name: '处理人员',
+                      value: `${startByName} ${vaguePhone(startByPhone, phoneVisible)}`,
+                    },
+                  ]
                 : undefined,
           },
           {
@@ -107,14 +109,15 @@ export default class OnekeyFlowDrawer extends PureComponent {
             cardItems:
               nstatus === '1'
                 ? [
-                  { name: '处理单位', value: finishCompanyName },
-                  {
-                    name: '处理人员',
-                    value: `${finishByName} ${vaguePhone(finishByPhone, phoneVisible)}`,
-                  },
-                  { name: '结果反馈', value: disaster_desc },
-                  { imgs: sitePhotos || [] },
-                ]
+                    { title: `该工单已处理完毕` },
+                    { name: '处理单位', value: finishCompanyName },
+                    {
+                      name: '处理人员',
+                      value: `${finishByName} ${vaguePhone(finishByPhone, phoneVisible)}`,
+                    },
+                    { name: '结果反馈', value: disaster_desc },
+                    { imgs: sitePhotos || [] },
+                  ]
                 : undefined,
           },
         ];
@@ -131,26 +134,26 @@ export default class OnekeyFlowDrawer extends PureComponent {
       left =
         length === 1 ? (
           <Fragment>
-            {head && <DynamicDrawerTop {...headProps} {...data[0]} />}
+            {head && <DynamicDrawerTop {...headProps} {...dataItem} />}
             {cards}
           </Fragment>
         ) : (
-            <Fragment>
-              {head && <DynamicDrawerTop {...headProps} {...data[0]} />}
-              <SwitchHead
-                index={index}
-                title="故障"
-                lastIndex={length - 1}
-                handleLeftClick={this.handleLeftClick}
-                handleRightClick={this.handleRightClick}
-              />
-              <div className={styles.sliderContainer}>
-                <Slider index={index} length={length} size={1}>
-                  {cards}
-                </Slider>
-              </div>
-            </Fragment>
-          );
+          <Fragment>
+            {head && <DynamicDrawerTop {...headProps} {...dataItem} />}
+            <SwitchHead
+              index={index}
+              title="故障"
+              lastIndex={length - 1}
+              handleLeftClick={this.handleLeftClick}
+              handleRightClick={this.handleRightClick}
+            />
+            <div className={styles.sliderContainer}>
+              <Slider index={index} length={length} size={1}>
+                {cards}
+              </Slider>
+            </div>
+          </Fragment>
+        );
     }
     return (
       <DrawerContainer

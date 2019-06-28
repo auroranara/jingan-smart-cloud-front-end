@@ -7,6 +7,7 @@ import SwitchHead from '../components/SwitchHead';
 import NewTimelineCard from '../components/NewTimelineCard';
 import { vaguePhone } from '../utils';
 import flowImg from '../../Gas/imgs/flow_alarm.png';
+import DynamicDrawerTop from '@/pages/BigPlatform/Operation/components/DynamicDrawerTop';
 
 const ID = 'gas-flow-drawer';
 
@@ -40,7 +41,8 @@ export default class GasFlowDrawer extends PureComponent {
       visible,
       phoneVisible,
       flowRepeat,
-      head = null,
+      head = false,
+      headProps = {},
       ...restProps
     } = this.props;
     const { index } = this.state;
@@ -135,12 +137,12 @@ export default class GasFlowDrawer extends PureComponent {
       left =
         length === 1 ? (
           <Fragment>
-            {head}
+            {head && <DynamicDrawerTop {...headProps} {...data[0]} />}
             {cards}
           </Fragment>
         ) : (
           <Fragment>
-            {head}
+            {head && <DynamicDrawerTop {...headProps} {...data[0]} />}
             <SwitchHead
               index={index}
               title="故障"

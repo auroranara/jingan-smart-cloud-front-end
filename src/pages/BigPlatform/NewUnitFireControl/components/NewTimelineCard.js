@@ -61,6 +61,7 @@ export default function NewTimelineCard(props) {
                   day={getTime(time)}
                   hour={getTime(time, 1)}
                   key={index}
+                  containerStyle={{ minHeight: '75px' }}
                 >
                   {(cardItems || msgInfo) && (
                     <div className={styles.card}>
@@ -87,10 +88,10 @@ export default function NewTimelineCard(props) {
                             </p>
                           );
                         })}
-                      {repeat &&
+                      {/* {repeat &&
                         repeat.repeatCount > 1 && (
                           <div className={styles.repeat} style={{ cursor: 'default' }}>
-                            {/* <Icon type="right" className={styles.arrow} /> */}
+                            <Icon type="right" className={styles.arrow} />
                             该点位设备重复上报
                             {repeat.repeatCount}
                             次，
@@ -98,7 +99,7 @@ export default function NewTimelineCard(props) {
                             最近一次更新：
                             {moment(repeat.lastTime).format('YYYY-MM-DD HH:mm:ss')}
                           </div>
-                        )}
+                        )} */}
                       {msgInfo && (
                         <div>
                           <p className={styles.title}>报警消息已发送成功</p>

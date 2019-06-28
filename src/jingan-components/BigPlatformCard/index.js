@@ -7,8 +7,8 @@ import styles from './index.less';
  * 大屏卡片通用方法
  */
 export default class BigPlatformCard extends PureComponent {
-  static Container({ className, style, children }) {
-    return <section className={classNames(styles.container, className)} style={style}>{children}</section>
+  static Container({ className, style, children, onClick }) {
+    return <section className={classNames(styles.container, className)} style={style} onClick={onClick}>{children}</section>
   }
 
   /**
