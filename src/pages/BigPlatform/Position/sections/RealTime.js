@@ -3,7 +3,6 @@ import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { stringify } from 'qs';
 import moment from 'moment';
 import { message, notification } from 'antd';
-import {findFirstVideo} from '@/utils/utils';
 import styles from './RealTime.less';
 import { AlarmHandle, AlarmMsg, MapInfo, PersonInfo, Tabs, VideoPlay } from '../components/Components';
 import { AlarmDrawer, CardList, CardSelected, LeafletMap, LowPowerDrawer, PersonDrawer, SectionList } from './Components';
@@ -17,7 +16,7 @@ const options = {
 };
 
 const SOS_TYPE = 1;
-const DELAY = 6000;
+// const DELAY = 6000;
 
 const LOCATION_MESSAGE_TYPE = "1";
 const AREA_CHANGE_TYPE = "2";
@@ -534,6 +533,7 @@ export default class RealTime extends PureComponent {
   render() {
     const {
       dispatch,
+      fullScreen,
       labelIndex,
       companyId,
       selectedCardId,
@@ -541,9 +541,12 @@ export default class RealTime extends PureComponent {
       areaInfoCache,
       personPosition: { sectionTree, positionList, positionAggregation, alarms, beaconList },
       showBoard,
+      showFullScreen,
+      hideFullScreen,
       handleLabelClick,
       setSelectedCard,
       setHistoryRecord,
+      showBeacon,
     } = this.props;
     const {
       alarmId,
@@ -576,7 +579,7 @@ export default class RealTime extends PureComponent {
 
     return (
       <div className={styles.container}>
-        <div className={styles.left}>
+        <div className={fullScreen ? styles.left1 : styles.left}>
           <Tabs value={labelIndex} handleLabelClick={handleLabelClick} />
           <div className={styles.leftSection}>
             {!labelIndex && (
@@ -615,9 +618,11 @@ export default class RealTime extends PureComponent {
             )}
           </div>
         </div>
-        <div className={styles.right}>
+        <div className={fullScreen ? styles.right1 : styles.right}>
           <div className={styles.rightSection}>
             <LeafletMap
+              beaconOn={showBeacon}
+              fullScreen={fullScreen}
               url={mapBackgroundUrl}
               isTrack={isTrack}
               selectedCardId={selectedCardId}
@@ -633,6 +638,8 @@ export default class RealTime extends PureComponent {
               setAreaId={this.setAreaId}
               setHighlightedAreaId={this.setHighlightedAreaId}
               showBoard={showBoard}
+              showFullScreen={showFullScreen}
+              hideFullScreen={hideFullScreen}
               handleShowVideo={this.handleShowVideo}
               handleShowPersonInfo={this.handleShowPersonInfo}
               handleShowPersonDrawer={this.handleShowPersonDrawer}

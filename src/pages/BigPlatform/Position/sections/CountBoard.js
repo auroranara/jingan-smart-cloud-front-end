@@ -34,7 +34,7 @@ export default function CountBoard(props) {
   const eastQuantity = east && east.count ? east.count : 0;
   return (
     <div className={styles.container} style={{ height: HEIGHT }}>
-      <Icon type="shrink" className={styles.shrink} onClick={hideBoard} />
+      <Icon type="switcher" className={styles.shrink} onClick={hideBoard} />
       <div className={styles.inner}>
         <div className={styles.head}>全厂人数: {westQuantity + eastQuantity}</div>
         <div className={styles.section}>

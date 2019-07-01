@@ -14,12 +14,13 @@ function AlarmCard(props) {
   } = props;
 
   const [title, desc] = getAlarmDesc(data, areaInfo);
-
+  const { type } = data;
+  const isSOS = +type === 1;
 
   return (
     <div className={styles.cardContainer} {...restProps}>
       <p className={styles.title}>{title}</p>
-      <p>{desc}，请及时处理。</p>
+      <p>{desc}{isSOS ? '，请及时处理' : ''}。</p>
       <span className={styles.detail} onClick={onClick}>详情<Icon type="double-right" /></span>
     </div>
   );
