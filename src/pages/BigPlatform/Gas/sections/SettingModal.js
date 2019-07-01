@@ -76,10 +76,11 @@ export default class SettingModal extends PureComponent {
             )}
           </FormItem>
           <FormItem label="消息提醒">
-            {getFieldDecorator('message', { initialValue: [1] })(
+            {getFieldDecorator('message', { initialValue: [0] })(
               <CheckboxGroup>
-                <Checkbox value={0}>预警提示</Checkbox>
-                <Checkbox value={1}>告警提示</Checkbox>
+                {/* <Checkbox value={0}>预警提示</Checkbox>
+                <Checkbox value={1}>告警提示</Checkbox> */}
+                <Checkbox value={0}>报警提示</Checkbox>
               </CheckboxGroup>
             )}
           </FormItem>
