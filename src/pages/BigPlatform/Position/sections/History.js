@@ -309,8 +309,8 @@ export default class History extends PureComponent {
     } = this.props;
     const { range, selectedAreaId, tableList, date, startTime, endTime } = this.state;
     const [ startTimeStamp, endTimeStamp ] = timeRange;
-    console.log(tree);
-    console.log(originalTree);
+    // console.log(tree);
+    // console.log(originalTree);
 
     const historyTree = originalTree.find(({ id }) => id === selectedAreaId);
     const sectionTreeList = sectionTree.map(sec => ({ ...sec, children: [] }));

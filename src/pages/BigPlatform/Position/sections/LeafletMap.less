@@ -38,29 +38,43 @@
   }
 }
 
-.home {
-  display: inline-block;
+.iconBase {
   width: 30px;
   height: 30px;
   line-height: 34px;
   color: #FFF;
   font-size: 20px;
-  position: absolute;
-  top: 125px;
-  // top: 85px;
-  left: 12px;
   border-radius: 3px;
   background-color: #0259a4;
+}
+
+.home:extend(.iconBase) {
+  display: inline-block;
+  // width: 30px;
+  // height: 30px;
+  // line-height: 34px;
+  // color: #FFF;
+  // font-size: 20px;
+  position: absolute;
+  // top: 125px;
+  top: 85px;
+  left: 12px;
+  // border-radius: 3px;
+  // background-color: #0259a4;
   z-index: 999;
 }
 
-.board:extend(.home) {
-  top: 85px;
+// .screen:extend(.home) {
+//   top: 85px;
+// }
+
+.switcher:extend(.iconBase) {
+  margin-right: 15px;
 }
 
 .back:extend(.home) {
-  // top: 125px;
-  top: 165px;
+  top: 125px;
+  // top: 165px;
 }
 
 .iconContainer {
@@ -311,8 +325,8 @@
 
 .beaconSwitch {
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 15px;
+  top: 10px;
   z-index: 998;
 }
 

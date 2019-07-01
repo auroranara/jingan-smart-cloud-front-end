@@ -1,11 +1,11 @@
 import { Component, Fragment } from 'react';
 import MsgRead from './MsgRead';
 import moment from 'moment';
-import styles from './DynamicDrawerTop.less'
+import styles from './DynamicDrawerTop.less';
 
-import bakFlag from '@/assets/bac-flag.png'
-import bakFlagFill from '@/assets/bac-flag-fill.png'
-import cameraImg from '@/pages/BigPlatform/NewUnitFireControl/imgs/cameralogo.png'
+import bakFlag from '@/assets/bac-flag.png';
+import bakFlagFill from '@/assets/bac-flag-fill.png';
+import cameraImg from '@/pages/BigPlatform/NewUnitFireControl/imgs/cameralogo.png';
 
 // const users = new Array(17).fill({
 //   id: '1',
@@ -21,10 +21,9 @@ const getEmptyData = () => {
 };
 
 export default class DynamicDrawerTop extends Component {
-
   state = {
-    showRepeatDesc: false,// 重复上报次数是否hover
-  }
+    showRepeatDesc: false, // 重复上报次数是否hover
+  };
 
   // handleReadChange = (showReaded) => {
   //   this.setState({
@@ -35,10 +34,10 @@ export default class DynamicDrawerTop extends Component {
   handleCameraClick = () => {
     const { onCameraClick } = this.props;
     onCameraClick && onCameraClick();
-  }
+  };
 
   render() {
-    const { showRepeatDesc } = this.state
+    const { showRepeatDesc } = this.state;
     // console.log('headProps', this.props.headProps)
     const {
       companyName = null,
@@ -59,38 +58,78 @@ export default class DynamicDrawerTop extends Component {
       // createCompanyName = null,
       work_order = null,
       systemTypeValue = null,
-    } = this.props
+      label = null,
+      component_region,
+      component_no,
+      installAddress,
+      componentName,
+      componentRegion,
+      componentNo,
+    } = this.props;
     const scTime = moment(firstTime).format('YYYY-MM-DD HH:mm');
     const zjTime = moment(lastTime).format('YYYY-MM-DD HH:mm');
+    const componentNum =
+      ((component_region || component_region === 0) &&
+        `${component_region}回路${component_no}号`) ||
+      ((componentRegion || componentRegion === 0) && `${componentRegion}回路${componentNo}号`);
     return (
       <div className={styles.dynamicDrawerTop} style={style}>
-        <div className={styles.companyInfoContainer}>
-          <div className={styles.title}>{companyName}</div>
+        <div
+          className={styles.companyInfoContainer}
+          style={{ minHeight: dynamicType === 3 ? 'auto' : '130px' }}
+        >
+          {companyName && <div className={styles.title}>{companyName}</div>}
           {/* 主机 */}
           {dynamicType === 0 && (
             <Fragment>
-              <div className={styles.line}>详细位置：{install_address || getEmptyData()}</div>
-              <div className={styles.line}>回路号：{component || getEmptyData()}</div>
-              <div className={styles.line} style={{ marginBottom: 0 }}>部件类型：{unitTypeName || getEmptyData()}</div>
+              <div className={styles.line}>
+                详细位置：
+                {install_address || installAddress || getEmptyData()}
+              </div>
+              <div className={styles.line}>
+                回路号：
+                {component || componentNum || getEmptyData()}
+              </div>
+              <div className={styles.line} style={{ marginBottom: 0 }}>
+                部件类型：
+                {unitTypeName || label || componentName || getEmptyData()}
+              </div>
             </Fragment>
           )}
           {/* 烟感 */}
-          {dynamicType === 1 && (
+          {(dynamicType === 1 || dynamicType === 2) && (
             <Fragment>
-              {sdeviceName && (<div className={styles.line}>名称：{sdeviceName}</div>)}
-              <div className={styles.line}>所在区域：{area || getEmptyData()}</div>
-              <div className={styles.line}>位置：{location || getEmptyData()}</div>
+              {sdeviceName && (
+                <div className={styles.line}>
+                  名称：
+                  {sdeviceName}
+                </div>
+              )}
+              <div className={styles.line}>
+                所在区域：
+                {area || getEmptyData()}
+              </div>
+              <div className={styles.line}>
+                位置：
+                {location || getEmptyData()}
+              </div>
             </Fragment>
           )}
           {/* 一键报修 */}
           {dynamicType === 3 && (
             <Fragment>
-              <div className={styles.line}>报修系统：{systemTypeValue || getEmptyData()}</div>
-              <div className={styles.line}>工单编号：{work_order || getEmptyData()}</div>
+              <div className={styles.line} style={{ width: '100%' }}>
+                报修系统：
+                {systemTypeValue || getEmptyData()}
+              </div>
+              <div className={styles.line} style={{ width: '100%' }}>
+                工单编号：
+                {work_order || getEmptyData()}
+              </div>
             </Fragment>
           )}
           {/* 重复上报 */}
-          {+num > 0 && (
+          {+num > 1 && (
             <div className={styles.logoContainer} style={{ top: 0, right: '24px' }}>
               <div
                 className={styles.logo}
@@ -101,30 +140,46 @@ export default class DynamicDrawerTop extends Component {
                   backgroundRepeat: 'no-repeat',
                 }}
                 onMouseEnter={() => this.setState({ showRepeatDesc: true })}
-                onMouseLeave={() => this.setState({ showRepeatDesc: false })}>
+                onMouseLeave={() => this.setState({ showRepeatDesc: false })}
+              >
                 <div>{num}</div>
               </div>
               <div className={styles.desc}>重复上报次数</div>
             </div>
           )}
           {/* 视频 */}
-          {dynamicType !== 3&&videoList && videoList.length > 0 && (
-            <div
-              onClick={this.handleCameraClick}
-              className={styles.cameraContainer}
-              style={{
-                top: '10px',
-                right: '104px',
-                backgroundImage: `url(${cameraImg})`,
-                backgroundSize: '100%',
-                backgroundPosition: 'center center',
-                backgroundRepeat: 'no-repeat',
-              }}
-            ></div>
-          )}
-          <div className={styles.repeatDesc} style={{ bottom: '16px', right: '22px', visibility: showRepeatDesc ? 'visible' : 'hidden' }}>
-            <div>首次发生事件：{scTime}</div>
-            <div>最近发生事件：{zjTime}</div>
+          {dynamicType !== 3 &&
+            videoList &&
+            videoList.length > 0 && (
+              <div
+                onClick={this.handleCameraClick}
+                className={styles.cameraContainer}
+                style={{
+                  top: '10px',
+                  right: '104px',
+                  backgroundImage: `url(${cameraImg})`,
+                  backgroundSize: '100%',
+                  backgroundPosition: 'center center',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              />
+            )}
+          <div
+            className={styles.repeatDesc}
+            style={{
+              bottom: '16px',
+              right: '22px',
+              visibility: showRepeatDesc ? 'visible' : 'hidden',
+            }}
+          >
+            <div>
+              首次发生时间：
+              {scTime}
+            </div>
+            <div>
+              最近发生时间：
+              {zjTime}
+            </div>
           </div>
         </div>
         {/* <div className={styles.messageSendingContainer}>
@@ -135,6 +190,6 @@ export default class DynamicDrawerTop extends Component {
           <MsgRead read={users} unread={users2} />
         </div> */}
       </div>
-    )
+    );
   }
 }

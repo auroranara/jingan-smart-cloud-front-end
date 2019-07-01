@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
-import { Spin, Tooltip } from 'antd';
+import { Spin, Tooltip, Select } from 'antd';
 import TotalInfo from '../components/TotalInfo';
 import { vaguePhone } from '../utils';
 // import LoadMoreButton from '../../Safety/Company3/components/LoadMoreButton';
@@ -10,14 +10,15 @@ import DrawerContainer from '../components/DrawerContainer';
 import numberBg from '../imgs/number-bg.png';
 import noData from '../imgs/noData.png';
 
+const { Option } = Select;
 const NO_DATA = '暂无信息';
 const TYPES = ['报警', '故障'];
 const STATUS_MAP = ['待处理', '处理中', '已处理'];
-const LABELS = [
-  ['主机报警', '主机报障'],
-  ['独立烟感报警', '独立烟感故障'],
-  ['可燃气体报警', '可燃气体报警'],
-  [],
+const LABELS = [['火警', '故障'], ['火警', '故障'], ['火警', '故障'], []];
+const statusSelector = [
+  { value: 'all', name: '全部状态' },
+  { value: 'warning', name: '火警' },
+  { value: 'fault', name: '故障' },
 ];
 
 function formatTime(time) {
@@ -35,7 +36,8 @@ function OrderCard(props) {
     showWorkOrderDetail,
     // ...restProps
   } = props;
-  const timeStr = workOrderType === 3 && type === 1 ? '报修' : TYPES[type];
+  // const timeStr = workOrderType === 3 && type === 1 ? '报修' : TYPES[type];
+  const timeStr = workOrderType === 3 && type === 1 ? '报修' : '报警';
 
   const {
     componentName, // 消防主机名称
@@ -63,6 +65,8 @@ function OrderCard(props) {
     lastTime,
     faultName,
     proceId,
+    proceStatus,
+    endDate,
   } = data;
   const titles = [componentName, area + location, area + location, systemTypeValue];
   const listItems = [
@@ -74,12 +78,12 @@ function OrderCard(props) {
             ? `${componentRegion}回路${componentNo}号`
             : componentNo,
       },
-      { name: '详细位置', value: installAddress },
+      { name: '安装位置', value: installAddress },
       { name: `${timeStr}时间`, value: formatTime(firstTime) },
     ],
     [
-      { name: '所在区域', value: area },
-      { name: '所在位置', value: location },
+      // { name: '安装位置', value: [area, location].join('') },
+      // { name: '所在位置', value: location },
       { name: `${timeStr}时间`, value: formatTime(firstTime) },
     ],
     [
@@ -90,8 +94,8 @@ function OrderCard(props) {
     ],
     [
       { name: '工单编号', value: workOrder },
-      { name: `${timeStr}时间`, value: formatTime(createDate) },
       { name: '报修人员', value: `${createByName} ${vaguePhone(createByPhone, phoneVisible)}` },
+      { name: `${timeStr}时间`, value: formatTime(createDate) },
     ],
   ];
   let statusStr;
@@ -118,10 +122,10 @@ function OrderCard(props) {
     else if (workOrderStatus === 1) statusStr = '正在维修中';
     else if (workOrderStatus === 2) {
       statusStr = `已维修完毕`;
-      listItems[workOrderType].push({
-        name: '维修人员',
-        value: `${executorName} ${vaguePhone(phone, phoneVisible)}`,
-      });
+      // listItems[workOrderType].push({
+      //   name: '维修人员',
+      //   value: `${executorName} ${vaguePhone(phone, phoneVisible)}`,
+      // });
     }
   }
 
@@ -129,7 +133,7 @@ function OrderCard(props) {
     <div className={styles.outer}>
       <div className={styles.card}>
         {/* <div className={styles.card} {...restProps}> */}
-        {workOrderType !== 3 &&
+        {/* {workOrderType !== 3 &&
           fireChildren &&
           fireChildren.length > 1 && (
             <div
@@ -141,13 +145,13 @@ function OrderCard(props) {
             >
               {fireChildren.length}
             </div>
-          )}
+          )} */}
         <p className={styles.name}>
           <Tooltip placement={'bottomLeft'} title={titles[workOrderType]}>
             <span className={styles.cardName}>{titles[workOrderType] || ''}</span>
           </Tooltip>
           {workOrderType !== 3 && (
-            <span className={styles.info}>
+            <span className={type === 0 ? styles.warning : styles.fault}>
               {type === 0 ? LABELS[workOrderType][type] : LABELS[workOrderType][type]}
             </span>
           )}
@@ -161,7 +165,61 @@ function OrderCard(props) {
             </p>
           );
         })}
-        <p>
+        {proceStatus === '1' && (
+          <p>
+            <span className={styles.left}>结束时间：</span>
+            {formatTime(endDate)}
+          </p>
+        )}
+        <div
+          className={styles.moreDetail}
+          onClick={() => {
+            const param = {
+              id: workOrderType === 3 ? proceId : undefined,
+              dataId:
+                workOrderType !== 3
+                  ? workOrderType === 2 || workOrderType === 1
+                    ? gasId
+                    : id
+                  : undefined,
+            };
+            // const repeat = {
+            //   times: fireChildren && fireChildren.length,
+            //   lastreportTime: lastTime,
+            // };
+            const occurData = [
+              {
+                create_time: createTime,
+                create_date: createDate,
+                firstTime,
+                lastTime,
+                area,
+                location,
+                install_address: installAddress,
+                label: componentName || systemTypeValue,
+                work_order: workOrder,
+                systemTypeValue,
+                createByName,
+                createByPhone,
+                faultName,
+                realtime,
+                num: fireChildren && fireChildren.length,
+                component_region: componentRegion,
+                component_no: componentNo,
+              },
+            ];
+
+            showWorkOrderDetail(
+              param,
+              workOrderType,
+              type,
+              workOrderStatus === 0 ? occurData : undefined
+            );
+          }}
+        >
+          处理动态>>
+        </div>
+        {/* <p>
           <span className={styles.left}>当前状态：</span>
           <span style={{ color: '#00ffff' }}>{statusStr}</span>
           <span
@@ -210,23 +268,35 @@ function OrderCard(props) {
           >
             处理动态>>
           </span>
-        </p>
+        </p> */}
       </div>
     </div>
   );
 }
 
 export default class NewWorkOrderDrawer extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      workOrderSelectType: 'all',
+    };
+  }
+
+  handleSelectType = val => {
+    const { handleSelectWorkOrderType } = this.props;
+    handleSelectWorkOrderType(val);
+  };
+
   render() {
     const {
-      // warnDetail: {
-      //   pagination: { listSize: total, pageNum, pageSize },
-      //   list: warnDetailList,
-      // },
-      // faultDetail: {
-      //   pagination: { listSize: totalFault, pageNum: pageNumFault, pageSize: pageSizeFault },
-      //   list: faultDetailList,
-      // },
+      warnDetail: {
+        pagination: { listSize: warnTotal, pageNum: warnPageNum, pageSize: warnPageSize },
+        list: warnDetailList,
+      },
+      faultDetail: {
+        pagination: { listSize: faultTotal, pageNum: faultPageNum, pageSize: faultPageSize },
+        list: faultDetailList,
+      },
       countFinishByUserId,
       data,
       onClose,
@@ -242,10 +312,11 @@ export default class NewWorkOrderDrawer extends PureComponent {
       phoneVisible,
       allDetailLoading,
       allDetail: {
-        pagination: { listSize: total, pageNum, pageSize },
+        pagination: { listSize: allTotal, pageNum: allPageNum, pageSize: allPageSize },
         list: allDetailList,
       },
       getAllDetail,
+      workOrderSelectType,
       ...restProps
     } = this.props;
 
@@ -258,21 +329,25 @@ export default class NewWorkOrderDrawer extends PureComponent {
         value: val,
         list: [],
       },
-      {
-        name: '可燃气体',
-        value: val,
-        list: [],
-      },
-      { name: '一键报修', value: val, list: [] },
+      // {
+      //   name: '可燃气体',
+      //   value: val,
+      //   list: [],
+      // },
+      { name: '报修', value: val, list: [] },
     ].map((item, index) => {
+      // 去掉了可燃气体
+      // 0,1,2,3  ====>  0,1,3
+      const indexs = [0, 1, 3];
+      const num = indexs[index];
       return {
         ...item,
         color: '#fff',
-        value: countFinishByUserId[index],
+        value: countFinishByUserId[num],
         onClick: () => {
           if (document.getElementById(`workOrderScroll`))
             document.getElementById(`workOrderScroll`).scrollTop = 0;
-          handleClickTab(index);
+          handleClickTab(num);
         },
         // warnDetailLoading || faultDetailLoading
         //   ? undefined
@@ -285,16 +360,82 @@ export default class NewWorkOrderDrawer extends PureComponent {
         //     },
       };
     });
+
+    let detailList = [],
+      pageNum = 1,
+      pageSize = 10,
+      total = 0;
+    switch (workOrderSelectType) {
+      case 'all':
+        detailList = allDetailList;
+        pageNum = allPageNum;
+        pageSize = allPageSize;
+        total = allTotal;
+        break;
+      case 'warning':
+        detailList = warnDetailList;
+        pageNum = warnPageNum;
+        pageSize = warnPageSize;
+        total = warnTotal;
+        break;
+      default:
+        detailList = faultDetailList;
+        pageNum = faultPageNum;
+        pageSize = faultPageSize;
+        total = faultTotal;
+        break;
+    }
+    if (workOrderType === 3) {
+      // 一键报修
+      detailList = allDetailList;
+      pageNum = allPageNum;
+      pageSize = allPageSize;
+      total = allTotal;
+    }
     const isLoadMore = pageNum * pageSize < total;
     const left = (
       <div className={styles.container}>
-        <TotalInfo data={topData} active={workOrderType} loading={allDetailLoading} />
+        <div className={styles.topWrapper}>
+          <TotalInfo
+            data={topData}
+            active={workOrderType}
+            loading={!!(allDetailLoading || warnDetailLoading || faultDetailLoading)}
+            style={{ flex: 1 }}
+          />
+          <Select
+            value={workOrderSelectType}
+            onSelect={this.handleSelectType}
+            className={styles.select}
+            dropdownClassName={styles.dropDown}
+            style={{ opacity: workOrderType !== 3 ? 1 : 0 }}
+          >
+            {statusSelector.map(item => {
+              const { value, name } = item;
+              return (
+                <Option
+                  key={value}
+                  value={value}
+                  data={item}
+                  style={{
+                    color: workOrderSelectType === value && '#00ffff',
+                  }}
+                >
+                  {name}
+                </Option>
+              );
+            })}
+          </Select>
+        </div>
+
         <div className={styles.cards}>
-          <Spin spinning={allDetailLoading} wrapperClassName={styles.spin}>
+          <Spin
+            spinning={!!(allDetailLoading || warnDetailLoading || faultDetailLoading)}
+            wrapperClassName={styles.spin}
+          >
             <div className={styles.scrollContainer} id={`workOrderScroll`}>
-              {allDetailList.length > 0 ? (
+              {detailList.length > 0 ? (
                 <div style={{ height: '100%' }}>
-                  {allDetailList.map((item, index) => {
+                  {detailList.map((item, index) => {
                     const { fireType } = item;
                     return (
                       <OrderCard
@@ -312,7 +453,13 @@ export default class NewWorkOrderDrawer extends PureComponent {
                     <div className={styles.loadMoreWrapper}>
                       <LoadMore
                         onClick={() => {
-                          getAllDetail(workOrderStatus, workOrderType, pageNum + 1);
+                          const fetchDetail =
+                            workOrderSelectType === 'all'
+                              ? getAllDetail
+                              : workOrderSelectType === 'warning'
+                                ? getWarnDetail
+                                : getFaultDetail;
+                          fetchDetail(workOrderStatus, workOrderType, pageNum + 1);
                         }}
                       />
                     </div>
@@ -354,7 +501,7 @@ export default class NewWorkOrderDrawer extends PureComponent {
         onClose={() => {
           onClose();
           setTimeout(() => {
-            handleParentChange({ workOrderType: 0 });
+            handleParentChange({ workOrderType: 0, workOrderSelectType: 'all' });
           }, 200);
         }}
         {...restProps}

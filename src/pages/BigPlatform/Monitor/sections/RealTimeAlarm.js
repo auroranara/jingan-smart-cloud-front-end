@@ -16,14 +16,16 @@ export default class RealTimeAlarm extends PureComponent {
     handleViewHistory: PropTypes.func.isRequired,  // 点击查看历史记录
     title: PropTypes.string.isRequired,  // 标题
     showTotal: PropTypes.bool,  // 是否展示标题旁的统计数量
+    showVideo: PropTypes.bool,
   }
 
   static defaultProps = {
     showTotal: true,
+    showVideo: true,
   }
 
   renderAlarmList = () => {
-    const { list, handleClick } = this.props
+    const { list, handleClick, showVideo } = this.props
     return list.map((item, i) => (
       <Col key={item.id} span={24} className={i === 0 ? styles.alarmItem : classNames(styles.alarmItem, styles.mt10)} >
         <div className={styles.innerItem}>
@@ -51,7 +53,7 @@ export default class RealTimeAlarm extends PureComponent {
             </span>
           </div>
         </div>
-        <div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt="" /></div>
+        {showVideo && (<div className={styles.videoPlayButton} onClick={handleClick}><img src={videoIcon} alt="" /></div>)}
       </Col>
     ))
   }

@@ -9,7 +9,7 @@ import {
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import { DotItem, Gauge, GaugeLabels } from '../components/Components';
 import ElectricityCharts from '../components/ElectricityCharts';
-import { getAlerted, getTargetAlerted, getLimit1 as getLimit } from '../utils';
+import { getAlerted, getTargetAlerted, getLimit1 as getLimit, fixLabelIndex } from '../utils';
 import styles from './MonitorDrawer.less';
 import locationIcon from '../imgs/location.png';
 import personIcon from '../imgs/person.png';
@@ -212,7 +212,7 @@ export default class MonitorDrawer extends PureComponent {
                 deviceConfig,
                 // chartTabs: ['temp', 'v1'],
               }}
-              activeTab={labelIndex}
+              activeTab={fixLabelIndex(labelIndex)}
             />
           </div>
         </div>

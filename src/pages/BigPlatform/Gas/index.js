@@ -743,7 +743,7 @@ export default class Gas extends PureComponent {
           handleAlarmClick={this.handleAlarmClick}
         />
         <AlarmDrawer
-          data={{ list: errorUnitsCardsInfo, companyStatus, graphList: AbnormalTrend }}
+          data={{ list: errorUnitsCardsInfo, companyStatus, graphList: AbnormalTrend, statisticsData }}
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleAlarmClick={this.handleAlarmClick}

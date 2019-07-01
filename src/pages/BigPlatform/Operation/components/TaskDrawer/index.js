@@ -64,7 +64,7 @@ const FIELDNAMES = {
   partNumber: 'componentNo', // 故障号
   area: ({ area, reportType }) => typeDict2[reportType] === '消防主机' ? undefined : area, // 区域
   location: ({ installAddress, location, reportType }) => typeDict2[reportType] === '消防主机' ? installAddress : location, // 位置
-  startTime: ({ createTime, realtime, createDate, reportType }) => ({ 消防主机: createTime, 独立烟感: realtime, 报修: createDate })[typeDict2[reportType]], // 报警/报修时间
+  startTime: ({ createTime, realtime, createDate, reportType, firstTime }) => ({ 消防主机: firstTime, 独立烟感: firstTime, 报修: createDate })[typeDict2[reportType]], // 报警/报修时间
   endTime: 'endDate', // 结束时间
   status: ({ fireType }) => statusDict2[fireType], // 状态
   wordOrderNumber: 'workOrder', // 工单编号

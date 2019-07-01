@@ -23,7 +23,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
         title="隐患详情"
         visible={visible}
         onClose={onClose}
-        width={470}
+        width={535}
         destroyOnClose={true}
         left={
           <div className={styles.drawerHiddenDangerDetail}>

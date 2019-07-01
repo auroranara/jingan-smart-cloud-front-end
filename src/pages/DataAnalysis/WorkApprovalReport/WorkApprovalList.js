@@ -258,11 +258,12 @@ export default class WorkApprovalList extends PureComponent {
       dzr,      // 吊装人
       zyjb,     // 作业级别
       zylb,     // 作业类别
+      mbbh,     // 盲板编号
       ...others
     } = values
     let filterValues = {
       ...others,
-      address: sxkjmc || dhdd || zydd,
+      address: mbbh || sxkjmc || dhdd || zydd,
       jobUsers: zyr || dhr || dzr,
       level: zyjb || zylb,
       query_start_time: this.formatDateToMs(query_start_time),
@@ -506,7 +507,7 @@ export default class WorkApprovalList extends PureComponent {
         render: () => <Input placeholder="作业地点" />,
       },
       {
-        id: 'diskCode',
+        id: 'mbbh',
         key: '盲板编号',
         render: () => <Input placeholder="盲板编号" />,
       },
@@ -698,7 +699,7 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         title: '盲板编号',
-        dataIndex: 'code',
+        dataIndex: 'address',
         key: '盲板编号',
         align: 'center',
         width: 150,

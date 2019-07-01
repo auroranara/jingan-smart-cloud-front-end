@@ -321,6 +321,9 @@ export default class FourColor extends PureComponent {
             iconSize: [33, 28],
             iconAnchor: [-10, 20],
           })}
+          onmouseover={this.handlePointMouseOver}
+          onmouseout={this.handlePointMouseLeave}
+          onClick={this.handleClickMarker}
         />
         {showTip && (
           <Marker

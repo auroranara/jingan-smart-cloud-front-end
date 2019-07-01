@@ -7,30 +7,30 @@ import { vaguePhone } from '../utils';
 import styles from './index.less';
 
 const TYPES = [
-  1,
+  1, // 发生监管\联动\反馈\屏蔽
   2,
   3,
   4,
-  7,
-  9,
-  11,
-  13,
-  14,
-  15,
-  16,
-  17,
-  18,
-  32,
-  36,
-  37,
-  38,
-  39,
-  40,
-  41,
-  42,
-  43,
+  7, // 主机报警
+  9, // 主机报障
+  11, // 一键报修
+  13, // 安全巡查
+  14, // 上报隐患
+  15, // 整改隐患
+  16, // 重新整改隐患
+  17, // 复查隐患
+  18, // 维保巡检
+  32, // 电气火灾报警
+  36, // 水系统报警
+  37, // 水系统恢复
+  38, // 独立烟感报警
+  // 39, // 可燃气体报警
+  40, // 独立烟感故障
+  // 41,
+  42, // 电气火灾失联
+  43, // 电气火灾失联恢复
   44, // 电器火灾报警恢复
-  45, // 燃气报警恢复
+  // 45, // 燃气报警恢复
   46, // 独立烟感失联
   47, // 独立烟感失联恢复
   48, // 水系统失联
@@ -178,6 +178,8 @@ export default class Messages extends PureComponent {
         createByPhone,
         faultName,
         realtime: firstTime,
+        component_region: loopNumber,
+        component_no: partNumber,
       },
     ];
     const restParams = [cameraMessage, occurData];

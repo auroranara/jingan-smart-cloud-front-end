@@ -1028,7 +1028,9 @@ export default {
         yield put({
           type: 'warnDetail',
           payload: {
-            list,
+            list: list.map(item => {
+              return { ...item, fireType: '1' };
+            }),
             pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
           },
           append: payload.pageNum !== 1,
@@ -1049,7 +1051,9 @@ export default {
         yield put({
           type: 'faultDetail',
           payload: {
-            list,
+            list: list.map(item => {
+              return { ...item, fireType: '2' };
+            }),
             pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
           },
           append: payload.pageNum !== 1,

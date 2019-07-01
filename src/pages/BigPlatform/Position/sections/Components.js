@@ -9,6 +9,7 @@ import LowPowerDrawer from './LowPowerDrawer';
 import PersonDrawer from './PersonDrawer';
 import RealTime from './RealTime';
 import SectionList from './SectionList';
+import SettingModal from './SettingModal';
 
 export {
   AlarmDrawer,
@@ -22,4 +23,5 @@ export {
   PersonDrawer,
   RealTime,
   SectionList,
+  SettingModal,
 };
