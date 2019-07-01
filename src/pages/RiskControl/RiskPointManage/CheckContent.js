@@ -258,7 +258,7 @@ export default class CheckContent extends PureComponent {
       // form: { setFieldsValue },
     } = this.props;
     const filterList = list.filter(item => item.itemId === id);
-    this.setState({ riskVisible: true, riskAssessId: id, filterList: filterList });
+    this.setState({ activeKey: '1', riskVisible: true, riskAssessId: id, filterList: filterList });
     const [{ l: hasL, e: hasE, c: hanC } = { filterList: {} }] = filterList;
     const hasRiskValue = (hasL * hasE * hanC).toFixed(2);
     if (hasL) {
@@ -278,16 +278,7 @@ export default class CheckContent extends PureComponent {
 
   // 风险评估Tab切换
   handleTabs = key => {
-    // const {
-    //   user: {
-    //     currentUser: { id },
-    //   },
-    //   form: { setFieldsValue },
-    // } = this.props;
     this.setState({ activeKey: key });
-    // const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
-    // setFieldsValue({
-    // });
   };
 
   // 计算风险值
@@ -309,11 +300,11 @@ export default class CheckContent extends PureComponent {
     const c = getFieldValue('c') || 1;
     const riskValue = getFieldValue('riskValue') || 1;
 
-    // const fieldsValue = { l, e, c, riskValue };
-
     setFieldsValue({
       riskValue: ((l * e * c * value) / (getFieldValue(name) || 1)).toFixed(2),
     });
+
+    const payload = { l, e, c, riskValue };
 
     if (riskValue !== null) {
       dispatch({
@@ -323,13 +314,9 @@ export default class CheckContent extends PureComponent {
         },
       });
     }
+
     // 保存选中条件
-    // sessionStorage.setItem(
-    //   `${sessionPrefix}${id}`,
-    //   JSON.stringify({
-    //     ...fieldsValue,
-    //   })
-    // );
+    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
   };
 
   // 风险评估保存
@@ -339,6 +326,9 @@ export default class CheckContent extends PureComponent {
       form: { validateFields },
       companyId,
       tabActiveKey,
+      user: {
+        currentUser: { id },
+      },
     } = this.props;
 
     const { riskAssessId } = this.state;
@@ -376,15 +366,18 @@ export default class CheckContent extends PureComponent {
     };
     validateFields((errors, values) => {
       if (!errors) {
-        const { count, customCount, ...others } = values;
-        const payload = {
-          itemId: riskAssessId,
-          level: customCount ? getCountStatus(customCount) : getCountStatus(count),
-          ...others,
-        };
+        const { count, customCount } = values;
+
+        // 从sessionStorage中获取存储的控件值
+        const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
+
         dispatch({
           type: 'riskPointManage/fetchAssessLevel',
-          payload,
+          payload: {
+            itemId: riskAssessId,
+            level: customCount ? customCount : getCountStatus(count),
+            ...payload,
+          },
           success,
           error,
         });
@@ -698,7 +691,6 @@ export default class CheckContent extends PureComponent {
       lecData: { llist = [], elist = [], clist = [] },
     } = this.props;
     const { riskVisible, activeKey, showImg, qrCode, filterList = [] } = this.state;
-    console.log('filterList', filterList);
 
     const [{ l, e, c, riskLevel } = { filterList: {} }] = filterList;
     const riskValue = (l * e * c).toFixed(2);
@@ -746,7 +738,12 @@ export default class CheckContent extends PureComponent {
           onOk={this.handleRiskSubmit}
           closable={false}
         >
-          <Tabs onChange={this.handleTabs} type="card" className={styles.tabs}>
+          <Tabs
+            activeKey={activeKey}
+            onChange={this.handleTabs}
+            type="card"
+            className={styles.tabs}
+          >
             <TabPane tab="LEC法" key="1">
               {activeKey === '1' && (
                 <Form>
@@ -817,32 +814,36 @@ export default class CheckContent extends PureComponent {
                   </FormItem>
                   <FormItem {...formItemLayout} label="对应风险等级">
                     {getFieldDecorator('count', {
-                      initialValue: l ? getCount(count) : '',
+                      initialValue: getCount(count),
                     })(<Input disabled placeholder="计算中..." style={{ width: 180 }} />)}
                   </FormItem>
                 </Form>
               )}
             </TabPane>
-            {/* <TabPane tab="自定义" key="2">
-              <FormItem {...formItemLayout} label="风险等级">
-                {getFieldDecorator('customCount', {
-                  initialValue: riskLevel ? riskLevel : '',
-                })(
-                  <Select
-                    placeholder="请选择风险等级"
-                    getPopupContainer={getRootChild}
-                    allowClear
-                    style={{ width: 180 }}
-                  >
-                    {riskGrade.map(({ key, value }) => (
-                      <Option value={key} key={key}>
-                        {value}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>
-            </TabPane> */}
+            <TabPane tab="自定义" key="2">
+              {activeKey === '2' && (
+                <Form>
+                  <FormItem {...formItemLayout} label="风险等级">
+                    {getFieldDecorator('customCount', {
+                      initialValue: riskLevel ? riskLevel : '',
+                    })(
+                      <Select
+                        placeholder="请选择风险等级"
+                        getPopupContainer={getRootChild}
+                        allowClear
+                        style={{ width: 180 }}
+                      >
+                        {riskGrade.map(({ key, value }) => (
+                          <Option value={key} key={key}>
+                            {value}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </FormItem>
+                </Form>
+              )}
+            </TabPane>
           </Tabs>
           ,
         </Modal>

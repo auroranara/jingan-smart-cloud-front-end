@@ -98,7 +98,6 @@ export default class App extends PureComponent {
       riskStyle,
     } = this.props;
     const { position, index, pageNum } = this.state;
-
     return (
       urls.length > 0 && (
         <Modal
@@ -125,17 +124,29 @@ export default class App extends PureComponent {
                 onClick={this.handleShowPoint}
               />
               {/* 坐标点 */
-              noClick &&
-                position && (
-                  <div
-                    className={styles.point}
-                    style={{
-                      left: `calc(${position.x * 100}% - 16px)`,
-                      top: `calc(${position.y * 100}% - 35px)`,
-                      backgroundImage: `url(${riskStyle ? Dot : videoIcon})`,
-                    }}
-                  />
-                )}
+              riskStyle
+                ? noClick &&
+                  position && (
+                    <div
+                      className={styles.point}
+                      style={{
+                        left: `calc(${position.x * 100}% - 16px)`,
+                        top: `calc(${position.y * 100}% - 20px)`,
+                        backgroundImage: `url(${Dot})`,
+                      }}
+                    />
+                  )
+                : noClick &&
+                  position && (
+                    <div
+                      className={styles.point}
+                      style={{
+                        left: `calc(${position.x * 100}% - 16px)`,
+                        top: `calc(${position.y * 100}% - 35px)`,
+                        backgroundImage: `url(${videoIcon})`,
+                      }}
+                    />
+                  )}
             </div>
             <Thumbnail
               ratio={ratio}

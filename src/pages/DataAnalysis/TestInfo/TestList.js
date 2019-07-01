@@ -93,6 +93,7 @@ export default class TestList extends PureComponent {
     },
     isInit: false,
     scrollX: 1250, // 列表scroll宽度
+    currentPage: 1,
     columns: [
       {
         title: '警情状态',
@@ -511,13 +512,24 @@ export default class TestList extends PureComponent {
     this.queryueryHistories(pageNum, pageSize);
   };
 
+  handleTableData = (list = [], indexBase) => {
+    return list.map((item, index) => {
+      return {
+        ...item,
+        index: indexBase + index + 1,
+      };
+    });
+  };
+
   render() {
     const {
       loading,
       fireTest: { pagination, list },
     } = this.props;
+
     const { pageNum, pageSize, total } = pagination;
-    const { columns, scrollX } = this.state;
+    const { columns, scrollX, currentPage } = this.state;
+    const indexBase = (currentPage - 1) * pageSize;
     return (
       <PageHeaderLayout
         title={title}
@@ -533,10 +545,10 @@ export default class TestList extends PureComponent {
         {list && list.length ? (
           <Card style={{ marginTop: '24px' }}>
             <Table
-              rowKey="detailId"
+              rowKey="index"
               loading={loading}
               columns={columns}
-              dataSource={list}
+              dataSource={this.handleTableData(list, indexBase)}
               pagination={false}
               scroll={{ x: scrollX }}
             />

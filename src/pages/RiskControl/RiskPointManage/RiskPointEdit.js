@@ -656,6 +656,7 @@ export default class RiskPointEdit extends PureComponent {
       [`buildingName${index}`]: undefined,
       [`floorName${index}`]: undefined,
     });
+    // this.getImgInfo(key);
   };
 
   // 获取楼层
@@ -716,6 +717,7 @@ export default class RiskPointEdit extends PureComponent {
       },
       ...picList.slice(index + 1),
     ];
+
     if (getFieldValue(`type${index}`) === undefined) {
       message.error('请先选择平面图！');
       this.setState({
@@ -768,9 +770,11 @@ export default class RiskPointEdit extends PureComponent {
     } = this.props;
 
     const { picModalVisible, picList } = this.state;
+
     return (
       <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative' }}>
         {picList.map((item, index) => {
+          // const imgTypeList = picType.filter(item => imgTypes.indexOf(item.key) < 0);
           return (
             <Col span={24} key={index} style={{ marginTop: 8 }}>
               <Row gutter={12}>
@@ -785,13 +789,11 @@ export default class RiskPointEdit extends PureComponent {
                       onSelect={() => this.handleImgIndex(index)}
                       disabled={item.isDisabled}
                     >
-                      {picType
-                        .filter(item => imgTypes.indexOf(item.key) < 0)
-                        .map(({ key, value }) => (
-                          <Option value={key} key={key}>
-                            {value}
-                          </Option>
-                        ))}
+                      {picType.map(({ key, value }) => (
+                        <Option value={key} key={key}>
+                          {value}
+                        </Option>
+                      ))}
                     </Select>
                   )}
                 </Col>
