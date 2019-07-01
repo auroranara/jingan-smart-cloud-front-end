@@ -58,7 +58,7 @@ export async function getFaultByBrand(params) {
   return request(`${URL_PREFIX}/shs/countFaultByBrand?${stringify(params)}`);
 }
 
-// 传感器品牌故障统计
+// 根据deviceid获取绑定视频列表
 export async function getVideoByDevice(params) {
   return request(`${URL_PREFIX}/video/bind/getVideoByDevice?${stringify(params)}`);
 }

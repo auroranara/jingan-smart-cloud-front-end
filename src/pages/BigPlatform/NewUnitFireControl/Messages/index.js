@@ -178,6 +178,8 @@ export default class Messages extends PureComponent {
         createByPhone,
         faultName,
         realtime: firstTime,
+        component_region: loopNumber,
+        component_no: partNumber,
       },
     ];
     const restParams = [cameraMessage, occurData];

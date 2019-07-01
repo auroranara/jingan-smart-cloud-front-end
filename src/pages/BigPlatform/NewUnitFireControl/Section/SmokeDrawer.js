@@ -24,7 +24,7 @@ export default class SmokeDrawer extends PureComponent {
     searchValue: '',
   };
 
-  componentDidMount() { }
+  componentDidMount() {}
 
   handleSearch = v => {
     this.setState({ searchValue: v });
@@ -100,15 +100,32 @@ export default class SmokeDrawer extends PureComponent {
                               faultName,
                             },
                           ];
-                          handleClickMsgFlow(
-                            param,
-                            1,
-                            +status > 0 ? 0 : 1,
-                            // {},
-                            [],
-                            occurData,
-                            false
-                          );
+                          const { getDeviceCamera } = this.props;
+                          +hasCamera === 1
+                            ? getDeviceCamera(device_id, 3, res => {
+                                const {
+                                  data: { list = [] },
+                                } = res;
+                                handleClickMsgFlow(
+                                  param,
+                                  1,
+                                  +status > 0 ? 0 : 1,
+                                  // {},
+                                  [...list],
+                                  occurData,
+                                  false
+                                );
+                              })
+                            : handleClickMsgFlow(
+                                param,
+                                1,
+                                +status > 0 ? 0 : 1,
+                                // {},
+                                [],
+                                occurData,
+                                false
+                              );
+                          if (+hasCamera === 1) this.handleClickCamera(device_id);
                         }}
                       >
                         处理动态>>
@@ -179,14 +196,14 @@ export default class SmokeDrawer extends PureComponent {
           {newList && newList.length > 0 ? (
             <div className={styles.listContainer}>{this.renderItems(newList)}</div>
           ) : (
-              <div
-                className={styles.emptyContainer}
-                style={{
-                  background: `url(${noMonitorImg}) no-repeat center center`,
-                  backgroundSize: '35% 80%',
-                }}
-              />
-            )}
+            <div
+              className={styles.emptyContainer}
+              style={{
+                background: `url(${noMonitorImg}) no-repeat center center`,
+                backgroundSize: '35% 80%',
+              }}
+            />
+          )}
         </div>
         <NewVideoPlay
           showList={true}

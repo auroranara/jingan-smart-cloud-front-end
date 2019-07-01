@@ -12,7 +12,7 @@ import DynamicDrawerTop from '@/pages/BigPlatform/Operation/components/DynamicDr
 
 const ID = 'fire-monitor-flow-drawer';
 const TITLES = ['报警', '故障'];
-const LABELS = [['发生', '确认', '完成'], ['故障发生', '开始处理', '处理完毕']];
+const LABELS = [['发生', '确认', '完成'], ['发生', '开始处理', '处理完毕']];
 export default class FireMonitorFlowDrawer extends PureComponent {
   state = { index: 0 };
 

@@ -36,7 +36,8 @@ function OrderCard(props) {
     showWorkOrderDetail,
     // ...restProps
   } = props;
-  const timeStr = workOrderType === 3 && type === 1 ? '报修' : TYPES[type];
+  // const timeStr = workOrderType === 3 && type === 1 ? '报修' : TYPES[type];
+  const timeStr = workOrderType === 3 && type === 1 ? '报修' : '报警';
 
   const {
     componentName, // 消防主机名称
@@ -121,10 +122,10 @@ function OrderCard(props) {
     else if (workOrderStatus === 1) statusStr = '正在维修中';
     else if (workOrderStatus === 2) {
       statusStr = `已维修完毕`;
-      listItems[workOrderType].push({
-        name: '维修人员',
-        value: `${executorName} ${vaguePhone(phone, phoneVisible)}`,
-      });
+      // listItems[workOrderType].push({
+      //   name: '维修人员',
+      //   value: `${executorName} ${vaguePhone(phone, phoneVisible)}`,
+      // });
     }
   }
 
