@@ -173,11 +173,11 @@ export default class DynamicDrawerTop extends Component {
             }}
           >
             <div>
-              首次发生事件：
+              首次发生时间：
               {scTime}
             </div>
             <div>
-              最近发生事件：
+              最近发生时间：
               {zjTime}
             </div>
           </div>
