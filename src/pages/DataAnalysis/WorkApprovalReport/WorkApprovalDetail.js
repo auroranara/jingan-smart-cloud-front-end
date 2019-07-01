@@ -403,7 +403,7 @@ export default class WorkApprovalDetail extends PureComponent {
       },
       '盲板编号': {
         term: '盲板编号',
-        value: code,
+        value: address,
       },
       '生产单位作业负责人审批': {
         term: '生产单位作业负责人审批',
