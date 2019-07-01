@@ -343,7 +343,7 @@ export default class NewWorkOrderDrawer extends PureComponent {
       return {
         ...item,
         color: '#fff',
-        value: countFinishByUserId[num],
+        value: countFinishByUserId[num][workOrderSelectType] || 0,
         onClick: () => {
           if (document.getElementById(`workOrderScroll`))
             document.getElementById(`workOrderScroll`).scrollTop = 0;
