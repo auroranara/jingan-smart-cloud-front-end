@@ -94,18 +94,17 @@ export default class PersonInfo extends PureComponent {
 
     const { cardId, sos, tlong, overstep, cardType, phoneNumber, visitorPhone, cardCode, areaId, departmentName, onlineStatus } = personItem;
     // const isAlarmExceptSOS = tlong || overstep;
+    const isSOS = sos;
     const isAlarm = sos || tlong || overstep;
     const isVisitor = !!+cardType;
     const isOff = !+onlineStatus;
     const name = getUserName(personItem);
     const phone = isVisitor ? visitorPhone : phoneNumber;
     const areaName = areaInfo[areaId] ? areaInfo[areaId].fullName : NO_DATA;
-    // const sortAlarms = [...alarms];
-    // sortAlarms.sort((a1, a2) => a2.warningTime - a1.warningTime);
-    // const SOSItem = sortAlarms.find(({ cardId: id, type }) => id === cardId && +type === 1);
-    // const alarmExceptSOSItem = sortAlarms.find(({ cardId: id, type }) => id === cardId && +type !== 1);
-    const alarmIds = alarms.filter(({ cardId: id }) => id === cardId).map(({ id }) => id).join(',');
-    const disabled = !alarmIds;
+
+    const SOSItem = alarms.find(({ cardId: id, type }) => id === cardId && +type === 1);
+    // const alarmIds = alarms.filter(({ cardId: id }) => id === cardId).map(({ id }) => id).join(',');
+    // const disabled = !alarmIds;
     const elem = getStatusElem(isAlarm, isOff);
 
     const newStyle = {
@@ -128,7 +127,7 @@ export default class PersonInfo extends PureComponent {
           <p>区域：{areaName}</p>
         </div>
         <div className={styles.btns}>
-          {isAlarm && (
+          {/* {isAlarm && (
             <Button
               ghost
               disabled={disabled}
@@ -136,6 +135,15 @@ export default class PersonInfo extends PureComponent {
               onClick={e => handleShowAlarmHandle(alarmIds)}
             >
               {disabled ? '已' : ''}处理
+            </Button>
+          )} */}
+          {isSOS && (
+            <Button
+              ghost
+              className={styles.btn}
+              onClick={e => handleShowAlarmHandle(SOSItem.id)}
+            >
+              取消报警
             </Button>
           )}
           <Button ghost className={styles.btn} onClick={this.handleTrackClick}>目标追踪</Button>
