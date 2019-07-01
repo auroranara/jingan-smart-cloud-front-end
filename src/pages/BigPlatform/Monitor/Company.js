@@ -538,6 +538,7 @@ export default class App extends PureComponent {
                     list={realTimeAlarm}
                     handleClick={this.handleAlarmCardClick}
                     handleViewHistory={this.handleViewHistory}
+                    showVideo={cameraTree && cameraTree.length > 0}
                   />
                 </div>
                 <div className={styles.videoMonitorContainer}>
