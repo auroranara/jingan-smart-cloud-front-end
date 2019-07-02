@@ -114,6 +114,8 @@ export default class RiskPointEdit extends PureComponent {
     isEdit: true,
     pointFixInfoList: [],
     selectedRowKeys: [],
+    xNumCurrent: '',
+    yNumCurrent: '',
   };
 
   // 返回到列表页面
@@ -548,20 +550,17 @@ export default class RiskPointEdit extends PureComponent {
     const imgType = picList.map(i => i.imgType);
     const imgIndex = imgType[index];
 
+    const xNumCurrent = picList.filter(item => item.imgType).map(item => item.xnum)[index] || '';
+    const yNumCurrent = picList.filter(item => item.imgType).map(item => item.ynum)[index] || '';
+
     if (!id && list.length === 0) {
       message.error('该单位暂无图片！');
     }
 
-    if (id && imgIndex && typeIndex) {
-      dispatch({
-        type: 'riskPointManage/fetchFixImgInfo',
-        payload: {
-          companyId,
-          type: typeIndex,
-        },
-      });
+    if (id && list.length === 0 && !typeIndex && !imgIndex) {
+      return message.error('该单位暂无图片！');
     } else {
-      if (id || typeIndex || imgIndex === 1 || imgIndex === 3 || imgIndex === 4) {
+      if ((id && typeIndex !== 2) || imgIndex === 1 || imgIndex === 3 || imgIndex === 4) {
         dispatch({
           type: 'riskPointManage/fetchFixImgInfo',
           payload: {
@@ -579,10 +578,6 @@ export default class RiskPointEdit extends PureComponent {
               pageNum: 1,
             },
           });
-        } else {
-          if (id && list.length === 0) {
-            message.error('该单位暂无图片！');
-          }
         }
       }
     }
@@ -590,6 +585,8 @@ export default class RiskPointEdit extends PureComponent {
     this.coordIndex = index;
     this.setState({
       picModalVisible: true,
+      xNumCurrent: xNumCurrent,
+      yNumCurrent: yNumCurrent,
     });
   };
 
@@ -769,7 +766,7 @@ export default class RiskPointEdit extends PureComponent {
       },
     } = this.props;
 
-    const { picModalVisible, picList } = this.state;
+    const { picModalVisible, picList, xNumCurrent, yNumCurrent } = this.state;
 
     return (
       <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative' }}>
@@ -900,6 +897,8 @@ export default class RiskPointEdit extends PureComponent {
             });
           }}
           riskStyle
+          xNum={xNumCurrent}
+          yNum={yNumCurrent}
         />
       </Row>
     );

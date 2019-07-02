@@ -19,11 +19,15 @@ export default class App extends PureComponent {
   }
 
   componentDidUpdate({ visible: prevVisible }) {
-    const { visible } = this.props;
+    const { visible, xNum, yNum } = this.props;
+
     if (!prevVisible && visible) {
       if (this.tempState === null) {
         this.setState({
-          position: null,
+          position: {
+            x: xNum ? parseFloat(xNum) : null,
+            y: yNum ? parseFloat(yNum) : null,
+          },
           index: 0,
           pageNum: 1,
         });
@@ -70,10 +74,13 @@ export default class App extends PureComponent {
    * 确认
    */
   handleOk = () => {
-    const { onOk, urls } = this.props;
+    const { onOk, urls, riskStyle } = this.props;
     const { position, index } = this.state;
-    // 保存上次选中的点和索引
-    this.tempState = JSON.parse(JSON.stringify(this.state));
+    // 保存上次选中的点和索引(除风险点模块)
+    if (!riskStyle) {
+      this.tempState = JSON.parse(JSON.stringify(this.state));
+    }
+
     if (onOk) {
       onOk(position, urls[index]);
     }
