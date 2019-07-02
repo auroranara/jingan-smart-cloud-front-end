@@ -91,3 +91,14 @@ export function getUnitList(list, deviceType) {
 export function hidePhone(phone) {
   return `${phone.slice(0, 3)}****${phone.slice(-4)}`;
 }
+
+export function sortUnits(units, deviceType) {
+  if (!Array.isArray(units))
+    return [];
+  const [normal, fire, fault, loss] = units.reduce((prev, next) => {
+    const status = getMapItemStatus(next, deviceType);
+    prev[status].push(next);
+    return prev;
+  }, [[], [], [], []]);
+  return [normal, loss, fault, fire].reduce((prev, next) => prev.concat(next), []);
+}
