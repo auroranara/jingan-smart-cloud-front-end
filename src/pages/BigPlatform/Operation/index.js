@@ -3,7 +3,7 @@ import { notification, Icon } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import { stringify } from 'qs';
-import moment from 'moment';
+// import moment from 'moment';
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
@@ -24,6 +24,9 @@ import iconFault from '@/assets/icon-fault-msg.png';
 import FireFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/FireFlowDrawer';
 import SmokeFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/SmokeFlowDrawer';
 import OnekeyFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/OnekeyFlowDrawer';
+
+const OPE = 3; // 运营或管理员unitType对应值
+const COMPANY_ALL = 'companyIdAll';
 
 // websocket配置
 const options = {
@@ -179,7 +182,7 @@ export default class Operation extends PureComponent {
     const {
       dispatch,
       user: {
-        currentUser: { userId },
+        currentUser: { userId, unitType },
       },
     } = this.props;
 
@@ -188,8 +191,9 @@ export default class Operation extends PureComponent {
     // 获取实时消息
     this.fetchScreenMessage();
 
+    const isAdmin = +unitType === OPE;
     const params = {
-      companyId: userId,
+      companyId: isAdmin ? COMPANY_ALL : userId,
       env,
       type: 7,
     };
