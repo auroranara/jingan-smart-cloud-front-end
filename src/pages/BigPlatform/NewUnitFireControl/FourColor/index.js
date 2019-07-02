@@ -367,7 +367,6 @@ export default class FourColor extends PureComponent {
       tips = {},
     } = this.props;
     const { videoVisible, videoKeyId, data, selectedFourColorImg: { webUrl } = {} } = this.state;
-console.log('data',data);
 
     return (
       <div className={styles.container}>

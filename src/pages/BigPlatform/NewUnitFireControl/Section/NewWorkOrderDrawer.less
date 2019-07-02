@@ -115,6 +115,7 @@
       // background-color: rgb(4, 59, 126);
       border: 1px solid @cyan;
       position: relative;
+      min-height: 129px;
 
       p {
         margin-bottom: 8px;
@@ -124,16 +125,28 @@
         margin-bottom: 0;
       }
 
-      .number {
+      .repeat {
         position: absolute;
-        top: 0;
-        min-width: 50px;
+        top: 10px;
         right: 15px;
-        height: 55px;
-        line-height: 42px;
         text-align: center;
-        font-size: 25px;
-        padding: 0 8px;
+        z-index: 66;
+        color: #8198B4;
+        font-size: 13px;
+        cursor: pointer;
+
+        &:hover {
+          color: #BED1E8;
+        }
+
+        .number {
+          min-width: 50px;
+          height: 55px;
+          line-height: 42px;
+          font-size: 25px;
+          padding: 0 8px;
+          cursor: pointer;
+        }
       }
 
       .name {
@@ -145,7 +158,7 @@
 
         .cardName {
           display: inline-block;
-          width: 55%;
+          width: 56%;
           overflow: hidden;
           white-space: nowrap;
           text-emphasis: ellipsis;
@@ -160,9 +173,9 @@
           border: 1px solid @grey;
           margin-left: 10px;
           font-weight: normal;
-          position: absolute;
+          position: relative;
           right: 15px;
-          top: 0;
+          top: -5px;
         }
 
         .warning {
@@ -278,6 +291,19 @@
         color: #00ffff;
         background-color: #04407d;
       }
+    }
+  }
+}
+
+.repeatTimes {
+  color: #fff;
+  text-align: center;
+
+  .times {
+    line-height: 24px;
+
+    .label {
+      color: #9F9F9F;
     }
   }
 }

@@ -9,6 +9,7 @@ import styles from './NewWorkOrderDrawer.less';
 import DrawerContainer from '../components/DrawerContainer';
 import numberBg from '../imgs/number-bg.png';
 import noData from '../imgs/noData.png';
+import bakFlag from '@/assets/bac-flag.png';
 
 const { Option } = Select;
 const NO_DATA = '暂无信息';
@@ -34,6 +35,10 @@ function OrderCard(props) {
     // onClick,
     phoneVisible,
     showWorkOrderDetail,
+    hover,
+    index,
+    handleMouseEnter,
+    handleMouseLeave,
     // ...restProps
   } = props;
   // const timeStr = workOrderType === 3 && type === 1 ? '报修' : TYPES[type];
@@ -129,6 +134,18 @@ function OrderCard(props) {
       // });
     }
   }
+  const repeat = (
+    <div className={styles.repeatTimes}>
+      <div className={styles.times}>
+        <span className={styles.label}>首次发生：</span>
+        {moment(firstTime).format('YYYY-MM-DD HH:mm:ss')}
+      </div>
+      <div className={styles.times}>
+        <span className={styles.label}>最近发生：</span>
+        {moment(lastTime).format('YYYY-MM-DD HH:mm:ss')}
+      </div>
+    </div>
+  );
 
   return (
     <div className={styles.outer}>
@@ -137,25 +154,42 @@ function OrderCard(props) {
         {/* {workOrderType !== 3 &&
           fireChildren &&
           fireChildren.length > 1 && (
-            <div
-              className={styles.number}
-              style={{
-                background: `url(${numberBg})`,
-                backgroundSize: '100% 100%',
-              }}
-            >
-              {fireChildren.length}
+            <div className={styles.repeat}>
+              <div
+                className={styles.number}
+                style={{
+                  background: `url(${
+                    hover ? numberBg : bakFlag
+                  }) center center / 100% 100% no-repeat`,
+                  // backgroundSize: '100% 100%',
+                }}
+                // onMouseEnter={() => handleMouseEnter(index)}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                {fireChildren.length}
+              </div>
+              重复上报次数
             </div>
           )} */}
+        {workOrderType !== 3 &&
+          fireChildren &&
+          fireChildren.length > 1 && (
+            <Tooltip placement={'bottomRight'} title={repeat}>
+              <div className={styles.repeat}>
+                重复上报 <span style={{ fontSize: '20px' }}>{fireChildren.length}</span> 次
+              </div>
+            </Tooltip>
+          )}
         <p className={styles.name}>
-          <Tooltip placement={'bottomLeft'} title={titles[workOrderType]}>
-            <span className={styles.cardName}>{titles[workOrderType] || ''}</span>
-          </Tooltip>
           {workOrderType !== 3 && (
             <span className={type === 0 ? styles.warning : styles.fault}>
               {type === 0 ? LABELS[workOrderType][type] : LABELS[workOrderType][type]}
             </span>
           )}
+          <Tooltip placement={'bottomLeft'} title={titles[workOrderType]}>
+            <span className={styles.cardName}>{titles[workOrderType] || ''}</span>
+          </Tooltip>
         </p>
         {listItems[workOrderType].map((item, index) => {
           const { name, value } = item;
@@ -215,7 +249,7 @@ function OrderCard(props) {
               workOrderType,
               type,
               workOrderStatus === 0 ? occurData : undefined,
-              cameraMessage,
+              cameraMessage
             );
           }}
         >
@@ -280,13 +314,21 @@ export default class NewWorkOrderDrawer extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      workOrderSelectType: 'all',
+      hover: undefined,
     };
   }
 
   handleSelectType = val => {
     const { handleSelectWorkOrderType } = this.props;
     handleSelectWorkOrderType(val);
+  };
+
+  handleMouseEnter = index => {
+    this.setState({ hover: index });
+  };
+
+  handleMouseLeave = () => {
+    this.setState({ hover: undefined });
   };
 
   render() {
@@ -321,6 +363,8 @@ export default class NewWorkOrderDrawer extends PureComponent {
       workOrderSelectType,
       ...restProps
     } = this.props;
+
+    const { hover } = this.state;
 
     const val = 0;
 
@@ -444,10 +488,14 @@ export default class NewWorkOrderDrawer extends PureComponent {
                         key={index}
                         type={+fireType - 1}
                         data={item}
+                        hover={hover === index}
                         workOrderType={workOrderType}
                         workOrderStatus={workOrderStatus}
                         showWorkOrderDetail={showWorkOrderDetail}
                         phoneVisible={phoneVisible}
+                        index={index}
+                        handleMouseEnter={() => this.handleMouseEnter(index)}
+                        handleMouseLeave={this.handleMouseLeave}
                       />
                     );
                   })}
