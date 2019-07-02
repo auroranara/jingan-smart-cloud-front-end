@@ -653,7 +653,10 @@ export default class RiskPointEdit extends PureComponent {
       [`buildingName${index}`]: undefined,
       [`floorName${index}`]: undefined,
     });
-    // this.getImgInfo(key);
+    // this.setState({
+    //   xNumCurrent: undefined,
+    //   yNumCurrent: undefined,
+    // });
   };
 
   // 获取楼层

@@ -825,6 +825,7 @@ export default class CheckContent extends PureComponent {
                 <Form>
                   <FormItem {...formItemLayout} label="风险等级">
                     {getFieldDecorator('customCount', {
+                      rules: [{ required: true, message: '请选择风险等级' }],
                       initialValue: riskLevel ? riskLevel : '',
                     })(
                       <Select
