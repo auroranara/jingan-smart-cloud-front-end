@@ -83,7 +83,7 @@ export default class FourColor extends PureComponent {
     } = this.props;
     // 更新选中的四色图和对应视频列表
     const points = firePoint
-      .filter(({ fix_fire_id }) => fix_fire_id && fix_fire_id === id)
+      .filter(({ fix_fire_id, x_fire, y_fire }) => fix_fire_id && fix_fire_id === id && x_fire && y_fire)
       .map(item => ({
         ...item,
         type: 'marker',
@@ -92,7 +92,7 @@ export default class FourColor extends PureComponent {
         render: this.renderPoint,
       }));
     const videos = videoFireList
-      .filter(({ fix_fire_id }) => fix_fire_id && fix_fire_id === id)
+      .filter(({ fix_fire_id, x_fire, y_fire }) => fix_fire_id && fix_fire_id === id && x_fire && y_fire)
       .map(item => ({
         ...item,
         type: 'marker',
@@ -367,6 +367,7 @@ export default class FourColor extends PureComponent {
       tips = {},
     } = this.props;
     const { videoVisible, videoKeyId, data, selectedFourColorImg: { webUrl } = {} } = this.state;
+console.log('data',data);
 
     return (
       <div className={styles.container}>

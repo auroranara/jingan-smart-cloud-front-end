@@ -37,7 +37,7 @@ function OrderCard(props) {
     // ...restProps
   } = props;
   // const timeStr = workOrderType === 3 && type === 1 ? '报修' : TYPES[type];
-  const timeStr = workOrderType === 3 && type === 1 ? '报修' : '报警';
+  const timeStr = workOrderType === 3 && type === 1 ? '报修' : '发生';
 
   const {
     componentName, // 消防主机名称
@@ -168,7 +168,7 @@ function OrderCard(props) {
         })}
         {proceStatus === '1' && (
           <p>
-            <span className={styles.left}>结束时间：</span>
+            <span className={styles.left}>完成时间：</span>
             {formatTime(endDate)}
           </p>
         )}
