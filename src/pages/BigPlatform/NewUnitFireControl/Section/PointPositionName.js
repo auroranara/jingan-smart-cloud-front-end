@@ -33,7 +33,7 @@ const FIELDNAMES = {
   description: 'desc', // 隐患描述
   images: 'backgrounds', // 图片地址
   name: 'item_name', // 点位名称
-  source: 'report_source_name', // 来源
+  source: 'report_source', // 来源
   reportPerson: 'report_user_name', // 上报人
   reportTime: 'report_time', // 上报时间
   planRectificationPerson: 'rectify_user_name', // 计划整改人
