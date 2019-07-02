@@ -788,6 +788,8 @@ export default class NewUnitFireControl extends PureComponent {
       paramName,
       deviceId,
       deviceType,
+      loopNumber,
+      partNumber,
     } = item;
     const msgItem = switchMsgType(+type);
     // const repeat = {
@@ -810,6 +812,8 @@ export default class NewUnitFireControl extends PureComponent {
         createByPhone,
         faultName,
         realtime: addTime,
+        component_region: loopNumber,
+        component_no: partNumber,
       },
     ];
     const msgFlag =
@@ -1853,7 +1857,7 @@ export default class NewUnitFireControl extends PureComponent {
   };
 
   // 处理工单处理动态
-  showWorkOrderDetail = (param, type, flow, occurData) => {
+  showWorkOrderDetail = (param, type, flow, occurData, cameraMessage = []) => {
     // type 0/1/2/3 主机/烟感/燃气/一键报修
     // flow 0/1 报警/故障
     const {
@@ -1880,7 +1884,12 @@ export default class NewUnitFireControl extends PureComponent {
         payload: { companyId, reportType: reportTypes[type], ...param },
       });
     }
-    this.setState({ [drawerVisibles[type]]: true, msgFlow: flow, dynamicType: type });
+    this.setState({
+      [drawerVisibles[type]]: true,
+      msgFlow: flow,
+      dynamicType: type,
+      videoList: cameraMessage,
+    });
   };
 
   handleShowAlarmFlows = flow => {

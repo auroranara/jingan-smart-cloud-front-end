@@ -67,6 +67,7 @@ function OrderCard(props) {
     proceId,
     proceStatus,
     endDate,
+    cameraMessage,
   } = data;
   const titles = [componentName, area + location, area + location, systemTypeValue];
   const listItems = [
@@ -213,7 +214,8 @@ function OrderCard(props) {
               param,
               workOrderType,
               type,
-              workOrderStatus === 0 ? occurData : undefined
+              workOrderStatus === 0 ? occurData : undefined,
+              cameraMessage,
             );
           }}
         >
@@ -343,7 +345,7 @@ export default class NewWorkOrderDrawer extends PureComponent {
       return {
         ...item,
         color: '#fff',
-        value: countFinishByUserId[num],
+        value: countFinishByUserId[num][workOrderSelectType] || 0,
         onClick: () => {
           if (document.getElementById(`workOrderScroll`))
             document.getElementById(`workOrderScroll`).scrollTop = 0;
