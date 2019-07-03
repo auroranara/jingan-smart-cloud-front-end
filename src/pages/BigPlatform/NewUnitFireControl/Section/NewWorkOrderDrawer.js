@@ -73,6 +73,7 @@ function OrderCard(props) {
     proceStatus,
     endDate,
     cameraMessage,
+    ndeviceName,
   } = data;
   const titles = [componentName, area + location, area + location, systemTypeValue];
   const listItems = [
@@ -99,7 +100,8 @@ function OrderCard(props) {
       { name: `${timeStr}时间`, value: formatTime(firstTime) },
     ],
     [
-      { name: '工单编号', value: workOrder },
+      // { name: '工单编号', value: workOrder },
+      { name: '设备名称', value: ndeviceName },
       { name: '报修人员', value: `${createByName} ${vaguePhone(createByPhone, phoneVisible)}` },
       { name: `${timeStr}时间`, value: formatTime(createDate) },
     ],
