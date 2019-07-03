@@ -15,10 +15,10 @@ const { Option } = Select;
 const NO_DATA = '暂无信息';
 const TYPES = ['报警', '故障'];
 const STATUS_MAP = ['待处理', '处理中', '已处理'];
-const LABELS = [['火警', '故障'], ['火警', '故障'], ['火警', '故障'], []];
+const LABELS = [['报警', '故障'], ['报警', '故障'], ['报警', '故障'], []];
 const statusSelector = [
   { value: 'all', name: '全部状态' },
-  { value: 'warning', name: '火警' },
+  { value: 'warning', name: '报警' },
   { value: 'fault', name: '故障' },
 ];
 
@@ -84,7 +84,7 @@ function OrderCard(props) {
             ? `${componentRegion}回路${componentNo}号`
             : componentNo,
       },
-      { name: '安装位置', value: installAddress },
+      { name: '详细位置', value: installAddress },
       { name: `${timeStr}时间`, value: formatTime(firstTime) },
     ],
     [
@@ -108,16 +108,16 @@ function OrderCard(props) {
   if (workOrderType === 0) {
     if (workOrderStatus === 0) statusStr = type === 1 ? '故障发生' : '待确认';
     else if (workOrderStatus === 1)
-      statusStr = type === 1 ? '正在处理中' : `已确认为 ${+proceType === 1 ? '误报' : '真实'}火警`;
+      statusStr = type === 1 ? '正在处理中' : `已确认为 ${+proceType === 1 ? '误报' : '真实'}报警`;
     else if (workOrderStatus === 2) {
       statusStr = type === 1 ? '故障已处理完毕' : `火警处理完毕`;
     }
   } else if (workOrderType === 1) {
     if (workOrderStatus === 0) statusStr = type === 1 ? '待处理' : '待确认';
     else if (workOrderStatus === 1)
-      statusStr = type === 1 ? '正在处理中' : `已确认为 ${+proceType === 1 ? '误报' : '真实'}火警`;
+      statusStr = type === 1 ? '正在处理中' : `已确认为 ${+proceType === 1 ? '误报' : '真实'}报警`;
     else if (workOrderStatus === 2) {
-      statusStr = `${type === 0 ? '火警' : '故障'}已处理完毕`;
+      statusStr = `${type === 0 ? '报警' : '故障'}已处理完毕`;
     }
   } else if (workOrderType === 2) {
     if (workOrderStatus === 0) statusStr = '待确认';
