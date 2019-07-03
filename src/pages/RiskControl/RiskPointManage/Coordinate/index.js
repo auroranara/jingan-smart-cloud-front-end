@@ -22,10 +22,6 @@ export default class App extends PureComponent {
 
     const imgId = urls.map(item => item.id);
     const imgIndex = imgId.indexOf(imgIdCurrent);
-    // console.log('urls', urls);
-    // console.log('imgId', imgId);
-    // console.log('imgIdCurrent', imgIdCurrent);
-    // console.log('imgIndex', imgIndex);
 
     if (!prevVisible && visible) {
       if (this.tempState === null) {
@@ -41,7 +37,7 @@ export default class App extends PureComponent {
               x: xNum ? parseFloat(xNum) : null,
               y: yNum ? parseFloat(yNum) : null,
             },
-            index: 0,
+            index: imgIndex !== -1 ? imgIndex : 0,
             pageNum: 1,
           });
         }
@@ -125,7 +121,10 @@ export default class App extends PureComponent {
           maskClosable={false}
           visible={visible}
           onOk={this.handleOk}
-          onCancel={onCancel}
+          onCancel={() => {
+            this.setState({ index: 0 });
+            onCancel();
+          }}
         >
           <div className={styles.container}>
             <div

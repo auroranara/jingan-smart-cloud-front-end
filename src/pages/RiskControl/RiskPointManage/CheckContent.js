@@ -257,10 +257,13 @@ export default class CheckContent extends PureComponent {
       riskPointList: list = [],
       // form: { setFieldsValue },
     } = this.props;
+
     const filterList = list.filter(item => item.itemId === id);
+
     this.setState({ activeKey: '1', riskVisible: true, riskAssessId: id, filterList: filterList });
-    const [{ l: hasL, e: hasE, c: hanC } = { filterList: {} }] = filterList;
+    const [{ l: hasL, e: hasE, c: hanC } = {}] = filterList;
     const hasRiskValue = (hasL * hasE * hanC).toFixed(2);
+
     if (hasL) {
       dispatch({
         type: 'riskPointManage/fetchCountLevel',
@@ -304,7 +307,7 @@ export default class CheckContent extends PureComponent {
       riskValue: ((l * e * c * value) / (getFieldValue(name) || 1)).toFixed(2),
     });
 
-    const payload = { l, e, c, riskValue };
+    const payload = { l, e, c, riskValue, [name]: value };
 
     if (riskValue !== null) {
       dispatch({
@@ -692,7 +695,8 @@ export default class CheckContent extends PureComponent {
     } = this.props;
     const { riskVisible, activeKey, showImg, qrCode, filterList = [] } = this.state;
 
-    const [{ l, e, c, riskLevel } = { filterList: {} }] = filterList;
+    const [{ l, e, c, riskLevel } = {}] = filterList;
+
     const riskValue = (l * e * c).toFixed(2);
 
     const formItemLayout = {

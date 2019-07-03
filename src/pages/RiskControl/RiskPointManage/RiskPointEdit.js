@@ -183,7 +183,6 @@ export default class RiskPointEdit extends PureComponent {
         callback: response => {
           const { itemFlowList, pointFixInfoList } = response;
           const flows = itemFlowList;
-          // const imgType = pointFixInfoList.map(i => i.imgType);
 
           this.setState({ flowList: flows });
           flow_id = flows.map(d => {
@@ -557,6 +556,15 @@ export default class RiskPointEdit extends PureComponent {
     const yNumCurrent = picList.map(item => item.ynum)[index] || '';
     const imgIdCurrent = picList.map(item => item.fixImgId)[index] || '';
 
+    const callback = () => {
+      this.setState({
+        picModalVisible: true,
+        xNumCurrent: xNumCurrent,
+        yNumCurrent: yNumCurrent,
+        imgIdCurrent: imgIdCurrent,
+      });
+    };
+
     if (!id && list.length === 0) {
       message.error('该单位暂无图片！');
     }
@@ -564,7 +572,7 @@ export default class RiskPointEdit extends PureComponent {
     if (id && list.length === 0 && !typeIndex && !imgIndex) {
       return message.error('请先选择平面图类型!');
     } else {
-      if (!typeIndex) {
+      if (!typeIndex && typeIndex !== 2) {
         if (id || imgIndex === 1 || imgIndex === 3 || imgIndex === 4) {
           dispatch({
             type: 'riskPointManage/fetchFixImgInfo',
@@ -572,6 +580,7 @@ export default class RiskPointEdit extends PureComponent {
               companyId,
               type: imgIndex,
             },
+            callback,
           });
         } else {
           if (id || imgIndex === 2) {
@@ -582,29 +591,18 @@ export default class RiskPointEdit extends PureComponent {
                 pageSize: 0,
                 pageNum: 1,
               },
+              success: callback,
             });
           }
         }
       } else {
-        if (id || typeIndex !== 2) {
-          dispatch({
-            type: 'riskPointManage/fetchFixImgInfo',
-            payload: {
-              companyId,
-              type: typeIndex,
-            },
-          });
+        if (typeIndex) {
+          callback();
         }
       }
     }
 
     this.coordIndex = index;
-    this.setState({
-      picModalVisible: true,
-      xNumCurrent: xNumCurrent,
-      yNumCurrent: yNumCurrent,
-      imgIdCurrent: imgIdCurrent,
-    });
   };
 
   // 定位模态框确定按钮点击事件
@@ -664,18 +662,17 @@ export default class RiskPointEdit extends PureComponent {
 
   // 清空当前平面图信息
   handleImgIndex = index => {
-    const {
-      form: { setFieldsValue },
-    } = this.props;
-    setFieldsValue({
-      [`xnum${index}`]: undefined,
-      [`ynum${index}`]: undefined,
-      [`buildingName${index}`]: undefined,
-      [`floorName${index}`]: undefined,
-    });
+    const { picList } = this.state;
+    const newList = [
+      ...picList.slice(0, index),
+      { isDisabled: false, isEdit: true },
+      ...picList.slice(index + 1),
+    ];
     this.setState({
       isImgSelect: false,
       typeIndex: '',
+      picList: newList,
+      isEdit: true,
     });
   };
 
@@ -790,6 +787,9 @@ export default class RiskPointEdit extends PureComponent {
         buildingData: { list: buildingList = [] },
         floorData: { list: floorList = [] },
       },
+      match: {
+        params: { id },
+      },
     } = this.props;
     const {
       picModalVisible,
@@ -800,12 +800,18 @@ export default class RiskPointEdit extends PureComponent {
       isImgSelect,
     } = this.state;
 
+    const imgTypeList = picType.filter(item => imgTypes.indexOf(item.key) < 0);
+    // const imgEditList = picList
+    //   .map(item => item.imgType)
+    //   .filter(item => imgTypes.indexOf(item) < 0);
+
+    const imgNewList = imgTypes.length > 0 && id ? picType : imgTypeList;
+    console.log('buildingList', buildingList);
+
     return (
       <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative' }}>
         {picList.map((item, index) => {
-          // const imgTypeEdit = picList.map(item => item.imgType);
-          const imgTypeList = picType.filter(item => imgTypes.indexOf(item.key) < 0);
-
+          console.log('picList', picList);
           return (
             <Col span={24} key={index} style={{ marginTop: 8 }}>
               <Row gutter={12}>
@@ -820,7 +826,7 @@ export default class RiskPointEdit extends PureComponent {
                       onSelect={() => this.handleImgIndex(index)}
                       disabled={item.isDisabled}
                     >
-                      {imgTypeList.map(({ key, value }) => (
+                      {imgNewList.map(({ key, value }) => (
                         <Option value={key} key={key}>
                           {value}
                         </Option>

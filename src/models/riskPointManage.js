@@ -448,7 +448,7 @@ export default {
     },
 
     // 图片选择
-    *fetchFixImgInfo({ payload }, { call, put }) {
+    *fetchFixImgInfo({ payload, callback }, { call, put }) {
       const response = yield call(queryFixImgInfo, payload);
       if (response.code === 200) {
         yield put({
@@ -456,6 +456,7 @@ export default {
           payload: response.data,
         });
       }
+      if (callback) callback(response.data);
     },
 
     // 获取系统推荐检查周期
