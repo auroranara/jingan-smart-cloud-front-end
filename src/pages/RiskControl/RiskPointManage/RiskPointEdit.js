@@ -114,6 +114,7 @@ export default class RiskPointEdit extends PureComponent {
     isEdit: true,
     pointFixInfoList: [],
     selectedRowKeys: [],
+    typeIndex: '',
     xNumCurrent: '',
     yNumCurrent: '',
     imgIdCurrent: '',
@@ -551,7 +552,6 @@ export default class RiskPointEdit extends PureComponent {
     const { picList, typeIndex } = this.state;
     const imgType = picList.map(i => i.imgType);
     const imgIndex = imgType[index];
-
     const xNumCurrent = picList.filter(item => item.imgType).map(item => item.xnum)[index] || '';
     const yNumCurrent = picList.filter(item => item.imgType).map(item => item.ynum)[index] || '';
     const imgIdCurrent =
@@ -564,24 +564,47 @@ export default class RiskPointEdit extends PureComponent {
     if (id && list.length === 0 && !typeIndex && !imgIndex) {
       return message.error('请先选择平面图类型!');
     } else {
-      if ((id && typeIndex !== 2) || imgIndex === 1 || imgIndex === 3 || imgIndex === 4) {
-        dispatch({
-          type: 'riskPointManage/fetchFixImgInfo',
-          payload: {
-            companyId,
-            type: imgIndex || typeIndex,
-          },
-        });
-      } else {
-        if (id || imgIndex === 2 || typeIndex === 2) {
+      if (!typeIndex) {
+        if (id || imgIndex === 1 || imgIndex === 3 || imgIndex === 4) {
           dispatch({
-            type: 'buildingsInfo/fetchBuildingList',
+            type: 'riskPointManage/fetchFixImgInfo',
             payload: {
-              company_id: companyId,
-              pageSize: 0,
-              pageNum: 1,
+              companyId,
+              type: imgIndex,
             },
           });
+        } else {
+          if (id || imgIndex === 2) {
+            dispatch({
+              type: 'buildingsInfo/fetchBuildingList',
+              payload: {
+                company_id: companyId,
+                pageSize: 0,
+                pageNum: 1,
+              },
+            });
+          }
+        }
+      } else {
+        if (id || typeIndex) {
+          dispatch({
+            type: 'riskPointManage/fetchFixImgInfo',
+            payload: {
+              companyId,
+              type: typeIndex,
+            },
+          });
+        } else {
+          if (id || typeIndex === 2) {
+            dispatch({
+              type: 'buildingsInfo/fetchBuildingList',
+              payload: {
+                company_id: companyId,
+                pageSize: 0,
+                pageNum: 1,
+              },
+            });
+          }
         }
       }
     }
@@ -597,9 +620,6 @@ export default class RiskPointEdit extends PureComponent {
 
   // 定位模态框确定按钮点击事件
   handleCoordinateOk = (value, fourColorImg) => {
-    console.log('value', value);
-    console.log('fourColorImg', fourColorImg);
-
     const {
       form: { setFieldsValue },
     } = this.props;
@@ -611,6 +631,8 @@ export default class RiskPointEdit extends PureComponent {
 
     this.setState({
       picModalVisible: false,
+      typeIndex: '',
+      isImgSelect: true,
     });
   };
 
@@ -664,6 +686,7 @@ export default class RiskPointEdit extends PureComponent {
     });
     this.setState({
       isImgSelect: false,
+      typeIndex: '',
     });
   };
 
@@ -911,6 +934,7 @@ export default class RiskPointEdit extends PureComponent {
           onCancel={() => {
             this.setState({
               picModalVisible: false,
+              typeIndex: '',
             });
           }}
           xNum={xNumCurrent}
