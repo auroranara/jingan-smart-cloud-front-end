@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { Modal } from 'antd';
 import styles from './index.less';
-import Thumbnail from '../Thumbnail';
-import videoIcon from '@/assets/icon-video.png';
+import Thumbnail from '@/components/Thumbnail';
+import dot from './dot.png';
 /**
  * 四色图坐标定位
  */
@@ -18,15 +18,33 @@ export default class App extends PureComponent {
   }
 
   componentDidUpdate({ visible: prevVisible }) {
-    const { visible } = this.props;
+    const { visible, xNum, yNum, isImgSelect } = this.props;
+
+    // const imgId = urls.map(item => item.id);
+    // const imgIndex = imgId.indexOf(imgIdCurrent);
+    // console.log('urls', urls);
+    // console.log('imgId', imgId);
+    // console.log('imgIdCurrent', imgIdCurrent);
+    // console.log('imgIndex', imgIndex);
 
     if (!prevVisible && visible) {
       if (this.tempState === null) {
-        this.setState({
-          position: null,
-          index: 0,
-          pageNum: 1,
-        });
+        if (isImgSelect === false) {
+          this.setState({
+            position: null,
+            index: 0,
+            pageNum: 1,
+          });
+        } else {
+          this.setState({
+            position: {
+              x: xNum ? parseFloat(xNum) : null,
+              y: yNum ? parseFloat(yNum) : null,
+            },
+            index: 0,
+            pageNum: 1,
+          });
+        }
       } else {
         this.setState(this.tempState);
       }
@@ -72,8 +90,6 @@ export default class App extends PureComponent {
   handleOk = () => {
     const { onOk, urls } = this.props;
     const { position, index } = this.state;
-    // 保存上次选中的点和索引
-    this.tempState = JSON.parse(JSON.stringify(this.state));
     if (onOk) {
       onOk(position, urls[index]);
     }
@@ -106,7 +122,6 @@ export default class App extends PureComponent {
           centered
           footer={footer}
           width={width}
-          // destroyOnClose
           maskClosable={false}
           visible={visible}
           onOk={this.handleOk}
@@ -133,8 +148,8 @@ export default class App extends PureComponent {
                     className={styles.point}
                     style={{
                       left: `calc(${position.x * 100}% - 16px)`,
-                      top: `calc(${position.y * 100}% - 35px)`,
-                      backgroundImage: `url(${videoIcon})`,
+                      top: `calc(${position.y * 100}% - 20px)`,
+                      backgroundImage: `url(${dot})`,
                     }}
                   />
                 )}
