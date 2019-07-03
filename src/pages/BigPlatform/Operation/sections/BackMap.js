@@ -7,7 +7,7 @@ import { DeviceBar, InfoStatus, MapLegend, MapTypeBar } from '../components/Comp
 import iconAddress from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-address.png';
 import iconMan from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-man.png';
 import { dotRed, dotGreen, dotHostGreen, dotHostRed, dotHostYellow, dotSmokeGreen, dotSmokeRed, dotSmokeYellow, dotSmokeGrey } from '../imgs/links';
-import { HOST, SMOKE, getMapLegendData, getMapItemStatus } from '../utils';
+import { HOST, SMOKE, getMapLegendData, getMapItemStatus, sortUnits } from '../utils';
 
 const IMGS = [
   [dotGreen, dotRed],
@@ -64,11 +64,12 @@ export default class MapSection extends PureComponent {
   }
 
   renderMarkers = lvl => {
-    const { units = [], unitDetail: { companyId: selectedCompanyId } = {} } = this.props;
+    const { units = [], deviceType, unitDetail: { companyId: selectedCompanyId } = {} } = this.props;
     if (units.length === 0) {
       if (this.mapInstance) this.mapInstance.setCity(region);
     }
-    const markers = units.map(item => {
+    const newUnits = sortUnits(units, deviceType);
+    const markers = newUnits.map(item => {
       return {
         ...item,
         position: {
@@ -110,7 +111,8 @@ export default class MapSection extends PureComponent {
     return (
       <div
         style={{ position: 'relative' }}
-        className={status ? styles.imgAnimate : styles.imgContainer}
+        // className={status ? styles.imgAnimate : styles.imgContainer}
+        className={styles.imgContainer}
         key={companyId}
       >
         {/* {!!deviceType && !!deviceCount && (

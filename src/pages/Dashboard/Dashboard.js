@@ -214,6 +214,7 @@ export default class Dashboard extends PureComponent {
           electricityMonitor: electricityMonitorAuth,
           gasVisible: gasAuth,
           smokeVisible: smokeAuth,
+          operationVisible: operationAuth,
         });
         break;
 

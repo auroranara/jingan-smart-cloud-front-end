@@ -228,6 +228,10 @@ export default class WorkApprovalList extends PureComponent {
     if (!materialsId) return
     // 获取供货方单位
     this.fetchSupplierUnits({ payload: { materialsId } })
+    // 清空筛选栏供货方单位
+    const { filterValues } = this.state
+    this.filterForm.setFieldsValue({ supplyCompany: undefined })
+    this.setState({ filterValues: { ...filterValues, supplyCompany: undefined } })
   }
 
 
@@ -342,7 +346,7 @@ export default class WorkApprovalList extends PureComponent {
     const allFields = [
       {
         id: 'applyDepartment',
-        key: '申请部门',
+        label: '申请部门',
         render: () => (
           <TreeSelect
             dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
@@ -355,12 +359,12 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         id: 'applyUserName',
-        key: '申请人',
+        label: '申请人',
         render: () => <Input placeholder="申请人" />,
       },
       {
         id: 'sqsj', // query_start_time,query_end_time
-        key: '申请时间',
+        label: '申请时间',
         render: () => (
           <RangePicker
             placeholder={['申请', '时间']}
@@ -376,7 +380,7 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         id: 'dangerChemicalId',
-        key: '危险化学品',
+        label: '危险化学品',
         render: () => (
           <Select placeholder="危险化学品" onSelect={this.handleChemicalSelect} >
             {dangerChemicals.map(item => (<Option key={item.id}>{item.name}</Option>))}
@@ -385,7 +389,7 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         id: 'qualified',
-        key: '是否合格',
+        label: '是否合格',
         render: () => (
           <Select placeholder="是否合格" >
             {QUALIFIED.map(({ value, label }) => (<Option key={value}>{label}</Option>))}
@@ -394,7 +398,7 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         id: 'supplyCompany',
-        key: '供货方单位',
+        label: '供货方单位',
         render: () => (
           <Select placeholder="供货方单位" >
             {supplierUnits.map(item => (<Option key={item.id}>{item.name}</Option>))}
@@ -403,7 +407,7 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         id: 'useCompany',
-        key: '使用单位',
+        label: '使用单位',
         render: () => (
           <TreeSelect
             dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
@@ -416,7 +420,7 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         id: 'approveStatus',
-        key: '审批状态',
+        label: '审批状态',
         render: () => (
           <Select placeholder="审批状态" >
             {approvalStatus.map(item => (<Option key={item.value}>{item.desc}</Option>))}
@@ -425,7 +429,7 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         id: 'zyjb',
-        key: '作业级别',
+        label: '作业级别',
         render: () => (
           <Select placeholder="作业级别" >
             {jobLevel.map(item => (<Option key={item.value}>{item.desc}</Option>))}
@@ -434,7 +438,7 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         id: 'zylb',
-        key: '作业类别',
+        label: '作业类别',
         render: () => (
           <Select placeholder="作业类别" >
             {jobLevel.map(item => (<Option key={item.value}>{item.desc}</Option>))}
@@ -443,12 +447,12 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         id: 'code',
-        key: '作业证编号',
+        label: '作业证编号',
         render: () => <Input placeholder="作业证编号" />,
       },
       {
         id: 'zysj', // work_start_time , work_end_time
-        key: '作业时间',
+        label: '作业时间',
         render: () => (
           <RangePicker
             placeholder={['作业', '时间']}
@@ -463,22 +467,22 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         id: 'dhdd',
-        key: '动火地点',
+        label: '动火地点',
         render: () => <Input placeholder="动火地点" />,
       },
       {
         id: 'dhr',
-        key: '动火人',
+        label: '动火人',
         render: () => <Input placeholder="动火人" />,
       },
       {
         id: 'sxkjmc',
-        key: '受限空间名称',
+        label: '受限空间名称',
         render: () => <Input placeholder="受限空间名称" />,
       },
       {
         id: 'wgyssj',
-        key: '完工验收时间',
+        label: '完工验收时间',
         render: () => (
           <RangePicker
             placeholder={['完工验收', '时间']}
@@ -493,27 +497,27 @@ export default class WorkApprovalList extends PureComponent {
       },
       {
         id: 'zyr',
-        key: '作业人',
+        label: '作业人',
         render: () => <Input placeholder="作业人" />,
       },
       {
         id: 'dzr',
-        key: '吊装人',
+        label: '吊装人',
         render: () => <Input placeholder="吊装人" />,
       },
       {
         id: 'zydd',
-        key: '作业地点',
+        label: '作业地点',
         render: () => <Input placeholder="作业地点" />,
       },
       {
         id: 'mbbh',
-        key: '盲板编号',
+        label: '盲板编号',
         render: () => <Input placeholder="盲板编号" />,
       },
     ]
     const fields = (TABLIST.find(item => item.key === activeKey) || {}).fields
-    const formFields = fields && fields.length ? fields.map(item => allFields.find(val => val.key === item)) : []
+    const formFields = fields && fields.length ? fields.map(item => allFields.find(val => val.label === item)) : []
 
     return (
       <Card>
