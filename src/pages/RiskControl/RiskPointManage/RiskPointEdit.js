@@ -16,7 +16,7 @@ import {
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
-import Coordinate from '@/components/Coordinate';
+import Coordinate from './Coordinate/index';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import CheckModal from '../../LawEnforcement/Illegal/checkModal';
 import styles from './RiskPointEdit.less';
@@ -114,8 +114,11 @@ export default class RiskPointEdit extends PureComponent {
     isEdit: true,
     pointFixInfoList: [],
     selectedRowKeys: [],
+    typeIndex: '',
     xNumCurrent: '',
     yNumCurrent: '',
+    imgIdCurrent: '',
+    isImgSelect: true,
   };
 
   // 返回到列表页面
@@ -549,35 +552,59 @@ export default class RiskPointEdit extends PureComponent {
     const { picList, typeIndex } = this.state;
     const imgType = picList.map(i => i.imgType);
     const imgIndex = imgType[index];
-
     const xNumCurrent = picList.filter(item => item.imgType).map(item => item.xnum)[index] || '';
     const yNumCurrent = picList.filter(item => item.imgType).map(item => item.ynum)[index] || '';
+    const imgIdCurrent =
+      picList.filter(item => item.imgType).map(item => item.fixImgId)[index] || '';
 
     if (!id && list.length === 0) {
       message.error('该单位暂无图片！');
     }
 
     if (id && list.length === 0 && !typeIndex && !imgIndex) {
-      return message.error('该单位暂无图片！');
+      return message.error('请先选择平面图类型!');
     } else {
-      if ((id && typeIndex !== 2) || imgIndex === 1 || imgIndex === 3 || imgIndex === 4) {
-        dispatch({
-          type: 'riskPointManage/fetchFixImgInfo',
-          payload: {
-            companyId,
-            type: imgIndex || typeIndex,
-          },
-        });
-      } else {
-        if (id || imgIndex === 2 || typeIndex === 2) {
+      if (!typeIndex) {
+        if (id || imgIndex === 1 || imgIndex === 3 || imgIndex === 4) {
           dispatch({
-            type: 'buildingsInfo/fetchBuildingList',
+            type: 'riskPointManage/fetchFixImgInfo',
             payload: {
-              company_id: companyId,
-              pageSize: 0,
-              pageNum: 1,
+              companyId,
+              type: imgIndex,
             },
           });
+        } else {
+          if (id || imgIndex === 2) {
+            dispatch({
+              type: 'buildingsInfo/fetchBuildingList',
+              payload: {
+                company_id: companyId,
+                pageSize: 0,
+                pageNum: 1,
+              },
+            });
+          }
+        }
+      } else {
+        if (id || typeIndex) {
+          dispatch({
+            type: 'riskPointManage/fetchFixImgInfo',
+            payload: {
+              companyId,
+              type: typeIndex,
+            },
+          });
+        } else {
+          if (id || typeIndex === 2) {
+            dispatch({
+              type: 'buildingsInfo/fetchBuildingList',
+              payload: {
+                company_id: companyId,
+                pageSize: 0,
+                pageNum: 1,
+              },
+            });
+          }
         }
       }
     }
@@ -587,6 +614,7 @@ export default class RiskPointEdit extends PureComponent {
       picModalVisible: true,
       xNumCurrent: xNumCurrent,
       yNumCurrent: yNumCurrent,
+      imgIdCurrent: imgIdCurrent,
     });
   };
 
@@ -600,8 +628,11 @@ export default class RiskPointEdit extends PureComponent {
       [`ynum${this.coordIndex}`]: value.y.toFixed(3),
     });
     this.fixImgId = fourColorImg.id;
+
     this.setState({
       picModalVisible: false,
+      typeIndex: '',
+      isImgSelect: true,
     });
   };
 
@@ -653,10 +684,10 @@ export default class RiskPointEdit extends PureComponent {
       [`buildingName${index}`]: undefined,
       [`floorName${index}`]: undefined,
     });
-    // this.setState({
-    //   xNumCurrent: undefined,
-    //   yNumCurrent: undefined,
-    // });
+    this.setState({
+      isImgSelect: false,
+      typeIndex: '',
+    });
   };
 
   // 获取楼层
@@ -768,8 +799,14 @@ export default class RiskPointEdit extends PureComponent {
         floorData: { list: floorList = [] },
       },
     } = this.props;
-
-    const { picModalVisible, picList, xNumCurrent, yNumCurrent } = this.state;
+    const {
+      picModalVisible,
+      picList,
+      xNumCurrent,
+      yNumCurrent,
+      imgIdCurrent,
+      isImgSelect,
+    } = this.state;
 
     return (
       <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative' }}>
@@ -897,11 +934,13 @@ export default class RiskPointEdit extends PureComponent {
           onCancel={() => {
             this.setState({
               picModalVisible: false,
+              typeIndex: '',
             });
           }}
-          riskStyle
           xNum={xNumCurrent}
           yNum={yNumCurrent}
+          imgIdCurrent={imgIdCurrent}
+          isImgSelect={isImgSelect}
         />
       </Row>
     );
