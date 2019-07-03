@@ -20,8 +20,8 @@ export default class App extends PureComponent {
   componentDidUpdate({ visible: prevVisible }) {
     const { visible, xNum, yNum, isImgSelect, urls, imgIdCurrent } = this.props;
 
-    // const imgId = urls.map(item => item.id);
-    // const imgIndex = imgId.indexOf(imgIdCurrent);
+    const imgId = urls.map(item => item.id);
+    const imgIndex = imgId.indexOf(imgIdCurrent);
     // console.log('urls', urls);
     // console.log('imgId', imgId);
     // console.log('imgIdCurrent', imgIdCurrent);
