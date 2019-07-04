@@ -252,12 +252,11 @@ export default class RiskPointEdit extends PureComponent {
       },
     } = this.props;
 
-    const { picList, isEdit } = this.state;
+    const { picList, isDisabled } = this.state;
 
-    // if (isEdit === true) {
-    //   return message.error('请先保存平面图定位信息');
-    // }
-
+    if (isDisabled === true) {
+      return message.error('请先保存平面图定位信息！');
+    }
     validateFieldsAndScroll((error, values) => {
       if (!error) {
         this.setState({
@@ -500,7 +499,7 @@ export default class RiskPointEdit extends PureComponent {
                   return;
                 }
                 this.setState({ flowList: [...flowList, record] });
-                flow_id.push({ flow_id_data: record.flow_id });
+                flow_id.push({ flow_id_data: record.flow_id, flow_id: record.flow_id });
               }}
             >
               {flow_id.map(item => item.flow_id_data).indexOf(record.flow_id) >= 0 ? (
@@ -834,7 +833,7 @@ export default class RiskPointEdit extends PureComponent {
       { ...picList[index], isDisabled: false, isEdit: true },
       ...picList.slice(index + 1),
     ];
-    this.setState({ picList: newList, isEdit: true });
+    this.setState({ picList: newList, isEdit: true, isDisabled: true });
   };
 
   handlePicInfoDelete = index => {
@@ -860,9 +859,6 @@ export default class RiskPointEdit extends PureComponent {
         buildingData: { list: buildingList = [] },
         floorData: { list: floorList = [] },
       },
-      // match: {
-      //   params: { id },
-      // },
     } = this.props;
     const {
       picModalVisible,
@@ -875,8 +871,6 @@ export default class RiskPointEdit extends PureComponent {
     } = this.state;
 
     const imgTypeList = picType.filter(item => imgTypes.indexOf(item.key) < 0);
-
-    // console.log('imgTypeList', imgTypeList);
 
     return (
       <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative' }}>
