@@ -182,22 +182,46 @@ export default class RiskPointEdit extends PureComponent {
         },
         callback: response => {
           const { itemFlowList, pointFixInfoList } = response;
-          const flows = itemFlowList;
 
-          this.setState({ flowList: flows });
-          flow_id = flows.map(d => {
+          const buildingList = pointFixInfoList.filter(item => item.imgType === 2);
+          const buildingId = buildingList.map(item => item.buildingId).join('');
+
+          this.setState({ flowList: itemFlowList });
+          flow_id = itemFlowList.map(d => {
             return { flow_id_data: d.flow_id_data };
           });
 
-          this.setState({
-            picList: pointFixInfoList.map(item => {
-              return {
-                ...item,
-                isEdit: false,
-                isDisabled: true,
-              };
-            }),
-          });
+          this.setState(
+            {
+              picList: pointFixInfoList.map(item => {
+                return {
+                  ...item,
+                  isEdit: false,
+                  isDisabled: true,
+                };
+              }),
+            },
+            () => {
+              if (buildingList.length > 0) {
+                dispatch({
+                  type: 'buildingsInfo/fetchBuildingList',
+                  payload: {
+                    company_id: companyId,
+                    pageSize: 0,
+                    pageNum: 1,
+                  },
+                });
+                dispatch({
+                  type: 'buildingsInfo/fetchFloorList',
+                  payload: {
+                    building_id: buildingId,
+                    pageSize: 0,
+                    pageNum: 1,
+                  },
+                });
+              }
+            }
+          );
         },
       });
     } else {
@@ -556,6 +580,10 @@ export default class RiskPointEdit extends PureComponent {
     const yNumCurrent = picList.map(item => item.ynum)[index] || '';
     const imgIdCurrent = picList.map(item => item.fixImgId)[index] || '';
 
+    const buildingList = picList.filter(item => item.imgType === 2);
+    const buildingId = buildingList.map(item => item.buildingId).join('');
+    const floorId = buildingList.map(item => item.fixImgId).join('');
+
     const callback = () => {
       this.setState({
         picModalVisible: true,
@@ -572,8 +600,8 @@ export default class RiskPointEdit extends PureComponent {
     if (id && list.length === 0 && !typeIndex && !imgIndex) {
       return message.error('请先选择平面图类型!');
     } else {
-      if (!typeIndex && typeIndex !== 2) {
-        if (id || imgIndex === 1 || imgIndex === 3 || imgIndex === 4) {
+      if (!typeIndex) {
+        if ((id && imgIndex !== 2) || imgIndex === 1 || imgIndex === 3 || imgIndex === 4) {
           dispatch({
             type: 'riskPointManage/fetchFixImgInfo',
             payload: {
@@ -591,14 +619,24 @@ export default class RiskPointEdit extends PureComponent {
                 pageSize: 0,
                 pageNum: 1,
               },
-              success: callback,
+              success: () => {
+                callback();
+                this.getFloorInfo(buildingId);
+                dispatch({
+                  type: 'riskPointManage/fetchFixImgInfo',
+                  payload: {
+                    companyId,
+                    type: imgIndex,
+                    buildingId: buildingId,
+                    floorId: floorId,
+                  },
+                });
+              },
             });
           }
         }
       } else {
-        if (typeIndex) {
-          callback();
-        }
+        callback();
       }
     }
 
@@ -688,6 +726,17 @@ export default class RiskPointEdit extends PureComponent {
       },
     });
     this.setState({ buildingId: id });
+  };
+
+  handleBuildingSelect = index => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({
+      [`floorName${index}`]: undefined,
+      [`xnum${index}`]: undefined,
+      [`ynum${index}`]: undefined,
+    });
   };
 
   // 根据建筑物和楼层获取图片
@@ -801,17 +850,14 @@ export default class RiskPointEdit extends PureComponent {
     } = this.state;
 
     const imgTypeList = picType.filter(item => imgTypes.indexOf(item.key) < 0);
-    // const imgEditList = picList
+    // const imgIdEdit = picList
     //   .map(item => item.imgType)
     //   .filter(item => imgTypes.indexOf(item) < 0);
-
-    const imgNewList = imgTypes.length > 0 && id ? picType : imgTypeList;
-    console.log('buildingList', buildingList);
+    const imgfilterList = imgTypes.length > 0 && id ? picType : imgTypeList;
 
     return (
       <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative' }}>
         {picList.map((item, index) => {
-          console.log('picList', picList);
           return (
             <Col span={24} key={index} style={{ marginTop: 8 }}>
               <Row gutter={12}>
@@ -826,7 +872,7 @@ export default class RiskPointEdit extends PureComponent {
                       onSelect={() => this.handleImgIndex(index)}
                       disabled={item.isDisabled}
                     >
-                      {imgNewList.map(({ key, value }) => (
+                      {imgfilterList.map(({ key, value }) => (
                         <Option value={key} key={key}>
                           {value}
                         </Option>
@@ -843,6 +889,7 @@ export default class RiskPointEdit extends PureComponent {
                         allowClear
                         placeholder="请选择建筑物名称"
                         disabled={item.isDisabled}
+                        onSelect={() => this.handleBuildingSelect(index)}
                         onChange={this.getFloorInfo}
                       >
                         {buildingList.map(({ buildingName, id }) => (
