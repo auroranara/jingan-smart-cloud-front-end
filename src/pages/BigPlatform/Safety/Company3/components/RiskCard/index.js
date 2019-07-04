@@ -145,7 +145,7 @@ export default class RiskCard extends PureComponent {
                     <div className={styles.smallInfoName}>最近检查时间</div>
                     <div className={styles.infoValue}>
                       <Ellipsis lines={1} tooltip>
-                        {last_check_date && moment(last_check_date).format('YYYY-MM-DD ')}
+                        {last_check_date ? moment(last_check_date).format('YYYY-MM-DD ') : '暂无数据'}
                       </Ellipsis>
                     </div>
                   </div>
