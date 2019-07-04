@@ -126,6 +126,7 @@ export default class riskPointList extends PureComponent {
     } = this.props;
 
     const { activeKey } = this.state;
+
     const count = list.map(item => item.pointCount);
 
     const tabList = [

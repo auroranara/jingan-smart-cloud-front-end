@@ -350,7 +350,7 @@ export default class WorkApprovalList extends PureComponent {
         render: () => (
           <TreeSelect
             dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-            placeholder="申请部门"
+            placeholder="请选择"
             allowClear
           >
             {this.generateTreeNode(departments)}
@@ -360,14 +360,13 @@ export default class WorkApprovalList extends PureComponent {
       {
         id: 'applyUserName',
         label: '申请人',
-        render: () => <Input placeholder="申请人" />,
+        render: () => <Input placeholder="请输入" />,
       },
       {
         id: 'sqsj', // query_start_time,query_end_time
         label: '申请时间',
         render: () => (
           <RangePicker
-            placeholder={['申请', '时间']}
             showTime={{ format: 'HH:mm:ss', defaultValue: [moment().startOf('day'), moment().endOf('day')] }}
             format="YYYY-MM-DD HH:mm:ss"
             style={{ width: '100%' }}
@@ -382,7 +381,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'dangerChemicalId',
         label: '危险化学品',
         render: () => (
-          <Select placeholder="危险化学品" onSelect={this.handleChemicalSelect} >
+          <Select placeholder="请选择" onSelect={this.handleChemicalSelect} >
             {dangerChemicals.map(item => (<Option key={item.id}>{item.name}</Option>))}
           </Select>
         ),
@@ -391,7 +390,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'qualified',
         label: '是否合格',
         render: () => (
-          <Select placeholder="是否合格" >
+          <Select placeholder="请选择" >
             {QUALIFIED.map(({ value, label }) => (<Option key={value}>{label}</Option>))}
           </Select>
         ),
@@ -400,7 +399,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'supplyCompany',
         label: '供货方单位',
         render: () => (
-          <Select placeholder="供货方单位" >
+          <Select placeholder="请选择" >
             {supplierUnits.map(item => (<Option key={item.id}>{item.name}</Option>))}
           </Select>
         ),
@@ -411,7 +410,7 @@ export default class WorkApprovalList extends PureComponent {
         render: () => (
           <TreeSelect
             dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-            placeholder="使用单位"
+            placeholder="请选择"
             allowClear
           >
             {this.generateTreeNode(departments)}
@@ -422,7 +421,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'approveStatus',
         label: '审批状态',
         render: () => (
-          <Select placeholder="审批状态" >
+          <Select placeholder="请选择" >
             {approvalStatus.map(item => (<Option key={item.value}>{item.desc}</Option>))}
           </Select>
         ),
@@ -431,7 +430,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'zyjb',
         label: '作业级别',
         render: () => (
-          <Select placeholder="作业级别" >
+          <Select placeholder="请选择" >
             {jobLevel.map(item => (<Option key={item.value}>{item.desc}</Option>))}
           </Select>
         ),
@@ -440,7 +439,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'zylb',
         label: '作业类别',
         render: () => (
-          <Select placeholder="作业类别" >
+          <Select placeholder="请选择" >
             {jobLevel.map(item => (<Option key={item.value}>{item.desc}</Option>))}
           </Select>
         ),
@@ -448,14 +447,13 @@ export default class WorkApprovalList extends PureComponent {
       {
         id: 'code',
         label: '作业证编号',
-        render: () => <Input placeholder="作业证编号" />,
+        render: () => <Input placeholder="请输入" />,
       },
       {
         id: 'zysj', // work_start_time , work_end_time
         label: '作业时间',
         render: () => (
           <RangePicker
-            placeholder={['作业', '时间']}
             showTime={{ format: 'HH:mm:ss', defaultValue: [moment().startOf('day'), moment().endOf('day')] }}
             style={{ width: '100%' }}
             ranges={{
@@ -468,24 +466,23 @@ export default class WorkApprovalList extends PureComponent {
       {
         id: 'dhdd',
         label: '动火地点',
-        render: () => <Input placeholder="动火地点" />,
+        render: () => <Input placeholder="请输入" />,
       },
       {
         id: 'dhr',
         label: '动火人',
-        render: () => <Input placeholder="动火人" />,
+        render: () => <Input placeholder="请输入" />,
       },
       {
         id: 'sxkjmc',
         label: '受限空间名称',
-        render: () => <Input placeholder="受限空间名称" />,
+        render: () => <Input placeholder="请输入" />,
       },
       {
         id: 'wgyssj',
         label: '完工验收时间',
         render: () => (
           <RangePicker
-            placeholder={['完工验收', '时间']}
             showTime={{ format: 'HH:mm:ss', defaultValue: [moment().startOf('day'), moment().endOf('day')] }}
             style={{ width: '100%' }}
             ranges={{
@@ -498,22 +495,22 @@ export default class WorkApprovalList extends PureComponent {
       {
         id: 'zyr',
         label: '作业人',
-        render: () => <Input placeholder="作业人" />,
+        render: () => <Input placeholder="请输入" />,
       },
       {
         id: 'dzr',
         label: '吊装人',
-        render: () => <Input placeholder="吊装人" />,
+        render: () => <Input placeholder="请输入" />,
       },
       {
         id: 'zydd',
         label: '作业地点',
-        render: () => <Input placeholder="作业地点" />,
+        render: () => <Input placeholder="请输入" />,
       },
       {
         id: 'mbbh',
         label: '盲板编号',
-        render: () => <Input placeholder="盲板编号" />,
+        render: () => <Input placeholder="请输入" />,
       },
     ]
     const fields = (TABLIST.find(item => item.key === activeKey) || {}).fields
@@ -527,6 +524,7 @@ export default class WorkApprovalList extends PureComponent {
           gutter={{ lg: 48, md: 24 }}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
+          layout="horizontal"
         ></InlineForm>
       </Card>
     )

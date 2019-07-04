@@ -25,10 +25,14 @@
     startTime: 'startTime', // 报警/报修时间
     endTime: 'endTime', // 结束时间
     status: 'status', // 状态
-    wordOrderNumber: 'wordOrderNumber', // 工单编号
+    systemType: 'systemType', // 系统类型
+    deviceName: 'deviceName', // 设备名称
     repairPersonName: 'repairPersonName', // 报修人员名称
     repairPersonPhone: 'repairPersonPhone', // 报修人员手机号
     process: 'process', // 处理状态
+    repeat: 'repeat', // 重复次数
+    firstTime: 'firstTime', // 首次发生时间
+    lastTime: 'lastTime', // 最近发生时间
   };
 ```
 
@@ -50,10 +54,14 @@
       startTime: 'startTime', // 报警/报修时间
       endTime: 'endTime', // 结束时间
       status: 'status', // 状态
-      wordOrderNumber: 'wordOrderNumber', // 工单编号
+      systemType: 'systemType', // 系统类型
+      deviceName: 'deviceName', // 设备名称
       repairPersonName: 'repairPersonName', // 报修人员名称
       repairPersonPhone: 'repairPersonPhone', // 报修人员手机号
       process: 'process', // 处理状态
+      repeat: 'repeat', // 重复次数
+      firstTime: 'firstTime', // 首次发生时间
+      lastTime: 'lastTime', // 最近发生时间
     }}
     fieldNames={{
       id: 'id', // 主键
@@ -67,10 +75,14 @@
       startTime: 'startTime', // 报警/报修时间
       endTime: 'endTime', // 结束时间
       status: 'status', // 状态
-      wordOrderNumber: 'wordOrderNumber', // 工单编号
+      systemType: 'systemType', // 系统类型
+      deviceName: 'deviceName', // 设备名称
       repairPersonName: 'repairPersonName', // 报修人员名称
       repairPersonPhone: 'repairPersonPhone', // 报修人员手机号
       process: 'process', // 处理状态
+      repeat: 'repeat', // 重复次数
+      firstTime: 'firstTime', // 首次发生时间
+      lastTime: 'lastTime', // 最近发生时间
     }}
   />
 ```
