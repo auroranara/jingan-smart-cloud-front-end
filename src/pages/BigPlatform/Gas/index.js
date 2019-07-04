@@ -217,10 +217,10 @@ export default class Gas extends PureComponent {
             const newList =
               sameIndex !== undefined
                 ? [
-                  ...alarmIds.slice(0, sameIndex),
-                  { companyId, messageFlag },
-                  ...alarmIds.slice(sameIndex + 1),
-                ]
+                    ...alarmIds.slice(0, sameIndex),
+                    { companyId, messageFlag },
+                    ...alarmIds.slice(sameIndex + 1),
+                  ]
                 : [...alarmIds, { companyId, messageFlag }];
             this.setState({ alarmIds: newList });
             this.showWarningNotification(data);
@@ -360,12 +360,12 @@ export default class Gas extends PureComponent {
   /**
    * 更新后
    */
-  componentDidUpdate() { }
+  componentDidUpdate() {}
 
   /**
    * 销毁前
    */
-  componentWillUnmount() { }
+  componentWillUnmount() {}
 
   cardsInfo = [];
   importCardsInfo = [];
@@ -720,6 +720,7 @@ export default class Gas extends PureComponent {
           onClick={e => this.handleDrawerVisibleChange('alarm')}
         />
         {/* 待处理业务 */}
+        {/*
         <NewSection
           title="待处理业务"
           className={styles.left}
@@ -728,6 +729,7 @@ export default class Gas extends PureComponent {
         >
           <ProcessingBusiness allGasFire={allGasFire} />
         </NewSection>
+        */}
 
         {/* extra info */}
         <SettingModal
@@ -743,7 +745,12 @@ export default class Gas extends PureComponent {
           handleAlarmClick={this.handleAlarmClick}
         />
         <AlarmDrawer
-          data={{ list: errorUnitsCardsInfo, companyStatus, graphList: AbnormalTrend, statisticsData }}
+          data={{
+            list: errorUnitsCardsInfo,
+            companyStatus,
+            graphList: AbnormalTrend,
+            statisticsData,
+          }}
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleAlarmClick={this.handleAlarmClick}
