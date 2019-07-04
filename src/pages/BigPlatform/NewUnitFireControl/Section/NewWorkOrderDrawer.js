@@ -17,7 +17,7 @@ const TYPES = ['报警', '故障'];
 const STATUS_MAP = ['待处理', '处理中', '已处理'];
 const LABELS = [['报警', '故障'], ['报警', '故障'], ['报警', '故障'], []];
 const statusSelector = [
-  { value: 'all', name: '全部状态' },
+  { value: 'all', name: '类型' },
   { value: 'warning', name: '报警' },
   { value: 'fault', name: '故障' },
 ];

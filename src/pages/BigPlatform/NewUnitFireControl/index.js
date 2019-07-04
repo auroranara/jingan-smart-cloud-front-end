@@ -832,7 +832,7 @@ export default class NewUnitFireControl extends PureComponent {
           else if (type === 38) this.handleClickMsgFlow(param, 1, 0, ...restParams);
           else if (type === 39) this.handleClickMsgFlow(param, 2, 0, ...restParams);
           else if (type === 40) this.handleClickMsgFlow(param, 1, 1, ...restParams);
-          else if (type === 32) this.handleClickElecMsg(deviceId);
+          else if (type === 32) this.handleClickElecMsg(deviceId, paramName);
           else if (type === 36) this.handleClickWater(0, [101, 102, 103].indexOf(+deviceType));
           // if (type === 7 || type === 38 || type === 39) this.handleClickMessage(messageFlag, item);
           // else this.handleFaultClick({ ...item });
@@ -1589,9 +1589,10 @@ export default class NewUnitFireControl extends PureComponent {
     });
   };
 
-  handleClickElectricity = (index, deviceId) => {
+  handleClickElectricity = (index, deviceId, paramName) => {
     this.setState({ electricityDrawerVisible: true, filterIndex: index });
-    deviceId && this.handleSelectDevice(deviceId);
+    const selectDeviceCallback = () => (paramName ? this.setAlertedLabelIndex(paramName) : null);
+    deviceId && this.handleSelectDevice(deviceId, selectDeviceCallback);
   };
 
   handleClickCheck = index => {
@@ -2018,14 +2019,18 @@ export default class NewUnitFireControl extends PureComponent {
     // this.handleShowFireVideo(cameraMessage);
   };
 
-  handleClickElecMsg = deviceId => {
+  handleClickElecMsg = (deviceId, paramName) => {
     const {
       electricityMonitor: {
         deviceStatusCount: { list: deviceList },
       },
     } = this.props;
     const deviceStatus = deviceList.find(item => item.deviceId === deviceId).status;
-    this.handleClickElectricity(+deviceStatus > 0 ? 0 : +deviceStatus === -1 ? 1 : 2, deviceId);
+    this.handleClickElectricity(
+      +deviceStatus > 0 ? 0 : +deviceStatus === -1 ? 1 : 2,
+      deviceId,
+      paramName
+    );
   };
 
   handleShowResetSection = () => {

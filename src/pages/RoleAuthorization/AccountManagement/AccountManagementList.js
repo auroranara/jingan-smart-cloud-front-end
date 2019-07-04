@@ -239,8 +239,6 @@ export default class accountManagementList extends React.Component {
           fetchUnitsFuzzy({
             payload: { unitType: GOV },
           });
-          // 获取网格列表
-          fetchGridList()
         } else {
           key = unitId ? unitId.key : undefined;
           fetchUnitsFuzzy({
@@ -266,6 +264,8 @@ export default class accountManagementList extends React.Component {
         listPayload = { pageSize, pageNum: 1 };
       }
     }
+    // 如果是政府用户或者搜索记录中选择了政府 获取网格列表
+    [selectedUnitType, unitType].includes(GOV) && fetchGridList()
     this.setState({ unitTypeChecked: selectedUnitType }, () => {
       searchInfo && setFieldsValue(searchInfo);
     });
@@ -547,6 +547,7 @@ export default class accountManagementList extends React.Component {
       form: { getFieldDecorator },
       hiddenDangerReport: { gridList },
       loading,
+      user: { currentUser: { unitType } },
     } = this.props;
 
     const isUnitUser = this.isUnitUser(); // 单位用户且不为运营
@@ -642,7 +643,7 @@ export default class accountManagementList extends React.Component {
                 </Select>
               )}
             </FormItem>
-            {!isUnitUser && unitTypeChecked === GOV && (
+            {(unitTypeChecked === GOV || unitType === GOV) && (
               <FormItem label="所属网格">
                 {getFieldDecorator('gridId')(
                   <TreeSelect
