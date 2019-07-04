@@ -844,7 +844,6 @@ export default class RiskPointEdit extends PureComponent {
       }),
       isDisabled: false,
       isEdit: false,
-      imgTypes: picList.map(item => item.imgType),
     });
   };
 
