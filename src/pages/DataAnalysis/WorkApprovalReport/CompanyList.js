@@ -38,12 +38,7 @@ export default class CompanyList extends PureComponent {
 
 
   componentDidMount() {
-    this.fetchCompanies({
-      payload: {
-        pageNum: 1,
-        pageSize: PAGESIZE,
-      },
-    })
+    this.handleQuery()
   }
 
 
@@ -83,7 +78,7 @@ export default class CompanyList extends PureComponent {
   handleLoadMore = () => {
     const {
       company: { isLast, pageNum },
-      // form: { getFieldsValue },
+      form: { getFieldsValue },
     } = this.props;
     if (isLast) {
       return;
@@ -94,7 +89,8 @@ export default class CompanyList extends PureComponent {
       payload: {
         pageNum: pageNum + 1,
         pageSize: PAGESIZE,
-        // ...getFieldsValue(),
+        eightJobCountFlag: '1',
+        ...getFieldsValue(),
       },
     });
   }
@@ -109,6 +105,7 @@ export default class CompanyList extends PureComponent {
       payload: {
         pageNum,
         pageSize,
+        eightJobCountFlag: '1',
         ...values,
       },
     })

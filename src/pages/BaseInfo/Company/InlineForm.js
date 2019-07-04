@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Form, Button, Row, Col } from 'antd';
+import styles from './InlineForm.less'
 
 const FormItem = Form.Item;
 
@@ -95,16 +96,17 @@ export default class InlineForm extends PureComponent {
       form: { getFieldDecorator },
       hideSearch,
       hideReset,
-      buttonSpan=defaultButtonSpan,
-      gutter={ md: 16 },
+      buttonSpan = defaultButtonSpan,
+      gutter = { md: 16 },
+      layout = 'vertical',
     } = this.props;
 
     return (
-      <Form layout="vertical" className="clearfix">
+      <Form layout={layout} className={styles.inlineForm}>
         <Row gutter={gutter}>
           {fields &&
             fields.map(field => {
-              const { inputSpan=defaultInputSpan } = field;
+              const { inputSpan = defaultInputSpan } = field;
               return (
                 <Col key={field.id} {...inputSpan}>
                   <FormItem
@@ -116,19 +118,20 @@ export default class InlineForm extends PureComponent {
                     {getFieldDecorator(field.id, field.options)(field.render(this.handleSearch))}
                   </FormItem>
                 </Col>
-            )})}
+              )
+            })}
           <Col {...buttonSpan}>
             <FormItem style={{ margin: '0', padding: '4px 0' }}>
               {!hideSearch && (
-              <Button type={searchType || 'primary'} onClick={this.handleSearch} style={{ marginRight: '16px' }}>
-                {searchText || '查询'}
-              </Button>
-            )}
+                <Button type={searchType || 'primary'} onClick={this.handleSearch} style={{ marginRight: '16px' }}>
+                  {searchText || '查询'}
+                </Button>
+              )}
               {!hideReset && (
-              <Button type={resetType || 'default'} onClick={this.handleReset} style={{ marginRight: '16px' }}>
-                {resetText || '重置'}
-              </Button>
-            )}
+                <Button type={resetType || 'default'} onClick={this.handleReset} style={{ marginRight: '16px' }}>
+                  {resetText || '重置'}
+                </Button>
+              )}
               {action}
             </FormItem>
           </Col>

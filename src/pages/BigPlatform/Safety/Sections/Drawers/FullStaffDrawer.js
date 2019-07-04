@@ -85,7 +85,7 @@ class FullStaffDrawer extends PureComponent {
                                   : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}
                               </div>
                               <div className={styles.gridName}>
-                                <Ellipsis tooltip length={12} style={{ overflow: 'visible' }}>
+                                <Ellipsis tooltip length={8} style={{ overflow: 'visible' }}>
                                   {gridName}
                                 </Ellipsis>
                               </div>

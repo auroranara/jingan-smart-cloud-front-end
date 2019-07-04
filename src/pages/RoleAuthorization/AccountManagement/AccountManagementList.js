@@ -211,6 +211,7 @@ export default class accountManagementList extends React.Component {
       fetch,
       fetchUnitsFuzzy,
       fetchRoles,
+      fetchGridList,
       account: { searchInfo },
       form: { setFieldsValue },
       user: {
@@ -218,18 +219,16 @@ export default class accountManagementList extends React.Component {
       },
     } = this.props;
 
-    const isUnitUser = this.isUnitUser();
+    const isUnitUser = this.isUnitUser(); // 是否非运营
+    let selectedUnitType;
     let listPayload;
     if (isUnitUser) {
       fetchRoles({ payload: { unitType, companyId: unitId } });
       listPayload = { pageSize, pageNum: 1, unitId };
     } else {
-      let selectedUnitType;
       if (searchInfo)
         // 上次缓存在model里的筛选条件
         selectedUnitType = searchInfo.unitType;
-
-      this.setState({ unitTypeChecked: selectedUnitType });
 
       // 如果有搜索条件，则填入并所属单位和账号列表
       if (searchInfo) {
@@ -240,6 +239,8 @@ export default class accountManagementList extends React.Component {
           fetchUnitsFuzzy({
             payload: { unitType: GOV },
           });
+          // 获取网格列表
+          fetchGridList()
         } else {
           key = unitId ? unitId.key : undefined;
           fetchUnitsFuzzy({
@@ -265,8 +266,9 @@ export default class accountManagementList extends React.Component {
         listPayload = { pageSize, pageNum: 1 };
       }
     }
-
-    searchInfo && setFieldsValue(searchInfo);
+    this.setState({ unitTypeChecked: selectedUnitType }, () => {
+      searchInfo && setFieldsValue(searchInfo);
+    });
     fetch({ payload: listPayload });
   };
 

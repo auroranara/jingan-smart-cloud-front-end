@@ -64,13 +64,15 @@ const FIELDNAMES = {
   partNumber: 'componentNo', // 故障号
   area: ({ area, reportType }) => typeDict2[reportType] === '消防主机' ? undefined : area, // 区域
   location: ({ installAddress, location, reportType }) => typeDict2[reportType] === '消防主机' ? installAddress : location, // 位置
-  startTime: ({ createTime, realtime, createDate, reportType, firstTime }) => ({ 消防主机: firstTime, 独立烟感: firstTime, 报修: createDate })[typeDict2[reportType]], // 报警/报修时间
+  startTime: ({ createDate, reportType, firstTime }) => ({ 消防主机: firstTime, 独立烟感: firstTime, 报修: createDate })[typeDict2[reportType]], // 报警/报修时间
   endTime: 'endDate', // 结束时间
   status: ({ fireType }) => statusDict2[fireType], // 状态
-  wordOrderNumber: 'workOrder', // 工单编号
+  systemType: 'systemTypeValue', // 系统类型
+  deviceName: 'ndeviceName', // 设备名称
   repairPersonName: 'createByName', // 报修人员名称
   repairPersonPhone: ({ createByPhone }) => createByPhone && `${createByPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'), // 报修人员手机号
   process: ({ proceStatus }) => proceDict[proceStatus], // 处理状态
+  repeat: ({ fireChildren }) => fireChildren && fireChildren.length, // 重复次数
 };
 
 @connect(({ operation, loading }) => ({

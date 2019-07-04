@@ -13,6 +13,7 @@ import yanshiCode from '../src/assets/yanshi_download_code.png';
 import xiaoyuanCode from '../src/assets/xiaoyuan_download_code.png';
 import xuzhouCode from '../src/assets/xuzhou_download_code.png';
 import czeyCode from '../src/assets/czey_download_code.png';
+// http://image.jingan-china.cn/v2/login/school_2.png
 const defaultConfig = {
   logo,
   code,
@@ -157,6 +158,8 @@ const configs = {
     servicePhone: '400-928-5656',
     layer: 'http://data.jingan-china.cn/v2/login/school_download_layer.png',
     code: xiaoyuanCode,
+    blur: ['http://image.jingan-china.cn/v2/login/school_2.png'],
+    focus: ['http://image.jingan-china.cn/v2/login/school_1.png  '],
     ios:
       'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/campus/official_version/CAMPUSInterSafe.plist&ran=',
     android:

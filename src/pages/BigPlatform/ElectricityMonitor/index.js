@@ -154,7 +154,7 @@ export default class ElectricityMonitor extends PureComponent {
         // console.log(data);
         const { type } = data;
         // 如果数据为告警或恢复，则将数据插入到列表的第一个
-        if ([31, 32].includes(type)) {
+        if ([32, 42, 43, 44].includes(type)) {
           const {
             electricityMonitor: { messages },
           } = this.props;
@@ -188,7 +188,7 @@ export default class ElectricityMonitor extends PureComponent {
           // }
         }
         // 如果为33，则修改单位状态
-        if (type === 33) {
+        if ([32, 42, 43, 44].includes(type)) {
           const { companyId, status } = data;
           const {
             electricityMonitor: {
