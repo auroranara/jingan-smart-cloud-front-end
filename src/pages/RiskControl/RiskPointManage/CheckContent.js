@@ -688,7 +688,7 @@ export default class CheckContent extends PureComponent {
     } = this.props;
     const { riskVisible, activeKey, showImg, qrCode, filterList = [] } = this.state;
     const [{ l, e, c, riskLevel } = {}] = filterList;
-
+    console.log('filterList00', filterList);
     const riskValue = (l * e * c).toFixed(2);
 
     const formItemLayout = {
@@ -749,9 +749,9 @@ export default class CheckContent extends PureComponent {
                       rules: [{ required: true, message: '请选择时间发生的可能性(L)' }],
                     })(
                       <Radio.Group
-                        onChange={e => {
-                          this.handleRadioChange(e, 'l');
-                        }}
+                      // onChange={e => {
+                      //   this.handleRadioChange(e, 'l');
+                      // }}
                       >
                         {llist.map(({ value, desc }) => (
                           <Tooltip title={desc} placement="bottom">
@@ -769,9 +769,9 @@ export default class CheckContent extends PureComponent {
                       rules: [{ required: true, message: '请选择频繁程度(E)' }],
                     })(
                       <Radio.Group
-                        onChange={e => {
-                          this.handleRadioChange(e, 'e');
-                        }}
+                      // onChange={e => {
+                      //   this.handleRadioChange(e, 'e');
+                      // }}
                       >
                         {elist.map(({ value, desc }) => (
                           <Tooltip title={desc} placement="bottom">

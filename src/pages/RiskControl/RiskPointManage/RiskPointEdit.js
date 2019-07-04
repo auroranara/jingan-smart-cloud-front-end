@@ -190,7 +190,7 @@ export default class RiskPointEdit extends PureComponent {
 
           this.setState({ flowList: itemFlowList });
           flow_id = itemFlowList.map(d => {
-            return { flow_id_data: d.flow_id_data };
+            return { flow_id_data: d.flow_id_data, flow_id: d.flow_id };
           });
 
           this.setState(
@@ -499,7 +499,7 @@ export default class RiskPointEdit extends PureComponent {
                   return;
                 }
                 this.setState({ flowList: [...flowList, record] });
-                flow_id.push({ flow_id_data: record.flow_id, flow_id: record.flow_id });
+                flow_id.push({ flow_id_data: record.flow_id });
               }}
             >
               {flow_id.map(item => item.flow_id_data).indexOf(record.flow_id) >= 0 ? (
@@ -837,11 +837,12 @@ export default class RiskPointEdit extends PureComponent {
   };
 
   handlePicInfoDelete = index => {
-    const { picList } = this.state;
+    const { picList, imgTypes } = this.state;
     this.setState({
       picList: picList.filter((item, i) => {
         return i !== index;
       }),
+      imgTypes: imgTypes.filter(item => item !== picList[index].imgType),
       isDisabled: false,
       isEdit: false,
     });
