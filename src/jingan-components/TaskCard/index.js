@@ -15,8 +15,8 @@ const isNotFireEngine = ({ type }) => type !== '消防主机';
 const isNotRepair = ({ type }) => type !== '报修';
 // 状态
 const statusColor = {
-  '火警': '#f83329',
-  '故障': '#eeab07',
+  报警: '#f83329',
+  故障: '#eeab07',
 };
 
 /**
@@ -88,7 +88,13 @@ export default class TaskCard extends BigPlatformCard {
     },
     {
       label: '报修人员',
-      render: ({ repairPersonName, repairPersonPhone }) => <span className={styles.multipleValue}>{[repairPersonName, repairPersonPhone].filter(v => v).map((v, i) => <span key={i}>{v}</span>)}</span>,
+      render: ({ repairPersonName, repairPersonPhone }) => (
+        <span className={styles.multipleValue}>
+          {[repairPersonName, repairPersonPhone].filter(v => v).map((v, i) => (
+            <span key={i}>{v}</span>
+          ))}
+        </span>
+      ),
       hidden: isNotRepair,
       labelContainerClassName: styles.labelContainer,
     },
@@ -100,12 +106,28 @@ export default class TaskCard extends BigPlatformCard {
           return '发生时间';
         }
       },
-      render: ({ startTime }) => <span className={styles.multipleValue}>{startTime && moment(+startTime).format(TIME_FORMAT).split(' ').map((v, i) => <span key={i}>{v}</span>)}</span>,
+      render: ({ startTime }) => (
+        <span className={styles.multipleValue}>
+          {startTime &&
+            moment(+startTime)
+              .format(TIME_FORMAT)
+              .split(' ')
+              .map((v, i) => <span key={i}>{v}</span>)}
+        </span>
+      ),
       labelContainerClassName: styles.labelContainer,
     },
     {
       label: '完成时间',
-      render: ({ endTime }) => <span className={styles.multipleValue}>{endTime && moment(+endTime).format(TIME_FORMAT).split(' ').map((v, i) => <span key={i}>{v}</span>)}</span>,
+      render: ({ endTime }) => (
+        <span className={styles.multipleValue}>
+          {endTime &&
+            moment(+endTime)
+              .format(TIME_FORMAT)
+              .split(' ')
+              .map((v, i) => <span key={i}>{v}</span>)}
+        </span>
+      ),
       hidden: ({ process }) => process !== '已处理',
       labelContainerClassName: styles.labelContainer,
     },
@@ -114,7 +136,7 @@ export default class TaskCard extends BigPlatformCard {
   handleClick = () => {
     const { onClick, data } = this.props;
     onClick && onClick(data);
-  }
+  };
 
   render() {
     const {
@@ -126,9 +148,17 @@ export default class TaskCard extends BigPlatformCard {
     const color = statusColor[status];
 
     return (
-      <Container className={className} style={{ paddingTop: '0.5em', paddingBottom: '0.5em', ...style }}>
+      <Container
+        className={className}
+        style={{ paddingTop: '0.5em', paddingBottom: '0.5em', ...style }}
+      >
         <div className={styles.titleWrapper}>
-          {type !== '报修' && color && <div className={styles.status} style={{ color, borderColor: color }}>{status}</div>}
+          {type !== '报修' &&
+            color && (
+              <div className={styles.status} style={{ color, borderColor: color }}>
+                {status}
+              </div>
+            )}
           <div className={styles.title}>{companyName}</div>
           {repeat > 1 && (
             <Tooltip
@@ -136,16 +166,27 @@ export default class TaskCard extends BigPlatformCard {
               placement="bottom"
               title={
                 <Fragment>
-                  <div>首次发生：{firstTime && moment(+firstTime).format(TIME_FORMAT)}</div>
-                  <div>最近发生：{lastTime && moment(+lastTime).format(TIME_FORMAT)}</div>
+                  <div>
+                    <span style={{ color: '#9F9F9F' }}> 首次发生：</span>
+                    {firstTime && moment(+firstTime).format(TIME_FORMAT)}
+                  </div>
+                  <div>
+                    <span style={{ color: '#9F9F9F' }}> 最近发生：</span>
+                    {lastTime && moment(+lastTime).format(TIME_FORMAT)}
+                  </div>
                 </Fragment>
               }
             >
-              <div className={styles.repeat}>重复上报{repeat}次</div>
+              <div className={styles.repeat}>
+                重复上报
+                {repeat}次
+              </div>
             </Tooltip>
           )}
         </div>
-        <div className={styles.action} onClick={this.handleClick}>处理动态>></div>
+        <div className={styles.action} onClick={this.handleClick}>
+          处理动态>>
+        </div>
         {this.renderFields(fieldsValue)}
       </Container>
     );

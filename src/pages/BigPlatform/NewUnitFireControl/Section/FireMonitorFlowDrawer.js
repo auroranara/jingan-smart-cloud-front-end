@@ -54,6 +54,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       faultDetailLoading,
       onClose,
       handleShowFlowVideo,
+      handleParentChange,
       ...restProps
     } = this.props;
     const { index } = this.state;
@@ -68,7 +69,10 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       ...dataItem,
       dynamicType: 0,
       videoList: dataItem.cameraMessage || [],
-      onCameraClick: handleShowFlowVideo,
+      onCameraClick: () => {
+        handleParentChange({ videoList: dataItem.cameraMessage || [] });
+        handleShowFlowVideo();
+      },
     };
     let left = null;
     if (length) {
