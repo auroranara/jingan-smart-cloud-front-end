@@ -93,7 +93,7 @@ const getCycleType = i => {
   }
 };
 
-let imgTypes = [];
+// let imgTypes = [];
 
 @connect(({ illegalDatabase, buildingsInfo, riskPointManage, user, loading }) => ({
   illegalDatabase,
@@ -119,6 +119,7 @@ export default class RiskPointEdit extends PureComponent {
     yNumCurrent: '',
     imgIdCurrent: '',
     isImgSelect: true,
+    imgTypes: [],
   };
 
   // 返回到列表页面
@@ -226,6 +227,7 @@ export default class RiskPointEdit extends PureComponent {
           this.setState({
             buildingId: buildingId,
             foloorId: foloorId,
+            imgTypes: [],
           });
         },
       });
@@ -252,9 +254,9 @@ export default class RiskPointEdit extends PureComponent {
 
     const { picList, isEdit } = this.state;
 
-    if (isEdit === true) {
-      return message.error('请先保存平面图定位信息');
-    }
+    // if (isEdit === true) {
+    //   return message.error('请先保存平面图定位信息');
+    // }
 
     validateFieldsAndScroll((error, values) => {
       if (!error) {
@@ -821,7 +823,8 @@ export default class RiskPointEdit extends PureComponent {
         isDisabled: false,
       });
     }
-    imgTypes = newList.map(item => item.imgType);
+    const imgTypes = newList.map(item => item.imgType);
+    this.setState({ imgTypes: imgTypes });
   };
 
   handlePicEdit = index => {
@@ -841,6 +844,7 @@ export default class RiskPointEdit extends PureComponent {
         return i !== index;
       }),
       isDisabled: false,
+      isEdit: false,
     });
   };
 
@@ -856,9 +860,9 @@ export default class RiskPointEdit extends PureComponent {
         buildingData: { list: buildingList = [] },
         floorData: { list: floorList = [] },
       },
-      match: {
-        params: { id },
-      },
+      // match: {
+      //   params: { id },
+      // },
     } = this.props;
     const {
       picModalVisible,
@@ -867,9 +871,10 @@ export default class RiskPointEdit extends PureComponent {
       yNumCurrent,
       imgIdCurrent,
       isImgSelect,
+      imgTypes,
     } = this.state;
 
-    // const imgTypeList = picType.filter(item => imgTypes.indexOf(item.key) < 0);
+    const imgTypeList = picType.filter(item => imgTypes.indexOf(item.key) < 0);
 
     // console.log('imgTypeList', imgTypeList);
 
@@ -890,7 +895,7 @@ export default class RiskPointEdit extends PureComponent {
                       onSelect={() => this.handleImgIndex(index)}
                       disabled={item.isDisabled}
                     >
-                      {picType.map(({ key, value }) => (
+                      {imgTypeList.map(({ key, value }) => (
                         <Option value={key} key={key}>
                           {value}
                         </Option>
