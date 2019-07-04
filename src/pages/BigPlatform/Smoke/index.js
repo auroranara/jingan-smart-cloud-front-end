@@ -51,8 +51,9 @@ const options = {
  * author:
  * date: 2019年01月08日
  */
-@connect(({ smoke }) => ({
+@connect(({ smoke, newUnitFireControl }) => ({
   smoke,
+  newUnitFireControl,
 }))
 export default class Smoke extends PureComponent {
   constructor(props) {
@@ -406,6 +407,7 @@ export default class Smoke extends PureComponent {
     location,
     paramName,
     messageFlag,
+    messageFlagForId,
     paramCode,
   }) => {
     const options = {
@@ -425,7 +427,7 @@ export default class Smoke extends PureComponent {
           onClick={() => {
             this.setState({ companyName });
             this.handleClickNotification(companyId);
-            this.handleAlarmClick(messageFlag, companyId, companyName);
+            this.handleAlarmClick(messageFlagForId, companyId, companyName);
           }}
         >
           <div className={styles.notificationText}>
@@ -558,7 +560,7 @@ export default class Smoke extends PureComponent {
     this.setState({ type: type });
   };
 
-  handleAlarmClick = (id, companyId, companyName, num) => {
+  handleAlarmClick = (id, companyId, companyName, num, msg) => {
     const {
       dispatch,
       match: {
@@ -573,6 +575,37 @@ export default class Smoke extends PureComponent {
         this.handleDrawerVisibleChange('alarmDynamic');
       },
     });
+
+    // dispatch({
+    //   type: 'newUnitFireControl/fetchCountNumAndTimeById',
+    //   payload: {
+    //     id,
+    //     reportType: 4,
+    //     fireType: 1,
+    //   },
+    //   callback: res => {
+    //     if (res) {
+    //       // 待处理自行拼
+    //       const { num, lastTime, firstTime } = res;
+    //       // this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+    //       dispatch({
+    //         type: 'newUnitFireControl/saveWorkOrderDetail',
+    //         payload: [{ ...occurData[0], firstTime, num, lastTime }],
+    //       });
+    //     } else {
+    //       // 处理中，已完成请求接口流程信息
+    //       dispatch({
+    //         type: 'newUnitFireControl/fetchWorkOrder',
+    //         payload: { companyId, reportType: 4, id },
+    //         // callback: res => {
+    //         //   if (res.data.list.length === 0) return;
+    //         //   const { num, lastTime } = res.data.list[0];
+    //         //   this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+    //         // },
+    //       });
+    //     }
+    //   },
+    // });
   };
 
   handleFaultClick = (id, companyId, companyName, num) => {
