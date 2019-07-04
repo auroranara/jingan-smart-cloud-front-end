@@ -170,7 +170,9 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       left =
         length === 1 ? (
           <Fragment>
-            {head && <DynamicDrawerTop {...headProps} {...dataItem} />}
+            {head && (
+              <DynamicDrawerTop {...headProps} {...dataItem} {...{ companyName: undefined }} />
+            )}
             {cards}
           </Fragment>
         ) : (
