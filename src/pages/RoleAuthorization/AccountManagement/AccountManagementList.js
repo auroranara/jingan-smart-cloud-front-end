@@ -211,6 +211,7 @@ export default class accountManagementList extends React.Component {
       fetch,
       fetchUnitsFuzzy,
       fetchRoles,
+      fetchGridList,
       account: { searchInfo },
       form: { setFieldsValue },
       user: {
@@ -218,18 +219,16 @@ export default class accountManagementList extends React.Component {
       },
     } = this.props;
 
-    const isUnitUser = this.isUnitUser();
+    const isUnitUser = this.isUnitUser(); // 是否非运营
+    let selectedUnitType;
     let listPayload;
     if (isUnitUser) {
       fetchRoles({ payload: { unitType, companyId: unitId } });
       listPayload = { pageSize, pageNum: 1, unitId };
     } else {
-      let selectedUnitType;
       if (searchInfo)
         // 上次缓存在model里的筛选条件
         selectedUnitType = searchInfo.unitType;
-
-      this.setState({ unitTypeChecked: selectedUnitType });
 
       // 如果有搜索条件，则填入并所属单位和账号列表
       if (searchInfo) {
@@ -265,8 +264,11 @@ export default class accountManagementList extends React.Component {
         listPayload = { pageSize, pageNum: 1 };
       }
     }
-
-    searchInfo && setFieldsValue(searchInfo);
+    // 如果是政府用户或者搜索记录中选择了政府 获取网格列表
+    [selectedUnitType, unitType].includes(GOV) && fetchGridList()
+    this.setState({ unitTypeChecked: selectedUnitType }, () => {
+      searchInfo && setFieldsValue(searchInfo);
+    });
     fetch({ payload: listPayload });
   };
 
@@ -545,6 +547,7 @@ export default class accountManagementList extends React.Component {
       form: { getFieldDecorator },
       hiddenDangerReport: { gridList },
       loading,
+      user: { currentUser: { unitType } },
     } = this.props;
 
     const isUnitUser = this.isUnitUser(); // 单位用户且不为运营
@@ -640,7 +643,7 @@ export default class accountManagementList extends React.Component {
                 </Select>
               )}
             </FormItem>
-            {!isUnitUser && unitTypeChecked === GOV && (
+            {(unitTypeChecked === GOV || unitType === GOV) && (
               <FormItem label="所属网格">
                 {getFieldDecorator('gridId')(
                   <TreeSelect

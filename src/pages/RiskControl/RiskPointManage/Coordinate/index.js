@@ -110,7 +110,6 @@ export default class App extends PureComponent {
     } = this.props;
 
     const { position, index, pageNum } = this.state;
-
     return (
       urls.length > 0 && (
         <Modal

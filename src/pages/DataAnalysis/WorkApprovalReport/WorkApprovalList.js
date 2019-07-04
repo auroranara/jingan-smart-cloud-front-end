@@ -224,10 +224,17 @@ export default class WorkApprovalList extends PureComponent {
   /**
    * 筛选条件-危险化学品改变
    */
-  handleChemicalSelect = (materialsId) => {
-    if (!materialsId) return
-    // 获取供货方单位
-    this.fetchSupplierUnits({ payload: { materialsId } })
+  handleChemicalChange = (materialsId) => {
+    if (materialsId) {
+      // 获取供货方单位
+      this.fetchSupplierUnits({ payload: { materialsId } })
+    } else {
+      const { dispatch } = this.props
+      dispatch({
+        type: 'dataAnalysis/save',
+        payload: { supplierUnits: [] },
+      })
+    }
     // 清空筛选栏供货方单位
     const { filterValues } = this.state
     this.filterForm.setFieldsValue({ supplyCompany: undefined })
@@ -381,7 +388,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'dangerChemicalId',
         label: '危险化学品',
         render: () => (
-          <Select placeholder="请选择" onSelect={this.handleChemicalSelect} >
+          <Select placeholder="请选择" allowClear onChange={this.handleChemicalChange} >
             {dangerChemicals.map(item => (<Option key={item.id}>{item.name}</Option>))}
           </Select>
         ),
@@ -390,7 +397,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'qualified',
         label: '是否合格',
         render: () => (
-          <Select placeholder="请选择" >
+          <Select placeholder="请选择" allowClear>
             {QUALIFIED.map(({ value, label }) => (<Option key={value}>{label}</Option>))}
           </Select>
         ),
@@ -399,7 +406,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'supplyCompany',
         label: '供货方单位',
         render: () => (
-          <Select placeholder="请选择" >
+          <Select placeholder="请选择" allowClear >
             {supplierUnits.map(item => (<Option key={item.id}>{item.name}</Option>))}
           </Select>
         ),
@@ -421,7 +428,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'approveStatus',
         label: '审批状态',
         render: () => (
-          <Select placeholder="请选择" >
+          <Select placeholder="请选择" allowClear >
             {approvalStatus.map(item => (<Option key={item.value}>{item.desc}</Option>))}
           </Select>
         ),
@@ -430,7 +437,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'zyjb',
         label: '作业级别',
         render: () => (
-          <Select placeholder="请选择" >
+          <Select placeholder="请选择" allowClear>
             {jobLevel.map(item => (<Option key={item.value}>{item.desc}</Option>))}
           </Select>
         ),
@@ -439,7 +446,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'zylb',
         label: '作业类别',
         render: () => (
-          <Select placeholder="请选择" >
+          <Select placeholder="请选择" allowClear>
             {jobLevel.map(item => (<Option key={item.value}>{item.desc}</Option>))}
           </Select>
         ),
