@@ -252,11 +252,7 @@ export default class CheckContent extends PureComponent {
 
   // 显示风险评估告知卡模态框
   handleRiskModal = id => {
-    const {
-      dispatch,
-      riskPointList: list = [],
-      // form: { setFieldsValue },
-    } = this.props;
+    const { dispatch, riskPointList: list = [] } = this.props;
 
     const filterList = list.filter(item => item.itemId === id);
 
@@ -289,9 +285,9 @@ export default class CheckContent extends PureComponent {
     const {
       form: { getFieldValue, setFieldsValue },
       dispatch,
-      user: {
-        currentUser: { id },
-      },
+      // user: {
+      //   currentUser: { id },
+      // },
     } = this.props;
 
     const {
@@ -319,7 +315,7 @@ export default class CheckContent extends PureComponent {
     }
 
     // 保存选中条件
-    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
+    sessionStorage.setItem(`${sessionPrefix}`, JSON.stringify(payload));
   };
 
   // 风险评估保存
@@ -329,9 +325,6 @@ export default class CheckContent extends PureComponent {
       form: { validateFields },
       companyId,
       tabActiveKey,
-      user: {
-        currentUser: { id },
-      },
     } = this.props;
 
     const { riskAssessId } = this.state;
@@ -372,7 +365,7 @@ export default class CheckContent extends PureComponent {
         const { count, customCount } = values;
 
         // 从sessionStorage中获取存储的控件值
-        const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
+        const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}`));
 
         dispatch({
           type: 'riskPointManage/fetchAssessLevel',
@@ -694,7 +687,6 @@ export default class CheckContent extends PureComponent {
       lecData: { llist = [], elist = [], clist = [] },
     } = this.props;
     const { riskVisible, activeKey, showImg, qrCode, filterList = [] } = this.state;
-
     const [{ l, e, c, riskLevel } = {}] = filterList;
 
     const riskValue = (l * e * c).toFixed(2);
