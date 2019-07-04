@@ -381,7 +381,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'dangerChemicalId',
         label: '危险化学品',
         render: () => (
-          <Select placeholder="请选择" onSelect={this.handleChemicalSelect} >
+          <Select placeholder="请选择" allowClear onSelect={this.handleChemicalSelect} >
             {dangerChemicals.map(item => (<Option key={item.id}>{item.name}</Option>))}
           </Select>
         ),
@@ -390,7 +390,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'qualified',
         label: '是否合格',
         render: () => (
-          <Select placeholder="请选择" >
+          <Select placeholder="请选择" allowClear>
             {QUALIFIED.map(({ value, label }) => (<Option key={value}>{label}</Option>))}
           </Select>
         ),
@@ -399,7 +399,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'supplyCompany',
         label: '供货方单位',
         render: () => (
-          <Select placeholder="请选择" >
+          <Select placeholder="请选择" allowClear >
             {supplierUnits.map(item => (<Option key={item.id}>{item.name}</Option>))}
           </Select>
         ),
@@ -421,7 +421,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'approveStatus',
         label: '审批状态',
         render: () => (
-          <Select placeholder="请选择" >
+          <Select placeholder="请选择" allowClear >
             {approvalStatus.map(item => (<Option key={item.value}>{item.desc}</Option>))}
           </Select>
         ),
@@ -430,7 +430,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'zyjb',
         label: '作业级别',
         render: () => (
-          <Select placeholder="请选择" >
+          <Select placeholder="请选择" allowClear>
             {jobLevel.map(item => (<Option key={item.value}>{item.desc}</Option>))}
           </Select>
         ),
@@ -439,7 +439,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'zylb',
         label: '作业类别',
         render: () => (
-          <Select placeholder="请选择" >
+          <Select placeholder="请选择" allowClear>
             {jobLevel.map(item => (<Option key={item.value}>{item.desc}</Option>))}
           </Select>
         ),
