@@ -15,7 +15,7 @@ const isNotFireEngine = ({ type }) => type !== '消防主机';
 const isNotRepair = ({ type }) => type !== '报修';
 // 状态
 const statusColor = {
-  火警: '#f83329',
+  报警: '#f83329',
   故障: '#eeab07',
 };
 
