@@ -251,7 +251,7 @@ function OrderCard(props) {
               workOrderType,
               type,
               workOrderStatus === 0 ? occurData : undefined,
-              cameraMessage
+              cameraMessage || []
             );
           }}
         >

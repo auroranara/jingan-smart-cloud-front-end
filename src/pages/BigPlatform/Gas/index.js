@@ -201,14 +201,14 @@ export default class Gas extends PureComponent {
         const { alarmIds } = this.state;
         const index = unitIds.indexOf(companyId);
         // 如果数据为告警或恢复，则将数据插入到列表的第一个
-        if ([31, 32].includes(type)) {
+        if ([39, 45].includes(type)) {
           // dispatch({
           //   type: 'gas/save',
           //   payload: { messages: [data].concat(messages) },
           // });
           // 如果发生告警，弹出通知框，否则关闭通知框
           this.fetchAbnormal();
-          if (type === 32) {
+          if (type === 39) {
             // const sameItem = alarmIds.find(item=>item.companyId===companyId);
             let sameIndex;
             alarmIds.forEach((item, i) => {
@@ -260,23 +260,6 @@ export default class Gas extends PureComponent {
               this.setState({ alarmIds: newIds });
             }
           }
-        }
-        // 如果为33，则修改单位状态
-        if (type === 33) {
-          this.fetchAbnormal();
-          // dispatch({
-          //   type: 'gas/saveUnitData',
-          //   payload: {
-          //     unitSet: {
-          //       ...unitSet,
-          //       units: [
-          //         ...units.slice(0, index),
-          //         { ...units[index], faultNum: units[index].faultNum - 1 },
-          //         ...units.slice(index + 1),
-          //       ],
-          //     },
-          //   },
-          // });
         }
       } catch (error) {
         console.log('error', error);
