@@ -395,6 +395,8 @@ export default {
     phoneVisible: false,
     // 设备统计列表
     deviceCountList: [],
+    // 安全巡查列表
+    safetyCheckList: [],
   },
 
   effects: {
@@ -757,6 +759,23 @@ export default {
         yield put({ type: 'saveRiskPointAttr', payload: { inspectionCount: response.data } });
       }
       callback && callback(response);
+    },
+    *fetchSafetyCheckList({ payload, callback }, { call, put }) {
+      const response = yield call(getPoints, payload);
+      const { code=500, data, msg='获取安全巡查数据失败，请稍后重试！' } = response || {};
+      if (code === 200) {
+        let safetyCheckList = data && data.pointInfo ? data.pointInfo : [];
+        safetyCheckList = safetyCheckList
+          .filter(({ status }) => +status === 4)
+          .map(({ x_mum: x_num, y_mum: y_num, ...point }) => ({ ...point, x_num, y_num }))
+          .sort(({ nextCheckDate: a }, { nextCheckDate: b }) => a - b);
+          yield put({
+            type: 'save',
+            payload: { safetyCheckList },
+          });
+      } else {
+        error(msg);
+      }
     },
     // 获取点位
     *fetchPoints({ payload, callback }, { call, put }) {
