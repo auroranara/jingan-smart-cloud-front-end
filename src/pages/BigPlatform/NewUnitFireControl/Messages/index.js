@@ -396,7 +396,7 @@ export default class Messages extends PureComponent {
           <a
             className={styles.detailBtn}
             onClick={() => {
-              handleClickElecMsg(deviceId);
+              handleClickElecMsg(deviceId, paramName);
             }}
           >
             详情

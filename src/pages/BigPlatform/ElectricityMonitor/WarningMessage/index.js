@@ -31,13 +31,14 @@ const Message = function({
         <div className={styles.messageTitleRight}>{moment(addTime).format('HH:mm:ss')}</div>
       </div>
       <div className={styles.messageContent}>
-        {type === 32 ? (
+        {type === 32 && (
           <div
             className={styles.msgDetail}
           >{`${area}${location}${paramName}${realtimeVal}${unit}（${
             condition === '>=' ? '≥' : '≤'
           }${limitVal}${unit}）`}</div>
-        ) : (
+        )}
+        {type === 44 && (
           <Fragment>
             <div>{`${moment(oldWarningTime).format(
               'HH:mm:ss'

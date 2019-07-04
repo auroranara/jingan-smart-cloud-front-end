@@ -1,6 +1,8 @@
 import { Component, Fragment } from 'react';
+import { Tooltip } from 'antd';
 import MsgRead from './MsgRead';
 import moment from 'moment';
+import Ellipsis from '@/components/Ellipsis';
 import styles from './DynamicDrawerTop.less';
 
 import bakFlag from '@/assets/bac-flag.png';
@@ -105,13 +107,31 @@ export default class DynamicDrawerTop extends Component {
                   {sdeviceName}
                 </div>
               )}
-              <div className={styles.line}>
-                所在区域：
-                {area || getEmptyData()}
+              <div
+                className={styles.line}
+                style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+              >
+                <Tooltip
+                  placement={'bottomLeft'}
+                  title={`所在区域：${area || getEmptyData()}`}
+                  overlayStyle={{ zIndex: 6666 }}
+                >
+                  所在区域：
+                  {area || getEmptyData()}
+                </Tooltip>
               </div>
-              <div className={styles.line}>
-                位置：
-                {location || getEmptyData()}
+              <div
+                className={styles.line}
+                style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+              >
+                <Tooltip
+                  placement={'bottomLeft'}
+                  title={`位置：${location || getEmptyData()}`}
+                  overlayStyle={{ zIndex: 6666 }}
+                >
+                  位置：
+                  {location || getEmptyData()}
+                </Tooltip>
               </div>
             </Fragment>
           )}
