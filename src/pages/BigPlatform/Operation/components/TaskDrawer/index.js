@@ -21,11 +21,11 @@ const processDict = {
   已处理: 1,
 };
 const statusDict = {
-  火警: 1,
+  报警: 1,
   故障: 2,
 };
 const statusDict2 = {
-  1: '火警',
+  1: '报警',
   2: '故障',
 };
 const proceDict = {
@@ -45,8 +45,8 @@ const statusList = [
     value: '类型',
   },
   {
-    key: '火警',
-    value: '火警',
+    key: '报警',
+    value: '报警',
   },
   {
     key: '故障',
@@ -98,7 +98,7 @@ export default class TaskDrawer extends PureComponent {
 
   scroll = null;
 
-  lastActiveStatus = '火警';
+  lastActiveStatus = '报警';
 
   componentDidUpdate({ visible: prevVisible }) {
     const { visible } = this.props;
