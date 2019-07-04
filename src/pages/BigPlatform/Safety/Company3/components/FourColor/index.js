@@ -28,12 +28,10 @@ const getStatusLabel = status => {
       return <span style={{ color: '#fff' }}>正常</span>;
     case 2:
       return <span style={{ color: '#FF4848' }}>异常</span>;
-    case 3:
-      return <span style={{ color: '#fff' }}>待检查</span>;
     case 4:
       return <span style={{ color: '#FF4848' }}>已超时</span>;
     default:
-      return '';
+      return <span style={{ color: '#fff' }}>待检查</span>;
   }
 };
 /**
@@ -326,7 +324,7 @@ export default class FourColor extends PureComponent {
                         backgroundImage: `url(${getIconByColor(risk_level, originalStatus)})`,
                       }}
                       onClick={() => {
-                        handleClickPoint(item_id, status);
+                        handleClickPoint(item_id, status || 3);
                       }}
                     />
                   </Tooltip>
