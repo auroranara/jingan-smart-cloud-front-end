@@ -227,7 +227,7 @@ export default class RiskPointEdit extends PureComponent {
           this.setState({
             buildingId: buildingId,
             foloorId: foloorId,
-            imgTypes: [],
+            imgTypes: pointFixInfoList.map(item => item.imgType),
           });
         },
       });
@@ -844,6 +844,7 @@ export default class RiskPointEdit extends PureComponent {
       }),
       isDisabled: false,
       isEdit: false,
+      imgTypes: picList.map(item => item.imgType),
     });
   };
 
