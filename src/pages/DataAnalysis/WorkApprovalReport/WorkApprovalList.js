@@ -224,10 +224,17 @@ export default class WorkApprovalList extends PureComponent {
   /**
    * 筛选条件-危险化学品改变
    */
-  handleChemicalSelect = (materialsId) => {
-    if (!materialsId) return
-    // 获取供货方单位
-    this.fetchSupplierUnits({ payload: { materialsId } })
+  handleChemicalChange = (materialsId) => {
+    if (materialsId) {
+      // 获取供货方单位
+      this.fetchSupplierUnits({ payload: { materialsId } })
+    } else {
+      const { dispatch } = this.props
+      dispatch({
+        type: 'dataAnalysis/save',
+        payload: { supplierUnits: [] },
+      })
+    }
     // 清空筛选栏供货方单位
     const { filterValues } = this.state
     this.filterForm.setFieldsValue({ supplyCompany: undefined })
@@ -381,7 +388,7 @@ export default class WorkApprovalList extends PureComponent {
         id: 'dangerChemicalId',
         label: '危险化学品',
         render: () => (
-          <Select placeholder="请选择" allowClear onSelect={this.handleChemicalSelect} >
+          <Select placeholder="请选择" allowClear onChange={this.handleChemicalChange} >
             {dangerChemicals.map(item => (<Option key={item.id}>{item.name}</Option>))}
           </Select>
         ),
