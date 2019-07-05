@@ -125,6 +125,7 @@ export default class CheckContent extends PureComponent {
     activeKey: null,
     riskAssessId: '', // 风险评估对应ItemId
     filterList: [],
+    riskValues: '',
   };
 
   // 生命周期函数
@@ -257,14 +258,13 @@ export default class CheckContent extends PureComponent {
       riskPointList: list = [],
       form: { setFieldsValue },
     } = this.props;
-
     const filterList = list.filter(item => item.itemId === id);
     this.setState({ activeKey: '1', riskVisible: true, riskAssessId: id, filterList: filterList });
 
     const [{ l: hasL, e: hasE, c: hanC } = {}] = filterList;
     const hasRiskValue = (hasL * hasE * hanC).toFixed(1);
 
-    if (hasL) {
+    if (hasL && hasRiskValue > 0.0) {
       dispatch({
         type: 'riskPointManage/fetchCountLevel',
         payload: {
@@ -275,24 +275,22 @@ export default class CheckContent extends PureComponent {
         l: hasL,
         e: hasE,
         c: hanC,
+        riskValue: hasRiskValue,
       });
     } else {
       setFieldsValue({
         l: undefined,
         e: undefined,
         c: undefined,
+        riskValue: undefined,
       });
+      this.setState({ riskValues: undefined });
     }
   };
 
   // 关闭风险评估告知卡模态框
   handleCloseModal = () => {
     this.setState({ riskVisible: false });
-  };
-
-  // 风险评估Tab切换
-  handleTabs = key => {
-    this.setState({ activeKey: key });
   };
 
   // 计算风险值
@@ -328,6 +326,12 @@ export default class CheckContent extends PureComponent {
 
     // 保存选中条件
     sessionStorage.setItem(`${sessionPrefix}`, JSON.stringify(payload));
+    this.setState({ riskValues: riskValue });
+  };
+
+  // 风险评估Tab切换
+  handleTabs = key => {
+    this.setState({ activeKey: key });
   };
 
   // 风险评估保存
@@ -699,11 +703,11 @@ export default class CheckContent extends PureComponent {
       lecData: { llist = [], elist = [], clist = [] },
     } = this.props;
 
-    const { riskVisible, activeKey, showImg, qrCode, filterList = [] } = this.state;
+    const { riskVisible, activeKey, showImg, qrCode, filterList = [], riskValues } = this.state;
     const [{ l, e, c, riskLevel } = {}] = filterList;
 
     const riskValue = (l * e * c).toFixed(1);
-
+    console.log('riskValue', riskValue);
     const formItemLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
@@ -797,7 +801,8 @@ export default class CheckContent extends PureComponent {
                   </FormItem>
                   <FormItem {...formItemLayout} label="对应风险等级">
                     {getFieldDecorator('count', {
-                      initialValue: getCount(count),
+                      initialValue:
+                        riskValue > 0.0 ? getCount(count) : riskValues ? getCount(count) : '',
                     })(<Input disabled placeholder="计算中..." style={{ width: 180 }} />)}
                   </FormItem>
                 </Form>
