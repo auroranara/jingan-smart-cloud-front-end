@@ -252,20 +252,35 @@ export default class CheckContent extends PureComponent {
 
   // 显示风险评估告知卡模态框
   handleRiskModal = id => {
-    const { dispatch, riskPointList: list = [] } = this.props;
+    const {
+      dispatch,
+      riskPointList: list = [],
+      form: { setFieldsValue },
+    } = this.props;
 
     const filterList = list.filter(item => item.itemId === id);
-
     this.setState({ activeKey: '1', riskVisible: true, riskAssessId: id, filterList: filterList });
-    const [{ l: hasL, e: hasE, c: hanC } = {}] = filterList;
-    const hasRiskValue = (hasL * hasE * hanC).toFixed(2);
 
-    if (hasRiskValue) {
+    const [{ l: hasL, e: hasE, c: hanC } = {}] = filterList;
+    const hasRiskValue = (hasL * hasE * hanC).toFixed(1);
+
+    if (hasL) {
       dispatch({
         type: 'riskPointManage/fetchCountLevel',
         payload: {
           levelValue: hasRiskValue,
         },
+      });
+      setFieldsValue({
+        l: hasL,
+        e: hasE,
+        c: hanC,
+      });
+    } else {
+      setFieldsValue({
+        l: undefined,
+        e: undefined,
+        c: undefined,
       });
     }
   };
@@ -297,7 +312,7 @@ export default class CheckContent extends PureComponent {
     const riskValue = getFieldValue('riskValue') || 1;
 
     setFieldsValue({
-      riskValue: ((l * e * c * value) / (getFieldValue(name) || 1)).toFixed(2),
+      riskValue: ((l * e * c * value) / (getFieldValue(name) || 1)).toFixed(1),
     });
 
     const payload = { l, e, c, riskValue, [name]: value };
@@ -683,10 +698,11 @@ export default class CheckContent extends PureComponent {
       riskPointManage: { isLast, count, riskGrade = [] },
       lecData: { llist = [], elist = [], clist = [] },
     } = this.props;
+
     const { riskVisible, activeKey, showImg, qrCode, filterList = [] } = this.state;
     const [{ l, e, c, riskLevel } = {}] = filterList;
-    console.log('filterList00', filterList);
-    const riskValue = (l * e * c).toFixed(2);
+
+    const riskValue = (l * e * c).toFixed(1);
 
     const formItemLayout = {
       labelCol: { span: 8 },
@@ -697,32 +713,6 @@ export default class CheckContent extends PureComponent {
       <div>
         <BackTop />
         {this.renderForm()}
-        <InfiniteScroll
-          initialLoad={false}
-          pageStart={0}
-          loadMore={() => {
-            // 防止多次加载
-            !loading && this.handleLoadMore();
-          }}
-          hasMore={!isLast}
-          loader={
-            <div className="loader" key={0}>
-              {loading && (
-                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-                  <Spin />
-                </div>
-              )}
-            </div>
-          }
-        >
-          {this.renderList()}
-        </InfiniteScroll>
-
-        <div className={styles.magnify} style={{ display: showImg ? 'block' : 'none' }}>
-          <QRCode className={styles.qrcode} size={200} value={qrCode} />
-          <Icon type="close" onClick={this.handleCloseImg} className={styles.iconClose} />
-        </div>
-
         <Modal
           title="风险评估"
           width={650}
@@ -819,7 +809,7 @@ export default class CheckContent extends PureComponent {
                   <FormItem {...formItemLayout} label="风险等级">
                     {getFieldDecorator('customCount', {
                       rules: [{ required: true, message: '请选择风险等级' }],
-                      initialValue: riskLevel ? riskLevel : '请选择风险等级',
+                      initialValue: riskLevel ? riskLevel : '',
                     })(
                       <Select
                         placeholder="请选择风险等级"
@@ -841,6 +831,32 @@ export default class CheckContent extends PureComponent {
           </Tabs>
           ,
         </Modal>
+
+        <InfiniteScroll
+          initialLoad={false}
+          pageStart={0}
+          loadMore={() => {
+            // 防止多次加载
+            !loading && this.handleLoadMore();
+          }}
+          hasMore={!isLast}
+          loader={
+            <div className="loader" key={0}>
+              {loading && (
+                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
+                  <Spin />
+                </div>
+              )}
+            </div>
+          }
+        >
+          {this.renderList()}
+        </InfiniteScroll>
+
+        <div className={styles.magnify} style={{ display: showImg ? 'block' : 'none' }}>
+          <QRCode className={styles.qrcode} size={200} value={qrCode} />
+          <Icon type="close" onClick={this.handleCloseImg} className={styles.iconClose} />
+        </div>
       </div>
     );
   }
