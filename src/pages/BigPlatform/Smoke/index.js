@@ -427,7 +427,7 @@ export default class Smoke extends PureComponent {
           onClick={() => {
             this.setState({ companyName });
             this.handleClickNotification(companyId);
-            this.handleAlarmClick(messageFlagForId, companyId, companyName);
+            this.handleAlarmClick(messageFlagForId || messageFlag, companyId, companyName);
           }}
         >
           <div className={styles.notificationText}>
