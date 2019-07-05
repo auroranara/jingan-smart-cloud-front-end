@@ -165,6 +165,9 @@ const getEmptyData = () => {
     fetchGridList(action) {
       dispatch({ type: 'hiddenDangerReport/fetchGridList', ...action });
     },
+    fetchAllGridList(action) {
+      dispatch({ type: 'hiddenDangerReport/fetchAllGridList', ...action });
+    },
   })
 )
 @Form.create()
@@ -212,6 +215,7 @@ export default class accountManagementList extends React.Component {
       fetchUnitsFuzzy,
       fetchRoles,
       fetchGridList,
+      fetchAllGridList,
       account: { searchInfo },
       form: { setFieldsValue },
       user: {
@@ -264,8 +268,9 @@ export default class accountManagementList extends React.Component {
         listPayload = { pageSize, pageNum: 1 };
       }
     }
-    // 如果是政府用户或者搜索记录中选择了政府 获取网格列表
-    [selectedUnitType, unitType].includes(GOV) && fetchGridList()
+    // 获取网格列表
+    selectedUnitType === GOV && fetchGridList()
+    unitType === GOV && fetchAllGridList()
     this.setState({ unitTypeChecked: selectedUnitType }, () => {
       searchInfo && setFieldsValue(searchInfo);
     });
