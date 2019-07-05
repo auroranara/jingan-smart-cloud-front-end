@@ -183,7 +183,7 @@ export default class MapSection extends PureComponent {
           events={{
             click: e => {
               const { messageFlag, companyId, companyName, messageFlagForId } = item;
-              handleAlarmClick(messageFlagForId, companyId, companyName);
+              handleAlarmClick(messageFlagForId || messageFlag, companyId, companyName);
               const newIds = [...alarmIds.slice(0, index), ...alarmIds.slice(index + 1)];
               this.props.handleParentChange({ alarmIds: newIds });
             },

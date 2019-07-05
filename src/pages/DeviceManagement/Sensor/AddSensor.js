@@ -263,8 +263,8 @@ export default class AddSensor extends Component {
           ...currentParameter,
           normalLower,
           normalUpper,
-          smallLower: 0,
-          largeUpper: 0,
+          smallLower: null,
+          largeUpper: null,
         }
         const newMonitoringParameters = monitoringParameters.map(item => {
           return item.id === currentParameter.id ? currentParameter : item

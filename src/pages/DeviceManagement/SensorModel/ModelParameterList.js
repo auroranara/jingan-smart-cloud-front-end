@@ -230,8 +230,8 @@ export default class ModelParameterList extends PureComponent {
           ...parameterDetail,
           normalLower,
           normalUpper,
-          smallLower: 0,
-          largeUpper: 0,
+          smallLower: null,
+          largeUpper: null,
         }
         this.setState({ alarmStrategyModalVisible: false })
         dispatch({
