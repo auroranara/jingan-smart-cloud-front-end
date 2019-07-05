@@ -13,7 +13,7 @@ import {
   fetchCameraTree,
 } from '../services/smoke';
 // 获取单位集
-const getUnitSet = function (units) {
+const getUnitSet = function(units) {
   // 告警单位
   const alarmUnit = [];
   // 预警单位
@@ -392,7 +392,9 @@ export default {
       //     newList.push({ ...item });
       //   }
       // });
-      const newList = response.data.list.filter(item => +item.over_flag === 0);
+      const newList = payload.id
+        ? [...response.data.list]
+        : response.data.list.filter(item => +item.over_flag === 0);
       if (response.code === 200) {
         const num = payload.num || 0;
         const list = num ? newList.slice(0, num) : newList;
