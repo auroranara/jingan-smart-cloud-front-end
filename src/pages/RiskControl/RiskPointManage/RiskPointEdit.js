@@ -93,7 +93,7 @@ const getCycleType = i => {
   }
 };
 
-let imgTypes = [];
+// let imgTypes = [];
 
 @connect(({ illegalDatabase, buildingsInfo, riskPointManage, user, loading }) => ({
   illegalDatabase,
@@ -119,6 +119,7 @@ export default class RiskPointEdit extends PureComponent {
     yNumCurrent: '',
     imgIdCurrent: '',
     isImgSelect: true,
+    imgTypes: [],
   };
 
   // 返回到列表页面
@@ -189,7 +190,7 @@ export default class RiskPointEdit extends PureComponent {
 
           this.setState({ flowList: itemFlowList });
           flow_id = itemFlowList.map(d => {
-            return { flow_id_data: d.flow_id_data };
+            return { flow_id_data: d.flow_id_data, flow_id: d.flow_id };
           });
 
           this.setState(
@@ -226,6 +227,7 @@ export default class RiskPointEdit extends PureComponent {
           this.setState({
             buildingId: buildingId,
             foloorId: foloorId,
+            imgTypes: pointFixInfoList.map(item => item.imgType),
           });
         },
       });
@@ -250,12 +252,11 @@ export default class RiskPointEdit extends PureComponent {
       },
     } = this.props;
 
-    const { picList, isEdit } = this.state;
+    const { picList, isDisabled } = this.state;
 
-    if (isEdit === true) {
-      return message.error('请先保存平面图定位信息');
+    if (isDisabled === true) {
+      return message.error('请先保存平面图定位信息！');
     }
-
     validateFieldsAndScroll((error, values) => {
       if (!error) {
         this.setState({
@@ -821,7 +822,8 @@ export default class RiskPointEdit extends PureComponent {
         isDisabled: false,
       });
     }
-    imgTypes = newList.map(item => item.imgType);
+    const imgTypes = newList.map(item => item.imgType);
+    this.setState({ imgTypes: imgTypes });
   };
 
   handlePicEdit = index => {
@@ -831,16 +833,18 @@ export default class RiskPointEdit extends PureComponent {
       { ...picList[index], isDisabled: false, isEdit: true },
       ...picList.slice(index + 1),
     ];
-    this.setState({ picList: newList, isEdit: true });
+    this.setState({ picList: newList, isEdit: true, isDisabled: true });
   };
 
   handlePicInfoDelete = index => {
-    const { picList } = this.state;
+    const { picList, imgTypes } = this.state;
     this.setState({
       picList: picList.filter((item, i) => {
         return i !== index;
       }),
+      imgTypes: imgTypes.filter(item => item !== picList[index].imgType),
       isDisabled: false,
+      isEdit: false,
     });
   };
 
@@ -856,9 +860,6 @@ export default class RiskPointEdit extends PureComponent {
         buildingData: { list: buildingList = [] },
         floorData: { list: floorList = [] },
       },
-      match: {
-        params: { id },
-      },
     } = this.props;
     const {
       picModalVisible,
@@ -867,11 +868,10 @@ export default class RiskPointEdit extends PureComponent {
       yNumCurrent,
       imgIdCurrent,
       isImgSelect,
+      imgTypes,
     } = this.state;
 
-    // const imgTypeList = picType.filter(item => imgTypes.indexOf(item.key) < 0);
-
-    // console.log('imgTypeList', imgTypeList);
+    const imgTypeList = picType.filter(item => imgTypes.indexOf(item.key) < 0);
 
     return (
       <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative' }}>
@@ -890,7 +890,7 @@ export default class RiskPointEdit extends PureComponent {
                       onSelect={() => this.handleImgIndex(index)}
                       disabled={item.isDisabled}
                     >
-                      {picType.map(({ key, value }) => (
+                      {imgTypeList.map(({ key, value }) => (
                         <Option value={key} key={key}>
                           {value}
                         </Option>

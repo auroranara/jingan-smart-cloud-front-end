@@ -395,6 +395,7 @@ export default class Gas extends PureComponent {
     paramName,
     messageFlag,
     paramCode,
+    messageFlagForId,
   }) => {
     const options = {
       key: `${messageFlag}_${paramCode}`,
@@ -413,7 +414,7 @@ export default class Gas extends PureComponent {
           onClick={() => {
             this.setState({ companyName });
             this.handleClickNotification(companyId);
-            this.handleAlarmClick(messageFlag, companyId, companyName);
+            this.handleAlarmClick(messageFlagForId, companyId, companyName);
           }}
         >
           <div className={styles.notificationText}>
