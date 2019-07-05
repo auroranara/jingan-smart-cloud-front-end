@@ -25,6 +25,14 @@ export async function getGridList() {
   return request(`/acloud_new/v2/gridInfo/getTreeDataById`);
 }
 
+
+/**
+ * 获取所有所属网格列表树
+ */
+export async function fetchAllGridList() {
+  return request('/acloud_new/v2/gridInfo/getAllGridTreeData')
+}
+
 /**
  * 导出
  */
@@ -64,3 +72,4 @@ export async function getHiddendeptContent(params) {
 export async function queryUnits(params) {
   return request(`/acloud_new/v2/rolePermission/user/unitsByGrid?${stringify(params)}`);
 }
+
