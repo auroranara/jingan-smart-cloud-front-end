@@ -260,7 +260,7 @@ export default class CheckContent extends PureComponent {
     const [{ l: hasL, e: hasE, c: hanC } = {}] = filterList;
     const hasRiskValue = (hasL * hasE * hanC).toFixed(2);
 
-    if (hasL) {
+    if (hasRiskValue) {
       dispatch({
         type: 'riskPointManage/fetchCountLevel',
         payload: {
@@ -285,9 +285,6 @@ export default class CheckContent extends PureComponent {
     const {
       form: { getFieldValue, setFieldsValue },
       dispatch,
-      // user: {
-      //   currentUser: { id },
-      // },
     } = this.props;
 
     const {
@@ -749,9 +746,9 @@ export default class CheckContent extends PureComponent {
                       rules: [{ required: true, message: '请选择时间发生的可能性(L)' }],
                     })(
                       <Radio.Group
-                      // onChange={e => {
-                      //   this.handleRadioChange(e, 'l');
-                      // }}
+                        onChange={e => {
+                          this.handleRadioChange(e, 'l');
+                        }}
                       >
                         {llist.map(({ value, desc }) => (
                           <Tooltip title={desc} placement="bottom">
@@ -769,9 +766,9 @@ export default class CheckContent extends PureComponent {
                       rules: [{ required: true, message: '请选择频繁程度(E)' }],
                     })(
                       <Radio.Group
-                      // onChange={e => {
-                      //   this.handleRadioChange(e, 'e');
-                      // }}
+                        onChange={e => {
+                          this.handleRadioChange(e, 'e');
+                        }}
                       >
                         {elist.map(({ value, desc }) => (
                           <Tooltip title={desc} placement="bottom">
