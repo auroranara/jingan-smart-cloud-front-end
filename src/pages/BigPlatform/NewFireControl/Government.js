@@ -40,11 +40,10 @@ import DangerDrawer from './section/DangerDrawer';
 import SafeDrawer from './section/SafeDrawer';
 import RiskDrawer from './section/RiskDrawer';
 
-const { location, region, projectName } = global.PROJECT_CONFIG;
+const { location, region } = global.PROJECT_CONFIG;
 
 // const AUTO_LOOKUP_ROTATE = 1;
 const AUTO_LOOKUP_ROTATE = 2;
-const AUDIO_SRC = 'http://data.jingan-china.cn/5a03005e74406.mp3';
 const HEIGHT_PERCNET = { height: '100%' };
 const LOOKING_UP = 'lookingUp';
 const OFF_GUARD = 'offGuardWarning';
