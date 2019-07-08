@@ -187,7 +187,7 @@ export default class RiskPointEdit extends PureComponent {
 
           const buildingList = pointFixInfoList.filter(item => item.imgType === 2);
           const buildingId = buildingList.map(item => item.buildingId).join('');
-          const foloorId = buildingList.map(item => item.fixImgId).join('');
+          const floorId = buildingList.map(item => item.fixImgId).join('');
 
           this.setState({ flowList: itemFlowList });
           flow_id = itemFlowList.map(d => {
@@ -227,7 +227,7 @@ export default class RiskPointEdit extends PureComponent {
           );
           this.setState({
             buildingId: buildingId,
-            foloorId: foloorId,
+            floorId: floorId,
             imgTypes: pointFixInfoList.map(item => item.imgType),
           });
         },
@@ -595,7 +595,7 @@ export default class RiskPointEdit extends PureComponent {
 
     const buildingList = picList.filter(item => item.imgType === 2);
     const buildingId = buildingList.map(item => item.buildingId).join('');
-    const floorId = buildingList.map(item => item.fixImgId).join('');
+    const floorId = buildingList.map(item => item.floorId).join('');
 
     const callback = () => {
       this.setState({
@@ -782,7 +782,7 @@ export default class RiskPointEdit extends PureComponent {
         floorId: id,
       },
     });
-    this.setState({ foloorId: id });
+    this.setState({ floorId: id });
   };
 
   // 平面图保存
@@ -790,7 +790,7 @@ export default class RiskPointEdit extends PureComponent {
     const {
       form: { getFieldValue },
     } = this.props;
-    const { picList, buildingId, foloorId } = this.state;
+    const { picList, buildingId, floorId } = this.state;
     const newList = [
       ...picList.slice(0, index),
       {
@@ -800,7 +800,7 @@ export default class RiskPointEdit extends PureComponent {
         ...{
           fixImgId: this.fixImgId,
           buildingId: buildingId,
-          floorId: foloorId,
+          floorId: floorId,
           imgType: getFieldValue(`type${index}`),
           xnum: getFieldValue(`xnum${index}`),
           ynum: getFieldValue(`ynum${index}`),
@@ -871,11 +871,16 @@ export default class RiskPointEdit extends PureComponent {
       imgIdCurrent,
       isImgSelect,
       imgTypes,
-      // typeIndex,
-      // imgIndex,
     } = this.state;
 
     const imgTypeList = picType.filter(item => imgTypes.indexOf(item.key) < 0);
+    // const urlList = [];
+    // imgList.forEach(element => {
+    //   const list = element.webUrl.split(',').map(item => {
+    //     return { ...element, webUrl: item };
+    //   });
+    //   urlList.push(...list);
+    // });
 
     return (
       <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative' }}>
@@ -926,7 +931,7 @@ export default class RiskPointEdit extends PureComponent {
                 {getFieldValue(`type${index}`) === 2 && (
                   <Col span={4}>
                     {getFieldDecorator(`floorName${index}`, {
-                      initialValue: item.fixImgId,
+                      initialValue: item.floorId,
                     })(
                       <Select
                         allowClear
@@ -1010,8 +1015,6 @@ export default class RiskPointEdit extends PureComponent {
           yNum={yNumCurrent}
           imgIdCurrent={imgIdCurrent}
           isImgSelect={isImgSelect}
-          // typeIndex={typeIndex}
-          // imgIndex={imgIndex}
         />
       </Row>
     );
