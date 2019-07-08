@@ -143,6 +143,11 @@ module.exports = env => {
           code: 'dashboard.threedgis',
           component: './BigPlatform/Threedgis',
         },
+        {
+          path: '/big-platform/gas-station/:unitId',
+          code: 'dashboard.gasStation',
+          component: './BigPlatform/GasStation',
+        },
       ],
     },
 
