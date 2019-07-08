@@ -7,6 +7,7 @@ import { Col, message, Modal, notification, Row } from 'antd';
 
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import Lightbox from 'react-images';
+import BigScreenAudio from '@/utils/audio';
 import { myParseInt, getNewAlarms, getGridId, STATUS, DANGER_PAGE_SIZE } from './utils';
 import styles from './Government.less';
 // import Head from './Head';
@@ -43,7 +44,7 @@ const { location, region, projectName } = global.PROJECT_CONFIG;
 
 // const AUTO_LOOKUP_ROTATE = 1;
 const AUTO_LOOKUP_ROTATE = 2;
-
+const AUDIO_SRC = 'http://data.jingan-china.cn/5a03005e74406.mp3';
 const HEIGHT_PERCNET = { height: '100%' };
 const LOOKING_UP = 'lookingUp';
 const OFF_GUARD = 'offGuardWarning';
@@ -123,6 +124,8 @@ export default class FireControlBigPlatform extends PureComponent {
     this.initFetch();
     // this.timer = setInterval(this.polling, DELAY);
     this.connectWebsocket();
+    // this.audio = new BigScreenAudio();
+    // document.addEventListener('click', () => this.audio.play());
   }
 
   componentWillUnmount() {
