@@ -318,12 +318,13 @@ export default class accountManagementList extends React.Component {
       saveSearchInfo,
       form: { resetFields, getFieldValue },
       user: {
-        currentUser: { unitId },
+        currentUser: { unitId, unitType },
       },
     } = this.props;
     const isUnitUser = this.isUnitUser();
     const payload = { pageSize, pageNum: 1 };
-    clearRoles();
+    if (+unitType === OPE)
+      clearRoles();
     resetFields();
     if (isUnitUser) {
       payload.unitId = unitId;

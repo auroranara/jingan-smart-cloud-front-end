@@ -407,7 +407,8 @@ export default {
     *fetchGasForMaintenance({ payload, success, error }, { call, put }) {
       const response = yield call(getGasForMaintenance, payload);
       if (response.code === 200) {
-        const newList = response.data.list.filter(item => +item.nstatus !== 1);
+        // const newList = response.data.list.filter(item => +item.nstatus !== 1);
+        const newList = response.data.list || [];
         const num = payload.num || 0;
         const list = num ? newList.slice(0, num) : newList;
         yield put({

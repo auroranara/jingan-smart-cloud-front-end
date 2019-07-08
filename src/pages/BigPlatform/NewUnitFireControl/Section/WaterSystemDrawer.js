@@ -59,6 +59,20 @@ function getImageNormal(i) {
   }
 }
 
+function rangeStr(range = [], unit, str) {
+  let newStr = '';
+  if (typeof range[0] === 'number' && typeof range[1] === 'number') {
+    newStr = range.join(str) + unit;
+  } else if (typeof range[0] === 'number') {
+    newStr = '≥' + range[0] + unit;
+  } else if (typeof range[1] === 'number') {
+    newStr = '≤' + range[1] + unit;
+  } else {
+    newStr = '---';
+  }
+  return newStr;
+}
+
 export default class WaterSystemDrawer extends PureComponent {
   state = {
     visible: true, // 抽屉是否可见
@@ -202,16 +216,7 @@ export default class WaterSystemDrawer extends PureComponent {
                 style={{ color: isGray ? '#838383' : '' }}
               >
                 参考范围：
-                {(!normalRange[0] && normalRange[0] !== 0) ||
-                (!normalRange[1] && normalRange[1] !== 0) ||
-                isNotIn ? (
-                  '---'
-                ) : (
-                  <span>
-                    {normalRange[0]}~{normalRange[1]}
-                    {unit}
-                  </span>
-                )}
+                {isNotIn ? '---' : <span>{rangeStr(normalRange, unit, '~')}</span>}
               </Ellipsis>
               {videoList &&
                 videoList.length > 0 && (
@@ -344,25 +349,11 @@ export default class WaterSystemDrawer extends PureComponent {
                   )}
                 </p>
                 <p style={{ marginBottom: 0 }}>
-                  {isGray ? (
+                  {/* {isGray ? (
                     <span style={{ color: '#838383' }}>
-                      参考范围：暂无
-                      {/* {(!normalRange[0] && normalRange[0] !== 0) ||
-                      (!normalRange[1] && normalRange[1] !== 0) ? (
-                        '暂无'
-                      ) : (
-                        <span>
-                          {normalRange[0]}~{normalRange[1]}
-                          {unit}
-                        </span>
-                      )} */}
-                    </span>
-                  ) : (
-                    <span>
-                      参考范围：
+                      参考范围：---
                       {(!normalRange[0] && normalRange[0] !== 0) ||
-                      (!normalRange[1] && normalRange[1] !== 0) ||
-                      isNotIn ? (
+                      (!normalRange[1] && normalRange[1] !== 0) ? (
                         '暂无'
                       ) : (
                         <span>
@@ -371,7 +362,12 @@ export default class WaterSystemDrawer extends PureComponent {
                         </span>
                       )}
                     </span>
-                  )}
+                  ) : ( */}
+                  <span style={{ color: isGray ? '#838383' : '#fff' }}>
+                    参考范围：
+                    {isNotIn ? '---' : <span>{rangeStr(normalRange, unit, '~')}</span>}
+                  </span>
+                  {/* )} */}
                 </p>
                 <div className={styles.lastLine}>
                   {videoList &&

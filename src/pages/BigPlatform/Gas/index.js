@@ -270,9 +270,9 @@ export default class Gas extends PureComponent {
       console.log('reconnecting...');
     };
 
-    setInterval(() => {
-      this.fetchPending();
-    }, 10000);
+    // setInterval(() => {
+    //   this.fetchPending();
+    // }, 10000);
   }
 
   fetchAbnormal = () => {
