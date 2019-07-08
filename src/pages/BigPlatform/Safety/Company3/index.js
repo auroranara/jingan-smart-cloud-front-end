@@ -219,19 +219,20 @@ export default class UnitSafety extends PureComponent {
   /* 设置轮询 */
   setPollingTimer = () => {
     this.pollingTimer = setTimeout(() => {
-      this.getPoints();
-      this.setPollingTimer();
-    }, 10 * 1000);
+      this.getPoints(() => {
+        this.setPollingTimer();
+      });
+    }, 5 * 1000);
   }
 
   /* 获取点位 */
-  getPoints = () => {
+  getPoints = (callback) => {
     const {
       match: {
         params: { companyId },
       },
     } = this.props;
-    this.fetchPoints({ companyId });
+    this.fetchPoints({ companyId }, callback);
   }
 
   /* 前往动态监控大屏 */
