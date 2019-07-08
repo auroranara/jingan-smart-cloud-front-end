@@ -120,6 +120,7 @@ export default class RiskPointEdit extends PureComponent {
     imgIdCurrent: '',
     isImgSelect: true,
     imgTypes: [],
+    imgIndex: '',
   };
 
   // 返回到列表页面
@@ -602,6 +603,7 @@ export default class RiskPointEdit extends PureComponent {
         xNumCurrent: xNumCurrent,
         yNumCurrent: yNumCurrent,
         imgIdCurrent: imgIdCurrent,
+        imgIndex: imgIndex,
       });
     };
 
@@ -869,6 +871,8 @@ export default class RiskPointEdit extends PureComponent {
       imgIdCurrent,
       isImgSelect,
       imgTypes,
+      // typeIndex,
+      // imgIndex,
     } = this.state;
 
     const imgTypeList = picType.filter(item => imgTypes.indexOf(item.key) < 0);
@@ -1006,6 +1010,8 @@ export default class RiskPointEdit extends PureComponent {
           yNum={yNumCurrent}
           imgIdCurrent={imgIdCurrent}
           isImgSelect={isImgSelect}
+          // typeIndex={typeIndex}
+          // imgIndex={imgIndex}
         />
       </Row>
     );

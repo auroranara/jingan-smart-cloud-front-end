@@ -107,9 +107,17 @@ export default class App extends PureComponent {
       width,
       ratio = '75%',
       noClick = true,
+      // typeIndex,
+      // imgIndex,
     } = this.props;
+    // console.log('typeIndex', typeIndex);
+    // console.log('imgIndex', imgIndex);
 
     const { position, index, pageNum } = this.state;
+    // const url =
+    //   typeIndex === 2 || imgIndex === 2 ? urls[index].webUrl.split(',')[0] : urls[index].webUrl;
+    // console.log('url', url);
+
     return (
       urls.length > 0 && (
         <Modal
