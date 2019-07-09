@@ -545,9 +545,9 @@ export default class Login extends PureComponent {
             <div>
               <span>copyright©2019</span>
               <span>{unitName}</span>
+              <span style={{ marginLeft: '5px' }}>{global.VERSION}</span>
             </div>
             <div>
-              {/*
               <span>
                 运营支持：
                 {serviceSupport}
@@ -555,7 +555,7 @@ export default class Login extends PureComponent {
               <span>
                 服务电话：
                 {servicePhone}
-              </span> */}
+              </span>
             </div>
           </div>
         </div>
