@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Divider, Icon } from 'antd';
 import NewSection from '@/components/NewSection';
 import moment from 'moment';
 import { vaguePhone } from '../utils';
@@ -84,6 +84,7 @@ export default class Messages extends PureComponent {
 
   renderMsg = (msg, index) => {
     const {
+      cssType,
       handleParentChange,
       fetchData,
       handleViewDangerDetail,
@@ -381,6 +382,11 @@ export default class Messages extends PureComponent {
       };
     });
 
+    const msgClassName = `msgItem${cssType ? cssType : ''}`;
+    const innerClassName = cssType ? styles.msgInner : undefined ;
+    const msgTime = formatTime(addTime);
+    const firstComponent = cssType ? <Divider>{msgTime}</Divider> : <div className={styles.msgTime}>{msgTime}</div>;
+
     if (type === 44 || type === 32 || type === 42 || type === 43) {
       const elecMsg = {
         44: { elecTitle: '电气火灾报警', elecContent: `${paramName}报警现已恢复正常` },
@@ -392,7 +398,8 @@ export default class Messages extends PureComponent {
         43: { elecTitle: '电气火灾失联', elecContent: `设备状态已恢复正常` },
       };
       return (
-        <div className={styles.msgItem} key={index}>
+        <div className={styles[msgClassName]} key={index}>
+          {firstComponent}
           <a
             className={styles.detailBtn}
             onClick={() => {
@@ -402,16 +409,17 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
-          <div className={styles.msgType}>【{elecMsg[type].elecTitle}】</div>
-          <div className={styles.msgType}>{elecMsg[type].elecContent}</div>
-          <div className={styles.msgBody}>
-            所在区域：
-            {area}
-          </div>
-          <div className={styles.msgBody}>
-            所在位置：
-            {location}
+          <div className={innerClassName}>
+            <div className={styles.msgType}>【{elecMsg[type].elecTitle}】</div>
+            <div className={styles.msgType}>{elecMsg[type].elecContent}</div>
+            <div className={styles.msgBody}>
+              所在区域：
+              {area}
+            </div>
+            <div className={styles.msgBody}>
+              所在位置：
+              {location}
+            </div>
           </div>
         </div>
       );
@@ -425,7 +433,8 @@ export default class Messages extends PureComponent {
         50: '独立烟感报警恢复',
       };
       return (
-        <div className={styles.msgItem} key={index}>
+        <div className={styles[msgClassName]} key={index}>
+          {firstComponent}
           <a
             className={styles.detailBtn}
             onClick={() => {
@@ -435,15 +444,17 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
-          <div className={styles.msgType}>【{smokeTitle[type]}】</div>
-          <div className={styles.msgBody}>
-            所在区域：
-            {area}
-          </div>
-          <div className={styles.msgBody}>
-            所在位置：
-            {location}
+          {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
+          <div className={innerClassName}>
+            <div className={styles.msgType}>【{smokeTitle[type]}】</div>
+            <div className={styles.msgBody}>
+              所在区域：
+              {area}
+            </div>
+            <div className={styles.msgBody}>
+              所在位置：
+              {location}
+            </div>
           </div>
         </div>
       );
@@ -456,7 +467,8 @@ export default class Messages extends PureComponent {
         49: { title: '水系统失联恢复', content: '从失联中恢复' },
       };
       return (
-        <div className={styles.msgItem} key={index}>
+        <div className={styles[msgClassName]} key={index}>
+          {firstComponent}
           <a
             className={styles.detailBtn}
             onClick={() => {
@@ -466,28 +478,33 @@ export default class Messages extends PureComponent {
             详情
             <Icon type="double-right" />
           </a>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
-          <div className={styles.msgType}>【{waterMsg[type].title}】</div>
-          <div className={styles.msgBody}>
-            {+deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱'}
+          {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
+          <div className={innerClassName}>
+            <div className={styles.msgType}>【{waterMsg[type].title}】</div>
+            <div className={styles.msgBody}>
+              {+deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱'}
+            </div>
+            <div className={styles.msgBody}>{virtualName + waterMsg[type].content}</div>
           </div>
-          <div className={styles.msgBody}>{virtualName + waterMsg[type].content}</div>
         </div>
       );
     }
 
     if (type === 45) {
       return (
-        <div className={styles.msgItem} key={index}>
-          <div className={styles.msgTime}>{formatTime(addTime)}</div>
-          <div className={styles.msgType}>【可燃气体报警恢复】</div>
-          <div className={styles.msgBody}>
-            所在区域：
-            {area}
-          </div>
-          <div className={styles.msgBody}>
-            所在位置：
-            {location}
+        <div className={styles[msgClassName]} key={index}>
+          {firstComponent}
+          {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
+          <div className={innerClassName}>
+            <div className={styles.msgType}>【可燃气体报警恢复】</div>
+            <div className={styles.msgBody}>
+              所在区域：
+              {area}
+            </div>
+            <div className={styles.msgBody}>
+              所在位置：
+              {location}
+            </div>
           </div>
         </div>
       );
@@ -495,42 +512,46 @@ export default class Messages extends PureComponent {
 
     const { onClick, items, isRepeat, showMsg } = msgSettings[type.toString()] || { items: [] };
     return (
-      <div className={styles.msgItem} key={index}>
+      <div className={styles[msgClassName]} key={index}>
+        {firstComponent}
         {onClick && (
           <a className={styles.detailBtn} onClick={onClick}>
             详情
             <Icon type="double-right" />
           </a>
         )}
-        <div className={styles.msgTime}>{formatTime(addTime)}</div>
-        <div className={styles.msgType}>
-          {title}
-          {showMsg && (
-            <span>
-              ——
-              {messageContent}
-            </span>
-          )}
+        {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
+        <div className={innerClassName}>
+          <div className={styles.msgType}>
+            {title}
+            {showMsg && (
+              <span>
+                ——
+                {messageContent}
+              </span>
+            )}
+          </div>
+          {items.map((item, i) => {
+            const { name, value } = item;
+            return (
+              <div className={styles.msgBody} key={i}>
+                {name ? `${name}：` : ''}
+                {value || getEmptyData()}
+              </div>
+            );
+          })}
+          {isRepeat &&
+            // repeatCount &&
+            +repeatCount > 1 && (
+              <div className={styles.msgType}>
+                重复上报
+                {repeatCount}
+                次，最近一次更新时间：
+                {lastReportTime}
+              </div>
+            )
+          }
         </div>
-        {items.map((item, i) => {
-          const { name, value } = item;
-          return (
-            <div className={styles.msgBody} key={i}>
-              {name ? `${name}：` : ''}
-              {value || getEmptyData()}
-            </div>
-          );
-        })}
-        {isRepeat &&
-          // repeatCount &&
-          +repeatCount > 1 && (
-            <div className={styles.msgType}>
-              重复上报
-              {repeatCount}
-              次，最近一次更新时间：
-              {lastReportTime}
-            </div>
-          )}
       </div>
     );
     // if (type === 1 || type === 2 || type === 3 || type === 4) {
@@ -955,7 +976,7 @@ export default class Messages extends PureComponent {
       <NewSection
         title="实时消息"
         className={className}
-        style={{ display: 'flex', flexDirection: 'column', height: 'auto' }}
+        style={{ display: 'flex', flexDirection: 'column', height: 'auto', position: 'absolute' }}
         titleStyle={{ flex: 'none' }}
         contentStyle={{
           flex: '1',

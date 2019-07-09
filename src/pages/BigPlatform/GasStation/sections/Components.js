@@ -1,5 +1,6 @@
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import { SetDrawer } from '@/pages/BigPlatform/Safety/Company3/components';
+import CompanyInfo from './CompanyInfo';
 
 export {
   AlarmDynamicDrawer,
@@ -7,7 +8,7 @@ export {
   CheckDrawer,
   CheckingDrawer,
   CheckWorkOrder,
-  CompanyInfo,
+  // CompanyInfo,
   CurrentHiddenDanger,
   DrawerHiddenDangerDetail,
   DrawerOfFireAlarm,
@@ -47,6 +48,7 @@ export {
 } from '@/pages/BigPlatform/NewUnitFireControl/Section/Components';
 
 export {
+  CompanyInfo,
   NewVideoPlay,
   SetDrawer,
 }

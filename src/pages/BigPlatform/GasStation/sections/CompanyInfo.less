@@ -1,0 +1,144 @@
+@red: rgb(248, 51, 41);
+@cyan: #04fdff;
+
+.companyInfo {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  :global {
+    .antd-pro\\components\\-description-list\\index-descriptionList .antd-pro\\components\\-description-list\\index-term {
+      color: #fff;
+      line-height: 26px;
+    }
+    .antd-pro-components-description-list-index-descriptionList .antd-pro-components-description-list-index-term {
+      color: #fff;
+      line-height: 26px;
+    }
+    .antd-pro\\components\\-description-list\\index-descriptionList .antd-pro\\components\\-description-list\\index-detail {
+      color: #fff;
+      line-height: 26px;
+    }
+    .antd-pro-components-description-list-index-descriptionList .antd-pro-components-description-list-index-detail {
+      color: #fff;
+      line-height: 26px;
+    }
+    .antd-pro\\components\\-description-list\\index-descriptionList {
+      .ant-col-xs-24+.ant-col-xs-24 {
+        margin-top: -16px;
+      }
+    }
+    .antd-pro-components-description-list-index-descriptionList {
+      .ant-col-xs-24+.ant-col-xs-24 {
+        margin-top: -16px;
+      }
+    }
+  }
+  .divider {
+    height: 2px;
+    width: 100%;
+    background: linear-gradient(to right, transparent, #0967d3, transparent);
+    opacity: 0.73;
+    margin-top: 10px;
+  }
+  .infoWrapper {
+    display: flex;
+    flex-direction: row;
+    // width: calc(100% - 50px);
+    .iconInfo {
+      width: 50px;
+      background-repeat: no-repeat;
+      background-position: center 8px;
+      background-size: 65% auto;
+    }
+    .info {
+      flex: 1;
+      flex-direction: column;
+      margin-top: 8px;
+      .manWrapper {
+        width: 165px;
+        // .phone {
+        //   margin-left: 20px;
+        // }
+      }
+    }
+  }
+  .companyName {
+    font-size: 17px;
+    line-height: 35px;
+  }
+}
+
+.icons {
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 3%;
+}
+
+.iconItem {
+  display: flex;
+  height: 50px;
+  cursor: pointer;
+}
+
+.icon {
+  width: 50px;
+  height: 50px;
+  background-repeat: no-repeat;
+  background-size: 95% auto;
+  background-position: center center;
+}
+
+.iconDesc {
+  margin-left: 5px;
+}
+
+.checkNum {
+  color: @cyan;
+  font-size: 24px;
+
+  .hint {
+    font-size: 12px;
+    color: #FFF;
+    display: none;
+    width: 60px;
+    padding: 5px 8px;
+    border-radius: 5px;
+    background-color: rgb(22, 22, 22);
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.checkNum:hover {
+  .hint {
+    display: block;
+  }
+}
+
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.redDot:extend(.dot) {
+  background-color: @red;
+}
+
+.cyanDot:extend(.dot) {
+  background-color: @cyan;
+}
+
+.outdate {
+  color: @red;
+}
+
+.slash {
+  color: #FFF;
+}

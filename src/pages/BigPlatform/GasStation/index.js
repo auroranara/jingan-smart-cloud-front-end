@@ -2255,18 +2255,17 @@ export default class GasStation extends PureComponent {
           />
         </Tooltip>
         <div className={styles.companyInfo}>
-          <div className={styles.inner}>
-            {/* 企业基本信息 */}
-            <CompanyInfo
-              handleViewCurrentDanger={this.handleViewCurrentDanger}
-              handleCheckDrawer={this.handleCheckDrawer}
-              model={this.props.newUnitFireControl}
-              phoneVisible={phoneVisible}
-            />
-          </div>
+          {/* 企业基本信息 */}
+          <CompanyInfo
+            handleViewCurrentDanger={this.handleViewCurrentDanger}
+            handleCheckDrawer={this.handleCheckDrawer}
+            model={this.props.newUnitFireControl}
+            phoneVisible={phoneVisible}
+          />
         </div>
         {/* 实时消息 */}
         <Messages
+          cssType="1"
           className={styles.realTimeMessage}
           model={this.props.newUnitFireControl}
           handleParentChange={this.handleParentChange}
@@ -2361,7 +2360,7 @@ export default class GasStation extends PureComponent {
               </div>
             </div>
             <div className={styles.item}>
-              <div className={styles.inner}>
+              <div className={styles.innerLast}>
                 {/* 重点部位监控 */}
                 <VideoSurveillance
                   handlePlay={this.handlePlay}
