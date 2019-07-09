@@ -40,7 +40,7 @@ export default class SensorList extends Component {
 
   componentDidMount() {
     this.fetchMonitoringTypeDict()
-    this.fetchSensorBrandDict()
+    // this.fetchSensorBrandDict()
     this.fetchSensorTypeDict()
     this.handleQuery()
   }
@@ -68,19 +68,6 @@ export default class SensorList extends Component {
       ...actions,
     })
   }
-
-
-  /**
-   * 获取传感器品牌列表（字典）
-   */
-  fetchSensorBrandDict = (actions) => {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'sensor/fetchSensorBrandDict',
-      ...actions,
-    })
-  }
-
 
   /**
    * 获取传感器类型列表（字典）
@@ -110,7 +97,7 @@ export default class SensorList extends Component {
     resetFields()
     this.handleQuery()
     this.fetchMonitoringTypeDict()
-    this.fetchSensorBrandDict()
+    // this.fetchSensorBrandDict()
     this.fetchSensorTypeDict()
   }
 
@@ -199,7 +186,7 @@ export default class SensorList extends Component {
                 )}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
+            {/* <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('brandId')(
                   <Select placeholder="品牌" onChange={this.handleBrandChange} dropdownStyle={{ zIndex: 50 }}>
@@ -209,7 +196,7 @@ export default class SensorList extends Component {
                   </Select>
                 )}
               </FormItem>
-            </Col>
+            </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('typeId')(

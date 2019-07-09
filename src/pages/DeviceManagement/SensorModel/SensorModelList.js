@@ -1,5 +1,5 @@
 import { PureComponent, Fragment } from 'react';
-import { Card, Form, Input, Button, Table, Row, Col, Select, Divider, Modal, message } from 'antd';
+import { Card, Form, Input, Button, Table, Row, Col, Select, Divider, Modal, message, Popconfirm } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 import codes from '@/utils/codes';
@@ -15,14 +15,15 @@ const breadcrumbList = [
   { title: '设备管理', name: '设备管理' },
   { title, name: title },
 ]
-const colWrapper = { lg: 12, md: 12, sm: 24, xs: 24 }
+const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
 const defaultPageSize = 10;
 const {
   deviceManagement: {
     sensorModel: {
       add: addCode,
-      edit: editCode,
+      delete: deleteCode,
+      // edit: editCode,
       model: {
         listView: viewModelCode,
       },
@@ -33,7 +34,8 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 15 },
 };
-const modalLabel = { 'add': '新增', 'edit': '编辑', 'copy': '复制' }
+const MODELLABEL = { 'add': '新增', 'edit': '编辑', 'copy': '克隆' }
+const noAuthStyle = { style: { color: 'rgba(0, 0, 0, 0.25)', cursor: 'not-allowed' } }
 
 @Form.create()
 @connect(({ sensor, resourceManagement, user, loading }) => ({
@@ -55,7 +57,6 @@ export default class SensorModelList extends PureComponent {
       brandDict: [],
       // 传感器型号字典
       typeDict: [],
-      sensorModelId: null,
       sensorDetail: {},
       // 弹窗类型 add/edit/copy
       modalType: 'add',
@@ -64,7 +65,7 @@ export default class SensorModelList extends PureComponent {
 
   componentDidMount() {
     this.fetchMonitoringTypeDict()
-    this.fetchSensorBrandDict()
+    this.fetchAllUnsetModelList()
     this.handleQuery()
   }
 
@@ -113,64 +114,65 @@ export default class SensorModelList extends PureComponent {
     })
   }
 
+
+
+  /**
+   * 根据监测类型获取型号代码列表（对象包含描述和补充描述）,筛选掉已添加
+   * @param {object} { { payload:{ type } } }
+   */
+  fetchUnsetModelList = (actions) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/fetchUnsetModelList',
+      ...actions,
+    })
+  }
+
+
+  /**
+   * 清空型号代码列表
+   */
+  saveModelCodeList = (actions) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/saveModelCodeList',
+      ...actions,
+    })
+  }
+
+
+  /**
+   * 根据监测类型获取型号代码列表（对象包含描述和补充描述）
+   */
+  fetchAllUnsetModelList = (actions) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/fetchAllUnsetModelList',
+      ...actions,
+    })
+  }
+
   /**
    * 筛选栏监测类型改变
    */
-  // handlemonitoringTypeChange = (monitoringTypeId, justState = false) => {
-  //   this.fetchSensorBrandDict({
-  //     payload: { monitoringTypeId, justState },
-  //     callback: (brandDict) => {
-  //       this.setState({ brandDict })
-  //     },
-  //   })
-  //   this.fetchSensorTypeDict({
-  //     payload: { monitoringTypeId, justState },
-  //     callback: (typeDict) => {
-  //       this.setState({ typeDict })
-  //     },
-  //   })
-  // }
-
-
-  /**
-   * 筛选栏品牌改变
-   */
-  // handleBrandChange = (brand, justState = false) => {
-  //   this.fetchMonitoringTypeDict({
-  //     payload: { brand, justState },
-  //     callback: (monitoringTypeDict) => {
-  //       this.setState({ monitoringTypeDict })
-  //     },
-  //   })
-  //   this.fetchSensorTypeDict({
-  //     payload: { brand, justState },
-  //     callback: (typeDict) => {
-  //       this.setState({ typeDict })
-  //     },
-  //   })
-  // }
-
-
-  /**
-   * 筛选栏类型改变
-   */
-  // handleTypeChange = (type) => {
-  //   this.fetchMonitoringTypeDict({ payload: { type } })
-  //   this.fetchSensorBrandDict({ payload: { type } })
-  // }
+  handleMonitoringTypeChange = (type) => {
+    const { form: { setFieldsValue } } = this.props
+    const params = type ? { payload: { type } } : {}
+    this.fetchAllUnsetModelList(params)
+    setFieldsValue({ serTypeCode: undefined })
+  }
 
   handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
     const {
       form: { getFieldsValue },
     } = this.props
-    const { serMonitoringTypeId, serBrand, serType } = getFieldsValue()
+    const { serMonitoringTypeId, serTypeCode } = getFieldsValue()
     this.fetchSensorModels({
       payload: {
         pageNum,
         pageSize,
         monitoringTypeId: serMonitoringTypeId,
-        brandId: serBrand,
-        type: serType,
+        typeCode: serTypeCode,
       },
     })
   }
@@ -182,16 +184,38 @@ export default class SensorModelList extends PureComponent {
     resetFields()
     this.handleQuery()
     this.fetchMonitoringTypeDict()
-    this.fetchSensorBrandDict()
-    this.fetchSensorTypeDict()
+    // this.fetchSensorBrandDict()
+    // this.fetchSensorTypeDict()
   }
 
+  // 新增弹窗监测类型改变
+  handleModalTypeChange = ({ key } = {}) => {
+    const {
+      form: { setFieldsValue },
+    } = this.props
+    // 获取型号代码列表
+    this.fetchUnsetModelList({ payload: { type: key } })
+    // 清空新增弹窗型号代码、描述、补充描述数据
+    setFieldsValue({ typeCode: undefined, brand: undefined, type: undefined })
+  }
+
+  // 新增弹窗型号代码改变
+  handleModalTypeCodeChange = (value) => {
+    const {
+      form: { setFieldsValue },
+      sensor: { modelCodeList = [] },
+    } = this.props
+    const { brand, msg: type } = modelCodeList.find(item => item.model === value) || {}
+    setFieldsValue({ brand, type })
+  }
 
   /**
    * 打开新增弹窗（点击筛选栏新增按钮）
    */
   handleViewAddModel = () => {
-    this.setState({ addModalVisible: true, modalType: 'add', sensorModelId: null, sensorDetail: {} })
+    // 清空型号代码列表
+    this.saveModelCodeList({ payload: [] })
+    this.setState({ addModalVisible: true, modalType: 'add', sensorDetail: {} })
   }
 
 
@@ -203,104 +227,82 @@ export default class SensorModelList extends PureComponent {
       dispatch,
       form: { validateFields },
     } = this.props
-    const { sensorModelId, modalType } = this.state
+    const { sensorDetail = {}, modalType } = this.state
     const success = () => {
-      message.success(`${modalLabel[modalType]}成功！`)
+      message.success(`${MODELLABEL[modalType]}成功！`)
       this.setState({ addModalVisible: false })
       this.handleQuery()
     }
     const error = () => {
-      message.error(`${modalLabel[modalType]}失败！`)
+      message.error(`${MODELLABEL[modalType]}失败！`)
     }
     validateFields((errors, values) => {
       if (errors) return
       const { serBrand, serMonitoringTypeId, serType, monitoringType: { key: monitoringTypeId, label: monitoringType }, ...others } = values
       const payload = { ...others, monitoringType, monitoringTypeId }
       // 如果编辑
-      if (modalType === 'edit') {
-        dispatch({
-          type: 'sensor/editSensorModel',
-          payload: { ...payload, id: sensorModelId },
-          success,
-          error,
-        })
-      } else if (modalType === 'add') {
-        // 如果新增
-        dispatch({
-          type: 'sensor/addSensorModel',
-          payload: { ...payload },
-          success,
-          error,
-        })
-      } else {
-        // 如果复制
-        dispatch({
-          type: 'sensor/copySensorModel',
-          payload: { ...payload, copyId: sensorModelId },
-          success,
-          error,
-        })
-      }
+      // modalType === 'edit' && dispatch({
+      //   type: 'sensor/editSensorModel',
+      //   payload: { ...payload, id: sensorDetail.id },
+      //   success,
+      //   error,
+      // })
+      // 如果新增
+      modalType === 'add' && dispatch({
+        type: 'sensor/addSensorModel',
+        payload: { ...payload },
+        success,
+        error,
+      })
+      // 如果克隆
+      modalType === 'copy' && dispatch({
+        type: 'sensor/copySensorModel',
+        payload: { ...payload, copyId: sensorDetail.id },
+        success,
+        error,
+      })
     })
   }
 
-  validateType = (rule, type, callback) => {
-    const { sensorDetail } = this.state
-    const preType = sensorDetail && sensorDetail.type
-    if (type && preType !== type) {
-      const { dispatch } = this.props
-      dispatch({
-        type: 'sensor/fetchModelCount',
-        payload: { type },
-        callback: ({ count }) => {
-          if (+count > 0) {
-            callback('传感器型号已存在')
-          } else callback()
-        },
-      })
-    } else callback()
-  }
-
-  validateTypeCode = (rule, typeCode, callback) => {
-    const { sensorDetail } = this.state
-    const preTypeCode = sensorDetail && sensorDetail.typeCode
-    if (typeCode && preTypeCode !== typeCode) {
-      const { dispatch } = this.props
-      dispatch({
-        type: 'sensor/fetchModelCount',
-        payload: { typeCode },
-        callback: ({ count }) => {
-          if (+count > 0) {
-            callback('型号代码已存在')
-          } else callback()
-        },
-      })
-    } else callback()
-  }
-
   /**
-   * 点击编辑按钮
+   * 点击编辑/克隆按钮
    */
   handleToEdit = (sensorDetail, modalType) => {
     const { form: { setFieldsValue } } = this.props
-    this.fetchMonitoringTypeDict({ payload: { brandId: sensorDetail.brandId } })
-    this.fetchSensorBrandDict({ payload: { monitoringTypeId: sensorDetail.monitoringTypeId } })
+    // 获取监测参数列表
+    this.fetchMonitoringTypeDict()
+    // this.fetchSensorBrandDict({ payload: { monitoringTypeId: sensorDetail.monitoringTypeId } })
     this.setState({ sensorModelId: sensorDetail.id, addModalVisible: true, modalType, sensorDetail }, () => {
-      const { monitoringType: label, monitoringTypeId: key, type, brandId, typeCode } = sensorDetail
+      const { monitoringType: label, monitoringTypeId: key, type, brand, typeCode } = sensorDetail
+      this.fetchUnsetModelList({ payload: { type: key } })
       if (modalType === 'copy') {
-        // 如果是复制
-        setFieldsValue({
-          monitoringType: { key, label },
-          brandId,
-        })
+        // 如果是克隆
+        setFieldsValue({ monitoringType: { key, label } })
         return
       }
       setFieldsValue({
         monitoringType: { key, label },
         type,
-        brandId,
+        brand,
         typeCode,
       })
+    })
+  }
+
+
+  /**
+   * 删除传感器型号
+   */
+  handleDelete = ({ id }) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/deleteSensorModel',
+      payload: { id },
+      success: () => {
+        message.success('删除成功！')
+        this.handleQuery()
+      },
+      error: response => { message.error(response.msg) },
     })
   }
 
@@ -311,9 +313,8 @@ export default class SensorModelList extends PureComponent {
     const {
       form: { getFieldDecorator },
       sensor: {
-        monitoringTypeDict,
-        brandDict,
-        typeDict,
+        monitoringTypeDict = [],
+        allModelCodeList = [],
       },
     } = this.props
     return (
@@ -323,7 +324,7 @@ export default class SensorModelList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('serMonitoringTypeId')(
-                  <Select placeholder="监测类型" dropdownStyle={{ zIndex: 50 }}>
+                  <Select placeholder="监测类型" dropdownStyle={{ zIndex: 50 }} onChange={this.handleMonitoringTypeChange} allowClear>
                     {monitoringTypeDict.map(({ value, key }) => (
                       <Option key={key} value={key}>{value}</Option>
                     ))}
@@ -333,33 +334,15 @@ export default class SensorModelList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('serBrand')(
-                  <Select placeholder="品牌" dropdownStyle={{ zIndex: 50 }}>
-                    {brandDict.map(({ value, key }) => (
-                      <Option key={key} value={key}>{value}</Option>
+                {getFieldDecorator('serTypeCode')(
+                  <Select placeholder="型号代码">
+                    {allModelCodeList.map(({ model }) => (
+                      <Option key={model} value={model}>{model}</Option>
                     ))}
                   </Select>
                 )}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('serType')(
-                  <Input placeholder="传感器型号" />
-                )}
-              </FormItem>
-            </Col>
-            {/* <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('serType')(
-                  <Select placeholder="传感器型号" onChange={(value) => this.handleTypeChange(value, false)}>
-                    {typeDict.map(({ value, key }) => (
-                      <Option key={key} value={key}>{value}</Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>
-            </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
@@ -376,7 +359,7 @@ export default class SensorModelList extends PureComponent {
   /**
   * 渲染表格
   */
-  renderTable = () => {
+  renderTable = ({ delAuth }) => {
     const {
       loading,
       sensor: {
@@ -392,32 +375,14 @@ export default class SensorModelList extends PureComponent {
     } = this.props
     const columns = [
       {
-        title: '监测类型代码',
-        dataIndex: 'monitoringTypeId',
-        align: 'center',
-        width: 200,
-      },
-      {
         title: '监测类型',
         dataIndex: 'monitoringType',
         align: 'center',
         width: 200,
       },
       {
-        title: '品牌',
-        dataIndex: 'brand',
-        align: 'center',
-        width: 150,
-      },
-      {
         title: '型号代码',
         dataIndex: 'typeCode',
-        align: 'center',
-        width: 150,
-      },
-      {
-        title: '传感器型号',
-        dataIndex: 'type',
         align: 'center',
         width: 150,
       },
@@ -433,6 +398,18 @@ export default class SensorModelList extends PureComponent {
         },
       },
       {
+        title: '描述',
+        dataIndex: 'brand',
+        align: 'center',
+        width: 200,
+      },
+      {
+        title: '补充描述',
+        dataIndex: 'type',
+        align: 'center',
+        width: 300,
+      },
+      {
         title: '操作',
         key: '操作',
         align: 'center',
@@ -442,9 +419,14 @@ export default class SensorModelList extends PureComponent {
           <Fragment>
             <AuthA code={viewModelCode} onClick={() => router.push(`/device-management/sensor-model/model/${row.id}`)}>配置参数</AuthA>
             <Divider type="vertical" />
-            <AuthA code={addCode} onClick={() => this.handleToEdit(row, 'copy')}>复制</AuthA>
+            <AuthA code={addCode} onClick={() => this.handleToEdit(row, 'copy')}>克隆</AuthA>
             <Divider type="vertical" />
-            <AuthA code={editCode} onClick={() => this.handleToEdit(row, 'edit')}>编辑</AuthA>
+            {delAuth ? (
+              <Popconfirm title="确认要删除该传感器型号吗？" onConfirm={() => this.handleDelete(row)}>
+                <a>删除</a>
+              </Popconfirm>
+            ) : (<span {...noAuthStyle}>删除</span>)}
+            {/* <AuthA code={editCode} onClick={() => this.handleToEdit(row, 'edit')}>编辑</AuthA> */}
           </Fragment>
         ),
       },
@@ -486,7 +468,7 @@ export default class SensorModelList extends PureComponent {
       form: { getFieldDecorator },
       sensor: {
         monitoringTypeDict,
-        brandDict,
+        modelCodeList = [],
       },
     } = this.props
     const {
@@ -495,7 +477,7 @@ export default class SensorModelList extends PureComponent {
     } = this.state
     return (
       <Modal
-        title={(modalType === 'add' && '新增传感器型号') || (modalType === 'edit' && '编辑传感器型号') || (modalType === 'copy' && '复制传感器型号')}
+        title={`${MODELLABEL[modalType]}传感器型号`}
         width={700}
         destroyOnClose
         visible={addModalVisible}
@@ -508,45 +490,35 @@ export default class SensorModelList extends PureComponent {
               rules: [{ required: true, message: '请选择监测类型' }],
               validateTrigger: 'onBlur',
             })(
-              <Select labelInValue placeholder="请选择">
+              <Select labelInValue disabled={modalType === 'copy'} placeholder="请选择" onChange={this.handleModalTypeChange}>
                 {monitoringTypeDict.map(({ value, key }) => (
                   <Option key={key} value={key}>{value}</Option>
                 ))}
               </Select>
             )}
           </FormItem>
-          <FormItem label="品牌" {...formItemLayout}>
-            {getFieldDecorator('brandId', {
-              rules: [{ required: true, message: '请选择品牌' }],
+          <FormItem label="型号代码" {...formItemLayout}>
+            {getFieldDecorator('typeCode', {
+              rules: [
+                { required: true, message: '请选择型号代码' },
+              ],
               validateTrigger: 'onBlur',
             })(
-              <Select placeholder="请选择">
-                {brandDict.map(({ value, key }) => (
-                  <Option key={key} value={key}>{value}</Option>
+              <Select placeholder="请选择" onChange={this.handleModalTypeCodeChange}>
+                {modelCodeList.map(({ model }) => (
+                  <Option key={model} value={model}>{model}</Option>
                 ))}
               </Select>
             )}
           </FormItem>
-          <FormItem label="传感器型号" {...formItemLayout}>
-            {getFieldDecorator('type', {
-              rules: [
-                { required: true, message: '请输入传感器型号' },
-                { validator: this.validateType },
-              ],
-              validateTrigger: 'onBlur',
-            })(
-              <Input placeholder="请输入" />
+          <FormItem label="描述" {...formItemLayout}>
+            {getFieldDecorator('brand')(
+              <Input placeholder="请先选择型号代码" disabled></Input>
             )}
           </FormItem>
-          <FormItem label="型号代码" {...formItemLayout}>
-            {getFieldDecorator('typeCode', {
-              rules: [
-                { required: true, message: '请输入型号代码' },
-                { validator: this.validateTypeCode },
-              ],
-              validateTrigger: 'onBlur',
-            })(
-              <Input placeholder="请输入" disabled={modalType === 'edit'} />
+          <FormItem label="补充描述" {...formItemLayout}>
+            {getFieldDecorator('type')(
+              <Input placeholder="请先选择型号代码" disabled></Input>
             )}
           </FormItem>
         </Form>
@@ -560,6 +532,7 @@ export default class SensorModelList extends PureComponent {
       sensor: { sensorModel: { pagination: { total = 0 } } },
     } = this.props
     const addAuth = hasAuthority(addCode, permissionCodes)
+    const delAuth = hasAuthority(deleteCode, permissionCodes)
     return (
       <PageHeaderLayout
         title={title}
@@ -567,7 +540,7 @@ export default class SensorModelList extends PureComponent {
         content={`传感器型号总数：${total}`}
       >
         {this.renderFilter({ addAuth })}
-        {this.renderTable()}
+        {this.renderTable({ delAuth })}
         {this.renderAddModal()}
       </PageHeaderLayout>
     )
