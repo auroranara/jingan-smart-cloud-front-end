@@ -673,7 +673,7 @@ export default class RiskPointEdit extends PureComponent {
 
     this.setState({
       picModalVisible: false,
-      typeIndex: '',
+      // typeIndex: '',
       isImgSelect: true,
     });
   };
@@ -765,6 +765,7 @@ export default class RiskPointEdit extends PureComponent {
       [`xnum${index}`]: undefined,
       [`ynum${index}`]: undefined,
     });
+    this.setState({ picModalVisible: false });
   };
 
   // 切换楼层
@@ -776,6 +777,7 @@ export default class RiskPointEdit extends PureComponent {
       [`xnum${index}`]: undefined,
       [`ynum${index}`]: undefined,
     });
+    this.setState({ picModalVisible: false });
   };
 
   // 根据建筑物和楼层获取图片
@@ -1023,7 +1025,7 @@ export default class RiskPointEdit extends PureComponent {
           onCancel={() => {
             this.setState({
               picModalVisible: false,
-              typeIndex: '',
+              // typeIndex: '',
             });
           }}
           xNum={xNumCurrent}
