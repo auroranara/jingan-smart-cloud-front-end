@@ -60,13 +60,17 @@ function getImageNormal(i) {
 }
 
 function rangeStr(range = [], unit, str) {
+  console.log(range);
+  console.log(unit);
+  console.log(str);
+
   let newStr = '';
   if (typeof range[0] === 'number' && typeof range[1] === 'number') {
     newStr = range.join(str) + unit;
   } else if (typeof range[0] === 'number') {
-    newStr = '≥' + range[0] + unit;
+    newStr = '>' + range[0] + unit;
   } else if (typeof range[1] === 'number') {
-    newStr = '≤' + range[1] + unit;
+    newStr = '<' + range[1] + unit;
   } else {
     newStr = '---';
   }
