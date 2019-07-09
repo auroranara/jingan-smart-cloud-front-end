@@ -5,6 +5,7 @@ import moment from 'moment';
 import { vaguePhone } from '../utils';
 // import DescriptionList from 'components/DescriptionList';
 import styles from './index.less';
+import { alarmIcon, dangerIcon, inspectIcon, outdateIcon } from '@/pages/BigPlatform/GasStation/imgs/links';
 
 const TYPES = [
   1, // 发生监管\联动\反馈\屏蔽
@@ -38,6 +39,15 @@ const TYPES = [
   50, // 独立烟感报警恢复
   51, // 独立烟感故障恢复
 ];
+const ICONS = {
+  14: dangerIcon,
+  15: dangerIcon,
+  16: dangerIcon,
+  17: dangerIcon,
+  18: inspectIcon,
+  32: alarmIcon,
+  36: alarmIcon,
+};
 const formatTime = time => {
   const diff = moment().diff(moment(time));
   if (diff > 2 * 24 * 60 * 60 * 1000) {
