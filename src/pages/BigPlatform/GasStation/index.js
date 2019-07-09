@@ -3,10 +3,12 @@ import { notification, Tooltip } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import { Rotate } from 'react-transform-components';
+import { stringify } from 'qs';
 
+import styles from './index.less';
+import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import { findFirstVideo } from '@/utils/utils';
-import styles from './index.less';
 import {
   AlarmDynamicDrawer,
   AlarmDynamicMsgDrawer,
@@ -41,6 +43,7 @@ import {
   SmokeMonitor,
   StatisticsOfFireControl,
   SetDrawer,
+  VideoSurveillance,
   WaterMonitor,
   WaterSystemDrawer,
   WorkOrderDrawer,
@@ -58,6 +61,13 @@ notification.config({
   duration: 30,
   bottom: 8,
 });
+
+const WS_OPTIONS = {
+  pingTimeout: 30000,
+  pongTimeout: 10000,
+  reconnectTimeout: 2000,
+  pingMsg: 'heartbeat',
+};
 
 const msgInfo = [
   {
@@ -219,14 +229,24 @@ export default class GasStation extends PureComponent {
   };
 
   componentDidMount() {
+    this.initScreen();
+    this.connectWebsocket();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.pollTimer);
+    clearInterval(this.chartPollTimer);
+    this.ws && this.ws.close();
+  }
+
+  pollTimer = null;
+  chartPollTimer = null;
+
+  initScreen = () => {
     const {
       dispatch,
-      match: {
-        params: { unitId: companyId },
-      },
+      match: { params: { unitId: companyId } },
     } = this.props;
-
-    const { checkItemId, waterTab } = this.state;
 
     // 获取企业信息
     dispatch({
@@ -433,8 +453,26 @@ export default class GasStation extends PureComponent {
 
     // 手机号是否可见
     dispatch({ type: 'unitSafety/savePhoneVisible' });
+  };
 
-    const { NanXiaoWebsocket: ws } = global;
+  connectWebsocket = () => {
+    const {
+      dispatch,
+      match: { params: { unitId: companyId } },
+    } = this.props;
+
+    const { checkItemId, waterTab } = this.state;
+    const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
+
+    const params = {
+      companyId,
+      env,
+      //env: 'dev',
+      type: 1,
+    };
+    const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
+
+    const ws = this.ws = new WebsocketHeartbeatJs({ url, ...WS_OPTIONS });
     if (!ws) return;
     ws.onmessage = e => {
       // 判断是否是心跳
@@ -683,7 +721,7 @@ export default class GasStation extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
-  }
+  };
 
   handleFetchRealTimeData = deviceId => {
     const { dispatch } = this.props;
@@ -860,14 +898,6 @@ export default class GasStation extends PureComponent {
       </div>
     );
   };
-
-  componentWillUnmount() {
-    clearInterval(this.pollTimer);
-    clearInterval(this.chartPollTimer);
-  }
-
-  pollTimer = null;
-  chartPollTimer = null;
 
   polling = () => {
     const {
@@ -2171,7 +2201,7 @@ export default class GasStation extends PureComponent {
 
     return (
       <BigPlatformLayout
-        title={'企业消防运营驾驶舱'}
+        title="加油站驾驶舱"
         style={{
           // backgroundImage: 'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg2.png)',
           backgroundImage: 'none',
@@ -2255,11 +2285,10 @@ export default class GasStation extends PureComponent {
         />
         <div className={styles.bottom}>
           <div className={styles.bottomInner}>
-            <div className={styles.item}>
+            {/* <div className={styles.item}>
               <div className={styles.inner} ref={node => (this.fireNode = node)}>
                 <Rotate axis="y" frontIndex={fireMonitorIndex}>
-                  {/* 虚拟消控主机 */}
-                  <FireMonitoring
+                  <FireMonitoring // 虚拟消控主机
                     fire={fire_state}
                     fault={fault_state}
                     shield={shield_state}
@@ -2274,8 +2303,7 @@ export default class GasStation extends PureComponent {
                     handleShowFireMonitor={this.handleShowFireMonitor}
                     handleShowResetSection={this.handleShowResetSection}
                   />
-                  {/* 消防主机监测 */}
-                  <StatisticsOfFireControl
+                  <StatisticsOfFireControl // 消防主机监测
                     type={fireControlType}
                     fireControlCount={fireControlCount}
                     onSwitch={this.handleSwitchFireControlType}
@@ -2283,15 +2311,9 @@ export default class GasStation extends PureComponent {
                   />
                 </Rotate>
               </div>
-            </div>
+            </div> */}
             <div className={styles.item}>
               <div className={styles.inner}>
-                {/* 重点部位监控 */}
-                {/* <VideoSurveillance
-                  handlePlay={this.handlePlay}
-                  handleShowVideo={this.handleShowVideo}
-                  data={cameraTree}
-                /> */}
                 {/* 电气火灾监测 */}
                 <ElectricityMonitor
                   companySmokeInfo={companySmokeInfo}
@@ -2324,20 +2346,6 @@ export default class GasStation extends PureComponent {
             </div>
             <div className={styles.item}>
               <div className={styles.inner}>
-                {/* 点位巡查统计 */}
-                {/* <PointInspectionCount
-                  model={this.props.newUnitFireControl}
-                  handleShowDrawer={(name, params) => {
-                    this.handleDrawerVisibleChange(name, params);
-                    this.fetchPointInspectionList(params.pointInspectionDrawerSelectedDate);
-                  }}
-                /> */}
-                {/* 独立烟感监测 */}
-                <SmokeMonitor companySmokeInfo={companySmokeInfo} onClick={this.handleClickSmoke} />
-              </div>
-            </div>
-            <div className={styles.item}>
-              <div className={styles.inner}>
                 {/* 维保统计 */}
                 {/* <MaintenanceCount
                   model={this.props.newUnitFireControl}
@@ -2349,6 +2357,16 @@ export default class GasStation extends PureComponent {
                   checkClick={this.handleClickCheck}
                   workOrderClick={this.handleClickWorkOrder}
                   countAllFireAndFault={countAllFireAndFault}
+                />
+              </div>
+            </div>
+            <div className={styles.item}>
+              <div className={styles.inner}>
+                {/* 重点部位监控 */}
+                <VideoSurveillance
+                  handlePlay={this.handlePlay}
+                  handleShowVideo={this.handleShowVideo}
+                  data={cameraTree}
                 />
               </div>
             </div>
