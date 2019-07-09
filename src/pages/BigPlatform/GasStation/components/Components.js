@@ -15,3 +15,6 @@ export {
   TotalInfo,
   WaterCards,
 } from '@/pages/BigPlatform/NewUnitFireControl/components/Components';
+
+
+export { default as ElectricalFireMonitoring } from './ElectricalFireMonitoring';

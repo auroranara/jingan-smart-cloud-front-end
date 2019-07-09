@@ -48,6 +48,7 @@ import {
   WaterSystemDrawer,
   WorkOrderDrawer,
 } from './sections/Components';
+import { ElectricalFireMonitoring } from './components/Components';
 
 import {
   headerBg,
@@ -2315,14 +2316,7 @@ export default class GasStation extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 电气火灾监测 */}
-                <ElectricityMonitor
-                  companySmokeInfo={companySmokeInfo}
-                  deviceStatusCount={deviceStatusCount}
-                  deviceRealTimeData={deviceRealTimeDataMonitor}
-                  devices={devices}
-                  handleFetchRealTimeData={this.handleFetchRealTimeData}
-                  onClick={this.handleClickElectricity}
-                />
+                <ElectricalFireMonitoring />
               </div>
             </div>
             <div className={styles.item}>

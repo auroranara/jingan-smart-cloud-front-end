@@ -1,0 +1,86 @@
+.container {
+  height: 100%;
+}
+.wrapper {
+  flex: 1;
+  display: flex;
+}
+.list {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1em; // 0 16px
+}
+.itemWrapper {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  width: 33.333333%;
+  max-width: 7.9375em; // 127px
+}
+.item {
+  flex: none;
+  width: 5.3125em; // 85px
+  cursor: pointer;
+}
+.itemTop {
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+.itemBottom {
+  position: relative;
+
+  .itemPercent {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+  }
+
+  img {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    z-index: 2;
+  }
+
+  .itemCount {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1em 0;
+    font-size: 1.5em;
+    text-align: center;
+    z-index: 3;
+  }
+}
+.itemLabel {
+  padding-top: 1em;
+  font-size: 14px;
+  line-height: 1;
+  text-align: center;
+}
+/* 单个配电箱 */
+.singleContainer {
+  flex: 1;
+
+}
+
+@media screen and (max-width: 1599px) {
+  .itemLabel {
+    font-size: 13px;
+  }
+}
+
+@media screen and (max-width: 1399px) {
+  .itemLabel {
+    font-size: 12px;
+  }
+}
