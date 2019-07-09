@@ -187,7 +187,7 @@ export default class RiskPointEdit extends PureComponent {
 
           const buildingList = pointFixInfoList.filter(item => item.imgType === 2);
           const buildingId = buildingList.map(item => item.buildingId).join('');
-          const floorId = buildingList.map(item => item.fixImgId).join('');
+          const floorId = buildingList.map(item => item.floorId).join('');
 
           this.setState({ flowList: itemFlowList });
           flow_id = itemFlowList.map(d => {
@@ -585,7 +585,7 @@ export default class RiskPointEdit extends PureComponent {
       dispatch,
     } = this.props;
 
-    const { picList, typeIndex } = this.state;
+    const { picList, typeIndex, floorId: addFloorId } = this.state;
     const imgType = picList.map(i => i.imgType);
     const imgIndex = imgType[index];
 
@@ -609,48 +609,51 @@ export default class RiskPointEdit extends PureComponent {
 
     if (!id && list.length === 0) {
       message.error('该单位暂无图片！');
-    }
-
-    if (id && list.length === 0 && !typeIndex && !imgIndex) {
-      return message.error('请先选择平面图类型!');
     } else {
-      if (!typeIndex) {
-        if ((id && imgIndex !== 2) || imgIndex === 1 || imgIndex === 3 || imgIndex === 4) {
-          dispatch({
-            type: 'riskPointManage/fetchFixImgInfo',
-            payload: {
-              companyId,
-              type: imgIndex,
-            },
-            callback,
-          });
-        } else {
-          if (id || imgIndex === 2) {
+      if (!typeIndex && !imgIndex) {
+        return message.error('请先选择平面图类型!');
+      } else {
+        if (!typeIndex) {
+          if ((id && imgIndex !== 2) || imgIndex === 1 || imgIndex === 3 || imgIndex === 4) {
             dispatch({
-              type: 'buildingsInfo/fetchBuildingList',
+              type: 'riskPointManage/fetchFixImgInfo',
               payload: {
-                company_id: companyId,
-                pageSize: 0,
-                pageNum: 1,
+                companyId,
+                type: imgIndex,
               },
-              success: () => {
-                callback();
-                this.getFloorInfo(buildingId);
-                dispatch({
-                  type: 'riskPointManage/fetchFixImgInfo',
-                  payload: {
-                    companyId,
-                    type: imgIndex,
-                    buildingId: buildingId,
-                    floorId: floorId,
-                  },
-                });
-              },
+              callback,
             });
+          } else {
+            if (id || imgIndex === 2) {
+              dispatch({
+                type: 'buildingsInfo/fetchBuildingList',
+                payload: {
+                  company_id: companyId,
+                  pageSize: 0,
+                  pageNum: 1,
+                },
+                success: () => {
+                  callback();
+                  this.getFloorInfo(buildingId);
+                  dispatch({
+                    type: 'riskPointManage/fetchFixImgInfo',
+                    payload: {
+                      companyId,
+                      type: imgIndex,
+                      buildingId: buildingId,
+                      floorId: addFloorId ? addFloorId : floorId,
+                    },
+                  });
+                },
+              });
+            }
+          }
+        } else {
+          callback();
+          if (id && list.length === 0) {
+            message.error('该单位暂无图片！');
           }
         }
-      } else {
-        callback();
       }
     }
 
@@ -709,7 +712,7 @@ export default class RiskPointEdit extends PureComponent {
         },
       });
     }
-    this.setState({ typeIndex: key });
+    this.setState({ typeIndex: key, picModalVisible: false });
   };
 
   // 清空当前平面图信息
@@ -759,6 +762,17 @@ export default class RiskPointEdit extends PureComponent {
     } = this.props;
     setFieldsValue({
       [`floorName${index}`]: undefined,
+      [`xnum${index}`]: undefined,
+      [`ynum${index}`]: undefined,
+    });
+  };
+
+  // 切换楼层
+  handleFloorSelect = index => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({
       [`xnum${index}`]: undefined,
       [`ynum${index}`]: undefined,
     });
@@ -938,6 +952,7 @@ export default class RiskPointEdit extends PureComponent {
                         placeholder="请选择楼层名称"
                         disabled={item.isDisabled}
                         onChange={this.getFloorPic}
+                        onSelect={() => this.handleFloorSelect(index)}
                       >
                         {floorList.map(({ floorName, id }) => (
                           <Option value={id} key={id}>
