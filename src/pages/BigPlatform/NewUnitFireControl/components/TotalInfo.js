@@ -15,10 +15,10 @@ export default class TotalInfo extends PureComponent {
   }
 
   render() {
-    const { data = [], loading = false } = this.props;
+    const { data = [], loading = false, style = {} } = this.props;
     const { active } = this.state;
     return (
-      <div className={styles.totalInfo}>
+      <div className={styles.totalInfo} style={{ ...style }}>
         {data.map((item, index) => {
           const { color, name, value, onClick } = item;
           return (

@@ -201,14 +201,14 @@ export default class Gas extends PureComponent {
         const { alarmIds } = this.state;
         const index = unitIds.indexOf(companyId);
         // 如果数据为告警或恢复，则将数据插入到列表的第一个
-        if ([31, 32].includes(type)) {
+        if ([39, 45].includes(type)) {
           // dispatch({
           //   type: 'gas/save',
           //   payload: { messages: [data].concat(messages) },
           // });
           // 如果发生告警，弹出通知框，否则关闭通知框
           this.fetchAbnormal();
-          if (type === 32) {
+          if (type === 39) {
             // const sameItem = alarmIds.find(item=>item.companyId===companyId);
             let sameIndex;
             alarmIds.forEach((item, i) => {
@@ -217,10 +217,10 @@ export default class Gas extends PureComponent {
             const newList =
               sameIndex !== undefined
                 ? [
-                  ...alarmIds.slice(0, sameIndex),
-                  { companyId, messageFlag },
-                  ...alarmIds.slice(sameIndex + 1),
-                ]
+                    ...alarmIds.slice(0, sameIndex),
+                    { companyId, messageFlag },
+                    ...alarmIds.slice(sameIndex + 1),
+                  ]
                 : [...alarmIds, { companyId, messageFlag }];
             this.setState({ alarmIds: newList });
             this.showWarningNotification(data);
@@ -261,23 +261,6 @@ export default class Gas extends PureComponent {
             }
           }
         }
-        // 如果为33，则修改单位状态
-        if (type === 33) {
-          this.fetchAbnormal();
-          // dispatch({
-          //   type: 'gas/saveUnitData',
-          //   payload: {
-          //     unitSet: {
-          //       ...unitSet,
-          //       units: [
-          //         ...units.slice(0, index),
-          //         { ...units[index], faultNum: units[index].faultNum - 1 },
-          //         ...units.slice(index + 1),
-          //       ],
-          //     },
-          //   },
-          // });
-        }
       } catch (error) {
         console.log('error', error);
       }
@@ -287,9 +270,9 @@ export default class Gas extends PureComponent {
       console.log('reconnecting...');
     };
 
-    setInterval(() => {
-      this.fetchPending();
-    }, 10000);
+    // setInterval(() => {
+    //   this.fetchPending();
+    // }, 10000);
   }
 
   fetchAbnormal = () => {
@@ -360,12 +343,12 @@ export default class Gas extends PureComponent {
   /**
    * 更新后
    */
-  componentDidUpdate() { }
+  componentDidUpdate() {}
 
   /**
    * 销毁前
    */
-  componentWillUnmount() { }
+  componentWillUnmount() {}
 
   cardsInfo = [];
   importCardsInfo = [];
@@ -412,6 +395,7 @@ export default class Gas extends PureComponent {
     paramName,
     messageFlag,
     paramCode,
+    messageFlagForId,
   }) => {
     const options = {
       key: `${messageFlag}_${paramCode}`,
@@ -430,7 +414,7 @@ export default class Gas extends PureComponent {
           onClick={() => {
             this.setState({ companyName });
             this.handleClickNotification(companyId);
-            this.handleAlarmClick(messageFlag, companyId, companyName);
+            this.handleAlarmClick(messageFlagForId || messageFlag, companyId, companyName);
           }}
         >
           <div className={styles.notificationText}>
@@ -720,6 +704,7 @@ export default class Gas extends PureComponent {
           onClick={e => this.handleDrawerVisibleChange('alarm')}
         />
         {/* 待处理业务 */}
+        {/*
         <NewSection
           title="待处理业务"
           className={styles.left}
@@ -728,6 +713,7 @@ export default class Gas extends PureComponent {
         >
           <ProcessingBusiness allGasFire={allGasFire} />
         </NewSection>
+        */}
 
         {/* extra info */}
         <SettingModal
@@ -743,7 +729,12 @@ export default class Gas extends PureComponent {
           handleAlarmClick={this.handleAlarmClick}
         />
         <AlarmDrawer
-          data={{ list: errorUnitsCardsInfo, companyStatus, graphList: AbnormalTrend }}
+          data={{
+            list: errorUnitsCardsInfo,
+            companyStatus,
+            graphList: AbnormalTrend,
+            statisticsData,
+          }}
           visible={alarmDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           handleAlarmClick={this.handleAlarmClick}

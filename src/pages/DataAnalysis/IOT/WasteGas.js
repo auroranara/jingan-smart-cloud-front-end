@@ -1,16 +1,15 @@
 import React, { PureComponent } from 'react';
-// import moment from 'moment';
 import { connect } from 'dva';
 import { Button, Card, message, notification, Table } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
-// import InlineForm from '../BaseInfo/Company/InlineForm';
 import ToolBar from '@/components/ToolBar';
 import {
-  TOXIC_GAS_TYPE as TYPE,
-  TOXIC_GAS_TYPE_LABEL as TYPE_LABEL,
-  TOXIC_GAS_COLUMNS as COLUMNS,
+  WASTE_GAS_TYPE as TYPE,
+  WASTE_GAS_TYPE_LABEL as TYPE_LABEL,
+  WASTE_GAS_PARAMS as PARAMS,
+  WASTE_GAS_COLUMNS as COLUMNS,
   PAGE_SIZE,
   getFields,
 } from './constant';
@@ -27,13 +26,11 @@ const breadcrumbList = [
   { title: TYPE_LABEL, name: TYPE_LABEL },
 ];
 
-// const data = [...Array(10).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', section: '厂区九车间', location: '氯乙烷压缩机东', category: '预警', value: 19.6, limit: '18', desc: '>=临界值' }));
-
 @connect(({ loading, dataAnalysis }) => ({
   dataAnalysis,
   loading: loading.effects['dataAnalysis/fetchData'],
 }))
-export default class ToxicGas extends PureComponent {
+export default class WasteGas extends PureComponent {
   state = {
     // moments: null,
     formVals: null,
@@ -59,7 +56,7 @@ export default class ToxicGas extends PureComponent {
 
   renderExportButton() {
     return (
-      <Button type="primary" onClick={this.handleExport} ghost /* style={{ marginTop: '8px' }} */>
+      <Button type="primary" onClick={this.handleExport} ghost style={{ marginTop: '8px' }}>
         导出报表
       </Button>
     );
@@ -161,7 +158,7 @@ export default class ToxicGas extends PureComponent {
     //   disabledDate: this.disabledDate,
     //   onCalendarChange: this.onCalendarChange,
     // };
-    const fields = getFields(TYPE);
+    const fields = getFields(TYPE, PARAMS);
 
     return (
       <PageHeaderLayout
@@ -178,6 +175,13 @@ export default class ToxicGas extends PureComponent {
         }
       >
         <Card className={styles.search}>
+          {/* <InlineForm
+            fields={fields}
+            action={this.renderExportButton()}
+            buttonSpan={{ xl: 6, md: 12, sm: 24 }}
+            onSearch={this.handleSearch}
+            onReset={this.handleReset}
+          /> */}
           <ToolBar
             fields={fields}
             action={this.renderExportButton()}
@@ -185,11 +189,7 @@ export default class ToxicGas extends PureComponent {
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             buttonStyle={{ textAlign: 'right' }}
-            buttonSpan={{
-              xl: 12,
-              sm: 24,
-              xs: 24,
-            }}
+            buttonSpan={{ xl: 12, sm: 24, xs: 24 }}
           />
         </Card>
         <div className={styles.container}>
@@ -201,6 +201,7 @@ export default class ToxicGas extends PureComponent {
             rowKey="id"
             loading={loading}
             columns={addAlign(COLUMNS)}
+            // dataSource={list}
             dataSource={handleTableData(list, indexBase)}
             onChange={this.onTableChange}
             pagination={{ pageSize: PAGE_SIZE, total, current: currentPage }}

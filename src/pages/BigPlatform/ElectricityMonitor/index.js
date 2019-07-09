@@ -154,7 +154,7 @@ export default class ElectricityMonitor extends PureComponent {
         // console.log(data);
         const { type } = data;
         // 如果数据为告警或恢复，则将数据插入到列表的第一个
-        if ([31, 32].includes(type)) {
+        if ([32, 42, 43, 44].includes(type)) {
           const {
             electricityMonitor: { messages },
           } = this.props;
@@ -188,7 +188,7 @@ export default class ElectricityMonitor extends PureComponent {
           // }
         }
         // 如果为33，则修改单位状态
-        if (type === 33) {
+        if ([32, 42, 43, 44].includes(type)) {
           const { companyId, status } = data;
           const {
             electricityMonitor: {
@@ -634,7 +634,6 @@ export default class ElectricityMonitor extends PureComponent {
         brandData,
       },
     } = this.props;
-    // console.log('this.props', this.props);
     const {
       setttingModalVisible,
       unitDrawerVisible,
@@ -658,6 +657,7 @@ export default class ElectricityMonitor extends PureComponent {
 
     return (
       <BigPlatformLayout
+        settable
         title="智慧用电监测平台"
         extra={extra}
         style={{ backgroundImage: 'none' }}
@@ -674,7 +674,6 @@ export default class ElectricityMonitor extends PureComponent {
         }}
         titleStyle={{ fontSize: 46 }}
         contentStyle={{ position: 'relative', height: '100%', zIndex: 0 }}
-        settable
         onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
@@ -719,7 +718,8 @@ export default class ElectricityMonitor extends PureComponent {
         />
         {/* 近半年内告警统计 */}
         <NewSection
-          title="近半年内告警统计"
+          // title="近半年内告警统计"
+          title="近半年内报警统计"
           className={styles.left}
           style={{ top: 'calc(45.184444% + 92px)', height: '27.5926%' }}
         >

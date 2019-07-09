@@ -182,6 +182,14 @@ module.exports = env => {
       name: 'mySynthesis',
       component: './Training/GeneralFile/MyFile/SynthesisReport',
     },
+    // 风险告知卡
+    // TODO 由于iframe原因
+    {
+      path: '/risk-control/risk-point-manage/card-printer-content/:id',
+      code: 'riskControl.riskPointManage.view',
+      name: 'riskCardPinter',
+      component: './RiskControl/RiskPointManage/PrinterContent',
+    },
 
     //404
     {
@@ -706,46 +714,46 @@ module.exports = env => {
         //   ],
         // },
         // dynamicMonitoring
-        {
-          path: '/dynamic-monitoring',
-          code: 'dynamicMonitoring',
-          icon: 'dashboard',
-          name: 'dynamicMonitoring',
-          routes: [
-            {
-              path: '/dynamic-monitoring/fire-alarm',
-              code: 'dynamicMonitoring.fireAlarm',
-              name: 'fireAlarm',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/dynamic-monitoring/fire-alarm',
-                  name: 'fireAlarm',
-                  redirect: '/dynamic-monitoring/fire-alarm/index',
-                },
-                {
-                  path: '/dynamic-monitoring/fire-alarm/index',
-                  code: 'dynamicMonitoring.fireAlarm.listView',
-                  name: 'index',
-                  component: './DynamicMonitoring/FireAlarm/index',
-                },
-                {
-                  path: '/dynamic-monitoring/fire-alarm/company/:companyId',
-                  code: 'dynamicMonitoring.fireAlarm.comanyDetailView',
-                  name: 'companyDetail',
-                  component: './DynamicMonitoring/FireAlarm/CompanyDetail',
-                },
-                {
-                  path: '/dynamic-monitoring/fire-alarm/history-record/:companyId',
-                  name: 'historyRecord',
-                  code: 'dynamicMonitoring.fireAlarm.historyRecordView',
-                  component: './DynamicMonitoring/FireAlarm/HistoryRecord',
-                },
-                // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
-              ],
-            },
-          ],
-        },
+        // {
+        //   path: '/dynamic-monitoring',
+        //   code: 'dynamicMonitoring',
+        //   icon: 'dashboard',
+        //   name: 'dynamicMonitoring',
+        //   routes: [
+        //     {
+        //       path: '/dynamic-monitoring/fire-alarm',
+        //       code: 'dynamicMonitoring.fireAlarm',
+        //       name: 'fireAlarm',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/dynamic-monitoring/fire-alarm',
+        //           name: 'fireAlarm',
+        //           redirect: '/dynamic-monitoring/fire-alarm/index',
+        //         },
+        //         {
+        //           path: '/dynamic-monitoring/fire-alarm/index',
+        //           code: 'dynamicMonitoring.fireAlarm.listView',
+        //           name: 'index',
+        //           component: './DynamicMonitoring/FireAlarm/index',
+        //         },
+        //         {
+        //           path: '/dynamic-monitoring/fire-alarm/company/:companyId',
+        //           code: 'dynamicMonitoring.fireAlarm.comanyDetailView',
+        //           name: 'companyDetail',
+        //           component: './DynamicMonitoring/FireAlarm/CompanyDetail',
+        //         },
+        //         {
+        //           path: '/dynamic-monitoring/fire-alarm/history-record/:companyId',
+        //           name: 'historyRecord',
+        //           code: 'dynamicMonitoring.fireAlarm.historyRecordView',
+        //           component: './DynamicMonitoring/FireAlarm/HistoryRecord',
+        //         },
+        //         // { path: '/dynamic-monitoring/fire-alarm/company/detail/:companyId/:detailId', name: 'alarmDetail', component: './DynamicMonitoring/FireAlarm/FireAlarmDetail' },
+        //       ],
+        //     },
+        //   ],
+        // },
 
         // data analysis
         {
@@ -770,43 +778,55 @@ module.exports = env => {
                   path: '/data-analysis/IOT-abnormal-data/list',
                   code: 'dataAnalysis.IOTAbnormalData.listView',
                   name: 'list',
-                  component: './DataAnalysis/DataAnalysisList',
+                  component: './DataAnalysis/IOT/DataAnalysisList',
                 },
                 {
                   path: '/data-analysis/IOT-abnormal-data/electricity/:id/count/:count',
                   code: 'dataAnalysis.IOTAbnormalData.electricity',
                   name: 'electricity',
-                  component: './DataAnalysis/Electricity',
+                  component: './DataAnalysis/IOT/Electricity',
                 },
                 {
                   path: '/data-analysis/IOT-abnormal-data/toxic-gas/:id/count/:count',
                   code: 'dataAnalysis.IOTAbnormalData.toxicGas',
                   name: 'toxicGas',
-                  component: './DataAnalysis/ToxicGas',
+                  component: './DataAnalysis/IOT/ToxicGas',
                 },
                 {
                   path: '/data-analysis/IOT-abnormal-data/waste-water/:id/count/:count',
                   code: 'dataAnalysis.IOTAbnormalData.wasteWater',
                   name: 'wasteWater',
-                  component: './DataAnalysis/WasteWater',
+                  component: './DataAnalysis/IOT/WasteWater',
                 },
                 {
                   path: '/data-analysis/IOT-abnormal-data/waste-gas/:id/count/:count',
                   code: 'dataAnalysis.IOTAbnormalData.wasteGas',
                   name: 'wasteGas',
-                  component: './DataAnalysis/WasteGas',
+                  component: './DataAnalysis/IOT/WasteGas',
                 },
                 {
                   path: '/data-analysis/IOT-abnormal-data/storage-tank/:id/count/:count',
                   code: 'dataAnalysis.IOTAbnormalData.storageTank',
                   name: 'storageTank',
-                  component: './DataAnalysis/StorageTank',
+                  component: './DataAnalysis/IOT/StorageTank',
                 },
                 {
                   path: '/data-analysis/IOT-abnormal-data/smoke-detector/:id/count/:count',
                   code: 'dataAnalysis.IOTAbnormalData.smokeDetector',
                   name: 'smokeDetector',
-                  component: './DataAnalysis/SmokeDetector',
+                  component: './DataAnalysis/IOT/SmokeDetector',
+                },
+                {
+                  path: '/data-analysis/IOT-abnormal-data/fire-alarm/company/:companyId',
+                  code: 'dataAnalysis.IOTAbnormalData.fireDetailView',
+                  name: 'companyDetail',
+                  component: './DynamicMonitoring/FireAlarm/CompanyDetail',
+                },
+                {
+                  path: '/data-analysis/IOT-abnormal-data/fire-alarm/history-record/:companyId',
+                  name: 'historyRecord',
+                  code: 'dataAnalysis.IOTAbnormalData.fireHistoryRecordView',
+                  component: './DynamicMonitoring/FireAlarm/HistoryRecord',
                 },
               ],
             },
@@ -1029,6 +1049,38 @@ module.exports = env => {
                   code: 'dataAnalysis.govermentReport.view',
                   name: 'detail',
                   component: './DataAnalysis/HiddenDangerReport/HiddenDangerReportDetail',
+                },
+              ],
+            },
+            // 作业审批报表
+            {
+              path: '/data-analysis/work-approval-report',
+              code: 'dataAnalysis.workApprovalReport',
+              name: 'workApprovalReport',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/data-analysis/work-approval-report',
+                  name: 'workApprovalReport',
+                  redirect: '/data-analysis/work-approval-report/list',
+                },
+                {
+                  path: '/data-analysis/work-approval-report/list',
+                  code: 'dataAnalysis.workApprovalReport.listView',
+                  name: 'list',
+                  component: './DataAnalysis/WorkApprovalReport/CompanyList',
+                },
+                {
+                  path: '/data-analysis/work-approval-report/company/:companyId/:type',
+                  name: 'workApprovalList',
+                  code: 'dataAnalysis.workApprovalReport.workApprovalList',
+                  component: './DataAnalysis/WorkApprovalReport/WorkApprovalList',
+                },
+                {
+                  path: '/data-analysis/work-approval-report/company/:companyId/:type/detail/:id',
+                  name: 'detail',
+                  code: 'dataAnalysis.workApprovalReport.detail',
+                  component: './DataAnalysis/WorkApprovalReport/WorkApprovalDetail',
                 },
               ],
             },
@@ -2172,6 +2224,83 @@ module.exports = env => {
                   code: 'personnelPosition.sectionManagement.divide',
                   path: '/personnel-position/section-management/company/:companyId/zoning/:id',
                   component: './PersonnelPosition/SectionManagement/Zoning',
+                },
+              ],
+            },
+          ],
+        },
+
+        // 风险管控
+        {
+          path: '/risk-control',
+          code: 'riskControl',
+          icon: 'audit',
+          name: 'riskControl',
+          routes: [
+            {
+              path: '/risk-control/risk-point-manage',
+              code: 'riskControl.riskPointManage',
+              name: 'riskPointManage',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/risk-point-manage',
+                  name: 'riskPointManage',
+                  redirect: '/risk-control/risk-point-manage/index',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/index',
+                  code: 'riskControl.riskPointManage.listView',
+                  name: 'listView',
+                  component: './RiskControl/RiskPointManage/index',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-point-List/:id',
+                  code: 'riskControl.riskPointManage.view',
+                  name: 'view',
+                  component: './RiskControl/RiskPointManage/RiskPointList',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/:type/list/:id',
+                  code: 'riskControl.riskPointManage.view',
+                  name: 'view',
+                  component: './RiskControl/RiskPointManage/RiskPointList',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-point-add',
+                  code: 'riskControl.riskPointManage.add',
+                  name: 'add',
+                  component: './RiskControl/RiskPointManage/RiskPointEdit',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-point-edit/:id',
+                  code: 'riskControl.riskPointManage.edit',
+                  name: 'edit',
+                  component: './RiskControl/RiskPointManage/RiskPointEdit',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-card-list/:id',
+                  code: 'riskControl.riskPointManage.view',
+                  name: 'riskCard',
+                  component: './RiskControl/RiskPointManage/RiskCard',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-card-add',
+                  code: 'riskControl.riskPointManage.view',
+                  name: 'riskCardAdd',
+                  component: './RiskControl/RiskPointManage/RiskCardEdit',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-card-edit/:id',
+                  code: 'riskControl.riskPointManage.view',
+                  name: 'riskCardEdit',
+                  component: './RiskControl/RiskPointManage/RiskCardEdit',
+                },
+                {
+                  path: '/risk-control/risk-point-manage/risk-card-printer/:id',
+                  code: 'riskControl.riskPointManage.view',
+                  name: 'riskCardPinter',
+                  component: './RiskControl/RiskPointManage/RiskCardPrinter',
                 },
               ],
             },

@@ -391,7 +391,7 @@ export default {
       processNum: 0,
       waitNum: 0,
     },
-    countFinishByUserId: [0, 0, 0, 0],
+    countFinishByUserId: [{}, {}, {}, {}],
     messageInformList: [],
     countNumAndTimeById: {},
     dangerChartId: {
@@ -1028,7 +1028,9 @@ export default {
         yield put({
           type: 'warnDetail',
           payload: {
-            list,
+            list: list.map(item => {
+              return { ...item, fireType: '1' };
+            }),
             pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
           },
           append: payload.pageNum !== 1,
@@ -1049,7 +1051,9 @@ export default {
         yield put({
           type: 'faultDetail',
           payload: {
-            list,
+            list: list.map(item => {
+              return { ...item, fireType: '2' };
+            }),
             pagination: { ...pagination, pageNum: payload.pageNum, pageSize: payload.pageSize },
           },
           append: payload.pageNum !== 1,
@@ -1102,23 +1106,28 @@ export default {
       }
     },
     // 处理工单统计
-    *fetchCountFinishByUserId({ payload }, { call, put }) {
+    *fetchCountFinishByUserId({ payload, callback }, { call, put }) {
       const response = yield call(countFinishByUserId, payload);
       if (response && response.code === 200) {
+        // reportType 1 主机，2 一键报修， 3 燃气， 4 烟感
         const { warnDetail, faultDetail } = response.data;
-
+        const warn1 = warnDetail.find(item => +item.reportType === 1).count;
+        const fault1 = faultDetail.find(item => +item.reportType === 1).count;
+        const warn4 = warnDetail.find(item => +item.reportType === 4).count;
+        const fault4 = faultDetail.find(item => +item.reportType === 4).count;
+        const warn3 = warnDetail.find(item => +item.reportType === 3).count;
+        const fault2 = faultDetail.find(item => +item.reportType === 2).count;
         yield put({
           type: 'countFinishByUserId',
           payload: [
-            warnDetail.find(item => +item.reportType === 1).count +
-              faultDetail.find(item => +item.reportType === 1).count,
-            warnDetail.find(item => +item.reportType === 4).count +
-              faultDetail.find(item => +item.reportType === 4).count,
-            warnDetail.find(item => +item.reportType === 3).count,
-            faultDetail.find(item => +item.reportType === 2).count,
+            { warning: warn1, fault: fault1, all: warn1 + fault1 },
+            { warning: warn4, fault: fault4, all: warn4 + fault4 },
+            { warning: warn3, fault: 0, all: warn3 },
+            { warning: 0, fault: fault2, all: fault2 },
           ],
         });
       }
+      if (callback) callback(response.data);
     },
     // 消息人员
     *fetchMessageInformList({ payload }, { call, put }) {

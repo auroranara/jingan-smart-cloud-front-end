@@ -35,13 +35,12 @@ const hosts = {
   sk: '192.168.10.21',
   ly: '192.168.10.19:8080',
   show: 'www.jinganyun.net',
-  czey: 'czey.jinganyun.net',
 };
 
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.show}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -51,7 +50,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.show}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
@@ -66,7 +65,7 @@ export default {
           hmr: true,
         },
         title: {
-          defaultTitle: '鹅湖智慧云',
+          defaultTitle: '智慧消防云',
         },
         locale: {
           enable: true, // default false

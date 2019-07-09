@@ -15,34 +15,6 @@ import styles from './index.less';
  * date: 2019年01月10日
  */
 export default class AccessUnitStatistics extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-
-    };
-  }
-
-  /**
-   * 挂载后
-   */
-  componentDidMount() {
-
-  }
-
-  /**
-   * 更新后
-   */
-  componentDidUpdate() {
-
-  }
-
-  /**
-   * 销毁前
-   */
-  componentWillUnmount() {
-
-  }
-
   /**
    * 渲染
    */

@@ -169,6 +169,7 @@ export default class MapSection extends PureComponent {
       return {
         ...units.find(item => item.companyId === data.companyId),
         messageFlag: data.messageFlag,
+        messageFlagForId: data.messageFlagForId,
       };
     });
     return tips.map((item, index) => {
@@ -181,8 +182,8 @@ export default class MapSection extends PureComponent {
           extData={item}
           events={{
             click: e => {
-              const { messageFlag, companyId, companyName } = item;
-              handleAlarmClick(messageFlag, companyId, companyName);
+              const { messageFlag, companyId, companyName, messageFlagForId } = item;
+              handleAlarmClick(messageFlagForId || messageFlag, companyId, companyName);
               const newIds = [...alarmIds.slice(0, index), ...alarmIds.slice(index + 1)];
               this.props.handleParentChange({ alarmIds: newIds });
             },

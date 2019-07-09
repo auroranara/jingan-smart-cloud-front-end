@@ -3,8 +3,9 @@ import { Col, Table } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
 import ImageCard from '@/components/ImageCard';
-
+import Lightbox from 'react-images';
 import styles from './PointPositionName.less';
+import HiddenDangerCard from '@/jingan-components/HiddenDangerCard';
 import DrawerContainer from '../components/DrawerContainer';
 // import PointError from '../imgs/hasDanger.png';
 // import lastCheckPoint from '../imgs/lastCheckPoint.png';
@@ -24,6 +25,23 @@ function nameToVague(str) {
   } else return str;
   return newStr;
 }
+
+const FIELDNAMES = {
+  status: 'status', // 隐患状态
+  type: 'business_type', // 隐患类型
+  id: 'id',
+  description: 'desc', // 隐患描述
+  images: 'backgrounds', // 图片地址
+  name: 'item_name', // 点位名称
+  source: 'report_source', // 来源
+  reportPerson: 'report_user_name', // 上报人
+  reportTime: 'report_time', // 上报时间
+  planRectificationPerson: 'rectify_user_name', // 计划整改人
+  planRectificationTime: 'plan_rectify_time', // 计划整改时间
+  actualRectificationPerson: 'rectify_user_name', // 实际整改人
+  actualRectificationTime: 'real_rectify_time', // 实际整改时间
+  designatedReviewPerson: 'review_user_name', // 指定复查人
+};
 
 const columns = [
   {
@@ -84,6 +102,16 @@ const columns = [
 ];
 
 export default class PointPositionName extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hoverIndex: -1,
+      images: [],
+      currentImage: 0,
+      lightBoxVisible: false,
+    };
+  }
+
   handleStatusPhoto = status => {
     //2待整改   3待复查, 7  超期未整改
     switch (+status) {
@@ -96,6 +124,53 @@ export default class PointPositionName extends PureComponent {
       default:
         return '';
     }
+  };
+
+  generateShow = (key, hoverIndex) =>
+    (this.selectedDangerIndex === key && [-1, key].includes(hoverIndex)) || hoverIndex === key;
+
+  /**
+   * 显示图片详情
+   */
+  handleShow = images => {
+    this.setState({ images, currentImage: 0, lightBoxVisible: true });
+  };
+
+  /**
+   * 切换图片
+   */
+  handleSwitchImage = currentImage => {
+    this.setState({
+      currentImage,
+    });
+  };
+
+  /**
+   * 切换上一张图片
+   */
+  handlePrevImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage - 1,
+    }));
+  };
+
+  /**
+   * 切换下一张图片
+   */
+  handleNextImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage + 1,
+    }));
+  };
+
+  /**
+   * 关闭图片详情
+   */
+  handleClose = () => {
+    this.setState({
+      images: [],
+      lightBoxVisible: false,
+    });
   };
 
   render() {
@@ -111,68 +186,26 @@ export default class PointPositionName extends PureComponent {
       handlePointDangerDetail,
       ...restProps
     } = this.props;
+    const { images, currentImage, lightBoxVisible } = this.state;
 
     const dangerList = list.filter(item => item.item_id === checkItemId);
 
     const currentStatus = dangerList.length > 0 ? hasDanger : noDanger;
 
     const cards = dangerList.map((item, index) => {
-      const {
-        desc,
-        report_user_name,
-        report_time,
-        rectify_user_name,
-        report_source_name,
-        plan_rectify_time,
-        real_rectify_time,
-        status,
-        hiddenDangerRecordDto,
-      } = item;
+      const { hiddenDangerRecordDto = [{ fileWebUrl: '' }] } = item;
+      const newItem = {
+        ...item,
+        backgrounds: hiddenDangerRecordDto[0].fileWebUrl.split(','),
+      };
       return (
-        <ImageCard
-          key={index}
-          style={{ marginBottom: '1em' }}
-          extraStyle={true}
-          showRightIcon={true}
-          showStatusLogo={true}
-          isCardClick={true}
-          onCardClick={() => {
-            handlePointDangerDetail(item);
-          }}
-          contentList={[
-            { label: '隐患描述', value: desc || '暂无数据' },
-            {
-              label: '上报',
-              value: (
-                <Fragment>
-                  {isVague ? nameToVague(report_user_name) : report_user_name}
-                  <span className={styles.text}>{moment(+report_time).format('YYYY-MM-DD')}</span>
-                </Fragment>
-              ),
-            },
-            {
-              label: +status === 3 ? '实际整改' : '计划整改',
-              value:
-                +status === 3 ? (
-                  <Fragment>
-                    {isVague ? nameToVague(rectify_user_name) : rectify_user_name}
-                    <span className={styles.text}>
-                      {moment(+real_rectify_time).format('YYYY-MM-DD')}
-                    </span>
-                  </Fragment>
-                ) : (
-                  <Fragment>
-                    {isVague ? nameToVague(rectify_user_name) : rectify_user_name}
-                    <span className={+status === 7 ? styles.warningText : styles.text}>
-                      {moment(+plan_rectify_time).format('YYYY-MM-DD')}
-                    </span>
-                  </Fragment>
-                ),
-            },
-            { label: '来源', value: <span>{report_source_name || '暂无数据'}</span> },
-          ]}
-          statusLogo={this.handleStatusPhoto(status)}
-          photo={hiddenDangerRecordDto[0].fileWebUrl.split(',')[0]}
+        <HiddenDangerCard
+          className={styles.card}
+          key={item.id}
+          data={newItem}
+          fieldNames={FIELDNAMES}
+          onClickImage={this.handleShow}
+          onClick={() => handlePointDangerDetail(item)}
         />
       );
     });
@@ -241,16 +274,29 @@ export default class PointPositionName extends PureComponent {
     );
 
     return (
-      <DrawerContainer
-        title={checkPointName}
-        destroyOnClose={true}
-        zIndex={1050}
-        width={485}
-        visible={visible}
-        left={left}
-        placement="right"
-        {...restProps}
-      />
+      <Fragment>
+        <DrawerContainer
+          title={checkPointName}
+          destroyOnClose={true}
+          zIndex={1050}
+          width={485}
+          visible={visible}
+          left={left}
+          placement="right"
+          {...restProps}
+        />
+        <Lightbox
+          images={images.map(src => ({ src }))}
+          isOpen={lightBoxVisible}
+          closeButtonTitle="关闭"
+          currentImage={currentImage}
+          onClickPrev={this.handlePrevImage}
+          onClickNext={this.handleNextImage}
+          onClose={this.handleClose}
+          onClickThumbnail={this.handleSwitchImage}
+          showThumbnails
+        />
+      </Fragment>
     );
   }
 }

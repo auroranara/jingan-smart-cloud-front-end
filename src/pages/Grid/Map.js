@@ -1,4 +1,4 @@
-import { Map, MouseTool, Polygon } from 'react-amap';
+import { Map, MouseTool, Polygon, PolyEditor } from 'react-amap';
 import React, { PureComponent } from 'react';
 import { message, Button } from 'antd';
 import { connect } from 'dva';
@@ -108,15 +108,16 @@ export default class GridMap extends PureComponent {
       what: `你绘制了一个多边形，有${obj.getPath().length}个端点`,
       // path: obj.getPath(),
     });
+    this.setNewPolugon(obj)
     this.close();
   }
 
   // 开始绘制
   drawPolygon = () => {
-    const { path } = this.state;
+    const { otherGridPoints = [] } = this.state;
     const points = this.mapinst.getAllOverlays('polygon');
 
-    if (!points || points.length === 0) {
+    if (points.length === otherGridPoints.length) {
       if (this.tool) {
         this.obj = undefined;
         this.tool.polygon();
@@ -128,42 +129,27 @@ export default class GridMap extends PureComponent {
     } else message.warning('只能同时绘制一块区域！');
   };
 
-  // 开启/关闭绘制区域
-  editPolygon = () => {
-    const { editActive } = this.state;
+  setNewPolugon = e => {
     const points = this.mapinst.getAllOverlays('polygon');
-    // console.log(this.mapinst.getAllOverlays('polygon')[0]);
-    // console.log('AMap2', window.AMap);
-    if (points && points.length) {
-      if (!editActive) {
-        // 开启编辑
-        this.mapinst.plugin(['AMap.PolyEditor'], () => {
-          this.polylineEditor = new window.AMap.PolyEditor(
-            this.mapinst,
-            this.mapinst.getAllOverlays('polygon')[0] //获取第一个多边形
-          );
-          this.setState(
-            {
-              editActive: true,
-            },
-            () => {
-              this.polylineEditor.open();
-            }
-          );
-        });
-      } else {
-        this.setState(
-          {
-            editActive: false,
-          },
-          () => {
-            this.polylineEditor.close();
-          }
-        );
-      }
+    this.setState({ path: e.Ge.path })
+    this.mapinst.remove(points[points.length - 1])
+  }
+
+  /**
+   * 开启/关闭绘制区域
+   */
+  editPolygon = () => {
+    const { editActive, otherGridPoints = [] } = this.state;
+    const points = this.mapinst.getAllOverlays('polygon');
+
+    // 判断所有网格点数量和同级网格点数量是否相等，如果相等则当前没有绘制网格
+    if (otherGridPoints.length !== points.length) {
+      this.setState({ editActive: !this.state.editActive })
     } else message.warning('请先绘制网格点！');
   };
-  // 提交网格点
+
+
+  // 点击提交网格点
   handleSubmit = () => {
     const points = this.mapinst.getAllOverlays('polygon');
     const {
@@ -172,16 +158,14 @@ export default class GridMap extends PureComponent {
         params: { id },
       },
     } = this.props;
-    const { editActive } = this.state;
+    const { editActive, otherGridPoints = [] } = this.state;
     if (!editActive) {
-      if (points && points.length) {
-        // console.log('points[0]',points[0].getPath());
-
+      if (points.length !== otherGridPoints.length) {
         dispatch({
           type: 'map/updateGridPoints',
           payload: {
             gridId: id,
-            location: JSON.stringify(points[0].getPath()),
+            location: JSON.stringify(points[points.length - 1].getPath()),
           },
           success: () => {
             message.success('操作成功！');
@@ -200,15 +184,23 @@ export default class GridMap extends PureComponent {
     }
   };
 
+
+  /**
+   * 点击清空区域
+   */
   handleClear = () => {
     const { editActive } = this.state;
+    // 如果未开启编辑
     if (!editActive) {
       this.setState({ editActive: false, path: [] });
-      this.mapinst.remove(this.mapinst.getAllOverlays('polygon'));
+      // this.mapinst.remove(this.mapinst.getAllOverlays('polygon'));
     } else message.warning('请先结束编辑！');
   };
 
-  // 渲染多边形
+
+  /**
+   * 渲染同级已绘制网格网格
+   */
   renderPolygons = (polygons) => {
     return polygons.map(({ gridName, mapLocation: p }, i) => {
       if (p && p.length) {
@@ -260,11 +252,16 @@ export default class GridMap extends PureComponent {
           >
             <MouseTool events={this.toolEvents} />
             <div style={layerStyle}>{what}</div>
-            {path &&
-              path.length && (
-                <Polygon path={path} style={{ strokeOpacity: 0.5, fillOpacity: 0.5 }} />
-              )}
             {this.renderPolygons(otherGridPoints)}
+            {/* 显示已绘制网格 */}
+            {path &&
+              path.length > 0 && (
+                <Polygon path={path} style={{ strokeOpacity: 0.5, fillOpacity: 0.5 }} >
+                  <PolyEditor active={editActive} event={{
+                    end: this.setNewPolugon,
+                  }} />
+                </Polygon>
+              )}
           </Map>
         </div>
         <Button

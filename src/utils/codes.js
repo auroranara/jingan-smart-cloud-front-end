@@ -172,9 +172,16 @@ export default {
       'waste-gas': 'dataAnalysis.IOTAbnormalData.wasteGas',
       'storage-tank': 'dataAnalysis.IOTAbnormalData.storageTank',
       'smoke-detector': 'dataAnalysis.IOTAbnormalData.smokeDetector',
+      fire: 'dataAnalysis.IOTAbnormalData.fireDetailView',
+      history: 'dataAnalysis.IOTAbnormalData.fireHistoryRecordView',
     },
     MaintenanceRecord: {
       view: 'dataAnalysis.maintenanceRecord.view',
+    },
+    workApprovalReport: {
+      listView: 'dataAnalysis.workApprovalReport.listView',
+      workApprovalList: 'dataAnalysis.workApprovalReport.workApprovalList',
+      detail: 'dataAnalysis.workApprovalReport.detail',
     },
   },
   lawEnforcement: {
@@ -282,6 +289,19 @@ export default {
       edit: 'personnelPosition.alarmManagement.edit',
       delete: 'personnelPosition.alarmManagement.delete',
       view: 'personnelPosition.alarmManagement.view',
+    },
+  },
+  /** 风险管控 */
+  riskControl: {
+    // 风险点管理
+    riskPointManage: {
+      listView: 'riskControl.riskPointManage.listView',
+      view: 'riskControl.riskPointManage.view',
+      add: 'riskControl.riskPointManage.add',
+      edit: 'riskControl.riskPointManage.edit',
+      delete: 'riskControl.riskPointManage.delete',
+      riskAssessmentView: 'riskControl.riskPointManage.riskAssessmentView',
+      riskCardView: 'riskControl.riskPointManage.riskCardView',
     },
   },
 };

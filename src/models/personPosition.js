@@ -6,6 +6,7 @@ import {
   querySectionTree,
   queryBeacons,
   getStatusCount,
+  getStatusCountList,
   getMonthCount,
   getServerTime,
   clearPosByArea,
@@ -23,6 +24,7 @@ export default {
     alarms1: [], // 报警查看中的报警列表
     beaconList: [],
     statusCount: {},
+    statusCountList: [],
     monthCount: [],
     serverTime: 0,
   },
@@ -81,6 +83,12 @@ export default {
       const { code=500, data } = response || {};
       if (code === 200)
         yield put({ type: 'saveStatusCount', payload: data });
+    },
+    *fetchStatusCountList({ payload, callback }, { call, put }) {
+      const response = yield call(getStatusCountList, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveStatusCountList', payload: data && Array.isArray(data.list) ? data.list: [] });
     },
     *fetchMonthCount({ payload, callback }, { call, put }) {
       const response = yield call(getMonthCount, payload);
@@ -143,6 +151,9 @@ export default {
     },
     saveStatusCount(state, action) {
       return { ...state, statusCount: action.payload };
+    },
+    saveStatusCountList(state, action) {
+      return { ...state, statusCountList: action.payload };
     },
     saveMonthCount(state, action) {
       return { ...state, monthCount: action.payload };

@@ -167,7 +167,9 @@ export default class App extends PureComponent {
           } = text;
           return itemTypeName !== '随手拍' ? (
             <Link
-              to={`/data-analysis/company-report/detail/${check_id}?companyName=${company_name}&&object_title=${object_title}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+              to={`/data-analysis/company-report/detail/${check_id}?companyName=${company_name}&&object_title=${encodeURIComponent(
+                object_title
+              )}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
             >
               查看
             </Link>
@@ -358,11 +360,12 @@ export default class App extends PureComponent {
       pageNum: 1,
       pageSize: 10,
     };
-    const { pageNum, pageSize, startTime, endTime, company_id, ...rest } = fieldsValue;
+    const { pageNum, pageSize, startTime, endTime, company_id, companyName, ...rest } = fieldsValue;
+
     // 重置控件
     setFieldsValue({
       gridId: undefined,
-      company_id: undefined,
+      companyName: undefined,
       itemType: undefined,
       objectTitle: undefined,
       checkUserName: undefined,

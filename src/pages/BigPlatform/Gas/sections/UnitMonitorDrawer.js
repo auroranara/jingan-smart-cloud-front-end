@@ -30,10 +30,10 @@ const OPTIONS = [
   { value: -1, desc: '失联', img: gasLossImg, color: '#9F9F9F' },
 ];
 
-const VIDEO_STYLE = {
-  width: '90%',
-  marginLeft: '-43%',
-};
+// const VIDEO_STYLE = {
+//   width: '90%',
+//   marginLeft: '-43%',
+// };
 
 const DEFAULT = '暂无数据';
 
@@ -45,7 +45,7 @@ function parseDataNum(n) {
     return Object.is(parsed, NaN) ? DEFAULT : 0;
   }
 
-  return DEFAULT;
+  return '--';
 }
 
 /**
@@ -106,9 +106,9 @@ export default class UnitMonitorDrawer extends PureComponent {
       unitAbnormalTrend = [],
       handleChangeStatus,
       status,
-      handleViewVideo,
+      // handleViewVideo,
       gas: { unitRealTimeMonitor },
-      cameraList,
+      // cameraList,
       cameraTree,
     } = this.props;
     const {
@@ -222,7 +222,7 @@ export default class UnitMonitorDrawer extends PureComponent {
           {unitRealTimeMonitor && unitRealTimeMonitor.length > 0 ? (
             <div className={styles.listContainer}>
               {unitRealTimeMonitor.map(
-                ({ area, location, realtimeData, status, normal_upper, unit }, i) => (
+                ({ area, location, realtimeData, status, normal_lower, normal_upper, unit }, i) => (
                   <div className={styles.card} key={i} style={{ marginTop: i < 2 ? '0' : '10px' }}>
                     <div
                       className={styles.imgContainer}
@@ -243,16 +243,13 @@ export default class UnitMonitorDrawer extends PureComponent {
                         LEL值：
                         <span style={{ color: +status === 1 ? '#F83329' : 'inherit' }}>
                           {parseDataNum(realtimeData)}
-                          {parseDataNum(realtimeData) > 0 || parseDataNum(realtimeData) === 0 ? (
-                            <span>{unit}</span>
-                          ) : (
-                              ''
-                            )}
+                          {/* {parseDataNum(realtimeData) > 0 || parseDataNum(realtimeData) === 0 ? <span>{unit}</span> : ''} */}
+                          {parseDataNum(realtimeData) >= 0 ? <span>{unit}</span> : ''}
                         </span>
                       </Ellipsis>
                       <Ellipsis className={styles.line} lines={1} tooltip>
                         参考值范围：
-                        {normal_upper && unit ? `0${unit}~${normal_upper}${unit}` : '暂无数据'}
+                        {normal_upper === null && normal_lower === null ? '--' : `${normal_lower || 0}${unit}~${normal_upper || '-'}${unit}`}
                       </Ellipsis>
                       <div className={styles.lastLine}>
                         <div

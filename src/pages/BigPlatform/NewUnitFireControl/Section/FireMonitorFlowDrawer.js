@@ -12,7 +12,7 @@ import DynamicDrawerTop from '@/pages/BigPlatform/Operation/components/DynamicDr
 
 const ID = 'fire-monitor-flow-drawer';
 const TITLES = ['报警', '故障'];
-const LABELS = [['发生', '确认', '完成'], ['故障发生', '开始处理', '处理完毕']];
+const LABELS = [['发生', '确认', '完成'], ['发生', '开始处理', '处理完毕']];
 export default class FireMonitorFlowDrawer extends PureComponent {
   state = { index: 0 };
 
@@ -39,15 +39,12 @@ export default class FireMonitorFlowDrawer extends PureComponent {
   render() {
     const {
       title,
-      data,
       PrincipalPhone,
       PrincipalName,
       visible,
       msgFlow,
       flowRepeat,
       phoneVisible,
-      head = false,
-      headProps = {},
       fireId,
       faultId,
       warnDetail: { list: warnDetailList },
@@ -56,6 +53,8 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       warnDetailLoading,
       faultDetailLoading,
       onClose,
+      handleShowFlowVideo,
+      handleParentChange,
       ...restProps
     } = this.props;
     const { index } = this.state;
@@ -63,6 +62,18 @@ export default class FireMonitorFlowDrawer extends PureComponent {
     const ids = msgFlow === 0 ? fireId : faultId;
     const length = ids.length;
 
+    const dataItem = list[0] || {};
+
+    const head = true;
+    const headProps = {
+      ...dataItem,
+      dynamicType: 0,
+      videoList: dataItem.cameraMessage || [],
+      onCameraClick: () => {
+        handleParentChange({ videoList: dataItem.cameraMessage || [] });
+        handleShowFlowVideo();
+      },
+    };
     let left = null;
     if (length) {
       const cards = ids.map((item, i) => {
@@ -92,14 +103,15 @@ export default class FireMonitorFlowDrawer extends PureComponent {
             label: LABELS[msgFlow][0],
             time: firstTime,
             cardItems: [
-              { title: installAddress || deviceAddress },
-              { value: `${componentName} 发生${TITLES[msgFlow]}` },
-              {
-                name: '安全管理员',
-                value: PrincipalName
-                  ? [PrincipalName, vaguePhone(PrincipalPhone, phoneVisible)].join(' ')
-                  : null,
-              },
+              // { title: installAddress || deviceAddress },
+              // { value: `${componentName} 发生${TITLES[msgFlow]}` },
+              // {
+              //   name: '安全管理员',
+              //   value: PrincipalName
+              //     ? [PrincipalName, vaguePhone(PrincipalPhone, phoneVisible)].join(' ')
+              //     : null,
+              // },
+              { title: `${TITLES[msgFlow]}发生` },
             ],
             repeat: { repeatCount: fireChildren ? fireChildren.length : 0, lastTime },
           },
@@ -117,6 +129,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
                           style: { color: +proceType === 1 ? '#fff' : '#ff4848' },
                         }
                       : undefined,
+                    msgFlow === 1 ? { title: `故障已开始处理` } : undefined,
                     { name: '处理单位', value: startCompanyName },
                     {
                       name: '处理人员',
@@ -131,6 +144,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
             cardItems:
               proceStatus === '1'
                 ? [
+                    { title: `${msgFlow === 1 ? '故障' : '现场'}已处理完毕` },
                     { name: '处理单位', value: executorCompanyName },
                     {
                       name: '处理人员',
@@ -156,12 +170,13 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       left =
         length === 1 ? (
           <Fragment>
-            {head && <DynamicDrawerTop {...headProps} {...data[0]} />}
+            {head && (
+              <DynamicDrawerTop {...headProps} {...dataItem} {...{ companyName: undefined }} />
+            )}
             {cards}
           </Fragment>
         ) : (
           <Fragment>
-            {head && <DynamicDrawerTop {...headProps} {...data[0]} />}
             <SwitchHead
               index={index}
               title={TITLES[msgFlow]}
@@ -169,6 +184,9 @@ export default class FireMonitorFlowDrawer extends PureComponent {
               handleLeftClick={this.handleLeftClick}
               handleRightClick={this.handleRightClick}
             />
+            {head && (
+              <DynamicDrawerTop {...headProps} {...dataItem} {...{ companyName: undefined }} />
+            )}
             <div className={styles.sliderContainer}>
               <Slider index={index} length={length} size={1}>
                 {cards}

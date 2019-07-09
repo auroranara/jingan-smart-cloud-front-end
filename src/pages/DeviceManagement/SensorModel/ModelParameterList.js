@@ -170,105 +170,16 @@ export default class ModelParameterList extends PureComponent {
   }
 
   /**
-   * 验证--预警下限
-   */
-  validateNormalLower = (rule, value, callback) => {
-    if (!value) {
-      callback()
-    } else if (numberReg.test(value)) {
-      // 如果是数字
-      // const { getFieldsValue } = this.props.form
-      // const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
-      if (+value < 0) {
-        callback('请输入大于0的数字')
-        return
-      }
-      // if (normalUpper && +value >= +normalUpper) {
-      //   callback('预警下限需小于预警上限')
-      //   return
-      // }
-      // if (smallLower && +value <= +smallLower) {
-      //   callback('预警下限需大于告警下限')
-      //   return
-      // }
-      callback()
-    } else callback('请输入数字')
-  }
-
-
-  /**
-   * 验证--预警上限
-   */
-  validateNormalUpper = (rule, value, callback) => {
-    if (!value) {
-      callback()
-    } else if (numberReg.test(value)) {
-      // const { getFieldsValue } = this.props.form
-      // const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
-      if (+value < 0) {
-        callback('请输入大于0的数字')
-        return
-      }
-      // if (normalLower && +value <= +normalLower) {
-      //   callback('预警上限需大于预警下限')
-      //   return
-      // }
-      // if (largeUpper && +value >= +largeUpper) {
-      //   callback('预警上限需小于告警上限')
-      //   return
-      // }
-      callback()
-    } else callback('请输入数字')
-  }
-
-
-  /**
-   * 验证--告警下限
-   */
-  validateSmallLower = (rule, value, callback) => {
-    if (!value) {
-      callback()
-    } else if (numberReg.test(value)) {
-      // const { getFieldsValue } = this.props.form
-      // const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
-      if (+value < 0) {
-        callback('请输入大于0的数字')
-        return
-      }
-      // if (largeUpper && +value >= +largeUpper) {
-      //   callback('告警下限需小于告警上限')
-      //   return
-      // }
-      // if (normalLower && +value >= +normalLower) {
-      //   callback('告警下限需小于预警下限')
-      //   return
-      // }
-      callback()
-    } else callback('请输入数字')
-  }
-
-
-  /**
    * 验证--告警上限
    */
-  validateLargeUpper = (rule, value, callback) => {
+  validateNum = (rule, value, callback) => {
     if (!value) {
       callback()
     } else if (numberReg.test(value)) {
-      // const { getFieldsValue } = this.props.form
-      // const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
       if (+value < 0) {
         callback('请输入大于0的数字')
         return
       }
-      // if (smallLower && +value <= +smallLower) {
-      //   callback('告警上限需大于告警下限')
-      //   return
-      // }
-      // if (normalUpper && +value <= +normalUpper) {
-      //   callback('告警上限需大于预警上限')
-      //   return
-      // }
       callback()
     } else callback('请输入数字')
   }
@@ -291,16 +202,14 @@ export default class ModelParameterList extends PureComponent {
      */
   handleAlarmStrategy = (parameterDetail) => {
     const { setFieldsValue } = this.props.form
-    const { largeUpper, normalLower, normalUpper, smallLower } = parameterDetail
+    const { normalLower, normalUpper } = parameterDetail
     this.setState({
       parameterDetail: { ...parameterDetail },
       alarmStrategyModalVisible: true,
     }, () => {
       setFieldsValue({
-        yLower: smallLower && normalLower,
-        yUpper: largeUpper && normalUpper,
-        gLower: smallLower || normalLower,
-        gUpper: largeUpper || normalUpper,
+        normalLower,
+        normalUpper,
       })
     })
   }
@@ -314,15 +223,15 @@ export default class ModelParameterList extends PureComponent {
       dispatch,
       form: { validateFields },
     } = this.props
-    validateFields(['yLower', 'yUpper', 'gLower', 'gUpper'], (errors, { yLower, yUpper, gLower, gUpper }) => {
+    validateFields(['normalLower', 'normalUpper'], (errors, { normalLower, normalUpper }) => {
       if (!errors) {
         const { parameterDetail } = this.state
         const payload = {
           ...parameterDetail,
-          normalLower: yLower || gLower,
-          normalUpper: yUpper || gUpper,
-          smallLower: yLower && gLower,
-          largeUpper: yUpper && gUpper,
+          normalLower,
+          normalUpper,
+          smallLower: null,
+          largeUpper: null,
         }
         this.setState({ alarmStrategyModalVisible: false })
         dispatch({
@@ -409,8 +318,8 @@ export default class ModelParameterList extends PureComponent {
         key: '报警策略数量',
         align: 'center',
         width: 130,
-        render: (val, { normalUpper, normalLower, largeUpper, smallLower }) => (
-          <span>{(numberReg.test(normalUpper) || numberReg.test(normalLower)) + (numberReg.test(largeUpper) || numberReg.test(smallLower))}</span>
+        render: (val, { normalUpper, normalLower }) => (
+          <span>{(numberReg.test(normalUpper) || numberReg.test(normalLower)) ? 1 : 0}</span>
         ),
       },
       {
@@ -525,27 +434,27 @@ export default class ModelParameterList extends PureComponent {
       >
         <Card className={styles.alarmStrategyModalCard}>
           <Form>
-            <Col span={7}>
+            {/* <Col span={7}>
               <FormItem>
                 <span className={styles.labelText}>报警等级：</span>
                 预警
               </FormItem>
-            </Col>
-            <Col span={11}>
-              <FormItem style={{ display: 'inline-block' }} label="预警阈值"></FormItem>
+            </Col> */}
+            <Col span={10}>
+              <FormItem style={{ display: 'inline-block' }} label="报警阈值"></FormItem>
               <FormItem style={{ width: '180px', display: 'inline-block' }}>
-                {getFieldDecorator('yLower', {
-                  rules: [{ validator: this.validateNormalLower }],
+                {getFieldDecorator('normalLower', {
+                  rules: [{ validator: this.validateNum }],
                   getValueFromEvent: e => e.target.value.trim() || null,
                 })(
                   <Input addonBefore="≤" addonAfter={unit} style={{ width: '100%' }} />
                 )}
               </FormItem>
             </Col>
-            <Col span={6}>
+            <Col span={10}>
               <FormItem>
-                {getFieldDecorator('yUpper', {
-                  rules: [{ validator: this.validateNormalUpper }],
+                {getFieldDecorator('normalUpper', {
+                  rules: [{ validator: this.validateNum }],
                   getValueFromEvent: e => e.target.value.trim() || null,
                 })(
                   <Input addonBefore="≥" addonAfter={unit} style={{ width: '180px' }} />
@@ -554,7 +463,7 @@ export default class ModelParameterList extends PureComponent {
             </Col>
           </Form>
         </Card>
-        <Card className={styles.alarmStrategyModalCard} style={{ marginTop: '15px' }}>
+        {/* <Card className={styles.alarmStrategyModalCard} style={{ marginTop: '15px' }}>
           <Form>
             <Col span={7}>
               <FormItem>
@@ -584,7 +493,7 @@ export default class ModelParameterList extends PureComponent {
               </FormItem>
             </Col>
           </Form>
-        </Card>
+        </Card> */}
       </Modal>
     )
   }

@@ -48,7 +48,7 @@ export default function OverviewBackSection(props) {
           <div
             className={styles.name}
             onClick={e =>
-              window.open(`${window.publicPath}#/big-platform/fire-control/company/${id}`)
+              window.open(`${window.publicPath}#/big-platform/fire-control/new-company/${id}`)
             }
           >
             <Ellipsis lines={1} tooltip>

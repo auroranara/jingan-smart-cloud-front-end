@@ -77,7 +77,7 @@ export default class ChartGauge extends PureComponent {
             lineStyle: { width: 1, color: '#fff' },
           },
           axisTick: {
-            length: 3,
+            length: 5,
             lineStyle: {
               color: 'auto',
             },

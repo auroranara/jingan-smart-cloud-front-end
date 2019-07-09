@@ -23,7 +23,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
         title="隐患详情"
         visible={visible}
         onClose={onClose}
-        width={470}
+        width={535}
         destroyOnClose={true}
         left={
           <div className={styles.drawerHiddenDangerDetail}>
@@ -35,6 +35,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                     timeLine: { time: timeStamp, timeLineLabel, type: timeLineType },
                     level_name = null,
                     report_user_name = null,
+                    allCheckPersonNames = null,
                     desc = null,
                     rectify_user_name = null,
                     plan_rectify_time = null,
@@ -92,7 +93,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                               {level_name || getEmptyData()}
                             </Description>
                             <Description className={styles.line} term="检查人">
-                              {report_user_name || getEmptyData()}
+                              {allCheckPersonNames || getEmptyData()}
                             </Description>
                             <Description className={styles.line} term="隐患描述">
                               {desc || getEmptyData()}

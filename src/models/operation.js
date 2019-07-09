@@ -171,7 +171,8 @@ export default {
       const response = yield call(getUnitList, payload);
       const { code, data } = response || {};
       if (code === 200) {
-        const lst = data && Array.isArray(data.list) ? data.list : [];
+        let lst = data && Array.isArray(data.list) ? data.list : [];
+        lst = lst.filter(({ latitude, longitude }) => latitude || longitude);
         yield put({ type: 'saveUnitList', payload: { unitId, list: lst } });
         callback && callback(lst);
       }

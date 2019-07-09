@@ -31,17 +31,18 @@ const Message = function({
         <div className={styles.messageTitleRight}>{moment(addTime).format('HH:mm:ss')}</div>
       </div>
       <div className={styles.messageContent}>
-        {type === 32 ? (
+        {type === 32 && (
           <div
             className={styles.msgDetail}
           >{`${area}${location}${paramName}${realtimeVal}${unit}（${
             condition === '>=' ? '≥' : '≤'
           }${limitVal}${unit}）`}</div>
-        ) : (
+        )}
+        {type === 44 && (
           <Fragment>
             <div>{`${moment(oldWarningTime).format(
               'HH:mm:ss'
-            )} ${area}${location}${paramName}告警`}</div>
+            )} ${area}${location}${paramName}报警`}</div>
             <div>现已恢复正常！</div>
           </Fragment>
         )}
@@ -104,7 +105,8 @@ export default class WarningMessage extends PureComponent {
 
     return (
       <NewSection
-        title="告警信息"
+        // title="告警信息"
+        title="报警信息"
         className={className}
         style={{ display: 'flex', flexDirection: 'column', height: 'auto' }}
         titleStyle={{ flex: 'none' }}

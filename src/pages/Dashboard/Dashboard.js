@@ -1,5 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { message } from 'antd';
+
 import codes from '@/utils/codes';
 import styles from './Dashboard.less';
 
@@ -31,8 +33,8 @@ const IMGS = [
   safe,
   monitor,
   posoitionImg,
-  gasImg,
   electricImg,
+  gasImg,
   fireMaintenanceImg,
   smokeImg,
   operationImg,
@@ -137,10 +139,10 @@ export default class Dashboard extends PureComponent {
     fireItem.url = `${window.publicPath}#/big-platform/new-fire-control/government/index`;
     gasItem.url = `${window.publicPath}#/big-platform/gas`;
     operationItem.url = `${window.publicPath}#/big-platform/operation`;
-    threedgisItem.url = `${window.publicPath}#/big-platform/3d-gis`;
+    // threedgisItem.url = `${window.publicPath}#/big-platform/3d-gis`;
     // smokeItem.url = `${window.publicPath}#/big-platform/smoke/${companyId}`
     // electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor` // 移到render里面
-    // unitType  1：维保企业 2：政府 3：运营 4:企事业主体
+    // unitType  1：维保企业 2：政府 3：运营 4:社会单位
     // 政府根据companyBasicInfo的数据来
     // if (unitType === 2) {
     //   //TODO 政府大屏开启
@@ -171,8 +173,8 @@ export default class Dashboard extends PureComponent {
 
     if (threedgisAuth) this.setState({ threedgisVisible: 1 });
 
-    // 企事业主体和政府有业务分类，维保和运营没有
-    // 所以企事业主体和政府的大屏权限 = 用户业务权限 && 企事业业务分类 && 账户被配置的权限，运营和维保企业的大屏权限 = 用户业务权限 && 账户被配置的权限
+    // 社会单位和政府有业务分类，维保和运营没有
+    // 所以社会单位和政府的大屏权限 = 用户业务权限 && 企事业业务分类 && 账户被配置的权限，运营和维保企业的大屏权限 = 用户业务权限 && 账户被配置的权限
     switch (unitType) {
       // 维保企业
       case 1:
@@ -212,6 +214,7 @@ export default class Dashboard extends PureComponent {
           electricityMonitor: electricityMonitorAuth,
           gasVisible: gasAuth,
           smokeVisible: smokeAuth,
+          operationVisible: operationAuth,
         });
         break;
 
@@ -251,6 +254,11 @@ export default class Dashboard extends PureComponent {
     }
   };
 
+  notice = e => {
+    e.preventDefault();
+    message.info('抱歉，网站建设中...');
+  };
+
   render() {
     const {
       user: { grids },
@@ -283,7 +291,7 @@ export default class Dashboard extends PureComponent {
       value && prev.push(items[i]);
       return prev;
     }, []);
-    console.log(imgWrapper);
+    // console.log(imgWrapper);
 
     return (
       <div className={styles.container}>
@@ -308,6 +316,7 @@ export default class Dashboard extends PureComponent {
                         target="_blank"
                         rel="noopener noreferrer"
                         className={styles.item}
+                        onClick={url ? null : this.notice}
                       >
                         <div className={styles.itemIconWrapper}>
                           <div

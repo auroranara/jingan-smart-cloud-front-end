@@ -71,8 +71,11 @@ const unitTypeList = {
   1: '维保企业',
   2: '政府机构',
   3: '平台管理',
-  4: '企事业主体',
+  4: '社会单位',
 };
+
+/* 获取root下的div */
+const getRootChild = () => document.querySelector('#root>div');
 
 /* 获取无数据 */
 const getEmptyData = () => {
@@ -80,9 +83,10 @@ const getEmptyData = () => {
 };
 
 @connect(
-  ({ account, user, loading }) => ({
+  ({ account, user, loading, hiddenDangerReport }) => ({
     account,
     user,
+    hiddenDangerReport,
     loading: loading.models.account,
   }),
   dispatch => ({
@@ -158,6 +162,12 @@ const getEmptyData = () => {
     clearUnits() {
       dispatch({ type: 'account/queryUnits', payload: [] });
     },
+    fetchGridList(action) {
+      dispatch({ type: 'hiddenDangerReport/fetchGridList', ...action });
+    },
+    fetchAllGridList(action) {
+      dispatch({ type: 'hiddenDangerReport/fetchAllGridList', ...action });
+    },
   })
 )
 @Form.create()
@@ -204,6 +214,8 @@ export default class accountManagementList extends React.Component {
       fetch,
       fetchUnitsFuzzy,
       fetchRoles,
+      fetchGridList,
+      fetchAllGridList,
       account: { searchInfo },
       form: { setFieldsValue },
       user: {
@@ -211,18 +223,16 @@ export default class accountManagementList extends React.Component {
       },
     } = this.props;
 
-    const isUnitUser = this.isUnitUser();
+    const isUnitUser = this.isUnitUser(); // 是否非运营
+    let selectedUnitType;
     let listPayload;
     if (isUnitUser) {
       fetchRoles({ payload: { unitType, companyId: unitId } });
       listPayload = { pageSize, pageNum: 1, unitId };
     } else {
-      let selectedUnitType;
       if (searchInfo)
         // 上次缓存在model里的筛选条件
         selectedUnitType = searchInfo.unitType;
-
-      this.setState({ unitTypeChecked: selectedUnitType });
 
       // 如果有搜索条件，则填入并所属单位和账号列表
       if (searchInfo) {
@@ -258,8 +268,12 @@ export default class accountManagementList extends React.Component {
         listPayload = { pageSize, pageNum: 1 };
       }
     }
-
-    searchInfo && setFieldsValue(searchInfo);
+    // 获取网格列表
+    selectedUnitType === GOV && fetchGridList()
+    unitType === GOV && fetchAllGridList()
+    this.setState({ unitTypeChecked: selectedUnitType }, () => {
+      searchInfo && setFieldsValue(searchInfo);
+    });
     fetch({ payload: listPayload });
   };
 
@@ -304,12 +318,13 @@ export default class accountManagementList extends React.Component {
       saveSearchInfo,
       form: { resetFields, getFieldValue },
       user: {
-        currentUser: { unitId },
+        currentUser: { unitId, unitType },
       },
     } = this.props;
     const isUnitUser = this.isUnitUser();
     const payload = { pageSize, pageNum: 1 };
-    clearRoles();
+    if (+unitType === OPE)
+      clearRoles();
     resetFields();
     if (isUnitUser) {
       payload.unitId = unitId;
@@ -356,6 +371,7 @@ export default class accountManagementList extends React.Component {
   // 单位类型下拉框选择
   handleUnitTypeChange = value => {
     const {
+      fetchGridList,
       fetchRoles,
       clearRoles,
       fetchUnitsFuzzy,
@@ -375,6 +391,8 @@ export default class accountManagementList extends React.Component {
           unitType: value,
         },
       });
+      // 获取网格列表
+      fetchGridList()
     } else if (value === null || value === undefined) {
       fetchUnitsFuzzy({
         payload: {
@@ -533,7 +551,9 @@ export default class accountManagementList extends React.Component {
     const {
       account: { unitTypes, unitIds, roles },
       form: { getFieldDecorator },
+      hiddenDangerReport: { gridList },
       loading,
+      user: { currentUser: { unitType } },
     } = this.props;
 
     const isUnitUser = this.isUnitUser(); // 单位用户且不为运营
@@ -629,6 +649,23 @@ export default class accountManagementList extends React.Component {
                 </Select>
               )}
             </FormItem>
+            {(unitTypeChecked === GOV || unitType === GOV) && (
+              <FormItem label="所属网格">
+                {getFieldDecorator('gridId')(
+                  <TreeSelect
+                    treeData={gridList}
+                    placeholder="请选择"
+                    getPopupContainer={getRootChild}
+                    allowClear
+                    dropdownStyle={{
+                      maxHeight: '50vh',
+                      zIndex: 50,
+                    }}
+                    style={{ width: 180 }}
+                  />
+                )}
+              </FormItem>
+            )}
           </Col>
 
           {/* 按钮 */}
@@ -713,17 +750,17 @@ export default class accountManagementList extends React.Component {
                   title={loginName}
                   className={styles.card}
                   actions={actions}
-                  // extra={
-                  //   <Button
-                  //     onClick={() => {
-                  //       this.handleShowDeleteConfirm(id);
-                  //     }}
-                  //     shape="circle"
-                  //     style={{ border: 'none', fontSize: '20px' }}
-                  //   >
-                  //     <Icon type="close" />
-                  //   </Button>
-                  // }
+                // extra={
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // }
                 >
                   <div>
                     <Row>
@@ -759,7 +796,7 @@ export default class accountManagementList extends React.Component {
                             <Popconfirm
                               title={`确定要${
                                 !!users[0].accountStatus ? '解绑' : '开启'
-                              }关联企业吗？`}
+                                }关联企业吗？`}
                               onConfirm={() =>
                                 this.handleAccountStatus({
                                   accountStatus: Number(!users[0].accountStatus),
@@ -776,16 +813,16 @@ export default class accountManagementList extends React.Component {
                                 {!!users[0].accountStatus ? (
                                   <Icon type="link" />
                                 ) : (
-                                  <Icon style={{ color: 'red' }} type="disconnect" />
-                                )}
+                                    <Icon style={{ color: 'red' }} type="disconnect" />
+                                  )}
                               </AuthSpan>
                             </Popconfirm>
                           </Col>
                         )}
                       </Row>
                     ) : (
-                      <p>{getEmptyData()}</p>
-                    )}
+                        <p>{getEmptyData()}</p>
+                      )}
                     <p
                       onClick={() => this.handleViewMore(users, loginId)}
                       style={{
@@ -826,10 +863,10 @@ export default class accountManagementList extends React.Component {
               <span>{val}</span>
             </Fragment>
           ) : (
-            <Fragment>
-              <span>平台管理</span>
-            </Fragment>
-          );
+              <Fragment>
+                <span>平台管理</span>
+              </Fragment>
+            );
         },
       },
       {
@@ -868,8 +905,8 @@ export default class accountManagementList extends React.Component {
                       {!!row.accountStatus ? (
                         <Icon type="link" />
                       ) : (
-                        <Icon style={{ color: 'red' }} type="disconnect" />
-                      )}
+                          <Icon style={{ color: 'red' }} type="disconnect" />
+                        )}
                     </AuthSpan>
                   </Popconfirm>
                 </Fragment>

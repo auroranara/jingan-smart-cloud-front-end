@@ -3,7 +3,6 @@ import { Modal } from 'antd';
 import styles from './index.less';
 import Thumbnail from '../Thumbnail';
 import videoIcon from '@/assets/icon-video.png';
-
 /**
  * 四色图坐标定位
  */
@@ -20,6 +19,7 @@ export default class App extends PureComponent {
 
   componentDidUpdate({ visible: prevVisible }) {
     const { visible } = this.props;
+
     if (!prevVisible && visible) {
       if (this.tempState === null) {
         this.setState({
@@ -96,6 +96,7 @@ export default class App extends PureComponent {
       ratio = '75%',
       noClick = true,
     } = this.props;
+
     const { position, index, pageNum } = this.state;
 
     return (
@@ -120,7 +121,9 @@ export default class App extends PureComponent {
             >
               <div
                 className={styles.picture}
-                style={{ backgroundImage: `url(${urls[index].webUrl})` }}
+                style={{
+                  backgroundImage: `url(${urls[index].webUrl})`,
+                }}
                 onClick={this.handleShowPoint}
               />
               {/* 坐标点 */

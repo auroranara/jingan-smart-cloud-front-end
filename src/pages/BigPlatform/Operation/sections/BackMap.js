@@ -7,7 +7,7 @@ import { DeviceBar, InfoStatus, MapLegend, MapTypeBar } from '../components/Comp
 import iconAddress from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-address.png';
 import iconMan from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-man.png';
 import { dotRed, dotGreen, dotHostGreen, dotHostRed, dotHostYellow, dotSmokeGreen, dotSmokeRed, dotSmokeYellow, dotSmokeGrey } from '../imgs/links';
-import { HOST, SMOKE, getMapLegendData, getMapItemStatus } from '../utils';
+import { HOST, SMOKE, getMapLegendData, getMapItemStatus, sortUnits } from '../utils';
 
 const IMGS = [
   [dotGreen, dotRed],
@@ -64,11 +64,12 @@ export default class MapSection extends PureComponent {
   }
 
   renderMarkers = lvl => {
-    const { units = [], unitDetail: { companyId: selectedCompanyId } = {} } = this.props;
+    const { units = [], deviceType, unitDetail: { companyId: selectedCompanyId } = {} } = this.props;
     if (units.length === 0) {
       if (this.mapInstance) this.mapInstance.setCity(region);
     }
-    const markers = units.map(item => {
+    const newUnits = sortUnits(units, deviceType);
+    const markers = newUnits.map(item => {
       return {
         ...item,
         position: {
@@ -101,7 +102,7 @@ export default class MapSection extends PureComponent {
   };
 
   renderMarkerLayout = extData => {
-    const { deviceType, handleMapClick, showTooltip, hideTooltip } =  this.props;
+    const { deviceType, handleMapClick, showTooltip, hideTooltip } = this.props;
     const { companyName, companyId, fireDeviceCount, smokeDeviceCount } = extData;
     const status = getMapItemStatus(extData, deviceType);
     const imgSrc = IMGS[deviceType][status];
@@ -110,7 +111,8 @@ export default class MapSection extends PureComponent {
     return (
       <div
         style={{ position: 'relative' }}
-        className={status ? styles.imgAnimate : styles.imgContainer}
+        // className={status ? styles.imgAnimate : styles.imgContainer}
+        className={styles.imgContainer}
         key={companyId}
       >
         {/* {!!deviceType && !!deviceCount && (
@@ -214,7 +216,7 @@ export default class MapSection extends PureComponent {
     let deviceCount;
     const hostStatuses = [fireDeviceCountForFire, fireDeviceCountForFault, 0, fireDeviceCountForNormal].map(n => +n);
     const smokeStatuses = [smokeDeviceCountForFire, smokeDeviceCountForFault, smokeDeviceCountForUnConnect, smokeDeviceCountForNormal].map(n => +n);
-    switch(deviceType) {
+    switch (deviceType) {
       case HOST:
         deviceCount = fireDeviceCount;
         statuses = hostStatuses;
@@ -281,12 +283,14 @@ export default class MapSection extends PureComponent {
               }}
             />
             {saferName}
-            <span
-              className={styles.saferPhone}
-              // style={{ marginLeft: '10px' }}
-            >
-              {saferPhone}
-            </span>
+            {saferPhone && (
+              <span
+                className={styles.saferPhone}
+              >
+                {saferPhone}
+              </span>
+            )}
+            {!saferName && !saferPhone && <span>暂无数据</span>}
           </div>
           {
             deviceType ? (
@@ -300,16 +304,16 @@ export default class MapSection extends PureComponent {
                 <div className={styles.statusWrapper}>
                   <div
                     className={styles.statusItem}
-                    // className={fire > 0 ? styles.itemActive : styles.statusItem}
-                    // onClick={alarmClick}
+                  // className={fire > 0 ? styles.itemActive : styles.statusItem}
+                  // onClick={alarmClick}
                   >
                     <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
                     报警 {fire > 0 ? fire : 0}
                   </div>
                   <div
                     className={styles.statusItem}
-                    // className={fault > 0 ? styles.itemActive : styles.statusItem}
-                    // onClick={faultClick}
+                  // className={fault > 0 ? styles.itemActive : styles.statusItem}
+                  // onClick={faultClick}
                   >
                     <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
                     故障 {fault}
@@ -327,8 +331,8 @@ export default class MapSection extends PureComponent {
                 </div>
               </Fragment>
             ) : (
-              <InfoStatus data={[hostStatuses.slice(0, 2), smokeStatuses.slice(0, 3)]} devices={[fireDeviceCount, smokeDeviceCount]} />
-            )
+                <InfoStatus data={[hostStatuses.slice(0, 2), smokeStatuses.slice(0, 3)]} devices={[fireDeviceCount, smokeDeviceCount]} />
+              )
           }
         </div>
         <Icon

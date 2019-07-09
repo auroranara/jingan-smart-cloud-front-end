@@ -67,7 +67,6 @@ export default class App extends PureComponent {
         params: { id },
       },
     } = this.props;
-
     // 获取详情
     dispatch({
       type: 'maintenanceReport/fetchCheckDetail',
@@ -111,6 +110,7 @@ export default class App extends PureComponent {
       },
       loading,
     } = this.props;
+
     const { tab } = this.state;
     /* 当前账号是否是企业 */
     const isCompany = unitType === 4;
@@ -175,7 +175,7 @@ export default class App extends PureComponent {
               <Link
                 to={`/data-analysis/maintenance-report/maintenanCheckDetail/${
                   val._id
-                }?checkId=${id}&&companyMtName=${companyName}&&itemTypeName=${itemTypeName}&&objectTitle=${objectTitle}&&checkCompanyName=${checkCompanyName}&&userName=${userName}&&checkDate=${checkDate}`}
+                  }?checkId=${id}&&companyMtName=${companyName}&&itemTypeName=${itemTypeName}&&objectTitle=${encodeURIComponent(objectTitle)}&&checkCompanyName=${checkCompanyName}&&userName=${userName}&&checkDate=${checkDate}`}
               >
                 <span style={{ color: '#40a9ff' }}> {val.statusName} </span>
               </Link>

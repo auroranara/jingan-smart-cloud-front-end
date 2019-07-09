@@ -21,11 +21,11 @@ const processDict = {
   已处理: 1,
 };
 const statusDict = {
-  火警: 1,
+  报警: 1,
   故障: 2,
 };
 const statusDict2 = {
-  1: '火警',
+  1: '报警',
   2: '故障',
 };
 const proceDict = {
@@ -41,12 +41,12 @@ const typeDict2 = {
 };
 const statusList = [
   {
-    key: '全部状态',
-    value: '全部状态',
+    key: '类型',
+    value: '类型',
   },
   {
-    key: '火警',
-    value: '火警',
+    key: '报警',
+    value: '报警',
   },
   {
     key: '故障',
@@ -54,23 +54,35 @@ const statusList = [
   },
 ];
 const DEFAULT_PAGE_SIZE = 20;
-const EmptyData = ({ msg, ...props }) => <div className={styles.emptyData} {...props}><img src={emptyDataBackground} alt="空数据"/><div>{msg}</div></div>;
+const EmptyData = ({ msg, ...props }) => (
+  <div className={styles.emptyData} {...props}>
+    <img src={emptyDataBackground} alt="空数据" />
+    <div>{msg}</div>
+  </div>
+);
 const FIELDNAMES = {
-  id: ({ id, gasId, proceId, reportType }) => ({ 消防主机: id, 独立烟感: id || gasId, 报修: proceId })[typeDict2[reportType]],
+  id: ({ id, gasId, proceId, reportType }) =>
+    ({ 消防主机: id, 独立烟感: id || gasId, 报修: proceId }[typeDict2[reportType]]),
   type: ({ reportType }) => typeDict2[reportType], // 类型
-  companyName: ({ companyName, rcompanyName, reportType }) => typeDict2[reportType] !== '报修' ? companyName : rcompanyName, // 企业名称
+  companyName: ({ companyName, rcompanyName, reportType }) =>
+    typeDict2[reportType] !== '报修' ? companyName : rcompanyName, // 企业名称
   partType: 'componentName', // 设施部件类型
   loopNumber: 'componentRegion', // 回路号
   partNumber: 'componentNo', // 故障号
-  area: ({ area, reportType }) => typeDict2[reportType] === '消防主机' ? undefined : area, // 区域
-  location: ({ installAddress, location, reportType }) => typeDict2[reportType] === '消防主机' ? installAddress : location, // 位置
-  startTime: ({ createTime, realtime, createDate, reportType }) => ({ 消防主机: createTime, 独立烟感: realtime, 报修: createDate })[typeDict2[reportType]], // 报警/报修时间
+  area: ({ area, reportType }) => (typeDict2[reportType] === '消防主机' ? undefined : area), // 区域
+  location: ({ installAddress, location, reportType }) =>
+    typeDict2[reportType] === '消防主机' ? installAddress : location, // 位置
+  startTime: ({ createDate, reportType, firstTime }) =>
+    ({ 消防主机: firstTime, 独立烟感: firstTime, 报修: createDate }[typeDict2[reportType]]), // 报警/报修时间
   endTime: 'endDate', // 结束时间
   status: ({ fireType }) => statusDict2[fireType], // 状态
-  wordOrderNumber: 'workOrder', // 工单编号
+  systemType: 'systemTypeValue', // 系统类型
+  deviceName: 'ndeviceName', // 设备名称
   repairPersonName: 'createByName', // 报修人员名称
-  repairPersonPhone: ({ createByPhone }) => createByPhone && `${createByPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'), // 报修人员手机号
+  repairPersonPhone: ({ createByPhone }) =>
+    createByPhone && `${createByPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'), // 报修人员手机号
   process: ({ proceStatus }) => proceDict[proceStatus], // 处理状态
+  repeat: ({ fireChildren }) => fireChildren && fireChildren.length, // 重复次数
 };
 
 @connect(({ operation, loading }) => ({
@@ -81,41 +93,40 @@ const FIELDNAMES = {
 export default class TaskDrawer extends PureComponent {
   state = {
     activeType: '消防主机',
-    activeStatus: '全部状态',
-  }
+    activeStatus: '类型',
+  };
 
   scroll = null;
 
-  lastActiveStatus = '火警';
+  lastActiveStatus = '报警';
 
   componentDidUpdate({ visible: prevVisible }) {
     const { visible } = this.props;
     if (!prevVisible && visible) {
-      this.getTaskList({
-        activeType: '消防主机',
-        activeStatus: '全部状态',
-      }, () => {
-        this.setState({
+      this.getTaskList(
+        {
           activeType: '消防主机',
-          activeStatus: '全部状态',
-        });
-      });
+          activeStatus: '类型',
+        },
+        () => {
+          this.setState({
+            activeType: '消防主机',
+            activeStatus: '类型',
+          });
+        }
+      );
     }
   }
 
-  setScrollReference = (scroll) => {
+  setScrollReference = scroll => {
     this.scroll = scroll && scroll.dom;
-  }
+  };
 
-  getTaskList = ({
-    activeType=this.state.activeType,
-    activeStatus=this.state.activeStatus,
-    pageNum=1,
-  }, callback) => {
-    const {
-      dispatch,
-      process,
-    } = this.props;
+  getTaskList = (
+    { activeType = this.state.activeType, activeStatus = this.state.activeStatus, pageNum = 1 },
+    callback
+  ) => {
+    const { dispatch, process } = this.props;
     dispatch({
       type: 'operation/fetchTaskList',
       payload: {
@@ -130,12 +141,12 @@ export default class TaskDrawer extends PureComponent {
         pageNum === 1 && this.scroll && this.scroll.scrollTop();
       },
     });
-  }
+  };
 
-  handleTabClick = (activeType) => {
+  handleTabClick = activeType => {
     const { activeStatus: prevActiveStatus, activeType: prevActiveType } = this.state;
     let activeStatus = prevActiveStatus;
-    if (activeStatus !== '全部状态') {
+    if (activeStatus !== '类型') {
       if (prevActiveType === '报修') {
         if (activeType !== '报修') {
           activeStatus = this.lastActiveStatus;
@@ -149,49 +160,35 @@ export default class TaskDrawer extends PureComponent {
     this.getTaskList(payload, () => {
       this.setState(payload);
     });
-  }
+  };
 
-  handleSelect = (activeStatus) => {
+  handleSelect = activeStatus => {
     this.getTaskList({ activeStatus }, () => {
       this.setState({ activeStatus });
     });
-  }
+  };
 
-  handleCardClick = (data) => {
+  handleCardClick = data => {
     const { onJump } = this.props;
     onJump && onJump(data);
-  }
+  };
 
   handleLoadMore = () => {
     const {
-      operation: {
-        taskList: {
-          pagination: {
-            pageNum=1,
-          }={},
-        }={},
-      },
+      operation: { taskList: { pagination: { pageNum = 1 } = {} } = {} },
     } = this.props;
     this.getTaskList({ pageNum: pageNum + 1 });
-  }
+  };
 
   render() {
     const {
       operation: {
         taskList: {
-          list=[],
-          pagination: {
-            pageNum=1,
-            pageSize=DEFAULT_PAGE_SIZE,
-            total=0,
-          }={},
-          count: {
-            消防主机: fire=0,
-            独立烟感: gas=0,
-            报修: repair=0,
-          }={},
-        }={},
-      }={},
+          list = [],
+          pagination: { pageNum = 1, pageSize = DEFAULT_PAGE_SIZE, total = 0 } = {},
+          count: { 消防主机: fire = 0, 独立烟感: gas = 0, 报修: repair = 0 } = {},
+        } = {},
+      } = {},
       loading,
       jumping,
       visible,
@@ -223,11 +220,7 @@ export default class TaskDrawer extends PureComponent {
           fixedContent: (
             <div className={styles.fixedContent}>
               <div>
-                <CustomTabs
-                  activeKey={activeType}
-                  data={tabs}
-                  onClick={this.handleTabClick}
-                />
+                <CustomTabs activeKey={activeType} data={tabs} onClick={this.handleTabClick} />
               </div>
               <div>
                 {activeType !== tabs[2].key && (
@@ -250,16 +243,26 @@ export default class TaskDrawer extends PureComponent {
         }}
       >
         <div className={styles.container}>
-          {Array.isArray(list) && list.length > 0 ? list.map((item) => (
-            <TaskCard
-              className={styles.card}
-              key={item.id || item.gasId || item.proceId}
-              data={item}
-              fieldNames={FIELDNAMES}
-              onClick={this.handleCardClick}
+          {Array.isArray(list) && list.length > 0 ? (
+            list.map(item => (
+              <TaskCard
+                className={styles.card}
+                key={item.id || item.gasId || item.proceId}
+                data={item}
+                fieldNames={FIELDNAMES}
+                onClick={this.handleCardClick}
+              />
+            ))
+          ) : (
+            <EmptyData
+              msg={`暂无${
+                activeType !== '报修' && activeStatus !== '类型' ? activeStatus : ''
+              }${activeType}${process}任务`}
             />
-          )) : <EmptyData msg={`暂无${activeType !== '报修' && activeStatus !== '全部状态' ? activeStatus : ''}${activeType}${process}任务`} />}
-          {total > pageNum * pageSize && <LoadMore className={styles.loadMore} onClick={this.handleLoadMore} />}
+          )}
+          {total > pageNum * pageSize && (
+            <LoadMore className={styles.loadMore} onClick={this.handleLoadMore} />
+          )}
         </div>
       </CustomDrawer>
     );

@@ -200,7 +200,7 @@ export default class UnitSafety extends PureComponent {
     // 获取动态监测数据
     this.fetchDynamicMonitorData({ companyId });
     // 获取点位
-    this.fetchPoints({ companyId });
+    this.getPoints();
     // 获取特种设备列表
     this.fetchSpecialEquipmentList({ companyId });
     // 获取手机是否显示配置
@@ -208,6 +208,31 @@ export default class UnitSafety extends PureComponent {
 
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
+
+    this.setPollingTimer();
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.pollingTimer);
+  }
+
+  /* 设置轮询 */
+  setPollingTimer = () => {
+    this.pollingTimer = setTimeout(() => {
+      this.getPoints(() => {
+        this.setPollingTimer();
+      });
+    }, 5 * 1000);
+  }
+
+  /* 获取点位 */
+  getPoints = (callback) => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    this.fetchPoints({ companyId }, callback);
   }
 
   /* 前往动态监控大屏 */

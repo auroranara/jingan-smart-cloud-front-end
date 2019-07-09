@@ -3,7 +3,7 @@ import { notification, Icon } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import { stringify } from 'qs';
-import moment from 'moment';
+// import moment from 'moment';
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
@@ -23,6 +23,10 @@ import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import FireFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/FireFlowDrawer';
 import SmokeFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/SmokeFlowDrawer';
+import OnekeyFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/OnekeyFlowDrawer';
+
+const OPE = 3; // 运营或管理员unitType对应值
+const COMPANY_ALL = 'companyIdAll';
 
 // websocket配置
 const options = {
@@ -118,6 +122,7 @@ const popupVisible = {
   resetHostsDrawerVisible: false,
   checksDrawerVisible: false,
   newWorkOrderDrawerVisible: false,
+  onekeyFlowDrawerVisible: false,
 };
 
 @connect(({ loading, operation, user, unitSafety }) => ({
@@ -160,6 +165,7 @@ export default class Operation extends PureComponent {
       smokeFlowDrawerVisible: false,
       fireVideoVisible: false,
       videoVisible: false,
+      onekeyFlowDrawerVisible: false,
       videoList: [],
       videoKeyId: undefined,
       dynamicType: null,
@@ -176,7 +182,7 @@ export default class Operation extends PureComponent {
     const {
       dispatch,
       user: {
-        currentUser: { userId },
+        currentUser: { userId, unitType },
       },
     } = this.props;
 
@@ -185,8 +191,9 @@ export default class Operation extends PureComponent {
     // 获取实时消息
     this.fetchScreenMessage();
 
+    const isAdmin = +unitType === OPE;
     const params = {
-      companyId: userId,
+      companyId: isAdmin ? COMPANY_ALL : userId,
       env,
       type: 7,
     };
@@ -491,7 +498,10 @@ export default class Operation extends PureComponent {
         }}
       >
         <div>
-          <span className={styles1.time}>{moment(addTime).format('YYYY-MM-DD HH:mm')}</span>{' '}
+          <span className={styles1.time}>
+            {/* {moment(addTime).format('YYYY-MM-DD HH:mm')} */}
+            刚刚
+          </span>{' '}
           {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
           <span className={styles1.address}>{installAddress || area + location}</span>
         </div>
@@ -730,6 +740,7 @@ export default class Operation extends PureComponent {
       gasId,
       proceId,
       companyName,
+      rcompanyName,
       companyId,
       componentRegion,
       componentNo,
@@ -750,8 +761,10 @@ export default class Operation extends PureComponent {
       firstTime,
       lastTime,
       createTime,
+      rcompanyId = null,
     } = data;
     const dataId = { 1: id, 4: id || gasId, 2: proceId }[reportType];
+    const cId = (+reportType !== 2 ? companyId : rcompanyId) || undefined;
     dispatch({
       type: 'operation/fetchCameraMessage',
       payload: {
@@ -760,16 +773,16 @@ export default class Operation extends PureComponent {
       },
       callback: cameraMessage => {
         const param = {
-          dataId,
-          id: dataId,
-          companyName: companyName || undefined,
+          dataId: +reportType !== 2 ? dataId : undefined,
+          id: +reportType === 2 ? dataId : undefined,
+          companyName: (+reportType !== 2 ? companyName : rcompanyName) || undefined,
           component:
             `${
-              componentRegion || typeof componentRegion === 'number' ? `${componentRegion}回路` : ''
+            componentRegion || typeof componentRegion === 'number' ? `${componentRegion}回路` : ''
             }${componentNo || typeof componentNo === 'number' ? `${componentNo}号` : ''}` ||
             undefined,
           unitTypeName: componentName || undefined,
-          companyId: companyId || undefined,
+          companyId: cId,
         };
         const type = { 1: 0, 4: 1, 2: 3 }[reportType];
         const flow = fireType - 1;
@@ -796,7 +809,7 @@ export default class Operation extends PureComponent {
         // console.log('flow:',flow);
         // console.log('occurData:',occurData);
         // console.log('companyId:',companyId);
-        this.handleClickMsgFlow(param, type, flow, cameraMessage, occurData, companyId);
+        this.handleClickMsgFlow(param, type, flow, cameraMessage, occurData, cId);
       },
     });
   };
@@ -822,7 +835,6 @@ export default class Operation extends PureComponent {
   ) => {
     // type 0/1/2/3 主机/烟感/燃气/一键报修
     // flow 0/1 报警/故障
-
     const {
       dispatch,
       operation: { unitList },
@@ -835,6 +847,7 @@ export default class Operation extends PureComponent {
     ];
     const reportTypes = [1, 4, 3, 2];
     this.hiddeAllPopup();
+
     if (type !== 3) {
       dispatch({
         type: 'operation/fetchCountNumAndTimeById',
@@ -861,13 +874,13 @@ export default class Operation extends PureComponent {
     } else {
       // 一键报修没有重复上报
       dispatch({
-        type: 'newUnitFireControl/fetchWorkOrder',
+        type: 'operation/fetchWorkOrder',
         payload: { companyId: cId, reportType: reportTypes[type], ...param },
         callback: res => {
           if (!(res.data && Array.isArray(res.data.list))) return;
           if (res.data.list.length === 0) {
             dispatch({
-              type: 'newUnitFireControl/saveWorkOrderDetail',
+              type: 'operation/saveWorkOrderDetail',
               payload: occurData,
             });
           }
@@ -878,7 +891,7 @@ export default class Operation extends PureComponent {
     dispatch({
       type: 'operation/fetchMaintenanceCompany',
       payload: {
-        companyId: param.companyId,
+        companyId: cId,
       },
     });
     // dispatch({
@@ -968,6 +981,7 @@ export default class Operation extends PureComponent {
       videoList,
       videoKeyId,
       unitList,
+      onekeyFlowDrawerVisible,
     } = this.state;
     const headProps = {
       ...workOrderDetail[0],
@@ -984,8 +998,8 @@ export default class Operation extends PureComponent {
         headerStyle={HEADER_STYLE}
         titleStyle={{ fontSize: 46 }}
         contentStyle={CONTENT_STYLE}
-        // settable
-        // onSet={this.handleClickSetButton}
+      // settable
+      // onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
         <BackMap
@@ -1090,6 +1104,18 @@ export default class Operation extends PureComponent {
           PrincipalName={PrincipalName}
           PrincipalPhone={PrincipalPhone}
           msgFlow={msgFlow}
+          phoneVisible={phoneVisible}
+          headProps={headProps}
+          head={true}
+        />
+        {/* 一键报修处理动态 */}
+        <OnekeyFlowDrawer
+          data={workOrderDetail}
+          visible={onekeyFlowDrawerVisible}
+          handleParentChange={this.handleMapParentChange}
+          onClose={() => this.handleDrawerVisibleChange('onekeyFlow')}
+          PrincipalName={PrincipalName}
+          PrincipalPhone={PrincipalPhone}
           phoneVisible={phoneVisible}
           headProps={headProps}
           head={true}

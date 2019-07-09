@@ -51,8 +51,9 @@ const options = {
  * author:
  * date: 2019年01月08日
  */
-@connect(({ smoke }) => ({
+@connect(({ smoke, newUnitFireControl }) => ({
   smoke,
+  newUnitFireControl,
 }))
 export default class Smoke extends PureComponent {
   constructor(props) {
@@ -200,23 +201,23 @@ export default class Smoke extends PureComponent {
         const { alarmIds } = this.state;
         // const index = unitIds.indexOf(companyId);
         // 如果数据为告警或恢复，则将数据插入到列表的第一个
-        if ([31, 32].includes(type)) {
+        if ([38, 50].includes(type)) {
           // dispatch({
           //   type: 'smoke/save',
           //   payload: { messages: [data].concat(messages) },
           // });
           // 如果发生告警，弹出通知框，否则关闭通知框
           this.fetchAbnormal();
-          if (type === 32) {
+          if (type === 38) {
             // const sameItem = alarmIds.find(item=>item.companyId===companyId);
             const sameIndex = alarmIds.map(item => item.companyId).indexOf(companyId);
             const newList =
               sameIndex >= 0
                 ? [
-                  ...alarmIds.slice(0, sameIndex),
-                  { companyId, messageFlag },
-                  ...alarmIds.slice(sameIndex + 1),
-                ]
+                    ...alarmIds.slice(0, sameIndex),
+                    { companyId, messageFlag },
+                    ...alarmIds.slice(sameIndex + 1),
+                  ]
                 : [...alarmIds, { companyId, messageFlag }];
             this.setState({ alarmIds: newList });
             this.showWarningNotification(data);
@@ -258,7 +259,7 @@ export default class Smoke extends PureComponent {
           }
         }
         // 如果为33，则修改单位状态
-        if (type === 33) {
+        if ([38, 40, 46, 47, 50, 51].includes(type)) {
           this.fetchAbnormal();
           // dispatch({
           //   type: 'smoke/saveUnitData',
@@ -353,7 +354,7 @@ export default class Smoke extends PureComponent {
   /**
    * 更新后
    */
-  componentDidUpdate() { }
+  componentDidUpdate() {}
 
   /**
    * 销毁前
@@ -406,6 +407,7 @@ export default class Smoke extends PureComponent {
     location,
     paramName,
     messageFlag,
+    messageFlagForId,
     paramCode,
   }) => {
     const options = {
@@ -425,7 +427,7 @@ export default class Smoke extends PureComponent {
           onClick={() => {
             this.setState({ companyName });
             this.handleClickNotification(companyId);
-            this.handleAlarmClick(messageFlag, companyId, companyName);
+            this.handleAlarmClick(messageFlagForId || messageFlag, companyId, companyName);
           }}
         >
           <div className={styles.notificationText}>
@@ -558,7 +560,7 @@ export default class Smoke extends PureComponent {
     this.setState({ type: type });
   };
 
-  handleAlarmClick = (id, companyId, companyName, num) => {
+  handleAlarmClick = (id, companyId, companyName, num, msg) => {
     const {
       dispatch,
       match: {
@@ -573,6 +575,37 @@ export default class Smoke extends PureComponent {
         this.handleDrawerVisibleChange('alarmDynamic');
       },
     });
+
+    // dispatch({
+    //   type: 'newUnitFireControl/fetchCountNumAndTimeById',
+    //   payload: {
+    //     id,
+    //     reportType: 4,
+    //     fireType: 1,
+    //   },
+    //   callback: res => {
+    //     if (res) {
+    //       // 待处理自行拼
+    //       const { num, lastTime, firstTime } = res;
+    //       // this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+    //       dispatch({
+    //         type: 'newUnitFireControl/saveWorkOrderDetail',
+    //         payload: [{ ...occurData[0], firstTime, num, lastTime }],
+    //       });
+    //     } else {
+    //       // 处理中，已完成请求接口流程信息
+    //       dispatch({
+    //         type: 'newUnitFireControl/fetchWorkOrder',
+    //         payload: { companyId, reportType: 4, id },
+    //         // callback: res => {
+    //         //   if (res.data.list.length === 0) return;
+    //         //   const { num, lastTime } = res.data.list[0];
+    //         //   this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+    //         // },
+    //       });
+    //     }
+    //   },
+    // });
   };
 
   handleFaultClick = (id, companyId, companyName, num) => {
@@ -829,6 +862,7 @@ export default class Smoke extends PureComponent {
           handleOk={this.handleSettingOk}
           handleCancel={this.handleSettingCancel}
         />
+        {/* 接入单位统计弹窗 */}
         <UnitDrawer
           data={{ list: importCardsInfo, AccessStatistics, AccessCount }}
           visible={unitDrawerVisible}

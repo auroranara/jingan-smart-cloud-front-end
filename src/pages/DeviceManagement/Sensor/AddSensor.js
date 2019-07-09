@@ -136,7 +136,7 @@ export default class AddSensor extends Component {
       match: { params: { id } },
     } = this.props
 
-    validateFields((error, { normalLower, normalUpper, smallLower, largeUpper, ...formData }) => {
+    validateFields((error, { normalLower, normalUpper, ...formData }) => {
       if (!error) {
         const payload = { ...formData, monitoringParameters }
         // console.log('提交',payload)
@@ -198,16 +198,14 @@ export default class AddSensor extends Component {
    */
   handleAlarmStrategy = (currentParameter) => {
     const { setFieldsValue } = this.props.form
-    const { largeUpper, normalLower, normalUpper, smallLower } = currentParameter
+    const { normalLower, normalUpper } = currentParameter
     this.setState({
       currentParameter: { ...currentParameter },
       alarmStrategyModalVisible: true,
     }, () => {
       setFieldsValue({
-        yLower: smallLower && normalLower,
-        yUpper: largeUpper && normalUpper,
-        gLower: smallLower || normalLower,
-        gUpper: largeUpper || normalUpper,
+        normalLower,
+        normalUpper,
       })
     })
   }
@@ -258,15 +256,15 @@ export default class AddSensor extends Component {
       sensor: { monitoringParameters },
       form: { validateFields },
     } = this.props
-    validateFields(['yLower', 'yUpper', 'gLower', 'gUpper'], (errors, { yLower, yUpper, gLower, gUpper }) => {
+    validateFields(['normalLower', 'normalUpper'], (errors, { normalLower, normalUpper }) => {
       if (!errors) {
         let { currentParameter } = this.state
         currentParameter = {
           ...currentParameter,
-          normalLower: yLower || gLower,
-          normalUpper: yUpper || gUpper,
-          smallLower: yLower && gLower,
-          largeUpper: yUpper && gUpper,
+          normalLower,
+          normalUpper,
+          smallLower: null,
+          largeUpper: null,
         }
         const newMonitoringParameters = monitoringParameters.map(item => {
           return item.id === currentParameter.id ? currentParameter : item
@@ -423,8 +421,8 @@ export default class AddSensor extends Component {
         title: '报警策略数量',
         key: '报警策略数量',
         align: 'center',
-        render: (val, { normalUpper, normalLower, largeUpper, smallLower }) => (
-          <span>{(numberReg.test(normalUpper) || numberReg.test(normalLower)) + (numberReg.test(largeUpper) || numberReg.test(smallLower))}</span>
+        render: (val, { normalUpper, normalLower }) => (
+          <span>{(numberReg.test(normalUpper) || numberReg.test(normalLower)) ? 1 : 0}</span>
         ),
       },
       {
@@ -554,16 +552,16 @@ export default class AddSensor extends Component {
       >
         <Card className={styles.alarmStrategyModalCard}>
           <Form>
-            <Col span={7}>
+            {/* <Col span={7}>
               <FormItem>
                 <span className={styles.labelText}>报警等级：</span>
                 预警
               </FormItem>
-            </Col>
-            <Col span={11}>
-              <FormItem style={{ display: 'inline-block' }} label="预警阈值"></FormItem>
+            </Col> */}
+            <Col span={10}>
+              <FormItem style={{ display: 'inline-block' }} label="报警阈值"></FormItem>
               <FormItem style={{ width: '180px', display: 'inline-block' }}>
-                {getFieldDecorator('yLower', {
+                {getFieldDecorator('normalLower', {
                   rules: [{ validator: this.validateNormalLower }],
                   getValueFromEvent: e => e.target.value.trim() || null,
                 })(
@@ -571,9 +569,9 @@ export default class AddSensor extends Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={6}>
+            <Col span={10}>
               <FormItem>
-                {getFieldDecorator('yUpper', {
+                {getFieldDecorator('normalUpper', {
                   rules: [{ validator: this.validateNormalUpper }],
                   getValueFromEvent: e => e.target.value.trim() || null,
                 })(
@@ -583,7 +581,7 @@ export default class AddSensor extends Component {
             </Col>
           </Form>
         </Card>
-        <Card className={styles.alarmStrategyModalCard} style={{ marginTop: '15px' }}>
+        {/* <Card className={styles.alarmStrategyModalCard} style={{ marginTop: '15px' }}>
           <Form>
             <Col span={7}>
               <FormItem>
@@ -591,10 +589,10 @@ export default class AddSensor extends Component {
                 告警
               </FormItem>
             </Col>
-            <Col span={11}>
+            <Col span={10}>
               <FormItem style={{ display: 'inline-block' }} label="告警阈值"></FormItem>
               <FormItem style={{ width: '180px', display: 'inline-block' }}>
-                {getFieldDecorator('gLower', {
+                {getFieldDecorator('normalLower', {
                   rules: [{ validator: this.validateSmallLower }],
                   getValueFromEvent: e => e.target.value.trim() || null,
                 })(
@@ -602,9 +600,9 @@ export default class AddSensor extends Component {
                 )}
               </FormItem>
             </Col>
-            <Col span={6}>
+            <Col span={10}>
               <FormItem>
-                {getFieldDecorator('gUpper', {
+                {getFieldDecorator('normalUpper', {
                   rules: [{ validator: this.validateLargeUpper }],
                   getValueFromEvent: e => e.target.value.trim() || null,
                 })(
@@ -613,7 +611,7 @@ export default class AddSensor extends Component {
               </FormItem>
             </Col>
           </Form>
-        </Card>
+        </Card> */}
       </Modal>
     )
   }

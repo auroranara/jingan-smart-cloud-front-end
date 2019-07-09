@@ -66,7 +66,10 @@ const DEFAULT_PAGE_SIZE = 10;
  */
 @connect(({ unitSafety, loading }) => ({
   unitSafety,
-  loading: loading.models.unitSafety,
+  loading0: loading.effects['unitSafety/fetchSafetyCheckList'],
+  loading1: loading.effects['unitSafety/fetchDangerList'],
+  loading2: loading.effects['unitSafety/fetchSafeFiles'],
+  loading3: loading.effects['unitSafety/fetchMonitorList'],
 }))
 export default class SafetyIndexDrawer extends PureComponent {
   state = {
@@ -79,20 +82,35 @@ export default class SafetyIndexDrawer extends PureComponent {
     const { visible } = this.props;
     const { currentTabIndex } = this.state;
     if (!prevVisible && visible) {
-      this.leftScroll && this.leftScroll.dom.scrollTop();
+      this.leftScroll && this.leftScroll.scrollTop();
+      this.rightScroll && this.rightScroll.scrollTop();
+      this.getSafetyCheckList();
       this.setState({ currentTabIndex: 0 });
     } else if (lastTabIndex !== currentTabIndex) {
-      this.rightScroll && this.rightScroll.dom.scrollTop();
+      this.rightScroll && this.rightScroll.scrollTop();
     }
   }
 
   refLeftScroll = scroll => {
-    this.leftScroll = scroll;
+    this.leftScroll = scroll && scroll.dom;
   };
 
   refRightScroll = scroll => {
-    this.rightScroll = scroll;
+    this.rightScroll = scroll && scroll.dom;
   };
+
+  /**
+   * 获取安全巡查
+   */
+  getSafetyCheckList = () => {
+    const { companyId, dispatch } = this.props;
+    dispatch({
+      type: 'unitSafety/fetchSafetyCheckList',
+      payload: {
+        companyId,
+      },
+    });
+  }
 
   /**
    * 获取隐患列表
@@ -147,7 +165,7 @@ export default class SafetyIndexDrawer extends PureComponent {
       return;
     }
     if (currentTabIndex === 0) {
-      // 由于安全巡查数据已经有了，所以不需要重新获取
+      this.getSafetyCheckList();
     } else if (currentTabIndex === 1) {
       this.getHiddenDangerList();
     } else if (currentTabIndex === 2) {
@@ -348,7 +366,7 @@ export default class SafetyIndexDrawer extends PureComponent {
   renderCount() {
     const {
       unitSafety: {
-        points: { abnormalPointList = [] } = {},
+        safetyCheckList=[],
         hiddenDangerCount: { total = 0, ycq = 0 } = {},
         monitorList: { alarm = [], loss = [] } = {},
         safeList = [],
@@ -358,7 +376,7 @@ export default class SafetyIndexDrawer extends PureComponent {
     let count;
     switch (currentTabIndex) {
       case 0:
-        count = `共有${abnormalPointList.length}个点位超时未查`;
+        count = `共有${safetyCheckList.length}个点位超时未查`;
         break;
       case 1:
         count = `共有${total}个隐患，其中${ycq}个已超期`;
@@ -381,7 +399,7 @@ export default class SafetyIndexDrawer extends PureComponent {
   renderList() {
     const {
       unitSafety: {
-        points: { abnormalPointList = [] } = {},
+        safetyCheckList=[],
         dangerList: {
           list: hiddenDangerList = [],
           pagination: {
@@ -405,7 +423,7 @@ export default class SafetyIndexDrawer extends PureComponent {
       case 0: // 注意排序
         Item = PointCard;
         key = 'item_id';
-        list = abnormalPointList;
+        list = safetyCheckList;
         fieldNames = {
           level: 'risk_level', // 风险等级
           name: 'object_title', // 点位名称
@@ -492,7 +510,10 @@ export default class SafetyIndexDrawer extends PureComponent {
     let {
       // 抽屉是否可见
       visible,
-      loading,
+      loading0,
+      loading1,
+      loading2,
+      loading3,
       // 抽屉关闭事件
       onClose,
     } = this.props;
@@ -526,7 +547,7 @@ export default class SafetyIndexDrawer extends PureComponent {
                 </div>
               }
               scrollProps={{ className: styles.scrollContainer }}
-              spinProps={{ loading }}
+              spinProps={{ loading: loading0 || loading1 || loading2 || loading3 || false }}
             >
               <div className={styles.content}>{this.renderList()}</div>
             </Section>

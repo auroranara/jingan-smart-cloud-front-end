@@ -7,6 +7,7 @@ import SwitchHead from '../components/SwitchHead';
 import NewTimelineCard from '../components/NewTimelineCard';
 import { vaguePhone } from '../utils';
 import flowImg from '../imgs/flow_m.png';
+import DynamicDrawerTop from '@/pages/BigPlatform/Operation/components/DynamicDrawerTop';
 
 const ID = 'onekey-flow-drawer';
 
@@ -39,13 +40,14 @@ export default class OnekeyFlowDrawer extends PureComponent {
       PrincipalName,
       visible,
       phoneVisible,
-      head = null,
+      head = false,
+      headProps = {},
       ...restProps
     } = this.props;
     const { index } = this.state;
     const list = (Array.isArray(data) ? data : []).slice(0, 1);
     const length = list.length;
-
+    const dataItem = list[0] || {};
     // 判断是否是维保处理，维保处理动态时，显示流程图，故障处理动态时不显示流程图
     // const isMaintenance = title.includes('维保');
 
@@ -76,12 +78,13 @@ export default class OnekeyFlowDrawer extends PureComponent {
             label: '报修',
             time: create_date,
             cardItems: [
-              { title: systemTypeValue },
-              { name: '工单编号', value: work_order },
-              {
-                name: '报修人员',
-                value: `${createByName} ${vaguePhone(createByPhone, phoneVisible)}`,
-              },
+              // { title: systemTypeValue },
+              // { name: '工单编号', value: work_order },
+              // {
+              //   name: '报修人员',
+              //   value: `${createByName} ${vaguePhone(createByPhone, phoneVisible)}`,
+              // },
+              { title: `已报修成功` },
             ],
           },
           // { label: '消息发送', time: 1569548522158, msgInfo: true },
@@ -91,6 +94,7 @@ export default class OnekeyFlowDrawer extends PureComponent {
             cardItems:
               nstatus === '0' || nstatus === '1'
                 ? [
+                    { title: `该工单已开始处理` },
                     { name: '处理单位', value: startCompanyName },
                     {
                       name: '处理人员',
@@ -105,6 +109,7 @@ export default class OnekeyFlowDrawer extends PureComponent {
             cardItems:
               nstatus === '1'
                 ? [
+                    { title: `该工单已处理完毕` },
                     { name: '处理单位', value: finishCompanyName },
                     {
                       name: '处理人员',
@@ -129,12 +134,12 @@ export default class OnekeyFlowDrawer extends PureComponent {
       left =
         length === 1 ? (
           <Fragment>
-            {head}
+            {head && <DynamicDrawerTop {...headProps} {...dataItem} />}
             {cards}
           </Fragment>
         ) : (
           <Fragment>
-            {head}
+            {head && <DynamicDrawerTop {...headProps} {...dataItem} />}
             <SwitchHead
               index={index}
               title="故障"
@@ -158,6 +163,7 @@ export default class OnekeyFlowDrawer extends PureComponent {
         width={535}
         left={left}
         visible={visible}
+        leftParStyle={{ display: 'flex', flexDirection: 'column' }}
         {...restProps}
       />
     );

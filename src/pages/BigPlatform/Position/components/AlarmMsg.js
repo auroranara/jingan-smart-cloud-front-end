@@ -27,7 +27,7 @@ export default function AlarmMsg(props) {
   return (
     <div className={styles.container} style={newStyle} {...restProps}>
       <Icon type="close" className={styles.close} onClick={e => handleClose('alarmMsg')} />
-      <Button ghost className={styles.btn} onClick={e => handleShowAlarmHandle(id)}>处理</Button>
+      {/* <Button ghost className={styles.btn} onClick={e => handleShowAlarmHandle(id)}>处理</Button> */}
       <h5 className={styles.title}>
         <span className={styles.info} />
         报警信息

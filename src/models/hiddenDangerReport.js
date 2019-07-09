@@ -19,13 +19,15 @@ import {
   // 获取隐患部门.整改部门列表
   getHiddendeptContent,
   queryUnits,
+  // 获取所有所属网格列表树
+  fetchAllGridList,
 } from '@/services/hiddenDangerReport.js';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
 import router from 'umi/router';
 import urls from '@/utils/urls';
 /* 格式化网格树 */
-const formatGrid = function(tree) {
+const formatGrid = function (tree) {
   const list = [];
   for (let { grid_id, grid_name, children } of tree) {
     if (children && children.length > 0) {
@@ -41,7 +43,7 @@ const formatGrid = function(tree) {
   return list;
 };
 /* 完善步骤条数组 */
-const formatTimeLine = function(timeLine) {
+const formatTimeLine = function (timeLine) {
   const list = timeLine.map((item, index) => {
     let type = +item.type;
     if (type === 1) {
@@ -310,12 +312,28 @@ export default {
         error();
       }
     },
+    *fetchAllGridList({ payload, callback }, { call, put }) {
+      const response = yield call(fetchAllGridList, payload)
+      if (response && response.code === 200) {
+        const list = formatGrid(response.data.list);
+        yield put({
+          type: 'save',
+          payload: {
+            key: 'gridList',
+            value: list,
+          },
+        });
+        if (callback) {
+          callback(list);
+        }
+      } else error()
+    },
     /**
      * 获取所属网格列表
      */
     *exportData({ payload, callback }, { call, put }) {
       const blob = yield call(exportData, payload);
-      fileDownload(blob, `隐患排查报表_${moment().format('YYYYMMDD')}.xls`);
+      fileDownload(blob, `隐患排查报表_${moment().format('YYYYMMDD')}.xlsx`);
     },
     /**
      * 获取文书列表

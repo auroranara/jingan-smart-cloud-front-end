@@ -12,7 +12,7 @@ import DynamicDrawerTop from '@/pages/BigPlatform/Operation/components/DynamicDr
 
 const ID = 'smoke-flow-drawer';
 const TITLES = ['报警', '故障'];
-const LABELS = [['发生', '确认', '完成'], ['故障发生', '开始处理', '处理完毕']];
+const LABELS = [['发生', '确认', '完成'], ['发生', '开始处理', '处理完毕']];
 export default class SmokeFlowDrawer extends PureComponent {
   state = { index: 0 };
 
@@ -51,7 +51,7 @@ export default class SmokeFlowDrawer extends PureComponent {
     const { index } = this.state;
     const list = (Array.isArray(data) ? data : []).slice(0, 1);
     const length = list.length;
-
+    const dataItem = list[0] || {};
     // 判断是否是维保处理，维保处理动态时，显示流程图，故障处理动态时不显示流程图
     // const isMaintenance = title.includes('维保');
 
@@ -86,20 +86,21 @@ export default class SmokeFlowDrawer extends PureComponent {
             label: LABELS[msgFlow][0],
             time: firstTime,
             cardItems: [
-              { title: [area, location].join('') || '暂无位置信息' },
-              msgFlow === 0
-                ? { value: `${`独立烟感探测器`} 发生${TITLES[msgFlow]}` }
-                : {
-                    value: `${`独立烟感探测器`} 发生${TITLES[msgFlow]}`,
-                    extra: faultName || undefined,
-                    extraStyle: { color: '#ffb400' },
-                  },
-              {
-                name: '安全管理员',
-                value: PrincipalName
-                  ? [PrincipalName, vaguePhone(PrincipalPhone, phoneVisible)].join(' ')
-                  : null,
-              },
+              // { title: [area, location].join('') || '暂无位置信息' },
+              // msgFlow === 0
+              //   ? { value: `${`独立烟感探测器`} 发生${TITLES[msgFlow]}` }
+              //   : {
+              //       value: `${`独立烟感探测器`} 发生${TITLES[msgFlow]}`,
+              //       extra: faultName || undefined,
+              //       extraStyle: { color: '#ffb400' },
+              //     },
+              // {
+              //   name: '安全管理员',
+              //   value: PrincipalName
+              //     ? [PrincipalName, vaguePhone(PrincipalPhone, phoneVisible)].join(' ')
+              //     : null,
+              // },
+              { title: `${TITLES[msgFlow]}发生` },
             ],
             repeat: { repeatCount: +num || 0, lastTime: lastTime },
           },
@@ -117,6 +118,7 @@ export default class SmokeFlowDrawer extends PureComponent {
                           style: { color: +type === 1 ? '#fff' : '#ff4848' },
                         }
                       : undefined,
+                    msgFlow === 1 ? { title: `故障已开始处理` } : undefined,
                     { name: '处理单位', value: startCompanyName },
                     {
                       name: '处理人员',
@@ -131,6 +133,7 @@ export default class SmokeFlowDrawer extends PureComponent {
             cardItems:
               nstatus === '1'
                 ? [
+                    { title: `${msgFlow === 1 ? '故障' : '现场'}已处理完毕` },
                     { name: '处理单位', value: finishCompanyName },
                     {
                       name: '处理人员',
@@ -155,12 +158,12 @@ export default class SmokeFlowDrawer extends PureComponent {
       left =
         length === 1 ? (
           <Fragment>
-            {head && <DynamicDrawerTop {...headProps} {...data[0]} />}
+            {head && <DynamicDrawerTop {...headProps} {...dataItem} />}
             {cards}
           </Fragment>
         ) : (
           <Fragment>
-            {head && <DynamicDrawerTop {...headProps} {...data[0]} />}
+            {head && <DynamicDrawerTop {...headProps} {...dataItem} />}
             <SwitchHead
               index={index}
               title={TITLES[msgFlow]}

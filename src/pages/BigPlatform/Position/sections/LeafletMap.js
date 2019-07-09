@@ -26,11 +26,12 @@ const ALARM = 2;
 }))
 export default class LeafletMap extends PureComponent {
   state = {
+    drawKey: Math.random(),
     data: [],
     images: undefined,
     reference: undefined,
     floorIcon: undefined,
-    beaconOn: true, // 是否显示信标
+    // beaconOn: true, // 是否显示信标
     positionIcons: [], // 人员及信标的图标
     movingIcons: [], // 移动的人员的图标
   };
@@ -45,9 +46,9 @@ export default class LeafletMap extends PureComponent {
     // } = prevProps;
     // const { areaId, highlightedAreaId, sectionTree } = this.props;
     const currentProps = this.props;
-    const { beaconOn: prevBeaconOn } = prevState;
-    const { beaconOn } = this.state;
-    const isBeaconOnChanged = prevBeaconOn !== beaconOn;
+    // const { beaconOn: prevBeaconOn } = prevState;
+    // const { beaconOn } = this.state;
+    // const isBeaconOnChanged = prevBeaconOn !== beaconOn;
 
     const props = [
       'areaId',
@@ -60,6 +61,8 @@ export default class LeafletMap extends PureComponent {
       'aggregation',
       'positions',
       'beaconList',
+      'fullScreen',
+      'beaconOn',
     ];
     // 状态变化对象，变化的为true
     const states = props.reduce((prev, next) => {
@@ -69,10 +72,13 @@ export default class LeafletMap extends PureComponent {
     const [prevMovingIds, currentMovingIds] = [prevProps.movingCards, currentProps.movingCards].map(cards => cards.map(({ cardId }) => cardId));
     states.movingIds = !isArraySame(prevMovingIds, currentMovingIds);
 
+    if (states.fullScreen)
+      this.setState({ drawKey: Math.random() });
+
     if (states.areaId || states.sectionTree || states.highlightedAreaId)
       this.handleMapData();
-    if (states.aggregation || states.areaId || states.areaInfo || states.isTrack || states.selectedCardId
-      || states.positions || states.movingIds || states.beaconList || isBeaconOnChanged)
+    if (states.aggregation || states.areaId || states.areaInfo || states.isTrack ||states.selectedCardId
+      || states.positions || states.movingIds || states.beaconList || states.beaconOn)
       this.setState({ positionIcons: this.positionsToIcons() });
     if (states.movingCards || states.areaId || states.areaInfo || states.isTrack || states.selectedCardId)
       this.setState({ movingIcons: this.movingCardsToIcons() });
@@ -303,13 +309,13 @@ export default class LeafletMap extends PureComponent {
     setAreaId(sectionTree[0].id);
   };
 
-  handleBeaconStateChange = checked => {
-    this.setState({ beaconOn: checked });
-  };
+  // handleBeaconStateChange = checked => {
+  //   this.setState({ beaconOn: checked });
+  // };
 
   beaconListToIcons = (aggregation) => {
-    let { beaconList, areaId } = this.props;
-    const { beaconOn } = this.state;
+    let { beaconList, areaId, beaconOn } = this.props;
+    // const { beaconOn } = this.state;
     if (!beaconOn)
       return [];
 
@@ -505,8 +511,8 @@ export default class LeafletMap extends PureComponent {
   };
 
   render() {
-    const { url, areaId, areaInfo, showBoard } = this.props;
-    const { data, images, reference, beaconOn, floorIcon, positionIcons, movingIcons } = this.state;
+    const { fullScreen, url, areaId, areaInfo, showBoard, showFullScreen, hideFullScreen } = this.props;
+    const { drawKey, data, images, reference, floorIcon, positionIcons, movingIcons } = this.state;
     // const { count, inCardCount, outCardCount } = this.currentTrueSection || {};
 
     const currentAreaInfo = (areaId && areaInfo[areaId]) || {};
@@ -515,9 +521,11 @@ export default class LeafletMap extends PureComponent {
     const icons = [...positionIcons, ...movingIcons].concat(floorIcon || []);
     // console.log('render icons', Date(), icons);
 
+    // console.log(drawKey);
     const imgDraw = (
       <Spin spinning={false} style={{ height: '100%' }}>
         <ImageDraw
+          key={drawKey}
           maxBoundsRatio={1.5}
           autoZoom
           boxZoom={false}
@@ -539,7 +547,7 @@ export default class LeafletMap extends PureComponent {
     return (
       <div className={styles.container}>
         {imgDraw}
-        <Icon type="arrows-alt" onClick={showBoard} className={styles.board} />
+        {/* <Icon type={fullScreen ? 'shrink' : 'arrows-alt'} onClick={fullScreen ? hideFullScreen : showFullScreen} className={styles.screen} /> */}
         <Icon type="home" onClick={this.handleHome} className={styles.home} />
         {parentId && <Icon type="rollback" onClick={this.handleBack} className={styles.back} />}
         {/* <div className={styles.mapInfo}>
@@ -560,8 +568,10 @@ export default class LeafletMap extends PureComponent {
           <div className={styles.generalLgd}>普通人员</div>
         </div>
         <div className={styles.beaconSwitch}>
-          <span className={styles.beaconLabel}>信标</span>
-          <Switch size="small" checked={beaconOn} onChange={this.handleBeaconStateChange} />
+          {/* <span className={styles.beaconLabel}>信标</span>
+          <Switch size="small" checked={beaconOn} onChange={this.handleBeaconStateChange} /> */}
+          <Icon className={styles.switcher} type="switcher" onClick={showBoard} />
+          <Icon className={styles.iconBase} type={fullScreen ? 'shrink' : 'arrows-alt'} onClick={fullScreen ? hideFullScreen : showFullScreen} />
         </div>
       </div>
     );

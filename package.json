@@ -80,6 +80,7 @@
     "omit.js": "^1.0.0",
     "path-to-regexp": "^2.2.1",
     "prop-types": "^15.6.2",
+    "qrcode.react": "^0.9.3",
     "qs": "^6.5.2",
     "rc-animate": "^2.4.4",
     "rc-select": "^8.2.0",

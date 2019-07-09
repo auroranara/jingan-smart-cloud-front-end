@@ -75,24 +75,34 @@ export default class SettingModal extends PureComponent {
               </RadioGroup>
             )}
           </FormItem>
-          <FormItem label="消息提醒">
+          {/* <FormItem label="消息提醒">
             {getFieldDecorator('message', { initialValue: [1] })(
               <CheckboxGroup>
                 <Checkbox value={0}>预警提示</Checkbox>
                 <Checkbox value={1}>告警提示</Checkbox>
               </CheckboxGroup>
             )}
-          </FormItem>
+          </FormItem> */}
           <FormItem label="短信及电话通知规则">
             {getFieldDecorator('phone', { initialValue: [0] })(
               <CheckboxGroup>
-                <Checkbox value={0}>预警时APP消息提醒</Checkbox>
-                <Checkbox value={1}>告警时短信提醒</Checkbox>
-                <Checkbox value={2}>告警时系统自动拨打电话提醒</Checkbox>
-                <Checkbox value={3} style={{ marginLeft: 0 }}>
+                <Checkbox value={0}>
+                  {/* 预警时APP消息提醒 */}
+                  报警时APP消息提醒
+                </Checkbox>
+                <Checkbox value={1}>
+                  {/* 告警时短信提醒 */}
+                  报警时短信提醒
+                </Checkbox>
+                <Checkbox value={2}>
+                  报警时系统自动拨打电话提醒
+                </Checkbox>
+                {/* <Checkbox value={3} style={{ marginLeft: 0 }}>
                   连续报警3次后短信提醒
                 </Checkbox>
-                <Checkbox value={4}>报警10分钟未处理自动拨打电话</Checkbox>
+                <Checkbox value={4}>
+                  报警10分钟未处理自动拨打电话
+                </Checkbox> */}
               </CheckboxGroup>
             )}
           </FormItem>

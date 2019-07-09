@@ -1,15 +1,33 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Col } from 'antd';
+import { Col, Spin } from 'antd';
 import moment from 'moment';
 import DrawerContainer from '../components/DrawerContainer';
 import ImageCard from '@/components/ImageCard';
+import HiddenDangerCard from '@/jingan-components/HiddenDangerCard'; // 隐患卡片
+import LoadMore from '@/components/LoadMore';
 import ReactEcharts from 'echarts-for-react';
+import Lightbox from 'react-images';
 import styles from './CurrentHiddenDanger.less';
 
+const FIELDNAMES = {
+  status: 'status', // 隐患状态
+  type: 'businessType', // 隐患类型
+  id: 'id',
+  description: 'description', // 隐患描述
+  images: 'backgrounds', // 图片地址
+  name: 'item_name', // 点位名称
+  source: 'report_source', // 来源
+  reportPerson: 'sbr', // 上报人
+  reportTime: 'sbsj', // 上报时间
+  planRectificationPerson: 'plan_zgr', // 计划整改人
+  planRectificationTime: 'plan_zgsj', // 计划整改时间
+  actualRectificationPerson: 'real_zgr', // 实际整改人
+  actualRectificationTime: 'real_zgsj', // 实际整改时间
+  designatedReviewPerson: 'fcr', // 指定复查人
+};
 const redColor = '#E96767'; // 红
 const yellowColor = '#F6B54E'; // 黄
 const blueColor = '#2A8BD5'; // 蓝
-
 
 const isVague = false;
 function nameToVague(str) {
@@ -34,19 +52,22 @@ export default class CurrentHiddenDanger extends PureComponent {
     // this.hoverIndex = -1;
     this.state = {
       hoverIndex: -1,
-    }
+      images: [],
+      currentImage: 0,
+      lightBoxVisible: false,
+    };
   }
 
   // componentWillUnmount() {
   //   clearInterval(this.hiddenDangerTimer);
   // }
   getSnapshotBeforeUpdate(preProps) {
-    return preProps.visible !== this.props.visible
+    return preProps.visible !== this.props.visible;
   }
   componentDidUpdate(preProps, preState, snapshot) {
     if (snapshot) {
       this.selectedDangerIndex = -1;
-      this.setState({ hoverIndex: -1 })
+      this.setState({ hoverIndex: -1 });
     }
   }
   handleStatusPhoto = status => {
@@ -64,7 +85,7 @@ export default class CurrentHiddenDanger extends PureComponent {
   };
 
   onMouseOver = ({ dataIndex }, chart) => {
-    this.setState({ hoverIndex: dataIndex })
+    this.setState({ hoverIndex: dataIndex });
     if (this.selectedDangerIndex >= 0) {
       chart.dispatchAction({
         type: 'downplay',
@@ -80,7 +101,7 @@ export default class CurrentHiddenDanger extends PureComponent {
   };
 
   onMouseOut = ({ dataIndex }, chart) => {
-    this.setState({ hoverIndex: -1 })
+    this.setState({ hoverIndex: -1 });
     chart.dispatchAction({
       type: 'downplay',
       seriesIndex: 0,
@@ -113,11 +134,56 @@ export default class CurrentHiddenDanger extends PureComponent {
           seriesIndex: 0,
           dataIndex: dataIndex,
         });
-      })
+      });
     }
   };
 
-  generateShow = (key, hoverIndex) => (this.selectedDangerIndex === key && [-1, key].includes(hoverIndex)) || hoverIndex === key
+  generateShow = (key, hoverIndex) =>
+    (this.selectedDangerIndex === key && [-1, key].includes(hoverIndex)) || hoverIndex === key;
+
+  /**
+   * 显示图片详情
+   */
+  handleShow = images => {
+    this.setState({ images, currentImage: 0, lightBoxVisible: true });
+  };
+
+  /**
+   * 切换图片
+   */
+  handleSwitchImage = currentImage => {
+    this.setState({
+      currentImage,
+    });
+  };
+
+  /**
+   * 切换上一张图片
+   */
+  handlePrevImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage - 1,
+    }));
+  };
+
+  /**
+   * 切换下一张图片
+   */
+  handleNextImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage + 1,
+    }));
+  };
+
+  /**
+   * 关闭图片详情
+   */
+  handleClose = () => {
+    this.setState({
+      images: [],
+      lightBoxVisible: false,
+    });
+  };
 
   render() {
     const {
@@ -129,8 +195,14 @@ export default class CurrentHiddenDanger extends PureComponent {
       reviewNum: dfc,
       totalNum: total,
       list = [],
+      loading,
+      hiddenDangerList: {
+        pagination: { total: listTotal, pageNum, pageSize },
+        list: dataList,
+      },
+      fetchHiddenDangerList,
     } = this.props;
-    const { hoverIndex } = this.state
+    const { hoverIndex, images, currentImage, lightBoxVisible } = this.state;
     const legendInfo = {
       已超期: ycq,
       未超期: wcq,
@@ -237,31 +309,54 @@ export default class CurrentHiddenDanger extends PureComponent {
     };
 
     return (
-      <DrawerContainer
-        title="当前隐患"
-        visible={visible}
-        onClose={onClose}
-        width={470}
-        destroyOnClose={true}
-        left={
-          <div className={styles.currentHiddenDanger}>
-            <div className={styles.chartContainer}>
-              <ReactEcharts
-                style={{ width: '100%', height: '100%' }}
-                option={option}
-                onEvents={{
-                  mouseover: this.onMouseOver,
-                  mouseout: this.onMouseOut,
-                  click: this.onChartClick,
-                }}
-              />
-              <div className={styles.total}>
-                <div className={styles.num}>{total}</div>
-                <div className={styles.label}>总数</div>
+      <Fragment>
+        <DrawerContainer
+          title="当前隐患"
+          visible={visible}
+          onClose={onClose}
+          width={535}
+          destroyOnClose={true}
+          left={
+            <div className={styles.currentHiddenDanger}>
+              <div className={styles.chartContainer}>
+                <ReactEcharts
+                  style={{ width: '100%', height: '100%' }}
+                  option={option}
+                  onEvents={{
+                    mouseover: this.onMouseOver,
+                    mouseout: this.onMouseOut,
+                    click: this.onChartClick,
+                  }}
+                />
+                <div className={styles.total}>
+                  <div className={styles.num}>{total}</div>
+                  <div className={styles.label}>总数</div>
+                </div>
               </div>
-            </div>
-            <div className={styles.mainContainer}>
-              {list.map((item, index) => {
+              <div className={styles.mainContainer}>
+                <Spin spinning={loading} wrapperClassName={styles.spin}>
+                  {/* <CompanyRisk hiddenDangerListByDate={list} /> */}
+                  {dataList && dataList.length ? (
+                    dataList.map(item => (
+                      <HiddenDangerCard
+                        className={styles.card}
+                        key={item.id}
+                        data={item}
+                        fieldNames={FIELDNAMES}
+                        onClickImage={this.handleShow}
+                        onClick={() => onCardClick(item)}
+                      />
+                    ))
+                  ) : (
+                    <div style={{ textAlign: 'center', color: '#fff' }}>暂无隐患</div>
+                  )}
+                  {pageNum * pageSize < listTotal && (
+                    <div className={styles.loadMoreWrapper}>
+                      <LoadMore onClick={() => fetchHiddenDangerList(pageNum + 1)} />
+                    </div>
+                  )}
+                </Spin>
+                {/* {list.map((item, index) => {
                 const {
                   desc,
                   report_user_name,
@@ -321,11 +416,23 @@ export default class CurrentHiddenDanger extends PureComponent {
                     />
                   </Col>
                 );
-              })}
+              })} */}
+              </div>
             </div>
-          </div>
-        }
-      />
+          }
+        />
+        <Lightbox
+          images={images.map(src => ({ src }))}
+          isOpen={lightBoxVisible}
+          closeButtonTitle="关闭"
+          currentImage={currentImage}
+          onClickPrev={this.handlePrevImage}
+          onClickNext={this.handleNextImage}
+          onClose={this.handleClose}
+          onClickThumbnail={this.handleSwitchImage}
+          showThumbnails
+        />
+      </Fragment>
     );
   }
 }

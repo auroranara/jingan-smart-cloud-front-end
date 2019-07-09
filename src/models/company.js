@@ -330,7 +330,7 @@ export default {
         list,
         pagination: { pageNum, pageSize, total },
       } = payload;
-      console.log('payload', payload.pagination.pageNum);
+      // console.log('payload', payload.pagination.pageNum);
       return {
         ...state,
         list,

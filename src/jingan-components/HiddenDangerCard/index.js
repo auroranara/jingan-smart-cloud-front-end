@@ -139,6 +139,7 @@ export default class HiddenDangerCard extends BigPlatformCard {
       className, // 容器类名
       style, // 容器样式
       onClickImage, // 图片点击事件
+      onClick, // 点击事件
     } = this.props;
     const fieldsValue = this.getFieldsValue();
     const { images, type, description, status } = fieldsValue;
@@ -146,7 +147,8 @@ export default class HiddenDangerCard extends BigPlatformCard {
     return (
       <Container
         className={className}
-        style={{ paddingTop: '0.75em', ...style }}
+        style={{ paddingTop: '0.75em', ...style, cursor: onClick ? 'pointer' : 'default' }}
+        onClick={onClick}
       >
         {status && this.renderStatus(status)}
         <div className={styles.titleWrapper}>
@@ -159,7 +161,7 @@ export default class HiddenDangerCard extends BigPlatformCard {
               <div
                 className={styles.image}
                 style={{ backgroundImage: `url(${images[0]})`, cursor: onClickImage ? 'pointer' : 'auto' }}
-                onClick={onClickImage && (() => onClickImage(images))} />
+                onClick={onClickImage && (e => { onClickImage(images); e.stopPropagation(); })} />
             )}
           </div>
           <div className={styles.fieldsWrapper}>

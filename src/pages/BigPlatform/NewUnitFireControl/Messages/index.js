@@ -7,35 +7,35 @@ import { vaguePhone } from '../utils';
 import styles from './index.less';
 
 const TYPES = [
-  1,
+  1, // 发生监管\联动\反馈\屏蔽
   2,
   3,
   4,
-  7,
-  9,
-  11,
-  13,
-  14,
-  15,
-  16,
-  17,
-  18,
-  32,
-  36,
-  37,
-  38,
-  39,
-  40,
-  41,
-  42,
-  43,
-  44, // 电器火灾告警恢复
-  45, // 燃气告警恢复
+  7, // 主机报警
+  9, // 主机报障
+  11, // 一键报修
+  13, // 安全巡查
+  14, // 上报隐患
+  15, // 整改隐患
+  16, // 重新整改隐患
+  17, // 复查隐患
+  18, // 维保巡检
+  32, // 电气火灾报警
+  36, // 水系统报警
+  37, // 水系统恢复
+  38, // 独立烟感报警
+  // 39, // 可燃气体报警
+  40, // 独立烟感故障
+  // 41,
+  42, // 电气火灾失联
+  43, // 电气火灾失联恢复
+  44, // 电器火灾报警恢复
+  // 45, // 燃气报警恢复
   46, // 独立烟感失联
   47, // 独立烟感失联恢复
   48, // 水系统失联
   49, // 水系统失联恢复
-  50, // 独立烟感告警恢复
+  50, // 独立烟感报警恢复
   51, // 独立烟感故障恢复
 ];
 const formatTime = time => {
@@ -67,7 +67,7 @@ export default class Messages extends PureComponent {
     super(props);
     this.state = {
       thisMin: '',
-      // 是否展开告警信息
+      // 是否展开报警信息
       isExpanded: false,
     };
   }
@@ -178,6 +178,8 @@ export default class Messages extends PureComponent {
         createByPhone,
         faultName,
         realtime: firstTime,
+        component_region: loopNumber,
+        component_no: partNumber,
       },
     ];
     const restParams = [cameraMessage, occurData];
@@ -381,10 +383,10 @@ export default class Messages extends PureComponent {
 
     if (type === 44 || type === 32 || type === 42 || type === 43) {
       const elecMsg = {
-        44: { elecTitle: '电气火灾报警', elecContent: `${paramName}告警现已恢复正常` },
+        44: { elecTitle: '电气火灾报警', elecContent: `${paramName}报警现已恢复正常` },
         32: {
           elecTitle: '电气火灾报警',
-          elecContent: `${paramName}告警${realtimeVal + unit}（参考值<${limitVal + unit}）`,
+          elecContent: `${paramName}报警${realtimeVal + unit}（参考值<${limitVal + unit}）`,
         },
         42: { elecTitle: '电气火灾失联', elecContent: `设备状态失联` },
         43: { elecTitle: '电气火灾失联', elecContent: `设备状态已恢复正常` },
@@ -394,7 +396,7 @@ export default class Messages extends PureComponent {
           <a
             className={styles.detailBtn}
             onClick={() => {
-              handleClickElecMsg(deviceId);
+              handleClickElecMsg(deviceId, paramName);
             }}
           >
             详情
@@ -416,11 +418,11 @@ export default class Messages extends PureComponent {
     }
 
     if (type === 46 || type === 47 || type === 50) {
-      // 46 独立烟感失联 47 独立烟感失联恢复 50 独立烟感告警恢复
+      // 46 独立烟感失联 47 独立烟感失联恢复 50 独立烟感报警恢复
       const smokeTitle = {
         46: '独立烟感失联',
         47: '独立烟感失联恢复',
-        50: '独立烟感告警恢复',
+        50: '独立烟感报警恢复',
       };
       return (
         <div className={styles.msgItem} key={index}>

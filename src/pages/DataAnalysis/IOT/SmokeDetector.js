@@ -1,11 +1,10 @@
 import React, { PureComponent } from 'react';
-// import moment from 'moment';
 import { connect } from 'dva';
 import { Button, Card, message, notification, Table } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
-import InlineForm from '../BaseInfo/Company/InlineForm';
+import InlineForm from '@/pages/BaseInfo/Company/InlineForm';
 import {
   SMOKE_DETECTOR_TYPE as TYPE,
   SMOKE_DETECTOR_TYPE_LABEL as TYPE_LABEL,
@@ -26,9 +25,6 @@ const breadcrumbList = [
   },
   { title: TYPE_LABEL, name: TYPE_LABEL },
 ];
-
-// const list = [...Array(20).keys()].map(i => ({ id: i, index: i+1, time: '2018-09-20 20:02:09', area: '厂区九车间', location: '氯乙烷压缩机东', status: 1, parameter: 'c2h5oh', value: '19.6|mg/m3', limitValue: '18', condition: 1 }));
-// const total = list.length;
 
 @connect(({ loading, dataAnalysis }) => ({
   dataAnalysis,
