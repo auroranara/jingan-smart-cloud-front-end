@@ -1167,6 +1167,7 @@ export default class NewUnitFireControl extends PureComponent {
         businessType: 2,
         pageNum: 1,
         pageSize: 10,
+        status: 5,
       },
     });
     this.setState({ currentDrawerVisible: true });
@@ -1421,7 +1422,7 @@ export default class NewUnitFireControl extends PureComponent {
       },
     } = this.props;
     const status =
-      (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || null;
+      (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || 5;
     this.setState({ hdStatus: status });
     // 获取当前隐患列表
     // dispatch({

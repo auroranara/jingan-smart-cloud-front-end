@@ -307,7 +307,9 @@ export default class DataAnalysisList extends PureComponent {
   render() {
     const {
       dataAnalysis: {
-        companies: { list = [] },
+        companies: { 
+          pagination:{total=0}={},
+         },
       },
     } = this.props;
 
@@ -318,7 +320,7 @@ export default class DataAnalysisList extends PureComponent {
         content={
           <div className={styles.total}>
             监测单位总数：
-            {list.length}
+            {total}
           </div>
         }
       >
