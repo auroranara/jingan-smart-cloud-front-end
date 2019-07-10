@@ -1,3 +1,5 @@
+import WaterTank from './WaterTank';
+
 export {
   ChartGauge,
   CheckCard,
@@ -15,3 +17,7 @@ export {
   TotalInfo,
   WaterCards,
 } from '@/pages/BigPlatform/NewUnitFireControl/components/Components';
+
+export {
+  WaterTank,
+}

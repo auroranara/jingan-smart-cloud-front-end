@@ -10,6 +10,8 @@ import iconHd from '@/assets/icon-hidden-danger.png';
 import iconCheck from '@/assets/icon-check.png';
 import inspectIcon from './inspect.png';
 import outdateIcon from './outdate.png';
+import waveBlue from './blueWave.png';
+import waveRed from './redWave.png';
 
 export {
   leftLine,
@@ -60,4 +62,6 @@ export {
   inspectIcon,
   outdateIcon,
   videoBtn,
+  waveBlue,
+  waveRed,
 }

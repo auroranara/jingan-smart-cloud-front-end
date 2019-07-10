@@ -1,13 +1,15 @@
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import { SetDrawer } from '@/pages/BigPlatform/Safety/Company3/components';
+import CheckWorkOrder from './CheckWorkOrder';
 import CompanyInfo from './CompanyInfo';
+import WaterSystem from './WaterSystem';
 
 export {
   AlarmDynamicDrawer,
   AlarmDynamicMsgDrawer,
   CheckDrawer,
   CheckingDrawer,
-  CheckWorkOrder,
+  // CheckWorkOrder,
   // CompanyInfo,
   CurrentHiddenDanger,
   DrawerHiddenDangerDetail,
@@ -15,7 +17,7 @@ export {
   ElectricityDrawer,
   ElectricityMonitor,
   FaultMessageDrawer,
-  FireDevice,
+  // FireDevice,
   FireDevice1,
   FireFlowDrawer,
   FireMonitorFlowDrawer,
@@ -48,7 +50,9 @@ export {
 } from '@/pages/BigPlatform/NewUnitFireControl/Section/Components';
 
 export {
+  CheckWorkOrder,
   CompanyInfo,
   NewVideoPlay,
   SetDrawer,
+  WaterSystem,
 }

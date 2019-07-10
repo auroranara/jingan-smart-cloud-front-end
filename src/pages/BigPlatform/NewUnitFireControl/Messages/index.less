@@ -18,7 +18,7 @@
     top: 8px;
     color: #04fdff;
   }
-  .msgType {
+  .msgType, .msgRepeatType {
     color: #04fdff;
     line-height: 24px;
   }
@@ -30,6 +30,10 @@
 
   .detailBtn {
     top: 20px;
+  }
+
+  .msgType {
+    padding-left: 22px;
   }
 
   :global {
@@ -49,7 +53,17 @@
   }
 }
 
+.typeIcon {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  top: 0;
+  left: 10px;
+  background-size: 100% 100%;
+}
+
 .msgInner {
+  position: relative;
   padding: 0 10px;
 }
 

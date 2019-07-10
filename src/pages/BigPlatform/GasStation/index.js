@@ -22,6 +22,7 @@ import {
   ElectricityDrawer,
   ElectricityMonitor,
   FaultMessageDrawer,
+  FireDevice,
   FireFlowDrawer,
   FireMonitorFlowDrawer,
   FireMonitoring,
@@ -45,6 +46,7 @@ import {
   SetDrawer,
   VideoSurveillance,
   WaterMonitor,
+  WaterSystem,
   WaterSystemDrawer,
   WorkOrderDrawer,
 } from './sections/Components';
@@ -2327,20 +2329,20 @@ export default class GasStation extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 水系统 */}
-                {/* <FireDevice
+                <WaterSystem
                   companyId={companyId}
                   onClick={this.handleViewWater}
                   waterList={list}
                   fetchWaterSystem={this.fetchWaterSystem}
                   waterAlarm={waterAlarm}
-                /> */}
-                <WaterMonitor
+                />
+                {/* <WaterMonitor
                   companyId={companyId}
                   onClick={this.handleClickWater}
                   waterList={list}
                   fetchWaterSystem={this.fetchWaterSystem}
                   waterAlarm={waterAlarm}
-                />
+                /> */}
               </div>
             </div>
             <div className={styles.item}>

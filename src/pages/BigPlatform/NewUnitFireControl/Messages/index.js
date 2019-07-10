@@ -30,7 +30,7 @@ const TYPES = [
   // 41,
   42, // 电气火灾失联
   43, // 电气火灾失联恢复
-  44, // 电器火灾报警恢复
+  44, // 电气火灾报警恢复
   // 45, // 燃气报警恢复
   46, // 独立烟感失联
   47, // 独立烟感失联恢复
@@ -40,6 +40,7 @@ const TYPES = [
   51, // 独立烟感故障恢复
 ];
 const ICONS = {
+  13: inspectIcon,
   14: dangerIcon,
   15: dangerIcon,
   16: dangerIcon,
@@ -47,6 +48,12 @@ const ICONS = {
   18: inspectIcon,
   32: alarmIcon,
   36: alarmIcon,
+  37: alarmIcon,
+  42: alarmIcon,
+  43: alarmIcon,
+  44: alarmIcon,
+  48: alarmIcon,
+  49: alarmIcon,
 };
 const formatTime = time => {
   const diff = moment().diff(moment(time));
@@ -394,6 +401,7 @@ export default class Messages extends PureComponent {
 
     const msgClassName = `msgItem${cssType ? cssType : ''}`;
     const innerClassName = cssType ? styles.msgInner : undefined ;
+    const typeIcon = cssType ? <span className={styles.typeIcon} style={{ backgroundImage: `url(${ICONS[type]})` }} /> : null;
     const msgTime = formatTime(addTime);
     const firstComponent = cssType ? <Divider>{msgTime}</Divider> : <div className={styles.msgTime}>{msgTime}</div>;
 
@@ -404,8 +412,8 @@ export default class Messages extends PureComponent {
           elecTitle: '电气火灾报警',
           elecContent: `${paramName}报警${realtimeVal + unit}（参考值<${limitVal + unit}）`,
         },
-        42: { elecTitle: '电气火灾失联', elecContent: `设备状态失联` },
-        43: { elecTitle: '电气火灾失联', elecContent: `设备状态已恢复正常` },
+        42: { elecTitle: '电气火灾失联', elecContent: '设备状态失联' },
+        43: { elecTitle: '电气火灾失联', elecContent: '设备状态已恢复正常' },
       };
       return (
         <div className={styles[msgClassName]} key={index}>
@@ -420,6 +428,7 @@ export default class Messages extends PureComponent {
             <Icon type="double-right" />
           </a>
           <div className={innerClassName}>
+            {typeIcon}
             <div className={styles.msgType}>【{elecMsg[type].elecTitle}】</div>
             <div className={styles.msgType}>{elecMsg[type].elecContent}</div>
             <div className={styles.msgBody}>
@@ -456,6 +465,7 @@ export default class Messages extends PureComponent {
           </a>
           {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
           <div className={innerClassName}>
+            {typeIcon}
             <div className={styles.msgType}>【{smokeTitle[type]}】</div>
             <div className={styles.msgBody}>
               所在区域：
@@ -490,6 +500,7 @@ export default class Messages extends PureComponent {
           </a>
           {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
           <div className={innerClassName}>
+            {typeIcon}
             <div className={styles.msgType}>【{waterMsg[type].title}】</div>
             <div className={styles.msgBody}>
               {+deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱'}
@@ -506,6 +517,7 @@ export default class Messages extends PureComponent {
           {firstComponent}
           {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
           <div className={innerClassName}>
+            {typeIcon}
             <div className={styles.msgType}>【可燃气体报警恢复】</div>
             <div className={styles.msgBody}>
               所在区域：
@@ -532,6 +544,7 @@ export default class Messages extends PureComponent {
         )}
         {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
         <div className={innerClassName}>
+          {typeIcon}
           <div className={styles.msgType}>
             {title}
             {showMsg && (
@@ -553,7 +566,7 @@ export default class Messages extends PureComponent {
           {isRepeat &&
             // repeatCount &&
             +repeatCount > 1 && (
-              <div className={styles.msgType}>
+              <div className={styles.msgRepeatType}>
                 重复上报
                 {repeatCount}
                 次，最近一次更新时间：
