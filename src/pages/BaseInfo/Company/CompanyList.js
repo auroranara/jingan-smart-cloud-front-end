@@ -14,6 +14,7 @@ import {
   Popconfirm,
   Select,
   Cascader,
+  TreeSelect,
 } from 'antd';
 import { Link, routerRedux } from 'dva/router';
 import router from 'umi/router';
@@ -29,7 +30,7 @@ import safeGray from '../../../assets/safe-gray.png';
 import fire from '../../../assets/fire.png';
 import fireGray from '../../../assets/fire-gray.png';
 
-import codesMap from '@/utils/codes';
+// import codesMap from '@/utils/codes';
 import styles from './CompanyList.less';
 
 const FormItem = Form.Item;
@@ -69,6 +70,9 @@ const defaultFormData = {
   industryCategory: undefined,
   companyType: undefined,
   companyStatus: undefined,
+  gridId: undefined,
+  isSafetyImp: undefined,
+  isFireImp: undefined,
 };
 // 获取无数据
 const getEmptyData = () => {
@@ -98,10 +102,11 @@ const breadcrumbList = [
 ];
 
 @connect(
-  ({ company, unitDivision, user, loading }) => ({
+  ({ company, unitDivision, hiddenDangerReport, user, loading }) => ({
     company,
     unitDivision,
     user,
+    hiddenDangerReport,
     loading: loading.models.company,
   }),
   dispatch => ({
@@ -237,6 +242,10 @@ export default class CompanyList extends PureComponent {
         key: 'companyTypes',
       },
       error,
+    });
+    // 获取网格列表
+    dispatch({
+      type: 'hiddenDangerReport/fetchGridList',
     });
     // 获取企业列表
     if (searchInfo) {
@@ -387,10 +396,11 @@ export default class CompanyList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      company: { companyTypes, industryCategories, companyStatuses },
+      company: { companyTypes, industryCategories, companyStatuses, isSafetyList, isFireImpList },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
+      hiddenDangerReport: { gridList },
       form: { getFieldDecorator },
       goToAdd,
     } = this.props;
@@ -401,6 +411,27 @@ export default class CompanyList extends PureComponent {
       <Card>
         <Form>
           <Row gutter={30}>
+            {unitType !== 1 &&
+              unitType !== 4 && (
+                <Col span={8}>
+                  <FormItem style={{ margin: '0', padding: '4px 0' }}>
+                    {getFieldDecorator('gridId', {
+                      initialValue: defaultFormData.gridId,
+                    })(
+                      <TreeSelect
+                        treeData={gridList}
+                        placeholder="请选择所属网格"
+                        getPopupContainer={getRootChild}
+                        allowClear
+                        dropdownStyle={{
+                          maxHeight: '50vh',
+                          zIndex: 50,
+                        }}
+                      />
+                    )}
+                  </FormItem>
+                </Col>
+              )}
             <Col span={8}>
               <FormItem style={{ margin: '0', padding: '4px 0' }}>
                 {getFieldDecorator('name', {
@@ -466,6 +497,53 @@ export default class CompanyList extends PureComponent {
                 )}
               </FormItem>
             </Col>
+
+            {unitType !== 1 &&
+              unitType !== 4 && (
+                <Col span={8}>
+                  <FormItem style={{ margin: '0', padding: '4px 0' }}>
+                    {getFieldDecorator('isSafetyImp', {
+                      initialValue: defaultFormData.isSafetyImp,
+                    })(
+                      <Select
+                        allowClear
+                        placeholder="是否安全重点单位"
+                        getPopupContainer={getRootChild}
+                      >
+                        {isSafetyList.map(item => (
+                          <Option value={item.key} key={item.key}>
+                            {item.value}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </FormItem>
+                </Col>
+              )}
+
+            {unitType !== 1 &&
+              unitType !== 4 && (
+                <Col span={8}>
+                  <FormItem style={{ margin: '0', padding: '4px 0' }}>
+                    {getFieldDecorator('isFireImp', {
+                      initialValue: defaultFormData.isFireImp,
+                    })(
+                      <Select
+                        allowClear
+                        placeholder="是否消防重点单位"
+                        getPopupContainer={getRootChild}
+                      >
+                        {isFireImpList.map(item => (
+                          <Option value={item.key} key={item.key}>
+                            {item.value}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </FormItem>
+                </Col>
+              )}
+
             <Col span={8}>
               <FormItem style={{ margin: '0', padding: '4px 0' }}>
                 <Button
