@@ -707,7 +707,6 @@ export default class CheckContent extends PureComponent {
     const [{ l, e, c, riskLevel } = {}] = filterList;
 
     const riskValue = (l * e * c).toFixed(1);
-    console.log('riskValue', riskValue);
     const formItemLayout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },

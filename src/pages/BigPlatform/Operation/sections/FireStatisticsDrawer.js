@@ -27,10 +27,11 @@ const empty = <EmptyChart style={{ height: 300 }} title="暂无信息" />;
 
 const TYPE = 'fireStatistics';
 const NO_DATA = '暂无信息';
-const [DATE_OPTIONS, DEVICE_OPTIONS, TYPE_OPTIONS] = [
+const [DATE_OPTIONS, DEVICE_OPTIONS, TYPE_OPTIONS, FIRE_OPTIONS] = [
   ['本日', '本周', '本月'],
   ['全部设备', '消防主机', '独立烟感'],
   ['全部火警', '误报火警', '真实火警', '未确认'],
+  ['', '误报火警', '真实火警', '', '', '未确认'],
 ].map(arr => arr.map((d, i) => ({ value: i, desc: d })));
 const RING_LABELS = ['误报', '真实', '未确认'];
 const RING_COLORS = ['255, 180, 0', '248, 51, 41', '188, 188, 189'];
@@ -44,7 +45,7 @@ const INFO_STYLE = {
 export default class FireStatisticsDrawer extends PureComponent {
   state = { graph: 0, typeSelected: 0, deviceSelected: 0, searchValue: '' };
 
-  pageNum=1;
+  pageNum = 1;
 
   handleSwitch = i => {
     this.setState({ graph: i });
@@ -65,9 +66,10 @@ export default class FireStatisticsDrawer extends PureComponent {
   };
 
   handleTypeSelectChange = i => {
+    // 由于吕旻傻吊改动 原先为确认火警为3 现在为5
     const { deviceSelected, searchValue } = this.state;
     this.setState({ typeSelected: i });
-    this.getFireList({ deviceType: deviceSelected, fireType: i, searchValue });
+    this.getFireList({ deviceType: deviceSelected, fireType: i === 3 ? 5 : i, searchValue });
   };
 
   genProgressClick = v => e => {
@@ -80,7 +82,7 @@ export default class FireStatisticsDrawer extends PureComponent {
     this.getFireList({ deviceType: deviceSelected, fireType: typeSelected, searchValue: v });
   };
 
-  getFireList = (options, initial=true) => {
+  getFireList = (options, initial = true) => {
     const { getFireList } = this.props;
     getFireList(options, initial);
   };
@@ -208,14 +210,18 @@ export default class FireStatisticsDrawer extends PureComponent {
       hasMore,
       dateType,
       data: {
-        firePie: { trueFire=0, falseFire=0, unConfirm=0 },
+        firePie: { trueFire = 0, falseFire = 0, unConfirm = 0 },
         fireTrend,
         fireList,
       },
     } = this.props;
     const { graph, typeSelected, deviceSelected } = this.state;
 
-    const rings = [falseFire, trueFire, unConfirm].map((n, i) => ({ name: RING_LABELS[i], value: n, itemStyle: { color: `rgb(${RING_COLORS[i]})` } }));
+    const rings = [falseFire, trueFire, unConfirm].map((n, i) => ({
+      name: RING_LABELS[i],
+      value: n,
+      itemStyle: { color: `rgb(${RING_COLORS[i]})` },
+    }));
     const trendList = fireTrend.map(({ month, count }) => ({ name: month, value: count }));
     // console.log(rings);
 
@@ -248,7 +254,12 @@ export default class FireStatisticsDrawer extends PureComponent {
         <DrawerSection title="处理状态统计" extra={dateSelect}>
           {rings.every(item => !item.value) ? empty : <ChartRing data={rings} />}
         </DrawerSection>
-        <DrawerSection title="火警趋势图" titleInfo="最近12个月" style={{ marginTop: 10 }} extra={extra}>
+        <DrawerSection
+          title="火警趋势图"
+          titleInfo="最近12个月"
+          style={{ marginTop: 10 }}
+          extra={extra}
+        >
           {/* {graph ? (
             graphList.length > 0 ? (
               <ReactEcharts option={this.getOption(graphList)} className="echarts-for-echarts" />
@@ -260,57 +271,86 @@ export default class FireStatisticsDrawer extends PureComponent {
           ) : (
                 <div style={{ textAlign: 'center' }}>暂无数据</div>
               )} */}
-          {trendList.length ? graph ? <ChartBar data={trendList} /> : <ChartLine data={trendList} /> : empty}
+          {trendList.length ? (
+            graph ? (
+              <ChartBar data={trendList} />
+            ) : (
+              <ChartLine data={trendList} />
+            )
+          ) : (
+            empty
+          )}
         </DrawerSection>
       </Fragment>
     );
 
     let cards = null;
     if (fireList.length)
-      cards = fireList.map(({ company_id, proce_id, relation_id, time, name, location, safety_name, safety_phone, fireType, deviceType }) => {
-        const info = TYPE_OPTIONS[fireType] ? TYPE_OPTIONS[fireType].desc : '';
-        const corner = DEVICE_OPTIONS[deviceType] ? DEVICE_OPTIONS[deviceType].desc.slice(-2) : '';
-        const color = RING_COLORS[+fireType - 1];
-        const phone = safety_phone ? hidePhone(safety_phone) : NO_DATA;
-        return (
-          <DrawerCard
-            key={proce_id || relation_id || Math.random()}
-            name={name || NO_DATA}
-            location={location || NO_DATA}
-            person={safety_name || NO_DATA}
-            phone={phone}
-            style={{ cursor: 'auto' }}
-            // clickName={() => {}}
-            info={info}
-            infoStyle={{ ...INFO_STYLE, color: `rgb(${color})`, borderColor: `rgb(${color})`}}
-            cornerLabel={corner}
-            more={
-              <p className={styles.more}>
-                <span className={styles.clockIcon} />
-                <span className={styles.moreTime}>{moment(time).format('YYYY-MM-DD HH:mm:ss')}</span>
-              </p>
-            }
-          />
-        );
-      }
-    )
+      cards = fireList.map(
+        ({
+          company_id,
+          proce_id,
+          relation_id,
+          time,
+          name,
+          location,
+          safety_name,
+          safety_phone,
+          fireType,
+          deviceType,
+        }) => {
+          const info = FIRE_OPTIONS[fireType] ? FIRE_OPTIONS[fireType].desc : '';
+
+          const corner = DEVICE_OPTIONS[deviceType]
+            ? DEVICE_OPTIONS[deviceType].desc.slice(-2)
+            : '';
+          const color = RING_COLORS[+fireType - 1];
+          const phone = safety_phone ? hidePhone(safety_phone) : NO_DATA;
+          return (
+            <DrawerCard
+              key={proce_id || relation_id || Math.random()}
+              name={name || NO_DATA}
+              location={location || NO_DATA}
+              person={safety_name || NO_DATA}
+              phone={phone}
+              style={{ cursor: 'auto' }}
+              // clickName={() => {}}
+              info={info}
+              infoStyle={{ ...INFO_STYLE, color: `rgb(${color})`, borderColor: `rgb(${color})` }}
+              cornerLabel={corner}
+              more={
+                <p className={styles.more}>
+                  <span className={styles.clockIcon} />
+                  <span className={styles.moreTime}>
+                    {moment(time).format('YYYY-MM-DD HH:mm:ss')}
+                  </span>
+                </p>
+              }
+            />
+          );
+        }
+      );
 
     const right = (
       <SearchBar onSearch={this.handleSearch} cols={[12, 12]} extra={selects}>
-        {
-          fireList.length ?
-            cards :
-            loading ?
-              null :
-              // <p className={styles.none}>暂无信息</p>
-              empty
-        }
+        {fireList.length
+          ? cards
+          : loading
+            ? null
+            : // <p className={styles.none}>暂无信息</p>
+              empty}
         {hasMore && (
           <p
-            className={!fireList.length && loading ? styles.none : loading ? styles.hasMore : styles.hasMore1}
+            className={
+              !fireList.length && loading ? styles.none : loading ? styles.hasMore : styles.hasMore1
+            }
             onClick={loading ? null : this.getMoreFireList}
           >
-            {loading ? <Icon type="sync" spin className={styles.sync} /> : <Icon type="double-right" className={styles.doubleRight}/>}
+            {loading ? (
+              <Icon type="sync" spin className={styles.sync} />
+            ) : (
+              <Icon type="double-right" className={styles.doubleRight} />
+            )}
           </p>
         )}
       </SearchBar>
