@@ -118,6 +118,10 @@ export default {
     modelCodeList: [],
     // 型号代码列表
     allModelCodeList: [],
+    // 传感器筛选信息
+    sensorSearchInfo: {},
+    // 传感器型号筛选信息
+    modelSearchInfo: {},
   },
   effects: {
     // 获取传感器企业列表
@@ -489,6 +493,18 @@ export default {
       return {
         ...state,
         modelCodeList: list,
+      }
+    },
+    saveSensorSearchInfo(state, { payload = {} }) {
+      return {
+        ...state,
+        sensorSearchInfo: { ...state.sensorSearchInfo, ...payload },
+      }
+    },
+    saveModelSearchInfo(state, { payload = {} }) {
+      return {
+        ...state,
+        modelSearchInfo: { ...state.modelSearchInfo, ...payload },
       }
     },
   },

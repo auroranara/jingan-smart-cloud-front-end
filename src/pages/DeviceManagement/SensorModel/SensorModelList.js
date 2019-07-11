@@ -64,9 +64,16 @@ export default class SensorModelList extends PureComponent {
   }
 
   componentDidMount() {
+    const {
+      form: { setFieldsValue },
+      sensor: { modelSearchInfo = {} },
+    } = this.props
+    const { pageNum, pageSize, ...others } = modelSearchInfo
+    setFieldsValue({ ...others })
     this.fetchMonitoringTypeDict()
     this.fetchAllUnsetModelList()
-    this.handleQuery()
+    this.fetchSensorModels({ payload: { pageNum: 1, pageSize: defaultPageSize, ...modelSearchInfo } })
+    // this.handleQuery()
   }
 
 
@@ -152,6 +159,15 @@ export default class SensorModelList extends PureComponent {
     })
   }
 
+  saveModelSearchInfo = (actions) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/saveModelSearchInfo',
+      ...actions,
+    })
+  }
+
+
   /**
    * 筛选栏监测类型改变
    */
@@ -175,6 +191,7 @@ export default class SensorModelList extends PureComponent {
         typeCode: serTypeCode,
       },
     })
+    this.saveModelSearchInfo({ payload: { serMonitoringTypeId, serTypeCode, pageNum, pageSize } })
   }
 
   handleReset = () => {

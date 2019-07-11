@@ -39,10 +39,19 @@ const {
 export default class SensorList extends Component {
 
   componentDidMount() {
+    const {
+      form: { setFieldsValue },
+      sensor: {
+        sensorSearchInfo = {},
+      },
+    } = this.props
+    const { pageNum, pageSize, ...values } = sensorSearchInfo
+    setFieldsValue({ ...values })
     this.fetchMonitoringTypeDict()
     // this.fetchSensorBrandDict()
     this.fetchSensorTypeDict()
-    this.handleQuery()
+    this.fetchSensors({ payload: { pageNum: 1, pageSize: defaultPageSize, ...sensorSearchInfo } })
+    // this.handleQuery()
   }
 
 
@@ -80,6 +89,18 @@ export default class SensorList extends Component {
     })
   }
 
+
+  /**
+   * 保存筛选信息
+   */
+  saveSearchInfo = (actions) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/saveSensorSearchInfo',
+      ...actions,
+    })
+  }
+
   handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
     const {
       form: { getFieldsValue },
@@ -88,6 +109,7 @@ export default class SensorList extends Component {
     this.fetchSensors({
       payload: { pageNum, pageSize, ...values },
     })
+    this.saveSearchInfo({ payload: { ...values, pageSize, pageNum } })
   }
 
   handleReset = () => {
@@ -159,7 +181,7 @@ export default class SensorList extends Component {
         // 监测类型字典
         monitoringTypeDict = [],
         // 传感器品牌字典
-        brandDict = [],
+        // brandDict = [],
         // 传感器型号字典
         typeDict = [],
       },
@@ -178,7 +200,7 @@ export default class SensorList extends Component {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('monitoringTypeId')(
-                  <Select placeholder="监测类型" onChange={this.handlemonitoringTypeChange} dropdownStyle={{ zIndex: 50 }}>
+                  <Select placeholder="监测类型" onChange={this.handlemonitoringTypeChange} dropdownStyle={{ zIndex: 50 }} allowClear>
                     {monitoringTypeDict.map(({ value, key }) => (
                       <Option key={key} value={key}>{value}</Option>
                     ))}
@@ -200,7 +222,7 @@ export default class SensorList extends Component {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('typeId')(
-                  <Select placeholder="传感器型号" dropdownStyle={{ zIndex: 50 }}>
+                  <Select placeholder="传感器型号" dropdownStyle={{ zIndex: 50 }} allowClear>
                     {typeDict.map(({ value, key }) => (
                       <Option key={key} value={key}>{value}</Option>
                     ))}
@@ -258,14 +280,14 @@ export default class SensorList extends Component {
         width: 150,
       },
       {
-        title: '品牌',
-        dataIndex: 'brand',
+        title: '传感器型号',
+        dataIndex: 'type',
         align: 'center',
         width: 150,
       },
       {
-        title: '传感器型号',
-        dataIndex: 'type',
+        title: '品牌',
+        dataIndex: 'brand',
         align: 'center',
         width: 150,
       },
