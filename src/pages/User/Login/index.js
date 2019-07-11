@@ -548,14 +548,18 @@ export default class Login extends PureComponent {
               <span style={{ marginLeft: '5px' }}>{global.VERSION}</span>
             </div>
             <div>
-              <span>
-                运营支持：
-                {serviceSupport}
-              </span>
-              <span>
-                服务电话：
-                {servicePhone}
-              </span>
+              {serviceSupport && (
+                <span>
+                  运营支持：
+                  {serviceSupport}
+                </span>
+              )}
+              {servicePhone && (
+                <span>
+                  服务电话：
+                  {servicePhone}
+                </span>
+              )}
             </div>
           </div>
         </div>
