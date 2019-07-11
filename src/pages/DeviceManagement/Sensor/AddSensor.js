@@ -48,7 +48,7 @@ export default class AddSensor extends Component {
       form: { setFieldsValue },
     } = this.props
     this.fetchMonitoringTypeDict()
-    this.fetchSensorBrandDict()
+    // this.fetchSensorBrandDict()
     // 如果编辑
     if (id) {
       // 获取传感器详情
@@ -168,29 +168,36 @@ export default class AddSensor extends Component {
    * 监测类型改变
    */
   handlemonitoringTypeChange = (monitoringTypeId) => {
-    const { form: { getFieldsValue, resetFields } } = this.props
-    const { brandId } = getFieldsValue()
+    const { form: { resetFields } } = this.props
     // this.fetchSensorBrandDict({ payload: { monitoringTypeId, typeId } })
-    this.fetchSensorTypeDict({ payload: { monitoringTypeId, brandId } })
-    resetFields(['typeId'])
+    this.fetchSensorTypeDict({ payload: { monitoringTypeId } })
+    resetFields(['typeId', 'brandId'])
   }
 
   /**
    * 品牌改变
    */
-  handleBrandChange = (brandId) => {
-    const { form: { getFieldsValue, resetFields } } = this.props
-    const { monitoringTypeId } = getFieldsValue()
-    // this.fetchMonitoringTypeDict({ payload: { typeId, brandId } })
-    this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } })
-    resetFields(['typeId'])
-  }
+  // handleBrandChange = (brandId) => {
+  //   const { form: { getFieldsValue, resetFields } } = this.props
+  //   const { monitoringTypeId } = getFieldsValue()
+  //   // this.fetchMonitoringTypeDict({ payload: { typeId, brandId } })
+  //   this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } })
+  //   resetFields(['typeId'])
+  // }
 
   /**
-   * 类型改变
+   * 传感器型号改变
    */
   handleTypeChange = (typeId) => {
+    const {
+      sensor: {
+        typeDict = [],
+      },
+      form: { setFieldsValue },
+    } = this.props
     this.fetchMonitoringParameter({ payload: { typeId } })
+    const selItem = typeDict.find(item => item.key === typeId) || {}
+    setFieldsValue({ brandId: selItem.optional_desc })
   }
 
   /**
@@ -457,26 +464,22 @@ export default class AddSensor extends Component {
               </Select>
             )}
           </FormItem>
-          <FormItem label="品牌" {...formItemLayout}>
-            {getFieldDecorator('brandId', {
-              rules: [{ required: true, message: '请选择品牌' }],
+          <FormItem label="传感器型号" {...formItemLayout}>
+            {getFieldDecorator('typeId', {
+              rules: [{ required: true, message: '请选择传感器型号' }],
             })(
-              <Select placeholder="请选择" {...itemStyles} onChange={this.handleBrandChange} allowClear>
-                {brandDict.map(({ key, value }) => (
+              <Select placeholder="请选择" {...itemStyles} onChange={this.handleTypeChange}>
+                {typeDict.map(({ key, value }) => (
                   <Option key={key} value={key}>{value}</Option>
                 ))}
               </Select>
             )}
           </FormItem>
-          <FormItem label="传感器型号" {...formItemLayout}>
-            {getFieldDecorator('typeId', {
-              rules: [{ required: true, message: '请选择传感器型号' }],
+          <FormItem label="品牌" {...formItemLayout}>
+            {getFieldDecorator('brandId', {
+              rules: [{ required: true, message: '请选择品牌' }],
             })(
-              <Select placeholder="请选择" {...itemStyles} onChange={this.handleTypeChange} allowClear>
-                {typeDict.map(({ key, value }) => (
-                  <Option key={key} value={key}>{value}</Option>
-                ))}
-              </Select>
+              <Input disabled placeholder="请先选择传感器型号" {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="传感器名称" {...formItemLayout}>

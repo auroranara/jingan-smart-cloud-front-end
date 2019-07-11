@@ -87,6 +87,7 @@ export default {
       add: 'deviceManagement.sensorModel.add',
       edit: 'deviceManagement.sensorModel.edit',
       copy: 'deviceManagement.sensorModel.copy',
+      delete: 'deviceManagement.sensorModel.delete',
       model: {
         listView: 'deviceManagement.sensorModel.model.listView',
         add: 'deviceManagement.sensorModel.model.add',
