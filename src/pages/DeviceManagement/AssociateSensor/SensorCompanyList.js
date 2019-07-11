@@ -211,8 +211,8 @@ export default class SensorCompanyList extends Component {
               const {
                 id,
                 name, // 公司名称
-                principal_name = null,
-                principal_phone = null,
+                principal_name = '',
+                principal_phone = '',
                 practical_address = null, // 地址
                 industryCategoryLabel = null,
               } = item
@@ -231,7 +231,7 @@ export default class SensorCompanyList extends Component {
                       行业类别：{industryCategoryLabel || '暂无信息'}
                     </Ellipsis>
                     <Ellipsis tooltip className={styles.lsEllipsis} lines={1}>
-                      主要负责人：{`${principal_name} ${principal_phone}`}
+                      主要负责人：{!principal_name && !principal_phone ? '暂无信息' : `${principal_name} ${principal_phone}`}
                     </Ellipsis>
                     <div className={styles.iconContainer}>
                       <AuthIcon
