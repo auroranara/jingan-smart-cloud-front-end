@@ -96,6 +96,28 @@ export default {
       },
     },
     searchInfo: null,
+    // 是否安全重点单位
+    isSafetyList: [
+      {
+        key: '1',
+        value: '是',
+      },
+      {
+        key: '0',
+        value: '否',
+      },
+    ],
+    // 是否消防重点单位
+    isFireImpList: [
+      {
+        key: '1',
+        value: '是',
+      },
+      {
+        key: '0',
+        value: '否',
+      },
+    ],
   },
 
   effects: {
