@@ -54,12 +54,15 @@ class CheckDrawer extends PureComponent {
       visible,
       handleParentChange,
       checksMonth,
-      listData = [],
+      listData: list = [],
       checkedCompanyInfo: { companyNum: companyCheckAll = 0, fireCheckCompanyCount = 0 },
       dangerCompany: { dangerCompanyNum = 0 },
       dangerCompanyOver = [],
     } = this.props;
     const thisMonth = moment().format('YYYY-MM');
+
+    const trashNames = ['王挺', '唐皓', '叶上山'];
+    const listData = list.filter(item=> !trashNames.includes(item.user_name));
 
     return (
       <div>
