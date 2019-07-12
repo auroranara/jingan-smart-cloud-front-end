@@ -38,6 +38,12 @@ export default class CompanyList extends PureComponent {
 
 
   componentDidMount() {
+    const { user: { currentUser: { unitType, companyName, companyId } } } = this.props
+    // 判断是否是企事业用户，是则直接进入作业列表
+    if (unitType === 4) {
+      router.push(`/data-analysis/work-approval-report/company/${companyId}/0?companyName=${companyName}`)
+      return
+    }
     this.handleQuery()
   }
 
