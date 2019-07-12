@@ -1,4 +1,5 @@
 import WaterTank from './WaterTank';
+import PolarBar from './PolarBar';
 
 export {
   ChartGauge,
@@ -19,5 +20,6 @@ export {
 } from '@/pages/BigPlatform/NewUnitFireControl/components/Components';
 
 export {
+  PolarBar,
   WaterTank,
 }

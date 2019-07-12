@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 
 import styles from './WaterSystem.less';
 import { Section } from './Components';
-import { WaterTank } from '../components/Components';
+import { PolarBar, WaterTank } from '../components/Components';
 
 export default class WaterSystem extends PureComponent {
   state = { deep: 0 };
@@ -21,7 +21,8 @@ export default class WaterSystem extends PureComponent {
     return (
       <Section title="水系统">
         <div className={styles.container} onClick={clicks[2]}>
-          <WaterTank
+          <PolarBar />
+          {/* <WaterTank
             className={styles.tank}
             dy={30}
             width={200}
@@ -30,7 +31,7 @@ export default class WaterSystem extends PureComponent {
             size={[100, 150]}
             limits={[1, 4]}
             range={5}
-          />
+          /> */}
         </div>
       </Section>
     );
