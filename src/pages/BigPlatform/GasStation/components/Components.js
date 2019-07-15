@@ -18,3 +18,5 @@ export {
 
 
 export { default as ElectricalFireMonitoring } from './ElectricalFireMonitoring';
+export { default as ElectricalFireMonitoringDrawer } from './ElectricalFireMonitoringDrawer';
+export { default as ElectricalFireMonitoringDetailDrawer } from './ElectricalFireMonitoringDetailDrawer';

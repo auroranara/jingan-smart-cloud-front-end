@@ -26,6 +26,8 @@ export default function CustomSection ({
   fixedContent,
   // 子元素
   children,
+  // 隐藏标题图标
+  hideIcon,
   // 滚动条相关设置属性，请查看Scroll组件
   scrollProps: {
     className: scrollClassName,
@@ -64,7 +66,7 @@ export default function CustomSection ({
     <div className={classNames('custom-section-container', className)} style={style} {...restProps}>
       {title && (
         <div className="custom-section-title-container">
-          <div className="custom-section-title-icon"></div>
+          {!hideIcon && <div className="custom-section-title-icon" />}
           <div className="custom-section-title-wrapper">{title}</div>
           {action && <div className="custom-section-action-wrapper">{action}</div>}
         </div>
