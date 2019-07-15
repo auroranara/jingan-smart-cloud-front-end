@@ -2139,8 +2139,8 @@ export default class GasStation extends PureComponent {
         workOrderDetail, // 只有一个元素的数组
         fireAlarm,
         faultList,
-        waterSystemData: { list },
-        waterDrawer: { list: waterDrawerList },
+        waterSystemData: { list: waterDrawerList },
+        // waterDrawer: { list: waterDrawerList },
         waterAlarm,
         maintenanceCompany: {
           name: maintenanceCompanys = [],
@@ -2368,7 +2368,7 @@ export default class GasStation extends PureComponent {
                 <WaterSystem
                   companyId={companyId}
                   onClick={this.handleViewWater}
-                  waterList={list}
+                  // waterList={list}
                   fetchWaterSystem={this.fetchWaterSystem}
                   waterAlarm={waterAlarm}
                 />
@@ -2597,8 +2597,8 @@ export default class GasStation extends PureComponent {
           visible={waterSystemDrawerVisible}
           waterTabItem={waterTabItem}
           onClose={this.handleCloseWater}
-          waterList={list}
-          waterDrawer={waterDrawerList}
+          waterList={waterDrawerList}
+          // waterDrawer={waterDrawerList}
           onClick={this.handleClickWater}
           filterIndex={filterIndex}
           handleParentChange={this.handleParentChange}

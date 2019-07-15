@@ -106,21 +106,21 @@ export default class WaterSystemDrawer extends PureComponent {
       : list;
 
     const filterFireList = list.filter(({ deviceName }) => deviceName.includes(searchValue));
-    // if (!filterFireList.filter(item => item.deviceDataList.length).length)
-    //   return <Empty />;
-    return [0, 1].map(item => {
-    // return filterPondList.map(item => {
-      // const { deviceDataList, videoList, status: devStatus } = item;
-      // const isMending = +devStatus === -1;
-      // const isNotIn = !deviceDataList.length;
-      // const { area, deviceId, location, deviceName } = item;
-      // const [
-      //   { value, status, unit, deviceParamsInfo: { normalUpper, normalLower } } = {
-      //     deviceParamsInfo: {},
-      //   },
-      // ] = deviceDataList;
-      // const normalRange = [normalLower, normalUpper];
-      // const isGray = isMending || isNotIn || (!isMending && +status < 0);
+    if (!filterFireList.filter(item => item.deviceDataList.length).length)
+      return <Empty />;
+    // return [0, 1].map(item => {
+    return filterPondList.map(item => {
+      const { deviceDataList, videoList, status: devStatus } = item;
+      const isMending = +devStatus === -1;
+      const isNotIn = !deviceDataList.length;
+      const { area, deviceId, location, deviceName } = item;
+      const [
+        { value, status, unit, deviceParamsInfo: { normalUpper, normalLower, maxValue } } = {
+          deviceParamsInfo: {},
+        },
+      ] = deviceDataList;
+      const limits = [normalLower, normalUpper];
+      const isGray = isMending || isNotIn || (!isMending && +status < 0);
       return (
         <Col
             span={12}
@@ -132,10 +132,10 @@ export default class WaterSystemDrawer extends PureComponent {
               dy={30}
               width={200}
               height={200}
-              value={3}
+              value={value}
               size={[100, 150]}
-              limits={[1, 4]}
-              range={5}
+              limits={limits}
+              range={maxValue}
               className={styles.tank}
               onClick={e => console.log(1)}
             />
@@ -148,28 +148,28 @@ export default class WaterSystemDrawer extends PureComponent {
     const {
       visible,
       waterTabItem,
-      videoKeyId,
-      waterDrawer,
+      // videoKeyId,
+      waterList,
       filterIndex,
       onClick,
       handleParentChange,
     } = this.props;
 
-    const { videoVisible, videoList } = this.state;
+    // const { videoVisible, videoList } = this.state;
 
-    const alarmList = waterDrawer.filter(item => {
+    const alarmList = waterList.filter(item => {
       const { deviceDataList } = item;
-      const [{ status } = { deviceParamsInfo: {} }] = deviceDataList;
+      const [{ status } = {}] = deviceDataList;
       return +status > 0;
     });
-    const normalList = waterDrawer.filter(item => {
+    const normalList = waterList.filter(item => {
       const { deviceDataList } = item;
-      const [{ status } = { deviceParamsInfo: {} }] = deviceDataList;
+      const [{ status } = {}] = deviceDataList;
       return +status === 0;
     });
-    const lostList = waterDrawer.filter(item => {
+    const lostList = waterList.filter(item => {
       const { deviceDataList } = item;
-      const [{ status } = { deviceParamsInfo: {} }] = deviceDataList;
+      const [{ status } = {}] = deviceDataList;
       return +status < 0;
     });
     const totalInfo = [
@@ -187,8 +187,8 @@ export default class WaterSystemDrawer extends PureComponent {
     });
     const newList = totalInfo[filterIndex] ? totalInfo[filterIndex].list : [];
     let cards = null;
-    // if (!newList || !newList.length)
-    if (false)
+    if (!newList || !newList.length)
+    // if (false)
       cards = <EmptyCard />;
     else if (waterTabItem === 0 || waterTabItem === 1)
       cards = this.renderFireCards(newList);
