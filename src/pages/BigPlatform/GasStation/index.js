@@ -50,6 +50,11 @@ import {
   WaterSystemDrawer,
   WorkOrderDrawer,
 } from './sections/Components';
+import {
+  ElectricalFireMonitoring,
+  ElectricalFireMonitoringDrawer,
+  ElectricalFireMonitoringDetailDrawer,
+} from './components/Components';
 
 import {
   headerBg,
@@ -156,6 +161,10 @@ const popupVisible = {
 )
 export default class GasStation extends PureComponent {
   state = {
+    electricalFireMonitoringDrawerVisible: false, // 电气火灾监测抽屉是否显示
+    electricalFireMonitoringDrawerValue: null, // 电气火灾监测抽屉参数
+    electricalFireMonitoringDetailDrawerVisible: false, // 电气火灾监测详情抽屉是否显示
+    electricalFireMonitoringDetailDrawerValue: null, // 电气火灾监测详情抽屉参数
     videoVisible: false, // 重点部位监控视频弹窗
     showVideoList: false, // 是否展示视频弹窗右侧列表
     videoKeyId: undefined,
@@ -2069,6 +2078,36 @@ export default class GasStation extends PureComponent {
     this.setState({ resetHostsDrawerVisible: true });
   };
 
+  /* 显示电气火灾监测抽屉 */
+  showElectricalFireMonitoringDrawer = (electricalFireMonitoringDrawerValue) => {
+    this.setState({
+      electricalFireMonitoringDrawerVisible: true,
+      electricalFireMonitoringDrawerValue,
+    });
+  }
+
+  /* 隐藏电气火灾监测抽屉 */
+  hideElectricalFireMonitoringDrawer = () => {
+    this.setState({
+      electricalFireMonitoringDrawerVisible: false,
+    });
+  }
+
+  /* 显示电气火灾监测详情抽屉 */
+  showElectricalFireMonitoringDetailDrawer = (electricalFireMonitoringDetailDrawerValue) => {
+    this.setState({
+      electricalFireMonitoringDetailDrawerVisible: true,
+      electricalFireMonitoringDetailDrawerValue,
+    });
+  }
+
+  /* 隐藏电气火灾监测详情抽屉 */
+  hideElectricalFireMonitoringDetailDrawer = () => {
+    this.setState({
+      electricalFireMonitoringDetailDrawerVisible: false,
+    });
+  }
+
   render() {
     // 从props中获取数据
     const {
@@ -2316,13 +2355,10 @@ export default class GasStation extends PureComponent {
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 电气火灾监测 */}
-                <ElectricityMonitor
-                  companySmokeInfo={companySmokeInfo}
-                  deviceStatusCount={deviceStatusCount}
-                  deviceRealTimeData={deviceRealTimeDataMonitor}
-                  devices={devices}
-                  handleFetchRealTimeData={this.handleFetchRealTimeData}
-                  onClick={this.handleClickElectricity}
+                <ElectricalFireMonitoring
+                  companyId={this.props.match.params.unitId}
+                  onSingleClick={this.showElectricalFireMonitoringDetailDrawer}
+                  onMultipleClick={this.showElectricalFireMonitoringDrawer}
                 />
               </div>
             </div>
@@ -2720,6 +2756,19 @@ export default class GasStation extends PureComponent {
           getWarnDetail={this.getWarnDetail}
           getFaultDetail={this.getFaultDetail}
           handleShowFlowVideo={this.handleShowFlowVideo}
+        />
+        {/* 电气火灾监测抽屉 */}
+        <ElectricalFireMonitoringDrawer
+          visible={this.state.electricalFireMonitoringDrawerVisible}
+          value={this.state.electricalFireMonitoringDrawerValue}
+          onClose={this.hideElectricalFireMonitoringDrawer}
+          onJump={this.showElectricalFireMonitoringDetailDrawer}
+        />
+        {/* 电气火灾监测详情抽屉 */}
+        <ElectricalFireMonitoringDetailDrawer
+          visible={this.state.electricalFireMonitoringDetailDrawerVisible}
+          value={this.state.electricalFireMonitoringDetailDrawerValue}
+          onClose={this.hideElectricalFireMonitoringDetailDrawer}
         />
       </BigPlatformLayout>
     );

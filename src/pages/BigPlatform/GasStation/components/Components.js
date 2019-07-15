@@ -19,6 +19,11 @@ export {
   WaterCards,
 } from '@/pages/BigPlatform/NewUnitFireControl/components/Components';
 
+
+export { default as ElectricalFireMonitoring } from './ElectricalFireMonitoring';
+export { default as ElectricalFireMonitoringDrawer } from './ElectricalFireMonitoringDrawer';
+export { default as ElectricalFireMonitoringDetailDrawer } from './ElectricalFireMonitoringDetailDrawer';
+
 export {
   PolarBar,
   WaterTank,
