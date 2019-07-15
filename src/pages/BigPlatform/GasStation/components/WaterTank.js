@@ -176,13 +176,14 @@ export default class WaterTank extends PureComponent {
   }
 
   render() {
-    const { width=400, height=200, className } = this.props;
+    const { width=400, height=200, className, onClick } = this.props;
     return (
       <canvas
         width={width}
         height={height}
         ref={node => this.canvas = node}
         className={className}
+        onClick={onClick}
       />
     );
   }

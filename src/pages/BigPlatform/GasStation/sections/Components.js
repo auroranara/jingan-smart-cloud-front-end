@@ -2,7 +2,10 @@ import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPla
 import { SetDrawer } from '@/pages/BigPlatform/Safety/Company3/components';
 import CheckWorkOrder from './CheckWorkOrder';
 import CompanyInfo from './CompanyInfo';
+import TrendChart from './TrendChart';
+import WaterItemDrawer from './WaterItemDrawer';
 import WaterSystem from './WaterSystem';
+import WaterSystemDrawer from './WaterSystemDrawer';
 
 export {
   AlarmDynamicDrawer,
@@ -45,7 +48,7 @@ export {
   TabSection,
   VideoSurveillance,
   WaterMonitor,
-  WaterSystemDrawer,
+  // WaterSystemDrawer,
   WorkOrderDrawer,
 } from '@/pages/BigPlatform/NewUnitFireControl/Section/Components';
 
@@ -54,5 +57,8 @@ export {
   CompanyInfo,
   NewVideoPlay,
   SetDrawer,
+  TrendChart,
+  WaterItemDrawer,
   WaterSystem,
+  WaterSystemDrawer,
 }

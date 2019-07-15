@@ -62,7 +62,11 @@ export default class PolarBar extends PureComponent {
         show: true,
         formatter: function (params) {
           const index = params.dataIndex;
-          return `${CATEGORIES[index]}<br/><span className=${styles.redDot}></span>报警<span className=${styles.greyDot}></span>失联<span className=${styles.cyanDot}></span>正常`;
+          return `
+            ${CATEGORIES[index]}<br/>
+            <span class=${styles.redDot}></span>报警<span class=${styles.num}>10</span>
+            <span class=${styles.greyDot}></span>失联<span class=${styles.num}>3</span>
+            <span class=${styles.cyanDot}></span>正常<span class=${styles.num}>25</span>`;
         },
       },
     };
