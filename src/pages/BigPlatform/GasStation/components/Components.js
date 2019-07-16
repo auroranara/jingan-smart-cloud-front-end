@@ -1,5 +1,6 @@
-import WaterTank from './WaterTank';
 import PolarBar from './PolarBar';
+import TrendChart from './TrendChart';
+import WaterTank from './WaterTank';
 
 export {
   ChartGauge,
@@ -26,5 +27,6 @@ export { default as ElectricalFireMonitoringDetailDrawer } from './ElectricalFir
 
 export {
   PolarBar,
+  TrendChart,
   WaterTank,
 }

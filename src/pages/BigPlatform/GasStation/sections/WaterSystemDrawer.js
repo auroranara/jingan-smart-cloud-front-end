@@ -99,20 +99,16 @@ export default class WaterSystemDrawer extends PureComponent {
   };
 
   renderPondCards = list => {
+    const { showWaterItemDrawer } = this.props;
     const { searchValue } = this.state;
 
-    const filterPondList = searchValue
-      ? list.filter(({ deviceName }) => deviceName.includes(searchValue))
-      : list;
+    let pondList = searchValue ? list.filter(({ deviceName }) => deviceName.includes(searchValue)) : list;
+    pondList = pondList.filter(item => item.deviceDataList && item.deviceDataList.length);
 
-    const filterFireList = list.filter(({ deviceName }) => deviceName.includes(searchValue));
-    if (!filterFireList.filter(item => item.deviceDataList.length).length)
+    if (!pondList.length)
       return <Empty />;
-    // return [0, 1].map(item => {
-    return filterPondList.map(item => {
-      const { deviceDataList, videoList, status: devStatus } = item;
-      const isMending = +devStatus === -1;
-      const isNotIn = !deviceDataList.length;
+    return pondList.map(item => {
+      const { deviceDataList, videoList } = item;
       const { area, deviceId, location, deviceName } = item;
       const [
         { value, status, unit, deviceParamsInfo: { normalUpper, normalLower, maxValue } } = {
@@ -120,26 +116,27 @@ export default class WaterSystemDrawer extends PureComponent {
         },
       ] = deviceDataList;
       const limits = [normalLower, normalUpper];
-      const isGray = isMending || isNotIn || (!isMending && +status < 0);
+
+      const targetItem = deviceDataList[0];
       return (
         <Col
-            span={12}
-            // key={deviceId}
-            key={item}
-            className={styles.col}
-          >
-            <WaterTank
-              dy={30}
-              width={200}
-              height={200}
-              value={value}
-              size={[100, 150]}
-              limits={limits}
-              range={maxValue}
-              className={styles.tank}
-              onClick={e => console.log(1)}
-            />
-        </Col>
+          span={12}
+          key={deviceId}
+          className={styles.col}
+        >
+          <WaterTank
+            dy={30}
+            width={200}
+            height={200}
+            value={value}
+            size={[100, 150]}
+            limits={limits}
+            range={maxValue}
+            unit={unit}
+            className={styles.tank}
+            onClick={e => showWaterItemDrawer(targetItem)}
+          />
+      </Col>
       );
     });
   };

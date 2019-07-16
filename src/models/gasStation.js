@@ -1,9 +1,13 @@
+import { stringify } from 'qs';
+import { message } from 'antd';
+
 import {
   getDistributionBoxClassification,
   getDistributionBoxTodayData,
   getDistributionBoxAlarmCount,
+  getDeviceHistory,
 } from '../services/gasStation';
-import { message } from 'antd';
+
 function error (msg) {
   message.error(msg);
 }
@@ -83,7 +87,8 @@ export default {
   state: {
     distributionBoxClassification: {}, // 配电箱分类
     distributionBoxTodayData: [], // 配电箱当天监测数据
-    distributionBoxAlarmCount: [], // 配电箱报警统计
+    distributionBoxAlarmCount: [], // 配电箱或水箱报警统计
+    waterHistory: [], // 水系统单个传感器历史
   },
 
   effects: {
@@ -134,6 +139,13 @@ export default {
         callback && callback();
       }
     },
+    *fetchWaterHistory({ payload, callback }, { call, put }) {
+      const response = yield call(getDeviceHistory, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({ type: 'saveWaterHistory', payload: data && Array.isArray(data.list) ? data.list : [] });
+      }
+    },
   },
 
   reducers: {
@@ -142,6 +154,12 @@ export default {
         ...state,
         ...payload,
       };
+    },
+    saveWaterHistory(state, action) {
+      return { ...state, waterHistory: action.payload };
+    },
+    saveWaterTotal(state, action) {
+      return { ...state, waterTotal: action.payload };
     },
   },
 };

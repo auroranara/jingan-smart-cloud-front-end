@@ -2,13 +2,14 @@ import React, { PureComponent } from 'react';
 import { notification, Tooltip } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Rotate } from 'react-transform-components';
+// import { Rotate } from 'react-transform-components';
 import { stringify } from 'qs';
 
 import styles from './index.less';
-import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
+import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { findFirstVideo } from '@/utils/utils';
+import { getWaterTotal } from './utils';
 import {
   AlarmDynamicDrawer,
   AlarmDynamicMsgDrawer,
@@ -45,6 +46,7 @@ import {
   StatisticsOfFireControl,
   SetDrawer,
   VideoSurveillance,
+  WaterItemDrawer,
   WaterMonitor,
   WaterSystem,
   WaterSystemDrawer,
@@ -55,7 +57,6 @@ import {
   ElectricalFireMonitoringDrawer,
   ElectricalFireMonitoringDetailDrawer,
 } from './components/Components';
-
 import {
   headerBg,
   iconFire,
@@ -132,6 +133,7 @@ const popupVisible = {
   gasFlowDrawerVisible: false,
   setDrawerVisible: false,
   fireMonitorFlowDrawerVisible: false,
+  waterItemDrawerVisible: false,
 };
 
 @connect(
@@ -144,6 +146,7 @@ const popupVisible = {
     bigPlatform,
     unitFireControl,
     unitSafety,
+    gasStation,
   }) => ({
     newUnitFireControl,
     monitor,
@@ -153,6 +156,7 @@ const popupVisible = {
     bigPlatform,
     unitFireControl,
     unitSafety,
+    gasStation,
     warnDetailLoading: loading.effects['newUnitFireControl/fetchWarnDetail'],
     faultDetailLoading: loading.effects['newUnitFireControl/fetchFaultDetail'],
     allDetailLoading: loading.effects['newUnitFireControl/fetchAllDetail'],
@@ -212,7 +216,7 @@ export default class GasStation extends PureComponent {
     videoList: [],
     fireVideoVisible: false,
     fireVideoKeyId: '',
-    waterTab: '101',
+    waterTab: '103',
     smokeDrawerVisible: false,
     filterIndex: 0,
     electricityDrawerVisible: false,
@@ -237,6 +241,8 @@ export default class GasStation extends PureComponent {
     fireMonitorFlowDrawerVisible: false,
     dynamicType: 0,
     workOrderSelectType: 'all',
+    waterItem: {},
+    waterItemDrawerVisible: false, // 水系统具体项目弹框
   };
 
   componentDidMount() {
@@ -391,7 +397,8 @@ export default class GasStation extends PureComponent {
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
     dispatch({ type: 'monitor/fetchCameraTree', payload: { company_id: companyId } });
 
-    this.fetchWaterSystem('101');
+    // this.fetchWaterSystem('101');
+    this.fetchWaterSystem('103');
 
     // 烟感列表
     dispatch({
@@ -575,7 +582,8 @@ export default class GasStation extends PureComponent {
               if (+deviceType === +waterTab) this.fetchWaterSystem(deviceType);
               if (this.state.waterSystemDrawerVisible) {
                 dispatch({
-                  type: 'newUnitFireControl/fetchWaterDrawer',
+                  // type: 'newUnitFireControl/fetchWaterDrawer',
+                  type: 'newUnitFireControl/fetchWaterSystem',
                   payload: {
                     companyId,
                     type: [101, 102, 103][this.state.waterTabItem],
@@ -808,18 +816,18 @@ export default class GasStation extends PureComponent {
       area,
       location,
       cameraMessage,
-      isOver,
-      count,
-      num,
-      newTime,
-      lastTime,
+      // isOver,
+      // count,
+      // num,
+      // newTime,
+      // firstTime,
+      // lastTime,
       componentType,
       workOrder,
       systemTypeValue,
       createBy,
       createByPhone,
       faultName,
-      firstTime,
       trueOver = null,
       deviceTypeName,
       paramName,
@@ -978,7 +986,8 @@ export default class GasStation extends PureComponent {
     });
 
     // 获取水系统---消火栓系统
-    this.fetchWaterSystem('101');
+    // this.fetchWaterSystem('101');
+    this.fetchWaterSystem('103')
   };
 
   // 获取水系统
@@ -1603,7 +1612,8 @@ export default class GasStation extends PureComponent {
       },
     } = this.props;
     dispatch({
-      type: 'newUnitFireControl/fetchWaterDrawer',
+      // type: 'newUnitFireControl/fetchWaterDrawer',
+      type: 'newUnitFireControl/fetchWaterSystem',
       payload: {
         companyId,
         type: [101, 102, 103][typeIndex],
@@ -2108,6 +2118,18 @@ export default class GasStation extends PureComponent {
     });
   }
 
+  showWaterItemDrawer = item => {
+    const { dispatch } = this.props;
+    const { deviceId } = item;
+    this.setState({ waterItem: item, waterItemDrawerVisible: true });
+    dispatch({ type: 'gasStation/fetchWaterHistory', payload: { deviceId, historyType: 1, queryDate: moment().format('YYYY/MM/DD HH:mm:ss') } });
+    dispatch({ type: 'gasStation/fetchDistributionBoxAlarmCount', payload: { deviceId, type: 1 } });
+  };
+
+  hdieWaterItemDrawer = () => {
+    this.setState({ waterItemDrawerVisible: false });
+  };
+
   render() {
     // 从props中获取数据
     const {
@@ -2116,14 +2138,14 @@ export default class GasStation extends PureComponent {
       },
       monitor: { allCamera, cameraTree },
       newUnitFireControl: {
-        fireAlarmSystem: {
-          fire_state = 0,
-          fault_state = 0,
-          start_state = 0,
-          supervise_state = 0,
-          shield_state = 0,
-          feedback_state = 0,
-        },
+        // fireAlarmSystem: {
+        //   fire_state = 0,
+        //   fault_state = 0,
+        //   start_state = 0,
+        //   supervise_state = 0,
+        //   shield_state = 0,
+        //   feedback_state = 0,
+        // },
         // systemScore,
         currentHiddenDanger,
         currentHiddenDanger: { timestampList },
@@ -2139,7 +2161,7 @@ export default class GasStation extends PureComponent {
         workOrderDetail, // 只有一个元素的数组
         fireAlarm,
         faultList,
-        waterSystemData: { list: waterDrawerList },
+        waterSystemData: { list: waterList },
         // waterDrawer: { list: waterDrawerList },
         waterAlarm,
         maintenanceCompany: {
@@ -2158,7 +2180,7 @@ export default class GasStation extends PureComponent {
       electricityMonitor: {
         deviceStatusCount,
         deviceRealTimeData,
-        deviceRealTimeDataMonitor,
+        // deviceRealTimeDataMonitor,
         devices,
         deviceConfig,
         deviceHistoryData,
@@ -2167,6 +2189,7 @@ export default class GasStation extends PureComponent {
       bigPlatform: { coItemList, hiddenDangerList },
       unitFireControl: { hosts, fireControlCount },
       unitSafety: { points, phoneVisible },
+      gasStation: { distributionBoxAlarmCount, waterHistory },
       warnDetailLoading,
       faultDetailLoading,
       allDetailLoading,
@@ -2232,6 +2255,8 @@ export default class GasStation extends PureComponent {
       fireMonitorFlowDrawerVisible,
       dynamicType,
       workOrderSelectType,
+      waterItem,
+      waterItemDrawerVisible,
     } = this.state;
     const headProps = {
       ...workOrderDetail[0],
@@ -2325,33 +2350,6 @@ export default class GasStation extends PureComponent {
         />
         <div className={styles.bottom}>
           <div className={styles.bottomInner}>
-            {/* <div className={styles.item}>
-              <div className={styles.inner} ref={node => (this.fireNode = node)}>
-                <Rotate axis="y" frontIndex={fireMonitorIndex}>
-                  <FireMonitoring // 虚拟消控主机
-                    fire={fire_state}
-                    fault={fault_state}
-                    shield={shield_state}
-                    linkage={start_state}
-                    supervise={supervise_state}
-                    feedback={feedback_state}
-                    handleShowAlarmFlows={this.handleShowAlarmFlows}
-                    // handleShowAlarmHistory={this.handleShowAlarmHistory}
-                    // handleShowFault={this.handleShowFault}
-                    handleParentChange={this.handleParentChange}
-                    hosts={hosts}
-                    handleShowFireMonitor={this.handleShowFireMonitor}
-                    handleShowResetSection={this.handleShowResetSection}
-                  />
-                  <StatisticsOfFireControl // 消防主机监测
-                    type={fireControlType}
-                    fireControlCount={fireControlCount}
-                    onSwitch={this.handleSwitchFireControlType}
-                    handleShowFireMonitor={this.handleShowFireMonitor}
-                  />
-                </Rotate>
-              </div>
-            </div> */}
             <div className={styles.item}>
               <div className={styles.inner}>
                 {/* 电气火灾监测 */}
@@ -2368,17 +2366,10 @@ export default class GasStation extends PureComponent {
                 <WaterSystem
                   companyId={companyId}
                   onClick={this.handleViewWater}
-                  // waterList={list}
+                  data={{ pond: waterList, spray: [], hydrant: [] }}
                   fetchWaterSystem={this.fetchWaterSystem}
-                  waterAlarm={waterAlarm}
+                  // waterAlarm={waterAlarm}
                 />
-                {/* <WaterMonitor
-                  companyId={companyId}
-                  onClick={this.handleClickWater}
-                  waterList={list}
-                  fetchWaterSystem={this.fetchWaterSystem}
-                  waterAlarm={waterAlarm}
-                /> */}
               </div>
             </div>
             <div className={styles.item}>
@@ -2502,10 +2493,6 @@ export default class GasStation extends PureComponent {
           phoneVisible={phoneVisible}
           onClose={() => this.handleDrawerVisibleChange('alarmHistory')}
         />
-        {/* <PointPositionName
-          visible={pointDrawerVisible}
-          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
-        />*/}
         {/* 点位巡查详情 */}
         <PointInspectionDrawer
           date={pointInspectionDrawerSelectedDate}
@@ -2592,14 +2579,15 @@ export default class GasStation extends PureComponent {
           phoneVisible={phoneVisible}
           onClose={() => this.handleDrawerVisibleChange('maintenanceCheck')}
         />
-        {/* 水系统抽屉抽屉 */}
+        {/* 水系统抽屉 */}
         <WaterSystemDrawer
           visible={waterSystemDrawerVisible}
           waterTabItem={waterTabItem}
           onClose={this.handleCloseWater}
-          waterList={waterDrawerList}
+          waterList={waterList}
           // waterDrawer={waterDrawerList}
-          onClick={this.handleClickWater}
+          // onClick={this.handleClickWater}
+          showWaterItemDrawer={this.showWaterItemDrawer}
           filterIndex={filterIndex}
           handleParentChange={this.handleParentChange}
         />
@@ -2769,6 +2757,11 @@ export default class GasStation extends PureComponent {
           visible={this.state.electricalFireMonitoringDetailDrawerVisible}
           value={this.state.electricalFireMonitoringDetailDrawerValue}
           onClose={this.hideElectricalFireMonitoringDetailDrawer}
+        />
+        <WaterItemDrawer
+          visible={waterItemDrawerVisible}
+          handleClose={this.hdieWaterItemDrawer}
+          data={{ item: waterItem, history: waterHistory, total: getWaterTotal(distributionBoxAlarmCount) }}
         />
       </BigPlatformLayout>
     );

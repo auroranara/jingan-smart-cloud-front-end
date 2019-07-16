@@ -41,12 +41,11 @@ export default class WaterItemDrawer extends PureComponent {
     const {
       visible,
       data: {
-        deviceRealTimeData: { deviceId = undefined, deviceDataForAppList = [] },
-        deviceConfig = [],
-        deviceHistoryData,
+        item,
+        history,
+        total,
         // cameraList = [],
       },
-      onClick,
       // handleSelect,
       // handleClose,
     } = this.props;
@@ -78,18 +77,16 @@ export default class WaterItemDrawer extends PureComponent {
           <h3 className={styles.chartTitle}>
             <span className={styles.rectIcon} />
             当天监测数据趋势
-            <TrendChart
-              // noData={!!deviceIds.length}
-              data={{
-                deviceHistoryData,
-                deviceConfig,
-              }}
-            />
           </h3>
+          <TrendChart
+            // noData={!!deviceIds.length}
+            data={{ item, history }}
+          />
           <h3 className={styles.chartTitle}>
             <span className={styles.rectIcon} />
             历史报警统计
           </h3>
+          {total}
         </div>
         {/* <VideoPlay
           showList={true}
@@ -113,7 +110,7 @@ export default class WaterItemDrawer extends PureComponent {
         rowStyle={{ height: 'calc(100% - 70px)' }}
         onClose={() => {
           this.handleClose();
-          this.handleVideoClose();
+          // this.handleVideoClose();
         }}
       />
     );

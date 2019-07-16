@@ -45,11 +45,11 @@ export default class WaterTank extends PureComponent {
   }
 
   drawWave() {
-    const { dy=0, value, size: [w, h], range } = this.props;
+    const { status, dy=0, value, size: [w, h], range } = this.props;
     const ctx = this.ctx;
     const percent = value / range;
     const targetWidth = Math.floor(h * percent);
-    ctx.drawImage(this.imgs[+this.isAlarm()], 0, 0, IMG_WIDTH, Math.floor(IMG_HEIGHT * percent), 0, h - targetWidth + dy, w, targetWidth);
+    ctx.drawImage(this.imgs[+!!status], 0, 0, IMG_WIDTH, Math.floor(IMG_HEIGHT * percent), 0, h - targetWidth + dy, w, targetWidth);
   }
 
   drawRect() {
@@ -62,7 +62,7 @@ export default class WaterTank extends PureComponent {
   }
 
   drawSplits() {
-    const { dy=0, size: [w, h] } = this.props;
+    const { dy=0, size: [w, h], range } = this.props;
 
     const ctx = this.ctx;
     const start = [w, h + dy];
@@ -92,7 +92,7 @@ export default class WaterTank extends PureComponent {
   }
 
   drawAxis() {
-    const { dy=0, size: [w, h], limits, range } = this.props;
+    const { dy=0, size: [w, h], limits, range, unit } = this.props;
     const ctx = this.ctx;
     const point1 = [w, h * (1 - limits[0] / range) + dy];
     const point2 = [w, h * (1 - limits[1] / range) + dy];
@@ -118,12 +118,12 @@ export default class WaterTank extends PureComponent {
     ctx.stroke();
 
     ctx.font = '14px microsoft yahei';
-    ctx.fillText('m', w + 10, dy);
+    ctx.fillText(unit, w + 10, dy);
     ctx.restore();
   }
 
   drawTriangle() {
-    const { dy=0, value, size: [w, h], range } = this.props;
+    const { status, dy=0, value, size: [w, h], range } = this.props;
 
     const ctx = this.ctx;
     const target = [w, Math.floor(h * (1 - value / range)) + dy];
@@ -132,7 +132,7 @@ export default class WaterTank extends PureComponent {
     const a = th * 1.414 / 2;
     const up = [x + th, y - a];
     const down = [x + th, y + a];
-    const color = this.isAlarm() ? RED : BLUE;
+    const color = status > 0 ? RED : BLUE;
 
     ctx.save();
     ctx.beginPath();

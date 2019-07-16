@@ -2,12 +2,30 @@ import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 
 import styles from './PolarBar.less';
+import { getStatusCount } from '../utils';
 
 const BAR_WIDTH = 10;
-const CATEGORIES = ['水池/水箱', '喷淋系统', '消火栓系统'];
 
 export default class PolarBar extends PureComponent {
+  chart = null;
+
+  chartCallback = chart => {
+    const { handleClick, lists } = this.props;
+    this.chart = chart;
+    chart.on('click', params => {
+      const index = params.dataIndex;
+      const { type, index: i } = lists[index];
+      handleClick(i, type);
+    });
+  }
+
   getOption() {
+    const { lists } = this.props;
+
+    const statusLists = lists.map(getStatusCount);
+    const categories = lists.map(({ name }) => name);
+    const [alarmList, lossList, normalList] = ['alarm', 'loss', 'normal'].map(prop => statusLists.map(sts => sts[prop] / sts.total * 75));
+
     return {
       angleAxis: {
         min: 0,
@@ -19,7 +37,7 @@ export default class PolarBar extends PureComponent {
       },
       radiusAxis: {
         type: 'category',
-        data: CATEGORIES,
+        data: categories,
         z: 10,
         axisLine: { lineStyle: { color: 'rgb(112,136,158)' } },
         axisLabel: { interval: 0 },
@@ -29,7 +47,7 @@ export default class PolarBar extends PureComponent {
       series: [{
           type: 'bar',
           barWidth: BAR_WIDTH,
-          data: [20, 10, 30],
+          data: alarmList,
           coordinateSystem: 'polar',
           name: '报警',
           stack: 'a',
@@ -37,7 +55,7 @@ export default class PolarBar extends PureComponent {
       }, {
           type: 'bar',
           barWidth: BAR_WIDTH,
-          data: [35, 10, 40],
+          data: lossList,
           coordinateSystem: 'polar',
           name: '失联',
           stack: 'a',
@@ -45,7 +63,7 @@ export default class PolarBar extends PureComponent {
       }, {
           type: 'bar',
           barWidth: BAR_WIDTH,
-          data: [20, 55, 5],
+          data: normalList,
           coordinateSystem: 'polar',
           name: '正常',
           stack: 'a',
@@ -62,11 +80,12 @@ export default class PolarBar extends PureComponent {
         show: true,
         formatter: function (params) {
           const index = params.dataIndex;
+          const { name, alarm, loss, normal } = statusLists[index];
           return `
-            ${CATEGORIES[index]}<br/>
-            <span class=${styles.redDot}></span>报警<span class=${styles.num}>10</span>
-            <span class=${styles.greyDot}></span>失联<span class=${styles.num}>3</span>
-            <span class=${styles.cyanDot}></span>正常<span class=${styles.num}>25</span>`;
+            ${name}<br/>
+            <span class=${styles.redDot}></span>报警<span class=${styles.num}>${alarm}</span>
+            <span class=${styles.greyDot}></span>失联<span class=${styles.num}>${loss}</span>
+            <span class=${styles.cyanDot}></span>正常<span class=${styles.num}>${normal}</span>`;
         },
       },
     };
@@ -77,6 +96,7 @@ export default class PolarBar extends PureComponent {
       <ReactEcharts
         style={{ width: '200px', height: '220px' }}
         option={this.getOption()}
+        onChartReady={this.chartCallback}
       />
     );
   }

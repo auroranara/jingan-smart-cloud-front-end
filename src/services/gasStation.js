@@ -12,7 +12,12 @@ export async function getDistributionBoxTodayData(params) {
   return request(`/acloud_new/v2/deviceInfo/getDeviceDataHistory?${stringify({ ...params, queryDate: moment().startOf('day').format('YYYY/MM/DD HH:mm:ss'), historyDataType: 1 })}`);
 }
 
-// 获取配电箱历史报警统计
+// 获取配电箱和水箱历史报警统计
 export async function getDistributionBoxAlarmCount(params) {
   return request(`/acloud_new/v2/sdgs/countHistoryIot?${stringify(params)}`);
+}
+
+// 获取传感器历史
+export async function getDeviceHistory(params) {
+  return request(`/acloud_new/v2/deviceInfo/getDeviceDataHistory?${stringify(params)}`);
 }
