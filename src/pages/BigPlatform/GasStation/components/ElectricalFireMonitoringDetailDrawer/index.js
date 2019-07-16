@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { Spin } from 'antd';
 import { connect } from 'dva';
 import classNames from 'classnames';
+import moment from 'moment';
 import ReactEcharts from "echarts-for-react";
 import CustomDrawer from '@/jingan-components/CustomDrawer';
 import CustomSelect from '@/jingan-components/CustomSelect';
@@ -100,9 +101,9 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
           axisLine: {
             lineStyle: {
               color: status < 0 ? [[1, '#ccc']] : [
-                normalMin === min && status === 0 ? undefined : [(normalMin - min) / (max - min), '#ff1e00'],
-                [(normalMax - min) / (max - min), '#1e90ff'],
-                normalMax === max && status === 0 ? undefined : [1, '#ff1e00'],
+                !isNaN(normalMin) && [(normalMin - min) / (max - min), '#ff1e00'],
+                !isNaN(normalMax) ? [(normalMax - min) / (max - min), '#1e90ff'] : [1, '#1e90ff'],
+                !isNaN(normalMax) && [1, '#ff1e00'],
               ].filter(v => v),
               width: 15,
             },
@@ -120,7 +121,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
             width: 4,
           },
           detail: {
-            formatter: `{a|${status < 0 ? '--' : value}}\n{b|${name}}`,
+            formatter: `{a|${status < 0 || isNaN(value) ? '--' : value}}\n{b|${name}}`,
             offsetCenter: [0, '65%'],
             rich: {
               a: {
@@ -239,6 +240,18 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
     );
   }
 
+  renderTooltip(params, data) {
+    return `${params[0].name}<br/>${
+      params.map(({ marker, seriesName, seriesIndex, value: [_, value] }) => {
+        const { normalMax, normalMin } = data[seriesIndex];
+        return `${marker}<span style="color: ${
+          value >= normalMax || value <= normalMin ? '#ff4848' : '#fff'
+        }">${seriesName}：&nbsp;${isNaN(value) ? '--' : value}</span>`;
+      })
+      .join('<br/>')
+    }`;
+  }
+
   /* 当天监测数据趋势 */
   renderTodayMonitoringDataTrend() {
     const {
@@ -250,127 +263,78 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
     const { activeKey } = this.state;
     const { params=[] } = value || {};
     const filteredParams = params.filter(({ name }) => name === activeKey || name.includes(activeKey) && name !== '漏电电流');
-    const { unit, normalMax, max } = filteredParams.reduce((a, b) => a.normalMax < b.normalMax ? a : b, {});
-    const { xAxis, series } = distributionBoxTodayData.reduce((result, { timeFlag, ia, ib, ic, ua, ub, uc, v1, v2, v3, v4, v5 }) => {
-      const { xAxis, series } = result;
-      xAxis.push(timeFlag);
+    const { unit, normalMax } = filteredParams.reduce((a, b) => a.normalMax < b.normalMax || isNaN(b.normalMax) ? a : b, {});
+    const series = distributionBoxTodayData.reduce((result, { timeFlag, ia, ib, ic, ua, ub, uc, v1, v2, v3, v4, v5 }) => {
+      const timestamp = +moment(timeFlag, 'HH:mm');
+      let list = [];
       if (activeKey === '漏电电流') {
-        if (series[0]) {
-          series[0].data.push(+v1);
-        } else {
-          series[0] = {
-            name: '漏电电流',
-            type: 'line',
-            data: [+v1],
-            smooth: true,
-          };
-        }
+        list = [{
+          name: '漏电电流',
+          value: v1,
+        }];
       } else if (activeKey === '温度') {
-        if (series[0]) {
-          series[0].data.push(+v2);
-        } else {
-          series[0] = {
-            name: 'A相温度',
-            type: 'line',
-            data: [+v2],
-            smooth: true,
-          };
-        }
-        if (series[1]) {
-          series[1].data.push(+v3);
-        } else {
-          series[1] = {
-            name: 'B相温度',
-            type: 'line',
-            data: [+v3],
-            smooth: true,
-          };
-        }
-        if (series[2]) {
-          series[2].data.push(+v4);
-        } else {
-          series[2] = {
-            name: 'C相温度',
-            type: 'line',
-            data: [+v4],
-            smooth: true,
-          };
-        }
-        if (series[3]) {
-          series[3].data.push(+v5);
-        } else {
-          series[3] = {
-            name: '零线温度',
-            type: 'line',
-            data: [+v5],
-            smooth: true,
-          };
-        }
+        list = [{
+          name: 'A相温度',
+          value: v2,
+        }, {
+          name: 'B相温度',
+          value: v3,
+        }, {
+          name: 'C相温度',
+          value: v4,
+        }, {
+          name: '零线温度',
+          value: v5,
+        }];
       } else if (activeKey === '电流') {
-        if (series[0]) {
-          series[0].data.push(+ia);
-        } else {
-          series[0] = {
-            name: 'A相电流',
-            type: 'line',
-            data: [+ia],
-            smooth: true,
-          };
-        }
-        if (series[1]) {
-          series[1].data.push(+ib);
-        } else {
-          series[1] = {
-            name: 'B相电流',
-            type: 'line',
-            data: [+ib],
-            smooth: true,
-          };
-        }
-        if (series[2]) {
-          series[2].data.push(+ic);
-        } else {
-          series[2] = {
-            name: 'C相电流',
-            type: 'line',
-            data: [+ic],
-            smooth: true,
-          };
-        }
+        list = [{
+          name: 'A相电流',
+          value: ia,
+        }, {
+          name: 'B相电流',
+          value: ib,
+        }, {
+          name: 'C相电流',
+          value: ic,
+        }];
       } else if (activeKey === '电压') {
-        if (series[0]) {
-          series[0].data.push(+ua);
-        } else {
-          series[0] = {
-            name: 'A相电压',
-            type: 'line',
-            data: [+ua],
-            smooth: true,
-          };
-        }
-        if (series[1]) {
-          series[1].data.push(+ub);
-        } else {
-          series[1] = {
-            name: 'B相电压',
-            type: 'line',
-            data: [+ub],
-            smooth: true,
-          };
-        }
-        if (series[2]) {
-          series[2].data.push(+uc);
-        } else {
-          series[2] = {
-            name: 'C相电压',
-            type: 'line',
-            data: [+uc],
-            smooth: true,
-          };
-        }
+        list = [{
+          name: 'A相电压',
+          value: ua,
+        }, {
+          name: 'B相电压',
+          value: ub,
+        }, {
+          name: 'C相电压',
+          value: uc,
+        }];
       }
+      list.forEach(({ name, value }, index) => {
+        if (result[index]) {
+          result[index].data.push({
+            name: timeFlag,
+            value: [
+              timestamp,
+              parseFloat(value),
+            ],
+          });
+        } else {
+          result[index] = {
+            name,
+            type: 'line',
+            data: [{
+              name: timeFlag,
+              value: [
+                timestamp,
+                parseFloat(value),
+              ],
+            }],
+            smooth: true,
+          };
+        }
+      });
       return result;
-    }, { xAxis: [], series: [] });
+    }, []);
     const option = {
       color: ['#f7e68a', '#00a181', '#ff4848', '#00a8ff'],
       tooltip: {
@@ -381,13 +345,11 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
             color: '#556476',
             type: 'dashed',
           },
-          shadowStyle: {
-            color: 'rgba(255, 72, 72, 0.3)',
-          },
         },
+        formatter: (params) => this.renderTooltip(params, filteredParams),
       },
       title: {
-        text: normalMax !== max ? `报警阈值：≥${normalMax}${unit}` : '',
+        text: !isNaN(normalMax) ? `报警阈值：≥${normalMax}${unit}` : '',
         textStyle: {
           color: '#fff',
           fontSize: 14,
@@ -415,16 +377,22 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
         containLabel: true,
       },
       xAxis: {
-        type: 'category',
+        type: 'time',
         boundaryGap: false,
-        data: xAxis,
+        splitNumber: 24,
         axisLine: {
           lineStyle: {
             color: '#1f477a',
           },
         },
+        splitLine:{
+          show: false,
+        },
         axisLabel: {
           color: '#fff',
+          formatter: name => {
+            return moment(name).format('HH:mm');
+          },
         },
       },
       yAxis: {
@@ -450,7 +418,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
     return (
       <Fragment>
         <div className={styles.subTitle}><span>>></span>当天监测数据趋势</div>
-        {xAxis.length > 0 ? (
+        {distributionBoxTodayData.length > 0 ? (
           <ReactEcharts
             className={styles.lineChart}
             option={option}

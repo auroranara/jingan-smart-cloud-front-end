@@ -71,9 +71,9 @@ export default class ElectricalFireMonitoring extends PureComponent {
           axisLine: {
             lineStyle: {
               color: status < 0 ? [[1, '#ccc']] : [
-                normalMin === min && status === 0 ? undefined : [(normalMin - min) / (max - min), '#ff1e00'],
-                [(normalMax - min) / (max - min), '#1e90ff'],
-                normalMax === max && status === 0 ? undefined : [1, '#ff1e00'],
+                !isNaN(normalMin) && [(normalMin - min) / (max - min), '#ff1e00'],
+                !isNaN(normalMax) ? [(normalMax - min) / (max - min), '#1e90ff'] : [1, '#1e90ff'],
+                !isNaN(normalMax) && [1, '#ff1e00'],
               ].filter(v => v),
               width: 15,
             },
@@ -91,7 +91,7 @@ export default class ElectricalFireMonitoring extends PureComponent {
             width: 4,
           },
           detail: {
-            formatter: `{a|${status < 0 ? '--' : value}}\n{b|${name}}`,
+            formatter: `{a|${status < 0 || isNaN(value) ? '--' : value}}\n{b|${name}}`,
             offsetCenter: [0, '65%'],
             rich: {
               a: {
