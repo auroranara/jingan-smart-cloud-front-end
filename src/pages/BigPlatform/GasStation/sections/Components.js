@@ -1,20 +1,26 @@
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import { SetDrawer } from '@/pages/BigPlatform/Safety/Company3/components';
+import CheckWorkOrder from './CheckWorkOrder';
+import CompanyInfo from './CompanyInfo';
+import TrendChart from './TrendChart';
+import WaterItemDrawer from './WaterItemDrawer';
+import WaterSystem from './WaterSystem';
+import WaterSystemDrawer from './WaterSystemDrawer';
 
 export {
   AlarmDynamicDrawer,
   AlarmDynamicMsgDrawer,
   CheckDrawer,
   CheckingDrawer,
-  CheckWorkOrder,
-  CompanyInfo,
+  // CheckWorkOrder,
+  // CompanyInfo,
   CurrentHiddenDanger,
   DrawerHiddenDangerDetail,
   DrawerOfFireAlarm,
   ElectricityDrawer,
   ElectricityMonitor,
   FaultMessageDrawer,
-  FireDevice,
+  // FireDevice,
   FireDevice1,
   FireFlowDrawer,
   FireMonitorFlowDrawer,
@@ -42,11 +48,17 @@ export {
   TabSection,
   VideoSurveillance,
   WaterMonitor,
-  WaterSystemDrawer,
+  // WaterSystemDrawer,
   WorkOrderDrawer,
 } from '@/pages/BigPlatform/NewUnitFireControl/Section/Components';
 
 export {
+  CheckWorkOrder,
+  CompanyInfo,
   NewVideoPlay,
   SetDrawer,
+  TrendChart,
+  WaterItemDrawer,
+  WaterSystem,
+  WaterSystemDrawer,
 }

@@ -1,3 +1,6 @@
+import WaterTank from './WaterTank';
+import PolarBar from './PolarBar';
+
 export {
   ChartGauge,
   CheckCard,
@@ -20,3 +23,8 @@ export {
 export { default as ElectricalFireMonitoring } from './ElectricalFireMonitoring';
 export { default as ElectricalFireMonitoringDrawer } from './ElectricalFireMonitoringDrawer';
 export { default as ElectricalFireMonitoringDetailDrawer } from './ElectricalFireMonitoringDetailDrawer';
+
+export {
+  PolarBar,
+  WaterTank,
+}
