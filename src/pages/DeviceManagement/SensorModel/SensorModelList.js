@@ -201,6 +201,7 @@ export default class SensorModelList extends PureComponent {
     resetFields()
     this.handleQuery()
     this.fetchMonitoringTypeDict()
+    this.fetchAllUnsetModelList()
     // this.fetchSensorBrandDict()
     // this.fetchSensorTypeDict()
   }
