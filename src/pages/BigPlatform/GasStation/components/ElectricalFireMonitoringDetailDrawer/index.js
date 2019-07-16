@@ -1,8 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
+import { Spin } from 'antd';
 import { connect } from 'dva';
 import classNames from 'classnames';
 import ReactEcharts from "echarts-for-react";
 import CustomDrawer from '@/jingan-components/CustomDrawer';
+import CustomSelect from '@/jingan-components/CustomSelect';
 import styles from './index.less';
 
 const STATE = {
@@ -148,7 +150,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
     });
   }
 
-  handleSelectChange(activeType) {
+  handleSelectChange = (activeType) => {
     this.setState({
       activeType,
       countLoading: true,
@@ -160,6 +162,84 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
     });
   }
 
+  /* 历史报警统计 */
+  renderHistoricalAlarmCount() {
+    const {
+      gasStation: {
+        distributionBoxAlarmCount=[],
+      }={},
+    } = this.props;
+    const { activeType, countLoading } = this.state;
+    const seriesData = distributionBoxAlarmCount.map(({ desc, value }) => ({ name: desc, value }));
+    const option = {
+      color: ['#ef6877', '#00baff', '#f6b54e', '#20c0ce', '#448ad0', '#B6A876', '#CA68EF', '#5DAD72', '#847be6', '#bcbcbd', '#D06244'],
+      tooltip: {
+        trigger: 'item',
+        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+        formatter: "{b}: {c} ({d}%)",
+      },
+      title: {
+        text: seriesData.reduce((total, { value }) => total + value, 0),
+        textStyle: {
+          color: '#fff',
+          fontSize: 30,
+          fontWeight: 'normal',
+          lineHeight: 30,
+        },
+        left: 'center',
+        top: '35%',
+      },
+      legend: {
+        left: 'center',
+        icon: 'circle',
+        bottom: 0,
+        textStyle: {
+          color: '#fff',
+          fontSize: 14,
+          lineHeight: 14,
+        },
+      },
+      series: [
+        {
+          type: 'pie',
+          center: ['50%', '40%'],
+          radius: ['50%', '70%'],
+          avoidLabelOverlap: false,
+          label: {
+            show: false,
+          },
+          data: seriesData,
+        },
+      ],
+    };
+
+    return (
+      <Fragment>
+        <div className={styles.alarmCountTitleWrapper}>
+          <div className={styles.alarmCountTitle}>历史报警统计</div>
+          <CustomSelect
+            className={styles.select}
+            data={TYPES}
+            value={activeType}
+            onChange={this.handleSelectChange}
+          />
+        </div>
+        <Spin spinning={countLoading}>
+          {seriesData.length > 0 ? (
+            <div className={styles.pieChartWrapper}>
+              <ReactEcharts
+                className={styles.pieChart}
+                option={option}
+                key={activeType}
+              />
+            </div>
+          ) : <div className={styles.emptyData}>暂无数据</div>}
+        </Spin>
+      </Fragment>
+    );
+  }
+
+  /* 当天监测数据趋势 */
   renderTodayMonitoringDataTrend() {
     const {
       gasStation: {
@@ -169,10 +249,9 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
     } = this.props;
     const { activeKey } = this.state;
     const { params=[] } = value || {};
-    const { unit, normalMax, max } = params
-    .filter(({ name }) => name === activeKey || name.includes(activeKey) && name !== '漏电电流')
-    .reduce((a, b) => a.normalMax < b.normalMax ? a : b, {});
-    const { xAxis, series } = distributionBoxTodayData.reduce((result, { timeFlag, ia, ib, ic, id, ua, ub, uc, v1, v2, v3, v4, v5 }) => {
+    const filteredParams = params.filter(({ name }) => name === activeKey || name.includes(activeKey) && name !== '漏电电流');
+    const { unit, normalMax, max } = filteredParams.reduce((a, b) => a.normalMax < b.normalMax ? a : b, {});
+    const { xAxis, series } = distributionBoxTodayData.reduce((result, { timeFlag, ia, ib, ic, ua, ub, uc, v1, v2, v3, v4, v5 }) => {
       const { xAxis, series } = result;
       xAxis.push(timeFlag);
       if (activeKey === '漏电电流') {
@@ -289,7 +368,6 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
             smooth: true,
           };
         }
-
       }
       return result;
     }, { xAxis: [], series: [] });
@@ -298,6 +376,15 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       tooltip: {
         trigger: 'axis',
         backgroundColor: 'rgba(0,0,0,0.75)',
+        axisPointer: {
+          lineStyle: {
+            color: '#556476',
+            type: 'dashed',
+          },
+          shadowStyle: {
+            color: 'rgba(255, 72, 72, 0.3)',
+          },
+        },
       },
       title: {
         text: normalMax !== max ? `报警阈值：≥${normalMax}${unit}` : '',
@@ -322,7 +409,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       },
       grid: {
         top: 20,
-        left: 10,
+        left: 20,
         right: 20,
         bottom: 30,
         containLabel: true,
@@ -363,10 +450,15 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
     return (
       <Fragment>
         <div className={styles.subTitle}><span>>></span>当天监测数据趋势</div>
-        <ReactEcharts
-          className={styles.lineChart}
-          option={option}
-        />
+        {xAxis.length > 0 ? (
+          <ReactEcharts
+            className={styles.lineChart}
+            option={option}
+            key={activeKey}
+          />
+        ) : (
+          <div className={styles.emptyData}>暂无数据</div>
+        )}
       </Fragment>
     );
   }
@@ -392,7 +484,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
               />
             </div>
           )) : (
-            <div style={{ textAlign: 'center' }}>暂无数据</div>
+            <div className={styles.emptyData}>暂无数据</div>
           )}
         </div>
       </Fragment>
@@ -462,6 +554,8 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
           {this.renderTabs()}
           {this.renderRealTimeMonitoringData()}
           {this.renderTodayMonitoringDataTrend()}
+          <div className={styles.splitLine} />
+          {this.renderHistoricalAlarmCount()}
         </div>
       </CustomDrawer>
     );

@@ -100,14 +100,48 @@
 .realTimeWrapper {
   flex: none;
   width: 50%;
-  height: 14em;
 }
 .echarts {
-  height: 100% !important;
+  height: 200px !important;
 }
 /* 当天监测数据 */
 .lineChart {
   height: 200px !important;
+}
+/* 分割线 */
+.splitLine {
+  margin: 1em 0;
+  height: 2px;
+  background-color: rgb(76, 206, 240);
+}
+/* 历史报警统计 */
+.alarmCountTitleWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.alarmCountTitle {
+  padding-left: 0.75em;
+  line-height: 1;
+  border-left: 3px solid #0ff;
+}
+.select {
+  :global {
+    .ant-select-selection {
+      border-radius: 5px !important;
+    }
+  }
+}
+.pieChartWrapper {
+  margin: 0 auto;
+  width: 80%;
+}
+.pieChart {
+  height: 300px !important;
+}
+.emptyData {
+  padding: 1em;
+  text-align: center;
 }
 
 @media screen and (max-width: 1599px) {
