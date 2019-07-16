@@ -226,14 +226,14 @@ export async function fetchModelCount(params) {
  * 根据监测类型获取型号代码列表（对象包含描述和补充描述）,筛选掉已添加
  */
 export async function fetchUnsetModelList(params) {
-  return request(`/acloud_new/deviceInfo/model/getunsetmodellist.json?${stringify(params)}`)
+  return request(`/acloud_new/v2/deviceInfo/model/getunsetmodellist.json?${stringify(params)}`)
 }
 
 /**
  * 根据监测类型获取型号代码列表（对象包含描述和补充描述）
  */
 export async function fetchAllUnsetModelList(params) {
-  return request(`/acloud_new/deviceInfo/model/getallmodellist.json?${stringify(params)}`)
+  return request(`/acloud_new/v2/deviceInfo/model/getallmodellist.json?${stringify(params)}`)
 }
 
 /**

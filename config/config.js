@@ -40,7 +40,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.cfm}`,
+      target: `http://${hosts.ly}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -50,7 +50,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.cfm}`,
+      target: `http://${hosts.ly}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
