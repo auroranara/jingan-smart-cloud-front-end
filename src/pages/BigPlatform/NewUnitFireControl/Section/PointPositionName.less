@@ -3,9 +3,9 @@
 
 .container {
   height: 100%;
-  overflow: auto;
-  margin-right: -16px;
-  padding-right: 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 
   :global {
     .ant-input-search.ant-input-search-enter-button>.ant-input {
@@ -65,11 +65,54 @@
       color: #fff;
     }
   }
+
+  .tabsWrapper {
+    width: 100%;
+    border-bottom: 1px solid #054795;
+    position: relative;
+    display: flex;
+    margin-bottom: 10px;
+
+    .tab {
+      height: 40px;
+      padding: 0 12px;
+      line-height: 40px;
+      text-align: center;
+      color: #3e82c7;
+      background-color: #043873;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+
+    .active {
+      .tab;
+      color: #fff;
+      background-color: #054795;
+    }
+  }
+
+  .scrollWrapper {
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin-right: -16px;
+    padding-right: 16px;
+
+    .tip {
+      color: #fff;
+      line-height: 30px;
+      margin-bottom: 8px;
+      padding-left: 8px;
+    }
+  }
 }
 
 .circleContainer {
   height: 90px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  padding: 0 30px;
 }
 
 .currentTitle {
@@ -81,17 +124,39 @@
   font-size: 14px;
 }
 
-.statusIcon {
-  height: 100%;
-}
-
 .icon {
   width: 90px;
   height: 90px;
-  position: absolute;
-  left: 0;
+  position: relative;
+  margin: 0 auto;
+  border: 1px solid #0ff;
+  border-radius: 50%;
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-size: 40%;
+  background-position: center 30%;
+
+  .iconTitle {
+    width: 100%;
+    position: absolute;
+    top: 65%;
+    text-align: center;
+  }
+
+  .abnormal {
+    .iconTitle;
+    color: #F83329;
+  }
+
+  .normal {
+    .iconTitle;
+    color: #fff;
+  }
+
+  .overTime {
+    .iconTitle;
+    color: #F83329;
+    top: 15%;
+  }
 }
 
 .cardsTitle {
@@ -145,20 +210,6 @@
 
 .resultError {
   color: #ff4848;
-}
-
-.hasDangerTitle {
-  color: rgb(255, 72, 72);
-  position: absolute;
-  top: 65%;
-  left: 27%;
-}
-
-.noDangerTitle {
-  color: #0ff;
-  position: absolute;
-  top: 65%;
-  left: 27%;
 }
 
 .card {

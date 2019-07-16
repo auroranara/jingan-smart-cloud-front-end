@@ -7,20 +7,23 @@
   .legendContainer {
     color: #fff;
     position: absolute;
-    bottom: 0;
+    bottom: 2px;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     font-size: 12px;
+    padding: 0 10%;
 
     .legend {
       cursor: pointer;
+      flex: 1;
+
       .circle {
         display: inline-block;
-        border-radius: 50%;
-        width: 14px;
+        // border-radius: 50%;
+        width: 5px;
         height: 14px;
         margin-right: 6px;
         position: relative;
@@ -35,6 +38,27 @@
       &+.legend {
         margin-left: 8px;
       }
+    }
+  }
+
+  .extra {
+    position: absolute;
+    right: 5px;
+    top: 2px;
+    color: #fff;
+    cursor: pointer;
+    padding: 0 8px;
+    border-radius: 5px;
+
+    .number {
+      color: #0ff;
+      font-size: 22px;
+      display: inline-block;
+      margin-left: 10px;
+    }
+
+    &:hover {
+      background-color: rgba(21, 74, 144, 0.7);
     }
   }
 }

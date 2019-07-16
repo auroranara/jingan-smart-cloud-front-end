@@ -249,7 +249,7 @@ function OrderCard(props) {
             showWorkOrderDetail(
               param,
               workOrderType,
-              type,
+              type < 0 ? 1 : type,
               workOrderStatus === 0 ? occurData : undefined,
               cameraMessage || []
             );

@@ -109,11 +109,11 @@ export default class HiddenDangerCard extends BigPlatformCard {
     switch (+status) {
       case 1:
       case 2:
-        label = '未超期';
+        label = '未超时';
         backgroundColor = '#0967D3';
         break;
       case 7:
-        label = '已超期';
+        label = '已超时';
         backgroundColor = '#FF4848';
         break;
       case 3:
