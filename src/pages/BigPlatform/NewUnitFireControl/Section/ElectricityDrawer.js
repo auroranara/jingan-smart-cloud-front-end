@@ -112,8 +112,6 @@ export default class ElectricityDrawer extends PureComponent {
       const index = CHARTS_LABELS[labelIndex].indexOf(desc);
       if (index > -1) {
         const limit = getLimit(deviceConfig, code);
-        console.log('limit', limit);
-
         list[index] = {
           desc,
           value,

@@ -1,0 +1,38 @@
+.tooltip {
+  :global {
+    .ant-tooltip-arrow {
+      opacity: 0;
+    }
+  }
+}
+
+.multipleValue {
+  &>:nth-child(n+2) {
+    margin-left: 0.5em;
+  }
+}
+
+.labelContainer {
+  color: #0ff !important;
+  width: 5em;
+}
+
+.red {
+  color: #F83329;
+}
+
+.label {
+  text-align: center;
+  border: 1px solid #026F96;
+  border-radius: 5px;
+  padding: 2px 6px;
+  cursor: pointer;
+
+  &+.label {
+    margin-left: 6px;
+  }
+
+  &:hover {
+    box-shadow: 0px 0px 3px 1px rgba(0, 255, 255, 0.7);
+  }
+}

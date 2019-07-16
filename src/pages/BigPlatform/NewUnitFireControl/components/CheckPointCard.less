@@ -1,0 +1,59 @@
+.tooltip {
+  :global {
+    .ant-tooltip-arrow {
+      opacity: 0;
+    }
+  }
+}
+
+.multipleValue {
+  &>:nth-child(n+2) {
+    margin-left: 0.5em;
+  }
+}
+
+.labelContainer {
+  color: #0ff !important;
+  width: 7em;
+}
+
+.level {
+  .rect {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    position: relative;
+    top: 2px;
+    margin-left: 10px;
+  }
+}
+
+.checkCycle {
+  display: inline-block;
+  color: #AEAEAE;
+  margin-left: 10px;
+}
+
+.lastCheckTime {
+  border-top: 1px solid #036E96;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.red {
+  color: #F83329;
+}
+
+.status {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  text-align: center;
+  transform: translate(50%) translate(-10px, 10px) rotate(45deg);
+  transform-origin: 50% 0;
+  color: #fff;
+  background-color: #ff4848;
+  font-size: 12px;
+  line-height: 24px;
+}

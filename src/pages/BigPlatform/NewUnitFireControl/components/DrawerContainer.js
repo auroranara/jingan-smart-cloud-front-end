@@ -4,13 +4,32 @@ import { Col, Drawer, Icon, Row } from 'antd';
 import styles from './DrawerContainer.less';
 
 const COL_STYLE = { height: '100%' };
-const ICON_STYLE = { position: 'absolute', right: 10, top: 10, fontSize: 18, color: '#FFF', cursor: 'pointer' };
+const ICON_STYLE = {
+  position: 'absolute',
+  right: 10,
+  top: 10,
+  fontSize: 18,
+  color: '#FFF',
+  cursor: 'pointer',
+};
 const WIDTH = 960;
 
 export default class DrawerContainer extends PureComponent {
   render() {
-    const { title, width, visible, onClose, left=null, right=null, id, style,leftParStyle={}, ...restProps } = this.props;
-
+    const {
+      title,
+      width,
+      visible,
+      onClose,
+      left = null,
+      right = null,
+      id,
+      style,
+      leftParStyle = {},
+      rowStyle,
+      ...restProps
+    } = this.props;
+    const hasTitle = !!title;
     // right不存在时，默认全部渲染left
     return (
       <Drawer
@@ -28,8 +47,8 @@ export default class DrawerContainer extends PureComponent {
             <span className={styles.rect} />
             {title}
           </h3>
-          <Row style={{ height: 'calc(100% - 51px)' }}>
-            <Col span={right ? 12 : 24} style={{...COL_STYLE,...leftParStyle}}>
+          <Row style={{ height: hasTitle ? 'calc(100% - 51px)' : '100%', ...rowStyle }}>
+            <Col span={right ? 12 : 24} style={{ ...COL_STYLE, ...leftParStyle }}>
               {left}
             </Col>
             {right && (

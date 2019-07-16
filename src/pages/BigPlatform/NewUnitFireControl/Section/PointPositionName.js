@@ -1,30 +1,19 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Col, Table } from 'antd';
+import { Col } from 'antd';
 import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
-import ImageCard from '@/components/ImageCard';
+import LoadMore from '@/components/LoadMore';
 import Lightbox from 'react-images';
 import styles from './PointPositionName.less';
 import HiddenDangerCard from '@/jingan-components/HiddenDangerCard';
 import DrawerContainer from '../components/DrawerContainer';
-// import PointError from '../imgs/hasDanger.png';
-// import lastCheckPoint from '../imgs/lastCheckPoint.png';
-// import normalCheckPoint from '../imgs/normalCheckPoint.png';
-// import waitCheckPoint from '../imgs/waitCheckPoint.png';
-import hasDanger from '../imgs/hasDanger.png';
-import noDanger from '../imgs/noDanger.png';
+import CheckedCard from '../components/CheckedCard';
+import NoData from '../components/NoData';
 
-const isVague = false;
-function nameToVague(str) {
-  let newStr = '';
-  if (str && str.length === 1) return str;
-  else if (str && str.length === 2) {
-    newStr = str.substr(0, 1) + '*';
-  } else if (str && str.length > 2) {
-    newStr = str.substr(0, 1) + '*' + str.substr(-1);
-  } else return str;
-  return newStr;
-}
+import hasDanger from '../imgs/icon-hasDanger.png';
+import noDanger from '../imgs/icon-noDanger.png';
+import checkingImg from '../imgs/icon-checking.png';
+import checkedImg from '../imgs/icon-checked.png';
 
 const FIELDNAMES = {
   status: 'status', // 隐患状态
@@ -43,63 +32,19 @@ const FIELDNAMES = {
   designatedReviewPerson: 'review_user_name', // 指定复查人
 };
 
-const columns = [
-  {
-    title: '巡查日期',
-    dataIndex: 'check_date',
-    key: 'check_date',
-    align: 'center',
-    render: time => {
-      return moment(time).format('YYYY-MM-DD');
-    },
-  },
-  {
-    title: '巡查人',
-    dataIndex: 'check_user_names',
-    key: 'check_user_names',
-    align: 'center',
-    render: val => {
-      return (
-        <Ellipsis length={5} tooltip>
-          {isVague ? nameToVague(val) : val}
-        </Ellipsis>
-      );
-    },
-  },
-  {
-    title: '巡查状态',
-    dataIndex: 'status',
-    key: 'status',
-    align: 'center',
-    render: val => {
-      return +val === 1 ? <span>正常</span> : <span style={{ color: '#ff4848' }}>异常</span>;
-    },
-  },
-  {
-    title: '处理结果',
-    dataIndex: 'data',
-    key: 'data',
-    align: 'center',
-    width: '50',
-    render: val => {
-      const { finish, overTime, rectifyNum, reviewNum } = val;
-      const resultStatus = ['已超期', '待整改', '待复查', '已关闭'];
-      const nums = [overTime, rectifyNum, reviewNum, finish];
-      return (
-        <div className={+val.status === 1 ? null : styles.resultError}>
-          <Ellipsis length={5} tooltip>
-            {resultStatus
-              .map((data, index) => {
-                return nums[index] ? `${data} ${nums[index]}` : '';
-              })
-              .filter(data => data)
-              .join('/')}
-          </Ellipsis>
-        </div>
-      );
-    },
-  },
-];
+const TABS = ['当前隐患', '巡查记录'];
+
+const STATUS = ['已检查', '已检查', '待检查', '已超期'];
+
+const getOffsetDays = ({ nextCheckDate }) => {
+  return nextCheckDate
+    ? Math.abs(
+        moment()
+          .startOf('day')
+          .diff(moment(+nextCheckDate), 'days')
+      )
+    : '';
+};
 
 export default class PointPositionName extends PureComponent {
   constructor(props) {
@@ -109,6 +54,7 @@ export default class PointPositionName extends PureComponent {
       images: [],
       currentImage: 0,
       lightBoxVisible: false,
+      tabActive: 0,
     };
   }
 
@@ -173,25 +119,39 @@ export default class PointPositionName extends PureComponent {
     });
   };
 
-  render() {
+  handleCloseDrawer = () => {
+    const { onClose } = this.props;
+    setTimeout(() => {
+      this.setState({ tabActive: 0 });
+    }, 200);
+    onClose();
+  };
+
+  handleTabClick = index => {
+    document.getElementById('checkScroll').scrollTop = 0;
+    this.setState({ tabActive: index });
+  };
+
+  renderTabs = (numbers = []) => {
+    const { tabActive } = this.state;
+    return TABS.map((item, index) => (
+      <div
+        key={index}
+        className={tabActive === index ? styles.active : styles.tab}
+        onClick={() => this.handleTabClick(index)}
+      >
+        {item}({numbers[index] || 0})
+      </div>
+    ));
+  };
+
+  renderHiddenDanger = () => {
     const {
-      visible,
-      pointRecordLists,
-      checkAbnormal,
-      count,
-      checkStatus,
       currentHiddenDanger: { list = [] },
       checkItemId,
-      checkPointName,
       handlePointDangerDetail,
-      ...restProps
     } = this.props;
-    const { images, currentImage, lightBoxVisible } = this.state;
-
     const dangerList = list.filter(item => item.item_id === checkItemId);
-
-    const currentStatus = dangerList.length > 0 ? hasDanger : noDanger;
-
     const cards = dangerList.map((item, index) => {
       const { hiddenDangerRecordDto = [{ fileWebUrl: '' }] } = item;
       const newItem = {
@@ -209,51 +169,136 @@ export default class PointPositionName extends PureComponent {
         />
       );
     });
+    return dangerList.length > 0 ? (
+      <Fragment>
+        <div className={styles.tip}>
+          共有
+          {dangerList.length}
+          条隐患，其中已超时
+          {dangerList.filter(item => +item.status === 7).length}
+          条、未超时
+          {dangerList.filter(item => +item.status === 2).length}
+          条、待复查
+          {dangerList.filter(item => +item.status === 3).length}条
+        </div>
+        <div className={styles.cards}>
+          <div className={styles.cardsMain}>{cards}</div>
+        </div>
+      </Fragment>
+    ) : (
+      <NoData />
+    );
+  };
+
+  renderChecks = () => {
+    const { pointRecordLists, checkAbnormal, count, handleCheckDangerDetail } = this.props;
+    return pointRecordLists.length > 0 ? (
+      <Fragment>
+        <div className={styles.tip}>
+          共巡查
+          {count}
+          次，其中异常
+          {checkAbnormal}次
+        </div>
+        <div className={styles.cards}>
+          {pointRecordLists.map(item => (
+            <CheckedCard
+              key={item.check_id}
+              className={styles.card}
+              data={item}
+              fieldNames={{
+                id: 'check_id', // 主键
+                checkDate: 'check_date', // 巡查日期
+                source: 'report_source', // 巡查来源
+                checkusers: 'check_user_names', // 巡查人员
+                status: 'status', // 巡查状态
+                overTimeId: ({ data: { overTimeId } }) => overTimeId, // 已超时
+                rectifyId: ({ data: { rectifyId } }) => rectifyId, // 未超时
+                reviewId: ({ data: { reviewId } }) => reviewId, // 待复查
+                finishId: ({ data: { finishId } }) => finishId, // 已关闭
+                hiddenDangerClick: () => handleCheckDangerDetail, // 点击隐患数量
+              }}
+            />
+          ))}
+        </div>
+      </Fragment>
+    ) : (
+      <NoData />
+    );
+  };
+
+  render() {
+    const {
+      visible,
+      pointRecordLists,
+      checkAbnormal,
+      count,
+      checkStatus,
+      currentHiddenDanger: { list = [] },
+      checkItemId,
+      checkPointName,
+      points: { pointList = [] } = {},
+      onClose,
+      ...restProps
+    } = this.props;
+    const { images, currentImage, lightBoxVisible, tabActive } = this.state;
+
+    const dangerList = list.filter(item => item.item_id === checkItemId);
+
+    const dangerImg = dangerList.length > 0 ? hasDanger : noDanger;
+
+    const pointInfo = pointList.find(item => item.item_id === checkItemId) || {};
+
+    const pointStatus = pointInfo.status;
 
     const left = (
       <div className={styles.container}>
         <div className={styles.circleContainer}>
-          <Col span={10} className={styles.currentTitle}>
-            <span>当前状态</span>
-          </Col>
-          <Col span={14} className={styles.statusIcon}>
+          <Col span={12}>
             <div
               className={styles.icon}
               style={{
-                backgroundImage: `url(${currentStatus})`,
+                backgroundImage: `url(${dangerImg})`,
+                borderColor: dangerList.length > 0 ? '#F83329' : '#0ff',
               }}
             >
               {dangerList.length > 0 ? (
-                <span className={styles.hasDangerTitle}>有隐患</span>
+                <div className={styles.abnormal}>有隐患</div>
               ) : (
-                <span className={styles.noDangerTitle}>无隐患</span>
+                <div className={styles.normal}>无隐患</div>
               )}
+            </div>
+          </Col>
+          <Col span={12}>
+            <div
+              className={styles.icon}
+              style={{
+                backgroundImage:
+                  +pointStatus === 4
+                    ? 'none'
+                    : `url(${+pointStatus === 3 ? checkingImg : checkedImg})`,
+                borderColor: +pointStatus === 4 ? '#F83329' : '#0ff',
+              }}
+            >
+              {+pointStatus === 4 && (
+                <div className={styles.overTime}>
+                  <span style={{ fontSize: '30px' }}>{getOffsetDays(pointInfo)}</span>天
+                </div>
+              )}
+              <div className={+pointStatus === 4 ? styles.abnormal : styles.normal}>
+                {STATUS[pointStatus - 1]}
+              </div>
             </div>
           </Col>
         </div>
 
-        {dangerList.length > 0 && (
-          <div className={styles.cardsTitle}>
-            <p className={styles.titleP}>
-              当前隐患
-              <span className={styles.titleSpan}>({dangerList.length})</span>
-            </p>
-          </div>
-        )}
+        <div className={styles.tabsWrapper}>{this.renderTabs([dangerList.length, count])}</div>
 
-        {dangerList.length > 0 && (
-          <div className={styles.cards}>
-            <div className={styles.cardsMain}>
-              {dangerList.length ? (
-                cards
-              ) : (
-                <div style={{ textAlign: 'center', color: '#fff' }}>{'暂无数据'}</div>
-              )}
-            </div>
-          </div>
-        )}
+        <div className={styles.scrollWrapper} id={'checkScroll'}>
+          {tabActive === 0 ? this.renderHiddenDanger() : this.renderChecks()}
+        </div>
 
-        <div className={styles.recordTitle}>
+        {/* <div className={styles.recordTitle}>
           <p className={styles.titleP}>
             巡查记录
             <span className={styles.titleSpan}>
@@ -269,20 +314,21 @@ export default class PointPositionName extends PureComponent {
           <div className={styles.recordTable}>
             <Table rowKey="check_id" columns={columns} dataSource={pointRecordLists} pageSize="5" />
           </div>
-        </div>
+        </div> */}
       </div>
     );
 
     return (
       <Fragment>
         <DrawerContainer
-          title={checkPointName}
+          title={`检查点——${checkPointName}`}
           destroyOnClose={true}
           zIndex={1050}
-          width={485}
+          width={535}
           visible={visible}
           left={left}
           placement="right"
+          onClose={this.handleCloseDrawer}
           {...restProps}
         />
         <Lightbox

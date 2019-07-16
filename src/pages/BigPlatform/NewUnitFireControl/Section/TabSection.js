@@ -55,11 +55,12 @@ export default class TabSection extends PureComponent {
                 style={{
                   backgroundImage: `url(${img})`,
                   zIndex: index === active ? 66 : -index,
+                  cursor: tabs.length > 1 ? 'pointer' : 'text',
                   ...titleStyle,
                 }}
                 onClick={() => {
                   this.setState({ active: index });
-                  onClick && onClick();
+                  onClick && tabs.length > 1 && onClick();
                 }}
                 key={index}
               >

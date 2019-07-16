@@ -22,7 +22,8 @@ export default function SwitchHead(props) {
 
   return (
     <div className={styles.container} {...restProps}>
-      {`${title}${INDEXES[index]}`}
+      {/* {`${title}${INDEXES[index]}`} */}
+      {`${title}${index+1}`}
       <span className={styles.leftLine} style={{ backgroundImage: `url(${leftLine})` }} />
       <span className={styles.rightLine} style={{ backgroundImage: `url(${rightLine})` }} />
       <Icon
