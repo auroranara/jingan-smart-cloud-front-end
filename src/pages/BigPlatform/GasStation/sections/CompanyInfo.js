@@ -28,6 +28,7 @@ export default class CompanyInfo extends PureComponent {
     return (
       <CustomSection
         title="基本信息"
+        className={styles.container}
       >
         <div className={styles.top}>
           <div className={styles.topLeft}>
