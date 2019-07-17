@@ -45,11 +45,11 @@ function formatDistributionBoxClassification (list) {
         name: desc,
         unit,
         code,
-        value: +value || 0,
-        min: +minValue || 0,
-        max: +maxValue || max,
-        normalMin: +normalLower || 0,
-        normalMax: +normalUpper || max,
+        value: parseFloat(value),
+        min: parseFloat(minValue) || 0,
+        max: parseFloat(maxValue) || max,
+        normalMin: parseFloat(normalLower),
+        normalMax: parseFloat(normalUpper),
         status: s,
         updateTime,
       });
@@ -79,6 +79,20 @@ function formatDistributionBoxClassification (list) {
     normal: [],
   });
 }
+
+const PARAMS_SORT = {
+  漏电电流: 1,
+  A相温度: 2,
+  B相温度: 3,
+  C相温度: 4,
+  零线温度: 5,
+  A相电流: 6,
+  B相电流: 7,
+  C相电流: 8,
+  A相电压: 9,
+  B相电压: 10,
+  C相电压: 11,
+};
 
 
 export default {
@@ -126,7 +140,7 @@ export default {
       const response = yield call(getDistributionBoxAlarmCount, payload);
       const { code=500, data } = response || {};
       if (code === 200) {
-        const distributionBoxAlarmCount = data && data.list || [];
+        const distributionBoxAlarmCount = data && data.list ? data.list.filter((a) => PARAMS_SORT[a.desc]).sort((a, b) => PARAMS_SORT[a.desc] - PARAMS_SORT[b.desc]) : [];
         yield put({
           type: 'save',
           payload: {

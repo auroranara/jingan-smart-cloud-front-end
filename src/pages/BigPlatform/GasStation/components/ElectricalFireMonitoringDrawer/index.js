@@ -94,7 +94,7 @@ export default class ElectricalFireMonitoringDrawer extends PureComponent {
       style = { borderColor: '#f83329' };
       let num = 0;
       for (let i = 0; i<params.length && num < 2; i++) {
-        const { name, value, unit, normalMin, normalMax, status } = params[i]; // 这里要改大于等于
+        const { name, value, unit, normalMin, normalMax, status } = params[i];
         if (status > 0) {
           rows.push({
             key: name,
@@ -118,7 +118,7 @@ export default class ElectricalFireMonitoringDrawer extends PureComponent {
         const { name, value, unit } = params[i];
         rows.push({
           key: name,
-          value: `${name}：${value}${unit}`,
+          value: `${name}：${isNaN(value) ? '--' : `${value}${unit}`}`,
           style: getParamStyle(name),
         });
       }
