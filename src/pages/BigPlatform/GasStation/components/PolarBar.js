@@ -10,12 +10,11 @@ export default class PolarBar extends PureComponent {
   chart = null;
 
   chartCallback = chart => {
-    const { handleClick, lists } = this.props;
-    this.chart = chart;
     chart.on('click', params => {
-      const index = params.dataIndex;
-      const { type, index: i } = lists[index];
-      handleClick(i, type);
+      const { handleClick, lists } = this.props;
+      const { dataIndex, componentIndex } = params;
+      const { type, index } = lists[dataIndex];
+      handleClick(index, type, componentIndex);
     });
   }
 
@@ -32,7 +31,7 @@ export default class PolarBar extends PureComponent {
         max: 100,
         interval: 5,
         axisLine: { lineStyle: { color: 'rgb(112,136,158)' } },
-        axisLabel: { color: 'rgb(112,136,158)' },
+        axisLabel: { show: false, color: 'rgb(112,136,158)' },
         splitLine: { lineStyle: { color: 'rgb(34,67,110)' } },
       },
       radiusAxis: {

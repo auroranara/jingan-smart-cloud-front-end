@@ -121,11 +121,10 @@
   height: 135px;
   display: flex;
   justify-content: center;
-  align-items: center;
   color: #4f678d;
 }
 
-.col {
+.tankContainer {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -133,4 +132,30 @@
 
 .tank {
   cursor: pointer;
+  position: relative;
+  left: 45px;
+}
+
+.name, .location {
+  text-align: center;
+  margin: 0;
+}
+
+.name {
+  color: #FFF;
+}
+
+.location {
+  color: rgb(159, 159, 159);
+}
+
+.locationIcon {
+  width: 16px;
+  height: 18px;
+  display: inline-block;
+  background-image: url(../imgs/location.png);
+  background-size: 100% 100%;
+  margin-right: 5px;
+  position: relative;
+  top: 4px;
 }

@@ -13,10 +13,11 @@ export default class CompanyInfo extends PureComponent {
       handleViewCurrentDanger,
       handleCheckDrawer,
       model: {
+        checkCount: { all, overTime },
         companyMessage: {
-          companyMessage: { companyName = '', countCheckItem = 0 },
+          companyMessage: { companyName = '' },
         },
-        currentHiddenDanger: { totalNum },
+        currentHiddenDanger: { overRectifyNum, totalNum },
         maintenanceCompany: {
           PrincipalName = '', //安全管理员
           PrincipalPhone = '',
@@ -75,7 +76,7 @@ export default class CompanyInfo extends PureComponent {
               <div className={styles.bottomItemIcon} style={{ backgroundImage: `url(${iconCheck})` }} />
               <div className={styles.bottomItemRight}>
                 <div className={styles.bottomItemLabel}>检查点</div>
-                  <div className={styles.bottomItemValue}><span className={styles.bottomItemValueAlarm}>{3}</span>/{countCheckItem}</div>
+                  <div className={styles.bottomItemValue}><span className={styles.bottomItemValueAlarm}>{overTime}</span>/{all}</div>
               </div>
             </div>
           </Tooltip>
@@ -103,7 +104,7 @@ export default class CompanyInfo extends PureComponent {
               <div className={styles.bottomItemIcon} style={{ backgroundImage: `url(${iconHd})` }} />
               <div className={styles.bottomItemRight}>
                 <div className={styles.bottomItemLabel}>当前隐患</div>
-                  <div className={styles.bottomItemValue}><span className={styles.bottomItemValueAlarm}>{3}</span>/{totalNum}</div>
+                  <div className={styles.bottomItemValue}><span className={styles.bottomItemValueAlarm}>{overRectifyNum}</span>/{totalNum}</div>
               </div>
             </div>
           </Tooltip>

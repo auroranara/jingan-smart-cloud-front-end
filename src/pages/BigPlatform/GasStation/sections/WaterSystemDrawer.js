@@ -1,12 +1,12 @@
-import React, { PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { Col } from 'antd';
 
 import styles from './WaterSystemDrawer.less';
 import { SearchBar } from '@/pages/BigPlatform/NewFireControl/components/Components';
-import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
-import { DrawerContainer, TotalInfo } from '@/pages/BigPlatform/NewUnitFireControl/components/Components';
+// import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
+import { DrawerContainer } from '@/pages/BigPlatform/NewUnitFireControl/components/Components';
 import { cameralogo, noMonitor } from '@/pages/BigPlatform/NewUnitFireControl/imgs/links';
-import { WaterTank } from '../components/Components';
+import { LossCard, TotalInfo, WaterTank } from '../components/Components';
 
 function title(i) {
   switch (i) {
@@ -56,58 +56,58 @@ export default class WaterSystemDrawer extends PureComponent {
     this.setState({ videoVisible: false, videoKeyId: '' });
   };
 
-  renderFireCards = list => {
-    const { searchValue } = this.state;
+  // renderFireCards = list => {
+  //   const { searchValue } = this.state;
 
-    const filterFireList = list.filter(({ deviceName }) => deviceName.includes(searchValue));
-    if (!filterFireList.filter(item => item.deviceDataList.length).length)
-      return <Empty />;
+  //   const filterFireList = list.filter(({ deviceName }) => deviceName.includes(searchValue));
+  //   if (!filterFireList.filter(item => item.deviceDataList.length).length)
+  //     return <Empty />;
 
-    return filterFireList.map(item => {
-      const { deviceDataList, videoList, status: devStatus } = item;
-      const isMending = +devStatus === -1;
-      const isNotIn = !deviceDataList.length;
-      const { area, deviceId, location, deviceName } = item;
-      const [
-        {
-          value,
-          status,
-          unit,
-          deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
-        } = { deviceParamsInfo: {} },
-      ] = deviceDataList;
-      const normalRange = [normalLower, normalUpper];
-      const isGray = isMending || isNotIn || (!isMending && +status < 0);
-      return (
-        <Col span={12} key={deviceId}>
-          <div
-            className={styles.card}
-            key={deviceId}
-            style={{
-              border: isGray
-                ? !isMending && +status < 0
-                  ? '1px solid #9f9f9f'
-                  : '1px solid #f83329'
-                : '1px solid #04fdff',
-            }}
-          >
-            Guage
-          </div>
-        </Col>
-      );
-    });
-  };
+  //   return filterFireList.map(item => {
+  //     const { deviceDataList, videoList, status: devStatus } = item;
+  //     const isMending = +devStatus === -1;
+  //     const isNotIn = !deviceDataList.length;
+  //     const { area, deviceId, location, deviceName } = item;
+  //     const [
+  //       {
+  //         value,
+  //         status,
+  //         unit,
+  //         deviceParamsInfo: { minValue, maxValue, normalUpper, normalLower },
+  //       } = { deviceParamsInfo: {} },
+  //     ] = deviceDataList;
+  //     const normalRange = [normalLower, normalUpper];
+  //     const isGray = isMending || isNotIn || (!isMending && +status < 0);
+  //     return (
+  //       <Col span={12} key={deviceId}>
+  //         <div
+  //           className={styles.card}
+  //           key={deviceId}
+  //           style={{
+  //             border: isGray
+  //               ? !isMending && +status < 0
+  //                 ? '1px solid #9f9f9f'
+  //                 : '1px solid #f83329'
+  //               : '1px solid #04fdff',
+  //           }}
+  //         >
+  //           Guage
+  //         </div>
+  //       </Col>
+  //     );
+  //   });
+  // };
 
-  renderPondCards = list => {
+  renderCards = (list, waterTabItem) => {
     const { showWaterItemDrawer } = this.props;
     const { searchValue } = this.state;
 
-    let pondList = searchValue ? list.filter(({ deviceName }) => deviceName.includes(searchValue)) : list;
-    pondList = pondList.filter(item => item.deviceDataList && item.deviceDataList.length);
+    let cardList = searchValue ? list.filter(({ deviceName }) => deviceName.includes(searchValue)) : list;
+    cardList = cardList.filter(item => item.deviceDataList && item.deviceDataList.length);
 
-    if (!pondList.length)
+    if (!cardList.length)
       return <Empty />;
-    return pondList.map(item => {
+    return cardList.map(item => {
       const { deviceDataList, videoList } = item;
       const { area, deviceId, location, deviceName } = item;
       const [
@@ -116,16 +116,16 @@ export default class WaterSystemDrawer extends PureComponent {
         },
       ] = deviceDataList;
       const limits = [normalLower, normalUpper];
-
       const targetItem = deviceDataList[0];
-      return (
-        <Col
-          span={12}
-          key={deviceId}
-          className={styles.col}
-        >
+      const sts = +status;
+      let card = <LossCard data={item}/>
+      if (sts !== -1) {
+        let img = waterTabItem === 0 || waterTabItem === 1 ? (
+          <div>guage</div>
+        ) : (
           <WaterTank
             dy={30}
+            status={+status}
             width={200}
             height={200}
             value={value}
@@ -136,9 +136,36 @@ export default class WaterSystemDrawer extends PureComponent {
             className={styles.tank}
             onClick={e => showWaterItemDrawer(targetItem)}
           />
+        );
+        card = (
+          <Fragment>
+            <div className={styles.tankContainer}>
+              {img}
+            </div>
+            <p className={styles.name}>{deviceName}</p>
+            <p className={styles.location}>
+              <span className={styles.locationIcon} />
+              {area}{location}
+            </p>
+          </Fragment>
+        );
+      }
+
+
+      return (
+        <Col
+          span={12}
+          key={deviceId}
+        >
+          {card}
       </Col>
       );
     });
+  };
+
+  handleIndexChange = index => {
+    const { handleParentChange } = this.props;
+    handleParentChange({ filterIndex: index });
   };
 
   render() {
@@ -146,14 +173,13 @@ export default class WaterSystemDrawer extends PureComponent {
       visible,
       waterTabItem,
       // videoKeyId,
-      waterList,
+      waterLists,
       filterIndex,
-      onClick,
-      handleParentChange,
     } = this.props;
 
     // const { videoVisible, videoList } = this.state;
 
+    const waterList = waterLists[waterTabItem];
     const alarmList = waterList.filter(item => {
       const { deviceDataList } = item;
       const [{ status } = {}] = deviceDataList;
@@ -173,28 +199,21 @@ export default class WaterSystemDrawer extends PureComponent {
       { name: '报警', value: alarmList.length, color: '#FF4848', list: alarmList },
       { name: '失联', value: lostList.length, color: '#9f9f9f', list: lostList },
       { name: '正常', value: normalList.length, color: '#00ffff', list: normalList },
-    ].map((item, index) => {
-      return {
-        ...item,
-        onClick: () => {
-          // onClick(index);
-          handleParentChange({ filterIndex: index });
-        },
-      };
-    });
+    ];
     const newList = totalInfo[filterIndex] ? totalInfo[filterIndex].list : [];
     let cards = null;
-    if (!newList || !newList.length)
-    // if (false)
-      cards = <EmptyCard />;
-    else if (waterTabItem === 0 || waterTabItem === 1)
-      cards = this.renderFireCards(newList);
-    else
-      cards = this.renderPondCards(newList);
 
+    if (!newList || !newList.length)
+      cards = <EmptyCard />;
+    // else if (waterTabItem === 0 || waterTabItem === 1)
+    //   cards = this.renderFireCards(newList);
+    else
+      cards = this.renderCards(newList, waterTabItem);
+
+    console.log('drawer', waterTabItem, filterIndex);
     const left = (
       <div className={styles.content}>
-        <TotalInfo data={totalInfo} active={filterIndex} />
+        <TotalInfo data={totalInfo} titleIndex={waterTabItem} handleClick={this.handleIndexChange} index={filterIndex} />
 
         {/* 实时监测数据 */}
         <div className={styles.realTimeMonitor}>
@@ -219,7 +238,7 @@ export default class WaterSystemDrawer extends PureComponent {
     return (
       <DrawerContainer
         style={{ overflow: 'hidden' }}
-        destroyOnClose={true}
+        destroyOnClose={false}
         title={title(waterTabItem) + '系统'}
         width={700}
         visible={visible}

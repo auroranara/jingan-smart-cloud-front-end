@@ -1,0 +1,44 @@
+@grey: rgb(159, 159, 159);
+
+.container {
+  border: 1px solid @grey;
+}
+
+.icon {
+  display: inline-block;
+  margin-right: 5px;
+  position: relative;
+  background-size: 100% 100%;
+}
+
+.pondIcon:extend(.icon) {
+  width: 22px;
+  height: 19px;
+  background-image: url(../imgs/tank-loss.png);
+}
+
+.locationIcon:extend(.icon) {
+  width: 16px;
+  height: 18px;
+  background-image: url(../imgs/location.png);
+}
+
+.lossIcon:extend(.icon) {
+  width: 18px;
+  height: 14px;
+  background-image: url(../imgs/loss-s.png);
+}
+
+.name {
+  color: #FFF;
+  margin: 0;
+}
+
+.location {
+  color: @grey;
+  margin: 0;
+}
+
+.time {
+  margin: 0;
+}

@@ -1,6 +1,6 @@
-import { stringify } from 'qs';
 import { message } from 'antd';
 
+import { queryWaterSystem } from '../services/bigPlatform/fireControl';
 import {
   getDistributionBoxClassification,
   getDistributionBoxTodayData,
@@ -103,6 +103,9 @@ export default {
     distributionBoxTodayData: [], // 配电箱当天监测数据
     distributionBoxAlarmCount: [], // 配电箱或水箱报警统计
     waterHistory: [], // 水系统单个传感器历史
+    pond: [], // 水池 水箱
+    spray: [], // 喷淋
+    hydrant: [], // 消火栓
   },
 
   effects: {
@@ -160,6 +163,16 @@ export default {
         yield put({ type: 'saveWaterHistory', payload: data && Array.isArray(data.list) ? data.list : [] });
       }
     },
+    *fetchWaterSystem({ payload }, { call, put }) {
+      const response = yield call(queryWaterSystem, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({
+          type: `saveWaterSystem${payload.type}`,
+          payload: data && Array.isArray(data.list) ? data.list : [],
+        });
+      }
+    },
   },
 
   reducers: {
@@ -174,6 +187,24 @@ export default {
     },
     saveWaterTotal(state, action) {
       return { ...state, waterTotal: action.payload };
+    },
+    saveWaterSystem101(state, action) {
+      return {
+        ...state,
+        hydrant: action.payload,
+      };
+    },
+    saveWaterSystem102(state, action) {
+      return {
+        ...state,
+        spray: action.payload,
+      };
+    },
+    saveWaterSystem103(state, action) {
+      return {
+        ...state,
+        pond: action.payload,
+      };
     },
   },
 };

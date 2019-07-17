@@ -67,7 +67,8 @@ export default class WaterItemDrawer extends PureComponent {
     // const { videoVisible, videoKeyId } = this.state;
     const { dateType } = this.state;
 
-    const { deviceDataList } = item;
+    const { area, location, deviceName, deviceDataList } = item;
+    const title = `${deviceName}(${area}${location})`;
     const water = deviceDataList && deviceDataList[0] ? deviceDataList[0] : undefined;
     let child = <LossDevice />;
     if (water) {
@@ -135,7 +136,7 @@ export default class WaterItemDrawer extends PureComponent {
     return (
       <DrawerContainer
         isTop
-        title="水系统"
+        title={title}
         width={700}
         visible={visible}
         left={left}

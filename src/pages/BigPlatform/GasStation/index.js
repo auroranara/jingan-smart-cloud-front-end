@@ -70,6 +70,8 @@ notification.config({
   bottom: 8,
 });
 
+const WATER_TYPES = [101, 102, 103];
+
 const WS_OPTIONS = {
   pingTimeout: 30000,
   pongTimeout: 10000,
@@ -210,13 +212,13 @@ export default class GasStation extends PureComponent {
     processIds: [],
     fireProcessIds: [],
     waterSystemDrawerVisible: false, // 水系统抽屉是否显示
-    waterTabItem: '',
+    waterTabItem: 0,
     // 最新一条隐患id
     latestHiddenDangerId: undefined,
     videoList: [],
     fireVideoVisible: false,
     fireVideoKeyId: '',
-    waterTab: '103',
+    // waterTab: '103',
     smokeDrawerVisible: false,
     filterIndex: 0,
     electricityDrawerVisible: false,
@@ -398,7 +400,7 @@ export default class GasStation extends PureComponent {
     dispatch({ type: 'monitor/fetchCameraTree', payload: { company_id: companyId } });
 
     // this.fetchWaterSystem('101');
-    this.fetchWaterSystem('103');
+    this.fetchAllWaterSystem();
 
     // 烟感列表
     dispatch({
@@ -579,17 +581,19 @@ export default class GasStation extends PureComponent {
             // 获取水系统---消火栓系统
             if (type === 36 || type === 37 || type === 48 || type === 49) {
               // 36 水系统报警 37 水系统报警恢复 48水系统失联 49 水系统失联恢复
-              if (+deviceType === +waterTab) this.fetchWaterSystem(deviceType);
-              if (this.state.waterSystemDrawerVisible) {
-                dispatch({
-                  // type: 'newUnitFireControl/fetchWaterDrawer',
-                  type: 'newUnitFireControl/fetchWaterSystem',
-                  payload: {
-                    companyId,
-                    type: [101, 102, 103][this.state.waterTabItem],
-                  },
-                });
-              }
+              // if (+deviceType === +waterTab) this.fetchWaterSystem(deviceType);
+              // if (this.state.waterSystemDrawerVisible) {
+              //   dispatch({
+              //     // type: 'newUnitFireControl/fetchWaterDrawer',
+              //     // type: 'newUnitFireControl/fetchWaterSystem',
+              //     type: 'gasStation/fetchWaterSystem',
+              //     payload: {
+              //       companyId,
+              //       type: WATER_TYPES[this.state.waterTabItem],
+              //     },
+              //   });
+              // }
+              this.fetchAllWaterSystem();
               // dispatch({
               //   type: 'newUnitFireControl/fetchWaterAlarm',
               //   payload: {
@@ -878,7 +882,7 @@ export default class GasStation extends PureComponent {
           else if (type === 39) this.handleClickMsgFlow(param, 2, 0, ...restParams);
           else if (type === 40) this.handleClickMsgFlow(param, 1, 1, ...restParams);
           else if (type === 32) this.handleClickElecMsg(deviceId, paramName);
-          else if (type === 36) this.handleClickWater(0, [101, 102, 103].indexOf(+deviceType));
+          else if (type === 36) this.handleClickWater(0, WATER_TYPES.indexOf(+deviceType));
           // if (type === 7 || type === 38 || type === 39) this.handleClickMessage(messageFlag, item);
           // else this.handleFaultClick({ ...item });
         }}
@@ -987,7 +991,11 @@ export default class GasStation extends PureComponent {
 
     // 获取水系统---消火栓系统
     // this.fetchWaterSystem('101');
-    this.fetchWaterSystem('103')
+    this.fetchAllWaterSystem();
+  };
+
+  fetchAllWaterSystem = () => {
+    WATER_TYPES.forEach(this.fetchWaterSystem);
   };
 
   // 获取水系统
@@ -998,9 +1006,10 @@ export default class GasStation extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
-    this.setState({ waterTab: type });
+    // this.setState({ waterTab: type });
     dispatch({
-      type: 'newUnitFireControl/fetchWaterSystem',
+      // type: 'newUnitFireControl/fetchWaterSystem',
+      type: 'gasStation/fetchWaterSystem',
       payload: {
         companyId,
         type,
@@ -1540,25 +1549,30 @@ export default class GasStation extends PureComponent {
     });
   };
 
-  handleViewWater = (i, type) => {
+  handleViewWater = (i, type, filterIndex) => {
     const {
       dispatch,
       match: {
         params: { unitId: companyId },
       },
     } = this.props;
-    this.setState({
+    const state = {
       waterSystemDrawerVisible: true,
       waterTabItem: i,
-    });
+    };
+    if (filterIndex !== undefined)
+      state.filterIndex = filterIndex;
 
-    dispatch({
-      type: 'newUnitFireControl/fetchWaterSystem',
-      payload: {
-        companyId,
-        type: type,
-      },
-    });
+    this.setState(state);
+
+    // dispatch({
+    //   // type: 'newUnitFireControl/fetchWaterSystem',
+    //   type: 'gasStation/fetchWaterSystem',
+    //   payload: {
+    //     companyId,
+    //     type,
+    //   },
+    // });
   };
 
   handleCloseWater = () => {
@@ -1613,10 +1627,11 @@ export default class GasStation extends PureComponent {
     } = this.props;
     dispatch({
       // type: 'newUnitFireControl/fetchWaterDrawer',
-      type: 'newUnitFireControl/fetchWaterSystem',
+      // type: 'newUnitFireControl/fetchWaterSystem',
+      type: 'gasStation/fetchWaterSystem',
       payload: {
         companyId,
-        type: [101, 102, 103][typeIndex],
+        type: WATER_TYPES[typeIndex],
       },
       callback: () => {
         this.setState({
@@ -2166,9 +2181,9 @@ export default class GasStation extends PureComponent {
         workOrderDetail, // 只有一个元素的数组
         fireAlarm,
         faultList,
-        waterSystemData: { list: waterList },
+        // waterSystemData: { list: waterList },
         // waterDrawer: { list: waterDrawerList },
-        waterAlarm,
+        // waterAlarm,
         maintenanceCompany: {
           name: maintenanceCompanys = [],
           PrincipalName = '', // 安全管理员
@@ -2194,7 +2209,7 @@ export default class GasStation extends PureComponent {
       bigPlatform: { coItemList, hiddenDangerList },
       unitFireControl: { hosts, fireControlCount },
       unitSafety: { points, phoneVisible },
-      gasStation: { distributionBoxAlarmCount, waterHistory },
+      gasStation: { distributionBoxAlarmCount, waterHistory, pond, spray, hydrant },
       warnDetailLoading,
       faultDetailLoading,
       allDetailLoading,
@@ -2312,7 +2327,7 @@ export default class GasStation extends PureComponent {
           tips={fourColorTips}
           latestHiddenDangerId={latestHiddenDangerId}
         />
-        <Tooltip placement="bottomLeft" overlayClassName={styles.tooltip} title="视频监控">
+        {/* <Tooltip placement="bottomLeft" overlayClassName={styles.tooltip} title="视频监控">
           <div
             className={styles.videoBtn}
             style={{
@@ -2324,7 +2339,7 @@ export default class GasStation extends PureComponent {
             }}
             onClick={() => this.handleShowVideo(findFirstVideo(cameraTree).id)}
           />
-        </Tooltip>
+        </Tooltip> */}
         <div className={styles.companyInfo}>
           {/* 企业基本信息 */}
           <CompanyInfo
@@ -2371,7 +2386,7 @@ export default class GasStation extends PureComponent {
                 <WaterSystem
                   companyId={companyId}
                   onClick={this.handleViewWater}
-                  data={{ pond: waterList, spray: [], hydrant: [] }}
+                  data={{ pond, spray, hydrant }}
                   fetchWaterSystem={this.fetchWaterSystem}
                   showWaterItemDrawer={this.showWaterItemDrawer}
                   // waterAlarm={waterAlarm}
@@ -2590,7 +2605,8 @@ export default class GasStation extends PureComponent {
           visible={waterSystemDrawerVisible}
           waterTabItem={waterTabItem}
           onClose={this.handleCloseWater}
-          waterList={waterList}
+          waterLists={[ hydrant, spray, pond ]}
+          // waterList={waterList}
           // waterDrawer={waterDrawerList}
           // onClick={this.handleClickWater}
           showWaterItemDrawer={this.showWaterItemDrawer}

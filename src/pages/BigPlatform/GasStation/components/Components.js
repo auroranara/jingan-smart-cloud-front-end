@@ -1,5 +1,7 @@
+import LossCard from './LossCard';
 import LossDevice from './LossDevice';
 import PolarBar from './PolarBar';
+import TotalInfo from './TotalInfo';
 import TrendChart from './TrendChart';
 import WaterTank from './WaterTank';
 
@@ -18,7 +20,7 @@ export {
   SwitchHead,
   TimelineCard,
   TimelineItem,
-  TotalInfo,
+  // TotalInfo,
   WaterCards,
 } from '@/pages/BigPlatform/NewUnitFireControl/components/Components';
 
@@ -28,8 +30,10 @@ export { default as ElectricalFireMonitoringDrawer } from './ElectricalFireMonit
 export { default as ElectricalFireMonitoringDetailDrawer } from './ElectricalFireMonitoringDetailDrawer';
 
 export {
+  LossCard,
   LossDevice,
   PolarBar,
+  TotalInfo,
   TrendChart,
   WaterTank,
 }
