@@ -1,8 +1,8 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Col } from 'antd';
-import Ellipsis from '@/components/Ellipsis';
+// import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
-import LoadMore from '@/components/LoadMore';
+// import LoadMore from '@/components/LoadMore';
 import Lightbox from 'react-images';
 import styles from './PointPositionName.less';
 import HiddenDangerCard from '@/jingan-components/HiddenDangerCard';
@@ -169,17 +169,27 @@ export default class PointPositionName extends PureComponent {
         />
       );
     });
+    const overTime = dangerList.filter(item => +item.status === 7).length;
+    const rectify = dangerList.filter(item => +item.status === 2).length;
+    const review = dangerList.filter(item => +item.status === 3).length;
+    const danger = [
+      { name: '已超时', value: overTime },
+      { name: '未超时', value: rectify },
+      { name: '待复查', value: review },
+    ];
     return dangerList.length > 0 ? (
       <Fragment>
         <div className={styles.tip}>
           共有
           {dangerList.length}
-          条隐患，其中已超时
-          {dangerList.filter(item => +item.status === 7).length}
-          条、未超时
-          {dangerList.filter(item => +item.status === 2).length}
-          条、待复查
-          {dangerList.filter(item => +item.status === 3).length}条
+          条隐患，其中
+          {danger
+            .map(item => {
+              const { name, value } = item;
+              return value ? `${name}${value}条` : null;
+            })
+            .filter(item => !!item)
+            .join('、')}
         </div>
         <div className={styles.cards}>
           <div className={styles.cardsMain}>{cards}</div>

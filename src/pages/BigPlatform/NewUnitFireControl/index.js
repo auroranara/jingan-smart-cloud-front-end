@@ -549,13 +549,13 @@ export default class NewUnitFireControl extends PureComponent {
     });
 
     // 获取当前隐患列表
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-    //   payload: {
-    //     company_id: companyId,
-    //     businessType: 2,
-    //   },
-    // });
+    dispatch({
+      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      payload: {
+        company_id: companyId,
+        businessType: 2,
+      },
+    });
     // 获取点位巡查统计
     dispatch({
       type: 'newUnitFireControl/fetchPointInspectionCount',

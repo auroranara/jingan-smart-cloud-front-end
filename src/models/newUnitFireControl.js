@@ -102,18 +102,18 @@ const formatTimeLine = function(timeLine) {
     let type = +item.type;
     let timeLineLabel = '';
     if (type === 1) {
-      timeLineLabel = '隐患创建';
+      timeLineLabel = '创建隐患';
     } else if (type === 2) {
       // 如果index大于1，意味着必然为重新整改
       if (index > 1) {
         timeLineLabel = '重新整改';
       } else {
-        timeLineLabel = '隐患整改';
+        timeLineLabel = '整改隐患';
       }
     } else if (type === 3) {
-      timeLineLabel = '隐患复查';
+      timeLineLabel = '复查隐患';
     } else if (type === 4) {
-      timeLineLabel = '隐患关闭';
+      timeLineLabel = '关闭隐患';
     }
     return {
       ...item,
@@ -126,17 +126,17 @@ const formatTimeLine = function(timeLine) {
   switch (+type) {
     case 1:
       list.push(
-        { timeLineLabel: '隐患整改', id: lastIndex + 1 },
-        { timeLineLabel: '隐患复查', id: lastIndex + 2 }
+        { timeLineLabel: '整改隐患', id: lastIndex + 1 },
+        { timeLineLabel: '复查隐患', id: lastIndex + 2 }
       );
       break;
     case 2:
-      list.push({ timeLineLabel: '隐患复查', id: lastIndex + 1 });
+      list.push({ timeLineLabel: '复查隐患', id: lastIndex + 1 });
       break;
     case 3:
       list.push(
         { timeLineLabel: '重新整改', id: lastIndex + 1 },
-        { timeLineLabel: '隐患复查', id: lastIndex + 2 }
+        { timeLineLabel: '复查隐患', id: lastIndex + 2 }
       );
       break;
     default:

@@ -78,38 +78,6 @@ export default class CheckedCard extends BigPlatformCard {
                 />
               ) : null;
             })}
-            {/* {overTimeId > 0 && (
-              <DotItem
-                title="已超时"
-                color={`#F83329`}
-                quantity={overTimeId}
-                className={styles.label}
-              />
-            )}
-            {rectifyId > 0 && (
-              <DotItem
-                title="未超时"
-                color={`#FFB400`}
-                quantity={rectifyId}
-                className={styles.label}
-              />
-            )}
-            {reviewId > 0 && (
-              <DotItem
-                title="待复查"
-                color={`#2A8BD5`}
-                quantity={reviewId}
-                className={styles.label}
-              />
-            )}
-            {finishId > 0 && (
-              <DotItem
-                title="已关闭"
-                color={`#9F9F9F`}
-                quantity={finishId}
-                className={styles.label}
-              />
-            )} */}
           </Fragment>
         ) : (
           `无`

@@ -79,6 +79,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       const cards = ids.map((item, i) => {
         const {
           proceStatus, // undefined, '2' 发生 '0' 处理中 '1' 完成
+          createTime,
           installAddress,
           deviceAddress,
           startDate,
@@ -101,7 +102,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
         const timelineList = [
           {
             label: LABELS[msgFlow][0],
-            time: firstTime,
+            time: createTime,
             cardItems: [
               // { title: installAddress || deviceAddress },
               // { value: `${componentName} 发生${TITLES[msgFlow]}` },

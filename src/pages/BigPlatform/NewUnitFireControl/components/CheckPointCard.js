@@ -100,18 +100,21 @@ export default class CheckPointCard extends BigPlatformCard {
     {
       label: '最近一次巡查',
       key: 'systemType',
-      render: ({ lastCheckTime, lastCheckPerson, lastReportSource }) => (
-        <Fragment>
-          <div>
-            {lastCheckPerson
-              ? `${lastCheckPerson}(${ReportSource[+lastReportSource - 1]})`
-              : NO_DATA}
-          </div>
-          <div style={{ paddingTop: '8px' }}>
-            {(lastCheckTime && moment(+lastCheckTime).format(TIME_FORMAT)) || NO_DATA}
-          </div>
-        </Fragment>
-      ),
+      render: ({ lastCheckTime, lastCheckPerson, lastReportSource }) =>
+        !lastCheckPerson && !lastCheckTime ? (
+          NO_DATA
+        ) : (
+          <Fragment>
+            <div>
+              {lastCheckPerson
+                ? `${lastCheckPerson}(${ReportSource[+lastReportSource - 1]})`
+                : NO_DATA}
+            </div>
+            <div style={{ paddingTop: '8px' }}>
+              {(lastCheckTime && moment(+lastCheckTime).format(TIME_FORMAT)) || NO_DATA}
+            </div>
+          </Fragment>
+        ),
       labelContainerClassName: styles.labelContainer,
       className: styles.lastCheckTime,
     },
