@@ -1,34 +1,12 @@
-import React, { PureComponent } from 'react';
-import { Row, Col } from 'antd';
-import { connect } from 'dva';
-
+import React, { PureComponent, Fragment } from 'react';
+import { Tooltip } from 'antd';
+import { Section2 as CustomSection } from '@/jingan-components/CustomSection';
+import Ellipsis from '@/components/Ellipsis';
 import { vaguePhone } from '@/pages/BigPlatform/NewUnitFireControl/utils';
-import { Section } from './Components';
-import DescriptionList from '@/components/DescriptionList';
 import styles from './CompanyInfo.less';
-import { iconCheck, iconCompany, iconHd, iconMaintenance } from '../imgs/links';
+import defaultGasStationIcon from '../imgs/default-gas-station-icon.png';
+import { iconCheck, iconHd } from '../imgs/links';
 
-const { Description } = DescriptionList;
-
-function Hint(props) {
-  const { labels=['超期', '总数'] } = props;
-  return (
-    <div className={styles.hint}>
-      <p>
-        <span className={styles.redDot} />
-        {labels[0]}
-      </p>
-      <p>
-        <span className={styles.cyanDot} />
-        {labels[1]}
-      </p>
-    </div>
-  );
-}
-
-@connect(({ newUnitFireControl }) => ({
-  newUnitFireControl,
-}))
 export default class CompanyInfo extends PureComponent {
   render() {
     const {
@@ -40,8 +18,6 @@ export default class CompanyInfo extends PureComponent {
         },
         currentHiddenDanger: { totalNum },
         maintenanceCompany: {
-          name: companyNames = [],
-          result: userList = [],
           PrincipalName = '', //安全管理员
           PrincipalPhone = '',
         },
@@ -50,73 +26,88 @@ export default class CompanyInfo extends PureComponent {
     } = this.props;
 
     return (
-      <Section title="单位基本信息" style={{ height: 'auto' }} scrollStyle={{ overflow: 'visible' }}>
-        <div className={styles.companyInfo}>
-          <div className={styles.infoWrapper}>
-            <div
-              className={styles.iconInfo}
-              style={{ backgroundImage: `url(${iconCompany})` }}
-            />
-            <div className={styles.info}>
-              <div className={styles.companyName}>{companyName}</div>
-              <DescriptionList col={1}>
-                {PrincipalName && (
-                  <Description term="安全管理员">
-                    <div className={styles.manWrapper}>
-                      {PrincipalName}
-                      <br/>
-                      <span className={styles.phone}>
-                        {vaguePhone(PrincipalPhone, phoneVisible)}
-                      </span>
-                    </div>
-                  </Description>
-                )}
-              </DescriptionList>
-            </div>
+      <CustomSection
+        title="基本信息"
+      >
+        <div className={styles.top}>
+          <div className={styles.topLeft}>
+            <div className={styles.topLeftItem} style={{ backgroundImage: `url(${defaultGasStationIcon})` }} />
           </div>
-          <div className={styles.divider} />
-          <div className={styles.icons}>
-            <div
-              className={styles.iconItem}
-              onClick={handleCheckDrawer}
-            >
-              <div
-                className={styles.icon}
-                style={{ backgroundImage: `url(${iconCheck})` }}
-              />
-              <div className={styles.iconDesc}>
-                检查点
-                <div className={styles.checkNum}>
-                  <span className={styles.outdate}>3</span>
-                  <span className={styles.slash}>/</span>
-                  {countCheckItem}
-                  <Hint />
-                </div>
-              </div>
+          <div className={styles.topRight}>
+            <div className={styles.topRightTop}>
+              <Ellipsis className={styles.topRightTopItem} lines={2}>{companyName}</Ellipsis>
             </div>
-            <div
-              className={styles.iconItem}
-              onClick={handleViewCurrentDanger}
-            >
-              <div
-                className={styles.icon}
-                style={{
-                  backgroundImage: `url(${iconHd})`,
-                }}
-              />
-              <div className={styles.iconDesc}>
-                当前隐患
-                <div className={styles.checkNum}>
-                  <span className={styles.outdate}>333</span>
-                  <span className={styles.slash}>/</span>
-                  {totalNum}
-                  <Hint labels={['超期', '当前']} />
-                </div>
+            <div className={styles.topRightBottom}>
+              <div className={styles.topRightBottomItem}>
+                <div className={styles.topRightBottomItemLabel}>安全管理员：</div>
+                <div className={styles.topRightBottomItemValue}>{PrincipalName}</div>
+              </div>
+              <div className={styles.topRightBottomItem}>
+                <div className={styles.topRightBottomItemLabel} style={{ letterSpacing: '0.25em' }}>联系方式：</div>
+                <div className={styles.topRightBottomItemValue}>{vaguePhone(PrincipalPhone, phoneVisible)}</div>
               </div>
             </div>
           </div>
         </div>
-      </Section>
+        <div className={styles.bottom}>
+          <Tooltip
+            overlayClassName={styles.tooltip}
+            placement="bottomRight"
+            title={(
+              <Fragment>
+                <div className={styles.tooltipItem}>
+                  <div className={styles.tooltipItemIcon} style={{ backgroundColor: '#f83329' }} />
+                  <div className={styles.tooltipItemValue}>
+                    超期数
+                  </div>
+                </div>
+                <div className={styles.tooltipItem}>
+                  <div className={styles.tooltipItemIcon} style={{ backgroundColor: '#02fcfa' }} />
+                  <div className={styles.tooltipItemValue}>
+                    总数
+                  </div>
+                </div>
+              </Fragment>
+            )}
+          >
+            <div className={styles.bottomItem} onClick={handleCheckDrawer}>
+              <div className={styles.bottomItemIcon} style={{ backgroundImage: `url(${iconCheck})` }} />
+              <div className={styles.bottomItemRight}>
+                <div className={styles.bottomItemLabel}>检查点</div>
+                  <div className={styles.bottomItemValue}><span className={styles.bottomItemValueAlarm}>{3}</span>/{countCheckItem}</div>
+              </div>
+            </div>
+          </Tooltip>
+          <Tooltip
+            overlayClassName={styles.tooltip}
+            placement="bottomRight"
+            title={(
+              <Fragment>
+                <div className={styles.tooltipItem}>
+                  <div className={styles.tooltipItemIcon} style={{ backgroundColor: '#f83329' }} />
+                  <div className={styles.tooltipItemValue}>
+                    超期数
+                  </div>
+                </div>
+                <div className={styles.tooltipItem}>
+                  <div className={styles.tooltipItemIcon} style={{ backgroundColor: '#02fcfa' }} />
+                  <div className={styles.tooltipItemValue}>
+                    当前
+                  </div>
+                </div>
+              </Fragment>
+            )}
+          >
+            <div className={styles.bottomItem} onClick={handleViewCurrentDanger}>
+              <div className={styles.bottomItemIcon} style={{ backgroundImage: `url(${iconHd})` }} />
+              <div className={styles.bottomItemRight}>
+                <div className={styles.bottomItemLabel}>当前隐患</div>
+                  <div className={styles.bottomItemValue}><span className={styles.bottomItemValueAlarm}>{3}</span>/{totalNum}</div>
+              </div>
+            </div>
+          </Tooltip>
+        </div>
+      </CustomSection>
     );
   }
 }

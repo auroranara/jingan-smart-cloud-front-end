@@ -3,6 +3,7 @@ import Section from '../Section';
 import playIcon from '../img/play.png';
 import styles from './VideoSurveillance.less';
 import {findFirstVideo} from '@/utils/utils';
+import defaultMonitorCover from './assets/default-monitor-cover.png';
 // const emptyIcon = 'http://data.jingan-china.cn/v2/big-platform/monitor/com/waterBg1.png';/
 /**
  * description: 视频监控
@@ -25,7 +26,7 @@ export default class VideoSurveillance extends PureComponent {
             }}
             style={{
               backgroundImage:
-                video && video.photo && video.photo !== '该设备ID不存在' ? `url(${video.photo})` : '',
+                `url(${video && video.photo && video.photo !== '该设备ID不存在' ? video.photo : defaultMonitorCover})`,
               backgroundRepeat: 'no-repeat',
               backgroundSize: '100% 100%',
               backgroundPosition: 'center',
