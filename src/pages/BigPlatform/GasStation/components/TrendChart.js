@@ -197,7 +197,7 @@ export default class TrendChart extends PureComponent {
         notMerge={true}
         onChartReady={this.onChartReadyCallback}
       />
-    ) : <div className={styles.noCards} style={{ background: `url(${waterBg})` }} />;
+    ) : <div className={styles.noCards} style={{ backgroundImage: `url(${waterBg})` }} />;
 
     return (
       <div

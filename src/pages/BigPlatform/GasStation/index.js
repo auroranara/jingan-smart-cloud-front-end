@@ -2123,7 +2123,12 @@ export default class GasStation extends PureComponent {
     const { deviceId } = item;
     this.setState({ waterItem: item, waterItemDrawerVisible: true });
     dispatch({ type: 'gasStation/fetchWaterHistory', payload: { deviceId, historyType: 1, queryDate: moment().format('YYYY/MM/DD HH:mm:ss') } });
-    dispatch({ type: 'gasStation/fetchDistributionBoxAlarmCount', payload: { deviceId, type: 1 } });
+    this.fetchAlarmCount(deviceId, 1);
+  };
+
+  fetchAlarmCount = (deviceId, type) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'gasStation/fetchDistributionBoxAlarmCount', payload: { deviceId, type } });
   };
 
   hdieWaterItemDrawer = () => {
@@ -2368,6 +2373,7 @@ export default class GasStation extends PureComponent {
                   onClick={this.handleViewWater}
                   data={{ pond: waterList, spray: [], hydrant: [] }}
                   fetchWaterSystem={this.fetchWaterSystem}
+                  showWaterItemDrawer={this.showWaterItemDrawer}
                   // waterAlarm={waterAlarm}
                 />
               </div>
@@ -2760,6 +2766,7 @@ export default class GasStation extends PureComponent {
         />
         <WaterItemDrawer
           visible={waterItemDrawerVisible}
+          fetchAlarmCount={this.fetchAlarmCount}
           handleClose={this.hdieWaterItemDrawer}
           data={{ item: waterItem, history: waterHistory, total: getWaterTotal(distributionBoxAlarmCount) }}
         />

@@ -9,6 +9,7 @@ import iconMaintenance from '@/assets/icon-maintenance.png';
 import iconHd from '@/assets/icon-hidden-danger.png';
 import iconCheck from '@/assets/icon-check.png';
 import inspectIcon from './inspect.png';
+import lossDevice from './loss.png';
 import outdateIcon from './outdate.png';
 import waveBlue from './blueWave.png';
 import waveRed from './redWave.png';
@@ -60,6 +61,7 @@ export {
   iconHd,
   iconMaintenance,
   inspectIcon,
+  lossDevice,
   outdateIcon,
   videoBtn,
   waveBlue,

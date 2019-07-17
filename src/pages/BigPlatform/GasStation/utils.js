@@ -98,6 +98,17 @@ export function getStatusCount(water) {
   }, { ...restProps, alarm: 0, loss: 0, normal: 0, total: list.length });
 }
 
-export function getSplit(num) {
-
+export function formatTime(time) {
+  const diff = moment().diff(moment(time));
+  if (diff >= 2 * 24 * 60 * 60 * 1000) {
+    return moment(time).format('YYYY-MM-DD HH:mm:ss');
+  } else if (diff >= 24 * 60 * 60 * 1000) {
+    return moment(time).format('昨日 HH:mm:ss');
+  } else if (diff >= 60 * 60 * 1000) {
+    return moment(time).format('今日 HH:mm:ss');
+  } else if (diff >= 60 * 1000) {
+    return `${moment.duration(diff).minutes()}分钟前`;
+  } else {
+    return '刚刚';
+  }
 }
