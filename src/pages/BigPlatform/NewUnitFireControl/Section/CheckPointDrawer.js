@@ -105,7 +105,7 @@ export default class CheckPointDrawer extends PureComponent {
           type: 'pie',
           center: ['50%', '45%'],
           radius: ['35%', '52%'],
-          avoidLabelOverlap: false,
+          avoidLabelOverlap: true,
           label: {
             normal: {
               show: true,

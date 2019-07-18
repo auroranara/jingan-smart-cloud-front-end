@@ -78,6 +78,19 @@ export default class DynamicDrawerTop extends Component {
       ((component_region || component_region === 0) &&
         `${component_region}回路${component_no}号`) ||
       ((componentRegion || componentRegion === 0) && `${componentRegion}回路${componentNo}号`);
+
+    const repeat = (
+      <div className={styles.repeatTimes}>
+        <div className={styles.times}>
+          <span className={styles.label}>首次发生：</span>
+          {moment(firstTime).format('YYYY-MM-DD HH:mm:ss')}
+        </div>
+        <div className={styles.times}>
+          <span className={styles.label}>最近发生：</span>
+          {moment(lastTime).format('YYYY-MM-DD HH:mm:ss')}
+        </div>
+      </div>
+    );
     return (
       <div className={styles.dynamicDrawerTop} style={style}>
         <div
@@ -154,8 +167,8 @@ export default class DynamicDrawerTop extends Component {
           )}
           {/* 重复上报 */}
           {+num > 1 && (
-            <div className={styles.logoContainer} style={{ top: 0, right: '24px' }}>
-              <div
+            <div className={styles.logoContainer}>
+              {/* <div
                 className={styles.logo}
                 style={{
                   backgroundImage: `url(${showRepeatDesc ? bakFlagFill : bakFlag})`,
@@ -167,8 +180,13 @@ export default class DynamicDrawerTop extends Component {
                 onMouseLeave={() => this.setState({ showRepeatDesc: false })}
               >
                 <div>{num}</div>
-              </div>
-              <div className={styles.desc}>重复上报次数</div>
+              </div> */}
+              <Tooltip placement={'bottomRight'} title={repeat} overlayStyle={{ zIndex: 2222 }}>
+                <div className={styles.desc}>
+                  重复上报
+                  <span style={{ fontSize: '18px' }}>{num}</span>次
+                </div>
+              </Tooltip>
             </div>
           )}
           {/* 视频 */}
@@ -180,7 +198,7 @@ export default class DynamicDrawerTop extends Component {
                 className={styles.cameraContainer}
                 style={{
                   top: '10px',
-                  right: '104px',
+                  right: '110px',
                   backgroundImage: `url(${cameraImg})`,
                   backgroundSize: '100%',
                   backgroundPosition: 'center center',

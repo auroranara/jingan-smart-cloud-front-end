@@ -28,6 +28,8 @@
       flex-direction: column;
       align-items: center;
       position: absolute;
+      top: 8px;
+      right: 15px;
 
       .logo {
         position: relative;
@@ -51,9 +53,14 @@
 
       .desc {
         text-align: center;
-        color: #9F9F9F;
+        color: #8198B4;
         font-size: 13px;
         margin-top: 5px;
+        cursor: pointer;
+
+        &:hover {
+          color: #BED1E8;
+        }
       }
     }
 
@@ -112,6 +119,19 @@
       &:after {
         background-color: transparent;
       }
+    }
+  }
+}
+
+.repeatTimes {
+  color: #fff;
+  text-align: center;
+
+  .times {
+    line-height: 24px;
+
+    .label {
+      color: #9F9F9F;
     }
   }
 }
