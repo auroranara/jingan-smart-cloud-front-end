@@ -125,12 +125,14 @@ const popupVisible = {
   onekeyFlowDrawerVisible: false,
 };
 
-@connect(({ loading, operation, user, unitSafety }) => ({
+@connect(({ loading, operation, user, unitSafety, newUnitFireControl }) => ({
   operation,
   user,
   unitSafety,
+  newUnitFireControl,
   loading: loading.models.operation,
   fireListLoading: loading.effects['operation/fetchFireList'],
+  messageInformListLoading: loading.effects['newUnitFireControl/fetchMessageInformList'],
 }))
 export default class Operation extends PureComponent {
   constructor(props) {
@@ -778,7 +780,7 @@ export default class Operation extends PureComponent {
           companyName: (+reportType !== 2 ? companyName : rcompanyName) || undefined,
           component:
             `${
-            componentRegion || typeof componentRegion === 'number' ? `${componentRegion}回路` : ''
+              componentRegion || typeof componentRegion === 'number' ? `${componentRegion}回路` : ''
             }${componentNo || typeof componentNo === 'number' ? `${componentNo}号` : ''}` ||
             undefined,
           unitTypeName: componentName || undefined,
@@ -824,6 +826,15 @@ export default class Operation extends PureComponent {
     callback(!!list.find(({ companyId }) => companyId === unitDetail.companyId));
   };
 
+  // 获取消息人员列表
+  fetchMessageInformList = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchMessageInformList',
+      payload: { ...params },
+    });
+  };
+
   handleClickMsgFlow = (
     param,
     type,
@@ -847,7 +858,7 @@ export default class Operation extends PureComponent {
     ];
     const reportTypes = [1, 4, 3, 2];
     this.hiddeAllPopup();
-
+    this.fetchMessageInformList({ id: param.id, dataId: param.dataId });
     if (type !== 3) {
       dispatch({
         type: 'operation/fetchCountNumAndTimeById',
@@ -956,6 +967,8 @@ export default class Operation extends PureComponent {
         },
       },
       unitSafety: { points, phoneVisible },
+      newUnitFireControl: { messageInformList },
+      messageInformListLoading,
     } = this.props;
 
     const {
@@ -998,8 +1011,8 @@ export default class Operation extends PureComponent {
         headerStyle={HEADER_STYLE}
         titleStyle={{ fontSize: 46 }}
         contentStyle={CONTENT_STYLE}
-      // settable
-      // onSet={this.handleClickSetButton}
+        // settable
+        // onSet={this.handleClickSetButton}
       >
         {/* 地图 */}
         <BackMap
@@ -1089,6 +1102,8 @@ export default class Operation extends PureComponent {
           msgFlow={msgFlow}
           phoneVisible={phoneVisible}
           headProps={headProps}
+          messageInformList={messageInformList}
+          messageInformListLoading={messageInformListLoading}
           head={true}
         />
         {/* 独立烟感处理动态 */}
@@ -1106,6 +1121,8 @@ export default class Operation extends PureComponent {
           msgFlow={msgFlow}
           phoneVisible={phoneVisible}
           headProps={headProps}
+          messageInformList={messageInformList}
+          messageInformListLoading={messageInformListLoading}
           head={true}
         />
         {/* 一键报修处理动态 */}
@@ -1118,6 +1135,8 @@ export default class Operation extends PureComponent {
           PrincipalPhone={PrincipalPhone}
           phoneVisible={phoneVisible}
           headProps={headProps}
+          messageInformList={messageInformList}
+          messageInformListLoading={messageInformListLoading}
           head={true}
         />
         <VideoPlay

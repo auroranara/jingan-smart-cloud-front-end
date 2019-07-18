@@ -1,5 +1,5 @@
 import { Component, Fragment } from 'react';
-import { Tooltip } from 'antd';
+import { Tooltip, Spin } from 'antd';
 import MsgRead from './MsgRead';
 import moment from 'moment';
 import Ellipsis from '@/components/Ellipsis';
@@ -67,6 +67,10 @@ export default class DynamicDrawerTop extends Component {
       componentName,
       componentRegion,
       componentNo,
+      read = [],
+      unread = [],
+      msgType = 0, // 0 报警 1 故障
+      msgSendLoading = false,
     } = this.props;
     const scTime = moment(firstTime).format('YYYY-MM-DD HH:mm');
     const zjTime = moment(lastTime).format('YYYY-MM-DD HH:mm');
@@ -202,13 +206,22 @@ export default class DynamicDrawerTop extends Component {
             </div>
           </div>
         </div>
-        {/* <div className={styles.messageSendingContainer}>
-          <div className={styles.topLine}>
-            <span>报警消息已发送成功！</span>
-            <span>共发送 12 人</span>
+        {read.length + unread.length > 0 && (
+          <div className={styles.messageSendingContainer}>
+            <Spin spinning={msgSendLoading} wrapperClassName={styles.spin}>
+              <div className={styles.topLine}>
+                <span>
+                  {(dynamicType === 3 && `报修`) ||
+                    (msgType === 0 && `报警`) ||
+                    (msgType === 1 && `故障`)}
+                  消息已发送成功！
+                </span>
+                <span>共发送 {read.length + unread.length} 人</span>
+              </div>
+              <MsgRead read={read} unread={unread} />
+            </Spin>
           </div>
-          <MsgRead read={users} unread={users2} />
-        </div> */}
+        )}
       </div>
     );
   }
