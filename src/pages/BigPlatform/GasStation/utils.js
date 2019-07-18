@@ -1,5 +1,8 @@
 import moment from 'moment';
 
+export const MAX_MPa = 2;
+export const MAX_M = 10;
+
 export function getWaterTotal(list) {
   if (!list || !list.length)
     return 0;
@@ -111,4 +114,48 @@ export function formatTime(time) {
   } else {
     return '刚刚';
   }
+}
+
+const LENGTH_UNITS = ['mm', 'cm', 'dm', 'm'];
+export function isLengthUnit(unit) {
+  return unit ? LENGTH_UNITS.includes(unit.trim().toLowerCase()) : false;
+}
+
+export function getMaxDeep(max, unit) {
+  return max ? getMaxDeepByNum(max) : getMaxDeepByUnit(unit);
+}
+
+function getMaxDeepByNum(n) {
+  if (n < 1)
+    return 1;
+
+  let m = n;
+  let i = 0;
+  while(m > 10) {
+    m /= 10;
+    i++;
+  }
+  return Math.ceil(m) * (10 ** i);
+}
+
+function getMaxDeepByUnit(unit) {
+  const u = unit.trim().toLowerCase();
+  let coefficient = 1;
+  switch(u) {
+    case 'cm':
+      coefficient *= 10;
+      break;
+    case 'mm':
+      coefficient *= 100;
+      break;
+    default:
+      console.log('default');
+  }
+
+  return coefficient * MAX_M;
+}
+
+// waterTabItem 0 消火栓 1 喷淋 2 水池/水箱  0，1-> Gauge 2->WaterTank
+export function isGauge(tab) {
+  return tab === 0 || tab === 1 ? true : false;
 }

@@ -161,9 +161,10 @@ export default {
       const { code, data } = response || {};
       if (code === 200) {
         yield put({ type: 'saveWaterHistory', payload: data && Array.isArray(data.list) ? data.list : [] });
+        callback && callback();
       }
     },
-    *fetchWaterSystem({ payload }, { call, put }) {
+    *fetchWaterSystem({ payload, callback }, { call, put }) {
       const response = yield call(queryWaterSystem, payload);
       const { code, data } = response || {};
       if (code === 200) {
@@ -171,6 +172,7 @@ export default {
           type: `saveWaterSystem${payload.type}`,
           payload: data && Array.isArray(data.list) ? data.list : [],
         });
+        callback && callback();
       }
     },
   },

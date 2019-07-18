@@ -106,15 +106,16 @@ export default class TrendChart extends PureComponent {
   getOptions = () => {
     const {
       data: {
-        item: { deviceParamsInfo: { normalLower, normalUpper }, desc, unit },
+        params: { deviceParamsInfo: { normalLower, normalUpper }, desc, unit },
         history,
       },
     } = this.props;
 
     let option = {};
     const limits = [normalLower, normalUpper];
-    // console.log(getChartList(history, limits));
-    if (!history.length) return noData;
+    const filteredHistory = history.filter(({ value }) => !Number.isNaN(Number.parseFloat(value))); // 剔除一些非数字的值
+
+    if (!filteredHistory.length) return noData;
     option = {
       ...defaultOption,
       title: {
@@ -147,7 +148,7 @@ export default class TrendChart extends PureComponent {
           name: desc,
           smooth: true,
           symbolSize: 5,
-          data: getChartList(history, limits),
+          data: getChartList(filteredHistory, limits),
         },
       ],
     };

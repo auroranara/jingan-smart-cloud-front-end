@@ -1,9 +1,11 @@
+import Gauge from './Gauge';
 import LossCard from './LossCard';
 import LossDevice from './LossDevice';
 import PolarBar from './PolarBar';
 import TotalInfo from './TotalInfo';
 import TrendChart from './TrendChart';
 import WaterTank from './WaterTank';
+import WaterTankBase from './WaterTankBase';
 
 export { OvSelect } from '@/pages/BigPlatform/NewFireControl/components/Components';
 export {
@@ -30,10 +32,12 @@ export { default as ElectricalFireMonitoringDrawer } from './ElectricalFireMonit
 export { default as ElectricalFireMonitoringDetailDrawer } from './ElectricalFireMonitoringDetailDrawer';
 
 export {
+  Gauge,
   LossCard,
   LossDevice,
   PolarBar,
   TotalInfo,
   TrendChart,
   WaterTank,
+  WaterTankBase,
 }

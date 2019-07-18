@@ -756,7 +756,7 @@ export default class GasStation extends PureComponent {
   };
 
   showFireMsg = item => {
-    const { type, messageId, isOver } = item;
+    const { type, messageId } = item;
     // if (type === 7 || type === 9 || type === 38 || type === 39 || type === 40 || type === 41) {
     //   if (+isOver === 0) {
     const msgItem = switchMsgType(+type);
@@ -2135,9 +2135,9 @@ export default class GasStation extends PureComponent {
 
   showWaterItemDrawer = item => {
     const { dispatch } = this.props;
-    const { deviceId } = item;
+    const { deviceId, deviceDataList: [{ deviceId: sensorId }] } = item;
     this.setState({ waterItem: item, waterItemDrawerVisible: true });
-    dispatch({ type: 'gasStation/fetchWaterHistory', payload: { deviceId, historyType: 1, queryDate: moment().format('YYYY/MM/DD HH:mm:ss') } });
+    dispatch({ type: 'gasStation/fetchWaterHistory', payload: { deviceId: sensorId, historyType: 1, queryDate: moment().format('YYYY/MM/DD HH:mm:ss') } });
     this.fetchAlarmCount(deviceId, 1);
   };
 
@@ -2437,20 +2437,6 @@ export default class GasStation extends PureComponent {
           handleVideoClose={this.handleFireVideoClose}
           isTree={false}
         />
-        {/* <VideoPlay
-          showList={showVideoList}
-          videoList={allCamera}
-          visible={videoVisible}
-          keyId={videoKeyId} // keyId
-          handleVideoClose={this.handleVideoClose}
-        /> */}
-        {/* <VideoPlay
-          showList={true}
-          videoList={videoList}
-          visible={fireVideoVisible}
-          keyId={videoList[0] ? videoList[0].key_id : undefined} // keyId
-          handleVideoClose={this.handleFireVideoClose}
-        /> */}
         <RiskDrawer
           visible={riskDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
@@ -2782,6 +2768,7 @@ export default class GasStation extends PureComponent {
         />
         <WaterItemDrawer
           visible={waterItemDrawerVisible}
+          tabItem={waterTabItem}
           fetchAlarmCount={this.fetchAlarmCount}
           handleClose={this.hdieWaterItemDrawer}
           data={{ item: waterItem, history: waterHistory, total: getWaterTotal(distributionBoxAlarmCount) }}

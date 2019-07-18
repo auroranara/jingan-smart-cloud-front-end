@@ -8,10 +8,6 @@ const ICON_STYLE = { position: 'absolute', right: 10, top: 10, fontSize: 18, col
 const WIDTH = 960;
 
 export default class DrawerContainer extends PureComponent {
-  componentDidMount() {
-    console.log('dm');
-  }
-
   render() {
     const { title, width, visible, isTop, onClose, left=null, right=null, top=null, rowStyle, ...restProps } = this.props;
     const hasTitle = !!title;

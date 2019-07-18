@@ -4,7 +4,8 @@ import styles from './WaterItemDrawer.less';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import { DrawerContainer } from '@/pages/BigPlatform/NewFireControl/components/Components';
 // import ElectricityCharts from '@/pages/BigPlatform/ElectricityMonitor/components/ElectricityCharts';
-import { LossDevice, OvSelect, TrendChart, WaterTank } from '../components/Components';
+import { Gauge, LossDevice, OvSelect, TrendChart, WaterTank } from '../components/Components';
+import { isGauge } from '../utils';
 // import cameraIcon from '../../ElectricityMonitor/imgs/camera.png';
 
 // const VIDEO_STYLE = {
@@ -55,38 +56,23 @@ export default class WaterItemDrawer extends PureComponent {
   render() {
     const {
       visible,
+      tabItem,
       data: {
         item,
         history,
         total,
         // cameraList = [],
       },
-      // handleSelect,
-      // handleClose,
     } = this.props;
     // const { videoVisible, videoKeyId } = this.state;
     const { dateType } = this.state;
 
     const { area, location, deviceName, deviceDataList } = item;
     const title = `${deviceName}(${area}${location})`;
-    const water = deviceDataList && deviceDataList[0] ? deviceDataList[0] : undefined;
+    const dataItem = deviceDataList && deviceDataList[0] ? deviceDataList[0] : undefined;
     let child = <LossDevice />;
-    if (water) {
-      const { value, status, unit, deviceParamsInfo: { normalLower, normalUpper, maxValue } } = water;
-      child = (
-        <WaterTank
-          status={+status}
-          dy={30}
-          width={200}
-          height={200}
-          value={value}
-          size={[100, 150]}
-          limits={[normalLower, normalUpper]}
-          range={maxValue}
-          unit={unit}
-        />
-      );
-    }
+    if (dataItem)
+      child = isGauge(tabItem) ? <Gauge data={dataItem} /> : <WaterTank data={dataItem} />;
 
     const left = (
       <Fragment>
@@ -111,7 +97,7 @@ export default class WaterItemDrawer extends PureComponent {
           </h3>
           <TrendChart
             // noData={!!deviceIds.length}
-            data={{ item, history }}
+            data={{ params: dataItem, history }}
           />
           <h3 className={styles.chartTitle}>
             <span className={styles.rectIcon} />

@@ -2,22 +2,28 @@
 
 .container {
   border: 1px solid @grey;
+  padding: 5px 8px;
+  cursor: pointer;
 }
 
 .icon {
   display: inline-block;
-  margin-right: 5px;
   position: relative;
   background-size: 100% 100%;
+  position: absolute;
+  left: 0;
 }
 
 .pondIcon:extend(.icon) {
+  top: 1px;
   width: 22px;
   height: 19px;
   background-image: url(../imgs/tank-loss.png);
 }
 
 .locationIcon:extend(.icon) {
+  left: 3px;
+  top: 2px;
   width: 16px;
   height: 18px;
   background-image: url(../imgs/location.png);
@@ -26,17 +32,22 @@
 .lossIcon:extend(.icon) {
   width: 18px;
   height: 14px;
+  position: relative;
+  left: 1px;
+  top: 2px;
+  margin-right: 6px;
   background-image: url(../imgs/loss-s.png);
 }
 
 .name {
   color: #FFF;
-  margin: 0;
+  margin-bottom: 3px;
+  position: relative;
+  padding-left: 25px;
 }
 
-.location {
+.location:extend(.name) {
   color: @grey;
-  margin: 0;
 }
 
 .time {
