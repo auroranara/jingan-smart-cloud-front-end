@@ -57,6 +57,8 @@ export default class MaintenanceDrawer extends PureComponent {
             </div>
           </Fragment>
         );
+    if (length === 0)
+      left = <div style={{ color: '#fff', textAlign: 'center' }}> 暂无处理流程 </div>;
 
     return (
       <DrawerContainer

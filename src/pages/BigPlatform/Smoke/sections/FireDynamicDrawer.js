@@ -30,7 +30,7 @@ export default class MaintenanceDrawer extends PureComponent {
 
     // 维保只有一个，故障可能是一个或多个
     let left = null;
-    if (length)
+    if (length > 0)
       left =
         length === 1 ? (
           <FireDynamicCard type={type} data={list[0]} />
@@ -57,6 +57,8 @@ export default class MaintenanceDrawer extends PureComponent {
             </div>
           </Fragment>
         );
+    if (length === 0)
+      left = <div style={{ color: '#fff', textAlign: 'center' }}> 暂无处理流程 </div>;
 
     return (
       <DrawerContainer

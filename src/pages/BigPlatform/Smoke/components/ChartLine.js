@@ -7,19 +7,19 @@ const LINE_STYLE = { width: 2, color: 'rgb(64, 95, 135)' };
 export default class ChartLine extends PureComponent {
   render() {
     const { data: list, labelRotate = -35 } = this.props;
-    const newList = list.map(item => {
-      let obj = {};
-      for (const key in item) {
-        if (item.hasOwnProperty(key)) {
-          const element = item[key];
-          obj = { ...element, month: key };
-        }
-      }
-      return obj;
-    });
+    // const newList = list.map(item => {
+    //   let obj = {};
+    //   for (const key in item) {
+    //     if (item.hasOwnProperty(key)) {
+    //       const element = item[key];
+    //       obj = { ...element, month: key };
+    //     }
+    //   }
+    //   return obj;
+    // });
 
-    const xData = newList.map(item => {
-      const newMonth = item.month;
+    const xData = list.map(item => {
+      const newMonth = item.datePoint;
       return moment(newMonth).format('MM');
     });
 
@@ -82,7 +82,7 @@ export default class ChartLine extends PureComponent {
               },
             },
           },
-          data: newList.map(item => item.unnormal),
+          data: list.map(item => item.unnormal),
         },
         {
           name: '故障',
@@ -95,7 +95,20 @@ export default class ChartLine extends PureComponent {
               },
             },
           },
-          data: newList.map(item => item.faultNum),
+          data: list.map(item => item.fault),
+        },
+        {
+          name: '失联',
+          type: 'line',
+          itemStyle: {
+            color: '#0FF',
+            normal: {
+              lineStyle: {
+                color: '#9f9f9f',
+              },
+            },
+          },
+          data: list.map(item => item.outContact),
         },
       ],
     };

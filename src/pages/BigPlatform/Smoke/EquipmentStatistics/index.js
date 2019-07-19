@@ -23,7 +23,7 @@ export default class EquipmentStatistics extends PureComponent {
         bottom: '35px',
       },
       legend: {
-        data: ['设备数量', '故障数量'],
+        data: ['设备数量', '故障数量', '失联数量'],
         textStyle: {
           color: '#fff',
         },
@@ -90,6 +90,14 @@ export default class EquipmentStatistics extends PureComponent {
           barWidth: '25%',
           barMaxWidth: 20,
           data: brandList.map(item => item.faultNum),
+        },
+        {
+          name: '失联数量',
+          type: 'bar',
+          color: 'rgb(159, 159, 159)',
+          barWidth: '25%',
+          barMaxWidth: 20,
+          data: brandList.map(item => item.unconnectNum),
         },
       ],
     };

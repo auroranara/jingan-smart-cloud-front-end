@@ -14,13 +14,14 @@ import moment from 'moment';
 import { DotItem, ChartLine } from '../components/Components';
 import unitRedIcon from '../imgs/unitRed.png';
 import unitYellowIcon from '../imgs/unitYellow.png';
+import unitLossIcon from '../imgs/unitBlueIconGrey.png';
 
 const ICON_WIDTH = 42;
 const ICON_HEIGHT = 40;
 const ICON_BOTTOM = 5;
 const TYPE = 'alarm';
 const NO_DATA = '暂无信息';
-const OPTIONS = ['全部', '火警', '故障'].map((d, i) => ({ value: i, desc: d }));
+const OPTIONS = ['全部', '火警', '故障', '失联'].map((d, i) => ({ value: i, desc: d }));
 
 export default class AlarmDrawer extends PureComponent {
   state = { graph: 0, selected: 0, searchValue: '' };
@@ -50,16 +51,16 @@ export default class AlarmDrawer extends PureComponent {
   };
 
   getOption = graphList => {
-    const newGraphList = graphList.map(item => {
-      let obj = {};
-      for (const key in item) {
-        if (item.hasOwnProperty(key)) {
-          const element = item[key];
-          obj = { ...element, month: key };
-        }
-      }
-      return obj;
-    });
+    // const newGraphList = graphList.map(item => {
+    //   let obj = {};
+    //   for (const key in item) {
+    //     if (item.hasOwnProperty(key)) {
+    //       const element = item[key];
+    //       obj = { ...element, month: key };
+    //     }
+    //   }
+    //   return obj;
+    // });
 
     const option = {
       textStyle: {
@@ -109,7 +110,7 @@ export default class AlarmDrawer extends PureComponent {
           },
         },
         axisLabel: {
-          formatter: function (value, index) {
+          formatter: function(value, index) {
             if (parseInt(value, 10) !== value) return '';
             return parseInt(value, 10);
           },
@@ -129,8 +130,8 @@ export default class AlarmDrawer extends PureComponent {
           color: '#fff',
           fontSize: 14,
         },
-        data: newGraphList.map(item => {
-          const newMonth = item.month;
+        data: graphList.map(item => {
+          const newMonth = item.datePoint;
           return moment(newMonth).format('MM');
         }),
       },
@@ -140,14 +141,21 @@ export default class AlarmDrawer extends PureComponent {
           color: '#ff4848',
           type: 'bar',
           barWidth: 5,
-          data: newGraphList.map(item => item.unnormal),
+          data: graphList.map(item => item.unnormal),
         },
         {
           name: '故障',
           type: 'bar',
           color: '#f6b54e',
           barWidth: 5,
-          data: newGraphList.map(item => item.faultNum),
+          data: graphList.map(item => item.fault),
+        },
+        {
+          name: '失联',
+          type: 'bar',
+          color: '#9f9f9f',
+          barWidth: 5,
+          data: graphList.map(item => item.outContact),
         },
       ],
     };
@@ -160,12 +168,41 @@ export default class AlarmDrawer extends PureComponent {
       handleFaultClick,
       handleClickDeviceNumber,
       visible,
-      data: { list = [], companyStatus: { unnormal = 0, faultNum = 0 }, graphList = [] } = {},
+      allUnitList: { list: unitList = [] },
+      // data: {
+      //   // list = [],
+      //   // companyStatus: { unnormal = 0, faultNum = 0 },
+      //   graphList = [],
+      // } = {},
+      unitsCount,
+      deviceCountChartData: { list: graphList = [] },
     } = this.props;
 
     const { graph, selected, searchValue } = this.state;
 
-    const filteredList = list
+    const unnormalCompanyNum = unitsCount.reduce(function(prev, cur) {
+      if (+cur.unnormal > 0) {
+        prev++;
+      }
+      return prev;
+    }, 0);
+
+    const faultCompanyNum = unitsCount.reduce((prev, cur) => {
+      if (+cur.fault > 0) {
+        prev++;
+      }
+      return prev;
+    }, 0);
+
+    const outContactCompanyNum = unitsCount.reduce((prev, cur) => {
+      if (+cur.outContact > 0) {
+        prev++;
+      }
+      return prev;
+    }, 0);
+
+    const filteredList = unitList
+      .filter(item => item.count)
       .filter(({ company_name }) => company_name.includes(searchValue))
       .filter(item => {
         switch (selected) {
@@ -182,10 +219,12 @@ export default class AlarmDrawer extends PureComponent {
         }
       });
 
-    const total = unnormal + faultNum;
-    const [alarmPercent, faultPercent] = [unnormal, faultNum].map(
-      n => (total ? (n / total) * 100 : 0)
-    );
+    const total = unnormalCompanyNum + faultCompanyNum + outContactCompanyNum;
+    const [alarmPercent, faultPercent, outContactPercent] = [
+      unnormalCompanyNum,
+      faultCompanyNum,
+      outContactCompanyNum,
+    ].map(n => (total ? (n / total) * 100 : 0));
 
     const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
     const select = (
@@ -203,7 +242,7 @@ export default class AlarmDrawer extends PureComponent {
           <OvProgress
             title="火警单位"
             percent={alarmPercent}
-            quantity={unnormal}
+            quantity={unnormalCompanyNum}
             strokeColor="rgb(255,72,72)"
             style={{ marginTop: 40 }}
             iconStyle={{
@@ -212,12 +251,12 @@ export default class AlarmDrawer extends PureComponent {
               height: ICON_HEIGHT,
               bottom: ICON_BOTTOM,
             }}
-          // onClick={this.genProgressClick(1)}
+            // onClick={this.genProgressClick(1)}
           />
           <OvProgress
             title="故障单位"
             percent={faultPercent}
-            quantity={faultNum}
+            quantity={faultCompanyNum}
             strokeColor="rgb(246,181,78)"
             // style={{ cursor: 'pointer' }}
             iconStyle={{
@@ -226,7 +265,21 @@ export default class AlarmDrawer extends PureComponent {
               height: ICON_HEIGHT,
               bottom: ICON_BOTTOM,
             }}
-          // onClick={this.genProgressClick(2)}
+            // onClick={this.genProgressClick(2)}
+          />
+          <OvProgress
+            title="失联单位"
+            percent={outContactPercent}
+            quantity={outContactCompanyNum}
+            strokeColor="rgb(159,159,159)"
+            // style={{ cursor: 'pointer' }}
+            iconStyle={{
+              backgroundImage: `url(${unitLossIcon})`,
+              width: ICON_WIDTH,
+              height: ICON_HEIGHT,
+              bottom: ICON_BOTTOM,
+            }}
+            // onClick={this.genProgressClick(2)}
           />
         </DrawerSection>
         <DrawerSection title="异常趋势图" titleInfo="最近12个月" extra={extra}>
@@ -234,13 +287,13 @@ export default class AlarmDrawer extends PureComponent {
             graphList.length > 0 ? (
               <ReactEcharts option={this.getOption(graphList)} className="echarts-for-echarts" />
             ) : (
-                <span style={{ textAlign: 'center' }}>暂无数据</span>
-              )
+              <span style={{ textAlign: 'center' }}>暂无数据</span>
+            )
           ) : graphList.length > 0 ? (
             <ChartLine data={graphList} labelRotate={0} />
           ) : (
-                <span style={{ textAlign: 'center' }}>暂无数据</span>
-              )}
+            <span style={{ textAlign: 'center' }}>暂无数据</span>
+          )}
         </DrawerSection>
       </Fragment>
     );
@@ -257,75 +310,95 @@ export default class AlarmDrawer extends PureComponent {
             normal: listNormal,
             unnormal: listUnnormal = 0,
             faultNum: listFaultNum,
+            outContact,
             count,
           }) => (
-              <DrawerCard
-                key={company_id}
-                name={company_name || NO_DATA}
-                location={address || NO_DATA}
-                person={principal_name || NO_DATA}
-                phone={principal_phone || NO_DATA}
-                style={{ cursor: 'auto' }}
-                clickName={() => handleClickDeviceNumber({
-                  companyId: company_id,
-                  companyName: company_name,
+            <DrawerCard
+              key={company_id}
+              name={company_name || NO_DATA}
+              location={address || NO_DATA}
+              person={principal_name || NO_DATA}
+              phone={principal_phone || NO_DATA}
+              style={{ cursor: 'auto' }}
+              clickName={() =>
+                handleClickDeviceNumber({
+                   company_id,
+                  company_name,
                   address,
-                  principalName: principal_name,
-                  principalPhone: principal_phone,
+                  principal_name,
+                  principal_phone,
                   normal: listNormal,
-                  unnormal: listUnnormal = 0,
+                  unnormal: (listUnnormal = 0),
                   faultNum: listFaultNum,
-                })}
-                infoStyle={{
-                  width: 70,
-                  textAlign: 'center',
-                  color: '#FFF',
-                  bottom: '50%',
-                  right: 25,
-                  transform: 'translateY(50%)',
-                }}
-                info={
-                  <Fragment>
-                    <div className={styles.equipment} onClick={() => handleClickDeviceNumber({
-                      companyId: company_id,
-                      companyName: company_name,
-                      address,
-                      principalName: principal_name,
-                      principalPhone: principal_phone,
-                      normal: listNormal,
-                      unnormal: listUnnormal = 0,
-                      faultNum: listFaultNum,
-                    })}>{count || '--'}</div>
-                    设备数
+                })
+              }
+              infoStyle={{
+                width: 70,
+                textAlign: 'center',
+                color: '#FFF',
+                bottom: '50%',
+                right: 25,
+                transform: 'translateY(50%)',
+              }}
+              info={
+                <Fragment>
+                  <div
+                    className={styles.equipment}
+                    onClick={() =>
+                      handleClickDeviceNumber({
+                        company_id,
+                        company_name,
+                        address,
+                        principal_name,
+                        principal_phone,
+                        normal: listNormal,
+                        unnormal: (listUnnormal = 0),
+                        faultNum: listFaultNum,
+                      })
+                    }
+                  >
+                    {count || '--'}
+                  </div>
+                  设备数
                 </Fragment>
-                }
-                more={
-                  <p className={styles.more}>
-                    <DotItem
-                      title="火警"
-                      color={`rgb(248,51,41)`}
-                      quantity={listUnnormal}
-                      className={listUnnormal > 0 ? styles.itemActive : ''}
-                      onClick={() =>
-                        listUnnormal > 0 &&
-                        handleAlarmClick(undefined, company_id, company_name, listUnnormal)
-                      }
-                    />
-                    <DotItem
-                      title="故障"
-                      color={`rgb(255,180,0)`}
-                      className={listFaultNum > 0 ? styles.itemActive : ''}
-                      quantity={listFaultNum}
-                      onClick={() =>
-                        listFaultNum > 0 &&
-                        handleFaultClick(undefined, company_id, company_name, listFaultNum)
-                      }
-                    />
-                    <DotItem title="正常" color={`rgb(55,164,96)`} quantity={listNormal} />
-                  </p>
-                }
-              />
-            )
+              }
+              more={
+                <p className={styles.more}>
+                  <DotItem
+                    title="火警"
+                    color={`rgb(248,51,41)`}
+                    quantity={listUnnormal}
+                    className={listUnnormal > 0 ? styles.itemActive : ''}
+                    onClick={() =>
+                      listUnnormal > 0 &&
+                      handleAlarmClick(undefined, company_id, company_name, 1, listUnnormal)
+                    }
+                  />
+                  <DotItem
+                    title="故障"
+                    color={`rgb(255,180,0)`}
+                    className={listFaultNum > 0 ? styles.itemActive : ''}
+                    quantity={listFaultNum}
+                    onClick={() =>
+                      listFaultNum > 0 &&
+                      handleFaultClick(undefined, company_id, company_name, 2, listFaultNum)
+                    }
+                  />
+                  <DotItem
+                    title="失联"
+                    color={`rgb(159,159,159)`}
+                    className={outContact > 0 ? styles.itemActive : ''}
+                    quantity={outContact}
+                    onClick={() =>
+                      outContact > 0 &&
+                      handleFaultClick(undefined, company_id, company_name, 3, outContact)
+                    }
+                  />
+                  <DotItem title="正常" color={`rgb(55,164,96)`} quantity={listNormal} />
+                </p>
+              }
+            />
+          )
         )}
       </SearchBar>
     );

@@ -67,3 +67,13 @@ export async function fetchCameraTree(params) {
 export async function getSmokeForMaintenance(params) {
   return request(`${URL_PREFIX}/shs/getSmokeForMaintenance?${stringify(params)}`);
 }
+
+// 历史状态图表数据
+export async function getDeviceCountChart(params) {
+  return request(`${URL_PREFIX}/deviceInfo/deviceStatusHistoryCount?${stringify(params)}`);
+}
+
+// 传感器列表
+export async function getDeviceList(params) {
+  return request(`${URL_PREFIX}/deviceInfo/commonDeviceList?${stringify(params)}`);
+}

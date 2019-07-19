@@ -18,13 +18,15 @@ import emptyBg from '../imgs/waterBg.png';
 import smokeAlarm from '../imgs/smoke-alarm.png';
 import smokeFault from '../imgs/smoke-fault.png';
 import smokeNormal from '../imgs/smoke-normal.png';
+import smokeLost from '../imgs/smoke-lost.png';
+// import smokeLost from '../imgs/smoke-lost.png';
 import Ellipsis from '@/components/Ellipsis';
 import { findFirstVideo } from '@/utils/utils';
 
-const LABELS = ['正常', '火警', '故障'];
+const LABELS = ['正常', '火警', '故障', '失联'];
 const COLORS = ['55,164,96', '248,51,41', '255,180,0', '159,159,159'];
 
-const OPTIONS = ['全部', '火警', '故障', '正常'].map((d, i) => ({ value: i, desc: d }));
+const OPTIONS = ['全部', '火警', '故障', '失联', '正常'].map((d, i) => ({ value: i, desc: d }));
 
 // const VIDEO_STYLE = {
 //   width: '90%',
@@ -36,15 +38,17 @@ export default class MonitorDrawer extends PureComponent {
     videoVisible: false,
     videoKeyId: '',
     statusIndex: 0,
+    videoList: [],
   };
 
-  handleClickCamera = () => {
-    const {
-      data: { cameraTree = [] },
-    } = this.props;
+  handleClickCamera = videoList => {
+    // const {
+    //   data: { cameraTree = [] },
+    // } = this.props;
     this.setState({
       videoVisible: true,
-      videoKeyId: cameraTree.length ? findFirstVideo(cameraTree).id : '',
+      videoList: videoList,
+      videoKeyId: videoList.length ? findFirstVideo(videoList).id : '',
     });
   };
 
@@ -58,24 +62,33 @@ export default class MonitorDrawer extends PureComponent {
 
   renderItems = () => {
     const {
-      data: { devList, cameraTree = [], unitDetail: { companyName, companyId } = {} },
+      data: {
+        // devList, cameraTree = [],
+        unitDetail: { company_name, company_id } = {},
+      },
       handleAlarmClick,
       handleFaultClick,
+      deviceListData: { list = [] },
     } = this.props;
+    console.log('listlistlist', list);
+
     const { statusIndex } = this.state;
-    const dataList = devList.filter(item => {
-      const { status } = item;
+    const dataList = list.filter(item => {
+      const { deviceStatus, workStatus, warnStatus } = item;
       switch (statusIndex) {
         case 0:
           return true;
         case 1:
-          if (+status > 0) return true;
+          if (+warnStatus > 0) return true;
           else return false;
         case 2:
-          if (+status < 0) return true;
+          if (+workStatus === -3) return true;
           else return false;
         case 3:
-          if (+status === 0 || !status) return true;
+          if (+deviceStatus === -1) return true;
+          else return false;
+        case 4:
+          if (+workStatus === 0 && +deviceStatus !== -1) return true;
           else return false;
         default:
           return true;
@@ -85,18 +98,46 @@ export default class MonitorDrawer extends PureComponent {
       <div className={styles.devScroll}>
         <Row gutter={16}>
           {dataList.length ? (
-            dataList.map((item, index) => {
-              const { area, location, add_time, status, iotId } = item;
-              const occurTime = `发生时间：${moment(add_time).format('YYYY-MM-DD HH:mm:ss')}`;
+            list.map((item, index) => {
+              const {
+                area,
+                location,
+                deviceStatusUpdateTime,
+                videoList,
+                deviceStatus,
+                workStatus,
+                warnStatus,
+                deviceId,
+                dataUpdateTime,
+              } = item;
+              const normalStatus =
+                +warnStatus !== 1 &&
+                +warnStatus !== 2 &&
+                +workStatus !== -3 &&
+                +deviceStatus !== -1;
+              const lossTime = `发生时间：${moment(deviceStatusUpdateTime).format(
+                'YYYY-MM-DD HH:mm:ss'
+              )}`;
+              const currTime = `发生时间：${moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss')}`;
               const devStatus = '设备状态：正常';
-              const color = +status > 0 ? '#f83329' : '#ffb400';
+              const color =
+                +deviceStatus === -1
+                  ? '#9f9f9f'
+                  : +workStatus === -3
+                    ? '#f83329'
+                    : +warnStatus === 1 || +warnStatus === 2
+                      ? '#ffb400'
+                      : '';
+
               let smokeImg;
-              if (+status > 0) {
-                smokeImg = smokeAlarm;
-              } else if (+status === 0 || !status) {
-                smokeImg = smokeNormal;
-              } else {
+              if (+deviceStatus === -1) {
+                smokeImg = smokeLost;
+              } else if (+workStatus === -3) {
                 smokeImg = smokeFault;
+              } else if (+warnStatus === 1 || +warnStatus === 2) {
+                smokeImg = smokeAlarm;
+              } else {
+                smokeImg = smokeNormal;
               }
               return (
                 <Col span={12} key={index}>
@@ -118,28 +159,52 @@ export default class MonitorDrawer extends PureComponent {
                       </div>
                       <div className={styles.infos}>
                         <Ellipsis lines={1} tooltip>
-                          {+status === 0 ? devStatus : occurTime}
+                          {+deviceStatus === -1
+                            ? lossTime
+                            : +workStatus === -3 || +warnStatus === 1 || +warnStatus === 2
+                              ? currTime
+                              : devStatus}
                         </Ellipsis>
                       </div>
                       <div className={styles.extraWrapper}>
-                        {!!cameraTree.length && (
+                        {!!videoList.length && (
                           <div
                             className={styles.camraImg}
                             style={{ backgroundImage: `url(${cameraIcon})` }}
-                            onClick={e => this.handleClickCamera()}
+                            onClick={e => this.handleClickCamera(videoList)}
                           />
                         )}
-                        {(+status !== 0 || !status) && (
+                        {!normalStatus && (
                           <div
                             className={styles.status}
                             style={{ color, borderColor: color, cursor: 'pointer' }}
                             onClick={() => {
-                              +status > 0
-                                ? handleAlarmClick(iotId, companyId, companyName, undefined)
-                                : handleFaultClick(iotId, companyId, companyName, undefined);
+                              +warnStatus === 1 || +warnStatus === 2
+                                ? handleAlarmClick(deviceId, company_id, company_name, 1, undefined)
+                                : +deviceStatus === -1
+                                  ? handleFaultClick(
+                                      deviceId,
+                                      company_id,
+                                      company_name,
+                                      3,
+                                      undefined
+                                    )
+                                  : handleFaultClick(
+                                      deviceId,
+                                      company_id,
+                                      company_name,
+                                      2,
+                                      undefined
+                                    );
                             }}
                           >
-                            {+status > 0 ? '火警' : '故障'}
+                            {+deviceStatus === -1
+                              ? '失联'
+                              : +workStatus === -3
+                                ? '故障'
+                                : +warnStatus === 1 || +warnStatus === 2
+                                  ? '火警'
+                                  : ''}
                           </div>
                         )}
                       </div>
@@ -172,38 +237,48 @@ export default class MonitorDrawer extends PureComponent {
       visible,
       data: {
         unitDetail: {
-          companyName,
+          company_name,
           address,
-          principalName,
-          principalPhone,
+          principal_name,
+          principal_phone,
+          company_id,
           // normal = 0,
           // unnormal = 0,
           // faultNum = 0,
         } = {},
-        cameraTree = [],
-        dataByCompany,
-        devList,
-        companySmokeInfo: { map: devMap = { unnormal: [], fault: [], normal: [] } },
+        // cameraTree = [],
+        // dataByCompany,
+        // devList,
+        // companySmokeInfo: { map: devMap = { unnormal: [], fault: [], normal: [] } },
       },
       handleClose,
+      deviceCountChartData: { list: dataByCompany = [] },
+      deviceListData: { list = [] },
+      units,
     } = this.props;
-    const { videoVisible, videoKeyId, statusIndex } = this.state;
+
+    const { videoVisible, videoKeyId, videoList, statusIndex } = this.state;
+
+    const filterUnits = units.filter(item => item.companyId === company_id);
+    const [{ normal, fault, outContact, unnormal } = {}] = filterUnits;
 
     const left = (
       <Fragment>
         <div className={styles.info}>
-          <p className={styles.name}>{companyName}</p>
+          <p className={styles.name}>{company_name}</p>
           <p>
             <span className={styles.location} style={{ backgroundImage: `url(${locationIcon})` }} />
             {address}
           </p>
           <p>
             <span className={styles.person} style={{ backgroundImage: `url(${personIcon})` }} />
-            {(principalName || principalPhone) &&
-              `${principalName ? principalName : '未命名'} ${principalPhone ? principalPhone : ''}`}
+            {(principal_name || principal_phone) &&
+              `${principal_name ? principal_name : '未命名'} ${
+                principal_phone ? principal_phone : ''
+              }`}
           </p>
           <p className={styles.dots}>
-            {[devMap.normal.length, devMap.unnormal.length, devMap.fault.length].map((n, i) => (
+            {[normal, fault, unnormal, outContact].map((n, i) => (
               <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
             ))}
           </p>
@@ -222,7 +297,7 @@ export default class MonitorDrawer extends PureComponent {
             </div>
           </h3>
           <div className={styles.section}>
-            {devList.length > 0 ? (
+            {list.length > 0 ? (
               this.renderItems()
             ) : (
               <div className={styles.empty} style={{ backgroundImage: `url(${emptyBg})` }} />
@@ -243,7 +318,7 @@ export default class MonitorDrawer extends PureComponent {
         </div>
         <NewVideoPlay
           showList={true}
-          videoList={cameraTree}
+          videoList={videoList}
           visible={videoVisible}
           keyId={videoKeyId}
           // style={VIDEO_STYLE}
