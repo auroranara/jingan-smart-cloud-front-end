@@ -10,6 +10,7 @@ export default {
     smoke: 'dashboard.smokeView',
     operation: 'dashboard.operationView',
     threedgis: 'dashboard.threedgis',
+    gasStation: 'dashboard.gasStation',
   },
   role: {
     list: 'roleAuthorization.role.listView',
