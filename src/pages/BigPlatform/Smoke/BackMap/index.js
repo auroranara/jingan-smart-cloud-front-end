@@ -325,14 +325,14 @@ export default class MapSection extends PureComponent {
               故障 {fault}
             </div>
             <div
-              className={+outContact > 0 ? styles.itemActive : styles.statusItem}
-              onClick={() => {
-                if (+outContact > 0) {
-                  handleFaultClick(undefined, company_id, company_name, 3, +outContact);
-                } else {
-                  return null;
-                }
-              }}
+            // className={+outContact > 0 ? styles.itemActive : styles.statusItem}
+            // onClick={() => {
+            //   if (+outContact > 0) {
+            //     handleFaultClick(undefined, company_id, company_name, 3, +outContact);
+            //   } else {
+            //     return null;
+            //   }
+            // }}
             >
               <span className={styles.statusIcon} style={{ backgroundColor: '#9f9f9f' }} />
               失联 {outContact}

@@ -212,12 +212,12 @@ export default class UnitDrawer extends PureComponent {
                         title="失联"
                         color={`rgb(159,159,159)`}
                         quantity={outContact}
-                        className={outContact > 0 ? styles.itemActive : ''}
-                        onClick={() =>
-                          outContact > 0
-                            ? handleFaultClick(undefined, company_id, company_name, 3, outContact)
-                            : ''
-                        }
+                        // className={outContact > 0 ? styles.itemActive : ''}
+                        // onClick={() =>
+                        //   outContact > 0
+                        //     ? handleFaultClick(undefined, company_id, company_name, 3, outContact)
+                        //     : ''
+                        // }
                       />
                       <DotItem title="正常" color={`rgb(55,164,96)`} quantity={normal} />
                     </p>

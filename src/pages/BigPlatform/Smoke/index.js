@@ -494,11 +494,26 @@ export default class Smoke extends PureComponent {
   };
 
   handleDrawerVisibleChange = (name, rest) => {
+    const {
+      dispatch,
+      match: {
+        params: { gridId },
+      },
+    } = this.props;
     const stateName = `${name}DrawerVisible`;
     this.setState(state => ({
       [stateName]: !state[stateName],
       ...rest,
     }));
+    if (name === 'alarm') {
+      // 历史状态图表数据
+      dispatch({
+        type: 'smoke/fetchDeviceCountChart',
+        payload: {
+          gridId,
+        },
+      });
+    }
   };
 
   // 地图搜索

@@ -322,7 +322,7 @@ export default class AlarmDrawer extends PureComponent {
               style={{ cursor: 'auto' }}
               clickName={() =>
                 handleClickDeviceNumber({
-                   company_id,
+                  company_id,
                   company_name,
                   address,
                   principal_name,
@@ -387,12 +387,12 @@ export default class AlarmDrawer extends PureComponent {
                   <DotItem
                     title="失联"
                     color={`rgb(159,159,159)`}
-                    className={outContact > 0 ? styles.itemActive : ''}
+                    // className={outContact > 0 ? styles.itemActive : ''}
                     quantity={outContact}
-                    onClick={() =>
-                      outContact > 0 &&
-                      handleFaultClick(undefined, company_id, company_name, 3, outContact)
-                    }
+                    // onClick={() =>
+                    //   outContact > 0 &&
+                    //   handleFaultClick(undefined, company_id, company_name, 3, outContact)
+                    // }
                   />
                   <DotItem title="正常" color={`rgb(55,164,96)`} quantity={listNormal} />
                 </p>

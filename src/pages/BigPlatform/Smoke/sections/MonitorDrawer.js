@@ -123,18 +123,18 @@ export default class MonitorDrawer extends PureComponent {
                 +deviceStatus === -1
                   ? '#9f9f9f'
                   : +workStatus === -3
-                    ? '#f83329'
+                    ? '#ffb400'
                     : +warnStatus === 1 || +warnStatus === 2
-                      ? '#ffb400'
+                      ? '#f83329'
                       : '';
 
               let smokeImg;
               if (+deviceStatus === -1) {
                 smokeImg = smokeLost;
-              } else if (+workStatus === -3) {
-                smokeImg = smokeFault;
               } else if (+warnStatus === 1 || +warnStatus === 2) {
                 smokeImg = smokeAlarm;
+              } else if (+workStatus === -3) {
+                smokeImg = smokeFault;
               } else {
                 smokeImg = smokeNormal;
               }
@@ -173,38 +173,77 @@ export default class MonitorDrawer extends PureComponent {
                             onClick={e => this.handleClickCamera(videoList)}
                           />
                         )}
-                        {!normalStatus && (
-                          <div
-                            className={styles.status}
-                            style={{ color, borderColor: color, cursor: 'pointer' }}
-                            onClick={() => {
-                              +warnStatus === 1 || +warnStatus === 2
-                                ? handleAlarmClick(deviceId, company_id, company_name, 1, undefined)
-                                : +deviceStatus === -1
-                                  ? handleFaultClick(
+                        {(!normalStatus &&
+                          +deviceStatus !== -1 &&
+                          +workStatus === -3 &&
+                          +warnStatus === 1) ||
+                        +warnStatus === 2 ? (
+                          <div>
+                            <span
+                              className={styles.status}
+                              style={{
+                                color: '#f83329',
+                                borderColor: '#f83329',
+                                cursor: 'pointer',
+                              }}
+                              onClick={() => {
+                                handleAlarmClick(deviceId, company_id, company_name, 1, undefined);
+                              }}
+                            >
+                              火警
+                            </span>
+                            <span
+                              className={styles.status}
+                              style={{
+                                color: '#ffb400',
+                                borderColor: '#ffb400',
+                                cursor: 'pointer',
+                                marginLeft: 10,
+                              }}
+                              onClick={() => {
+                                handleFaultClick(deviceId, company_id, company_name, 2, undefined);
+                              }}
+                            >
+                              故障
+                            </span>
+                          </div>
+                        ) : (
+                          !normalStatus && (
+                            <div
+                              className={styles.status}
+                              style={{
+                                color,
+                                borderColor: color,
+                                cursor: 'pointer',
+                              }}
+                              onClick={() => {
+                                (+deviceStatus !== -1 && +warnStatus === 1) || +warnStatus === 2
+                                  ? handleAlarmClick(
                                       deviceId,
                                       company_id,
                                       company_name,
-                                      3,
+                                      1,
                                       undefined
                                     )
-                                  : handleFaultClick(
+                                  : +deviceStatus !== -1 &&
+                                    handleFaultClick(
                                       deviceId,
                                       company_id,
                                       company_name,
                                       2,
                                       undefined
                                     );
-                            }}
-                          >
-                            {+deviceStatus === -1
-                              ? '失联'
-                              : +workStatus === -3
-                                ? '故障'
-                                : +warnStatus === 1 || +warnStatus === 2
-                                  ? '火警'
-                                  : ''}
-                          </div>
+                              }}
+                            >
+                              {+deviceStatus === -1
+                                ? '失联'
+                                : +workStatus === -3
+                                  ? '故障'
+                                  : +warnStatus === 1 || +warnStatus === 2
+                                    ? '火警'
+                                    : ''}
+                            </div>
+                          )
                         )}
                       </div>
                     </div>
@@ -255,7 +294,6 @@ export default class MonitorDrawer extends PureComponent {
       deviceListData: { list = [] },
       units,
     } = this.props;
-
     const { videoVisible, videoKeyId, videoList, statusIndex } = this.state;
 
     const filterUnits = units.filter(item => item.companyId === company_id);
