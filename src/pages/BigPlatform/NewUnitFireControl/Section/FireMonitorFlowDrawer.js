@@ -219,7 +219,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
               handleRightClick={this.handleRightClick}
             />
             {headContent}
-            <div className={styles.sliderContainer}>
+            <div className={styles.sliderContainer} style={{ height: 'auto' }}>
               <Slider index={index} length={length} size={1}>
                 {cards}
               </Slider>
@@ -236,7 +236,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
         left={left}
         visible={visible}
         destroyOnClose
-        leftParStyle={{ display: 'flex', flexDirection: 'column', overflow: 'auto' }}
+        leftParStyle={{ overflow: 'auto' }}
         onClose={() => {
           onClose();
           setTimeout(() => {

@@ -174,6 +174,7 @@ export default class OnekeyFlowDrawer extends PureComponent {
         id={ID}
         title={'报修处理动态'}
         zIndex={1388}
+        destroyOnClose
         width={535}
         left={left}
         visible={visible}
