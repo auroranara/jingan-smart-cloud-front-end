@@ -89,6 +89,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                 ? { color: '#0ff', borderColor: '#0ff' }
                 : { color: '#0296B2', borderColor: '#0296B2' };
               const timeStyle = isLast ? { color: '#fff' } : { color: '#8198B4' };
+              const containerStyle = { borderColor: isLast ? '#0ff' : '#0296B2' };
               if (!timeLine.time) {
                 return <TimelineItem key={index} label={timeLineLabel} spans={SPANS} />;
               }
@@ -102,6 +103,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                     hour={stampHour}
                     labelStyle={labelStyle}
                     timeStyle={timeStyle}
+                    containerStyle={containerStyle}
                   >
                     <div className={styles.contentContainer}>
                       <Tooltip
@@ -174,6 +176,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                     hour={stampHour}
                     labelStyle={labelStyle}
                     timeStyle={timeStyle}
+                    containerStyle={containerStyle}
                   >
                     <div className={styles.contentContainer}>
                       <DescriptionList className={styles.lineList} col={1}>
@@ -212,6 +215,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                     hour={stampHour}
                     labelStyle={labelStyle}
                     timeStyle={timeStyle}
+                    containerStyle={containerStyle}
                   >
                     <div className={styles.contentContainer}>
                       <DescriptionList className={styles.lineList} col={1}>
@@ -253,6 +257,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
                     hour={stampHour}
                     labelStyle={labelStyle}
                     timeStyle={timeStyle}
+                    containerStyle={containerStyle}
                   >
                     <div className={styles.contentContainer}>
                       <DescriptionList className={styles.lineList} col={1}>
