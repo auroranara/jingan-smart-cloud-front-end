@@ -87,8 +87,9 @@ export default class WaterTankBase extends PureComponent {
         x = x0 - SPLIT_WIDTH * 0.7;
       else {
         x = x0 - SPLIT_NUM;
-        const [tx, ty] = [x - 8, y + (i ? 4 : 0)];
         const label = startLabel + labelInterval * i;
+        const deltaX = 4 + String(label).length * 4;
+        const [tx, ty] = [x - deltaX, y + (i ? 4 : 0)];
         ctx.fillText(label, tx, ty);
       }
 

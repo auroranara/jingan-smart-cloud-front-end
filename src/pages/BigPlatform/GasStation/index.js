@@ -21,12 +21,12 @@ import {
   DrawerHiddenDangerDetail,
   DrawerOfFireAlarm,
   ElectricityDrawer,
-  ElectricityMonitor,
+  // ElectricityMonitor,
   FaultMessageDrawer,
-  FireDevice,
+  // FireDevice,
   FireFlowDrawer,
   FireMonitorFlowDrawer,
-  FireMonitoring,
+  // FireMonitoring,
   FourColor,
   GasFlowDrawer,
   MaintenanceCheckDrawer,
@@ -42,12 +42,12 @@ import {
   RiskDrawer,
   SmokeDrawer,
   SmokeFlowDrawer,
-  SmokeMonitor,
-  StatisticsOfFireControl,
+  // SmokeMonitor,
+  // StatisticsOfFireControl,
   SetDrawer,
   VideoSurveillance,
   WaterItemDrawer,
-  WaterMonitor,
+  // WaterMonitor,
   WaterSystem,
   WaterSystemDrawer,
   WorkOrderDrawer,
@@ -61,7 +61,7 @@ import {
   headerBg,
   iconFire,
   iconFault,
-  videoBtn,
+  // videoBtn,
 } from './imgs/links';
 
 notification.config({
@@ -70,6 +70,7 @@ notification.config({
   bottom: 8,
 });
 
+const WEB_SOCKET_TYPE = 8;
 const WATER_TYPES = [101, 102, 103];
 
 const WS_OPTIONS = {
@@ -218,7 +219,6 @@ export default class GasStation extends PureComponent {
     videoList: [],
     fireVideoVisible: false,
     fireVideoKeyId: '',
-    // waterTab: '103',
     smokeDrawerVisible: false,
     filterIndex: 0,
     electricityDrawerVisible: false,
@@ -283,35 +283,11 @@ export default class GasStation extends PureComponent {
       payload: { company_id: companyId },
     });
 
-    // // 获取点位信息
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchRiskPointInfo',
-    //   payload: { company_id: companyId },
-    // });
-
     // 获取消防主机监测
     this.fetchFireAlarmSystem();
-    // 获取消防设施评分
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchSystemScore',
-    //   payload: {
-    //     companyId,
-    //   },
-    // });
-
-    // 获取隐患详情
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchRiskDetail',
-    //   payload: {
-    //     company_id: companyId,
-    //   },
-    // });
 
     // 获取警情动态详情及历史
     [0, 1].forEach(i => this.handleFetchAlarmHandle(0, i));
-
-    // 初始化维保工单
-    // this.handleFetchAllWorkOrder();
 
     // 获取故障
     dispatch({ type: 'newUnitFireControl/fetchFault', payload: { companyId } });
@@ -337,8 +313,6 @@ export default class GasStation extends PureComponent {
         companyId,
       },
     });
-    // 获取大屏消息
-    // this.fetchScreenMessage(dispatch, companyId);
 
     dispatch({
       type: 'newUnitFireControl/fetchScreenMessage',
@@ -393,9 +367,6 @@ export default class GasStation extends PureComponent {
     // 获取点位巡查列表
     this.fetchPointInspectionList();
 
-    // 轮询
-    // this.pollTimer = setInterval(this.polling, DELAY);
-    // this.chartPollTimer = setInterval(this.chartPolling, CHART_DELAY);
     dispatch({ type: 'monitor/fetchAllCamera', payload: { company_id: companyId } });
     dispatch({ type: 'monitor/fetchCameraTree', payload: { company_id: companyId } });
 
@@ -481,14 +452,13 @@ export default class GasStation extends PureComponent {
       match: { params: { unitId: companyId } },
     } = this.props;
 
-    const { checkItemId, waterTab } = this.state;
+    const { checkItemId } = this.state;
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
 
     const params = {
       companyId,
       env,
-      //env: 'dev',
-      type: 1,
+      type: WEB_SOCKET_TYPE,
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
 
@@ -510,21 +480,12 @@ export default class GasStation extends PureComponent {
               type,
               checkResult,
               pointId,
-              deviceType,
               isOver,
               enterSign,
             } = result;
 
-            if (
-              type === 7 ||
-              type === 9 ||
-              type === 38 ||
-              // type === 39 ||
-              type === 40 ||
-              type === 41 ||
-              type === 32 ||
-              type === 36
-            ) {
+            // if ( type === 7 || type === 9 || type === 32 || type === 36 ||  type === 38 || type === 40 || type === 41) {
+            if ([7, 9, 32, 36, 38, 40, 41].includes(+type)) {
               if (+isOver === 0) {
                 if (type === 7 || type === 9) {
                   if (enterSign === '1') this.showFireMsg(result);
@@ -546,21 +507,14 @@ export default class GasStation extends PureComponent {
               });
             }
 
-            if (
-              type === 1 ||
-              type === 2 ||
-              type === 3 ||
-              type === 4 ||
-              type === 9 ||
-              type === 7 ||
-              type === 21 ||
-              type === 52
-            ) {
+            // if (type === 1 || type === 2 || type === 3 || type === 4 || type === 9 || type === 7 || type === 21 || type === 52) {
+            if ([1, 2, 3, 4, 7, 9, 21, 52].includes(+type)) {
               // 获取消防主机监测
               this.fetchFireAlarmSystem();
             }
 
-            if (type === 14 || type === 15 || type === 16 || type === 17) {
+            // if (type === 14 || type === 15 || type === 16 || type === 17) {
+            if ([14, 15, 16, 17].includes(+type)) {
               // 更新当前隐患总数
               dispatch({
                 type: 'newUnitFireControl/fetchHiddenDangerNum',
@@ -568,7 +522,8 @@ export default class GasStation extends PureComponent {
               });
             }
 
-            if (type === 44 || type === 32 || type === 42 || type === 43) {
+            // if (type === 44 || type === 32 || type === 42 || type === 43) {
+            if ([32, 42, 43, 44].includes(+type)) {
               // 电气火灾监测
               dispatch({
                 type: 'electricityMonitor/fetchDeviceStatusCount',
@@ -579,38 +534,15 @@ export default class GasStation extends PureComponent {
             }
 
             // 获取水系统---消火栓系统
-            if (type === 36 || type === 37 || type === 48 || type === 49) {
+            // if (type === 36 || type === 37 || type === 48 || type === 49) {
+            if ([36, 37, 48, 49].includes(+type)) {
               // 36 水系统报警 37 水系统报警恢复 48水系统失联 49 水系统失联恢复
-              // if (+deviceType === +waterTab) this.fetchWaterSystem(deviceType);
-              // if (this.state.waterSystemDrawerVisible) {
-              //   dispatch({
-              //     // type: 'newUnitFireControl/fetchWaterDrawer',
-              //     // type: 'newUnitFireControl/fetchWaterSystem',
-              //     type: 'gasStation/fetchWaterSystem',
-              //     payload: {
-              //       companyId,
-              //       type: WATER_TYPES[this.state.waterTabItem],
-              //     },
-              //   });
-              // }
               this.fetchAllWaterSystem();
-              // dispatch({
-              //   type: 'newUnitFireControl/fetchWaterAlarm',
-              //   payload: {
-              //     companyId,
-              //   },
-              // });
             }
 
-            if (
-              type === 38 ||
-              type === 40 ||
-              type === 46 ||
-              type === 47 ||
-              type === 50 ||
-              type === 51
-            ) {
-              // 烟感列表
+            // 烟感列表
+            // if (type === 38 || type === 40 || type === 46 || type === 47 || type === 50 || type === 51) {\
+            if ([38, 40, 46, 47, 50, 51].includes(+type)) {
               dispatch({
                 type: 'smoke/fetchCompanySmokeInfo',
                 payload: {
@@ -618,17 +550,6 @@ export default class GasStation extends PureComponent {
                 },
               });
             }
-
-            // if (type === 18) {
-            //   // 获取消防设施评分
-            //   dispatch({
-            //     type: 'newUnitFireControl/fetchSystemScore',
-            //     payload: {
-            //       companyId,
-            //     },
-            //   });
-            //   if (this.state.fireAlarmVisible) this.fetchViewFireAlarm();
-            // }
 
             // 四色图隐患
             const { fourColorTips, deletedFourColorTips } = this.state;
@@ -678,7 +599,8 @@ export default class GasStation extends PureComponent {
                 },
               });
             }
-            if (type === 15 || type === 16 || type === 17) {
+            // if (type === 15 || type === 16 || type === 17) {
+            if ([15, 16, 17].includes(+type)) {
               if (fourColorTips[pointId] === messageFlag)
                 this.removeFourColorTip(pointId, messageFlag);
               // 获取点位
@@ -757,8 +679,6 @@ export default class GasStation extends PureComponent {
 
   showFireMsg = item => {
     const { type, messageId } = item;
-    // if (type === 7 || type === 9 || type === 38 || type === 39 || type === 40 || type === 41) {
-    //   if (+isOver === 0) {
     const msgItem = switchMsgType(+type);
     const style = {
       boxShadow: `0px 0px 20px ${msgItem.color}`,
@@ -793,8 +713,6 @@ export default class GasStation extends PureComponent {
         },
       });
     }, 800);
-    //   }
-    // }
   };
 
   renderNotificationTitle = item => {
@@ -820,12 +738,6 @@ export default class GasStation extends PureComponent {
       area,
       location,
       cameraMessage,
-      // isOver,
-      // count,
-      // num,
-      // newTime,
-      // firstTime,
-      // lastTime,
       componentType,
       workOrder,
       systemTypeValue,
@@ -841,10 +753,6 @@ export default class GasStation extends PureComponent {
       partNumber,
     } = item;
     const msgItem = switchMsgType(+type);
-    // const repeat = {
-    //   times: +isOver === 0 ? count : num,
-    //   lastreportTime: addTime,
-    // };
     const occurData = [
       {
         create_time: addTime,
@@ -876,15 +784,39 @@ export default class GasStation extends PureComponent {
       <div
         className={styles.notificationBody}
         onClick={() => {
-          if (type === 7) this.handleClickMsgFlow(param, 0, 0, ...restParams);
-          else if (type === 9) this.handleClickMsgFlow(param, 0, 1, ...restParams);
-          else if (type === 38) this.handleClickMsgFlow(param, 1, 0, ...restParams);
-          else if (type === 39) this.handleClickMsgFlow(param, 2, 0, ...restParams);
-          else if (type === 40) this.handleClickMsgFlow(param, 1, 1, ...restParams);
-          else if (type === 32) this.handleClickElecMsg(deviceId, paramName);
-          else if (type === 36) this.handleClickWater(0, WATER_TYPES.indexOf(+deviceType));
-          // if (type === 7 || type === 38 || type === 39) this.handleClickMessage(messageFlag, item);
-          // else this.handleFaultClick({ ...item });
+          // if (type === 7) this.handleClickMsgFlow(param, 0, 0, ...restParams);
+          // else if (type === 9) this.handleClickMsgFlow(param, 0, 1, ...restParams);
+          // else if (type === 38) this.handleClickMsgFlow(param, 1, 0, ...restParams);
+          // else if (type === 39) this.handleClickMsgFlow(param, 2, 0, ...restParams);
+          // else if (type === 40) this.handleClickMsgFlow(param, 1, 1, ...restParams);
+          // else if (type === 32) this.handleClickElecMsg(deviceId, paramName);
+          // else if (type === 36) this.handleClickWater(0, WATER_TYPES.indexOf(+deviceType));
+
+          switch(type) {
+            case 7:
+              this.handleClickMsgFlow(param, 0, 0, ...restParams);
+              break;
+            case 9:
+              this.handleClickMsgFlow(param, 0, 1, ...restParams);
+              break;
+            case 32:
+              this.handleClickElecMsg(deviceId, paramName);
+              break;
+            case 36:
+              this.handleClickWater(0, WATER_TYPES.indexOf(+deviceType));
+              break;
+            case 38:
+              this.handleClickMsgFlow(param, 1, 0, ...restParams);
+              break;
+            case 39:
+              this.handleClickMsgFlow(param, 2, 0, ...restParams);
+              break;
+            case 40:
+              this.handleClickMsgFlow(param, 1, 1, ...restParams);
+              break;
+            default:
+              console.log('default click');
+          }
         }}
       >
         <div>
@@ -932,14 +864,6 @@ export default class GasStation extends PureComponent {
     const { checkItemId } = this.state;
     // 获取消防主机监测
     this.fetchFireAlarmSystem();
-
-    // 获取消防设施评分
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchSystemScore',
-    //   payload: {
-    //     companyId,
-    //   },
-    // });
 
     // 获取当前隐患列表
     dispatch({
@@ -1006,21 +930,13 @@ export default class GasStation extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
-    // this.setState({ waterTab: type });
     dispatch({
-      // type: 'newUnitFireControl/fetchWaterSystem',
       type: 'gasStation/fetchWaterSystem',
       payload: {
         companyId,
         type,
       },
     });
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchWaterAlarm',
-    //   payload: {
-    //     companyId,
-    //   },
-    // });
   };
   /**
    * 获取点位巡查列表
@@ -1082,18 +998,6 @@ export default class GasStation extends PureComponent {
           }
         }
 
-        // let sameIndex = -1;
-        // res.list.forEach((item, index) => {
-        //   if (item.messageId === this.topId) {
-        //     sameIndex = index;
-        //     return;
-        //   }
-        // });
-        // 截取新的消息列表
-        // const newMsg = sameIndex < 0 ? res.list : res.list.slice(0, sameIndex);
-        // newMsg.forEach(data => {
-        //   this.showFireMsg(data);
-        // });
         this.topId = res.list[0] ? res.list[0].messageId : undefined;
       },
     });
@@ -1197,15 +1101,6 @@ export default class GasStation extends PureComponent {
       type: 'newUnitFireControl/fetchHiddenDangerNum',
       payload: { companyId },
     });
-
-    // 获取当前隐患列表
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-    //   payload: {
-    //     company_id: companyId,
-    //     businessType: 2,
-    //   },
-    // });
 
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
@@ -1385,7 +1280,7 @@ export default class GasStation extends PureComponent {
       callback: res => {
         const {
           data: {
-            list: [{ cameraMessage }, ...rest],
+            list: [{ cameraMessage }],
           },
         } = res;
         this.handleShowFireVideo(cameraMessage);
@@ -1395,14 +1290,10 @@ export default class GasStation extends PureComponent {
   };
 
   handleClickMessage = (dataId, msg) => {
-    // const {
-    //   monitor: { allCamera },
-    // } = this.props;
     const { cameraMessage } = msg;
     this.hiddeAllPopup();
     this.handleFetchAlarmHandle(dataId);
     this.setState({ alarmMessageDrawerVisible: true });
-    // this.handleShowVideo(allCamera.length ? allCamera[0].key_id : '', true);
     this.handleShowFireVideo(cameraMessage);
   };
 
@@ -1430,7 +1321,6 @@ export default class GasStation extends PureComponent {
   handleFaultClick = data => {
     const { cameraMessage, messageFlag } = data;
     this.hiddeAllPopup();
-    // this.setState({ faultMessage: data, faultMessageDrawerVisible: true });
     const {
       dispatch,
       match: {
@@ -1470,17 +1360,6 @@ export default class GasStation extends PureComponent {
     const status =
       (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || null;
     this.setState({ hdStatus: status });
-    // 获取当前隐患列表
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-    //   payload: {
-    //     company_id: companyId,
-    //     businessType: 2,
-    //     status:
-    //       (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || null,
-    //   },
-    //   callback,
-    // });
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
       payload: {
@@ -1552,9 +1431,7 @@ export default class GasStation extends PureComponent {
   handleViewWater = (i, type, filterIndex) => {
     const {
       dispatch,
-      match: {
-        params: { unitId: companyId },
-      },
+      match: { params: { unitId: companyId } },
     } = this.props;
     const state = {
       waterSystemDrawerVisible: true,
@@ -1590,7 +1467,6 @@ export default class GasStation extends PureComponent {
       videoUrl: rtsp_address,
       videoName: name,
     }));
-    // const MediaPlayUrls = [{"videoUrl":"rtsp://admin:12345@192.168.16.250:554/h264/ch7/sub/av_stream","videoName":"视频1"},{"videoUrl":"rtsp://admin:12345@192.168.16.250:554/h264/ch7/sub/av_stream","videoName":"视频2"}];
     const url = 'ws://localhost:10035/test';
     const ws = new WebSocket(url);
     ws.onopen = () => {
@@ -1626,8 +1502,6 @@ export default class GasStation extends PureComponent {
       },
     } = this.props;
     dispatch({
-      // type: 'newUnitFireControl/fetchWaterDrawer',
-      // type: 'newUnitFireControl/fetchWaterSystem',
       type: 'gasStation/fetchWaterSystem',
       payload: {
         companyId,
@@ -1654,17 +1528,11 @@ export default class GasStation extends PureComponent {
   };
 
   handleClickWorkOrder = index => {
-    // this.getWarnDetail(index, 0, 1);
-    // this.getFaultDetail(index, 0, 1);
     this.getAllDetail(index, 0, 1);
     this.setState({ newWorkOrderDrawerVisible: true, workOrderStatus: index, workOrderType: 0 });
     this.getWordOrderCount(index);
     if (document.getElementById(`workOrderScroll`))
       document.getElementById(`workOrderScroll`).scrollTop = 0;
-    // [0, 1].forEach(item => {
-    //   if (document.getElementById(`workOrderScroll${item}`))
-    //     document.getElementById(`workOrderScroll${item}`).scrollTop = 0;
-    // });
   };
 
   getAllDetail = (status, type = 1, pageNum, params = {}) => {
@@ -1718,8 +1586,6 @@ export default class GasStation extends PureComponent {
     if (index === 3) this.getAllDetail(workOrderStatus, index, 1);
     // 一键报修
     else fetchDetail(workOrderStatus, index, 1);
-    // this.getWarnDetail(workOrderStatus, index, 1);
-    // this.getFaultDetail(workOrderStatus, index, 1);
     this.setState({ workOrderType: index });
   };
 
@@ -1966,15 +1832,6 @@ export default class GasStation extends PureComponent {
         this.setState({ fireMonitorFlowDrawerVisible: true, msgFlow: flow });
       },
     });
-    // this.handleFetchAlarmHandle(0, 0, res => {
-    //   const {
-    //     data: {
-    //       list: [{ cameraMessage }, ...rest],
-    //     },
-    //   } = res;
-    //   this.handleShowFireVideo(cameraMessage);
-    // });
-    // this.setState({ alarmDynamicDrawerVisible: true });
   };
 
   handleClickMsgFlow = (
@@ -2016,7 +1873,6 @@ export default class GasStation extends PureComponent {
           if (res) {
             // 待处理自行拼
             const { num, lastTime, firstTime } = res;
-            // this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
             dispatch({
               type: 'newUnitFireControl/saveWorkOrderDetail',
               payload: [{ ...occurData[0], firstTime, num, lastTime }],
@@ -2026,11 +1882,6 @@ export default class GasStation extends PureComponent {
             dispatch({
               type: 'newUnitFireControl/fetchWorkOrder',
               payload: { companyId, reportType: reportTypes[type], ...param },
-              // callback: res => {
-              //   if (res.data.list.length === 0) return;
-              //   const { num, lastTime } = res.data.list[0];
-              //   this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
-              // },
             });
           }
         },
@@ -2051,26 +1902,12 @@ export default class GasStation extends PureComponent {
         },
       });
     }
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchWorkOrder',
-    //   payload: { companyId, reportType: reportTypes[type], ...param },
-    //   callback: res => {
-    //     if (!(res.data && Array.isArray(res.data.list))) return;
-    //     if (res.data.list.length === 0) {
-    //       dispatch({
-    //         type: 'newUnitFireControl/saveWorkOrderDetail',
-    //         payload: occurData,
-    //       });
-    //     }
-    //   },
-    // });
     this.setState({
       [drawerVisibles[type]]: true,
       msgFlow: flow,
       dynamicType: type,
       videoList: cameraMessage,
     });
-    // this.handleShowFireVideo(cameraMessage);
   };
 
   handleClickElecMsg = (deviceId, paramName) => {
@@ -2158,15 +1995,6 @@ export default class GasStation extends PureComponent {
       },
       monitor: { allCamera, cameraTree },
       newUnitFireControl: {
-        // fireAlarmSystem: {
-        //   fire_state = 0,
-        //   fault_state = 0,
-        //   start_state = 0,
-        //   supervise_state = 0,
-        //   shield_state = 0,
-        //   feedback_state = 0,
-        // },
-        // systemScore,
         currentHiddenDanger,
         currentHiddenDanger: { timestampList },
         checkCount,
@@ -2181,9 +2009,6 @@ export default class GasStation extends PureComponent {
         workOrderDetail, // 只有一个元素的数组
         fireAlarm,
         faultList,
-        // waterSystemData: { list: waterList },
-        // waterDrawer: { list: waterDrawerList },
-        // waterAlarm,
         maintenanceCompany: {
           name: maintenanceCompanys = [],
           PrincipalName = '', // 安全管理员
@@ -2251,7 +2076,7 @@ export default class GasStation extends PureComponent {
       latestHiddenDangerId,
       videoList,
       fireVideoVisible,
-      fireVideoKeyId,
+      // fireVideoKeyId,
       waterSystemDrawerVisible,
       waterTabItem,
       smokeDrawerVisible,
@@ -2262,10 +2087,10 @@ export default class GasStation extends PureComponent {
       newWorkOrderDrawerVisible,
       workOrderType,
       workOrderStatus,
-      fireMonitorIndex,
-      fireControlType,
+      // fireMonitorIndex,
+      // fireControlType,
       fireFlowDrawerVisible,
-      occurData,
+      // occurData,
       smokeFlowDrawerVisible,
       onekeyFlowDrawerVisible,
       gasFlowDrawerVisible,
@@ -2395,11 +2220,6 @@ export default class GasStation extends PureComponent {
             </div>
             <div className={styles.item}>
               <div className={styles.inner}>
-                {/* 维保统计 */}
-                {/* <MaintenanceCount
-                  model={this.props.newUnitFireControl}
-                  handleShowOrder={this.handleDrawerVisibleChange}
-                /> */}
                 {/* 安全巡查/处理工单 */}
                 <CheckWorkOrder
                   coItemList={coItemList}
@@ -2492,7 +2312,6 @@ export default class GasStation extends PureComponent {
           phoneVisible={phoneVisible}
         />
         <AlarmDynamicDrawer
-          // data={alarmHandleHistory}
           data={
             alarmHandleHistory.length > 20 ? alarmHandleHistory.slice(0, 20) : alarmHandleHistory
           }
@@ -2592,9 +2411,6 @@ export default class GasStation extends PureComponent {
           waterTabItem={waterTabItem}
           onClose={this.handleCloseWater}
           waterLists={[ hydrant, spray, pond ]}
-          // waterList={waterList}
-          // waterDrawer={waterDrawerList}
-          // onClick={this.handleClickWater}
           showWaterItemDrawer={this.showWaterItemDrawer}
           filterIndex={filterIndex}
           handleParentChange={this.handleParentChange}
@@ -2632,14 +2448,7 @@ export default class GasStation extends PureComponent {
           visible={resetHostsDrawerVisible}
           hosts={hosts}
           onClose={() => {
-            // const { dispatch } = this.props;
             this.handleDrawerVisibleChange('resetHosts');
-            // dispatch({
-            //   type: 'unitFireControl/fetchHosts',
-            //   payload: {
-            //     companyId,
-            //   },
-            // });
           }}
           handleResetSingleHost={this.handleResetSingleHost}
           handleResetAllHosts={this.handleResetAllHosts}

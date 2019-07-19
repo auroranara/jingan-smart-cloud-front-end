@@ -79,7 +79,7 @@ export default class WaterItemDrawer extends PureComponent {
         <div className={styles.chartContainer}>
           <h3 className={styles.chartTitle}>
             <span className={styles.rectIcon} />
-            数据监测
+            实时监测数据
             {/* {!!cameraList.length && (
               <span
                 className={styles.camera}
