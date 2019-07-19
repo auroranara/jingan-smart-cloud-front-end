@@ -198,6 +198,7 @@ export default class SmokeFlowDrawer extends PureComponent {
       <DrawerContainer
         id={ID}
         title={`${TITLES[msgFlow]}处理动态`}
+        destroyOnClose
         zIndex={1388}
         width={535}
         left={left}

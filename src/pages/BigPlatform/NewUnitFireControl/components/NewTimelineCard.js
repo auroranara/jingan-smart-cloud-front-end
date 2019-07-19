@@ -63,7 +63,8 @@ export default function NewTimelineCard(props) {
                   : dataLength - 1 === index
                     ? { color: '#0ff', borderColor: '#0ff' }
                     : { color: '#4f6793', borderColor: '#4f6793' };
-              const timeStyle = isLast ? { color: '#fff' } : { color: '#8198B4' };
+              const timeStyle = { color: isLast ? '#fff' : '#8198B4' };
+              const containerStyle = { borderColor: isLast ? '#0ff' : '#0296B2' };
               return (
                 <TimelineItem
                   spans={SPANS}
@@ -71,7 +72,7 @@ export default function NewTimelineCard(props) {
                   day={getTime(time)}
                   hour={getTime(time, 1)}
                   key={index}
-                  containerStyle={{ minHeight: '75px' }}
+                  containerStyle={{ minHeight: '75px', ...containerStyle }}
                   labelStyle={labelStyle}
                   timeStyle={timeStyle}
                 >
