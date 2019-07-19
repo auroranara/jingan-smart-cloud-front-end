@@ -70,7 +70,6 @@ export default class MonitorDrawer extends PureComponent {
       handleFaultClick,
       deviceListData: { list = [] },
     } = this.props;
-    console.log('listlistlist', list);
 
     const { statusIndex } = this.state;
     const dataList = list.filter(item => {
@@ -98,7 +97,7 @@ export default class MonitorDrawer extends PureComponent {
       <div className={styles.devScroll}>
         <Row gutter={16}>
           {dataList.length ? (
-            list.map((item, index) => {
+            dataList.map((item, index) => {
               const {
                 area,
                 location,
