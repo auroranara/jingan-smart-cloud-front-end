@@ -125,7 +125,7 @@ export default class SmokeDrawer extends PureComponent {
                                 occurData,
                                 false
                               );
-                          if (+hasCamera === 1) this.handleClickCamera(device_id);
+                          // if (+hasCamera === 1) this.handleClickCamera(device_id);
                         }}
                       >
                         处理动态>>
