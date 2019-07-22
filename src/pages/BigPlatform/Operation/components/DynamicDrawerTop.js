@@ -40,7 +40,6 @@ export default class DynamicDrawerTop extends Component {
 
   render() {
     const { showRepeatDesc } = this.state;
-    // console.log('headProps', this.props.headProps)
     const {
       companyName = null,
       component = null, // 回路号

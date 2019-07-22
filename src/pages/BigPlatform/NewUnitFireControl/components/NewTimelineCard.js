@@ -35,7 +35,7 @@ export default function NewTimelineCard(props) {
   return (
     <div
       className={styles.container}
-      style={{ height: '100%', display: 'flex', flexDirection: 'column', ...style }}
+      style={{ height: 'auto', display: 'flex', flexDirection: 'column', ...style }}
       {...restProps}
     >
       {showHead && (

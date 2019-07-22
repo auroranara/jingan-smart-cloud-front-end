@@ -1861,6 +1861,7 @@ export default class NewUnitFireControl extends PureComponent {
       dynamicType: type,
       videoList: cameraMessage,
     });
+    Array.isArray(cameraMessage) && cameraMessage.length > 0 && this.handleShowFlowVideo();
   };
 
   handleShowAlarmFlows = flow => {
@@ -1988,6 +1989,7 @@ export default class NewUnitFireControl extends PureComponent {
       dynamicType: type,
       videoList: cameraMessage,
     });
+    Array.isArray(cameraMessage) && cameraMessage.length > 0 && this.handleShowFlowVideo();
     // this.handleShowFireVideo(cameraMessage);
   };
 
