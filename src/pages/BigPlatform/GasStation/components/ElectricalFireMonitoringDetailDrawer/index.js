@@ -371,7 +371,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
         },
       },
       grid: {
-        top: 20,
+        top: 40,
         left: 20,
         right: 20,
         bottom: 30,
@@ -397,6 +397,10 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
         },
       },
       yAxis: {
+        name: `单位(${unit})`,
+        nameTextStyle: {
+          color: '#fff',
+        },
         type: 'value',
         scale: true,
         axisLine: {

@@ -2591,6 +2591,7 @@ export default class GasStation extends PureComponent {
         <ElectricalFireMonitoringDetailDrawer
           visible={this.state.electricalFireMonitoringDetailDrawerVisible}
           value={this.state.electricalFireMonitoringDetailDrawerValue}
+          activeKey={this.state.electricalFireMonitoringDetailDrawerActiveKey}
           onClose={this.hideElectricalFireMonitoringDetailDrawer}
         />
         <WaterItemDrawer
