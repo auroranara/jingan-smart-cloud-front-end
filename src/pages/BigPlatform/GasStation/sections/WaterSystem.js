@@ -45,7 +45,7 @@ export default class WaterSystem extends PureComponent {
     }
 
     return (
-      <Section title="水系统">
+      <Section title="消防水系统">
         <div className={styles.container}>
           {child}
           {title}

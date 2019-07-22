@@ -7,6 +7,7 @@ import {
   getDistributionBoxAlarmCount,
   getDeviceHistory,
   getUnitPhoto,
+  getScreenMessage,
 } from '../services/gasStation';
 
 function error (msg) {
@@ -108,6 +109,7 @@ export default {
     spray: [], // 喷淋
     hydrant: [], // 消火栓
     unitPhoto: '',
+    screenMessage: [],
   },
 
   effects: {
@@ -187,6 +189,21 @@ export default {
         });
       }
     },
+    *fetchScreenMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getScreenMessage, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({
+          type: 'saveScreenMessage',
+          payload: data && Array.isArray(data.list) ? data.list : [],
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
   },
 
   reducers: {
@@ -222,6 +239,15 @@ export default {
     },
     saveUnitPhoto(state, action) {
       return { ...state, unitPhoto: action.payload };
+    },
+    saveScreenMessage(state, action) {
+      let newMsg = action.payload;
+      if (action.isMore)
+        newMsg = [...newMsg, ...state.screenMessage];
+      return {
+        ...state,
+        screenMessage: newMsg,
+      };
     },
   },
 };
