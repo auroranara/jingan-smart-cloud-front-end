@@ -1,0 +1,238 @@
+.container {
+  height: 100%;
+}
+.wrapper {
+  height: 100%;
+}
+.list {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 0.5em;
+}
+.itemWrapper {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  padding: 0 0.5em;
+  width: 33.333333%;
+  max-width: 7.9375em; // 127px
+}
+.item {
+  flex: none;
+  width: 5.3125em; // 85px
+  cursor: pointer;
+}
+.itemTop {
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+.itemBottom {
+  position: relative;
+
+  .itemPercent {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+  }
+
+  img {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    z-index: 2;
+  }
+
+  .itemCount {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1em 0;
+    font-size: 1.5em;
+    text-align: center;
+    z-index: 3;
+  }
+}
+.itemLabel {
+  padding-top: 1em;
+  font-size: 14px;
+  line-height: 1;
+  text-align: center;
+}
+/* 单个配电箱 */
+.singleContainer {
+  height: 100%;
+  padding: 0 1em;
+}
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  height: 1.5em;
+}
+.titleIcon {
+  flex: none;
+  margin-right: 0.25em;
+  width: 18px;
+  height: 16.5px;
+}
+.title {
+  flex: none;
+  font-size: 14px;
+}
+.content {
+  height: calc(~'100% - 1.5em');
+}
+.subContent {
+  position: relative;
+  height: 100%;
+  cursor: pointer;
+
+  :global {
+    .ant-carousel {
+      height: 100%;
+    }
+    .slick-slider {
+      height: 100%;
+    }
+    .slick-list {
+      height: 100%;
+    }
+    .slick-track {
+      height: 100%;
+    }
+    .slick-slide {
+      &>div {
+        height: 100%;
+      }
+    }
+  }
+}
+.carouselItem {
+  position: relative;
+  height: 100%;
+}
+.alarmWrapper {
+  position: absolute;
+  top: 0.75em;
+  left: 1.25em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.alarmIcon {
+  flex: none;
+  width: 2.1875em;
+  height: 2.1875em;
+  margin-bottom: 0.75em;
+}
+.alarmLabel {
+  flex: none;
+  font-size: 14px;
+  line-height: 1;
+  color: #fff;
+}
+.prevAlarmName {
+  position: absolute;
+  left: 0;
+  bottom: 0.125em;
+  color: #f83329;
+  font-size: 12px;
+  line-height: 1;
+  padding: 5px 7px;
+  border: 1px solid #f83329;
+  border-radius: 5px;
+}
+.nextAlarmName {
+  position: absolute;
+  right: 0;
+  bottom: 0.125em;
+  color: #f83329;
+  font-size: 12px;
+  line-height: 1;
+  padding: 5px 7px;
+  border: 1px solid #f83329;
+  border-radius: 5px;
+}
+.prevButton {
+  position: absolute;
+  left: 0;
+  bottom: 50%;
+  font-size: 20px;
+  color: #0072e0;
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+  }
+}
+.nextButton {
+  position: absolute;
+  right: 0;
+  bottom: 50%;
+  font-size: 20px;
+  color: #0072e0;
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+  }
+}
+.echarts {
+  height: 100% !important;
+  cursor: pointer !important;
+
+  div,
+  canvas {
+    cursor: pointer !important;
+  }
+}
+/* 失联 */
+.lossWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.lossIcon {
+  flex: none;
+  margin-bottom: 1.5em;
+  width: 5.875em;
+  height: 5.0625em;
+}
+.lossLabel {
+  flex: none;
+  line-height: 1;
+}
+
+@media screen and (max-width: 1599px) {
+  .itemLabel {
+    font-size: 13px;
+  }
+  .title {
+    font-size: 13px;
+  }
+  .alarmLabel {
+    font-size: 13px;
+  }
+}
+
+@media screen and (max-width: 1399px) {
+  .itemLabel {
+    font-size: 12px;
+  }
+  .title {
+    font-size: 12px;
+  }
+  .alarmLabel {
+    font-size: 12px;
+  }
+}
