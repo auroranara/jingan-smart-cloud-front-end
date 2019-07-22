@@ -21,3 +21,8 @@ export async function getDistributionBoxAlarmCount(params) {
 export async function getDeviceHistory(params) {
   return request(`/acloud_new/v2/deviceInfo/getDeviceDataHistory?${stringify(params)}`);
 }
+
+// 获取企业照片
+export async function getUnitPhoto(id) {
+  return request(`/acloud_new/v2/baseInfo/company/${id}`);
+}

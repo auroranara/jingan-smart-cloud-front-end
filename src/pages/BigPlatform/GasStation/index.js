@@ -267,6 +267,11 @@ export default class GasStation extends PureComponent {
       match: { params: { unitId: companyId } },
     } = this.props;
 
+    dispatch({
+      type: 'gasStation/fetchUnitPhoto',
+      payload: companyId,
+    });
+
     // 获取企业信息
     dispatch({
       type: 'newUnitFireControl/fetchCompanyMessage',
@@ -2034,7 +2039,7 @@ export default class GasStation extends PureComponent {
       bigPlatform: { coItemList, hiddenDangerList },
       unitFireControl: { hosts, fireControlCount },
       unitSafety: { points, phoneVisible },
-      gasStation: { distributionBoxAlarmCount, waterHistory, pond, spray, hydrant },
+      gasStation: { distributionBoxAlarmCount, waterHistory, pond, spray, hydrant, unitPhoto },
       warnDetailLoading,
       faultDetailLoading,
       allDetailLoading,
@@ -2171,6 +2176,7 @@ export default class GasStation extends PureComponent {
             handleViewCurrentDanger={this.handleViewCurrentDanger}
             handleCheckDrawer={this.handleCheckDrawer}
             model={this.props.newUnitFireControl}
+            src={unitPhoto}
             phoneVisible={phoneVisible}
           />
         </div>

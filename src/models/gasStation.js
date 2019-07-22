@@ -6,6 +6,7 @@ import {
   getDistributionBoxTodayData,
   getDistributionBoxAlarmCount,
   getDeviceHistory,
+  getUnitPhoto,
 } from '../services/gasStation';
 
 function error (msg) {
@@ -106,6 +107,7 @@ export default {
     pond: [], // 水池 水箱
     spray: [], // 喷淋
     hydrant: [], // 消火栓
+    unitPhoto: '',
   },
 
   effects: {
@@ -175,6 +177,16 @@ export default {
         callback && callback();
       }
     },
+    *fetchUnitPhoto({ payload }, { call, put }) {
+      const response = yield call(getUnitPhoto, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({
+          type: 'saveUnitPhoto',
+          payload: data && Array.isArray(data.companyPhotoDetails) && data.companyPhotoDetails[0] ? data.companyPhotoDetails[0].webUrl : '',
+        });
+      }
+    },
   },
 
   reducers: {
@@ -207,6 +219,9 @@ export default {
         ...state,
         pond: action.payload,
       };
+    },
+    saveUnitPhoto(state, action) {
+      return { ...state, unitPhoto: action.payload };
     },
   },
 };

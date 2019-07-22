@@ -23,6 +23,7 @@ export default class CompanyInfo extends PureComponent {
           PrincipalPhone = '',
         },
       },
+      src,
       phoneVisible,
     } = this.props;
 
@@ -33,7 +34,7 @@ export default class CompanyInfo extends PureComponent {
       >
         <div className={styles.top}>
           <div className={styles.topLeft}>
-            <div className={styles.topLeftItem} style={{ backgroundImage: `url(${defaultGasStationIcon})` }} />
+            <div className={styles.topLeftItem} style={{ backgroundImage: `url(${src || defaultGasStationIcon})` }} />
           </div>
           <div className={styles.topRight}>
             <div className={styles.topRightTop}>
