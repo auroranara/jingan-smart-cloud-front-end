@@ -19,14 +19,14 @@ export const SMOKE_DETECTOR_TYPE = 6;
 export const SMOKE_DETECTOR_TYPE_LABEL = '独立烟感异常数据分析';
 
 export const PAGE_SIZE = 10;
-const STATUS_MAP = { '-1': '失联', 1: '预警', 2: '告警' };
+const STATUS_MAP = { '-1': '失联', 1: '报警', 2: '报警' };
 const SMOKE_STATUS_MAP = { '-1': '失联', 2: '火警' };
 const STATUS_COLOR_MAP = { '-1': 'rgba(0,0,0,0.65)', 1: 'orange', 2: 'red' };
 
 const OPTIONS = [
   { name: '全部', key: 0 },
-  { name: '预警', key: 1 },
-  { name: '告警', key: 2 },
+  // { name: '预警', key: 1 },
+  { name: '报警', key: 1 },
   { name: '失联', key: -1 },
 ];
 
