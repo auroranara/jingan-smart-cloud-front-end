@@ -88,7 +88,7 @@ const fieldLabels = {
   gridId: '所属网格',
   importantSafety: '安全重点单位',
   importantHost: '消防重点单位',
-  unitPhoto: '单位头像',
+  unitPhoto: '单位照片',
 };
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
@@ -244,12 +244,14 @@ export default class CompanyDetail extends PureComponent {
           practicalDistrict,
           companyIchnography,
           fireIchnographyDetails,
+          companyPhotoDetails,
           companyNatureLabel,
           gridId,
           companyType,
         }) => {
           const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
           const fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
+          const unitPhotoList = Array.isArray(companyPhotoDetails) ? companyPhotoDetails : [];
           // 若idMap已获取则设值，未获取时则在获取idMap后设值
           this.gridId = gridId;
           Object.keys(this.idMap).length && setFieldsValue({ gridId: this.idMap[gridId] });
@@ -270,8 +272,15 @@ export default class CompanyDetail extends PureComponent {
                   uid: index,
                   status: 'done',
                 })),
-            firePictureList: fireIchnographyList.map(({ dbUrl, webUrl, fileName }, index) => ({
-              uid: index,
+            firePictureList: fireIchnographyList.map(({ id, dbUrl, webUrl, fileName }, index) => ({
+              uid: id || index,
+              status: 'done',
+              name: fileName,
+              url: webUrl,
+              dbUrl,
+            })),
+            unitPhotoList: unitPhotoList.map(({ id, dbUrl, webUrl, fileName }, index) => ({
+              uid: id || index,
               status: 'done',
               name: fileName,
               url: webUrl,
@@ -470,7 +479,7 @@ export default class CompanyDetail extends PureComponent {
           this.setState({
             submitting: true,
           });
-          const { ichnographyList, firePictureList } = this.state;
+          const { ichnographyList, firePictureList, unitPhotoList } = this.state;
           const [longitude, latitude] = coordinate ? coordinate.split(',') : [];
           const payload = {
             ...restFields,
@@ -489,7 +498,10 @@ export default class CompanyDetail extends PureComponent {
               ichnographyList.map(({ name, url, dbUrl }) => ({ name, url, dbUrl }))
             ),
             fireIchnography: JSON.stringify(
-              firePictureList.map(({ name, webUrl, dbUrl }) => ({ fileName: name, webUrl, dbUrl }))
+              firePictureList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
+            ),
+            companyPhoto: JSON.stringify(
+              unitPhotoList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
             ),
             longitude,
             latitude,

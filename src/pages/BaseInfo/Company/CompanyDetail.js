@@ -85,6 +85,7 @@ const fieldLabels = {
   gridId: '所属网格',
   importantSafety: '安全重点单位',
   importantHost: '消防重点单位',
+  unitPhoto: '单位图片',
 };
 // tab列表
 const tabList = [
@@ -233,6 +234,7 @@ export default class CompanyDetail extends PureComponent {
             companyNatureLabel,
             companyIchnography,
             fireIchnographyDetails,
+            companyPhotoDetails,
             registerAddress,
             registerProvinceLabel,
             registerCityLabel,
@@ -248,7 +250,7 @@ export default class CompanyDetail extends PureComponent {
         },
       },
     } = this.props;
-    const { isCompany, gridLabel } = this.state;
+    const { isCompany } = this.state;
 
     const [importantHost, importantSafety] = getImportantTypes(companyType);
 
@@ -272,6 +274,7 @@ export default class CompanyDetail extends PureComponent {
     // console.log(typeof companyIchnographyList);
 
     let fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
+    let unitPhotoList = Array.isArray(companyPhotoDetails) ? companyPhotoDetails : [];
     // fireIchnographyList 肯定为true
     // fireIchnographyList = fireIchnographyList ? fireIchnographyList : fireIchnographyList.dbUrl;
 
@@ -324,7 +327,18 @@ export default class CompanyDetail extends PureComponent {
           </Description>
           <Description term={fieldLabels.fireIchnography}>
             {fireIchnographyList.length !== 0
-              ? fireIchnographyList.map(({ fileName, webUrl }, index) => (
+              ? fireIchnographyList.map(({ fileName, webUrl }) => (
+                  <div key={webUrl}>
+                    <a href={webUrl} target="_blank" rel="noopener noreferrer">
+                      {fileName || '预览'}
+                    </a>
+                  </div>
+                ))
+              : getEmptyData()}
+          </Description>
+          <Description term={fieldLabels.unitPhoto}>
+            {unitPhotoList.length
+              ? unitPhotoList.map(({ fileName, webUrl }) => (
                   <div key={webUrl}>
                     <a href={webUrl} target="_blank" rel="noopener noreferrer">
                       {fileName || '预览'}
