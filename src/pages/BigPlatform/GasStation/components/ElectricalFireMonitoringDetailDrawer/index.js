@@ -494,6 +494,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       value,
     } = this.props;
     const { name, location, params=[] } = value || {};
+    const alarmParams = (params || []).filter(({ status }) => status > 0);
 
     return (
       <CustomDrawer
@@ -521,10 +522,10 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       >
         <div className={styles.container}>
           <div className={styles.alarmParamsTitleWrapper}>
-            <div className={styles.alarmParamsTitle}>报警参数</div>
-            {params && params.map(({ name, status }) => status > 0 ? (
+            <div className={styles.alarmParamsTitle}>{alarmParams.length > 0 ? '报警参数' : '数据监测'}</div>
+            {alarmParams.map(({ name }) => (
               <div className={styles.alarmParam} key={name}><span className={styles.alarmParamName}>{name}</span></div>
-            ) : null)}
+            ))}
           </div>
           {this.renderTabs()}
           {this.renderRealTimeMonitoringData()}
