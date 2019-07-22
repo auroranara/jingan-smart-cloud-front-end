@@ -1,0 +1,169 @@
+.titleIcon {
+  float: left;
+  margin-top: -0.4375em;
+  margin-right: 0.75em;
+  width: 1.875em;
+  height: 1.875em;
+  background: url('./assets/distribution-box.png') no-repeat center;
+  background-size: 100% auto;
+}
+.title {
+  float: left;
+}
+.name {
+  margin-right: 0.75em;
+}
+.container {
+  padding: 0 1em;
+}
+.alarmParamsTitleWrapper {
+  padding-bottom: 1em;
+  overflow: hidden;
+}
+.alarmParamsTitle {
+  float: left;
+  padding: 0 1em 0 0.75em;
+  margin: 0.625em 0 1.125em;
+  line-height: 1;
+  border-left: 3px solid #0ff;
+}
+.alarmParam {
+  float: left;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.5em;
+  margin-bottom: 0.5em;
+  width: 5.625em;
+  height: 2.25em;
+  color: #f83329;
+  border: 1px solid #f83329;
+  border-radius: 5px;
+}
+.alarmParamName {
+  font-size: 14px;
+}
+/* tab */
+.tabs {
+  margin-bottom: 1.5em;
+  font-size: 14px;
+}
+.divider {
+  position: relative;
+  height: 1px;
+  background-color: rgb(76, 206, 240);
+  clear: both;
+  z-index: 2;
+}
+.tab {
+  position: relative;
+  float: left;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 9px;
+  margin-bottom: -1px;
+  width: 7em;
+  height: 3em;
+  color: #3e82c7;
+  background-color: #043873;
+  border: 1px solid #043873;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  cursor: pointer;
+  z-index: 1;
+
+  &.selectedTab {
+    color: #fff;
+    background-color: #033069;
+    border-color: rgb(76, 206, 240);
+    border-bottom-color: #033069;
+    cursor: auto;
+    z-index: 3;
+  }
+}
+/* 实时监测数据 */
+.subTitle {
+  font-size: 14px;
+  line-height: 1;
+
+  span {
+    color: #0ff;
+  }
+}
+.realTimeContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+.realTimeWrapper {
+  flex: none;
+  width: 50%;
+}
+.echarts {
+  height: 200px !important;
+}
+/* 当天监测数据 */
+.lineChart {
+  height: 200px !important;
+}
+/* 分割线 */
+.splitLine {
+  margin: 1em 0;
+  height: 2px;
+  background-color: rgb(76, 206, 240);
+}
+/* 历史报警统计 */
+.alarmCountTitleWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.alarmCountTitle {
+  padding-left: 0.75em;
+  line-height: 1;
+  border-left: 3px solid #0ff;
+}
+.select {
+  :global {
+    .ant-select-selection {
+      border-radius: 5px !important;
+    }
+  }
+}
+.pieChartWrapper {
+  margin: 0 auto;
+  width: 80%;
+}
+.pieChart {
+  height: 300px !important;
+}
+.emptyData {
+  padding: 1em;
+  text-align: center;
+}
+
+@media screen and (max-width: 1599px) {
+  .alarmParamName {
+    font-size: 13px;
+  }
+  .tabs {
+    font-size: 13px;
+  }
+  .subTitle {
+    font-size: 13px;
+  }
+}
+
+@media screen and (max-width: 1399px) {
+  .alarmParamName {
+    font-size: 12px;
+  }
+  .tabs {
+    font-size: 12px;
+  }
+  .subTitle {
+    font-size: 12px;
+  }
+}

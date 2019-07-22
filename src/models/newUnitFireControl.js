@@ -975,7 +975,6 @@ export default {
         error();
       }
     },
-
     // 水系统
     *fetchWaterSystem({ payload }, { call, put }) {
       const response = yield call(queryWaterSystem, payload);

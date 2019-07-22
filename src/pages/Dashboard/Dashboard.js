@@ -16,6 +16,7 @@ const fireMaintenanceImg = 'http://data.jingan-china.cn/new-fire-control.png';
 const smokeImg = 'http://data.jingan-china.cn/smoke.png';
 const operationImg = 'http://data.jingan-china.cn/v2/dashboard/operation.png';
 const threedgisImg = 'http://data.jingan-china.cn/v2/dashboard/3dgis.png';
+const gasStationImg = 'http://data.jingan-china.cn/v2/dashboard/gas-station.png';
 
 // const safeItem = { src: safe, url: '', label: '政府安全驾驶舱' };
 // const fireItem = { src: fire, url: '', label: '消防主机联网驾驶舱' };
@@ -39,6 +40,7 @@ const IMGS = [
   smokeImg,
   operationImg,
   threedgisImg,
+  gasStationImg,
 ];
 const LABELS = [
   '政府安全',
@@ -51,6 +53,7 @@ const LABELS = [
   '烟感',
   '智慧消防运营',
   '3D-GIS',
+  '加油站',
 ];
 const [
   safeItem,
@@ -63,6 +66,7 @@ const [
   smokeItem,
   operationItem,
   threedgisItem,
+  gasStationItem,
 ] = IMGS.map((img, i) => ({
   src: img,
   url: '',
@@ -86,6 +90,7 @@ export default class Dashboard extends PureComponent {
     smokeVisible: 0, // 烟感大屏可见
     operationVisible: 0, // 智慧消防运营大屏
     threedgisVisible: 0, // 3D-GIS
+    gasStationVisible: 0, // 加油站
   };
 
   componentDidMount() {
@@ -126,6 +131,7 @@ export default class Dashboard extends PureComponent {
       smokeAuth,
       operationAuth,
       threedgisAuth,
+      gasStationAuth,
     ] = Object.entries(codes.dashboard).map(([k, v]) => permissionCodes.includes(v));
 
     // 1=>安全生产(安全大屏和动态监测大屏) 2=>消防(消防大屏) 3=>环保(暂时没有大屏对应) 4=>卫生(暂时没有大屏对应)
@@ -170,6 +176,7 @@ export default class Dashboard extends PureComponent {
     const fireMaintenanceUrl = `${
       window.publicPath
     }#/big-platform/fire-control/new-company/${companyId}`;
+    const gasStationUrl = `${window.publicPath}#/big-platform/gas-station/${companyId}`;
 
     if (threedgisAuth) this.setState({ threedgisVisible: 1 });
 
@@ -227,12 +234,14 @@ export default class Dashboard extends PureComponent {
         monitorItem.url = monitorUrl;
         positionItem.url = positionUrl;
         fireMaintenanceItem.url = fireMaintenanceUrl;
+        gasStationItem.url = gasStationUrl;
         this.setState({
           safetyProduction: safetyProduction && safetyAuth && clfcSafetyAuth,
           fireService: fireService && fireControlAuth && clfcFireControlAuth,
           fireMaintenanceVisible: fireService && fireMaintenanceAuth && clfcFireControlAuth,
           monitorService: monitorService && dynamicMonitorAuth && clfcSafetyAuth,
           personnelPositioning: personnelPositioning && personnelPositionAuth,
+          gasStationVisible: gasStationAuth,
         });
         break;
 
@@ -285,6 +294,7 @@ export default class Dashboard extends PureComponent {
       smokeItem,
       operationItem,
       threedgisItem,
+      gasStationItem,
     ];
     // 如果state中不全是控制大屏显示的参数，则需要修改
     const imgWrapper = Object.entries(this.state).reduce((prev, [, value], i) => {
