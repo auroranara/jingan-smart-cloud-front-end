@@ -120,9 +120,9 @@ export default class ElectricalFireMonitoring extends PureComponent {
     onMultipleClick && onMultipleClick(label);
   }
 
-  handleSingleClick = (data) => {
+  handleSingleClick = (data, paramName) => {
     const { onSingleClick } = this.props;
-    onSingleClick && onSingleClick(data);
+    onSingleClick && onSingleClick(data, paramName);
   }
 
   handleCarouselChange = (_, currentIndex) => {
@@ -165,11 +165,22 @@ export default class ElectricalFireMonitoring extends PureComponent {
       const data = alarm[0] || loss[0] || normal[0];
       let subContent;
       if (alarmCount === 1 || normalCount === 1) { // 报警或正常
-        const { params } = data;
+        let { params } = data;
+        params = params.reduce((result, param) => {
+          if (param.status > 0) {
+            result.alarm.push(param);
+          } else if (param.status < 0) {
+            result.loss.push(param);
+          } else {
+            result.normal.push(param);
+          }
+          return result;
+        }, { alarm: [], loss: [], normal: [] });
+        params = params.alarm.concat(params.loss, params.normal);
         const isFirst = currentIndex === 0;
         const isLast = currentIndex === params.length - 1;
         subContent = (
-          <div className={styles.subContent} onClick={() => this.handleSingleClick(data)}>
+          <div className={styles.subContent}>
             <Carousel
               // afterChange={this.handleCarouselChange}
               beforeChange={this.handleCarouselChange}
@@ -177,7 +188,7 @@ export default class ElectricalFireMonitoring extends PureComponent {
               ref={this.setCarouselReference}
             >
               {params.map((param, index) => (
-                <div className={styles.carouselItem} key={param.name}>
+                <div className={styles.carouselItem} key={param.name} onClick={() => this.handleSingleClick(data, param.name)}>
                   <ReactEcharts
                     className={styles.echarts}
                     option={this.getOption(param)}

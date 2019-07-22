@@ -46,13 +46,14 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
     ...STATE,
   }
 
-  componentDidUpdate({ visible: prevVisible }) {
-    const { visible } = this.props;
+  componentDidUpdate({ visible: prevVisible, activeKey: prevActiveKey }) {
+    const { visible, activeKey } = this.props;
     if (!prevVisible && visible) {
       this.getDistributionBoxTodayData();
       this.getDistributionBoxAlarmCount(STATE.activeType);
       this.setState({
         ...STATE,
+        activeKey: prevActiveKey !== activeKey ? activeKey : STATE.activeKey,
       });
       this.scrollTop();
     }
@@ -443,18 +444,20 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
     return (
       <Fragment>
         <div className={styles.subTitle}><span>>></span>实时监测数据</div>
-        <div className={styles.realTimeContainer}>
-          {list.length > 0 ? list.map(param => (
-            <div className={styles.realTimeWrapper} key={param.name}>
-              <ReactEcharts
-                className={styles.echarts}
-                option={this.getGaugeOption(param)}
-              />
-            </div>
-          )) : (
-            <div className={styles.emptyData}>暂无数据</div>
-          )}
-        </div>
+        {list.length > 0 ? (
+          <div className={styles.realTimeContainer} style={{ justifyContent: list.length === 1 ? 'center' : 'flex-start' }}>
+            {list.map(param => (
+              <div className={styles.realTimeWrapper} key={param.name}>
+                <ReactEcharts
+                  className={styles.echarts}
+                  option={this.getGaugeOption(param)}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.emptyData}>暂无数据</div>
+        )}
       </Fragment>
     );
   }

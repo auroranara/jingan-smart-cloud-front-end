@@ -9,6 +9,20 @@ import {
   getUnitPhoto,
 } from '../services/gasStation';
 
+const PARAMS_SORT = {
+  漏电电流: 1,
+  A相温度: 2,
+  B相温度: 3,
+  C相温度: 4,
+  零线温度: 5,
+  A相电流: 6,
+  B相电流: 7,
+  C相电流: 8,
+  A相电压: 9,
+  B相电压: 10,
+  C相电压: 11,
+};
+
 function error (msg) {
   message.error(msg);
 }
@@ -63,7 +77,7 @@ function formatDistributionBoxClassification (list) {
       id: deviceId,
       name: deviceName,
       location: `${area || ''}${location || ''}`,
-      params,
+      params: params.sort((a, b) => PARAMS_SORT[a.name] - PARAMS_SORT[b.name]),
       updateTime,
     };
     if (status === 1) {
@@ -81,19 +95,7 @@ function formatDistributionBoxClassification (list) {
   });
 }
 
-const PARAMS_SORT = {
-  漏电电流: 1,
-  A相温度: 2,
-  B相温度: 3,
-  C相温度: 4,
-  零线温度: 5,
-  A相电流: 6,
-  B相电流: 7,
-  C相电流: 8,
-  A相电压: 9,
-  B相电压: 10,
-  C相电压: 11,
-};
+
 
 
 export default {
@@ -111,7 +113,7 @@ export default {
   },
 
   effects: {
-    *fetchDistributionBoxClassification ({ payload }, { call, put }) {
+    *fetchDistributionBoxClassification ({ payload, callback }, { call, put }) {
       const response = yield call(getDistributionBoxClassification, payload);
       const { code=500, data } = response || {};
       if (code === 200) {
@@ -122,6 +124,7 @@ export default {
             distributionBoxClassification,
           },
         });
+        callback && callback(distributionBoxClassification);
       } else {
         error('获取电气火灾监测数据失败，请稍后重试！');
       }

@@ -172,6 +172,7 @@ export default class GasStation extends PureComponent {
     electricalFireMonitoringDrawerValue: null, // 电气火灾监测抽屉参数
     electricalFireMonitoringDetailDrawerVisible: false, // 电气火灾监测详情抽屉是否显示
     electricalFireMonitoringDetailDrawerValue: null, // 电气火灾监测详情抽屉参数
+    electricalFireMonitoringDetailDrawerActiveKey: '漏电电流', // 电气火灾监测详情抽屉选中参数
     videoVisible: false, // 重点部位监控视频弹窗
     showVideoList: false, // 是否展示视频弹窗右侧列表
     videoKeyId: undefined,
@@ -1917,16 +1918,26 @@ export default class GasStation extends PureComponent {
 
   handleClickElecMsg = (deviceId, paramName) => {
     const {
-      electricityMonitor: {
-        deviceStatusCount: { list: deviceList },
+      dispatch,
+      match: {
+        params: { unitId: companyId },
       },
     } = this.props;
-    const deviceStatus = deviceList.find(item => item.deviceId === deviceId).status;
-    this.handleClickElectricity(
-      +deviceStatus > 0 ? 0 : +deviceStatus === -1 ? 1 : 2,
-      deviceId,
-      paramName
-    );
+    dispatch({
+      type: 'gasStation/fetchDistributionBoxClassification',
+      payload: {
+        companyId,
+        type: 1,
+      },
+      callback: ({ alarm=[], loss=[] }) => {
+        const data = [...alarm, ...loss].filter(({ id }) => id === deviceId)[0];
+        if (data) {
+          this.showElectricalFireMonitoringDetailDrawer(data, paramName);
+        } else {
+          console.log('未找到设备对应的数据');
+        }
+      },
+    });
   };
 
   handleShowResetSection = () => {
@@ -1961,10 +1972,11 @@ export default class GasStation extends PureComponent {
   }
 
   /* 显示电气火灾监测详情抽屉 */
-  showElectricalFireMonitoringDetailDrawer = (electricalFireMonitoringDetailDrawerValue) => {
+  showElectricalFireMonitoringDetailDrawer = (electricalFireMonitoringDetailDrawerValue, paramName='漏电电流') => {
     this.setState({
       electricalFireMonitoringDetailDrawerVisible: true,
       electricalFireMonitoringDetailDrawerValue,
+      electricalFireMonitoringDetailDrawerActiveKey: paramName === '漏电电流' ? '漏电电流' : paramName.slice(-2),
     });
   }
 
