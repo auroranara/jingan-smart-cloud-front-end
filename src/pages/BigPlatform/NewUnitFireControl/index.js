@@ -691,13 +691,6 @@ export default class NewUnitFireControl extends PureComponent {
 
     // 手机号是否可见
     dispatch({ type: 'unitSafety/savePhoneVisible' });
-
-    dispatch({
-      type: 'newUnitFireControl/fetchHiddenDangerDetail',
-      payload: { id: 'rt5nyx4k9bgijcai' },
-      // e9sot8_rc7vj4ywm
-      // rt5nyx4k9bgijcai
-    });
   }
 
   handleFetchRealTimeData = deviceId => {
