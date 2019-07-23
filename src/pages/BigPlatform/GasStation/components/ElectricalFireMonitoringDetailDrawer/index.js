@@ -502,8 +502,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
           <Fragment>
             <div className={styles.titleIcon} />
             <div className={styles.title}>
-              <span className={styles.name}>{name || '--'}</span>
-              <span>{location ? `(${location})` : ''}</span>
+              {location}
             </div>
           </Fragment>
         }

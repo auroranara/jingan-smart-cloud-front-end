@@ -242,7 +242,7 @@ export default class ElectricalFireMonitoring extends PureComponent {
         <div className={styles.singleContainer}>
           <div className={styles.titleWrapper}>
             <img className={styles.titleIcon} src={distributionBoxIcon} alt="配电箱图标" />
-            <span className={styles.title}>{data.name || data.location}</span>
+            <span className={styles.title}>{data.location}</span>
           </div>
           <div className={styles.content}>
             {subContent}
