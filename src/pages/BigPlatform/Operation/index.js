@@ -925,7 +925,12 @@ export default class Operation extends PureComponent {
       company: { ...param },
       videoList: cameraMessage,
     });
-    this.handleShowFireVideo(cameraMessage);
+    if (cameraMessage && cameraMessage.length) {
+      this.setState({
+        videoVisible: true,
+        videoKeyId: cameraMessage && cameraMessage[0] && cameraMessage[0].key_id,
+      });
+    }
 
     const detail = unitList.find(({ companyId }) => companyId === cId);
     if (type <= 1) {
