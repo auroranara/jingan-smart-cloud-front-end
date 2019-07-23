@@ -175,9 +175,10 @@ export default class MonitorDrawer extends PureComponent {
                         )}
                         {(!normalStatus &&
                           +deviceStatus !== -1 &&
+                          +workStatus !== 0 &&
                           +workStatus === -3 &&
-                          +warnStatus === 1) ||
-                        +warnStatus === 2 ? (
+                          +warnStatus === 2) ||
+                        +warnStatus === 1 ? (
                           <div>
                             <span
                               className={styles.status}
@@ -214,7 +215,7 @@ export default class MonitorDrawer extends PureComponent {
                               style={{
                                 color,
                                 borderColor: color,
-                                cursor: 'pointer',
+                                cursor: +deviceStatus !== -1 ? 'pointer' : 'default',
                               }}
                               onClick={() => {
                                 (+deviceStatus !== -1 && +warnStatus === 1) || +warnStatus === 2
@@ -315,7 +316,7 @@ export default class MonitorDrawer extends PureComponent {
               }`}
           </p>
           <p className={styles.dots}>
-            {[normal, fault, unnormal, outContact].map((n, i) => (
+            {[normal, unnormal, fault, outContact].map((n, i) => (
               <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
             ))}
           </p>

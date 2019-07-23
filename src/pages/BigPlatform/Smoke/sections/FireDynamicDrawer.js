@@ -10,7 +10,7 @@ import { vaguePhone } from '../../NewUnitFireControl/utils';
 import NewTimelineCard from '../../NewUnitFireControl/components/NewTimelineCard';
 
 const ID = 'maintenance-drawer';
-const TITLES = ['报警', '故障'];
+const TITLES = ['火警', '故障'];
 const LABELS = [['发生', '确认', '完成'], ['发生', '开始处理', '处理完毕']];
 
 export default class MaintenanceDrawer extends PureComponent {
@@ -62,7 +62,7 @@ export default class MaintenanceDrawer extends PureComponent {
       return { ...item, id: item.user_id, name: item.add_user_name };
     });
 
-    const { company_id, company_name, device_name, type, area, location } = headProps;
+    const { company_id, company_name, device_name, area, location } = headProps;
 
     const headContent = head && (
       <DynamicDrawerTop
@@ -70,7 +70,6 @@ export default class MaintenanceDrawer extends PureComponent {
         companyId={company_id}
         companyName={company_name}
         sdeviceName={device_name}
-        dynamicType={+type}
         area={area}
         location={location}
         read={read}
@@ -99,7 +98,7 @@ export default class MaintenanceDrawer extends PureComponent {
           disaster_desc,
           firstTime,
           num,
-          lastTime,
+          realtime,
         } = item;
 
         const timelineList = [
@@ -107,7 +106,7 @@ export default class MaintenanceDrawer extends PureComponent {
             label: LABELS[msgFlow][0],
             time: firstTime,
             cardItems: [{ title: `${TITLES[msgFlow]}发生` }],
-            repeat: { repeatCount: +num || 0, lastTime: lastTime },
+            repeat: { repeatCount: +num || 0, realtime: realtime },
           },
           {
             label: LABELS[1][1],
@@ -167,7 +166,6 @@ export default class MaintenanceDrawer extends PureComponent {
           </Fragment>
         ) : (
           <Fragment>
-            {headContent}
             <SwitchHead
               index={index}
               title={TITLES[msgFlow]}
@@ -175,6 +173,7 @@ export default class MaintenanceDrawer extends PureComponent {
               handleLeftClick={this.handleLeftClick}
               handleRightClick={this.handleRightClick}
             />
+            {headContent}
             <div className={styles.sliderContainer}>
               <Slider index={index} length={length} size={1}>
                 {cards}

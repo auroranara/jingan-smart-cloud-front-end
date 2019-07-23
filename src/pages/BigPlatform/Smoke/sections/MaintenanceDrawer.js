@@ -61,7 +61,7 @@ export default class MaintenanceDrawer extends PureComponent {
       return { ...item, id: item.user_id, name: item.add_user_name };
     });
 
-    const { company_id, company_name, device_name, type, area, location } = headProps;
+    const { company_id, company_name, device_name, area, location } = headProps;
 
     const headContent = head && (
       <DynamicDrawerTop
@@ -69,7 +69,6 @@ export default class MaintenanceDrawer extends PureComponent {
         companyId={company_id}
         companyName={company_name}
         sdeviceName={device_name}
-        dynamicType={+type}
         area={area}
         location={location}
         read={read}
@@ -166,7 +165,6 @@ export default class MaintenanceDrawer extends PureComponent {
           </Fragment>
         ) : (
           <Fragment>
-            {headContent}
             <SwitchHead
               index={index}
               title={TITLES[msgFlow]}
@@ -174,6 +172,7 @@ export default class MaintenanceDrawer extends PureComponent {
               handleLeftClick={this.handleLeftClick}
               handleRightClick={this.handleRightClick}
             />
+            {headContent}
             <div className={styles.sliderContainer}>
               <Slider index={index} length={length} size={1}>
                 {cards}
