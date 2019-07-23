@@ -264,7 +264,9 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
     const { activeKey } = this.state;
     const { params=[] } = value || {};
     const filteredParams = params.filter(({ name }) => name === activeKey || name.includes(activeKey) && name !== '漏电电流');
-    const { unit, normalMax } = filteredParams.reduce((a, b) => a.normalMax < b.normalMax || isNaN(b.normalMax) ? a : b, {});
+    console.log(filteredParams);
+    const { unit, normalMax } = filteredParams.reduce((a, b) => a.normalMax > b.normalMax || isNaN(a.normalMax) ? b : a, {});
+    console.log(unit);
     const series = distributionBoxTodayData.reduce((result, { timeFlag, ia, ib, ic, ua, ub, uc, v1, v2, v3, v4, v5 }) => {
       const timestamp = +moment(timeFlag, 'HH:mm');
       let list = [];
@@ -380,7 +382,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       xAxis: {
         type: 'time',
         boundaryGap: false,
-        splitNumber: 24,
+        splitNumber: 12,
         axisLine: {
           lineStyle: {
             color: '#1f477a',
@@ -397,7 +399,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
         },
       },
       yAxis: {
-        name: `单位(${unit})`,
+        name: unit && `单位(${unit})`,
         nameTextStyle: {
           color: '#fff',
         },
@@ -502,8 +504,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
           <Fragment>
             <div className={styles.titleIcon} />
             <div className={styles.title}>
-              <span className={styles.name}>{name || '--'}</span>
-              <span>{location ? `(${location})` : ''}</span>
+              {location}
             </div>
           </Fragment>
         }
