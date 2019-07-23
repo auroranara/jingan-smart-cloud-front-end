@@ -1,24 +1,32 @@
-.msgItem, .msgItem1 {
+.msgItem,
+.msgItem1 {
   position: relative;
   padding: 5px 10px;
+
   .msgTime {
     font-size: 15px;
     line-height: 26px;
     color: #04fdff;
   }
+
   .msgBody {
     line-height: 24px;
+    display: flex;
   }
+
   &+.msgItem {
     border-top: 1px solid rgba(9, 103, 211, 0.4);
   }
+
   .detailBtn {
     position: absolute;
     right: 5px;
     top: 8px;
     color: #04fdff;
   }
-  .msgType, .msgRepeatType {
+
+  .msgType,
+  .msgRepeatType {
     color: #04fdff;
     line-height: 24px;
   }
@@ -43,13 +51,14 @@
       color: #FFF;
       margin: 10px 0 0;
     }
+
     .ant-divider-horizontal.ant-divider-with-text::before,
     .ant-divider-horizontal.ant-divider-with-text-left::before,
     .ant-divider-horizontal.ant-divider-with-text-right::before,
     .ant-divider-horizontal.ant-divider-with-text::after,
     .ant-divider-horizontal.ant-divider-with-text-left::after,
     .ant-divider-horizontal.ant-divider-with-text-right::after {
-      border-top-color: rgba(9,103,211,0.9);
+      border-top-color: rgba(9, 103, 211, 0.9);
     }
   }
 }
@@ -90,11 +99,12 @@
   display: flex;
   height: auto !important;
 
-  & > :first-child {
+  &> :first-child {
     position: static !important;
     flex: 1;
   }
 }
+
 /* 扩展按钮 */
 .expandButton {
   position: absolute;
@@ -109,6 +119,7 @@
     color: #fff;
   }
 }
+
 /* 空数据 */
 .emptyData {
   padding: 12px 0;

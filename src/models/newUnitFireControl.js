@@ -1017,7 +1017,7 @@ export default {
       if (callback) callback();
     },
     // 获取火灾警报数据详情
-    *fetchWarnDetail({ payload, success }, { call, put }) {
+    *fetchWarnDetail({ payload, success, callback }, { call, put }) {
       const response = yield call(getWarnDetail, payload);
       const {
         code,
@@ -1038,9 +1038,10 @@ export default {
           success();
         }
       }
+      if (callback) callback(response);
     },
     // 获取火灾故障数据列表
-    *fetchFaultDetail({ payload, success }, { call, put }) {
+    *fetchFaultDetail({ payload, success, callback }, { call, put }) {
       const response = yield call(getFaultDetail, payload);
       const {
         code,
@@ -1061,9 +1062,10 @@ export default {
           success();
         }
       }
+      if (callback) callback(response);
     },
     // 获取警报,故障数据详情
-    *fetchAllDetail({ payload, success }, { call, put }) {
+    *fetchAllDetail({ payload, success, callback }, { call, put }) {
       const response = yield call(getAllDetail, payload);
       const {
         code,
@@ -1082,6 +1084,7 @@ export default {
           success();
         }
       }
+      if (callback) callback(response);
     },
     // 消防主机当前火警和故障ids
     *fetchDangerChartId({ payload, callback }, { call, put }) {

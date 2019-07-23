@@ -1,11 +1,17 @@
 import React, { PureComponent } from 'react';
 import { Divider, Icon } from 'antd';
+import Ellipsis from 'components/Ellipsis';
 import NewSection from '@/components/NewSection';
 import moment from 'moment';
 import { vaguePhone } from '../utils';
 // import DescriptionList from 'components/DescriptionList';
 import styles from './index.less';
-import { alarmIcon, dangerIcon, inspectIcon, outdateIcon } from '@/pages/BigPlatform/GasStation/imgs/links';
+import {
+  alarmIcon,
+  dangerIcon,
+  inspectIcon,
+  outdateIcon,
+} from '@/pages/BigPlatform/GasStation/imgs/links';
 
 const TYPES = [
   1, // 发生监管\联动\反馈\屏蔽
@@ -172,6 +178,9 @@ export default class Messages extends PureComponent {
       unit,
       limitVal,
       deviceId,
+      userMessage = [],
+      checkUserPhone,
+      accompany = [],
     } = msg;
     // const repeatCount = +isOver === 0 ? count : num;
     const repeatCount = count;
@@ -234,7 +243,18 @@ export default class Messages extends PureComponent {
         // 安全巡查
         items: [
           { name: '检查点', value: pointName },
-          { name: '检查人', value: checkUser },
+          {
+            name: '检查人',
+            value: () => {
+              return (
+                <Ellipsis lines={1} tooltip>
+                  {[{ createByName: checkUser, createByPhone: checkUserPhone }, ...accompany]
+                    .map(item => `${item.createByName} ${item.createByPhone}`)
+                    .join('，')}
+                </Ellipsis>
+              );
+            },
+          },
           { name: '巡查结果', value: checkResult },
         ],
       },
@@ -272,7 +292,14 @@ export default class Messages extends PureComponent {
           { name: '维保单位', value: maintenanceCompany },
           {
             name: '维保人',
-            value: Array.isArray(maintenanceUser) ? maintenanceUser.join('，') : maintenanceUser,
+            // value: Array.isArray(maintenanceUser) ? maintenanceUser.join('，') : maintenanceUser,
+            value: () => {
+              return (
+                <Ellipsis lines={1} tooltip>
+                  {userMessage.map(item => `${item.createByName} ${item.createByPhone}`).join('，')}
+                </Ellipsis>
+              );
+            },
           },
           { name: '消防设施评分', value: score },
         ],
@@ -400,10 +427,16 @@ export default class Messages extends PureComponent {
     });
 
     const msgClassName = `msgItem${cssType ? cssType : ''}`;
-    const innerClassName = cssType ? styles.msgInner : undefined ;
-    const typeIcon = cssType ? <span className={styles.typeIcon} style={{ backgroundImage: `url(${ICONS[type]})` }} /> : null;
+    const innerClassName = cssType ? styles.msgInner : undefined;
+    const typeIcon = cssType ? (
+      <span className={styles.typeIcon} style={{ backgroundImage: `url(${ICONS[type]})` }} />
+    ) : null;
     const msgTime = formatTime(addTime);
-    const firstComponent = cssType ? <Divider>{msgTime}</Divider> : <div className={styles.msgTime}>{msgTime}</div>;
+    const firstComponent = cssType ? (
+      <Divider>{msgTime}</Divider>
+    ) : (
+      <div className={styles.msgTime}>{msgTime}</div>
+    );
 
     if (type === 44 || type === 32 || type === 42 || type === 43) {
       const elecMsg = {
@@ -559,7 +592,9 @@ export default class Messages extends PureComponent {
             return (
               <div className={styles.msgBody} key={i}>
                 {name ? `${name}：` : ''}
-                {value || getEmptyData()}
+                <div style={{ flex: 1 }}>
+                  {typeof value === 'function' ? value() : value || getEmptyData()}
+                </div>
               </div>
             );
           })}
@@ -572,8 +607,7 @@ export default class Messages extends PureComponent {
                 次，最近一次更新时间：
                 {lastReportTime}
               </div>
-            )
-          }
+            )}
         </div>
       </div>
     );
