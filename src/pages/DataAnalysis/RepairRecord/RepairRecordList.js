@@ -5,30 +5,33 @@ import { Button, Card, Form, Input, DatePicker, Col, Table, Pagination, Select }
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import Lightbox from 'react-images';
 import router from 'umi/router';
-import styles from './RepairRecordList.less'
+import styles from './RepairRecordList.less';
 
 const FormItem = Form.Item;
 const { RangePicker } = DatePicker;
-const Option = Select.Option
+const Option = Select.Option;
 
-const title = "报修记录"
+const title = '报修记录';
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '数据分析', name: '数据分析' },
   { title, name: title },
-]
+];
 
 // 维修状态配置
 const statusList = [
   { value: 0, label: '处理中' },
   { value: 1, label: '已处理' },
   { value: 2, label: '待处理' },
-]
+];
 
 // 栅格的配置
 const grdiSetting = {
-  xl: 8, md: 12, sm: 24, xs: 24,
-}
+  xl: 8,
+  md: 12,
+  sm: 24,
+  xs: 24,
+};
 
 @connect(({ dataAnalysis, user }) => ({
   dataAnalysis,
@@ -39,7 +42,7 @@ export default class RepairRecordList extends PureComponent {
   state = {
     modalVisible: false,
     imageFiles: [], // 附件图片列表
-    currentImage: 0,// 展示附件大图下标
+    currentImage: 0, // 展示附件大图下标
     scrollX: 1250, // 列表scroll宽度
     columns: [
       {
@@ -76,9 +79,7 @@ export default class RepairRecordList extends PureComponent {
         key: 'create_date',
         align: 'center',
         width: 200,
-        render: (val) => (
-          <span>{moment(+val).format('YYYY-MM-DD HH:mm:ss')}</span>
-        ),
+        render: val => <span>{moment(+val).format('YYYY-MM-DD HH:mm:ss')}</span>,
       },
       {
         title: '报修附件',
@@ -90,14 +91,12 @@ export default class RepairRecordList extends PureComponent {
           return (
             <Fragment>
               {record.reportPhotos && record.reportPhotos.length ? (
-                <a onClick={() => this.handleShowModal(record.reportPhotos)}>
-                  查看附件
-                </a>
+                <a onClick={() => this.handleShowModal(record.reportPhotos)}>查看附件</a>
               ) : (
-                  <span style={{ color: '#aaa' }}>查看附件</span>
-                )}
+                <span style={{ color: '#aaa' }}>查看附件</span>
+              )}
             </Fragment>
-          )
+          );
         },
       },
       {
@@ -106,8 +105,16 @@ export default class RepairRecordList extends PureComponent {
         key: 'realStatus',
         align: 'center',
         width: 130,
-        render: (val) => (
-          <span style={{ color: `${(val === "已处理" && "#aaa") || (val === "待处理" && "red") || (val === "处理中" && "#1890FF")}` }}>{val}</span>
+        render: val => (
+          <span
+            style={{
+              color: `${(val === '已处理' && '#aaa') ||
+                (val === '待处理' && 'red') ||
+                (val === '处理中' && '#1890FF')}`,
+            }}
+          >
+            {val}
+          </span>
         ),
       },
       {
@@ -124,37 +131,35 @@ export default class RepairRecordList extends PureComponent {
         ),
       },
     ],
-  }
+  };
   componentDidMount() {
     const {
       dispatch,
       dataAnalysis: {
         repairRecord: {
-          pagination: {
-            pageSize,
-          },
+          pagination: { pageSize },
         },
       },
       user: {
         currentUser: { companyBasicInfo: { isBranch } = {} },
       },
-    } = this.props
+    } = this.props;
     const { columns } = this.state;
     if (!isBranch) {
       columns.splice(6, 0, {
         title: '维修单位',
-        dataIndex: 'unit_name',
-        key: 'unit_name',
+        dataIndex: 'finishCompanyName',
+        key: 'finishCompanyName',
         align: 'center',
         width: 350,
-      })
+      });
       this.setState({ columns: [...columns], scrollX: 1600 });
     }
     // 获取报修记录列表
     dispatch({
       type: 'dataAnalysis/fetchRepairRecords',
       payload: { pageNum: 1, pageSize },
-    })
+    });
   }
 
   // 点击查询
@@ -164,24 +169,22 @@ export default class RepairRecordList extends PureComponent {
       dispatch,
       dataAnalysis: {
         repairRecord: {
-          pagination: {
-            pageSize,
-          },
+          pagination: { pageSize },
         },
       },
-    } = this.props
-    const data = getFieldsValue()
-    const { time, ...query } = data
+    } = this.props;
+    const data = getFieldsValue();
+    const { time, ...query } = data;
     if (time && time.length) {
-      const [start, end] = time
-      query.startTime = moment(start).format('YYYY-MM-DD HH:mm:ss')
-      query.endTime = moment(end).format('YYYY-MM-DD HH:mm:ss')
+      const [start, end] = time;
+      query.startTime = moment(start).format('YYYY-MM-DD HH:mm:ss');
+      query.endTime = moment(end).format('YYYY-MM-DD HH:mm:ss');
     }
     dispatch({
       type: 'dataAnalysis/fetchRepairRecords',
       payload: { pageNum: 1, pageSize, ...query },
-    })
-  }
+    });
+  };
 
   // 点击重置
   handleReset = () => {
@@ -190,95 +193,88 @@ export default class RepairRecordList extends PureComponent {
       dispatch,
       dataAnalysis: {
         repairRecord: {
-          pagination: {
-            pageSize,
-          },
+          pagination: { pageSize },
         },
       },
-    } = this.props
-    resetFields()
+    } = this.props;
+    resetFields();
     dispatch({
       type: 'dataAnalysis/fetchRepairRecords',
       payload: { pageNum: 1, pageSize },
-    })
-  }
+    });
+  };
 
   // 查看详情
-  handleViewDetail = (work_order) => {
-    router.push(`/data-analysis/repair-record/detail/${work_order}`)
-  }
+  handleViewDetail = work_order => {
+    router.push(`/data-analysis/repair-record/detail/${work_order}`);
+  };
 
   // 查看附件
-  handleShowModal = (files) => {
+  handleShowModal = files => {
     const newFiles = files.map(item => {
       return {
         src: item,
-      }
-    })
+      };
+    });
     this.setState({
       modalVisible: true,
       imageFiles: newFiles,
       currentImage: 0,
-    })
-  }
+    });
+  };
 
   // 关闭查看附件弹窗
   handleModalClose = () => {
     this.setState({
       modalVisible: false,
-    })
-  }
+    });
+  };
 
   // 附件图片的点击翻入上一页
   gotoPrevious = () => {
-    let { currentImage } = this.state
-    if (currentImage <= 0) return
-    this.setState({ currentImage: --currentImage })
-  }
+    let { currentImage } = this.state;
+    if (currentImage <= 0) return;
+    this.setState({ currentImage: --currentImage });
+  };
 
   // 附件图片的点击翻入下一页
   gotoNext = () => {
-    let { currentImage, imageFiles } = this.state
-    if (currentImage >= imageFiles.length - 1) return
-    this.setState({ currentImage: ++currentImage })
-  }
+    let { currentImage, imageFiles } = this.state;
+    if (currentImage >= imageFiles.length - 1) return;
+    this.setState({ currentImage: ++currentImage });
+  };
 
   // 附件图片点击下方缩略图
-  handleClickThumbnail = (i) => {
-    const { currentImage } = this.state
-    if (currentImage === i) return
-    this.setState({ currentImage: i })
-  }
+  handleClickThumbnail = i => {
+    const { currentImage } = this.state;
+    if (currentImage === i) return;
+    this.setState({ currentImage: i });
+  };
 
   // 翻页
   onPageChange = (pageNum, pageSize) => {
     const {
       form: { getFieldsValue },
       dispatch,
-    } = this.props
-    const data = getFieldsValue()
-    const { time, ...query } = data
+    } = this.props;
+    const data = getFieldsValue();
+    const { time, ...query } = data;
     if (time && time.length) {
-      const [start, end] = time
-      query.startTime = moment(start).format('YYYY-MM-DD HH:mm:ss')
-      query.endTime = moment(end).format('YYYY-MM-DD HH:mm:ss')
+      const [start, end] = time;
+      query.startTime = moment(start).format('YYYY-MM-DD HH:mm:ss');
+      query.endTime = moment(end).format('YYYY-MM-DD HH:mm:ss');
     }
     dispatch({
       type: 'dataAnalysis/fetchRepairRecords',
       payload: { pageNum, pageSize, ...query },
-    })
-  }
+    });
+  };
 
   renderForm = () => {
     const {
       form: { getFieldDecorator },
-      user: {
-        currentUser: {
-          unitType,
-          companyBasicInfo: { isBranch } = {},
-        } = {},
-      },
-    } = this.props
+      user: { currentUser: { unitType, companyBasicInfo: { isBranch } = {} } = {} },
+    } = this.props;
     return (
       <Card>
         <Form layout="inline" className={styles.repairRecordForm}>
@@ -286,41 +282,43 @@ export default class RepairRecordList extends PureComponent {
             <FormItem className={styles.formItem}>
               {getFieldDecorator('workOrder', {
                 getValueFromEvent: e => e.target.value.trim(),
-              })(
-                <Input placeholder="请输入工单编号"></Input>
-              )}
+              })(<Input placeholder="请输入工单编号" />)}
             </FormItem>
           </Col>
-          <Col  {...grdiSetting}>
+          <Col {...grdiSetting}>
             <FormItem className={styles.formItem}>
               {getFieldDecorator('companyName', {
                 getValueFromEvent: e => e.target.value.trim(),
-              })(
-                <Input placeholder="报修单位名称"></Input>
-              )}
+              })(<Input placeholder="报修单位名称" />)}
             </FormItem>
           </Col>
           {!isBranch && (
-            <Col  {...grdiSetting}>
+            <Col {...grdiSetting}>
               <FormItem className={styles.formItem}>
                 {getFieldDecorator('unitName', {
                   getValueFromEvent: e => e.target.value.trim(),
-                })(
-                  <Input placeholder="维修单位名称"></Input>
-                )}
+                })(<Input placeholder="维修单位名称" />)}
               </FormItem>
-            </Col>)}
+            </Col>
+          )}
           <Col {...grdiSetting}>
             <FormItem className={styles.formItem}>
               {getFieldDecorator('status')(
                 <Select placeholder="请选择维修状态">
-                  {statusList.map(({ value, label }) => unitType === 4 && value === 2 ? null : (<Option value={value} key={value} >{label}</Option>))}
+                  {statusList.map(
+                    ({ value, label }) =>
+                      unitType === 4 && value === 2 ? null : (
+                        <Option value={value} key={value}>
+                          {label}
+                        </Option>
+                      )
+                  )}
                 </Select>
               )}
             </FormItem>
           </Col>
           <Col {...grdiSetting}>
-            <FormItem className={styles.formItem} >
+            <FormItem className={styles.formItem}>
               {getFieldDecorator('time')(
                 <RangePicker
                   style={{ width: '100%' }}
@@ -335,7 +333,9 @@ export default class RepairRecordList extends PureComponent {
           </Col>
           <Col {...grdiSetting}>
             <FormItem>
-              <Button onClick={this.handleQuery} type="primary">查询</Button>
+              <Button onClick={this.handleQuery} type="primary">
+                查询
+              </Button>
             </FormItem>
             <FormItem>
               <Button onClick={this.handleReset}>重置</Button>
@@ -343,31 +343,41 @@ export default class RepairRecordList extends PureComponent {
           </Col>
         </Form>
       </Card>
-    )
-  }
+    );
+  };
 
   render() {
-    const { modalVisible, imageFiles, currentImage, columns, scrollX } = this.state
+    const { modalVisible, imageFiles, currentImage, columns, scrollX } = this.state;
     const {
       dataAnalysis: {
         repairRecord: {
           repairRecords,
-          pagination: {
-            pageNum, pageSize, total,
-          },
+          pagination: { pageNum, pageSize, total },
         },
       },
-    } = this.props
+    } = this.props;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={<span style={{ fontSize: '16px' }}>列表记录：{total}</span>}
+        content={
+          <span style={{ fontSize: '16px' }}>
+            列表记录：
+            {total}
+          </span>
+        }
       >
         {this.renderForm()}
         {repairRecords && repairRecords.length ? (
           <Card className={styles.repairRecordList}>
-            <Table scroll={{ x: scrollX }} rowKey="id" columns={columns} dataSource={repairRecords} bordered pagination={false} />
+            <Table
+              scroll={{ x: scrollX }}
+              rowKey="id"
+              columns={columns}
+              dataSource={repairRecords}
+              bordered
+              pagination={false}
+            />
             <Pagination
               style={{ marginTop: '20px', float: 'right' }}
               showQuickJumper
@@ -377,9 +387,16 @@ export default class RepairRecordList extends PureComponent {
               pageSizeOptions={['5', '10', '15', '20']}
               total={total}
               onChange={this.onPageChange}
-              onShowSizeChange={(num, size) => { this.onPageChange(1, size) }} />
+              onShowSizeChange={(num, size) => {
+                this.onPageChange(1, size);
+              }}
+            />
           </Card>
-        ) : (<Card className={styles.noRepairRecordList}><span >暂无数据</span></Card>)}
+        ) : (
+          <Card className={styles.noRepairRecordList}>
+            <span>暂无数据</span>
+          </Card>
+        )}
         <Lightbox
           images={imageFiles}
           isOpen={modalVisible}
@@ -392,6 +409,6 @@ export default class RepairRecordList extends PureComponent {
           imageCountSeparator="/"
         />
       </PageHeaderLayout>
-    )
+    );
   }
 }

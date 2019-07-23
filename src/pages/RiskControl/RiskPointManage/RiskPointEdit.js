@@ -251,6 +251,7 @@ export default class RiskPointEdit extends PureComponent {
       location: {
         query: { companyId },
       },
+      riskPointManage: { checkCycleData },
     } = this.props;
 
     const { picList, isDisabled } = this.state;
@@ -258,6 +259,7 @@ export default class RiskPointEdit extends PureComponent {
     if (isDisabled === true) {
       return message.error('请先保存平面图定位信息！');
     }
+
     validateFieldsAndScroll((error, values) => {
       if (!error) {
         this.setState({
@@ -269,10 +271,15 @@ export default class RiskPointEdit extends PureComponent {
           qrCode,
           nfcCode,
           checkCycle,
+          recommendCycle,
           cycleType,
           itemCode,
         } = values;
-
+        if (+cycleType === 1 && checkCycleData === null) {
+          return (
+            recommendCycle !== null, message.error('推荐检查周期为空，可以选择自定义检查周期！')
+          );
+        }
         const payload = {
           id,
           companyId,
@@ -1221,7 +1228,12 @@ export default class RiskPointEdit extends PureComponent {
                     {getFieldDecorator('recommendCycle', {
                       getValueFromEvent: this.handleTrim,
                       initialValue: getCycleType(checkCycleData),
-                      rules: [{ required: true, message: '推荐检查周期' }],
+                      rules: [
+                        {
+                          // required: getFieldDecorator('cycleType') === '1' ? true : false,
+                          message: '推荐检查周期',
+                        },
+                      ],
                     })(<Input placeholder="推荐检查周期" disabled />)}
                   </Form.Item>
                 </Col>
