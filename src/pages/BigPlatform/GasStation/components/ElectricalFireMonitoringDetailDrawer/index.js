@@ -380,7 +380,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       xAxis: {
         type: 'time',
         boundaryGap: false,
-        splitNumber: 24,
+        splitNumber: 12,
         axisLine: {
           lineStyle: {
             color: '#1f477a',
