@@ -403,7 +403,9 @@ export default class Messages extends PureComponent {
     const innerClassName = cssType ? styles.msgInner : undefined ;
     const typeIcon = cssType ? <span className={styles.typeIcon} style={{ backgroundImage: `url(${ICONS[type]})` }} /> : null;
     const msgTime = formatTime(addTime);
-    const firstComponent = cssType ? <Divider>{msgTime}</Divider> : <div className={styles.msgTime}>{msgTime}</div>;
+    const firstComponent = cssType ? (
+        <Divider><span className={index ? styles.greyTime : undefined}>{msgTime}</span></Divider>
+      ): <div className={styles.msgTime}>{msgTime}</div>;
 
     if (type === 44 || type === 32 || type === 42 || type === 43) {
       const elecMsg = {

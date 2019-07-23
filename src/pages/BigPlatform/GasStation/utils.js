@@ -18,23 +18,6 @@ export function legendFormatter(limits, unit) {
   return lower || upper ? `报警范围：${lowerDesc}${lower && upper ? '或' : ''}${upperDesc}` : null;
 };
 
-function calcItemColor(item, pieces) {
-  const value = item.value[1];
-  if (!pieces || pieces.length <= 0 || value === undefined) return item;
-  pieces.forEach(p => {
-    if (
-      (p.condition === '1' && value >= p.limitValue) ||
-      (p.condition === '2' && value <= p.limitValue)
-    ) {
-      item = {
-        ...item,
-
-      };
-    }
-  });
-  return item;
-};
-
 export function tooltipFormatter(params) {
   if (Array.isArray(params)) {
     return (
@@ -135,7 +118,16 @@ function getMaxDeepByNum(n) {
     m /= 10;
     i++;
   }
-  return Math.ceil(m) * (10 ** i);
+  return getFlagNum(m) * (10 ** i);
+}
+
+const FLAG_NUM = 2.5;
+function getFlagNum(n) {
+  for (let i = 1; i < 5; i++) {
+    const flag = i * FLAG_NUM;
+    if (n < flag)
+      return flag;
+  }
 }
 
 function getMaxDeepByUnit(unit) {

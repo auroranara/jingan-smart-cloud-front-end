@@ -62,9 +62,12 @@ export default class WaterTankBase extends PureComponent {
     const ctx = this.ctx;
     const { dy=0, size: [w, h] } = this.props;
 
+    ctx.save();
     ctx.beginPath();
     ctx.strokeStyle = 'grey';
+    ctx.lineWidth = 4;
     ctx.strokeRect(0, dy, w, h);
+    ctx.restore();
   }
 
   drawSplits() {
@@ -107,7 +110,7 @@ export default class WaterTankBase extends PureComponent {
     const point2 = [w, h * (1 - limits[1] / max) + dy];
 
     ctx.save()
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.moveTo(w, h + dy);
     ctx.strokeStyle = RED;
@@ -153,6 +156,7 @@ export default class WaterTankBase extends PureComponent {
     ctx.closePath();
     ctx.fill();
     ctx.font = '14px microsoft yahei';
+    ctx.fillStyle = status > 0 ? RED : WHITE;
     ctx.fillText(`${value}${unit}`, target[0] + 25, target[1] + 10);
     ctx.fillStyle = WHITE;
     ctx.font = '12px microsoft yahei';
@@ -179,13 +183,6 @@ export default class WaterTankBase extends PureComponent {
     ctx.stroke();
     ctx.restore();
   }
-
-  // isAlarm() {
-  //   const { value, limits } = this.props;
-  //   if (value < limits[0] || value > limits[1])
-  //     return true;
-  //   return false;
-  // }
 
   render() {
     const { width=400, height=200, className, onClick } = this.props;

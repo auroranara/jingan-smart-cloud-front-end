@@ -57,10 +57,12 @@ export default class CheckWorkOrder extends PureComponent {
         {
           type: 'pie',
           center: ['50%', '45%'],
-          radius: ['30%', '48%'],
+          // radius: ['30%', '48%'],
+          radius: ['50%', '68%'],
           avoidLabelOverlap: false,
           label: {
             normal: {
+              position: 'center',
               show: false,
               formatter: '{b}\n{number|{c}}',
               rich: {
@@ -72,6 +74,7 @@ export default class CheckWorkOrder extends PureComponent {
               },
             },
             emphasis: {
+              position: 'center',
               show: true,
               textStyle: {
                 fontSize: isTinyHeight ? 12 : 13,

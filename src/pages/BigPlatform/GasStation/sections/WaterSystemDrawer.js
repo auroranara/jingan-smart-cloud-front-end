@@ -69,7 +69,7 @@ export default class WaterSystemDrawer extends PureComponent {
       const { status } = dataItem;
       const sts = +status;
       const handleClick = e => showWaterItemDrawer(item);
-      let card = <LossCard data={item} onClick={handleClick}/>
+      let card = <LossCard data={item} iconIndex={waterTabItem}/>
       if (sts !== -1) {
         const img = isGauge(waterTabItem) ? (
           <Gauge

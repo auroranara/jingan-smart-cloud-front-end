@@ -14,7 +14,8 @@ import {
   AlarmDynamicDrawer,
   AlarmDynamicMsgDrawer,
   CheckDrawer,
-  CheckingDrawer,
+  // CheckingDrawer,
+  CheckPointDrawer,
   CheckWorkOrder,
   CompanyInfo,
   CurrentHiddenDanger,
@@ -1444,10 +1445,10 @@ export default class GasStation extends PureComponent {
   };
 
   handleViewWater = (i, type, filterIndex) => {
-    const {
-      dispatch,
-      match: { params: { unitId: companyId } },
-    } = this.props;
+    // const {
+    //   dispatch,
+    //   match: { params: { unitId: companyId } },
+    // } = this.props;
     const state = {
       waterSystemDrawerVisible: true,
       waterTabItem: i,
@@ -1985,17 +1986,20 @@ export default class GasStation extends PureComponent {
     });
   }
 
-  showWaterItemDrawer = item => {
+  showWaterItemDrawer = (item, tabIndex) => {
     const { dispatch } = this.props;
-    const { deviceId, deviceDataList: [{ deviceId: sensorId }] } = item;
-    this.setState({ waterItem: item, waterItemDrawerVisible: true });
-    dispatch({ type: 'gasStation/fetchWaterHistory', payload: { deviceId: sensorId, historyType: 1, queryDate: moment().format('YYYY/MM/DD HH:mm:ss') } });
+    const { deviceDataList: [{ deviceId }] } = item;
+    const state = { waterItem: item, waterItemDrawerVisible: true };
+    if (tabIndex !== undefined)
+      state.waterTabItem = tabIndex;
+    this.setState(state);
+    dispatch({ type: 'gasStation/fetchWaterHistory', payload: { deviceId, historyType: 1, queryDate: moment().format('YYYY/MM/DD HH:mm:ss') } });
     this.fetchAlarmCount(deviceId, 1);
   };
 
   fetchAlarmCount = (deviceId, type) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'gasStation/fetchDistributionBoxAlarmCount', payload: { deviceId, type } });
+    dispatch({ type: 'gasStation/fetchWaterHistoryAlarm', payload: { deviceId, type } });
   };
 
   hdieWaterItemDrawer = () => {
@@ -2012,8 +2016,8 @@ export default class GasStation extends PureComponent {
       newUnitFireControl: {
         currentHiddenDanger,
         currentHiddenDanger: { timestampList },
-        checkCount,
-        checkList,
+        // checkCount,
+        // checkList,
         pointRecordList: { pointRecordLists, abnormal: checkAbnormal, count },
         alarmHandleMessage,
         alarmHandleList,
@@ -2049,7 +2053,7 @@ export default class GasStation extends PureComponent {
       bigPlatform: { coItemList, hiddenDangerList },
       unitFireControl: { hosts, fireControlCount },
       unitSafety: { points, phoneVisible },
-      gasStation: { distributionBoxAlarmCount, waterHistory, pond, spray, hydrant, unitPhoto },
+      gasStation: { waterAlarmCount, waterHistory, pond, spray, hydrant, unitPhoto },
       warnDetailLoading,
       faultDetailLoading,
       allDetailLoading,
@@ -2187,6 +2191,7 @@ export default class GasStation extends PureComponent {
             handleCheckDrawer={this.handleCheckDrawer}
             model={this.props.newUnitFireControl}
             src={unitPhoto}
+            data={points}
             phoneVisible={phoneVisible}
           />
         </div>
@@ -2278,11 +2283,22 @@ export default class GasStation extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         {/**检查点抽屉 */}
-        <CheckingDrawer
+        {/* <CheckingDrawer
           visible={checkDrawerVisible}
           companyId={companyId}
           checkCount={checkCount}
           checkList={checkList}
+          handlePointDrawer={this.handlePointDrawer}
+          onClose={() => {
+            this.setState({
+              checkDrawerVisible: false,
+            });
+          }}
+        /> */}
+        <CheckPointDrawer
+          visible={checkDrawerVisible}
+          data={points}
+          currentHiddenDanger={currentHiddenDanger}
           handlePointDrawer={this.handlePointDrawer}
           onClose={() => {
             this.setState({
@@ -2597,7 +2613,7 @@ export default class GasStation extends PureComponent {
           tabItem={waterTabItem}
           fetchAlarmCount={this.fetchAlarmCount}
           handleClose={this.hdieWaterItemDrawer}
-          data={{ item: waterItem, history: waterHistory, total: getWaterTotal(distributionBoxAlarmCount) }}
+          data={{ item: waterItem, history: waterHistory, total: getWaterTotal(waterAlarmCount) }}
         />
       </BigPlatformLayout>
     );

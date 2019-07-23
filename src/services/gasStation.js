@@ -29,5 +29,5 @@ export async function getUnitPhoto(id) {
 
 // 获取大屏消息
 export async function getScreenMessage(params) {
-  return request(`/acloud_new/v2sdgs/screenMessageForGS?${stringify(params)}`);
+  return request(`/acloud_new/v2/sdgs/screenMessageForGS?${stringify(params)}`);
 }

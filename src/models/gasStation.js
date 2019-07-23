@@ -110,6 +110,7 @@ export default {
     hydrant: [], // 消火栓
     unitPhoto: '',
     screenMessage: [],
+    waterAlarmCount: [],
   },
 
   effects: {
@@ -204,6 +205,12 @@ export default {
         error();
       }
     },
+    *fetchWaterHistoryAlarm({ payload }, { call, put }) {
+      const response = yield call(getDistributionBoxAlarmCount, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveWaterAlarmCount', payload: data && Array.isArray(data.list) ? data.list : [] });
+    },
   },
 
   reducers: {
@@ -248,6 +255,9 @@ export default {
         ...state,
         screenMessage: newMsg,
       };
+    },
+    saveWaterAlarmCount(state, action) {
+      return { ...state, waterAlarmCount: action.payload };
     },
   },
 };

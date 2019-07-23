@@ -13,7 +13,7 @@ export default class CompanyInfo extends PureComponent {
       handleViewCurrentDanger,
       handleCheckDrawer,
       model: {
-        checkCount: { all, overTime },
+        // checkCount: { all, overTime },
         companyMessage: {
           companyMessage: { companyName = '' },
         },
@@ -23,9 +23,13 @@ export default class CompanyInfo extends PureComponent {
           PrincipalPhone = '',
         },
       },
+      data: { pointList = [] } = {},
       src,
       phoneVisible,
     } = this.props;
+
+    const all = pointList.length;
+    const overTime = pointList.filter(({ status }) => +status === 4).length;
 
     return (
       <CustomSection

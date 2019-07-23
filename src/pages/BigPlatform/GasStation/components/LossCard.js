@@ -3,17 +3,20 @@ import moment from 'moment';
 
 import styles from './LossCard.less';
 import Ellipsis from '@/components/Ellipsis';
+import { pondIcon1 as pondIcon, sprayIcon, hydrantIcon } from '../imgs/links';
 
 const MAX = 18;
+const ICONS = [hydrantIcon, sprayIcon, pondIcon];
 
 export default function LossCard(props) {
-  const { data: { area, location, deviceName, deviceDataList }, ...restProps } = props;
+  const { data: { area, location, deviceName, deviceDataList }, iconIndex=0, onClick, style, ...restProps } = props;
   const { updateTime } = deviceDataList[0] || {};
   const address = `${area ? area : ''}${location ? location : ''}`;
+  const newStyle = { ...style, cursor: onClick ? 'pointer' : 'auto' };
   return (
-    <div className={styles.container} {...restProps}>
+    <div className={styles.container} onClick={onClick} style={newStyle} {...restProps}>
       <p className={styles.name}>
-        <span className={styles.pondIcon} />
+        <span className={styles.pondIcon} style={{ backgroundImage: `url(${ICONS[iconIndex]})` }} />
         {deviceName && deviceName.length > MAX ? <Ellipsis tooltip lines={1}>{deviceName}</Ellipsis> : deviceName}
       </p>
       <p className={styles.location}>
