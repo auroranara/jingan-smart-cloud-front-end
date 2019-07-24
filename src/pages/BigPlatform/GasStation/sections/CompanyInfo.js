@@ -38,7 +38,9 @@ export default class CompanyInfo extends PureComponent {
       >
         <div className={styles.top}>
           <div className={styles.topLeft}>
-            <div className={styles.topLeftItem} style={{ backgroundImage: `url(${src || defaultGasStationIcon})` }} />
+            <div className={styles.topLeftItem}>
+              <img src={src || defaultGasStationIcon} alt="" />
+            </div>
           </div>
           <div className={styles.topRight}>
             <div className={styles.topRightTop}>

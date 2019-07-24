@@ -172,16 +172,27 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       }={},
     } = this.props;
     const { activeType, countLoading } = this.state;
-    const seriesData = distributionBoxAlarmCount.map(({ desc, value }) => ({ name: desc, value }));
+    const colors = ['#ef6877', '#00baff', '#f6b54e', '#20c0ce', '#448ad0', '#B6A876', '#CA68EF', '#5DAD72', '#847be6', '#bcbcbd', '#D06244'];
+    const { seriesData, color, text } = distributionBoxAlarmCount.reduce((result, { desc, value }, index) => {
+      if (value > 0) {
+        result.seriesData.push({
+          name: desc,
+          value,
+        });
+        result.color.push(colors[index]);
+        result.text += value;
+      }
+      return result;
+    }, { seriesData: [], color: [], text: 0 });
     const option = {
-      color: ['#ef6877', '#00baff', '#f6b54e', '#20c0ce', '#448ad0', '#B6A876', '#CA68EF', '#5DAD72', '#847be6', '#bcbcbd', '#D06244'],
+      color,
       tooltip: {
         trigger: 'item',
         backgroundColor: 'rgba(0, 0, 0, 0.75)',
         formatter: "{b}: {c} ({d}%)",
       },
       title: {
-        text: seriesData.reduce((total, { value }) => total + value, 0),
+        text,
         textStyle: {
           color: '#fff',
           fontSize: 30,
