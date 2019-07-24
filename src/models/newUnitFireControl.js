@@ -869,7 +869,6 @@ export default {
       }
     },
     *fetchWebsocketScreenMessage({ payload, success, error }, { call, put }) {
-      console.log('fetchWebsocketScreenMessage', payload);
       if (payload.code === 200) {
         yield put({
           type: 'saveScreenMessage',

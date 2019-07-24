@@ -501,15 +501,11 @@ export default class Messages extends PureComponent {
 
     const msgClassName = `msgItem${cssType ? cssType : ''}`;
     const innerClassName = cssType ? styles.msgInner : undefined;
-    const typeIcon = cssType ? (
-      <span className={styles.typeIcon} style={{ backgroundImage: `url(${ICONS[type]})` }} />
-    ) : null;
+    const typeIcon = cssType ? <span className={styles.typeIcon} style={{ backgroundImage: `url(${ICONS[type]})` }} /> : null;
     const msgTime = formatTime(addTime);
     const firstComponent = cssType ? (
-      <Divider>{msgTime}</Divider>
-    ) : (
-      <div className={styles.msgTime}>{msgTime}</div>
-    );
+      <Divider><span className={index ? styles.greyTime : undefined}>{msgTime}</span></Divider>
+    ): <div className={styles.msgTime}>{msgTime}</div>;
 
     const { onClick, items, isRepeat, showMsg, otherTitle } = msgSettings[type.toString()] || {
       items: [],

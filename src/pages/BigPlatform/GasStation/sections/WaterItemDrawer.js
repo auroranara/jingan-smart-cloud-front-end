@@ -16,6 +16,7 @@ import { isGauge } from '../utils';
 const DATE_OPTIONS = [
   { value: 1, desc: '最近一周' },
   { value: 2, desc: '最近一月' },
+  { value: 3, desc: '最近三月' },
   { value: 5, desc: '最近一年' },
 ];
 
@@ -42,7 +43,7 @@ export default class WaterItemDrawer extends PureComponent {
   // };
 
   handleDateChange = value => {
-    const { fetchAlarmCount, data: { item: { deviceId } } } = this.props;
+    const { fetchAlarmCount, data: { item: { deviceDataList: [{ deviceId }] } } } = this.props;
     this.setState({ dateType: value });
     fetchAlarmCount(deviceId, value);
   };
@@ -71,6 +72,7 @@ export default class WaterItemDrawer extends PureComponent {
     const title = `${deviceName}(${area}${location})`;
     const dataItem = deviceDataList && deviceDataList[0] ? deviceDataList[0] : undefined;
     let child = <LossDevice />;
+
     if (dataItem)
       child = isGauge(tabItem) ? <Gauge data={dataItem} /> : <WaterTank data={dataItem} />;
 
