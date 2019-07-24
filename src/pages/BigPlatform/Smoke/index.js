@@ -620,6 +620,18 @@ export default class Smoke extends PureComponent {
     });
   };
 
+  // 获取视频
+  fetchCameraMessage = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'operation/fetchCameraMessage',
+      payload: { ...params },
+      callback: cameraMessage => {
+        this.setState({ videoList: cameraMessage });
+      },
+    });
+  };
+
   handleAlarmClick = (id, company_id, company_name, type, num, msg) => {
     console.log('handleAlarmClick', id, company_id, company_name, type, num, msg);
     const {
@@ -639,16 +651,7 @@ export default class Smoke extends PureComponent {
         const dataId = list.map(item => item.data_id)[0];
         this.handleDrawerVisibleChange('alarmDynamic');
         this.fetchMessageInformList({ dataId });
-        dispatch({
-          type: 'operation/fetchCameraMessage',
-          payload: {
-            id: dataId,
-            reportType: 4,
-          },
-          callback: cameraMessage => {
-            this.setState({ videoList: cameraMessage });
-          },
-        });
+        this.fetchCameraMessage({ id: dataId, reportType: 4 });
       },
     });
   };
@@ -685,16 +688,7 @@ export default class Smoke extends PureComponent {
         const dataId = list.map(item => item.data_id)[0];
         this.handleDrawerVisibleChange('maintenance');
         this.fetchMessageInformList({ dataId });
-        dispatch({
-          type: 'operation/fetchCameraMessage',
-          payload: {
-            id: dataId,
-            reportType: 4,
-          },
-          callback: cameraMessage => {
-            this.setState({ videoList: cameraMessage });
-          },
-        });
+        this.fetchCameraMessage({ id: dataId, reportType: 4 });
       },
     });
   };
@@ -899,6 +893,7 @@ export default class Smoke extends PureComponent {
       dynamicType,
       onCameraClick: this.handleShowFlowVideo,
     };
+    const dataId = gasForMaintenance.map(item => item.data_id);
 
     // const importCardsInfo = this.importCardsInfo;
     // const errorUnitsCardsInfo = this.errorUnitsCardsInfo;
@@ -1001,13 +996,13 @@ export default class Smoke extends PureComponent {
         >
           <HistoricalFire data={statisticsData} onClick={this.handleHistoricalFireClick} />
         </NewSection>
-        <NewSection
+        {/* <NewSection
           title="设备故障统计"
           className={styles.left}
           style={{ top: 'calc(55.85% + 92px)', height: '28%', cursor: 'pointer' }}
         >
           <EquipmentStatistics brandData={brandData} />
-        </NewSection>
+        </NewSection> */}
         {/* extra info */}
         <SettingModal
           visible={setttingModalVisible}
@@ -1046,6 +1041,7 @@ export default class Smoke extends PureComponent {
           // type={drawerType}
           msgFlow={msgFlow}
           data={gasForMaintenance}
+          dataId={dataId}
           visible={maintenanceDrawerVisible}
           companyName={companyName}
           onClose={() => this.handleDrawerVisibleChange('maintenance')}
@@ -1053,7 +1049,8 @@ export default class Smoke extends PureComponent {
           headProps={headProps}
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
-          handleParentChange={this.handleMapParentChange}
+          fetchCameraMessage={this.fetchCameraMessage}
+          fetchMessageInformList={this.fetchMessageInformList}
         />
         {/* 灾情事件动态 */}
         {/* <AlarmDynamicDrawer
@@ -1072,10 +1069,12 @@ export default class Smoke extends PureComponent {
           companyName={companyName}
           onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
           head={true}
+          dataId={dataId}
           headProps={headProps}
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
-          handleParentChange={this.handleMapParentChange}
+          fetchCameraMessage={this.fetchCameraMessage}
+          fetchMessageInformList={this.fetchMessageInformList}
         />
         {/* 单位监测数据 */}
         <MonitorDrawer

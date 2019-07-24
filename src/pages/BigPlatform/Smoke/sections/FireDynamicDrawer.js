@@ -14,24 +14,26 @@ const TITLES = ['火警', '故障'];
 const LABELS = [['发生', '确认', '完成'], ['发生', '开始处理', '处理完毕']];
 
 export default class MaintenanceDrawer extends PureComponent {
-  state = { index: 0 };
+  state = { index: 0, dataList: {} };
 
   handleLeftClick = () => {
-    const { handleParentChange, data } = this.props;
+    const { fetchMessageInformList, fetchCameraMessage, dataId, data } = this.props;
     const { index } = this.state;
-    const list = Array.isArray(data) ? data : [];
-    const videoList = list[index - 1].cameraMessage || [];
-    this.setState(({ index }) => ({ index: index - 1 }));
-    handleParentChange({ videoList });
+    const id = dataId[index - 1];
+    const dataList = data[index - 1];
+    fetchMessageInformList({ dataId: id });
+    fetchCameraMessage({ id, reportType: 4 });
+    this.setState(({ index }) => ({ index: index - 1, dataList: dataList }));
   };
 
   handleRightClick = () => {
-    const { handleParentChange, data } = this.props;
+    const { fetchMessageInformList, fetchCameraMessage, dataId, data } = this.props;
     const { index } = this.state;
-    const list = Array.isArray(data) ? data : [];
-    const videoList = list[index + 1].cameraMessage || [];
-    this.setState(({ index }) => ({ index: index + 1 }));
-    handleParentChange({ videoList });
+    const id = dataId[index + 1];
+    const dataList = data[index + 1];
+    fetchMessageInformList({ dataId: id });
+    fetchCameraMessage({ id, reportType: 4 });
+    this.setState(({ index }) => ({ index: index + 1, dataList: dataList }));
   };
 
   render() {
@@ -51,8 +53,10 @@ export default class MaintenanceDrawer extends PureComponent {
       ...restProps
     } = this.props;
 
-    const { index } = this.state;
+    const { index, dataList } = this.state;
+
     const list = Array.isArray(data) ? data : [];
+
     const length = list.length;
     // const dataItem = list[0] || {};
     const read = messageInformList.filter(item => +item.status === 1).map(item => {
@@ -62,8 +66,18 @@ export default class MaintenanceDrawer extends PureComponent {
       return { ...item, id: item.user_id, name: item.add_user_name };
     });
 
-    const { company_id, company_name, device_name, area, location } = headProps;
+    const newHeadProps = Object.keys(dataList).length === 0 ? headProps : dataList;
 
+    const {
+      company_id,
+      company_name,
+      device_name,
+      area,
+      location,
+      num,
+      firstTime,
+      lastTime,
+    } = newHeadProps;
     const headContent = head && (
       <DynamicDrawerTop
         {...headProps}
@@ -71,6 +85,9 @@ export default class MaintenanceDrawer extends PureComponent {
         companyName={company_name}
         sdeviceName={device_name}
         area={area}
+        num={num}
+        firstTime={firstTime}
+        lastTime={lastTime}
         location={location}
         read={read}
         unread={unread}
