@@ -56,8 +56,8 @@ export default class ImgSlider extends PureComponent {
   /**
    * 显示图片详情
    */
-  handleShow = images => {
-    this.setState({ images, currentImage: 0, lightBoxVisible: true });
+  handleShow = (images, index = 0) => {
+    this.setState({ images, currentImage: index, lightBoxVisible: true });
   };
 
   /**
@@ -140,7 +140,7 @@ export default class ImgSlider extends PureComponent {
               backgroundImage: `url(${src})`,
               cursor: isCamera ? 'auto' : 'pointer',
             }}
-            onClick={i > picLength - 1 && i < 3 ? null : () => this.handleShow(picture)}
+            onClick={i > picLength - 1 && i < 3 ? null : () => this.handleShow(picture, i)}
           />
         </div>
       );
