@@ -2262,7 +2262,7 @@ export default class GasStation extends PureComponent {
                 <WaterSystem
                   companyId={companyId}
                   onClick={this.handleViewWater}
-                  data={{ pond: [], spray: [], hydrant: [] }}
+                  data={{ pond, spray, hydrant }}
                   fetchWaterSystem={this.fetchWaterSystem}
                   showWaterItemDrawer={this.showWaterItemDrawer}
                   // waterAlarm={waterAlarm}
