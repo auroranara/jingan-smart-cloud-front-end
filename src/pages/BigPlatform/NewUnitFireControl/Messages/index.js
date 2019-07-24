@@ -263,7 +263,10 @@ export default class Messages extends PureComponent {
               return (
                 <Ellipsis lines={1} tooltip>
                   {[{ createByName: checkUser, createByPhone: checkUserPhone }, ...accompany]
-                    .map(item => `${item.createByName} ${item.createByPhone}`)
+                    .map(
+                      item =>
+                        `${item.createByName} ${vaguePhone(item.createByPhone, phoneVisible) || ''}`
+                    )
                     .join('，')}
                 </Ellipsis>
               );
@@ -310,7 +313,12 @@ export default class Messages extends PureComponent {
             value: () => {
               return (
                 <Ellipsis lines={1} tooltip>
-                  {userMessage.map(item => `${item.createByName} ${item.createByPhone}`).join('，')}
+                  {userMessage
+                    .map(
+                      item =>
+                        `${item.createByName} ${vaguePhone(item.createByPhone, phoneVisible) || ''}`
+                    )
+                    .join('，')}
                 </Ellipsis>
               );
             },
@@ -501,11 +509,17 @@ export default class Messages extends PureComponent {
 
     const msgClassName = `msgItem${cssType ? cssType : ''}`;
     const innerClassName = cssType ? styles.msgInner : undefined;
-    const typeIcon = cssType ? <span className={styles.typeIcon} style={{ backgroundImage: `url(${ICONS[type]})` }} /> : null;
+    const typeIcon = cssType ? (
+      <span className={styles.typeIcon} style={{ backgroundImage: `url(${ICONS[type]})` }} />
+    ) : null;
     const msgTime = formatTime(addTime);
     const firstComponent = cssType ? (
-      <Divider><span className={index ? styles.greyTime : undefined}>{msgTime}</span></Divider>
-    ): <div className={styles.msgTime}>{msgTime}</div>;
+      <Divider>
+        <span className={index ? styles.greyTime : undefined}>{msgTime}</span>
+      </Divider>
+    ) : (
+      <div className={styles.msgTime}>{msgTime}</div>
+    );
 
     const { onClick, items, isRepeat, showMsg, otherTitle } = msgSettings[type.toString()] || {
       items: [],
