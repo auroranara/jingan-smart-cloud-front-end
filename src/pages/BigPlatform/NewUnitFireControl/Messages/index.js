@@ -218,6 +218,20 @@ export default class Messages extends PureComponent {
     };
     let msgSettings = {};
     if (TYPES.indexOf(+type) < 0) return null;
+    const elecMsg = {
+      44: { elecTitle: '电气火灾报警', elecContent: `${paramName}报警现已恢复正常` },
+      32: {
+        elecTitle: '电气火灾报警',
+        elecContent: `${paramName}报警${realtimeVal + unit}（参考值<${limitVal + unit}）`,
+      },
+      42: { elecTitle: '电气火灾失联', elecContent: '设备状态失联' },
+      43: { elecTitle: '电气火灾失联', elecContent: '设备状态已恢复正常' },
+    };
+    const smokeTitle = {
+      46: '独立烟感失联',
+      47: '独立烟感失联恢复',
+      50: '独立烟感报警恢复',
+    };
     [1, 2, 3, 4].forEach(item => {
       // 发生监管\联动\反馈\屏蔽
       msgSettings = {
@@ -425,6 +439,65 @@ export default class Messages extends PureComponent {
         },
       };
     });
+    [32, 42, 43, 44].forEach(item => {
+      // 电气火灾报警, 电气火灾失联, 电气火灾失联恢复, 电气火灾报警恢复
+      msgSettings = {
+        ...msgSettings,
+        [item.toString()]: {
+          onClick: () => {
+            handleClickElecMsg(deviceId, paramName);
+          },
+          otherTitle: `【${elecMsg[item].elecTitle}】`,
+          items: [
+            { value: elecMsg[item].elecContent, style: { color: '#0ff' } },
+            { name: '所在区域', value: area },
+            { name: '所在位置', value: location },
+          ],
+        },
+      };
+    });
+    [46, 47, 50].forEach(item => {
+      // 独立烟感失联, 独立烟感失联恢复, 独立烟感报警恢复
+      msgSettings = {
+        ...msgSettings,
+        [item.toString()]: {
+          onClick: () => {
+            handleClickSmoke(item === 46 ? 2 : 3);
+          },
+          otherTitle: `【${smokeTitle[item]}】`,
+          items: [{ name: '所在区域', value: area }, { name: '所在位置', value: location }],
+        },
+      };
+    });
+    [48, 49].forEach(item => {
+      // 水系统失联, 水系统失联恢复
+      msgSettings = {
+        ...msgSettings,
+        [item.toString()]: {
+          onClick: () => {
+            handleClickWater(item === 48 ? 1 : 2, [101, 102, 103].indexOf(+deviceType));
+          },
+          otherTitle: `【${item === 48 ? '水系统失联' : '水系统失联恢复'}】`,
+          items: [
+            {
+              value:
+                +deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱',
+            },
+            { value: virtualName + item === 48 ? '失联' : '从失联中恢复' },
+          ],
+        },
+      };
+    });
+    [45].forEach(item => {
+      // 可燃气体报警恢复
+      msgSettings = {
+        ...msgSettings,
+        [item.toString()]: {
+          otherTitle: `【可燃气体报警恢复】`,
+          items: [{ name: '所在区域', value: area }, { name: '所在位置', value: location }],
+        },
+      };
+    });
 
     const msgClassName = `msgItem${cssType ? cssType : ''}`;
     const innerClassName = cssType ? styles.msgInner : undefined;
@@ -438,134 +511,10 @@ export default class Messages extends PureComponent {
       <div className={styles.msgTime}>{msgTime}</div>
     );
 
-    if (type === 44 || type === 32 || type === 42 || type === 43) {
-      const elecMsg = {
-        44: { elecTitle: '电气火灾报警', elecContent: `${paramName}报警现已恢复正常` },
-        32: {
-          elecTitle: '电气火灾报警',
-          elecContent: `${paramName}报警${realtimeVal + unit}（参考值<${limitVal + unit}）`,
-        },
-        42: { elecTitle: '电气火灾失联', elecContent: '设备状态失联' },
-        43: { elecTitle: '电气火灾失联', elecContent: '设备状态已恢复正常' },
-      };
-      return (
-        <div className={styles[msgClassName]} key={index}>
-          {firstComponent}
-          <a
-            className={styles.detailBtn}
-            onClick={() => {
-              handleClickElecMsg(deviceId, paramName);
-            }}
-          >
-            详情
-            <Icon type="double-right" />
-          </a>
-          <div className={innerClassName}>
-            {typeIcon}
-            <div className={styles.msgType}>【{elecMsg[type].elecTitle}】</div>
-            <div className={styles.msgType}>{elecMsg[type].elecContent}</div>
-            <div className={styles.msgBody}>
-              所在区域：
-              {area}
-            </div>
-            <div className={styles.msgBody}>
-              所在位置：
-              {location}
-            </div>
-          </div>
-        </div>
-      );
-    }
+    const { onClick, items, isRepeat, showMsg, otherTitle } = msgSettings[type.toString()] || {
+      items: [],
+    };
 
-    if (type === 46 || type === 47 || type === 50) {
-      // 46 独立烟感失联 47 独立烟感失联恢复 50 独立烟感报警恢复
-      const smokeTitle = {
-        46: '独立烟感失联',
-        47: '独立烟感失联恢复',
-        50: '独立烟感报警恢复',
-      };
-      return (
-        <div className={styles[msgClassName]} key={index}>
-          {firstComponent}
-          <a
-            className={styles.detailBtn}
-            onClick={() => {
-              handleClickSmoke(type === 46 ? 2 : 3);
-            }}
-          >
-            详情
-            <Icon type="double-right" />
-          </a>
-          {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
-          <div className={innerClassName}>
-            {typeIcon}
-            <div className={styles.msgType}>【{smokeTitle[type]}】</div>
-            <div className={styles.msgBody}>
-              所在区域：
-              {area}
-            </div>
-            <div className={styles.msgBody}>
-              所在位置：
-              {location}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    if (type === 48 || type === 49) {
-      // 48 水系统失联 49 水系统失联恢复
-      const waterMsg = {
-        48: { title: '水系统失联', content: '失联' },
-        49: { title: '水系统失联恢复', content: '从失联中恢复' },
-      };
-      return (
-        <div className={styles[msgClassName]} key={index}>
-          {firstComponent}
-          <a
-            className={styles.detailBtn}
-            onClick={() => {
-              handleClickWater(type === 48 ? 1 : 2, [101, 102, 103].indexOf(+deviceType));
-            }}
-          >
-            详情
-            <Icon type="double-right" />
-          </a>
-          {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
-          <div className={innerClassName}>
-            {typeIcon}
-            <div className={styles.msgType}>【{waterMsg[type].title}】</div>
-            <div className={styles.msgBody}>
-              {+deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱'}
-            </div>
-            <div className={styles.msgBody}>{virtualName + waterMsg[type].content}</div>
-          </div>
-        </div>
-      );
-    }
-
-    if (type === 45) {
-      return (
-        <div className={styles[msgClassName]} key={index}>
-          {firstComponent}
-          {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
-          <div className={innerClassName}>
-            {typeIcon}
-            <div className={styles.msgType}>【可燃气体报警恢复】</div>
-            <div className={styles.msgBody}>
-              所在区域：
-              {area}
-            </div>
-            <div className={styles.msgBody}>
-              所在位置：
-              {location}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    const { onClick, items, isRepeat, showMsg } = msgSettings[type.toString()] || { items: [] };
     return (
       <div className={styles[msgClassName]} key={index}>
         {firstComponent}
@@ -579,7 +528,7 @@ export default class Messages extends PureComponent {
         <div className={innerClassName}>
           {typeIcon}
           <div className={styles.msgType}>
-            {title}
+            {otherTitle || title}
             {showMsg && (
               <span>
                 ——
@@ -588,11 +537,11 @@ export default class Messages extends PureComponent {
             )}
           </div>
           {items.map((item, i) => {
-            const { name, value } = item;
+            const { name, value, style } = item;
             return (
               <div className={styles.msgBody} key={i}>
                 {name ? `${name}：` : ''}
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, ...style }}>
                   {typeof value === 'function' ? value() : value || getEmptyData()}
                 </div>
               </div>
