@@ -15,7 +15,7 @@ const IMG_HEIGHT = 378;
 export default class WaterTankBase extends PureComponent {
   componentDidMount() {
     const { range,value, limits, unit } = this.props;
-    this.maxDeep = getMaxDeep(range[1] || limits[1] || value, unit);
+    this.maxDeep = getMaxDeep(getMax(range[1] || limits[1], value), unit);
 
     const canvas = this.canvas;
     this.ctx = canvas.getContext('2d');
@@ -107,16 +107,21 @@ export default class WaterTankBase extends PureComponent {
     const ctx = this.ctx;
     const ceiling = getMin(range[1], limits[1]);
     const floor = getMax(range[0], limits[0]);
-    const point1 = [w, h * (1 - floor / max) + dy];
-    const point2 = [w, h * (1 - ceiling / max) + dy];
+    const origin = [w, h + dy];
+    const target = [w, dy];
+    const point1 = floor ? [w, h * (1 - floor / max) + dy] : origin;
+    const point2 = ceiling ? [w, h * (1 - ceiling / max) + dy] : target;
 
     ctx.save()
     ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(w, h + dy);
-    ctx.strokeStyle = RED;
-    ctx.lineTo(...point1);
-    ctx.stroke();
+
+    if (floor !== null) {
+      ctx.beginPath();
+      ctx.moveTo(...origin);
+      ctx.strokeStyle = RED;
+      ctx.lineTo(...point1);
+      ctx.stroke();
+    }
 
     ctx.beginPath();
     ctx.moveTo(...point1)
@@ -124,11 +129,13 @@ export default class WaterTankBase extends PureComponent {
     ctx.lineTo(...point2);
     ctx.stroke();
 
-    ctx.beginPath();
-    ctx.moveTo(...point2);
-    ctx.strokeStyle = RED;
-    ctx.lineTo(w, dy);
-    ctx.stroke();
+    if (ceiling) {
+      ctx.beginPath();
+      ctx.moveTo(...point2);
+      ctx.strokeStyle = RED;
+      ctx.lineTo(...target);
+      ctx.stroke();
+    }
 
     ctx.font = '14px microsoft yahei';
     ctx.fillText(unit, w + 2, dy);

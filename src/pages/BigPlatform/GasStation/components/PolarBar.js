@@ -19,7 +19,7 @@ export default class PolarBar extends PureComponent {
   }
 
   getOption() {
-    const { lists } = this.props;
+    const { lists, max=100 } = this.props;
 
     const statusLists = lists.map(getStatusCount);
     const categories = lists.map(({ name }) => name);
@@ -28,7 +28,7 @@ export default class PolarBar extends PureComponent {
     return {
       angleAxis: {
         min: 0,
-        max: 20,
+        max,
         interval: 5,
         axisLine: { show: false, lineStyle: { color: 'rgb(112,136,158)' } },
         axisLabel: { show: false, color: 'rgb(112,136,158)' },
@@ -96,7 +96,7 @@ export default class PolarBar extends PureComponent {
   render() {
     return (
       <ReactEcharts
-        style={{ width: '200px', height: '220px' }}
+        style={{ width: '100%', height: '100%' }}
         option={this.getOption()}
         onChartReady={this.chartCallback}
       />

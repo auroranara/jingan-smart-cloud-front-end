@@ -306,13 +306,14 @@ export default class GasStation extends PureComponent {
     });
 
     // 获取当前隐患列表
-    dispatch({
-      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-      payload: {
-        company_id: companyId,
-        businessType: 2,
-      },
-    });
+    this.fetchCurrentHiddenDanger(companyId);
+    // dispatch({
+    //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+    //   payload: {
+    //     company_id: companyId,
+    //     businessType: 2,
+    //   },
+    // });
     // 获取点位巡查统计
     dispatch({
       type: 'newUnitFireControl/fetchPointInspectionCount',
@@ -479,7 +480,7 @@ export default class GasStation extends PureComponent {
           // type: 'newUnitFireControl/fetchWebsocketScreenMessage',
           type: 'gasStation/saveScreenMessage',
           isMore: 1,
-          payload: data,
+          payload: data.data,
         });
         this.handleWebsocketMsg(data.data);
       } catch (error) {
@@ -614,13 +615,14 @@ export default class GasStation extends PureComponent {
         });
 
         // 获取当前隐患列表
-        dispatch({
-          type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-          payload: {
-            company_id: companyId,
-            businessType: 2,
-          },
-        });
+        this.fetchCurrentHiddenDanger(companyId);
+        // dispatch({
+        //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+        //   payload: {
+        //     company_id: companyId,
+        //     // businessType: 2,
+        //   },
+        // });
 
         //获取巡查记录
         dispatch({
@@ -644,13 +646,14 @@ export default class GasStation extends PureComponent {
         });
 
         // 获取当前隐患列表
-        dispatch({
-          type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-          payload: {
-            company_id: companyId,
-            businessType: 2,
-          },
-        });
+        this.fetchCurrentHiddenDanger(companyId);
+        // dispatch({
+        //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+        //   payload: {
+        //     company_id: companyId,
+        //     // businessType: 2,
+        //   },
+        // });
 
         //获取巡查记录
         dispatch({
@@ -671,13 +674,14 @@ export default class GasStation extends PureComponent {
         });
 
         // 获取当前隐患列表
-        dispatch({
-          type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-          payload: {
-            company_id: companyId,
-            businessType: 2,
-          },
-        });
+        this.fetchCurrentHiddenDanger(companyId);
+        // dispatch({
+        //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+        //   payload: {
+        //     company_id: companyId,
+        //     // businessType: 2,
+        //   },
+        // });
 
         //获取巡查记录
         dispatch({
@@ -919,13 +923,14 @@ export default class GasStation extends PureComponent {
     });
 
     // 获取当前隐患列表
-    dispatch({
-      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-      payload: {
-        company_id: companyId,
-        businessType: 2,
-      },
-    });
+    this.fetchCurrentHiddenDanger(companyId);
+    // dispatch({
+    //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+    //   payload: {
+    //     company_id: companyId,
+    //     // businessType: 2,
+    //   },
+    // });
 
     //获取巡查记录
     dispatch({
@@ -939,6 +944,17 @@ export default class GasStation extends PureComponent {
     // 获取水系统---消火栓系统
     // this.fetchWaterSystem('101');
     this.fetchAllWaterSystem();
+  };
+
+  fetchCurrentHiddenDanger = companyId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      payload: {
+        company_id: companyId,
+        // businessType: 2,
+      },
+    });
   };
 
   fetchAllWaterSystem = () => {
@@ -1157,13 +1173,14 @@ export default class GasStation extends PureComponent {
       },
     });
     // 获取当前隐患列表
-    dispatch({
-      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-      payload: {
-        company_id: companyId,
-        businessType: 2,
-      },
-    });
+    this.fetchCurrentHiddenDanger(companyId);
+    // dispatch({
+    //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+    //   payload: {
+    //     company_id: companyId,
+    //     // businessType: 2,
+    //   },
+    // });
     this.setState({ checkDrawerVisible: true });
   };
   /**
