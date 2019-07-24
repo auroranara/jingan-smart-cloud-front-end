@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 
 import styles from './WaterSystem.less';
 import { Section } from './Components';
-import { Gauge, LossDevice, PolarBar, WaterTank } from '../components/Components';
+import { GasEmpty, Gauge, LossDevice, PolarBar, WaterTank } from '../components/Components';
 import { isGauge, getStatusDesc } from '../utils';
 import { pondIcon, sprayIcon, hydrantIcon } from '../imgs/links';
 
@@ -18,9 +18,8 @@ export default class WaterSystem extends PureComponent {
     const waterLists = lists.map((lst, i) => ({ name: CATEGORIES[i], type: TYPES[i], index: i, list: lst })).filter(({ list }) => list.length);
     let title = null;
     let alarm = null;
-    let child = <PolarBar max={12} lists={waterLists} handleClick={onClick} />;
-    const isSingle = waterLists.length === 1 && waterLists[0].list.length === 1;
-    if (isSingle) {
+    let child = <GasEmpty />;
+    if (waterLists.length === 1 && waterLists[0].list.length === 1) {
       const { list: [item], index } = waterLists[0];
       const { area, location, deviceName, deviceDataList } = item;
       const dataItem = deviceDataList[0];
@@ -56,7 +55,8 @@ export default class WaterSystem extends PureComponent {
           />
         );
       }
-    }
+    } else if (waterLists.length)
+      child = <PolarBar max={12} lists={waterLists} handleClick={onClick} />;
 
     return (
       <Section title="消防水系统">
