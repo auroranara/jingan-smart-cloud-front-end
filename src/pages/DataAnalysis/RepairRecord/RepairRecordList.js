@@ -152,6 +152,7 @@ export default class RepairRecordList extends PureComponent {
         key: 'finishCompanyName',
         align: 'center',
         width: 350,
+        render: (val, record) => <span>{record.realStatus === '待处理' ? '' : val}</span>,
       });
       this.setState({ columns: [...columns], scrollX: 1600 });
     }
