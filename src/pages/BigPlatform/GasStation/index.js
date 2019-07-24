@@ -535,6 +535,13 @@ export default class GasStation extends PureComponent {
                 type: 'electricityMonitor/fetchDeviceStatusCount',
                 payload: { companyId },
               });
+              dispatch({
+                type: 'gasStation/fetchDistributionBoxClassification',
+                payload: {
+                  companyId,
+                  type: 1,
+                },
+              });
               this.getDeviceRealTimeData(this.elecDrawerDeviceId);
               this.handleFetchRealTimeData(this.elecMonitorDeviceId);
             }
@@ -1918,26 +1925,20 @@ export default class GasStation extends PureComponent {
 
   handleClickElecMsg = (deviceId, paramName) => {
     const {
-      dispatch,
-      match: {
-        params: { unitId: companyId },
+      GasStation: {
+        distributionBoxClassification: {
+          alarm=[],
+          loss=[],
+          normal=[],
+        },
       },
     } = this.props;
-    dispatch({
-      type: 'gasStation/fetchDistributionBoxClassification',
-      payload: {
-        companyId,
-        type: 1,
-      },
-      callback: ({ alarm=[], loss=[] }) => {
-        const data = [...alarm, ...loss].filter(({ id }) => id === deviceId)[0];
-        if (data) {
-          this.showElectricalFireMonitoringDetailDrawer(data, paramName);
-        } else {
-          console.log('未找到设备对应的数据');
-        }
-      },
-    });
+    const data = [...alarm, ...loss, ...normal ].filter(({ id }) => id === deviceId)[0];
+    if (data) {
+      this.showElectricalFireMonitoringDetailDrawer(data, paramName);
+    } else {
+      console.log('未找到设备对应的数据');
+    }
   };
 
   handleShowResetSection = () => {

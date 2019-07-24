@@ -264,9 +264,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
     const { activeKey } = this.state;
     const { params=[] } = value || {};
     const filteredParams = params.filter(({ name }) => name === activeKey || name.includes(activeKey) && name !== '漏电电流');
-    console.log(filteredParams);
     const { unit, normalMax } = filteredParams.reduce((a, b) => a.normalMax > b.normalMax || isNaN(a.normalMax) ? b : a, {});
-    console.log(unit);
     const series = distributionBoxTodayData.reduce((result, { timeFlag, ia, ib, ic, ua, ub, uc, v1, v2, v3, v4, v5 }) => {
       const timestamp = +moment(timeFlag, 'HH:mm');
       let list = [];
@@ -508,6 +506,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
             </div>
           </Fragment>
         }
+        zIndex={1001}
         width={700}
         visible={visible}
         onClose={onClose}
