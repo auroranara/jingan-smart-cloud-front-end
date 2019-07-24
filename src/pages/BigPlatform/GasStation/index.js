@@ -548,15 +548,22 @@ export default class GasStation extends PureComponent {
       }
 
       // if (type === 44 || type === 32 || type === 42 || type === 43) {
-      if ([32, 42, 43, 44].includes(+type)) {
-        // 电气火灾监测
-        dispatch({
-          type: 'electricityMonitor/fetchDeviceStatusCount',
-          payload: { companyId },
-        });
-        this.getDeviceRealTimeData(this.elecDrawerDeviceId);
-        this.handleFetchRealTimeData(this.elecMonitorDeviceId);
-      }
+        if ([32, 42, 43, 44].includes(+type)) {
+          // 电气火灾监测
+          dispatch({
+            type: 'electricityMonitor/fetchDeviceStatusCount',
+            payload: { companyId },
+          });
+          dispatch({
+            type: 'gasStation/fetchDistributionBoxClassification',
+            payload: {
+              companyId,
+              type: 1,
+            },
+          });
+          this.getDeviceRealTimeData(this.elecDrawerDeviceId);
+          this.handleFetchRealTimeData(this.elecMonitorDeviceId);
+        }
 
       // 获取水系统---消火栓系统
       // if (type === 36 || type === 37 || type === 48 || type === 49) {
@@ -1929,26 +1936,20 @@ export default class GasStation extends PureComponent {
 
   handleClickElecMsg = (deviceId, paramName) => {
     const {
-      dispatch,
-      match: {
-        params: { unitId: companyId },
+      GasStation: {
+        distributionBoxClassification: {
+          alarm=[],
+          loss=[],
+          normal=[],
+        },
       },
     } = this.props;
-    dispatch({
-      type: 'gasStation/fetchDistributionBoxClassification',
-      payload: {
-        companyId,
-        type: 1,
-      },
-      callback: ({ alarm=[], loss=[] }) => {
-        const data = [...alarm, ...loss].filter(({ id }) => id === deviceId)[0];
-        if (data) {
-          this.showElectricalFireMonitoringDetailDrawer(data, paramName);
-        } else {
-          console.log('未找到设备对应的数据');
-        }
-      },
-    });
+    const data = [...alarm, ...loss, ...normal ].filter(({ id }) => id === deviceId)[0];
+    if (data) {
+      this.showElectricalFireMonitoringDetailDrawer(data, paramName);
+    } else {
+      console.log('未找到设备对应的数据');
+    }
   };
 
   handleShowResetSection = () => {

@@ -506,6 +506,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
             </div>
           </Fragment>
         }
+        zIndex={1001}
         width={700}
         visible={visible}
         onClose={onClose}
