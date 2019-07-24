@@ -151,3 +151,18 @@ function getMaxDeepByUnit(unit) {
 export function isGauge(tab) {
   return tab === 0 || tab === 1 ? true : false;
 }
+
+export function getMin(...args) {
+  return getTarget(0, args);
+}
+
+export function getMax(...args) {
+  return getTarget(1, args);
+}
+
+function getTarget(type, nums) {
+  const ns = nums.filter(n => n !== undefined && n !== null);
+  if (ns.length)
+    return Math[type ? 'max' : 'min'](...ns);
+  return null;
+}
