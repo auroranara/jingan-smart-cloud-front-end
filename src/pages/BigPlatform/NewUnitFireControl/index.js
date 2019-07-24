@@ -1575,7 +1575,7 @@ export default class NewUnitFireControl extends PureComponent {
     // });
   };
 
-  getAllDetail = (status, type = 1, pageNum, params = {}) => {
+  getAllDetail = (status, type = 1, pageNum, params = {}, callback) => {
     // status 0 待处理 1 处理中 2 已处理
     const {
       dispatch,
@@ -1595,6 +1595,7 @@ export default class NewUnitFireControl extends PureComponent {
         pageSize: 10,
         ...params,
       },
+      callback,
     });
   };
 
@@ -1644,7 +1645,7 @@ export default class NewUnitFireControl extends PureComponent {
     fetchDetail(workOrderStatus, workOrderType, 1);
   };
 
-  getWarnDetail = (status, type = 1, pageNum, params = {}) => {
+  getWarnDetail = (status, type = 1, pageNum, params = {}, callback) => {
     // status 0 待处理 1 处理中 2 已处理
     const {
       dispatch,
@@ -1664,10 +1665,11 @@ export default class NewUnitFireControl extends PureComponent {
         pageSize: 10,
         ...params,
       },
+      callback,
     });
   };
 
-  getFaultDetail = (status, type = 1, pageNum, params = {}) => {
+  getFaultDetail = (status, type = 1, pageNum, params = {}, callback) => {
     // status 0 待处理 1 处理中 2 已处理
     const {
       dispatch,
@@ -1687,6 +1689,7 @@ export default class NewUnitFireControl extends PureComponent {
         pageSize: 10,
         ...params,
       },
+      callback,
     });
   };
 
@@ -1872,7 +1875,15 @@ export default class NewUnitFireControl extends PureComponent {
         const ids = flow === 0 ? fireId : faultId;
         const { id, status } = ids[0];
         const fetchFlow = flow === 0 ? this.getWarnDetail : this.getFaultDetail;
-        fetchFlow(status, 0, 1, { id, status });
+        fetchFlow(status, 0, 1, { id, status }, res => {
+          const {
+            data: {
+              list: [{ cameraMessage }],
+            },
+          } = res;
+          this.setState({ videoList: cameraMessage || [] });
+          Array.isArray(cameraMessage) && cameraMessage.length > 0 && this.handleShowFlowVideo();
+        });
         this.fetchMessageInformList({ dataId: id });
         this.setState({ fireMonitorFlowDrawerVisible: true, msgFlow: flow });
       },

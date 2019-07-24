@@ -36,7 +36,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
 
   render() {
     const { index } = this.state;
-    const { visible, onClose, data = [], hiddenDangerIds=[], handleParentChange } = this.props;
+    const { visible, onClose, data = [], hiddenDangerIds = [], handleParentChange } = this.props;
     const originLength = data.filter(item => item.timeLine.type).length;
     const length = hiddenDangerIds.length;
     const cards = (

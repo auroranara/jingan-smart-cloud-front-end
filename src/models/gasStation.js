@@ -7,6 +7,7 @@ import {
   getDistributionBoxAlarmCount,
   getDeviceHistory,
   getUnitPhoto,
+  getScreenMessage,
 } from '../services/gasStation';
 
 const PARAMS_SORT = {
@@ -110,6 +111,8 @@ export default {
     spray: [], // 喷淋
     hydrant: [], // 消火栓
     unitPhoto: '',
+    screenMessage: [],
+    waterAlarmCount: [],
   },
 
   effects: {
@@ -190,6 +193,27 @@ export default {
         });
       }
     },
+    *fetchScreenMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getScreenMessage, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({
+          type: 'saveScreenMessage',
+          payload: data && Array.isArray(data.list) ? data.list : [],
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    *fetchWaterHistoryAlarm({ payload }, { call, put }) {
+      const response = yield call(getDistributionBoxAlarmCount, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveWaterAlarmCount', payload: data && Array.isArray(data.list) ? data.list : [] });
+    },
   },
 
   reducers: {
@@ -225,6 +249,18 @@ export default {
     },
     saveUnitPhoto(state, action) {
       return { ...state, unitPhoto: action.payload };
+    },
+    saveScreenMessage(state, action) {
+      let newMsg = action.payload;
+      if (action.isMore)
+        newMsg = [...newMsg, ...state.screenMessage];
+      return {
+        ...state,
+        screenMessage: newMsg,
+      };
+    },
+    saveWaterAlarmCount(state, action) {
+      return { ...state, waterAlarmCount: action.payload };
     },
   },
 };

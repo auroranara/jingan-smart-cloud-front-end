@@ -24,12 +24,23 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       getWarnDetail,
       getFaultDetail,
       fetchMessageInformList,
+      handleParentChange,
     } = this.props;
     const { index } = this.state;
     const ids = msgFlow === 0 ? fireId : faultId;
     const { id, status } = ids[index - 1];
     const fetchFlow = msgFlow === 0 ? getWarnDetail : getFaultDetail;
-    fetchFlow(status, 0, 1, { id, status });
+    fetchFlow(status, 0, 1, { id, status }, res => {
+      const {
+        data: {
+          list: [{ cameraMessage }],
+        },
+      } = res;
+      handleParentChange({
+        videoList: cameraMessage || [],
+        fireVideoVisible: Array.isArray(cameraMessage) && cameraMessage.length > 0,
+      });
+    });
     fetchMessageInformList({ dataId: id });
     this.setState(({ index }) => ({ index: index - 1 }));
   };
@@ -42,12 +53,23 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       getWarnDetail,
       getFaultDetail,
       fetchMessageInformList,
+      handleParentChange,
     } = this.props;
     const { index } = this.state;
     const ids = msgFlow === 0 ? fireId : faultId;
     const { id, status } = ids[index + 1];
     const fetchFlow = msgFlow === 0 ? getWarnDetail : getFaultDetail;
-    fetchFlow(status, 0, 1, { id, status });
+    fetchFlow(status, 0, 1, { id, status }, res => {
+      const {
+        data: {
+          list: [{ cameraMessage }],
+        },
+      } = res;
+      handleParentChange({
+        videoList: cameraMessage || [],
+        fireVideoVisible: Array.isArray(cameraMessage) && cameraMessage.length > 0,
+      });
+    });
     fetchMessageInformList({ dataId: id });
     this.setState(({ index }) => ({ index: index + 1 }));
   };
