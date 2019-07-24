@@ -483,7 +483,7 @@ export default class Messages extends PureComponent {
               value:
                 +deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱',
             },
-            { value: virtualName + item === 48 ? '失联' : '从失联中恢复' },
+            { value: virtualName + (item === 48 ? '失联' : '从失联中恢复') },
           ],
         },
       };
