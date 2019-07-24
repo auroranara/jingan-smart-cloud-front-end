@@ -1925,7 +1925,7 @@ export default class GasStation extends PureComponent {
 
   handleClickElecMsg = (deviceId, paramName) => {
     const {
-      GasStation: {
+      gasStation: {
         distributionBoxClassification: {
           alarm=[],
           loss=[],
