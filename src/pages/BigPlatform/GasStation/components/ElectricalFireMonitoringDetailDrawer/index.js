@@ -24,7 +24,7 @@ const TYPES = [
   },
   {
     key: '3',
-    value: '最近一季',
+    value: '最近三月',
   },
   {
     key: '4',
