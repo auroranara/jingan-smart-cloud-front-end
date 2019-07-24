@@ -26,3 +26,8 @@ export async function getDeviceHistory(params) {
 export async function getUnitPhoto(id) {
   return request(`/acloud_new/v2/baseInfo/company/${id}`);
 }
+
+// 获取大屏消息
+export async function getScreenMessage(params) {
+  return request(`/acloud_new/v2/sdgs/screenMessageForGS?${stringify(params)}`);
+}

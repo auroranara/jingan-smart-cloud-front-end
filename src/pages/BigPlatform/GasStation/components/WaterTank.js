@@ -12,7 +12,7 @@ export default function WaterTank(props) {
     ...restProps
   } = props;
 
-  const { value, status, unit, deviceParamsInfo: { normalLower, normalUpper, maxValue } } = data;
+  const { value, status, unit, deviceParamsInfo: { normalLower, normalUpper, minValue, maxValue } } = data;
 
   const val = value || 0;
 
@@ -26,7 +26,7 @@ export default function WaterTank(props) {
       value={val}
       size={[100, 150]}
       limits={[normalLower, normalUpper]}
-      range={maxValue}
+      range={[minValue, maxValue]}
       unit={unit}
       {...restProps}
     />

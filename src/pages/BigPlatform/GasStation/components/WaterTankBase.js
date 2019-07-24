@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 
 import { waveBlue, waveRed } from '../imgs/links';
-import { getMaxDeep } from '../utils';
+import { getMaxDeep, getMin, getMax } from '../utils';
 
 const RED = 'rgb(248,51,41)';
 const BLUE = 'rgb(24,141,255)';
@@ -14,8 +14,8 @@ const IMG_HEIGHT = 378;
 
 export default class WaterTankBase extends PureComponent {
   componentDidMount() {
-    const { range, unit, limits } = this.props;
-    this.maxDeep = getMaxDeep(range || limits[1], unit);
+    const { range,value, limits, unit } = this.props;
+    this.maxDeep = getMaxDeep(range[1] || limits[1] || value, unit);
 
     const canvas = this.canvas;
     this.ctx = canvas.getContext('2d');
@@ -46,7 +46,6 @@ export default class WaterTankBase extends PureComponent {
     this.drawSplits();
     this.drawAxis();
     this.drawTriangle();
-    this.drawLimitLine();
   }
 
   drawWave() {
@@ -62,9 +61,12 @@ export default class WaterTankBase extends PureComponent {
     const ctx = this.ctx;
     const { dy=0, size: [w, h] } = this.props;
 
+    ctx.save();
     ctx.beginPath();
     ctx.strokeStyle = 'grey';
+    ctx.lineWidth = 4;
     ctx.strokeRect(0, dy, w, h);
+    ctx.restore();
   }
 
   drawSplits() {
@@ -100,14 +102,16 @@ export default class WaterTankBase extends PureComponent {
   }
 
   drawAxis() {
-    const { dy=0, size: [w, h], limits, unit } = this.props;
+    const { dy=0, size: [w, h], range, limits, unit } = this.props;
     const max = this.maxDeep;
     const ctx = this.ctx;
-    const point1 = [w, h * (1 - limits[0] / max) + dy];
-    const point2 = [w, h * (1 - limits[1] / max) + dy];
+    const ceiling = getMin(range[1], limits[1]);
+    const floor = getMax(range[0], limits[0]);
+    const point1 = [w, h * (1 - floor / max) + dy];
+    const point2 = [w, h * (1 - ceiling / max) + dy];
 
     ctx.save()
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.moveTo(w, h + dy);
     ctx.strokeStyle = RED;
@@ -128,6 +132,28 @@ export default class WaterTankBase extends PureComponent {
 
     ctx.font = '14px microsoft yahei';
     ctx.fillText(unit, w + 2, dy);
+    ctx.restore();
+
+    this.drawLimitLine([ceiling, floor]);
+  }
+
+  drawLimitLine(limits) {
+    const { dy=0, size: [w, h] } = this.props;
+    const max = this.maxDeep;
+    const ctx = this.ctx;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.setLineDash([4, 2]);
+    ctx.strokeStyle = RED;
+    limits.forEach(lmt => {
+      if (lmt !== null) {
+        const y = h * (1 - lmt / max) + dy;
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+      }
+    });
+    ctx.stroke();
     ctx.restore();
   }
 
@@ -153,39 +179,13 @@ export default class WaterTankBase extends PureComponent {
     ctx.closePath();
     ctx.fill();
     ctx.font = '14px microsoft yahei';
+    ctx.fillStyle = status > 0 ? RED : WHITE;
     ctx.fillText(`${value}${unit}`, target[0] + 25, target[1] + 10);
     ctx.fillStyle = WHITE;
     ctx.font = '12px microsoft yahei';
     ctx.fillText('当前水位', target[0] + 25, target[1] - 8);
     ctx.restore();
   }
-
-  drawLimitLine() {
-    const { dy=0, size: [w, h], limits } = this.props;
-
-    const max = this.maxDeep;
-    const ctx = this.ctx;
-    ctx.save();
-    ctx.beginPath();
-    ctx.setLineDash([4, 2]);
-    ctx.strokeStyle = RED;
-    limits.forEach((lmt, i) => {
-      if (!lmt || i && lmt === max)
-        return;
-      const y = h * (1 - lmt / max) + dy;
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-    });
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  // isAlarm() {
-  //   const { value, limits } = this.props;
-  //   if (value < limits[0] || value > limits[1])
-  //     return true;
-  //   return false;
-  // }
 
   render() {
     const { width=400, height=200, className, onClick } = this.props;

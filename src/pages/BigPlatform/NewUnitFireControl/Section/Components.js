@@ -2,6 +2,7 @@ import AlarmDynamicDrawer from './AlarmDynamicDrawer';
 import AlarmDynamicMsgDrawer from './AlarmDynamicMsgDrawer';
 import CheckDrawer from './CheckDrawer';
 import CheckingDrawer from './CheckingDrawer';
+import CheckPointDrawer from './CheckPointDrawer';
 import CheckWorkOrder from './CheckWorkOrder';
 import CompanyInfo from '../CompanyInfo';
 import CurrentHiddenDanger from './CurrentHiddenDanger';
@@ -46,6 +47,7 @@ export {
   AlarmDynamicMsgDrawer,
   CheckDrawer,
   CheckingDrawer,
+  CheckPointDrawer,
   CheckWorkOrder,
   CompanyInfo,
   CurrentHiddenDanger,
