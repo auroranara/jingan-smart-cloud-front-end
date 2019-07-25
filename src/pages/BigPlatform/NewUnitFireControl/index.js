@@ -53,6 +53,7 @@ import FireMonitorFlowDrawer from './Section/FireMonitorFlowDrawer';
 
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
+import iconAlarm from '@/assets/icon-alarm.png';
 import headerBg from '@/assets/new-header-bg.png';
 import videoBtn from '../Monitor/imgs/videoBtn.png';
 
@@ -74,6 +75,7 @@ const msgInfo = [
     body: '发生报警，',
     bottom: '情况危急，请立即处理！',
     animation: styles.redShadow,
+    types: [7, 38, 39],
   },
   {
     title: '故障提示',
@@ -82,14 +84,22 @@ const msgInfo = [
     body: '发生故障，',
     bottom: '请及时维修！',
     animation: styles.orangeShadow,
+    types: [9, 40],
+  },
+  {
+    title: '报警提示',
+    icon: iconAlarm,
+    color: '#f83329',
+    body: '发生报警，',
+    bottom: '情况危急，请立即处理！',
+    animation: styles.redShadow,
+    types: [32, 36],
   },
 ];
 
 const switchMsgType = type => {
-  const alarmTypes = [7, 38, 39, 32, 36];
-  const faultTypes = [9, 40];
-  if (alarmTypes.indexOf(type) >= 0) return msgInfo[0];
-  else if (faultTypes.indexOf(type) >= 0) return msgInfo[1];
+  const msgItem = msgInfo.find(item => item.types.indexOf(type) >= 0) || msgInfo[0];
+  return msgItem;
 };
 
 const popupVisible = {
