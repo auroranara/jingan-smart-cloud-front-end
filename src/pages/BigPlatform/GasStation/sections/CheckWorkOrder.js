@@ -181,24 +181,24 @@ export default class CheckWorkOrder extends PureComponent {
     const { coItemList } = this.props;
     let child = (
       <div className={styles.circleContainer}>
-        <div className={styles.circle} ref={node => this.circle = node}>
+        <div className={styles.emptyCircle} ref={node => this.circle = node}>
           0
         </div>
       </div>
     );
-    // if ([1, 2, 3, 4].some(n => coItemList[`status${n}`] !== 0))
-    //   child = (
-    //     <Fragment>
-    //       <ReactEcharts
-    //         option={this.getPieOption()}
-    //         style={{ height: '100%', width: '100%' }}
-    //         className="echarts-for-echarts"
-    //         notMerge={true}
-    //         onChartReady={this.onChartReadyCallback}
-    //       />
-    //       {this.renderLegend()}
-    //     </Fragment>
-    //   );
+    if ([1, 2, 3, 4].some(n => coItemList[`status${n}`] !== 0))
+      child = (
+        <Fragment>
+          <ReactEcharts
+            option={this.getPieOption()}
+            style={{ height: '100%', width: '100%' }}
+            className="echarts-for-echarts"
+            notMerge={true}
+            onChartReady={this.onChartReadyCallback}
+          />
+          {this.renderLegend()}
+        </Fragment>
+      );
     return (
       <Section title="安全巡查">
         <div className={styles.container}>

@@ -41,7 +41,7 @@ function getMaxValueByParamName(name) {
 }
 
 function formatDistributionBoxClassification (list) {
-  return list.reduce((result, { deviceId, deviceName, area, location, deviceDataForAppList, updateTime }) => {
+  return list.reduce((result, { deviceId, deviceName, area, location, deviceDataForAppList, updateTime, linkStatus }) => {
     const { status, params } = deviceDataForAppList.reduce((res, { code, desc, status, unit, value, deviceParamsInfo, updateTime }) => {
       let s;
       if (status > 0) {
@@ -81,9 +81,10 @@ function formatDistributionBoxClassification (list) {
       params: params.sort((a, b) => PARAMS_SORT[a.name] - PARAMS_SORT[b.name]),
       updateTime,
     };
-    if (status === 1) {
+    const s = deviceDataForAppList && deviceDataForAppList.length > 0 ? status : +linkStatus;
+    if (s === 1) {
       result.alarm.push(data);
-    } else if (status === -1){
+    } else if (s === -1){
       result.loss.push(data);
     } else {
       result.normal.push(data);

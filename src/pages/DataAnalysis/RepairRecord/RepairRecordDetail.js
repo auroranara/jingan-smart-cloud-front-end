@@ -45,7 +45,7 @@ const reportInfo = [
 ];
 
 const repairInfo = [
-  { label: '维修单位', key: 'unit_name', status: 'repair' },
+  { label: '维修单位', key: 'finishCompanyName', status: 'repair' },
   { label: '维修人员', key: 'executor_name', status: 'repair' },
   { label: '联系电话', key: 'phone', status: 'repair' },
   { label: '开始时间', key: 'start_date', status: 'repair' },

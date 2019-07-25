@@ -11,7 +11,7 @@ import styles from './index.less';
  * author: sunkai
  * date: 2018年01月09日
  */
-export default function NewSection ({
+export default function NewSection({
   // 容器类名
   className,
   // 容器样式
@@ -36,17 +36,31 @@ export default function NewSection ({
   planB,
 }) {
   return (
-    <div className={className?`${styles.container} ${className}`:styles.container} style={style} onClick={onClick}>
-      <div className={styles.title} style={{ ...(planB?{ backgroundImage: `url(${titleBg})`, backgroundSize: '100% 100%' }:{ backgroundImage: `url(${titleBg2})` }), ...titleStyle }}>
+    <div
+      className={className ? `${styles.container} ${className}` : styles.container}
+      style={style}
+      onClick={onClick}
+    >
+      <div
+        className={styles.title}
+        style={{
+          ...(planB
+            ? { backgroundImage: `url(${titleBg})`, backgroundSize: '100% 100%' }
+            : { backgroundImage: `url(${titleBg2})` }),
+          ...titleStyle,
+        }}
+      >
         {title}
         {extra && <span className={styles.extra}>{extra}</span>}
       </div>
-      <div className={styles.content} style={{ ...(planB?{ backgroundColor: 'rgba(17, 58, 112, 0.502)' }:{}), ...contentStyle  }}>
-        {scroll ? (
-          <Scroll {...scroll}>
-            {children}
-          </Scroll>
-        ) : children}
+      <div
+        className={styles.content}
+        style={{
+          ...(planB ? { backgroundColor: 'rgba(17, 58, 112, 0.502)' } : {}),
+          ...contentStyle,
+        }}
+      >
+        {scroll ? <Scroll {...scroll}>{children}</Scroll> : children}
       </div>
       {other}
     </div>
