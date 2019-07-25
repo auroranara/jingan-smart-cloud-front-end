@@ -640,6 +640,7 @@ export default class Smoke extends PureComponent {
         params: { gridId },
       },
     } = this.props;
+
     this.setState({ companyName: company_name, msgFlow: +type === 1 ? 0 : 1, dynamicType: type });
     dispatch({
       type: 'smoke/fetchSmokeForMaintenance',
@@ -648,7 +649,14 @@ export default class Smoke extends PureComponent {
         const {
           data: { list = [] },
         } = res;
-        const dataId = list.map(item => item.data_id)[0];
+        const {
+          smoke: { gasForMaintenance = [] },
+        } = this.props;
+        const gasId = gasForMaintenance.map(item => item.data_id)[0];
+        const dataId = list
+          .filter(item => item.data_id === gasId)
+          .map(item => item.data_id)
+          .join('');
         this.handleDrawerVisibleChange('alarmDynamic');
         this.fetchMessageInformList({ dataId });
         this.fetchCameraMessage({ id: dataId, reportType: 4 });
@@ -685,7 +693,14 @@ export default class Smoke extends PureComponent {
         const {
           data: { list = [] },
         } = res;
-        const dataId = list.map(item => item.data_id)[0];
+        const {
+          smoke: { gasForMaintenance = [] },
+        } = this.props;
+        const gasId = gasForMaintenance.map(item => item.data_id)[0];
+        const dataId = list
+          .filter(item => item.data_id === gasId)
+          .map(item => item.data_id)
+          .join('');
         this.handleDrawerVisibleChange('maintenance');
         this.fetchMessageInformList({ dataId });
         this.fetchCameraMessage({ id: dataId, reportType: 4 });
