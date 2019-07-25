@@ -246,7 +246,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
                 key={activeType}
               />
             </div>
-          ) : <div className={styles.emptyData}>暂无数据</div>}
+          ) : <div className={styles.emptyCountWrapper}><div className={styles.emptyCount}>0</div></div>}
         </Spin>
       </Fragment>
     );
