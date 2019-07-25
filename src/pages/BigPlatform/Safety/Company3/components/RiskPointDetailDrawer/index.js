@@ -61,7 +61,10 @@ const INSPECTION_FIELDNAMES = {
  */
 @connect(({ unitSafety, loading }) => ({
   unitSafety,
-  loading: loading.models.unitSafety,
+  loading1: loading.effects['unitSafety/fetchRiskPointHiddenDangerList'],
+  loading2: loading.effects['unitSafety/fetchRiskPointInspectionList'],
+  loading3: loading.effects['unitSafety/fetchRiskPointHiddenDangerCount'],
+  loading4: loading.effects['unitSafety/fetchRiskPointInspectionCount'],
 }))
 export default class RiskPointDetailDrawer extends PureComponent {
   state = {
@@ -236,7 +239,10 @@ export default class RiskPointDetailDrawer extends PureComponent {
           },
         }={},
       },
-      loading,
+      loading1,
+      loading2,
+      loading3,
+      loading4,
     } = this.props;
     const { tabKey, subTabKey } = this.state;
     let subTabs, Item, list, fieldNames, key, restProps, backgroundImage, pageSize, pageNum, total;
@@ -320,7 +326,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
         sectionProps={{
           refScroll: this.setScrollReference,
           scrollProps: { className: styles.scrollContainer },
-          spinProps: { loading },
+          spinProps: { loading: loading1 || loading2 || loading3 || loading4 || false },
           fixedContent: (
             <Fragment>
               <div className={styles.titleWrapper}>
