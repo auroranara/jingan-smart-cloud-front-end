@@ -166,3 +166,19 @@ function getTarget(type, nums) {
     return Math[type ? 'max' : 'min'](...ns);
   return null;
 }
+
+export function getStatusDesc(value, limitLists, descs) {
+  const val = Number.parseFloat(value);
+  if (Number.isNaN(val))
+    return;
+
+  const limits = limitLists.reduce((prev, next) => {
+    next.forEach((n, i) => prev[i].push(n));
+    return prev;
+  }, [[], []])
+  const [min, max] = limits.map((ns, i) => getTarget(i, ns));
+  if (min !== null && val <= min)
+    return descs[0];
+  else if (max !== null && val >= max)
+    return descs[1];
+}

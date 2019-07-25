@@ -27,20 +27,28 @@
   margin-right: 5px;
   position: relative;
   top: 2px;
-  // background-size: 100% 100%;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center center;
 }
 
-// .icon:extend(.iconBase) {
-//   width: 16px;
-//   height: 16px;
-//   background-image: url(../imgs/tank.png);
-// }
+.lightContainer {
+  position: absolute;
+  left: 25px;
+  top: 35px;
+}
 
-// .icon1:extend(.iconBase) {
-//   width: 16px;
-//   height: 16px;
-//   background-image: url(../imgs/tank.png);
-// }
+@lightWidth: 25px;
+.alarm {
+  height: @lightWidth;
+  background-image: url(../imgs/redLight.png);
+  background-size: @lightWidth @lightWidth;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.desc {
+  font-size: 12px;
+  margin: 0;
+  text-align: center;
+}

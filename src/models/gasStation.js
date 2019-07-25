@@ -253,7 +253,7 @@ export default {
     saveScreenMessage(state, action) {
       let newMsg = action.payload;
       if (action.isMore)
-        newMsg = [...newMsg, ...state.screenMessage];
+        newMsg = [newMsg, ...state.screenMessage];
       return {
         ...state,
         screenMessage: newMsg,
