@@ -109,7 +109,7 @@ export default class CheckPointDrawer extends PureComponent {
           label: {
             normal: {
               show: true,
-              lineHeight: 25,
+              lineHeight: 18,
               formatter: '{b}\n{c} ({d}%)',
               textStyle: {
                 color: '#fff',
