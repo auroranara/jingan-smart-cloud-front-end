@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Tooltip, Carousel, Icon } from 'antd';
+import Ellipsis from '@/components/Ellipsis';
 import ReactEcharts from "echarts-for-react";
 import { connect } from 'dva';
 import moment from 'moment';
@@ -166,7 +167,7 @@ export default class ElectricalFireMonitoring extends PureComponent {
       let subContent;
       if (alarmCount === 1 || normalCount === 1) { // 报警或正常
         let { params } = data;
-        params = params.reduce((result, param) => {
+        params = (params || []).reduce((result, param) => {
           if (param.status > 0) {
             result.alarm.push(param);
           } else if (param.status < 0) {
@@ -176,10 +177,10 @@ export default class ElectricalFireMonitoring extends PureComponent {
           }
           return result;
         }, { alarm: [], loss: [], normal: [] });
-        params = params.alarm.concat(params.loss, params.normal);
+        params = params.alarm.concat(params.loss, params.normal); // 为了确保报警优先排序
         const isFirst = currentIndex === 0;
         const isLast = currentIndex === params.length - 1;
-        subContent = (
+        subContent = params.length > 0 ? (
           <div className={styles.subContent}>
             <Carousel
               // afterChange={this.handleCarouselChange}
@@ -229,6 +230,11 @@ export default class ElectricalFireMonitoring extends PureComponent {
               />
             </Tooltip>
           </div>
+        ) : (
+          <div className={styles.emptyData}>
+            <img src={lossBackground} alt="失联" />
+            <span>暂无参数</span>
+          </div>
         );
       } else { // 失联
         subContent = (
@@ -242,7 +248,7 @@ export default class ElectricalFireMonitoring extends PureComponent {
         <div className={styles.singleContainer}>
           <div className={styles.titleWrapper}>
             <img className={styles.titleIcon} src={distributionBoxIcon} alt="配电箱图标" />
-            <span className={styles.title}>{data.location}</span>
+            <span className={styles.title}><Ellipsis lines={1} tooltip>{data.location}</Ellipsis></span>
           </div>
           <div className={styles.content}>
             {subContent}
