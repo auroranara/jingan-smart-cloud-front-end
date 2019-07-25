@@ -3,6 +3,7 @@ import { Tooltip, Carousel, Icon } from 'antd';
 import ReactEcharts from "echarts-for-react";
 import { connect } from 'dva';
 import moment from 'moment';
+
 import { Section2 as Section } from '@/jingan-components/CustomSection';
 import alarmDistributionBoxTop from './assets/alarm-distribution-box-top.png';
 import alarmDistributionBoxBottom from './assets/alarm-distribution-box-bottom.png';
@@ -14,6 +15,7 @@ import distributionBoxIcon from './assets/distribution-box-icon.png';
 import alarmIcon from './assets/alarm-icon.png';
 import lossBackground from './assets/loss-background.png';
 import styles from './index.less';
+import { GasEmpty } from '../Components';
 
 function formatTime(time) {
   const diff = moment().diff(moment(time));
@@ -160,7 +162,11 @@ export default class ElectricalFireMonitoring extends PureComponent {
     const lossCount = loss.length;
     const normalCount = normal.length;
     const length = alarmCount + lossCount + normalCount;
-    let content;
+    let content = (
+      <div className={styles.emptyContainer}>
+        <GasEmpty />
+      </div>
+    );
     if (length === 1) { // 单个
       const data = alarm[0] || loss[0] || normal[0];
       let subContent;

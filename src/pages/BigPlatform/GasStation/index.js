@@ -300,10 +300,11 @@ export default class GasStation extends PureComponent {
     dispatch({ type: 'newUnitFireControl/fetchFault', payload: { companyId } });
 
     // 获取当前隐患图表统计数据
-    dispatch({
-      type: 'newUnitFireControl/fetchHiddenDangerNum',
-      payload: { companyId },
-    });
+    this.fetchHiddenDangerNum();
+    // dispatch({
+    //   type: 'newUnitFireControl/fetchHiddenDangerNum',
+    //   payload: { companyId },
+    // });
 
     // 获取当前隐患列表
     this.fetchCurrentHiddenDanger(companyId);
@@ -542,10 +543,11 @@ export default class GasStation extends PureComponent {
       // if (type === 14 || type === 15 || type === 16 || type === 17) {
       if ([14, 15, 16, 17].includes(+type)) {
         // 更新当前隐患总数
-        dispatch({
-          type: 'newUnitFireControl/fetchHiddenDangerNum',
-          payload: { companyId },
-        });
+        this.fetchHiddenDangerNum();
+        // dispatch({
+        //   type: 'newUnitFireControl/fetchHiddenDangerNum',
+        //   payload: { companyId },
+        // });
       }
 
       // if (type === 44 || type === 32 || type === 42 || type === 43) {
@@ -893,10 +895,11 @@ export default class GasStation extends PureComponent {
     this.fetchFireAlarmSystem();
 
     // 获取当前隐患列表
-    dispatch({
-      type: 'newUnitFireControl/fetchHiddenDangerNum',
-      payload: { companyId },
-    });
+    this.fetchHiddenDangerNum();
+    // dispatch({
+    //   type: 'newUnitFireControl/fetchHiddenDangerNum',
+    //   payload: { companyId },
+    // });
 
     // 获取企业信息
     dispatch({
@@ -944,6 +947,20 @@ export default class GasStation extends PureComponent {
     // 获取水系统---消火栓系统
     // this.fetchWaterSystem('101');
     this.fetchAllWaterSystem();
+  };
+
+  fetchHiddenDangerNum = () => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    // 获取当前隐患图表统计数据
+    dispatch({
+      type: 'newUnitFireControl/fetchHiddenDangerNum',
+      payload: { companyId, businessType: 'all' },
+    });
   };
 
   fetchCurrentHiddenDanger = companyId => {
@@ -1137,10 +1154,11 @@ export default class GasStation extends PureComponent {
       },
     } = this.props;
     // 获取当前隐患图表统计数据
-    dispatch({
-      type: 'newUnitFireControl/fetchHiddenDangerNum',
-      payload: { companyId },
-    });
+    this.fetchHiddenDangerNum();
+    // dispatch({
+    //   type: 'newUnitFireControl/fetchHiddenDangerNum',
+    //   payload: { companyId },
+    // });
 
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
