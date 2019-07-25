@@ -82,7 +82,7 @@ const WS_OPTIONS = {
 
 const msgInfo = [
   {
-    title: '火警提示',
+    title: '报警提示',
     icon: iconFire,
     color: '#f83329',
     body: '发生报警，',
@@ -302,20 +302,10 @@ export default class GasStation extends PureComponent {
 
     // 获取当前隐患图表统计数据
     this.fetchHiddenDangerNum();
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchHiddenDangerNum',
-    //   payload: { companyId },
-    // });
 
     // 获取当前隐患列表
     this.fetchCurrentHiddenDanger(companyId);
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-    //   payload: {
-    //     company_id: companyId,
-    //     businessType: 2,
-    //   },
-    // });
+
     // 获取点位巡查统计
     dispatch({
       type: 'newUnitFireControl/fetchPointInspectionCount',
@@ -325,7 +315,6 @@ export default class GasStation extends PureComponent {
     });
 
     dispatch({
-      // type: 'newUnitFireControl/fetchScreenMessage',
       type: 'gasStation/fetchScreenMessage',
       payload: {
         companyId,
@@ -481,7 +470,6 @@ export default class GasStation extends PureComponent {
       try {
         const data = JSON.parse(e.data);
         dispatch({
-          // type: 'newUnitFireControl/fetchWebsocketScreenMessage',
           type: 'gasStation/saveScreenMessage',
           isMore: 1,
           payload: data.data,
@@ -505,10 +493,9 @@ export default class GasStation extends PureComponent {
     } = this.props;
     const { checkItemId } = this.state;
 
-    // 显示火警障碍弹窗
+    // 显示报警弹窗
     const { itemId, messageFlag, type, checkResult, pointId, isOver, enterSign } = result;
 
-    // if ( type === 7 || type === 9 || type === 32 || type === 36 ||  type === 38 || type === 40 || type === 41) {
     if ([7, 9, 32, 36, 38, 40, 41].includes(+type)) {
       if (+isOver === 0) {
         if (type === 7 || type === 9) {
@@ -531,23 +518,16 @@ export default class GasStation extends PureComponent {
       });
     }
 
-    // if (type === 1 || type === 2 || type === 3 || type === 4 || type === 9 || type === 7 || type === 21 || type === 52) {
     if ([1, 2, 3, 4, 7, 9, 21, 52].includes(+type)) {
       // 获取消防主机监测
       this.fetchFireAlarmSystem();
     }
 
-    // if (type === 14 || type === 15 || type === 16 || type === 17) {
     if ([14, 15, 16, 17].includes(+type)) {
       // 更新当前隐患总数
       this.fetchHiddenDangerNum();
-      // dispatch({
-      //   type: 'newUnitFireControl/fetchHiddenDangerNum',
-      //   payload: { companyId },
-      // });
     }
 
-    // if (type === 44 || type === 32 || type === 42 || type === 43) {
     if ([32, 42, 43, 44].includes(+type)) {
       // 电气火灾监测
       dispatch({
@@ -566,14 +546,12 @@ export default class GasStation extends PureComponent {
     }
 
     // 获取水系统---消火栓系统
-    // if (type === 36 || type === 37 || type === 48 || type === 49) {
     if ([36, 37, 48, 49].includes(+type)) {
       // 36 水系统报警 37 水系统报警恢复 48水系统失联 49 水系统失联恢复
       this.fetchAllWaterSystem();
     }
 
     // 烟感列表
-    // if (type === 38 || type === 40 || type === 46 || type === 47 || type === 50 || type === 51) {\
     if ([38, 40, 46, 47, 50, 51].includes(+type)) {
       dispatch({
         type: 'smoke/fetchCompanySmokeInfo',
@@ -615,13 +593,6 @@ export default class GasStation extends PureComponent {
 
       // 获取当前隐患列表
       this.fetchCurrentHiddenDanger(companyId);
-      // dispatch({
-      //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-      //   payload: {
-      //     company_id: companyId,
-      //     // businessType: 2,
-      //   },
-      // });
 
       //获取巡查记录
       dispatch({
@@ -632,7 +603,6 @@ export default class GasStation extends PureComponent {
         },
       });
     }
-    // if (type === 15 || type === 16 || type === 17) {
     if ([15, 16, 17].includes(+type)) {
       if (fourColorTips[pointId] === messageFlag) this.removeFourColorTip(pointId, messageFlag);
       // 获取点位
@@ -645,13 +615,6 @@ export default class GasStation extends PureComponent {
 
       // 获取当前隐患列表
       this.fetchCurrentHiddenDanger(companyId);
-      // dispatch({
-      //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-      //   payload: {
-      //     company_id: companyId,
-      //     // businessType: 2,
-      //   },
-      // });
 
       //获取巡查记录
       dispatch({
@@ -673,13 +636,6 @@ export default class GasStation extends PureComponent {
 
       // 获取当前隐患列表
       this.fetchCurrentHiddenDanger(companyId);
-      // dispatch({
-      //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-      //   payload: {
-      //     company_id: companyId,
-      //     // businessType: 2,
-      //   },
-      // });
 
       //获取巡查记录
       dispatch({
@@ -809,14 +765,6 @@ export default class GasStation extends PureComponent {
       <div
         className={styles.notificationBody}
         onClick={() => {
-          // if (type === 7) this.handleClickMsgFlow(param, 0, 0, ...restParams);
-          // else if (type === 9) this.handleClickMsgFlow(param, 0, 1, ...restParams);
-          // else if (type === 38) this.handleClickMsgFlow(param, 1, 0, ...restParams);
-          // else if (type === 39) this.handleClickMsgFlow(param, 2, 0, ...restParams);
-          // else if (type === 40) this.handleClickMsgFlow(param, 1, 1, ...restParams);
-          // else if (type === 32) this.handleClickElecMsg(deviceId, paramName);
-          // else if (type === 36) this.handleClickWater(0, WATER_TYPES.indexOf(+deviceType));
-
           switch (type) {
             case 7:
               this.handleClickMsgFlow(param, 0, 0, ...restParams);
@@ -892,10 +840,6 @@ export default class GasStation extends PureComponent {
 
     // 获取当前隐患列表
     this.fetchHiddenDangerNum();
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchHiddenDangerNum',
-    //   payload: { companyId },
-    // });
 
     // 获取企业信息
     dispatch({
@@ -923,13 +867,6 @@ export default class GasStation extends PureComponent {
 
     // 获取当前隐患列表
     this.fetchCurrentHiddenDanger(companyId);
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-    //   payload: {
-    //     company_id: companyId,
-    //     // businessType: 2,
-    //   },
-    // });
 
     //获取巡查记录
     dispatch({
@@ -1024,7 +961,6 @@ export default class GasStation extends PureComponent {
    */
   fetchScreenMessage = (dispatch, companyId) => {
     dispatch({
-      // type: 'newUnitFireControl/fetchScreenMessage',
       type: 'gasStation/fetchScreenMessage',
       payload: {
         companyId,
@@ -1151,10 +1087,6 @@ export default class GasStation extends PureComponent {
     } = this.props;
     // 获取当前隐患图表统计数据
     this.fetchHiddenDangerNum();
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchHiddenDangerNum',
-    //   payload: { companyId },
-    // });
 
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
@@ -1188,13 +1120,7 @@ export default class GasStation extends PureComponent {
     });
     // 获取当前隐患列表
     this.fetchCurrentHiddenDanger(companyId);
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-    //   payload: {
-    //     company_id: companyId,
-    //     // businessType: 2,
-    //   },
-    // });
+
     this.setState({ checkDrawerVisible: true });
   };
   /**
@@ -1484,10 +1410,6 @@ export default class GasStation extends PureComponent {
   };
 
   handleViewWater = (i, type, filterIndex) => {
-    // const {
-    //   dispatch,
-    //   match: { params: { unitId: companyId } },
-    // } = this.props;
     const state = {
       waterSystemDrawerVisible: true,
       waterTabItem: i,
@@ -1495,15 +1417,6 @@ export default class GasStation extends PureComponent {
     if (filterIndex !== undefined) state.filterIndex = filterIndex;
 
     this.setState(state);
-
-    // dispatch({
-    //   // type: 'newUnitFireControl/fetchWaterSystem',
-    //   type: 'gasStation/fetchWaterSystem',
-    //   payload: {
-    //     companyId,
-    //     type,
-    //   },
-    // });
   };
 
   handleCloseWater = () => {
@@ -2180,7 +2093,6 @@ export default class GasStation extends PureComponent {
       <BigPlatformLayout
         title="加油站驾驶舱"
         style={{
-          // backgroundImage: 'url(http://data.jingan-china.cn/v2/big-platform/fire-control/com/new/bg2.png)',
           backgroundImage: 'none',
           backgroundColor: 'rgb(0, 24, 52)',
         }}
@@ -2329,19 +2241,6 @@ export default class GasStation extends PureComponent {
           visible={riskDrawerVisible}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
-        {/**检查点抽屉 */}
-        {/* <CheckingDrawer
-          visible={checkDrawerVisible}
-          companyId={companyId}
-          checkCount={checkCount}
-          checkList={checkList}
-          handlePointDrawer={this.handlePointDrawer}
-          onClose={() => {
-            this.setState({
-              checkDrawerVisible: false,
-            });
-          }}
-        /> */}
         <CheckPointDrawer
           visible={checkDrawerVisible}
           data={points}
