@@ -1207,7 +1207,7 @@ export default class RiskPointEdit extends PureComponent {
                       initialValue: data.objectTitle,
                       getValueFromEvent: this.handleTrim,
                       rules: [{ required: true, message: '请输入风险点' }],
-                    })(<Input placeholder="请输入风险点" />)}
+                    })(<Input placeholder="请输入风险点" maxLength="30" />)}
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -1216,7 +1216,7 @@ export default class RiskPointEdit extends PureComponent {
                       initialValue: data.itemCode,
                       getValueFromEvent: this.handleTrim,
                       rules: [{ message: '请输入编号' }],
-                    })(<Input placeholder="请输入编号" />)}
+                    })(<Input placeholder="请输入编号" maxLength="12" />)}
                   </Form.Item>
                 </Col>
               </Row>
