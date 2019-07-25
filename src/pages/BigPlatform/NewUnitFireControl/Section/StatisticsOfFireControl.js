@@ -215,7 +215,7 @@ export default class StatisticsOfFireControl extends PureComponent {
     );
 
     return (
-      <Section title="消防主机监测" extra={extra}>
+      <Section title="消防主机监测" extra={extra} style={{ WebkitBackfaceVisibility: 'hidden' }}>
         <div className={styles.fireControlPieChartContainer}>
           <ReactEcharts
             option={option}

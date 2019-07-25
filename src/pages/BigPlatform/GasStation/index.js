@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import { notification, Tooltip } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
-// import { Rotate } from 'react-transform-components';
 import { stringify } from 'qs';
 
 import styles from './index.less';
@@ -266,7 +265,9 @@ export default class GasStation extends PureComponent {
   initScreen = () => {
     const {
       dispatch,
-      match: { params: { unitId: companyId } },
+      match: {
+        params: { unitId: companyId },
+      },
     } = this.props;
 
     dispatch({
@@ -458,7 +459,9 @@ export default class GasStation extends PureComponent {
   connectWebsocket = () => {
     const {
       dispatch,
-      match: { params: { unitId: companyId } },
+      match: {
+        params: { unitId: companyId },
+      },
     } = this.props;
     const { projectKey: env, webscoketHost } = global.PROJECT_CONFIG;
 
@@ -469,7 +472,7 @@ export default class GasStation extends PureComponent {
     };
     const url = `ws://${webscoketHost}/websocket?${stringify(params)}`;
 
-    const ws = this.ws = new WebsocketHeartbeatJs({ url, ...WS_OPTIONS });
+    const ws = (this.ws = new WebsocketHeartbeatJs({ url, ...WS_OPTIONS }));
     if (!ws) return;
     ws.onmessage = e => {
       // 判断是否是心跳
@@ -495,204 +498,197 @@ export default class GasStation extends PureComponent {
   handleWebsocketMsg = result => {
     const {
       dispatch,
-      match: { params: { unitId: companyId } },
+      match: {
+        params: { unitId: companyId },
+      },
     } = this.props;
     const { checkItemId } = this.state;
 
-      // 显示火警障碍弹窗
-      const {
-        itemId,
-        messageFlag,
-        type,
-        checkResult,
-        pointId,
-        isOver,
-        enterSign,
-      } = result;
+    // 显示火警障碍弹窗
+    const { itemId, messageFlag, type, checkResult, pointId, isOver, enterSign } = result;
 
-      // if ( type === 7 || type === 9 || type === 32 || type === 36 ||  type === 38 || type === 40 || type === 41) {
-      if ([7, 9, 32, 36, 38, 40, 41].includes(+type)) {
-        if (+isOver === 0) {
-          if (type === 7 || type === 9) {
-            if (enterSign === '1') this.showFireMsg(result);
-          } else {
-            this.showFireMsg(result);
-          }
-        }
-        if (type === 32 || type === 36) this.showFireMsg(result);
-        this.fetchScreenMessage(dispatch, companyId);
-      }
-
-      if (type === 38 || type === 40) {
-        // 烟感列表
-        dispatch({
-          type: 'smoke/fetchCompanySmokeInfo',
-          payload: {
-            company_id: companyId,
-          },
-        });
-      }
-
-      // if (type === 1 || type === 2 || type === 3 || type === 4 || type === 9 || type === 7 || type === 21 || type === 52) {
-      if ([1, 2, 3, 4, 7, 9, 21, 52].includes(+type)) {
-        // 获取消防主机监测
-        this.fetchFireAlarmSystem();
-      }
-
-      // if (type === 14 || type === 15 || type === 16 || type === 17) {
-      if ([14, 15, 16, 17].includes(+type)) {
-        // 更新当前隐患总数
-        dispatch({
-          type: 'newUnitFireControl/fetchHiddenDangerNum',
-          payload: { companyId },
-        });
-      }
-
-      // if (type === 44 || type === 32 || type === 42 || type === 43) {
-        if ([32, 42, 43, 44].includes(+type)) {
-          // 电气火灾监测
-          dispatch({
-            type: 'electricityMonitor/fetchDeviceStatusCount',
-            payload: { companyId },
-          });
-          dispatch({
-            type: 'gasStation/fetchDistributionBoxClassification',
-            payload: {
-              companyId,
-              type: 1,
-            },
-          });
-          this.getDeviceRealTimeData(this.elecDrawerDeviceId);
-          this.handleFetchRealTimeData(this.elecMonitorDeviceId);
-        }
-
-      // 获取水系统---消火栓系统
-      // if (type === 36 || type === 37 || type === 48 || type === 49) {
-      if ([36, 37, 48, 49].includes(+type)) {
-        // 36 水系统报警 37 水系统报警恢复 48水系统失联 49 水系统失联恢复
-        this.fetchAllWaterSystem();
-      }
-
-      // 烟感列表
-      // if (type === 38 || type === 40 || type === 46 || type === 47 || type === 50 || type === 51) {\
-      if ([38, 40, 46, 47, 50, 51].includes(+type)) {
-        dispatch({
-          type: 'smoke/fetchCompanySmokeInfo',
-          payload: {
-            company_id: companyId,
-          },
-        });
-      }
-
-      // 四色图隐患
-      const { fourColorTips, deletedFourColorTips } = this.state;
-      // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
-      if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
-        // 如果前一条隐患还没消失，则移除前一条隐患
-        if (fourColorTips[itemId] === messageFlag) {
-          return;
-        } else if (fourColorTips[itemId]) {
-          this.setState({
-            fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
-            latestHiddenDangerId: itemId,
-            deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
-          });
+    // if ( type === 7 || type === 9 || type === 32 || type === 36 ||  type === 38 || type === 40 || type === 41) {
+    if ([7, 9, 32, 36, 38, 40, 41].includes(+type)) {
+      if (+isOver === 0) {
+        if (type === 7 || type === 9) {
+          if (enterSign === '1') this.showFireMsg(result);
         } else {
-          this.setState({
-            fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
-            latestHiddenDangerId: itemId,
-          });
+          this.showFireMsg(result);
         }
       }
+      if (type === 32 || type === 36) this.showFireMsg(result);
+      this.fetchScreenMessage(dispatch, companyId);
+    }
 
-      if (type === 14) {
-        // 获取点位
-        dispatch({
-          type: 'newUnitFireControl/fetchPointList',
-          payload: {
-            companyId,
-          },
+    if (type === 38 || type === 40) {
+      // 烟感列表
+      dispatch({
+        type: 'smoke/fetchCompanySmokeInfo',
+        payload: {
+          company_id: companyId,
+        },
+      });
+    }
+
+    // if (type === 1 || type === 2 || type === 3 || type === 4 || type === 9 || type === 7 || type === 21 || type === 52) {
+    if ([1, 2, 3, 4, 7, 9, 21, 52].includes(+type)) {
+      // 获取消防主机监测
+      this.fetchFireAlarmSystem();
+    }
+
+    // if (type === 14 || type === 15 || type === 16 || type === 17) {
+    if ([14, 15, 16, 17].includes(+type)) {
+      // 更新当前隐患总数
+      dispatch({
+        type: 'newUnitFireControl/fetchHiddenDangerNum',
+        payload: { companyId },
+      });
+    }
+
+    // if (type === 44 || type === 32 || type === 42 || type === 43) {
+    if ([32, 42, 43, 44].includes(+type)) {
+      // 电气火灾监测
+      dispatch({
+        type: 'electricityMonitor/fetchDeviceStatusCount',
+        payload: { companyId },
+      });
+      dispatch({
+        type: 'gasStation/fetchDistributionBoxClassification',
+        payload: {
+          companyId,
+          type: 1,
+        },
+      });
+      this.getDeviceRealTimeData(this.elecDrawerDeviceId);
+      this.handleFetchRealTimeData(this.elecMonitorDeviceId);
+    }
+
+    // 获取水系统---消火栓系统
+    // if (type === 36 || type === 37 || type === 48 || type === 49) {
+    if ([36, 37, 48, 49].includes(+type)) {
+      // 36 水系统报警 37 水系统报警恢复 48水系统失联 49 水系统失联恢复
+      this.fetchAllWaterSystem();
+    }
+
+    // 烟感列表
+    // if (type === 38 || type === 40 || type === 46 || type === 47 || type === 50 || type === 51) {\
+    if ([38, 40, 46, 47, 50, 51].includes(+type)) {
+      dispatch({
+        type: 'smoke/fetchCompanySmokeInfo',
+        payload: {
+          company_id: companyId,
+        },
+      });
+    }
+
+    // 四色图隐患
+    const { fourColorTips, deletedFourColorTips } = this.state;
+    // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
+    if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
+      // 如果前一条隐患还没消失，则移除前一条隐患
+      if (fourColorTips[itemId] === messageFlag) {
+        return;
+      } else if (fourColorTips[itemId]) {
+        this.setState({
+          fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+          latestHiddenDangerId: itemId,
+          deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
         });
-
-        // 获取当前隐患列表
-        this.fetchCurrentHiddenDanger(companyId);
-        // dispatch({
-        //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-        //   payload: {
-        //     company_id: companyId,
-        //     // businessType: 2,
-        //   },
-        // });
-
-        //获取巡查记录
-        dispatch({
-          type: 'newUnitFireControl/fetchPointRecord',
-          payload: {
-            itemId: checkItemId,
-            item_type: 2,
-          },
+      } else {
+        this.setState({
+          fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+          latestHiddenDangerId: itemId,
         });
       }
-      // if (type === 15 || type === 16 || type === 17) {
-      if ([15, 16, 17].includes(+type)) {
-        if (fourColorTips[pointId] === messageFlag)
-          this.removeFourColorTip(pointId, messageFlag);
-        // 获取点位
-        dispatch({
-          type: 'newUnitFireControl/fetchPointList',
-          payload: {
-            companyId,
-          },
-        });
+    }
 
-        // 获取当前隐患列表
-        this.fetchCurrentHiddenDanger(companyId);
-        // dispatch({
-        //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-        //   payload: {
-        //     company_id: companyId,
-        //     // businessType: 2,
-        //   },
-        // });
+    if (type === 14) {
+      // 获取点位
+      dispatch({
+        type: 'newUnitFireControl/fetchPointList',
+        payload: {
+          companyId,
+        },
+      });
 
-        //获取巡查记录
-        dispatch({
-          type: 'newUnitFireControl/fetchPointRecord',
-          payload: {
-            itemId: checkItemId,
-            item_type: 2,
-          },
-        });
-      }
-      if (type === 13) {
-        // 获取点位
-        dispatch({
-          type: 'newUnitFireControl/fetchPointList',
-          payload: {
-            companyId,
-          },
-        });
+      // 获取当前隐患列表
+      this.fetchCurrentHiddenDanger(companyId);
+      // dispatch({
+      //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      //   payload: {
+      //     company_id: companyId,
+      //     // businessType: 2,
+      //   },
+      // });
 
-        // 获取当前隐患列表
-        this.fetchCurrentHiddenDanger(companyId);
-        // dispatch({
-        //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-        //   payload: {
-        //     company_id: companyId,
-        //     // businessType: 2,
-        //   },
-        // });
+      //获取巡查记录
+      dispatch({
+        type: 'newUnitFireControl/fetchPointRecord',
+        payload: {
+          itemId: checkItemId,
+          item_type: 2,
+        },
+      });
+    }
+    // if (type === 15 || type === 16 || type === 17) {
+    if ([15, 16, 17].includes(+type)) {
+      if (fourColorTips[pointId] === messageFlag) this.removeFourColorTip(pointId, messageFlag);
+      // 获取点位
+      dispatch({
+        type: 'newUnitFireControl/fetchPointList',
+        payload: {
+          companyId,
+        },
+      });
 
-        //获取巡查记录
-        dispatch({
-          type: 'newUnitFireControl/fetchPointRecord',
-          payload: {
-            itemId: checkItemId,
-            item_type: 2,
-          },
-        });
-        if (checkResult === '无隐患') this.removeFourColorTip2(pointId);
-      }
+      // 获取当前隐患列表
+      this.fetchCurrentHiddenDanger(companyId);
+      // dispatch({
+      //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      //   payload: {
+      //     company_id: companyId,
+      //     // businessType: 2,
+      //   },
+      // });
+
+      //获取巡查记录
+      dispatch({
+        type: 'newUnitFireControl/fetchPointRecord',
+        payload: {
+          itemId: checkItemId,
+          item_type: 2,
+        },
+      });
+    }
+    if (type === 13) {
+      // 获取点位
+      dispatch({
+        type: 'newUnitFireControl/fetchPointList',
+        payload: {
+          companyId,
+        },
+      });
+
+      // 获取当前隐患列表
+      this.fetchCurrentHiddenDanger(companyId);
+      // dispatch({
+      //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+      //   payload: {
+      //     company_id: companyId,
+      //     // businessType: 2,
+      //   },
+      // });
+
+      //获取巡查记录
+      dispatch({
+        type: 'newUnitFireControl/fetchPointRecord',
+        payload: {
+          itemId: checkItemId,
+          item_type: 2,
+        },
+      });
+      if (checkResult === '无隐患') this.removeFourColorTip2(pointId);
+    }
   };
 
   handleFetchRealTimeData = deviceId => {
@@ -819,7 +815,7 @@ export default class GasStation extends PureComponent {
           // else if (type === 32) this.handleClickElecMsg(deviceId, paramName);
           // else if (type === 36) this.handleClickWater(0, WATER_TYPES.indexOf(+deviceType));
 
-          switch(type) {
+          switch (type) {
             case 7:
               this.handleClickMsgFlow(param, 0, 0, ...restParams);
               break;
@@ -1478,8 +1474,7 @@ export default class GasStation extends PureComponent {
       waterSystemDrawerVisible: true,
       waterTabItem: i,
     };
-    if (filterIndex !== undefined)
-      state.filterIndex = filterIndex;
+    if (filterIndex !== undefined) state.filterIndex = filterIndex;
 
     this.setState(state);
 
@@ -1954,14 +1949,10 @@ export default class GasStation extends PureComponent {
   handleClickElecMsg = (deviceId, paramName) => {
     const {
       gasStation: {
-        distributionBoxClassification: {
-          alarm=[],
-          loss=[],
-          normal=[],
-        },
+        distributionBoxClassification: { alarm = [], loss = [], normal = [] },
       },
     } = this.props;
-    const data = [...alarm, ...loss, ...normal ].filter(({ id }) => id === deviceId)[0];
+    const data = [...alarm, ...loss, ...normal].filter(({ id }) => id === deviceId)[0];
     if (data) {
       this.showElectricalFireMonitoringDetailDrawer(data, paramName);
     } else {
@@ -1986,44 +1977,52 @@ export default class GasStation extends PureComponent {
   };
 
   /* 显示电气火灾监测抽屉 */
-  showElectricalFireMonitoringDrawer = (electricalFireMonitoringDrawerValue) => {
+  showElectricalFireMonitoringDrawer = electricalFireMonitoringDrawerValue => {
     this.setState({
       electricalFireMonitoringDrawerVisible: true,
       electricalFireMonitoringDrawerValue,
     });
-  }
+  };
 
   /* 隐藏电气火灾监测抽屉 */
   hideElectricalFireMonitoringDrawer = () => {
     this.setState({
       electricalFireMonitoringDrawerVisible: false,
     });
-  }
+  };
 
   /* 显示电气火灾监测详情抽屉 */
-  showElectricalFireMonitoringDetailDrawer = (electricalFireMonitoringDetailDrawerValue, paramName='漏电电流') => {
+  showElectricalFireMonitoringDetailDrawer = (
+    electricalFireMonitoringDetailDrawerValue,
+    paramName = '漏电电流'
+  ) => {
     this.setState({
       electricalFireMonitoringDetailDrawerVisible: true,
       electricalFireMonitoringDetailDrawerValue,
-      electricalFireMonitoringDetailDrawerActiveKey: paramName === '漏电电流' ? '漏电电流' : paramName.slice(-2),
+      electricalFireMonitoringDetailDrawerActiveKey:
+        paramName === '漏电电流' ? '漏电电流' : paramName.slice(-2),
     });
-  }
+  };
 
   /* 隐藏电气火灾监测详情抽屉 */
   hideElectricalFireMonitoringDetailDrawer = () => {
     this.setState({
       electricalFireMonitoringDetailDrawerVisible: false,
     });
-  }
+  };
 
   showWaterItemDrawer = (item, tabIndex) => {
     const { dispatch } = this.props;
-    const { deviceDataList: [{ deviceId }] } = item;
+    const {
+      deviceDataList: [{ deviceId }],
+    } = item;
     const state = { waterItem: item, waterItemDrawerVisible: true };
-    if (tabIndex !== undefined)
-      state.waterTabItem = tabIndex;
+    if (tabIndex !== undefined) state.waterTabItem = tabIndex;
     this.setState(state);
-    dispatch({ type: 'gasStation/fetchWaterHistory', payload: { deviceId, historyType: 1, queryDate: moment().format('YYYY/MM/DD HH:mm:ss') } });
+    dispatch({
+      type: 'gasStation/fetchWaterHistory',
+      payload: { deviceId, historyType: 1, queryDate: moment().format('YYYY/MM/DD HH:mm:ss') },
+    });
     this.fetchAlarmCount(deviceId, 1);
   };
 
@@ -2473,7 +2472,7 @@ export default class GasStation extends PureComponent {
           visible={waterSystemDrawerVisible}
           waterTabItem={waterTabItem}
           onClose={this.handleCloseWater}
-          waterLists={[ hydrant, spray, pond ]}
+          waterLists={[hydrant, spray, pond]}
           showWaterItemDrawer={this.showWaterItemDrawer}
           filterIndex={filterIndex}
           handleParentChange={this.handleParentChange}

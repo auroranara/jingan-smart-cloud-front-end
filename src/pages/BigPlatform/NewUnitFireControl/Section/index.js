@@ -36,19 +36,24 @@ export default class Section extends PureComponent {
 
     return (
       <div className={containerClassName} style={style}>
-          <div className={styles.title} style={{ backgroundImage: `url(${titleBg})`, ...titleStyle }}>
-            {title}
-            {extra && <span className={styles.extra}>{extra}</span>}
-          </div>
+        <div className={styles.title} style={{ backgroundImage: `url(${titleBg})`, ...titleStyle }}>
+          {title}
+          {extra && <span className={styles.extra}>{extra}</span>}
+        </div>
+        <div
+          className={styles.content}
+          style={{
+            // backgroundImage: `url(${contentBg})`,
+            ...contentStyle,
+          }}
+        >
           <div
-            className={styles.content}
-            style={{
-              // backgroundImage: `url(${contentBg})`,
-              ...contentStyle,
-            }}
-            >
-            <div className={styles.scroll} style={{ overflow: isScroll ? 'auto' : 'hidden', height: '100%', ...scrollStyle }}>{children}</div>
+            className={styles.scroll}
+            style={{ overflow: isScroll ? 'auto' : 'hidden', height: '100%', ...scrollStyle }}
+          >
+            {children}
           </div>
+        </div>
       </div>
     );
   }
