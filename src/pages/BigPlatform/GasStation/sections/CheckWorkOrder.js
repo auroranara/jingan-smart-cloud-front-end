@@ -13,7 +13,8 @@ export default class CheckWorkOrder extends PureComponent {
   }
 
   componentDidMount() {
-    this.circle.style.width = `${this.circle.offsetHeight}px`;
+    if (this.circle)
+      this.circle.style.width = `${this.circle.offsetHeight}px`;
   }
 
   getPieOption() {

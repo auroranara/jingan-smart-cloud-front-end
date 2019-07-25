@@ -59,7 +59,7 @@ import {
 } from './components/Components';
 import {
   headerBg,
-  iconFire,
+  redLight as iconFire,
   iconFault,
   // videoBtn,
 } from './imgs/links';
@@ -776,7 +776,8 @@ export default class GasStation extends PureComponent {
               this.handleClickElecMsg(deviceId, paramName);
               break;
             case 36:
-              this.handleClickWater(0, WATER_TYPES.indexOf(+deviceType));
+              // this.handleClickWater(0, WATER_TYPES.indexOf(+deviceType));
+              this.handleClickWater(0, WATER_TYPES.indexOf(+deviceType), deviceId);
               break;
             case 38:
               this.handleClickMsgFlow(param, 1, 0, ...restParams);
@@ -1460,8 +1461,32 @@ export default class GasStation extends PureComponent {
     this.setState({ smokeDrawerVisible: true, filterIndex: index });
   };
 
-  handleClickWater = (index, typeIndex) => {
-    const { waterTabItem } = this.state;
+  // handleClickWater = (index, typeIndex) => {
+  //   const { waterTabItem } = this.state;
+  //   const {
+  //     dispatch,
+  //     match: {
+  //       params: { unitId: companyId },
+  //     },
+  //   } = this.props;
+  //   dispatch({
+  //     type: 'gasStation/fetchWaterSystem',
+  //     payload: {
+  //       companyId,
+  //       type: WATER_TYPES[typeIndex],
+  //     },
+  //     callback: () => {
+  //       this.setState({
+  //         waterSystemDrawerVisible: true,
+  //         filterIndex: index,
+  //         waterTabItem: typeIndex || typeIndex === 0 ? typeIndex : waterTabItem,
+  //       });
+  //     },
+  //   });
+  // };
+
+  handleClickWater = (index, typeIndex, deviceId) => {
+    // const { waterTabItem } = this.state;
     const {
       dispatch,
       match: {
@@ -1474,12 +1499,14 @@ export default class GasStation extends PureComponent {
         companyId,
         type: WATER_TYPES[typeIndex],
       },
-      callback: () => {
-        this.setState({
-          waterSystemDrawerVisible: true,
-          filterIndex: index,
-          waterTabItem: typeIndex || typeIndex === 0 ? typeIndex : waterTabItem,
+      callback: list => {
+        this.setState({ waterTabItem: typeIndex });
+        const item = list.find(({ deviceDataList }) => {
+          if (Array.isArray(deviceDataList) && deviceDataList[0])
+            return deviceDataList[0].deviceId === deviceId;
+          return false;
         });
+        item && this.showWaterItemDrawer(item);
       },
     });
   };

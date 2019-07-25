@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import { Icon } from 'antd';
 
 import styles from './LossCard.less';
 import Ellipsis from '@/components/Ellipsis';
@@ -27,6 +28,7 @@ export default function LossCard(props) {
         <span className={styles.lossIcon} />
         {updateTime ? moment(updateTime).format('YYYY-MM-DD HH:mm:ss') : '暂无失联时间'}
       </p>
+      <Icon className={styles.arrow} type="right" />
     </div>
   );
 }
