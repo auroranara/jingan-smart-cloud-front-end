@@ -41,7 +41,7 @@ import ElectricityDrawer from './Section/ElectricityDrawer';
 import ResetHostsDrawer from './Section/ResetHostsDrawer';
 import CheckDrawer from './Section/CheckDrawer';
 import NewWorkOrderDrawer from './Section/NewWorkOrderDrawer';
-import { Rotate } from 'react-transform-components';
+import Rotate from '@/components/Rotate';
 import StatisticsOfFireControl from './Section/StatisticsOfFireControl';
 import FireFlowDrawer from './Section/FireFlowDrawer';
 import OnekeyFlowDrawer from './Section/OnekeyFlowDrawer';
