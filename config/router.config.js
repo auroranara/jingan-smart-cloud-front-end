@@ -2242,6 +2242,7 @@ module.exports = env => {
           icon: 'audit',
           name: 'riskControl',
           routes: [
+            /** 风险点管理*/
             {
               path: '/risk-control/risk-point-manage',
               code: 'riskControl.riskPointManage',
@@ -2306,6 +2307,50 @@ module.exports = env => {
                   code: 'riskControl.riskPointManage.view',
                   name: 'riskCardPinter',
                   component: './RiskControl/RiskPointManage/RiskCardPrinter',
+                },
+              ],
+            },
+            /** 企业网格点管理*/
+            {
+              path: '/risk-control/grid-point-manage',
+              code: 'riskControl.gridPointManage',
+              name: 'gridPointManage',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/risk-control/grid-point-manage',
+                  name: 'gridPointManage',
+                  redirect: '/risk-control/grid-point-manage/index',
+                },
+                {
+                  path: '/risk-control/grid-point-manage/index',
+                  code: 'riskControl.gridPointManage.listView',
+                  name: 'listView',
+                  component: './RiskControl/ComapnyGridManage/index',
+                },
+                {
+                  path: '/risk-control/grid-point-manage/grid-point-List/:id',
+                  code: 'riskControl.gridPointManage.view',
+                  name: 'view',
+                  component: './RiskControl/ComapnyGridManage/GridPointList',
+                },
+                {
+                  path: '/risk-control/grid-point-manage/grid-point-add',
+                  code: 'riskControl.gridPointManage.add',
+                  name: 'add',
+                  component: './RiskControl/ComapnyGridManage/GridPointEdit',
+                },
+                {
+                  path: '/risk-control/grid-point-manage/grid-point-edit/:id',
+                  code: 'riskControl.gridPointManage.edit',
+                  name: 'edit',
+                  component: './RiskControl/ComapnyGridManage/GridPointEdit',
+                },
+                {
+                  path: '/risk-control/grid-point-manage/grid-point-detail/:id',
+                  code: 'riskControl.gridPointManage.detailView',
+                  name: 'detailView',
+                  component: './RiskControl/ComapnyGridManage/GridPointDetail',
                 },
               ],
             },

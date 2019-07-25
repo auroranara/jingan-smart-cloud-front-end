@@ -1,4 +1,5 @@
 import {
+  /**风险点 */
   queryRiskCompanyList,
   queryRiskPointList,
   queryRiskPointCount,
@@ -23,12 +24,20 @@ import {
   queryHdLetterDetail,
   deleteHdLetter,
   queryShowLetter,
+  /** 网格点 */
+  queryGridCompanyList,
+  queryGridPointList,
+  queryGridPointAdd,
+  updateGridPoint,
+  queryGridPointDetail,
+  deleteGridPoint,
 } from '../services/riskPointManage.js';
 
 export default {
   namespace: 'riskPointManage',
 
   state: {
+    /** 风险点 */
     data: {
       list: [],
       pagination: {
@@ -269,6 +278,44 @@ export default {
       localPictureUrlList: [],
       warningSignUrlList: [],
     },
+    /**网格点 */
+    companyGridData: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageSize: 10,
+        pageNum: 1,
+      },
+    },
+    GridListData: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageSize: 10,
+        pageNum: 1,
+      },
+    },
+    gridDetail: {
+      data: {
+        objectTitle: undefined,
+        dangerLevel: undefined,
+        locationCode: undefined,
+        qrCode: undefined,
+        nfcCode: undefined,
+        checkCycle: undefined,
+        cycleType: undefined,
+      },
+    },
+    levelList: [
+      {
+        key: '1',
+        value: '1级',
+      },
+      {
+        key: '2',
+        value: '2级',
+      },
+    ],
   },
 
   effects: {
@@ -579,9 +626,100 @@ export default {
       }
       if (callback) callback(response);
     },
+
+    // 网格点企业列表
+    *fetchGridCompanyList({ payload, callback }, { call, put }) {
+      const response = yield call(queryGridCompanyList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveGridCompaniesList',
+          payload: response.data,
+        });
+        if (callback) callback(response.data);
+      }
+    },
+
+    // 追加网格点企业列表
+    *appendCompanyGridList({ payload }, { call, put }) {
+      const response = yield call(queryGridCompanyList, payload);
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveCompanyGridLoadMoreList',
+          payload: response.data,
+        });
+      }
+    },
+
+    // 网格点列表
+    *fetchGridList({ payload, callback }, { call, put }) {
+      const response = yield call(queryGridPointList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveGridList',
+          payload: response.data,
+        });
+        if (callback) callback(response.data);
+      }
+    },
+
+    // 新增网格点
+    *fetchGridPointAdd({ payload, success, error }, { call, put }) {
+      const response = yield call(queryGridPointAdd, payload);
+      const { code, data } = response;
+      if (code === 200) {
+        yield put({ type: 'addGridPoint', payload: data });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 编辑网格点
+    *fetchGridPointEdit({ payload, success, error }, { call, put }) {
+      const response = yield call(updateGridPoint, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveGridPointUpdate',
+          payload: response.data,
+        });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 查看网格点详情
+    *fetchGridPointDetail({ payload, callback }, { call, put }) {
+      const response = yield call(queryGridPointDetail, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveGridPointDetail',
+          payload: response.data,
+        });
+        if (callback) callback(response.data);
+      }
+    },
+
+    // 删除网格点
+    *fetchGridPointDelete({ payload, success, error }, { call, put }) {
+      const response = yield call(deleteGridPoint, payload);
+      if (response.code === 200) {
+        yield put({ type: 'removGridPoint', payload: payload.id });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
   },
 
   reducers: {
+    /**---风险点--- */
     // 获取企业列表
     saveCompaniesList(state, { payload }) {
       const {
@@ -719,6 +857,7 @@ export default {
         },
       };
     },
+
     // 查看详情
     savePointDetail(state, { payload }) {
       return {
@@ -864,6 +1003,104 @@ export default {
       return {
         ...state,
         detailHdLetter: { data: {} },
+      };
+    },
+
+    /**---网格点-- */
+
+    // 获取企业列表
+    saveGridCompaniesList(state, { payload }) {
+      const {
+        list,
+        pagination: { pageNum, pageSize, total },
+      } = payload;
+      return {
+        ...state,
+        list,
+        pageNum: 1,
+        companyGridData: payload,
+        isLast: pageNum * pageSize >= total,
+      };
+    },
+
+    // 获取更多企业列表
+    saveCompanyGridLoadMoreList(
+      state,
+      {
+        payload: {
+          list,
+          pagination: { pageNum, pageSize, total },
+        },
+      }
+    ) {
+      return {
+        ...state,
+        list: [...state.list, ...list],
+        pageNum,
+        isLast: pageNum * pageSize >= total,
+      };
+    },
+
+    // 获取网格点列表
+    saveGridList(state, { payload }) {
+      const {
+        list,
+        pagination: { pageNum, pageSize, total },
+      } = payload;
+      return {
+        ...state,
+        list,
+        pageNum: 1,
+        GridListData: payload,
+        isLast: pageNum * pageSize >= total,
+      };
+    },
+
+    // 新增网格点
+    addGridPoint(state, { payload }) {
+      return {
+        ...state,
+        gridDetail: payload,
+      };
+    },
+
+    // 编辑网格点
+    saveGridPointUpdate(state, { payload }) {
+      return {
+        ...state,
+        gridDetail: {
+          ...state.detail,
+          data: payload,
+        },
+      };
+    },
+
+    // 清除网格点详情
+    clearGridDetail(state) {
+      return {
+        ...state,
+        gridDetail: { data: {} },
+      };
+    },
+
+    // 详情
+    saveGridPointDetail(state, { payload }) {
+      return {
+        ...state,
+        gridDetail: {
+          ...state.detail,
+          data: payload,
+        },
+      };
+    },
+
+    removGridPoint(state, { payload: id }) {
+      return {
+        ...state,
+        GridListData: {
+          ...state.GridListData,
+          list: state.GridListData.list.filter(item => item.id !== id),
+        },
       };
     },
   },
