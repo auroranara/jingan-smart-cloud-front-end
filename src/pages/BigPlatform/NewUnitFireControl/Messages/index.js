@@ -13,6 +13,7 @@ import {
   outdateIcon,
 } from '@/pages/BigPlatform/GasStation/imgs/links';
 
+const MAX_NAME_LENGTH = 4;
 const TYPES = [
   1, // 发生监管\联动\反馈\屏蔽
   2,
@@ -111,11 +112,11 @@ export default class Messages extends PureComponent {
       handleParentChange,
       fetchData,
       handleViewDangerDetail,
-      handleClickMessage,
-      handleFaultClick,
-      handleFireMessage,
-      handleWorkOrderCardClickMsg,
-      handleViewWater,
+      // handleClickMessage,
+      // handleFaultClick,
+      // handleFireMessage,
+      // handleWorkOrderCardClickMsg,
+      // handleViewWater,
       handleClickMsgFlow,
       phoneVisible,
       handleClickElecMsg,
@@ -126,7 +127,7 @@ export default class Messages extends PureComponent {
       type,
       title,
       messageFlag,
-      proceCompany,
+      // proceCompany,
       addTime,
       address,
       reportUser,
@@ -141,14 +142,14 @@ export default class Messages extends PureComponent {
       componentType,
       rectifyMeasures,
       rectifyUser,
-      resultFeedBack,
-      proceUser,
-      proceContent,
+      // resultFeedBack,
+      // proceUser,
+      // proceContent,
       checkResult,
       checkUser,
       score,
       maintenanceCompany,
-      maintenanceUser,
+      // maintenanceUser,
       // addTimeStr,
       deviceType,
       area,
@@ -158,7 +159,7 @@ export default class Messages extends PureComponent {
       virtualName,
       messageContent,
       count,
-      newTime,
+      // newTime,
       component,
       unitTypeName,
       createBy,
@@ -166,7 +167,7 @@ export default class Messages extends PureComponent {
       systemTypeValue,
       workOrder,
       realtimeData,
-      num,
+      // num,
       lastTime,
       isOver,
       cameraMessage,
@@ -525,17 +526,25 @@ export default class Messages extends PureComponent {
       items: [],
     };
 
+    const detailBtn = cssType ? (
+        <Icon type="right" className={styles.detailArrow}/>
+    ) : (
+      <a className={styles.detailBtn} onClick={onClick}>
+        详情
+        <Icon type="double-right" />
+      </a>
+    );
+
     return (
       <div className={styles[msgClassName]} key={index}>
         {firstComponent}
-        {onClick && (
-          <a className={styles.detailBtn} onClick={onClick}>
-            详情
-            <Icon type="double-right" />
-          </a>
-        )}
+        {onClick && detailBtn}
         {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
-        <div className={innerClassName}>
+        <div
+          className={innerClassName}
+          style={{ cursor: cssType &&  onClick ? 'pointer' : 'auto'}}
+          onClick={cssType ? onClick : null}
+        >
           {typeIcon}
           <div className={styles.msgType}>
             {otherTitle || title}
@@ -550,7 +559,11 @@ export default class Messages extends PureComponent {
             const { name, value, style } = item;
             return (
               <div className={styles.msgBody} key={i}>
-                {name ? `${name}：` : ''}
+                {name ?
+                  cssType ?
+                    <span className={styles.msgName} style={{ marginRight: `${MAX_NAME_LENGTH - name.length}em` }}>{name}：</span>
+                    : `${name}：`
+                  : ''}
                 <div style={{ flex: 1, ...style }}>
                   {typeof value === 'function' ? value() : value || getEmptyData()}
                 </div>
