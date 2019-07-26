@@ -90,7 +90,6 @@ export default class Smoke extends PureComponent {
       dynamicType: 0,
       videoList: [],
       fireVideoVisible: false,
-      wsData: [],
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -312,7 +311,6 @@ export default class Smoke extends PureComponent {
           //   },
           // });
         }
-        this.setState({ wsData: data });
       } catch (error) {
         console.log('error', error);
       }
@@ -450,7 +448,8 @@ export default class Smoke extends PureComponent {
   }) => {
     const options = {
       key: `${messageFlag}_${paramCode}`,
-      duration: null,
+      // duration: null,
+      duration: 30,
       placement: 'bottomLeft',
       className: styles.notification,
       message: (
@@ -486,9 +485,6 @@ export default class Smoke extends PureComponent {
       ),
     };
     notification.open(options);
-    setTimeout(() => {
-      this.hideWarningNotification({ messageFlag, paramCode });
-    }, 30000);
   };
 
   /**
@@ -722,7 +718,14 @@ export default class Smoke extends PureComponent {
           .join('');
         this.handleDrawerVisibleChange('maintenance');
         this.fetchMessageInformList({ dataId });
-        this.fetchCameraMessage({ id: dataId, reportType: 4 });
+        dispatch({
+          type: 'operation/fetchCameraMessage',
+          payload: { id: dataId, reportType: 4 },
+          callback: cameraMessage => {
+            this.setState({ videoList: cameraMessage });
+            Array.isArray(cameraMessage) && cameraMessage.length > 0 && this.handleShowFlowVideo();
+          },
+        });
       },
     });
   };
@@ -881,7 +884,6 @@ export default class Smoke extends PureComponent {
       dynamicType,
       videoList,
       fireVideoVisible,
-      wsData,
     } = this.state;
 
     const headProps = {
@@ -933,7 +935,6 @@ export default class Smoke extends PureComponent {
           clearPollingMap={this.clearPollingMap}
           pollingMap={this.pollingMap}
           fetchMapInfo={this.fetchMapInfo}
-          wsData={wsData}
         />
         {/* 搜索框 */}
         <MapSearch

@@ -192,7 +192,6 @@ export default class MapSection extends PureComponent {
       statisticsData: { companysList = [] },
       alarmIds = [],
       handleAlarmClick,
-      wsData,
     } = this.props;
 
     const tips = alarmIds.map(data => {
@@ -207,7 +206,6 @@ export default class MapSection extends PureComponent {
         latitude: companysList
           .filter(item => item.company_id === data.companyId)
           .map(item => item.latitude),
-        deviceId: wsData.map(item => item.deviceId),
         messageFlag: data.messageFlag,
         messageFlagForId: data.messageFlagForId,
       };
@@ -226,12 +224,11 @@ export default class MapSection extends PureComponent {
             click: e => {
               const {
                 // messageFlag,
-                deviceId: id,
                 companyId: company_id,
                 companyName: company_name,
                 // messageFlagForId,
               } = item;
-              handleAlarmClick(id, company_id, company_name, 1);
+              handleAlarmClick(company_id, company_name, 1);
               const newIds = [...alarmIds.slice(0, index), ...alarmIds.slice(index + 1)];
               this.props.handleParentChange({ alarmIds: newIds });
             },
