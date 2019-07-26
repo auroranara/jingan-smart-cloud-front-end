@@ -46,6 +46,7 @@ export default class WaterTankBase extends PureComponent {
     this.drawWave();
     this.drawRect();
     this.drawSplits();
+    // if (status !== LOSS)
     this.drawAxis();
     this.drawTriangle();
   }

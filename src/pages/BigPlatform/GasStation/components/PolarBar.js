@@ -12,10 +12,9 @@ export default class PolarBar extends PureComponent {
   chartCallback = chart => {
     chart.on('click', params => {
       const { handleClick, lists } = this.props;
-      const { dataIndex, componentIndex } = params;
-      const { type, index } = lists[dataIndex];
-      handleClick(index, componentIndex);
-      console.log(params);
+      const { dataIndex, seriesIndex } = params;
+      const { index } = lists[dataIndex];
+      handleClick(index, seriesIndex);
     });
   }
 
