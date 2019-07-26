@@ -383,7 +383,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       },
       grid: {
         top: 40,
-        left: 20,
+        left: 30,
         right: 20,
         bottom: 30,
         containLabel: true,

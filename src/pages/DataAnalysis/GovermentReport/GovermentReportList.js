@@ -85,19 +85,19 @@ export default class App extends PureComponent {
 
     /* 默认除操作列以外的表格列 */
     const defaultColumns = [
-      {
-        title: '上报途径',
-        dataIndex: 'itemTypeName',
-      },
-      {
-        title: '点位名称',
-        dataIndex: 'object_title',
-        render: val => (
-          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
-            {val}
-          </Ellipsis>
-        ),
-      },
+      // {
+      //   title: '上报途径',
+      //   dataIndex: 'itemTypeName',
+      // },
+      // {
+      //   title: '点位名称',
+      //   dataIndex: 'object_title',
+      //   render: val => (
+      //     <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+      //       {val}
+      //     </Ellipsis>
+      //   ),
+      // },
       {
         title: '检查人',
         dataIndex: 'check_user_names',
@@ -120,8 +120,8 @@ export default class App extends PureComponent {
           value === '异常' ? (
             <Badge status="error" text={value} />
           ) : (
-            <Badge status="success" text={value} />
-          ),
+              <Badge status="success" text={value} />
+            ),
       },
       {
         title: '隐患情况',
@@ -174,12 +174,12 @@ export default class App extends PureComponent {
               查看
             </Link>
           ) : (
-            <Link
-              to={`/data-analysis/goverment-report/govermentCheckDetail/${_id}?newGovId=${_id}`}
-            >
-              查看
+              <Link
+                to={`/data-analysis/goverment-report/govermentCheckDetail/${_id}?newGovId=${_id}`}
+              >
+                查看
             </Link>
-          );
+            );
         },
       },
     ];
@@ -320,8 +320,8 @@ export default class App extends PureComponent {
       gridId: undefined,
       company_id: undefined,
       createTime: undefined,
-      itemType: undefined,
-      objectTitle: undefined,
+      // itemType: undefined,
+      // objectTitle: undefined,
       checkUserName: undefined,
       checkResult: undefined,
     });
@@ -378,8 +378,8 @@ export default class App extends PureComponent {
     setFieldsValue({
       gridId: undefined,
       companyName: undefined,
-      itemType: undefined,
-      objectTitle: undefined,
+      // itemType: undefined,
+      // objectTitle: undefined,
       checkUserName: undefined,
       checkResult: undefined,
       createTime:
@@ -429,7 +429,10 @@ export default class App extends PureComponent {
    **/
   renderFilterForm() {
     const {
-      maintenanceReport: { reportingChannelsList, checkResultList },
+      maintenanceReport: {
+        // reportingChannelsList,
+        checkResultList,
+      },
       form: { getFieldDecorator },
       hiddenDangerReport: { gridList, unitIdes },
       loading,
@@ -496,7 +499,7 @@ export default class App extends PureComponent {
             </Form.Item>
           </Col>
           {/* 上报途径 */}
-          <Col xl={8} md={12} sm={24} xs={24}>
+          {/* <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.reporting_channels}>
               {getFieldDecorator('itemType')(
                 <Select
@@ -513,13 +516,13 @@ export default class App extends PureComponent {
                 </Select>
               )}
             </Form.Item>
-          </Col>
+          </Col> */}
           {/* 点位名称 */}
-          <Col xl={8} md={12} sm={24} xs={24}>
+          {/* <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.item_name}>
               {getFieldDecorator('objectTitle')(<Input placeholder="请输入" />)}
             </Form.Item>
-          </Col>
+          </Col> */}
           {/* 检查人 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.check_user}>
@@ -601,10 +604,10 @@ export default class App extends PureComponent {
         }}
       />
     ) : (
-      <div style={{ textAlign: 'center' }}>
-        <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>
-      </div>
-    );
+        <div style={{ textAlign: 'center' }}>
+          <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>
+        </div>
+      );
   }
 
   /**

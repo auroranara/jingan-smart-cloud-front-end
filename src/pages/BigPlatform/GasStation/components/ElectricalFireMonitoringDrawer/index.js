@@ -76,7 +76,7 @@ export default class ElectricalFireMonitoringDrawer extends PureComponent {
   renderCard = (data) => {
     const { activeKey } = this.state;
     const { id, location, updateTime, params } = data;
-    let style, className;
+    let style;
     const rows = [
       {
         key: 'name',
@@ -90,7 +90,6 @@ export default class ElectricalFireMonitoringDrawer extends PureComponent {
       // },
     ];
     if (activeKey === '报警') {
-      className = styles.enable;
       style = { borderColor: '#f83329' };
       let num = 0;
       for (let i = 0; i<params.length && num < 2; i++) {
@@ -112,7 +111,6 @@ export default class ElectricalFireMonitoringDrawer extends PureComponent {
         style: { backgroundImage: `url(${lossIcon})`, backgroundSize: '18px 14px' },
       });
     } else {
-      className = styles.enable;
       style = { borderColor: '#00ffff' };
       for (let i = 0; i < 2; i++) {
         const { name, value, unit } = params[i];
@@ -126,10 +124,10 @@ export default class ElectricalFireMonitoringDrawer extends PureComponent {
 
     return (
       <div
-        className={classNames(styles.card, className)}
+        className={styles.card}
         style={style}
         key={id}
-        onClick={activeKey !== '失联' ? () => this.handleJumpButtonClick(data) : undefined}
+        onClick={() => this.handleJumpButtonClick(data)}
       >
         {rows.map(({ key, value, style }) => (
           <div
@@ -140,12 +138,10 @@ export default class ElectricalFireMonitoringDrawer extends PureComponent {
             <div className={styles.cardRowValue}>{value}</div>
           </div>
         ))}
-        {activeKey !== '失联' && (
-          <Icon
-            type="right"
-            className={styles.jumpButton}
-          />
-        )}
+        <Icon
+          type="right"
+          className={styles.jumpButton}
+        />
       </div>
     );
   }
