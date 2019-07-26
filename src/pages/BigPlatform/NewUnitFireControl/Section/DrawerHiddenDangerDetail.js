@@ -313,7 +313,7 @@ export default class DrawerHiddenDangerDetail extends PureComponent {
         onClose={() => {
           setTimeout(() => {
             this.setState({ index: 0 });
-            handleParentChange({ hiddenDangerIds: [] });
+            handleParentChange && handleParentChange({ hiddenDangerIds: [] });
           }, 200);
           onClose();
         }}

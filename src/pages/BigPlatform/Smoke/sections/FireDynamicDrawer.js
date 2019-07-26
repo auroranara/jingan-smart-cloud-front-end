@@ -67,6 +67,7 @@ export default class MaintenanceDrawer extends PureComponent {
     });
 
     const newHeadProps = Object.keys(dataList).length === 0 ? headProps : dataList;
+    console.log('headProps', headProps);
 
     const {
       company_id,
@@ -207,11 +208,11 @@ export default class MaintenanceDrawer extends PureComponent {
         id={ID}
         title={title}
         zIndex={2000}
-        // subTitle={companyName}
+        destroyOnClose
         width={535}
         left={left}
         onClose={() => {
-          this.setState({ index: 0 });
+          this.setState({ index: 0, dataList: {} });
           onClose();
         }}
         {...restProps}
