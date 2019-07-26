@@ -192,8 +192,9 @@ export default class MapSection extends PureComponent {
       statisticsData: { companysList = [] },
       alarmIds = [],
       handleAlarmClick,
+      wsData,
     } = this.props;
-    console.log('alarmIds', alarmIds);
+    // console.log('alarmIds', alarmIds);
 
     const tips = alarmIds.map(data => {
       return {
@@ -207,11 +208,12 @@ export default class MapSection extends PureComponent {
         latitude: companysList
           .filter(item => item.company_id === data.companyId)
           .map(item => item.latitude),
+        deviceId: wsData.map(item => item.deviceId),
         messageFlag: data.messageFlag,
         messageFlagForId: data.messageFlagForId,
       };
     });
-    console.log('tips', tips);
+    // console.log('tips', tips);
 
     return tips.map((item, index) => {
       return item.unnormal > 0 ? (
@@ -224,12 +226,13 @@ export default class MapSection extends PureComponent {
           events={{
             click: e => {
               const {
-                messageFlag,
+                // messageFlag,
+                deviceId: id,
                 companyId: company_id,
                 companyName: company_name,
-                messageFlagForId,
+                // messageFlagForId,
               } = item;
-              handleAlarmClick(messageFlagForId || messageFlag, company_id, company_name, 1);
+              handleAlarmClick(id, company_id, company_name, 1);
               const newIds = [...alarmIds.slice(0, index), ...alarmIds.slice(index + 1)];
               this.props.handleParentChange({ alarmIds: newIds });
             },

@@ -122,13 +122,13 @@ export default class GridPointDetail extends PureComponent {
         params: { id },
       },
       riskPointManage: {
-        gridDetail: {
-          data: { objectTitle, dangerLevel, locationCode, qrCode, nfcCode, checkCycle, cycleType },
-        },
+        gridDetail: { data },
         checkCycleData,
       },
     } = this.props;
 
+    const { objectTitle, dangerLevel, locationCode, qrCode, nfcCode, checkCycle, cycleType } =
+      data || {};
     const { flowList: checkList } = this.state;
 
     const COLUMNS = [
@@ -174,7 +174,7 @@ export default class GridPointDetail extends PureComponent {
         <DescriptionList col={2} style={{ marginBottom: 16 }}>
           <Description term="点位名称">{objectTitle || getEmptyData()}</Description>
           <Description term="点位级别">
-            {+dangerLevel === 1 ? '1级' : '2级' || getEmptyData()}
+            {+dangerLevel === 1 ? '1级' : +dangerLevel === 2 ? '2级' : getEmptyData()}
           </Description>
           <Description term="推荐检查周期">
             {getCycleType(checkCycleData) || getEmptyData()}
@@ -212,7 +212,7 @@ export default class GridPointDetail extends PureComponent {
           <AuthButton
             type="primary"
             size="large"
-            code={codesMap.lawEnforcement.illegal.edit}
+            code={codesMap.riskControl.gridPointManage.edit}
             onClick={() => {
               this.goToEdit(id);
             }}

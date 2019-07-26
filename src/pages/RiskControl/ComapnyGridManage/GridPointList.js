@@ -315,7 +315,7 @@ export default class GridPointList extends PureComponent {
                   ]}
                   extra={
                     <AuthButton
-                      code={codesMap.riskControl.riskPointManage.delete}
+                      code={codesMap.riskControl.gridPointManage.delete}
                       codes={codes}
                       onClick={() => {
                         this.handleShowDeleteConfirm(itemId);
