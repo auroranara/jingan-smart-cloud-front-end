@@ -220,7 +220,7 @@ export default class App extends PureComponent {
               pagination={false}
             />
           </Card> */}
-          {list.length > 0 && list.map(({ checkDate, dangerCount, objectCount, pointName, resultList = [] }, i) => {
+          {list.length > 0 ? list.map(({ checkDate, dangerCount, objectCount, pointName, resultList = [] }, i) => {
             const newList = [];
             resultList.forEach(element => {
               element.list.forEach((detail, index) => {
@@ -229,7 +229,7 @@ export default class App extends PureComponent {
               });
             });
             return (
-              <Card key={i} title={
+              <Card style={{ marginBottom: '24px' }} key={i} title={
                 <Fragment>
                   <span>点位名称：{pointName}</span>
                   <span className={styles.titleDesc}>共检查{objectCount}项，上报隐患{dangerCount}项</span>
@@ -248,7 +248,7 @@ export default class App extends PureComponent {
                 />
               </Card>
             )
-          })}
+          }) : <div style={{textAlign:'center'}}>暂无数据</div>}
         </Spin>
       </PageHeaderLayout>
     );
