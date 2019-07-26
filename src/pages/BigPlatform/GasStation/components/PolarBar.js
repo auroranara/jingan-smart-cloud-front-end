@@ -14,7 +14,8 @@ export default class PolarBar extends PureComponent {
       const { handleClick, lists } = this.props;
       const { dataIndex, componentIndex } = params;
       const { type, index } = lists[dataIndex];
-      handleClick(index, type, componentIndex);
+      handleClick(index, componentIndex);
+      console.log(params);
     });
   }
 

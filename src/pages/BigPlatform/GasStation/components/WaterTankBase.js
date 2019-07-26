@@ -12,9 +12,11 @@ const SPLIT_NUM = 10;
 const IMG_WIDTH = 309;
 const IMG_HEIGHT = 378;
 
+const LOSS = -1;
+
 export default class WaterTankBase extends PureComponent {
   componentDidMount() {
-    const { range,value, limits, unit } = this.props;
+    const { range, value, limits, unit } = this.props;
     this.maxDeep = getMaxDeep(getMax(range[1] || limits[1], value), unit);
 
     const canvas = this.canvas;
@@ -187,7 +189,7 @@ export default class WaterTankBase extends PureComponent {
     ctx.fill();
     ctx.font = '14px microsoft yahei';
     ctx.fillStyle = status > 0 ? RED : WHITE;
-    ctx.fillText(`${value}${unit}`, target[0] + 25, target[1] + 10);
+    ctx.fillText(`${status === LOSS ? '-' : value}${unit}`, target[0] + 25, target[1] + 10);
     ctx.fillStyle = WHITE;
     ctx.font = '12px microsoft yahei';
     ctx.fillText('当前水位', target[0] + 25, target[1] - 8);
