@@ -220,6 +220,11 @@ export default class GridPointEdit extends PureComponent {
             recommendCycle !== null, message.error('推荐检查周期为空，可以选择自定义检查周期！')
           );
         }
+
+        if (+cycleType === 2 && checkCycle === undefined) {
+          return message.error('自定义检查周期不能为空！');
+        }
+
         if (flow_id.length === 0) {
           return message.error('请选择检查内容！');
         }
