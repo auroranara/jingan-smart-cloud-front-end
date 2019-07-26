@@ -75,19 +75,19 @@ export default class ElectricalFireMonitoringDrawer extends PureComponent {
 
   renderCard = (data) => {
     const { activeKey } = this.state;
-    const { id, name, location, updateTime, params } = data;
+    const { id, location, updateTime, params } = data;
     let style, className;
     const rows = [
       {
         key: 'name',
-        value: name || '--',
+        value: location,
         style: { backgroundImage: `url(${nameIcon})`, backgroundSize: '21px 19.5px' },
       },
-      {
-        key: 'location',
-        value: <span className={styles.location}>{location}</span>,
-        style: { backgroundImage: `url(${locationIcon})`, backgroundSize: '15.5px 18px' },
-      },
+      // {
+      //   key: 'location',
+      //   value: <span className={styles.location}>{location}</span>,
+      //   style: { backgroundImage: `url(${locationIcon})`, backgroundSize: '15.5px 18px' },
+      // },
     ];
     if (activeKey === '报警') {
       className = styles.enable;

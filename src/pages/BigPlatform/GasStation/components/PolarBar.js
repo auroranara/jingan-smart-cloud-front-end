@@ -12,9 +12,9 @@ export default class PolarBar extends PureComponent {
   chartCallback = chart => {
     chart.on('click', params => {
       const { handleClick, lists } = this.props;
-      const { dataIndex, componentIndex } = params;
-      const { type, index } = lists[dataIndex];
-      handleClick(index, type, componentIndex);
+      const { dataIndex, seriesIndex } = params;
+      const { index } = lists[dataIndex];
+      handleClick(index, seriesIndex);
     });
   }
 
@@ -23,16 +23,18 @@ export default class PolarBar extends PureComponent {
 
     const statusLists = lists.map(getStatusCount);
     const categories = lists.map(({ name }) => name);
-    const [alarmList, lossList, normalList] = ['alarm', 'loss', 'normal'].map(prop => statusLists.map(sts => sts[prop] / sts.total * 75));
+    const [alarmList, lossList, normalList] = ['alarm', 'loss', 'normal'].map(prop => statusLists.map(sts => sts[prop]));
+    const max = Math.max(...statusLists.map(sts => sts.total)) / 3 * 4;
 
     return {
       angleAxis: {
         min: 0,
-        max: 100,
+        max,
         interval: 5,
-        axisLine: { lineStyle: { color: 'rgb(112,136,158)' } },
+        axisLine: { show: false, lineStyle: { color: 'rgb(112,136,158)' } },
         axisLabel: { show: false, color: 'rgb(112,136,158)' },
-        splitLine: { lineStyle: { color: 'rgb(34,67,110)' } },
+        axisTick: { show: false },
+        splitLine: { show: false, lineStyle: { color: 'rgb(34,67,110)' } },
       },
       radiusAxis: {
         type: 'category',
@@ -42,7 +44,9 @@ export default class PolarBar extends PureComponent {
         axisLabel: { interval: 0 },
       },
       textStyle: { color: '#FFF' },
-      polar: {},
+      polar: {
+        center: ['50%', '47%'],
+      },
       series: [{
           type: 'bar',
           barWidth: BAR_WIDTH,
@@ -93,7 +97,7 @@ export default class PolarBar extends PureComponent {
   render() {
     return (
       <ReactEcharts
-        style={{ width: '200px', height: '220px' }}
+        style={{ width: '100%', height: '100%' }}
         option={this.getOption()}
         onChartReady={this.chartCallback}
       />

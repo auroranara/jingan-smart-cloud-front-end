@@ -3,7 +3,7 @@
 .container {
   border: 1px solid @grey;
   padding: 5px 8px;
-  cursor: pointer;
+  position: relative;
 }
 
 .icon {
@@ -15,14 +15,20 @@
 }
 
 .pondIcon:extend(.icon) {
-  top: 1px;
-  width: 22px;
-  height: 19px;
-  background-image: url(../imgs/tank-loss.png);
+  // top: 1px;
+  // width: 22px;
+  // height: 19px;
+  left: 1px;
+  width: 18px;
+  height: 18px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  // background-image: url(../imgs/tank-loss.png);
 }
 
 .locationIcon:extend(.icon) {
-  left: 3px;
+  left: 2px;
   top: 2px;
   width: 16px;
   height: 18px;
@@ -52,4 +58,11 @@
 
 .time {
   margin: 0;
+}
+
+.arrow {
+  color: @grey;
+  position: absolute;
+  right: 5px;
+  top: 42%;
 }

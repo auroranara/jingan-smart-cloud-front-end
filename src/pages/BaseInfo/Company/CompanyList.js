@@ -498,7 +498,7 @@ export default class CompanyList extends PureComponent {
               </FormItem>
             </Col>
 
-            {unitType !== 1 &&
+            {/* {unitType !== 1 &&
               unitType !== 4 && (
                 <Col span={8}>
                   <FormItem style={{ margin: '0', padding: '4px 0' }}>
@@ -519,9 +519,9 @@ export default class CompanyList extends PureComponent {
                     )}
                   </FormItem>
                 </Col>
-              )}
+              )} */}
 
-            {unitType !== 1 &&
+            {/* {unitType !== 1 &&
               unitType !== 4 && (
                 <Col span={8}>
                   <FormItem style={{ margin: '0', padding: '4px 0' }}>
@@ -542,7 +542,7 @@ export default class CompanyList extends PureComponent {
                     )}
                   </FormItem>
                 </Col>
-              )}
+              )} */}
 
             <Col span={8}>
               <FormItem style={{ margin: '0', padding: '4px 0' }}>

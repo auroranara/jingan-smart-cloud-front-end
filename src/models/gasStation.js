@@ -7,6 +7,7 @@ import {
   getDistributionBoxAlarmCount,
   getDeviceHistory,
   getUnitPhoto,
+  getScreenMessage,
 } from '../services/gasStation';
 
 const PARAMS_SORT = {
@@ -40,7 +41,7 @@ function getMaxValueByParamName(name) {
 }
 
 function formatDistributionBoxClassification (list) {
-  return list.reduce((result, { deviceId, deviceName, area, location, deviceDataForAppList, updateTime }) => {
+  return list.reduce((result, { deviceId, deviceName, area, location, deviceDataForAppList, updateTime, linkStatus }) => {
     const { status, params } = deviceDataForAppList.reduce((res, { code, desc, status, unit, value, deviceParamsInfo, updateTime }) => {
       let s;
       if (status > 0) {
@@ -80,9 +81,10 @@ function formatDistributionBoxClassification (list) {
       params: params.sort((a, b) => PARAMS_SORT[a.name] - PARAMS_SORT[b.name]),
       updateTime,
     };
-    if (status === 1) {
+    const s = deviceDataForAppList && deviceDataForAppList.length > 0 ? status : +linkStatus;
+    if (s === 1) {
       result.alarm.push(data);
-    } else if (status === -1){
+    } else if (s === -1){
       result.loss.push(data);
     } else {
       result.normal.push(data);
@@ -110,6 +112,8 @@ export default {
     spray: [], // 喷淋
     hydrant: [], // 消火栓
     unitPhoto: '',
+    screenMessage: [],
+    waterAlarmCount: [],
   },
 
   effects: {
@@ -173,11 +177,12 @@ export default {
       const response = yield call(queryWaterSystem, payload);
       const { code, data } = response || {};
       if (code === 200) {
+        const lst = data && Array.isArray(data.list) ? data.list : [];
         yield put({
           type: `saveWaterSystem${payload.type}`,
-          payload: data && Array.isArray(data.list) ? data.list : [],
+          payload: lst,
         });
-        callback && callback();
+        callback && callback(lst);
       }
     },
     *fetchUnitPhoto({ payload }, { call, put }) {
@@ -189,6 +194,27 @@ export default {
           payload: data && Array.isArray(data.companyPhotoDetails) && data.companyPhotoDetails[0] ? data.companyPhotoDetails[0].webUrl : '',
         });
       }
+    },
+    *fetchScreenMessage({ payload, success, error }, { call, put }) {
+      const response = yield call(getScreenMessage, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({
+          type: 'saveScreenMessage',
+          payload: data && Array.isArray(data.list) ? data.list : [],
+        });
+        if (success) {
+          success(response.data || { list: [] });
+        }
+      } else if (error) {
+        error();
+      }
+    },
+    *fetchWaterHistoryAlarm({ payload }, { call, put }) {
+      const response = yield call(getDistributionBoxAlarmCount, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        yield put({ type: 'saveWaterAlarmCount', payload: data && Array.isArray(data.list) ? data.list : [] });
     },
   },
 
@@ -225,6 +251,18 @@ export default {
     },
     saveUnitPhoto(state, action) {
       return { ...state, unitPhoto: action.payload };
+    },
+    saveScreenMessage(state, action) {
+      let newMsg = action.payload;
+      if (action.isMore)
+        newMsg = [newMsg, ...state.screenMessage];
+      return {
+        ...state,
+        screenMessage: newMsg,
+      };
+    },
+    saveWaterAlarmCount(state, action) {
+      return { ...state, waterAlarmCount: action.payload };
     },
   },
 };

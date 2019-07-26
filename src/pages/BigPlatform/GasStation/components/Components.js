@@ -1,3 +1,4 @@
+import GasEmpty from './GasEmpty';
 import Gauge from './Gauge';
 import LossCard from './LossCard';
 import LossDevice from './LossDevice';
@@ -32,6 +33,7 @@ export { default as ElectricalFireMonitoringDrawer } from './ElectricalFireMonit
 export { default as ElectricalFireMonitoringDetailDrawer } from './ElectricalFireMonitoringDetailDrawer';
 
 export {
+  GasEmpty,
   Gauge,
   LossCard,
   LossDevice,

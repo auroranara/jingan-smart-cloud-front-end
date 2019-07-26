@@ -325,7 +325,7 @@ export default class Operation extends PureComponent {
     const { longitude, latitude } = unitDetail;
     mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     this.setState({ unitDetail });
-    this.mapChild.handleMapClick(unitDetail);
+    setTimeout(() => this.mapChild.handleMapClick(unitDetail), 400); // 解决点击时无法居中的问题
     this.hideTooltip();
   };
 
@@ -436,27 +436,27 @@ export default class Operation extends PureComponent {
       area,
       location,
       cameraMessage,
-      isOver,
-      count,
-      num,
-      newTime,
-      lastTime,
+      // isOver,
+      // count,
+      // num,
+      // newTime,
+      // firstTime,
+      // lastTime,
       componentType,
       workOrder,
       systemTypeValue,
       createBy,
       createByPhone,
       faultName,
-      firstTime,
       companyName,
       component,
       trueOver = null,
     } = item;
     const msgItem = switchMsgType(+type);
-    const repeat = {
-      times: +isOver === 0 ? count : num,
-      lastreportTime: addTime,
-    };
+    // const repeat = {
+    //   times: +isOver === 0 ? count : num,
+    //   lastreportTime: addTime,
+    // };
     const occurData = [
       {
         create_time: addTime,
@@ -572,9 +572,9 @@ export default class Operation extends PureComponent {
   };
 
   handleVideoOpen = () => {
-    const { dispatch } = this.props;
+    // const { dispatch } = this.props;
     const {
-      company: { companyId },
+      // company: { companyId },
       videoList = [],
     } = this.state;
     if (videoList && videoList.length) {
@@ -1043,6 +1043,7 @@ export default class Operation extends PureComponent {
           style={MAP_SEARCH_STYLE}
           selectList={selectList}
           value={searchValue}
+          keys={{ id: 'companyId', name: 'companyName' }}
           handleChange={this.handleMapSearchChange}
           handleSelect={this.showUnitDetail}
         />

@@ -72,27 +72,22 @@ export default class MonitorDrawer extends PureComponent {
     } = this.props;
 
     const { statusIndex } = this.state;
-    const dataList = list.filter(item => {
-      const { deviceStatus, workStatus, warnStatus } = item;
-      switch (statusIndex) {
-        case 0:
-          return true;
-        case 1:
-          if (+warnStatus > 0) return true;
-          else return false;
-        case 2:
-          if (+workStatus === -3) return true;
-          else return false;
-        case 3:
-          if (+deviceStatus === -1) return true;
-          else return false;
-        case 4:
-          if (+workStatus === 0 && +deviceStatus !== -1) return true;
-          else return false;
-        default:
-          return true;
-      }
-    });
+
+    const [normallList, fireList, faultList, lostList] = [
+      list.filter(
+        item => !(+item.warnStatus > 0 || +item.workStatus === -3 || +item.deviceStatus === -1)
+      ),
+      list.filter(item => +item.warnStatus === 1 || +item.warnStatus === 2).map(item => {
+        return { ...item, isfire: true };
+      }),
+      list.filter(item => +item.workStatus === -3).map(item => {
+        return { ...item, isfault: true };
+      }),
+      list.filter(item => +item.deviceStatus === -1),
+    ];
+    const newList = [...normallList, ...fireList, ...faultList, ...lostList];
+    const dataList = [newList, fireList, faultList, lostList, normallList][statusIndex];
+
     return (
       <div className={styles.devScroll}>
         <Row gutter={16}>
@@ -108,6 +103,8 @@ export default class MonitorDrawer extends PureComponent {
                 warnStatus,
                 deviceId,
                 dataUpdateTime,
+                isfault,
+                isfire,
               } = item;
               const normalStatus =
                 +warnStatus !== 1 &&
@@ -120,20 +117,14 @@ export default class MonitorDrawer extends PureComponent {
               const currTime = `发生时间：${moment(dataUpdateTime).format('YYYY-MM-DD HH:mm:ss')}`;
               const devStatus = '设备状态：正常';
               const color =
-                +deviceStatus === -1
-                  ? '#9f9f9f'
-                  : +workStatus === -3
-                    ? '#ffb400'
-                    : +warnStatus === 1 || +warnStatus === 2
-                      ? '#f83329'
-                      : '';
+                +deviceStatus === -1 ? '#9f9f9f' : isfault ? '#ffb400' : isfire ? '#f83329' : '';
 
               let smokeImg;
               if (+deviceStatus === -1) {
                 smokeImg = smokeLost;
-              } else if (+warnStatus === 1 || +warnStatus === 2) {
+              } else if (isfire) {
                 smokeImg = smokeAlarm;
-              } else if (+workStatus === -3) {
+              } else if (isfault) {
                 smokeImg = smokeFault;
               } else {
                 smokeImg = smokeNormal;
@@ -173,77 +164,35 @@ export default class MonitorDrawer extends PureComponent {
                             onClick={e => this.handleClickCamera(videoList)}
                           />
                         )}
-                        {(!normalStatus &&
-                          +deviceStatus !== -1 &&
-                          +workStatus === -3 &&
-                          +warnStatus === 1) ||
-                        +warnStatus === 2 ? (
-                          <div>
-                            <span
-                              className={styles.status}
-                              style={{
-                                color: '#f83329',
-                                borderColor: '#f83329',
-                                cursor: 'pointer',
-                              }}
-                              onClick={() => {
-                                handleAlarmClick(deviceId, company_id, company_name, 1, undefined);
-                              }}
-                            >
-                              火警
-                            </span>
-                            <span
-                              className={styles.status}
-                              style={{
-                                color: '#ffb400',
-                                borderColor: '#ffb400',
-                                cursor: 'pointer',
-                                marginLeft: 10,
-                              }}
-                              onClick={() => {
-                                handleFaultClick(deviceId, company_id, company_name, 2, undefined);
-                              }}
-                            >
-                              故障
-                            </span>
+                        {!normalStatus && (
+                          <div
+                            className={styles.status}
+                            style={{
+                              color,
+                              borderColor: color,
+                              cursor: +deviceStatus !== -1 ? 'pointer' : 'default',
+                            }}
+                            onClick={() => {
+                              isfire
+                                ? handleAlarmClick(deviceId, company_id, company_name, 1, undefined)
+                                : isfault &&
+                                  handleFaultClick(
+                                    deviceId,
+                                    company_id,
+                                    company_name,
+                                    2,
+                                    undefined
+                                  );
+                            }}
+                          >
+                            {+deviceStatus === -1
+                              ? '失联'
+                              : isfault
+                                ? '故障'
+                                : isfire
+                                  ? '火警'
+                                  : ''}
                           </div>
-                        ) : (
-                          !normalStatus && (
-                            <div
-                              className={styles.status}
-                              style={{
-                                color,
-                                borderColor: color,
-                                cursor: 'pointer',
-                              }}
-                              onClick={() => {
-                                (+deviceStatus !== -1 && +warnStatus === 1) || +warnStatus === 2
-                                  ? handleAlarmClick(
-                                      deviceId,
-                                      company_id,
-                                      company_name,
-                                      1,
-                                      undefined
-                                    )
-                                  : +deviceStatus !== -1 &&
-                                    handleFaultClick(
-                                      deviceId,
-                                      company_id,
-                                      company_name,
-                                      2,
-                                      undefined
-                                    );
-                              }}
-                            >
-                              {+deviceStatus === -1
-                                ? '失联'
-                                : +workStatus === -3
-                                  ? '故障'
-                                  : +warnStatus === 1 || +warnStatus === 2
-                                    ? '火警'
-                                    : ''}
-                            </div>
-                          )
                         )}
                       </div>
                     </div>
@@ -315,7 +264,7 @@ export default class MonitorDrawer extends PureComponent {
               }`}
           </p>
           <p className={styles.dots}>
-            {[normal, fault, unnormal, outContact].map((n, i) => (
+            {[normal, unnormal, fault, outContact].map((n, i) => (
               <DotItem key={i} title={LABELS[i]} color={`rgb(${COLORS[i]})`} quantity={n} />
             ))}
           </p>

@@ -737,12 +737,12 @@ export default class ElectricityMonitor extends PureComponent {
             showUnitDetail={this.showUnitDetail}
           />
           {/* 设备故障统计 */}
-          <NewSection
+          {/* <NewSection
             title="设备故障统计"
             style={{ width: '100%', height: '250px', cursor: 'pointer', marginTop: 15 }}
           >
             <EquipmentStatistics brandData={brandData} />
-          </NewSection>
+          </NewSection> */}
         </div>
         <SettingModal
           visible={setttingModalVisible}

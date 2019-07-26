@@ -3,6 +3,10 @@ import { stringify } from 'qs';
 
 const URL_PREFIX = '/acloud_new/v2';
 
+/**
+ * 风险点管理
+ */
+
 // 风险点企业列表
 export async function queryRiskCompanyList(params) {
   return request(`${URL_PREFIX}/pointManage/riskPointCompanyForPage?${stringify(params)}`);
@@ -140,4 +144,46 @@ export async function queryShowLetter({ id }) {
 // 获取行业类别字典
 export async function queryIndustryDict(params) {
   return request(`${URL_PREFIX}/pointManage/industryDict?${stringify(params)}`);
+}
+
+/**
+ * 网格点管理
+ */
+
+// 网格点企业列表
+export async function queryGridCompanyList(params) {
+  return request(`${URL_PREFIX}/pointManage/gridPointCompanyForPage?${stringify(params)}`);
+}
+
+// 网格点列表
+export async function queryGridPointList(params) {
+  return request(`${URL_PREFIX}/pointManage/gridPointForPage?${stringify(params)}`);
+}
+
+// 新增
+export async function queryGridPointAdd(params) {
+  return request(`${URL_PREFIX}/pointManage/gridPoint`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+// 编辑
+export async function updateGridPoint(params) {
+  return request(`/acloud_new/v2/pointManage/gridPoint`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+// 详情
+export async function queryGridPointDetail({ id }) {
+  return request(`${URL_PREFIX}/pointManage/gridPoint/${id}`);
+}
+
+// 删除
+export async function deleteGridPoint({ ids }) {
+  return request(`/acloud_new/v2/pointManage/point/${ids}`, {
+    method: 'DELETE',
+  });
 }

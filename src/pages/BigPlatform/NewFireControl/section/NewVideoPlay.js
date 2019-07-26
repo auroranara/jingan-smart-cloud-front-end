@@ -79,7 +79,7 @@ class VideoPlay extends Component {
 
     // 清空视频链接
     this.setState({ videoSrc: '', selectedKeys: [videoId], expandedKeys, autoExpandParent: true, searchValue: '' });
-    dispatch({
+    videoKey && dispatch({
       type: 'videoPlay/fetchStartToPlay',
       payload: {
         key_id: videoKey,

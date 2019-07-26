@@ -80,7 +80,7 @@ export default class EquipmentStatistics extends PureComponent {
           color: 'rgb(4, 253, 255)',
           type: 'bar',
           barWidth: '25%',
-          barMaxWidth: 20,
+          barMaxWidth: 10,
           data: brandList.map(item => item.totalNum),
         },
         {
@@ -88,7 +88,7 @@ export default class EquipmentStatistics extends PureComponent {
           type: 'bar',
           color: 'rgb(217, 61, 73)',
           barWidth: '25%',
-          barMaxWidth: 20,
+          barMaxWidth: 10,
           data: brandList.map(item => item.faultNum),
         },
         {
@@ -96,7 +96,7 @@ export default class EquipmentStatistics extends PureComponent {
           type: 'bar',
           color: 'rgb(159, 159, 159)',
           barWidth: '25%',
-          barMaxWidth: 20,
+          barMaxWidth: 10,
           data: brandList.map(item => item.unconnectNum),
         },
       ],

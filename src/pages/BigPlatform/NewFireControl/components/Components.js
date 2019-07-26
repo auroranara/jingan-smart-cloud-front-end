@@ -8,6 +8,7 @@ import DrawerSection from './DrawerSection';
 import DrawerStretchCard from './DrawerStretchCard';
 import EmptyChart from './EmptyChart';
 import GraphSwitch from './GraphSwitch';
+import MapSearch from './MapSearch';
 import OvProgress from './OvProgress';
 import OvSelect from './OvSelect';
 import SearchBar from './SearchBar';
@@ -23,6 +24,7 @@ export {
   DrawerStretchCard,
   EmptyChart,
   GraphSwitch,
+  MapSearch,
   OvProgress,
   OvSelect,
   SearchBar,

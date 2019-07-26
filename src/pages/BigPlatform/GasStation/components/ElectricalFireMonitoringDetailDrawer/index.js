@@ -24,7 +24,7 @@ const TYPES = [
   },
   {
     key: '3',
-    value: '最近一季',
+    value: '最近三月',
   },
   {
     key: '4',
@@ -172,16 +172,27 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       }={},
     } = this.props;
     const { activeType, countLoading } = this.state;
-    const seriesData = distributionBoxAlarmCount.map(({ desc, value }) => ({ name: desc, value }));
+    const colors = ['#ef6877', '#00baff', '#f6b54e', '#20c0ce', '#448ad0', '#B6A876', '#CA68EF', '#5DAD72', '#847be6', '#bcbcbd', '#D06244'];
+    const { seriesData, color, text } = distributionBoxAlarmCount.reduce((result, { desc, value }, index) => {
+      if (value > 0) {
+        result.seriesData.push({
+          name: desc,
+          value,
+        });
+        result.color.push(colors[index]);
+        result.text += value;
+      }
+      return result;
+    }, { seriesData: [], color: [], text: 0 });
     const option = {
-      color: ['#ef6877', '#00baff', '#f6b54e', '#20c0ce', '#448ad0', '#B6A876', '#CA68EF', '#5DAD72', '#847be6', '#bcbcbd', '#D06244'],
+      color,
       tooltip: {
         trigger: 'item',
         backgroundColor: 'rgba(0, 0, 0, 0.75)',
         formatter: "{b}: {c} ({d}%)",
       },
       title: {
-        text: seriesData.reduce((total, { value }) => total + value, 0),
+        text,
         textStyle: {
           color: '#fff',
           fontSize: 30,
@@ -235,7 +246,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
                 key={activeType}
               />
             </div>
-          ) : <div className={styles.emptyData}>暂无数据</div>}
+          ) : <div className={styles.emptyCountWrapper}><div className={styles.emptyCount}>0</div></div>}
         </Spin>
       </Fragment>
     );
@@ -264,7 +275,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
     const { activeKey } = this.state;
     const { params=[] } = value || {};
     const filteredParams = params.filter(({ name }) => name === activeKey || name.includes(activeKey) && name !== '漏电电流');
-    const { unit, normalMax } = filteredParams.reduce((a, b) => a.normalMax < b.normalMax || isNaN(b.normalMax) ? a : b, {});
+    const { unit, normalMax } = filteredParams.reduce((a, b) => a.normalMax > b.normalMax || isNaN(a.normalMax) ? b : a, {});
     const series = distributionBoxTodayData.reduce((result, { timeFlag, ia, ib, ic, ua, ub, uc, v1, v2, v3, v4, v5 }) => {
       const timestamp = +moment(timeFlag, 'HH:mm');
       let list = [];
@@ -380,7 +391,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       xAxis: {
         type: 'time',
         boundaryGap: false,
-        splitNumber: 24,
+        splitNumber: 12,
         axisLine: {
           lineStyle: {
             color: '#1f477a',
@@ -397,7 +408,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
         },
       },
       yAxis: {
-        name: `单位(${unit})`,
+        name: unit && `单位(${unit})`,
         nameTextStyle: {
           color: '#fff',
         },
@@ -502,11 +513,11 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
           <Fragment>
             <div className={styles.titleIcon} />
             <div className={styles.title}>
-              <span className={styles.name}>{name || '--'}</span>
-              <span>{location ? `(${location})` : ''}</span>
+              {location}
             </div>
           </Fragment>
         }
+        zIndex={1001}
         width={700}
         visible={visible}
         onClose={onClose}

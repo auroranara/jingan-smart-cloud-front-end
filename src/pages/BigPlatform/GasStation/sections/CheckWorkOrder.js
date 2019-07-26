@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 
 // import TabSection from './TabSection';
@@ -8,11 +8,13 @@ import styles from './CheckWorkOrder.less';
 const isTinyHeight = window.screen.availHeight < 650;
 
 export default class CheckWorkOrder extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      type: 0, // 0 安全巡查 1 处理工单
-    };
+  state = {
+    type: 0, // 0 安全巡查 1 处理工单
+  }
+
+  componentDidMount() {
+    if (this.circle)
+      this.circle.style.width = `${this.circle.offsetHeight}px`;
   }
 
   getPieOption() {
@@ -57,10 +59,12 @@ export default class CheckWorkOrder extends PureComponent {
         {
           type: 'pie',
           center: ['50%', '45%'],
-          radius: ['30%', '48%'],
+          // radius: ['30%', '48%'],
+          radius: ['50%', '68%'],
           avoidLabelOverlap: false,
           label: {
             normal: {
+              position: 'center',
               show: false,
               formatter: '{b}\n{number|{c}}',
               rich: {
@@ -72,6 +76,7 @@ export default class CheckWorkOrder extends PureComponent {
               },
             },
             emphasis: {
+              position: 'center',
               show: true,
               textStyle: {
                 fontSize: isTinyHeight ? 12 : 13,
@@ -174,9 +179,17 @@ export default class CheckWorkOrder extends PureComponent {
   };
 
   render() {
-    return (
-      <Section title="安全巡查">
-        <div className={styles.container}>
+    const { coItemList } = this.props;
+    let child = (
+      <div className={styles.circleContainer}>
+        <div className={styles.emptyCircle} ref={node => this.circle = node}>
+          0
+        </div>
+      </div>
+    );
+    if ([1, 2, 3, 4].some(n => coItemList[`status${n}`] !== 0))
+      child = (
+        <Fragment>
           <ReactEcharts
             option={this.getPieOption()}
             style={{ height: '100%', width: '100%' }}
@@ -185,6 +198,12 @@ export default class CheckWorkOrder extends PureComponent {
             onChartReady={this.onChartReadyCallback}
           />
           {this.renderLegend()}
+        </Fragment>
+      );
+    return (
+      <Section title="安全巡查">
+        <div className={styles.container}>
+          {child}
         </div>
       </Section>
     );

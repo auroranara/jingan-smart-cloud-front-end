@@ -305,5 +305,14 @@ export default {
       riskAssessmentView: 'riskControl.riskPointManage.riskAssessmentView',
       riskCardView: 'riskControl.riskPointManage.riskCardView',
     },
+    // 风险点管理
+    gridPointManage: {
+      listView: 'riskControl.gridPointManage.listView',
+      view: 'riskControl.gridPointManage.view',
+      add: 'riskControl.gridPointManage.add',
+      edit: 'riskControl.gridPointManage.edit',
+      delete: 'riskControl.gridPointManage.delete',
+      detailView: 'riskControl.gridPointManage.detailView',
+    },
   },
 };

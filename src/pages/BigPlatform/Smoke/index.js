@@ -32,6 +32,8 @@ import BackMap from './BackMap';
 import MapSearch from './BackMap/MapSearch';
 // 引入样式文件
 import styles from './index.less';
+import { findFirstVideo } from '@/utils/utils';
+import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
 import { SettingModal, UnitDrawer, AlarmDrawer, FireStatisticsDrawer } from './sections/Components';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 
@@ -51,9 +53,11 @@ const options = {
  * author:
  * date: 2019年01月08日
  */
-@connect(({ smoke, newUnitFireControl }) => ({
+@connect(({ smoke, newUnitFireControl, operation, loading }) => ({
   smoke,
   newUnitFireControl,
+  operation,
+  messageInformListLoading: loading.effects['newUnitFireControl/fetchMessageInformList'],
 }))
 export default class Smoke extends PureComponent {
   constructor(props) {
@@ -82,6 +86,10 @@ export default class Smoke extends PureComponent {
       errorUnitsCardsInfo: [],
       unitDetail: {},
       importCardsInfo: [],
+      msgFlow: 0, // 0 火警 1故障
+      dynamicType: 0,
+      videoList: [],
+      fireVideoVisible: false,
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -427,15 +435,16 @@ export default class Smoke extends PureComponent {
    * 显示告警通知提醒框
    */
   showWarningNotification = ({
-    companyId,
-    addTime,
-    companyName,
+    companyId: company_id,
+    // addTime,
+    companyName: company_name,
     area,
     location,
     paramName,
     messageFlag,
-    messageFlagForId,
+    // messageFlagForId,
     paramCode,
+    deviceId: id,
   }) => {
     const options = {
       key: `${messageFlag}_${paramCode}`,
@@ -452,14 +461,20 @@ export default class Smoke extends PureComponent {
         <div
           className={styles.notificationContent}
           onClick={() => {
-            this.setState({ companyName });
-            this.handleClickNotification(companyId);
-            this.handleAlarmClick(messageFlagForId || messageFlag, companyId, companyName, 1);
+            this.setState({ companyName: company_name });
+            this.handleClickNotification(company_id);
+            this.handleAlarmClick(
+              // messageFlagForId || messageFlag,
+              id,
+              company_id,
+              company_name,
+              1
+            );
           }}
         >
           <div className={styles.notificationText}>
-            <div className={styles.notificationTextFirst}>{moment(addTime).format('HH:mm:ss')}</div>
-            <div className={styles.notificationTextSecond}>{companyName}</div>
+            <div className={styles.notificationTextFirst}>刚刚</div>
+            <div className={styles.notificationTextSecond}>{company_name}</div>
           </div>
           <div className={styles.notificationText}>
             <div className={styles.notificationTextFirst}>{`${area}${location}${paramName}`}</div>
@@ -539,13 +554,13 @@ export default class Smoke extends PureComponent {
     });
   };
 
-  handleClickNotification = companyId => {
+  handleClickNotification = company_id => {
     const {
       smoke: {
         statisticsData: { companysList = [] },
       },
     } = this.props;
-    this.showUnitDetail(companysList.filter(item => item.company_id === companyId)[0]);
+    this.showUnitDetail(companysList.filter(item => item.company_id === company_id)[0]);
   };
 
   handleClickCamera = () => {
@@ -603,52 +618,78 @@ export default class Smoke extends PureComponent {
     this.setState({ type: type });
   };
 
+  // 获取消息人员列表
+  fetchMessageInformList = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchMessageInformList',
+      payload: { ...params },
+    });
+  };
+
+  // 获取视频
+  fetchCameraMessage = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'operation/fetchCameraMessage',
+      payload: { ...params },
+      callback: cameraMessage => {
+        this.setState({ videoList: cameraMessage });
+      },
+    });
+  };
+
   handleAlarmClick = (id, company_id, company_name, type, num, msg) => {
+    console.log('handleAlarmClick', id, company_id, company_name, type, num, msg);
     const {
       dispatch,
       match: {
         params: { gridId },
       },
     } = this.props;
-    this.setState({ companyName: company_name });
+
+    this.setState({ companyName: company_name, msgFlow: +type === 1 ? 0 : 1, dynamicType: type });
     dispatch({
       type: 'smoke/fetchSmokeForMaintenance',
       payload: { companyId: company_id, deviceId: id, gridId, num, type: type },
-      success: () => {
+      success: res => {
+        const {
+          data: { list = [] },
+        } = res;
+        const {
+          smoke: { gasForMaintenance = [] },
+        } = this.props;
+        const gasId = gasForMaintenance.map(item => item.data_id)[0];
+        const dataId = list
+          .filter(item => item.data_id === gasId)
+          .map(item => item.data_id)
+          .join('');
         this.handleDrawerVisibleChange('alarmDynamic');
+        this.fetchMessageInformList({ dataId });
+        dispatch({
+          type: 'operation/fetchCameraMessage',
+          payload: { id: dataId, reportType: 4 },
+          callback: cameraMessage => {
+            this.setState({ videoList: cameraMessage });
+            Array.isArray(cameraMessage) && cameraMessage.length > 0 && this.handleShowFlowVideo();
+          },
+        });
       },
     });
+  };
 
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchCountNumAndTimeById',
-    //   payload: {
-    //     id,
-    //     reportType: 4,
-    //     fireType: 1,
-    //   },
-    //   callback: res => {
-    //     if (res) {
-    //       // 待处理自行拼
-    //       const { num, lastTime, firstTime } = res;
-    //       // this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
-    //       dispatch({
-    //         type: 'newUnitFireControl/saveWorkOrderDetail',
-    //         payload: [{ ...occurData[0], firstTime, num, lastTime }],
-    //       });
-    //     } else {
-    //       // 处理中，已完成请求接口流程信息
-    //       dispatch({
-    //         type: 'newUnitFireControl/fetchWorkOrder',
-    //         payload: { companyId, reportType: 4, id },
-    //         // callback: res => {
-    //         //   if (res.data.list.length === 0) return;
-    //         //   const { num, lastTime } = res.data.list[0];
-    //         //   this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
-    //         // },
-    //       });
-    //     }
-    //   },
-    // });
+  // 开启视频监控
+  handleShowFlowVideo = videoList => {
+    this.setState({ fireVideoVisible: true });
+  };
+
+  // 关闭视频监控
+  handleFireVideoClose = () => {
+    this.setState({ fireVideoVisible: false, fireVideoKeyId: undefined });
+  };
+
+  handleMapParentChange = newState => {
+    this.setState({ ...newState });
   };
 
   handleFaultClick = (id, company_id, company_name, type, num) => {
@@ -658,12 +699,25 @@ export default class Smoke extends PureComponent {
         params: { gridId },
       },
     } = this.props;
-    this.setState({ companyName: company_name });
+    this.setState({ companyName: company_name, msgFlow: +type === 1 ? 0 : 1, dynamicType: type });
     dispatch({
       type: 'smoke/fetchSmokeForMaintenance',
       payload: { companyId: company_id, deviceId: id, gridId, num, type: type },
-      success: () => {
+      success: res => {
+        const {
+          data: { list = [] },
+        } = res;
+        const {
+          smoke: { gasForMaintenance = [] },
+        } = this.props;
+        const gasId = gasForMaintenance.map(item => item.data_id)[0];
+        const dataId = list
+          .filter(item => item.data_id === gasId)
+          .map(item => item.data_id)
+          .join('');
         this.handleDrawerVisibleChange('maintenance');
+        this.fetchMessageInformList({ dataId });
+        this.fetchCameraMessage({ id: dataId, reportType: 4 });
       },
     });
   };
@@ -714,6 +768,11 @@ export default class Smoke extends PureComponent {
         companyId: companyId,
       },
     });
+    // 烟感地图数据
+    dispatch({
+      type: 'smoke/fetchMapList',
+      payload: { gridId, type: 6, companyId },
+    });
   };
 
   handleClickUnitStatistics = unitDetail => {
@@ -759,6 +818,11 @@ export default class Smoke extends PureComponent {
         gridId,
         companyId: company_id,
       },
+    });
+    // 烟感地图数据
+    dispatch({
+      type: 'smoke/fetchMapList',
+      payload: { gridId, type: 6, companyId: company_id },
     });
   };
 
@@ -821,6 +885,8 @@ export default class Smoke extends PureComponent {
       match: {
         params: { gridId },
       },
+      newUnitFireControl: { messageInformList },
+      messageInformListLoading,
     } = this.props;
 
     const {
@@ -844,7 +910,19 @@ export default class Smoke extends PureComponent {
       type,
       errorUnitsCardsInfo,
       importCardsInfo,
+      msgFlow,
+      dynamicType,
+      videoList,
+      fireVideoVisible,
     } = this.state;
+
+    const headProps = {
+      ...gasForMaintenance[0],
+      videoList,
+      dynamicType,
+      onCameraClick: this.handleShowFlowVideo,
+    };
+    const dataId = gasForMaintenance.map(item => item.data_id);
 
     // const importCardsInfo = this.importCardsInfo;
     // const errorUnitsCardsInfo = this.errorUnitsCardsInfo;
@@ -947,13 +1025,13 @@ export default class Smoke extends PureComponent {
         >
           <HistoricalFire data={statisticsData} onClick={this.handleHistoricalFireClick} />
         </NewSection>
-        <NewSection
+        {/* <NewSection
           title="设备故障统计"
           className={styles.left}
           style={{ top: 'calc(55.85% + 92px)', height: '28%', cursor: 'pointer' }}
         >
           <EquipmentStatistics brandData={brandData} />
-        </NewSection>
+        </NewSection> */}
         {/* extra info */}
         <SettingModal
           visible={setttingModalVisible}
@@ -990,11 +1068,18 @@ export default class Smoke extends PureComponent {
         <MaintenanceDrawer
           title="故障处理动态"
           // type={drawerType}
-          type={'fault'}
+          msgFlow={msgFlow}
           data={gasForMaintenance}
+          dataId={dataId}
           visible={maintenanceDrawerVisible}
           companyName={companyName}
           onClose={() => this.handleDrawerVisibleChange('maintenance')}
+          head={true}
+          headProps={headProps}
+          messageInformList={messageInformList}
+          messageInformListLoading={messageInformListLoading}
+          fetchCameraMessage={this.fetchCameraMessage}
+          fetchMessageInformList={this.fetchMessageInformList}
         />
         {/* 灾情事件动态 */}
         {/* <AlarmDynamicDrawer
@@ -1006,11 +1091,19 @@ export default class Smoke extends PureComponent {
         <FireDynamicDrawer
           title="灾情事件动态"
           // type={drawerType}
-          type={'alarm'}
+          // type={'alarm'}
+          msgFlow={msgFlow}
           data={gasForMaintenance}
           visible={alarmDynamicDrawerVisible}
           companyName={companyName}
           onClose={() => this.handleDrawerVisibleChange('alarmDynamic')}
+          head={true}
+          dataId={dataId}
+          headProps={headProps}
+          messageInformList={messageInformList}
+          messageInformListLoading={messageInformListLoading}
+          fetchCameraMessage={this.fetchCameraMessage}
+          fetchMessageInformList={this.fetchMessageInformList}
         />
         {/* 单位监测数据 */}
         <MonitorDrawer
@@ -1048,6 +1141,14 @@ export default class Smoke extends PureComponent {
           position={tooltipPosition}
           offset={[15, 42]}
           style={{ zIndex: 150 }}
+        />
+        <NewVideoPlay
+          showList={true}
+          videoList={videoList}
+          visible={fireVideoVisible}
+          keyId={videoList.length > 0 ? findFirstVideo(videoList).id : undefined} // keyId
+          handleVideoClose={this.handleFireVideoClose}
+          isTree={false}
         />
       </BigPlatformLayout>
     );

@@ -1,8 +1,10 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Tooltip, Carousel, Icon } from 'antd';
+import Ellipsis from '@/components/Ellipsis';
 import ReactEcharts from "echarts-for-react";
 import { connect } from 'dva';
 import moment from 'moment';
+
 import { Section2 as Section } from '@/jingan-components/CustomSection';
 import alarmDistributionBoxTop from './assets/alarm-distribution-box-top.png';
 import alarmDistributionBoxBottom from './assets/alarm-distribution-box-bottom.png';
@@ -14,6 +16,7 @@ import distributionBoxIcon from './assets/distribution-box-icon.png';
 import alarmIcon from './assets/alarm-icon.png';
 import lossBackground from './assets/loss-background.png';
 import styles from './index.less';
+import { GasEmpty } from '../Components';
 
 function formatTime(time) {
   const diff = moment().diff(moment(time));
@@ -160,13 +163,17 @@ export default class ElectricalFireMonitoring extends PureComponent {
     const lossCount = loss.length;
     const normalCount = normal.length;
     const length = alarmCount + lossCount + normalCount;
-    let content;
+    let content = (
+      <div className={styles.emptyContainer}>
+        <GasEmpty />
+      </div>
+    );
     if (length === 1) { // 单个
       const data = alarm[0] || loss[0] || normal[0];
       let subContent;
       if (alarmCount === 1 || normalCount === 1) { // 报警或正常
         let { params } = data;
-        params = params.reduce((result, param) => {
+        params = (params || []).reduce((result, param) => {
           if (param.status > 0) {
             result.alarm.push(param);
           } else if (param.status < 0) {
@@ -176,10 +183,10 @@ export default class ElectricalFireMonitoring extends PureComponent {
           }
           return result;
         }, { alarm: [], loss: [], normal: [] });
-        params = params.alarm.concat(params.loss, params.normal);
+        params = params.alarm.concat(params.loss, params.normal); // 为了确保报警优先排序
         const isFirst = currentIndex === 0;
         const isLast = currentIndex === params.length - 1;
-        subContent = (
+        subContent = params.length > 0 ? (
           <div className={styles.subContent}>
             <Carousel
               // afterChange={this.handleCarouselChange}
@@ -229,6 +236,11 @@ export default class ElectricalFireMonitoring extends PureComponent {
               />
             </Tooltip>
           </div>
+        ) : (
+          <div className={styles.emptyData}>
+            <img src={lossBackground} alt="失联" />
+            <span>暂无参数</span>
+          </div>
         );
       } else { // 失联
         subContent = (
@@ -242,7 +254,7 @@ export default class ElectricalFireMonitoring extends PureComponent {
         <div className={styles.singleContainer}>
           <div className={styles.titleWrapper}>
             <img className={styles.titleIcon} src={distributionBoxIcon} alt="配电箱图标" />
-            <span className={styles.title}>{data.name || data.location}</span>
+            <span className={styles.title}><Ellipsis lines={1} tooltip>{data.location}</Ellipsis></span>
           </div>
           <div className={styles.content}>
             {subContent}

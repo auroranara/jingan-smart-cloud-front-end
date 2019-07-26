@@ -187,15 +187,32 @@ export default class MapSection extends PureComponent {
   };
 
   renderTips = () => {
-    const { units = [], alarmIds = [], handleAlarmClick } = this.props;
+    const {
+      units = [],
+      statisticsData: { companysList = [] },
+      alarmIds = [],
+      handleAlarmClick,
+    } = this.props;
+    console.log('alarmIds', alarmIds);
 
     const tips = alarmIds.map(data => {
       return {
         ...units.find(item => item.companyId === data.companyId),
+        unnormal: units
+          .filter(item => item.companyId === data.companyId)
+          .map(item => item.unnormal),
+        longitude: companysList
+          .filter(item => item.company_id === data.companyId)
+          .map(item => item.longitude),
+        latitude: companysList
+          .filter(item => item.company_id === data.companyId)
+          .map(item => item.latitude),
         messageFlag: data.messageFlag,
         messageFlagForId: data.messageFlagForId,
       };
     });
+    console.log('tips', tips);
+
     return tips.map((item, index) => {
       return item.unnormal > 0 ? (
         <Marker
@@ -206,8 +223,13 @@ export default class MapSection extends PureComponent {
           extData={item}
           events={{
             click: e => {
-              const { messageFlag, companyId, companyName, messageFlagForId } = item;
-              handleAlarmClick(messageFlagForId || messageFlag, companyId, companyName, 3);
+              const {
+                messageFlag,
+                companyId: company_id,
+                companyName: company_name,
+                messageFlagForId,
+              } = item;
+              handleAlarmClick(messageFlagForId || messageFlag, company_id, company_name, 1);
               const newIds = [...alarmIds.slice(0, index), ...alarmIds.slice(index + 1)];
               this.props.handleParentChange({ alarmIds: newIds });
             },

@@ -3,7 +3,7 @@ import dangerIcon from './danger.png';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 import headerBg from '@/assets/new-header-bg.png';
-import videoBtn from '@/pages/BigPlatform/Monitor/imgs/videoBtn.png';
+import hydrantIcon from './hydrant.png';
 import iconCompany from '@/assets/icon-company.png';
 import iconMaintenance from '@/assets/icon-maintenance.png';
 import iconHd from '@/assets/icon-hidden-danger.png';
@@ -11,6 +11,11 @@ import iconCheck from '@/assets/icon-check.png';
 import inspectIcon from './inspect.png';
 import lossDevice from './loss.png';
 import outdateIcon from './outdate.png';
+import pondIcon from './tank.png';
+import pondIcon1 from './tank-loss.png';
+import redLight from './redLight.png';
+import sprayIcon from './spray.png';
+import videoBtn from '@/pages/BigPlatform/Monitor/imgs/videoBtn.png';
 import waveBlue from './blueWave.png';
 import waveRed from './redWave.png';
 
@@ -54,6 +59,7 @@ export {
   alarmIcon,
   dangerIcon,
   headerBg,
+  hydrantIcon,
   iconCheck,
   iconCompany,
   iconFire,
@@ -63,6 +69,10 @@ export {
   inspectIcon,
   lossDevice,
   outdateIcon,
+  pondIcon,
+  pondIcon1,
+  redLight,
+  sprayIcon,
   videoBtn,
   waveBlue,
   waveRed,

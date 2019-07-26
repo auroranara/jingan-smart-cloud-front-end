@@ -27,11 +27,11 @@ class MapSearch extends PureComponent {
   };
 
   render() {
-    const { selectList, value, style } = this.props;
+    const { selectList, value, style, keys={ id: 'id', name: 'name' } } = this.props;
     // const { selectList, value, style, handleChange } = this.props;
     // const { selectedItem: { id, name } } = this.state;
     const options = selectList.map(item => {
-      const { name } = item;
+      const name = item[keys.name];
       let children = name;
       // 字符串中不包含value值时，直接渲染字符串，包含时才显示高亮
       if (name.includes(value)) {
@@ -40,7 +40,7 @@ class MapSearch extends PureComponent {
       }
 
       return (
-        <Option key={item.id} label={item} style={{ color: '#FFF' }}>
+        <Option key={item[keys.id]} label={item} style={{ color: '#FFF' }}>
           {children}
         </Option>
       );

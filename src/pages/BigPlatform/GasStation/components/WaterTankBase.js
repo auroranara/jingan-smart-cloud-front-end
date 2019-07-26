@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 
 import { waveBlue, waveRed } from '../imgs/links';
-import { getMaxDeep } from '../utils';
+import { getMaxDeep, getMin, getMax } from '../utils';
 
 const RED = 'rgb(248,51,41)';
 const BLUE = 'rgb(24,141,255)';
@@ -12,10 +12,12 @@ const SPLIT_NUM = 10;
 const IMG_WIDTH = 309;
 const IMG_HEIGHT = 378;
 
+const LOSS = -1;
+
 export default class WaterTankBase extends PureComponent {
   componentDidMount() {
-    const { range, unit, limits } = this.props;
-    this.maxDeep = getMaxDeep(range || limits[1], unit);
+    const { range, value, limits, unit } = this.props;
+    this.maxDeep = getMaxDeep(getMax(range[1] || limits[1], value), unit);
 
     const canvas = this.canvas;
     this.ctx = canvas.getContext('2d');
@@ -44,9 +46,9 @@ export default class WaterTankBase extends PureComponent {
     this.drawWave();
     this.drawRect();
     this.drawSplits();
+    // if (status !== LOSS)
     this.drawAxis();
     this.drawTriangle();
-    this.drawLimitLine();
   }
 
   drawWave() {
@@ -62,9 +64,12 @@ export default class WaterTankBase extends PureComponent {
     const ctx = this.ctx;
     const { dy=0, size: [w, h] } = this.props;
 
+    ctx.save();
     ctx.beginPath();
     ctx.strokeStyle = 'grey';
+    ctx.lineWidth = 4;
     ctx.strokeRect(0, dy, w, h);
+    ctx.restore();
   }
 
   drawSplits() {
@@ -100,19 +105,26 @@ export default class WaterTankBase extends PureComponent {
   }
 
   drawAxis() {
-    const { dy=0, size: [w, h], limits, unit } = this.props;
+    const { dy=0, size: [w, h], range, limits, unit } = this.props;
     const max = this.maxDeep;
     const ctx = this.ctx;
-    const point1 = [w, h * (1 - limits[0] / max) + dy];
-    const point2 = [w, h * (1 - limits[1] / max) + dy];
+    const ceiling = getMin(range[1], limits[1]);
+    const floor = getMax(range[0], limits[0]);
+    const origin = [w, h + dy];
+    const target = [w, dy];
+    const point1 = floor ? [w, h * (1 - floor / max) + dy] : origin;
+    const point2 = ceiling ? [w, h * (1 - ceiling / max) + dy] : target;
 
     ctx.save()
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(w, h + dy);
-    ctx.strokeStyle = RED;
-    ctx.lineTo(...point1);
-    ctx.stroke();
+    ctx.lineWidth = 4;
+
+    if (floor !== null) {
+      ctx.beginPath();
+      ctx.moveTo(...origin);
+      ctx.strokeStyle = RED;
+      ctx.lineTo(...point1);
+      ctx.stroke();
+    }
 
     ctx.beginPath();
     ctx.moveTo(...point1)
@@ -120,14 +132,38 @@ export default class WaterTankBase extends PureComponent {
     ctx.lineTo(...point2);
     ctx.stroke();
 
-    ctx.beginPath();
-    ctx.moveTo(...point2);
-    ctx.strokeStyle = RED;
-    ctx.lineTo(w, dy);
-    ctx.stroke();
+    if (ceiling) {
+      ctx.beginPath();
+      ctx.moveTo(...point2);
+      ctx.strokeStyle = RED;
+      ctx.lineTo(...target);
+      ctx.stroke();
+    }
 
     ctx.font = '14px microsoft yahei';
     ctx.fillText(unit, w + 2, dy);
+    ctx.restore();
+
+    this.drawLimitLine([ceiling, floor]);
+  }
+
+  drawLimitLine(limits) {
+    const { dy=0, size: [w, h] } = this.props;
+    const max = this.maxDeep;
+    const ctx = this.ctx;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.setLineDash([4, 2]);
+    ctx.strokeStyle = RED;
+    limits.forEach(lmt => {
+      if (lmt !== null) {
+        const y = h * (1 - lmt / max) + dy;
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+      }
+    });
+    ctx.stroke();
     ctx.restore();
   }
 
@@ -153,39 +189,13 @@ export default class WaterTankBase extends PureComponent {
     ctx.closePath();
     ctx.fill();
     ctx.font = '14px microsoft yahei';
-    ctx.fillText(`${value}${unit}`, target[0] + 25, target[1] + 10);
+    ctx.fillStyle = status > 0 ? RED : WHITE;
+    ctx.fillText(`${status === LOSS ? '- ' : value}${unit}`, target[0] + 25, target[1] + 10);
     ctx.fillStyle = WHITE;
     ctx.font = '12px microsoft yahei';
     ctx.fillText('当前水位', target[0] + 25, target[1] - 8);
     ctx.restore();
   }
-
-  drawLimitLine() {
-    const { dy=0, size: [w, h], limits } = this.props;
-
-    const max = this.maxDeep;
-    const ctx = this.ctx;
-    ctx.save();
-    ctx.beginPath();
-    ctx.setLineDash([4, 2]);
-    ctx.strokeStyle = RED;
-    limits.forEach((lmt, i) => {
-      if (!lmt || i && lmt === max)
-        return;
-      const y = h * (1 - lmt / max) + dy;
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-    });
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  // isAlarm() {
-  //   const { value, limits } = this.props;
-  //   if (value < limits[0] || value > limits[1])
-  //     return true;
-  //   return false;
-  // }
 
   render() {
     const { width=400, height=200, className, onClick } = this.props;
