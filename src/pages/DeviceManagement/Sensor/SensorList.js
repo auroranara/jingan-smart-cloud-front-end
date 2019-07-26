@@ -280,7 +280,7 @@ export default class SensorList extends Component {
         width: 150,
       },
       {
-        title: '传感器型号',
+        title: '型号代码',
         dataIndex: 'typeCode',
         align: 'center',
         width: 150,
@@ -292,13 +292,13 @@ export default class SensorList extends Component {
         width: 150,
       },
       {
-        title: '传感器名称',
+        title: '设备名称',
         dataIndex: 'deviceName',
         align: 'center',
         width: 150,
       },
       {
-        title: '传感器ID',
+        title: '传感器Token',
         dataIndex: 'relationDeviceId',
         align: 'center',
         width: 150,
