@@ -194,7 +194,6 @@ export default class MapSection extends PureComponent {
       handleAlarmClick,
       wsData,
     } = this.props;
-    // console.log('alarmIds', alarmIds);
 
     const tips = alarmIds.map(data => {
       return {
@@ -213,7 +212,7 @@ export default class MapSection extends PureComponent {
         messageFlagForId: data.messageFlagForId,
       };
     });
-    // console.log('tips', tips);
+    console.log('tips', tips);
 
     return tips.map((item, index) => {
       return item.unnormal > 0 ? (
