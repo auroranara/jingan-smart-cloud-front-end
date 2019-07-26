@@ -20,7 +20,7 @@ import { isGauge } from '../utils';
 //   { value: 4, desc: '最近半年' },
 //   { value: 5, desc: '最近一年' },
 // ];
-const DATE_OPTIONS = ['一周', '一月', '三月', '半年', '一年'].map((desc, i) => ({ value: i, desc: `最近${desc}` }));
+const DATE_OPTIONS = ['一周', '一月', '三月', '半年', '一年'].map((desc, i) => ({ value: i + 1, desc: `最近${desc}` }));
 
 export default class WaterItemDrawer extends PureComponent {
   // state = {

@@ -182,3 +182,16 @@ export function getStatusDesc(value, limitLists, descs) {
   else if (max !== null && val >= max)
     return descs[1];
 }
+
+export const LOSS = -1;
+export function getStatusColor(status, colors) {
+  let index = 0;
+  if (status === LOSS)
+    index = 0;
+  else if (status === 0)
+    index = 1;
+  else if (status > 0)
+    index = 2;
+
+  return colors[index];
+}

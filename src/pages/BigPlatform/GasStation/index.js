@@ -1410,7 +1410,7 @@ export default class GasStation extends PureComponent {
     });
   };
 
-  handleViewWater = (i, type, filterIndex) => {
+  handleViewWater = (i, filterIndex) => {
     const state = {
       waterSystemDrawerVisible: true,
       waterTabItem: i,
@@ -2193,7 +2193,7 @@ export default class GasStation extends PureComponent {
           handleFaultClick={this.handleFaultClick}
           handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
           handleFireMessage={this.handleFireMessage}
-          handleViewWater={this.handleViewWater}
+          // handleViewWater={this.handleViewWater}
           handleClickMsgFlow={this.handleClickMsgFlow}
           phoneVisible={phoneVisible}
           handleClickElecMsg={this.handleClickElecMsg}
@@ -2221,7 +2221,6 @@ export default class GasStation extends PureComponent {
                   data={{ pond, spray, hydrant }}
                   fetchWaterSystem={this.fetchWaterSystem}
                   showWaterItemDrawer={this.showWaterItemDrawer}
-                  // waterAlarm={waterAlarm}
                 />
               </div>
             </div>

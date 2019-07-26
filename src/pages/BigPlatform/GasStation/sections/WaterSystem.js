@@ -21,7 +21,7 @@ export default class WaterSystem extends PureComponent {
     let child = <GasEmpty />;
     if (waterLists.length === 1 && waterLists[0].list.length === 1) {
       const { list: [item], index } = waterLists[0];
-      const { area, location, deviceName, deviceDataList } = item;
+      const { deviceName, deviceDataList } = item;
       const dataItem = deviceDataList[0];
       const { status, updateTime, value, deviceParamsInfo: { normalLower, normalUpper, minValue, maxValue } } = dataItem;
       const sts = +status;

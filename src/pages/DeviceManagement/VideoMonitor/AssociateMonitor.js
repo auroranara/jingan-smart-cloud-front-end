@@ -44,15 +44,6 @@ export default class AssociatePersonnelPosition extends Component {
     dispatch({ type: 'videoMonitor/getClassTypeList' })
   }
 
-  handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
-    const {
-      data: { id },
-      form: { getFieldsValue },
-    } = this.props
-    const values = getFieldsValue()
-    this.fetchBindedMonitorDevice({ payload: { videoId: id, pageNum, pageSize, ...values } })
-  }
-
   // 获取视频已绑定设备（动态监测）
   fetchBindedMonitorDevice = actions => {
     const {

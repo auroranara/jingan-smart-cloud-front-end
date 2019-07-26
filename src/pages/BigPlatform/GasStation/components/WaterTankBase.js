@@ -1,11 +1,13 @@
 import React, { PureComponent } from 'react';
 
 import { waveBlue, waveRed } from '../imgs/links';
-import { getMaxDeep, getMin, getMax } from '../utils';
+import { LOSS, getMaxDeep, getMin, getMax, getStatusColor } from '../utils';
 
 const RED = 'rgb(248,51,41)';
 const BLUE = 'rgb(24,141,255)';
+const GREY = 'grey';
 const WHITE = 'white';
+const COLORS = [GREY, BLUE, RED];
 const SPLIT_WIDTH = 10;
 const SPLIT_NUM = 10;
 
@@ -14,7 +16,7 @@ const IMG_HEIGHT = 378;
 
 export default class WaterTankBase extends PureComponent {
   componentDidMount() {
-    const { range,value, limits, unit } = this.props;
+    const { range, value, limits, unit } = this.props;
     this.maxDeep = getMaxDeep(getMax(range[1] || limits[1], value), unit);
 
     const canvas = this.canvas;
@@ -44,6 +46,7 @@ export default class WaterTankBase extends PureComponent {
     this.drawWave();
     this.drawRect();
     this.drawSplits();
+    // if (status !== LOSS)
     this.drawAxis();
     this.drawTriangle();
   }
@@ -63,7 +66,7 @@ export default class WaterTankBase extends PureComponent {
 
     ctx.save();
     ctx.beginPath();
-    ctx.strokeStyle = 'grey';
+    ctx.strokeStyle = GREY;
     ctx.lineWidth = 4;
     ctx.strokeRect(0, dy, w, h);
     ctx.restore();
@@ -175,7 +178,7 @@ export default class WaterTankBase extends PureComponent {
     const a = th * 1.414 / 2;
     const up = [x + th, y - a];
     const down = [x + th, y + a];
-    const color = status > 0 ? RED : BLUE;
+    const color = getStatusColor(status, COLORS);
 
     ctx.save();
     ctx.beginPath();
@@ -186,8 +189,8 @@ export default class WaterTankBase extends PureComponent {
     ctx.closePath();
     ctx.fill();
     ctx.font = '14px microsoft yahei';
-    ctx.fillStyle = status > 0 ? RED : WHITE;
-    ctx.fillText(`${value}${unit}`, target[0] + 25, target[1] + 10);
+    ctx.fillStyle = getStatusColor(status, [GREY, WHITE, RED]);
+    ctx.fillText(`${status === LOSS ? '-' : value} ${unit}`, target[0] + 25, target[1] + 10);
     ctx.fillStyle = WHITE;
     ctx.font = '12px microsoft yahei';
     ctx.fillText('当前水位', target[0] + 25, target[1] - 8);
