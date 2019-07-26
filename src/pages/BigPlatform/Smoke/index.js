@@ -90,6 +90,7 @@ export default class Smoke extends PureComponent {
       dynamicType: 0,
       videoList: [],
       fireVideoVisible: false,
+      wsData: [],
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
     // 设备状态统计数定时器
@@ -311,6 +312,7 @@ export default class Smoke extends PureComponent {
           //   },
           // });
         }
+        this.setState({ wsData: data });
       } catch (error) {
         console.log('error', error);
       }
@@ -484,6 +486,9 @@ export default class Smoke extends PureComponent {
       ),
     };
     notification.open(options);
+    setTimeout(() => {
+      this.hideWarningNotification({ messageFlag, paramCode });
+    }, 30000);
   };
 
   /**
@@ -733,20 +738,6 @@ export default class Smoke extends PureComponent {
         params: { gridId },
       },
     } = this.props;
-    // dispatch({ type: 'smoke/fetchCameraTree', payload: { company_id: companyId } });
-    // dispatch({
-    //   type: 'smoke/fetchCompanySmokeInfo',
-    //   payload: { company_id: companyId },
-    //   success: () => {
-    //     this.handleDrawerVisibleChange('monitor');
-    //     this.pollCompanyInfo = setInterval(() => {
-    //       dispatch({
-    //         type: 'smoke/fetchCompanySmokeInfo',
-    //         payload: { company_id: companyId },
-    //       });
-    //     }, 2000);
-    //   },
-    // });
     // 获取单位传感器列表
     dispatch({
       type: 'smoke/fetchUnitDeviceList',
@@ -768,11 +759,6 @@ export default class Smoke extends PureComponent {
         companyId: companyId,
       },
     });
-    // 烟感地图数据
-    dispatch({
-      type: 'smoke/fetchMapList',
-      payload: { gridId, type: 6, companyId },
-    });
   };
 
   handleClickUnitStatistics = unitDetail => {
@@ -784,20 +770,6 @@ export default class Smoke extends PureComponent {
     } = this.props;
     const { company_id } = unitDetail;
     this.setState({ unitDetail });
-    // dispatch({ type: 'smoke/fetchCameraTree', payload: { company_id: companyId } });
-    // dispatch({
-    //   type: 'smoke/fetchCompanySmokeInfo',
-    //   payload: { company_id: company_id },
-    //   success: () => {
-    //     this.handleDrawerVisibleChange('monitor');
-    //     this.pollCompanyInfo = setInterval(() => {
-    //       dispatch({
-    //         type: 'smoke/fetchCompanySmokeInfo',
-    //         payload: { company_id: company_id },
-    //       });
-    //     }, 2000);
-    //   },
-    // });
     // 获取单位传感器列表
     dispatch({
       type: 'smoke/fetchUnitDeviceList',
@@ -818,11 +790,6 @@ export default class Smoke extends PureComponent {
         gridId,
         companyId: company_id,
       },
-    });
-    // 烟感地图数据
-    dispatch({
-      type: 'smoke/fetchMapList',
-      payload: { gridId, type: 6, companyId: company_id },
     });
   };
 
@@ -914,6 +881,7 @@ export default class Smoke extends PureComponent {
       dynamicType,
       videoList,
       fireVideoVisible,
+      wsData,
     } = this.state;
 
     const headProps = {
@@ -965,6 +933,7 @@ export default class Smoke extends PureComponent {
           clearPollingMap={this.clearPollingMap}
           pollingMap={this.pollingMap}
           fetchMapInfo={this.fetchMapInfo}
+          wsData={wsData}
         />
         {/* 搜索框 */}
         <MapSearch

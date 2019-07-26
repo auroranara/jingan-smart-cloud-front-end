@@ -203,6 +203,7 @@ export default class GridPointEdit extends PureComponent {
         this.setState({
           submitting: true,
         });
+
         const {
           objectTitle,
           locationCode,
@@ -213,11 +214,16 @@ export default class GridPointEdit extends PureComponent {
           cycleType,
           dangerLevel,
         } = values;
+
         if (+cycleType === 1 && checkCycleData === null) {
           return (
             recommendCycle !== null, message.error('推荐检查周期为空，可以选择自定义检查周期！')
           );
         }
+        if (flow_id.length === 0) {
+          return message.error('请选择检查内容！');
+        }
+
         const payload = {
           id,
           companyId,
@@ -733,7 +739,7 @@ export default class GridPointEdit extends PureComponent {
                   <Form.Item label={fieldLabels.checkCycle}>
                     {getFieldDecorator('cycleType', {
                       initialValue: data.cycleType,
-                      rules: [{ message: '请选择检查周期方案' }],
+                      rules: [{ required: true, message: '请选择检查周期方案' }],
                     })(
                       <Select allowClear placeholder="请选择检查周期方案">
                         {checkCycleList.map(({ key, value }) => (
@@ -754,7 +760,7 @@ export default class GridPointEdit extends PureComponent {
                     {getFieldDecorator('locationCode', {
                       initialValue: data.locationCode,
                       getValueFromEvent: this.handleTrim,
-                      rules: [{ message: '请选择监督点位置' }],
+                      rules: [{ required: true, message: '请选择监督点位置' }],
                     })(<Input placeholder="请选择监督点位置" disabled />)}
                   </Form.Item>
                 </Col>
@@ -766,7 +772,7 @@ export default class GridPointEdit extends PureComponent {
                     {getFieldDecorator('qrCode', {
                       initialValue: data.qrCode,
                       getValueFromEvent: this.handleTrim,
-                      rules: [{ message: '请选择二维码' }],
+                      rules: [{ required: true, message: '请选择二维码' }],
                     })(<Input placeholder="请选择二维码" disabled />)}
                   </Form.Item>
                 </Col>
@@ -775,7 +781,7 @@ export default class GridPointEdit extends PureComponent {
                     {getFieldDecorator('nfcCode', {
                       initialValue: data.nfcCode,
                       getValueFromEvent: this.handleTrim,
-                      rules: [{ message: '请选择NFC' }],
+                      rules: [{ required: true, message: '请选择NFC' }],
                     })(<Input placeholder="请选择NFC" disabled />)}
                   </Form.Item>
                 </Col>
