@@ -436,14 +436,15 @@ export default class Smoke extends PureComponent {
    */
   showWarningNotification = ({
     companyId: company_id,
-    addTime,
+    // addTime,
     companyName: company_name,
     area,
     location,
     paramName,
     messageFlag,
-    messageFlagForId,
+    // messageFlagForId,
     paramCode,
+    deviceId: id,
   }) => {
     const options = {
       key: `${messageFlag}_${paramCode}`,
@@ -462,11 +463,17 @@ export default class Smoke extends PureComponent {
           onClick={() => {
             this.setState({ companyName: company_name });
             this.handleClickNotification(company_id);
-            this.handleAlarmClick(messageFlagForId || messageFlag, company_id, company_name, 1);
+            this.handleAlarmClick(
+              // messageFlagForId || messageFlag,
+              id,
+              company_id,
+              company_name,
+              1
+            );
           }}
         >
           <div className={styles.notificationText}>
-            <div className={styles.notificationTextFirst}>{moment(addTime).format('HH:mm:ss')}</div>
+            <div className={styles.notificationTextFirst}>刚刚</div>
             <div className={styles.notificationTextSecond}>{company_name}</div>
           </div>
           <div className={styles.notificationText}>
@@ -659,7 +666,14 @@ export default class Smoke extends PureComponent {
           .join('');
         this.handleDrawerVisibleChange('alarmDynamic');
         this.fetchMessageInformList({ dataId });
-        this.fetchCameraMessage({ id: dataId, reportType: 4 });
+        dispatch({
+          type: 'operation/fetchCameraMessage',
+          payload: { id: dataId, reportType: 4 },
+          callback: cameraMessage => {
+            this.setState({ videoList: cameraMessage });
+            Array.isArray(cameraMessage) && cameraMessage.length > 0 && this.handleShowFlowVideo();
+          },
+        });
       },
     });
   };
