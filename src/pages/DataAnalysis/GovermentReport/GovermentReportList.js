@@ -158,28 +158,20 @@ export default class App extends PureComponent {
           const {
             check_id,
             company_name,
-            itemTypeName,
             check_user_names,
             check_date,
             checkResultName,
             object_title,
-            _id,
           } = text;
-          return itemTypeName !== '随手拍' ? (
+          return (
             <Link
               to={`/data-analysis/goverment-report/detail/${check_id}?companyName=${company_name}&&object_title=${encodeURIComponent(
                 object_title
-              )}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+              )}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
             >
               查看
             </Link>
-          ) : (
-              <Link
-                to={`/data-analysis/goverment-report/govermentCheckDetail/${_id}?newGovId=${_id}`}
-              >
-                查看
-            </Link>
-            );
+          )
         },
       },
     ];
@@ -225,7 +217,7 @@ export default class App extends PureComponent {
       pageSize: 10,
     };
 
-    const { pageNum, pageSize, startTime, endTime, ...rest } = payload;
+    const { pageNum, pageSize, startTime, endTime, companyName, ...rest } = payload;
     // 重置控件
     setFieldsValue({
       createTime:
@@ -237,10 +229,10 @@ export default class App extends PureComponent {
 
     // 获取列表
     dispatch({
-      type: 'maintenanceReport/fetchMaintenancList',
+      type: 'maintenanceReport/fetchMaintenanceCheckForGov',
       payload: {
         ...payload,
-        reportSource: 2,
+        // reportSource: 2,
       },
     });
 
@@ -254,7 +246,7 @@ export default class App extends PureComponent {
     });
 
     // 根据用户类型获取单位
-    payload.company_id &&
+    payload.companyId &&
       dispatch({
         type: 'hiddenDangerReport/fetchUnitListFuzzy',
         payload: {
@@ -282,25 +274,25 @@ export default class App extends PureComponent {
         currentUser: { id },
       },
     } = this.props;
-    const { createTime, company_id, ...rest } = getFieldsValue();
+    const { createTime, companyId, ...rest } = getFieldsValue();
     const [startTime, endTime] = createTime || [];
     const payload = {
       ...rest,
       pageNum: 1,
       pageSize,
-      company_id,
+      companyId,
       companyName:
-        unitIdes.find(item => item.id === company_id) &&
-        unitIdes.find(item => item.id === company_id).name,
+        unitIdes.find(item => item.id === companyId) &&
+        unitIdes.find(item => item.id === companyId).name,
       startTime: startTime && `${startTime.format('YYYY/MM/DD')} 00:00:00`,
       endTime: endTime && `${endTime.format('YYYY/MM/DD')} 23:59:59`,
     };
     // 获取列表
     dispatch({
-      type: 'maintenanceReport/fetchMaintenancList',
+      type: 'maintenanceReport/fetchMaintenanceCheckForGov',
       payload: {
         ...payload,
-        reportSource: 2,
+        // reportSource: 2,
       },
     });
     // 保存筛选条件
@@ -318,7 +310,7 @@ export default class App extends PureComponent {
     // 重置控件
     setFieldsValue({
       gridId: undefined,
-      company_id: undefined,
+      companyId: undefined,
       createTime: undefined,
       // itemType: undefined,
       // objectTitle: undefined,
@@ -327,7 +319,7 @@ export default class App extends PureComponent {
     });
     this.handleSearch();
     dispatch({
-      type: 'hiddenDangerReport/fetchUnitListFuzzy',
+      type: 'hiddenDangerReport/fetchMaintenanceCheckForGov',
       payload: {
         // unitName: value && value.trim(),
         pageNum: 1,
@@ -373,7 +365,7 @@ export default class App extends PureComponent {
       pageNum: 1,
       pageSize: 10,
     };
-    const { pageNum, pageSize, startTime, endTime, company_id, companyName, ...rest } = fieldsValue;
+    const { pageNum, pageSize, startTime, endTime, companyId, companyName, ...rest } = fieldsValue;
     // 重置控件
     setFieldsValue({
       gridId: undefined,
@@ -395,7 +387,7 @@ export default class App extends PureComponent {
         ...fieldsValue,
         pageNum: num,
         pageSize: size,
-        reportSource: 2,
+        // reportSource: 2,
       },
     });
 
@@ -464,7 +456,7 @@ export default class App extends PureComponent {
           {!this.isCompany && (
             <Col xl={8} md={12} sm={24} xs={24}>
               <Form.Item label={fieldLabels.company_name}>
-                {getFieldDecorator('company_id')(
+                {getFieldDecorator('companyId')(
                   <AutoComplete
                     allowClear
                     mode="combobox"
