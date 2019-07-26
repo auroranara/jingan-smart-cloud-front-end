@@ -13,6 +13,7 @@ import lossDevice from './loss.png';
 import outdateIcon from './outdate.png';
 import pondIcon from './tank.png';
 import pondIcon1 from './tank-loss.png';
+import redLight from './redLight.png';
 import sprayIcon from './spray.png';
 import videoBtn from '@/pages/BigPlatform/Monitor/imgs/videoBtn.png';
 import waveBlue from './blueWave.png';
@@ -70,6 +71,7 @@ export {
   outdateIcon,
   pondIcon,
   pondIcon1,
+  redLight,
   sprayIcon,
   videoBtn,
   waveBlue,

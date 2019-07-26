@@ -152,15 +152,18 @@ export default class RiskPointEdit extends PureComponent {
         query: { companyId },
       },
     } = this.props;
+
     const payload = { pageSize: PageSize, pageNum: 1 };
-    // 获取推荐检查周期
-    dispatch({
-      type: 'riskPointManage/fetchCheckCycle',
-      payload: {
-        companyId,
-        type: 2,
-      },
-    });
+    if (!id) {
+      // 获取推荐检查周期
+      dispatch({
+        type: 'riskPointManage/fetchCheckCycle',
+        payload: {
+          companyId,
+          type: 2,
+        },
+      });
+    }
     // 获取业务分类
     dispatch({
       type: 'illegalDatabase/fetchOptions',
@@ -192,6 +195,16 @@ export default class RiskPointEdit extends PureComponent {
           this.setState({ flowList: itemFlowList });
           flow_id = itemFlowList.map(d => {
             return { flow_id_data: d.flow_id_data, flow_id: d.flow_id };
+          });
+
+          // 获取推荐检查周期
+          dispatch({
+            type: 'riskPointManage/fetchCheckCycle',
+            payload: {
+              riskLevel: response.riskLevel,
+              companyId,
+              type: 2,
+            },
           });
 
           this.setState(

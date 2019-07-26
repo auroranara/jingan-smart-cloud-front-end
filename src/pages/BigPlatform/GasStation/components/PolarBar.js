@@ -12,18 +12,19 @@ export default class PolarBar extends PureComponent {
   chartCallback = chart => {
     chart.on('click', params => {
       const { handleClick, lists } = this.props;
-      const { dataIndex, componentIndex } = params;
-      const { type, index } = lists[dataIndex];
-      handleClick(index, type, componentIndex);
+      const { dataIndex, seriesIndex } = params;
+      const { index } = lists[dataIndex];
+      handleClick(index, seriesIndex);
     });
   }
 
   getOption() {
-    const { lists, max=100 } = this.props;
+    const { lists } = this.props;
 
     const statusLists = lists.map(getStatusCount);
     const categories = lists.map(({ name }) => name);
     const [alarmList, lossList, normalList] = ['alarm', 'loss', 'normal'].map(prop => statusLists.map(sts => sts[prop]));
+    const max = Math.max(...statusLists.map(sts => sts.total)) / 3 * 4;
 
     return {
       angleAxis: {
