@@ -212,7 +212,7 @@ export default class MaintenanceDrawer extends PureComponent {
         width={535}
         left={left}
         onClose={() => {
-          this.setState({ index: 0, dataList: [] });
+          this.setState({ index: 0, dataList: {} });
           onClose();
         }}
         {...restProps}
