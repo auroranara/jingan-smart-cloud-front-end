@@ -177,11 +177,12 @@ export default {
       const response = yield call(queryWaterSystem, payload);
       const { code, data } = response || {};
       if (code === 200) {
+        const lst = data && Array.isArray(data.list) ? data.list : [];
         yield put({
           type: `saveWaterSystem${payload.type}`,
-          payload: data && Array.isArray(data.list) ? data.list : [],
+          payload: lst,
         });
-        callback && callback();
+        callback && callback(lst);
       }
     },
     *fetchUnitPhoto({ payload }, { call, put }) {

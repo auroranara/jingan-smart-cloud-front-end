@@ -40,8 +40,6 @@ export default class WaterSystemDrawer extends PureComponent {
     videoList: [],
   };
 
-  componentDidMount() {}
-
   handleSearch = v => {
     this.setState({ searchValue: v });
   };
@@ -69,7 +67,7 @@ export default class WaterSystemDrawer extends PureComponent {
       const { status } = dataItem;
       const sts = +status;
       const handleClick = e => showWaterItemDrawer(item);
-      let card = <LossCard data={item} iconIndex={waterTabItem}/>
+      let card = <LossCard data={item} iconIndex={waterTabItem} onClick={handleClick}/>
       if (sts !== -1) {
         const img = isGauge(waterTabItem) ? (
           <Gauge
@@ -160,7 +158,7 @@ export default class WaterSystemDrawer extends PureComponent {
 
     const left = (
       <div className={styles.content}>
-        <TotalInfo data={totalInfo} titleIndex={waterTabItem} handleClick={this.handleIndexChange} index={filterIndex} />
+        <TotalInfo index={filterIndex} data={totalInfo} handleClick={this.handleIndexChange} />
 
         {/* 实时监测数据 */}
         <div className={styles.realTimeMonitor}>

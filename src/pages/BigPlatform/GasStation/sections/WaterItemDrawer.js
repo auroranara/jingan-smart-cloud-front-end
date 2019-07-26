@@ -109,7 +109,7 @@ export default class WaterItemDrawer extends PureComponent {
             <OvSelect cssType="1" options={DATE_OPTIONS} value={dateType} handleChange={this.handleDateChange} />
           </h3>
           <div className={styles.waterContainer}>
-            <div className={styles.circle}><span className={styles.total}>{total}</span>次</div>
+            <div className={styles.circle} style={{ borderColor: total ? 'rgb(24, 141, 255)' : '#334d6e' }}><span className={styles.total}>{total}</span>次</div>
           </div>
         </div>
         {/* <VideoPlay
@@ -131,6 +131,7 @@ export default class WaterItemDrawer extends PureComponent {
         visible={visible}
         left={left}
         placement="right"
+        zIndex={1001}
         rowStyle={{ height: 'calc(100% - 70px)' }}
         onClose={() => {
           this.handleClose();

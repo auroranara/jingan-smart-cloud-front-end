@@ -41,10 +41,10 @@ export default class WaterSystem extends PureComponent {
           </div>
         );
       }
+      const handleClick = e => showWaterItemDrawer(item, index);
       if (sts === -1)
-        child = <LossDevice time={updateTime} />;
+        child = <LossDevice time={updateTime} onClick={handleClick} />;
       else {
-        const handleClick = e => showWaterItemDrawer(item, index);
         child = isGauge(index) ? (
           <Gauge data={dataItem} onClick={handleClick} />
         ) : (
