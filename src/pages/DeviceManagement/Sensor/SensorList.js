@@ -281,7 +281,7 @@ export default class SensorList extends Component {
       },
       {
         title: '传感器型号',
-        dataIndex: 'type',
+        dataIndex: 'typeCode',
         align: 'center',
         width: 150,
       },
