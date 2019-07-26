@@ -37,6 +37,12 @@ const options = {
   pingMsg: 'heartbeat',
 };
 
+notification.config({
+  placement: 'bottomLeft',
+  duration: 30,
+  bottom: 8,
+});
+
 /**
  * description: 用电监测
  * author:
@@ -449,7 +455,8 @@ export default class ElectricityMonitor extends PureComponent {
           }}
         >
           <div className={styles.notificationText}>
-            <div className={styles.notificationTextFirst}>{moment(addTime).format('HH:mm:ss')}</div>
+            {/* <div className={styles.notificationTextFirst}>{moment(addTime).format('HH:mm:ss')}</div> */}
+            <div className={styles.notificationTextFirst}>刚刚</div>
             <div className={styles.notificationTextSecond}>{companyName}</div>
           </div>
           <div className={styles.notificationText}>

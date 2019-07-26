@@ -1,9 +1,11 @@
+@grey: rgb(79, 103, 147);
+
 .msgItem,
 .msgItem1 {
   position: relative;
   padding: 5px 10px;
   .greyTime {
-    color: rgb(159, 159, 159);
+    color: @grey;
   }
   .msgTime, .msgTime1 {
     font-size: 15px;
@@ -14,6 +16,10 @@
   .msgBody {
     line-height: 24px;
     display: flex;
+
+    .msgName {
+      color: @grey;
+    }
   }
 
   &+.msgItem {
@@ -25,6 +31,17 @@
     right: 5px;
     top: 8px;
     color: #04fdff;
+  }
+
+  .detailArrow {
+    font-size: 18px;
+    color: @grey;
+    position: absolute;
+    right: 8px;
+    top: calc(50% + 15px);
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 1;
   }
 
   .msgType,
@@ -76,7 +93,7 @@
 
 .msgInner {
   position: relative;
-  padding: 0 10px;
+  padding: 0 25px 0 10px;
 }
 
 .messages::-webkit-scrollbar-track {
