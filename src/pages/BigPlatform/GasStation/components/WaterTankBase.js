@@ -189,7 +189,7 @@ export default class WaterTankBase extends PureComponent {
     ctx.fill();
     ctx.font = '14px microsoft yahei';
     ctx.fillStyle = status > 0 ? RED : WHITE;
-    ctx.fillText(`${status === LOSS ? '-' : value}${unit}`, target[0] + 25, target[1] + 10);
+    ctx.fillText(`${status === LOSS ? '- ' : value}${unit}`, target[0] + 25, target[1] + 10);
     ctx.fillStyle = WHITE;
     ctx.font = '12px microsoft yahei';
     ctx.fillText('当前水位', target[0] + 25, target[1] - 8);
