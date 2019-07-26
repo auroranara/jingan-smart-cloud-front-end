@@ -28,7 +28,7 @@ import { phoneReg, emailReg } from '@/utils/validate';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
 import { getToken } from '@/utils/authority';
-import { getCompanyType, getImportantTypes } from '../utils';
+import { getCompanyType, getFileList, getImageSize, getImportantTypes } from '../utils';
 
 import styles from './Company.less';
 import Safety from './Safety';
@@ -679,23 +679,22 @@ export default class CompanyDetail extends PureComponent {
     const { fileList: fList, file } = info;
     let fileList = [...fList];
 
-    if (file.status === 'done') {
-      if (file.response.code === 200)
-        fileList = [file];
-      else
-        fileList = fileList.slice(0, 1);
+    if (file.status === 'done') { // 上传完成后，查看图片大小
+      const { response: { data: { list: [{ webUrl }] } } } = file;
+      getImageSize(webUrl, isSatisfied => {
+        if (file.response.code === 200 && isSatisfied)
+          fileList = [file];
+        else {
+          message.error('上传的图片分辨率请不要大于240*320');
+          fileList = fileList.slice(0, 1);
+        }
+        fileList = getFileList(fileList);
+        this.setState({ unitPhotoList: fileList });
+      });
+    } else { // 其他情况，直接用原文件数组
+      fileList = getFileList(fileList);
+      this.setState({ unitPhotoList: fileList });
     }
-
-    fileList = fileList.map(file => {
-      if (!file.url && file.response) {
-        const { data: { list: [{ webUrl, dbUrl }] } } = file.response;
-        file.url = webUrl;
-        file.dbUrl = dbUrl;
-      }
-      return file;
-    });
-
-    this.setState({ unitPhotoList: fileList });
   };
 
   /* 区域动态加载 */
@@ -819,6 +818,7 @@ export default class CompanyDetail extends PureComponent {
         action={uploadAction}
         fileList={fileList}
         onChange={onChange}
+        // beforeUpload={this.handleBeforeUploadUnitPhoto}
         headers={{ 'JA-Token': getToken() }}
       >
         <Button type="dashed" style={{ width: '96px', height: '96px' }}>
