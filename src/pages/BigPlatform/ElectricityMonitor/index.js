@@ -37,12 +37,6 @@ const options = {
   pingMsg: 'heartbeat',
 };
 
-notification.config({
-  placement: 'bottomLeft',
-  duration: 30,
-  bottom: 8,
-});
-
 /**
  * description: 用电监测
  * author:
@@ -433,7 +427,7 @@ export default class ElectricityMonitor extends PureComponent {
     } = this.props;
     const options = {
       key: `${messageFlag}_${paramCode}`,
-      duration: null,
+      duration: 30,
       placement: 'bottomLeft',
       className: styles.notification,
       message: (
