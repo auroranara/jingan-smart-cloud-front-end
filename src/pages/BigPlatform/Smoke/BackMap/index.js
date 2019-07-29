@@ -199,13 +199,16 @@ export default class MapSection extends PureComponent {
         ...units.find(item => item.companyId === data.companyId),
         unnormal: units
           .filter(item => item.companyId === data.companyId)
-          .map(item => item.unnormal),
+          .map(item => item.unnormal)
+          .join(''),
         longitude: companysList
           .filter(item => item.company_id === data.companyId)
-          .map(item => item.longitude),
+          .map(item => item.longitude)
+          .join(''),
         latitude: companysList
           .filter(item => item.company_id === data.companyId)
-          .map(item => item.latitude),
+          .map(item => item.latitude)
+          .join(''),
         messageFlag: data.messageFlag,
         messageFlagForId: data.messageFlagForId,
       };
@@ -228,7 +231,7 @@ export default class MapSection extends PureComponent {
                 companyName: company_name,
                 // messageFlagForId,
               } = item;
-              handleAlarmClick(company_id, company_name, 1);
+              handleAlarmClick(null, company_id, company_name, 1);
               const newIds = [...alarmIds.slice(0, index), ...alarmIds.slice(index + 1)];
               this.props.handleParentChange({ alarmIds: newIds });
             },

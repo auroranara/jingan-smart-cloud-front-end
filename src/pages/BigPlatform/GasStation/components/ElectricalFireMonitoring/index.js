@@ -244,7 +244,7 @@ export default class ElectricalFireMonitoring extends PureComponent {
         );
       } else { // 失联
         subContent = (
-          <div className={styles.lossWrapper}>
+          <div className={styles.lossWrapper} onClick={() => this.handleSingleClick(data)}>
             <img className={styles.lossIcon} src={lossBackground} alt="失联" />
             <span className={styles.lossLabel}>{formatTime(+data.updateTime)} 设备失联！</span>
           </div>

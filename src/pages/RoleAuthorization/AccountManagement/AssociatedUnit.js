@@ -541,7 +541,7 @@ export default class AssociatedUnit extends PureComponent {
             messagePermissions: convertToMsgList(msgs),
           };
           switch (
-            payload.unitType // 设值用户角色
+          payload.unitType // 设值用户角色
           ) {
             case MAI: // 维保企业
               payload.userType = 'company_safer';
@@ -1301,6 +1301,7 @@ export default class AssociatedUnit extends PureComponent {
                   <Form.Item label={fieldLabels.gridIds}>
                     {getFieldDecorator('gridIds', {
                       initialValue: gridIds ? gridIds.split(',').filter(id => id) : [],
+                      rules: [{ required: true, message: '请选择所属网格' }],
                     })(
                       <TreeSelect
                         allowClear
@@ -1466,8 +1467,8 @@ export default class AssociatedUnit extends PureComponent {
                         )}
                       </Fragment>
                     ) : (
-                      <span>暂无数据</span>
-                    )}
+                        <span>暂无数据</span>
+                      )}
                   </div>
                   <div className={styles.line}>
                     <span>分公司及其服务单位：</span>
@@ -1501,8 +1502,8 @@ export default class AssociatedUnit extends PureComponent {
                         )}
                       </Fragment>
                     ) : (
-                      <span>暂无数据</span>
-                    )}
+                        <span>暂无数据</span>
+                      )}
                   </div>
                 </div>
               </Col>
@@ -1528,10 +1529,10 @@ export default class AssociatedUnit extends PureComponent {
         render: txt => {
           return txt
             ? txt.split('\n').map((t, i) => (
-                <p key={i} className={styles1.example}>
-                  {t}
-                </p>
-              ))
+              <p key={i} className={styles1.example}>
+                {t}
+              </p>
+            ))
             : txt;
         },
       },

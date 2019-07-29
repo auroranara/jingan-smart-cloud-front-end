@@ -27,8 +27,8 @@ function handleGasList(list = [], status = ALL) {
     const { deviceId, area, location, realTimeData: { updateTime, status, realTimeData }, deviceParams } = item;
     const fixedStatus = STATUS_FIX[status];
     // 失联状态，realTimeData = null，对应参数的值设为'-'，原params数组中每个对象的code对应realTimedData中的键名
-    const params = deviceParams.map(({ id, code, desc, unit }) => ({ id, desc, unit, value: fixedStatus === LOSS || !realTimeData ? '-' : realTimeData[code] }));
-    return { id: deviceId, status: fixedStatus, location: `${area} ${location}`, time: updateTime, params, armStatus: realTimeData ? realTimeData.armStatus : null, armStatusName: realTimeData ? realTimeData.armStatusName : null };
+    const params = deviceParams.map(({ id, code, desc, unit }) => ({ id, desc, unit, value: fixedStatus === LOSS || !realTimeData ? '-' : realTimeData[code], code }));
+    return { id: deviceId, status: fixedStatus, location: `${area} ${location}`, time: updateTime, params, armStatus: realTimeData ? realTimeData.armStatus : null, armStatusName: realTimeData ? realTimeData.armStatusName : null, newArmStatus: realTimeData ? realTimeData._arm_status : null };
   });
 }
 
@@ -77,7 +77,7 @@ export default class GasBackSection extends PureComponent {
 
     let cards = <EmptyBg title="暂无气体监测信息" />;
     if (statusFilteredList.length)
-      cards = statusFilteredList.map(({ id, status, location, time, params, armStatus, armStatusName }) => <GasCard key={id} {...{ status, location, time, params, armStatusName: +armStatus === -1 ? '-' : armStatusName, timeStyle: armStatusName ? { marginTop: '15px' } : null }} />);
+      cards = statusFilteredList.map(({ id, status, location, time, params, armStatus }) => <GasCard key={id} {...{ status, location, time, params, armStatus }} />);
 
     return (
       <FcSection title="可燃/有毒气体监测" className={styles.gas} style={{ position: 'relative', padding: '0 15px 10px' }} isBack>
@@ -85,15 +85,18 @@ export default class GasBackSection extends PureComponent {
           <input value={inputVal} onChange={this.handleInputChange} className={styles.input} placeholder="区域位置" />
           <button className={styles.check}>查询</button>
         </div> */}
+        {/* 搜索框 */}
         <div className={styles.inputContainer}>
           <input value={inputVal} onChange={this.handleInputChange} className={styles.input} placeholder="可搜索区域和位置" />
         </div>
+        {/* 筛选 */}
         <div className={styles.labelContainer}>
           {nums.map(([s, n]) => <GasStatusLabel key={s} num={n} status={s} selected={status === s} onClick={() => handleLabelClick(s)} />)}
         </div>
         <div className={styles.cardsContainer}>
           {cards}
         </div>
+        {/* 返回 */}
         <span
           className={styles.back}
           onClick={this.handleBack}
