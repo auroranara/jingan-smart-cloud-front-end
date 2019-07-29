@@ -38,3 +38,15 @@ export async function exportData(params) {
 export async function exportGovData(params) {
   return request(`/acloud_new/v2/statistics/govExport?${stringify(params)}`);
 }
+
+
+/**
+ * 获取政府监督报表
+ */
+export async function fetchMaintenanceCheckForGov(params) {
+  return request(`/acloud_new/v2/statistics/maintenanceCheckForGov?${stringify(params)}`)
+}
+
+export async function fetchAllCheckDetail(params) {
+  return request(`/acloud_new/v2/statistics/getCheckDetailForGov?${stringify(params)}`)
+}

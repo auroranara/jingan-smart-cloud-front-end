@@ -36,3 +36,34 @@ export function getImportantTypes(companyType) {
       return ['0', '0'];
   }
 }
+
+const MAX_WIDTH = 240;
+const MAX_HEIGHT = 320;
+export function getImageSize(src, callback) {
+  if (!src) {
+    console.log(src);
+    return;
+  }
+
+  const img = new Image();
+  img.src = src;
+  img.onload = e => {
+    const { width, height } = e.target;
+    const isSatisfied = width <= MAX_WIDTH && height <= MAX_HEIGHT;
+    callback(isSatisfied);
+  };
+}
+
+export function getFileList(list) {
+  if (!Array.isArray(list))
+    return [];
+
+  return list.map(file => {
+    if (!file.url && file.response) {
+      const { data: { list: [{ webUrl, dbUrl }] } } = file.response;
+      file.url = webUrl;
+      file.dbUrl = dbUrl;
+    }
+    return file;
+  });
+}

@@ -6,6 +6,8 @@ import {
   exportData,
   // 导出---政府报表
   exportGovData,
+  fetchMaintenanceCheckForGov,
+  fetchAllCheckDetail,
 } from '../services/maintenanceReport.js';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
@@ -68,11 +70,32 @@ export default {
         if (callback) callback(response);
       }
     },
-
+    // 新-获取政府监督报表列表
+    *fetchMaintenanceCheckForGov({ payload, callback }, { call, put }) {
+      const response = yield call(fetchMaintenanceCheckForGov, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveList',
+          payload: response.data,
+        });
+        if (callback) callback(response);
+      }
+    },
     // 详情
     *fetchCheckDetail({ payload }, { call, put }) {
       // console.log('payload', payload);
       const response = yield call(getSelfCheckDetail, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveDetail',
+          payload: response.data,
+        });
+      }
+    },
+    // 获取政府和随手拍的所有详情
+    *fetchAllCheckDetail({ payload }, { call, put }) {
+      // console.log('payload', payload);
+      const response = yield call(fetchAllCheckDetail, payload);
       if (response.code === 200) {
         yield put({
           type: 'saveDetail',

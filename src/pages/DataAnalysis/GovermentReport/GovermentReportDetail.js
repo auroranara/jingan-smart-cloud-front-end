@@ -70,7 +70,7 @@ export default class App extends PureComponent {
 
     // 获取详情
     dispatch({
-      type: 'maintenanceReport/fetchCheckDetail',
+      type: 'maintenanceReport/fetchAllCheckDetail',
       payload: {
         checkId: id,
       },
@@ -115,12 +115,12 @@ export default class App extends PureComponent {
     const isCompany = unitType === 4;
 
     const newList = [];
-    list.forEach(element => {
-      element.list.forEach((detail, index) => {
-        const item = { ...detail, ...element, rowSpan: index === 0 ? element.list.length : 0 };
-        newList.push(item);
-      });
-    });
+    // list.forEach(element => {
+    //   element.list.forEach((detail, index) => {
+    //     const item = { ...detail, ...element, rowSpan: index === 0 ? element.list.length : 0 };
+    //     newList.push(item);
+    //   });
+    // });
 
     const renderContent = (value, row, index) => {
       const obj = {
@@ -173,9 +173,9 @@ export default class App extends PureComponent {
               <Link
                 to={`/data-analysis/goverment-report/govermentCheckDetail/${
                   val._id
-                }?checkId=${id}&&companyGovName=${companyName}&&object_title=${encodeURIComponent(
-                  object_title
-                )}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+                  }?checkId=${id}&&companyGovName=${companyName}&&object_title=${encodeURIComponent(
+                    object_title
+                  )}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
               >
                 <span style={{ color: '#40a9ff' }}> {val.statusName} </span>
               </Link>
@@ -188,8 +188,7 @@ export default class App extends PureComponent {
       <PageHeaderLayout
         title={
           <Fragment>
-            {itemTypeName}：{object_title}
-            {!isCompany && <div className={styles.content}>{`单位名称：${companyName}`}</div>}
+            {!isCompany && <div>{`单位名称：${companyName}`}</div>}
             <div className={styles.content}>{`检查人：${check_user_names}`}</div>
             <div className={styles.content}>{`检查时间：${moment(+check_date).format(
               'YYYY-MM-DD HH:mm'
@@ -209,21 +208,47 @@ export default class App extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         <Spin spinning={!!loading}>
-          {tab === '1' && (
-            <Card title="检查内容" className={styles.card}>
-              <Table
-                className={styles.table}
-                dataSource={newList}
-                columns={columns}
-                rowKey={'detail_id'}
-                scroll={{
-                  x: true,
-                }}
-                pagination={false}
-              />
-            </Card>
-          )}
-          {/* {tab === '2'} */}
+          {/* <Card title="检查内容" className={styles.card}>
+            <Table
+              className={styles.table}
+              dataSource={newList}
+              columns={columns}
+              rowKey={'detail_id'}
+              scroll={{
+                x: true,
+              }}
+              pagination={false}
+            />
+          </Card> */}
+          {list.length > 0 ? list.map(({ checkDate, dangerCount, objectCount, pointName, resultList = [] }, i) => {
+            const newList = [];
+            resultList.forEach(element => {
+              element.list.forEach((detail, index) => {
+                const item = { ...detail, ...element, rowSpan: index === 0 ? element.list.length : 0 };
+                newList.push(item);
+              });
+            });
+            return (
+              <Card style={{ marginBottom: '24px' }} key={i} title={
+                <Fragment>
+                  <span>点位名称：{pointName}</span>
+                  <span className={styles.titleDesc}>共检查{objectCount}项，上报隐患{dangerCount}项</span>
+                  <span className={styles.titleDesc}>检查时间：{moment(checkDate).format('MM-DD HH:mm')}</span>
+                </Fragment>
+              }>
+                <Table
+                  className={styles.table}
+                  dataSource={newList}
+                  columns={columns}
+                  rowKey="detail_id"
+                  scroll={{
+                    x: true,
+                  }}
+                  pagination={false}
+                />
+              </Card>
+            )
+          }) : <div style={{textAlign:'center'}}>暂无数据</div>}
         </Spin>
       </PageHeaderLayout>
     );

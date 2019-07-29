@@ -9,7 +9,7 @@ const { Container } = BigPlatformCard;
 // 时间格式
 const TIME_FORMAT = 'YYYY-MM-DD';
 // 巡查来源
-const SOURCE = ['企业自查', '政府监管', '维保检查'];
+const SOURCE = ['企业自查', '政府监督', '维保检查'];
 
 const NO_DATA = '暂无数据';
 
