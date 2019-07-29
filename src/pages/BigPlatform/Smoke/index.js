@@ -315,7 +315,6 @@ export default class Smoke extends PureComponent {
         console.log('error', error);
       }
     };
-
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
@@ -885,7 +884,6 @@ export default class Smoke extends PureComponent {
       videoList,
       fireVideoVisible,
     } = this.state;
-
     const headProps = {
       ...gasForMaintenance[0],
       videoList,

@@ -244,6 +244,7 @@ export default class GasStation extends PureComponent {
     fireMonitorFlowDrawerVisible: false,
     dynamicType: 0,
     workOrderSelectType: 'all',
+    hiddenDangerIds: [],
     waterItem: {},
     waterItemDrawerVisible: false, // 水系统具体项目弹框
   };
@@ -1158,15 +1159,31 @@ export default class GasStation extends PureComponent {
 
   // 点击查看隐患详情
   handleViewDangerDetail = data => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'newUnitFireControl/fetchHiddenDangerDetail',
-      payload: { id: data.id },
-    });
+    this.fetchDangerDetail(data.id);
     this.setState({
+      hiddenDangerIds: [data.id],
       dangerDetailVisible: true,
     });
   };
+
+  // 巡查点击查看隐患详情
+  handleCheckDangerDetail = (ids = []) => {
+    this.fetchDangerDetail(ids[0]);
+    this.setState({
+      hiddenDangerIds: ids,
+      dangerDetailVisible: true,
+    });
+  };
+
+  // 点击查看隐患详情
+  fetchDangerDetail = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchHiddenDangerDetail',
+      payload: { id },
+    });
+  };
+
   /**
    * 修改点位巡查抽屉选中时间
    */
@@ -2106,6 +2123,7 @@ export default class GasStation extends PureComponent {
       fireMonitorFlowDrawerVisible,
       dynamicType,
       workOrderSelectType,
+      hiddenDangerIds,
       waterItem,
       waterItemDrawerVisible,
     } = this.state;
@@ -2281,15 +2299,16 @@ export default class GasStation extends PureComponent {
         {/**点位名称抽屉 */}
         <PointPositionName
           visible={pointDrawerVisible}
+          points={points}
           pointRecordLists={pointRecordLists}
           checkAbnormal={checkAbnormal}
-          points={points}
           currentHiddenDanger={currentHiddenDanger}
           checkStatus={checkStatus}
           checkPointName={checkPointName}
           checkItemId={checkItemId}
           count={count}
           handlePointDangerDetail={this.handleViewDangerDetail}
+          handleCheckDangerDetail={this.handleCheckDangerDetail}
           onClose={() => {
             this.setState({
               pointDrawerVisible: false,
@@ -2347,8 +2366,11 @@ export default class GasStation extends PureComponent {
         {/* 隐患详情抽屉 */}
         <DrawerHiddenDangerDetail
           visible={dangerDetailVisible}
+          handleParentChange={this.handleParentChange}
           onClose={this.handleCloseDetailOfDanger}
           data={timestampList}
+          hiddenDangerIds={hiddenDangerIds}
+          fetchDangerDetail={this.fetchDangerDetail}
         />
         <WorkOrderDrawer
           data={{ workOrderList1, workOrderList2, workOrderList7 }}

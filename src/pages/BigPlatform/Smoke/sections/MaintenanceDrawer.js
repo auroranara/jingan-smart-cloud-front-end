@@ -204,7 +204,7 @@ export default class MaintenanceDrawer extends PureComponent {
         id={ID}
         title={title}
         zIndex={2000}
-        // subTitle={companyName}
+        destroyOnClose
         width={535}
         left={left}
         onClose={() => {
