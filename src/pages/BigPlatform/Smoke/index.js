@@ -205,6 +205,8 @@ export default class Smoke extends PureComponent {
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
         const data = JSON.parse(e.data).data;
+        console.log('data', data);
+
         const { type, companyId, messageFlag } = data;
         // const {
         //   smoke: {
