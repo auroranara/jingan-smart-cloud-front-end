@@ -19,6 +19,7 @@ export default class WaterSystem extends PureComponent {
     let title = null;
     let alarm = null;
     let child = <GasEmpty />;
+    let containerClass = styles.container;
     if (waterLists.length === 1 && waterLists[0].list.length === 1) {
       const { list: [item], index } = waterLists[0];
       const { deviceName, deviceDataList } = item;
@@ -42,8 +43,10 @@ export default class WaterSystem extends PureComponent {
         );
       }
       const handleClick = e => showWaterItemDrawer(item, index);
-      if (sts === -1)
+      if (sts === -1) {
+        containerClass = styles.container1;
         child = <LossDevice time={updateTime} onClick={handleClick} />;
+      }
       else {
         child = isGauge(index) ? (
           <Gauge data={dataItem} onClick={handleClick} />
@@ -60,7 +63,7 @@ export default class WaterSystem extends PureComponent {
 
     return (
       <Section title="消防水系统">
-        <div className={styles.container}>
+        <div className={containerClass}>
           {child}
           {title}
           {alarm}
