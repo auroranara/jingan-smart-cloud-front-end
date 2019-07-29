@@ -1,13 +1,14 @@
 /* 风险点模块 */
 .container {
   // margin: 0 auto;
-  padding: 1em 10%;
+  padding: 1em 0;
   // max-width: 380px;
   height: 100%;
   line-height: 1;
 }
 .top {
   position: relative;
+  margin: 0 10%;
   height: 50%;
 }
 .splitLineWrapper {
@@ -24,34 +25,61 @@
 }
 .bottom {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
   height: 42%;
 
-  & > div {
-    flex: none;
-    padding-left: 4.25em;
-    line-height: 1.75em;
-    background: no-repeat left;
-    background-size: 3em 3em;
+  .bottomItem {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    .countLabel {
-      line-height: 1.25em;
-    }
-    .countValue {
-      font-size: 1.5em;
-      color: #00ffff;
-    }
-  }
-  /* 可点击元素 */
-  & > .hoverable {
-    cursor: pointer;
+    .bottomItemContent {
+      flex: none;
 
-    &:hover {
-      .countValue {
-        color: #fff;
+      &.enableClick {
+        cursor: pointer;
+
+        &:hover {
+          .bottomItemContentTop {
+            color: #fff;
+          }
+        }
+      }
+
+      .bottomItemContentTop {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 0.75em;
+        width: 4em;
+        height: 4em;
+        font-size: 1.5em;
+        color: #0ff;
+        border: 2px solid #0ff;
+        border-radius: 50%;
+      }
+      .bottomItemContentBottom {
+        line-height: 1;
+        text-align: center;
       }
     }
   }
+  .verticalSplitLine {
+    flex: none;
+    width: 2px;
+    height: 100%;
+    background: no-repeat center;
+    background-size: 100% 100%;
+  }
+  // /* 可点击元素 */
+  // & > .hoverable {
+  //   cursor: pointer;
+
+  //   &:hover {
+  //     .countValue {
+  //       color: #fff;
+  //     }
+  //   }
+  // }
 }

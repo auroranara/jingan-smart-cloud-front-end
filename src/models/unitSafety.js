@@ -798,6 +798,7 @@ export default {
               fix_img_id,
               status,
               risk_level,
+              originalStatus,
             } = point;
             // 如果为风险点
             if (+item_type === 2) {
@@ -813,6 +814,7 @@ export default {
               obj[statusDict[+status]]++;
               obj[levelDict[+risk_level]]++;
               obj[`${levelDict[+risk_level]}${capitalStatusDict[+status]}PointList`].push(point);
+              obj.risk += +originalStatus === 2;
             }
             return obj;
           },
@@ -828,6 +830,7 @@ export default {
             abnormal: 0,
             pending: 0,
             overtime: 0,
+            risk: 0,
             redNormalPointList: [],
             redAbnormalPointList: [],
             redPendingPointList: [],
