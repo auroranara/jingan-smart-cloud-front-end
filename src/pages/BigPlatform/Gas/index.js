@@ -189,7 +189,7 @@ export default class Gas extends PureComponent {
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
         const data = JSON.parse(e.data).data;
-        const { type, companyId, messageFlag } = data;
+        const { type, companyId, messageFlag, messageFlagForId } = data;
         const {
           gas: {
             // messages,
@@ -218,10 +218,10 @@ export default class Gas extends PureComponent {
               sameIndex !== undefined
                 ? [
                     ...alarmIds.slice(0, sameIndex),
-                    { companyId, messageFlag },
+                    { companyId, messageFlag: messageFlagForId || messageFlag },
                     ...alarmIds.slice(sameIndex + 1),
                   ]
-                : [...alarmIds, { companyId, messageFlag }];
+                : [...alarmIds, { companyId, messageFlag: messageFlagForId || messageFlag }];
             this.setState({ alarmIds: newList });
             this.showWarningNotification(data);
             // dispatch({
