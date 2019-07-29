@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Spin, Table } from 'antd';
+import { Card, Spin, Table, Icon } from 'antd';
 import { connect } from 'dva';
 import Link from 'umi/link';
 import moment from 'moment';
@@ -228,27 +228,36 @@ export default class App extends PureComponent {
                 newList.push(item);
               });
             });
-            return (
-              <Card style={{ marginBottom: '24px' }} key={i} title={
-                <Fragment>
-                  <span>点位名称：{pointName}</span>
-                  <span className={styles.titleDesc}>共检查{objectCount}项，上报隐患{dangerCount}项</span>
-                  <span className={styles.titleDesc}>检查时间：{moment(checkDate).format('MM-DD HH:mm')}</span>
-                </Fragment>
-              }>
-                <Table
-                  className={styles.table}
-                  dataSource={newList}
-                  columns={columns}
-                  rowKey="detail_id"
-                  scroll={{
-                    x: true,
-                  }}
-                  pagination={false}
-                />
+            // 是否随手拍
+            const isSSP = pointName === '随手拍'
+            return isSSP ? (
+              <Card style={{ marginBottom: '24px' }} key={i}>
+                <span className={styles.title}>点位名称：{pointName}</span>
+                <span className={styles.titleDesc}>上报隐患{dangerCount}条</span>
+                <span className={styles.titleDesc}>检查时间：{moment(checkDate).format('MM-DD HH:mm')}</span>
+                <Icon style={{ cursor: 'pointer', fontSize: '16px', float: 'right' }} type="right" />
               </Card>
-            )
-          }) : <div style={{textAlign:'center'}}>暂无数据</div>}
+            ) : (
+                <Card style={{ marginBottom: '24px' }} key={i} title={
+                  <Fragment>
+                    <span>点位名称：{pointName}</span>
+                    <span className={styles.titleDesc}>共检查{objectCount}项，上报隐患{dangerCount}条</span>
+                    <span className={styles.titleDesc}>检查时间：{moment(checkDate).format('MM-DD HH:mm')}</span>
+                  </Fragment>
+                }>
+                  <Table
+                    className={styles.table}
+                    dataSource={newList}
+                    columns={columns}
+                    rowKey="detail_id"
+                    scroll={{
+                      x: true,
+                    }}
+                    pagination={false}
+                  />
+                </Card>
+              )
+          }) : <div style={{ textAlign: 'center' }}>暂无数据</div>}
         </Spin>
       </PageHeaderLayout>
     );
