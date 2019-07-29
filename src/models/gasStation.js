@@ -136,7 +136,7 @@ export default {
     *fetchDistributionBoxTodayData({ payload }, { call, put }) {
       const response = yield call(getDistributionBoxTodayData, payload);
       const { code=500, data } = response || {};
-      if (code === 200) {
+      // if (code === 200) {
         const distributionBoxTodayData = data && data.list || [];
         yield put({
           type: 'save',
@@ -144,9 +144,9 @@ export default {
             distributionBoxTodayData,
           },
         });
-      } else {
-        error('获取配电箱当天监测数据失败，请稍后重试！');
-      }
+      // } else {
+      //   // error('获取配电箱当天监测数据失败，请稍后重试！');
+      // }
     },
     *fetchDistributionBoxAlarmCount({ payload, callback }, { call, put }) {
       const response = yield call(getDistributionBoxAlarmCount, payload);
