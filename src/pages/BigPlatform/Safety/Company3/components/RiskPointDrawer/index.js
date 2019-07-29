@@ -53,7 +53,9 @@ const getTitleSuffix = (key, value) => {
       case '待检查':
         return <span style={{ color: '#5EBEFF' }}>待检查</span>;
       case '已超时':
-        return <span style={{ color: '#FF4848' }}>已超时</span>;
+        return <span style={{ color: '#FF4848' }}>超时未查</span>;
+      case '有隐患':
+        return <span style={{ color: '#FF4848' }}>有隐患</span>;
       default:
         return null;
     }
@@ -199,6 +201,11 @@ export default class RiskPointDrawer extends PureComponent {
         grayAbnormalPointList=[],
         grayPendingPointList=[],
         grayOvertimePointList=[],
+        redRiskyPointList=[],
+        orangeRiskyPointList=[],
+        yellowRiskyPointList=[],
+        blueRiskyPointList=[],
+        grayRiskyPointList=[],
       },
       // 要展示的内容的类型
       riskPointType: { key, value }={},
@@ -259,6 +266,13 @@ export default class RiskPointDrawer extends PureComponent {
             bluePointList = blueOvertimePointList;
             grayPointList = grayOvertimePointList;
           break;
+          case '有隐患':
+            redPointList = redRiskyPointList;
+            orangePointList = orangeRiskyPointList;
+            yellowPointList = yellowRiskyPointList;
+            bluePointList = blueRiskyPointList;
+            grayPointList = grayRiskyPointList;
+            break;
           default:
             redPointList = redAbnormalPointList.concat(redOvertimePointList, redPendingPointList, redNormalPointList);
             orangePointList = orangeAbnormalPointList.concat(orangeOvertimePointList, orangePendingPointList, orangeNormalPointList);
