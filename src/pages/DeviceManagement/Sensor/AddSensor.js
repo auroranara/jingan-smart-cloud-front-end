@@ -14,7 +14,7 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
-const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
+const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const defaultPageSize = 10;
 const numberReg = /^(0|[1-9][0-9]*)(\.[0-9]{1,3})?$/;
 
@@ -24,9 +24,8 @@ const numberReg = /^(0|[1-9][0-9]*)(\.[0-9]{1,3})?$/;
   companyLoading: loading.effects['sensor/fetchModelList'],
 }))
 export default class AddSensor extends Component {
-
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       // 当前监测参数
       currentParameter: {},
@@ -38,85 +37,107 @@ export default class AddSensor extends Component {
       compayModalVisible: false,
       // 选中的企业
       selectedCompany: {},
-    }
+    };
   }
 
   componentDidMount() {
     const {
       dispatch,
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       form: { setFieldsValue },
-    } = this.props
-    this.fetchMonitoringTypeDict()
-    this.fetchSensorBrandDict()
+    } = this.props;
+    this.fetchMonitoringTypeDict();
+    this.fetchSensorBrandDict();
     // 如果编辑
     if (id) {
       // 获取传感器详情
       dispatch({
         type: 'sensor/fetchSensorDetail',
         payload: { id },
-        callback: (response) => {
-          const { companyId, companyName, monitoringParameters, monitoringTypeId, typeId, brandId, deviceName, relationDeviceId, area, location } = response.data
-          setFieldsValue({ companyId, monitoringTypeId, typeId, brandId, deviceName, relationDeviceId, area, location })
+        callback: response => {
+          const {
+            companyId,
+            companyName,
+            monitoringParameters,
+            monitoringTypeId,
+            typeId,
+            brandId,
+            deviceName,
+            relationDeviceId,
+            area,
+            location,
+          } = response.data;
+          setFieldsValue({
+            companyId,
+            monitoringTypeId,
+            typeId,
+            brandId,
+            deviceName,
+            relationDeviceId,
+            area,
+            location,
+          });
           this.setState({
             selectedCompany: { id: companyId, name: companyName },
-          })
-          this.fetchSensorTypeDict({ payload: { monitoringTypeId, brandId } })
+          });
+          this.fetchSensorTypeDict({ payload: { monitoringTypeId, brandId } });
           dispatch({
             type: 'sensor/saveState',
             payload: { key: 'monitoringParameters', value: monitoringParameters },
-          })
+          });
         },
-      })
+      });
     } else {
       // 如果新增
-      this.fetchSensorTypeDict()
+      this.fetchSensorTypeDict();
     }
   }
 
   /**
    * 获取监测类型列表（字典）
    */
-  fetchMonitoringTypeDict = (actions) => {
-    const { dispatch } = this.props
+  fetchMonitoringTypeDict = actions => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'sensor/fetchMonitoringTypeDict',
       ...actions,
-    })
-  }
+    });
+  };
 
   /**
    * 获取传感器品牌列表（字典）
    */
-  fetchSensorBrandDict = (actions) => {
-    const { dispatch } = this.props
+  fetchSensorBrandDict = actions => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'sensor/fetchSensorBrandDict',
       ...actions,
-    })
-  }
+    });
+  };
 
   /**
    * 获取传感器类型列表（字典）
    */
-  fetchSensorTypeDict = (actions) => {
-    const { dispatch } = this.props
+  fetchSensorTypeDict = actions => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'sensor/fetchSensorTypeDict',
       ...actions,
-    })
-  }
+    });
+  };
 
   /**
    * 获取监测参数列表
    */
-  fetchMonitoringParameter = (actions) => {
-    const { dispatch } = this.props
+  fetchMonitoringParameter = actions => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'sensor/fetchMonitoringParameter',
       ...actions,
-    })
-  }
+    });
+  };
 
   /**
    * 获取企业列表（弹窗）
@@ -129,113 +150,119 @@ export default class AddSensor extends Component {
   handleSubmit = () => {
     const {
       dispatch,
-      sensor: {
-        monitoringParameters,
-      },
+      sensor: { monitoringParameters },
       form: { validateFields },
-      match: { params: { id } },
-    } = this.props
+      match: {
+        params: { id },
+      },
+    } = this.props;
 
     validateFields((error, { normalLower, normalUpper, ...formData }) => {
       if (!error) {
-        const payload = { ...formData, monitoringParameters }
+        const payload = { ...formData, monitoringParameters };
         // console.log('提交',payload)
         const success = () => {
-          message.success(id ? '编辑成功！' : '新增成功！')
-          router.push('/device-management/sensor/list')
-        }
-        const error = () => { message.error(id ? '编辑失败' : '新增失败！') }
+          message.success(id ? '编辑成功！' : '新增成功！');
+          router.push('/device-management/sensor/list');
+        };
+        const error = () => {
+          message.error(id ? '编辑失败' : '新增失败！');
+        };
         if (id) {
           dispatch({
             type: 'sensor/editSensor',
             payload: { ...payload, deviceId: id },
             success,
             error,
-          })
+          });
         } else {
           dispatch({
             type: 'sensor/addSensor',
             payload,
             success,
             error,
-          })
+          });
         }
       }
-    })
-  }
+    });
+  };
 
   /**
    * 监测类型改变
    */
-  handlemonitoringTypeChange = (monitoringTypeId) => {
-    const { form: { getFieldsValue, resetFields } } = this.props
-    const { brandId } = getFieldsValue()
+  handlemonitoringTypeChange = monitoringTypeId => {
+    const {
+      form: { getFieldsValue, resetFields },
+    } = this.props;
+    const { brandId } = getFieldsValue();
     // this.fetchSensorBrandDict({ payload: { monitoringTypeId, typeId } })
-    this.fetchSensorTypeDict({ payload: { monitoringTypeId, brandId } })
-    resetFields(['typeId'])
-  }
+    this.fetchSensorTypeDict({ payload: { monitoringTypeId, brandId } });
+    resetFields(['typeId']);
+  };
 
   /**
    * 品牌改变
    */
-  handleBrandChange = (brandId) => {
-    const { form: { getFieldsValue, resetFields } } = this.props
-    const { monitoringTypeId } = getFieldsValue()
+  handleBrandChange = brandId => {
+    const {
+      form: { getFieldsValue, resetFields },
+    } = this.props;
+    const { monitoringTypeId } = getFieldsValue();
     // this.fetchMonitoringTypeDict({ payload: { typeId, brandId } })
-    this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } })
-    resetFields(['typeId'])
-  }
+    this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } });
+    resetFields(['typeId']);
+  };
 
   /**
    * 类型改变
    */
-  handleTypeChange = (typeId) => {
-    this.fetchMonitoringParameter({ payload: { typeId } })
-  }
+  handleTypeChange = typeId => {
+    this.fetchMonitoringParameter({ payload: { typeId } });
+  };
 
   /**
    * 打开配置报警策略
    */
-  handleAlarmStrategy = (currentParameter) => {
-    const { setFieldsValue } = this.props.form
-    const { normalLower, normalUpper } = currentParameter
-    this.setState({
-      currentParameter: { ...currentParameter },
-      alarmStrategyModalVisible: true,
-    }, () => {
-      setFieldsValue({
-        normalLower,
-        normalUpper,
-      })
-    })
-  }
-
+  handleAlarmStrategy = currentParameter => {
+    const { setFieldsValue } = this.props.form;
+    const { normalLower, normalUpper } = currentParameter;
+    this.setState(
+      {
+        currentParameter: { ...currentParameter },
+        alarmStrategyModalVisible: true,
+      },
+      () => {
+        setFieldsValue({
+          normalLower,
+          normalUpper,
+        });
+      }
+    );
+  };
 
   /**
    * 选择企业
    */
-  handleSelectCompany = (selectedCompany) => {
+  handleSelectCompany = selectedCompany => {
     const {
       form: { setFieldsValue },
-    } = this.props
-    this.setState({ selectedCompany, companyModalVisible: false })
-    setFieldsValue({ companyId: selectedCompany.id })
-  }
-
+    } = this.props;
+    this.setState({ selectedCompany, companyModalVisible: false });
+    setFieldsValue({ companyId: selectedCompany.id });
+  };
 
   /**
    * 打开选择单位弹窗
    */
   handleViewCompanyModal = () => {
-    this.setState({ companyModalVisible: true })
+    this.setState({ companyModalVisible: true });
     this.fetchCompany({
       payload: {
         pageSize: 10,
         pageNum: 1,
       },
-    })
-  }
-
+    });
+  };
 
   /**
    * 保存已配置的报警策略
@@ -246,7 +273,6 @@ export default class AddSensor extends Component {
   //   this.setState({ currentParameter })
   // }
 
-
   /**
    * 点击确认配置报警策略弹窗
    */
@@ -255,43 +281,42 @@ export default class AddSensor extends Component {
       dispatch,
       sensor: { monitoringParameters },
       form: { validateFields },
-    } = this.props
+    } = this.props;
     validateFields(['normalLower', 'normalUpper'], (errors, { normalLower, normalUpper }) => {
       if (!errors) {
-        let { currentParameter } = this.state
+        let { currentParameter } = this.state;
         currentParameter = {
           ...currentParameter,
           normalLower,
           normalUpper,
           smallLower: null,
           largeUpper: null,
-        }
+        };
         const newMonitoringParameters = monitoringParameters.map(item => {
-          return item.id === currentParameter.id ? currentParameter : item
-        })
+          return item.id === currentParameter.id ? currentParameter : item;
+        });
         dispatch({
           type: 'sensor/saveState',
           payload: { key: 'monitoringParameters', value: newMonitoringParameters },
-        })
-        this.setState({ alarmStrategyModalVisible: false })
+        });
+        this.setState({ alarmStrategyModalVisible: false });
       }
-    })
-  }
-
+    });
+  };
 
   /**
    * 验证--预警下限
    */
   validateNormalLower = (rule, value, callback) => {
     if (!value) {
-      callback()
+      callback();
     } else if (numberReg.test(value)) {
       // 如果是数字
       // const { getFieldsValue } = this.props.form
       // const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
       if (+value < 0) {
-        callback('请输入大于0的数字')
-        return
+        callback('请输入大于0的数字');
+        return;
       }
       // if (normalUpper && +value >= +normalUpper) {
       //   callback('预警下限需小于预警上限')
@@ -301,23 +326,22 @@ export default class AddSensor extends Component {
       //   callback('预警下限需大于告警下限')
       //   return
       // }
-      callback()
-    } else callback('请输入数字')
-  }
-
+      callback();
+    } else callback('请输入数字');
+  };
 
   /**
    * 验证--预警上限
    */
   validateNormalUpper = (rule, value, callback) => {
     if (!value) {
-      callback()
+      callback();
     } else if (numberReg.test(value)) {
       // const { getFieldsValue } = this.props.form
       // const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
       if (+value < 0) {
-        callback('请输入大于0的数字')
-        return
+        callback('请输入大于0的数字');
+        return;
       }
       // if (normalLower && +value <= +normalLower) {
       //   callback('预警上限需大于预警下限')
@@ -327,23 +351,22 @@ export default class AddSensor extends Component {
       //   callback('预警上限需小于告警上限')
       //   return
       // }
-      callback()
-    } else callback('请输入数字')
-  }
-
+      callback();
+    } else callback('请输入数字');
+  };
 
   /**
    * 验证--告警下限
    */
   validateSmallLower = (rule, value, callback) => {
     if (!value) {
-      callback()
+      callback();
     } else if (numberReg.test(value)) {
       // const { getFieldsValue } = this.props.form
       // const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
       if (+value < 0) {
-        callback('请输入大于0的数字')
-        return
+        callback('请输入大于0的数字');
+        return;
       }
       // if (largeUpper && +value >= +largeUpper) {
       //   callback('告警下限需小于告警上限')
@@ -353,23 +376,22 @@ export default class AddSensor extends Component {
       //   callback('告警下限需小于预警下限')
       //   return
       // }
-      callback()
-    } else callback('请输入数字')
-  }
-
+      callback();
+    } else callback('请输入数字');
+  };
 
   /**
    * 验证--告警上限
    */
   validateLargeUpper = (rule, value, callback) => {
     if (!value) {
-      callback()
+      callback();
     } else if (numberReg.test(value)) {
       // const { getFieldsValue } = this.props.form
       // const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
       if (+value < 0) {
-        callback('请输入大于0的数字')
-        return
+        callback('请输入大于0的数字');
+        return;
       }
       // if (smallLower && +value <= +smallLower) {
       //   callback('告警上限需大于告警下限')
@@ -379,9 +401,9 @@ export default class AddSensor extends Component {
       //   callback('告警上限需大于预警上限')
       //   return
       // }
-      callback()
-    } else callback('请输入数字')
-  }
+      callback();
+    } else callback('请输入数字');
+  };
 
   /**
    * 渲染表单
@@ -399,8 +421,8 @@ export default class AddSensor extends Component {
         // 监测参数列表
         monitoringParameters = [],
       },
-    } = this.props
-    const { selectedCompany } = this.state
+    } = this.props;
+    const { selectedCompany } = this.state;
     const columns = [
       {
         title: '监测参数编码',
@@ -422,17 +444,17 @@ export default class AddSensor extends Component {
         key: '报警策略数量',
         align: 'center',
         render: (val, { normalUpper, normalLower }) => (
-          <span>{(numberReg.test(normalUpper) || numberReg.test(normalLower)) ? 1 : 0}</span>
+          <span>{numberReg.test(normalUpper) || numberReg.test(normalLower) ? 1 : 0}</span>
         ),
       },
       {
         title: '操作',
         key: '操作',
         align: 'center',
-        render: (val, row) => (<a onClick={() => this.handleAlarmStrategy(row)}>配置报警策略</a>),
+        render: (val, row) => <a onClick={() => this.handleAlarmStrategy(row)}>配置报警策略</a>,
       },
-    ]
-    const typeId = getFieldValue('typeId')
+    ];
+    const typeId = getFieldValue('typeId');
     return (
       <Card>
         <Form>
@@ -442,7 +464,9 @@ export default class AddSensor extends Component {
             })(
               <Fragment>
                 <Input {...itemStyles} disabled value={selectedCompany.name} placeholder="请选择" />
-                <Button type="primary" onClick={this.handleViewCompanyModal}>选择单位</Button>
+                <Button type="primary" onClick={this.handleViewCompanyModal}>
+                  选择单位
+                </Button>
               </Fragment>
             )}
           </FormItem>
@@ -450,20 +474,34 @@ export default class AddSensor extends Component {
             {getFieldDecorator('monitoringTypeId', {
               rules: [{ required: true, message: '请选择监测类型' }],
             })(
-              <Select placeholder="请选择" {...itemStyles} onChange={this.handlemonitoringTypeChange} allowClear>
+              <Select
+                placeholder="请选择"
+                {...itemStyles}
+                onChange={this.handlemonitoringTypeChange}
+                allowClear
+              >
                 {monitoringTypeDict.map(({ key, value }) => (
-                  <Option key={key} value={key}>{value}</Option>
+                  <Option key={key} value={key}>
+                    {value}
+                  </Option>
                 ))}
               </Select>
             )}
           </FormItem>
           <FormItem label="品牌" {...formItemLayout}>
             {getFieldDecorator('brandId', {
-              rules: [{ required: true, message: '请选择品牌' }],
+              rules: [{ required: false, message: '请选择品牌' }],
             })(
-              <Select placeholder="请选择" {...itemStyles} onChange={this.handleBrandChange} allowClear>
+              <Select
+                placeholder="请选择"
+                {...itemStyles}
+                onChange={this.handleBrandChange}
+                allowClear
+              >
                 {brandDict.map(({ key, value }) => (
-                  <Option key={key} value={key}>{value}</Option>
+                  <Option key={key} value={key}>
+                    {value}
+                  </Option>
                 ))}
               </Select>
             )}
@@ -472,17 +510,22 @@ export default class AddSensor extends Component {
             {getFieldDecorator('typeId', {
               rules: [{ required: true, message: '请选择传感器型号' }],
             })(
-              <Select placeholder="请选择" {...itemStyles} onChange={this.handleTypeChange} allowClear>
+              <Select
+                placeholder="请选择"
+                {...itemStyles}
+                onChange={this.handleTypeChange}
+                allowClear
+              >
                 {typeDict.map(({ key, value }) => (
-                  <Option key={key} value={key}>{value}</Option>
+                  <Option key={key} value={key}>
+                    {value}
+                  </Option>
                 ))}
               </Select>
             )}
           </FormItem>
           <FormItem label="传感器名称" {...formItemLayout}>
-            {getFieldDecorator('deviceName')(
-              <Input placeholder="请输入" {...itemStyles} />
-            )}
+            {getFieldDecorator('deviceName')(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           {/* <FormItem label="传感器位号" {...formItemLayout}>
             {getFieldDecorator('b', {
@@ -494,9 +537,7 @@ export default class AddSensor extends Component {
           <FormItem label="传感器ID" {...formItemLayout}>
             {getFieldDecorator('relationDeviceId', {
               rules: [{ required: true, message: '请输入传感器ID' }],
-            })(
-              <Input placeholder="请输入" {...itemStyles} />
-            )}
+            })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           {typeId && (
             <FormItem label="监测参数" {...formItemLayout}>
@@ -508,27 +549,30 @@ export default class AddSensor extends Component {
           <FormItem label="所在区域" {...formItemLayout}>
             {getFieldDecorator('area', {
               rules: [{ required: true, message: '请输入所在区域' }],
-            })(
-              <Input placeholder="请输入" {...itemStyles} />
-            )}
+            })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="位置详情" {...formItemLayout}>
             {getFieldDecorator('location', {
               rules: [{ required: true, message: '请输入位置详情' }],
-            })(
-              <Input placeholder="请输入" {...itemStyles} />
-            )}
+            })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           {/* <FormItem label="地图定位" {...formItemLayout}></FormItem> */}
         </Form>
         <Row style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button onClick={() => { router.push('/device-management/sensor/list') }}>取消</Button>
-          <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>确定</Button>
+          <Button
+            onClick={() => {
+              router.push('/device-management/sensor/list');
+            }}
+          >
+            取消
+          </Button>
+          <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
+            确定
+          </Button>
         </Row>
       </Card>
-    )
-  }
-
+    );
+  };
 
   /**
    * 配置报警策略弹窗
@@ -536,17 +580,16 @@ export default class AddSensor extends Component {
   renderAlarmStrategyModal = () => {
     const {
       form: { getFieldDecorator },
-    } = this.props
-    const {
-      alarmStrategyModalVisible,
-      currentParameter: { desc, unit } = {},
-    } = this.state
+    } = this.props;
+    const { alarmStrategyModalVisible, currentParameter: { desc, unit } = {} } = this.state;
     return (
       <Modal
         title={desc ? `配置报警策略--${desc}` : '配置报警策略'}
         width={800}
         visible={alarmStrategyModalVisible}
-        onCancel={() => { this.setState({ alarmStrategyModalVisible: false }) }}
+        onCancel={() => {
+          this.setState({ alarmStrategyModalVisible: false });
+        }}
         onOk={this.handleConfirmAlarmStrategy}
         destroyOnClose
       >
@@ -559,14 +602,12 @@ export default class AddSensor extends Component {
               </FormItem>
             </Col> */}
             <Col span={10}>
-              <FormItem style={{ display: 'inline-block' }} label="报警阈值"></FormItem>
+              <FormItem style={{ display: 'inline-block' }} label="报警阈值" />
               <FormItem style={{ width: '180px', display: 'inline-block' }}>
                 {getFieldDecorator('normalLower', {
                   rules: [{ validator: this.validateNormalLower }],
                   getValueFromEvent: e => e.target.value.trim() || null,
-                })(
-                  <Input addonBefore="≤" addonAfter={unit} style={{ width: '100%' }} />
-                )}
+                })(<Input addonBefore="≤" addonAfter={unit} style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
             <Col span={10}>
@@ -574,9 +615,7 @@ export default class AddSensor extends Component {
                 {getFieldDecorator('normalUpper', {
                   rules: [{ validator: this.validateNormalUpper }],
                   getValueFromEvent: e => e.target.value.trim() || null,
-                })(
-                  <Input addonBefore="≥" addonAfter={unit} style={{ width: '180px' }} />
-                )}
+                })(<Input addonBefore="≥" addonAfter={unit} style={{ width: '180px' }} />)}
               </FormItem>
             </Col>
           </Form>
@@ -613,28 +652,25 @@ export default class AddSensor extends Component {
           </Form>
         </Card> */}
       </Modal>
-    )
-  }
+    );
+  };
 
   render() {
     const {
       companyLoading,
       match: { prams: { id = null } = {} },
       sensor: { companyModal },
-    } = this.props
-    const { companyModalVisible } = this.state
-    const title = id ? '编辑传感器' : '新增传感器'
+    } = this.props;
+    const { companyModalVisible } = this.state;
+    const title = id ? '编辑传感器' : '新增传感器';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '设备管理', name: '设备管理' },
       { title: '传感器管理', name: '传感器管理', href: '/device-management/sensor/list' },
       { title, name: title },
-    ]
+    ];
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
         {/* 选择企业弹窗 */}
         <CompanyModal
@@ -644,10 +680,12 @@ export default class AddSensor extends Component {
           modal={companyModal}
           fetch={this.fetchCompany}
           onSelect={this.handleSelectCompany}
-          onClose={() => { this.setState({ companyModalVisible: false }) }}
+          onClose={() => {
+            this.setState({ companyModalVisible: false });
+          }}
         />
         {this.renderAlarmStrategyModal()}
       </PageHeaderLayout>
-    )
+    );
   }
 }
