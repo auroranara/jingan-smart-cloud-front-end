@@ -46,13 +46,13 @@ const INSPECTION_FIELDNAMES = {
   status: 'status', // 巡查结果
   result({
     data: {
-      overTime=0,
-      rectifyNum=0,
-      reviewNum=0,
-      finish=0,
+      overTimeId=[],
+      rectifyId=[],
+      reviewId=[],
+      finishId=[],
     }={},
   }) {
-    return [overTime, rectifyNum, reviewNum, finish];
+    return [overTimeId.length, rectifyId.length, reviewId.length, finishId.length];
   }, // 处理结果
 };
 
