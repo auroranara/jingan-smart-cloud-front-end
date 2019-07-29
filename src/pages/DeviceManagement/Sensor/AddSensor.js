@@ -196,8 +196,8 @@ export default class AddSensor extends Component {
       form: { setFieldsValue },
     } = this.props
     this.fetchMonitoringParameter({ payload: { typeId } })
-    const selItem = typeDict.find(item => item.key === typeId) || {}
-    setFieldsValue({ brandId: selItem.optional_desc })
+    const selItem = typeDict.find(item => item.classModel === typeId) || {}
+    setFieldsValue({ brandId: selItem.modelDesc })
   }
 
   /**
@@ -469,8 +469,8 @@ export default class AddSensor extends Component {
               rules: [{ required: true, message: '请选择传感器型号' }],
             })(
               <Select placeholder="请选择" {...itemStyles} onChange={this.handleTypeChange}>
-                {typeDict.map(({ key, value }) => (
-                  <Option key={key} value={key}>{value}</Option>
+                {typeDict.map(({ classModel }) => (
+                  <Option key={classModel} value={classModel}>{classModel}</Option>
                 ))}
               </Select>
             )}

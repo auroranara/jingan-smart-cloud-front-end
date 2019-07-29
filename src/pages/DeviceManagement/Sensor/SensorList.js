@@ -221,10 +221,10 @@ export default class SensorList extends Component {
             </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('typeId')(
+                {getFieldDecorator('modelName')(
                   <Select placeholder="传感器型号" dropdownStyle={{ zIndex: 50 }} allowClear>
-                    {typeDict.map(({ value, key }) => (
-                      <Option key={key} value={key}>{value}</Option>
+                    {typeDict.map(({ classModel }) => (
+                      <Option key={classModel} value={classModel}>{classModel}</Option>
                     ))}
                   </Select>
                 )}
@@ -287,7 +287,13 @@ export default class SensorList extends Component {
       },
       {
         title: '品牌',
-        dataIndex: 'brand',
+        dataIndex: 'brandName',
+        align: 'center',
+        width: 150,
+      },
+      {
+        title: '型号',
+        dataIndex: 'modelName',
         align: 'center',
         width: 150,
       },
