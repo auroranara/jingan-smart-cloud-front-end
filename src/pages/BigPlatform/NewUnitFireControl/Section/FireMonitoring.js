@@ -45,7 +45,7 @@ export default class FireMonitoring extends PureComponent {
     );
 
     return (
-      <Section title="虚拟消控主机" extra={extra} style={{ WebkitBackfaceVisibility: 'hidden' }}>
+      <Section title="虚拟消控主机" extra={extra}>
         <div className={styles.contaniner}>
           {hosts &&
             hosts.length > 0 && (
