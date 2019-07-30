@@ -25,6 +25,7 @@ import Ellipsis from '@/components/Ellipsis';
 import QRCode from 'qrcode.react';
 import styles from './CheckContent.less';
 import codesMap from '@/utils/codes';
+import Qrcode from './qrcode.png';
 import { hasAuthority, AuthButton, AuthLink, AuthSpan } from '@/utils/customAuth';
 
 const { confirm } = Modal;
@@ -671,18 +672,17 @@ export default class CheckContent extends PureComponent {
                       </p>
                     </Col>
                     <Col
-                      span={8}
+                      span={6}
                       onClick={() => {
                         if (hasAuthority(codesMap.riskControl.riskPointManage.view, codes))
                           this.handleShowModal(qrCode);
                         else message.warn('您没有权限访问对应页面');
                       }}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: 'pointer', padding: '9px 4px', textAlign: 'center' }}
                     >
-                      <span className={styles.quantity}>
-                        点击查
-                        <br />看<br />
-                        二维码
+                      <span>
+                        <img src={Qrcode} alt="" width={45} height={45} />
+                        <p>查看二维码</p>
                       </span>
                     </Col>
                   </Row>
@@ -857,9 +857,18 @@ export default class CheckContent extends PureComponent {
           {this.renderList()}
         </InfiniteScroll>
 
-        <div className={styles.magnify} style={{ display: showImg ? 'block' : 'none' }}>
-          <QRCode className={styles.qrcode} size={200} value={qrCode} />
+        <div
+          className={styles.magnify}
+          onClick={this.handleCloseImg}
+          style={{ display: showImg ? 'block' : 'none', pointerEvents: 'auto' }}
+        >
           <Icon type="close" onClick={this.handleCloseImg} className={styles.iconClose} />
+          <QRCode
+            className={styles.qrcode}
+            size={200}
+            value={qrCode}
+            onClick={e => e.stopPropagation()}
+          />
         </div>
       </div>
     );

@@ -422,9 +422,18 @@ export default class GridPointList extends PureComponent {
         >
           {this.renderList()}
         </InfiniteScroll>
-        <div className={styles.magnify} style={{ display: showImg ? 'block' : 'none' }}>
-          <QRCode className={styles.qrcode} size={200} value={qrCode} />
+        <div
+          className={styles.magnify}
+          style={{ display: showImg ? 'block' : 'none' }}
+          onClick={this.handleCloseImg}
+        >
           <Icon type="close" onClick={this.handleCloseImg} className={styles.iconClose} />
+          <QRCode
+            className={styles.qrcode}
+            size={200}
+            value={qrCode}
+            onClick={e => e.stopPropagation()}
+          />
         </div>
       </PageHeaderLayout>
     );
