@@ -28,7 +28,7 @@ function handleGasList(list = [], status = ALL) {
     const fixedStatus = STATUS_FIX[status];
     // 失联状态，realTimeData = null，对应参数的值设为'-'，原params数组中每个对象的code对应realTimedData中的键名
     const params = deviceParams.map(({ id, code, desc, unit }) => ({ id, desc, unit, value: fixedStatus === LOSS || !realTimeData ? '-' : realTimeData[code], code }));
-    return { id: deviceId, status: fixedStatus, location: `${area} ${location}`, time: updateTime, params, armStatus: realTimeData ? realTimeData.armStatus : null, armStatusName: realTimeData ? realTimeData.armStatusName : null, newArmStatus: realTimeData ? realTimeData._arm_status : null };
+    return { id: deviceId, status: fixedStatus, location: `${area} ${location}`, time: updateTime, params, armStatus: realTimeData ? realTimeData._arm_status : null };
   });
 }
 
