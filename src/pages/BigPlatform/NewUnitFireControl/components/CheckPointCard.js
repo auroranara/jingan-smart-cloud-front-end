@@ -107,7 +107,7 @@ export default class CheckPointCard extends BigPlatformCard {
           <Fragment>
             <div>
               {lastCheckPerson
-                ? `${lastCheckPerson}(${ReportSource[+lastReportSource - 1]})`
+                ? `${lastCheckPerson.split(',').join('、')}(${ReportSource[+lastReportSource - 1]})`
                 : NO_DATA}
             </div>
             <div style={{ paddingTop: '8px' }}>
