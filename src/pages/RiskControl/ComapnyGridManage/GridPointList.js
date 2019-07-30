@@ -17,7 +17,7 @@ import {
 // import router from 'umi/router';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import InfiniteScroll from 'react-infinite-scroller';
+// import InfiniteScroll from 'react-infinite-scroller';
 import moment from 'moment';
 import QRCode from 'qrcode.react';
 
@@ -377,8 +377,8 @@ export default class GridPointList extends PureComponent {
   // 渲染页面
   render() {
     const {
-      loading,
-      riskPointManage: { isLast },
+      // loading,
+      // riskPointManage: { isLast },
       location: {
         query: { companyName },
       },
@@ -402,29 +402,10 @@ export default class GridPointList extends PureComponent {
       >
         <BackTop />
         {this.renderForm()}
-        <InfiniteScroll
-          initialLoad={false}
-          pageStart={0}
-          loadMore={() => {
-            // 防止多次加载
-            !loading && this.handleLoadMore();
-          }}
-          hasMore={!isLast}
-          loader={
-            <div className="loader" key={0}>
-              {loading && (
-                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-                  <Spin />
-                </div>
-              )}
-            </div>
-          }
-        >
-          {this.renderList()}
-        </InfiniteScroll>
+        {this.renderList()}
         <div
           className={styles.magnify}
-          style={{ display: showImg ? 'block' : 'none' }}
+          style={{ display: showImg ? 'block' : 'none', position: 'absolute' }}
           onClick={this.handleCloseImg}
         >
           <Icon type="close" onClick={this.handleCloseImg} className={styles.iconClose} />

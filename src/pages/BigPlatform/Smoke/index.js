@@ -653,7 +653,7 @@ export default class Smoke extends PureComponent {
     this.setState({ companyName: company_name, msgFlow: +type === 1 ? 0 : 1, dynamicType: type });
     dispatch({
       type: 'smoke/fetchSmokeForMaintenance',
-      payload: { companyId: company_id, deviceId: id, gridId, num, type: type },
+      payload: { deviceId: id, companyId: company_id, gridId, num, type: type },
       success: res => {
         const {
           data: { list = [] },

@@ -62,13 +62,20 @@ export default class FireStatisticsDrawer extends PureComponent {
       form: { getFieldDecorator },
       smoke: {
         fireHistoryData: {
-          fireCompanyList: { startDate, endDate, list = [] },
+          fireCompanyList: {
+            startDate,
+            endDate,
+            list = [],
+            finish_execute,
+            ing_execute,
+            wait_execute,
+          },
         },
       },
       type,
     } = this.props;
 
-    const rings = [0, 0, 0].map((n, i) => ({
+    const rings = [ing_execute, finish_execute, wait_execute].map((n, i) => ({
       name: RING_LABELS[i],
       value: n,
       itemStyle: { color: `rgb(${RING_COLORS[i]})` },

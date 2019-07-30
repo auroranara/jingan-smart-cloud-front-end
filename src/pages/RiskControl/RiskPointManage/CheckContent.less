@@ -94,12 +94,15 @@
 }
 
 .titleSpan {
-  border: 1px solid rgb(180, 174, 174);
+  border: 1px solid #096dd9;
+  border-radius: 12%;
   padding: 2px;
   position: absolute;
   right: 60px;
   font-weight: normal;
-  font-size: 15px;
+  font-size: 14px;
+  color: #096dd9;
+  padding: 0px 5px;
 }
 
 .tabs {
@@ -132,8 +135,30 @@
 .iconClose {
   position: absolute;
   left: 54%;
-  top: 33%;
+  top: 36%;
   color: #fff;
   font-size: 25px;
   cursor: pointer;
+}
+
+@media screen and (max-width:1440px) {
+  .iconClose {
+    position: absolute;
+    left: 55.5%;
+    top: 33%;
+    color: #fff;
+    font-size: 25px;
+    cursor: pointer;
+  }
+}
+
+@media screen and (max-width:1366px) {
+  .iconClose {
+    position: absolute;
+    left: 56%;
+    top: 30%;
+    color: #fff;
+    font-size: 25px;
+    cursor: pointer;
+  }
 }

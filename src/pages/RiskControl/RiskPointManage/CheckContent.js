@@ -89,17 +89,17 @@ const getCountStatus = i => {
 const getCheckCycle = s => {
   switch (s) {
     case 'every_day':
-      return '日检查点';
+      return '日  检';
     case 'every_week':
-      return '周检查点';
+      return '周  检';
     case 'every_month':
-      return '月检查点';
+      return '月  检';
     case 'every_quarter':
-      return '季度检查点';
+      return '季  检';
     case 'every_half_year':
-      return '半年检查点';
+      return '半 年 检';
     case 'every_year':
-      return '年检查点';
+      return '年  检';
     default:
       break;
   }
