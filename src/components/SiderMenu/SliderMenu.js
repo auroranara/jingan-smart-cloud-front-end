@@ -23,6 +23,7 @@ const getDefaultCollapsedSubMenus = props => {
     .map(item => getMenuMatches(flatMenuKeys, item)[0])
     .filter(item => item);
 };
+let firstMount = true;
 
 /**
  * Recursively flatten the data
@@ -70,6 +71,10 @@ export default class SiderMenu extends PureComponent {
     return null;
   }
 
+  componentDidMount() {
+    firstMount = false;
+  }
+
   isMainMenu = key => {
     const { menuData } = this.props;
     return menuData.some(item => {
@@ -99,7 +104,7 @@ export default class SiderMenu extends PureComponent {
   }
 
   render() {
-    const { logo, collapsed, onCollapse, fixSiderbar, theme } = this.props;
+    const { logo, collapsed, onCollapse, fixSiderbar, theme, isMobile } = this.props;
     const { openKeys } = this.state;
     // const defaultProps = collapsed ? {} : { openKeys };
     // 若openKeys为空数组，则更新一下它的值(当然第一次render返回还是空数组，当menuData不为空数组时，更新后为新的值)，若不是空数组即用原来的值
@@ -110,6 +115,7 @@ export default class SiderMenu extends PureComponent {
     const siderClassName = classNames(styles.sider, {
       [styles.fixSiderbar]: fixSiderbar,
       [styles.light]: theme === 'light',
+      [styles.noBoxShadow]: isMobile,
     });
 
     return (
@@ -118,7 +124,11 @@ export default class SiderMenu extends PureComponent {
         collapsible
         collapsed={collapsed}
         breakpoint="lg"
-        onCollapse={onCollapse}
+        onCollapse={collapse => {
+          if (firstMount || !isMobile) {
+            onCollapse(collapse);
+          }
+        }}
         width={256}
         theme={theme}
         className={siderClassName}

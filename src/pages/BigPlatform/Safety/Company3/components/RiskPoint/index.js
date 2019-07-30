@@ -109,12 +109,11 @@ export default class RiskPoint extends PureComponent {
           blue=0,
           gray=0,
           overtime=0,
-          risk=0,
+          risky=0,
         }={},
       },
       // 点击事件
       handleClick,
-      onRiskClick,
     } = this.props;
 
     let data, legendData=[
@@ -226,10 +225,10 @@ export default class RiskPoint extends PureComponent {
           <div className={styles.bottom}>
             <div className={styles.bottomItem}>
               <div
-                className={classNames(styles.bottomItemContent, risk && styles.enableClick)}
-                onClick={onRiskClick}
+                className={classNames(styles.bottomItemContent, risky && styles.enableClick)}
+                onClick={() => {risky && handleClick('riskPoint', { riskPointType: { key: 'status', value: '有隐患' } });}}
               >
-                <div className={styles.bottomItemContentTop}>{risk}</div>
+                <div className={styles.bottomItemContentTop}>{risky}</div>
                 <div className={styles.bottomItemContentBottom}>有隐患</div>
               </div>
             </div>

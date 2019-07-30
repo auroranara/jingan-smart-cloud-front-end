@@ -6,6 +6,7 @@ import moment from 'moment';
 import ReactEcharts from "echarts-for-react";
 import CustomDrawer from '@/jingan-components/CustomDrawer';
 import CustomSelect from '@/jingan-components/CustomSelect';
+import noTrend from '@/pages/BigPlatform/Gas/imgs/no-monitor.png';
 import styles from './index.less';
 
 const STATE = {
@@ -441,7 +442,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
             key={activeKey}
           />
         ) : (
-          <div className={styles.emptyData}>暂无数据</div>
+          <div className={styles.emptyTrend} style={{ backgroundImage: `url(${noTrend})` }} />
         )}
       </Fragment>
     );

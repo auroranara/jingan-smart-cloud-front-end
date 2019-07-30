@@ -814,7 +814,10 @@ export default {
               obj[statusDict[+status]]++;
               obj[levelDict[+risk_level]]++;
               obj[`${levelDict[+risk_level]}${capitalStatusDict[+status]}PointList`].push(point);
-              obj.risk += +originalStatus === 2;
+              if (+originalStatus === 2) {
+                obj.risky += 1;
+                obj[`${levelDict[+risk_level]}RiskyPointList`].push(point);
+              }
             }
             return obj;
           },
@@ -830,7 +833,12 @@ export default {
             abnormal: 0,
             pending: 0,
             overtime: 0,
-            risk: 0,
+            risky: 0,
+            redRiskyPointList: [],
+            orangeRiskyPointList: [],
+            yellowRiskyPointList: [],
+            blueRiskyPointList: [],
+            grayRiskyPointList: [],
             redNormalPointList: [],
             redAbnormalPointList: [],
             redPendingPointList: [],
