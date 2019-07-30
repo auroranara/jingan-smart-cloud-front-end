@@ -490,11 +490,13 @@ export default class App extends PureComponent {
                           : '监督点上报' || getEmptyData()}
                     </Ellipsis>
                   </Description>
-                  <Description term="检查类型">
-                    <Ellipsis tooltip={!!inspectionType} lines={1} style={{ height: 22 }}>
-                      {inspectionType || getEmptyData()}
-                    </Ellipsis>
-                  </Description>
+                  {inspectionType && (
+                    <Description term="检查类型">
+                      <Ellipsis tooltip={!!inspectionType} lines={1} style={{ height: 22 }}>
+                        {inspectionType || getEmptyData()}
+                      </Ellipsis>
+                    </Description>
+                  )}
                   <Description term="点位名称">
                     <Ellipsis tooltip={!!item_name} lines={1} style={{ height: 22 }}>
                       {item_name || getEmptyData()}
@@ -510,21 +512,27 @@ export default class App extends PureComponent {
                       {level_name || getEmptyData()}
                     </Ellipsis>
                   </Description>
-                  <Description term="隐患类型">
-                    <Ellipsis tooltip={!!hiddenType} lines={1} style={{ height: 22 }}>
-                      {hiddenType || getEmptyData()}
-                    </Ellipsis>
-                  </Description>
-                  <Description term="隐患部门">
-                    <Ellipsis tooltip={!!hiddenDept} lines={1} style={{ height: 22 }}>
-                      {hiddenDept || getEmptyData()}
-                    </Ellipsis>
-                  </Description>
-                  <Description term="隐患地点">
-                    <Ellipsis tooltip={!!location} lines={1} style={{ height: 22 }}>
-                      {location || getEmptyData()}
-                    </Ellipsis>
-                  </Description>
+                  {hiddenType && (
+                    <Description term="隐患类型">
+                      <Ellipsis tooltip={!!hiddenType} lines={1} style={{ height: 22 }}>
+                        {hiddenType || getEmptyData()}
+                      </Ellipsis>
+                    </Description>
+                  )}
+                  {hiddenDept && (
+                    <Description term="隐患部门">
+                      <Ellipsis tooltip={!!hiddenDept} lines={1} style={{ height: 22 }}>
+                        {hiddenDept || getEmptyData()}
+                      </Ellipsis>
+                    </Description>
+                  )}
+                  {location && (
+                    <Description term="隐患地点">
+                      <Ellipsis tooltip={!!location} lines={1} style={{ height: 22 }}>
+                        {location || getEmptyData()}
+                      </Ellipsis>
+                    </Description>
+                  )}
                   <Description term="检查人">
                     <Ellipsis tooltip={!!allCheckPersonNames} lines={1} style={{ height: 22 }}>
                       {allCheckPersonNames || getEmptyData()}
@@ -660,11 +668,13 @@ export default class App extends PureComponent {
                               {create_time_str || getEmptyData()}
                             </Ellipsis>
                           </Description>
-                          <Description term="原因分析">
-                            <Ellipsis tooltip={!!analysis} lines={1} style={{ height: 22 }}>
-                              {analysis || getEmptyData()}
-                            </Ellipsis>
-                          </Description>
+                          {analysis && (
+                            <Description term="原因分析">
+                              <Ellipsis tooltip={!!analysis} lines={1} style={{ height: 22 }}>
+                                {analysis || getEmptyData()}
+                              </Ellipsis>
+                            </Description>
+                          )}
                           <Description term="整改金额">
                             <Ellipsis tooltip lines={1} style={{ height: 22 }}>
                               {typeof money === 'number' ? money : 0}
