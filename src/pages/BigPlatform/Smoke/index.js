@@ -205,9 +205,8 @@ export default class Smoke extends PureComponent {
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
         const data = JSON.parse(e.data).data;
-        console.log('data', data);
 
-        const { type, companyId, messageFlag } = data;
+        const { type, companyId, messageFlag, messageFlagForId } = data;
         // const {
         //   smoke: {
         //     // messages,
@@ -243,12 +242,13 @@ export default class Smoke extends PureComponent {
               sameIndex >= 0
                 ? [
                     ...alarmIds.slice(0, sameIndex),
-                    { companyId, messageFlag },
+                    { companyId, messageFlag: messageFlagForId || messageFlag },
                     ...alarmIds.slice(sameIndex + 1),
                   ]
-                : [...alarmIds, { companyId, messageFlag }];
+                : [...alarmIds, { companyId, messageFlag: messageFlagForId || messageFlag }];
             this.setState({ alarmIds: newList });
             this.showWarningNotification(data);
+
             // dispatch({
             //   type: 'smoke/saveUnitData',
             //   payload: {
@@ -278,7 +278,8 @@ export default class Smoke extends PureComponent {
             // });
             let sameIndex;
             alarmIds.forEach((item, i) => {
-              if (item.messageFlag === messageFlag) sameIndex = i;
+              if (item.messageFlag === messageFlag || item.messageFlag === messageFlagForId)
+                sameIndex = i;
             });
             if (sameIndex !== undefined) {
               const newIds = [...alarmIds.slice(0, sameIndex), ...alarmIds.slice(sameIndex + 1)];
@@ -445,7 +446,7 @@ export default class Smoke extends PureComponent {
     messageFlag,
     // messageFlagForId,
     paramCode,
-    deviceId: id,
+    deviceId,
   }) => {
     const options = {
       key: `${messageFlag}_${paramCode}`,
@@ -465,13 +466,7 @@ export default class Smoke extends PureComponent {
           onClick={() => {
             this.setState({ companyName: company_name });
             this.handleClickNotification(company_id);
-            this.handleAlarmClick(
-              // messageFlagForId || messageFlag,
-              id,
-              company_id,
-              company_name,
-              1
-            );
+            this.handleAlarmClick(null, deviceId, company_id, company_name, 1);
           }}
         >
           <div className={styles.notificationText}>
@@ -641,8 +636,8 @@ export default class Smoke extends PureComponent {
     });
   };
 
-  handleAlarmClick = (id, company_id, company_name, type, num, msg) => {
-    console.log('handleAlarmClick', id, company_id, company_name, type, num, msg);
+  handleAlarmClick = (id, deviceId, company_id, company_name, type, num, msg) => {
+    console.log('handleAlarmClick', id, deviceId, company_id, company_name, type, num, msg);
     const {
       dispatch,
       match: {
@@ -653,7 +648,7 @@ export default class Smoke extends PureComponent {
     this.setState({ companyName: company_name, msgFlow: +type === 1 ? 0 : 1, dynamicType: type });
     dispatch({
       type: 'smoke/fetchSmokeForMaintenance',
-      payload: { deviceId: id, companyId: company_id, gridId, num, type: type },
+      payload: { id, deviceId, companyId: company_id, gridId, num, type: type },
       success: res => {
         const {
           data: { list = [] },

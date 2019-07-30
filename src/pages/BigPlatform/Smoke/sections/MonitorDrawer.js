@@ -174,7 +174,14 @@ export default class MonitorDrawer extends PureComponent {
                             }}
                             onClick={() => {
                               isfire
-                                ? handleAlarmClick(deviceId, company_id, company_name, 1, undefined)
+                                ? handleAlarmClick(
+                                    undefined,
+                                    deviceId,
+                                    company_id,
+                                    company_name,
+                                    1,
+                                    undefined
+                                  )
                                 : isfault &&
                                   handleFaultClick(
                                     deviceId,

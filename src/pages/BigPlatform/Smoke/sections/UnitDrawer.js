@@ -193,7 +193,14 @@ export default class UnitDrawer extends PureComponent {
                         className={unnormal > 0 ? styles.itemActive : ''}
                         onClick={() =>
                           unnormal > 0
-                            ? handleAlarmClick(undefined, company_id, company_name, 1, unnormal)
+                            ? handleAlarmClick(
+                                undefined,
+                                undefined,
+                                company_id,
+                                company_name,
+                                1,
+                                unnormal
+                              )
                             : ''
                         }
                       />

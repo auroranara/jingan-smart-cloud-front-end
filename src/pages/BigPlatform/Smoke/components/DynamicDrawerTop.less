@@ -1,0 +1,137 @@
+.dynamicDrawerTop {
+  font-size: 15px;
+
+  .companyInfoContainer,
+  .messageSendingContainer {
+    border: 1px solid #04fdff;
+    padding: 16px;
+    color: #fff;
+    position: relative;
+  }
+
+  .companyInfoContainer {
+    min-height: 130px;
+
+    .title {
+      font-size: 17px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .line {
+      width: calc(100% - 220px);
+      margin-bottom: 6px;
+    }
+
+    .logoContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: absolute;
+      top: 8px;
+      right: 15px;
+
+      .logo {
+        position: relative;
+        color: #fff;
+        cursor: pointer;
+        width: 43px;
+        height: 44px;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        background-position: center center;
+        transition: all .3s;
+
+        &>div {
+          position: absolute;
+          top: 39%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 21px;
+        }
+      }
+
+      .desc {
+        text-align: center;
+        color: #8198B4;
+        font-size: 13px;
+        margin-top: 5px;
+        cursor: pointer;
+
+        &:hover {
+          color: #BED1E8;
+        }
+      }
+    }
+
+    .cameraContainer {
+      position: absolute;
+      width: 33px;
+      height: 33px;
+      cursor: pointer;
+    }
+
+    .repeatDesc {
+      position: absolute;
+      font-size: 13px;
+      color: #00FFFF;
+      visibility: hidden;
+
+      div {
+        margin-bottom: 7px;
+      }
+
+      div:last-of-type {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .messageSendingContainer {
+    border-top: none;
+
+    .topLine {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+
+      span:first-of-type {
+        font-size: 17px;
+      }
+    }
+
+    .avtive {
+      color: #00FFFF;
+      text-decoration-line: underline;
+      font-size: 15px;
+      cursor: pointer;
+    }
+  }
+}
+
+.spin {
+  height: 100%;
+
+  :global {
+    .ant-spin-container {
+      height: 100%;
+
+      &:after {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+.repeatTimes {
+  color: #fff;
+  text-align: center;
+
+  .times {
+    line-height: 24px;
+
+    .label {
+      color: #9F9F9F;
+    }
+  }
+}

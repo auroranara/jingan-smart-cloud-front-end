@@ -5,7 +5,7 @@ import Slider from '../components/Slider';
 import DrawerContainer from '../components/DrawerContainer';
 import SwitchHead from '../components/SwitchHead';
 // import MaintenanceCard from '../components/MaintenanceCard';
-import DynamicDrawerTop from '@/pages/BigPlatform/Operation/components/DynamicDrawerTop';
+import DynamicDrawerTop from '../components/DynamicDrawerTop';
 import { vaguePhone } from '../../NewUnitFireControl/utils';
 import NewTimelineCard from '../../NewUnitFireControl/components/NewTimelineCard';
 
@@ -24,6 +24,7 @@ export default class MaintenanceDrawer extends PureComponent {
     fetchMessageInformList({ dataId: id });
     fetchCameraMessage({ id, reportType: 4 });
     this.setState(({ index }) => ({ index: index - 1, dataList: dataList }));
+    this.readMsg.setReadDefault();
   };
 
   handleRightClick = () => {
@@ -34,6 +35,11 @@ export default class MaintenanceDrawer extends PureComponent {
     fetchMessageInformList({ dataId: id });
     fetchCameraMessage({ id, reportType: 4 });
     this.setState(({ index }) => ({ index: index + 1, dataList: dataList }));
+    this.readMsg.setReadDefault();
+  };
+
+  onRef = ref => {
+    this.readMsg = ref;
   };
 
   render() {
@@ -90,6 +96,7 @@ export default class MaintenanceDrawer extends PureComponent {
         unread={unread}
         msgType={msgFlow}
         msgSendLoading={messageInformListLoading}
+        onRef={this.onRef}
       />
     );
 

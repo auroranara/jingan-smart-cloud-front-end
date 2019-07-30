@@ -226,12 +226,18 @@ export default class MapSection extends PureComponent {
           events={{
             click: e => {
               const {
-                // messageFlag,
+                messageFlag,
                 companyId: company_id,
                 companyName: company_name,
-                // messageFlagForId,
+                messageFlagForId,
               } = item;
-              handleAlarmClick(null, company_id, company_name, 1);
+              handleAlarmClick(
+                messageFlagForId || messageFlag,
+                undefined,
+                company_id,
+                company_name,
+                1
+              );
               const newIds = [...alarmIds.slice(0, index), ...alarmIds.slice(index + 1)];
               this.props.handleParentChange({ alarmIds: newIds });
             },
@@ -326,7 +332,7 @@ export default class MapSection extends PureComponent {
               className={+unnormal > 0 ? styles.itemActive : styles.statusItem}
               onClick={() => {
                 if (+unnormal > 0) {
-                  handleAlarmClick(undefined, company_id, company_name, 1, +unnormal);
+                  handleAlarmClick(undefined, undefined, company_id, company_name, 1, +unnormal);
                 } else {
                   return null;
                 }

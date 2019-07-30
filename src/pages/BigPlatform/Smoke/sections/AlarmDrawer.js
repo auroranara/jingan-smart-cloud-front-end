@@ -371,7 +371,14 @@ export default class AlarmDrawer extends PureComponent {
                     className={listUnnormal > 0 ? styles.itemActive : ''}
                     onClick={() =>
                       listUnnormal > 0 &&
-                      handleAlarmClick(undefined, company_id, company_name, 1, listUnnormal)
+                      handleAlarmClick(
+                        undefined,
+                        undefined,
+                        company_id,
+                        company_name,
+                        1,
+                        listUnnormal
+                      )
                     }
                   />
                   <DotItem
