@@ -10,7 +10,7 @@ import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
 import styles from './index.less';
 import styles1 from '@/pages/BigPlatform/NewUnitFireControl/index.less';
-import { BackMap, SettingModal, FireStatisticsDrawer, Messages } from './sections/Components';
+import { BackMap, FireStatisticsDrawer, Messages, SettingModal, UnitListDrawer } from './sections/Components';
 import {
   MapSearch,
   Tooltip as MyTooltip,
@@ -21,9 +21,10 @@ import {
 import { PAGE_SIZE, getUnitList } from './utils';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
-import FireFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/FireFlowDrawer';
-import SmokeFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/SmokeFlowDrawer';
-import OnekeyFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/OnekeyFlowDrawer';
+// import FireFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/FireFlowDrawer';
+// import SmokeFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/SmokeFlowDrawer';
+// import OnekeyFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/OnekeyFlowDrawer';
+import { FireFlowDrawer, OnekeyFlowDrawer, SmokeFlowDrawer } from '@/pages/BigPlatform/NewUnitFireControl/Section/Components';
 
 const OPE = 3; // 运营或管理员unitType对应值
 const COMPANY_ALL = 'companyIdAll';
@@ -123,6 +124,7 @@ const popupVisible = {
   checksDrawerVisible: false,
   newWorkOrderDrawerVisible: false,
   onekeyFlowDrawerVisible: false,
+  unitListDrawerVisible: false,
 };
 
 @connect(({ loading, operation, user, unitSafety, newUnitFireControl }) => ({
@@ -168,6 +170,7 @@ export default class Operation extends PureComponent {
       fireVideoVisible: false,
       videoVisible: false,
       onekeyFlowDrawerVisible: false,
+      unitListDrawerVisible: true, // 企业列表抽屉
       videoList: [],
       videoKeyId: undefined,
       dynamicType: null,
@@ -735,7 +738,6 @@ export default class Operation extends PureComponent {
   };
 
   handleTaskCardClick = data => {
-    // console.log(data);
     const { dispatch } = this.props;
     const {
       id,
@@ -1000,6 +1002,7 @@ export default class Operation extends PureComponent {
       videoKeyId,
       unitList,
       onekeyFlowDrawerVisible,
+      unitListDrawerVisible,
     } = this.state;
     const headProps = {
       ...workOrderDetail[0],
@@ -1144,6 +1147,11 @@ export default class Operation extends PureComponent {
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
           head={true}
+        />
+        <UnitListDrawer
+          visible={unitListDrawerVisible}
+          list={unitList}
+          handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <VideoPlay
           showList={false}

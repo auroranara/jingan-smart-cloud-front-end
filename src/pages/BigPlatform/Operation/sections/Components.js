@@ -2,6 +2,7 @@ import BackMap from './BackMap';
 import FireStatistics from './FireStatistics';
 import FireStatisticsDrawer from './FireStatisticsDrawer';
 import Messages from './Messages';
+import UnitListDrawer from './UnitListDrawer';
 
 export {
   AlarmDrawer,
@@ -18,4 +19,5 @@ export {
   FireStatistics,
   FireStatisticsDrawer,
   Messages,
+  UnitListDrawer,
 }
