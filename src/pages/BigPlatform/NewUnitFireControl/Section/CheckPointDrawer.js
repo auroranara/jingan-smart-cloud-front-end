@@ -5,6 +5,7 @@ import ReactEcharts from 'echarts-for-react';
 import DrawerContainer from '../components/DrawerContainer';
 import NoData from '../components/NoData';
 import CheckPointCard from '../components/CheckPointCard';
+import { filterChartValue } from '../utils.js';
 import {
   DrawerSection,
   OvSelect,
@@ -108,18 +109,21 @@ export default class CheckPointDrawer extends PureComponent {
           avoidLabelOverlap: true,
           label: {
             normal: {
-              show: true,
-              lineHeight: 18,
+              show: false,
+              lineHeight: 25,
               formatter: '{b}\n{c} ({d}%)',
               textStyle: {
                 color: '#fff',
                 fontSize: 14,
               },
             },
+            emphasis: {
+              show: true,
+            },
           },
           labelLine: {
             normal: {
-              show: true,
+              show: false,
               length: 18,
               length2: 18,
             },
@@ -127,7 +131,9 @@ export default class CheckPointDrawer extends PureComponent {
               show: true,
             },
           },
-          data: data,
+          hoverAnimation: !!pointList.length,
+          legendHoverLink: !!pointList.length,
+          data: filterChartValue(data),
         },
       ],
     };
@@ -137,16 +143,45 @@ export default class CheckPointDrawer extends PureComponent {
         style={{ height: '300px', width: '100%' }}
         className="echarts-for-echarts"
         notMerge={true}
+        onChartReady={this.onChartReadyCallback}
       />
     );
   };
 
+  onChartReadyCallback = chart => {
+    if (!chart) return;
+    let currentIndex = -1;
+    const chartAnimate = () => {
+      const dataLen = chart.getOption().series[0].data.length;
+      // 取消之前高亮的图形
+      chart.dispatchAction({
+        type: 'downplay',
+        seriesIndex: 0,
+        dataIndex: currentIndex,
+      });
+      currentIndex = (currentIndex + 1) % dataLen;
+      // 高亮当前图形
+      chart.dispatchAction({
+        type: 'highlight',
+        seriesIndex: 0,
+        dataIndex: currentIndex,
+      });
+    };
+    // chartAnimate();
+    setInterval(() => {
+      chartAnimate();
+    }, 5000);
+  };
+
   renderRatioPie = (chartData, styles) => {
-    const { data, label, color, legend } = chartData;
+    const { data, label, color, legend, value } = chartData;
+
     const option = {
       color: [color || '#F83329', '#04234A'],
       tooltip: {
-        show: false,
+        formatter: label,
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        padding: [5, 12],
       },
       legend: {
         show: !!legend,
@@ -172,10 +207,10 @@ export default class CheckPointDrawer extends PureComponent {
               position: 'center',
               lineHeight: 25,
               textStyle: {
-                fontSize: 14,
+                fontSize: 20,
                 color: '#fff',
               },
-              formatter: label,
+              formatter: `${value}`,
             },
           },
           labelLine: {
@@ -289,13 +324,15 @@ export default class CheckPointDrawer extends PureComponent {
               data: hasDangerRatio,
               color: '#F83329',
               legend: '有隐患点位',
-              label: `有隐患\n${hasDanger} (${hasDangerRatio}%)`,
+              label: `有隐患点位<br/>数量：${hasDanger} (${hasDangerRatio}%)`,
+              value: hasDanger,
             })}
             {this.renderRatioPie({
               data: noDangerRatio,
               color: '#00FFFF',
               legend: '无隐患点位',
-              label: `无隐患\n${noDanger} (${noDangerRatio}%)`,
+              label: `无隐患点位<br/>数量：${noDanger} (${noDangerRatio}%)`,
+              value: noDanger,
             })}
           </div>
         </DrawerSection>
