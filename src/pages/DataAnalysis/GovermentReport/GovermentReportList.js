@@ -162,12 +162,16 @@ export default class App extends PureComponent {
             check_date,
             checkResultName,
             object_title,
+            end_time,
           } = text;
+          const startDate = moment(check_date).format('YYYY-MM-DD')
+          const endDate = moment(end_time).format('YYYY-MM-DD')
+          const date = check_date === end_time ? moment(check_date).format('YYYY-MM-DD HH:mm') : startDate === endDate ? `${moment(check_date).format('YYYY-MM-DD HH:mm')}~${moment(end_time).format('HH:mm')}` : `${startDate}~${endDate}`
           return (
             <Link
               to={`/data-analysis/goverment-report/detail/${check_id}?companyName=${company_name}&&object_title=${encodeURIComponent(
                 object_title
-              )}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+              )}&&check_user_names=${check_user_names}&&check_date=${date}&&checkResultName=${checkResultName}`}
             >
               查看
             </Link>
@@ -382,7 +386,7 @@ export default class App extends PureComponent {
     });
     // 获取列表
     dispatch({
-      type: 'maintenanceReport/fetchMaintenancList',
+      type: 'maintenanceReport/fetchMaintenanceCheckForGov',
       payload: {
         ...fieldsValue,
         pageNum: num,
