@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import Section from '../Section';
 import TabSection from './TabSection';
+import { filterChartValue } from '../utils.js';
 import styles from './CheckWorkOrder.less';
 
 /**
@@ -42,7 +43,21 @@ export default class CheckWorkOrder extends PureComponent {
       return prev;
     }, {});
 
+    const total = chartDatas[type].reduce((prev, next) => {
+      return prev + next.value;
+    }, 0);
+
     const option = {
+      title: {
+        text: total,
+        textStyle: {
+          color: '#fff',
+          fontSize: 22,
+          fontWeight: 400,
+        },
+        left: 'center',
+        top: '40%',
+      },
       legend: {
         show: false,
         data: chartDatas[type].map(item => item.name),
@@ -59,14 +74,15 @@ export default class CheckWorkOrder extends PureComponent {
       series: [
         {
           type: 'pie',
-          center: ['50%', '45%'],
+          center: ['50%', '48%'],
           radius: ['40%', '48%'],
           avoidLabelOverlap: false,
           label: {
             normal: {
-              show: true,
+              show: false,
               // formatter: '{b}\n{number|{c} {d}%}',
               formatter: '{b}\n{c} ({d}%)',
+              lineHeight: 24,
               textStyle: {
                 color: '#fff',
                 fontSize: isTinyHeight ? 12 : 14,
@@ -79,50 +95,55 @@ export default class CheckWorkOrder extends PureComponent {
               //   },
               // },
             },
-          },
-          labelLine: {
-            normal: {
-              show: true,
-              length: 20,
-              length2: 5,
-            },
             emphasis: {
               show: true,
             },
           },
-          data: chartDatas[type],
-        },
-        {
-          type: 'pie',
-          center: ['50%', '45%'],
-          radius: ['40%', '48%'],
-          avoidLabelOverlap: false,
-          label: {
+          labelLine: {
             normal: {
               show: false,
-              position: 'center',
-              formatter: '{c}',
-              textStyle: {
-                color: '#fff',
-                fontSize: isTinyHeight ? 16 : 20,
-              },
+              length: 12,
+              length2: 12,
             },
             emphasis: {
               show: true,
             },
           },
-          labelLine: {
-            normal: {
-              show: true,
-              length: 20,
-              length2: 5,
-            },
-            emphasis: {
-              show: true,
-            },
-          },
-          data: chartDatas[type],
+          hoverAnimation: !!total,
+          legendHoverLink: !!total,
+          data: filterChartValue(chartDatas[type]),
         },
+        // {
+        //   type: 'pie',
+        //   center: ['50%', '45%'],
+        //   radius: ['40%', '48%'],
+        //   avoidLabelOverlap: false,
+        //   label: {
+        //     normal: {
+        //       show: false,
+        //       position: 'center',
+        //       formatter: '{c}',
+        //       textStyle: {
+        //         color: '#fff',
+        //         fontSize: isTinyHeight ? 16 : 20,
+        //       },
+        //     },
+        //     emphasis: {
+        //       show: true,
+        //     },
+        //   },
+        //   labelLine: {
+        //     normal: {
+        //       show: false,
+        //       length: 20,
+        //       length2: 5,
+        //     },
+        //     emphasis: {
+        //       show: true,
+        //     },
+        //   },
+        //   data: filterChartValue(chartDatas[type]),
+        // },
       ],
     };
     return option;
@@ -130,27 +151,27 @@ export default class CheckWorkOrder extends PureComponent {
 
   onChartReadyCallback = chart => {
     if (!chart) return;
-    // let currentIndex = -1;
-    // const chartAnimate = () => {
-    //   const dataLen = chart.getOption().series[0].data.length;
-    //   // 取消之前高亮的图形
-    //   chart.dispatchAction({
-    //     type: 'downplay',
-    //     seriesIndex: 0,
-    //     dataIndex: currentIndex,
-    //   });
-    //   currentIndex = (currentIndex + 1) % dataLen;
-    //   // 高亮当前图形
-    //   chart.dispatchAction({
-    //     type: 'highlight',
-    //     seriesIndex: 0,
-    //     dataIndex: currentIndex,
-    //   });
-    // };
-    // // chartAnimate();
-    // setInterval(() => {
-    //   chartAnimate();
-    // }, 5000);
+    let currentIndex = -1;
+    const chartAnimate = () => {
+      const dataLen = chart.getOption().series[0].data.length;
+      // 取消之前高亮的图形
+      chart.dispatchAction({
+        type: 'downplay',
+        seriesIndex: 0,
+        dataIndex: currentIndex,
+      });
+      currentIndex = (currentIndex + 1) % dataLen;
+      // 高亮当前图形
+      chart.dispatchAction({
+        type: 'highlight',
+        seriesIndex: 0,
+        dataIndex: currentIndex,
+      });
+    };
+    // chartAnimate();
+    setInterval(() => {
+      chartAnimate();
+    }, 5000);
 
     chart.on('click', params => {
       const { checkClick, workOrderClick } = this.props;
@@ -185,7 +206,7 @@ export default class CheckWorkOrder extends PureComponent {
       <div className={styles.legendContainer}>
         {chartDatas[type].map((item, index) => {
           const { value, name, color } = item;
-          return (
+          return !!value ? (
             <div
               className={styles.legend}
               onClick={() => {
@@ -197,7 +218,7 @@ export default class CheckWorkOrder extends PureComponent {
               {name}
               {/* <span className={styles.number}>{value}</span> */}
             </div>
-          );
+          ) : null;
         })}
       </div>
     );
