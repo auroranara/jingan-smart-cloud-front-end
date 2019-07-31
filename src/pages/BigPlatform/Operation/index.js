@@ -1032,6 +1032,7 @@ export default class Operation extends PureComponent {
           deviceType={deviceType}
           // units={getUnitList(unitList, deviceType)}
           units={unitList}
+          unitLists={unitLists}
           handleMapClick={this.showUnitDetail}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}

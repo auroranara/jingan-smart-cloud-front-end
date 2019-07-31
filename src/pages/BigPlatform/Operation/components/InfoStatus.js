@@ -1,12 +1,17 @@
 import React, { PureComponent } from 'react';
 
 import styles from './InfoStatus.less';
-import { getStatusImg } from '../utils';
+import { BAR_COLORS as COLORS, COUNT_BASE_KEY, COUNT_KEYS, COUNT_LABELS as LABELS, TYPE_KEYS, TYPE_COUNTS, getStatuses, getStatusImg } from '../utils';
 import { hostGreen, hostYellow, hostRed, smokeGreen, smokeYellow, smokeGrey, smokeRed } from '../imgs/links';
 
 const WIDTH = 60;
-const COLORS = ['#f83329', '#ffb400', '#9f9f9f'];
-const LABELS = ['报警', '故障', '失联']
+const IMGS_LIST = [
+  [hostRed, hostYellow, undefined, hostGreen],
+  [smokeRed, smokeYellow, smokeGrey, smokeGreen],
+  [],
+  [],
+  [],
+];
 
 function StatusBar(props) {
   const { data } = props;
@@ -33,20 +38,20 @@ function StatusBar(props) {
 
 export default class InfoStatus extends PureComponent {
   render() {
-    const { data, devices } = this.props;
-    data[0].push(0); // 为主机的失联补0，反正0对最后结果无影响
+    const { data } = this.props;
+    const statuses = getStatuses(data);
     return(
       <div className={styles.container}>
-        {!!devices[0] && (
-          <div className={styles.host} style={{ backgroundImage: `url(${getStatusImg(data[0], [hostRed, hostYellow, undefined, hostGreen])})` }}>
-            <StatusBar data={data[0]} />
-          </div>
-        )}
-        {!!devices[1] && (
-          <div className={styles.smoke} style={{ backgroundImage: `url(${getStatusImg(data[1], [smokeRed, smokeYellow, smokeGrey, smokeGreen])})` }}>
-          <StatusBar data={data[1]} />
-        </div>
-        )}
+        {TYPE_KEYS.slice(1).map((k, i) => {
+          const typeKey = `${k}${COUNT_BASE_KEY}`;
+          if (data[typeKey])
+            return (
+              <div key={k} className={styles[k]} style={{ backgroundImage: `url(${getStatusImg(statuses, IMGS_LIST[i])})` }}>
+                <StatusBar data={statuses} />
+              </div>
+            );
+          return null;
+        })}
       </div>
     )
   }

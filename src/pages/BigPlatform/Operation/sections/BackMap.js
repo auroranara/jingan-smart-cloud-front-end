@@ -28,7 +28,7 @@ import {
   dotWaterRed,
   dotWaterYellow,
 } from '../imgs/links';
-import { HOST, SMOKE, ELEC, GAS, WATER, getMapLegendData, getMapItemStatus, sortUnits } from '../utils';
+import { BAR_COLORS, COUNT_BASE_KEY, COUNT_KEYS, COUNT_LABELS, TYPE_KEYS, TYPE_COUNTS, getMapLegendData, getMapItemStatus, sortUnits } from '../utils';
 
 const IMGS = [
   [dotGreen, dotRed],
@@ -50,15 +50,6 @@ const INIT_INFO = {
   latitude: 31.544389,
   saferName: '',
   saferPhone: '',
-  fireDeviceCount: 0,
-  fireDeviceCountForFire: 0,
-  fireDeviceCountForFault: 0,
-  fireDeviceCountForNormal: 0,
-  smokeDeviceCount: 0,
-  smokeDeviceCountForFire: 0,
-  smokeDeviceCountForFault: 0,
-  smokeDeviceCountForUnConnect: 0,
-  smokeDeviceCountForNormal: 0,
 };
 
 export default class MapSection extends PureComponent {
@@ -130,10 +121,9 @@ export default class MapSection extends PureComponent {
 
   renderMarkerLayout = extData => {
     const { deviceType, handleMapClick, showTooltip, hideTooltip } = this.props;
-    const { companyName, companyId, fireDeviceCount, smokeDeviceCount } = extData;
+    const { companyName, companyId } = extData;
     const status = getMapItemStatus(extData, deviceType);
     const imgSrc = IMGS[deviceType][status];
-    // const deviceCount = deviceType === HOST ? +fireDeviceCount : +smokeDeviceCount;
 
     return (
       <div
@@ -142,9 +132,6 @@ export default class MapSection extends PureComponent {
         className={styles.imgContainer}
         key={companyId}
       >
-        {/* {!!deviceType && !!deviceCount && (
-          <div className={styles[`imgDot${deviceCount < 100 ? '' : 1}`]}>{deviceCount}</div>
-        )} */}
         <img
           src={imgSrc}
           alt="dot"
@@ -154,11 +141,7 @@ export default class MapSection extends PureComponent {
             handleMapClick(extData);
             hideTooltip();
           }}
-          onMouseEnter={e => {
-            // if (this.target === e.target) return;
-            // this.target = e.target;
-            showTooltip(e, companyName);
-          }}
+          onMouseEnter={e => showTooltip(e, companyName)}
           onMouseLeave={hideTooltip}
         />
       </div>
@@ -167,8 +150,6 @@ export default class MapSection extends PureComponent {
 
   handleMapClick = extData => {
     if (extData.companyId === this.state.infoWindow.companyId && this.state.infoWindowShow) return;
-    // const { fetchMapInfo } = this.props;
-    // fetchMapInfo();
     this.setState({
       infoWindowShow: true,
       infoWindow: {
@@ -216,62 +197,43 @@ export default class MapSection extends PureComponent {
 
   // 弹窗渲染
   renderInfoWindow = () => {
-    const { deviceType, handleAlarmClick, handleCompanyClick, handleFaultClick } = this.props;
+    const { deviceType, handleCompanyClick, handleAlarmClick, handleFaultClick } = this.props;
     const {
       infoWindowShow,
-      infoWindow: {
-        companyId,
-        companyName,
-        address,
-        longitude,
-        latitude,
-        saferName,
-        saferPhone,
-        fireDeviceCount,
-        fireDeviceCountForFire,
-        fireDeviceCountForFault,
-        fireDeviceCountForNormal,
-        smokeDeviceCount,
-        smokeDeviceCountForFire,
-        smokeDeviceCountForFault,
-        smokeDeviceCountForUnConnect,
-        smokeDeviceCountForNormal,
-      },
+      infoWindow,
     } = this.state;
 
-    let statuses;
-    let deviceCount;
-    const hostStatuses = [fireDeviceCountForFire, fireDeviceCountForFault, 0, fireDeviceCountForNormal].map(n => +n);
-    const smokeStatuses = [smokeDeviceCountForFire, smokeDeviceCountForFault, smokeDeviceCountForUnConnect, smokeDeviceCountForNormal].map(n => +n);
-    switch (deviceType) {
-      case HOST:
-        deviceCount = fireDeviceCount;
-        statuses = hostStatuses;
-        break;
-      case SMOKE:
-        deviceCount = smokeDeviceCount;
-        statuses = smokeStatuses;
-        break;
-      default:
-        deviceCount = 0;
-        statuses = [0, 0, 0, 0];
-    }
-    const [fire, fault, loss, normal] = statuses;
+    const {
+      companyId,
+      companyName,
+      address,
+      longitude,
+      latitude,
+      saferName,
+      saferPhone,
+    } = infoWindow;
 
-    // const alarmClick = () => {
-    //   if (fire) {
-    //     handleAlarmClick(undefined, companyId, companyName, fire);
-    //   } else {
-    //     return null;
-    //   }
-    // };
-    // const faultClick = () => {
-    //   if (fault > 0) {
-    //     handleFaultClick(undefined, companyId, companyName, fault);
-    //   } else {
-    //     return null;
-    //   }
-    // };
+    const typeKey = `${TYPE_KEYS[deviceType]}${COUNT_BASE_KEY}`;
+    const typeCount = TYPE_COUNTS[deviceType];
+    const statuses = COUNT_KEYS.slice(1).map(key => {
+      const value = infoWindow[`${typeKey}For${key}`];
+      return value ? +value : 0;
+    });
+    const bar = (
+      <div className={styles.statusWrapper}>
+        {statuses.map((n, i) => {
+          const label = COUNT_LABELS[i + 1];
+          if (typeCount[i + 1])
+            return (
+              <div key={label} className={styles.statusItem}>
+                <span className={styles.statusIcon} style={{ backgroundColor: BAR_COLORS[i] }} />
+                {label} {n}
+              </div>
+            );
+          return null;
+        })}
+      </div>
+    );
 
     return (
       <InfoWindow
@@ -293,21 +255,14 @@ export default class MapSection extends PureComponent {
           <div className={styles.info}>
             <span
               className={styles.infoIcon}
-              style={{
-                backgroundImage: `url(${iconAddress})`,
-                // background: `url(${iconAddress}) no-repeat center center`,
-                // backgroundSize: '100% 100%',
-              }}
+              style={{ backgroundImage: `url(${iconAddress})` }}
             />
             {address}
           </div>
           <div className={styles.info}>
             <span
               className={styles.infoIcon}
-              style={{
-                backgroundImage: `url(${iconMan})`,
-                // backgroundSize: '100% 100%',
-              }}
+              style={{ backgroundImage: `url(${iconMan})` }}
             />
             {saferName}
             {saferPhone && (
@@ -319,48 +274,7 @@ export default class MapSection extends PureComponent {
             )}
             {!saferName && !saferPhone && <span>暂无数据</span>}
           </div>
-          {
-            deviceType ? (
-              <Fragment>
-                {/* <div
-                  className={styles.device}
-                  // style={{ borderTop: '1px solid #474747', margin: '8px 0', paddingTop: '8px' }}
-                >
-                  设备数量 {deviceCount}
-                </div> */}
-                <div className={styles.statusWrapper}>
-                  <div
-                    className={styles.statusItem}
-                  // className={fire > 0 ? styles.itemActive : styles.statusItem}
-                  // onClick={alarmClick}
-                  >
-                    <span className={styles.statusIcon} style={{ backgroundColor: '#f83329' }} />
-                    报警 {fire > 0 ? fire : 0}
-                  </div>
-                  <div
-                    className={styles.statusItem}
-                  // className={fault > 0 ? styles.itemActive : styles.statusItem}
-                  // onClick={faultClick}
-                  >
-                    <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
-                    故障 {fault}
-                  </div>
-                  {deviceType === SMOKE && (
-                    <div className={styles.statusItem}>
-                      <span className={styles.statusIcon} style={{ backgroundColor: '#9f9f9f' }} />
-                      失联 {loss}
-                    </div>
-                  )}
-                  {/* <div className={styles.statusItem}>
-                    <span className={styles.statusIcon} style={{ backgroundColor: '#37a460' }} />
-                    正常 {normal}
-                  </div> */}
-                </div>
-              </Fragment>
-            ) : (
-                <InfoStatus data={[hostStatuses.slice(0, 2), smokeStatuses.slice(0, 3)]} devices={[fireDeviceCount, smokeDeviceCount]} />
-              )
-          }
+          {deviceType ? bar : <InfoStatus data={infoWindow} />}
         </div>
         <Icon
           type="close"
@@ -393,8 +307,9 @@ export default class MapSection extends PureComponent {
   };
 
   render() {
-    const { deviceType, handleParentChange, units } = this.props;
+    const { deviceType, handleParentChange, units, unitLists } = this.props;
     const mapLegendData = getMapLegendData(units, deviceType);
+    const nums = unitLists.map(list => list.length);
 
     return (
       <div className={styles.mapContainer}>
@@ -439,8 +354,8 @@ export default class MapSection extends PureComponent {
             重置
           </div>
         </GDMap>
-        <DeviceBar type={deviceType} handleClick={this.onDeviceTypeChange} />
-        <MapLegend data={mapLegendData} />
+        <DeviceBar type={deviceType} nums={nums} handleClick={this.onDeviceTypeChange} />
+        <MapLegend type={deviceType} data={mapLegendData} />
       </div>
     );
   }
