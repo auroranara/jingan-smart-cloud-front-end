@@ -50,8 +50,8 @@ export default class SensorList extends Component {
     this.fetchMonitoringTypeDict()
     // this.fetchSensorBrandDict()
     this.fetchSensorTypeDict()
-    this.fetchSensors({ payload: { pageNum: 1, pageSize: defaultPageSize, ...sensorSearchInfo } })
-    // this.handleQuery()
+    // this.fetchSensors({ payload: { pageNum: 1, pageSize: defaultPageSize, ...sensorSearchInfo } })
+    this.handleQuery(pageNum, pageSize)
   }
 
 
@@ -145,22 +145,22 @@ export default class SensorList extends Component {
    * 筛选栏检测类型改变
    */
   handlemonitoringTypeChange = (monitoringTypeId) => {
-    const { getFieldValue } = this.props.form
-    const brandId = getFieldValue('brandId')
+    // const { getFieldValue } = this.props.form
+    // const brandId = getFieldValue('brandId')
     // this.fetchSensorBrandDict({ payload: { monitoringTypeId } })
-    this.fetchSensorTypeDict({ payload: { monitoringTypeId, brandId } })
+    this.fetchSensorTypeDict({ payload: { monitoringTypeId } })
   }
 
 
   /**
    * 筛选栏品牌改变
    */
-  handleBrandChange = (brandId) => {
-    const { getFieldValue } = this.props.form
-    const monitoringTypeId = getFieldValue('monitoringTypeId')
-    // this.fetchMonitoringTypeDict({ payload: { brand } })
-    this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } })
-  }
+  // handleBrandChange = (brandId) => {
+  //   const { getFieldValue } = this.props.form
+  //   const monitoringTypeId = getFieldValue('monitoringTypeId')
+  //   // this.fetchMonitoringTypeDict({ payload: { brand } })
+  //   this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } })
+  // }
 
 
   /**
@@ -221,10 +221,10 @@ export default class SensorList extends Component {
             </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('typeId')(
+                {getFieldDecorator('modelName')(
                   <Select placeholder="传感器型号" dropdownStyle={{ zIndex: 50 }} allowClear>
-                    {typeDict.map(({ value, key }) => (
-                      <Option key={key} value={key}>{value}</Option>
+                    {typeDict.map(({ classModel }) => (
+                      <Option key={classModel} value={classModel}>{classModel}</Option>
                     ))}
                   </Select>
                 )}
@@ -287,7 +287,13 @@ export default class SensorList extends Component {
       },
       {
         title: '品牌',
-        dataIndex: 'brand',
+        dataIndex: 'brandName',
+        align: 'center',
+        width: 150,
+      },
+      {
+        title: '型号',
+        dataIndex: 'modelName',
         align: 'center',
         width: 150,
       },

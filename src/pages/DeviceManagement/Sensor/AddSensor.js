@@ -56,12 +56,12 @@ export default class AddSensor extends Component {
         type: 'sensor/fetchSensorDetail',
         payload: { id },
         callback: (response) => {
-          const { companyId, companyName, monitoringParameters, monitoringTypeId, typeId, brandId, deviceName, relationDeviceId, area, location } = response.data
-          setFieldsValue({ companyId, monitoringTypeId, typeId, brandId, deviceName, relationDeviceId, area, location })
+          const { companyId, companyName, monitoringParameters, monitoringTypeId, typeId, brandName, deviceName, relationDeviceId, area, location } = response.data
+          setFieldsValue({ companyId, monitoringTypeId, typeId, brandName, deviceName, relationDeviceId, area, location })
           this.setState({
             selectedCompany: { id: companyId, name: companyName },
           })
-          this.fetchSensorTypeDict({ payload: { monitoringTypeId, brandId } })
+          this.fetchSensorTypeDict({ payload: { monitoringTypeId } })
           dispatch({
             type: 'sensor/saveState',
             payload: { key: 'monitoringParameters', value: monitoringParameters },
@@ -171,7 +171,7 @@ export default class AddSensor extends Component {
     const { form: { resetFields } } = this.props
     // this.fetchSensorBrandDict({ payload: { monitoringTypeId, typeId } })
     this.fetchSensorTypeDict({ payload: { monitoringTypeId } })
-    resetFields(['typeId', 'brandId'])
+    resetFields(['typeId', 'brandName'])
   }
 
   /**
@@ -196,8 +196,8 @@ export default class AddSensor extends Component {
       form: { setFieldsValue },
     } = this.props
     this.fetchMonitoringParameter({ payload: { typeId } })
-    const selItem = typeDict.find(item => item.key === typeId) || {}
-    setFieldsValue({ brandId: selItem.optional_desc })
+    const selItem = typeDict.find(item => item.id === typeId) || {}
+    setFieldsValue({ brandName: selItem.modelDesc })
   }
 
   /**
@@ -469,16 +469,14 @@ export default class AddSensor extends Component {
               rules: [{ required: true, message: '请选择传感器型号' }],
             })(
               <Select placeholder="请选择" {...itemStyles} onChange={this.handleTypeChange}>
-                {typeDict.map(({ key, value }) => (
-                  <Option key={key} value={key}>{value}</Option>
+                {typeDict.map(({ classModel, id }) => (
+                  <Option key={id} value={id}>{classModel}</Option>
                 ))}
               </Select>
             )}
           </FormItem>
           <FormItem label="品牌" {...formItemLayout}>
-            {getFieldDecorator('brandId', {
-              rules: [{ required: true, message: '请选择品牌' }],
-            })(
+            {getFieldDecorator('brandName')(
               <Input disabled placeholder="请先选择传感器型号" {...itemStyles} />
             )}
           </FormItem>
