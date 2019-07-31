@@ -175,17 +175,6 @@ export default class AddSensor extends Component {
   }
 
   /**
-   * 品牌改变
-   */
-  // handleBrandChange = (brandId) => {
-  //   const { form: { getFieldsValue, resetFields } } = this.props
-  //   const { monitoringTypeId } = getFieldsValue()
-  //   // this.fetchMonitoringTypeDict({ payload: { typeId, brandId } })
-  //   this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } })
-  //   resetFields(['typeId'])
-  // }
-
-  /**
    * 传感器型号改变
    */
   handleTypeChange = (typeId) => {
@@ -464,7 +453,7 @@ export default class AddSensor extends Component {
               </Select>
             )}
           </FormItem>
-          <FormItem label="传感器型号" {...formItemLayout}>
+          <FormItem label="型号代码" {...formItemLayout}>
             {getFieldDecorator('typeId', {
               rules: [{ required: true, message: '请选择传感器型号' }],
             })(
@@ -492,7 +481,7 @@ export default class AddSensor extends Component {
               <Input {...itemStyles} />
             )}
           </FormItem> */}
-          <FormItem label="传感器ID" {...formItemLayout}>
+          <FormItem label="传感器Token" {...formItemLayout}>
             {getFieldDecorator('relationDeviceId', {
               rules: [{ required: true, message: '请输入传感器ID' }],
             })(
