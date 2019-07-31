@@ -268,7 +268,7 @@ export default class Messages extends PureComponent {
                       item =>
                         `${item.createByName} ${vaguePhone(item.createByPhone, phoneVisible) || ''}`
                     )
-                    .join('，')}
+                    .join('、')}
                 </Ellipsis>
               );
             },
@@ -319,7 +319,7 @@ export default class Messages extends PureComponent {
                       item =>
                         `${item.createByName} ${vaguePhone(item.createByPhone, phoneVisible) || ''}`
                     )
-                    .join('，')}
+                    .join('、')}
                 </Ellipsis>
               );
             },
@@ -527,7 +527,7 @@ export default class Messages extends PureComponent {
     };
 
     const detailBtn = cssType ? (
-        <Icon type="right" className={styles.detailArrow}/>
+      <Icon type="right" className={styles.detailArrow} />
     ) : (
       <a className={styles.detailBtn} onClick={onClick}>
         详情
@@ -542,7 +542,7 @@ export default class Messages extends PureComponent {
         {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
         <div
           className={innerClassName}
-          style={{ cursor: cssType &&  onClick ? 'pointer' : 'auto'}}
+          style={{ cursor: cssType && onClick ? 'pointer' : 'auto' }}
           onClick={cssType ? onClick : null}
         >
           {typeIcon}
@@ -559,11 +559,20 @@ export default class Messages extends PureComponent {
             const { name, value, style } = item;
             return (
               <div className={styles.msgBody} key={i}>
-                {name ?
-                  cssType ?
-                    <span className={styles.msgName} style={{ marginRight: `${MAX_NAME_LENGTH - name.length}em` }}>{name}：</span>
-                    : `${name}：`
-                  : ''}
+                {name ? (
+                  cssType ? (
+                    <span
+                      className={styles.msgName}
+                      style={{ marginRight: `${MAX_NAME_LENGTH - name.length}em` }}
+                    >
+                      {name}：
+                    </span>
+                  ) : (
+                    `${name}：`
+                  )
+                ) : (
+                  ''
+                )}
                 <div style={{ flex: 1, ...style }}>
                   {typeof value === 'function' ? value() : value || getEmptyData()}
                 </div>
