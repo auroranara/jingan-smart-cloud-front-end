@@ -91,7 +91,17 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
   }
 
   getGaugeOption = ({ name, value, unit, min, max, normalMin, normalMax, status }) => {
-    const color = status > 0 ? '#f83329' : '#fff';
+    let color, itemColor;
+    if (status > 0) {
+      color = '#f83329';
+      itemColor = '#ff1e00';
+    } else if (status < 0) {
+      color = '#ccc';
+      itemColor = '#ccc';
+    } else {
+      color = '#fff';
+      itemColor = '#1e90ff';
+    }
     return {
       series: [
         {
@@ -109,6 +119,9 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
               ].filter(v => v),
               width: 15,
             },
+          },
+          itemStyle: {
+            color: itemColor,
           },
           splitLine: {
             length: 15,
