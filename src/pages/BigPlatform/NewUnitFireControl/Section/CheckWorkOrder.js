@@ -150,9 +150,6 @@ export default class CheckWorkOrder extends PureComponent {
   }
 
   onChartReadyCallback = chart => {
-    const {
-      countAllFireAndFault: { processNum = 0, waitNum = 0 },
-    } = this.props;
     if (!chart) return;
     let currentIndex = -1;
     const chartAnimate = () => {
@@ -177,6 +174,9 @@ export default class CheckWorkOrder extends PureComponent {
     }, 5000);
 
     chart.on('click', params => {
+      const {
+        countAllFireAndFault: { processNum = 0, waitNum = 0 },
+      } = this.props;
       if (processNum + waitNum === 0) return null;
       const { checkClick, workOrderClick } = this.props;
       const { dataIndex } = params;
