@@ -483,7 +483,7 @@ export default class AddSensor extends Component {
           </FormItem> */}
           <FormItem label="传感器Token" {...formItemLayout}>
             {getFieldDecorator('relationDeviceId', {
-              rules: [{ required: true, message: '请输入传感器ID' }],
+              rules: [{ required: true, message: '请输入传感器Token' }],
             })(
               <Input placeholder="请输入" {...itemStyles} />
             )}

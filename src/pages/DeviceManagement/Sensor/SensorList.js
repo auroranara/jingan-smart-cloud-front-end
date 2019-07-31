@@ -233,7 +233,7 @@ export default class SensorList extends Component {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('relationDeviceId')(
-                  <Input placeholder="传感器ID" />
+                  <Input placeholder="传感器Token" />
                 )}
               </FormItem>
             </Col>
