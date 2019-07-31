@@ -431,6 +431,7 @@ export default class MaintenanceCompanyList extends PureComponent {
                     code={codesMap.maintenanceCompany.detail}
                     codes={codes}
                     to={`/fire-control/maintenance-company/detail/${item.id}`}
+                    target="_blank"
                   >
                     查看
                   </AuthLink>,
@@ -438,6 +439,7 @@ export default class MaintenanceCompanyList extends PureComponent {
                     code={codesMap.maintenanceCompany.edit}
                     codes={codes}
                     to={`/fire-control/maintenance-company/edit/${item.id}`}
+                    target="_blank"
                   >
                     编辑
                   </AuthLink>,
