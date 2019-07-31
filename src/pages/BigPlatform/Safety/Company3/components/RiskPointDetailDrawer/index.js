@@ -42,6 +42,7 @@ const HIDDEN_DANGER_FIELDNAMES = {
 // 巡查字段
 const INSPECTION_FIELDNAMES = {
   date: 'check_date', // 巡查日期
+  source: 'report_source', // 巡查来源
   person: 'check_user_names', // 巡查人
   status: 'status', // 巡查结果
   result({
