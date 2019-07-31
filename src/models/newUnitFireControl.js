@@ -102,18 +102,18 @@ const formatTimeLine = function(timeLine) {
     let type = +item.type;
     let timeLineLabel = '';
     if (type === 1) {
-      timeLineLabel = '隐患创建';
+      timeLineLabel = '创建隐患';
     } else if (type === 2) {
       // 如果index大于1，意味着必然为重新整改
       if (index > 1) {
         timeLineLabel = '重新整改';
       } else {
-        timeLineLabel = '隐患整改';
+        timeLineLabel = '整改隐患';
       }
     } else if (type === 3) {
-      timeLineLabel = '隐患复查';
+      timeLineLabel = '复查隐患';
     } else if (type === 4) {
-      timeLineLabel = '隐患关闭';
+      timeLineLabel = '关闭隐患';
     }
     return {
       ...item,
@@ -126,17 +126,17 @@ const formatTimeLine = function(timeLine) {
   switch (+type) {
     case 1:
       list.push(
-        { timeLineLabel: '隐患整改', id: lastIndex + 1 },
-        { timeLineLabel: '隐患复查', id: lastIndex + 2 }
+        { timeLineLabel: '整改隐患', id: lastIndex + 1 },
+        { timeLineLabel: '复查隐患', id: lastIndex + 2 }
       );
       break;
     case 2:
-      list.push({ timeLineLabel: '隐患复查', id: lastIndex + 1 });
+      list.push({ timeLineLabel: '复查隐患', id: lastIndex + 1 });
       break;
     case 3:
       list.push(
         { timeLineLabel: '重新整改', id: lastIndex + 1 },
-        { timeLineLabel: '隐患复查', id: lastIndex + 2 }
+        { timeLineLabel: '复查隐患', id: lastIndex + 2 }
       );
       break;
     default:
@@ -869,7 +869,6 @@ export default {
       }
     },
     *fetchWebsocketScreenMessage({ payload, success, error }, { call, put }) {
-      console.log('fetchWebsocketScreenMessage', payload);
       if (payload.code === 200) {
         yield put({
           type: 'saveScreenMessage',
@@ -975,7 +974,6 @@ export default {
         error();
       }
     },
-
     // 水系统
     *fetchWaterSystem({ payload }, { call, put }) {
       const response = yield call(queryWaterSystem, payload);
@@ -1018,7 +1016,7 @@ export default {
       if (callback) callback();
     },
     // 获取火灾警报数据详情
-    *fetchWarnDetail({ payload, success }, { call, put }) {
+    *fetchWarnDetail({ payload, success, callback }, { call, put }) {
       const response = yield call(getWarnDetail, payload);
       const {
         code,
@@ -1039,9 +1037,10 @@ export default {
           success();
         }
       }
+      if (callback) callback(response);
     },
     // 获取火灾故障数据列表
-    *fetchFaultDetail({ payload, success }, { call, put }) {
+    *fetchFaultDetail({ payload, success, callback }, { call, put }) {
       const response = yield call(getFaultDetail, payload);
       const {
         code,
@@ -1062,9 +1061,10 @@ export default {
           success();
         }
       }
+      if (callback) callback(response);
     },
     // 获取警报,故障数据详情
-    *fetchAllDetail({ payload, success }, { call, put }) {
+    *fetchAllDetail({ payload, success, callback }, { call, put }) {
       const response = yield call(getAllDetail, payload);
       const {
         code,
@@ -1083,6 +1083,7 @@ export default {
           success();
         }
       }
+      if (callback) callback(response);
     },
     // 消防主机当前火警和故障ids
     *fetchDangerChartId({ payload, callback }, { call, put }) {

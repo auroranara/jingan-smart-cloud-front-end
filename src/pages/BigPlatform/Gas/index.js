@@ -253,7 +253,7 @@ export default class Gas extends PureComponent {
             // });
             let sameIndex;
             alarmIds.forEach((item, i) => {
-              if (item.messageFlag === messageFlag) sameIndex = i;
+              if (item.messageFlag === messageFlag || item.messageFlag === messageFlagForId) sameIndex = i;
             });
             if (sameIndex !== undefined) {
               const newIds = [...alarmIds.slice(0, sameIndex), ...alarmIds.slice(sameIndex + 1)];
@@ -399,7 +399,7 @@ export default class Gas extends PureComponent {
   }) => {
     const options = {
       key: `${messageFlag}_${paramCode}`,
-      duration: null,
+      duration: 30,
       placement: 'bottomLeft',
       className: styles.notification,
       message: (
@@ -418,7 +418,8 @@ export default class Gas extends PureComponent {
           }}
         >
           <div className={styles.notificationText}>
-            <div className={styles.notificationTextFirst}>{moment(addTime).format('HH:mm:ss')}</div>
+            {/* <div className={styles.notificationTextFirst}>{moment(addTime).format('HH:mm:ss')}</div> */}
+            <div className={styles.notificationTextFirst}>刚刚</div>
             <div className={styles.notificationTextSecond}>{companyName}</div>
           </div>
           <div className={styles.notificationText}>

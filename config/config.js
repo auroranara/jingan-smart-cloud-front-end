@@ -18,7 +18,7 @@ const hosts = {
   lm: '192.168.10.2', // 吕旻
   sj: '192.168.10.3', // 沈杰
   gjm: '192.168.10.55', // 顾家铭
-  ct: '192.168.10.8:8080', //陈涛
+  ct: '192.168.10.11:8080', //陈涛
   sqz: '192.168.10.56', //孙启政
   dev: '192.168.10.68:18081', // 开发
   test: 'test.jinganyun.net', // 测试
@@ -75,12 +75,12 @@ export default {
         dynamicImport: true,
         ...(os.platform() === 'darwin'
           ? {
-              dll: {
-                include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-                exclude: ['@babel/runtime'],
-              },
-              hardSource: false,
-            }
+            dll: {
+              include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+              exclude: ['@babel/runtime'],
+            },
+            hardSource: false,
+          }
           : {}),
       },
     ],

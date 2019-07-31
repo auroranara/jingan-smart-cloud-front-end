@@ -249,7 +249,7 @@ function OrderCard(props) {
             showWorkOrderDetail(
               param,
               workOrderType,
-              type,
+              type < 0 ? 1 : type,
               workOrderStatus === 0 ? occurData : undefined,
               cameraMessage || []
             );
@@ -257,56 +257,6 @@ function OrderCard(props) {
         >
           处理动态>>
         </div>
-        {/* <p>
-          <span className={styles.left}>当前状态：</span>
-          <span style={{ color: '#00ffff' }}>{statusStr}</span>
-          <span
-            className={styles.moreDetail}
-            onClick={() => {
-              const param = {
-                id: workOrderType === 3 ? proceId : undefined,
-                dataId:
-                  workOrderType !== 3
-                    ? workOrderType === 2 || workOrderType === 1
-                      ? gasId
-                      : id
-                    : undefined,
-              };
-              const repeat = {
-                times: fireChildren && fireChildren.length,
-                lastreportTime: lastTime,
-              };
-              const occurData = [
-                {
-                  create_time: createTime,
-                  create_date: createDate,
-                  firstTime,
-                  lastTime,
-                  area,
-                  location,
-                  install_address: installAddress,
-                  label: componentName || systemTypeValue,
-                  work_order: workOrder,
-                  systemTypeValue,
-                  createByName,
-                  createByPhone,
-                  faultName,
-                  realtime,
-                  num: fireChildren && fireChildren.length,
-                },
-              ];
-
-              showWorkOrderDetail(
-                param,
-                workOrderType,
-                type,
-                workOrderStatus === 0 ? occurData : undefined
-              );
-            }}
-          >
-            处理动态>>
-          </span>
-        </p> */}
       </div>
     </div>
   );
@@ -396,16 +346,8 @@ export default class NewWorkOrderDrawer extends PureComponent {
           if (document.getElementById(`workOrderScroll`))
             document.getElementById(`workOrderScroll`).scrollTop = 0;
           handleClickTab(num);
+          if (num === 3) handleParentChange({ workOrderSelectType: 'all' });
         },
-        // warnDetailLoading || faultDetailLoading
-        //   ? undefined
-        //   : () => {
-        //       [0, 1].forEach(item => {
-        //         if (document.getElementById(`workOrderScroll${item}`))
-        //           document.getElementById(`workOrderScroll${item}`).scrollTop = 0;
-        //       });
-        //       handleClickTab(index);
-        //     },
       };
     });
 

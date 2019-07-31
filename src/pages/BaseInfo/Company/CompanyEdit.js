@@ -28,7 +28,7 @@ import { phoneReg, emailReg } from '@/utils/validate';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
 import { getToken } from '@/utils/authority';
-import { getCompanyType, getImportantTypes } from '../utils';
+import { getCompanyType, getFileList, getImageSize, getImportantTypes } from '../utils';
 
 import styles from './Company.less';
 import Safety from './Safety';
@@ -88,6 +88,7 @@ const fieldLabels = {
   gridId: '所属网格',
   importantSafety: '安全重点单位',
   importantHost: '消防重点单位',
+  unitPhoto: '单位照片',
 };
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
@@ -190,6 +191,7 @@ export default class CompanyDetail extends PureComponent {
   state = {
     ichnographyList: [],
     firePictureList: [],
+    unitPhotoList: [],
     isCompany: true,
     submitting: false,
     uploading: false,
@@ -242,12 +244,14 @@ export default class CompanyDetail extends PureComponent {
           practicalDistrict,
           companyIchnography,
           fireIchnographyDetails,
+          companyPhotoDetails,
           companyNatureLabel,
           gridId,
           companyType,
         }) => {
           const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
           const fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
+          const unitPhotoList = Array.isArray(companyPhotoDetails) ? companyPhotoDetails : [];
           // 若idMap已获取则设值，未获取时则在获取idMap后设值
           this.gridId = gridId;
           Object.keys(this.idMap).length && setFieldsValue({ gridId: this.idMap[gridId] });
@@ -268,8 +272,15 @@ export default class CompanyDetail extends PureComponent {
                   uid: index,
                   status: 'done',
                 })),
-            firePictureList: fireIchnographyList.map(({ dbUrl, webUrl, fileName }, index) => ({
-              uid: index,
+            firePictureList: fireIchnographyList.map(({ id, dbUrl, webUrl, fileName }, index) => ({
+              uid: id || index,
+              status: 'done',
+              name: fileName,
+              url: webUrl,
+              dbUrl,
+            })),
+            unitPhotoList: unitPhotoList.map(({ id, dbUrl, webUrl, fileName }, index) => ({
+              uid: id || index,
               status: 'done',
               name: fileName,
               url: webUrl,
@@ -468,7 +479,7 @@ export default class CompanyDetail extends PureComponent {
           this.setState({
             submitting: true,
           });
-          const { ichnographyList, firePictureList } = this.state;
+          const { ichnographyList, firePictureList, unitPhotoList } = this.state;
           const [longitude, latitude] = coordinate ? coordinate.split(',') : [];
           const payload = {
             ...restFields,
@@ -487,7 +498,10 @@ export default class CompanyDetail extends PureComponent {
               ichnographyList.map(({ name, url, dbUrl }) => ({ name, url, dbUrl }))
             ),
             fireIchnography: JSON.stringify(
-              firePictureList.map(({ name, webUrl, dbUrl }) => ({ fileName: name, webUrl, dbUrl }))
+              firePictureList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
+            ),
+            companyPhoto: JSON.stringify(
+              unitPhotoList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
             ),
             longitude,
             latitude,
@@ -661,6 +675,28 @@ export default class CompanyDetail extends PureComponent {
     }
   };
 
+  handleUploadUnitPhoto = info => { // 限制一个文件，但有可能新文件上传失败，所以在新文件上传完成后判断，成功则只保留新的，失败，则保留原来的
+    const { fileList: fList, file } = info;
+    let fileList = [...fList];
+
+    if (file.status === 'done') { // 上传完成后，查看图片大小
+      const { response: { data: { list: [{ webUrl }] } } } = file;
+      getImageSize(webUrl, isSatisfied => {
+        if (file.response.code === 200 && isSatisfied)
+          fileList = [file];
+        else {
+          message.error('上传的图片分辨率请不要大于240*320');
+          fileList = fileList.slice(0, 1);
+        }
+        fileList = getFileList(fileList);
+        this.setState({ unitPhotoList: fileList });
+      });
+    } else { // 其他情况，直接用原文件数组
+      fileList = getFileList(fileList);
+      this.setState({ unitPhotoList: fileList });
+    }
+  };
+
   /* 区域动态加载 */
   handleLoadData = (keys, selectedOptions) => {
     const { fetchArea } = this.props;
@@ -771,17 +807,18 @@ export default class CompanyDetail extends PureComponent {
   };
 
   /* 上传文件按钮 */
-  renderUploadButton = ({ fileList, onChange }) => {
+  renderUploadButton = (fileList, onChange, multiple=true) => {
     return (
       <Upload
         name="files"
         data={{
           folder,
         }}
-        multiple
+        multiple={multiple}
         action={uploadAction}
         fileList={fileList}
         onChange={onChange}
+        // beforeUpload={this.handleBeforeUploadUnitPhoto}
         headers={{ 'JA-Token': getToken() }}
       >
         <Button type="dashed" style={{ width: '96px', height: '96px' }}>
@@ -911,7 +948,7 @@ export default class CompanyDetail extends PureComponent {
       },
       form: { getFieldDecorator },
     } = this.props;
-    const { ichnographyList, firePictureList, isCompany, gridTree } = this.state;
+    const { ichnographyList, firePictureList, unitPhotoList, isCompany, gridTree } = this.state;
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -1104,20 +1141,21 @@ export default class CompanyDetail extends PureComponent {
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.companyIchnography}>
-                {this.renderUploadButton({
-                  fileList: ichnographyList,
-                  onChange: this.handleUploadIchnography,
-                })}
+                {this.renderUploadButton(ichnographyList, this.handleUploadIchnography)}
               </Form.Item>
             </Col>
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.fireIchnography}>
-                {this.renderUploadButton({
-                  fileList: firePictureList,
-                  onChange: this.handleUploadfireIchnography,
-                })}
+                {this.renderUploadButton(firePictureList, this.handleUploadfireIchnography)}
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={{ lg: 48, md: 24 }}>
+            <Col lg={8} md={12} sm={24}>
+              <Form.Item label={fieldLabels.unitPhoto}>
+                {this.renderUploadButton(unitPhotoList, this.handleUploadUnitPhoto, false)}
               </Form.Item>
             </Col>
           </Row>

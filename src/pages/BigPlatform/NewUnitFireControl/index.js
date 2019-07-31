@@ -24,6 +24,7 @@ import CurrentHiddenDanger from './Section/CurrentHiddenDanger';
 import DrawerHiddenDangerDetail from './Section/DrawerHiddenDangerDetail';
 import PointPositionName from './Section/PointPositionName';
 import CheckingDrawer from './Section/CheckingDrawer';
+import CheckPointDrawer from './Section/CheckPointDrawer';
 import PointInspectionDrawer from './PointInspectionDrawer';
 import MaintenanceDrawer from './Section/MaintenanceDrawer';
 import DrawerOfFireAlarm from './Section/DrawerOfFireAlarm';
@@ -52,6 +53,7 @@ import FireMonitorFlowDrawer from './Section/FireMonitorFlowDrawer';
 
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
+import iconAlarm from '@/assets/icon-alarm.png';
 import headerBg from '@/assets/new-header-bg.png';
 import videoBtn from '../Monitor/imgs/videoBtn.png';
 
@@ -73,6 +75,7 @@ const msgInfo = [
     body: '发生报警，',
     bottom: '情况危急，请立即处理！',
     animation: styles.redShadow,
+    types: [7, 38, 39],
   },
   {
     title: '故障提示',
@@ -81,14 +84,22 @@ const msgInfo = [
     body: '发生故障，',
     bottom: '请及时维修！',
     animation: styles.orangeShadow,
+    types: [9, 40],
+  },
+  {
+    title: '报警提示',
+    icon: iconAlarm,
+    color: '#f83329',
+    body: '发生报警，',
+    bottom: '情况危急，请立即处理！',
+    animation: styles.redShadow,
+    types: [32, 36],
   },
 ];
 
 const switchMsgType = type => {
-  const alarmTypes = [7, 38, 39, 32, 36];
-  const faultTypes = [9, 40];
-  if (alarmTypes.indexOf(type) >= 0) return msgInfo[0];
-  else if (faultTypes.indexOf(type) >= 0) return msgInfo[1];
+  const msgItem = msgInfo.find(item => item.types.indexOf(type) >= 0) || msgInfo[0];
+  return msgItem;
 };
 
 const popupVisible = {
@@ -151,6 +162,7 @@ const popupVisible = {
     faultDetailLoading: loading.effects['newUnitFireControl/fetchFaultDetail'],
     allDetailLoading: loading.effects['newUnitFireControl/fetchAllDetail'],
     hiddenDangerLoading: loading.effects['bigPlatform/fetchHiddenDangerListForPage'],
+    messageInformListLoading: loading.effects['newUnitFireControl/fetchMessageInformList'],
   })
 )
 export default class NewUnitFireControl extends PureComponent {
@@ -227,6 +239,8 @@ export default class NewUnitFireControl extends PureComponent {
     fireMonitorFlowDrawerVisible: false,
     dynamicType: 0,
     workOrderSelectType: 'all',
+    hdStatus: 5,
+    hiddenDangerIds: [],
   };
 
   componentDidMount() {
@@ -553,6 +567,8 @@ export default class NewUnitFireControl extends PureComponent {
         businessType: 2,
       },
     });
+    // 获取检查点列表
+    dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId } });
     // 获取点位巡查统计
     dispatch({
       type: 'newUnitFireControl/fetchPointInspectionCount',
@@ -658,16 +674,6 @@ export default class NewUnitFireControl extends PureComponent {
         }
       },
     });
-    [1, 2, 3, 4].forEach(item => {
-      // 巡查数量 1 正常,2 异常,3 待检查，4 已超时
-      dispatch({
-        type: 'bigPlatform/fetchCoItemList',
-        payload: {
-          company_id: companyId,
-          status: item,
-        },
-      });
-    });
     // 烟感视频？
     dispatch({ type: 'smoke/fetchCameraTree', payload: { company_id: companyId } });
     // 获取主机列表
@@ -679,7 +685,7 @@ export default class NewUnitFireControl extends PureComponent {
     });
 
     // 安全巡查
-    dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId } });
+    // dispatch({ type: 'unitSafety/fetchPoints', payload: { companyId } });
 
     // 处理工单统计
     dispatch({ type: 'newUnitFireControl/fetchCountAllFireAndFault', payload: { companyId } });
@@ -930,15 +936,6 @@ export default class NewUnitFireControl extends PureComponent {
       },
     });
 
-    // 获取当前隐患列表
-    dispatch({
-      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-      payload: {
-        company_id: companyId,
-        businessType: 2,
-      },
-    });
-
     //获取巡查记录
     dispatch({
       type: 'newUnitFireControl/fetchPointRecord',
@@ -1151,15 +1148,6 @@ export default class NewUnitFireControl extends PureComponent {
       payload: { companyId },
     });
 
-    // 获取当前隐患列表
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-    //   payload: {
-    //     company_id: companyId,
-    //     businessType: 2,
-    //   },
-    // });
-
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
       payload: {
@@ -1177,28 +1165,6 @@ export default class NewUnitFireControl extends PureComponent {
    * 打开检查点抽屉
    */
   handleCheckDrawer = () => {
-    const {
-      dispatch,
-      match: {
-        params: { unitId: companyId },
-      },
-    } = this.props;
-    // 获取检查点列表
-    dispatch({
-      type: 'newUnitFireControl/fetchCheckDetail',
-      payload: {
-        companyId,
-        item_type: 2,
-      },
-    });
-    // 获取当前隐患列表
-    dispatch({
-      type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-      payload: {
-        company_id: companyId,
-        businessType: 2,
-      },
-    });
     this.setState({ checkDrawerVisible: true });
   };
   /**
@@ -1235,13 +1201,28 @@ export default class NewUnitFireControl extends PureComponent {
 
   // 点击查看隐患详情
   handleViewDangerDetail = data => {
+    this.fetchDangerDetail(data.id);
+    this.setState({
+      hiddenDangerIds: [data.id],
+      dangerDetailVisible: true,
+    });
+  };
+
+  // 巡查点击查看隐患详情
+  handleCheckDangerDetail = (ids = []) => {
+    this.fetchDangerDetail(ids[0]);
+    this.setState({
+      hiddenDangerIds: ids,
+      dangerDetailVisible: true,
+    });
+  };
+
+  // 点击查看隐患详情
+  fetchDangerDetail = id => {
     const { dispatch } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchHiddenDangerDetail',
-      payload: { id: data.id },
-    });
-    this.setState({
-      dangerDetailVisible: true,
+      payload: { id },
     });
   };
   /**
@@ -1425,16 +1406,6 @@ export default class NewUnitFireControl extends PureComponent {
       (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || 5;
     this.setState({ hdStatus: status });
     // 获取当前隐患列表
-    // dispatch({
-    //   type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-    //   payload: {
-    //     company_id: companyId,
-    //     businessType: 2,
-    //     status:
-    //       (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || null,
-    //   },
-    //   callback,
-    // });
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
       payload: {
@@ -1614,7 +1585,7 @@ export default class NewUnitFireControl extends PureComponent {
     // });
   };
 
-  getAllDetail = (status, type = 1, pageNum, params = {}) => {
+  getAllDetail = (status, type = 1, pageNum, params = {}, callback) => {
     // status 0 待处理 1 处理中 2 已处理
     const {
       dispatch,
@@ -1634,6 +1605,7 @@ export default class NewUnitFireControl extends PureComponent {
         pageSize: 10,
         ...params,
       },
+      callback,
     });
   };
 
@@ -1683,7 +1655,7 @@ export default class NewUnitFireControl extends PureComponent {
     fetchDetail(workOrderStatus, workOrderType, 1);
   };
 
-  getWarnDetail = (status, type = 1, pageNum, params = {}) => {
+  getWarnDetail = (status, type = 1, pageNum, params = {}, callback) => {
     // status 0 待处理 1 处理中 2 已处理
     const {
       dispatch,
@@ -1703,10 +1675,11 @@ export default class NewUnitFireControl extends PureComponent {
         pageSize: 10,
         ...params,
       },
+      callback,
     });
   };
 
-  getFaultDetail = (status, type = 1, pageNum, params = {}) => {
+  getFaultDetail = (status, type = 1, pageNum, params = {}, callback) => {
     // status 0 待处理 1 处理中 2 已处理
     const {
       dispatch,
@@ -1726,6 +1699,7 @@ export default class NewUnitFireControl extends PureComponent {
         pageSize: 10,
         ...params,
       },
+      callback,
     });
   };
 
@@ -1850,11 +1824,11 @@ export default class NewUnitFireControl extends PureComponent {
   };
 
   // 获取消息人员列表
-  fetchMessageInformList = ids => {
+  fetchMessageInformList = params => {
     const { dispatch } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchMessageInformList',
-      payload: { ids },
+      payload: { ...params },
     });
   };
 
@@ -1886,12 +1860,17 @@ export default class NewUnitFireControl extends PureComponent {
         payload: { companyId, reportType: reportTypes[type], ...param },
       });
     }
+    this.fetchMessageInformList(param);
     this.setState({
       [drawerVisibles[type]]: true,
       msgFlow: flow,
       dynamicType: type,
       videoList: cameraMessage,
     });
+    Array.isArray(cameraMessage) &&
+      cameraMessage.length > 0 &&
+      type !== 3 &&
+      this.handleShowFlowVideo();
   };
 
   handleShowAlarmFlows = flow => {
@@ -1909,7 +1888,16 @@ export default class NewUnitFireControl extends PureComponent {
         const ids = flow === 0 ? fireId : faultId;
         const { id, status } = ids[0];
         const fetchFlow = flow === 0 ? this.getWarnDetail : this.getFaultDetail;
-        fetchFlow(status, 0, 1, { id, status });
+        fetchFlow(status, 0, 1, { id, status }, res => {
+          const {
+            data: {
+              list: [{ cameraMessage }],
+            },
+          } = res;
+          this.setState({ videoList: cameraMessage || [] });
+          Array.isArray(cameraMessage) && cameraMessage.length > 0 && this.handleShowFlowVideo();
+        });
+        this.fetchMessageInformList({ dataId: id });
         this.setState({ fireMonitorFlowDrawerVisible: true, msgFlow: flow });
       },
     });
@@ -1949,6 +1937,7 @@ export default class NewUnitFireControl extends PureComponent {
     ];
     const reportTypes = [1, 4, 3, 2];
     isHidePopups && this.hiddeAllPopup();
+    this.fetchMessageInformList(param);
     if (type !== 3) {
       // 待处理请求重复上报次数，第一次、最后一次上报时间
       // 返回null则状态已到处理中或已完成
@@ -2017,6 +2006,10 @@ export default class NewUnitFireControl extends PureComponent {
       dynamicType: type,
       videoList: cameraMessage,
     });
+    Array.isArray(cameraMessage) &&
+      cameraMessage.length > 0 &&
+      type !== 3 &&
+      this.handleShowFlowVideo();
     // this.handleShowFireVideo(cameraMessage);
   };
 
@@ -2095,6 +2088,7 @@ export default class NewUnitFireControl extends PureComponent {
         countAllFireAndFault,
         countFinishByUserId,
         dangerChartId: { fireId = [], faultId = [] },
+        messageInformList,
       },
       smoke: { companySmokeInfo },
       electricityMonitor: {
@@ -2113,6 +2107,7 @@ export default class NewUnitFireControl extends PureComponent {
       faultDetailLoading,
       allDetailLoading,
       hiddenDangerLoading,
+      messageInformListLoading,
     } = this.props;
 
     const {
@@ -2174,6 +2169,7 @@ export default class NewUnitFireControl extends PureComponent {
       fireMonitorFlowDrawerVisible,
       dynamicType,
       workOrderSelectType,
+      hiddenDangerIds,
     } = this.state;
     const headProps = {
       ...workOrderDetail[0],
@@ -2402,7 +2398,7 @@ export default class NewUnitFireControl extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         {/**检查点抽屉 */}
-        <CheckingDrawer
+        {/* <CheckingDrawer
           visible={checkDrawerVisible}
           companyId={companyId}
           checkCount={checkCount}
@@ -2413,10 +2409,23 @@ export default class NewUnitFireControl extends PureComponent {
               checkDrawerVisible: false,
             });
           }}
+        /> */}
+        {/**检查点抽屉 */}
+        <CheckPointDrawer
+          visible={checkDrawerVisible}
+          data={points}
+          currentHiddenDanger={currentHiddenDanger}
+          handlePointDrawer={this.handlePointDrawer}
+          onClose={() => {
+            this.setState({
+              checkDrawerVisible: false,
+            });
+          }}
         />
         {/**点位名称抽屉 */}
         <PointPositionName
           visible={pointDrawerVisible}
+          points={points}
           pointRecordLists={pointRecordLists}
           checkAbnormal={checkAbnormal}
           currentHiddenDanger={currentHiddenDanger}
@@ -2425,6 +2434,7 @@ export default class NewUnitFireControl extends PureComponent {
           checkItemId={checkItemId}
           count={count}
           handlePointDangerDetail={this.handleViewDangerDetail}
+          handleCheckDangerDetail={this.handleCheckDangerDetail}
           onClose={() => {
             this.setState({
               pointDrawerVisible: false,
@@ -2487,8 +2497,11 @@ export default class NewUnitFireControl extends PureComponent {
         {/* 隐患详情抽屉 */}
         <DrawerHiddenDangerDetail
           visible={dangerDetailVisible}
+          handleParentChange={this.handleParentChange}
           onClose={this.handleCloseDetailOfDanger}
           data={timestampList}
+          hiddenDangerIds={hiddenDangerIds}
+          fetchDangerDetail={this.fetchDangerDetail}
         />
         <WorkOrderDrawer
           data={{ workOrderList1, workOrderList2, workOrderList7 }}
@@ -2650,6 +2663,8 @@ export default class NewUnitFireControl extends PureComponent {
           msgFlow={msgFlow}
           phoneVisible={phoneVisible}
           headProps={headProps}
+          messageInformList={messageInformList}
+          messageInformListLoading={messageInformListLoading}
           head={true}
         />
         {/* 独立烟感处理动态 */}
@@ -2664,6 +2679,8 @@ export default class NewUnitFireControl extends PureComponent {
           msgFlow={msgFlow}
           phoneVisible={phoneVisible}
           headProps={headProps}
+          messageInformList={messageInformList}
+          messageInformListLoading={messageInformListLoading}
           head={true}
         />
         {/* 一键报修处理动态 */}
@@ -2676,6 +2693,8 @@ export default class NewUnitFireControl extends PureComponent {
           PrincipalPhone={PrincipalPhone}
           phoneVisible={phoneVisible}
           headProps={headProps}
+          messageInformList={messageInformList}
+          messageInformListLoading={messageInformListLoading}
           head={true}
         />
         {/* 燃气处理动态 */}
@@ -2689,6 +2708,8 @@ export default class NewUnitFireControl extends PureComponent {
           PrincipalPhone={PrincipalPhone}
           phoneVisible={phoneVisible}
           headProps={headProps}
+          messageInformList={messageInformList}
+          messageInformListLoading={messageInformListLoading}
           head={true}
         />
         {/* 设置抽屉 */}
@@ -2714,6 +2735,9 @@ export default class NewUnitFireControl extends PureComponent {
           getWarnDetail={this.getWarnDetail}
           getFaultDetail={this.getFaultDetail}
           handleShowFlowVideo={this.handleShowFlowVideo}
+          messageInformList={messageInformList}
+          messageInformListLoading={messageInformListLoading}
+          fetchMessageInformList={this.fetchMessageInformList}
         />
       </BigPlatformLayout>
     );

@@ -11,6 +11,8 @@ import {
   getMapList,
   getCompanySmokeInfo,
   fetchCameraTree,
+  getDeviceCountChart, // 历史状态图表数据
+  getDeviceList, // 传感器列表
 } from '../services/smoke';
 // 获取单位集
 const getUnitSet = function(units) {
@@ -66,6 +68,7 @@ export default {
       fireByYear: 0,
       // 本年历史火警
       fireByQuarter: 0,
+      companysList: [],
     },
     // 异常单位统计数据
     unNormalCount: {
@@ -145,6 +148,14 @@ export default {
       dataByCompany: [],
       list: [],
     },
+    // 历史状态图表数据
+    deviceCountChartData: {
+      list: [],
+    },
+    // 单位传感器列表
+    deviceListData: {
+      list: [],
+    },
   },
 
   effects: {
@@ -178,6 +189,7 @@ export default {
             fireByMonth,
             fireByYear,
             fireByQuarter,
+            companys,
           },
         } = response;
         const statisticsData = {
@@ -196,6 +208,7 @@ export default {
           fireByYear,
           // 本年历史火警
           fireByQuarter,
+          companysList: companys,
         };
         const pay = {
           statisticsData,
@@ -237,8 +250,9 @@ export default {
           data: { list: units },
         } = response;
         const pay = {
-          unitSet: getUnitSet(units),
-          unitIds: units.map(({ company_id }) => company_id),
+          // unitSet: getUnitSet(units),
+          unitSet: units,
+          unitIds: units.map(({ companyId }) => companyId),
         };
         yield put({
           type: 'save',
@@ -409,6 +423,37 @@ export default {
         error(response);
       }
     },
+    // 历史状态图表数据
+    *fetchDeviceCountChart({ payload, success, error }, { call, put }) {
+      const response = yield call(getDeviceCountChart, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveDeviceCountChart',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response);
+      }
+    },
+
+    // 传感器列表
+    *fetchUnitDeviceList({ payload, success, error }, { call, put }) {
+      const response = yield call(getDeviceList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveDeviceList',
+          payload: response.data,
+        });
+        if (success) {
+          success(response.data);
+        }
+      } else if (error) {
+        error(response);
+      }
+    },
   },
   reducers: {
     // 保存
@@ -458,6 +503,22 @@ export default {
       return {
         ...state,
         companySmokeInfo: payload,
+      };
+    },
+
+    // 获取历史状态图表数据
+    saveDeviceCountChart(state, { payload }) {
+      return {
+        ...state,
+        deviceCountChartData: payload,
+      };
+    },
+
+    // 获取传感器列表
+    saveDeviceList(state, { payload }) {
+      return {
+        ...state,
+        deviceListData: payload,
       };
     },
   },

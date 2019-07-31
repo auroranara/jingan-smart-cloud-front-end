@@ -7,6 +7,7 @@ import MapTypeBar from './MapTypeBar';
 import pointNormal from './imgs/point-normal.png';
 import pointAlarm from './imgs/point-alarm.png';
 import pointPreAlarm from './imgs/point-preAlarm.png';
+import pointLoss from './imgs/point-loss.png';
 import iconAddress from './imgs/icon-address.png';
 import iconMan from './imgs/icon-man.png';
 
@@ -35,6 +36,12 @@ function MapLegend(props) {
         </div>
         故障单位
       </div>
+      <div className={styles.legendItem}>
+        <div className={styles.legendIcon}>
+          <div className={styles.legendColor} style={{ backgroundColor: '#9f9f9f' }} />
+        </div>
+        失联单位
+      </div>
     </div>
   );
 }
@@ -44,15 +51,15 @@ export default class MapSection extends PureComponent {
     this.state = {
       infoWindowShow: false,
       infoWindow: {
-        companyId: '',
-        companyName: '',
-        principalName: '',
-        principalPhone: '',
-        count: 0,
-        normal: 0,
-        unnormal: 0,
-        faultNum: 0,
-        outContact: 0,
+        company_id: '',
+        company_name: '',
+        principal_name: '',
+        principal_phone: '',
+        // count: 0,
+        // normal: 0,
+        // unnormal: 0,
+        // faultNum: 0,
+        // outContact: 0,
         address: '',
         longitude: 120.366011,
         latitude: 31.544389,
@@ -65,7 +72,11 @@ export default class MapSection extends PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const { units } = this.props;
+    const {
+      units,
+      // statisticsData: { companysList },
+    } = this.props;
+
     const { units: prevUnits } = prevProps;
     const { infoWindowShow, infoWindow } = this.state;
     if (JSON.stringify(units) !== JSON.stringify(prevUnits) && infoWindowShow) {
@@ -77,18 +88,22 @@ export default class MapSection extends PureComponent {
   }
 
   renderMarkers = lvl => {
-    const { units = [], unitDetail: { companyId: selectedCompanyId } = {} } = this.props;
-    if (units.length === 0) {
+    const {
+      statisticsData: { companysList = [] },
+      unitDetail: { companyId: selectedCompanyId } = {},
+    } = this.props;
+
+    if (companysList.length === 0) {
       if (this.mapInstance) this.mapInstance.setCity(region);
     }
-    const markers = units.map(item => {
+    const markers = companysList.map(item => {
       return {
         ...item,
         position: {
           longitude: item.longitude,
           latitude: item.latitude,
         },
-        zIndex: selectedCompanyId === item.companyId ? 999 : 100,
+        zIndex: selectedCompanyId === item.company_id ? 999 : 100,
       };
     });
 
@@ -114,13 +129,20 @@ export default class MapSection extends PureComponent {
   };
 
   renderMarkerLayout = extData => {
-    const { companyName, companyId, unnormal, faultNum } = extData;
+    const { units } = this.props;
+
+    const { company_name, company_id } = extData;
+    const filterUnits = units.filter(item => item.companyId === company_id);
+    const [{ fault, outContact, unnormal } = {}] = filterUnits;
+
     let imgSrc = pointNormal;
 
     if (+unnormal > 0) {
       imgSrc = pointAlarm;
-    } else if (+faultNum > 0) {
+    } else if (+fault > 0) {
       imgSrc = pointPreAlarm;
+    } else if (+outContact > 0) {
+      imgSrc = pointLoss;
     } else {
       imgSrc = pointNormal;
     }
@@ -128,7 +150,7 @@ export default class MapSection extends PureComponent {
       <div
         style={{ position: 'relative' }}
         className={+unnormal > 0 ? styles.imgAnimate : styles.imgContainer}
-        key={companyId}
+        key={company_id}
       >
         <img
           src={imgSrc}
@@ -141,7 +163,7 @@ export default class MapSection extends PureComponent {
           onMouseEnter={e => {
             if (this.target === e.target) return;
             this.target = e.target;
-            this.props.showTooltip(e, companyName);
+            this.props.showTooltip(e, company_name);
           }}
           onMouseLeave={this.props.hideTooltip}
         />
@@ -150,7 +172,8 @@ export default class MapSection extends PureComponent {
   };
 
   handleMapClick = extData => {
-    if (extData.companyId === this.state.infoWindow.companyId && this.state.infoWindowShow) return;
+    if (extData.company_id === this.state.infoWindow.company_id && this.state.infoWindowShow)
+      return;
     const { fetchMapInfo } = this.props;
     // clearPollingMap();
     // pollingMap();
@@ -164,14 +187,34 @@ export default class MapSection extends PureComponent {
   };
 
   renderTips = () => {
-    const { units = [], alarmIds = [], handleAlarmClick } = this.props;
+    const {
+      units = [],
+      statisticsData: { companysList = [] },
+      alarmIds = [],
+      handleAlarmClick,
+    } = this.props;
+
     const tips = alarmIds.map(data => {
       return {
         ...units.find(item => item.companyId === data.companyId),
+        unnormal: units
+          .filter(item => item.companyId === data.companyId)
+          .map(item => item.unnormal)
+          .join(''),
+        longitude: companysList
+          .filter(item => item.company_id === data.companyId)
+          .map(item => item.longitude)
+          .join(''),
+        latitude: companysList
+          .filter(item => item.company_id === data.companyId)
+          .map(item => item.latitude)
+          .join(''),
         messageFlag: data.messageFlag,
         messageFlagForId: data.messageFlagForId,
       };
     });
+    console.log('tips', tips);
+
     return tips.map((item, index) => {
       return item.unnormal > 0 ? (
         <Marker
@@ -182,8 +225,19 @@ export default class MapSection extends PureComponent {
           extData={item}
           events={{
             click: e => {
-              const { messageFlag, companyId, companyName, messageFlagForId } = item;
-              handleAlarmClick(messageFlagForId || messageFlag, companyId, companyName);
+              const {
+                messageFlag,
+                companyId: company_id,
+                companyName: company_name,
+                messageFlagForId,
+              } = item;
+              handleAlarmClick(
+                messageFlagForId || messageFlag,
+                undefined,
+                company_id,
+                company_name,
+                1
+              );
               const newIds = [...alarmIds.slice(0, index), ...alarmIds.slice(index + 1)];
               this.props.handleParentChange({ alarmIds: newIds });
             },
@@ -207,19 +261,25 @@ export default class MapSection extends PureComponent {
       infoWindowShow,
       infoWindow: {
         address,
-        principalName,
-        principalPhone,
-        companyName,
-        companyId,
+        principal_name,
+        principal_phone,
+        company_name,
+        company_id,
         longitude,
         latitude,
-        count,
-        normal,
-        unnormal,
-        faultNum,
+        // count,
+        // normal,
+        // unnormal,
+        // fault,
+        // outContact,
       },
     } = this.state;
-    const { handleAlarmClick, handleCompanyClick, handleFaultClick } = this.props;
+
+    const { handleAlarmClick, handleCompanyClick, handleFaultClick, units } = this.props;
+
+    const filterUnits = units.filter(item => item.companyId === company_id);
+    const [{ count, normal, fault, outContact, unnormal } = {}] = filterUnits;
+
     return (
       <InfoWindow
         position={{ longitude, latitude }}
@@ -227,17 +287,17 @@ export default class MapSection extends PureComponent {
         isCustom={false}
         autoMove={true}
         visible={infoWindowShow}
-        key={companyId}
+        key={company_id}
       >
         <div className={styles.comapnyWrapper}>
           <h3
             className={styles.comapnyName}
             style={{ cursor: 'pointer' }}
             onClick={() => {
-              handleCompanyClick(companyId);
+              handleCompanyClick(company_id);
             }}
           >
-            {companyName}
+            {company_name}
           </h3>
           <div className={styles.info}>
             <span
@@ -257,8 +317,8 @@ export default class MapSection extends PureComponent {
                 backgroundSize: '100% 100%',
               }}
             />
-            {principalName}
-            <span style={{ marginLeft: '10px' }}>{principalPhone}</span>
+            {principal_name}
+            <span style={{ marginLeft: '10px' }}>{principal_phone}</span>
           </div>
           <div style={{ borderTop: '1px solid #474747', margin: '8px 0', paddingTop: '8px' }}>
             设备数量 {count}
@@ -272,7 +332,7 @@ export default class MapSection extends PureComponent {
               className={+unnormal > 0 ? styles.itemActive : styles.statusItem}
               onClick={() => {
                 if (+unnormal > 0) {
-                  handleAlarmClick(undefined, companyId, companyName, +unnormal);
+                  handleAlarmClick(undefined, undefined, company_id, company_name, 1, +unnormal);
                 } else {
                   return null;
                 }
@@ -282,17 +342,30 @@ export default class MapSection extends PureComponent {
               火警 {unnormal > 0 ? unnormal : 0}
             </div>
             <div
-              className={+faultNum > 0 ? styles.itemActive : styles.statusItem}
+              className={+fault > 0 ? styles.itemActive : styles.statusItem}
               onClick={() => {
-                if (+faultNum > 0) {
-                  handleFaultClick(undefined, companyId, companyName, +faultNum);
+                if (+fault > 0) {
+                  handleFaultClick(undefined, company_id, company_name, 2, +fault);
                 } else {
                   return null;
                 }
               }}
             >
               <span className={styles.statusIcon} style={{ backgroundColor: '#ffb400' }} />
-              故障 {faultNum}
+              故障 {fault}
+            </div>
+            <div
+            // className={+outContact > 0 ? styles.itemActive : styles.statusItem}
+            // onClick={() => {
+            //   if (+outContact > 0) {
+            //     handleFaultClick(undefined, company_id, company_name, 3, +outContact);
+            //   } else {
+            //     return null;
+            //   }
+            // }}
+            >
+              <span className={styles.statusIcon} style={{ backgroundColor: '#9f9f9f' }} />
+              失联 {outContact}
             </div>
           </div>
         </div>

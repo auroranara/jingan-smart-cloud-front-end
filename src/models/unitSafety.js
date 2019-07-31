@@ -798,6 +798,7 @@ export default {
               fix_img_id,
               status,
               risk_level,
+              originalStatus,
             } = point;
             // 如果为风险点
             if (+item_type === 2) {
@@ -813,6 +814,10 @@ export default {
               obj[statusDict[+status]]++;
               obj[levelDict[+risk_level]]++;
               obj[`${levelDict[+risk_level]}${capitalStatusDict[+status]}PointList`].push(point);
+              if (+originalStatus === 2) {
+                obj.risky += 1;
+                obj[`${levelDict[+risk_level]}RiskyPointList`].push(point);
+              }
             }
             return obj;
           },
@@ -828,6 +833,12 @@ export default {
             abnormal: 0,
             pending: 0,
             overtime: 0,
+            risky: 0,
+            redRiskyPointList: [],
+            orangeRiskyPointList: [],
+            yellowRiskyPointList: [],
+            blueRiskyPointList: [],
+            grayRiskyPointList: [],
             redNormalPointList: [],
             redAbnormalPointList: [],
             redPendingPointList: [],

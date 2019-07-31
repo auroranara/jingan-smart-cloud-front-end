@@ -1,13 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import ReactEcharts from 'echarts-for-react';
+import classNames from 'classnames';
 import Section from '../Section';
 import RiskPointPieLegend from '../../../Components/RiskPointPieLegend';
 import splitLine from '@/assets/split-line.png';
-import pendingIcon from '@/assets/icon_pending_inspection.png';
-import abnormalIcon from '@/assets/icon_abnormal.png';
-import overtimeIcon from '@/assets/icon_overtime.png';
-import normalIcon from '@/assets/icon_normal.png';
+import verticalSplitLine from '../../imgs/vertical-split-line.png';
 // 引入样式文件
 import styles from './index.less';
 
@@ -110,10 +108,8 @@ export default class RiskPoint extends PureComponent {
           yellow=0,
           blue=0,
           gray=0,
-          normal=0,
-          abnormal=0,
-          pending=0,
           overtime=0,
+          risky=0,
         }={},
       },
       // 点击事件
@@ -227,40 +223,24 @@ export default class RiskPoint extends PureComponent {
           <div className={styles.splitLineWrapper}><div className={styles.splitLine} style={{ backgroundImage: `url(${splitLine})` }} /></div>
           {/* 统计信息 */}
           <div className={styles.bottom}>
-            <div
-              className={normal?styles.hoverable:undefined}
-              style={{ backgroundImage: `url(${normalIcon})` }}
-              onClick={() => {normal && handleClick('riskPoint', { riskPointType: { key: 'status', value: '正常' } });}}
-            >
-              <div className={styles.countLabel}>正常<span style={{ opacity: 0 }}>隐藏</span></div>
-              <div className={styles.countValue}>{normal}</div>
+            <div className={styles.bottomItem}>
+              <div
+                className={classNames(styles.bottomItemContent, risky && styles.enableClick)}
+                onClick={() => {risky && handleClick('riskPoint', { riskPointType: { key: 'status', value: '有隐患' } });}}
+              >
+                <div className={styles.bottomItemContentTop}>{risky}</div>
+                <div className={styles.bottomItemContentBottom}>有隐患</div>
+              </div>
             </div>
-
-            <div
-              className={pending?styles.hoverable:undefined}
-              style={{ backgroundImage: `url(${pendingIcon})` }}
-              onClick={() => {pending && handleClick('riskPoint', { riskPointType: { key: 'status', value: '待检查' } });}}
-            >
-              <div className={styles.countLabel}>待检查<span style={{ opacity: 0 }}>隐</span></div>
-              <div className={styles.countValue}>{pending}</div>
-            </div>
-
-            <div
-              className={abnormal?styles.hoverable:undefined}
-              style={{ backgroundImage: `url(${abnormalIcon})` }}
-              onClick={() => {abnormal && handleClick('riskPoint', { riskPointType: { key: 'status', value: '异常' } });}}
-            >
-              <div className={styles.countLabel}>异常<span style={{ opacity: 0 }}>隐藏</span></div>
-              <div className={styles.countValue}>{abnormal}</div>
-            </div>
-
-            <div
-              className={overtime?styles.hoverable:undefined}
-              style={{ backgroundImage: `url(${overtimeIcon})` }}
-              onClick={() => {overtime && handleClick('riskPoint', { riskPointType: { key: 'status', value: '已超时' } });}}
-            >
-              <div className={styles.countLabel}>已超时<span style={{ opacity: 0 }}>隐</span></div>
-              <div className={styles.countValue}>{overtime}</div>
+            <div className={styles.verticalSplitLine} style={{ backgroundImage: `url(${verticalSplitLine})` }} />
+            <div className={styles.bottomItem}>
+              <div
+                className={classNames(styles.bottomItemContent, overtime && styles.enableClick)}
+                onClick={() => {overtime && handleClick('riskPoint', { riskPointType: { key: 'status', value: '已超时' } });}}
+              >
+                <div className={styles.bottomItemContentTop}>{overtime}</div>
+                <div className={styles.bottomItemContentBottom}>超时未查</div>
+              </div>
             </div>
           </div>
         </div>

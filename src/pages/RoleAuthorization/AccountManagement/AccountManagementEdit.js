@@ -1233,7 +1233,9 @@ export default class AccountManagementEdit extends PureComponent {
               unitTypeChecked === GOV && (
                 <Col lg={24} md={24} sm={24}>
                   <Form.Item label={fieldLabels.gridIds}>
-                    {getFieldDecorator('gridIds', {})(
+                    {getFieldDecorator('gridIds', {
+                      rules: [{ required: true, message: '请选择所属网格' }],
+                    })(
                       <TreeSelect
                         allowClear
                         treeCheckable
@@ -1389,8 +1391,8 @@ export default class AccountManagementEdit extends PureComponent {
                         )}
                       </Fragment>
                     ) : (
-                      <span>暂无数据</span>
-                    )}
+                        <span>暂无数据</span>
+                      )}
                   </div>
                   <div className={styles.line}>
                     <span>分公司及其服务单位：</span>
@@ -1418,8 +1420,8 @@ export default class AccountManagementEdit extends PureComponent {
                         )}
                       </Fragment>
                     ) : (
-                      <span>暂无数据</span>
-                    )}
+                        <span>暂无数据</span>
+                      )}
                   </div>
                 </div>
               </Col>
@@ -1489,10 +1491,10 @@ export default class AccountManagementEdit extends PureComponent {
         render: txt => {
           return txt
             ? txt.split('\n').map((t, i) => (
-                <p key={i} className={styles1.example}>
-                  {t}
-                </p>
-              ))
+              <p key={i} className={styles1.example}>
+                {t}
+              </p>
+            ))
             : txt;
         },
       },

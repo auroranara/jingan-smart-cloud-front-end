@@ -15,7 +15,7 @@ import {
 const FormItem = Form.Item;
 const TYPE = 'fire';
 const { RangePicker } = DatePicker;
-const RING_LABELS = ['处理中', '已处理', '超时结束'];
+const RING_LABELS = ['处理中', '已处理', '待处理'];
 const RING_COLORS = ['0,255,255', '0,186,255', '188,188,189'];
 
 @connect(({ smoke }) => ({
@@ -62,13 +62,20 @@ export default class FireStatisticsDrawer extends PureComponent {
       form: { getFieldDecorator },
       smoke: {
         fireHistoryData: {
-          fireCompanyList: { startDate, endDate, list = [] },
+          fireCompanyList: {
+            startDate,
+            endDate,
+            list = [],
+            finish_execute,
+            ing_execute,
+            wait_execute,
+          },
         },
       },
       type,
     } = this.props;
 
-    const rings = [0, 0, 0].map((n, i) => ({
+    const rings = [ing_execute, finish_execute, wait_execute].map((n, i) => ({
       name: RING_LABELS[i],
       value: n,
       itemStyle: { color: `rgb(${RING_COLORS[i]})` },

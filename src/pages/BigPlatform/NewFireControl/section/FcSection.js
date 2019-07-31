@@ -24,8 +24,6 @@ export default class FcSection extends PureComponent {
       height: '100%',
       backfaceVisibility: 'hidden',
       WebkitBackfaceVisibility: 'hidden',
-      // boxShadow: '0 0 1.1em rgba(9, 103, 211, 0.9) inset',
-      // background: 'rgba(9,103,211,0.1)',
       boxShadow: 'rgba(0, 0, 0, 0.6) 5px 5px 10px',
       background: 'rgb(3,48,105)',
       border: '1px solid rgb(2,252,250)',
@@ -38,14 +36,8 @@ export default class FcSection extends PureComponent {
         {title ? (
           // <h3 className={styles.title}>
           //   <span className={styles.dot} />
-          <h3
-            className={styles.title}
-            style={{ backgroundImage: `url(${titleBg})` }}
-          >
-            <span
-              className={styles.dot}
-              style={{ backgroundImage: `url(${titleDot})` }}
-            />
+          <h3 className={styles.title} style={{ backgroundImage: `url(${titleBg})` }}>
+            <span className={styles.dot} style={{ backgroundImage: `url(${titleDot})` }} />
             {title}
             {backTitle && (
               <span className={styles.back} onClick={handleBack}>

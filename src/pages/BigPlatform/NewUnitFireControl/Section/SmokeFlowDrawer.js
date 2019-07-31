@@ -46,15 +46,30 @@ export default class SmokeFlowDrawer extends PureComponent {
       phoneVisible,
       head = false,
       headProps = {},
+      messageInformList = [],
+      messageInformListLoading = false,
       ...restProps
     } = this.props;
     const { index } = this.state;
     const list = (Array.isArray(data) ? data : []).slice(0, 1);
     const length = list.length;
     const dataItem = list[0] || {};
-    // 判断是否是维保处理，维保处理动态时，显示流程图，故障处理动态时不显示流程图
-    // const isMaintenance = title.includes('维保');
-
+    const read = messageInformList.filter(item => +item.status === 1).map(item => {
+      return { ...item, id: item.user_id, name: item.add_user_name };
+    });
+    const unread = messageInformList.filter(item => +item.status === 0).map(item => {
+      return { ...item, id: item.user_id, name: item.add_user_name };
+    });
+    const headContent = head && (
+      <DynamicDrawerTop
+        {...headProps}
+        {...dataItem}
+        read={read}
+        unread={unread}
+        msgType={msgFlow}
+        msgSendLoading={messageInformListLoading}
+      />
+    );
     // 维保只有一个，故障可能是一个或多个
     let left = null;
     if (length) {
@@ -158,12 +173,12 @@ export default class SmokeFlowDrawer extends PureComponent {
       left =
         length === 1 ? (
           <Fragment>
-            {head && <DynamicDrawerTop {...headProps} {...dataItem} />}
+            {headContent}
             {cards}
           </Fragment>
         ) : (
           <Fragment>
-            {head && <DynamicDrawerTop {...headProps} {...dataItem} />}
+            {headContent}
             <SwitchHead
               index={index}
               title={TITLES[msgFlow]}
@@ -183,11 +198,12 @@ export default class SmokeFlowDrawer extends PureComponent {
       <DrawerContainer
         id={ID}
         title={`${TITLES[msgFlow]}处理动态`}
+        destroyOnClose
         zIndex={1388}
         width={535}
         left={left}
         visible={visible}
-        leftParStyle={{ display: 'flex', flexDirection: 'column' }}
+        leftParStyle={{ display: 'flex', flexDirection: 'column', overflow: 'auto' }}
         {...restProps}
       />
     );

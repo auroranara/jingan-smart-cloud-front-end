@@ -8,7 +8,7 @@
   position: relative;
 
   p {
-    color: #9F9F9F;
+    color: #fff;
     // margin-left: 10px;
     margin-bottom: 8px;
   }
@@ -19,6 +19,28 @@
 
   p:first-child {
     color: #fff;
+    font-size: 16px;
+
+    .line {
+      color: #fff;
+      width: auto;
+    }
+
+    .last {
+      color: #fff;
+      width: auto;
+    }
+  }
+
+  .line {
+    color: #8198B4;
+    display: inline-block;
+    width: 5.5em;
+  }
+
+  .last {
+    .line;
+    color: #0ff;
   }
 
   .title {
@@ -55,8 +77,8 @@
 }
 
 .timeline {
-  flex: 1;
-  overflow: auto;
+  // flex: 1;
+  // overflow: auto;
   margin-top: 40px;
   padding: 35px 0 0 5px;
   border-top: 1px solid rgb(2, 148, 170);
@@ -65,10 +87,11 @@
     .ant-timeline-item-head {
       width: 11px;
       height: 11px;
+      border-color: #0ff;
     }
 
     .ant-timeline-item-tail {
-      border-color: rgba(0, 186, 255);
+      border-color: #0ff;
     }
   }
 

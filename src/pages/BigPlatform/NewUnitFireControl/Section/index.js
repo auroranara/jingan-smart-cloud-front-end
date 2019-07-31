@@ -10,7 +10,7 @@ import styles from './index.less';
  * author: sunkai
  * date: 2018年12月03日
  */
-export default class App extends PureComponent {
+export default class Section extends PureComponent {
   render() {
     const {
       // 容器类名
@@ -28,6 +28,7 @@ export default class App extends PureComponent {
       // 内容样式
       contentStyle,
       // 是否显示滚动条
+      scrollStyle,
       isScroll,
     } = this.props;
     // 合并后的类名
@@ -35,19 +36,24 @@ export default class App extends PureComponent {
 
     return (
       <div className={containerClassName} style={style}>
-          <div className={styles.title} style={{ backgroundImage: `url(${titleBg})`, ...titleStyle }}>
-            {title}
-            {extra && <span className={styles.extra}>{extra}</span>}
-          </div>
+        <div className={styles.title} style={{ backgroundImage: `url(${titleBg})`, ...titleStyle }}>
+          {title}
+          {extra && <span className={styles.extra}>{extra}</span>}
+        </div>
+        <div
+          className={styles.content}
+          style={{
+            // backgroundImage: `url(${contentBg})`,
+            ...contentStyle,
+          }}
+        >
           <div
-            className={styles.content}
-            style={{
-              // backgroundImage: `url(${contentBg})`,
-              ...contentStyle,
-            }}
-            >
-            <div className={styles.scroll} style={{ overflow: isScroll ? 'auto' : 'hidden', height: '100%' }}>{children}</div>
+            className={styles.scroll}
+            style={{ overflow: isScroll ? 'auto' : 'hidden', height: '100%', ...scrollStyle }}
+          >
+            {children}
           </div>
+        </div>
       </div>
     );
   }

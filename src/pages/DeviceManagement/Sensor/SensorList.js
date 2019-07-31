@@ -39,10 +39,19 @@ const {
 export default class SensorList extends Component {
 
   componentDidMount() {
+    const {
+      form: { setFieldsValue },
+      sensor: {
+        sensorSearchInfo = {},
+      },
+    } = this.props
+    const { pageNum, pageSize, ...values } = sensorSearchInfo
+    setFieldsValue({ ...values })
     this.fetchMonitoringTypeDict()
-    this.fetchSensorBrandDict()
+    // this.fetchSensorBrandDict()
     this.fetchSensorTypeDict()
-    this.handleQuery()
+    // this.fetchSensors({ payload: { pageNum: 1, pageSize: defaultPageSize, ...sensorSearchInfo } })
+    this.handleQuery(pageNum, pageSize)
   }
 
 
@@ -69,19 +78,6 @@ export default class SensorList extends Component {
     })
   }
 
-
-  /**
-   * 获取传感器品牌列表（字典）
-   */
-  fetchSensorBrandDict = (actions) => {
-    const { dispatch } = this.props
-    dispatch({
-      type: 'sensor/fetchSensorBrandDict',
-      ...actions,
-    })
-  }
-
-
   /**
    * 获取传感器类型列表（字典）
    */
@@ -89,6 +85,18 @@ export default class SensorList extends Component {
     const { dispatch } = this.props
     dispatch({
       type: 'sensor/fetchSensorTypeDict',
+      ...actions,
+    })
+  }
+
+
+  /**
+   * 保存筛选信息
+   */
+  saveSearchInfo = (actions) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/saveSensorSearchInfo',
       ...actions,
     })
   }
@@ -101,6 +109,7 @@ export default class SensorList extends Component {
     this.fetchSensors({
       payload: { pageNum, pageSize, ...values },
     })
+    this.saveSearchInfo({ payload: { ...values, pageSize, pageNum } })
   }
 
   handleReset = () => {
@@ -110,7 +119,7 @@ export default class SensorList extends Component {
     resetFields()
     this.handleQuery()
     this.fetchMonitoringTypeDict()
-    this.fetchSensorBrandDict()
+    // this.fetchSensorBrandDict()
     this.fetchSensorTypeDict()
   }
 
@@ -136,22 +145,22 @@ export default class SensorList extends Component {
    * 筛选栏检测类型改变
    */
   handlemonitoringTypeChange = (monitoringTypeId) => {
-    const { getFieldValue } = this.props.form
-    const brandId = getFieldValue('brandId')
+    // const { getFieldValue } = this.props.form
+    // const brandId = getFieldValue('brandId')
     // this.fetchSensorBrandDict({ payload: { monitoringTypeId } })
-    this.fetchSensorTypeDict({ payload: { monitoringTypeId, brandId } })
+    this.fetchSensorTypeDict({ payload: { monitoringTypeId } })
   }
 
 
   /**
    * 筛选栏品牌改变
    */
-  handleBrandChange = (brandId) => {
-    const { getFieldValue } = this.props.form
-    const monitoringTypeId = getFieldValue('monitoringTypeId')
-    // this.fetchMonitoringTypeDict({ payload: { brand } })
-    this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } })
-  }
+  // handleBrandChange = (brandId) => {
+  //   const { getFieldValue } = this.props.form
+  //   const monitoringTypeId = getFieldValue('monitoringTypeId')
+  //   // this.fetchMonitoringTypeDict({ payload: { brand } })
+  //   this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } })
+  // }
 
 
   /**
@@ -172,7 +181,7 @@ export default class SensorList extends Component {
         // 监测类型字典
         monitoringTypeDict = [],
         // 传感器品牌字典
-        brandDict = [],
+        // brandDict = [],
         // 传感器型号字典
         typeDict = [],
       },
@@ -191,7 +200,7 @@ export default class SensorList extends Component {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('monitoringTypeId')(
-                  <Select placeholder="监测类型" onChange={this.handlemonitoringTypeChange} dropdownStyle={{ zIndex: 50 }}>
+                  <Select placeholder="监测类型" onChange={this.handlemonitoringTypeChange} dropdownStyle={{ zIndex: 50 }} allowClear>
                     {monitoringTypeDict.map(({ value, key }) => (
                       <Option key={key} value={key}>{value}</Option>
                     ))}
@@ -199,7 +208,7 @@ export default class SensorList extends Component {
                 )}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
+            {/* <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('brandId')(
                   <Select placeholder="品牌" onChange={this.handleBrandChange} dropdownStyle={{ zIndex: 50 }}>
@@ -209,13 +218,13 @@ export default class SensorList extends Component {
                   </Select>
                 )}
               </FormItem>
-            </Col>
+            </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('typeId')(
-                  <Select placeholder="传感器型号" dropdownStyle={{ zIndex: 50 }}>
-                    {typeDict.map(({ value, key }) => (
-                      <Option key={key} value={key}>{value}</Option>
+                {getFieldDecorator('modelName')(
+                  <Select placeholder="型号代码" dropdownStyle={{ zIndex: 50 }} allowClear>
+                    {typeDict.map(({ classModel }) => (
+                      <Option key={classModel} value={classModel}>{classModel}</Option>
                     ))}
                   </Select>
                 )}
@@ -224,7 +233,7 @@ export default class SensorList extends Component {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('relationDeviceId')(
-                  <Input placeholder="传感器ID" />
+                  <Input placeholder="传感器Token" />
                 )}
               </FormItem>
             </Col>
@@ -271,25 +280,31 @@ export default class SensorList extends Component {
         width: 150,
       },
       {
+        title: '型号代码',
+        dataIndex: 'typeCode',
+        align: 'center',
+        width: 150,
+      },
+      {
         title: '品牌',
-        dataIndex: 'brand',
+        dataIndex: 'brandName',
         align: 'center',
         width: 150,
       },
       {
-        title: '传感器型号',
-        dataIndex: 'type',
+        title: '型号',
+        dataIndex: 'modelName',
         align: 'center',
         width: 150,
       },
       {
-        title: '传感器名称',
+        title: '描述',
         dataIndex: 'deviceName',
         align: 'center',
         width: 150,
       },
       {
-        title: '传感器ID',
+        title: '传感器Token',
         dataIndex: 'relationDeviceId',
         align: 'center',
         width: 150,

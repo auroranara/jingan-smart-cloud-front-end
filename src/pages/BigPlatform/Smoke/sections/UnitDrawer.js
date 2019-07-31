@@ -127,6 +127,7 @@ export default class UnitDrawer extends PureComponent {
             faultNum,
             normal,
             count,
+            outContact,
           }) => (
             <DrawerCard
               key={company_id}
@@ -139,11 +140,11 @@ export default class UnitDrawer extends PureComponent {
                 count &&
                 (() =>
                   handleClickUnitStatistics({
-                    companyId: company_id,
-                    companyName: company_name,
+                    company_id,
+                    company_name,
                     address,
-                    principalName: principal_name,
-                    principalPhone: principal_phone,
+                    principal_name,
+                    principal_phone,
                     normal,
                     unnormal,
                     faultNum,
@@ -163,11 +164,11 @@ export default class UnitDrawer extends PureComponent {
                     onClick={() => {
                       count &&
                         handleClickUnitStatistics({
-                          companyId: company_id,
-                          companyName: company_name,
+                          company_id,
+                          company_name,
                           address,
-                          principalName: principal_name,
-                          principalPhone: principal_phone,
+                          principal_name,
+                          principal_phone,
                           normal,
                           unnormal,
                           faultNum,
@@ -192,7 +193,14 @@ export default class UnitDrawer extends PureComponent {
                         className={unnormal > 0 ? styles.itemActive : ''}
                         onClick={() =>
                           unnormal > 0
-                            ? handleAlarmClick(undefined, company_id, company_name, unnormal)
+                            ? handleAlarmClick(
+                                undefined,
+                                undefined,
+                                company_id,
+                                company_name,
+                                1,
+                                unnormal
+                              )
                             : ''
                         }
                       />
@@ -203,9 +211,20 @@ export default class UnitDrawer extends PureComponent {
                         className={faultNum > 0 ? styles.itemActive : ''}
                         onClick={() =>
                           faultNum > 0
-                            ? handleFaultClick(undefined, company_id, company_name, faultNum)
+                            ? handleFaultClick(undefined, company_id, company_name, 2, faultNum)
                             : ''
                         }
+                      />
+                      <DotItem
+                        title="失联"
+                        color={`rgb(159,159,159)`}
+                        quantity={outContact}
+                        // className={outContact > 0 ? styles.itemActive : ''}
+                        // onClick={() =>
+                        //   outContact > 0
+                        //     ? handleFaultClick(undefined, company_id, company_name, 3, outContact)
+                        //     : ''
+                        // }
                       />
                       <DotItem title="正常" color={`rgb(55,164,96)`} quantity={normal} />
                     </p>

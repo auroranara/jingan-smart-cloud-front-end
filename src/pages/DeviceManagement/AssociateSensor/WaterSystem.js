@@ -488,7 +488,7 @@ export default class SensorCompanyList extends Component {
         align: 'center',
       },
       {
-        title: '传感器ID',
+        title: '传感器Token',
         dataIndex: 'relationDeviceId',
         align: 'center',
       },
@@ -530,7 +530,7 @@ export default class SensorCompanyList extends Component {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('deviceNo')(
-                  <Input placeholder="传感器ID" />
+                  <Input placeholder="传感器Token" />
                 )}
               </FormItem>
             </Col>
@@ -586,7 +586,7 @@ export default class SensorCompanyList extends Component {
         align: 'center',
       },
       {
-        title: '传感器ID',
+        title: '传感器Token',
         dataIndex: 'relationDeviceId',
         align: 'center',
       },

@@ -10,6 +10,7 @@ export default {
     smoke: 'dashboard.smokeView',
     operation: 'dashboard.operationView',
     threedgis: 'dashboard.threedgis',
+    gasStation: 'dashboard.gasStation',
   },
   role: {
     list: 'roleAuthorization.role.listView',
@@ -87,6 +88,7 @@ export default {
       add: 'deviceManagement.sensorModel.add',
       edit: 'deviceManagement.sensorModel.edit',
       copy: 'deviceManagement.sensorModel.copy',
+      delete: 'deviceManagement.sensorModel.delete',
       model: {
         listView: 'deviceManagement.sensorModel.model.listView',
         add: 'deviceManagement.sensorModel.model.add',
@@ -302,6 +304,15 @@ export default {
       delete: 'riskControl.riskPointManage.delete',
       riskAssessmentView: 'riskControl.riskPointManage.riskAssessmentView',
       riskCardView: 'riskControl.riskPointManage.riskCardView',
+    },
+    // 风险点管理
+    gridPointManage: {
+      listView: 'riskControl.gridPointManage.listView',
+      view: 'riskControl.gridPointManage.view',
+      add: 'riskControl.gridPointManage.add',
+      edit: 'riskControl.gridPointManage.edit',
+      delete: 'riskControl.gridPointManage.delete',
+      detailView: 'riskControl.gridPointManage.detailView',
     },
   },
 };

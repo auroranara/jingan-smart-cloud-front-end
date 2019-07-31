@@ -97,12 +97,15 @@
       margin: 8px 0;
       padding-top: 8px;
       overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
 
       .statusItem {
-        float: left;
-        width: 24.5%;
-        text-align: center;
+        // float: left;
+        // min-width: 24.5%;
+        text-align: left;
         border: 1px solid transparent;
+        padding-right: 8px;
 
         .statusIcon {
           display: inline-block;
@@ -260,7 +263,8 @@
     height: 42px;
   }
 
-  .imgDot, .imgDot1 {
+  .imgDot,
+  .imgDot1 {
     color: #000;
     position: absolute;
     top: 0;

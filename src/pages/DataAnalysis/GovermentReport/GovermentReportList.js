@@ -25,6 +25,8 @@ import styles from './GovermentReport.less';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 const title = '政府监督报表';
+// 默认每页显示数量
+const defaultPageSize = 10;
 
 /* 面包屑 */
 const breadcrumbList = [
@@ -85,19 +87,19 @@ export default class App extends PureComponent {
 
     /* 默认除操作列以外的表格列 */
     const defaultColumns = [
-      {
-        title: '上报途径',
-        dataIndex: 'itemTypeName',
-      },
-      {
-        title: '点位名称',
-        dataIndex: 'object_title',
-        render: val => (
-          <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
-            {val}
-          </Ellipsis>
-        ),
-      },
+      // {
+      //   title: '上报途径',
+      //   dataIndex: 'itemTypeName',
+      // },
+      // {
+      //   title: '点位名称',
+      //   dataIndex: 'object_title',
+      //   render: val => (
+      //     <Ellipsis tooltip length={14} style={{ overflow: 'visible' }}>
+      //       {val}
+      //     </Ellipsis>
+      //   ),
+      // },
       {
         title: '检查人',
         dataIndex: 'check_user_names',
@@ -120,8 +122,8 @@ export default class App extends PureComponent {
           value === '异常' ? (
             <Badge status="error" text={value} />
           ) : (
-            <Badge status="success" text={value} />
-          ),
+              <Badge status="success" text={value} />
+            ),
       },
       {
         title: '隐患情况',
@@ -158,28 +160,24 @@ export default class App extends PureComponent {
           const {
             check_id,
             company_name,
-            itemTypeName,
             check_user_names,
             check_date,
             checkResultName,
             object_title,
-            _id,
+            end_time,
           } = text;
-          return itemTypeName !== '随手拍' ? (
+          const startDate = moment(check_date).format('YYYY-MM-DD')
+          const endDate = moment(end_time).format('YYYY-MM-DD')
+          const date = check_date === end_time ? moment(check_date).format('YYYY-MM-DD HH:mm') : startDate === endDate ? `${moment(check_date).format('YYYY-MM-DD HH:mm')}~${moment(end_time).format('HH:mm')}` : `${startDate}~${endDate}`
+          return (
             <Link
               to={`/data-analysis/goverment-report/detail/${check_id}?companyName=${company_name}&&object_title=${encodeURIComponent(
                 object_title
-              )}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
+              )}&&check_user_names=${check_user_names}&&check_date=${date}&&checkResultName=${checkResultName}`}
             >
               查看
             </Link>
-          ) : (
-            <Link
-              to={`/data-analysis/goverment-report/govermentCheckDetail/${_id}?newGovId=${_id}`}
-            >
-              查看
-            </Link>
-          );
+          )
         },
       },
     ];
@@ -225,7 +223,7 @@ export default class App extends PureComponent {
       pageSize: 10,
     };
 
-    const { pageNum, pageSize, startTime, endTime, ...rest } = payload;
+    const { pageNum = 1, pageSize = defaultPageSize, startTime, endTime, companyName, ...rest } = payload;
     // 重置控件
     setFieldsValue({
       createTime:
@@ -236,13 +234,7 @@ export default class App extends PureComponent {
     });
 
     // 获取列表
-    dispatch({
-      type: 'maintenanceReport/fetchMaintenancList',
-      payload: {
-        ...payload,
-        reportSource: 2,
-      },
-    });
+    this.handleSearch(pageNum, pageSize)
 
     // 获取网格列表
     dispatch({
@@ -254,7 +246,7 @@ export default class App extends PureComponent {
     });
 
     // 根据用户类型获取单位
-    payload.company_id &&
+    payload.companyId &&
       dispatch({
         type: 'hiddenDangerReport/fetchUnitListFuzzy',
         payload: {
@@ -268,43 +260,41 @@ export default class App extends PureComponent {
   /**
    * 查询
    */
-  handleSearch = () => {
+  handleSearch = (pageNum = 1, pageSize = defaultPageSize) => {
     const {
       dispatch,
       form: { getFieldsValue },
-      maintenanceReport: {
-        data: {
-          pagination: { pageSize },
-        },
-      },
       hiddenDangerReport: { unitIdes },
       user: {
-        currentUser: { id },
+        currentUser: { id, companyId: cId, unitType },
       },
     } = this.props;
-    const { createTime, company_id, ...rest } = getFieldsValue();
+    const { createTime, companyId: serCId, ...rest } = getFieldsValue();
     const [startTime, endTime] = createTime || [];
+    // 企业用户登录传currentUser中的企业id
+    const companyId = unitType === 4 ? cId : serCId
     const payload = {
       ...rest,
-      pageNum: 1,
+      pageNum,
       pageSize,
-      company_id,
+      companyId,
       companyName:
-        unitIdes.find(item => item.id === company_id) &&
-        unitIdes.find(item => item.id === company_id).name,
+        unitIdes.find(item => item.id === companyId) &&
+        unitIdes.find(item => item.id === companyId).name,
       startTime: startTime && `${startTime.format('YYYY/MM/DD')} 00:00:00`,
       endTime: endTime && `${endTime.format('YYYY/MM/DD')} 23:59:59`,
     };
+    const searchInfo = unitType === 4 ? { ...payload, companyId: null } : payload
     // 获取列表
     dispatch({
-      type: 'maintenanceReport/fetchMaintenancList',
+      type: 'maintenanceReport/fetchMaintenanceCheckForGov',
       payload: {
         ...payload,
-        reportSource: 2,
+        // reportSource: 2,
       },
     });
     // 保存筛选条件
-    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
+    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(searchInfo));
   };
 
   /**
@@ -312,28 +302,19 @@ export default class App extends PureComponent {
    */
   handleReset = () => {
     const {
-      dispatch,
       form: { setFieldsValue },
     } = this.props;
     // 重置控件
     setFieldsValue({
       gridId: undefined,
-      company_id: undefined,
+      companyId: undefined,
       createTime: undefined,
-      itemType: undefined,
-      objectTitle: undefined,
+      // itemType: undefined,
+      // objectTitle: undefined,
       checkUserName: undefined,
       checkResult: undefined,
     });
     this.handleSearch();
-    dispatch({
-      type: 'hiddenDangerReport/fetchUnitListFuzzy',
-      payload: {
-        // unitName: value && value.trim(),
-        pageNum: 1,
-        pageSize: 10,
-      },
-    });
   };
 
   /**
@@ -357,59 +338,6 @@ export default class App extends PureComponent {
     });
   };
 
-  /**
-   * 加载更多
-   */
-  handleLoadMore = (num, size) => {
-    const {
-      dispatch,
-      form: { setFieldsValue },
-      user: {
-        currentUser: { id },
-      },
-    } = this.props;
-    // 从sessionStorage中获取存储的控件值
-    const fieldsValue = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
-      pageNum: 1,
-      pageSize: 10,
-    };
-    const { pageNum, pageSize, startTime, endTime, company_id, companyName, ...rest } = fieldsValue;
-    // 重置控件
-    setFieldsValue({
-      gridId: undefined,
-      companyName: undefined,
-      itemType: undefined,
-      objectTitle: undefined,
-      checkUserName: undefined,
-      checkResult: undefined,
-      createTime:
-        startTime && endTime
-          ? [moment(startTime, 'YYYY/MM/DD HH:mm:ss'), moment(endTime, 'YYYY/MM/DD HH:mm:ss')]
-          : [],
-      ...rest,
-    });
-    // 获取列表
-    dispatch({
-      type: 'maintenanceReport/fetchMaintenancList',
-      payload: {
-        ...fieldsValue,
-        pageNum: num,
-        pageSize: size,
-        reportSource: 2,
-      },
-    });
-
-    // 保存筛选条件
-    sessionStorage.setItem(
-      `${sessionPrefix}${id}`,
-      JSON.stringify({
-        ...fieldsValue,
-        pageNum: 1,
-        pageSize: size,
-      })
-    );
-  };
-
   // 单位下拉框输入
   handleUnitIdChange = value => {
     const { dispatch } = this.props;
@@ -429,7 +357,10 @@ export default class App extends PureComponent {
    **/
   renderFilterForm() {
     const {
-      maintenanceReport: { reportingChannelsList, checkResultList },
+      maintenanceReport: {
+        // reportingChannelsList,
+        checkResultList,
+      },
       form: { getFieldDecorator },
       hiddenDangerReport: { gridList, unitIdes },
       loading,
@@ -461,7 +392,7 @@ export default class App extends PureComponent {
           {!this.isCompany && (
             <Col xl={8} md={12} sm={24} xs={24}>
               <Form.Item label={fieldLabels.company_name}>
-                {getFieldDecorator('company_id')(
+                {getFieldDecorator('companyId')(
                   <AutoComplete
                     allowClear
                     mode="combobox"
@@ -496,7 +427,7 @@ export default class App extends PureComponent {
             </Form.Item>
           </Col>
           {/* 上报途径 */}
-          <Col xl={8} md={12} sm={24} xs={24}>
+          {/* <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.reporting_channels}>
               {getFieldDecorator('itemType')(
                 <Select
@@ -513,13 +444,13 @@ export default class App extends PureComponent {
                 </Select>
               )}
             </Form.Item>
-          </Col>
+          </Col> */}
           {/* 点位名称 */}
-          <Col xl={8} md={12} sm={24} xs={24}>
+          {/* <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.item_name}>
               {getFieldDecorator('objectTitle')(<Input placeholder="请输入" />)}
             </Form.Item>
-          </Col>
+          </Col> */}
           {/* 检查人 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item label={fieldLabels.check_user}>
@@ -548,7 +479,7 @@ export default class App extends PureComponent {
           {/* 按钮 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item>
-              <Button type="primary" onClick={this.handleSearch} style={{ marginRight: 16 }}>
+              <Button type="primary" onClick={() => this.handleSearch()} style={{ marginRight: 16 }}>
                 查询
               </Button>
               <Button onClick={this.handleReset} style={{ marginRight: 16 }}>
@@ -594,17 +525,17 @@ export default class App extends PureComponent {
           // showTotal: (total) => `共 ${total} 条`,
           showQuickJumper: true,
           showSizeChanger: true,
-          onChange: this.handleLoadMore,
+          onChange: this.handleSearch,
           onShowSizeChange: (num, size) => {
-            this.handleLoadMore(1, size);
+            this.handleSearch(1, size);
           },
         }}
       />
     ) : (
-      <div style={{ textAlign: 'center' }}>
-        <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>
-      </div>
-    );
+        <div style={{ textAlign: 'center' }}>
+          <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>
+        </div>
+      );
   }
 
   /**

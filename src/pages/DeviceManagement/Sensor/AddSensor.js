@@ -47,42 +47,22 @@ export default class AddSensor extends Component {
         params: { id },
       },
       form: { setFieldsValue },
-    } = this.props;
-    this.fetchMonitoringTypeDict();
-    this.fetchSensorBrandDict();
+    } = this.props
+    this.fetchMonitoringTypeDict()
+    // this.fetchSensorBrandDict()
     // 如果编辑
     if (id) {
       // 获取传感器详情
       dispatch({
         type: 'sensor/fetchSensorDetail',
         payload: { id },
-        callback: response => {
-          const {
-            companyId,
-            companyName,
-            monitoringParameters,
-            monitoringTypeId,
-            typeId,
-            brandId,
-            deviceName,
-            relationDeviceId,
-            area,
-            location,
-          } = response.data;
-          setFieldsValue({
-            companyId,
-            monitoringTypeId,
-            typeId,
-            brandId,
-            deviceName,
-            relationDeviceId,
-            area,
-            location,
-          });
+        callback: (response) => {
+          const { companyId, companyName, monitoringParameters, monitoringTypeId, typeId, brandName, deviceName, relationDeviceId, area, location } = response.data
+          setFieldsValue({ companyId, monitoringTypeId, typeId, brandName, deviceName, relationDeviceId, area, location })
           this.setState({
             selectedCompany: { id: companyId, name: companyName },
-          });
-          this.fetchSensorTypeDict({ payload: { monitoringTypeId, brandId } });
+          })
+          this.fetchSensorTypeDict({ payload: { monitoringTypeId } })
           dispatch({
             type: 'sensor/saveState',
             payload: { key: 'monitoringParameters', value: monitoringParameters },
@@ -190,35 +170,27 @@ export default class AddSensor extends Component {
   /**
    * 监测类型改变
    */
-  handlemonitoringTypeChange = monitoringTypeId => {
-    const {
-      form: { getFieldsValue, resetFields },
-    } = this.props;
-    const { brandId } = getFieldsValue();
+  handlemonitoringTypeChange = (monitoringTypeId) => {
+    const { form: { resetFields } } = this.props
     // this.fetchSensorBrandDict({ payload: { monitoringTypeId, typeId } })
-    this.fetchSensorTypeDict({ payload: { monitoringTypeId, brandId } });
-    resetFields(['typeId']);
-  };
+    this.fetchSensorTypeDict({ payload: { monitoringTypeId } })
+    resetFields(['typeId', 'brandName'])
+  }
 
   /**
-   * 品牌改变
+   * 传感器型号改变
    */
-  handleBrandChange = brandId => {
+  handleTypeChange = (typeId) => {
     const {
-      form: { getFieldsValue, resetFields },
-    } = this.props;
-    const { monitoringTypeId } = getFieldsValue();
-    // this.fetchMonitoringTypeDict({ payload: { typeId, brandId } })
-    this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } });
-    resetFields(['typeId']);
-  };
-
-  /**
-   * 类型改变
-   */
-  handleTypeChange = typeId => {
-    this.fetchMonitoringParameter({ payload: { typeId } });
-  };
+      sensor: {
+        typeDict = [],
+      },
+      form: { setFieldsValue },
+    } = this.props
+    this.fetchMonitoringParameter({ payload: { typeId } })
+    const selItem = typeDict.find(item => item.id === typeId) || {}
+    setFieldsValue({ brandName: selItem.modelDesc })
+  }
 
   /**
    * 打开配置报警策略
@@ -488,44 +460,26 @@ export default class AddSensor extends Component {
               </Select>
             )}
           </FormItem>
-          <FormItem label="品牌" {...formItemLayout}>
-            {getFieldDecorator('brandId', {
-              rules: [{ required: false, message: '请选择品牌' }],
-            })(
-              <Select
-                placeholder="请选择"
-                {...itemStyles}
-                onChange={this.handleBrandChange}
-                allowClear
-              >
-                {brandDict.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
-          <FormItem label="传感器型号" {...formItemLayout}>
+          <FormItem label="型号代码" {...formItemLayout}>
             {getFieldDecorator('typeId', {
               rules: [{ required: true, message: '请选择传感器型号' }],
             })(
-              <Select
-                placeholder="请选择"
-                {...itemStyles}
-                onChange={this.handleTypeChange}
-                allowClear
-              >
-                {typeDict.map(({ key, value }) => (
-                  <Option key={key} value={key}>
-                    {value}
-                  </Option>
+              <Select placeholder="请选择" {...itemStyles} onChange={this.handleTypeChange}>
+                {typeDict.map(({ classModel, id }) => (
+                  <Option key={id} value={id}>{classModel}</Option>
                 ))}
               </Select>
             )}
           </FormItem>
-          <FormItem label="传感器名称" {...formItemLayout}>
-            {getFieldDecorator('deviceName')(<Input placeholder="请输入" {...itemStyles} />)}
+          <FormItem label="品牌" {...formItemLayout}>
+            {getFieldDecorator('brandName')(
+              <Input disabled placeholder="请先选择传感器型号" {...itemStyles} />
+            )}
+          </FormItem>
+          <FormItem label="描述" {...formItemLayout}>
+            {getFieldDecorator('deviceName')(
+              <Input placeholder="请输入" {...itemStyles} />
+            )}
           </FormItem>
           {/* <FormItem label="传感器位号" {...formItemLayout}>
             {getFieldDecorator('b', {
@@ -534,10 +488,12 @@ export default class AddSensor extends Component {
               <Input {...itemStyles} />
             )}
           </FormItem> */}
-          <FormItem label="传感器ID" {...formItemLayout}>
+          <FormItem label="传感器Token" {...formItemLayout}>
             {getFieldDecorator('relationDeviceId', {
-              rules: [{ required: true, message: '请输入传感器ID' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
+              rules: [{ required: true, message: '请输入传感器Token' }],
+            })(
+              <Input placeholder="请输入" {...itemStyles} />
+            )}
           </FormItem>
           {typeId && (
             <FormItem label="监测参数" {...formItemLayout}>

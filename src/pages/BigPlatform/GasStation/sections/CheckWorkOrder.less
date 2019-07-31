@@ -1,0 +1,58 @@
+.container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+
+  .legendContainer {
+    color: #fff;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 12px;
+
+    .legend {
+      cursor: pointer;
+      .circle {
+        display: inline-block;
+        border-radius: 50%;
+        width: 14px;
+        height: 14px;
+        margin-right: 6px;
+        position: relative;
+        top: 3px;
+      }
+
+      .number {
+        display: inline-block;
+        margin-left: 6px;
+      }
+
+      &+.legend {
+        margin-left: 8px;
+      }
+    }
+  }
+}
+
+.circleContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.emptyCircle {
+  font-size: 30px;
+  height: 80%;
+  border: 16px solid #334d6e;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

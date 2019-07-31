@@ -42,17 +42,18 @@ const HIDDEN_DANGER_FIELDNAMES = {
 // 巡查字段
 const INSPECTION_FIELDNAMES = {
   date: 'check_date', // 巡查日期
+  source: 'report_source', // 巡查来源
   person: 'check_user_names', // 巡查人
   status: 'status', // 巡查结果
   result({
     data: {
-      overTime=0,
-      rectifyNum=0,
-      reviewNum=0,
-      finish=0,
+      overTimeId=[],
+      rectifyId=[],
+      reviewId=[],
+      finishId=[],
     }={},
   }) {
-    return [overTime, rectifyNum, reviewNum, finish];
+    return [overTimeId.length, rectifyId.length, reviewId.length, finishId.length];
   }, // 处理结果
 };
 
@@ -61,7 +62,10 @@ const INSPECTION_FIELDNAMES = {
  */
 @connect(({ unitSafety, loading }) => ({
   unitSafety,
-  loading: loading.models.unitSafety,
+  loading1: loading.effects['unitSafety/fetchRiskPointHiddenDangerList'],
+  loading2: loading.effects['unitSafety/fetchRiskPointInspectionList'],
+  loading3: loading.effects['unitSafety/fetchRiskPointHiddenDangerCount'],
+  loading4: loading.effects['unitSafety/fetchRiskPointInspectionCount'],
 }))
 export default class RiskPointDetailDrawer extends PureComponent {
   state = {
@@ -236,7 +240,10 @@ export default class RiskPointDetailDrawer extends PureComponent {
           },
         }={},
       },
-      loading,
+      loading1,
+      loading2,
+      loading3,
+      loading4,
     } = this.props;
     const { tabKey, subTabKey } = this.state;
     let subTabs, Item, list, fieldNames, key, restProps, backgroundImage, pageSize, pageNum, total;
@@ -320,7 +327,7 @@ export default class RiskPointDetailDrawer extends PureComponent {
         sectionProps={{
           refScroll: this.setScrollReference,
           scrollProps: { className: styles.scrollContainer },
-          spinProps: { loading },
+          spinProps: { loading: loading1 || loading2 || loading3 || loading4 || false },
           fixedContent: (
             <Fragment>
               <div className={styles.titleWrapper}>

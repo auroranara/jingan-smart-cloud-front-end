@@ -641,7 +641,7 @@ export default class App extends PureComponent {
     // 重置控件
     setFieldsValue({
       grid_id: undefined,
-      company_id: undefined,
+      // company_id: undefined,
       code: undefined,
       report_source: undefined,
       status: undefined,
@@ -1136,7 +1136,7 @@ export default class App extends PureComponent {
         }}
       />
     ) : (
-      <div style={{ textAlign: 'center' ,height:'150px',lineHeight:'150px'}}>
+      <div style={{ textAlign: 'center', height: '150px', lineHeight: '150px' }}>
         <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>
       </div>
     );

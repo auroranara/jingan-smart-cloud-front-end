@@ -20,6 +20,7 @@ const NO_DATA = '暂无信息';
 
 export default function NewTimelineCard(props) {
   const { dataList, style, flowImg, showHead = true, loading = false, ...restProps } = props;
+  const dataLength = dataList.filter(item => item.cardItems).length;
 
   const users = new Array(17).fill({
     id: '1',
@@ -34,7 +35,7 @@ export default function NewTimelineCard(props) {
   return (
     <div
       className={styles.container}
-      style={{ height: '100%', display: 'flex', flexDirection: 'column', ...style }}
+      style={{ height: 'auto', display: 'flex', flexDirection: 'column', ...style }}
       {...restProps}
     >
       {showHead && (
@@ -54,6 +55,16 @@ export default function NewTimelineCard(props) {
             {dataList.map((item, index) => {
               const { label, time, cardItems, msgInfo, repeat } = item;
               // const { read, unread } = msgInfo;
+              const isLast = dataLength - 1 === index;
+              const labelClassName = isLast ? styles.last : styles.line;
+              const labelStyle =
+                index < dataLength - 1
+                  ? { color: '#0296B2', borderColor: '#0296B2' }
+                  : dataLength - 1 === index
+                    ? { color: '#0ff', borderColor: '#0ff' }
+                    : { color: '#4f6793', borderColor: '#4f6793' };
+              const timeStyle = { color: isLast ? '#fff' : '#8198B4' };
+              const containerStyle = { borderColor: isLast ? '#0ff' : '#0296B2' };
               return (
                 <TimelineItem
                   spans={SPANS}
@@ -61,7 +72,9 @@ export default function NewTimelineCard(props) {
                   day={getTime(time)}
                   hour={getTime(time, 1)}
                   key={index}
-                  containerStyle={{ minHeight: '75px' }}
+                  containerStyle={{ minHeight: '75px', ...containerStyle }}
+                  labelStyle={labelStyle}
+                  timeStyle={timeStyle}
                 >
                   {(cardItems || msgInfo) && (
                     <div className={styles.card}>
@@ -78,7 +91,7 @@ export default function NewTimelineCard(props) {
                             <ImgSlider picture={imgs} key={i} />
                           ) : (
                             <p key={i}>
-                              {name ? `${name}：` : ''}
+                              <span className={labelClassName}>{name ? `${name}：` : ''}</span>
                               <span style={style || {}}>{value || NO_DATA}</span>
                               {extra && (
                                 <span className={styles.extra} style={extraStyle || {}}>

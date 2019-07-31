@@ -35,14 +35,14 @@ class MapSearch extends PureComponent {
     if (!value) options = [];
     else {
       options = selectList.map(item => {
-        const { companyName, companyId } = item;
-        let children = companyName;
+        const { company_name, company_id } = item;
+        let children = company_name;
         // 字符串中不包含value值时，直接渲染字符串，包含时才显示高亮
-        if (companyName.includes(value)) {
-          const [front, end] = companyName.split(value);
+        if (company_name.includes(value)) {
+          const [front, end] = company_name.split(value);
           children = [
             front,
-            <span key={companyId} className={styles.highlight}>
+            <span key={company_id} className={styles.highlight}>
               {value}
             </span>,
             end,
@@ -50,7 +50,7 @@ class MapSearch extends PureComponent {
         }
 
         return (
-          <Option key={item.companyId} label={item} style={{ color: '#FFF' }}>
+          <Option key={item.company_id} label={item} style={{ color: '#FFF' }}>
             {children}
           </Option>
         );

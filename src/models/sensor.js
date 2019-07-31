@@ -29,6 +29,9 @@ import {
   deleteModelParameter,
   copySensorModel,
   fetchModelCount,
+  fetchUnsetModelList,
+  fetchAllUnsetModelList,
+  deleteSensorModel,
 } from '../services/sensor'
 const defaultPagination = { pageNum: 1, pageSize: 10, total: 0 }
 export default {
@@ -111,6 +114,14 @@ export default {
     },
     // 型号参数
     modelParameters: [],
+    // 型号代码列表(筛选掉已添加)
+    modelCodeList: [],
+    // 型号代码列表
+    allModelCodeList: [],
+    // 传感器筛选信息
+    sensorSearchInfo: {},
+    // 传感器型号筛选信息
+    modelSearchInfo: {},
   },
   effects: {
     // 获取传感器企业列表
@@ -384,6 +395,35 @@ export default {
         callback(response.data)
       }
     },
+    // 根据监测类型获取型号代码列表（对象包含描述和补充描述）,筛选掉已添加
+    *fetchUnsetModelList({ payload, success, error }, { call, put }) {
+      const response = yield call(fetchUnsetModelList, payload)
+      if (response && response.error && response.error.code === 200) {
+        yield put({
+          type: 'saveState',
+          payload: { key: 'modelCodeList', value: response.result || [] },
+        })
+        if (success) success()
+      } else if (error) error(response)
+    },
+    // 根据监测类型获取型号代码列表（对象包含描述和补充描述）
+    *fetchAllUnsetModelList({ payload, success, error }, { call, put }) {
+      const response = yield call(fetchAllUnsetModelList, payload)
+      if (response && response.error && response.error.code === 200) {
+        yield put({
+          type: 'saveState',
+          payload: { key: 'allModelCodeList', value: response.result || [] },
+        })
+        if (success) success()
+      } else if (error) error(response)
+    },
+    // 删除传感器型号
+    *deleteSensorModel({ payload, success, error }, { call }) {
+      const response = yield call(deleteSensorModel, payload)
+      if (response && response.code === 200 && success) {
+        success()
+      } else if (error) error(response)
+    },
   },
   reducers: {
     saveState(state, { payload: { key, value } }) {
@@ -447,6 +487,24 @@ export default {
           list,
           pagination,
         },
+      }
+    },
+    saveModelCodeList(state, { payload: { list = [] } }) {
+      return {
+        ...state,
+        modelCodeList: list,
+      }
+    },
+    saveSensorSearchInfo(state, { payload = {} }) {
+      return {
+        ...state,
+        sensorSearchInfo: { ...state.sensorSearchInfo, ...payload },
+      }
+    },
+    saveModelSearchInfo(state, { payload = {} }) {
+      return {
+        ...state,
+        modelSearchInfo: { ...state.modelSearchInfo, ...payload },
       }
     },
   },

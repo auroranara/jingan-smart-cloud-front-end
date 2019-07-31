@@ -15,12 +15,12 @@ class AbnormalChart extends PureComponent {
 
   getOption() {
     const { data } = this.props;
-    const xData = data.map(item => moment(item.month).format('M') + '月');
+    const xData = data.map(item => moment(item.datePoint).format('M') + '月');
     const option = {
       textStyle: {
         color: '#fff',
       },
-      color: ['#f83329', '#ffb400'],
+      color: ['#f83329', '#ffb400', '#9f9f9f'],
       grid: {
         top: '25px',
         left: '20px',
@@ -43,7 +43,7 @@ class AbnormalChart extends PureComponent {
         extraCssText: 'box-shadow: -3px 3px 3px rgba(0, 0, 0, 0.3);border-radius: 10px;',
       },
       legend: {
-        data: ['火警次数', '故障次数'],
+        data: ['火警次数', '故障次数', '失联次数'],
         textStyle: {
           color: '#fff',
         },
@@ -104,7 +104,13 @@ class AbnormalChart extends PureComponent {
           name: '故障次数',
           type: 'bar',
           barWidth: 15,
-          data: data.map(item => item.faultNum),
+          data: data.map(item => item.fault),
+        },
+        {
+          name: '失联次数',
+          type: 'bar',
+          barWidth: 15,
+          data: data.map(item => item.outContact),
         },
       ],
     };

@@ -16,27 +16,41 @@ export default class MsgRead extends PureComponent {
     const { read = [], unread = [] } = this.props;
     const { active, isMore } = this.state;
     const allList = [read, unread][active];
-    const list = isMore ? allList : allList.slice(0, 7)
+    const list = isMore ? allList : allList.slice(0, 7);
     return (
       <div className={styles.users}>
-        {list.map((item, index) => {
-          const { name } = item;
-          return (
-            <div className={styles.userWrapper} key={index}>
-              <div
-                className={styles.userIcon}
-                style={{
-                  background: `url(${avatar}) center center / 100% 100% no-repeat`,
-                }}
-              />
-              {name}
+        {allList.length > 0 ? (
+          <div style={{ overflow: 'hidden', marginBottom: '10px' }}>
+            {list.map((item, index) => {
+              const { name } = item;
+              return (
+                <div className={styles.userWrapper} key={index}>
+                  <div
+                    className={styles.userIcon}
+                    style={{
+                      background: `url(${avatar}) center center / 100% 100% no-repeat`,
+                    }}
+                  />
+                  {name}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center', color: '#fff', margin: '20px 0' }}>暂无数据</div>
+        )}
+        {allList.length > 7 && (
+          <div
+            className={styles.shwoMore}
+            style={{ bottom: isMore ? 0 : '20px' }}
+            onClick={() => this.setState({ isMore: !isMore })}
+          >
+            {isMore ? `收起` : `更多`}
+            <div style={{ transform: isMore ? 'rotate(-90deg)' : 'rotate(90deg)' }}>
+              <Icon type="double-right" />
             </div>
-          );
-        })}
-        <div className={styles.shwoMore} onClick={() => this.setState({ isMore: !isMore })}>
-          更多
-          <div style={{ transform: isMore ? 'rotate(-90deg)' : 'rotate(90deg)' }}><Icon type="double-right" /></div>
-        </div>
+          </div>
+        )}
       </div>
     );
   };

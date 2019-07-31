@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
+import Section from '../Section';
 import TabSection from './TabSection';
+import { filterChartValue } from '../utils.js';
 import styles from './CheckWorkOrder.less';
 
 /**
@@ -13,7 +15,7 @@ export default class CheckWorkOrder extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      type: 0, // 0 安全巡查 1 处理工单
+      type: 1, // 0 安全巡查 1 处理工单
     };
   }
 
@@ -32,7 +34,7 @@ export default class CheckWorkOrder extends PureComponent {
       [
         { value: waitNum, name: '待处理', itemStyle: { color: '#F83329' } },
         { value: processNum, name: '处理中', itemStyle: { color: '#FFB650' } },
-        { value: finishNum, name: '已处理', itemStyle: { color: '#2A8BD5' } },
+        // { value: finishNum, name: '已处理', itemStyle: { color: '#2A8BD5' } },
       ],
     ];
     const legendData = chartDatas[type].reduce((prev, next) => {
@@ -41,7 +43,21 @@ export default class CheckWorkOrder extends PureComponent {
       return prev;
     }, {});
 
+    const total = chartDatas[type].reduce((prev, next) => {
+      return prev + next.value;
+    }, 0);
+
     const option = {
+      title: {
+        text: total,
+        textStyle: {
+          color: '#fff',
+          fontSize: 22,
+          fontWeight: 400,
+        },
+        left: 'center',
+        top: '40%',
+      },
       legend: {
         show: false,
         data: chartDatas[type].map(item => item.name),
@@ -58,43 +74,76 @@ export default class CheckWorkOrder extends PureComponent {
       series: [
         {
           type: 'pie',
-          center: ['50%', '45%'],
-          radius: ['30%', '48%'],
+          center: ['50%', '48%'],
+          radius: ['40%', '48%'],
           avoidLabelOverlap: false,
           label: {
             normal: {
               show: false,
-              formatter: '{b}\n{number|{c}}',
-              rich: {
-                number: {
-                  fontSize: isTinyHeight ? 14 : 18,
-                  color: '#fff',
-                  align: 'center',
-                },
+              // formatter: '{b}\n{number|{c} {d}%}',
+              formatter: '{b}\n{c} ({d}%)',
+              lineHeight: 24,
+              textStyle: {
+                color: '#fff',
+                fontSize: isTinyHeight ? 12 : 14,
               },
+              // rich: {
+              //   number: {
+              //     fontSize: isTinyHeight ? 14 : 18,
+              //     color: '#fff',
+              //     align: 'center',
+              //   },
+              // },
             },
             emphasis: {
               show: true,
-              textStyle: {
-                fontSize: isTinyHeight ? 12 : 13,
-                fontWeight: 'bold',
-                textShadowColor: '#01112e',
-                textShadowBlur: 3,
-              },
             },
           },
           labelLine: {
             normal: {
               show: false,
-              length: 20,
-              length2: 5,
+              length: 12,
+              length2: 12,
             },
             emphasis: {
               show: true,
             },
           },
-          data: chartDatas[type],
+          hoverAnimation: !!total,
+          legendHoverLink: !!total,
+          data: filterChartValue(chartDatas[type]),
         },
+        // {
+        //   type: 'pie',
+        //   center: ['50%', '45%'],
+        //   radius: ['40%', '48%'],
+        //   avoidLabelOverlap: false,
+        //   label: {
+        //     normal: {
+        //       show: false,
+        //       position: 'center',
+        //       formatter: '{c}',
+        //       textStyle: {
+        //         color: '#fff',
+        //         fontSize: isTinyHeight ? 16 : 20,
+        //       },
+        //     },
+        //     emphasis: {
+        //       show: true,
+        //     },
+        //   },
+        //   labelLine: {
+        //     normal: {
+        //       show: false,
+        //       length: 20,
+        //       length2: 5,
+        //     },
+        //     emphasis: {
+        //       show: true,
+        //     },
+        //   },
+        //   data: filterChartValue(chartDatas[type]),
+        // },
       ],
     };
     return option;
@@ -125,6 +174,10 @@ export default class CheckWorkOrder extends PureComponent {
     }, 5000);
 
     chart.on('click', params => {
+      const {
+        countAllFireAndFault: { processNum = 0, waitNum = 0 },
+      } = this.props;
+      if (processNum + waitNum === 0) return null;
       const { checkClick, workOrderClick } = this.props;
       const { dataIndex } = params;
       const { type } = this.state;
@@ -149,7 +202,7 @@ export default class CheckWorkOrder extends PureComponent {
       [
         { value: waitNum, name: '待处理', color: '#F83329' },
         { value: processNum, name: '处理中', color: '#FFB650' },
-        { value: finishNum, name: '已处理', color: '#2A8BD5' },
+        // { value: finishNum, name: '已处理', color: '#2A8BD5' },
       ],
     ];
 
@@ -157,7 +210,7 @@ export default class CheckWorkOrder extends PureComponent {
       <div className={styles.legendContainer}>
         {chartDatas[type].map((item, index) => {
           const { value, name, color } = item;
-          return (
+          return !!value ? (
             <div
               className={styles.legend}
               onClick={() => {
@@ -167,24 +220,27 @@ export default class CheckWorkOrder extends PureComponent {
             >
               <span className={styles.circle} style={{ backgroundColor: color }} />
               {name}
-              <span className={styles.number}>{value}</span>
+              {/* <span className={styles.number}>{value}</span> */}
             </div>
-          );
+          ) : null;
         })}
       </div>
     );
   };
 
   render() {
-    const {} = this.props;
+    const {
+      countAllFireAndFault: { finishNum = 0 },
+      workOrderClick,
+    } = this.props;
 
     const tabs = [
-      {
-        title: '安全巡查',
-        onClick: () => {
-          this.setState({ type: 0 });
-        },
-      },
+      // {
+      //   title: '安全巡查',
+      //   onClick: () => {
+      //     this.setState({ type: 0 });
+      //   },
+      // },
       {
         title: '处理工单',
         onClick: () => {
@@ -194,7 +250,8 @@ export default class CheckWorkOrder extends PureComponent {
     ];
 
     return (
-      <TabSection tabs={tabs}>
+      // <TabSection tabs={tabs}>
+      <Section title="处理工单">
         <div className={styles.container}>
           <ReactEcharts
             option={this.getPieOption()}
@@ -204,8 +261,15 @@ export default class CheckWorkOrder extends PureComponent {
             onChartReady={this.onChartReadyCallback}
           />
           {this.renderLegend()}
+          {!!finishNum && (
+            <div className={styles.extra} onClick={() => workOrderClick(2)}>
+              已处理
+              <span className={styles.number}>{finishNum}</span>
+            </div>
+          )}
         </div>
-      </TabSection>
+      </Section>
+      // </TabSection>
     );
   }
 }

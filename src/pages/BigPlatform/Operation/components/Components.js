@@ -7,7 +7,7 @@ import DeviceBar from './DeviceBar';
 import InfoStatus from './InfoStatus';
 import LegendDot from './LegendDot';
 import MapLegend from './MapLegend';
-import MapSearch from '@/pages/BigPlatform/Smoke/BackMap/MapSearch';
+// import MapSearch from '@/pages/BigPlatform/NewFireControl/components/Components';
 import MapTypeBar from '@/pages/BigPlatform/Smoke/BackMap/MapTypeBar';
 
 export {
@@ -19,6 +19,7 @@ export {
   DrawerSection,
   EmptyChart,
   GraphSwitch,
+  MapSearch,
   OvSelect,
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
@@ -38,7 +39,6 @@ export {
   InfoStatus,
   LegendDot,
   MapLegend,
-  MapSearch,
   MapTypeBar,
   TaskDrawer,
   TaskCount,

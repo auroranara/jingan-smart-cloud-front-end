@@ -1,0 +1,87 @@
+.container {
+  padding: 0
+}
+.alarmCount {
+  margin-left: 0.5em;
+  color: #f83329,
+}
+.lossCount {
+  margin-left: 0.5em;
+  color: #9f9f9f;
+}
+.normalCount {
+  margin-left: 0.5em;
+  color: #00ffff;
+}
+.tabs {
+  padding: 0 1em 1em;
+}
+.spin {
+  height: calc(~'100% - 3.5em') !important;
+}
+.container {
+  padding: 0 1em;
+}
+.card {
+  position: relative;
+  margin-bottom: 1em;
+  padding: 0.75em 0;
+  border: 1px solid #00ffff;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    .jumpButton {
+      color: #0ff;
+    }
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+.cardRow {
+  display: flex;
+}
+.cardRowIcon {
+  flex: none;
+  width: 3em;
+  background: no-repeat center;
+}
+.cardRowValue {
+  flex: 1;
+  padding: 0.75em 0;
+  line-height: 1;
+}
+.location {
+  color: #9f9f9f;
+}
+.jumpButton {
+  position: absolute;
+  top: 50%;
+  right: 0.5em;
+  font-size: 16px;
+  transform: translateY(-50%);
+}
+.alarmColor {
+  margin-right: 0.5em;
+  color: #f83329;
+}
+
+@media screen and (max-width: 1599px) {
+  .card {
+    font-size: 13px;
+  }
+  .jumpButton {
+    font-size: 15px;
+  }
+}
+
+@media screen and (max-width: 1399px) {
+  .card {
+    font-size: 12px;
+  }
+  .jumpButton {
+    font-size: 14px;
+  }
+}

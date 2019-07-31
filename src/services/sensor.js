@@ -220,3 +220,27 @@ export async function deleteModelParameter({ modelId, id }) {
 export async function fetchModelCount(params) {
   return request(`/acloud_new/v2/sensorType/sensorType/count?${stringify(params)}`)
 }
+
+
+/**
+ * 根据监测类型获取型号代码列表（对象包含描述和补充描述）,筛选掉已添加
+ */
+export async function fetchUnsetModelList(params) {
+  return request(`/acloud_new/v2/deviceInfo/model/getunsetmodellist.json?${stringify(params)}`)
+}
+
+/**
+ * 根据监测类型获取型号代码列表（对象包含描述和补充描述）
+ */
+export async function fetchAllUnsetModelList(params) {
+  return request(`/acloud_new/v2/deviceInfo/model/getallmodellist.json?${stringify(params)}`)
+}
+
+/**
+ * 删除传感器型号
+ */
+export async function deleteSensorModel({ id }) {
+  return request(`/acloud_new/v2/sensorType/sensorType/${id}`, {
+    method: 'DELETE',
+  })
+}

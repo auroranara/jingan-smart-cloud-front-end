@@ -427,7 +427,7 @@ export default class ElectricityMonitor extends PureComponent {
     } = this.props;
     const options = {
       key: `${messageFlag}_${paramCode}`,
-      duration: null,
+      duration: 30,
       placement: 'bottomLeft',
       className: styles.notification,
       message: (
@@ -449,7 +449,8 @@ export default class ElectricityMonitor extends PureComponent {
           }}
         >
           <div className={styles.notificationText}>
-            <div className={styles.notificationTextFirst}>{moment(addTime).format('HH:mm:ss')}</div>
+            {/* <div className={styles.notificationTextFirst}>{moment(addTime).format('HH:mm:ss')}</div> */}
+            <div className={styles.notificationTextFirst}>刚刚</div>
             <div className={styles.notificationTextSecond}>{companyName}</div>
           </div>
           <div className={styles.notificationText}>
@@ -737,12 +738,12 @@ export default class ElectricityMonitor extends PureComponent {
             showUnitDetail={this.showUnitDetail}
           />
           {/* 设备故障统计 */}
-          <NewSection
+          {/* <NewSection
             title="设备故障统计"
             style={{ width: '100%', height: '250px', cursor: 'pointer', marginTop: 15 }}
           >
             <EquipmentStatistics brandData={brandData} />
-          </NewSection>
+          </NewSection> */}
         </div>
         <SettingModal
           visible={setttingModalVisible}

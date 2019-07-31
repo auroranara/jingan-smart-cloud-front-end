@@ -17,22 +17,60 @@ export default class FireMonitorFlowDrawer extends PureComponent {
   state = { index: 0 };
 
   handleLeftClick = () => {
-    const { fireId, faultId, msgFlow, getWarnDetail, getFaultDetail } = this.props;
+    const {
+      fireId,
+      faultId,
+      msgFlow,
+      getWarnDetail,
+      getFaultDetail,
+      fetchMessageInformList,
+      handleParentChange,
+    } = this.props;
     const { index } = this.state;
     const ids = msgFlow === 0 ? fireId : faultId;
     const { id, status } = ids[index - 1];
     const fetchFlow = msgFlow === 0 ? getWarnDetail : getFaultDetail;
-    fetchFlow(status, 0, 1, { id, status });
+    fetchFlow(status, 0, 1, { id, status }, res => {
+      const {
+        data: {
+          list: [{ cameraMessage }],
+        },
+      } = res;
+      handleParentChange({
+        videoList: cameraMessage || [],
+        fireVideoVisible: Array.isArray(cameraMessage) && cameraMessage.length > 0,
+      });
+    });
+    fetchMessageInformList({ dataId: id });
     this.setState(({ index }) => ({ index: index - 1 }));
   };
 
   handleRightClick = () => {
-    const { fireId, faultId, msgFlow, getWarnDetail, getFaultDetail } = this.props;
+    const {
+      fireId,
+      faultId,
+      msgFlow,
+      getWarnDetail,
+      getFaultDetail,
+      fetchMessageInformList,
+      handleParentChange,
+    } = this.props;
     const { index } = this.state;
     const ids = msgFlow === 0 ? fireId : faultId;
     const { id, status } = ids[index + 1];
     const fetchFlow = msgFlow === 0 ? getWarnDetail : getFaultDetail;
-    fetchFlow(status, 0, 1, { id, status });
+    fetchFlow(status, 0, 1, { id, status }, res => {
+      const {
+        data: {
+          list: [{ cameraMessage }],
+        },
+      } = res;
+      handleParentChange({
+        videoList: cameraMessage || [],
+        fireVideoVisible: Array.isArray(cameraMessage) && cameraMessage.length > 0,
+      });
+    });
+    fetchMessageInformList({ dataId: id });
     this.setState(({ index }) => ({ index: index + 1 }));
   };
 
@@ -55,6 +93,8 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       onClose,
       handleShowFlowVideo,
       handleParentChange,
+      messageInformList = [],
+      messageInformListLoading = false,
       ...restProps
     } = this.props;
     const { index } = this.state;
@@ -74,11 +114,29 @@ export default class FireMonitorFlowDrawer extends PureComponent {
         handleShowFlowVideo();
       },
     };
+    const read = messageInformList.filter(item => +item.status === 1).map(item => {
+      return { ...item, id: item.user_id, name: item.add_user_name };
+    });
+    const unread = messageInformList.filter(item => +item.status === 0).map(item => {
+      return { ...item, id: item.user_id, name: item.add_user_name };
+    });
+    const headContent = head && (
+      <DynamicDrawerTop
+        {...headProps}
+        {...dataItem}
+        {...{ companyName: undefined }}
+        read={read}
+        unread={unread}
+        msgType={msgFlow}
+        msgSendLoading={messageInformListLoading}
+      />
+    );
     let left = null;
     if (length) {
       const cards = ids.map((item, i) => {
         const {
           proceStatus, // undefined, '2' 发生 '0' 处理中 '1' 完成
+          createTime,
           installAddress,
           deviceAddress,
           startDate,
@@ -101,7 +159,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
         const timelineList = [
           {
             label: LABELS[msgFlow][0],
-            time: firstTime,
+            time: createTime,
             cardItems: [
               // { title: installAddress || deviceAddress },
               // { value: `${componentName} 发生${TITLES[msgFlow]}` },
@@ -170,9 +228,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       left =
         length === 1 ? (
           <Fragment>
-            {head && (
-              <DynamicDrawerTop {...headProps} {...dataItem} {...{ companyName: undefined }} />
-            )}
+            {headContent}
             {cards}
           </Fragment>
         ) : (
@@ -184,10 +240,8 @@ export default class FireMonitorFlowDrawer extends PureComponent {
               handleLeftClick={this.handleLeftClick}
               handleRightClick={this.handleRightClick}
             />
-            {head && (
-              <DynamicDrawerTop {...headProps} {...dataItem} {...{ companyName: undefined }} />
-            )}
-            <div className={styles.sliderContainer}>
+            {headContent}
+            <div className={styles.sliderContainer} style={{ height: 'auto' }}>
               <Slider index={index} length={length} size={1}>
                 {cards}
               </Slider>
@@ -204,7 +258,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
         left={left}
         visible={visible}
         destroyOnClose
-        leftParStyle={{ display: 'flex', flexDirection: 'column' }}
+        leftParStyle={{ overflow: 'auto' }}
         onClose={() => {
           onClose();
           setTimeout(() => {

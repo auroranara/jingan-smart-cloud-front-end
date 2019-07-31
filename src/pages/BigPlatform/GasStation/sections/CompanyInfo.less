@@ -1,0 +1,143 @@
+.container {
+  :global {
+    .custom-section2-title-container {
+      background-size: 72.519% 100%;
+    }
+  }
+}
+.top {
+  display: flex;
+  padding: 0.75em 1em 1.25em;
+  background: linear-gradient(to right, transparent, #0967d3, transparent) no-repeat center bottom;
+  background-size: 100% 2px;
+}
+.topLeft {
+  flex: none;
+  display: flex;
+  align-items: center;
+  width: 32%;
+}
+.topLeftItem {
+  flex: none;
+  width: 100%;
+  // padding-top: 133.333333%;
+  background: no-repeat center;
+  background-size: contain;
+  // background-size: 100% 100%;
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+.topRight {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  // justify-content: space-between;
+  padding: 0.625em 0 0.625em 1.25em;
+}
+.topRightTop {
+  flex: none;
+  margin-bottom: 1.25em;
+}
+.topRightTopItem {
+  font-size: 18px;
+  line-height: 30px;
+}
+.topRightBottom {
+  flex: none;
+}
+.topRightBottomItem {
+  display: flex;
+  line-height: 30px;
+}
+.topRightBottomItemLabel {
+  flex: none;
+  width: 6em;
+  white-space: nowrap;
+}
+.topRightBottomItemValue {
+  flex: 1;
+}
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.5em 1.25em 1em;
+}
+.bottomItem {
+  flex: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    .bottomItemValue {
+      color: #fff;
+    }
+  }
+}
+.bottomItemIcon {
+  flex: none;
+  width: 3em;
+  height: 3em;
+  background: no-repeat center;
+  background-size: 100% 100%;
+}
+.bottomItemRight {
+  flex: 1;
+  padding-left: 1em;
+}
+.bottomItemValue {
+  font-size: 1.75em;
+  color: #04fdff;
+}
+.bottomItemValueAlarm {
+  color: #f83329;
+}
+.tooltip {
+  :global {
+    .ant-tooltip-content {
+      .ant-tooltip-arrow {
+        border-bottom-color: transparent;
+      }
+    }
+  }
+}
+.tooltipItem {
+  display: flex;
+  align-items: center;
+}
+.tooltipItemIcon {
+  flex: none;
+  margin-right: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.tooltipItemValue {
+  flex: 1;
+}
+
+
+
+
+@media screen and (max-width: 1599px) and (min-width: 1400px) {
+  .topRightTopItem {
+    font-size: 16px;
+    line-height: 28px;
+  }
+  .topRightBottomItem {
+    line-height: 28px;
+  }
+}
+
+@media screen and (max-width: 1399px) {
+  .topRightTopItem {
+    font-size: 14px;
+    line-height: 26px;
+  }
+  .topRightBottomItem {
+    line-height: 26px;
+  }
+}
