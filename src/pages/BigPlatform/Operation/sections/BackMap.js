@@ -6,13 +6,37 @@ import { DeviceBar, InfoStatus, MapLegend, MapTypeBar } from '../components/Comp
 
 import iconAddress from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-address.png';
 import iconMan from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-man.png';
-import { dotRed, dotGreen, dotHostGreen, dotHostRed, dotHostYellow, dotSmokeGreen, dotSmokeRed, dotSmokeYellow, dotSmokeGrey } from '../imgs/links';
-import { HOST, SMOKE, getMapLegendData, getMapItemStatus, sortUnits } from '../utils';
+import {
+  dotElecGreen,
+  dotElecGrey,
+  dotElecRed,
+  dotGasGreen,
+  dotGasGrey,
+  dotGasRed,
+  dotGasYellow,
+  dotGreen,
+  dotRed,
+  dotHostGreen,
+  dotHostRed,
+  dotHostYellow,
+  dotSmokeGreen,
+  dotSmokeRed,
+  dotSmokeYellow,
+  dotSmokeGrey,
+  dotWaterGreen,
+  dotWaterGrey,
+  dotWaterRed,
+  dotWaterYellow,
+} from '../imgs/links';
+import { HOST, SMOKE, ELEC, GAS, WATER, getMapLegendData, getMapItemStatus, sortUnits } from '../utils';
 
 const IMGS = [
   [dotGreen, dotRed],
   [dotHostGreen, dotHostRed, dotHostYellow],
   [dotSmokeGreen, dotSmokeRed, dotSmokeYellow, dotSmokeGrey],
+  [dotElecGreen, dotElecRed, '', dotElecGrey],
+  [dotGasGreen, dotGasRed, dotGasYellow, dotGasGrey],
+  [dotWaterGreen, dotWaterRed, dotWaterYellow, dotWaterGrey],
 ];
 
 const { region } = global.PROJECT_CONFIG;
@@ -38,13 +62,10 @@ const INIT_INFO = {
 };
 
 export default class MapSection extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      infoWindowShow: false,
-      infoWindow: INIT_INFO,
-    };
-  }
+  state = {
+    infoWindowShow: false,
+    infoWindow: INIT_INFO,
+  };
 
   componentDidMount() {
     this.props.onRef(this);
@@ -55,12 +76,18 @@ export default class MapSection extends PureComponent {
     const { units: prevUnits } = prevProps;
     const { infoWindowShow, infoWindow } = this.state;
 
-    if (JSON.stringify(units) !== JSON.stringify(prevUnits) && infoWindowShow) {
+    if (units !== prevUnits && infoWindowShow) {
       const { companyId } = infoWindow;
       this.setState({
         infoWindow: { ...infoWindow, ...units.find(item => item.companyId === companyId) },
       });
     }
+    // if (JSON.stringify(units) !== JSON.stringify(prevUnits) && infoWindowShow) {
+    //   const { companyId } = infoWindow;
+    //   this.setState({
+    //     infoWindow: { ...infoWindow, ...units.find(item => item.companyId === companyId) },
+    //   });
+    // }
   }
 
   renderMarkers = lvl => {
@@ -231,20 +258,20 @@ export default class MapSection extends PureComponent {
     }
     const [fire, fault, loss, normal] = statuses;
 
-    const alarmClick = () => {
-      if (fire) {
-        handleAlarmClick(undefined, companyId, companyName, fire);
-      } else {
-        return null;
-      }
-    };
-    const faultClick = () => {
-      if (fault > 0) {
-        handleFaultClick(undefined, companyId, companyName, fault);
-      } else {
-        return null;
-      }
-    };
+    // const alarmClick = () => {
+    //   if (fire) {
+    //     handleAlarmClick(undefined, companyId, companyName, fire);
+    //   } else {
+    //     return null;
+    //   }
+    // };
+    // const faultClick = () => {
+    //   if (fault > 0) {
+    //     handleFaultClick(undefined, companyId, companyName, fault);
+    //   } else {
+    //     return null;
+    //   }
+    // };
 
     return (
       <InfoWindow

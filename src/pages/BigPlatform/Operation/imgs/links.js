@@ -1,6 +1,13 @@
 import clockIcon from './clock.png';
 import companyIcon from './company.png';
 import companyIcon1 from './company1.png';
+import dotElecGreen from './dotElecGreen.png';
+import dotElecGrey from './dotElecGrey.png';
+import dotElecRed from './dotElecRed.png';
+import dotGasGreen from './dotGasGreen.png';
+import dotGasGrey from './dotGasGrey.png';
+import dotGasRed from './dotGasRed.png';
+import dotGasYellow from './dotGasYellow.png';
 import dotGreen from './dotGreen.png';
 import dotRed from './dotRed.png';
 import dotHostGreen from './dotHostGreen.png';
@@ -10,6 +17,9 @@ import dotSmokeGreen from './dotSmokeGreen.png';
 import dotSmokeRed from './dotSmokeRed.png';
 import dotSmokeYellow from './dotSmokeYellow.png';
 import dotSmokeGrey from './dotSmokeGrey.png';
+import dotWaterGreen from './dotWaterGreen.png';
+import dotWaterGrey from './dotWaterGrey.png';
+import dotWaterRed from './dotWaterRed.png';
 import hostIcon from './host.png';
 import hostIcon1 from './host1.png';
 import hostGreen from './hostGreen.png';
@@ -29,6 +39,13 @@ export {
   clockIcon,
   companyIcon,
   companyIcon1,
+  dotElecGreen,
+  dotElecGrey,
+  dotElecRed,
+  dotGasGreen,
+  dotGasGrey,
+  dotGasRed,
+  dotGasYellow,
   dotGreen,
   dotRed,
   dotHostGreen,
@@ -38,6 +55,9 @@ export {
   dotSmokeRed,
   dotSmokeYellow,
   dotSmokeGrey,
+  dotWaterGreen,
+  dotWaterGrey,
+  dotWaterRed,
   hostIcon,
   hostIcon1,
   hostGreen,

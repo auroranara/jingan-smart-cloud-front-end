@@ -3,6 +3,21 @@ export { genCardsInfo } from '@/pages/BigPlatform/Smoke/utils';
 export const ALL_DEVICES = 0;
 export const HOST = 1;
 export const SMOKE = 2;
+export const ELEC = 3;
+export const GAS = 4;
+export const WATER = 5;
+export const TYPE_KEYS = ['', 'fire', 'smoke', 'elec', 'gas', 'water'];
+export const COUNT_BASE_KEY = 'DeviceCount';
+export const COUNT_KEYS = ['Normal', 'Fire', 'Fault', 'UnConnect'];
+export const TYPE_DESCES = ['服务单位', '消防主机', '独立烟感', '电气火灾', '可燃气体', '水系统'];
+export const TYPE_COUNTS = [ // deviceType不同时对应的状态
+  [1, 1, 1, 1],
+  [1, 1, 1, 0],
+  [1, 1, 1, 1],
+  [1, 1, 0, 1],
+  [1, 1, 1, 1],
+  [1, 1, 0, 1],
+];
 export const PAGE_SIZE = 10;
 
 export function getStatusImg(list, imgs) {
@@ -86,6 +101,17 @@ export function getUnitList(list, deviceType) {
     default:
       return [];
   }
+}
+
+export function getUnitLists(list) {
+  const lists = list.reduce((prev, next) => {
+    prev.forEach((lst, i) => {
+      if (next[`${TYPE_KEYS[i + 1]}DeviceCount`])
+        lst.push(next);
+    });
+    return prev;
+  }, [[], [], [], [], []]);
+  return [list, ...lists];
 }
 
 export function hidePhone(phone) {

@@ -153,7 +153,7 @@ export default class Operation extends PureComponent {
       tooltipPosition: [0, 0],
       alarmIds: [],
       companyName: '',
-      unitList: [], // 地图显示的企业列表
+      // unitList: [], // 地图显示的企业列表
       unitDetail: {},
       deviceType: 0, // 地图中间根据设备显示企业列表
       fireListHasMore: true, // 火警统计抽屉右边列表是否有更多
@@ -170,7 +170,7 @@ export default class Operation extends PureComponent {
       fireVideoVisible: false,
       videoVisible: false,
       onekeyFlowDrawerVisible: false,
-      unitListDrawerVisible: true, // 企业列表抽屉
+      unitListDrawerVisible: false, // 企业列表抽屉
       videoList: [],
       videoKeyId: undefined,
       dynamicType: null,
@@ -279,19 +279,19 @@ export default class Operation extends PureComponent {
     };
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    const {
-      operation: { unitList },
-    } = this.props;
-    const { deviceType } = this.state;
-    const {
-      operation: { unitList: prevUnitList },
-    } = prevProps;
-    const { deviceType: prevDeviceType } = prevState;
-    if (unitList !== prevUnitList || deviceType !== prevDeviceType) {
-      this.setState({ unitList: getUnitList(unitList, deviceType) });
-    }
-  }
+  // componentDidUpdate(prevProps, prevState, snapshot) {
+  //   const {
+  //     operation: { unitList },
+  //   } = this.props;
+  //   const { deviceType } = this.state;
+  //   const {
+  //     operation: { unitList: prevUnitList },
+  //   } = prevProps;
+  //   const { deviceType: prevDeviceType } = prevState;
+  //   if (unitList !== prevUnitList || deviceType !== prevDeviceType) {
+  //     this.setState({ unitList: getUnitList(unitList, deviceType) });
+  //   }
+  // }
 
   messageIds = [];
   messageTimers = [];
@@ -556,10 +556,11 @@ export default class Operation extends PureComponent {
   // 地图搜索
   fetchMapSearchData = value => {
     const {
-      operation: { unitList },
+      operation: { unitList, unitLists },
     } = this.props;
     const { deviceType } = this.state;
-    const list = getUnitList(unitList, deviceType);
+    // const list = getUnitList(unitList, deviceType);
+    const list = unitLists[deviceType];
     const selectList = value ? list.filter(item => item.companyName.includes(value)) : [];
     this.setState({
       searchValue: value,
@@ -820,10 +821,11 @@ export default class Operation extends PureComponent {
 
   handleDeviceTypeChange = (v, callback) => {
     const {
-      operation: { unitList },
+      operation: { unitList, unitLists },
     } = this.props;
     const { unitDetail } = this.state;
-    const list = getUnitList(unitList, v);
+    // const list = getUnitList(unitList, v);
+    const list = unitLists[v];
     this.setState({ deviceType: v });
     callback(!!list.find(({ companyId }) => companyId === unitDetail.companyId));
   };
@@ -958,6 +960,7 @@ export default class Operation extends PureComponent {
       fireListLoading,
       operation: {
         // unitList,
+        unitLists,
         firePie,
         fireTrend,
         fireList,
@@ -977,7 +980,6 @@ export default class Operation extends PureComponent {
       newUnitFireControl: { messageInformList },
       messageInformListLoading,
     } = this.props;
-
     const {
       setttingModalVisible,
       selectList,
@@ -1000,7 +1002,7 @@ export default class Operation extends PureComponent {
       videoVisible,
       videoList,
       videoKeyId,
-      unitList,
+      // unitList,
       onekeyFlowDrawerVisible,
       unitListDrawerVisible,
     } = this.state;
@@ -1011,6 +1013,9 @@ export default class Operation extends PureComponent {
       ...company,
       videoList,
     };
+
+    const unitList = unitLists[deviceType];
+
     return (
       <BigPlatformLayout
         title="智慧消防运营驾驶舱"
