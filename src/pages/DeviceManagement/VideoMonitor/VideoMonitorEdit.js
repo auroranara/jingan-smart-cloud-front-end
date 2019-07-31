@@ -197,10 +197,10 @@ export default class VideoMonitorEdit extends PureComponent {
           status,
           rtspAddress,
           photoAddress,
-          xNum,
-          yNum,
-          xFire,
-          yFire,
+          xnum,
+          ynum,
+          xfire,
+          yfire,
           isInspection,
           buildingFloor: { buildingId, floorId } = {},
         } = values;
@@ -217,10 +217,10 @@ export default class VideoMonitorEdit extends PureComponent {
           companyId: companyIdParams || companyId || unitId,
           rtspAddress,
           photoAddress,
-          xNum,
-          yNum,
-          xFire,
-          yFire,
+          xnum,
+          ynum,
+          xfire,
+          yfire,
           fixFireId: this.fixFireId,
           fixImgId: this.fixImgId,
           isInspection: +isInspection,
@@ -329,7 +329,7 @@ export default class VideoMonitorEdit extends PureComponent {
       },
     });
     this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: value.id } });
-    setFieldsValue({ xNum: undefined, yNum: undefined, buildingFloor: {} });
+    setFieldsValue({ xnum: undefined, ynum: undefined, buildingFloor: {} });
     this.handleHideCompanyModal();
   };
 
@@ -386,8 +386,8 @@ export default class VideoMonitorEdit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     setFieldsValue({
-      xNum: value.x.toFixed(3),
-      yNum: value.y.toFixed(3),
+      xnum: value.x.toFixed(3),
+      ynum: value.y.toFixed(3),
     });
     this.fixImgId = fourColorImg.id;
     this.setState({
@@ -424,8 +424,8 @@ export default class VideoMonitorEdit extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     setFieldsValue({
-      xFire: value.x.toFixed(3),
-      yFire: value.y.toFixed(3),
+      xfire: value.x.toFixed(3),
+      yfire: value.y.toFixed(3),
     });
     this.fixFireId = fireImgs.id;
     this.setState({
@@ -765,15 +765,15 @@ export default class VideoMonitorEdit extends PureComponent {
               <Row gutter={12}>
                 <Col span={8}>
                   <Form.Item label={fieldLabels.fourPictureX}>
-                    {getFieldDecorator('xNum', {
-                      initialValue: xfire,
+                    {getFieldDecorator('xnum', {
+                      initialValue: xnum,
                       rules: [{ message: '请输入四色图坐标—X' }],
                     })(<Input placeholder="请输入四色图坐标—X" />)}
                   </Form.Item>
                 </Col>
                 <Col span={8}>
                   <Form.Item label={fieldLabels.fourPictureY}>
-                    {getFieldDecorator('yNum', {
+                    {getFieldDecorator('ynum', {
                       initialValue: ynum,
                       rules: [{ message: '请输入四色图坐标—Y' }],
                     })(<Input placeholder="请输入四色图坐标—Y" />)}
@@ -806,7 +806,7 @@ export default class VideoMonitorEdit extends PureComponent {
               <Row gutter={12}>
                 <Col span={8}>
                   <Form.Item label={fieldLabels.firePictureX}>
-                    {getFieldDecorator('xFire', {
+                    {getFieldDecorator('xfire', {
                       initialValue: xfire,
                       rules: [{ message: '请输入消防平面图坐标—X' }],
                     })(<Input placeholder="请输入消防平面图坐标—X" />)}
@@ -814,7 +814,7 @@ export default class VideoMonitorEdit extends PureComponent {
                 </Col>
                 <Col span={8}>
                   <Form.Item label={fieldLabels.firePictureY}>
-                    {getFieldDecorator('yFire', {
+                    {getFieldDecorator('yfire', {
                       initialValue: yfire,
                       rules: [{ message: '请输入消防平面图坐标—Y' }],
                     })(<Input placeholder="请输入消防平面图坐标—Y" />)}

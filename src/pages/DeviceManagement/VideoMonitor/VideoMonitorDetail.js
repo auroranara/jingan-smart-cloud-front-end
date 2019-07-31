@@ -32,7 +32,9 @@ export default class VideoMonitorDetail extends PureComponent {
   componentDidMount() {
     const {
       dispatch,
-      match: { params: { id, companyId } },
+      match: {
+        params: { id, companyId },
+      },
     } = this.props;
 
     // 获取视频设备信息详情
@@ -44,19 +46,19 @@ export default class VideoMonitorDetail extends PureComponent {
         dispatch({
           type: 'personnelPosition/fetchBuildings',
           payload: { pageNum: 1, pageSize: 0, company_id: companyId },
-          callback: (list) => {
-            const { buildingName = null } = list.find(item => item.id === buildingId) || {}
-            this.setState({ buildingName })
+          callback: list => {
+            const { buildingName = null } = list.find(item => item.id === buildingId) || {};
+            this.setState({ buildingName });
           },
-        })
+        });
         dispatch({
           type: 'personnelPosition/fetchFloors',
           payload: { pageNum: 1, pageSize: 0, building_id: buildingId },
-          callback: (list) => {
-            const { floorName } = list.find(item => item.id === floorId) || {}
-            this.setState({ floorName })
+          callback: list => {
+            const { floorName } = list.find(item => item.id === floorId) || {};
+            this.setState({ floorName });
           },
-        })
+        });
       },
     });
   }
@@ -86,22 +88,24 @@ export default class VideoMonitorDetail extends PureComponent {
             rtspAddress,
             photoAddress,
             isInspection,
-            xNum,
-            yNum,
-            xFire,
-            yFire,
+            xnum,
+            ynum,
+            xfire,
+            yfire,
           },
         },
       },
     } = this.props;
-    const { buildingName, floorName } = this.state
+    const { buildingName, floorName } = this.state;
     return (
       <Card title="视频设备信息详情" bordered={false}>
         <DescriptionList col={3}>
           <Description term="设备ID">{deviceId || getEmptyData()}</Description>
           <Description term="摄像头ID">{keyId || getEmptyData()}</Description>
           <Description term="视频所属区域">{name || getEmptyData()}</Description>
-          <Description term="所属建筑楼层">{buildingName + floorName || getEmptyData()}</Description>
+          <Description term="所属建筑楼层">
+            {buildingName + floorName || getEmptyData()}
+          </Description>
           <Description term="视频URL">
             <Ellipsis tooltip lines={1}>
               {rtspAddress || getEmptyData()}
@@ -112,10 +116,10 @@ export default class VideoMonitorDetail extends PureComponent {
           <Description term="是否用于查岗">
             {isInspection === 1 ? '是' : '否' || getEmptyData()}
           </Description>
-          <Description term="四色图坐标-X">{xNum || getEmptyData()}</Description>
-          <Description term="四色图坐标-Y">{yNum || getEmptyData()}</Description>
-          <Description term="消防平面图坐标-X">{xFire || getEmptyData()}</Description>
-          <Description term="消防平面图坐标-Y">{yFire || getEmptyData()}</Description>
+          <Description term="四色图坐标-X">{xnum || getEmptyData()}</Description>
+          <Description term="四色图坐标-Y">{ynum || getEmptyData()}</Description>
+          <Description term="消防平面图坐标-X">{xfire || getEmptyData()}</Description>
+          <Description term="消防平面图坐标-Y">{yfire || getEmptyData()}</Description>
         </DescriptionList>
       </Card>
     );
