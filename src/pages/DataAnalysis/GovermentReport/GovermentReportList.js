@@ -271,6 +271,7 @@ export default class App extends PureComponent {
     } = this.props;
     const { createTime, companyId: serCId, ...rest } = getFieldsValue();
     const [startTime, endTime] = createTime || [];
+    // 企业用户登录传currentUser中的企业id
     const companyId = unitType === 4 ? cId : serCId
     const payload = {
       ...rest,
@@ -283,6 +284,7 @@ export default class App extends PureComponent {
       startTime: startTime && `${startTime.format('YYYY/MM/DD')} 00:00:00`,
       endTime: endTime && `${endTime.format('YYYY/MM/DD')} 23:59:59`,
     };
+    const searchInfo = unitType === 4 ? { ...payload, companyId: null } : payload
     // 获取列表
     dispatch({
       type: 'maintenanceReport/fetchMaintenanceCheckForGov',
@@ -292,7 +294,7 @@ export default class App extends PureComponent {
       },
     });
     // 保存筛选条件
-    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
+    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(searchInfo));
   };
 
   /**
