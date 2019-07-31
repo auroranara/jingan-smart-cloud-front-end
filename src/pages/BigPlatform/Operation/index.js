@@ -925,7 +925,7 @@ export default class Operation extends PureComponent {
       company: { ...param },
       videoList: cameraMessage,
     });
-    if (cameraMessage && cameraMessage.length) {
+    if (cameraMessage && cameraMessage.length && type !== 3) {
       this.setState({
         videoVisible: true,
         videoKeyId: cameraMessage && cameraMessage[0] && cameraMessage[0].key_id,
