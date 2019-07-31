@@ -529,12 +529,12 @@ export default class SensorModelList extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem label="描述" {...formItemLayout}>
+          <FormItem label="品牌" {...formItemLayout}>
             {getFieldDecorator('modelName')(
               <Input placeholder="请先选择型号代码" disabled></Input>
             )}
           </FormItem>
-          <FormItem label="补充描述" {...formItemLayout}>
+          <FormItem label="品牌" {...formItemLayout}>
             {getFieldDecorator('brandName')(
               <Input placeholder="请先选择型号代码" disabled></Input>
             )}

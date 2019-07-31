@@ -480,7 +480,7 @@ export default class AddSensor extends Component {
               <Input disabled placeholder="请先选择传感器型号" {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="传感器名称" {...formItemLayout}>
+          <FormItem label="描述" {...formItemLayout}>
             {getFieldDecorator('deviceName')(
               <Input placeholder="请输入" {...itemStyles} />
             )}

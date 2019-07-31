@@ -298,7 +298,7 @@ export default class SensorList extends Component {
         width: 150,
       },
       {
-        title: '设备名称',
+        title: '描述',
         dataIndex: 'deviceName',
         align: 'center',
         width: 150,
