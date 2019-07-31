@@ -476,9 +476,7 @@ export default class AddSensor extends Component {
             )}
           </FormItem>
           <FormItem label="品牌" {...formItemLayout}>
-            {getFieldDecorator('brandName', {
-              rules: [{ required: true, message: '请选择品牌' }],
-            })(
+            {getFieldDecorator('brandName')(
               <Input disabled placeholder="请先选择传感器型号" {...itemStyles} />
             )}
           </FormItem>
