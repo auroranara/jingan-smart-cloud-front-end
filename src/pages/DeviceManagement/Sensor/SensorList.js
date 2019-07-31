@@ -222,7 +222,7 @@ export default class SensorList extends Component {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('modelName')(
-                  <Select placeholder="传感器型号" dropdownStyle={{ zIndex: 50 }} allowClear>
+                  <Select placeholder="型号代码" dropdownStyle={{ zIndex: 50 }} allowClear>
                     {typeDict.map(({ classModel }) => (
                       <Option key={classModel} value={classModel}>{classModel}</Option>
                     ))}
