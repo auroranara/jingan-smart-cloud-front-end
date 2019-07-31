@@ -72,8 +72,8 @@ export default class SensorModelList extends PureComponent {
     setFieldsValue({ ...others })
     this.fetchMonitoringTypeDict()
     this.fetchAllUnsetModelList()
-    this.fetchSensorModels({ payload: { pageNum: 1, pageSize: defaultPageSize, ...modelSearchInfo } })
-    // this.handleQuery()
+    // this.fetchSensorModels({ payload: { pageNum: 1, pageSize: defaultPageSize, ...modelSearchInfo } })
+    this.handleQuery(pageNum, pageSize)
   }
 
 
@@ -214,7 +214,7 @@ export default class SensorModelList extends PureComponent {
     // 获取型号代码列表
     this.fetchUnsetModelList({ payload: { type: key } })
     // 清空新增弹窗型号代码、描述、补充描述数据
-    setFieldsValue({ typeCode: undefined, brand: undefined, type: undefined })
+    setFieldsValue({ typeCode: undefined, modelName: undefined, type: undefined })
   }
 
   // 新增弹窗型号代码改变
@@ -223,8 +223,8 @@ export default class SensorModelList extends PureComponent {
       form: { setFieldsValue },
       sensor: { modelCodeList = [] },
     } = this.props
-    const { brand, msg: type } = modelCodeList.find(item => item.model === value) || {}
-    setFieldsValue({ brand, type })
+    const { brand: modelName, msg: brandName } = modelCodeList.find(item => item.model === value) || {}
+    setFieldsValue({ modelName, brandName })
   }
 
   /**
@@ -291,7 +291,7 @@ export default class SensorModelList extends PureComponent {
     this.fetchMonitoringTypeDict()
     // this.fetchSensorBrandDict({ payload: { monitoringTypeId: sensorDetail.monitoringTypeId } })
     this.setState({ sensorModelId: sensorDetail.id, addModalVisible: true, modalType, sensorDetail }, () => {
-      const { monitoringType: label, monitoringTypeId: key, type, brand, typeCode } = sensorDetail
+      const { monitoringType: label, monitoringTypeId: key, type, modelName, typeCode } = sensorDetail
       this.fetchUnsetModelList({ payload: { type: key } })
       if (modalType === 'copy') {
         // 如果是克隆
@@ -301,7 +301,7 @@ export default class SensorModelList extends PureComponent {
       setFieldsValue({
         monitoringType: { key, label },
         type,
-        brand,
+        modelName,
         typeCode,
       })
     })
@@ -416,14 +416,14 @@ export default class SensorModelList extends PureComponent {
         },
       },
       {
-        title: '描述',
-        dataIndex: 'brand',
+        title: '品牌',
+        dataIndex: 'brandName',
         align: 'center',
         width: 200,
       },
       {
-        title: '补充描述',
-        dataIndex: 'type',
+        title: '型号',
+        dataIndex: 'modelName',
         align: 'center',
         width: 300,
       },
@@ -530,12 +530,12 @@ export default class SensorModelList extends PureComponent {
             )}
           </FormItem>
           <FormItem label="描述" {...formItemLayout}>
-            {getFieldDecorator('brand')(
+            {getFieldDecorator('modelName')(
               <Input placeholder="请先选择型号代码" disabled></Input>
             )}
           </FormItem>
           <FormItem label="补充描述" {...formItemLayout}>
-            {getFieldDecorator('type')(
+            {getFieldDecorator('brandName')(
               <Input placeholder="请先选择型号代码" disabled></Input>
             )}
           </FormItem>

@@ -50,8 +50,8 @@ export default class SensorList extends Component {
     this.fetchMonitoringTypeDict()
     // this.fetchSensorBrandDict()
     this.fetchSensorTypeDict()
-    this.fetchSensors({ payload: { pageNum: 1, pageSize: defaultPageSize, ...sensorSearchInfo } })
-    // this.handleQuery()
+    // this.fetchSensors({ payload: { pageNum: 1, pageSize: defaultPageSize, ...sensorSearchInfo } })
+    this.handleQuery(pageNum, pageSize)
   }
 
 
@@ -145,22 +145,22 @@ export default class SensorList extends Component {
    * 筛选栏检测类型改变
    */
   handlemonitoringTypeChange = (monitoringTypeId) => {
-    const { getFieldValue } = this.props.form
-    const brandId = getFieldValue('brandId')
+    // const { getFieldValue } = this.props.form
+    // const brandId = getFieldValue('brandId')
     // this.fetchSensorBrandDict({ payload: { monitoringTypeId } })
-    this.fetchSensorTypeDict({ payload: { monitoringTypeId, brandId } })
+    this.fetchSensorTypeDict({ payload: { monitoringTypeId } })
   }
 
 
   /**
    * 筛选栏品牌改变
    */
-  handleBrandChange = (brandId) => {
-    const { getFieldValue } = this.props.form
-    const monitoringTypeId = getFieldValue('monitoringTypeId')
-    // this.fetchMonitoringTypeDict({ payload: { brand } })
-    this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } })
-  }
+  // handleBrandChange = (brandId) => {
+  //   const { getFieldValue } = this.props.form
+  //   const monitoringTypeId = getFieldValue('monitoringTypeId')
+  //   // this.fetchMonitoringTypeDict({ payload: { brand } })
+  //   this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } })
+  // }
 
 
   /**
