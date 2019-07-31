@@ -16,10 +16,12 @@ export default class StorageTankDrawer extends PureComponent {
   renderTankList = list => {
     return list.map(item => {
       const { tankId, locationCode, tankName, deviceDataForAppList } = item;
-      const liquid = deviceDataForAppList.filter(data => data.desc === '液位' || '水位')[0] || {};
+      const liquid =
+        deviceDataForAppList.filter(data => data.desc === '水位' || data.desc === '液位')[0] || {};
       const pressure = deviceDataForAppList.filter(data => data.desc === '压力')[0] || {};
       const temp = deviceDataForAppList.filter(data => data.desc === '温度')[0] || {};
       const dataList = [liquid, pressure, temp];
+
       return (
         <StorageLableCards key={tankId} num={locationCode} title={tankName} dataList={dataList} />
       );

@@ -8,8 +8,7 @@ const DEFAULT = '---';
 
 function parseDataNum(n) {
   const t = typeof n;
-  if (t === 'number')
-    return n;
+  if (t === 'number') return n;
   if (t === 'string') {
     const parsed = Number.parseFloat(n);
     return Object.is(parsed, NaN) ? DEFAULT : 0;
