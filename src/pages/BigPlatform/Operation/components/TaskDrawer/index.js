@@ -244,10 +244,11 @@ export default class TaskDrawer extends PureComponent {
       >
         <div className={styles.container}>
           {Array.isArray(list) && list.length > 0 ? (
-            list.map(item => (
+            list.map((item, index) => (
               <TaskCard
                 className={styles.card}
-                key={item.id || item.gasId || item.proceId}
+                // key={item.id || item.gasId || item.proceId}
+                key={index}
                 data={item}
                 fieldNames={FIELDNAMES}
                 onClick={this.handleCardClick}
