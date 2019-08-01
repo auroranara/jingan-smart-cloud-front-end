@@ -166,7 +166,7 @@ export default class SensorCompanyList extends Component {
   handleToBind = (deviceInfo) => {
     const { dispatch } = this.props
     // 获取传感器类型
-    dispatch({ type: 'sensor/fetchSensorTypes' })
+    dispatch({ type: 'sensor/fetchSensorTypeDict' })
     this.setState({ deviceInfo }, () => {
       this.queryBindList()
       this.setState({ bindModalVisible: true })
@@ -477,14 +477,15 @@ export default class SensorCompanyList extends Component {
             total = 0,
           },
         },
-        sensorTypes = [],
+        // sensorTypes = [],
+        typeDict = [],
       },
     } = this.props
     const { selectedSensorKeys, bindModalVisible } = this.state
     const columns = [
       {
-        title: '传感器型号',
-        dataIndex: 'modelName',
+        title: '型号代码',
+        dataIndex: 'classModel',
         align: 'center',
       },
       {
@@ -521,8 +522,8 @@ export default class SensorCompanyList extends Component {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('deviceModelId')(
-                  <Select placeholder="传感器型号">
-                    {sensorTypes.map(({ id, label }) => (<Select.Option key={id} value={id}>{label}</Select.Option>))}
+                  <Select placeholder="型号代码">
+                    {typeDict.map(({ id, classModel }) => (<Select.Option key={id} value={id}>{classModel}</Select.Option>))}
                   </Select>
                 )}
               </FormItem>
@@ -580,6 +581,11 @@ export default class SensorCompanyList extends Component {
     } = this.props
     const { bindedModalVisible } = this.state
     const columns = [
+      {
+        title: '型号代码',
+        dataIndex: 'classModel',
+        align: 'center',
+      },
       {
         title: '传感器型号',
         dataIndex: 'modelName',
