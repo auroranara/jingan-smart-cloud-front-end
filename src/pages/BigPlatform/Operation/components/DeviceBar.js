@@ -8,20 +8,25 @@ import { TYPE_DESCES } from '../utils';
 // const ICONS1 = [companyIcon1, hostIcon1, smokeIcon1];
 
 export default function DeviceBar(props) {
-  const { type, handleClick, nums } = props;
+  const { type, handleClick, nums, ignore } = props;
+  const desces = TYPE_DESCES.map((label, i) => ({
+    index: i,
+    label,
+    selected: i === +type,
+    num: nums[i],
+  })).filter(({ index }) => ignore ? !ignore.includes(index) : true);
 
   return (
     <div className={styles.container}>
-      {TYPE_DESCES.map((label, i) => {
-        const selected = i === type;
+      {desces.map(({ index, label, selected, num }, i) => {
         return (
           <div
             key={label}
             className={styles[`item${selected ? 1 : ''}`]}
-            style={i === TYPE_DESCES.length - 1 ? { marginRight: 0 } : null}
-            onClick={e => handleClick(i)}
+            style={i === desces.length - 1 ? { marginRight: 0 } : null}
+            onClick={e => handleClick(index)}
           >
-            <p className={styles.num}>{nums[i]}</p>
+            <p className={styles.num}>{num}</p>
             <p className={styles.desc}>{label}</p>
           </div>
         );

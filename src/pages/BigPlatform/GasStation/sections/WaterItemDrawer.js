@@ -76,7 +76,7 @@ export default class WaterItemDrawer extends PureComponent {
     let child = <LossDevice />;
 
     if (dataItem)
-      child = isGauge(tabItem) ? <Gauge data={dataItem} /> : <WaterTank data={dataItem} />;
+      child = isGauge(tabItem, dataItem.unit) ? <Gauge data={dataItem} /> : <WaterTank data={dataItem} />;
 
     const left = (
       <Fragment>

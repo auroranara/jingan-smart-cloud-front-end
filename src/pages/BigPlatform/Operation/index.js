@@ -3,14 +3,14 @@ import { notification, Icon } from 'antd';
 import { connect } from 'dva';
 import debounce from 'lodash/debounce';
 import { stringify } from 'qs';
-// import moment from 'moment';
+import moment from 'moment';
 import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
 import styles from './index.less';
 import styles1 from '@/pages/BigPlatform/NewUnitFireControl/index.less';
-import { BackMap, FireStatisticsDrawer, Messages, SettingModal, UnitListDrawer } from './sections/Components';
+import { BackMap, ElectricalFireMonitoringDetailDrawer, FireStatisticsDrawer, Messages, SettingModal, UnitListDrawer, WaterItemDrawer } from './sections/Components';
 import {
   MapSearch,
   Tooltip as MyTooltip,
@@ -19,6 +19,7 @@ import {
   FireCount,
 } from './components/Components';
 import { PAGE_SIZE, getUnitList } from './utils';
+import { WATER_TYPES, getWaterTotal } from '@/pages/BigPlatform/GasStation/utils';
 import iconFire from '@/assets/icon-fire-msg.png';
 import iconFault from '@/assets/icon-fault-msg.png';
 // import FireFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/FireFlowDrawer';
@@ -28,6 +29,8 @@ import { FireFlowDrawer, OnekeyFlowDrawer, SmokeFlowDrawer } from '@/pages/BigPl
 
 const OPE = 3; // 运营或管理员unitType对应值
 const COMPANY_ALL = 'companyIdAll';
+const TYPE_CLICK_LIST = [7, 9, 11, 38, 40];
+const TYPE_MSG_LIST = [7, 38, 39];
 
 // websocket配置
 const options = {
@@ -112,8 +115,7 @@ const popupVisible = {
   faultDrawerVisible: false,
   currentDrawerVisible: false, // 当前隐患抽屉可见
   dangerDetailVisible: false, // 隐患详情抽屉可见
-  // 点位巡查抽屉是否显示
-  pointInspectionDrawerVisible: false,
+  pointInspectionDrawerVisible: false, // 点位巡查抽屉是否显示
   maintenanceMsgDrawerVisible: false,
   alarmDynamicMsgDrawerVisible: false,
   fireAlarmVisible: false,
@@ -125,13 +127,16 @@ const popupVisible = {
   newWorkOrderDrawerVisible: false,
   onekeyFlowDrawerVisible: false,
   unitListDrawerVisible: false,
+  electricalFireMonitoringDetailDrawerVisible: false,
+  waterItemDrawerVisible: false,
 };
 
-@connect(({ loading, operation, user, unitSafety, newUnitFireControl }) => ({
+@connect(({ loading, operation, user, unitSafety, newUnitFireControl, gasStation }) => ({
   operation,
   user,
   unitSafety,
   newUnitFireControl,
+  gasStation,
   loading: loading.models.operation,
   fireListLoading: loading.effects['operation/fetchFireList'],
   messageInformListLoading: loading.effects['newUnitFireControl/fetchMessageInformList'],
@@ -175,6 +180,11 @@ export default class Operation extends PureComponent {
       videoKeyId: undefined,
       dynamicType: null,
       company: {},
+      electricalFireMonitoringDetailDrawerVisible: false, // 电气火灾监测详情抽屉是否显示
+      electricalFireMonitoringDetailDrawerValue: null, // 电气火灾监测详情抽屉参数
+      electricalFireMonitoringDetailDrawerActiveKey: '漏电电流', // 电气火灾监测详情抽屉选中参数
+      waterItem: {},
+      waterItemDrawerVisible: false, // 水系统详情抽屉
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
   }
@@ -226,25 +236,18 @@ export default class Operation extends PureComponent {
           success: result => {
             // 显示火警障碍弹窗
             const {
-              itemId,
-              messageFlag,
+              // itemId,
+              // messageFlag,
+              // checkResult,
+              // pointId,
+              // pointStatus,
+              // deviceType,
               type,
-              checkResult,
-              pointId,
-              pointStatus,
-              deviceType,
               enterSign,
               isOver,
             } = result;
 
-            if (
-              type === 7 ||
-              type === 9 ||
-              type === 38 ||
-              type === 39 ||
-              type === 40 ||
-              type === 41
-            ) {
+            if ([7, 9, 38, 39, 40, 41].includes(+type)) {
               if (+isOver === 0) {
                 if (type === 7 || type === 9) {
                   if (enterSign === '1') this.showFireMsg(result);
@@ -255,18 +258,18 @@ export default class Operation extends PureComponent {
               this.fetchScreenMessage();
             }
 
-            if (
-              type === 1 ||
-              type === 2 ||
-              type === 3 ||
-              type === 4 ||
-              type === 9 ||
-              type === 7 ||
-              type === 21
-            ) {
-              // 获取消防主机监测
-              // this.fetchFireAlarmSystem();
-            }
+            // if (
+            //   type === 1 ||
+            //   type === 2 ||
+            //   type === 3 ||
+            //   type === 4 ||
+            //   type === 9 ||
+            //   type === 7 ||
+            //   type === 21
+            // ) {
+            //   // 获取消防主机监测
+            //   // this.fetchFireAlarmSystem();
+            // }
           },
         });
       } catch (error) {
@@ -342,7 +345,8 @@ export default class Operation extends PureComponent {
 
   showFireMsg = item => {
     const { type, messageId, isOver } = item;
-    if (type === 7 || type === 9 || type === 38 || type === 39 || type === 40 || type === 41) {
+    // if (type === 7 || type === 9 || type === 38 || type === 39 || type === 40 || type === 41) {
+    if (TYPE_MSG_LIST.includes(+type)) {
       if (+isOver === 0) {
         const msgItem = switchMsgType(+type);
         const style = {
@@ -952,6 +956,89 @@ export default class Operation extends PureComponent {
     this.setState({ fireVideoVisible: true });
   };
 
+  handleClickElecMsg = (deviceId, paramName) => {
+    const {
+      gasStation: {
+        distributionBoxClassification: { alarm = [], loss = [], normal = [] },
+      },
+    } = this.props;
+    const data = [...alarm, ...loss, ...normal].filter(({ id }) => id === deviceId)[0];
+    if (data) {
+      this.showElectricalFireMonitoringDetailDrawer(data, paramName);
+    } else {
+      console.log('未找到设备对应的数据');
+    }
+  };
+
+  showElectricalFireMonitoringDetailDrawer = (
+    electricalFireMonitoringDetailDrawerValue,
+    paramName = '漏电电流'
+  ) => {
+    this.setState({
+      electricalFireMonitoringDetailDrawerVisible: true,
+      electricalFireMonitoringDetailDrawerValue,
+      electricalFireMonitoringDetailDrawerActiveKey:
+        paramName === '漏电电流' ? '漏电电流' : paramName.slice(-2),
+    });
+  };
+
+  hideElectricalFireMonitoringDetailDrawer = () => {
+    this.setState({
+      electricalFireMonitoringDetailDrawerVisible: false,
+    });
+  };
+
+  handleClickWater = (index, typeIndex, deviceId) => {
+    // const { waterTabItem } = this.state;
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    dispatch({
+      type: 'gasStation/fetchWaterSystem',
+      payload: {
+        companyId,
+        type: WATER_TYPES[typeIndex],
+      },
+      callback: list => {
+        const item = list.find(({ deviceDataList }) => {
+          if (Array.isArray(deviceDataList) && deviceDataList[0])
+            return deviceDataList[0].deviceId === deviceId;
+          return false;
+        });
+        item && this.showWaterItemDrawer(item);
+      },
+    });
+  };
+
+  showWaterItemDrawer = (item, tabIndex) => {
+    const { dispatch } = this.props;
+    const {
+      deviceDataList: [{ deviceId }],
+    } = item;
+    this.setState({ waterItem: item, waterItemDrawerVisible: true });
+    dispatch({
+      type: 'gasStation/fetchWaterHistory',
+      payload: { deviceId, historyType: 1, queryDate: moment().format('YYYY/MM/DD HH:mm:ss') },
+    });
+    this.fetchAlarmCount(deviceId, 1);
+  };
+
+  fetchAlarmCount = (deviceId, type) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'gasStation/fetchWaterHistoryAlarm', payload: { deviceId, type } });
+  };
+
+  hdieWaterItemDrawer = () => {
+    this.setState({ waterItemDrawerVisible: false });
+  };
+
+  showUnitListDrawer = e => {
+    this.setState({ unitListDrawerVisible: true });
+  };
+
   /**
    * 渲染
    */
@@ -978,6 +1065,7 @@ export default class Operation extends PureComponent {
       },
       unitSafety: { points, phoneVisible },
       newUnitFireControl: { messageInformList },
+      gasStation: { waterAlarmCount, waterHistory },
       messageInformListLoading,
     } = this.props;
     const {
@@ -1005,6 +1093,11 @@ export default class Operation extends PureComponent {
       // unitList,
       onekeyFlowDrawerVisible,
       unitListDrawerVisible,
+      waterItem,
+      waterItemDrawerVisible,
+      electricalFireMonitoringDetailDrawerVisible,
+      electricalFireMonitoringDetailDrawerValue,
+      electricalFireMonitoringDetailDrawerActiveKey,
     } = this.state;
     const headProps = {
       ...workOrderDetail[0],
@@ -1045,6 +1138,7 @@ export default class Operation extends PureComponent {
           handleCompanyClick={this.handleCompanyClick}
           // fetchMapInfo={this.fetchMapInfo}
           handleDeviceTypeChange={this.handleDeviceTypeChange}
+          showUnitListDrawer={this.showUnitListDrawer}
         />
         {/* 搜索框 */}
         <MapSearch
@@ -1096,11 +1190,23 @@ export default class Operation extends PureComponent {
         />
         {/* 实时消息 */}
         <Messages
+          cssType="1"
+          showCompanyInMsg
           className={styles.realTimeMessage}
           model={this.props.operation}
+          phoneVisible={phoneVisible}
+          typeClickList={TYPE_CLICK_LIST}
           handleParentChange={this.handleMapParentChange}
           handleClickMsgFlow={this.handleClickMsgFlow}
-          phoneVisible={phoneVisible}
+          // handleViewDangerDetail={this.handleViewDangerDetail}
+          // fetchData={this.fetchMaintenanceCheck}
+          // handleClickMessage={this.handleClickMessage}
+          // handleFaultClick={this.handleFaultClick}
+          // handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
+          // handleFireMessage={this.handleFireMessage}
+          handleClickElecMsg={this.handleClickElecMsg}
+          // handleClickSmoke={this.handleClickSmoke}
+          handleClickWater={this.handleClickWater}
         />
         {/* 消防主机处理动态 */}
         <FireFlowDrawer
@@ -1157,7 +1263,20 @@ export default class Operation extends PureComponent {
         <UnitListDrawer
           visible={unitListDrawerVisible}
           list={unitList}
+          deviceType={deviceType}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+        />
+        <ElectricalFireMonitoringDetailDrawer
+          visible={electricalFireMonitoringDetailDrawerVisible}
+          value={electricalFireMonitoringDetailDrawerValue}
+          activeKey={electricalFireMonitoringDetailDrawerActiveKey}
+          onClose={this.hideElectricalFireMonitoringDetailDrawer}
+        />
+        <WaterItemDrawer
+          visible={waterItemDrawerVisible}
+          fetchAlarmCount={this.fetchAlarmCount}
+          handleClose={this.hdieWaterItemDrawer}
+          data={{ item: waterItem, history: waterHistory, total: getWaterTotal(waterAlarmCount) }}
         />
         <VideoPlay
           showList={false}

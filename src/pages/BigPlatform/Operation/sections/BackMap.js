@@ -307,9 +307,28 @@ export default class MapSection extends PureComponent {
   };
 
   render() {
-    const { deviceType, handleParentChange, units, unitLists } = this.props;
+    const { deviceType, handleParentChange, units, unitLists, showUnitListDrawer } = this.props;
     const mapLegendData = getMapLegendData(units, deviceType);
     const nums = unitLists.map(list => list.length);
+    const resetBtn = (
+      <div
+        className={styles.allPoint}
+        onClick={() => {
+          this.mapInstance.setFitView(
+            this.mapInstance.getAllOverlays().filter(d => d.CLASS_NAME === 'AMap.Marker')
+          );
+          this.setState({ infoWindowShow: false });
+        }}
+      >
+        <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
+        重置
+      </div>
+    );
+    const listBtn = (
+      <div className={styles.listBtn} onClick={showUnitListDrawer}>
+        单位列表
+      </div>
+    );
 
     return (
       <div className={styles.mapContainer}>
@@ -341,20 +360,10 @@ export default class MapSection extends PureComponent {
           {this.renderMarkers()}
           {/* {this.renderTips()} */}
           <MapTypeBar />
-          <div
-            className={styles.allPoint}
-            onClick={() => {
-              this.mapInstance.setFitView(
-                this.mapInstance.getAllOverlays().filter(d => d.CLASS_NAME === 'AMap.Marker')
-              );
-              this.setState({ infoWindowShow: false });
-            }}
-          >
-            <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
-            重置
-          </div>
+          {resetBtn}
+          {listBtn}
         </GDMap>
-        <DeviceBar type={deviceType} nums={nums} handleClick={this.onDeviceTypeChange} />
+        <DeviceBar type={deviceType} nums={nums} ignore={[4]} handleClick={this.onDeviceTypeChange} />
         <MapLegend type={deviceType} data={mapLegendData} />
       </div>
     );

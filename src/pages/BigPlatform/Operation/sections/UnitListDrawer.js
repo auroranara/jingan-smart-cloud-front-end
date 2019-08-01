@@ -7,7 +7,7 @@ import {
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import { DotItem } from '@/pages/BigPlatform/Smoke/components/Components';
-import { COUNT_BASE_KEY as COUNT_BASE, COUNT_KEYS } from '../utils';
+import { COUNT_BASE_KEY as COUNT_BASE, COUNT_KEYS, TYPE_COUNTS, TYPE_DESCES, TYPE_KEYS, getAllDevicesCount } from '../utils';
 
 const TYPE = 'unitList';
 const NO_DATA = '暂无信息';
@@ -43,6 +43,7 @@ export default class UnitListDrawer extends PureComponent {
     const {
       visible,
       list=[],
+      deviceType,
       // handleAlarmClick,
       // handleFaultClick,
       // handleClickUnitStatistics,
@@ -57,9 +58,16 @@ export default class UnitListDrawer extends PureComponent {
       >
         {filteredList.map(item => {
           const { companyId, companyName, address, saferName, saferPhone } = item;
-          const selected = 'fire';
-          const count = item[`${selected}${COUNT_BASE}`];
-          const dotItems = STATUS_PROPS.map(itm => ({ ...itm, value: item[`${selected}${COUNT_BASE}For${COUNT_KEYS[itm.index]}`] }));
+          let [count, stsCounts] = getAllDevicesCount(item);
+          let dotItems = stsCounts.map((n, i) => ({ ...STATUS_PROPS[i], value: n }));
+          if (deviceType) {
+            const selected = TYPE_KEYS[deviceType];
+            const typeCount = TYPE_COUNTS[deviceType];
+            count = item[`${selected}${COUNT_BASE}`];
+            dotItems = STATUS_PROPS
+              .filter(({ index }) => typeCount[index])
+              .map(itm => ({ ...itm, value: item[`${selected}${COUNT_BASE}For${COUNT_KEYS[itm.index]}`] }));
+          }
           // const clickUnitStatistics = e =>  handleClickUnitStatistics({ company_id, company_name, address, principal_name, principal_phone, normal, unnormal, faultNum });
           const dots = (
             <p className={styles.more}>
@@ -105,7 +113,7 @@ export default class UnitListDrawer extends PureComponent {
 
     return (
       <DrawerContainer
-        title="单位列表"
+        title={`单位列表-${TYPE_DESCES[deviceType]}`}
         width={500}
         visible={visible}
         left={left}

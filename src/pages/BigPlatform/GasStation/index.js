@@ -8,7 +8,7 @@ import styles from './index.less';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { findFirstVideo } from '@/utils/utils';
-import { getWaterTotal } from './utils';
+import { WATER_TYPES, getWaterTotal } from './utils';
 import {
   AlarmDynamicDrawer,
   AlarmDynamicMsgDrawer,
@@ -71,7 +71,6 @@ notification.config({
 });
 
 const WEB_SOCKET_TYPE = 8;
-const WATER_TYPES = [101, 102, 103];
 
 const WS_OPTIONS = {
   pingTimeout: 30000,
@@ -2204,16 +2203,15 @@ export default class GasStation extends PureComponent {
           cssType="1"
           className={styles.realTimeMessage}
           model={this.props.gasStation}
+          phoneVisible={phoneVisible}
           handleParentChange={this.handleParentChange}
+          handleClickMsgFlow={this.handleClickMsgFlow}
           handleViewDangerDetail={this.handleViewDangerDetail}
           fetchData={this.fetchMaintenanceCheck}
           handleClickMessage={this.handleClickMessage}
           handleFaultClick={this.handleFaultClick}
           handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
           handleFireMessage={this.handleFireMessage}
-          // handleViewWater={this.handleViewWater}
-          handleClickMsgFlow={this.handleClickMsgFlow}
-          phoneVisible={phoneVisible}
           handleClickElecMsg={this.handleClickElecMsg}
           handleClickSmoke={this.handleClickSmoke}
           handleClickWater={this.handleClickWater}

@@ -9,6 +9,7 @@ export const WATER = 5;
 export const TYPE_KEYS = ['', 'fire', 'smoke', 'elec', 'gas', 'water'];
 export const COUNT_BASE_KEY = 'DeviceCount';
 export const COUNT_KEYS = ['Normal', 'Fire', 'Fault', 'UnConnect'];
+const COUNT_KEYS1 = ['Fire', 'Fault', 'UnConnect', 'Normal'];
 export const COUNT_LABELS = ['正常', '报警', '故障', '失联'];
 export const BAR_LABELS = COUNT_LABELS.slice(1);
 export const BAR_COLORS = ['#f83329', '#ffb400', '#9f9f9f'];
@@ -24,7 +25,10 @@ export const TYPE_COUNTS = [ // deviceType不同时对应的传感器状态类�
 export const PAGE_SIZE = 10;
 
 export function getStatuses(item) {
-  return [0, 0, 0, 0];
+  return TYPE_KEYS.slice(1).map(k => COUNT_KEYS1.map(ck => {
+    const value = item[`${k}${COUNT_BASE_KEY}For${ck}`];
+    return value ? +value : 0;
+  }));
 }
 
 export function getStatusImg(list, imgs) {
@@ -107,4 +111,8 @@ export function sortUnits(units, deviceType) {
     return prev;
   }, [[], [], [], []]);
   return [normal, loss, fault, fire].reduce((prev, next) => prev.concat(next), []);
+}
+
+export function getAllDevicesCount(item) {
+  return [0, [0, 0, 0, 0]];
 }

@@ -3,7 +3,8 @@ import { Divider, Icon } from 'antd';
 import Ellipsis from 'components/Ellipsis';
 import NewSection from '@/components/NewSection';
 import moment from 'moment';
-import { vaguePhone } from '../utils';
+
+import { getMsgIcon, vaguePhone } from '../utils';
 // import DescriptionList from 'components/DescriptionList';
 import styles from './index.less';
 import {
@@ -15,10 +16,10 @@ import {
 
 const MAX_NAME_LENGTH = 4;
 const TYPES = [
-  1, // 发生监管\联动\反馈\屏蔽
-  2,
-  3,
-  4,
+  1, // 发生监管
+  2, // 联动
+  3, // 反馈
+  4, // 屏蔽
   7, // 主机报警
   9, // 主机报障
   11, // 一键报修
@@ -46,22 +47,13 @@ const TYPES = [
   50, // 独立烟感报警恢复
   51, // 独立烟感故障恢复
 ];
-const ICONS = {
-  13: inspectIcon,
-  14: dangerIcon,
-  15: dangerIcon,
-  16: dangerIcon,
-  17: dangerIcon,
-  18: inspectIcon,
-  32: alarmIcon,
-  36: alarmIcon,
-  37: alarmIcon,
-  42: alarmIcon,
-  43: alarmIcon,
-  44: alarmIcon,
-  48: alarmIcon,
-  49: alarmIcon,
-};
+
+const ICON_LIST = [
+  { icon: inspectIcon, types: [13, 18] },
+  { icon: dangerIcon, types: [14, 15, 16, 17] },
+  { icon: alarmIcon, types: [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51] },
+];
+
 const formatTime = time => {
   const diff = moment().diff(moment(time));
   if (diff > 2 * 24 * 60 * 60 * 1000) {
@@ -109,8 +101,10 @@ export default class Messages extends PureComponent {
   renderMsg = (msg, index) => {
     const {
       cssType,
+      showCompanyInMsg,
       handleParentChange,
       fetchData,
+      typeClickList,
       handleViewDangerDetail,
       // handleClickMessage,
       // handleFaultClick,
@@ -182,6 +176,8 @@ export default class Messages extends PureComponent {
       userMessage = [],
       checkUserPhone,
       accompany = [],
+      companyName,
+      companyId,
     } = msg;
     // const repeatCount = +isOver === 0 ? count : num;
     const repeatCount = count;
@@ -216,6 +212,10 @@ export default class Messages extends PureComponent {
     const param = {
       dataId: +isOver === 0 ? msgFlag : undefined,
       id: +isOver !== 0 ? msgFlag : undefined,
+      companyId: companyId || undefined,
+      companyName: companyName || undefined,
+      component: component || undefined,
+      unitTypeName: unitTypeName || undefined,
     };
     let msgSettings = {};
     if (TYPES.indexOf(+type) < 0) return null;
@@ -511,7 +511,7 @@ export default class Messages extends PureComponent {
     const msgClassName = `msgItem${cssType ? cssType : ''}`;
     const innerClassName = cssType ? styles.msgInner : undefined;
     const typeIcon = cssType ? (
-      <span className={styles.typeIcon} style={{ backgroundImage: `url(${ICONS[type]})` }} />
+      <span className={styles.typeIcon} style={{ backgroundImage: `url(${getMsgIcon(type, ICON_LIST)})` }} />
     ) : null;
     const msgTime = formatTime(addTime);
     const firstComponent = cssType ? (
@@ -526,10 +526,14 @@ export default class Messages extends PureComponent {
       items: [],
     };
 
+    const nameIndex = items.findIndex(({ name }) => name);
+    if (showCompanyInMsg && nameIndex !== -1)
+      items.splice(nameIndex, 0, { name: '单位', value: companyName || '无名单位' });
+    const handleClick = !typeClickList || typeClickList.includes(+type) ? onClick : undefined;
     const detailBtn = cssType ? (
         <Icon type="right" className={styles.detailArrow}/>
     ) : (
-      <a className={styles.detailBtn} onClick={onClick}>
+      <a className={styles.detailBtn} onClick={handleClick}>
         详情
         <Icon type="double-right" />
       </a>
@@ -538,12 +542,12 @@ export default class Messages extends PureComponent {
     return (
       <div className={styles[msgClassName]} key={index}>
         {firstComponent}
-        {onClick && detailBtn}
+        {handleClick && detailBtn}
         {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
         <div
           className={innerClassName}
-          style={{ cursor: cssType &&  onClick ? 'pointer' : 'auto'}}
-          onClick={cssType ? onClick : null}
+          style={{ cursor: cssType &&  handleClick ? 'pointer' : 'auto'}}
+          onClick={cssType ? handleClick : null}
         >
           {typeIcon}
           <div className={styles.msgType}>

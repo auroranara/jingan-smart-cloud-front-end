@@ -20,6 +20,13 @@ import dotSmokeGrey from './dotSmokeGrey.png';
 import dotWaterGreen from './dotWaterGreen.png';
 import dotWaterGrey from './dotWaterGrey.png';
 import dotWaterRed from './dotWaterRed.png';
+import elecGreen from './elecGreen.png';
+import elecGrey from './elecGrey.png';
+import elecRed from './elecRed.png';
+import gasGreen from './gasGreen.png';
+import gasGrey from './gasGrey.png';
+import gasRed from './gasRed.png';
+import gasYellow from './gasYellow.png';
 import hostIcon from './host.png';
 import hostIcon1 from './host1.png';
 import hostGreen from './hostGreen.png';
@@ -34,6 +41,9 @@ import smokeGreen from './smokeGreen.png';
 import smokeGrey from './smokeGrey.png';
 import smokeRed from './smokeRed.png';
 import smokeYellow from './smokeYellow.png';
+import waterGreen from './waterGreen.png';
+import waterGrey from './waterGrey.png';
+import waterRed from './waterRed.png';
 
 export {
   clockIcon,
@@ -58,6 +68,13 @@ export {
   dotWaterGreen,
   dotWaterGrey,
   dotWaterRed,
+  elecGreen,
+  elecGrey,
+  elecRed,
+  gasGreen,
+  gasGrey,
+  gasRed,
+  gasYellow,
   hostIcon,
   hostIcon1,
   hostGreen,
@@ -72,4 +89,7 @@ export {
   smokeGrey,
   smokeRed,
   smokeYellow,
+  waterGreen,
+  waterGrey,
+  waterRed,
 }

@@ -5,23 +5,36 @@
   border-top: 1px solid #474747;
 }
 
-.host {
+.fire {
   width: 23px;
-  height: 25px;
-  margin-right: 20px;
+  height: 24px;
 }
 
 .smoke {
+  width: 24px;
+  height: 24px;
+}
+
+.elec {
   width: 26px;
   height: 26px;
 }
 
-.host, .smoke {
-  position: relative;
-  background-size: 100% 100%;
+.gas {
+  width: 20px;
+  height: 27px;
 }
 
-.host, .smoke {
+.water {
+  width: 21px;
+  height: 27px;
+}
+
+.fire, .smoke, .elec, .gas, .water {
+  position: relative;
+  background-size: 100% 100%;
+  margin-right: 10px;
+
   .bar {
     display: none;
     position: absolute;
@@ -34,7 +47,7 @@
   }
 }
 
-.host:hover, .smoke:hover {
+.fire:hover, .smoke:hover, .elec:hover, .gas:hover, .water:hover {
   .bar {
     display: flex;
   }
