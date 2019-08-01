@@ -1097,6 +1097,7 @@ export default class GasStation extends PureComponent {
         // businessType: 2,
         pageNum: 1,
         pageSize: 10,
+        status: 5,
       },
     });
     this.setState({ currentDrawerVisible: true });
@@ -1357,7 +1358,7 @@ export default class GasStation extends PureComponent {
       },
     } = this.props;
     const status =
-      (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || null;
+      (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || 5;
     this.setState({ hdStatus: status });
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
@@ -1378,7 +1379,7 @@ export default class GasStation extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
-    const { hdStatus } = this.state;
+    const { hdStatus = 5 } = this.state;
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
       payload: {
