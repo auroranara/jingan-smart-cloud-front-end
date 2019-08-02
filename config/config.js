@@ -1,18 +1,20 @@
 /* eslint-disable react/destructuring-assignment */
 
 // https://umijs.org/config/
-
 import os from 'os';
 const path = require('path');
 const initRouters = require('./router.config');
 const webpackplugin = require('./plugin.config');
-
+const generateName = require('./name.config')
 let version = '';
 process.argv.forEach(p => {
   if (p.indexOf('version=') > -1) {
     version = p.split('=')[1];
   }
 });
+// 根据环境变量生成项目名称
+const PROJECT_ENV = process.env.PROJECT_ENV || 'default';
+const projectShortName = generateName(PROJECT_ENV)
 
 const hosts = {
   lm: '192.168.10.2', // 吕旻
@@ -40,7 +42,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.ly}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -50,7 +52,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.ly}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
@@ -65,7 +67,7 @@ export default {
           hmr: true,
         },
         title: {
-          defaultTitle: '晶安智慧云',
+          defaultTitle: projectShortName || '晶安智慧云',
         },
         locale: {
           enable: true, // default false
