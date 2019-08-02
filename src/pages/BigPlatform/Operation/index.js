@@ -20,7 +20,8 @@ import {
 } from './components/Components';
 import { PAGE_SIZE, getUnitList } from './utils';
 import { WATER_TYPES, getWaterTotal } from '@/pages/BigPlatform/GasStation/utils';
-import iconFire from '@/assets/icon-fire-msg.png';
+// import iconFire from '@/assets/icon-fire-msg.png';
+import { redLight as iconFire } from '@/pages/BigPlatform/GasStation/imgs/links';
 import iconFault from '@/assets/icon-fault-msg.png';
 // import FireFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/FireFlowDrawer';
 // import SmokeFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/SmokeFlowDrawer';
@@ -504,8 +505,7 @@ export default class Operation extends PureComponent {
         </div>
         {companyName && <div>【{companyName}】</div>}
         <div>
-          {(type === 7 || type === 9) &&
-            unitTypeName && (
+          {type === 7 && unitTypeName && (
               <span className={styles1.device} style={{ color: msgItem.color }}>
                 【{unitTypeName}】
               </span>
