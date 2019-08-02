@@ -12,7 +12,7 @@ process.argv.forEach(p => {
     version = p.split('=')[1];
   }
 });
-// 根据环境变量生成项目名称
+// --TODO:根据环境变量生成项目名称
 const PROJECT_ENV = process.env.PROJECT_ENV || 'default';
 const projectShortName = generateName(PROJECT_ENV)
 
