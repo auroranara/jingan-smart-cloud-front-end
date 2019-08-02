@@ -240,6 +240,7 @@ export default class Operation extends PureComponent {
             const { type, enterSign, isOver } = result;
 
             if (ALARM_TYPES.includes(+type)) {
+              // 水系统，电气火灾不用判断isOver，主机和独立烟感需要判断isOver是否为0
               if ([32, 36].includes(type) || (+isOver === 0 && (type === 7 && enterSign === '1' || type !== 7)))
                 this.showFireMsg(result);
               this.fetchScreenMessage();
