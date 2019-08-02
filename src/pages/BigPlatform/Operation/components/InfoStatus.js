@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 
 import styles from './InfoStatus.less';
-import { BAR_COLORS as COLORS, COUNT_BASE_KEY, COUNT_LABELS, TYPE_COUNTS, TYPE_KEYS, getStatuses, getStatusImg } from '../utils';
+import { BAR_COLORS as COLORS, COUNT_BASE_KEY, COUNT_LABELS, GAS, TYPE_COUNTS, TYPE_KEYS, getStatuses, getStatusImg } from '../utils';
 import {
   elecGreen,
   elecGrey,
@@ -66,7 +66,7 @@ export default class InfoStatus extends PureComponent {
         {TYPE_KEYS.slice(1).map((k, i) => {
           const typeKey = `${k}${COUNT_BASE_KEY}`;
           const stses = statuses[i];
-          if (data[typeKey])
+          if (data[typeKey] && i !== GAS - 1)
             return (
               <div key={k} className={styles[k]} style={{ backgroundImage: `url(${getStatusImg(stses, IMGS_LIST[i])})` }}>
                 <StatusBar deviceType={i + 1} data={stses.slice(0, 3)} />
