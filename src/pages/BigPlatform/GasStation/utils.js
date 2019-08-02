@@ -2,6 +2,7 @@ import moment from 'moment';
 
 export const MAX_MPa = 2;
 export const MAX_M = 10;
+export const WATER_TYPES = [101, 102, 103];
 
 export function getWaterTotal(list) {
   if (!list || !list.length)
@@ -148,8 +149,10 @@ function getMaxDeepByUnit(unit) {
 }
 
 // waterTabItem 0 消火栓 1 喷淋 2 水池/水箱  0，1-> Gauge 2->WaterTank
-export function isGauge(tab) {
-  return tab === 0 || tab === 1 ? true : false;
+export function isGauge(tab, unit) {
+  if (tab !== undefined)
+    return tab === 0 || tab === 1 ? true : false;
+  return !isLengthUnit(unit);
 }
 
 export function getMin(...args) {
