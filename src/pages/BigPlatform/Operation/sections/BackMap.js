@@ -330,6 +330,10 @@ export default class MapSection extends PureComponent {
       </div>
     );
 
+    const isWine = global.PROJECT_CONFIG.projectShortName === '智慧消防云'; // 是否泸州老窖
+    const mapCSSId = isWine ? '2e4b83bf089a6c075c0bea7b3ac22e25' : 'b9d9da96da6ba2487d60019876b26fc5';
+    // console.log(global.PROJECT_CONFIG);
+
     return (
       <div className={styles.mapContainer}>
         <GDMap
@@ -345,8 +349,7 @@ export default class MapSection extends PureComponent {
             keyboardEnable: false,
           }}
           useAMapUI
-          // mapStyle="amap://styles/b9d9da96da6ba2487d60019876b26fc5"
-          mapStyle="amap://styles/2e4b83bf089a6c075c0bea7b3ac22e25"
+          mapStyle={`amap://styles/${mapCSSId}`}
           expandZoomRange
           zooms={zooms}
           pitch={60}

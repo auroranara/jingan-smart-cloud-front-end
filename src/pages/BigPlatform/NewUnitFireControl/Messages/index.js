@@ -526,8 +526,10 @@ export default class Messages extends PureComponent {
       items: [],
     };
 
-    const nameIndex = items.findIndex(({ name }) => name);
-    if (showCompanyInMsg && nameIndex !== -1)
+    let nameIndex = items.findIndex(({ name }) => name);
+    if (nameIndex === -1)
+      nameIndex = items.length;
+    if (showCompanyInMsg)
       items.splice(nameIndex, 0, { name: '单位', value: companyName || '无名单位' });
     const handleClick = !typeClickList || typeClickList.includes(+type) ? onClick : undefined;
     const detailBtn = cssType ? (

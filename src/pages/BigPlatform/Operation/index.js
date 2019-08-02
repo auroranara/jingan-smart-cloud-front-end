@@ -1257,12 +1257,14 @@ export default class Operation extends PureComponent {
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
         />
         <ElectricalFireMonitoringDetailDrawer
+          showCompany
           visible={electricalFireMonitoringDetailDrawerVisible}
           value={electricalFireMonitoringDetailDrawerValue}
           activeKey={electricalFireMonitoringDetailDrawerActiveKey}
           onClose={this.hideElectricalFireMonitoringDetailDrawer}
         />
         <WaterItemDrawer
+          showCompany
           visible={waterItemDrawerVisible}
           fetchAlarmCount={this.fetchAlarmCount}
           handleClose={this.hdieWaterItemDrawer}

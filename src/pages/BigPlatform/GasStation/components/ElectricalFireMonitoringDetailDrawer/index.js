@@ -500,12 +500,13 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
 
   render() {
     const {
+      showCompany,
       visible,
       onClose,
       // loading,
       value,
     } = this.props;
-    const { name, location, params=[] } = value || {};
+    const { name, location, companyName, params=[] } = value || {};
     const alarmParams = (params || []).filter(({ status }) => status > 0);
 
     return (
@@ -514,7 +515,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
           <Fragment>
             <div className={styles.titleIcon} />
             <div className={styles.title}>
-              {location}
+              {location}{showCompany && companyName ? `-${companyName}` : ''}
             </div>
           </Fragment>
         }

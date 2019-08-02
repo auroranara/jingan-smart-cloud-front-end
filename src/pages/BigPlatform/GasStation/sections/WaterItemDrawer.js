@@ -58,6 +58,7 @@ export default class WaterItemDrawer extends PureComponent {
 
   render() {
     const {
+      showCompany,
       visible,
       tabItem,
       data: {
@@ -70,8 +71,8 @@ export default class WaterItemDrawer extends PureComponent {
     // const { videoVisible, videoKeyId } = this.state;
     const { dateType } = this.state;
 
-    const { area, location, deviceName, deviceDataList } = item;
-    const title = `${deviceName}(${area}${location})`;
+    const { area, location, companyName, deviceName, deviceDataList } = item;
+    const title = `${deviceName}(${area}${location})${showCompany && companyName ? `-${companyName}` : ''}`;
     const dataItem = deviceDataList && deviceDataList[0] ? deviceDataList[0] : undefined;
     let child = <LossDevice />;
 
