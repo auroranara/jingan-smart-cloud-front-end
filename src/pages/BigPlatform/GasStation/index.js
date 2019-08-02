@@ -351,12 +351,7 @@ export default class GasStation extends PureComponent {
     });
 
     // 获取点位
-    dispatch({
-      type: 'newUnitFireControl/fetchPointList',
-      payload: {
-        companyId,
-      },
-    });
+    this.fetchPointList();
 
     // 企业负责人和维保员信息
     dispatch({
@@ -585,12 +580,7 @@ export default class GasStation extends PureComponent {
 
     if (type === 14) {
       // 获取点位
-      dispatch({
-        type: 'newUnitFireControl/fetchPointList',
-        payload: {
-          companyId,
-        },
-      });
+      this.fetchPointList();
 
       // 获取当前隐患列表
       this.fetchCurrentHiddenDanger(companyId);
@@ -607,12 +597,7 @@ export default class GasStation extends PureComponent {
     if ([15, 16, 17].includes(+type)) {
       if (fourColorTips[pointId] === messageFlag) this.removeFourColorTip(pointId, messageFlag);
       // 获取点位
-      dispatch({
-        type: 'newUnitFireControl/fetchPointList',
-        payload: {
-          companyId,
-        },
-      });
+      this.fetchPointList();
 
       // 获取当前隐患列表
       this.fetchCurrentHiddenDanger(companyId);
@@ -628,12 +613,7 @@ export default class GasStation extends PureComponent {
     }
     if (type === 13) {
       // 获取点位
-      dispatch({
-        type: 'newUnitFireControl/fetchPointList',
-        payload: {
-          companyId,
-        },
-      });
+      this.fetchPointList();
 
       // 获取当前隐患列表
       this.fetchCurrentHiddenDanger(companyId);
@@ -860,12 +840,7 @@ export default class GasStation extends PureComponent {
     this.fetchScreenMessage(dispatch, companyId);
 
     // 获取点位
-    dispatch({
-      type: 'newUnitFireControl/fetchPointList',
-      payload: {
-        companyId,
-      },
-    });
+    this.fetchPointList();
 
     // 获取当前隐患列表
     this.fetchCurrentHiddenDanger(companyId);
@@ -882,6 +857,17 @@ export default class GasStation extends PureComponent {
     // 获取水系统---消火栓系统
     // this.fetchWaterSystem('101');
     this.fetchAllWaterSystem();
+  };
+
+  fetchPointList = () => {
+    const {
+      dispatch,
+      match: { params: { unitId: companyId } },
+    } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchPointList',
+      payload: { companyId, screenType: 'gas' },
+    });
   };
 
   fetchHiddenDangerNum = () => {
