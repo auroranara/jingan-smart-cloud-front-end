@@ -72,8 +72,8 @@ const FIELDNAMES = {
   area: ({ area, reportType }) => (typeDict2[reportType] === '消防主机' ? undefined : area), // 区域
   location: ({ installAddress, location, reportType }) =>
     typeDict2[reportType] === '消防主机' ? installAddress : location, // 位置
-  startTime: ({ createDate, reportType, firstTime }) =>
-    ({ 消防主机: firstTime, 独立烟感: firstTime, 报修: createDate }[typeDict2[reportType]]), // 报警/报修时间
+  startTime: ({ createDate, reportType, lastTime }) =>
+    ({ 消防主机: lastTime, 独立烟感: lastTime, 报修: createDate }[typeDict2[reportType]]), // 报警/报修时间
   endTime: 'endDate', // 结束时间
   status: ({ fireType }) => statusDict2[fireType], // 状态
   systemType: 'systemTypeValue', // 系统类型
