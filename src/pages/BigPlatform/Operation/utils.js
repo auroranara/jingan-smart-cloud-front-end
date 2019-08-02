@@ -114,5 +114,12 @@ export function sortUnits(units, deviceType) {
 }
 
 export function getAllDevicesCount(item) {
-  return [0, [0, 0, 0, 0]];
+  return TYPE_KEYS.slice(1).reduce((prev, next) => {
+    const baseKey = `${next}${COUNT_BASE_KEY}`;
+    prev[0] += item[baseKey];
+    COUNT_KEYS.forEach((ck, i) => {
+      prev[1][i] += item[`${baseKey}For${ck}`] || 0;
+    });
+    return prev;
+  }, [0, [0, 0, 0, 0]]);
 }

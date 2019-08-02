@@ -29,8 +29,9 @@ import { FireFlowDrawer, OnekeyFlowDrawer, SmokeFlowDrawer } from '@/pages/BigPl
 
 const OPE = 3; // 运营或管理员unitType对应值
 const COMPANY_ALL = 'companyIdAll';
-const TYPE_CLICK_LIST = [7, 9, 11, 38, 40];
-const TYPE_MSG_LIST = [7, 38, 39];
+const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 40, 42, 43, 44, 48, 49];
+const ALARM_TYPES = [7, 32, 36, 38];
+const TYPE_MSG_LIST = ALARM_TYPES;
 
 // websocket配置
 const options = {
@@ -71,7 +72,7 @@ const CONTENT_STYLE = { position: 'relative', height: '100%', zIndex: 0 };
 
 const MSG_INFO = [
   {
-    title: '火警提示',
+    title: '报警提示',
     icon: iconFire,
     color: '#f83329',
     body: '发生报警，',
@@ -89,7 +90,7 @@ const MSG_INFO = [
 ];
 
 const switchMsgType = type => {
-  const alarmTypes = [7, 38, 39];
+  const alarmTypes = ALARM_TYPES;
   const faultTypes = [9, 40];
   if (alarmTypes.indexOf(type) >= 0) return MSG_INFO[0];
   else if (faultTypes.indexOf(type) >= 0) return MSG_INFO[1];
@@ -228,48 +229,21 @@ export default class Operation extends PureComponent {
 
       try {
         const data = JSON.parse(e.data);
+        const { companyId } = data.data;
         this.fetchStatistics();
-        this.fetchMapUnitList(data.data.companyId);
+        this.fetchMapUnitList(companyId);
+
         dispatch({
           type: 'operation/fetchWebsocketScreenMessage',
           payload: data,
           success: result => {
-            // 显示火警障碍弹窗
-            const {
-              // itemId,
-              // messageFlag,
-              // checkResult,
-              // pointId,
-              // pointStatus,
-              // deviceType,
-              type,
-              enterSign,
-              isOver,
-            } = result;
+            const { type, enterSign, isOver } = result;
 
-            if ([7, 9, 38, 39, 40, 41].includes(+type)) {
-              if (+isOver === 0) {
-                if (type === 7 || type === 9) {
-                  if (enterSign === '1') this.showFireMsg(result);
-                } else {
-                  this.showFireMsg(result);
-                }
-              }
+            if (ALARM_TYPES.includes(+type)) {
+              if ([32, 36].includes(type) || (+isOver === 0 && (type === 7 && enterSign === '1' || type !== 7)))
+                this.showFireMsg(result);
               this.fetchScreenMessage();
             }
-
-            // if (
-            //   type === 1 ||
-            //   type === 2 ||
-            //   type === 3 ||
-            //   type === 4 ||
-            //   type === 9 ||
-            //   type === 7 ||
-            //   type === 21
-            // ) {
-            //   // 获取消防主机监测
-            //   // this.fetchFireAlarmSystem();
-            // }
           },
         });
       } catch (error) {
@@ -299,6 +273,15 @@ export default class Operation extends PureComponent {
   messageIds = [];
   messageTimers = [];
   messageCloseTimers = [];
+
+  fetchElecDeviceList = (companyId, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'gasStation/fetchDistributionBoxClassification',
+      payload: { companyId, type: 1 },
+      callback,
+    });
+  };
 
   hiddeAllPopup = () => {
     this.setState({ ...popupVisible });
@@ -344,57 +327,52 @@ export default class Operation extends PureComponent {
   // };
 
   showFireMsg = item => {
-    const { type, messageId, isOver } = item;
-    // if (type === 7 || type === 9 || type === 38 || type === 39 || type === 40 || type === 41) {
-    if (TYPE_MSG_LIST.includes(+type)) {
-      if (+isOver === 0) {
-        const msgItem = switchMsgType(+type);
-        const style = {
-          boxShadow: `0px 0px 20px ${msgItem.color}`,
-        };
-        const styleAnimation = {
-          ...style,
-          animation: `${msgItem.animation} 2s linear 0s infinite alternate`,
-        };
-        const options = {
-          key: messageId,
-          className: styles1.notification,
-          message: this.renderNotificationTitle(item),
-          description: this.renderNotificationMsg(item),
-          style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
-        };
-        notification.open({
-          ...options,
-        });
+    const { type, messageId } = item;
+    const msgItem = switchMsgType(+type);
+    const style = {
+      boxShadow: `0px 0px 20px ${msgItem.color}`,
+    };
+    const styleAnimation = {
+      ...style,
+      animation: `${msgItem.animation} 2s linear 0s infinite alternate`,
+    };
+    const options = {
+      key: messageId,
+      className: styles1.notification,
+      message: this.renderNotificationTitle(item),
+      description: this.renderNotificationMsg(item),
+      style: this.fireNode ? { ...style, width: this.fireNode.clientWidth - 8 } : { ...style },
+    };
+    notification.open({
+      ...options,
+    });
 
-        const timer = setTimeout(() => {
-          // 解决加入animation覆盖notification自身显示动效时长问题
+    const timer = setTimeout(() => {
+      // 解决加入animation覆盖notification自身显示动效时长问题
+      notification.open({
+        ...options,
+        style: this.fireNode
+          ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 }
+          : { ...styleAnimation },
+        onClose: () => {
           notification.open({
             ...options,
-            style: this.fireNode
-              ? { ...styleAnimation, width: this.fireNode.clientWidth - 8 }
-              : { ...styleAnimation },
-            onClose: () => {
-              notification.open({
-                ...options,
-              });
-              setTimeout(() => {
-                this.closeNotification(messageId);
-              }, 200);
-            },
           });
-        }, 800);
+          setTimeout(() => {
+            this.closeNotification(messageId);
+          }, 200);
+        },
+      });
+    }, 800);
 
-        const closeTimer = setTimeout(() => {
-          this.closeNotification(messageId);
-        }, 30000);
+    const closeTimer = setTimeout(() => {
+      this.closeNotification(messageId);
+    }, 30000);
 
-        this.messageIds.push(messageId);
-        this.messageTimers.push(timer);
-        this.messageCloseTimers.push(closeTimer);
-        this.closeExcessNotification();
-      }
-    }
+    this.messageIds.push(messageId);
+    this.messageTimers.push(timer);
+    this.messageCloseTimers.push(closeTimer);
+    this.closeExcessNotification();
   };
 
   closeNotification = id => {
@@ -443,12 +421,6 @@ export default class Operation extends PureComponent {
       area,
       location,
       cameraMessage,
-      // isOver,
-      // count,
-      // num,
-      // newTime,
-      // firstTime,
-      // lastTime,
       componentType,
       workOrder,
       systemTypeValue,
@@ -458,12 +430,12 @@ export default class Operation extends PureComponent {
       companyName,
       component,
       trueOver = null,
+      deviceId,
+      deviceType,
+      deviceTypeName,
+      paramName,
     } = item;
     const msgItem = switchMsgType(+type);
-    // const repeat = {
-    //   times: +isOver === 0 ? count : num,
-    //   lastreportTime: addTime,
-    // };
     const occurData = [
       {
         create_time: addTime,
@@ -493,18 +465,33 @@ export default class Operation extends PureComponent {
       unitTypeName: unitTypeName || undefined,
       companyId: companyId || undefined,
     };
+
+    let handleClick = null;
+    // if (type === 7) this.handleClickMsgFlow(param, 0, 0, ...restParams);
+    // else if (type === 9) this.handleClickMsgFlow(param, 0, 1, ...restParams);
+    // else if (type === 38) this.handleClickMsgFlow(param, 1, 0, ...restParams);
+    // else if (type === 39) this.handleClickMsgFlow(param, 2, 0, ...restParams);
+    // else if (type === 40) this.handleClickMsgFlow(param, 1, 1, ...restParams);
+    switch(type) {
+      case 7:
+        handleClick = e => this.handleClickMsgFlow(param, 0, 0, ...restParams);
+        break;
+      case 32:
+        handleClick = e => this.handleClickElecMsg(deviceId, paramName, companyId);
+        break;
+      case 36:
+        handleClick = e => this.handleClickWater(undefined, WATER_TYPES.indexOf(deviceType), deviceId, companyId);
+        break;
+      case 38:
+        handleClick = e => this.handleClickMsgFlow(param, 1, 0, ...restParams);
+        break;
+      default:
+        console.log('no click');
+    }
     return (
       <div
         className={styles1.notificationBody}
-        onClick={() => {
-          if (type === 7) this.handleClickMsgFlow(param, 0, 0, ...restParams);
-          else if (type === 9) this.handleClickMsgFlow(param, 0, 1, ...restParams);
-          else if (type === 38) this.handleClickMsgFlow(param, 1, 0, ...restParams);
-          else if (type === 39) this.handleClickMsgFlow(param, 2, 0, ...restParams);
-          else if (type === 40) this.handleClickMsgFlow(param, 1, 1, ...restParams);
-          // if (type === 7 || type === 38 || type === 39) this.handleClickMessage(messageFlag, item);
-          // else this.handleFaultClick({ ...item });
-        }}
+        onClick={handleClick}
       >
         <div>
           <span className={styles1.time}>
@@ -525,6 +512,16 @@ export default class Operation extends PureComponent {
           {(type === 38 || type === 39 || type === 40) && (
             <span className={styles1.device} style={{ color: msgItem.color }}>
               {type === 39 ? `【可燃气体探测器】` : `【独立烟感探测器】`}
+            </span>
+          )}
+          {type === 36 && (
+            <span className={styles.device} style={{ color: msgItem.color }}>
+              {`【水系统探测器】${deviceTypeName}`}
+            </span>
+          )}
+          {type === 32 && (
+            <span className={styles.device} style={{ color: msgItem.color }}>
+              {`【电气火灾探测器】${paramName}`}
             </span>
           )}
           {msgItem.body}
@@ -956,18 +953,15 @@ export default class Operation extends PureComponent {
     this.setState({ fireVideoVisible: true });
   };
 
-  handleClickElecMsg = (deviceId, paramName) => {
-    const {
-      gasStation: {
-        distributionBoxClassification: { alarm = [], loss = [], normal = [] },
-      },
-    } = this.props;
-    const data = [...alarm, ...loss, ...normal].filter(({ id }) => id === deviceId)[0];
-    if (data) {
-      this.showElectricalFireMonitoringDetailDrawer(data, paramName);
-    } else {
-      console.log('未找到设备对应的数据');
-    }
+  handleClickElecMsg = (deviceId, paramName, companyId) => {
+    this.fetchElecDeviceList(companyId, distributionBoxClassification => {
+      const { alarm = [], loss = [], normal = [] } = distributionBoxClassification;
+      const data = [...alarm, ...loss, ...normal].filter(({ id }) => id === deviceId)[0];
+      if (data)
+        this.showElectricalFireMonitoringDetailDrawer(data, paramName);
+      else
+        console.log('未找到设备对应的数据');
+    });
   };
 
   showElectricalFireMonitoringDetailDrawer = (
@@ -988,14 +982,9 @@ export default class Operation extends PureComponent {
     });
   };
 
-  handleClickWater = (index, typeIndex, deviceId) => {
+  handleClickWater = (index, typeIndex, deviceId, companyId) => {
     // const { waterTabItem } = this.state;
-    const {
-      dispatch,
-      match: {
-        params: { unitId: companyId },
-      },
-    } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'gasStation/fetchWaterSystem',
       payload: {
