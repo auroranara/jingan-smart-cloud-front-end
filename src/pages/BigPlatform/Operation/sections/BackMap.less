@@ -6,8 +6,8 @@
   width: 100%;
   height: 100%;
 
-  .allPoint {
-    position: absolute; // top: 100px;
+  .allPoint, .listBtn {
+    position: absolute;
     top: calc(9.62963% + 24px);
     right: 185px;
     height: 32px;
@@ -20,11 +20,15 @@
     text-align: center;
   }
 
-  .allPoint:hover {
+  .listBtn {
+    right: 270px;
+  }
+
+  .allPoint:hover, .listBtn:hover {
     opacity: 0.85;
   }
 
-  .allPoint:active {
+  .allPoint:active, .listBtn:active {
     color: #fff;
   }
 

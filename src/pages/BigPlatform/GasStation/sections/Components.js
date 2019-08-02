@@ -1,11 +1,11 @@
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
-import { SetDrawer } from '@/pages/BigPlatform/Safety/Company3/components';
 import CheckWorkOrder from './CheckWorkOrder';
 import CompanyInfo from './CompanyInfo';
 import WaterItemDrawer from './WaterItemDrawer';
 import WaterSystem from './WaterSystem';
 import WaterSystemDrawer from './WaterSystemDrawer';
 
+export { SetDrawer } from '@/pages/BigPlatform/Safety/Company3/components';
 export {
   AlarmDynamicDrawer,
   AlarmDynamicMsgDrawer,
@@ -56,7 +56,6 @@ export {
   CheckWorkOrder,
   CompanyInfo,
   NewVideoPlay,
-  SetDrawer,
   WaterItemDrawer,
   WaterSystem,
   WaterSystemDrawer,
