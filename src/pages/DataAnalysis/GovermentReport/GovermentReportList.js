@@ -25,6 +25,8 @@ import styles from './GovermentReport.less';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 const title = '政府监督报表';
+// 默认每页显示数量
+const defaultPageSize = 10;
 
 /* 面包屑 */
 const breadcrumbList = [
@@ -221,7 +223,7 @@ export default class App extends PureComponent {
       pageSize: 10,
     };
 
-    const { pageNum, pageSize, startTime, endTime, companyName, ...rest } = payload;
+    const { pageNum = 1, pageSize = defaultPageSize, startTime, endTime, companyName, ...rest } = payload;
     // 重置控件
     setFieldsValue({
       createTime:
@@ -232,13 +234,7 @@ export default class App extends PureComponent {
     });
 
     // 获取列表
-    dispatch({
-      type: 'maintenanceReport/fetchMaintenanceCheckForGov',
-      payload: {
-        ...payload,
-        // reportSource: 2,
-      },
-    });
+    this.handleSearch(pageNum, pageSize)
 
     // 获取网格列表
     dispatch({
@@ -264,25 +260,22 @@ export default class App extends PureComponent {
   /**
    * 查询
    */
-  handleSearch = () => {
+  handleSearch = (pageNum = 1, pageSize = defaultPageSize) => {
     const {
       dispatch,
       form: { getFieldsValue },
-      maintenanceReport: {
-        data: {
-          pagination: { pageSize },
-        },
-      },
       hiddenDangerReport: { unitIdes },
       user: {
-        currentUser: { id },
+        currentUser: { id, companyId: cId, unitType },
       },
     } = this.props;
-    const { createTime, companyId, ...rest } = getFieldsValue();
+    const { createTime, companyId: serCId, ...rest } = getFieldsValue();
     const [startTime, endTime] = createTime || [];
+    // 企业用户登录传currentUser中的企业id
+    const companyId = unitType === 4 ? cId : serCId
     const payload = {
       ...rest,
-      pageNum: 1,
+      pageNum,
       pageSize,
       companyId,
       companyName:
@@ -291,6 +284,7 @@ export default class App extends PureComponent {
       startTime: startTime && `${startTime.format('YYYY/MM/DD')} 00:00:00`,
       endTime: endTime && `${endTime.format('YYYY/MM/DD')} 23:59:59`,
     };
+    const searchInfo = unitType === 4 ? { ...payload, companyId: null } : payload
     // 获取列表
     dispatch({
       type: 'maintenanceReport/fetchMaintenanceCheckForGov',
@@ -300,7 +294,7 @@ export default class App extends PureComponent {
       },
     });
     // 保存筛选条件
-    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
+    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(searchInfo));
   };
 
   /**
@@ -308,7 +302,6 @@ export default class App extends PureComponent {
    */
   handleReset = () => {
     const {
-      dispatch,
       form: { setFieldsValue },
     } = this.props;
     // 重置控件
@@ -322,14 +315,6 @@ export default class App extends PureComponent {
       checkResult: undefined,
     });
     this.handleSearch();
-    dispatch({
-      type: 'hiddenDangerReport/fetchMaintenanceCheckForGov',
-      payload: {
-        // unitName: value && value.trim(),
-        pageNum: 1,
-        pageSize: 10,
-      },
-    });
   };
 
   /**
@@ -351,59 +336,6 @@ export default class App extends PureComponent {
         reportSource: 2,
       },
     });
-  };
-
-  /**
-   * 加载更多
-   */
-  handleLoadMore = (num, size) => {
-    const {
-      dispatch,
-      form: { setFieldsValue },
-      user: {
-        currentUser: { id },
-      },
-    } = this.props;
-    // 从sessionStorage中获取存储的控件值
-    const fieldsValue = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
-      pageNum: 1,
-      pageSize: 10,
-    };
-    const { pageNum, pageSize, startTime, endTime, companyId, companyName, ...rest } = fieldsValue;
-    // 重置控件
-    setFieldsValue({
-      gridId: undefined,
-      companyName: undefined,
-      // itemType: undefined,
-      // objectTitle: undefined,
-      checkUserName: undefined,
-      checkResult: undefined,
-      createTime:
-        startTime && endTime
-          ? [moment(startTime, 'YYYY/MM/DD HH:mm:ss'), moment(endTime, 'YYYY/MM/DD HH:mm:ss')]
-          : [],
-      ...rest,
-    });
-    // 获取列表
-    dispatch({
-      type: 'maintenanceReport/fetchMaintenanceCheckForGov',
-      payload: {
-        ...fieldsValue,
-        pageNum: num,
-        pageSize: size,
-        // reportSource: 2,
-      },
-    });
-
-    // 保存筛选条件
-    sessionStorage.setItem(
-      `${sessionPrefix}${id}`,
-      JSON.stringify({
-        ...fieldsValue,
-        pageNum: 1,
-        pageSize: size,
-      })
-    );
   };
 
   // 单位下拉框输入
@@ -547,7 +479,7 @@ export default class App extends PureComponent {
           {/* 按钮 */}
           <Col xl={8} md={12} sm={24} xs={24}>
             <Form.Item>
-              <Button type="primary" onClick={this.handleSearch} style={{ marginRight: 16 }}>
+              <Button type="primary" onClick={() => this.handleSearch()} style={{ marginRight: 16 }}>
                 查询
               </Button>
               <Button onClick={this.handleReset} style={{ marginRight: 16 }}>
@@ -593,9 +525,9 @@ export default class App extends PureComponent {
           // showTotal: (total) => `共 ${total} 条`,
           showQuickJumper: true,
           showSizeChanger: true,
-          onChange: this.handleLoadMore,
+          onChange: this.handleSearch,
           onShowSizeChange: (num, size) => {
-            this.handleLoadMore(1, size);
+            this.handleSearch(1, size);
           },
         }}
       />

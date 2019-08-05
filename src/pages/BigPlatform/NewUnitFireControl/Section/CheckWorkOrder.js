@@ -174,6 +174,10 @@ export default class CheckWorkOrder extends PureComponent {
     }, 5000);
 
     chart.on('click', params => {
+      const {
+        countAllFireAndFault: { processNum = 0, waitNum = 0 },
+      } = this.props;
+      if (processNum + waitNum === 0) return null;
       const { checkClick, workOrderClick } = this.props;
       const { dataIndex } = params;
       const { type } = this.state;
@@ -257,10 +261,12 @@ export default class CheckWorkOrder extends PureComponent {
             onChartReady={this.onChartReadyCallback}
           />
           {this.renderLegend()}
-          <div className={styles.extra} onClick={() => workOrderClick(2)}>
-            已处理
-            <span className={styles.number}>{finishNum}</span>
-          </div>
+          {!!finishNum && (
+            <div className={styles.extra} onClick={() => workOrderClick(2)}>
+              已处理
+              <span className={styles.number}>{finishNum}</span>
+            </div>
+          )}
         </div>
       </Section>
       // </TabSection>

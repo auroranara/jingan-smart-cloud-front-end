@@ -8,7 +8,7 @@ import styles from './index.less';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
 import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import { findFirstVideo } from '@/utils/utils';
-import { getWaterTotal } from './utils';
+import { WATER_TYPES, getWaterTotal } from './utils';
 import {
   AlarmDynamicDrawer,
   AlarmDynamicMsgDrawer,
@@ -71,7 +71,6 @@ notification.config({
 });
 
 const WEB_SOCKET_TYPE = 8;
-const WATER_TYPES = [101, 102, 103];
 
 const WS_OPTIONS = {
   pingTimeout: 30000,
@@ -351,12 +350,7 @@ export default class GasStation extends PureComponent {
     });
 
     // 获取点位
-    dispatch({
-      type: 'newUnitFireControl/fetchPointList',
-      payload: {
-        companyId,
-      },
-    });
+    this.fetchPointList();
 
     // 企业负责人和维保员信息
     dispatch({
@@ -585,12 +579,7 @@ export default class GasStation extends PureComponent {
 
     if (type === 14) {
       // 获取点位
-      dispatch({
-        type: 'newUnitFireControl/fetchPointList',
-        payload: {
-          companyId,
-        },
-      });
+      this.fetchPointList();
 
       // 获取当前隐患列表
       this.fetchCurrentHiddenDanger(companyId);
@@ -607,12 +596,7 @@ export default class GasStation extends PureComponent {
     if ([15, 16, 17].includes(+type)) {
       if (fourColorTips[pointId] === messageFlag) this.removeFourColorTip(pointId, messageFlag);
       // 获取点位
-      dispatch({
-        type: 'newUnitFireControl/fetchPointList',
-        payload: {
-          companyId,
-        },
-      });
+      this.fetchPointList();
 
       // 获取当前隐患列表
       this.fetchCurrentHiddenDanger(companyId);
@@ -628,12 +612,7 @@ export default class GasStation extends PureComponent {
     }
     if (type === 13) {
       // 获取点位
-      dispatch({
-        type: 'newUnitFireControl/fetchPointList',
-        payload: {
-          companyId,
-        },
-      });
+      this.fetchPointList();
 
       // 获取当前隐患列表
       this.fetchCurrentHiddenDanger(companyId);
@@ -860,12 +839,7 @@ export default class GasStation extends PureComponent {
     this.fetchScreenMessage(dispatch, companyId);
 
     // 获取点位
-    dispatch({
-      type: 'newUnitFireControl/fetchPointList',
-      payload: {
-        companyId,
-      },
-    });
+    this.fetchPointList();
 
     // 获取当前隐患列表
     this.fetchCurrentHiddenDanger(companyId);
@@ -882,6 +856,17 @@ export default class GasStation extends PureComponent {
     // 获取水系统---消火栓系统
     // this.fetchWaterSystem('101');
     this.fetchAllWaterSystem();
+  };
+
+  fetchPointList = () => {
+    const {
+      dispatch,
+      match: { params: { unitId: companyId } },
+    } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchPointList',
+      payload: { companyId, screenType: 'gas' },
+    });
   };
 
   fetchHiddenDangerNum = () => {
@@ -1097,6 +1082,7 @@ export default class GasStation extends PureComponent {
         // businessType: 2,
         pageNum: 1,
         pageSize: 10,
+        status: 5,
       },
     });
     this.setState({ currentDrawerVisible: true });
@@ -1357,7 +1343,7 @@ export default class GasStation extends PureComponent {
       },
     } = this.props;
     const status =
-      (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || null;
+      (dataIndex === 0 && '7') || (dataIndex === 1 && '2') || (dataIndex === 2 && '3') || 5;
     this.setState({ hdStatus: status });
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
@@ -1378,7 +1364,7 @@ export default class GasStation extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
-    const { hdStatus } = this.state;
+    const { hdStatus = 5 } = this.state;
     dispatch({
       type: 'bigPlatform/fetchHiddenDangerListForPage',
       payload: {
@@ -2204,16 +2190,15 @@ export default class GasStation extends PureComponent {
           cssType="1"
           className={styles.realTimeMessage}
           model={this.props.gasStation}
+          phoneVisible={phoneVisible}
           handleParentChange={this.handleParentChange}
+          handleClickMsgFlow={this.handleClickMsgFlow}
           handleViewDangerDetail={this.handleViewDangerDetail}
           fetchData={this.fetchMaintenanceCheck}
           handleClickMessage={this.handleClickMessage}
           handleFaultClick={this.handleFaultClick}
           handleWorkOrderCardClickMsg={this.handleWorkOrderCardClickMsg}
           handleFireMessage={this.handleFireMessage}
-          // handleViewWater={this.handleViewWater}
-          handleClickMsgFlow={this.handleClickMsgFlow}
-          phoneVisible={phoneVisible}
           handleClickElecMsg={this.handleClickElecMsg}
           handleClickSmoke={this.handleClickSmoke}
           handleClickWater={this.handleClickWater}

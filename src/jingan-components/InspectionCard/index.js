@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import moment from 'moment';
 import BigPlatformCard from '../BigPlatformCard';
+import { hiddenDangerSource } from '@/utils/dict';
 // 引入样式文件
 import styles from './index.less';
 const { Container } = BigPlatformCard;
@@ -14,6 +15,7 @@ const TIME_FORMAT = 'YYYY-MM-DD';
 export default class InspectionCard extends BigPlatformCard {
   FIELDNAMES = {
     date: 'date', // 巡查日期
+    source: 'source', // 巡查来源
     person: 'person', // 巡查人
     status: 'status', // 巡查结果
     result: 'result', // 处理结果
@@ -23,6 +25,10 @@ export default class InspectionCard extends BigPlatformCard {
     {
       label: '巡查日期',
       render: ({ date }) => date && moment(+date).format(TIME_FORMAT),
+    },
+    {
+      label: '巡查来源',
+      render: ({ source }) => hiddenDangerSource[source],
     },
     {
       label: '巡查人',

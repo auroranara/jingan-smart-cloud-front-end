@@ -1,3 +1,5 @@
+import { message } from 'antd';
+
 import {
   getTaskList,
   getTaskCount,
@@ -20,7 +22,8 @@ import {
   countNumAndTimeById,
   queryCheckUsers,
 } from '@/services/bigPlatform/fireControl';
-import { message } from 'antd';
+import { getUnitLists } from '@/pages/BigPlatform/Operation/utils';
+
 function error(msg) {
   message.error(msg);
 }
@@ -50,6 +53,7 @@ export default {
       month: 0,
     },
     unitList: [], // 地图企业列表
+    unitLists: [[], [], [], [], [], []], // 企业分类列表的二维数组
     firePie: {},
     fireTrend: [],
     fireList: [],
@@ -381,9 +385,12 @@ export default {
       if (unitId && list.length) {
         newUnitList = Array.from(unitList);
         const index = unitList.findIndex(({ companyId }) => companyId === unitId);
-        newUnitList[index] = list[0];
+        const target = list.find(({ companyId }) => companyId === unitId);
+        if (target)
+          newUnitList[index] = target;
+        // newUnitList[index] = list[0];
       } else newUnitList = list;
-      return { ...state, unitList: newUnitList };
+      return { ...state, unitList: newUnitList, unitLists: getUnitLists(newUnitList) };
     },
     saveFirePie(state, action) {
       return { ...state, firePie: action.payload };

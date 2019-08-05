@@ -56,12 +56,12 @@ export default class AddSensor extends Component {
         type: 'sensor/fetchSensorDetail',
         payload: { id },
         callback: (response) => {
-          const { companyId, companyName, monitoringParameters, monitoringTypeId, typeId, brandId, deviceName, relationDeviceId, area, location } = response.data
-          setFieldsValue({ companyId, monitoringTypeId, typeId, brandId, deviceName, relationDeviceId, area, location })
+          const { companyId, companyName, monitoringParameters, monitoringTypeId, typeId, brandName, deviceName, relationDeviceId, area, location } = response.data
+          setFieldsValue({ companyId, monitoringTypeId, typeId, brandName, deviceName, relationDeviceId, area, location })
           this.setState({
             selectedCompany: { id: companyId, name: companyName },
           })
-          this.fetchSensorTypeDict({ payload: { monitoringTypeId, brandId } })
+          this.fetchSensorTypeDict({ payload: { monitoringTypeId } })
           dispatch({
             type: 'sensor/saveState',
             payload: { key: 'monitoringParameters', value: monitoringParameters },
@@ -171,19 +171,8 @@ export default class AddSensor extends Component {
     const { form: { resetFields } } = this.props
     // this.fetchSensorBrandDict({ payload: { monitoringTypeId, typeId } })
     this.fetchSensorTypeDict({ payload: { monitoringTypeId } })
-    resetFields(['typeId', 'brandId'])
+    resetFields(['typeId', 'brandName'])
   }
-
-  /**
-   * 品牌改变
-   */
-  // handleBrandChange = (brandId) => {
-  //   const { form: { getFieldsValue, resetFields } } = this.props
-  //   const { monitoringTypeId } = getFieldsValue()
-  //   // this.fetchMonitoringTypeDict({ payload: { typeId, brandId } })
-  //   this.fetchSensorTypeDict({ payload: { brandId, monitoringTypeId } })
-  //   resetFields(['typeId'])
-  // }
 
   /**
    * 传感器型号改变
@@ -196,8 +185,8 @@ export default class AddSensor extends Component {
       form: { setFieldsValue },
     } = this.props
     this.fetchMonitoringParameter({ payload: { typeId } })
-    const selItem = typeDict.find(item => item.key === typeId) || {}
-    setFieldsValue({ brandId: selItem.optional_desc })
+    const selItem = typeDict.find(item => item.id === typeId) || {}
+    setFieldsValue({ brandName: selItem.modelDesc })
   }
 
   /**
@@ -464,25 +453,23 @@ export default class AddSensor extends Component {
               </Select>
             )}
           </FormItem>
-          <FormItem label="传感器型号" {...formItemLayout}>
+          <FormItem label="型号代码" {...formItemLayout}>
             {getFieldDecorator('typeId', {
               rules: [{ required: true, message: '请选择传感器型号' }],
             })(
               <Select placeholder="请选择" {...itemStyles} onChange={this.handleTypeChange}>
-                {typeDict.map(({ key, value }) => (
-                  <Option key={key} value={key}>{value}</Option>
+                {typeDict.map(({ classModel, id }) => (
+                  <Option key={id} value={id}>{classModel}</Option>
                 ))}
               </Select>
             )}
           </FormItem>
           <FormItem label="品牌" {...formItemLayout}>
-            {getFieldDecorator('brandId', {
-              rules: [{ required: true, message: '请选择品牌' }],
-            })(
+            {getFieldDecorator('brandName')(
               <Input disabled placeholder="请先选择传感器型号" {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="传感器名称" {...formItemLayout}>
+          <FormItem label="描述" {...formItemLayout}>
             {getFieldDecorator('deviceName')(
               <Input placeholder="请输入" {...itemStyles} />
             )}
@@ -494,9 +481,9 @@ export default class AddSensor extends Component {
               <Input {...itemStyles} />
             )}
           </FormItem> */}
-          <FormItem label="传感器ID" {...formItemLayout}>
+          <FormItem label="传感器Token" {...formItemLayout}>
             {getFieldDecorator('relationDeviceId', {
-              rules: [{ required: true, message: '请输入传感器ID' }],
+              rules: [{ required: true, message: '请输入传感器Token' }],
             })(
               <Input placeholder="请输入" {...itemStyles} />
             )}

@@ -341,8 +341,8 @@ export default class NewUnitFireControl extends PureComponent {
             }
 
             // 获取水系统---消火栓系统
-            if (type === 36 || type === 37 || type === 48 || type === 49) {
-              // 36 水系统报警 37 水系统报警恢复 48水系统失联 49 水系统失联恢复
+            if (type === 36 || type === 37 || type === 48 || type === 49 || type === 53) {
+              // 36 水系统报警 37 水系统报警恢复 48水系统失联 49 水系统失联恢复 53 水系统检修状态
               if (+deviceType === +waterTab) this.fetchWaterSystem(deviceType);
               if (this.state.waterSystemDrawerVisible) {
                 dispatch({
@@ -1867,7 +1867,10 @@ export default class NewUnitFireControl extends PureComponent {
       dynamicType: type,
       videoList: cameraMessage,
     });
-    Array.isArray(cameraMessage) && cameraMessage.length > 0 && this.handleShowFlowVideo();
+    Array.isArray(cameraMessage) &&
+      cameraMessage.length > 0 &&
+      type !== 3 &&
+      this.handleShowFlowVideo();
   };
 
   handleShowAlarmFlows = flow => {
@@ -2003,7 +2006,10 @@ export default class NewUnitFireControl extends PureComponent {
       dynamicType: type,
       videoList: cameraMessage,
     });
-    Array.isArray(cameraMessage) && cameraMessage.length > 0 && this.handleShowFlowVideo();
+    Array.isArray(cameraMessage) &&
+      cameraMessage.length > 0 &&
+      type !== 3 &&
+      this.handleShowFlowVideo();
     // this.handleShowFireVideo(cameraMessage);
   };
 

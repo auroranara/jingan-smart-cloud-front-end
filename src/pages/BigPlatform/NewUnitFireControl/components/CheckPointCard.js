@@ -145,7 +145,7 @@ export default class CheckPointCard extends BigPlatformCard {
       label: '距到期天数',
       key: 'deviceName',
       render: ({ expiryDays }) => (
-        <span className={expiryDays && expiryDays !== 0 ? styles.red : undefined}>
+        <span className={expiryDays || expiryDays === 0 ? styles.red : undefined}>
           {expiryDays !== '' ? expiryDays : NO_DATA}
         </span>
       ),

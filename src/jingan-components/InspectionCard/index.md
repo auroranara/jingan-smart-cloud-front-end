@@ -15,6 +15,7 @@
 ```js
   {
     date: 'date', // 巡查日期
+    source: 'source', // 巡查来源
     person: 'person', // 巡查人
     status: 'status', // 巡查结果 
     result: 'result', // 处理结果
@@ -29,12 +30,14 @@
     style={{ fontSize: 14 }}
     data={{
       date: 'date', // 巡查日期
+      source: 'source', // 巡查来源
       person: 'person', // 巡查人
       status: 'status', // 巡查结果 
       result: 'result', // 处理结果
     }}
     fieldNames={{
       date: 'date', // 巡查日期
+      source: 'source', // 巡查来源
       person: 'person', // 巡查人
       status: 'status', // 巡查结果 
       result: 'result', // 处理结果
