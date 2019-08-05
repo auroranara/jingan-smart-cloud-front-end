@@ -385,7 +385,10 @@ export default {
       if (unitId && list.length) {
         newUnitList = Array.from(unitList);
         const index = unitList.findIndex(({ companyId }) => companyId === unitId);
-        newUnitList[index] = list[0];
+        const target = list.find(({ companyId }) => companyId === unitId);
+        if (target)
+          newUnitList[index] = target;
+        // newUnitList[index] = list[0];
       } else newUnitList = list;
       return { ...state, unitList: newUnitList, unitLists: getUnitLists(newUnitList) };
     },

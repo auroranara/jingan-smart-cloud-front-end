@@ -32,7 +32,6 @@ const OPE = 3; // 运营或管理员unitType对应值
 const COMPANY_ALL = 'companyIdAll';
 const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 40, 42, 43, 44, 48, 49];
 const ALARM_TYPES = [7, 32, 36, 38];
-const TYPE_MSG_LIST = ALARM_TYPES;
 
 // websocket配置
 const options = {
@@ -680,9 +679,6 @@ export default class Operation extends PureComponent {
     dispatch({
       type: 'operation/fetchUnitList',
       payload: { unitId },
-      // callback: list => {
-      //   this.setState({ unitList: list });
-      // },
     });
   };
 
