@@ -321,6 +321,7 @@ export default class VideoEquipmentList extends PureComponent {
                       code={codesMap.deviceManagement.videoMonitor.view}
                       codes={codes}
                       to={`/device-management/video-monitor/${companyId}/detail/${id}?name=${equipmentListName}`}
+                      target="_blank"
                     >
                       查看
                     </AuthLink>,
@@ -328,6 +329,7 @@ export default class VideoEquipmentList extends PureComponent {
                       code={codesMap.deviceManagement.videoMonitor.edit}
                       codes={codes}
                       to={`/device-management/video-monitor/edit/${id}?name=${equipmentListName}&&companyId=${companyId}`}
+                      target="_blank"
                     >
                       编辑
                     </AuthLink>,
@@ -335,6 +337,7 @@ export default class VideoEquipmentList extends PureComponent {
                       code={codesMap.deviceManagement.videoMonitor.associate}
                       codes={codes}
                       to={`/device-management/video-monitor/associate/fire/${id}?name=${equipmentListName}&&companyId=${companyId}`}
+                      target="_blank"
                     >
                       关联设备
                     </AuthLink>,

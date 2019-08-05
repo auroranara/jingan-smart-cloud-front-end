@@ -3,9 +3,10 @@ import { Button, Card, Input, Form, Row, Col, Select, List, Spin, Modal, Radio, 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { connect } from 'dva';
 import codes from '@/utils/codes';
+import { Link } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from 'components/Ellipsis';
-import { hasAuthority, AuthA } from '@/utils/customAuth';
+import { hasAuthority, AuthA, AuthLink } from '@/utils/customAuth';
 import router from 'umi/router';
 import tagImg from '@/assets/tag.png';
 import styles from './TagManagementList.less';
@@ -17,37 +18,29 @@ const confirm = Modal.confirm;
 
 const {
   personnelPosition: {
-    tag: {
-      add: addCode,
-      edit: editCode,
-      delete: deleteCode,
-      detail: viewCode,
-      import: importCode,
-    },
+    tag: { add: addCode, edit: editCode, delete: deleteCode, detail: viewCode, import: importCode },
   },
-} = codes
+} = codes;
 
-const title = "标签列表"
+const title = '标签列表';
 const defaultPageSize = 10;
-const templateUrl='http://data.jingan-china.cn/v2/download/%E5%AF%BC%E5%85%A5%E6%A0%87%E7%AD%BE%E5%8D%A1%E6%A8%A1%E6%9D%BF.xlsx'
-const colWrapper = { lg: 12, md: 12, sm: 24, xs: 24 }
+const templateUrl =
+  'http://data.jingan-china.cn/v2/download/%E5%AF%BC%E5%85%A5%E6%A0%87%E7%AD%BE%E5%8D%A1%E6%A8%A1%E6%9D%BF.xlsx';
+const colWrapper = { lg: 12, md: 12, sm: 24, xs: 24 };
 
 const cardStatusInfo = [
   { label: '已领用', value: 0 },
   { label: '未领用', value: 1 },
   { label: '禁用', value: 2 },
-]
+];
 
-const typesInfo = [
-  { label: '普通卡', value: '0' },
-  { label: '临时卡', value: '1' },
-]
+const typesInfo = [{ label: '普通卡', value: '0' }, { label: '临时卡', value: '1' }];
 
 const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
-const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
+const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const columns = [
   {
     title: '用户名',
@@ -61,7 +54,7 @@ const columns = [
     key: 'phoneNumber',
     align: 'center',
   },
-]
+];
 
 @Form.create()
 @connect(({ personnelPosition, user, loading }) => ({
@@ -71,21 +64,21 @@ const columns = [
 }))
 /* 标签管理 */
 export default class TagManagement extends PureComponent {
-
   state = {
     modalVisible: false, // 弹窗可见
-    employeeModalVisible: false,// 选择单位弹窗可见
-    currentPersonnelList: [],   // 当前分页下人员列表
-    selectedPersonnerlKeys: [],           // 选中的人员列表
-    pagination: {               // 人员分页信息
+    employeeModalVisible: false, // 选择单位弹窗可见
+    currentPersonnelList: [], // 当前分页下人员列表
+    selectedPersonnerlKeys: [], // 选中的人员列表
+    pagination: {
+      // 人员分页信息
       pageNum: 1,
       pageSize: 10,
       total: 0,
     },
-    tagDetail: {},       // 领卡时保存的标签详情
-    searchUserName: null,   // 持卡人用户名（搜索用）
-    searchPhoneNumber: null,  // 持卡人手机号（搜索用）
-  }
+    tagDetail: {}, // 领卡时保存的标签详情
+    searchUserName: null, // 持卡人用户名（搜索用）
+    searchPhoneNumber: null, // 持卡人手机号（搜索用）
+  };
 
   componentDidMount() {
     const {
@@ -93,58 +86,62 @@ export default class TagManagement extends PureComponent {
       personnelPosition: {
         tag: { searchInfo: { searchType, searchCardStatus, searchCode } = {} },
       },
-    } = this.props
+    } = this.props;
     // 填入已保存的搜索栏数据
-    setFieldsValue({ searchType, searchCardStatus, searchCode })
+    setFieldsValue({ searchType, searchCardStatus, searchCode });
     // 获取标签卡列表
-    this.handleQuery()
+    this.handleQuery();
   }
 
   // 获取标签列表
-  fetchTagList = (actions) => {
-    const { dispatch } = this.props
+  fetchTagList = actions => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'personnelPosition/fetchTagList',
       ...actions,
-    })
-  }
+    });
+  };
 
   // 改变标签卡状态（领卡、退卡、启用、禁用）
-  changeTag = (actions) => {
+  changeTag = actions => {
     // 参数 status 1：启用改禁用，2:禁用改启用，3:退卡,4:领卡
-    const { dispatch } = this.props
+    const { dispatch } = this.props;
     dispatch({
       type: 'personnelPosition/changeTag',
       ...actions,
-    })
-  }
+    });
+  };
 
   // 获取持卡人
-  fetchEmployees = (actions) => {
-    const { dispatch } = this.props
+  fetchEmployees = actions => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'personnelPosition/fetchEmployees',
       ...actions,
-    })
-  }
+    });
+  };
 
   // 更新state
   changeState = (key, value) => {
-    const item = {}
-    item[key] = value
-    this.setState(item)
-  }
+    const item = {};
+    item[key] = value;
+    this.setState(item);
+  };
 
   // 加载更多列表数据
   handleLoadMore = () => {
     const {
-      match: { params: { companyId } },
+      match: {
+        params: { companyId },
+      },
       personnelPosition: {
-        tag: { pagination: { pageNum, pageSize } },
+        tag: {
+          pagination: { pageNum, pageSize },
+        },
       },
       form: { getFieldsValue },
-    } = this.props
-    const { searchType, searchCardStatus, searchCode } = getFieldsValue()
+    } = this.props;
+    const { searchType, searchCardStatus, searchCode } = getFieldsValue();
     this.fetchTagList({
       payload: {
         pageNum: pageNum + 1,
@@ -154,55 +151,69 @@ export default class TagManagement extends PureComponent {
         code: searchCode,
         companyId,
       },
-    })
-  }
+    });
+  };
 
   // 确认退卡
   checkOut = ({ id: cardId }) => {
     this.changeTag({
       payload: { status: '3', cardId },
       success: () => {
-        message.success('退卡成功！')
+        message.success('退卡成功！');
         // 重新获取标签列表
-        this.handleQuery()
+        this.handleQuery();
       },
-      error: () => { message.error('退卡失败！') },
-    })
-  }
+      error: () => {
+        message.error('退卡失败！');
+      },
+    });
+  };
 
   // 关闭弹窗
   handleCloseModal = () => {
     this.setState({
       modalVisible: false,
-    })
-  }
+    });
+  };
 
   // 点击新增
   handleToAdd = () => {
-    const { match: { params: { companyId } } } = this.props
-    router.push(`/personnel-position/tag-management/add/${companyId}`)
-  }
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    router.push(`/personnel-position/tag-management/add/${companyId}`);
+  };
 
   // 点击查看详情
   handleToDetail = ({ id }) => {
-    const { match: { params: { companyId } } } = this.props
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     router.push({
       pathname: '/personnel-position/tag-management/detail',
       query: { id, companyId },
-    })
-  }
+    });
+  };
 
   // 点击查询
   handleQuery = (needSave = false) => {
     const {
       dispatch,
       form: { getFieldsValue },
-      match: { params: { companyId } },
-      personnelPosition: {
-        tag: { pagination: { pageSize } },
+      match: {
+        params: { companyId },
       },
-    } = this.props
-    const { searchType, searchCardStatus, searchCode } = getFieldsValue()
+      personnelPosition: {
+        tag: {
+          pagination: { pageSize },
+        },
+      },
+    } = this.props;
+    const { searchType, searchCardStatus, searchCode } = getFieldsValue();
     this.fetchTagList({
       payload: {
         pageNum: 1,
@@ -212,35 +223,37 @@ export default class TagManagement extends PureComponent {
         code: searchCode,
         companyId,
       },
-    })
+    });
     if (needSave) {
       dispatch({
         type: 'personnelPosition/saveTagSearchInfo',
         payload: { searchType, searchCardStatus, searchCode },
-      })
+      });
     }
-  }
+  };
 
   // 点击重置
   handleReset = () => {
     const {
       dispatch,
       form: { resetFields },
-      match: { params: { companyId } },
-    } = this.props
-    resetFields()
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    resetFields();
     dispatch({
       type: 'personnelPosition/saveTagSearchInfo',
       payload: {},
-    })
+    });
     this.fetchTagList({
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
         companyId,
       },
-    })
-  }
+    });
+  };
 
   // 点击启用禁用标签
   handleEnableChange = (value, { id: cardId, cardStatus, type, userId, visitorName = null }) => {
@@ -256,16 +269,18 @@ export default class TagManagement extends PureComponent {
           this.changeTag({
             payload: { status: '1', cardId },
             success: () => {
-              message.success('禁用成功！')
+              message.success('禁用成功！');
               // 重新获取标签卡列表
-              this.handleQuery()
+              this.handleQuery();
             },
-            error: () => { message.error('禁用失败！') },
-          })
+            error: () => {
+              message.error('禁用失败！');
+            },
+          });
         },
         okText: '确认',
         cancelText: '取消',
-      }
+      };
       if (+type === 0) {
         // 普通卡
         if (userId) {
@@ -273,13 +288,13 @@ export default class TagManagement extends PureComponent {
           confirm({
             ...settings,
             content: '该卡已有持卡人，禁用后则自动解除，您确定要禁用该卡？',
-          })
+          });
         } else {
           // 空卡无人绑定
           confirm({
             ...settings,
             content: '您确定要禁用该标签卡？',
-          })
+          });
         }
       } else {
         // 临时卡
@@ -287,13 +302,13 @@ export default class TagManagement extends PureComponent {
           confirm({
             ...settings,
             content: '该卡已有持卡人，禁用后则自动解除，您确定要禁用该卡？',
-          })
-          return
+          });
+          return;
         }
         confirm({
           ...settings,
           content: '您确定要禁用该标签卡？',
-        })
+        });
       }
     } else {
       // 选择启用
@@ -306,21 +321,25 @@ export default class TagManagement extends PureComponent {
           this.changeTag({
             payload: { status: '2', cardId },
             success: () => {
-              message.success('启用成功！')
+              message.success('启用成功！');
               // 重新获取标签卡列表
-              this.handleQuery()
+              this.handleQuery();
             },
-          })
+          });
         },
-      })
+      });
     }
-  }
+  };
 
   // 点击跳转到编辑页面
-  handleToEdit = (id) => {
-    const { match: { params: { companyId } } } = this.props
-    router.push(`/personnel-position/tag-management/edit/${companyId}/${id}`)
-  }
+  handleToEdit = id => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    router.push(`/personnel-position/tag-management/edit/${companyId}/${id}`);
+  };
 
   // 人员列表页面变化
   handlePageChange = (pageNum, pageSize) => {
@@ -328,7 +347,7 @@ export default class TagManagement extends PureComponent {
       personnelPosition: {
         tag: { personnelList },
       },
-    } = this.props
+    } = this.props;
     this.setState({
       currentPersonnelList: personnelList.slice((pageNum - 1) * pageSize, pageNum * pageSize),
       pagination: {
@@ -336,19 +355,19 @@ export default class TagManagement extends PureComponent {
         pageNum,
         pageSize,
       },
-    })
-  }
+    });
+  };
 
   // 点击打开选择人员弹窗
   handleToSelectEmployee = () => {
     const {
-      personnelPosition: { tag: { personnelList = [] } },
-    } = this.props
-    const {
-      tagDetail,
-    } = this.state
+      personnelPosition: {
+        tag: { personnelList = [] },
+      },
+    } = this.props;
+    const { tagDetail } = this.state;
     if (tagDetail.companyId) {
-      const currentPersonnelList = personnelList.slice(0, defaultPageSize)
+      const currentPersonnelList = personnelList.slice(0, defaultPageSize);
       this.setState({
         employeeModalVisible: true,
         currentPersonnelList,
@@ -357,116 +376,127 @@ export default class TagManagement extends PureComponent {
           pageSize: defaultPageSize,
           total: personnelList ? personnelList.length : 0,
         },
-      })
+      });
     } else {
-      message.error('未选择单位')
+      message.error('未选择单位');
     }
-  }
+  };
 
   // 关闭选择人员弹窗
   handleCloseEmployeeModal = () => {
-    this.setState({ employeeModalVisible: false })
-  }
+    this.setState({ employeeModalVisible: false });
+  };
 
   // 选择人员
   selectPersonnel = () => {
     const {
       form: { setFieldsValue },
-    } = this.props
-    const {
-      selectedRows = [],
-    } = this.state
+    } = this.props;
+    const { selectedRows = [] } = this.state;
     if (!selectedRows || selectedRows.length <= 0) {
-      message.error('请选择持卡人')
-      return
+      message.error('请选择持卡人');
+      return;
     }
     const [personnel] = selectedRows,
-      { phoneNumber } = personnel
-    this.setState({ personnel, employeeModalVisible: false })
-    setFieldsValue({ personnel, phoneNumber })
-  }
+      { phoneNumber } = personnel;
+    this.setState({ personnel, employeeModalVisible: false });
+    setFieldsValue({ personnel, phoneNumber });
+  };
 
   // 打开领卡弹窗
-  handleReceiveCard = (item) => {
-    const { id: cardId, type, code, phoneNumber, companyId, sysId, companyName } = item
+  handleReceiveCard = item => {
+    const { id: cardId, type, code, phoneNumber, companyId, sysId, companyName } = item;
     const {
       dispatch,
       form: { setFieldsValue },
-    } = this.props
+    } = this.props;
     // type 0  普通卡 1 临时卡 临时卡没有领卡退卡
-    if (+type !== 0) return
+    if (+type !== 0) return;
     // 获取该单位下系统配置
     dispatch({
       type: 'personnelPosition/fetchSystemConfiguration',
       payload: { pageNum: 1, pageSize: 0, companyId },
-    })
+    });
     // 获取单位人员
     this.fetchEmployees({
       payload: { companyId },
-    })
+    });
     // 如果是普通卡 打开弹窗选择持卡人
-    this.setState({
-      modalVisible: true,
-      tagDetail: item,
-      selectedPersonnerlKeys: [],
-    }, () => {
-      setFieldsValue({
-        code,
-        type,
-        personnel: undefined,
-        phoneNumber,
-        sysId,
-        company: { id: companyId, name: companyName },
-      })
-    })
-  }
+    this.setState(
+      {
+        modalVisible: true,
+        tagDetail: item,
+        selectedPersonnerlKeys: [],
+      },
+      () => {
+        setFieldsValue({
+          code,
+          type,
+          personnel: undefined,
+          phoneNumber,
+          sysId,
+          company: { id: companyId, name: companyName },
+        });
+      }
+    );
+  };
 
   // 领卡
   receiveCard = () => {
     const {
       form: { validateFields },
-    } = this.props
-    const { tagDetail: { id: cardId } } = this.state
+    } = this.props;
+    const {
+      tagDetail: { id: cardId },
+    } = this.state;
     validateFields((err, values) => {
-      if (err) return
-      const { personnel: { id: userId } } = values
+      if (err) return;
+      const {
+        personnel: { id: userId },
+      } = values;
       this.changeTag({
         payload: { status: '4', cardId, userId },
         success: () => {
-          message.success('领卡成功！')
+          message.success('领卡成功！');
           this.setState({
             employeeModalVisible: false,
             modalVisible: false,
             selectedPersonnerlKeys: [],
-          })
+          });
           // 重新获取标签卡列表
-          this.handleQuery()
+          this.handleQuery();
         },
-        error: () => { message.error('领卡失败！') },
-      })
-    })
-  }
+        error: () => {
+          message.error('领卡失败！');
+        },
+      });
+    });
+  };
 
   // 点击退卡
-  handleCheckOut = (item) => {
+  handleCheckOut = item => {
     confirm({
       title: '系统提示',
       content: '您确定要进行退卡操作？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.checkOut(item),
-    })
-  }
+    });
+  };
 
   // 点击搜素持卡人
   handleSearchPersonnel = () => {
-    const { searchUserName: userName = null, searchPhoneNumber: phoneNumber = null, tagDetail: { companyId } } = this.state
+    const {
+      searchUserName: userName = null,
+      searchPhoneNumber: phoneNumber = null,
+      tagDetail: { companyId },
+    } = this.state;
     // 获取单位人员
     this.fetchEmployees({
       payload: { companyId, userName, phoneNumber },
-      callback: (list) => {
-        if (!list) return
-        const currentPersonnelList = list.slice(0, defaultPageSize)
+      callback: list => {
+        if (!list) return;
+        const currentPersonnelList = list.slice(0, defaultPageSize);
         this.setState({
           currentPersonnelList,
           pagination: {
@@ -474,18 +504,21 @@ export default class TagManagement extends PureComponent {
             pageSize: defaultPageSize,
             total: list.length,
           },
-        })
+        });
       },
-    })
-  }
+    });
+  };
 
   handleToImport = () => {
-    const { match: { params: { companyId } } } = this.props
-    router.push(`/personnel-position/tag-management/import/${companyId}`)
-  }
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    router.push(`/personnel-position/tag-management/import/${companyId}`);
+  };
 
   render() {
-
     const {
       loading,
       form: { getFieldDecorator, getFieldValue },
@@ -495,59 +528,61 @@ export default class TagManagement extends PureComponent {
           list,
           isLast,
           // 标签分页数据
-          pagination: {
-            total: tagTotal = 0,
-          },
+          pagination: { total: tagTotal = 0 },
         },
         systemConfiguration: { list: systemList },
       },
-      user: { currentUser: { permissionCodes } },
-    } = this.props
+      user: {
+        currentUser: { permissionCodes },
+      },
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
     const {
       modalVisible,
       employeeModalVisible,
       currentPersonnelList,
       // 选择人员分页数据
-      pagination: {
-        pageNum,
-        pageSize,
-        total,
-      },
+      pagination: { pageNum, pageSize, total },
       selectedPersonnerlKeys,
-    } = this.state
+    } = this.state;
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '人员定位', name: '人员定位' },
       { title: '标签管理', name: '标签管理', href: '/personnel-position/tag-management/companies' },
       { title, name: title },
-    ]
+    ];
 
     // {id,userName}
-    const personnel = getFieldValue('personnel')
+    const personnel = getFieldValue('personnel');
     // {id,name}
-    const company = getFieldValue('company')
+    const company = getFieldValue('company');
     // 新增权限
-    const addAuth = hasAuthority(addCode, permissionCodes)
-    const deleteAuth = hasAuthority(deleteCode, permissionCodes)
-    const importAuth = hasAuthority(importCode, permissionCodes)
-    const editAuth = (cardStatus) => hasAuthority(editCode, permissionCodes) && +cardStatus !== 2
+    const addAuth = hasAuthority(addCode, permissionCodes);
+    const deleteAuth = hasAuthority(deleteCode, permissionCodes);
+    const importAuth = hasAuthority(importCode, permissionCodes);
+    const editAuth = cardStatus => hasAuthority(editCode, permissionCodes) && +cardStatus !== 2;
     const rowSelection = {
       selectedRowKeys: selectedPersonnerlKeys,
       onChange: (selectedPersonnerlKeys, selectedRows) => {
-        this.setState({ selectedPersonnerlKeys, selectedRows })
+        this.setState({ selectedPersonnerlKeys, selectedRows });
       },
       type: 'radio',
-    }
+    };
 
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={(
+        content={
           <div style={{ overflow: 'hidden' }}>
-            <span style={{ lineHeight: '32px' }}>标签数量：{tagTotal}</span>
+            <span style={{ lineHeight: '32px' }}>
+              标签数量：
+              {tagTotal}
+            </span>
           </div>
-        )}
+        }
       >
         {/* 筛选栏 */}
         <Card className={styles.tagFilter}>
@@ -555,9 +590,7 @@ export default class TagManagement extends PureComponent {
             <Row gutter={16}>
               <Col {...colWrapper}>
                 <FormItem className={styles.formItem}>
-                  {getFieldDecorator('searchCode')(
-                    <Input placeholder="请输入标签卡号" />
-                  )}
+                  {getFieldDecorator('searchCode')(<Input placeholder="请输入标签卡号" />)}
                 </FormItem>
               </Col>
               <Col {...colWrapper}>
@@ -565,7 +598,9 @@ export default class TagManagement extends PureComponent {
                   {getFieldDecorator('searchCardStatus')(
                     <Select placeholder="标签卡状态">
                       {cardStatusInfo.map((item, i) => (
-                        <Option key={i} value={item.value}>{item.label}</Option>
+                        <Option key={i} value={item.value}>
+                          {item.label}
+                        </Option>
                       ))}
                     </Select>
                   )}
@@ -576,7 +611,9 @@ export default class TagManagement extends PureComponent {
                   {getFieldDecorator('searchType')(
                     <Select placeholder="标签卡分类">
                       {typesInfo.map((item, i) => (
-                        <Option key={i} value={item.value}>{item.label}</Option>
+                        <Option key={i} value={item.value}>
+                          {item.label}
+                        </Option>
                       ))}
                     </Select>
                   )}
@@ -584,13 +621,31 @@ export default class TagManagement extends PureComponent {
               </Col>
               <Col {...colWrapper}>
                 <FormItem className={styles.formItem}>
-                  <Button type="primary" onClick={() => this.handleQuery(true)}>查询</Button>
-                  <Button className={styles.ml10} onClick={this.handleReset}>重置</Button>
-                  <Button type="primary" className={styles.ml10} disabled={!addAuth} onClick={this.handleToAdd}>新增</Button>
+                  <Button type="primary" onClick={() => this.handleQuery(true)}>
+                    查询
+                  </Button>
+                  <Button className={styles.ml10} onClick={this.handleReset}>
+                    重置
+                  </Button>
+                  <Button
+                    type="primary"
+                    className={styles.ml10}
+                    disabled={!addAuth}
+                    onClick={this.handleToAdd}
+                  >
+                    新增
+                  </Button>
                   <Button className={styles.ml10} type="primary">
                     <a href={templateUrl}>模板下载</a>
                   </Button>
-                  <Button className={styles.ml10} disabled={!importAuth} type="primary" onClick={this.handleToImport}>批量导入</Button>
+                  <Button
+                    className={styles.ml10}
+                    disabled={!importAuth}
+                    type="primary"
+                    onClick={this.handleToImport}
+                  >
+                    批量导入
+                  </Button>
                 </FormItem>
               </Col>
             </Row>
@@ -621,71 +676,129 @@ export default class TagManagement extends PureComponent {
               dataSource={list}
               grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
               locale={{ emptyText: '暂无数据' }}
-              renderItem={(item) => {
+              renderItem={item => {
                 const {
                   id,
                   type, // 分类  0 普通卡  1 临时卡
                   cardStatus = null, // 状态  0 已领用 1 未领用 2 禁用
-                  battery = null,    // 电量
-                  code,             // 编号
-                  userName = null,   // 持卡人
-                  status,          // 1 在线 0 离线
-                  visitorName = null,  // 临时卡持卡人
-                } = item
+                  battery = null, // 电量
+                  code, // 编号
+                  userName = null, // 持卡人
+                  status, // 1 在线 0 离线
+                  visitorName = null, // 临时卡持卡人
+                } = item;
                 return (
                   <List.Item key={id}>
                     <Card
                       actions={[
-                        <AuthA code={viewCode} onClick={() => this.handleToDetail(item)}>查看</AuthA>,
-                        <span
-                          style={{ cursor: editAuth(cardStatus) ? 'pointer' : 'not-allowed' }}
-                          onClick={editAuth(cardStatus) ? () => this.handleToEdit(item.id) : null}
-                        >编辑</span>,
+                        <AuthLink
+                          code={viewCode}
+                          to={`/personnel-position/tag-management/detail?companyId=${companyId}&&id=${id}`}
+                          target="_blank"
+                        >
+                          查看
+                        </AuthLink>,
+                        editAuth(cardStatus) ? (
+                          <Link
+                            to={`/personnel-position/tag-management/edit/${companyId}/${id}`}
+                            target="_blank"
+                            style={{ cursor: 'pointer' }}
+                            // onClick={editAuth(cardStatus) ? () => this.handleToEdit(item.id) : null}
+                          >
+                            编辑
+                          </Link>
+                        ) : (
+                          <span style={{ cursor: 'not-allowed' }}>编辑</span>
+                        ),
+                        // <span
+                        //   style={{ cursor: !editAuth(cardStatus) ? 'pointer' : 'not-allowed' }}
+                        //   onClick={!editAuth(cardStatus) ? () => this.handleToEdit(item.id) : null}
+                        // >
+                        //   编辑
+                        // </span>,
                       ]}
                     >
                       <div className={styles.cardContent}>
-                        <div className={styles.imgConatiner}
+                        <div
+                          className={styles.imgConatiner}
                           style={{
                             background: `url(${tagImg})`,
                             backgroundSize: '100% 100%',
                             backgroundRepeat: 'no-repeat',
                             backgroundPosition: 'center center',
                           }}
-                        ></div>
+                        />
                         <div className={styles.detail}>
-                          <Ellipsis lines={1} tooltip className={styles.title}>{code}</Ellipsis>
-                          <div className={styles.line}>卡分类：{+type === 0 ? '普通卡' : '临时卡'}</div>
-                          {+type === 0 ? (
-                            <div className={styles.line}>持卡人：{userName || '暂无信息'}</div>
-                          ) : (
-                              <div className={styles.line}>持卡人：{visitorName || '暂无信息'}</div>
-                            )}
+                          <Ellipsis lines={1} tooltip className={styles.title}>
+                            {code}
+                          </Ellipsis>
                           <div className={styles.line}>
-                            电<span style={{ visibility: 'hidden' }}>隐</span>量：
-                          <span style={{ color: !battery ? 'inherit' : +battery >= 25 ? 'green' : 'red' }}>{battery ? `${battery}%` : '暂无信息'}</span>
+                            卡分类：
+                            {+type === 0 ? '普通卡' : '临时卡'}
+                          </div>
+                          {+type === 0 ? (
+                            <div className={styles.line}>
+                              持卡人：
+                              {userName || '暂无信息'}
+                            </div>
+                          ) : (
+                            <div className={styles.line}>
+                              持卡人：
+                              {visitorName || '暂无信息'}
+                            </div>
+                          )}
+                          <div className={styles.line}>
+                            电<span style={{ visibility: 'hidden' }}>隐</span>
+                            量：
+                            <span
+                              style={{
+                                color: !battery ? 'inherit' : +battery >= 25 ? 'green' : 'red',
+                              }}
+                            >
+                              {battery ? `${battery}%` : '暂无信息'}
+                            </span>
                           </div>
                           <div className={styles.line}>
-                            状<span style={{ visibility: 'hidden' }}>隐</span>态：
-                          {+status === 1 ? <span style={{ color: 'green' }}>在线</span> : <span style={{ color: 'red' }}>离线</span>}
+                            状<span style={{ visibility: 'hidden' }}>隐</span>
+                            态：
+                            {+status === 1 ? (
+                              <span style={{ color: 'green' }}>在线</span>
+                            ) : (
+                              <span style={{ color: 'red' }}>离线</span>
+                            )}
                           </div>
                         </div>
-                        {+type === 0 && ((+cardStatus === 0 && (
-                          <div onClick={() => this.handleCheckOut(item)}
-                            className={styles.fixedButton} style={{ cursor: 'pointer' }}>
-                            <span>退卡</span>
-                          </div>
-                        )) || (+cardStatus === 1 && (
-                          <div onClick={() => this.handleReceiveCard(item)}
-                            className={styles.fixedButton} style={{ cursor: 'pointer' }}>
-                            <span>领卡</span>
-                          </div>
-                        )) || (+cardStatus === 2 && (
-                          <div className={styles.fixedButton} style={{ cursor: 'not-allowed' }}>
-                            <span style={{ color: '#c2c0c0' }}>禁用</span>
-                          </div>
-                        )))}
+                        {+type === 0 &&
+                          ((+cardStatus === 0 && (
+                            <div
+                              onClick={() => this.handleCheckOut(item)}
+                              className={styles.fixedButton}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              <span>退卡</span>
+                            </div>
+                          )) ||
+                            (+cardStatus === 1 && (
+                              <div
+                                onClick={() => this.handleReceiveCard(item)}
+                                className={styles.fixedButton}
+                                style={{ cursor: 'pointer' }}
+                              >
+                                <span>领卡</span>
+                              </div>
+                            )) ||
+                            (+cardStatus === 2 && (
+                              <div className={styles.fixedButton} style={{ cursor: 'not-allowed' }}>
+                                <span style={{ color: '#c2c0c0' }}>禁用</span>
+                              </div>
+                            )))}
                         <div className={styles.enableButton}>
-                          <Radio.Group onChange={(e) => this.handleEnableChange(e.target.value, item)} value={+cardStatus === 2 ? 'jinyong' : 'qiyong'} size="small" buttonStyle="solid">
+                          <Radio.Group
+                            onChange={e => this.handleEnableChange(e.target.value, item)}
+                            value={+cardStatus === 2 ? 'jinyong' : 'qiyong'}
+                            size="small"
+                            buttonStyle="solid"
+                          >
                             <Radio.Button value="qiyong">启用</Radio.Button>
                             <Radio.Button value="jinyong">禁用</Radio.Button>
                           </Radio.Group>
@@ -693,9 +806,9 @@ export default class TagManagement extends PureComponent {
                       </div>
                     </Card>
                   </List.Item>
-                )
+                );
               }}
-            ></List>
+            />
           </div>
         </InfiniteScroll>
         {/* 领卡弹窗 */}
@@ -708,16 +821,19 @@ export default class TagManagement extends PureComponent {
         >
           <Form>
             <FormItem label="标签号" {...formItemLayout}>
-              {getFieldDecorator('code')(
-                <Input disabled {...itemStyles} />
-              )}
+              {getFieldDecorator('code')(<Input disabled {...itemStyles} />)}
             </FormItem>
             <FormItem label="所属单位" {...formItemLayout}>
               {getFieldDecorator('company', {
                 // initialValue: id ? { id: detail.companyId, name: detail.companyName } : undefined,
               })(
                 <div style={{ display: 'inline-block', width: '100%' }}>
-                  <Input value={company ? company.name : undefined} placeholder="请选择" disabled {...itemStyles} />
+                  <Input
+                    value={company ? company.name : undefined}
+                    placeholder="请选择"
+                    disabled
+                    {...itemStyles}
+                  />
                 </div>
               )}
             </FormItem>
@@ -725,7 +841,7 @@ export default class TagManagement extends PureComponent {
               {getFieldDecorator('sysId', {
                 rules: [{ required: true, message: '请选择所属系统' }],
               })(
-                <Select disabled {...itemStyles} notFoundContent="暂无数据" >
+                <Select disabled {...itemStyles} notFoundContent="暂无数据">
                   {systemList.map(({ sysName, id }) => (
                     <Option key={id}>{sysName}</Option>
                   ))}
@@ -736,7 +852,9 @@ export default class TagManagement extends PureComponent {
               {getFieldDecorator('type')(
                 <Select disabled placeholder="请选择" {...itemStyles}>
                   {typesInfo.map(({ value, label }, i) => (
-                    <Option key={i} value={value}>{label}</Option>
+                    <Option key={i} value={value}>
+                      {label}
+                    </Option>
                   ))}
                 </Select>
               )}
@@ -746,15 +864,20 @@ export default class TagManagement extends PureComponent {
                 rules: [{ required: true, type: 'object', message: '请选择持卡人' }],
               })(
                 <div style={{ display: 'inline-block', width: '100%' }}>
-                  <Input value={personnel ? personnel.userName : undefined} disabled {...itemStyles} placeholder="请选择" />
-                  <Button type="primary" onClick={this.handleToSelectEmployee}>选择人员</Button>
+                  <Input
+                    value={personnel ? personnel.userName : undefined}
+                    disabled
+                    {...itemStyles}
+                    placeholder="请选择"
+                  />
+                  <Button type="primary" onClick={this.handleToSelectEmployee}>
+                    选择人员
+                  </Button>
                 </div>
               )}
             </FormItem>
             <FormItem label="联系方式" {...formItemLayout}>
-              {getFieldDecorator('phoneNumber')(
-                <Input disabled {...itemStyles} />
-              )}
+              {getFieldDecorator('phoneNumber')(<Input disabled {...itemStyles} />)}
             </FormItem>
           </Form>
         </Modal>
@@ -768,9 +891,23 @@ export default class TagManagement extends PureComponent {
           destroyOnClose
         >
           <div style={{ marginBottom: '24px', width: '100%' }}>
-            <Input style={{ width: '300px' }} placeholder="请输入用户名" onChange={e => this.changeState('searchUserName', e.target.value)} />
-            <Input style={{ marginLeft: '10px', width: '300px' }} placeholder="请输入手机号" onChange={e => this.changeState('searchPhoneNumber', e.target.value)} />
-            <Button style={{ marginLeft: '10px' }} type="primary" onClick={this.handleSearchPersonnel}>查询</Button>
+            <Input
+              style={{ width: '300px' }}
+              placeholder="请输入用户名"
+              onChange={e => this.changeState('searchUserName', e.target.value)}
+            />
+            <Input
+              style={{ marginLeft: '10px', width: '300px' }}
+              placeholder="请输入手机号"
+              onChange={e => this.changeState('searchPhoneNumber', e.target.value)}
+            />
+            <Button
+              style={{ marginLeft: '10px' }}
+              type="primary"
+              onClick={this.handleSearchPersonnel}
+            >
+              查询
+            </Button>
           </div>
           <Table
             rowKey="id"
@@ -790,9 +927,9 @@ export default class TagManagement extends PureComponent {
                 this.handlePageChange(1, size);
               },
             }}
-          ></Table>
+          />
         </Modal>
       </PageHeaderLayout>
-    )
+    );
   }
 }

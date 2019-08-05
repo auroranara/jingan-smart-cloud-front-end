@@ -621,6 +621,7 @@ export default class CompanyList extends PureComponent {
                       to={detailUrl + id}
                       onClick={hasDetailAuthority ? null : preventDefault}
                       disabled={!hasDetailAuthority}
+                      target="_blank"
                     >
                       查看
                     </Link>,
@@ -628,6 +629,7 @@ export default class CompanyList extends PureComponent {
                       to={editUrl + id}
                       onClick={hasEditAuthority ? null : preventDefault}
                       disabled={!hasEditAuthority}
+                      target="_blank"
                     >
                       编辑
                     </Link>,
@@ -635,6 +637,7 @@ export default class CompanyList extends PureComponent {
                       to={departmentUrl + id}
                       onClick={hasViewDepAuthority ? null : preventDefault}
                       disabled={!hasViewDepAuthority}
+                      target="_blank"
                     >
                       部门
                     </Link>,

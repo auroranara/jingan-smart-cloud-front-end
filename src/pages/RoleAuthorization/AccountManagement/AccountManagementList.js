@@ -269,8 +269,8 @@ export default class accountManagementList extends React.Component {
       }
     }
     // 获取网格列表
-    selectedUnitType === GOV && fetchGridList()
-    unitType === GOV && fetchAllGridList()
+    selectedUnitType === GOV && fetchGridList();
+    unitType === GOV && fetchAllGridList();
     this.setState({ unitTypeChecked: selectedUnitType }, () => {
       searchInfo && setFieldsValue(searchInfo);
     });
@@ -323,8 +323,7 @@ export default class accountManagementList extends React.Component {
     } = this.props;
     const isUnitUser = this.isUnitUser();
     const payload = { pageSize, pageNum: 1 };
-    if (+unitType === OPE)
-      clearRoles();
+    if (+unitType === OPE) clearRoles();
     resetFields();
     if (isUnitUser) {
       payload.unitId = unitId;
@@ -392,7 +391,7 @@ export default class accountManagementList extends React.Component {
         },
       });
       // 获取网格列表
-      fetchGridList()
+      fetchGridList();
     } else if (value === null || value === undefined) {
       fetchUnitsFuzzy({
         payload: {
@@ -553,7 +552,9 @@ export default class accountManagementList extends React.Component {
       form: { getFieldDecorator },
       hiddenDangerReport: { gridList },
       loading,
-      user: { currentUser: { unitType } },
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
 
     const isUnitUser = this.isUnitUser(); // 单位用户且不为运营
@@ -722,6 +723,7 @@ export default class accountManagementList extends React.Component {
               <AuthLink
                 code={codesMap.account.detail}
                 to={`/role-authorization/account-management/detail/${loginId}`}
+                target="_blank"
               >
                 查看
               </AuthLink>,
@@ -729,12 +731,14 @@ export default class accountManagementList extends React.Component {
                 code={codesMap.account.edit}
                 // code={isSelf ? 'codeNotExist' : codesMap.account.edit}
                 to={`/role-authorization/account-management/edit/${loginId}`}
+                target="_blank"
               >
                 编辑
               </AuthLink>,
               <AuthLink
                 code={codesMap.account.addAssociatedUnit}
                 to={`/role-authorization/account-management/associated-unit/add/${loginId}`}
+                target="_blank"
               >
                 关联单位
               </AuthLink>,
@@ -750,17 +754,17 @@ export default class accountManagementList extends React.Component {
                   title={loginName}
                   className={styles.card}
                   actions={actions}
-                // extra={
-                //   <Button
-                //     onClick={() => {
-                //       this.handleShowDeleteConfirm(id);
-                //     }}
-                //     shape="circle"
-                //     style={{ border: 'none', fontSize: '20px' }}
-                //   >
-                //     <Icon type="close" />
-                //   </Button>
-                // }
+                  // extra={
+                  //   <Button
+                  //     onClick={() => {
+                  //       this.handleShowDeleteConfirm(id);
+                  //     }}
+                  //     shape="circle"
+                  //     style={{ border: 'none', fontSize: '20px' }}
+                  //   >
+                  //     <Icon type="close" />
+                  //   </Button>
+                  // }
                 >
                   <div>
                     <Row>
@@ -796,7 +800,7 @@ export default class accountManagementList extends React.Component {
                             <Popconfirm
                               title={`确定要${
                                 !!users[0].accountStatus ? '解绑' : '开启'
-                                }关联企业吗？`}
+                              }关联企业吗？`}
                               onConfirm={() =>
                                 this.handleAccountStatus({
                                   accountStatus: Number(!users[0].accountStatus),
@@ -813,16 +817,16 @@ export default class accountManagementList extends React.Component {
                                 {!!users[0].accountStatus ? (
                                   <Icon type="link" />
                                 ) : (
-                                    <Icon style={{ color: 'red' }} type="disconnect" />
-                                  )}
+                                  <Icon style={{ color: 'red' }} type="disconnect" />
+                                )}
                               </AuthSpan>
                             </Popconfirm>
                           </Col>
                         )}
                       </Row>
                     ) : (
-                        <p>{getEmptyData()}</p>
-                      )}
+                      <p>{getEmptyData()}</p>
+                    )}
                     <p
                       onClick={() => this.handleViewMore(users, loginId)}
                       style={{
@@ -863,10 +867,10 @@ export default class accountManagementList extends React.Component {
               <span>{val}</span>
             </Fragment>
           ) : (
-              <Fragment>
-                <span>平台管理</span>
-              </Fragment>
-            );
+            <Fragment>
+              <span>平台管理</span>
+            </Fragment>
+          );
         },
       },
       {
@@ -905,8 +909,8 @@ export default class accountManagementList extends React.Component {
                       {!!row.accountStatus ? (
                         <Icon type="link" />
                       ) : (
-                          <Icon style={{ color: 'red' }} type="disconnect" />
-                        )}
+                        <Icon style={{ color: 'red' }} type="disconnect" />
+                      )}
                     </AuthSpan>
                   </Popconfirm>
                 </Fragment>

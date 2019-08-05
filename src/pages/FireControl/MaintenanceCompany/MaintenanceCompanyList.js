@@ -15,7 +15,7 @@ import {
   Cascader,
   Select,
 } from 'antd';
-import { routerRedux } from 'dva/router';
+import { Link, routerRedux } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import Ellipsis from '@/components/Ellipsis';
@@ -431,6 +431,7 @@ export default class MaintenanceCompanyList extends PureComponent {
                     code={codesMap.maintenanceCompany.detail}
                     codes={codes}
                     to={`/fire-control/maintenance-company/detail/${item.id}`}
+                    target="_blank"
                   >
                     查看
                   </AuthLink>,
@@ -438,6 +439,7 @@ export default class MaintenanceCompanyList extends PureComponent {
                     code={codesMap.maintenanceCompany.edit}
                     codes={codes}
                     to={`/fire-control/maintenance-company/edit/${item.id}`}
+                    target="_blank"
                   >
                     编辑
                   </AuthLink>,
@@ -481,18 +483,29 @@ export default class MaintenanceCompanyList extends PureComponent {
                       {item.parentUnitName || getEmptyData()}
                     </Ellipsis>
                   </Col>
-                  <Col
-                    span={8}
-                    onClick={() => {
-                      if (hasAuthority(codesMap.maintenanceCompany.serviceDetail, codes))
-                        goToService(`/fire-control/maintenance-company/serviceList/${item.id}`);
-                      else message.warn('您没有权限访问对应页面');
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <span className={styles.quantity}>{item.serviceCompanyCount}</span>
-                    <span className={styles.servicenum}>服务单位数</span>
-                  </Col>
+
+                  {hasAuthority(codesMap.maintenanceCompany.serviceDetail, codes) ? (
+                    <Col span={8} style={{ cursor: 'pointer' }}>
+                      <Link
+                        to={`/fire-control/maintenance-company/serviceList/${item.id}`}
+                        target="_blank"
+                      >
+                        <span className={styles.quantity}>{item.serviceCompanyCount}</span>
+                        <span className={styles.servicenum}>服务单位数</span>
+                      </Link>
+                    </Col>
+                  ) : (
+                    <Col
+                      span={8}
+                      onClick={() => {
+                        message.warn('您没有权限访问对应页面');
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <span className={styles.quantity}>{item.serviceCompanyCount}</span>
+                      <span className={styles.servicenum}>服务单位数</span>
+                    </Col>
+                  )}
                 </Row>
               </Card>
             </List.Item>

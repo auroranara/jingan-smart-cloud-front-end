@@ -399,14 +399,14 @@ export default class CheckContent extends PureComponent {
   };
 
   // 跳转到风险告知卡
-  goToRiskCard = (itemId, companyName, companyId) => {
-    const { dispatch } = this.props;
-    dispatch(
-      routerRedux.push(
-        `/risk-control/risk-point-manage/risk-card-list/${itemId}?companyName=${companyName}&companyId=${companyId}`
-      )
-    );
-  };
+  // goToRiskCard = (itemId, companyName, companyId) => {
+  //   const { dispatch } = this.props;
+  //   dispatch(
+  //     routerRedux.push(
+  //       `/risk-control/risk-point-manage/risk-card-list/${itemId}?companyName=${companyName}&companyId=${companyId}`
+  //     )
+  //   );
+  // };
 
   // 无风险等级,不能点击风险告知卡
   goToMessage = () => {
@@ -606,6 +606,7 @@ export default class CheckContent extends PureComponent {
                       code={codesMap.riskControl.riskPointManage.edit}
                       codes={codes}
                       to={`/risk-control/risk-point-manage/risk-point-edit/${itemId}?companyId=${companyId}&companyName=${companyName}`}
+                      target="_blank"
                     >
                       编辑
                     </AuthLink>,
@@ -616,17 +617,25 @@ export default class CheckContent extends PureComponent {
                     >
                       风险评估
                     </AuthSpan>,
-                    <AuthSpan
-                      code={codesMap.riskControl.riskPointManage.riskCardView}
-                      codes={codes}
-                      onClick={() =>
-                        riskLevelDesc
-                          ? this.goToRiskCard(itemId, companyName, companyId)
-                          : this.goToMessage()
-                      }
-                    >
-                      风险告知卡
-                    </AuthSpan>,
+                    riskLevelDesc ? (
+                      <AuthLink
+                        code={codesMap.riskControl.riskPointManage.riskCardView}
+                        codes={codes}
+                        to={`/risk-control/risk-point-manage/risk-card-list/${itemId}?companyName=${companyName}&companyId=${companyId}`}
+                        target="_blank"
+                      >
+                        风险告知卡
+                      </AuthLink>
+                    ) : (
+                      <AuthSpan
+                        code={codesMap.riskControl.riskPointManage.riskCardView}
+                        codes={codes}
+                        onClick={() => this.goToMessage()}
+                        target="_blank"
+                      >
+                        风险告知卡
+                      </AuthSpan>
+                    ),
                   ]}
                   extra={
                     <AuthButton

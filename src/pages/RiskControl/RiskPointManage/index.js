@@ -15,7 +15,7 @@ import {
   Row,
   Select,
 } from 'antd';
-import { routerRedux } from 'dva/router';
+import { Link, routerRedux } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import Ellipsis from '@/components/Ellipsis';
@@ -88,14 +88,14 @@ export default class RiskPointManage extends PureComponent {
   }
 
   // 跳转到风险点列表
-  goToRiskPointList = (id, name) => {
-    const { dispatch } = this.props;
-    dispatch(
-      routerRedux.push(
-        `/risk-control/risk-point-manage/risk-point-List/${id}?companyId=${id}&&companyName=${name}`
-      )
-    );
-  };
+  // goToRiskPointList = (id, name) => {
+  //   const { dispatch } = this.props;
+  //   dispatch(
+  //     routerRedux.push(
+  //       `/risk-control/risk-point-manage/risk-point-List/${id}?companyId=${id}&&companyName=${name}`
+  //     )
+  //   );
+  // };
 
   // 查询
   handleClickToQuery = () => {
@@ -277,17 +277,28 @@ export default class RiskPointManage extends PureComponent {
                         {practicalAddressLabel.replace('null', '') || getEmptyData()}
                       </Ellipsis>
                     </Col>
-                    <Col
-                      span={8}
-                      onClick={() => {
-                        if (hasAuthority(codesMap.riskControl.riskPointManage.view, codes))
-                          this.goToRiskPointList(companyId, companyName);
-                        else message.warn('您没有权限访问对应页面');
-                      }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <span className={styles.quantity}>{pointCount}</span>
-                    </Col>
+
+                    {hasAuthority(codesMap.riskControl.riskPointManage.view, codes) ? (
+                      <Col span={8} style={{ cursor: 'pointer' }}>
+                        <Link
+                          to={`/risk-control/risk-point-manage/risk-point-List/${companyId}?companyId=${companyId}&&companyName=${companyName}`}
+                          target="_blank"
+                        >
+                          <span className={styles.quantity}>{pointCount}</span>
+                        </Link>
+                      </Col>
+                    ) : (
+                      <Col
+                        span={8}
+                        onClick={() => {
+                          message.warn('您没有权限访问对应页面');
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <span className={styles.quantity}>{pointCount}</span>
+                      </Col>
+                    )}
+
                     {companyStatus === '2' && <div className={styles.status}>禁用</div>}
                   </Row>
                 </Card>

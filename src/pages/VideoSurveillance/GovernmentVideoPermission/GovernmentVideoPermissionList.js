@@ -215,6 +215,7 @@ export default class VideoPermissionList extends PureComponent {
                     <AuthLink
                       code={edit}
                       to={`/video-surveillance/government-video-permission/edit/${departmentId}?name=${departmentName}`}
+                      target="_blank"
                     >
                       编辑
                     </AuthLink>,
@@ -270,7 +271,12 @@ export default class VideoPermissionList extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={<div>单位总数：{total}</div>}
+        content={
+          <div>
+            单位总数：
+            {total}
+          </div>
+        }
       >
         {this.renderQuery()}
         <InfiniteScroll

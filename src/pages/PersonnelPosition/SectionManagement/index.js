@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Card, Form, Row, Col, Input, Button, List, Spin, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Ellipsis from 'components/Ellipsis';
+import { Link } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
 import router from 'umi/router';
 import codes from '@/utils/codes';
@@ -112,8 +113,11 @@ export default class SectionManagement extends PureComponent {
           isLast,
         },
       },
+      user: {
+        currentUser: { permissionCodes },
+      },
     } = this.props;
-
+    const viewAuth = hasAuthority(sectionCode, permissionCodes);
     return (
       <PageHeaderLayout
         title={title}
@@ -193,13 +197,36 @@ export default class SectionManagement extends PureComponent {
                           {search_area || '暂无信息'}
                         </Ellipsis>
                       </div>
-                      <div
+
+                      {viewAuth ? (
+                        <div className={styles.countContainer}>
+                          <Link
+                            to={`/personnel-position/section-management/company/${id}`}
+                            target="_blank"
+                          >
+                            <div className={styles.count}>{area_num}</div>
+                            <p className={styles.text}>区域数</p>
+                          </Link>
+                        </div>
+                      ) : (
+                        <div
+                          className={styles.countContainer}
+                          onClick={() => {
+                            message.warn('您没有权限访问对应页面');
+                          }}
+                        >
+                          <div className={styles.count}>{area_num}</div>
+                          <p className={styles.text}>区域数</p>
+                        </div>
+                      )}
+
+                      {/* <div
                         className={styles.countContainer}
                         onClick={() => this.handleViewSections(item)}
                       >
                         <div className={styles.count}>{area_num}</div>
                         <p className={styles.text}>区域数</p>
-                      </div>
+                      </div> */}
                     </Card>
                   </List.Item>
                 );
