@@ -10,6 +10,7 @@ import {
 import router from 'umi/router';
 import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
+import { Link } from 'dva/router';
 import ToolBar from '@/components/ToolBar';
 import CustomTreeSelect from '@/components/CustomTreeSelect';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -80,7 +81,7 @@ export default class CompanyList extends PureComponent {
     if (data) {
       sessionStorage.setItem('HIDDEN_DANGER_COUNT_REPORT', JSON.stringify(data));
     }
-    router.push('/data-analysis/hidden-danger-count-report/detail');
+    // router.push('/data-analysis/hidden-danger-count-report/detail');
   };
 
   handleSearch = () => {
@@ -173,31 +174,37 @@ export default class CompanyList extends PureComponent {
               .join('');
             return (
               <List.Item key={id}>
-                <Card
-                  title={name}
-                  className={styles.cardItem}
+                <Link
+                  to={'/data-analysis/hidden-danger-count-report/detail'}
                   onClick={() => this.handleCardClick(item)}
-                  hoverable
+                  target="_blank"
                 >
-                  <div>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      地址：
-                      {practicalAddressLabel || <EmptyData />}
-                    </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      行业类别：
-                      {industryCategoryLabel || <EmptyData />}
-                    </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      负责人：
-                      {safetyName || <EmptyData />}
-                    </Ellipsis>
-                    <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                      联系电话：
-                      {safetyPhone || <EmptyData />}
-                    </Ellipsis>
-                  </div>
-                </Card>
+                  <Card
+                    title={name}
+                    className={styles.cardItem}
+                    // onClick={() => this.handleCardClick(item)}
+                    hoverable
+                  >
+                    <div>
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                        地址：
+                        {practicalAddressLabel || <EmptyData />}
+                      </Ellipsis>
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                        行业类别：
+                        {industryCategoryLabel || <EmptyData />}
+                      </Ellipsis>
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                        负责人：
+                        {safetyName || <EmptyData />}
+                      </Ellipsis>
+                      <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+                        联系电话：
+                        {safetyPhone || <EmptyData />}
+                      </Ellipsis>
+                    </div>
+                  </Card>
+                </Link>
               </List.Item>
             );
           }}

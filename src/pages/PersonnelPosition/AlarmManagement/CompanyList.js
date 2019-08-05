@@ -6,7 +6,7 @@ import { Card, Input, List, message } from 'antd';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import InlineForm from '@/pages/BaseInfo/Company/InlineForm';
-import { AuthDiv } from '@/utils/customAuth';
+import { AuthLink } from '@/utils/customAuth';
 import styles from './CompanyList.less';
 import codes from '@/utils/codes';
 
@@ -157,10 +157,12 @@ export default class CompanyList extends PureComponent {
 
             return (
               <List.Item key={id}>
-                <AuthDiv
+                <AuthLink
                   code={codes.personnelPosition.alarmManagement.alarmList}
-                  onClick={e => this.handleClick(company_id)}
+                  to={`/personnel-position/alarm-management/list/${company_id}`}
+                  // onClick={e => this.handleClick(company_id)}
                   errMsg="您没有查看报警策略列表的权限"
+                  target="_blank"
                 >
                   <Card
                     className={styles.card}
@@ -191,7 +193,7 @@ export default class CompanyList extends PureComponent {
                       </div>
                     )}
                   </Card>
-                </AuthDiv>
+                </AuthLink>
               </List.Item>
             );
           }}

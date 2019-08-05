@@ -606,6 +606,7 @@ export default class CheckContent extends PureComponent {
                       code={codesMap.riskControl.riskPointManage.edit}
                       codes={codes}
                       to={`/risk-control/risk-point-manage/risk-point-edit/${itemId}?companyId=${companyId}&companyName=${companyName}`}
+                      target="_blank"
                     >
                       编辑
                     </AuthLink>,
