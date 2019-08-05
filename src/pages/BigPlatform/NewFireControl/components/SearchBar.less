@@ -5,7 +5,9 @@
   height: 100%;
 
   :global {
-    .ant-input-search.ant-input-search-enter-button > .ant-input, .ant-input {
+
+    .ant-input-search.ant-input-search-enter-button>.ant-input,
+    .ant-input {
       color: #FFF;
       border: 1px solid @color;
       background-color: transparent;
@@ -25,17 +27,17 @@
       background-color: @blue;
     }
 
-    .ant-table-thead > tr > th {
+    .ant-table-thead>tr>th {
       color: #FFF;
       background-color: @blue;
       border-bottom: none;
     }
 
-    .ant-table-fixed-header > .ant-table-content > .ant-table-scroll > .ant-table-body {
+    .ant-table-fixed-header>.ant-table-content>.ant-table-scroll>.ant-table-body {
       background-color: rgb(3, 48, 105);
     }
 
-    .ant-table-tbody > tr > td {
+    .ant-table-tbody>tr>td {
       border-color: rgb(5, 65, 135);
     }
 
@@ -53,7 +55,7 @@
     //   background: transparent;
     // }
 
-    .ant-table-thead > tr > th.ant-table-column-has-actions.ant-table-column-has-sorters:hover {
+    .ant-table-thead>tr>th.ant-table-column-has-actions.ant-table-column-has-sorters:hover {
       background: rgba(0, 0, 0, 0.1);
     }
   }
@@ -65,7 +67,7 @@
 
 .cardsContainer {
   // margin-top: 12px;
-  height: calc(100% - 32px);
+  height: calc(100% - 44px);
   overflow: auto;
   position: relative;
 }
