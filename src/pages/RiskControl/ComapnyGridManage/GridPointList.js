@@ -302,6 +302,7 @@ export default class GridPointList extends PureComponent {
                       code={codesMap.riskControl.gridPointManage.edit}
                       codes={codes}
                       to={`/risk-control/grid-point-manage/grid-point-edit/${itemId}?companyId=${companyId}&companyName=${companyName}`}
+                      target="_blank"
                     >
                       编辑
                     </AuthLink>,
@@ -309,6 +310,7 @@ export default class GridPointList extends PureComponent {
                       code={codesMap.riskControl.gridPointManage.detailView}
                       codes={codes}
                       to={`/risk-control/grid-point-manage/grid-point-detail/${itemId}?companyId=${companyId}&companyName=${companyName}`}
+                      target="_blank"
                     >
                       查看
                     </AuthLink>,
