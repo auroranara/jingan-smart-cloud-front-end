@@ -33,6 +33,19 @@ export default class DynamicDrawerTop extends Component {
   //   })
   // }
 
+  componentDidMount() {
+    const { onRef } = this.props;
+    onRef && onRef(this);
+  }
+
+  resetMsgRead = () => {
+    this.msgRead.setDefault();
+  };
+
+  onRef = ref => {
+    this.msgRead = ref;
+  };
+
   handleCameraClick = () => {
     const { onCameraClick } = this.props;
     onCameraClick && onCameraClick();
@@ -235,7 +248,7 @@ export default class DynamicDrawerTop extends Component {
                 </span>
                 <span>共发送 {read.length + unread.length} 人</span>
               </div>
-              <MsgRead read={read} unread={unread} />
+              <MsgRead read={read} unread={unread} onRef={this.onRef} />
             </Spin>
           </div>
         )}

@@ -12,6 +12,13 @@ export default class MsgRead extends PureComponent {
       isMore: false, // 是否展开更多
     };
   }
+  componentDidMount() {
+    const { onRef } = this.props;
+    onRef && onRef(this);
+  }
+  setDefault = () => {
+    this.setState({ active: 0, isMore: false });
+  };
   renderUsers = () => {
     const { read = [], unread = [] } = this.props;
     const { active, isMore } = this.state;
