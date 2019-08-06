@@ -290,8 +290,13 @@ export default class DataAnalysisList extends PureComponent {
                         //   pathname: `/data-analysis/IOT-abnormal-data/${icon}/${id}`,
                         //   num: iconNums[icon],
                         // }}
-                        to={`/data-analysis/IOT-abnormal-data/${icon === 'fire' ? `fire-alarm/company/${id}` : `${icon}/${id}/count/${iconNums[icon]}`}`}
+                        to={`/data-analysis/IOT-abnormal-data/${
+                          icon === 'fire'
+                            ? `fire-alarm/company/${id}`
+                            : `${icon}/${id}/count/${iconNums[icon]}`
+                        }`}
                         style={ICON_STYLE}
+                        target="_blank"
                       />
                     ))}
                   </p>
@@ -307,9 +312,7 @@ export default class DataAnalysisList extends PureComponent {
   render() {
     const {
       dataAnalysis: {
-        companies: { 
-          pagination:{total=0}={},
-         },
+        companies: { pagination: { total = 0 } = {} },
       },
     } = this.props;
 

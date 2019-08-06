@@ -105,10 +105,12 @@ export default class App extends PureComponent {
       const company = JSON.parse(sessionStorage.getItem(`${companySessionName}${id}`));
       // 注意：必须确保company为truthy时先渲染出控件再重置values
       // 如果company存在的话，就将数据重置到输入框中
-      company ? this.setState({ company }, () => {
-        // 如果控件数据存在的话，就将数据重置到控件中
-        values && this.setState({ values });
-      }) : (values && this.setState({ values }));
+      company
+        ? this.setState({ company }, () => {
+            // 如果控件数据存在的话，就将数据重置到控件中
+            values && this.setState({ values });
+          })
+        : values && this.setState({ values });
       // 从sessionStorage中获取之前的scrollTop
       const scrollTop = sessionStorage.getItem(`${scrollSessionName}${id}`);
       // 如果scrollTop存在的话，就将滚动条移动到对应位置
@@ -344,17 +346,21 @@ export default class App extends PureComponent {
     const { company } = this.state;
     const notCompany = unitType === 2 || unitType === 3;
     // 当账户为政府或运营时可以选择企业
-    return notCompany && (
-      <div style={{ marginBottom: 8 }}>
-        <Input
-          placeholder="请选择单位"
-          style={{ marginRight: 16, width: 256 }}
-          value={company && company.name}
-          readOnly
-          disabled
-        />
-        <Button type="primary" onClick={this.handleShowModal}>选择单位</Button>
-      </div>
+    return (
+      notCompany && (
+        <div style={{ marginBottom: 8 }}>
+          <Input
+            placeholder="请选择单位"
+            style={{ marginRight: 16, width: 256 }}
+            value={company && company.name}
+            readOnly
+            disabled
+          />
+          <Button type="primary" onClick={this.handleShowModal}>
+            选择单位
+          </Button>
+        </div>
+      )
     );
   }
 
@@ -380,7 +386,17 @@ export default class App extends PureComponent {
         <InlineForm
           fields={fields}
           values={values}
-          action={<Button type="primary" disabled={!hasAddAuthority || hideForm} onClick={() => {router.push(addUrl);}}>新增</Button>}
+          action={
+            <Button
+              type="primary"
+              disabled={!hasAddAuthority || hideForm}
+              onClick={() => {
+                router.push(addUrl);
+              }}
+            >
+              新增
+            </Button>
+          }
           onSearch={this.handleSearch}
           onReset={this.handleReset}
         />
@@ -392,7 +408,14 @@ export default class App extends PureComponent {
    * 列表
    */
   renderList() {
-    const { examinationPaper: { list: { list } }, user: { currentUser: { permissionCodes, unitType } } } = this.props;
+    const {
+      examinationPaper: {
+        list: { list },
+      },
+      user: {
+        currentUser: { permissionCodes, unitType },
+      },
+    } = this.props;
     const { company } = this.state;
     // 是否有查看详情权限
     const hasDetailAuthority = hasAuthority(detailCode, permissionCodes);
@@ -426,8 +449,32 @@ export default class App extends PureComponent {
                 }
                 className={styles.card}
                 actions={[
-                  hasDetailAuthority ? <Link to={previewUrl + id}>预览试卷</Link> : <span onClick={() => { message.warning('您没有权限访问对应页面'); }}>预览试卷</span>,
-                  hasDetailAuthority ? <Link to={detailUrl + id}>试卷规则</Link> : <span onClick={() => { message.warning('您没有权限访问对应页面'); }}>试卷规则</span>,
+                  hasDetailAuthority ? (
+                    <Link to={previewUrl + id} target="_blank">
+                      预览试卷
+                    </Link>
+                  ) : (
+                    <span
+                      onClick={() => {
+                        message.warning('您没有权限访问对应页面');
+                      }}
+                    >
+                      预览试卷
+                    </span>
+                  ),
+                  hasDetailAuthority ? (
+                    <Link to={detailUrl + id} target="_blank">
+                      试卷规则
+                    </Link>
+                  ) : (
+                    <span
+                      onClick={() => {
+                        message.warning('您没有权限访问对应页面');
+                      }}
+                    >
+                      试卷规则
+                    </span>
+                  ),
                 ]}
                 extra={
                   hasDeleteAuthority && !isUsed ? (
@@ -479,7 +526,17 @@ export default class App extends PureComponent {
   }
 
   render() {
-    const { examinationPaper: { list: { pagination: { total, pageSize, pageNum } } }, loading, user: { currentUser: { unitType } } } = this.props;
+    const {
+      examinationPaper: {
+        list: {
+          pagination: { total, pageSize, pageNum },
+        },
+      },
+      loading,
+      user: {
+        currentUser: { unitType },
+      },
+    } = this.props;
     const { company } = this.state;
     // 是否为非企业
     const notCompany = unitType === 2 || unitType === 3;
@@ -490,7 +547,17 @@ export default class App extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={<Fragment>{this.renderSelect()}{!hideList && <div>试卷总数：{hideList ? 0 : total}</div>}</Fragment>}
+        content={
+          <Fragment>
+            {this.renderSelect()}
+            {!hideList && (
+              <div>
+                试卷总数：
+                {hideList ? 0 : total}
+              </div>
+            )}
+          </Fragment>
+        }
       >
         {/* 控件 */ this.renderForm()}
         <InfiniteScroll
@@ -499,7 +566,7 @@ export default class App extends PureComponent {
             // 防止多次加载
             !loading && this.handleLoadMore();
           }}
-          hasMore={hideList ? false : (pageNum * pageSize < total)}
+          hasMore={hideList ? false : pageNum * pageSize < total}
           loader={
             <div className="loader" key={0}>
               {loading && (

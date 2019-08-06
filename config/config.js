@@ -5,7 +5,7 @@ import os from 'os';
 const path = require('path');
 const initRouters = require('./router.config');
 const webpackplugin = require('./plugin.config');
-const generateName = require('./name.config')
+const generateName = require('./name.config');
 let version = '';
 process.argv.forEach(p => {
   if (p.indexOf('version=') > -1) {
@@ -14,7 +14,7 @@ process.argv.forEach(p => {
 });
 // --TODO:根据环境变量生成项目名称
 const PROJECT_ENV = process.env.PROJECT_ENV || 'default';
-const projectShortName = generateName(PROJECT_ENV)
+const projectShortName = generateName(PROJECT_ENV);
 
 const hosts = {
   lm: '192.168.10.2', // 吕旻
@@ -77,12 +77,12 @@ export default {
         dynamicImport: true,
         ...(os.platform() === 'darwin'
           ? {
-            dll: {
-              include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
-              exclude: ['@babel/runtime'],
-            },
-            hardSource: false,
-          }
+              dll: {
+                include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
+                exclude: ['@babel/runtime'],
+              },
+              hardSource: false,
+            }
           : {}),
       },
     ],
@@ -96,7 +96,14 @@ export default {
     ie: 11,
   },
   // 如果是演示环境 publicPath目录为xshow
-  publicPath: process.env.PROJECT_ENV === 'show' ? '/xshow/' : '/',
+  // 如果是泸州环境由于没有ip使用acloud_new
+  // 后期改成switch
+  publicPath:
+    process.env.PROJECT_ENV === 'show'
+      ? '/xshow/'
+      : process.env.PROJECT_ENV === 'fire'
+        ? '/acloud_new/'
+        : '/',
   // publicPath: '/acloud_new/',
   theme: {
     'card-actions-background': '#f5f8fa',

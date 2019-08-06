@@ -407,6 +407,7 @@ export default class RoleList extends PureComponent {
                       to={detailUrl + id}
                       onClick={hasDetailAuthority ? null : preventDefault}
                       disabled={!hasDetailAuthority}
+                      target="_blank"
                     >
                       查看
                     </Link>,
@@ -414,6 +415,7 @@ export default class RoleList extends PureComponent {
                       to={editUrl + id}
                       onClick={hasEditAuthority ? null : preventDefault}
                       disabled={!hasEditAuthority}
+                      target="_blank"
                     >
                       编辑
                     </Link>,

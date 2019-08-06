@@ -9,7 +9,7 @@ import codes from '@/utils/codes';
 import { hasAuthority, AuthIcon } from '@/utils/customAuth';
 import router from 'umi/router';
 import styles from './SensorCompanyList.less';
-import iconWater from '@/assets/water-syatem.png'
+import iconWater from '@/assets/water-syatem.png';
 
 const FormItem = Form.Item;
 
@@ -18,25 +18,23 @@ const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '设备管理', name: '设备管理' },
   { title, name: title },
-]
-const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
-const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
+];
+const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 };
+const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
 const defaultPageSize = 10;
 const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
-const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
+const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const {
   deviceManagement: {
     associateSensor: {
       addCompany: addCompanyCode,
-      waterSystem: {
-        listView: waterViewmCode,
-      },
+      waterSystem: { listView: waterViewmCode },
     },
   },
-} = codes
+} = codes;
 
 @Form.create()
 @connect(({ sensor, resourceManagement, user, loading }) => ({
@@ -47,27 +45,26 @@ const {
   companyLoading: loading.effects['resourceManagement/fetchCompanyList'],
 }))
 export default class SensorCompanyList extends Component {
-
   state = {
     addModalVisible: false, // 新增单位弹窗可见
     companyModalVisible: false, // 选择企业弹窗
-    company: undefined,          // 新增单位时选择的单位信息
-  }
+    company: undefined, // 新增单位时选择的单位信息
+  };
 
   componentDidMount() {
-    const { dispatch } = this.props
-    this.fetchSensorCompanies({ payload: { pageNum: 1, pageSize: defaultPageSize } })
+    const { dispatch } = this.props;
+    this.fetchSensorCompanies({ payload: { pageNum: 1, pageSize: defaultPageSize } });
     // 获取设备类型列表
-    dispatch({ type: 'sensor/fetchDeviceTypes' })
+    dispatch({ type: 'sensor/fetchDeviceTypes' });
   }
 
   /**
    * 获取传感器企业列表
    */
   fetchSensorCompanies = actions => {
-    const { dispatch } = this.props
-    dispatch({ type: 'sensor/fetchSensorCompanies', ...actions })
-  }
+    const { dispatch } = this.props;
+    dispatch({ type: 'sensor/fetchSensorCompanies', ...actions });
+  };
 
   // 获取单位列表
   fetchCompanyList = actions => {
@@ -76,16 +73,20 @@ export default class SensorCompanyList extends Component {
   };
 
   handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
-    const { form: { getFieldsValue } } = this.props
-    const { searchCompanyName: companyName } = getFieldsValue()
-    this.fetchSensorCompanies({ payload: { companyName, pageNum, pageSize } })
-  }
+    const {
+      form: { getFieldsValue },
+    } = this.props;
+    const { searchCompanyName: companyName } = getFieldsValue();
+    this.fetchSensorCompanies({ payload: { companyName, pageNum, pageSize } });
+  };
 
   handleSelectCompany = company => {
-    const { form: { setFieldsValue } } = this.props
-    setFieldsValue({ companyId: company.id })
-    this.setState({ company, companyModalVisible: false })
-  }
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({ companyId: company.id });
+    this.setState({ company, companyModalVisible: false });
+  };
 
   //点击选择企业
   handleViewCompanyModal = () => {
@@ -102,28 +103,32 @@ export default class SensorCompanyList extends Component {
     const {
       dispatch,
       form: { validateFields },
-    } = this.props
+    } = this.props;
     validateFields((err, { searchCompanyName, ...values }) => {
       if (!err) {
         dispatch({
           type: 'sensor/addSensorCompany',
           payload: { ...values },
           success: () => {
-            message.success('新增单位成功！')
-            this.setState({ addModalVisible: false })
-            this.handleQuery()
+            message.success('新增单位成功！');
+            this.setState({ addModalVisible: false });
+            this.handleQuery();
           },
-          error: () => { message.error('新增单位失败！') },
-        })
+          error: () => {
+            message.error('新增单位失败！');
+          },
+        });
       }
-    })
-  }
+    });
+  };
 
   handleReset = () => {
-    const { form: { resetFields } } = this.props
-    resetFields()
-    this.handleQuery(1, defaultPageSize)
-  }
+    const {
+      form: { resetFields },
+    } = this.props;
+    resetFields();
+    this.handleQuery(1, defaultPageSize);
+  };
 
   /**
    * 渲染筛选栏
@@ -131,9 +136,11 @@ export default class SensorCompanyList extends Component {
   renderFilter = () => {
     const {
       form: { getFieldDecorator },
-      user: { currentUser: { permissionCodes } },
-    } = this.props
-    const addCompanyAuth = hasAuthority(addCompanyCode, permissionCodes)
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
+    const addCompanyAuth = hasAuthority(addCompanyCode, permissionCodes);
 
     return (
       <Card>
@@ -141,9 +148,7 @@ export default class SensorCompanyList extends Component {
           <Row gutter={16}>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('searchCompanyName')(
-                  <Input placeholder="请输入单位名称" />
-                )}
+                {getFieldDecorator('searchCompanyName')(<Input placeholder="请输入单位名称" />)}
               </FormItem>
             </Col>
             {/* <Col {...colWrapper}>
@@ -157,17 +162,32 @@ export default class SensorCompanyList extends Component {
             </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
-                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                <Button type="primary" disabled={!addCompanyAuth} onClick={() => { this.setState({ addModalVisible: true, company: undefined }) }}>新增单位</Button>
+                <Button
+                  style={{ marginRight: '10px' }}
+                  type="primary"
+                  onClick={() => this.handleQuery()}
+                >
+                  查询
+                </Button>
+                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
+                  重置
+                </Button>
+                <Button
+                  type="primary"
+                  disabled={!addCompanyAuth}
+                  onClick={() => {
+                    this.setState({ addModalVisible: true, company: undefined });
+                  }}
+                >
+                  新增单位
+                </Button>
               </FormItem>
             </Col>
           </Row>
         </Form>
       </Card>
-    )
-  }
-
+    );
+  };
 
   /**
    * 渲染列表
@@ -182,7 +202,7 @@ export default class SensorCompanyList extends Component {
           isLast,
         },
       },
-    } = this.props
+    } = this.props;
     return (
       <InfiniteScroll
         initialLoad={false}
@@ -215,23 +235,28 @@ export default class SensorCompanyList extends Component {
                 principal_phone = '',
                 practical_address = null, // 地址
                 industryCategoryLabel = null,
-              } = item
+              } = item;
               return (
                 <List.Item
                   key={id}
-                // actions={[
+                  // actions={[
 
-                // ]}
+                  // ]}
                 >
                   <Card title={name} className={styles.card}>
                     <Ellipsis tooltip className={styles.ellipsis} lines={1}>
-                      地址：{practical_address || '暂无信息'}
+                      地址：
+                      {practical_address || '暂无信息'}
                     </Ellipsis>
                     <Ellipsis tooltip className={styles.ellipsis} lines={1}>
-                      行业类别：{industryCategoryLabel || '暂无信息'}
+                      行业类别：
+                      {industryCategoryLabel || '暂无信息'}
                     </Ellipsis>
                     <Ellipsis tooltip className={styles.lsEllipsis} lines={1}>
-                      主要负责人：{!principal_name && !principal_phone ? '暂无信息' : `${principal_name} ${principal_phone}`}
+                      主要负责人：
+                      {!principal_name && !principal_phone
+                        ? '暂无信息'
+                        : `${principal_name} ${principal_phone}`}
                     </Ellipsis>
                     <div className={styles.iconContainer}>
                       <AuthIcon
@@ -251,6 +276,7 @@ export default class SensorCompanyList extends Component {
                           marginRight: 15,
                           backgroundSize: '100% 100%',
                         }}
+                        target="_blank"
                       />
                     </div>
                     {/* <div className={styles.countContainer}>
@@ -259,14 +285,13 @@ export default class SensorCompanyList extends Component {
                   </div> */}
                   </Card>
                 </List.Item>
-              )
+              );
             }}
           />
         </div>
       </InfiniteScroll>
-    )
-  }
-
+    );
+  };
 
   /**
    * 渲染新增单位弹窗
@@ -275,15 +300,17 @@ export default class SensorCompanyList extends Component {
     const {
       form: { getFieldDecorator },
       sensor: { deviceTypes = [] },
-    } = this.props
-    const { addModalVisible, company = {} } = this.state
+    } = this.props;
+    const { addModalVisible, company = {} } = this.state;
     return (
       <Modal
         title="新增单位"
         width={700}
         visible={addModalVisible}
         destroyOnClose={true}
-        onCancel={() => { this.setState({ addModalVisible: false }) }}
+        onCancel={() => {
+          this.setState({ addModalVisible: false });
+        }}
         onOk={this.addSensorCompany}
       >
         <Form>
@@ -293,54 +320,56 @@ export default class SensorCompanyList extends Component {
             })(
               <Fragment>
                 <Input value={company.name} disabled placeholder="请选择" {...itemStyles} />
-                <Button type="primary" onClick={this.handleViewCompanyModal}>选择单位</Button>
+                <Button type="primary" onClick={this.handleViewCompanyModal}>
+                  选择单位
+                </Button>
               </Fragment>
             )}
           </FormItem>
           <FormItem label="设备名称" {...formItemLayout}>
             {getFieldDecorator('deviceName', {
               rules: [{ required: true, message: '请输入设备名称' }],
-            })(
-              <Input placeholder="请输入" {...itemStyles} />
-            )}
+            })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="设备类型" {...formItemLayout}>
             {getFieldDecorator('deviceType', {
               rules: [{ required: true, message: '请选择设备类型' }],
             })(
               <Select placeholder="请选择" {...itemStyles}>
-                {deviceTypes.map(({ type, typeDesc }, i) => (<Select.Option key={i} value={type}>{typeDesc}</Select.Option>))}
+                {deviceTypes.map(({ type, typeDesc }, i) => (
+                  <Select.Option key={i} value={type}>
+                    {typeDesc}
+                  </Select.Option>
+                ))}
               </Select>
             )}
           </FormItem>
           <FormItem label="所在区域" {...formItemLayout}>
             {getFieldDecorator('area', {
               rules: [{ required: true, message: '请输入所在区域' }],
-            })(
-              <Input placeholder="请输入" {...itemStyles} />
-            )}
+            })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="所在位置" {...formItemLayout}>
             {getFieldDecorator('location', {
               rules: [{ required: true, message: '请输入所在位置' }],
-            })(
-              <Input placeholder="请输入" {...itemStyles} />
-            )}
+            })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
         </Form>
       </Modal>
-    )
-  }
+    );
+  };
 
   render() {
     const {
       companyLoading,
       resourceManagement: { companyList },
       sensor: {
-        sensorCompany: { pagination: { total } },
+        sensorCompany: {
+          pagination: { total },
+        },
       },
-    } = this.props
-    const { companyModalVisible } = this.state
+    } = this.props;
+    const { companyModalVisible } = this.state;
     return (
       <PageHeaderLayout
         title={title}
@@ -358,9 +387,11 @@ export default class SensorCompanyList extends Component {
           modal={companyList}
           fetch={this.fetchCompanyList}
           onSelect={this.handleSelectCompany}
-          onClose={() => { this.setState({ companyModalVisible: false }) }}
+          onClose={() => {
+            this.setState({ companyModalVisible: false });
+          }}
         />
       </PageHeaderLayout>
-    )
+    );
   }
 }

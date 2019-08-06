@@ -48,7 +48,7 @@ const {
       floorListView: floorListViewCode,
     },
   },
-} = codesMap
+} = codesMap;
 
 /* 获取无数据 */
 const getEmptyData = () => {
@@ -402,6 +402,7 @@ export default class BuildingInfoList extends PureComponent {
                       code={editCode}
                       codes={codes}
                       to={`/base-info/buildings-info/edit/${id}?companyId=${companyId}&&name=${name}`}
+                      target="_blank"
                     >
                       编辑
                     </AuthLink>,
@@ -437,8 +438,8 @@ export default class BuildingInfoList extends PureComponent {
                           }}
                         />
                       ) : (
-                          <div className={styles.detailpic} />
-                        )}
+                        <div className={styles.detailpic} />
+                      )}
                     </Col>
                     <Col span={14}>
                       <p>
@@ -465,6 +466,7 @@ export default class BuildingInfoList extends PureComponent {
                         code={floorListViewCode}
                         style={{ cursor: 'pointer' }}
                         href={`#/base-info/buildings-info/floor/list/${id}?companyId=${companyId}&&name=${name}`}
+                        target="_blank"
                       >
                         楼层管理
                       </AuthButton>

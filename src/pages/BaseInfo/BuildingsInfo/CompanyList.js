@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Form, List, Card, Button, Input, Spin, Col, Row, Cascader, message } from 'antd';
-import { routerRedux } from 'dva/router';
+import { Link, routerRedux } from 'dva/router';
 import Ellipsis from 'components/Ellipsis';
 import InfiniteScroll from 'react-infinite-scroller';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -77,10 +77,10 @@ export default class CompanyList extends PureComponent {
   }
 
   // 跳转到建筑物信息列表
-  handleBuildingList = (id, name) => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/base-info/buildings-info/detail/${id}?name=${name}`));
-  };
+  // handleBuildingList = (id, name) => {
+  //   const { dispatch } = this.props;
+  //   dispatch(routerRedux.push(`/base-info/buildings-info/detail/${id}?name=${name}`));
+  // };
 
   /* 查询 */
   handleClickToQuery = () => {
@@ -252,17 +252,26 @@ export default class CompanyList extends PureComponent {
                         {head_of_security_phone || getEmptyData()}
                       </p>
                     </Col>
-                    <Col
-                      span={8}
-                      onClick={() => {
-                        if (hasAuthority(codesMap.company.buildingsInfo.view, codes))
-                          this.handleBuildingList(company_id, company_name);
-                        else message.warn('您没有权限访问对应页面');
-                      }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <span className={styles.quantity}>{buildingNum}</span>
-                    </Col>
+                    {hasAuthority(codesMap.company.buildingsInfo.view, codes) ? (
+                      <Col span={8} style={{ cursor: 'pointer' }}>
+                        <Link
+                          to={`/base-info/buildings-info/detail/${company_id}?name=${company_name}`}
+                          target="_blank"
+                        >
+                          <span className={styles.quantity}>{buildingNum}</span>
+                        </Link>
+                      </Col>
+                    ) : (
+                      <Col
+                        span={8}
+                        onClick={() => {
+                          message.warn('您没有权限访问对应页面');
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <span className={styles.quantity}>{buildingNum}</span>
+                      </Col>
+                    )}
                   </Row>
                 </Card>
               </List.Item>

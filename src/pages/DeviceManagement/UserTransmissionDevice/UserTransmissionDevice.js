@@ -89,7 +89,8 @@ export default class UserTransmissionDevice extends PureComponent {
 
     // 这里的页面结构是，html和body和div.#root是一样高的，而div.#root下的唯一子元素是高度比较大的
     // 发现向上滚动时，整个html都在往上滚，所以要获取document.documentElement元素，才能正确获取到scollTop，body及div.#root获取到的scrollTop都为0
-    const scrollToBottom = documentElem.scrollTop + documentElem.offsetHeight >= childElem.offsetHeight;
+    const scrollToBottom =
+      documentElem.scrollTop + documentElem.offsetHeight >= childElem.offsetHeight;
     // console.log(childElem);
     // console.log(documentElem.scrollTop + documentElem.offsetHeight, childElem.offsetHeight);
     // 当页面滚到底部且当前并不在请求数据且数据库还有数据时，才能再次请求
@@ -216,7 +217,13 @@ export default class UserTransmissionDevice extends PureComponent {
             <Button onClick={this.handleReset}>重置</Button>
           </Col>
           <Col span={4} offset={4}>
-            <AuthButton code={buttonCodes.deviceManagement.transmission.add} type="primary" onClick={e => router.push('/device-management/user-transmission-device/add')}>新增传输装置</AuthButton>
+            <AuthButton
+              code={buttonCodes.deviceManagement.transmission.add}
+              type="primary"
+              onClick={e => router.push('/device-management/user-transmission-device/add')}
+            >
+              新增传输装置
+            </AuthButton>
           </Col>
         </Row>
       </Card>
@@ -266,6 +273,7 @@ export default class UserTransmissionDevice extends PureComponent {
                   code={buttonCodes.deviceManagement.transmission.detail}
                   to={`/device-management/user-transmission-device/${id}/detail`}
                   errMsg={ERROR_MSG}
+                  target="_blank"
                 >
                   <Card hoverable className={styles.card} title={name}>
                     <Ellipsis tooltip className={styles.ellipsis} lines={1}>

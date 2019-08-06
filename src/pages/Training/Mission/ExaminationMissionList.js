@@ -259,12 +259,17 @@ export default class ExaminationMissionList extends PureComponent {
           <List.Item>
             <Card
               actions={[
-                <AuthLink code={'training.mission.view'} to={`/training/mission/view/${item.id}`}>
+                <AuthLink
+                  code={'training.mission.view'}
+                  to={`/training/mission/view/${item.id}`}
+                  target="_blank"
+                >
                   查看
                 </AuthLink>,
                 <AuthLink
                   code={+item.status === 1 ? 'training.mission.edit' : 'training.mission.fuck'}
                   to={`/training/mission/edit/${item.id}`}
+                  target="_blank"
                 >
                   编辑
                 </AuthLink>,
