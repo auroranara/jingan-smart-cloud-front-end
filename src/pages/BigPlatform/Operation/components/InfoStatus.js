@@ -66,7 +66,7 @@ export default class InfoStatus extends PureComponent {
         {TYPE_KEYS.slice(1).map((k, i) => {
           const typeKey = `${k}${COUNT_BASE_KEY}`;
           const stses = statuses[i];
-          if (data[typeKey] && i !== GAS - 1)
+          if (data[typeKey])
             return (
               <div key={k} className={styles[k]} style={{ backgroundImage: `url(${getStatusImg(stses, IMGS_LIST[i])})` }}>
                 <StatusBar deviceType={i + 1} data={stses.slice(0, 3)} />

@@ -27,7 +27,7 @@ class MapSearch extends PureComponent {
   };
 
   render() {
-    const { selectList, value, style, keys={ id: 'id', name: 'name' } } = this.props;
+    const { cssType, selectList, value, style, keys={ id: 'id', name: 'name' } } = this.props;
     // const { selectList, value, style, handleChange } = this.props;
     // const { selectedItem: { id, name } } = this.state;
     const options = selectList.map(item => {
@@ -56,7 +56,7 @@ class MapSearch extends PureComponent {
        中显示该value值
     */
     return (
-      <div className={styles.mapSearchMain}>
+      <div className={styles[`mapSearchMain${cssType || ''}`]}>
         <div>
           <Select
             style={{ width: 300, ...style }}

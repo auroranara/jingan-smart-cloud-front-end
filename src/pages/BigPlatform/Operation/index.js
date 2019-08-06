@@ -20,12 +20,8 @@ import {
 } from './components/Components';
 import { PAGE_SIZE, getUnitList } from './utils';
 import { WATER_TYPES, getWaterTotal } from '@/pages/BigPlatform/GasStation/utils';
-// import iconFire from '@/assets/icon-fire-msg.png';
 import { redLight as iconFire } from '@/pages/BigPlatform/GasStation/imgs/links';
 import iconFault from '@/assets/icon-fault-msg.png';
-// import FireFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/FireFlowDrawer';
-// import SmokeFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/SmokeFlowDrawer';
-// import OnekeyFlowDrawer from '@/pages/BigPlatform/NewUnitFireControl/Section/OnekeyFlowDrawer';
 import { FireFlowDrawer, OnekeyFlowDrawer, SmokeFlowDrawer } from '@/pages/BigPlatform/NewUnitFireControl/Section/Components';
 
 const OPE = 3; // 运营或管理员unitType对应值
@@ -825,7 +821,7 @@ export default class Operation extends PureComponent {
     // const list = getUnitList(unitList, v);
     const list = unitLists[v];
     this.setState({ deviceType: v });
-    callback(!!list.find(({ companyId }) => companyId === unitDetail.companyId));
+    callback(!!list.find(({ companyId }) => companyId === unitDetail.companyId), !!unitDetail);
   };
 
   // 获取消息人员列表
@@ -1128,7 +1124,7 @@ export default class Operation extends PureComponent {
         />
         {/* 搜索框 */}
         <MapSearch
-          className={styles.mapSearch}
+          cssType="1"
           style={MAP_SEARCH_STYLE}
           selectList={selectList}
           value={searchValue}
