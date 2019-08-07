@@ -41,6 +41,7 @@ export default class DynamicDrawerTop extends Component {
   render() {
     const { showRepeatDesc } = this.state;
     const {
+      hideInfo,
       companyName = null,
       component = null, // 回路号
       unitTypeName = null, // 部件类型
@@ -96,7 +97,7 @@ export default class DynamicDrawerTop extends Component {
           className={styles.companyInfoContainer}
           style={{ minHeight: dynamicType === 3 ? 'auto' : '130px' }}
         >
-          {companyName && <div className={styles.title}>{companyName}</div>}
+          {!hideInfo && companyName && <div className={styles.title}>{companyName}</div>}
           {/* 主机 */}
           {dynamicType === 0 && (
             <Fragment>
@@ -165,7 +166,7 @@ export default class DynamicDrawerTop extends Component {
             </Fragment>
           )}
           {/* 重复上报 */}
-          {+num > 1 && (
+          {!hideInfo && +num > 1 && (
             <div className={styles.logoContainer}>
               {/* <div
                 className={styles.logo}
@@ -189,39 +190,39 @@ export default class DynamicDrawerTop extends Component {
             </div>
           )}
           {/* 视频 */}
-          {dynamicType !== 3 &&
-            videoList &&
-            videoList.length > 0 && (
-              <div
-                onClick={this.handleCameraClick}
-                className={styles.cameraContainer}
-                style={{
-                  top: '10px',
-                  right: '110px',
-                  backgroundImage: `url(${cameraImg})`,
-                  backgroundSize: '100%',
-                  backgroundPosition: 'center center',
-                  backgroundRepeat: 'no-repeat',
-                }}
-              />
-            )}
-          <div
-            className={styles.repeatDesc}
-            style={{
-              bottom: '16px',
-              right: '22px',
-              visibility: showRepeatDesc ? 'visible' : 'hidden',
-            }}
-          >
-            <div>
-              首次发生时间：
-              {scTime}
+          {!hideInfo && dynamicType !== 3 && videoList && videoList.length > 0 && (
+            <div
+              onClick={this.handleCameraClick}
+              className={styles.cameraContainer}
+              style={{
+                top: '10px',
+                right: '110px',
+                backgroundImage: `url(${cameraImg})`,
+                backgroundSize: '100%',
+                backgroundPosition: 'center center',
+                backgroundRepeat: 'no-repeat',
+              }}
+            />
+          )}
+          {!hideInfo && (
+            <div
+              className={styles.repeatDesc}
+              style={{
+                bottom: '16px',
+                right: '22px',
+                visibility: showRepeatDesc ? 'visible' : 'hidden',
+              }}
+            >
+              <div>
+                首次发生时间：
+                {scTime}
+              </div>
+              <div>
+                最近发生时间：
+                {zjTime}
+              </div>
             </div>
-            <div>
-              最近发生时间：
-              {zjTime}
-            </div>
-          </div>
+          )}
         </div>
         {read.length + unread.length > 0 && (
           <div className={styles.messageSendingContainer}>

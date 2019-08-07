@@ -1,14 +1,14 @@
-import TaskDrawer from './TaskDrawer';
-import TaskCount from './TaskCount';
-import FireCount from './FireCount';
-import Message from './Message';
-
 import DeviceBar from './DeviceBar';
+import DrawerSwitchHead from './DrawerSwitchHead';
+import FireCount from './FireCount';
 import InfoStatus from './InfoStatus';
 import LegendDot from './LegendDot';
 import MapLegend from './MapLegend';
-// import MapSearch from '@/pages/BigPlatform/NewFireControl/components/Components';
 import MapTypeBar from '@/pages/BigPlatform/Smoke/BackMap/MapTypeBar';
+import Message from './Message';
+import TaskCount from './TaskCount';
+import TaskDrawer from './TaskDrawer';
+import UnitInfo from './UnitInfo';
 
 export {
   ChartBar,
@@ -27,7 +27,6 @@ export {
 export {
   ChartGauge,
   DotItem,
-  // ChartLine,
   BussinessChartLine,
   BussinessChartBar,
   GridSelect,
@@ -36,12 +35,14 @@ export {
 
 export {
   DeviceBar,
+  DrawerSwitchHead,
+  FireCount,
   InfoStatus,
   LegendDot,
   MapLegend,
   MapTypeBar,
+  Message,
   TaskDrawer,
   TaskCount,
-  FireCount,
-  Message,
+  UnitInfo,
 }

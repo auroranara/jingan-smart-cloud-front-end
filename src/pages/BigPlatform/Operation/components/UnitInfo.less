@@ -1,0 +1,43 @@
+@darkBlue: rgb(25, 94, 142);
+
+.container {
+  padding: 5px 0;
+  border-bottom: 1px solid @darkBlue;
+  position: relative;
+
+  p {
+    color: #FFF;
+    margin: 0;
+  }
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  background-size: contain;
+  background-position: center center;
+  margin-right: 5px;
+}
+
+.unit {
+  margin-bottom: 5px;
+}
+
+.unitIcon:extend(.icon) {
+  background-image: url(../imgs/unit.png);
+}
+
+.locationIcon:extend(.icon) {
+  background-image: url(../imgs/location.png);
+}
+
+.cameraIcon {
+  width: 36px;
+  height: 36px;
+  background-size: 100% 100%;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
