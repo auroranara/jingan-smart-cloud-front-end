@@ -225,6 +225,14 @@ export default class App extends PureComponent {
 
     const { pageNum = 1, pageSize = defaultPageSize, startTime, endTime, companyName, ...rest } = payload;
     // 重置控件
+    companyName && dispatch({
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
+      payload: {
+        unitName: companyName,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
     setFieldsValue({
       createTime:
         startTime && endTime
