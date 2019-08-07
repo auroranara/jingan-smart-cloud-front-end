@@ -166,7 +166,10 @@ export default class SensorCompanyList extends Component {
   handleToBind = (deviceInfo) => {
     const { dispatch } = this.props
     // 获取传感器类型
-    dispatch({ type: 'sensor/fetchSensorTypeDict' })
+    dispatch({
+      type: 'sensor/fetchSensorTypeDict',
+      payload: { monitoringTypeId: 5 },
+    })
     this.setState({ deviceInfo }, () => {
       this.queryBindList()
       this.setState({ bindModalVisible: true })

@@ -49,9 +49,10 @@ export default class SensorList extends Component {
     setFieldsValue({ ...values })
     this.fetchMonitoringTypeDict()
     // this.fetchSensorBrandDict()
-    this.fetchSensorTypeDict()
+    // this.fetchSensorTypeDict()
     // this.fetchSensors({ payload: { pageNum: 1, pageSize: defaultPageSize, ...sensorSearchInfo } })
     this.handleQuery(pageNum, pageSize)
+    this.saveTypeDict()
   }
 
 
@@ -101,6 +102,14 @@ export default class SensorList extends Component {
     })
   }
 
+  saveTypeDict = actions => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/saveTypeDict',
+      ...actions,
+    })
+  }
+
   handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
     const {
       form: { getFieldsValue },
@@ -119,8 +128,9 @@ export default class SensorList extends Component {
     resetFields()
     this.handleQuery()
     this.fetchMonitoringTypeDict()
+    this.saveTypeDict()
     // this.fetchSensorBrandDict()
-    this.fetchSensorTypeDict()
+    // this.fetchSensorTypeDict()
   }
 
 
@@ -145,9 +155,10 @@ export default class SensorList extends Component {
    * 筛选栏检测类型改变
    */
   handlemonitoringTypeChange = (monitoringTypeId) => {
-    // const { getFieldValue } = this.props.form
+    const { resetFields } = this.props.form
     // const brandId = getFieldValue('brandId')
     // this.fetchSensorBrandDict({ payload: { monitoringTypeId } })
+    resetFields(['modelName'])
     this.fetchSensorTypeDict({ payload: { monitoringTypeId } })
   }
 

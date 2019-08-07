@@ -507,5 +507,11 @@ export default {
         modelSearchInfo: { ...state.modelSearchInfo, ...payload },
       }
     },
+    saveTypeDict(state, { payload = [] }) {
+      return {
+        ...state,
+        typeDict: payload,
+      }
+    },
   },
 }
