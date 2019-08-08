@@ -1258,6 +1258,12 @@ module.exports = env => {
                   name: 'add',
                   component: './DeviceManagement/UserTransmissionDevice/TransmissionDeviceAdd',
                 },
+                {
+                  path: '/device-management/user-transmission-device/:companyId/point-managament/:hostId',
+                  code: 'deviceManagement.userTransmissionDevice.pointManagement.listView',
+                  name: 'pointManagement',
+                  component: './DeviceManagement/UserTransmissionDevice/PointManagement',
+                },
               ],
             },
             // 视频监控

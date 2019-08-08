@@ -4,8 +4,9 @@ import { Button, Card, Dropdown, Menu, Icon, Table } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import styles from './DeviceDetailCard.less';
-import { getDisabled, hasAuthority, AuthA, AuthLink, AuthButton } from '../../../utils/customAuth';
-import buttonCodes from '../../../utils/codes';
+import { getDisabled, hasAuthority, AuthA, AuthLink, AuthButton } from '@/utils/customAuth';
+import buttonCodes from '@/utils/codes';
+import router from 'umi/router';
 
 // const DEVICE_UPDATE_CODE = 'fireControl.userTransmissionDevice.edit';
 // const DEVICE_DELETE_CODE = 'fireControl.userTransmissionDevice.delete';
@@ -145,7 +146,7 @@ export default class DeviceDetailCard extends Component {
       {
         title: '操作',
         key: 'action',
-        width: 110,
+        width: 180,
         render(text, record, index) {
           const menu = (
             <Menu>
@@ -182,7 +183,7 @@ export default class DeviceDetailCard extends Component {
                   code={buttonCodes.deviceManagement.transmission.host.import}
                   to={`/device-management/user-transmission-device/${companyId}/import-point-position/${
                     record.id
-                  }`}
+                    }`}
                 >
                   导入点位
                 </AuthLink>
@@ -192,19 +193,15 @@ export default class DeviceDetailCard extends Component {
 
           return (
             <Fragment>
-              {/* <a
-                className={getDisabled(HOST_UPDATE_CODE, codes) ? styles.tableAStyleNotAllowed : styles.tableAStyle }
-                // className = {styles.tableAStyleNotAllowed}
-                onClick={getOnClick(HOST_UPDATE_CODE, codes, () =>
-                  handleHostUpdateClick({
-                    ...hostList[index],
-                    transmissionDeviceCode: deviceCode,
-                    transmissionId: id,
-                  }))
-                }
+              <AuthA
+                code={buttonCodes.deviceManagement.transmission.point.listView}
+                style={hostTableAStyle}
+                onClick={() => {
+                  router.push(`/device-management/user-transmission-device/${companyId}/point-managament/${record.id}?deviceCode=${record.deviceCode}`)
+                }}
               >
-                编辑
-              </a> */}
+                点位管理
+              </AuthA>
               <AuthA
                 code={buttonCodes.deviceManagement.transmission.host.update}
                 // codes={[]}

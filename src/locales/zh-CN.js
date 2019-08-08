@@ -107,6 +107,7 @@ export default {
   'menu.deviceManagement.userTransmissionDevice.list': '单位列表',
   'menu.deviceManagement.userTransmissionDevice.deviceDetail': '详情页',
   'menu.deviceManagement.userTransmissionDevice.importPointPosition': '导入点位数据',
+  'menu.deviceManagement.userTransmissionDevice.pointManagement': '导入点位',
   'menu.deviceManagement.videoMonitor': '视频监控',
   'menu.deviceManagement.videoMonitor.videoMonitor': '视频监控',
   'menu.deviceManagement.videoMonitor.listView': '视频监控列表',
