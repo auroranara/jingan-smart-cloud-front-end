@@ -1,7 +1,7 @@
 import BackMap from './BackMap';
 import FireStatistics from './FireStatistics';
 import FireStatisticsDrawer from './FireStatisticsDrawer';
-// import Messages from './Messages';
+import GasDrawer from './GasDrawer';
 import UnitListDrawer from './UnitListDrawer';
 
 export { Messages } from '@/pages/BigPlatform/NewUnitFireControl/Section/Components';
@@ -12,7 +12,6 @@ export {
   AlarmDrawer,
   SettingModal,
   UnitDrawer,
-  // FireStatisticsDrawer,
   MonitorDrawer,
   MaintenanceDrawer,
   FireDynamicDrawer,
@@ -22,6 +21,6 @@ export {
   BackMap,
   FireStatistics,
   FireStatisticsDrawer,
-  // Messages,
+  GasDrawer,
   UnitListDrawer,
 }

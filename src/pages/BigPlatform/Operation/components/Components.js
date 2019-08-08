@@ -1,6 +1,11 @@
+import AlarmCount from './AlarmCount';
 import DeviceBar from './DeviceBar';
 import DrawerSwitchHead from './DrawerSwitchHead';
+import DynamicDrawerTop from './DynamicDrawerTop';
 import FireCount from './FireCount';
+import GasFlow from './GasFlow';
+import GasMonitor from './GasMonitor';
+import GasWorkOrder from './GasWorkOrder';
 import InfoStatus from './InfoStatus';
 import LegendDot from './LegendDot';
 import MapLegend from './MapLegend';
@@ -34,9 +39,14 @@ export {
 } from '@/pages/BigPlatform/Smoke/components/Components';
 
 export {
+  AlarmCount,
   DeviceBar,
   DrawerSwitchHead,
+  DynamicDrawerTop,
   FireCount,
+  GasFlow,
+  GasMonitor,
+  GasWorkOrder,
   InfoStatus,
   LegendDot,
   MapLegend,

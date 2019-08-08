@@ -1,15 +1,19 @@
-.conatainer {
+.container {
   display: flex;
   justify-content: center;
+  margin-top: 15px;
 }
 
 .spans {
   span {
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
     color: #FFF;
     padding: 0 50px;
-    line-height: 40px;
     border: 1px solid #0FF;
     border-right: none;
+    cursor: pointer;
   }
 
   span:last-child {
@@ -17,6 +21,7 @@
   }
 
   .selected {
+    cursor: auto;
     background-color: rgb(5, 71, 149);
   }
 }

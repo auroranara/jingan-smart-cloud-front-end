@@ -10,7 +10,16 @@ import WebsocketHeartbeatJs from '@/utils/heartbeat';
 import headerBg from '@/assets/new-header-bg.png';
 import styles from './index.less';
 import styles1 from '@/pages/BigPlatform/NewUnitFireControl/index.less';
-import { BackMap, ElectricalFireMonitoringDetailDrawer, FireStatisticsDrawer, Messages, SettingModal, UnitListDrawer, WaterItemDrawer } from './sections/Components';
+import {
+  BackMap,
+  ElectricalFireMonitoringDetailDrawer,
+  FireStatisticsDrawer,
+  GasDrawer,
+  Messages,
+  SettingModal,
+  UnitListDrawer,
+  WaterItemDrawer,
+} from './sections/Components';
 import {
   MapSearch,
   Tooltip as MyTooltip,
@@ -18,7 +27,7 @@ import {
   TaskCount,
   FireCount,
 } from './components/Components';
-import { PAGE_SIZE, getUnitList } from './utils';
+import { PAGE_SIZE } from './utils';
 import { WATER_TYPES, getWaterTotal } from '@/pages/BigPlatform/GasStation/utils';
 import { redLight as iconFire } from '@/pages/BigPlatform/GasStation/imgs/links';
 import iconFault from '@/assets/icon-fault-msg.png';
@@ -26,8 +35,8 @@ import { FireFlowDrawer, OnekeyFlowDrawer, SmokeFlowDrawer } from '@/pages/BigPl
 
 const OPE = 3; // 运营或管理员unitType对应值
 const COMPANY_ALL = 'companyIdAll';
-const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 40, 42, 43, 44, 48, 49];
-const ALARM_TYPES = [7, 32, 36, 38];
+const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 48, 49];
+const ALARM_TYPES = [7, 32, 36, 38, 39];
 
 // websocket配置
 const options = {
@@ -85,6 +94,13 @@ const MSG_INFO = [
   },
 ];
 
+const DRAWER_VISIBLES = [
+  'fireFlowDrawerVisible',
+  'smokeFlowDrawerVisible',
+  'gasDrawerVisible',
+  'onekeyFlowDrawerVisible',
+];
+
 const switchMsgType = type => {
   const alarmTypes = ALARM_TYPES;
   const faultTypes = [9, 40];
@@ -126,6 +142,7 @@ const popupVisible = {
   unitListDrawerVisible: false,
   electricalFireMonitoringDetailDrawerVisible: false,
   waterItemDrawerVisible: false,
+  gasDrawerVisible: false,
 };
 
 @connect(({ loading, operation, user, unitSafety, newUnitFireControl, gasStation }) => ({
@@ -182,6 +199,7 @@ export default class Operation extends PureComponent {
       electricalFireMonitoringDetailDrawerActiveKey: '漏电电流', // 电气火灾监测详情抽屉选中参数
       waterItem: {},
       waterItemDrawerVisible: false, // 水系统详情抽屉
+      gasDrawerVisible: false, // 燃气
     };
     this.debouncedFetchData = debounce(this.fetchMapSearchData, 500);
   }
@@ -464,11 +482,6 @@ export default class Operation extends PureComponent {
     };
 
     let handleClick = null;
-    // if (type === 7) this.handleClickMsgFlow(param, 0, 0, ...restParams);
-    // else if (type === 9) this.handleClickMsgFlow(param, 0, 1, ...restParams);
-    // else if (type === 38) this.handleClickMsgFlow(param, 1, 0, ...restParams);
-    // else if (type === 39) this.handleClickMsgFlow(param, 2, 0, ...restParams);
-    // else if (type === 40) this.handleClickMsgFlow(param, 1, 1, ...restParams);
     switch(type) {
       case 7:
         handleClick = e => this.handleClickMsgFlow(param, 0, 0, ...restParams);
@@ -481,6 +494,9 @@ export default class Operation extends PureComponent {
         break;
       case 38:
         handleClick = e => this.handleClickMsgFlow(param, 1, 0, ...restParams);
+        break;
+      case 39:
+        handleClick = e => this.handleClickMsgFlow(param, 2, 0, ...restParams);
         break;
       default:
         console.log('no click');
@@ -803,11 +819,7 @@ export default class Operation extends PureComponent {
             realtime,
           },
         ];
-        // console.log('param:',param);
-        // console.log('type:',type);
-        // console.log('flow:',flow);
-        // console.log('occurData:',occurData);
-        // console.log('companyId:',companyId);
+
         this.handleClickMsgFlow(param, type, flow, cameraMessage, occurData, cId);
       },
     });
@@ -848,12 +860,7 @@ export default class Operation extends PureComponent {
       dispatch,
       operation: { unitList },
     } = this.props;
-    const drawerVisibles = [
-      'fireFlowDrawerVisible',
-      'smokeFlowDrawerVisible',
-      'gasFlowDrawerVisible',
-      'onekeyFlowDrawerVisible',
-    ];
+
     const reportTypes = [1, 4, 3, 2];
     this.hiddeAllPopup();
     this.fetchMessageInformList({ id: param.id, dataId: param.dataId });
@@ -917,7 +924,7 @@ export default class Operation extends PureComponent {
     //   },
     // });
     this.setState({
-      [drawerVisibles[type]]: true,
+      [DRAWER_VISIBLES[type]]: true,
       msgFlow: flow,
       dynamicType: type,
       company: { ...param },
@@ -1080,6 +1087,7 @@ export default class Operation extends PureComponent {
       electricalFireMonitoringDetailDrawerVisible,
       electricalFireMonitoringDetailDrawerValue,
       electricalFireMonitoringDetailDrawerActiveKey,
+      gasDrawerVisible,
     } = this.state;
     const headProps = {
       ...workOrderDetail[0],
@@ -1192,11 +1200,8 @@ export default class Operation extends PureComponent {
         />
         {/* 消防主机处理动态 */}
         <FireFlowDrawer
-          // data={occurData}
           data={workOrderDetail}
           flowRepeat={flowRepeat}
-          // fireData={occurData}
-          // faultData={occurData}
           visible={fireFlowDrawerVisible}
           handleParentChange={this.handleMapParentChange}
           onClose={() => this.handleDrawerVisibleChange('fireFlow')}
@@ -1211,11 +1216,8 @@ export default class Operation extends PureComponent {
         />
         {/* 独立烟感处理动态 */}
         <SmokeFlowDrawer
-          // data={occurData}
           flowRepeat={flowRepeat}
           data={workOrderDetail}
-          // fireData={occurData}
-          // faultData={occurData}
           visible={smokeFlowDrawerVisible}
           handleParentChange={this.handleMapParentChange}
           onClose={() => this.handleDrawerVisibleChange('smokeFlow')}
@@ -1241,6 +1243,13 @@ export default class Operation extends PureComponent {
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
           head={true}
+        />
+        <GasDrawer
+          monitorData={{}}
+          orderData={{ order: workOrderDetail, msgFlow, phoneVisible, headProps, messageInformList, messageInformListLoading }}
+          visible={gasDrawerVisible}
+          // handleParentChange={this.handleMapParentChange}
+          onClose={() => this.handleDrawerVisibleChange('gas')}
         />
         <UnitListDrawer
           visible={unitListDrawerVisible}
