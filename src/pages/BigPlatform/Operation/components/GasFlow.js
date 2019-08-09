@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
+import moment from 'moment';
 
-// import styles from './GasFlow.less';
 import { NewTimelineCard } from '@/pages/BigPlatform/NewUnitFireControl/components/Components';
 import { vaguePhone } from '@/pages/BigPlatform/NewUnitFireControl/utils';
 import { DynamicDrawerTop } from './Components';
@@ -28,6 +28,7 @@ export default function GasFlow(props) {
   const unread = messageInformList.filter(item => +item.status === 0).map(item => {
     return { ...item, id: item.user_id, name: item.add_user_name };
   });
+
   const headContent = (
     <DynamicDrawerTop
       {...headProps}
@@ -59,6 +60,8 @@ export default function GasFlow(props) {
         firstTime,
         num,
         lastTime,
+        limit_value,
+        realtime_data,
       } = item;
       const timelineList = [
         {
@@ -66,8 +69,8 @@ export default function GasFlow(props) {
           time: firstTime,
           cardItems: [
             { title: '发生报警' },
-            { name: '浓度最新报警值', value: '30%' },
-            { name: '最近报警时间', value: '2019-01-01 00:00:00' },
+            { name: '浓度最新报警值', style: { color: 'rgb(248,51,41)' }, value: `${realtime_data}%`, extra: `(≥${limit_value}%)` },
+            { name: '最近报警时间', value: moment(lastTime).format('YYYY-MM-DD HH:mm:ss') },
           ],
         },
         {

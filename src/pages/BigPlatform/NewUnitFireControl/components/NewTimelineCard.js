@@ -5,7 +5,7 @@ import { Timeline, Spin } from 'antd';
 import styles from './NewTimelineCard.less';
 import TimelineItem from './TimelineItem';
 import ImgSlider from './ImgSlider';
-import MsgRead from './MsgRead';
+import { getMaxNameLength } from '../utils';
 
 // type 0 -> 日期 1 -> 时间
 function getTime(time, type = 0) {
@@ -54,7 +54,7 @@ export default function NewTimelineCard(props) {
                     : { color: '#4f6793', borderColor: '#4f6793' };
               const timeStyle = { color: isLast ? '#fff' : '#8198B4' };
               const containerStyle = { borderColor: isLast ? '#0ff' : '#0296B2' };
-              const maxNameLength = cardItems ? 8 : 0;
+              // const maxNameLength = getMaxNameLength(cardItems);
               return (
                 <TimelineItem
                   spans={SPANS}
@@ -66,30 +66,40 @@ export default function NewTimelineCard(props) {
                   labelStyle={labelStyle}
                   timeStyle={timeStyle}
                 >
-                  {(cardItems || msgInfo) && (
+                  {cardItems && (
                     <div className={styles.card}>
                       {cardItems &&
                         cardItems.length > 0 &&
                         cardItems.map((cardItem, i) => {
                           if (!cardItem) return null;
                           const { title, name, value, imgs, style, extra, extraStyle } = cardItem;
-                          return title ? (
-                            <p className={styles.title} key={i}>
-                              {title}
-                            </p>
-                          ) : imgs && imgs.length > 0 && imgs[0] ? (
-                            <ImgSlider picture={imgs} key={i} />
-                          ) : (
-                            <p key={i}>
-                              <span className={labelClassName} style={{ marginRight: `${maxNameLength - name.length}em` }}>{name ? `${name}：` : ''}</span>
-                              <span style={style || {}}>{value || NO_DATA}</span>
-                              {extra && (
-                                <span className={styles.extra} style={extraStyle || {}}>
-                                  {extra}
-                                </span>
-                              )}
-                            </p>
-                          );
+                          if (title)
+                            return (
+                              <p className={styles.title} key={i}>
+                                {title}
+                              </p>
+                            );
+                          const imgList = imgs ? imgs.filter(img => img) : [];
+                          if (imgList.length)
+                              return <ImgSlider key={i} picture={imgs} />;
+                          if (name)
+                              return (
+                                <p key={i}>
+                                  <span
+                                    className={labelClassName}
+                                    // style={{ marginRight: `${maxNameLength - name.length}em` }}
+                                  >
+                                    {name}：
+                                  </span>
+                                  <span style={style || {}}>{value || NO_DATA}</span>
+                                  {extra && (
+                                    <span className={styles.extra} style={extraStyle || {}}>
+                                      {extra}
+                                    </span>
+                                  )}
+                                </p>
+                              );
+                          return null;
                         })}
                       {/* {msgInfo && (
                         <div>

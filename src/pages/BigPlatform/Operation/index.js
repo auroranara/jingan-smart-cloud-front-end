@@ -190,6 +190,7 @@ export default class Operation extends PureComponent {
       videoVisible: false,
       onekeyFlowDrawerVisible: false,
       unitListDrawerVisible: false, // 企业列表抽屉
+      // showVideoList: false,
       videoList: [],
       videoKeyId: undefined,
       dynamicType: null,
@@ -473,6 +474,7 @@ export default class Operation extends PureComponent {
       messageFlag && (messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
     const restParams = [cameraMessage, occurData, companyId];
     const param = {
+      deviceId,
       dataId: +trueOver === 0 ? msgFlag : undefined,
       id: +trueOver !== 0 ? msgFlag : undefined,
       companyName: companyName || undefined,
@@ -589,16 +591,15 @@ export default class Operation extends PureComponent {
   };
 
   handleVideoOpen = () => {
-    // const { dispatch } = this.props;
     const {
-      // company: { companyId },
       videoList = [],
     } = this.state;
     if (videoList && videoList.length) {
       this.setState({
         videoVisible: true,
-        videoList,
+        // videoList,
         videoKeyId: videoList && videoList[0] && videoList[0].key_id,
+        // showVideoList: false,
       });
       return;
     }
@@ -861,6 +862,8 @@ export default class Operation extends PureComponent {
       operation: { unitList },
     } = this.props;
 
+    const { deviceId } = param;
+    ['deviceId', 'companyName', 'unitTypeName', 'component'].forEach(p => delete param[p]);
     const reportTypes = [1, 4, 3, 2];
     this.hiddeAllPopup();
     this.fetchMessageInformList({ id: param.id, dataId: param.dataId });
@@ -903,6 +906,10 @@ export default class Operation extends PureComponent {
         },
       });
     }
+
+    if (type === 2) // 燃气
+      this.fetchGasData(deviceId);
+
     // 企业负责人和维保员信息
     dispatch({
       type: 'operation/fetchMaintenanceCompany',
@@ -943,6 +950,27 @@ export default class Operation extends PureComponent {
     }
     this.showUnitDetail(detail);
     this.hideTooltip();
+  };
+
+  fetchGasData = deviceId => {
+    const { dispatch } =  this.props;
+    dispatch({
+      type: 'operation/fetchGasHistory',
+      payload: { deviceId, historyType: 1, queryDate: moment().format('YYYY/MM/DD HH:mm:ss') },
+    });
+    dispatch({
+      type: 'operation/fetchGasRealtimeData',
+      payload: { deviceId },
+    });
+    this.fetchGasTotal(deviceId, 1);
+  };
+
+  fetchGasTotal = (deviceId, dateType) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'operation/fetchGasTotal',
+      payload: { deviceId, type: dateType },
+    });
   };
 
   /**
@@ -1040,17 +1068,18 @@ export default class Operation extends PureComponent {
         firePie,
         fireTrend,
         fireList,
-      },
-      user: {
-        currentUser: { unitName },
-      },
-      operation: {
         workOrderDetail, // 只有一个元素的数组
         maintenanceCompany: {
           name: maintenanceCompanys = [],
           PrincipalName = '', // 安全管理员
           PrincipalPhone = '', // 安全管理员电话
         },
+        gasHistory,
+        gasRealtimeData,
+        gasTotal,
+      },
+      user: {
+        currentUser: { unitName },
       },
       unitSafety: { points, phoneVisible },
       newUnitFireControl: { messageInformList },
@@ -1088,6 +1117,7 @@ export default class Operation extends PureComponent {
       electricalFireMonitoringDetailDrawerValue,
       electricalFireMonitoringDetailDrawerActiveKey,
       gasDrawerVisible,
+      // showVideoList,
     } = this.state;
     const headProps = {
       ...workOrderDetail[0],
@@ -1245,10 +1275,11 @@ export default class Operation extends PureComponent {
           head={true}
         />
         <GasDrawer
-          monitorData={{}}
-          orderData={{ order: workOrderDetail, msgFlow, phoneVisible, headProps, messageInformList, messageInformListLoading }}
+          monitorData={{ item: gasRealtimeData, history: gasHistory }}
+          orderData={{ order: workOrderDetail, item: gasRealtimeData, phoneVisible, headProps, messageInformList, messageInformListLoading, gasTotal }}
           visible={gasDrawerVisible}
-          // handleParentChange={this.handleMapParentChange}
+          handleCameraOpen={videoList && videoList.length ? this.handleVideoOpen : null}
+          fetchGasTotal={this.fetchGasTotal}
           onClose={() => this.handleDrawerVisibleChange('gas')}
         />
         <UnitListDrawer
@@ -1272,7 +1303,7 @@ export default class Operation extends PureComponent {
           data={{ item: waterItem, history: waterHistory, total: getWaterTotal(waterAlarmCount) }}
         />
         <VideoPlay
-          showList={false}
+          showList={true}
           videoList={videoList}
           visible={videoVisible}
           keyId={videoKeyId}

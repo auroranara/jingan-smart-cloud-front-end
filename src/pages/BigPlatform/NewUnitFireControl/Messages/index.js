@@ -209,6 +209,7 @@ export default class Messages extends PureComponent {
     const msgFlag =
       messageFlag && (messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
     const param = {
+      deviceId,
       dataId: +isOver === 0 ? msgFlag : undefined,
       id: +isOver !== 0 ? msgFlag : undefined,
       companyId: companyId || undefined,

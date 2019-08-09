@@ -39,6 +39,11 @@ export {
 } from '@/pages/BigPlatform/Smoke/components/Components';
 
 export {
+  Gauge,
+  TrendChart,
+} from '@/pages/BigPlatform/GasStation/components/Components';
+
+export {
   AlarmCount,
   DeviceBar,
   DrawerSwitchHead,
