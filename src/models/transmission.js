@@ -10,7 +10,11 @@ import {
   transmissionHostAdd,
   transmissionHostUpdate,
   transmissionHostDelete,
+  fetchPoints,
+  editPoint,
+  deletePoint,
 } from '../services/transmission';
+import { fetchDictList } from '../services/videoMonitor'
 
 export default {
   namespace: 'transmission',
@@ -31,8 +35,18 @@ export default {
     deviceList: [],
     companyDetail: {},
     selectCompany: { pagination: {} },
+    facilityTypes: [], // 设施类型
+    componentTypes: [], // 部件类型
+    // 点位管理
+    pointManagement: {
+      list: [],
+      pagination: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+    },
   },
-
   effects: {
     *fetch({ payload, callback }, { call, put }) {
       const response = yield call(queryTransmissionDevice, payload);
@@ -147,13 +161,67 @@ export default {
     *fetchSelectCompany({ payload }, { call, put }) {
       let response = yield call(queryTransmissionDevice, payload);
       response = response || {};
-      const { code=500, data={} } = response;
+      const { code = 500, data = {} } = response;
       if (code === 200)
         yield put({ type: 'saveSelectCompany', payload: data });
+    },
+    // 获取设施类型、部件类型
+    *fetchDictList({ payload }, { call, put }) {
+      const response = yield call(fetchDictList, { type: 'systemcode' });
+      if (response) {
+        yield put({
+          type: 'save',
+          payload: { facilityTypes: response.result || [] },
+        });
+      }
+      const res = yield call(fetchDictList, { type: 'componentType' });
+      if (res) {
+        yield put({
+          type: 'save',
+          payload: { componentTypes: res.result || [] },
+        });
+      }
+    },
+    // 获取点位列表
+    *fetchPoints({ payload }, { call, put }) {
+      const res = yield call(fetchPoints, payload)
+      if (res && res.code === 200) {
+        const { list = [], pageNum = 1, pageSize = 10, total = 0 } = res.data || {}
+        yield put({
+          type: 'save',
+          payload: {
+            pointManagement: {
+              list,
+              pagination: { pageNum, pageSize, total },
+            },
+          },
+        })
+      }
+    },
+    // 编辑点位
+    *editPoint({ payload, success, error }, { call }) {
+      const res = yield call(editPoint, payload)
+      if (res && res.code === 200 && success) {
+        success()
+      } else error(res)
+    },
+    *deletePoint({ payload, success, error }, { call }) {
+      const res = yield call(deletePoint, payload)
+      console.log('payload', payload);
+
+      if (res && res.code === 200 && success) {
+        success()
+      } else error(res)
     },
   },
 
   reducers: {
+    save(state, action) {
+      return {
+        ...state,
+        ...action.payload,
+      }
+    },
     queryList(state, action) {
       const {
         list,
