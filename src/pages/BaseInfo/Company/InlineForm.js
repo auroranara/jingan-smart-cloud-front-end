@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
-import { Form, Button, Row, Col } from 'antd';
-import styles from './InlineForm.less'
+import { Form, Button, Row, Col, Checkbox } from 'antd';
+import styles from './InlineForm.less';
 
 const FormItem = Form.Item;
 
@@ -41,7 +41,10 @@ export default class InlineForm extends PureComponent {
    * 组件挂载以后修改值可以通过修改values来实现
    */
   componentDidUpdate({ values: prevValues }) {
-    const { values, form: { setFieldsValue } } = this.props;
+    const {
+      values,
+      form: { setFieldsValue },
+    } = this.props;
     if (values !== prevValues) {
       setFieldsValue(values);
     }
@@ -99,6 +102,9 @@ export default class InlineForm extends PureComponent {
       buttonSpan = defaultButtonSpan,
       gutter = { md: 16 },
       layout = 'vertical',
+      bindPoint,
+      onChangeCheckBox,
+      checked = false,
     } = this.props;
 
     return (
@@ -118,21 +124,38 @@ export default class InlineForm extends PureComponent {
                     {getFieldDecorator(field.id, field.options)(field.render(this.handleSearch))}
                   </FormItem>
                 </Col>
-              )
+              );
             })}
-          <Col {...buttonSpan}>
+          <Col {...buttonSpan} style={{ width: '65%' }}>
             <FormItem style={{ margin: '0', padding: '4px 0' }}>
               {!hideSearch && (
-                <Button type={searchType || 'primary'} onClick={this.handleSearch} style={{ marginRight: '16px' }}>
+                <Button
+                  type={searchType || 'primary'}
+                  onClick={this.handleSearch}
+                  style={{ marginRight: '16px' }}
+                >
                   {searchText || '查询'}
                 </Button>
               )}
               {!hideReset && (
-                <Button type={resetType || 'default'} onClick={this.handleReset} style={{ marginRight: '16px' }}>
+                <Button
+                  type={resetType || 'default'}
+                  onClick={this.handleReset}
+                  style={{ marginRight: '16px' }}
+                >
                   {resetText || '重置'}
                 </Button>
               )}
               {action}
+              {bindPoint && (
+                <Checkbox
+                  onChange={onChangeCheckBox}
+                  checked={checked}
+                  style={{ marginLeft: '4%' }}
+                >
+                  仅显示未绑定的标签
+                </Checkbox>
+              )}
             </FormItem>
           </Col>
         </Row>

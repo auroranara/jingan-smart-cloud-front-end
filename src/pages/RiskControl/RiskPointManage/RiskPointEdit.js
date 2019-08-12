@@ -70,7 +70,17 @@ const COLUMNS = [
     dataIndex: 'nfc_code',
     key: 'nfc_code',
     align: 'center',
-    width: 300,
+    width: 150,
+  },
+  {
+    title: '绑定的点位',
+    dataIndex: 'objectTitles',
+    key: 'objectTitles',
+    align: 'center',
+    width: 200,
+    render: val => {
+      return val && val.length > 0 ? val.join('、') : '————';
+    },
   },
 ];
 
@@ -357,9 +367,11 @@ export default class RiskPointEdit extends PureComponent {
         query: { companyId },
       },
     } = this.props;
+    const { checked } = this.state;
     dispatch({
       type: 'riskPointManage/fetchLabelDict',
       payload: {
+        noBind: checked === true ? 1 : '',
         companyId,
         ...payload,
       },
@@ -394,13 +406,35 @@ export default class RiskPointEdit extends PureComponent {
     });
   };
 
+  onChangeCheckBox = e => {
+    const {
+      dispatch,
+      location: {
+        query: { companyId },
+      },
+    } = this.props;
+    const isChecked = e.target.checked;
+    dispatch({
+      type: 'riskPointManage/fetchLabelDict',
+      payload: {
+        companyId,
+        noBind: isChecked === true ? 1 : '',
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
+    this.setState({
+      checked: isChecked,
+    });
+  };
+
   // 渲染模态框(RFID)
   renderRfidModal() {
     const {
       loading,
       riskPointManage: { labelModal },
     } = this.props;
-    const { rfidVisible } = this.state;
+    const { rfidVisible, checked } = this.state;
 
     const setField = [
       {
@@ -422,6 +456,9 @@ export default class RiskPointEdit extends PureComponent {
         onSelect={this.handleSelect}
         onClose={this.handleClose}
         field={setField}
+        onChangeCheckBox={this.onChangeCheckBox}
+        checked={checked}
+        bindPoint
       />
     );
   }
@@ -1130,7 +1167,7 @@ export default class RiskPointEdit extends PureComponent {
         dataIndex: 'flow_name',
         key: 'flow_name',
         align: 'center',
-        width: 80,
+        width: 120,
       },
       {
         title: '隐患等级',
@@ -1302,7 +1339,7 @@ export default class RiskPointEdit extends PureComponent {
                     })(<Input placeholder="请选择RFID" disabled />)}
                   </Form.Item>
                 </Col>
-                <Col span={2} style={{ position: 'relative', marginTop: '3%' }}>
+                <Col span={2} style={{ position: 'relative', marginTop: '2.6%' }}>
                   <Button onClick={this.handleFocus}>选择</Button>
                 </Col>
                 <Col span={8}>
