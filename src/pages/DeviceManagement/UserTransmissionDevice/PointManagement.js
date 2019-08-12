@@ -1,9 +1,10 @@
 import { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Table, Card, Form, Row, Col, Input, Select, Button, Divider, Spin, Modal, message, Popconfirm } from 'antd';
+import { Table, Card, Form, Row, Col, Input, Select, Button, Divider, Spin, message, Popconfirm, Drawer } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { AuthA, hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
+import styles from './PointManagement.less';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -11,7 +12,6 @@ const Option = Select.Option;
 const TITLE = '点位管理';
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
-const noAuthStyle = { style: { color: 'rgba(0, 0, 0, 0.25)', cursor: 'not-allowed' } }
 const defaultPageSize = 10;
 const formItemLayout = {
   labelCol: { span: 7 },
@@ -117,8 +117,8 @@ export default class PointManagement extends Component {
     })
   }
 
-  // 确认编辑
-  handleDoEdit = () => {
+  // 确认新增/编辑
+  handleSubmit = () => {
     const {
       dispatch,
       form: { validateFields },
@@ -136,19 +136,34 @@ export default class PointManagement extends Component {
       'installAddress',
     ], (errs, values) => {
       if (errs) return
-      dispatch({
-        type: 'transmission/editPoint',
-        payload: { ...values, id: pointId, hostId },
-        success: () => {
-          message.success('编辑点位成功')
-          this.setState({ visible: false })
-          this.handleSearch()
-        },
-        error: (res) => {
-          const msg = res && res.msg ? `编辑点位失败，${res.msg}` : '编辑点位失败'
-          message.error(msg)
-        },
-      })
+      const { loopNumber, partNumber, ...others } = values
+      const success = () => {
+        message.success(`${pointId ? '编辑' : '新增'}点位成功`)
+        this.setState({ visible: false })
+        this.handleSearch()
+      }
+      const error = (res) => {
+        const prompt = `${pointId ? '编辑' : '新增'}点位失败`
+        const msg = res && res.msg ? `${prompt}，${res.msg}` : prompt
+        message.error(msg)
+      }
+      if (pointId) {
+        // 如果编辑
+        dispatch({
+          type: 'transmission/editPoint',
+          payload: { ...others, id: pointId, hostId, loopNumber: +loopNumber, partNumber: +partNumber },
+          success,
+          error,
+        })
+      } else {
+        // 如果新增
+        dispatch({
+          type: 'transmission/addPoint',
+          payload: { ...others, hostId, loopNumber: +loopNumber, partNumber: +partNumber },
+          success,
+          error,
+        })
+      }
     })
 
   }
@@ -168,6 +183,18 @@ export default class PointManagement extends Component {
         message.error(msg)
       },
     })
+  }
+
+  onClose = () => {
+    this.setState({ visible: false })
+  }
+
+
+  /**
+   * 点击新增
+   */
+  handleToAdd = () => {
+    this.setState({ visible: true, pointId: null })
   }
 
   /**
@@ -245,7 +272,8 @@ export default class PointManagement extends Component {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle} >
                 <Button type="primary" style={{ marginRight: '10px' }} onClick={() => this.handleSearch()}>查询</Button>
-                <Button onClick={this.handleReset}>重置</Button>
+                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
+                <Button type="primary" onClick={this.handleToAdd}>新增</Button>
               </FormItem>
             </Col>
           </Row>
@@ -266,18 +294,22 @@ export default class PointManagement extends Component {
         componentTypes = [],
       },
     } = this.props
-    const { visible } = this.state
+    const { visible, pointId } = this.state
     return (
-      <Modal
+      <Drawer
         width={600}
-        title="编辑点位"
+        title={pointId ? '编辑点位' : '新增点位'}
         visible={visible}
-        onOk={this.handleDoEdit}
-        onCancel={() => { this.setState({ visible: false }) }}
+        destroyOnClose
+        onClose={() => this.onClose()}
+        className={styles.pointDrawer}
       >
         <Form>
           <FormItem label="系统类型" {...formItemLayout}>
-            {getFieldDecorator('systemType')(
+            {getFieldDecorator('systemType', {
+              validateTrigger: 'onBlur',
+              rules: [{ required: true, message: '请选择系统类型' }],
+            })(
               <Select placeholder="请选择系统类型" allowClear>
                 {facilityTypes.map(({ value, label }) => (
                   <Option key={value} value={value}>{label}</Option>
@@ -286,7 +318,10 @@ export default class PointManagement extends Component {
             )}
           </FormItem>
           <FormItem label="部件类型" {...formItemLayout}>
-            {getFieldDecorator('unitType')(
+            {getFieldDecorator('unitType', {
+              validateTrigger: 'onBlur',
+              rules: [{ required: true, message: '请选择部件类型' }],
+            })(
               <Select placeholder="请选择部件类型" allowClear>
                 {componentTypes.map(({ value, label }) => (
                   <Option key={value} value={value}>{label}</Option>
@@ -295,37 +330,76 @@ export default class PointManagement extends Component {
             )}
           </FormItem>
           <FormItem label="回路号" {...formItemLayout}>
-            {getFieldDecorator('loopNumber')(
+            {getFieldDecorator('loopNumber', {
+              validateTrigger: 'onBlur',
+              rules: [
+                { required: true, message: '请输入回路号' },
+                { message: '请输入数字', pattern: /^\d+$/ },
+              ],
+            })(
               <Input placeholder="请输入回路号" />
             )}
           </FormItem>
           <FormItem label="部位号" {...formItemLayout}>
-            {getFieldDecorator('partNumber')(
+            {getFieldDecorator('partNumber', {
+              validateTrigger: 'onBlur',
+              rules: [
+                { required: true, message: '请输入部位号' },
+                { message: '请输入数字', pattern: /^\d+$/ },
+              ],
+            })(
               <Input placeholder="请输入部位号" />
             )}
           </FormItem>
           <FormItem label="部件型号" {...formItemLayout}>
-            {getFieldDecorator('componentModel')(
+            {getFieldDecorator('componentModel', {
+              validateTrigger: 'onBlur',
+              rules: [{ required: true, message: '请输入部件型号' }],
+            })(
               <Input placeholder="请输入部件型号" />
             )}
           </FormItem>
           <FormItem label="生产企业名称" {...formItemLayout}>
-            {getFieldDecorator('createCompanyName')(
+            {getFieldDecorator('createCompanyName', {
+              validateTrigger: 'onBlur',
+              rules: [{ required: true, message: '请输入生产企业名称' }],
+            })(
               <Input placeholder="请输入生产企业名称" />
             )}
           </FormItem>
           <FormItem label="安装楼层" {...formItemLayout}>
-            {getFieldDecorator('installFloor')(
+            {getFieldDecorator('installFloor', {
+              validateTrigger: 'onBlur',
+              rules: [{ required: true, message: '请输入安装楼层' }],
+            })(
               <Input placeholder="请输入安装楼层" />
             )}
           </FormItem>
           <FormItem label="安装位置" {...formItemLayout}>
-            {getFieldDecorator('installAddress')(
+            {getFieldDecorator('installAddress', {
+              validateTrigger: 'onBlur',
+              rules: [{ required: true, message: '请输入安装位置' }],
+            })(
               <Input placeholder="请输入安装位置" />
             )}
           </FormItem>
         </Form>
-      </Modal>
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            bottom: 0,
+            width: '100%',
+            borderTop: '1px solid #e9e9e9',
+            padding: '10px 16px',
+            background: '#fff',
+            textAlign: 'right',
+          }}
+        >
+          <Button style={{ marginRight: 8 }} onClick={this.onClose}>取消</Button>
+          <Button type="primary" onClick={this.handleSubmit}>确认</Button>
+        </div>
+      </Drawer>
     )
   }
 
@@ -422,18 +496,22 @@ export default class PointManagement extends Component {
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <AuthA
-              code={editCode}
-              onClick={() => { this.handleToEdit(row) }}
-            >
-              编辑
+            {!row.hasData ? (
+              <span className={styles.noAuth}>编辑</span>
+            ) : (
+                <AuthA
+                  code={editCode}
+                  onClick={() => { this.handleToEdit(row) }}
+                >
+                  编辑
             </AuthA>
+              )}
             <Divider type="vertical" />
-            {deleteAuth ? (
+            {deleteAuth && row.hasData ? (
               <Popconfirm title="确认要删除改点位吗？" onConfirm={() => this.handelDoDelete(row)}>
                 <a>删除</a>
               </Popconfirm>
-            ) : (<span {...noAuthStyle}>删除</span>)}
+            ) : (<span className={styles.noAuth}>删除</span>)}
           </Fragment>
         ),
       },

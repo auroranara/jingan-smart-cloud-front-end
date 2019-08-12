@@ -13,6 +13,7 @@ import {
   fetchPoints,
   editPoint,
   deletePoint,
+  addPoint,
 } from '../services/transmission';
 import { fetchDictList } from '../services/videoMonitor'
 
@@ -205,10 +206,16 @@ export default {
         success()
       } else error(res)
     },
+    // 删除点位
     *deletePoint({ payload, success, error }, { call }) {
       const res = yield call(deletePoint, payload)
-      console.log('payload', payload);
-
+      if (res && res.code === 200 && success) {
+        success()
+      } else error(res)
+    },
+    // 新增点位
+    *addPoint({ payload, success, error }, { call }) {
+      const res = yield call(addPoint, payload)
       if (res && res.code === 200 && success) {
         success()
       } else error(res)
