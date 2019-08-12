@@ -15,6 +15,7 @@ export default function TimelineItem(props) {
     containerStyle,
     labelStyle,
     timeStyle,
+    showFirstAlarmDesc,
     ...restProps
   } = props;
   const isHandled = !!children;
@@ -28,6 +29,13 @@ export default function TimelineItem(props) {
               {label}
             </span>
           </p>
+          {isHandled &&
+            showFirstAlarmDesc && (
+              <p className={styles.p} style={timeStyle}>
+                首次报警时间
+              </p>
+            )
+          }
           {isHandled &&
             day && (
               <p className={styles.p} style={timeStyle}>

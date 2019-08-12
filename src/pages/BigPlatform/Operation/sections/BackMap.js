@@ -2,7 +2,7 @@ import React, { Fragment, PureComponent } from 'react';
 import { Icon } from 'antd';
 import { Map as GDMap, InfoWindow, Markers, Marker } from 'react-amap';
 import styles from './BackMap.less';
-import { DeviceBar, InfoStatus, MapLegend, MapTypeBar } from '../components/Components';
+import { DeviceBar, InfoStatus, MapLegend, MapTypeBar, OvSelect } from '../components/Components';
 
 import iconAddress from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-address.png';
 import iconMan from '@/pages/BigPlatform/Smoke/BackMap/imgs/icon-man.png';
@@ -28,7 +28,7 @@ import {
   dotWaterRed,
   dotWaterYellow,
 } from '../imgs/links';
-import { BAR_COLORS, COUNT_BASE_KEY, COUNT_KEYS, COUNT_LABELS, TYPE_KEYS, TYPE_COUNTS, getMapLegendData, getMapItemStatus, sortUnits } from '../utils';
+import { BAR_COLORS, COUNT_BASE_KEY, COUNT_KEYS, COUNT_LABELS, MAP_THEMES as THEMES, TYPE_KEYS, TYPE_COUNTS, getMapLegendData, getMapItemStatus, sortUnits } from '../utils';
 
 const IMGS = [
   [dotGreen, dotRed],
@@ -52,14 +52,20 @@ const INIT_INFO = {
   saferPhone: '',
 };
 
+const MAP_CSS_IDS = ['2e4b83bf089a6c075c0bea7b3ac22e25', 'b9d9da96da6ba2487d60019876b26fc5'];
+
 export default class MapSection extends PureComponent {
   state = {
     infoWindowShow: false,
     infoWindow: INIT_INFO,
+    mapStyleType: 0,
   };
 
   componentDidMount() {
     this.props.onRef(this);
+    const isWine = global.PROJECT_CONFIG.projectShortName === '智慧消防云'; // 是否泸州
+    if (!isWine)
+      this.setState({ mapStyleType: 1 });
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -300,25 +306,38 @@ export default class MapSection extends PureComponent {
 
   onDeviceTypeChange = v => {
     const { handleDeviceTypeChange } = this.props;
-    handleDeviceTypeChange(v, isInList => {
-      if (!isInList)
-        this.setState({ infoWindowShow: false });
+    handleDeviceTypeChange(v, (isInList, isDetailExist) => {
+      setTimeout(() => this.reset(), 100);
+      // if (!isInList)
+      //   this.setState({ infoWindowShow: false });
     });
+  };
+
+  reset = e => {
+    this.mapInstance.setFitView(
+      this.mapInstance.getAllOverlays().filter(d => d.CLASS_NAME === 'AMap.Marker')
+    );
+    this.setState({ infoWindowShow: false });
+  };
+
+  handleMapStyleChange = value => {
+    this.setState({ mapStyleType: value });
   };
 
   render() {
     const { deviceType, handleParentChange, units, unitLists, showUnitListDrawer } = this.props;
+    const { mapStyleType } = this.state;
     const mapLegendData = getMapLegendData(units, deviceType);
     const nums = unitLists.map(list => list.length);
+    const theme = (
+      <div className={styles.theme}>
+        <OvSelect cssType="3" options={THEMES} value={mapStyleType} handleChange={this.handleMapStyleChange} />
+      </div>
+    );
     const resetBtn = (
       <div
         className={styles.allPoint}
-        onClick={() => {
-          this.mapInstance.setFitView(
-            this.mapInstance.getAllOverlays().filter(d => d.CLASS_NAME === 'AMap.Marker')
-          );
-          this.setState({ infoWindowShow: false });
-        }}
+        onClick={this.reset}
       >
         <Icon type="reload" theme="outlined" style={{ marginRight: '3px' }} />
         重置
@@ -330,9 +349,7 @@ export default class MapSection extends PureComponent {
       </div>
     );
 
-    const isWine = global.PROJECT_CONFIG.projectShortName === '智慧消防云'; // 是否泸州老窖
-    const mapCSSId = isWine ? '2e4b83bf089a6c075c0bea7b3ac22e25' : 'b9d9da96da6ba2487d60019876b26fc5';
-    // console.log(global.PROJECT_CONFIG);
+
 
     return (
       <div className={styles.mapContainer}>
@@ -349,7 +366,7 @@ export default class MapSection extends PureComponent {
             keyboardEnable: false,
           }}
           useAMapUI
-          mapStyle={`amap://styles/${mapCSSId}`}
+          mapStyle={`amap://styles/${MAP_CSS_IDS[mapStyleType]}`}
           expandZoomRange
           zooms={zooms}
           pitch={60}
@@ -364,10 +381,11 @@ export default class MapSection extends PureComponent {
           {this.renderMarkers()}
           {/* {this.renderTips()} */}
           <MapTypeBar />
+          {theme}
           {resetBtn}
           {listBtn}
         </GDMap>
-        <DeviceBar type={deviceType} nums={nums} ignore={[4]} handleClick={this.onDeviceTypeChange} />
+        <DeviceBar type={deviceType} nums={nums} ignore={[]} handleClick={this.onDeviceTypeChange} />
         <MapLegend type={deviceType} data={mapLegendData} />
       </div>
     );

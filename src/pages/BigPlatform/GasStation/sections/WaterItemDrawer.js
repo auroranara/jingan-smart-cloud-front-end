@@ -5,22 +5,13 @@ import styles from './WaterItemDrawer.less';
 import { DrawerContainer } from '@/pages/BigPlatform/NewFireControl/components/Components';
 // import ElectricityCharts from '@/pages/BigPlatform/ElectricityMonitor/components/ElectricityCharts';
 import { Gauge, LossDevice, OvSelect, TrendChart, WaterTank } from '../components/Components';
-import { isGauge } from '../utils';
+import { DATE_OPTIONS, isGauge } from '../utils';
 // import cameraIcon from '../../ElectricityMonitor/imgs/camera.png';
 
 // const VIDEO_STYLE = {
 //   width: '90%',
 //   marginLeft: '-43%',
 // };
-
-// const DATE_OPTIONS = [
-//   { value: 1, desc: '最近一周' },
-//   { value: 2, desc: '最近一月' },
-//   { value: 3, desc: '最近三月' },
-//   { value: 4, desc: '最近半年' },
-//   { value: 5, desc: '最近一年' },
-// ];
-const DATE_OPTIONS = ['一周', '一月', '三月', '半年', '一年'].map((desc, i) => ({ value: i + 1, desc: `最近${desc}` }));
 
 export default class WaterItemDrawer extends PureComponent {
   // state = {

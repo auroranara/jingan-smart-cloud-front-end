@@ -24,3 +24,11 @@ export const filterChartValue = (chartData = []) => {
   const newData = chartData.filter(item => !!item.value);
   return newData.length ? newData : NoPieData;
 };
+
+export function getMaxNameLength(list) {
+  list = list.filter(itm => itm);
+  if (!list || !list.length)
+    return 0;
+
+  return Math.max(...list.map(({ name }) => name ? name.length : 0));
+}

@@ -1,11 +1,20 @@
 export { genCardsInfo } from '@/pages/BigPlatform/Smoke/utils';
 
+export const MAP_THEMES = [
+  { desc: '标准', value: 0 },
+  { desc: '静蓝', value: 1 },
+];
+
 export const ALL_DEVICES = 0;
 export const HOST = 1;
 export const SMOKE = 2;
 export const ELEC = 3;
 export const GAS = 4;
 export const WATER = 5;
+
+export const GAS_CODE = 'value';
+export const ARM_CODE = '_arm_status';
+
 export const TYPE_KEYS = ['', 'fire', 'smoke', 'elec', 'gas', 'water'];
 export const COUNT_BASE_KEY = 'DeviceCount';
 export const COUNT_KEYS = ['Normal', 'Fire', 'Fault', 'UnConnect'];
