@@ -502,6 +502,7 @@ export default class Messages extends PureComponent {
       msgSettings = {
         ...msgSettings,
         [item.toString()]: {
+          onClick: () => { handleClickMsgFlow(param, 2, 0, ...restParams); },
           otherTitle: `【可燃气体报警恢复】`,
           items: [{ name: '所在区域', value: area }, { name: '所在位置', value: location }],
         },

@@ -19,7 +19,7 @@ const SPANS = [5, 19];
 const NO_DATA = '暂无信息';
 
 export default function NewTimelineCard(props) {
-  const { dataList, style, flowImg, showHead = true, loading = false, ...restProps } = props;
+  const { dataList, style, flowImg, showFirstAlarmDesc, showHead = true, loading = false, ...restProps } = props;
   const dataLength = dataList.filter(item => item.cardItems).length;
 
   return (
@@ -61,6 +61,7 @@ export default function NewTimelineCard(props) {
                   label={label}
                   day={getTime(time)}
                   hour={getTime(time, 1)}
+                  showFirstAlarmDesc={showFirstAlarmDesc && !index}
                   key={index}
                   containerStyle={{ minHeight: '75px', ...containerStyle }}
                   labelStyle={labelStyle}

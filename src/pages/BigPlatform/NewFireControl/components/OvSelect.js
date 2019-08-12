@@ -5,7 +5,7 @@ import styles from './OvSelect.less';
 
 const { Option } = Select;
 
-const CLASSNAME = ['zero', 'one', 'two'];
+const CLASSNAME = ['zero', 'one', 'two', 'three'];
 
 export default class OvSelect extends PureComponent {
   render() {

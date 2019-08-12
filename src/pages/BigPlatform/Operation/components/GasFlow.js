@@ -106,6 +106,7 @@ export default function GasFlow(props) {
           key={i}
           dataList={timelineList}
           showHead={false}
+          showFirstAlarmDesc
           style={{ width: `calc(100% / ${length})` }}
         />
       );

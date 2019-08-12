@@ -2,9 +2,8 @@ import React, { Fragment } from 'react';
 
 import styles from './GasMonitor.less';
 import { DrawerSection, Gauge, TrendChart } from './Components';
+import { GAS_CODE, ARM_CODE } from '../utils';
 
-const GAS_CODE = 'value';
-const ARM_CODE = '_arm_status';
 const GAS_STATUS = {
   '-20': '关闭',
   '-21': '打开',

@@ -35,7 +35,8 @@ import { FireFlowDrawer, OnekeyFlowDrawer, SmokeFlowDrawer } from '@/pages/BigPl
 
 const OPE = 3; // 运营或管理员unitType对应值
 const COMPANY_ALL = 'companyIdAll';
-const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 48, 49];
+const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 48, 49];
+// const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 48, 49];
 const ALARM_TYPES = [7, 32, 36, 38, 39];
 
 // websocket配置
@@ -1287,6 +1288,8 @@ export default class Operation extends PureComponent {
           list={unitList}
           deviceType={deviceType}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
+          showUnitDetail={this.showUnitDetail}
+          handleCompanyClick={this.handleCompanyClick}
         />
         <ElectricalFireMonitoringDetailDrawer
           showCompany

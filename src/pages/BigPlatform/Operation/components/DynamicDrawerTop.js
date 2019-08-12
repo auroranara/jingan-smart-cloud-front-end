@@ -74,6 +74,8 @@ export default class DynamicDrawerTop extends Component {
     } = this.props;
     // const scTime = moment(firstTime).format('YYYY-MM-DD HH:mm');
     // const zjTime = moment(lastTime).format('YYYY-MM-DD HH:mm');
+
+    const totalRead = read.length + unread.length;
     const componentNum =
       ((component_region || component_region === 0) &&
         `${component_region}回路${component_no}号`) ||
@@ -106,7 +108,7 @@ export default class DynamicDrawerTop extends Component {
         {!hideInfo && (
           <div
             className={styles.companyInfoContainer}
-            style={{ minHeight: dynamicType === 3 ? 'auto' : '130px' }}
+            style={{ minHeight: dynamicType === 3 ? 'auto' : '130px', borderBottom: totalRead ? 'none' : '1px solid #04fdff' }}
           >
             {companyName && <div className={styles.title}>{companyName}</div>}
             {/* 主机 */}
@@ -193,7 +195,7 @@ export default class DynamicDrawerTop extends Component {
             )}
           </div>
         )}
-        {read.length + unread.length > 0 && (
+        {totalRead > 0 && (
           <div className={styles.messageSendingContainer}>
             <Spin spinning={msgSendLoading} wrapperClassName={styles.spin}>
               <div className={styles.topLine}>
@@ -202,7 +204,7 @@ export default class DynamicDrawerTop extends Component {
                     (msgType === 0 && `报警`) ||
                     (msgType === 1 && `故障`)}
                   消息已发送成功！
-                  <span>(共发送 {read.length + unread.length} 人)</span>
+                  <span>(共发送 {totalRead} 人)</span>
                 </span>
                 {repeat}
               </div>
