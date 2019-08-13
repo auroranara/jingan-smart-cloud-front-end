@@ -68,7 +68,17 @@ const COLUMNS = [
     dataIndex: 'nfc_code',
     key: 'nfc_code',
     align: 'center',
-    width: 300,
+    width: 150,
+  },
+  {
+    title: '绑定的点位',
+    dataIndex: 'objectTitles',
+    key: 'objectTitles',
+    align: 'center',
+    width: 200,
+    render: val => {
+      return val && val.length > 0 ? val.join('、') : '————';
+    },
   },
 ];
 
@@ -285,10 +295,14 @@ export default class GridPointEdit extends PureComponent {
         query: { companyId },
       },
     } = this.props;
+
+    const { checked } = this.state;
+
     dispatch({
       type: 'riskPointManage/fetchLabelDict',
       payload: {
         itemType: 1,
+        noBind: checked === true ? 1 : '',
         companyId,
         ...payload,
       },
@@ -322,6 +336,27 @@ export default class GridPointEdit extends PureComponent {
       rfidVisible: false,
     });
   };
+  onChangeCheckBox = e => {
+    const {
+      dispatch,
+      location: {
+        query: { companyId },
+      },
+    } = this.props;
+    const isChecked = e.target.checked;
+    dispatch({
+      type: 'riskPointManage/fetchLabelDict',
+      payload: {
+        companyId,
+        noBind: isChecked === true ? 1 : '',
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
+    this.setState({
+      checked: isChecked,
+    });
+  };
 
   // 渲染模态框(RFID)
   renderRfidModal() {
@@ -329,7 +364,7 @@ export default class GridPointEdit extends PureComponent {
       loading,
       riskPointManage: { labelModal },
     } = this.props;
-    const { rfidVisible } = this.state;
+    const { rfidVisible, checked } = this.state;
 
     const setField = [
       {
@@ -351,6 +386,9 @@ export default class GridPointEdit extends PureComponent {
         onSelect={this.handleSelect}
         onClose={this.handleClose}
         field={setField}
+        onChangeCheckBox={this.onChangeCheckBox}
+        checked={checked}
+        bindPoint
       />
     );
   }
