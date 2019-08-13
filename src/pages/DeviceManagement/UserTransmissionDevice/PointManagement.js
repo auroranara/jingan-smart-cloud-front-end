@@ -1,6 +1,6 @@
 import { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Table, Card, Form, Row, Col, Input, Select, Button, Divider, Spin, message, Popconfirm, Drawer } from 'antd';
+import { Table, Card, Form, Row, Col, Input, Select, Button, Divider, Spin, message, Popconfirm, Modal } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { AuthA, hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
@@ -136,7 +136,7 @@ export default class PointManagement extends Component {
       'installAddress',
     ], (errs, values) => {
       if (errs) return
-      const { loopNumber, partNumber, ...others } = values
+      const { loopNumber, partNumber, installFloor, ...others } = values
       const success = () => {
         message.success(`${pointId ? '编辑' : '新增'}点位成功`)
         this.setState({ visible: false })
@@ -147,11 +147,14 @@ export default class PointManagement extends Component {
         const msg = res && res.msg ? `${prompt}，${res.msg}` : prompt
         message.error(msg)
       }
+      const numbers = {
+        loopNumber: +loopNumber, partNumber: +partNumber, installFloor: +installFloor,
+      }
       if (pointId) {
         // 如果编辑
         dispatch({
           type: 'transmission/editPoint',
-          payload: { ...others, id: pointId, hostId, loopNumber: +loopNumber, partNumber: +partNumber },
+          payload: { ...others, id: pointId, hostId, ...numbers },
           success,
           error,
         })
@@ -159,7 +162,7 @@ export default class PointManagement extends Component {
         // 如果新增
         dispatch({
           type: 'transmission/addPoint',
-          payload: { ...others, hostId, loopNumber: +loopNumber, partNumber: +partNumber },
+          payload: { ...others, hostId, ...numbers },
           success,
           error,
         })
@@ -296,13 +299,13 @@ export default class PointManagement extends Component {
     } = this.props
     const { visible, pointId } = this.state
     return (
-      <Drawer
+      <Modal
         width={600}
         title={pointId ? '编辑点位' : '新增点位'}
         visible={visible}
         destroyOnClose
-        onClose={() => this.onClose()}
-        className={styles.pointDrawer}
+        onCancel={this.onClose}
+        onOk={this.handleSubmit}
       >
         <Form>
           <FormItem label="系统类型" {...formItemLayout}>
@@ -370,7 +373,10 @@ export default class PointManagement extends Component {
           <FormItem label="安装楼层" {...formItemLayout}>
             {getFieldDecorator('installFloor', {
               validateTrigger: 'onBlur',
-              rules: [{ required: true, message: '请输入安装楼层' }],
+              rules: [
+                { required: true, message: '请输入安装楼层' },
+                { message: '请输入数字', pattern: /^\d+$/ },
+              ],
             })(
               <Input placeholder="请输入安装楼层" />
             )}
@@ -384,7 +390,7 @@ export default class PointManagement extends Component {
             )}
           </FormItem>
         </Form>
-        <div
+        {/* <div
           style={{
             position: 'absolute',
             left: 0,
@@ -398,8 +404,8 @@ export default class PointManagement extends Component {
         >
           <Button style={{ marginRight: 8 }} onClick={this.onClose}>取消</Button>
           <Button type="primary" onClick={this.handleSubmit}>确认</Button>
-        </div>
-      </Drawer>
+        </div> */}
+      </Modal>
     )
   }
 
