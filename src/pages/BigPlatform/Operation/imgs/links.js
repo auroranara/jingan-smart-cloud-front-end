@@ -1,3 +1,4 @@
+import alarmIcon from './alarmIcon.png';
 import clockIcon from './clock.png';
 import companyIcon from './company.png';
 import companyIcon1 from './company1.png';
@@ -23,6 +24,7 @@ import dotWaterRed from './dotWaterRed.png';
 import elecGreen from './elecGreen.png';
 import elecGrey from './elecGrey.png';
 import elecRed from './elecRed.png';
+import faultIcon from './faultIcon.png';
 import gasGreen from './gasGreen.png';
 import gasGrey from './gasGrey.png';
 import gasRed from './gasRed.png';
@@ -32,6 +34,7 @@ import hostIcon1 from './host1.png';
 import hostGreen from './hostGreen.png';
 import hostRed from './hostRed.png';
 import hostYellow from './hostYellow.png';
+import lossIcon from './lossIcon.png';
 import pointNormal from './point-normal.png';
 import pointAlarm from './point-alarm.png';
 import pointPreAlarm from './point-preAlarm.png';
@@ -46,6 +49,7 @@ import waterGrey from './waterGrey.png';
 import waterRed from './waterRed.png';
 
 export {
+  alarmIcon,
   clockIcon,
   companyIcon,
   companyIcon1,
@@ -71,6 +75,7 @@ export {
   elecGreen,
   elecGrey,
   elecRed,
+  faultIcon,
   gasGreen,
   gasGrey,
   gasRed,
@@ -80,6 +85,7 @@ export {
   hostGreen,
   hostRed,
   hostYellow,
+  lossIcon,
   pointNormal,
   pointAlarm,
   pointPreAlarm,

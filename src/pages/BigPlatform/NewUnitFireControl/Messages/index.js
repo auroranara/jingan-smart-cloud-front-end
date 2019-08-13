@@ -33,13 +33,12 @@ const TYPES = [
   36, // 水系统报警
   37, // 水系统恢复
   38, // 独立烟感报警
-  // 39, // 可燃气体报警
+  39, // 可燃气体报警
   40, // 独立烟感故障
-  // 41,
   42, // 电气火灾失联
   43, // 电气火灾失联恢复
   44, // 电气火灾报警恢复
-  // 45, // 燃气报警恢复
+  45, // 燃气报警恢复
   46, // 独立烟感失联
   47, // 独立烟感失联恢复
   48, // 水系统失联
@@ -210,6 +209,7 @@ export default class Messages extends PureComponent {
     const msgFlag =
       messageFlag && (messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
     const param = {
+      deviceId,
       dataId: +isOver === 0 ? msgFlag : undefined,
       id: +isOver !== 0 ? msgFlag : undefined,
       companyId: companyId || undefined,
@@ -502,6 +502,7 @@ export default class Messages extends PureComponent {
       msgSettings = {
         ...msgSettings,
         [item.toString()]: {
+          onClick: () => { handleClickMsgFlow(param, 2, 0, ...restParams); },
           otherTitle: `【可燃气体报警恢复】`,
           items: [{ name: '所在区域', value: area }, { name: '所在位置', value: location }],
         },

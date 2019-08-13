@@ -86,3 +86,11 @@ export async function deletePoint({ id }) {
     method: 'DELETE',
   })
 }
+
+// 新增点位
+export async function addPoint(params) {
+  return request('/acloud_new/v2/pointData/addPointData', {
+    method: 'POST',
+    body: params,
+  })
+}

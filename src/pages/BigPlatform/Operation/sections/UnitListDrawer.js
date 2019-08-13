@@ -44,6 +44,8 @@ export default class UnitListDrawer extends PureComponent {
       visible,
       list=[],
       deviceType,
+      showUnitDetail,
+      handleCompanyClick,
       // handleAlarmClick,
       // handleFaultClick,
       // handleClickUnitStatistics,
@@ -88,8 +90,9 @@ export default class UnitListDrawer extends PureComponent {
               location={address || NO_DATA}
               person={saferName || NO_DATA}
               phone={saferPhone || NO_DATA}
-              style={{ cursor: 'auto' }}
-              // clickName={ count && clickUnitStatistics }
+              style={{ cursor: 'pointer' }}
+              clickName={ count ? e => handleCompanyClick(companyId) : null }
+              onClick={e => showUnitDetail(item)}
               infoStyle={INFO_STYLE}
               info={
                 <Fragment>
