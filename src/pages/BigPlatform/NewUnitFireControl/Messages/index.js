@@ -14,6 +14,7 @@ import {
   outdateIcon,
 } from '@/pages/BigPlatform/GasStation/imgs/links';
 
+const DEFAULT_SHOW_TYPES = [1, 2, 3, 4, 7, 9, 11, 13, 14, 15, 16, 17, 18, 32, 36, 37, 38, 40, 42, 43, 44, 46, 47, 48, 49, 50, 51];
 const MAX_NAME_LENGTH = 4;
 const TYPES = [
   1, // 发生监管
@@ -45,12 +46,14 @@ const TYPES = [
   49, // 水系统失联恢复
   50, // 独立烟感报警恢复
   51, // 独立烟感故障恢复
+  54, // 可燃气体失联
+  55, // 可燃气体失联恢复
 ];
 
 const ICON_LIST = [
   { icon: inspectIcon, types: [13, 18] },
   { icon: dangerIcon, types: [14, 15, 16, 17] },
-  { icon: alarmIcon, types: [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51] },
+  { icon: alarmIcon, types: [1, 2, 3, 4, 7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51] },
 ];
 
 const formatTime = time => {
@@ -104,6 +107,7 @@ export default class Messages extends PureComponent {
       handleParentChange,
       fetchData,
       typeClickList,
+      showTypes=DEFAULT_SHOW_TYPES,
       handleViewDangerDetail,
       // handleClickMessage,
       // handleFaultClick,
@@ -205,7 +209,7 @@ export default class Messages extends PureComponent {
         component_no: partNumber,
       },
     ];
-    const restParams = [cameraMessage, occurData];
+    const restParams = [cameraMessage, occurData, companyId];
     const msgFlag =
       messageFlag && (messageFlag[0] === '[' ? JSON.parse(messageFlag)[0] : messageFlag);
     const param = {
@@ -233,6 +237,12 @@ export default class Messages extends PureComponent {
       47: '独立烟感失联恢复',
       50: '独立烟感报警恢复',
     };
+    const gasTitle = {
+      45: '可燃气体报警恢复',
+      54: '可燃气体失联',
+      55: '可燃气体失联恢复',
+    };
+
     [1, 2, 3, 4].forEach(item => {
       // 发生监管\联动\反馈\屏蔽
       msgSettings = {
@@ -335,25 +345,22 @@ export default class Messages extends PureComponent {
         },
         items: [
           {
-            value:
-              +deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱',
+            name: '系统类型',
+            value: +deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱',
           },
-          {
-            value:
-              virtualName + '-' + paramName + (condition === '>=' ? '高于' : '低于') + '报警值',
-          },
+          { value: virtualName + '-' + paramName + (condition === '>=' ? '高于' : '低于') + '报警值' },
         ],
       },
       '37': {
-        // 水系统恢复
+        // 水系统报警恢复
         onClick: () => {
           handleClickWater(2, [101, 102, 103].indexOf(+deviceType), deviceId, companyId);
           // handleViewWater([101, 102, 103].indexOf(+deviceType), deviceType);
         },
         items: [
           {
-            value:
-              +deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱',
+            name: '系统类型',
+            value: +deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱',
           },
           { value: virtualName + '恢复正常' },
         ],
@@ -489,6 +496,7 @@ export default class Messages extends PureComponent {
           otherTitle: `【${item === 48 ? '水系统失联' : '水系统失联恢复'}】`,
           items: [
             {
+              name: '系统类型',
               value:
                 +deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱',
             },
@@ -497,17 +505,20 @@ export default class Messages extends PureComponent {
         },
       };
     });
-    [45].forEach(item => {
+    [45, 54, 55].forEach(item => {
       // 可燃气体报警恢复
       msgSettings = {
         ...msgSettings,
         [item.toString()]: {
           onClick: () => { handleClickMsgFlow(param, 2, 0, ...restParams); },
-          otherTitle: `【可燃气体报警恢复】`,
+          otherTitle: `【${gasTitle[type]}】`,
           items: [{ name: '所在区域', value: area }, { name: '所在位置', value: location }],
         },
       };
     });
+
+    if (!showTypes.includes(+type))
+      return null;
 
     const msgClassName = `msgItem${cssType ? cssType : ''}`;
     const innerClassName = cssType ? styles.msgInner : undefined;

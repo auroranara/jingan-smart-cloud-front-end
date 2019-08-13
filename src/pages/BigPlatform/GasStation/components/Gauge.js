@@ -7,8 +7,9 @@ import { MAX_MPa as MAX } from '../utils';
 export default class Gauge extends PureComponent {
   getOption = data => {
     const {
+      isOverhaul,
       value,
-      status,
+      status: sts,
       unit,
       deviceParamsInfo: {
         minValue,
@@ -23,6 +24,7 @@ export default class Gauge extends PureComponent {
     const normalMin = Number.parseFloat(normalLower);
     const normalMax = Number.parseFloat(normalUpper);
 
+    const status = isOverhaul ? -1 : sts;
     let color, itemColor;
     if (status > 0) {
       color = '#f83329';
@@ -68,12 +70,12 @@ export default class Gauge extends PureComponent {
             width: 4,
           },
           detail: {
-            formatter: `{a|${status < 0 || isNaN(value) ? '--' : value}}\n{b|${name}}`,
+            formatter: `{a|${isOverhaul ? '检修中' : status < 0 || isNaN(value) ? '--' : value}}\n{b|${name}}`,
             offsetCenter: [0, '65%'],
             rich: {
               a: {
                 lineHeight: 48,
-                fontSize: 24,
+                fontSize: isOverhaul ? 18 : 24,
                 color,
               },
               b: {

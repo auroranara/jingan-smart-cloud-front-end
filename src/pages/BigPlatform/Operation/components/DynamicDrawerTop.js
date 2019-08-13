@@ -197,12 +197,12 @@ export default class DynamicDrawerTop extends Component {
                 onClick={this.handleCameraClick}
                 className={styles.cameraContainer}
                 style={{
-                  top: '10px',
-                  right: '110px',
+                //   top: '10px',
+                //   right: '110px',
                   backgroundImage: `url(${cameraImg})`,
-                  backgroundSize: '100%',
-                  backgroundPosition: 'center center',
-                  backgroundRepeat: 'no-repeat',
+                //   backgroundSize: '100%',
+                //   backgroundPosition: 'center center',
+                //   backgroundRepeat: 'no-repeat',
                 }}
               />
             )}

@@ -27,7 +27,7 @@ import {
   TaskCount,
   FireCount,
 } from './components/Components';
-import { PAGE_SIZE } from './utils';
+import { GAS, PAGE_SIZE } from './utils';
 import { WATER_TYPES, getWaterTotal } from '@/pages/BigPlatform/GasStation/utils';
 import { redLight as iconFire } from '@/pages/BigPlatform/GasStation/imgs/links';
 import iconFault from '@/assets/icon-fault-msg.png';
@@ -37,6 +37,7 @@ const OPE = 3; // 运营或管理员unitType对应值
 const COMPANY_ALL = 'companyIdAll';
 const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 48, 49];
 // const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 48, 49];
+const SHOW_TYPES = [1, 2, 3, 4, 7, 9, 11, 13, 14, 15, 16, 17, 18, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 54, 55];
 const ALARM_TYPES = [7, 32, 36, 38, 39];
 
 // websocket配置
@@ -851,7 +852,6 @@ export default class Operation extends PureComponent {
     param,
     type,
     flow,
-    // repeat,
     cameraMessage = [],
     occurData,
     cId
@@ -945,10 +945,17 @@ export default class Operation extends PureComponent {
       });
     }
 
+    this.locateCompany(cId, type<=2 ? type <=1 ? type + 1 : GAS : undefined);
+  };
+
+  locateCompany = (cId, deviceType) => {
+    const {
+      operation: { unitList },
+    } = this.props;
+
     const detail = unitList.find(({ companyId }) => companyId === cId);
-    if (type <= 1) {
-      this.setState({ deviceType: type + 1 });
-    }
+    if (deviceType !== undefined)
+      this.setState({ deviceType });
     this.showUnitDetail(detail);
     this.hideTooltip();
   };
@@ -991,6 +998,7 @@ export default class Operation extends PureComponent {
       else
         console.log('未找到设备对应的数据');
     });
+    this.locateCompany(companyId, 3);
   };
 
   showElectricalFireMonitoringDetailDrawer = (
@@ -1029,6 +1037,7 @@ export default class Operation extends PureComponent {
         item && this.showWaterItemDrawer(item);
       },
     });
+    this.locateCompany(companyId, 5);
   };
 
   showWaterItemDrawer = (item, tabIndex) => {
@@ -1217,6 +1226,7 @@ export default class Operation extends PureComponent {
           model={this.props.operation}
           phoneVisible={phoneVisible}
           typeClickList={TYPE_CLICK_LIST}
+          showTypes={SHOW_TYPES}
           handleParentChange={this.handleMapParentChange}
           handleClickMsgFlow={this.handleClickMsgFlow}
           // handleViewDangerDetail={this.handleViewDangerDetail}

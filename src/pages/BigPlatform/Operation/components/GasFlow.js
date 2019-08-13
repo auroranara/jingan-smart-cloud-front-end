@@ -36,7 +36,7 @@ export default function GasFlow(props) {
       hideInfo
       read={read}
       unread={unread}
-      msgType={msgFlow}
+      msgType={0}
       msgSendLoading={messageInformListLoading}
     />
   );

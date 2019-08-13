@@ -5,7 +5,7 @@ import styles from './WaterItemDrawer.less';
 import { DrawerContainer } from '@/pages/BigPlatform/NewFireControl/components/Components';
 // import ElectricityCharts from '@/pages/BigPlatform/ElectricityMonitor/components/ElectricityCharts';
 import { Gauge, LossDevice, OvSelect, TrendChart, WaterTank } from '../components/Components';
-import { DATE_OPTIONS, isGauge } from '../utils';
+import { DATE_OPTIONS, OVERHAUL, isGauge } from '../utils';
 // import cameraIcon from '../../ElectricityMonitor/imgs/camera.png';
 
 // const VIDEO_STYLE = {
@@ -62,13 +62,14 @@ export default class WaterItemDrawer extends PureComponent {
     // const { videoVisible, videoKeyId } = this.state;
     const { dateType } = this.state;
 
-    const { area, location, companyName, deviceName, deviceDataList } = item;
+    const { area, location, companyName, deviceName, deviceDataList, status } = item;
     const title = `${deviceName}(${area}${location})${showCompany && companyName ? `-${companyName}` : ''}`;
     const dataItem = deviceDataList && deviceDataList[0] ? deviceDataList[0] : undefined;
     let child = <LossDevice />;
 
+    const isOverhaul = +status === OVERHAUL;
     if (dataItem)
-      child = isGauge(tabItem, dataItem.unit) ? <Gauge data={dataItem} /> : <WaterTank data={dataItem} />;
+      child = isGauge(tabItem, dataItem.unit) ? <Gauge data={dataItem} isOverhaul={isOverhaul} /> : <WaterTank data={dataItem} isisOverhaul={isOverhaul} />;
 
     const left = (
       <Fragment>
