@@ -108,6 +108,7 @@ export default class SafetyIndexDrawer extends PureComponent {
       type: 'unitSafety/fetchSafetyCheckList',
       payload: {
         companyId,
+        itemType: 2,
       },
     });
   }
