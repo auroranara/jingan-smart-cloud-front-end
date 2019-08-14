@@ -357,7 +357,11 @@ export default class PointManagement extends Component {
           <FormItem label="部件型号" {...formItemLayout}>
             {getFieldDecorator('componentModel', {
               validateTrigger: 'onBlur',
-              rules: [{ required: true, message: '请输入部件型号' }],
+              rules: [
+                { required: true, message: '请输入部件型号' },
+                { message: '请勿输入特殊字符', pattern: /^[\u4e00-\u9fa5a-z0-9]+$/gi },
+                { message: '输入限制为100个字符', max: 100 },
+              ],
             })(
               <Input placeholder="请输入部件型号" />
             )}
@@ -365,7 +369,11 @@ export default class PointManagement extends Component {
           <FormItem label="生产企业名称" {...formItemLayout}>
             {getFieldDecorator('createCompanyName', {
               validateTrigger: 'onBlur',
-              rules: [{ required: true, message: '请输入生产企业名称' }],
+              rules: [
+                { required: true, message: '请输入生产企业名称' },
+                { message: '请勿输入特殊字符', pattern: /^[\u4e00-\u9fa5a-z0-9]+$/gi },
+                { message: '输入限制为100个字符', max: 100 },
+              ],
             })(
               <Input placeholder="请输入生产企业名称" />
             )}
@@ -384,7 +392,11 @@ export default class PointManagement extends Component {
           <FormItem label="安装位置" {...formItemLayout}>
             {getFieldDecorator('installAddress', {
               validateTrigger: 'onBlur',
-              rules: [{ required: true, message: '请输入安装位置' }],
+              rules: [
+                { required: true, message: '请输入安装位置' },
+                { message: '请勿输入特殊字符', pattern: /^[\u4e00-\u9fa5a-z0-9]+$/gi },
+                { message: '输入限制为100个字符', max: 100 },
+              ],
             })(
               <Input placeholder="请输入安装位置" />
             )}
