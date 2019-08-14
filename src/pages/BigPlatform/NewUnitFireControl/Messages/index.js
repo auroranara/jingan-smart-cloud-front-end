@@ -340,7 +340,7 @@ export default class Messages extends PureComponent {
       '36': {
         // 水系统报警
         onClick: () => {
-          handleClickWater(0, [101, 102, 103].indexOf(+deviceType), deviceId, companyId);
+          handleClickWater(0, [101, 102, 103].indexOf(+deviceType), deviceId, companyId, cameraMessage);
           // handleViewWater([101, 102, 103].indexOf(+deviceType), deviceType);
         },
         items: [
@@ -354,7 +354,7 @@ export default class Messages extends PureComponent {
       '37': {
         // 水系统报警恢复
         onClick: () => {
-          handleClickWater(2, [101, 102, 103].indexOf(+deviceType), deviceId, companyId);
+          handleClickWater(2, [101, 102, 103].indexOf(+deviceType), deviceId, companyId, cameraMessage);
           // handleViewWater([101, 102, 103].indexOf(+deviceType), deviceType);
         },
         items: [
@@ -461,7 +461,7 @@ export default class Messages extends PureComponent {
         ...msgSettings,
         [item.toString()]: {
           onClick: () => {
-            handleClickElecMsg(deviceId, paramName, companyId);
+            handleClickElecMsg(deviceId, paramName, companyId, cameraMessage);
           },
           otherTitle: `【${elecMsg[item].elecTitle}】`,
           items: [
@@ -491,7 +491,7 @@ export default class Messages extends PureComponent {
         ...msgSettings,
         [item.toString()]: {
           onClick: () => {
-            handleClickWater(item === 48 ? 1 : 2, [101, 102, 103].indexOf(+deviceType), deviceId, companyId);
+            handleClickWater(item === 48 ? 1 : 2, [101, 102, 103].indexOf(+deviceType), deviceId, companyId, cameraMessage);
           },
           otherTitle: `【${item === 48 ? '水系统失联' : '水系统失联恢复'}】`,
           items: [

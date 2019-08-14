@@ -4,7 +4,7 @@ import styles from './WaterItemDrawer.less';
 // import VideoPlay from '@/pages/BigPlatform/NewFireControl/section/VideoPlay';
 import { DrawerContainer } from '@/pages/BigPlatform/NewFireControl/components/Components';
 // import ElectricityCharts from '@/pages/BigPlatform/ElectricityMonitor/components/ElectricityCharts';
-import { Gauge, LossDevice, OvSelect, TrendChart, WaterTank } from '../components/Components';
+import { Gauge, LossDevice, OvSelect, TrendChart, UnitInfo, WaterTank } from '../components/Components';
 import { DATE_OPTIONS, OVERHAUL, isGauge } from '../utils';
 // import cameraIcon from '../../ElectricityMonitor/imgs/camera.png';
 
@@ -58,12 +58,14 @@ export default class WaterItemDrawer extends PureComponent {
         total,
         // cameraList = [],
       },
+      handleCameraOpen,
     } = this.props;
     // const { videoVisible, videoKeyId } = this.state;
     const { dateType } = this.state;
 
     const { area, location, companyName, deviceName, deviceDataList, status } = item;
-    const title = `${deviceName}(${area}${location})${showCompany && companyName ? `-${companyName}` : ''}`;
+    const loc = `${area || ''}${location || ''}`;
+    let title = `${deviceName}${showCompany ? '' : `(${loc})`}`;
     const dataItem = deviceDataList && deviceDataList[0] ? deviceDataList[0] : undefined;
     let child = <LossDevice />;
 
@@ -74,6 +76,14 @@ export default class WaterItemDrawer extends PureComponent {
     const left = (
       <Fragment>
         <div className={styles.chartContainer}>
+          {showCompany && (
+            <UnitInfo
+              style={{ marginBottom: 15 }}
+              name={companyName}
+              location={loc}
+              clickCamera={handleCameraOpen}
+            />
+          )}
           <h3 className={styles.chartTitle}>
             <span className={styles.rectIcon} />
             实时监测数据

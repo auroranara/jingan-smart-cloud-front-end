@@ -78,6 +78,7 @@ export default function GasFlow(props) {
           time: start_date,
           cardItems:[
             { title: '处理报警' },
+            { name: '处理单位', value: startCompanyName },
             { name: '处理人员', value: `${startByName} ${vaguePhone(startByPhone, phoneVisible)}` },
           ],
         },
@@ -90,6 +91,7 @@ export default function GasFlow(props) {
               name: '处理人员',
               value: `${finishByName} ${vaguePhone(finishByPhone, phoneVisible)}`,
             },
+            { name: '处理单位', value: finishCompanyName },
             { name: '问题描述', value: disaster_desc },
             { imgs: sitePhotos || [] },
           ],

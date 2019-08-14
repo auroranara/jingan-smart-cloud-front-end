@@ -16,7 +16,7 @@ export default function UnitInfo(props) {
         <span className={styles.locationIcon} />
         区域位置：{location || NO_DATA}
       </p>
-      {clickCamera && <span className={styles.cameraIcon} />}
+      {clickCamera && <span onClick={clickCamera} className={styles.cameraIcon} />}
     </div>
   );
 }

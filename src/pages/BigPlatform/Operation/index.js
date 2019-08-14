@@ -491,10 +491,10 @@ export default class Operation extends PureComponent {
         handleClick = e => this.handleClickMsgFlow(param, 0, 0, ...restParams);
         break;
       case 32:
-        handleClick = e => this.handleClickElecMsg(deviceId, paramName, companyId);
+        handleClick = e => this.handleClickElecMsg(deviceId, paramName, companyId, cameraMessage);
         break;
       case 36:
-        handleClick = e => this.handleClickWater(undefined, WATER_TYPES.indexOf(deviceType), deviceId, companyId);
+        handleClick = e => this.handleClickWater(undefined, WATER_TYPES.indexOf(deviceType), deviceId, companyId, cameraMessage);
         break;
       case 38:
         handleClick = e => this.handleClickMsgFlow(param, 1, 0, ...restParams);
@@ -938,14 +938,26 @@ export default class Operation extends PureComponent {
       company: { ...param },
       videoList: cameraMessage,
     });
-    if (cameraMessage && cameraMessage.length && type !== 3) {
+
+    if (type !== 3)
+      this.setCameraMessage(cameraMessage);
+    // if (cameraMessage && cameraMessage.length && type !== 3) {
+    //   this.setState({
+    //     videoVisible: true,
+    //     videoKeyId: cameraMessage && cameraMessage[0] && cameraMessage[0].key_id,
+    //   });
+    // }
+
+    this.locateCompany(cId, type<=2 ? type <=1 ? type + 1 : GAS : undefined);
+  };
+
+  setCameraMessage = cameraMessage => {
+    if (cameraMessage && cameraMessage.length) {
       this.setState({
         videoVisible: true,
         videoKeyId: cameraMessage && cameraMessage[0] && cameraMessage[0].key_id,
       });
     }
-
-    this.locateCompany(cId, type<=2 ? type <=1 ? type + 1 : GAS : undefined);
   };
 
   locateCompany = (cId, deviceType) => {
@@ -989,7 +1001,7 @@ export default class Operation extends PureComponent {
     this.setState({ fireVideoVisible: true });
   };
 
-  handleClickElecMsg = (deviceId, paramName, companyId) => {
+  handleClickElecMsg = (deviceId, paramName, companyId, cameraMessage) => {
     this.fetchElecDeviceList(companyId, distributionBoxClassification => {
       const { alarm = [], loss = [], normal = [] } = distributionBoxClassification;
       const data = [...alarm, ...loss, ...normal].filter(({ id }) => id === deviceId)[0];
@@ -998,6 +1010,7 @@ export default class Operation extends PureComponent {
       else
         console.log('未找到设备对应的数据');
     });
+    this.setCameraMessage(cameraMessage);
     this.locateCompany(companyId, 3);
   };
 
@@ -1019,7 +1032,7 @@ export default class Operation extends PureComponent {
     });
   };
 
-  handleClickWater = (index, typeIndex, deviceId, companyId) => {
+  handleClickWater = (index, typeIndex, deviceId, companyId, cameraMessage) => {
     // const { waterTabItem } = this.state;
     const { dispatch } = this.props;
     dispatch({
@@ -1037,6 +1050,7 @@ export default class Operation extends PureComponent {
         item && this.showWaterItemDrawer(item);
       },
     });
+    this.setCameraMessage(cameraMessage);
     this.locateCompany(companyId, 5);
   };
 
@@ -1138,6 +1152,7 @@ export default class Operation extends PureComponent {
     };
 
     const unitList = unitLists[deviceType];
+    const handleCameraOpen = videoList && videoList.length ? this.handleVideoOpen : null;
 
     return (
       <BigPlatformLayout
@@ -1289,7 +1304,7 @@ export default class Operation extends PureComponent {
           monitorData={{ item: gasRealtimeData, history: gasHistory }}
           orderData={{ order: workOrderDetail, item: gasRealtimeData, phoneVisible, headProps, messageInformList, messageInformListLoading, gasTotal }}
           visible={gasDrawerVisible}
-          handleCameraOpen={videoList && videoList.length ? this.handleVideoOpen : null}
+          handleCameraOpen={handleCameraOpen}
           fetchGasTotal={this.fetchGasTotal}
           onClose={() => this.handleDrawerVisibleChange('gas')}
         />
@@ -1306,12 +1321,14 @@ export default class Operation extends PureComponent {
           visible={electricalFireMonitoringDetailDrawerVisible}
           value={electricalFireMonitoringDetailDrawerValue}
           activeKey={electricalFireMonitoringDetailDrawerActiveKey}
+          handleCameraOpen={handleCameraOpen}
           onClose={this.hideElectricalFireMonitoringDetailDrawer}
         />
         <WaterItemDrawer
           showCompany
           visible={waterItemDrawerVisible}
           fetchAlarmCount={this.fetchAlarmCount}
+          handleCameraOpen={handleCameraOpen}
           handleClose={this.hdieWaterItemDrawer}
           data={{ item: waterItem, history: waterHistory, total: getWaterTotal(waterAlarmCount) }}
         />
