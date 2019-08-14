@@ -336,6 +336,7 @@ export default class GridPointEdit extends PureComponent {
       rfidVisible: false,
     });
   };
+  
   onChangeCheckBox = e => {
     const {
       dispatch,
@@ -348,6 +349,7 @@ export default class GridPointEdit extends PureComponent {
       type: 'riskPointManage/fetchLabelDict',
       payload: {
         companyId,
+        itemType: 1,
         noBind: isChecked === true ? 1 : '',
         pageNum: 1,
         pageSize: 10,
