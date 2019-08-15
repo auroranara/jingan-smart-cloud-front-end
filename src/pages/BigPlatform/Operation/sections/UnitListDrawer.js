@@ -39,12 +39,18 @@ export default class UnitListDrawer extends PureComponent {
     this.setState({ searchValue: '' });
   };
 
+  genCardClick = item => e => {
+    const { showUnitDetail } = this.props;
+    showUnitDetail(item);
+    this.handleClose();
+  };
+
   render() {
     const {
       visible,
       list=[],
       deviceType,
-      showUnitDetail,
+      // showUnitDetail,
       handleCompanyClick,
       // handleAlarmClick,
       // handleFaultClick,
@@ -92,7 +98,7 @@ export default class UnitListDrawer extends PureComponent {
               phone={saferPhone || NO_DATA}
               style={{ cursor: 'pointer' }}
               clickName={ count ? e => handleCompanyClick(companyId) : null }
-              onClick={e => showUnitDetail(item)}
+              onClick={this.genCardClick(item)}
               infoStyle={INFO_STYLE}
               info={
                 <Fragment>

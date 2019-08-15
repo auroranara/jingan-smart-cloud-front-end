@@ -5,8 +5,11 @@ export function getMsgIcon(type, list) {
 }
 
 export function vaguePhone(phone, phoneVisible) {
+  if (!phone)
+    return '';
+
   const newPhone =
-    phoneVisible || !phone ? phone : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+    phoneVisible ? phone : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
   return newPhone;
 }
 

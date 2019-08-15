@@ -12,7 +12,7 @@ export default class GasDrawer extends PureComponent {
   };
 
   render() {
-    const { visible, monitorData, orderData, handleVideoOpen, fetchGasTotal, ...restProps } = this.props;
+    const { visible, monitorData, orderData, handleCameraOpen, fetchGasTotal, ...restProps } = this.props;
     const { index } = this.state;
 
     const { order, item } = orderData;
@@ -24,7 +24,7 @@ export default class GasDrawer extends PureComponent {
         <UnitInfo
           name={companyName}
           location={`${area || ''}${location || ''}`}
-          clickCamera={handleVideoOpen}
+          clickCamera={handleCameraOpen}
         />
         <DrawerSwitchHead index={index} onChange={this.handleChange} />
         <div className={styles.gasContainer}>
