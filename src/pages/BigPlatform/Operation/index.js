@@ -864,7 +864,9 @@ export default class Operation extends PureComponent {
     } = this.props;
 
     const { deviceId } = param;
+    this.setState({ company: { ...param } });
     ['deviceId', 'companyName', 'unitTypeName', 'component'].forEach(p => delete param[p]);
+
     const reportTypes = [1, 4, 3, 2];
     this.hiddeAllPopup();
     this.fetchMessageInformList({ id: param.id, dataId: param.dataId });
@@ -935,8 +937,6 @@ export default class Operation extends PureComponent {
       [DRAWER_VISIBLES[type]]: true,
       msgFlow: flow,
       dynamicType: type,
-      company: { ...param },
-      videoList: cameraMessage,
     });
 
     if (type !== 3)
@@ -955,7 +955,14 @@ export default class Operation extends PureComponent {
     if (cameraMessage && cameraMessage.length) {
       this.setState({
         videoVisible: true,
+        videoList: cameraMessage,
         videoKeyId: cameraMessage && cameraMessage[0] && cameraMessage[0].key_id,
+      });
+    } else {
+      this.setState({
+        // videoVisible: false,
+        videoList: [],
+        videoKeyId: '',
       });
     }
   };
