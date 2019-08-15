@@ -336,7 +336,7 @@ export default class GridPointEdit extends PureComponent {
       rfidVisible: false,
     });
   };
-  
+
   onChangeCheckBox = e => {
     const {
       dispatch,
@@ -809,7 +809,7 @@ export default class GridPointEdit extends PureComponent {
                     })(<Input placeholder="请选择监督点位置" disabled />)}
                   </Form.Item>
                 </Col>
-                <Col span={2} style={{ position: 'relative', marginTop: '3%' }}>
+                <Col span={2} style={{ position: 'relative', marginTop: '2.6%' }}>
                   <Button onClick={this.handleFocus}>选择</Button>
                 </Col>
                 <Col span={8}>
@@ -836,21 +836,22 @@ export default class GridPointEdit extends PureComponent {
         </Form>
 
         <Form style={{ marginTop: 30 }}>
-          <Form.Item {...formItemLayout} label={fieldLabels.checkContent} />
-          <Button
-            type="primary"
-            style={{ float: 'right', marginLeft: 10, marginBottom: 10 }}
-            onClick={this.handleDeleteContent}
-          >
-            删除
-          </Button>
-          <Button
-            type="primary"
-            style={{ float: 'right', marginBottom: 10 }}
-            onClick={this.handleContentModal}
-          >
-            新增
-          </Button>
+          <Form.Item {...formItemLayout} label={fieldLabels.checkContent}>
+            <Button
+              type="primary"
+              style={{ marginLeft: -15, marginBottom: 10, padding: '0 12px' }}
+              onClick={this.handleContentModal}
+            >
+              新增
+            </Button>
+            <Button
+              type="primary"
+              style={{ marginLeft: 10, marginBottom: 10, padding: '0 12px' }}
+              onClick={this.handleDeleteContent}
+            >
+              删除
+            </Button>
+          </Form.Item>
           <Divider style={{ marginTop: '-20px' }} />
           {this.renderCheckTable()}
         </Form>
