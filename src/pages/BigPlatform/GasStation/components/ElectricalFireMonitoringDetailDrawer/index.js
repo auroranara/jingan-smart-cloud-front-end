@@ -4,10 +4,12 @@ import { connect } from 'dva';
 import classNames from 'classnames';
 import moment from 'moment';
 import ReactEcharts from "echarts-for-react";
+
 import CustomDrawer from '@/jingan-components/CustomDrawer';
 import CustomSelect from '@/jingan-components/CustomSelect';
 import noTrend from '@/pages/BigPlatform/Gas/imgs/no-monitor.png';
 import styles from './index.less';
+import { UnitInfo } from '../Components';
 
 const STATE = {
   activeKey: '漏电电流',
@@ -516,7 +518,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       showCompany,
       visible,
       onClose,
-      // loading,
+      handleCameraOpen,
       value,
     } = this.props;
     const { name, location, companyName, params=[] } = value || {};
@@ -528,7 +530,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
           <Fragment>
             <div className={styles.titleIcon} />
             <div className={styles.title}>
-              {location}{showCompany && companyName ? `-${companyName}` : ''}
+              {location}
             </div>
           </Fragment>
         }
@@ -547,6 +549,14 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
         }}
       >
         <div className={styles.container}>
+          {showCompany && (
+            <UnitInfo
+              style={{ marginBottom: 15 }}
+              name={companyName}
+              location={location}
+              clickCamera={handleCameraOpen}
+            />
+          )}
           <div className={styles.alarmParamsTitleWrapper}>
             <div className={styles.alarmParamsTitle}>{alarmParams.length > 0 ? '报警参数' : '数据监测'}</div>
             {alarmParams.map(({ name }) => (

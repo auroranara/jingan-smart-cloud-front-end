@@ -27,7 +27,7 @@ import {
   TaskCount,
   FireCount,
 } from './components/Components';
-import { PAGE_SIZE } from './utils';
+import { GAS, PAGE_SIZE } from './utils';
 import { WATER_TYPES, getWaterTotal } from '@/pages/BigPlatform/GasStation/utils';
 import { redLight as iconFire } from '@/pages/BigPlatform/GasStation/imgs/links';
 import iconFault from '@/assets/icon-fault-msg.png';
@@ -37,6 +37,7 @@ const OPE = 3; // 运营或管理员unitType对应值
 const COMPANY_ALL = 'companyIdAll';
 const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 48, 49];
 // const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 48, 49];
+const SHOW_TYPES = [1, 2, 3, 4, 7, 9, 11, 13, 14, 15, 16, 17, 18, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 54, 55];
 const ALARM_TYPES = [7, 32, 36, 38, 39];
 
 // websocket配置
@@ -490,10 +491,10 @@ export default class Operation extends PureComponent {
         handleClick = e => this.handleClickMsgFlow(param, 0, 0, ...restParams);
         break;
       case 32:
-        handleClick = e => this.handleClickElecMsg(deviceId, paramName, companyId);
+        handleClick = e => this.handleClickElecMsg(deviceId, paramName, companyId, cameraMessage);
         break;
       case 36:
-        handleClick = e => this.handleClickWater(undefined, WATER_TYPES.indexOf(deviceType), deviceId, companyId);
+        handleClick = e => this.handleClickWater(undefined, WATER_TYPES.indexOf(deviceType), deviceId, companyId, cameraMessage);
         break;
       case 38:
         handleClick = e => this.handleClickMsgFlow(param, 1, 0, ...restParams);
@@ -851,7 +852,6 @@ export default class Operation extends PureComponent {
     param,
     type,
     flow,
-    // repeat,
     cameraMessage = [],
     occurData,
     cId
@@ -864,7 +864,9 @@ export default class Operation extends PureComponent {
     } = this.props;
 
     const { deviceId } = param;
+    this.setState({ company: { ...param } });
     ['deviceId', 'companyName', 'unitTypeName', 'component'].forEach(p => delete param[p]);
+
     const reportTypes = [1, 4, 3, 2];
     this.hiddeAllPopup();
     this.fetchMessageInformList({ id: param.id, dataId: param.dataId });
@@ -935,20 +937,44 @@ export default class Operation extends PureComponent {
       [DRAWER_VISIBLES[type]]: true,
       msgFlow: flow,
       dynamicType: type,
-      company: { ...param },
-      videoList: cameraMessage,
     });
-    if (cameraMessage && cameraMessage.length && type !== 3) {
+
+    if (type !== 3)
+      this.setCameraMessage(cameraMessage);
+    // if (cameraMessage && cameraMessage.length && type !== 3) {
+    //   this.setState({
+    //     videoVisible: true,
+    //     videoKeyId: cameraMessage && cameraMessage[0] && cameraMessage[0].key_id,
+    //   });
+    // }
+
+    this.locateCompany(cId, type<=2 ? type <=1 ? type + 1 : GAS : undefined);
+  };
+
+  setCameraMessage = cameraMessage => {
+    if (cameraMessage && cameraMessage.length) {
       this.setState({
         videoVisible: true,
+        videoList: cameraMessage,
         videoKeyId: cameraMessage && cameraMessage[0] && cameraMessage[0].key_id,
       });
+    } else {
+      this.setState({
+        // videoVisible: false,
+        videoList: [],
+        videoKeyId: '',
+      });
     }
+  };
+
+  locateCompany = (cId, deviceType) => {
+    const {
+      operation: { unitList },
+    } = this.props;
 
     const detail = unitList.find(({ companyId }) => companyId === cId);
-    if (type <= 1) {
-      this.setState({ deviceType: type + 1 });
-    }
+    if (deviceType !== undefined)
+      this.setState({ deviceType });
     this.showUnitDetail(detail);
     this.hideTooltip();
   };
@@ -982,7 +1008,7 @@ export default class Operation extends PureComponent {
     this.setState({ fireVideoVisible: true });
   };
 
-  handleClickElecMsg = (deviceId, paramName, companyId) => {
+  handleClickElecMsg = (deviceId, paramName, companyId, cameraMessage) => {
     this.fetchElecDeviceList(companyId, distributionBoxClassification => {
       const { alarm = [], loss = [], normal = [] } = distributionBoxClassification;
       const data = [...alarm, ...loss, ...normal].filter(({ id }) => id === deviceId)[0];
@@ -991,6 +1017,8 @@ export default class Operation extends PureComponent {
       else
         console.log('未找到设备对应的数据');
     });
+    this.setCameraMessage(cameraMessage);
+    this.locateCompany(companyId, 3);
   };
 
   showElectricalFireMonitoringDetailDrawer = (
@@ -1011,7 +1039,7 @@ export default class Operation extends PureComponent {
     });
   };
 
-  handleClickWater = (index, typeIndex, deviceId, companyId) => {
+  handleClickWater = (index, typeIndex, deviceId, companyId, cameraMessage) => {
     // const { waterTabItem } = this.state;
     const { dispatch } = this.props;
     dispatch({
@@ -1029,6 +1057,8 @@ export default class Operation extends PureComponent {
         item && this.showWaterItemDrawer(item);
       },
     });
+    this.setCameraMessage(cameraMessage);
+    this.locateCompany(companyId, 5);
   };
 
   showWaterItemDrawer = (item, tabIndex) => {
@@ -1129,6 +1159,7 @@ export default class Operation extends PureComponent {
     };
 
     const unitList = unitLists[deviceType];
+    const handleCameraOpen = videoList && videoList.length ? this.handleVideoOpen : null;
 
     return (
       <BigPlatformLayout
@@ -1217,6 +1248,7 @@ export default class Operation extends PureComponent {
           model={this.props.operation}
           phoneVisible={phoneVisible}
           typeClickList={TYPE_CLICK_LIST}
+          showTypes={SHOW_TYPES}
           handleParentChange={this.handleMapParentChange}
           handleClickMsgFlow={this.handleClickMsgFlow}
           // handleViewDangerDetail={this.handleViewDangerDetail}
@@ -1279,7 +1311,7 @@ export default class Operation extends PureComponent {
           monitorData={{ item: gasRealtimeData, history: gasHistory }}
           orderData={{ order: workOrderDetail, item: gasRealtimeData, phoneVisible, headProps, messageInformList, messageInformListLoading, gasTotal }}
           visible={gasDrawerVisible}
-          handleCameraOpen={videoList && videoList.length ? this.handleVideoOpen : null}
+          handleCameraOpen={handleCameraOpen}
           fetchGasTotal={this.fetchGasTotal}
           onClose={() => this.handleDrawerVisibleChange('gas')}
         />
@@ -1296,12 +1328,14 @@ export default class Operation extends PureComponent {
           visible={electricalFireMonitoringDetailDrawerVisible}
           value={electricalFireMonitoringDetailDrawerValue}
           activeKey={electricalFireMonitoringDetailDrawerActiveKey}
+          handleCameraOpen={handleCameraOpen}
           onClose={this.hideElectricalFireMonitoringDetailDrawer}
         />
         <WaterItemDrawer
           showCompany
           visible={waterItemDrawerVisible}
           fetchAlarmCount={this.fetchAlarmCount}
+          handleCameraOpen={handleCameraOpen}
           handleClose={this.hdieWaterItemDrawer}
           data={{ item: waterItem, history: waterHistory, total: getWaterTotal(waterAlarmCount) }}
         />

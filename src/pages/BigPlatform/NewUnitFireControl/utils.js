@@ -1,3 +1,9 @@
+export const WATER_LABELS = {
+  101: '消火栓',
+  102: '喷淋',
+  103: '水池/水箱',
+};
+
 export function getMsgIcon(type, list) {
   const target = list.find(({ types }) => types.includes(+type));
   if (target)
@@ -5,8 +11,11 @@ export function getMsgIcon(type, list) {
 }
 
 export function vaguePhone(phone, phoneVisible) {
+  if (!phone)
+    return '';
+
   const newPhone =
-    phoneVisible || !phone ? phone : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+    phoneVisible ? phone : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
   return newPhone;
 }
 

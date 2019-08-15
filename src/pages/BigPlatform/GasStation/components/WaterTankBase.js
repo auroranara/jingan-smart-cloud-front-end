@@ -168,7 +168,7 @@ export default class WaterTankBase extends PureComponent {
   }
 
   drawTriangle() {
-    const { status, dy=0, value, unit, size: [w, h] } = this.props;
+    const { isOverhaul, status, dy=0, value, unit, size: [w, h] } = this.props;
 
     const max = this.maxDeep;
     const ctx = this.ctx;
@@ -178,7 +178,7 @@ export default class WaterTankBase extends PureComponent {
     const a = th * 1.414 / 2;
     const up = [x + th, y - a];
     const down = [x + th, y + a];
-    const color = getStatusColor(status, COLORS);
+    const color = getStatusColor(isOverhaul ? -1 : status, COLORS);
 
     ctx.save();
     ctx.beginPath();
@@ -188,12 +188,18 @@ export default class WaterTankBase extends PureComponent {
     ctx.lineTo(...down);
     ctx.closePath();
     ctx.fill();
-    ctx.font = '14px microsoft yahei';
-    ctx.fillStyle = getStatusColor(status, [GREY, WHITE, RED]);
-    ctx.fillText(`${status === LOSS ? '-' : value} ${unit}`, target[0] + 25, target[1] + 10);
-    ctx.fillStyle = WHITE;
-    ctx.font = '12px microsoft yahei';
-    ctx.fillText('当前水位', target[0] + 25, target[1] - 8);
+    if (isOverhaul) {
+      ctx.font = '14px microsoft yahei';
+      ctx.fillStyle = GREY;
+      ctx.fillText('检修中', target[0] + 25, target[1] + 5);
+    } else {
+      ctx.font = '14px microsoft yahei';
+      ctx.fillStyle = getStatusColor(status, [GREY, WHITE, RED]);
+      ctx.fillText(`${status === LOSS ? '-' : value} ${unit}`, target[0] + 25, target[1] + 10);
+      ctx.font = '12px microsoft yahei';
+      ctx.fillStyle = WHITE;
+      ctx.fillText('当前水位', target[0] + 25, target[1] - 8);
+    }
     ctx.restore();
   }
 

@@ -27,6 +27,7 @@ export {
   WaterCards,
 } from '@/pages/BigPlatform/NewUnitFireControl/components/Components';
 
+export { UnitInfo } from '@/pages/BigPlatform/Operation/components/Components';
 
 export { default as ElectricalFireMonitoring } from './ElectricalFireMonitoring';
 export { default as ElectricalFireMonitoringDrawer } from './ElectricalFireMonitoringDrawer';

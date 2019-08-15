@@ -2,6 +2,8 @@ import moment from 'moment';
 
 export const DATE_OPTIONS = ['一周', '一月', '三月', '半年', '一年'].map((desc, i) => ({ value: i + 1, desc: `最近${desc}` }));
 
+export const OVERHAUL = -1;
+
 export const MAX_MPa = 2;
 export const MAX_M = 10;
 export const WATER_TYPES = [101, 102, 103];
