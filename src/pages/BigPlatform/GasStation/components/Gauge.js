@@ -5,9 +5,8 @@ import styles from './Gauge.less';
 import { MAX_MPa as MAX } from '../utils';
 
 export default class Gauge extends PureComponent {
-  getOption = data => {
+  getOption = (data, isOverhaul) => {
     const {
-      isOverhaul,
       value,
       status: sts,
       unit,
@@ -94,12 +93,12 @@ export default class Gauge extends PureComponent {
   }
 
   render() {
-    const { data, gaugeStyle, ...restProps } = this.props;
+    const { isOverhaul, data, gaugeStyle, ...restProps } = this.props;
     return (
       <div className={styles.container} {...restProps}>
         <ReactEcharts
           style={{ width: 200, height: 200, ...gaugeStyle }}
-          option={this.getOption(data)}
+          option={this.getOption(data, isOverhaul)}
         />
       </div>
     )
