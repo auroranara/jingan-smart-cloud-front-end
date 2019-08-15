@@ -250,20 +250,9 @@ export default class Operation extends PureComponent {
         this.fetchStatistics();
         this.fetchMapUnitList(companyId);
 
-        dispatch({
-          type: 'operation/fetchWebsocketScreenMessage',
-          payload: data,
-          success: result => {
-            const { type, enterSign, isOver } = result;
+        this.handleShowFireMsg(data.data);
 
-            if (ALARM_TYPES.includes(+type)) {
-              // 水系统，电气火灾不用判断isOver，主机和独立烟感需要判断isOver是否为0
-              if ([32, 36].includes(type) || (+isOver === 0 && (type === 7 && enterSign === '1' || type !== 7)))
-                this.showFireMsg(result);
-              this.fetchScreenMessage();
-            }
-          },
-        });
+        this.fetchScreenMessage();
       } catch (error) {
         console.log('error', error);
       }
@@ -272,6 +261,16 @@ export default class Operation extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
+  }
+
+  handleShowFireMsg = result => {
+    const { type, enterSign, isOver } = result;
+
+    if (ALARM_TYPES.includes(+type)) {
+      // 水系统，电气火灾不用判断isOver，主机和独立烟感需要判断isOver是否为0
+      if ([32, 36].includes(type) || (+isOver === 0 && (type === 7 && enterSign === '1' || type !== 7)))
+        this.showFireMsg(result);
+    }
   }
 
   // componentDidUpdate(prevProps, prevState, snapshot) {
@@ -869,7 +868,10 @@ export default class Operation extends PureComponent {
 
     const reportTypes = [1, 4, 3, 2];
     this.hiddeAllPopup();
-    this.fetchMessageInformList({ id: param.id, dataId: param.dataId });
+    this.fetchMessageInformList({
+      id: param.id,
+      // dataId: param.dataId,
+    });
     if (type !== 3) {
       dispatch({
         type: 'operation/fetchCountNumAndTimeById',

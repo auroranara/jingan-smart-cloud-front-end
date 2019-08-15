@@ -132,3 +132,26 @@ export function getAllDevicesCount(item) {
     return prev;
   }, [0, [0, 0, 0, 0]]);
 }
+
+function isNumber(n) {
+  return typeof n === 'number' && !Number.isNaN(n);
+}
+
+export function sortByFactors(lst, factors) {
+  const list = Array.from(lst);
+  if (!factors || !factors.length)
+    return list;
+  const prop = factors[0];
+  list.sort((a, b) => {
+    const [a1, b1] = [a, b].map(o => o[prop]);
+    const [na, nb] = [a1, b1].map(s => Number.parseFloat(s));
+    if ([na, nb].every(isNumber))
+      return nb - na;
+    return a1.localeCompare(b1);
+  });
+  let flag;
+  for (let i = 0; i <= list.length; i++) {
+
+  }
+  return list;
+}
