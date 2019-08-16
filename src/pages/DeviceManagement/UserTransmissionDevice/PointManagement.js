@@ -337,7 +337,7 @@ export default class PointManagement extends Component {
               validateTrigger: 'onBlur',
               rules: [
                 { required: true, message: '请输入回路号' },
-                { message: '请输入数字', pattern: /^\d+$/ },
+                { message: '请输入1-9位数字', pattern: /^\d{1,9}$/ },
               ],
             })(
               <Input placeholder="请输入回路号" />
@@ -348,7 +348,7 @@ export default class PointManagement extends Component {
               validateTrigger: 'onBlur',
               rules: [
                 { required: true, message: '请输入部位号' },
-                { message: '请输入数字', pattern: /^\d+$/ },
+                { message: '请输入1-9位数字', pattern: /^\d{1,9}$/ },
               ],
             })(
               <Input placeholder="请输入部位号" />
@@ -383,7 +383,7 @@ export default class PointManagement extends Component {
               validateTrigger: 'onBlur',
               rules: [
                 { required: true, message: '请输入安装楼层' },
-                { message: '请输入数字', pattern: /^\d+$/ },
+                { message: '请输入1-9位数字', pattern: /^\d{1,9}$/ },
               ],
             })(
               <Input placeholder="请输入安装楼层" />

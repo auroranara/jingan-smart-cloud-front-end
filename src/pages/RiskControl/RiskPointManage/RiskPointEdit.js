@@ -1367,7 +1367,12 @@ export default class RiskPointEdit extends PureComponent {
 
         <Form style={{ marginTop: 8 }}>
           <Form.Item {...formItemLayout} label={fieldLabels.picLocation}>
-            <Button type="primary" onClick={this.handlePicInfoAdd} disabled={isDisabled}>
+            <Button
+              type="primary"
+              style={{ padding: '0 12px' }}
+              onClick={this.handlePicInfoAdd}
+              disabled={isDisabled}
+            >
               新增
             </Button>
           </Form.Item>
@@ -1375,21 +1380,22 @@ export default class RiskPointEdit extends PureComponent {
         </Form>
 
         <Form style={{ marginTop: 30 }}>
-          <Form.Item {...formItemLayout} label={fieldLabels.checkContent} />
-          <Button
-            type="primary"
-            style={{ float: 'right', marginLeft: 10, marginBottom: 10 }}
-            onClick={this.handleDeleteContent}
-          >
-            删除
-          </Button>
-          <Button
-            type="primary"
-            style={{ float: 'right', marginBottom: 10 }}
-            onClick={this.handleContentModal}
-          >
-            新增
-          </Button>
+          <Form.Item {...formItemLayout} label={fieldLabels.checkContent}>
+            <Button
+              type="primary"
+              style={{ marginBottom: 10, padding: '0 12px' }}
+              onClick={this.handleContentModal}
+            >
+              新增
+            </Button>
+            <Button
+              type="primary"
+              style={{ marginLeft: 10, marginBottom: 10, padding: '0 12px' }}
+              onClick={this.handleDeleteContent}
+            >
+              删除
+            </Button>
+          </Form.Item>
           <Divider style={{ marginTop: '-20px' }} />
           {this.renderCheckTable()}
         </Form>

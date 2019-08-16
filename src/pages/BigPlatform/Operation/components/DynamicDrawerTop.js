@@ -84,6 +84,7 @@ export default class DynamicDrawerTop extends Component {
       unread = [],
       msgType = 0, // 0 报警 1 故障
       msgSendLoading = false,
+      showCompanyName = true,
     } = this.props;
     // const scTime = moment(firstTime).format('YYYY-MM-DD HH:mm');
     // const zjTime = moment(lastTime).format('YYYY-MM-DD HH:mm');
@@ -106,24 +107,28 @@ export default class DynamicDrawerTop extends Component {
         </div>
       </div>
     );
-    const repeat = +num > 1 ? (
-      <div className={styles.logoContainer}>
-        <Tooltip placement={'bottomRight'} title={repeatTitle} overlayStyle={{ zIndex: 2222 }}>
-          <div className={styles.desc}>
-            重复上报
-            <span style={{ fontSize: '18px' }}>{num}</span>次
-          </div>
-        </Tooltip>
-      </div>
-    ) : null;
+    const repeat =
+      +num > 1 ? (
+        <div className={styles.logoContainer}>
+          <Tooltip placement={'bottomRight'} title={repeatTitle} overlayStyle={{ zIndex: 2222 }}>
+            <div className={styles.desc}>
+              重复上报
+              <span style={{ fontSize: '18px' }}>{num}</span>次
+            </div>
+          </Tooltip>
+        </div>
+      ) : null;
     return (
       <div className={styles.dynamicDrawerTop} style={style}>
         {!hideInfo && (
           <div
             className={styles.companyInfoContainer}
-            style={{ minHeight: dynamicType === 3 ? 'auto' : '130px', borderBottom: totalRead ? 'none' : '1px solid #04fdff' }}
+            style={{
+              minHeight: dynamicType === 3 ? 'auto' : '130px',
+              borderBottom: totalRead ? 'none' : '1px solid #04fdff',
+            }}
           >
-            {companyName && <div className={styles.title}>{companyName}</div>}
+            {showCompanyName && companyName && <div className={styles.title}>{companyName}</div>}
             {/* 主机 */}
             {dynamicType === 0 && (
               <Fragment>
