@@ -14,7 +14,35 @@ import {
   outdateIcon,
 } from '@/pages/BigPlatform/GasStation/imgs/links';
 
-const DEFAULT_SHOW_TYPES = [1, 2, 3, 4, 7, 9, 11, 13, 14, 15, 16, 17, 18, 32, 36, 37, 38, 40, 42, 43, 44, 46, 47, 48, 49, 50, 51];
+const DEFAULT_SHOW_TYPES = [
+  1,
+  2,
+  3,
+  4,
+  7,
+  9,
+  11,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  32,
+  36,
+  37,
+  38,
+  40,
+  42,
+  43,
+  44,
+  46,
+  47,
+  48,
+  49,
+  50,
+  51,
+];
 const MAX_NAME_LENGTH = 4;
 const TYPES = [
   1, // 发生监管
@@ -114,7 +142,7 @@ export default class Messages extends PureComponent {
       handleParentChange,
       fetchData,
       typeClickList,
-      showTypes=DEFAULT_SHOW_TYPES,
+      showTypes = DEFAULT_SHOW_TYPES,
       handleViewDangerDetail,
       // handleClickMessage,
       // handleFaultClick,
@@ -498,7 +526,13 @@ export default class Messages extends PureComponent {
         ...msgSettings,
         [item.toString()]: {
           onClick: () => {
-            handleClickWater(item === 48 ? 1 : 2, [101, 102, 103].indexOf(+deviceType), deviceId, companyId, cameraMessage);
+            handleClickWater(
+              item === 48 ? 1 : item === 36 ? 0 : 2,
+              [101, 102, 103].indexOf(+deviceType),
+              deviceId,
+              companyId,
+              cameraMessage
+            );
           },
           otherTitle: `【${WATER_LABELS[deviceType]}系统-${WATER_TITLES[item]}】`,
           items: [
@@ -519,20 +553,24 @@ export default class Messages extends PureComponent {
       msgSettings = {
         ...msgSettings,
         [item.toString()]: {
-          onClick: () => { handleClickMsgFlow(param, 2, 0, ...restParams); },
+          onClick: () => {
+            handleClickMsgFlow(param, 2, 0, ...restParams);
+          },
           otherTitle: `【${gasTitle[type]}】`,
           items: [{ name: '所在区域', value: area }, { name: '所在位置', value: location }],
         },
       };
     });
 
-    if (!showTypes.includes(+type))
-      return null;
+    if (!showTypes.includes(+type)) return null;
 
     const msgClassName = `msgItem${cssType ? cssType : ''}`;
     const innerClassName = cssType ? styles.msgInner : undefined;
     const typeIcon = cssType ? (
-      <span className={styles.typeIcon} style={{ backgroundImage: `url(${getMsgIcon(type, ICON_LIST)})` }} />
+      <span
+        className={styles.typeIcon}
+        style={{ backgroundImage: `url(${getMsgIcon(type, ICON_LIST)})` }}
+      />
     ) : null;
     const msgTime = formatTime(addTime);
     const firstComponent = cssType ? (
@@ -548,8 +586,7 @@ export default class Messages extends PureComponent {
     };
 
     let nameIndex = items.findIndex(({ name }) => name);
-    if (nameIndex === -1)
-      nameIndex = items.length;
+    if (nameIndex === -1) nameIndex = items.length;
     if (showCompanyInMsg)
       items.splice(nameIndex, 0, { name: '单位', value: companyName || '无名单位' });
     const handleClick = !typeClickList || typeClickList.includes(+type) ? onClick : undefined;
@@ -569,7 +606,7 @@ export default class Messages extends PureComponent {
         {/* <div className={styles.msgTime}>{formatTime(addTime)}</div> */}
         <div
           className={innerClassName}
-          style={{ cursor: cssType &&  handleClick ? 'pointer' : 'auto'}}
+          style={{ cursor: cssType && handleClick ? 'pointer' : 'auto' }}
           onClick={cssType ? handleClick : null}
         >
           {typeIcon}

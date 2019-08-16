@@ -251,8 +251,6 @@ export default class NewUnitFireControl extends PureComponent {
       },
     } = this.props;
 
-    const { checkItemId, waterTab } = this.state;
-
     const { NanXiaoWebsocket: ws } = global;
     if (!ws) return;
     ws.onmessage = e => {
