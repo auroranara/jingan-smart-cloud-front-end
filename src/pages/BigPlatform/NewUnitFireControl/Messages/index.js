@@ -385,7 +385,7 @@ export default class Messages extends PureComponent {
         },
         items: [
           // { name: '报警值', value: `${desc || paramName}(${realtimeData || realtimeVal}%)` },
-          { value: `当前值${desc || paramName}${realtimeData || realtimeVal}${unit}（参考值≤${limitVal}${unit}）`, style: CYAN_STYLE },
+          { value: `当前值${desc || paramName}${realtimeVal}${unit}（参考值≤${limitVal}${unit}）`, style: CYAN_STYLE },
           { name: '所在区域', value: area },
           { name: '所在位置', value: location },
         ],
@@ -565,7 +565,7 @@ export default class Messages extends PureComponent {
       items.unshift({ value: '设备状态失联', style: CYAN_STYLE });
     if ([47, 49].includes(+type)) // 失联恢复添加描述
       items.unshift({ value: '设备失联状态恢复正常', style: CYAN_STYLE });
-    if (+type === 39 && +isOver)
+    if (+type === 39 && !realtimeVal && !limitVal)
       items.shift();
     const handleClick = !typeClickList || typeClickList.includes(+type) ? onClick : undefined;
     const detailBtn = cssType ? (
