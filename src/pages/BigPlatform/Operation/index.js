@@ -876,9 +876,11 @@ export default class Operation extends PureComponent {
 
     const reportTypes = [1, 4, 3, 2];
     this.hiddeAllPopup();
+    let workOrderPayload = { companyId: cId, reportType: reportTypes[type], ...param };
+    if (proceId)
+      workOrderPayload = { ...workOrderPayload, id: proceId, dataId: undefined };
     this.fetchMessageInformList({
-      id: proceId,
-      // id: param.id,
+      id: proceId || param.id,
       // dataId: param.dataId,
     });
     if (type !== 3) {
@@ -899,7 +901,8 @@ export default class Operation extends PureComponent {
           } else {
             dispatch({
               type: 'operation/fetchWorkOrder',
-              payload: { companyId: cId, reportType: reportTypes[type], ...param, id: proceId, dataId: undefined },
+              // payload: { companyId: cId, reportType: reportTypes[type], ...param },
+              payload: workOrderPayload,
             });
           }
         },
@@ -908,7 +911,8 @@ export default class Operation extends PureComponent {
       // 一键报修没有重复上报
       dispatch({
         type: 'operation/fetchWorkOrder',
-        payload: { companyId: cId, reportType: reportTypes[type], ...param, id: proceId, dataId: undefined },
+        // payload: { companyId: cId, reportType: reportTypes[type], ...param },
+        payload: workOrderPayload,
         callback: res => {
           if (!(res.data && Array.isArray(res.data.list))) return;
           if (res.data.list.length === 0) {
