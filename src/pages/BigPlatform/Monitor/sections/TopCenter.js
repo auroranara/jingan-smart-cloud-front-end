@@ -106,16 +106,16 @@ const smokeColumns = [
     key: 'status',
     dataIndex: 'status',
     align: 'center',
-    width: 120,
-    render: (val, { deviceStatus = null, workStatus = null }) => {
+    width: 160,
+    render: (val, { deviceStatus = null, workStatus = null, workStatusName = null }) => {
       return +deviceStatus === -1
         ? '故障(失联)'
         : (+workStatus === -3 && +deviceStatus === 1) || (+workStatus === -3 && +deviceStatus === 2)
-          ? '故障、火警'
+          ? `故障(${workStatusName})、火警`
           : +deviceStatus === 1 || +deviceStatus === 2
             ? '火警'
             : +workStatus === -3
-              ? '故障'
+              ? `故障(${workStatusName})`
               : +deviceStatus === 0 && '正常';
     },
   },
