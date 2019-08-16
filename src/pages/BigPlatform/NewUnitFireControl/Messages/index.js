@@ -500,7 +500,7 @@ export default class Messages extends PureComponent {
           onClick: () => {
             handleClickWater(item === 48 ? 1 : 2, [101, 102, 103].indexOf(+deviceType), deviceId, companyId, cameraMessage);
           },
-          otherTitle: `【${WATER_LABELS[deviceType]}-${WATER_TITLES[item]}】`,
+          otherTitle: `【${WATER_LABELS[deviceType]}系统-${WATER_TITLES[item]}】`,
           items: [
             // {
             //   name: '系统类型',
