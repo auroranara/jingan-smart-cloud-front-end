@@ -798,8 +798,8 @@ export default class Operation extends PureComponent {
       callback: cameraMessage => {
         const param = {
           dataId: +reportType !== 2 ? dataId : undefined,
-          // id: +reportType === 2 ? dataId : undefined,
-          id: proceId,
+          id: +reportType === 2 ? dataId : undefined,
+          proceId,
           companyName: (+reportType !== 2 ? companyName : rcompanyName) || undefined,
           component:
             `${
@@ -870,14 +870,15 @@ export default class Operation extends PureComponent {
       operation: { unitList },
     } = this.props;
 
-    const { deviceId } = param;
+    const { deviceId, proceId } = param;
     this.setState({ company: { ...param } });
-    ['deviceId', 'companyName', 'unitTypeName', 'component'].forEach(p => delete param[p]);
+    ['deviceId', 'proceId', 'companyName', 'unitTypeName', 'component'].forEach(p => delete param[p]);
 
     const reportTypes = [1, 4, 3, 2];
     this.hiddeAllPopup();
     this.fetchMessageInformList({
-      id: param.id,
+      id: proceId,
+      // id: param.id,
       // dataId: param.dataId,
     });
     if (type !== 3) {
@@ -898,7 +899,7 @@ export default class Operation extends PureComponent {
           } else {
             dispatch({
               type: 'operation/fetchWorkOrder',
-              payload: { companyId: cId, reportType: reportTypes[type], ...param },
+              payload: { companyId: cId, reportType: reportTypes[type], ...param, id: proceId, dataId: undefined },
             });
           }
         },
@@ -907,7 +908,7 @@ export default class Operation extends PureComponent {
       // 一键报修没有重复上报
       dispatch({
         type: 'operation/fetchWorkOrder',
-        payload: { companyId: cId, reportType: reportTypes[type], ...param },
+        payload: { companyId: cId, reportType: reportTypes[type], ...param, id: proceId, dataId: undefined },
         callback: res => {
           if (!(res.data && Array.isArray(res.data.list))) return;
           if (res.data.list.length === 0) {

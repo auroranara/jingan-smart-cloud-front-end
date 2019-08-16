@@ -565,6 +565,8 @@ export default class Messages extends PureComponent {
       items.unshift({ value: '设备状态失联', style: CYAN_STYLE });
     if ([47, 49].includes(+type)) // 失联恢复添加描述
       items.unshift({ value: '设备失联状态恢复正常', style: CYAN_STYLE });
+    if (+type === 39 && +isOver)
+      items.shift();
     const handleClick = !typeClickList || typeClickList.includes(+type) ? onClick : undefined;
     const detailBtn = cssType ? (
       <Icon type="right" className={styles.detailArrow} />
