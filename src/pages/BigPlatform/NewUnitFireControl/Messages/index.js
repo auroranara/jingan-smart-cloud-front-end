@@ -419,7 +419,7 @@ export default class Messages extends PureComponent {
       // 主机报警, 报障
       msgSettings = {
         ...msgSettings,
-        [item.toString()]: {
+        [item]: {
           onClick:
             enterSign === '1'
               ? () => {
@@ -440,7 +440,7 @@ export default class Messages extends PureComponent {
       // 整改隐患, 重新整改隐患
       msgSettings = {
         ...msgSettings,
-        [item.toString()]: {
+        [item]: {
           onClick: () => {
             handleViewDangerDetail({ id: messageFlag });
           },
@@ -457,7 +457,7 @@ export default class Messages extends PureComponent {
       // 独立烟感报警, 故障
       msgSettings = {
         ...msgSettings,
-        [item.toString()]: {
+        [item]: {
           onClick: () => {
             // if (+item === 38) handleClickMsgFlow(param, 1, 0, ...restParams);
             // else if (+item === 40)
@@ -473,7 +473,7 @@ export default class Messages extends PureComponent {
       // 电气火灾报警, 电气火灾失联, 电气火灾失联恢复, 电气火灾报警恢复
       msgSettings = {
         ...msgSettings,
-        [item.toString()]: {
+        [item]: {
           onClick: () => {
             handleClickElecMsg(deviceId, paramName, companyId, cameraMessage);
           },
@@ -490,7 +490,7 @@ export default class Messages extends PureComponent {
       // 独立烟感失联, 独立烟感失联恢复, 独立烟感报警恢复
       msgSettings = {
         ...msgSettings,
-        [item.toString()]: {
+        [item]: {
           onClick: () => {
             handleClickSmoke(item === 46 ? 2 : 3);
           },
@@ -502,7 +502,7 @@ export default class Messages extends PureComponent {
     [36, 37, 48, 49].forEach(item => { // 水系统报警，报警恢复，失联, 失联恢复
       msgSettings = {
         ...msgSettings,
-        [item.toString()]: {
+        [item]: {
           onClick: () => {
             handleClickWater(
               item === 48 ? 1 : item === 36 ? 0 : 2,
@@ -560,6 +560,11 @@ export default class Messages extends PureComponent {
     if (nameIndex === -1) nameIndex = items.length;
     if (showCompanyInMsg)
       items.splice(nameIndex, 0, { name: '单位', value: companyName || '无名单位' });
+
+    if ([46, 48].includes(+type)) // 失联添加描述
+      items.unshift({ value: '设备状态失联', style: CYAN_STYLE });
+    if ([47, 49].includes(+type)) // 失联恢复添加描述
+      items.unshift({ value: '设备失联状态恢复正常', style: CYAN_STYLE });
     const handleClick = !typeClickList || typeClickList.includes(+type) ? onClick : undefined;
     const detailBtn = cssType ? (
       <Icon type="right" className={styles.detailArrow} />

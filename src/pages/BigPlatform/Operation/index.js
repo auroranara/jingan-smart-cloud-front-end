@@ -799,7 +799,7 @@ export default class Operation extends PureComponent {
         const param = {
           dataId: +reportType !== 2 ? dataId : undefined,
           // id: +reportType === 2 ? dataId : undefined,
-          id: proceId || id,
+          id: proceId,
           companyName: (+reportType !== 2 ? companyName : rcompanyName) || undefined,
           component:
             `${
