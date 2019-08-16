@@ -798,7 +798,8 @@ export default class Operation extends PureComponent {
       callback: cameraMessage => {
         const param = {
           dataId: +reportType !== 2 ? dataId : undefined,
-          id: +reportType === 2 ? dataId : undefined,
+          // id: +reportType === 2 ? dataId : undefined,
+          id: proceId || id,
           companyName: (+reportType !== 2 ? companyName : rcompanyName) || undefined,
           component:
             `${

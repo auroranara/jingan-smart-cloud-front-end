@@ -4,7 +4,7 @@ import Ellipsis from 'components/Ellipsis';
 import NewSection from '@/components/NewSection';
 import moment from 'moment';
 
-import { getMsgIcon, vaguePhone, WATER_LABELS } from '../utils';
+import { getMsgIcon, vaguePhone, CYAN_STYLE } from '../utils';
 // import DescriptionList from 'components/DescriptionList';
 import styles from './index.less';
 import {
@@ -78,6 +78,12 @@ const TYPES = [
   55, // 可燃气体失联恢复
 ];
 
+const WATER_LABELS = {
+  101: '消火栓系统',
+  102: '喷淋系统',
+  103: '水池/水箱',
+};
+
 const ICON_LIST = [
   { icon: inspectIcon, types: [13, 18] },
   { icon: dangerIcon, types: [14, 15, 16, 17] },
@@ -142,7 +148,7 @@ export default class Messages extends PureComponent {
       handleParentChange,
       fetchData,
       typeClickList,
-      showTypes = DEFAULT_SHOW_TYPES,
+      // showTypes=DEFAULT_SHOW_TYPES,
       handleViewDangerDetail,
       // handleClickMessage,
       // handleFaultClick,
@@ -217,13 +223,9 @@ export default class Messages extends PureComponent {
       companyName,
       companyId,
     } = msg;
-    // const repeatCount = +isOver === 0 ? count : num;
+
     const repeatCount = count;
     const lastReportTime = moment(+isOver === 0 ? addTime : lastTime).format('YYYY-MM-DD HH:mm');
-    // const repeat = {
-    //   times: repeatCount,
-    //   lastreportTime: addTime,
-    // };
     const occurData = [
       {
         create_time: firstTime,
@@ -257,25 +259,30 @@ export default class Messages extends PureComponent {
       unitTypeName: unitTypeName || undefined,
     };
     let msgSettings = {};
-    if (TYPES.indexOf(+type) < 0) return null;
+
     const elecMsg = {
-      44: { elecTitle: '电气火灾报警', elecContent: `${paramName}报警现已恢复正常` },
       32: {
-        elecTitle: '电气火灾报警',
-        elecContent: `${paramName}报警${realtimeVal + unit}（参考值<${limitVal + unit}）`,
+        elecTitle: '电气火灾-报警',
+        elecContent: `${paramName}报警${realtimeVal + unit}（参考值≤${limitVal + unit}）`,
       },
-      42: { elecTitle: '电气火灾失联', elecContent: '设备状态失联' },
-      43: { elecTitle: '电气火灾失联', elecContent: '设备状态已恢复正常' },
+      44: { elecTitle: '电气火灾-报警恢复', elecContent: `${paramName}报警现已恢复正常` },
+      42: { elecTitle: '电气火灾-失联', elecContent: '设备状态失联' },
+      43: { elecTitle: '电气火灾-失联恢复', elecContent: '设备状态已恢复正常' },
     };
     const smokeTitle = {
-      46: '独立烟感失联',
-      47: '独立烟感失联恢复',
-      50: '独立烟感报警恢复',
+      46: '独立烟感-失联',
+      47: '独立烟感-失联恢复',
+      50: '独立烟感-报警恢复',
     };
     const gasTitle = {
-      45: '可燃气体报警恢复',
-      54: '可燃气体失联',
-      55: '可燃气体失联恢复',
+      45: '可燃气体-报警恢复',
+      54: '可燃气体-失联',
+      55: '可燃气体-失联恢复',
+    };
+    const gasContent = {
+      45: `已恢复正常，当前值${desc || paramName}${realtimeData || realtimeVal}${unit}`,
+      54: '设备状态失联',
+      55: '设备失联状态恢复正常',
     };
 
     [1, 2, 3, 4].forEach(item => {
@@ -372,41 +379,13 @@ export default class Messages extends PureComponent {
           { name: '消防设施评分', value: score },
         ],
       },
-      // '36': {
-      //   // 水系统报警
-      //   onClick: () => {
-      //     handleClickWater(0, [101, 102, 103].indexOf(+deviceType), deviceId, companyId, cameraMessage);
-      //     // handleViewWater([101, 102, 103].indexOf(+deviceType), deviceType);
-      //   },
-      //   items: [
-      //     {
-      //       name: '系统类型',
-      //       value: +deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱',
-      //     },
-      //     { value: virtualName + '-' + paramName + (condition === '>=' ? '高于' : '低于') + '报警值' },
-      //   ],
-      // },
-      // '37': {
-      //   // 水系统报警恢复
-      //   onClick: () => {
-      //     handleClickWater(2, [101, 102, 103].indexOf(+deviceType), deviceId, companyId, cameraMessage);
-      //     // handleViewWater([101, 102, 103].indexOf(+deviceType), deviceType);
-      //   },
-      //   items: [
-      //     {
-      //       name: '系统类型',
-      //       value: +deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱',
-      //     },
-      //     { value: virtualName + '恢复正常' },
-      //   ],
-      // },
-      '39': {
-        // 可燃气体报警
+      '39': { // 可燃气体报警
         onClick: () => {
           handleClickMsgFlow(param, 2, 0, ...restParams);
         },
         items: [
-          { name: '报警值', value: `${desc || paramName}(${realtimeData || realtimeVal}%)` },
+          // { name: '报警值', value: `${desc || paramName}(${realtimeData || realtimeVal}%)` },
+          { value: `当前值${desc || paramName}${realtimeData || realtimeVal}${unit}（参考值≤${limitVal}${unit}）`, style: CYAN_STYLE },
           { name: '所在区域', value: area },
           { name: '所在位置', value: location },
         ],
@@ -520,8 +499,7 @@ export default class Messages extends PureComponent {
         },
       };
     });
-    [36, 37, 48, 49].forEach(item => {
-      // 水系统报警，报警恢复，失联, 失联恢复
+    [36, 37, 48, 49].forEach(item => { // 水系统报警，报警恢复，失联, 失联恢复
       msgSettings = {
         ...msgSettings,
         [item.toString()]: {
@@ -534,35 +512,28 @@ export default class Messages extends PureComponent {
               cameraMessage
             );
           },
-          otherTitle: `【${WATER_LABELS[deviceType]}系统-${WATER_TITLES[item]}】`,
+          otherTitle: `【${WATER_LABELS[deviceType]}-${WATER_TITLES[item]}】`,
           items: [
-            // {
-            //   name: '系统类型',
-            //   value:
-            //     +deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱',
-            // },
-            // { value: virtualName + (item === 48 ? '失联' : '从失联中恢复') },
             { name: '所在区域', value: area },
             { name: '所在位置', value: location },
           ],
         },
       };
     });
-    [45, 54, 55].forEach(item => {
-      // 可燃气体报警恢复
+    [45, 54, 55].forEach(item => { // 可燃气体
       msgSettings = {
         ...msgSettings,
-        [item.toString()]: {
-          onClick: () => {
-            handleClickMsgFlow(param, 2, 0, ...restParams);
-          },
+        [item]: {
+          onClick: () => { handleClickMsgFlow(param, 2, 0, ...restParams); },
           otherTitle: `【${gasTitle[type]}】`,
-          items: [{ name: '所在区域', value: area }, { name: '所在位置', value: location }],
+          items: [
+            { value: gasContent[item], style: CYAN_STYLE },
+            { name: '所在区域', value: area },
+            { name: '所在位置', value: location },
+          ],
         },
       };
     });
-
-    if (!showTypes.includes(+type)) return null;
 
     const msgClassName = `msgItem${cssType ? cssType : ''}`;
     const innerClassName = cssType ? styles.msgInner : undefined;
@@ -656,421 +627,17 @@ export default class Messages extends PureComponent {
         </div>
       </div>
     );
-    // if (type === 1 || type === 2 || type === 3 || type === 4) {
-    //   // 发生监管\联动\反馈\屏蔽
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         位置：
-    //         {installAddress || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         回路故障号：
-    //         {loopNumber || loopNumber === 0 ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         部件类型：
-    //         {componentType || getEmptyData()}
-    //       </div>
-    //     </div>
-    //   );
-    // } else if (type === 5 || type === 6) {
-    //   // 发生火警, 发生故障
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <a
-    //         className={styles.detailBtn}
-    //         onClick={() => {
-    //           if (type === 5) handleClickMessage(messageFlag, { ...msg });
-    //           else handleFaultClick({ ...msg });
-    //         }}
-    //       >
-    //         详情
-    //         <Icon type="double-right" />
-    //       </a>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         位置：
-    //         {installAddress || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         回路故障号：
-    //         {loopNumber || loopNumber === 0 ? `${loopNumber}回路${partNumber}号` : '暂无数据'}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         部件类型：
-    //         {componentType || getEmptyData()}
-    //       </div>
-    //     </div>
-    //   );
-    // } else if (type === 7) {
-    //   // 火警确认
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <a
-    //         className={styles.detailBtn}
-    //         onClick={() => {
-    //           handleFireMessage(JSON.parse(messageFlag));
-    //         }}
-    //       >
-    //         详情
-    //         <Icon type="double-right" />
-    //       </a>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         位置：
-    //         {address || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         处理人：
-    //         {isVague ? nameToVague(proceUser) : proceUser || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         确认结果：
-    //         {resultFeedBack || getEmptyData()}
-    //       </div>
-    //     </div>
-    //   );
-    // } else if (type === 8 || type === 19) {
-    //   // 真实火警处理，误报火警处理
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <a
-    //         className={styles.detailBtn}
-    //         onClick={() => {
-    //           handleFireMessage(JSON.parse(messageFlag));
-    //         }}
-    //       >
-    //         详情
-    //         <Icon type="double-right" />
-    //       </a>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         位置：
-    //         {address || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         处理人：
-    //         {isVague ? nameToVague(proceUser) : proceUser || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         处理内容：
-    //         {proceContent || getEmptyData()}
-    //       </div>
-    //     </div>
-    //   );
-    // } else if (type === 9) {
-    //   // 开始故障维修
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <a
-    //         className={styles.detailBtn}
-    //         onClick={() => {
-    //           handleParentChange({ maintenanceTitle: '故障处理动态' });
-    //           handleWorkOrderCardClickMsg(JSON.parse(messageFlag));
-    //         }}
-    //       >
-    //         详情
-    //         <Icon type="double-right" />
-    //       </a>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         位置：
-    //         {address || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         维修人：
-    //         {isVague ? nameToVague(proceUser) : proceUser || getEmptyData()}
-    //       </div>
-    //     </div>
-    //   );
-    // } else if (type === 10 || type === 11) {
-    //   // 故障指派维修, 维保开始维修
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <a
-    //         className={styles.detailBtn}
-    //         onClick={() => {
-    //           if (type === 10) handleParentChange({ maintenanceTitle: '故障处理动态' });
-    //           handleWorkOrderCardClickMsg(JSON.parse(messageFlag));
-    //         }}
-    //       >
-    //         详情
-    //         <Icon type="double-right" />
-    //       </a>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         位置：
-    //         {address || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         {type === 10 ? '上报' : '维修'}
-    //         单位：
-    //         {proceCompany}
-    //       </div>
-    //     </div>
-    //   );
-    // } else if (type === 12) {
-    //   // 完成故障维修
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <a
-    //         className={styles.detailBtn}
-    //         onClick={() => {
-    //           handleParentChange({ maintenanceTitle: '故障处理动态' });
-    //           handleWorkOrderCardClickMsg(JSON.parse(messageFlag));
-    //         }}
-    //       >
-    //         详情
-    //         <Icon type="double-right" />
-    //       </a>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         位置：
-    //         {address || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         维修单位：
-    //         {proceCompany || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         维修人：
-    //         {isVague ? nameToVague(proceUser) : proceUser}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         结果反馈：
-    //         {resultFeedBack}
-    //       </div>
-    //     </div>
-    //   );
-    // } else if (type === 13) {
-    //   // 安全巡查
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         检查点：
-    //         {pointName}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         巡查人：
-    //         {isVague ? nameToVague(checkUser) : checkUser || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         巡查结果：
-    //         {checkResult}
-    //       </div>
-    //     </div>
-    //   );
-    // } else if (type === 14) {
-    //   // 上报隐患
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <a
-    //         className={styles.detailBtn}
-    //         onClick={() => {
-    //           handleViewDangerDetail({ id: messageFlag });
-    //         }}
-    //       >
-    //         详情
-    //         <Icon type="double-right" />
-    //       </a>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         检查点：
-    //         {pointName}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         隐患描述：
-    //         {dangerDesc || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         上报人：
-    //         {isVague ? nameToVague(reportUser) : reportUser}
-    //       </div>
-    //     </div>
-    //   );
-    // } else if (type === 15 || type === 16) {
-    //   // 整改隐患, 重新整改隐患
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <a
-    //         className={styles.detailBtn}
-    //         onClick={() => {
-    //           handleViewDangerDetail({ id: messageFlag });
-    //         }}
-    //       >
-    //         详情
-    //         <Icon type="double-right" />
-    //       </a>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         检查点：
-    //         {pointName}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         隐患描述：
-    //         {dangerDesc || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         整改人：
-    //         {isVague ? nameToVague(rectifyUser) : rectifyUser}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         整改措施：
-    //         {rectifyMeasures}
-    //       </div>
-    //     </div>
-    //   );
-    // } else if (type === 17) {
-    //   // 复查隐患
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <a
-    //         className={styles.detailBtn}
-    //         onClick={() => {
-    //           handleViewDangerDetail({ id: messageFlag });
-    //         }}
-    //       >
-    //         详情
-    //         <Icon type="double-right" />
-    //       </a>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         检查点：
-    //         {pointName}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         隐患描述：
-    //         {dangerDesc || getEmptyData()}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         复查人：
-    //         {isVague ? nameToVague(reviewUser) : reviewUser}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         复查结果：
-    //         {reviewResult}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         备注：
-    //         {remark}
-    //       </div>
-    //     </div>
-    //   );
-    // } else if (type === 18) {
-    //   // 维保巡检
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <a
-    //         className={styles.detailBtn}
-    //         onClick={() => {
-    //           handleParentChange({ maintenanceCheckDrawerVisible: true });
-    //           fetchData(messageFlag);
-    //         }}
-    //       >
-    //         详情
-    //         <Icon type="double-right" />
-    //       </a>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         维保单位：
-    //         {maintenanceCompany}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         维保人：
-    //         {Array.isArray(maintenanceUser)
-    //           ? maintenanceUser
-    //               .map(item => {
-    //                 return isVague ? nameToVague(item) : item;
-    //               })
-    //               .join('，')
-    //           : isVague
-    //             ? nameToVague(maintenanceUser)
-    //             : maintenanceUser}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         消防设施评分：
-    //         {score}
-    //       </div>
-    //     </div>
-    //   );
-    // } else if (type === 36) {
-    //   // 动态监测报警
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <a
-    //         className={styles.detailBtn}
-    //         onClick={() => {
-    //           handleViewWater([101, 102, 103].indexOf(+deviceType), deviceType);
-    //         }}
-    //       >
-    //         详情
-    //         <Icon type="double-right" />
-    //       </a>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         {+deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱'}
-    //       </div>
-    //       <div className={styles.msgBody}>
-    //         {virtualName + '-' + paramName + (condition === '>=' ? '高于' : '低于') + '报警值'}
-    //       </div>
-    //     </div>
-    //   );
-    // } else if (type === 37) {
-    //   // 动态监测恢复
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <a
-    //         className={styles.detailBtn}
-    //         onClick={() => {
-    //           handleViewWater([101, 102, 103].indexOf(+deviceType), deviceType);
-    //         }}
-    //       >
-    //         详情
-    //         <Icon type="double-right" />
-    //       </a>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //       <div className={styles.msgBody}>
-    //         {+deviceType === 101 ? '消火栓系统' : +deviceType === 102 ? '喷淋系统' : '水池/水箱'}
-    //       </div>
-    //       <div className={styles.msgBody}>{virtualName + '恢复正常'}</div>
-    //     </div>
-    //   );
-    // } else {
-    //   msgItem = (
-    //     <div className={styles.msgItem} key={index}>
-    //       <div className={styles.msgTime}>{formatTime(addTime)}</div>
-    //       <div className={styles.msgType}>{title}</div>
-    //     </div>
-    //   );
-    // }
-    // return msgItem;
   };
 
   render() {
     const {
+      showTypes=DEFAULT_SHOW_TYPES,
       model: { screenMessage = [] },
       className,
     } = this.props;
     const { isExpanded } = this.state;
     // 过滤掉有其他type的
-    const list = screenMessage.filter(item => TYPES.indexOf(+item.type) >= 0);
+    const list = screenMessage.filter(item => showTypes.includes(+item.type));
     // 收缩显示3个，展开最大显示100个
     const newList = isExpanded ? list.slice(0, 100) : list.slice(0, 3);
 
