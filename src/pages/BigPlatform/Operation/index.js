@@ -250,20 +250,9 @@ export default class Operation extends PureComponent {
         this.fetchStatistics();
         this.fetchMapUnitList(companyId);
 
-        dispatch({
-          type: 'operation/fetchWebsocketScreenMessage',
-          payload: data,
-          success: result => {
-            const { type, enterSign, isOver } = result;
+        this.handleShowFireMsg(data.data);
 
-            if (ALARM_TYPES.includes(+type)) {
-              // 水系统，电气火灾不用判断isOver，主机和独立烟感需要判断isOver是否为0
-              if ([32, 36].includes(type) || (+isOver === 0 && (type === 7 && enterSign === '1' || type !== 7)))
-                this.showFireMsg(result);
-              this.fetchScreenMessage();
-            }
-          },
-        });
+        this.fetchScreenMessage();
       } catch (error) {
         console.log('error', error);
       }
@@ -272,6 +261,16 @@ export default class Operation extends PureComponent {
     ws.onreconnect = () => {
       console.log('reconnecting...');
     };
+  }
+
+  handleShowFireMsg = result => {
+    const { type, enterSign, isOver } = result;
+
+    if (ALARM_TYPES.includes(+type)) {
+      // 水系统，电气火灾不用判断isOver，主机和独立烟感需要判断isOver是否为0
+      if ([32, 36].includes(type) || (+isOver === 0 && (type === 7 && enterSign === '1' || type !== 7)))
+        this.showFireMsg(result);
+    }
   }
 
   // componentDidUpdate(prevProps, prevState, snapshot) {
@@ -430,6 +429,7 @@ export default class Operation extends PureComponent {
 
   renderNotificationMsg = item => {
     const {
+      messageId,
       companyId,
       type,
       addTime,
@@ -488,27 +488,32 @@ export default class Operation extends PureComponent {
     let handleClick = null;
     switch(type) {
       case 7:
-        handleClick = e => this.handleClickMsgFlow(param, 0, 0, ...restParams);
+        handleClick = () => this.handleClickMsgFlow(param, 0, 0, ...restParams);
         break;
       case 32:
-        handleClick = e => this.handleClickElecMsg(deviceId, paramName, companyId, cameraMessage);
+        handleClick = () => this.handleClickElecMsg(deviceId, paramName, companyId, cameraMessage);
         break;
       case 36:
-        handleClick = e => this.handleClickWater(undefined, WATER_TYPES.indexOf(deviceType), deviceId, companyId, cameraMessage);
+        handleClick = () => this.handleClickWater(undefined, WATER_TYPES.indexOf(deviceType), deviceId, companyId, cameraMessage);
         break;
       case 38:
-        handleClick = e => this.handleClickMsgFlow(param, 1, 0, ...restParams);
+        handleClick = () => this.handleClickMsgFlow(param, 1, 0, ...restParams);
         break;
       case 39:
-        handleClick = e => this.handleClickMsgFlow(param, 2, 0, ...restParams);
+        handleClick = () => this.handleClickMsgFlow(param, 2, 0, ...restParams);
         break;
       default:
         console.log('no click');
     }
+
+    const onClick = e => {
+      handleClick();
+      this.closeNotification(messageId);
+    };
     return (
       <div
         className={styles1.notificationBody}
-        onClick={handleClick}
+        onClick={onClick}
       >
         <div>
           <span className={styles1.time}>
@@ -702,7 +707,7 @@ export default class Operation extends PureComponent {
     this.setState({ fireStatisticsDrawerVisible: true, dateType: dType });
     this.getFirePie(dType);
     this.getFireTrend();
-    this.getFireList();
+    this.getFireList({ dateType: dType });
   };
 
   getFirePie = dateType => {
@@ -715,7 +720,7 @@ export default class Operation extends PureComponent {
     dispatch({ type: 'operation/fetchFireTrend' });
   };
 
-  getFireList = ({ deviceType, fireType, searchValue } = {}, initial = true) => {
+  getFireList = ({ deviceType, fireType, searchValue, dateType } = {}, initial = true) => {
     const { dispatch } = this.props;
     const [dType, fType, name] = [deviceType, fireType, searchValue].map(v => (v ? v : undefined));
 
@@ -730,6 +735,7 @@ export default class Operation extends PureComponent {
         name,
         deviceType: dType,
         fireType: fType,
+        type: dateType + 1,
         pageNum: this.fireListPageNum,
         pageSize: PAGE_SIZE,
       },
@@ -869,7 +875,10 @@ export default class Operation extends PureComponent {
 
     const reportTypes = [1, 4, 3, 2];
     this.hiddeAllPopup();
-    this.fetchMessageInformList({ id: param.id, dataId: param.dataId });
+    this.fetchMessageInformList({
+      id: param.id,
+      // dataId: param.dataId,
+    });
     if (type !== 3) {
       dispatch({
         type: 'operation/fetchCountNumAndTimeById',

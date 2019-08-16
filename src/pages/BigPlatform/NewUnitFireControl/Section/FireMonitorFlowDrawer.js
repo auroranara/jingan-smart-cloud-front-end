@@ -114,6 +114,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
     const headProps = {
       ...dataItem,
       dynamicType: 0,
+      showCompanyName: false,
       videoList: dataItem.cameraMessage || [],
       onCameraClick: () => {
         handleParentChange({ videoList: dataItem.cameraMessage || [] });
@@ -130,7 +131,6 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       <DynamicDrawerTop
         {...headProps}
         {...dataItem}
-        {...{ companyName: undefined }}
         read={read}
         unread={unread}
         msgType={msgFlow}

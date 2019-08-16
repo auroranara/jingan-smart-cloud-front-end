@@ -11,8 +11,14 @@ export default class GasDrawer extends PureComponent {
     this.setState({ index: i });
   };
 
+  handleClose = () => {
+    const { onClose } = this.props;
+    onClose();
+    this.setState({ index: 1 });
+  };
+
   render() {
-    const { visible, monitorData, orderData, handleCameraOpen, fetchGasTotal, ...restProps } = this.props;
+    const { visible, monitorData, orderData, handleCameraOpen, fetchGasTotal, onClose, ...restProps } = this.props;
     const { index } = this.state;
 
     const { order, item } = orderData;
@@ -48,11 +54,12 @@ export default class GasDrawer extends PureComponent {
     return (
       <DrawerContainer
         destroyOnClose
+        placement="right"
         title={title}
         width={535}
         left={left}
         visible={visible}
-        placement="right"
+        onClose={this.handleClose}
         {...restProps}
       />
     );

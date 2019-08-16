@@ -53,7 +53,7 @@ const TYPES = [
 const ICON_LIST = [
   { icon: inspectIcon, types: [13, 18] },
   { icon: dangerIcon, types: [14, 15, 16, 17] },
-  { icon: alarmIcon, types: [1, 2, 3, 4, 7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51] },
+  { icon: alarmIcon, types: [1, 2, 3, 4, 7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 54, 55] },
 ];
 
 const WATER_TITLES = {
@@ -500,7 +500,7 @@ export default class Messages extends PureComponent {
           onClick: () => {
             handleClickWater(item === 48 ? 1 : 2, [101, 102, 103].indexOf(+deviceType), deviceId, companyId, cameraMessage);
           },
-          otherTitle: `【${WATER_LABELS[deviceType]}-${WATER_TITLES[item]}】`,
+          otherTitle: `【${WATER_LABELS[deviceType]}系统-${WATER_TITLES[item]}】`,
           items: [
             // {
             //   name: '系统类型',

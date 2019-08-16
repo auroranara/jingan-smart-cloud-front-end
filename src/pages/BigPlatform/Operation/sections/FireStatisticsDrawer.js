@@ -42,10 +42,12 @@ const INFO_STYLE = {
   borderRadius: 15,
 };
 
+function fireTypeFix(i) {
+  return i === 3 ? 5 : i;
+}
+
 export default class FireStatisticsDrawer extends PureComponent {
   state = { graph: 0, typeSelected: 0, deviceSelected: 0, searchValue: '' };
-
-  pageNum = 1;
 
   handleSwitch = i => {
     this.setState({ graph: i });
@@ -53,23 +55,25 @@ export default class FireStatisticsDrawer extends PureComponent {
 
   onDateTypeChange = i => {
     const { handleDateTypeChange, getFirePie, getFireList } = this.props;
-    // const { deviceSelected, typeSelected, searchValue } = this.state;
+    const { deviceSelected, typeSelected, searchValue } = this.state;
     handleDateTypeChange(i);
     getFirePie(i);
-    // getFireList(deviceSelected, typeSelected, searchValue);
+    getFireList({ deviceType: deviceSelected, fireType: fireTypeFix(typeSelected), searchValue, dateType: i });
   };
 
   handleDeviceSelectChange = i => {
+    const { dateType } = this.props;
     const { typeSelected, searchValue } = this.state;
     this.setState({ deviceSelected: i });
-    this.getFireList({ deviceType: i, fireType: typeSelected, searchValue });
+    this.getFireList({ deviceType: i, fireType: fireTypeFix(typeSelected), searchValue, dateType });
   };
 
   handleTypeSelectChange = i => {
-    // 由于吕旻傻吊改动 原先为确认火警为3 现在为5
+    // 由于吕旻傻吊改动 原先未确认火警为3 现在为5
+    const { dateType } = this.props;
     const { deviceSelected, searchValue } = this.state;
     this.setState({ typeSelected: i });
-    this.getFireList({ deviceType: deviceSelected, fireType: i === 3 ? 5 : i, searchValue });
+    this.getFireList({ deviceType: deviceSelected, fireType: fireTypeFix(i), searchValue, dateType });
   };
 
   genProgressClick = v => e => {
@@ -77,9 +81,10 @@ export default class FireStatisticsDrawer extends PureComponent {
   };
 
   handleSearch = v => {
+    const { dateType } = this.props;
     const { deviceSelected, typeSelected } = this.state;
     this.setState({ searchValue: v });
-    this.getFireList({ deviceType: deviceSelected, fireType: typeSelected, searchValue: v });
+    this.getFireList({ deviceType: deviceSelected, fireType: fireTypeFix(typeSelected), searchValue: v, dateType });
   };
 
   getFireList = (options, initial = true) => {
@@ -88,8 +93,9 @@ export default class FireStatisticsDrawer extends PureComponent {
   };
 
   getMoreFireList = e => {
+    const { dateType } = this.props;
     const { deviceSelected, typeSelected, searchValue } = this.state;
-    this.getFireList({ deviceType: deviceSelected, fireType: typeSelected, searchValue }, false);
+    this.getFireList({ deviceType: deviceSelected, fireType: fireTypeFix(typeSelected), searchValue, dateType }, false);
   };
 
   handleClose = () => {
