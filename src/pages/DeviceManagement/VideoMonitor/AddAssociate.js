@@ -255,29 +255,21 @@ export default class AddAssociate extends Component {
       },
     } = this.props;
 
-    const modelList = typeDict.map(item => item.modelDesc);
-    let obj = {};
-    let newModelList = [];
-    for (let m = 0; m < modelList.length; m++) {
-      const s = modelList[m];
-      if (obj[s]) continue;
-      else {
-        obj[s] = s;
-        newModelList.push(s);
+    const modelList = typeDict.map(item => item.modelDesc).reduce((pre, cur) => {
+      if (!pre.includes(cur)) {
+        return pre.concat(cur);
+      } else {
+        return pre;
       }
-    }
+    }, []);
 
-    const optionalList = typeDict.map(item => item.optionalDesc);
-    let opt = {};
-    let newOptionalList = [];
-    for (let m = 0; m < optionalList.length; m++) {
-      const s = optionalList[m];
-      if (opt[s]) continue;
-      else {
-        opt[s] = s;
-        newOptionalList.push(s);
+    const optionalList = typeDict.map(item => item.optionalDesc).reduce((pre, cur) => {
+      if (!pre.includes(cur)) {
+        return pre.concat(cur);
+      } else {
+        return pre;
       }
-    }
+    }, []);
 
     const breadcrumbList = [
       {
@@ -467,7 +459,7 @@ export default class AddAssociate extends Component {
                       <FormItem {...formItemStyle}>
                         {getFieldDecorator('modelDesc')(
                           <Select placeholder="品牌">
-                            {newModelList.map(item => (
+                            {modelList.map(item => (
                               <Select.Option key={item} value={item}>
                                 {item}
                               </Select.Option>
@@ -480,7 +472,7 @@ export default class AddAssociate extends Component {
                       <FormItem {...formItemStyle}>
                         {getFieldDecorator('optionalDesc')(
                           <Select placeholder="产品型号">
-                            {newOptionalList.map(item => (
+                            {optionalList.map(item => (
                               <Select.Option key={item} value={item}>
                                 {item}
                               </Select.Option>
