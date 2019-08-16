@@ -1,8 +1,4 @@
-export const WATER_LABELS = {
-  101: '消火栓',
-  102: '喷淋',
-  103: '水池/水箱',
-};
+export const CYAN_STYLE = { color: '#0FF' };
 
 export function getMsgIcon(type, list) {
   const target = list.find(({ types }) => types.includes(+type));
