@@ -180,6 +180,9 @@ export default class CompanyModal extends PureComponent {
         list,
         pagination: { total, pageNum, pageSize },
       },
+      bindPoint,
+      onChangeCheckBox,
+      checked,
     } = this.props;
     const { selectedRowKeys } = this.state;
 
@@ -200,6 +203,9 @@ export default class CompanyModal extends PureComponent {
           action={actSelect && this.renderSelectButton()}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
+          bindPoint={bindPoint}
+          onChangeCheckBox={onChangeCheckBox}
+          checked={checked}
         />
         <Table
           style={{ marginTop: '16px' }}

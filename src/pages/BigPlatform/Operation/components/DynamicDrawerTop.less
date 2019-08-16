@@ -11,6 +11,7 @@
 
   .companyInfoContainer {
     min-height: 130px;
+    // border-bottom: none;
 
     .title {
       font-size: 17px;
@@ -23,52 +24,16 @@
       margin-bottom: 6px;
     }
 
-    .logoContainer {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: absolute;
-      top: 8px;
-      right: 15px;
-
-      .logo {
-        position: relative;
-        color: #fff;
-        cursor: pointer;
-        width: 43px;
-        height: 44px;
-        background-size: 100%;
-        background-repeat: no-repeat;
-        background-position: center center;
-        transition: all .3s;
-
-        &>div {
-          position: absolute;
-          top: 39%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 21px;
-        }
-      }
-
-      .desc {
-        text-align: center;
-        color: #8198B4;
-        font-size: 13px;
-        margin-top: 5px;
-        cursor: pointer;
-
-        &:hover {
-          color: #BED1E8;
-        }
-      }
-    }
-
     .cameraContainer {
       position: absolute;
       width: 33px;
       height: 33px;
       cursor: pointer;
+      top: 10px;
+      right: 10px;
+      background-size: 100%;
+      background-position: center center;
+      background-repeat: no-repeat;
     }
 
     .repeatDesc {
@@ -88,7 +53,7 @@
   }
 
   .messageSendingContainer {
-    border-top: none;
+    // border-top: none;
 
     .topLine {
       display: flex;
@@ -97,6 +62,48 @@
 
       span:first-of-type {
         font-size: 17px;
+      }
+
+      .logoContainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: absolute;
+        // top: 8px;
+        top: -5px;
+        right: 15px;
+
+        .logo {
+          position: relative;
+          color: #fff;
+          cursor: pointer;
+          width: 43px;
+          height: 44px;
+          background-size: 100%;
+          background-repeat: no-repeat;
+          background-position: center center;
+          transition: all .3s;
+
+          &>div {
+            position: absolute;
+            top: 39%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 21px;
+          }
+        }
+
+        .desc {
+          text-align: center;
+          color: #8198B4;
+          font-size: 13px;
+          margin-top: 5px;
+          cursor: pointer;
+
+          &:hover {
+            color: #BED1E8;
+          }
+        }
       }
     }
 

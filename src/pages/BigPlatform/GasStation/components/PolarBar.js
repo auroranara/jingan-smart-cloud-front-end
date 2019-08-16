@@ -4,7 +4,7 @@ import ReactEcharts from 'echarts-for-react';
 import styles from './PolarBar.less';
 import { getStatusCount } from '../utils';
 
-const BAR_WIDTH = 10;
+const BAR_WIDTH = 12;
 
 export default class PolarBar extends PureComponent {
   chart = null;
@@ -40,8 +40,9 @@ export default class PolarBar extends PureComponent {
         type: 'category',
         data: categories,
         z: 10,
-        axisLine: { lineStyle: { color: 'rgb(112,136,158)' } },
+        axisLine: { show: false, lineStyle: { color: 'rgb(112,136,158)' } },
         axisLabel: { interval: 0 },
+        axisTick: { show: false },
       },
       textStyle: { color: '#FFF' },
       polar: {

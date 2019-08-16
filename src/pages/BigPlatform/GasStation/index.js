@@ -541,8 +541,8 @@ export default class GasStation extends PureComponent {
     }
 
     // 获取水系统---消火栓系统
-    if ([36, 37, 48, 49].includes(+type)) {
-      // 36 水系统报警 37 水系统报警恢复 48水系统失联 49 水系统失联恢复
+    if ([36, 37, 48, 49, 53].includes(+type)) {
+      // 36 水系统报警 37 水系统报警恢复 48水系统失联 49 水系统失联恢复 53 检修中
       this.fetchAllWaterSystem();
     }
 

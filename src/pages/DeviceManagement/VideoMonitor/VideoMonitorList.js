@@ -14,7 +14,7 @@ import {
   Col,
   Row,
 } from 'antd';
-import { routerRedux } from 'dva/router';
+import { Link, routerRedux } from 'dva/router';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import Ellipsis from '@/components/Ellipsis';
@@ -226,17 +226,27 @@ export default class VideoMonitorList extends PureComponent {
                         {safetyPhone || getEmptyData()}
                       </p>
                     </Col>
-                    <Col
-                      span={8}
-                      onClick={() => {
-                        if (hasAuthority(codesMap.deviceManagement.videoMonitor.view, codes))
-                          this.goToEquipmentList(id, item.name);
-                        else message.warn('您没有权限访问对应页面');
-                      }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <span className={styles.quantity}>{videoCount}</span>
-                    </Col>
+
+                    {hasAuthority(codesMap.deviceManagement.videoMonitor.view, codes) ? (
+                      <Col span={8} style={{ cursor: 'pointer' }}>
+                        <Link
+                          to={`/device-management/video-monitor/video-equipment/${id}?name=${name}`}
+                          target="_blank"
+                        >
+                          <span className={styles.quantity}>{videoCount}</span>
+                        </Link>
+                      </Col>
+                    ) : (
+                      <Col
+                        span={8}
+                        onClick={() => {
+                          message.warn('您没有权限访问对应页面');
+                        }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <span className={styles.quantity}>{videoCount}</span>
+                      </Col>
+                    )}
                   </Row>
                 </Card>
               </List.Item>

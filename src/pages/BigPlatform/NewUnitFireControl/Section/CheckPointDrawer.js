@@ -385,7 +385,7 @@ export default class CheckPointDrawer extends PureComponent {
         left={left}
         right={right}
         placement="right"
-        rowStyle={{ height: 'calc(100% - 70px)' }}
+        rowStyle={{ height: 'calc(100% - 70px)', overflow: 'auto' }}
         onClose={this.handleClose}
       />
     );

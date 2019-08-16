@@ -23,19 +23,17 @@
   }
 }
 
-.one {
+.one, .three {
   position: absolute;
   top: 0;
   // left: 42px;
   right: 0;
 }
 
-.one,
-.two {
+.one, .two, .three {
   :global {
     .ant-select-selection {
       border-color: rgb(4, 253, 255);
-      ;
       background-color: transparent;
     }
 
@@ -45,6 +43,15 @@
 
     .ant-select-arrow {
       color: #FFF;
+    }
+  }
+}
+
+.three {
+  :global {
+    .ant-select-selection {
+      border: none;
+      background-color: #1a6ac2;
     }
   }
 }

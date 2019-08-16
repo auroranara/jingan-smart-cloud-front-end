@@ -209,12 +209,12 @@ export default class SensorModelList extends PureComponent {
   // 新增弹窗监测类型改变
   handleModalTypeChange = ({ key } = {}) => {
     const {
-      form: { setFieldsValue },
+      form: { resetFields },
     } = this.props
     // 获取型号代码列表
     this.fetchUnsetModelList({ payload: { type: key } })
     // 清空新增弹窗型号代码、描述、补充描述数据
-    setFieldsValue({ typeCode: undefined, modelName: undefined, type: undefined })
+    resetFields(['typeCode', 'modelName', 'brandName'])
   }
 
   // 新增弹窗型号代码改变
@@ -530,12 +530,12 @@ export default class SensorModelList extends PureComponent {
             )}
           </FormItem>
           <FormItem label="品牌" {...formItemLayout}>
-            {getFieldDecorator('modelName')(
+            {getFieldDecorator('brandName')(
               <Input placeholder="请先选择型号代码" disabled></Input>
             )}
           </FormItem>
-          <FormItem label="品牌" {...formItemLayout}>
-            {getFieldDecorator('brandName')(
+          <FormItem label="型号" {...formItemLayout}>
+            {getFieldDecorator('modelName')(
               <Input placeholder="请先选择型号代码" disabled></Input>
             )}
           </FormItem>

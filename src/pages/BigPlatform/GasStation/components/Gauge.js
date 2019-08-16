@@ -5,10 +5,10 @@ import styles from './Gauge.less';
 import { MAX_MPa as MAX } from '../utils';
 
 export default class Gauge extends PureComponent {
-  getOption = data => {
+  getOption = (data, isOverhaul) => {
     const {
       value,
-      status,
+      status: sts,
       unit,
       deviceParamsInfo: {
         minValue,
@@ -23,7 +23,18 @@ export default class Gauge extends PureComponent {
     const normalMin = Number.parseFloat(normalLower);
     const normalMax = Number.parseFloat(normalUpper);
 
-    const color = status > 0 ? '#f83329' : '#fff';
+    const status = isOverhaul ? -1 : sts;
+    let color, itemColor;
+    if (status > 0) {
+      color = '#f83329';
+      itemColor = '#ff1e00';
+    } else if (status < 0) {
+      color = '#ccc';
+      itemColor = '#ccc';
+    } else {
+      color = '#fff';
+      itemColor = '#1e90ff';
+    }
     return {
       series: [
         {
@@ -42,6 +53,9 @@ export default class Gauge extends PureComponent {
               width: 15,
             },
           },
+          itemStyle: {
+            color: itemColor,
+          },
           splitLine: {
             length: 15,
           },
@@ -55,12 +69,12 @@ export default class Gauge extends PureComponent {
             width: 4,
           },
           detail: {
-            formatter: `{a|${status < 0 || isNaN(value) ? '--' : value}}\n{b|${name}}`,
+            formatter: `{a|${isOverhaul ? '检修中' : status < 0 || isNaN(value) ? '--' : value}}\n{b|${name}}`,
             offsetCenter: [0, '65%'],
             rich: {
               a: {
                 lineHeight: 48,
-                fontSize: 24,
+                fontSize: isOverhaul ? 18 : 24,
                 color,
               },
               b: {
@@ -79,12 +93,12 @@ export default class Gauge extends PureComponent {
   }
 
   render() {
-    const { data, gaugeStyle, ...restProps } = this.props;
+    const { isOverhaul, data, gaugeStyle, ...restProps } = this.props;
     return (
       <div className={styles.container} {...restProps}>
         <ReactEcharts
           style={{ width: 200, height: 200, ...gaugeStyle }}
-          option={this.getOption(data)}
+          option={this.getOption(data, isOverhaul)}
         />
       </div>
     )

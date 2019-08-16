@@ -13,6 +13,7 @@ import {
   getMessages,
   getAllScreenMessage,
   getCameraMessage,
+  getGasTotal,
 } from '@/services/operation';
 import {
   queryAlarmHandleList,
@@ -22,6 +23,8 @@ import {
   countNumAndTimeById,
   queryCheckUsers,
 } from '@/services/bigPlatform/fireControl';
+import { getDeviceRealTimeData } from '@/services/gas';
+import { getDeviceHistory } from '@/services/gasStation';
 import { getUnitLists } from '@/pages/BigPlatform/Operation/utils';
 
 function error(msg) {
@@ -80,6 +83,9 @@ export default {
     workOrderList2: [],
     // 已超期维保工单
     workOrderList7: [],
+    gasHistory: [],
+    gasRealtimeData: {},
+    gasTotal: {},
   },
   effects: {
     *fetchTaskList({ payload, callback }, { call, put, all }) {
@@ -225,7 +231,6 @@ export default {
       }
     },
     *fetchWebsocketScreenMessage({ payload, success, error }, { call, put }) {
-      console.log('fetchWebsocketScreenMessage', payload);
       if (payload.code === 200) {
         yield put({
           type: 'saveScreenMessage',
@@ -354,6 +359,30 @@ export default {
         error(msg);
       }
     },
+    *fetchGasHistory({ payload, callback }, { call, put }) {
+      const response = yield call(getDeviceHistory, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({ type: 'saveGasHistory', payload: data && Array.isArray(data.list) ? data.list : [] });
+        callback && callback();
+      }
+    },
+    *fetchGasRealtimeData({ payload, callback }, { call, put }) {
+      const response = yield call(getDeviceRealTimeData, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({ type: 'saveGasRealtimeData', payload: data || {} });
+        callback && callback(data);
+      }
+    },
+    *fetchGasTotal({ payload, callback }, { call, put }) {
+      const response = yield call(getGasTotal, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({ type: 'saveGasTotal', payload: data || {} });
+        callback && callback(data);
+      }
+    },
   },
 
   reducers: {
@@ -458,6 +487,15 @@ export default {
         ...state,
         messages: [payload, ...state.messages],
       };
+    },
+    saveGasHistory(state, action) {
+      return { ...state, gasHistory: action.payload };
+    },
+    saveGasRealtimeData(state, action) {
+      return { ...state, gasRealtimeData: action.payload };
+    },
+    saveGasTotal(state, action) {
+      return { ...state, gasTotal: action.payload };
     },
   },
 };

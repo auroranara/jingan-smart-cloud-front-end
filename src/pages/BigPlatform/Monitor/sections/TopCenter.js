@@ -106,8 +106,17 @@ const smokeColumns = [
     key: 'status',
     dataIndex: 'status',
     align: 'center',
-    render: (val,{deviceStatus=null,workStatus=null,workStatusName=null}) => {
-      return +val === -1 ? (+deviceStatus===-1&&'故障（失联）')||(+workStatus===-3&&`故障（${workStatusName}）`) : +val === 0 ? '正常' : '火警';
+    width: 160,
+    render: (val, { deviceStatus = null, workStatus = null, workStatusName = null }) => {
+      return +deviceStatus === -1
+        ? '故障(失联)'
+        : (+workStatus === -3 && +deviceStatus === 1) || (+workStatus === -3 && +deviceStatus === 2)
+          ? `故障(${workStatusName})、火警`
+          : +deviceStatus === 1 || +deviceStatus === 2
+            ? '火警'
+            : +workStatus === -3
+              ? `故障(${workStatusName})`
+              : +deviceStatus === 0 && '正常';
     },
   },
   {
@@ -414,15 +423,23 @@ export default class TopCenter extends PureComponent {
         span={8}
         className={styles.section}
         style={{ cursor: isHover ? 'pointer' : 'inherit' }}
-        onClick={isHover ? () => { this.handleViewModal(title) } : null}
+        onClick={
+          isHover
+            ? () => {
+                this.handleViewModal(title);
+              }
+            : null
+        }
       >
-        <div className={styles.leftImg}
+        <div
+          className={styles.leftImg}
           style={{
             backgroundImage: `url(${img})`,
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center center',
             backgroundSize: '50% 40%',
-          }}></div>
+          }}
+        />
         <div className={styles.rightContent}>
           <div className={styles.title}>{title}</div>
           <div className={styles.number}>
@@ -430,8 +447,8 @@ export default class TopCenter extends PureComponent {
           </div>
         </div>
       </Col>
-    )
-  }
+    );
+  };
 
   render() {
     const {
@@ -454,9 +471,27 @@ export default class TopCenter extends PureComponent {
         <Col span={24} style={{ height: '35%', padding: '0' }}>
           <div className={styles.deviceStatistics}>
             <div className={styles.shadowIn}>
-              {this.renderDeviceSection({ img: deviceTotalNumber, title: '设备总数', num: count, color: 'blue', isHover: false })}
-              {this.renderDeviceSection({ img: abnormalDevice, title: '报警设备', num: unnormal, color: 'red', isHover: true })}
-              {this.renderDeviceSection({ img: missingDevice, title: '故障设备', num: outContact, color: 'yellow', isHover: true })}
+              {this.renderDeviceSection({
+                img: deviceTotalNumber,
+                title: '设备总数',
+                num: count,
+                color: 'blue',
+                isHover: false,
+              })}
+              {this.renderDeviceSection({
+                img: abnormalDevice,
+                title: '报警设备',
+                num: unnormal,
+                color: 'red',
+                isHover: true,
+              })}
+              {this.renderDeviceSection({
+                img: missingDevice,
+                title: '故障设备',
+                num: outContact,
+                color: 'yellow',
+                isHover: true,
+              })}
             </div>
           </div>
         </Col>
@@ -573,7 +608,9 @@ export default class TopCenter extends PureComponent {
                     backgroundSize: '50% 40%',
                   }}
                 >
-                  <div className={styles.total}><span>设备数 {total}</span></div>
+                  <div className={styles.total}>
+                    <span>设备数 {total}</span>
+                  </div>
                   <div
                     className={styles.dot}
                     style={{ backgroundImage: `url(${redDot})`, backgroundSize: '15% 15%' }}
@@ -599,7 +636,7 @@ export default class TopCenter extends PureComponent {
         </Col>
         {this.renderModal()}
         {this.renderSmokeModal()}
-      </Col >
+      </Col>
     );
   }
 }

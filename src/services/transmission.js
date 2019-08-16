@@ -66,3 +66,31 @@ export async function transmissionHostDelete({ companyId, transmissionId, hostId
     { method: 'DELETE' }
   );
 }
+
+// 获取点位列表
+export async function fetchPoints(params) {
+  return request(`/acloud_new/v2/pointData/selectByHostId?${stringify(params)}`)
+}
+
+// 编辑点位
+export async function editPoint(params) {
+  return request('/acloud_new/v2/pointData/updatePointData', {
+    method: 'PUT',
+    body: params,
+  })
+}
+
+// 删除点位
+export async function deletePoint({ id }) {
+  return request(`/acloud_new/v2/pointData/deletePointData/${id}`, {
+    method: 'DELETE',
+  })
+}
+
+// 新增点位
+export async function addPoint(params) {
+  return request('/acloud_new/v2/pointData/addPointData', {
+    method: 'POST',
+    body: params,
+  })
+}

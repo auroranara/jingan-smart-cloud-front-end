@@ -54,6 +54,11 @@ export default {
         delete: 'deviceManagement.userTransmissionDevice.host.delete',
         import: 'deviceManagement.userTransmissionDevice.host.importPointPosition',
       },
+      point: {
+        listView: 'deviceManagement.userTransmissionDevice.pointManagement.listView',
+        edit: 'deviceManagement.userTransmissionDevice.pointManagement.edit',
+        delete: 'deviceManagement.userTransmissionDevice.pointManagement.delete',
+      },
     },
     videoMonitor: {
       listView: 'deviceManagement.videoMonitor.listView',

@@ -71,7 +71,7 @@ export default class AddSensor extends Component {
       });
     } else {
       // 如果新增
-      this.fetchSensorTypeDict();
+      this.saveTypeDict()
     }
   }
 
@@ -126,6 +126,18 @@ export default class AddSensor extends Component {
     const { dispatch } = this.props;
     dispatch({ type: 'sensor/fetchModelList', payload });
   };
+
+
+  /**
+   * 保存型号代码列表
+   */
+  saveTypeDict = actions => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/saveTypeDict',
+      ...actions,
+    })
+  }
 
   handleSubmit = () => {
     const {

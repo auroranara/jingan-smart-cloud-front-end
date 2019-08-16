@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Card, Form, Row, Col, Input, Button, List, Spin } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import { Link } from 'dva/router';
 import Ellipsis from 'components/Ellipsis';
 import InfiniteScroll from 'react-infinite-scroller';
 import router from 'umi/router';
@@ -15,18 +16,16 @@ const FormItem = Form.Item;
 // 权限代码
 const {
   personnelPosition: {
-    beaconManagement: {
-      companyBeacon: beaconCode,
-    },
+    beaconManagement: { companyBeacon: beaconCode },
   },
-} = codes
+} = codes;
 
-const title = "信标管理"
+const title = '信标管理';
 const breadcrumbList = [
-  { title: '首页', name: '首页', href: "/" },
+  { title: '首页', name: '首页', href: '/' },
   { title: '人员定位', name: '人员定位' },
   { title, name: title },
-]
+];
 const defaultPageSize = 18;
 
 @Form.create()
@@ -36,27 +35,23 @@ const defaultPageSize = 18;
   loading: loading.effects['personnelPosition/fetchBeaconCompanyList'],
 }))
 export default class BeaconManagement extends PureComponent {
-
   componentDidMount() {
     this.fetchCompanyList({
       payload: {
         pageNum: 1,
         pageSize: defaultPageSize,
       },
-    })
-
+    });
   }
 
   // 获取信标单位列表
-  fetchCompanyList = (actions) => {
-    const {
-      dispatch,
-    } = this.props
+  fetchCompanyList = actions => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'personnelPosition/fetchBeaconCompanyList',
       ...actions,
-    })
-  }
+    });
+  };
 
   handleLoadMore = () => {
     const {
@@ -66,41 +61,41 @@ export default class BeaconManagement extends PureComponent {
         },
       },
       form: { getFieldValue },
-    } = this.props
-    const name = getFieldValue('name')
+    } = this.props;
+    const name = getFieldValue('name');
     this.fetchCompanyList({
       payload: { pageNum: pageNum + 1, pageSize, name },
-    })
-  }
+    });
+  };
 
   // 点击查询
   handleQuery = () => {
     const {
       form: { getFieldValue },
-    } = this.props
-    const name = getFieldValue('name')
+    } = this.props;
+    const name = getFieldValue('name');
     this.fetchCompanyList({
       payload: { pageNum: 1, pageSize: defaultPageSize, name },
-    })
-  }
+    });
+  };
 
   // 点击重置
   handleReset = () => {
     const {
       form: { resetFields },
-    } = this.props
-    resetFields(['name'])
-    this.handleQuery()
-  }
+    } = this.props;
+    resetFields(['name']);
+    this.handleQuery();
+  };
 
   // 点击查看信标列表
   handleViewBeacons = ({ id }, auth) => {
     if (auth) {
-      router.push(`/personnel-position/beacon-management/company/${id}`)
-      return
+      router.push(`/personnel-position/beacon-management/company/${id}`);
+      return;
     }
-    message.warning('您没有权限访问对应页面')
-  }
+    message.warning('您没有权限访问对应页面');
+  };
 
   render() {
     const {
@@ -108,17 +103,17 @@ export default class BeaconManagement extends PureComponent {
       form: { getFieldDecorator },
       personnelPosition: {
         beaconManagement: {
-          list = [],  // 信标单位列表
+          list = [], // 信标单位列表
           isLast,
         },
       },
       user: {
         currentUser: { permissionCodes },
       },
-    } = this.props
+    } = this.props;
 
     // 查看信标权限
-    const viewAuth = hasAuthority(beaconCode, permissionCodes)
+    const viewAuth = hasAuthority(beaconCode, permissionCodes);
 
     return (
       <PageHeaderLayout
@@ -132,15 +127,17 @@ export default class BeaconManagement extends PureComponent {
             <Row gutter={16}>
               <Col lg={8} md={12} sm={24} xs={24}>
                 <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                  {getFieldDecorator('name')(
-                    <Input placeholder="请输入单位名称" />
-                  )}
+                  {getFieldDecorator('name')(<Input placeholder="请输入单位名称" />)}
                 </FormItem>
               </Col>
               <Col lg={8} md={12} sm={24} xs={24}>
                 <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                  <Button type="primary" onClick={this.handleQuery}>查询</Button>
-                  <Button style={{ marginLeft: '10px' }} onClick={this.handleReset}>重置</Button>
+                  <Button type="primary" onClick={this.handleQuery}>
+                    查询
+                  </Button>
+                  <Button style={{ marginLeft: '10px' }} onClick={this.handleReset}>
+                    重置
+                  </Button>
                 </FormItem>
               </Col>
             </Row>
@@ -177,34 +174,60 @@ export default class BeaconManagement extends PureComponent {
                   principalName = null,
                   principalPhone = null,
                   practicalAddress = null, // 地址
-                  beaconCount = 0,         // 信标数
-                } = item
+                  beaconCount = 0, // 信标数
+                } = item;
                 return (
                   <List.Item key={id}>
                     <Card title={name} className={styles.card}>
                       <Ellipsis tooltip className={styles.ellipsis} lines={1}>
-                        主要负责人：{principalName || '暂无信息'}
+                        主要负责人：
+                        {principalName || '暂无信息'}
                       </Ellipsis>
                       <Ellipsis tooltip className={styles.ellipsis} lines={1}>
-                        联系电话：{principalPhone || '暂无信息'}
+                        联系电话：
+                        {principalPhone || '暂无信息'}
                       </Ellipsis>
                       <div className={styles.lsEllipsis}>
                         <Ellipsis tooltip lines={1}>
-                          地址：{practicalAddress || '暂无信息'}
+                          地址：
+                          {practicalAddress || '暂无信息'}
                         </Ellipsis>
                       </div>
-                      <div className={styles.countContainer} onClick={() => this.handleViewBeacons(item, viewAuth)}>
+
+                      {viewAuth ? (
+                        <div className={styles.countContainer}>
+                          <Link
+                            to={`/personnel-position/beacon-management/company/${id}`}
+                            target="_blank"
+                          >
+                            <div className={styles.count}>{beaconCount}</div>
+                            <p className={styles.text}>信标数</p>
+                          </Link>
+                        </div>
+                      ) : (
+                        <div
+                          className={styles.countContainer}
+                          onClick={() => {
+                            message.warn('您没有权限访问对应页面');
+                          }}
+                        >
+                          <div className={styles.count}>{beaconCount}</div>
+                          <p className={styles.text}>信标数</p>
+                        </div>
+                      )}
+
+                      {/* <div className={styles.countContainer} onClick={() => this.handleViewBeacons(item, viewAuth)}>
                         <div className={styles.count}>{beaconCount}</div>
                         <p className={styles.text}>信标数</p>
-                      </div>
+                      </div> */}
                     </Card>
                   </List.Item>
-                )
+                );
               }}
-            ></List>
+            />
           </div>
         </InfiniteScroll>
       </PageHeaderLayout>
-    )
+    );
   }
 }

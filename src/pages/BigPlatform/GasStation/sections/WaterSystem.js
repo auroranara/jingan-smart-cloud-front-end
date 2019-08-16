@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import styles from './WaterSystem.less';
 import { Section } from './Components';
 import { GasEmpty, Gauge, LossDevice, PolarBar, WaterTank } from '../components/Components';
-import { isGauge, getStatusDesc } from '../utils';
+import { isGauge, getStatusDesc, OVERHAUL } from '../utils';
 import { pondIcon, sprayIcon, hydrantIcon } from '../imgs/links';
 
 const CATEGORIES = ['消火栓系统', '喷淋系统', '水池/水箱'];
@@ -22,7 +22,8 @@ export default class WaterSystem extends PureComponent {
     let containerClass = styles.container;
     if (waterLists.length === 1 && waterLists[0].list.length === 1) {
       const { list: [item], index } = waterLists[0];
-      const { deviceName, deviceDataList } = item;
+      const { deviceName, deviceDataList, status: deviceStatus } = item;
+      const isOverhaul = +deviceStatus === OVERHAUL;
       const dataItem = deviceDataList[0];
       const { status, updateTime, value, deviceParamsInfo: { normalLower, normalUpper, minValue, maxValue } } = dataItem;
       const sts = +status;
@@ -49,9 +50,10 @@ export default class WaterSystem extends PureComponent {
       }
       else {
         child = isGauge(index) ? (
-          <Gauge data={dataItem} onClick={handleClick} />
+          <Gauge isOverhaul={isOverhaul} data={dataItem} onClick={handleClick} />
         ) : (
           <WaterTank
+            isOverhaul={isOverhaul}
             data={dataItem}
             onClick={handleClick}
             tankClassName={styles.tank}

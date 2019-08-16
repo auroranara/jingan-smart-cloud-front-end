@@ -251,8 +251,6 @@ export default class NewUnitFireControl extends PureComponent {
       },
     } = this.props;
 
-    const { checkItemId, waterTab } = this.state;
-
     const { NanXiaoWebsocket: ws } = global;
     if (!ws) return;
     ws.onmessage = e => {
@@ -260,242 +258,7 @@ export default class NewUnitFireControl extends PureComponent {
       if (!e.data || e.data.indexOf('heartbeat') > -1) return;
       try {
         const data = JSON.parse(e.data);
-        dispatch({
-          type: 'newUnitFireControl/fetchWebsocketScreenMessage',
-          payload: data,
-          success: result => {
-            // 显示火警障碍弹窗
-            const {
-              itemId,
-              messageFlag,
-              type,
-              checkResult,
-              pointId,
-              pointStatus,
-              deviceType,
-              isOver,
-              enterSign,
-            } = result;
-
-            if (
-              type === 7 ||
-              type === 9 ||
-              type === 38 ||
-              // type === 39 ||
-              type === 40 ||
-              type === 41 ||
-              type === 32 ||
-              type === 36
-            ) {
-              if (+isOver === 0) {
-                if (type === 7 || type === 9) {
-                  if (enterSign === '1') this.showFireMsg(result);
-                } else {
-                  this.showFireMsg(result);
-                }
-              }
-              if (type === 32 || type === 36) this.showFireMsg(result);
-              this.fetchScreenMessage(dispatch, companyId);
-            }
-
-            if (type === 38 || type === 40) {
-              // 烟感列表
-              dispatch({
-                type: 'smoke/fetchCompanySmokeInfo',
-                payload: {
-                  company_id: companyId,
-                },
-              });
-            }
-
-            if (
-              type === 1 ||
-              type === 2 ||
-              type === 3 ||
-              type === 4 ||
-              type === 9 ||
-              type === 7 ||
-              type === 21 ||
-              type === 52
-            ) {
-              // 获取消防主机监测
-              this.fetchFireAlarmSystem();
-            }
-
-            if (type === 14 || type === 15 || type === 16 || type === 17) {
-              // 更新当前隐患总数
-              dispatch({
-                type: 'newUnitFireControl/fetchHiddenDangerNum',
-                payload: { companyId },
-              });
-            }
-
-            if (type === 44 || type === 32 || type === 42 || type === 43) {
-              // 电气火灾监测
-              dispatch({
-                type: 'electricityMonitor/fetchDeviceStatusCount',
-                payload: { companyId },
-              });
-              this.getDeviceRealTimeData(this.elecDrawerDeviceId);
-              this.handleFetchRealTimeData(this.elecMonitorDeviceId);
-            }
-
-            // 获取水系统---消火栓系统
-            if (type === 36 || type === 37 || type === 48 || type === 49 || type === 53) {
-              // 36 水系统报警 37 水系统报警恢复 48水系统失联 49 水系统失联恢复 53 水系统检修状态
-              if (+deviceType === +waterTab) this.fetchWaterSystem(deviceType);
-              if (this.state.waterSystemDrawerVisible) {
-                dispatch({
-                  type: 'newUnitFireControl/fetchWaterDrawer',
-                  payload: {
-                    companyId,
-                    type: [101, 102, 103][this.state.waterTabItem],
-                  },
-                });
-              }
-              // dispatch({
-              //   type: 'newUnitFireControl/fetchWaterAlarm',
-              //   payload: {
-              //     companyId,
-              //   },
-              // });
-            }
-
-            if (
-              type === 38 ||
-              type === 40 ||
-              type === 46 ||
-              type === 47 ||
-              type === 50 ||
-              type === 51
-            ) {
-              // 烟感列表
-              dispatch({
-                type: 'smoke/fetchCompanySmokeInfo',
-                payload: {
-                  company_id: companyId,
-                },
-              });
-            }
-
-            // if (type === 18) {
-            //   // 获取消防设施评分
-            //   dispatch({
-            //     type: 'newUnitFireControl/fetchSystemScore',
-            //     payload: {
-            //       companyId,
-            //     },
-            //   });
-            //   if (this.state.fireAlarmVisible) this.fetchViewFireAlarm();
-            // }
-
-            // 四色图隐患
-            const { fourColorTips, deletedFourColorTips } = this.state;
-            // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
-            if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
-              // 如果前一条隐患还没消失，则移除前一条隐患
-              if (fourColorTips[itemId] === messageFlag) {
-                return;
-              } else if (fourColorTips[itemId]) {
-                this.setState({
-                  fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
-                  latestHiddenDangerId: itemId,
-                  deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
-                });
-              } else {
-                this.setState({
-                  fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
-                  latestHiddenDangerId: itemId,
-                });
-              }
-            }
-
-            if (type === 14) {
-              // 获取点位
-              dispatch({
-                type: 'newUnitFireControl/fetchPointList',
-                payload: {
-                  companyId,
-                },
-              });
-
-              // 获取当前隐患列表
-              dispatch({
-                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-                payload: {
-                  company_id: companyId,
-                  businessType: 2,
-                },
-              });
-
-              //获取巡查记录
-              dispatch({
-                type: 'newUnitFireControl/fetchPointRecord',
-                payload: {
-                  itemId: checkItemId,
-                  item_type: 2,
-                },
-              });
-            }
-            if (type === 15 || type === 16 || type === 17) {
-              if (fourColorTips[pointId] === messageFlag)
-                this.removeFourColorTip(pointId, messageFlag);
-              // 获取点位
-              dispatch({
-                type: 'newUnitFireControl/fetchPointList',
-                payload: {
-                  companyId,
-                },
-              });
-
-              // 获取当前隐患列表
-              dispatch({
-                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-                payload: {
-                  company_id: companyId,
-                  businessType: 2,
-                },
-              });
-
-              //获取巡查记录
-              dispatch({
-                type: 'newUnitFireControl/fetchPointRecord',
-                payload: {
-                  itemId: checkItemId,
-                  item_type: 2,
-                },
-              });
-            }
-            if (type === 13) {
-              // 获取点位
-              dispatch({
-                type: 'newUnitFireControl/fetchPointList',
-                payload: {
-                  companyId,
-                },
-              });
-
-              // 获取当前隐患列表
-              dispatch({
-                type: 'newUnitFireControl/fetchCurrentHiddenDanger',
-                payload: {
-                  company_id: companyId,
-                  businessType: 2,
-                },
-              });
-
-              //获取巡查记录
-              dispatch({
-                type: 'newUnitFireControl/fetchPointRecord',
-                payload: {
-                  itemId: checkItemId,
-                  item_type: 2,
-                },
-              });
-              if (checkResult === '无隐患') this.removeFourColorTip2(pointId);
-            }
-          },
-        });
+        this.handleSocketMessage(data.data);
       } catch (error) {
         console.log('error', error);
       }
@@ -702,6 +465,239 @@ export default class NewUnitFireControl extends PureComponent {
     // 手机号是否可见
     dispatch({ type: 'unitSafety/savePhoneVisible' });
   }
+
+  handleSocketMessage = result => {
+    const {
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+
+    const { checkItemId, waterTab } = this.state;
+    // 显示火警障碍弹窗
+    const {
+      itemId,
+      messageFlag,
+      type,
+      checkResult,
+      pointId,
+      pointStatus,
+      deviceType,
+      isOver,
+      enterSign,
+    } = result;
+    this.fetchScreenMessage(dispatch, companyId);
+    if (
+      type === 7 ||
+      type === 9 ||
+      type === 38 ||
+      // type === 39 ||
+      type === 40 ||
+      type === 41 ||
+      type === 32 ||
+      type === 36
+    ) {
+      if (+isOver === 0) {
+        if (type === 7 || type === 9) {
+          if (enterSign === '1') this.showFireMsg(result);
+        } else {
+          this.showFireMsg(result);
+        }
+      }
+      if (type === 32 || type === 36) this.showFireMsg(result);
+      // this.fetchScreenMessage(dispatch, companyId);
+    }
+
+    if (type === 38 || type === 40) {
+      // 烟感列表
+      dispatch({
+        type: 'smoke/fetchCompanySmokeInfo',
+        payload: {
+          company_id: companyId,
+        },
+      });
+    }
+
+    if (
+      type === 1 ||
+      type === 2 ||
+      type === 3 ||
+      type === 4 ||
+      type === 9 ||
+      type === 7 ||
+      type === 21 ||
+      type === 52
+    ) {
+      // 获取消防主机监测
+      this.fetchFireAlarmSystem();
+    }
+
+    if (type === 14 || type === 15 || type === 16 || type === 17) {
+      // 更新当前隐患总数
+      dispatch({
+        type: 'newUnitFireControl/fetchHiddenDangerNum',
+        payload: { companyId },
+      });
+    }
+
+    if (type === 44 || type === 32 || type === 42 || type === 43) {
+      // 电气火灾监测
+      dispatch({
+        type: 'electricityMonitor/fetchDeviceStatusCount',
+        payload: { companyId },
+      });
+      this.getDeviceRealTimeData(this.elecDrawerDeviceId);
+      this.handleFetchRealTimeData(this.elecMonitorDeviceId);
+    }
+
+    // 获取水系统---消火栓系统
+    if (type === 36 || type === 37 || type === 48 || type === 49 || type === 53) {
+      // 36 水系统报警 37 水系统报警恢复 48水系统失联 49 水系统失联恢复 53 水系统检修状态
+      this.fetchWaterSystem(waterTab);
+      if (this.state.waterSystemDrawerVisible) {
+        dispatch({
+          type: 'newUnitFireControl/fetchWaterDrawer',
+          payload: {
+            companyId,
+            type: [101, 102, 103][this.state.waterTabItem],
+          },
+        });
+      }
+      // dispatch({
+      //   type: 'newUnitFireControl/fetchWaterAlarm',
+      //   payload: {
+      //     companyId,
+      //   },
+      // });
+    }
+
+    if (type === 38 || type === 40 || type === 46 || type === 47 || type === 50 || type === 51) {
+      // 烟感列表
+      dispatch({
+        type: 'smoke/fetchCompanySmokeInfo',
+        payload: {
+          company_id: companyId,
+        },
+      });
+    }
+
+    // if (type === 18) {
+    //   // 获取消防设施评分
+    //   dispatch({
+    //     type: 'newUnitFireControl/fetchSystemScore',
+    //     payload: {
+    //       companyId,
+    //     },
+    //   });
+    //   if (this.state.fireAlarmVisible) this.fetchViewFireAlarm();
+    // }
+
+    // 四色图隐患
+    const { fourColorTips, deletedFourColorTips } = this.state;
+    // 如果最新一条数据为隐患，并且为首次出现，则对应点位显示隐患提示
+    if (type === 14 && deletedFourColorTips.indexOf(messageFlag) === -1) {
+      // 如果前一条隐患还没消失，则移除前一条隐患
+      if (fourColorTips[itemId] === messageFlag) {
+        return;
+      } else if (fourColorTips[itemId]) {
+        this.setState({
+          fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+          latestHiddenDangerId: itemId,
+          deletedFourColorTips: deletedFourColorTips.concat(fourColorTips[itemId]),
+        });
+      } else {
+        this.setState({
+          fourColorTips: { ...fourColorTips, [itemId]: messageFlag },
+          latestHiddenDangerId: itemId,
+        });
+      }
+    }
+
+    if (type === 14) {
+      // 获取点位
+      dispatch({
+        type: 'newUnitFireControl/fetchPointList',
+        payload: {
+          companyId,
+        },
+      });
+
+      // 获取当前隐患列表
+      dispatch({
+        type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+        payload: {
+          company_id: companyId,
+          businessType: 2,
+        },
+      });
+
+      //获取巡查记录
+      dispatch({
+        type: 'newUnitFireControl/fetchPointRecord',
+        payload: {
+          itemId: checkItemId,
+          item_type: 2,
+        },
+      });
+    }
+    if (type === 15 || type === 16 || type === 17) {
+      if (fourColorTips[pointId] === messageFlag) this.removeFourColorTip(pointId, messageFlag);
+      // 获取点位
+      dispatch({
+        type: 'newUnitFireControl/fetchPointList',
+        payload: {
+          companyId,
+        },
+      });
+
+      // 获取当前隐患列表
+      dispatch({
+        type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+        payload: {
+          company_id: companyId,
+          businessType: 2,
+        },
+      });
+
+      //获取巡查记录
+      dispatch({
+        type: 'newUnitFireControl/fetchPointRecord',
+        payload: {
+          itemId: checkItemId,
+          item_type: 2,
+        },
+      });
+    }
+    if (type === 13) {
+      // 获取点位
+      dispatch({
+        type: 'newUnitFireControl/fetchPointList',
+        payload: {
+          companyId,
+        },
+      });
+
+      // 获取当前隐患列表
+      dispatch({
+        type: 'newUnitFireControl/fetchCurrentHiddenDanger',
+        payload: {
+          company_id: companyId,
+          businessType: 2,
+        },
+      });
+
+      //获取巡查记录
+      dispatch({
+        type: 'newUnitFireControl/fetchPointRecord',
+        payload: {
+          itemId: checkItemId,
+          item_type: 2,
+        },
+      });
+      if (checkResult === '无隐患') this.removeFourColorTip2(pointId);
+    }
+  };
 
   handleFetchRealTimeData = deviceId => {
     const { dispatch } = this.props;
@@ -2176,6 +2172,7 @@ export default class NewUnitFireControl extends PureComponent {
       dynamicType,
       videoList,
       onCameraClick: this.handleShowFlowVideo,
+      showCompanyName: false,
     };
 
     return (

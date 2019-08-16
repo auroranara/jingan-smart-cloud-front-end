@@ -1,12 +1,21 @@
 export { genCardsInfo } from '@/pages/BigPlatform/Smoke/utils';
 
+export const MAP_THEMES = [
+  { desc: '标准', value: 0 },
+  { desc: '静蓝', value: 1 },
+];
+
 export const ALL_DEVICES = 0;
 export const HOST = 1;
 export const SMOKE = 2;
 export const ELEC = 3;
 export const GAS = 4;
 export const WATER = 5;
-export const TYPE_KEYS = ['', 'fire', 'smoke', 'elec', 'gas', 'water'];
+
+export const GAS_CODE = 'value';
+export const ARM_CODE = '_arm_status';
+
+export const TYPE_KEYS = ['all', 'fire', 'smoke', 'elec', 'gas', 'water'];
 export const COUNT_BASE_KEY = 'DeviceCount';
 export const COUNT_KEYS = ['Normal', 'Fire', 'Fault', 'UnConnect'];
 const COUNT_KEYS1 = ['Fire', 'Fault', 'UnConnect', 'Normal'];
@@ -88,6 +97,7 @@ export function getUnitList(list, deviceType) {
 }
 
 export function getUnitLists(list) {
+  addAllStatusCount(list);
   const lists = list.reduce((prev, next) => {
     prev.forEach((lst, i) => {
       if (next[`${TYPE_KEYS[i + 1]}DeviceCount`])
@@ -95,7 +105,70 @@ export function getUnitLists(list) {
     });
     return prev;
   }, [[], [], [], [], []]);
-  return [list, ...lists];
+  const allLists = [list, ...lists];
+  allLists.forEach(sortByStatus);
+  return allLists;
+}
+
+function addAllStatusCount(list) {
+  const allKey = TYPE_KEYS[0];
+  const deviceKeys = TYPE_KEYS.slice(1);
+  list.forEach(item => {
+    COUNT_KEYS.forEach(k => {
+      const baseKey = `${COUNT_BASE_KEY}For${k}`;
+      item[`${allKey}${baseKey}`] = deviceKeys.reduce((prev, next) => {
+        const count = item[`${next}${baseKey}`];
+        return count ? prev + count : prev;
+      }, 0);
+    });
+    item[`${allKey}${COUNT_BASE_KEY}`] = deviceKeys.reduce((prev, next) => prev + item[`${next}${COUNT_BASE_KEY}`], 0);
+  });
+}
+
+function sortByStatus(list, index) {
+  const typeLabel = TYPE_KEYS[index];
+  const typeCount = TYPE_COUNTS[index];
+  const factors = COUNT_KEYS.filter((k, i) => typeCount[i]).map(k => `${typeLabel}DeviceCountFor${k}`);
+  let first = factors.shift();
+  factors.push(first, 'companyName');
+  sortByFactors(list, factors);
+}
+
+function isNumber(n) {
+  return typeof n === 'number' && !Number.isNaN(n);
+}
+
+function sortByFactors(list, factors) {
+  const length = list.length;
+  if (!list || !length || length === 1 || !factors || !factors.length)
+    return list;
+  const prop = factors[0];
+  const nextFactors = factors.slice(1);
+  list.sort((a, b) => {
+    const [a1, b1] = [a, b].map(o => o[prop]);
+    const [na, nb] = [a1, b1].map(s => Number.parseFloat(s));
+    if ([na, nb].every(isNumber))
+      return nb - na;
+    return a1.localeCompare(b1);
+  });
+
+  let flag;
+  let accumList = [];
+  for (let i = 0; i < list.length; i++) {
+    const o = list[i];
+    const v = o[prop];
+    if (flag !== v) {
+      flag = v;
+      accumList.push([o]);
+    } else
+      accumList[accumList.length - 1].push(o);
+  }
+  accumList.forEach(lst => sortByFactors(lst, nextFactors));
+
+  let accumIndex = 0;
+  accumList.forEach(lst => lst.forEach(o => list[accumIndex++] = o));
+
+  return list;
 }
 
 export function hidePhone(phone) {

@@ -153,7 +153,7 @@ export default class WaterSystemDrawer extends PureComponent {
                 : '1px solid #04fdff',
             }}
           >
-            {isMending && <div className={styles.status}>检修</div>}
+            {isMending && <div className={styles.status}>检修中</div>}
             {isNotIn && <div className={styles.status}>未接入</div>}
             {!isMending && !isNotIn && +status > 0 && <div className={styles.status}>报警</div>}
             {!isMending &&

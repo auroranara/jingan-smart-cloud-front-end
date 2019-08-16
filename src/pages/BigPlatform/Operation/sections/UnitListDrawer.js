@@ -39,11 +39,19 @@ export default class UnitListDrawer extends PureComponent {
     this.setState({ searchValue: '' });
   };
 
+  genCardClick = item => e => {
+    const { showUnitDetail } = this.props;
+    showUnitDetail(item);
+    this.handleClose();
+  };
+
   render() {
     const {
       visible,
       list=[],
       deviceType,
+      // showUnitDetail,
+      handleCompanyClick,
       // handleAlarmClick,
       // handleFaultClick,
       // handleClickUnitStatistics,
@@ -58,16 +66,16 @@ export default class UnitListDrawer extends PureComponent {
       >
         {filteredList.map(item => {
           const { companyId, companyName, address, saferName, saferPhone } = item;
-          let [count, stsCounts] = getAllDevicesCount(item);
-          let dotItems = stsCounts.map((n, i) => ({ ...STATUS_PROPS[i], value: n }));
-          if (deviceType) {
+          // let [count, stsCounts] = getAllDevicesCount(item);
+          // let dotItems = stsCounts.map((n, i) => ({ ...STATUS_PROPS[i], value: n }));
+          // if (deviceType) {
             const selected = TYPE_KEYS[deviceType];
             const typeCount = TYPE_COUNTS[deviceType];
-            count = item[`${selected}${COUNT_BASE}`];
-            dotItems = STATUS_PROPS
+            const count = item[`${selected}${COUNT_BASE}`];
+            const dotItems = STATUS_PROPS
               .filter(({ index }) => typeCount[index])
               .map(itm => ({ ...itm, value: item[`${selected}${COUNT_BASE}For${COUNT_KEYS[itm.index]}`] }));
-          }
+          // }
           // const clickUnitStatistics = e =>  handleClickUnitStatistics({ company_id, company_name, address, principal_name, principal_phone, normal, unnormal, faultNum });
           const dots = (
             <p className={styles.more}>
@@ -88,8 +96,9 @@ export default class UnitListDrawer extends PureComponent {
               location={address || NO_DATA}
               person={saferName || NO_DATA}
               phone={saferPhone || NO_DATA}
-              style={{ cursor: 'auto' }}
-              // clickName={ count && clickUnitStatistics }
+              style={{ cursor: 'pointer' }}
+              clickName={ count ? e => handleCompanyClick(companyId) : null }
+              onClick={this.genCardClick(item)}
               infoStyle={INFO_STYLE}
               info={
                 <Fragment>

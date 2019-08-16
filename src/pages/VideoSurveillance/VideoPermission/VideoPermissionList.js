@@ -153,7 +153,7 @@ export default class VideoPermissionList extends PureComponent {
         videoPermission: { add },
       },
     } = codes;
-    return unitType && unitType === 3 || unitType === 2 ? (
+    return (unitType && unitType === 3) || unitType === 2 ? (
       <Card>
         <Form layout="inline">
           <FormItem label="所属单位：">
@@ -231,6 +231,7 @@ export default class VideoPermissionList extends PureComponent {
                     <AuthLink
                       code={edit}
                       to={`/video-surveillance/video-permission/edit/${item.id}?name=${name}`}
+                      target="_blank"
                     >
                       编辑
                     </AuthLink>,

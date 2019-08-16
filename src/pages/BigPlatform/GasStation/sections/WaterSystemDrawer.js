@@ -8,7 +8,7 @@ import { SearchBar } from '@/pages/BigPlatform/NewFireControl/components/Compone
 import { DrawerContainer } from '@/pages/BigPlatform/NewUnitFireControl/components/Components';
 import { cameralogo, noMonitor } from '@/pages/BigPlatform/NewUnitFireControl/imgs/links';
 import { Gauge, LossCard, TotalInfo, WaterTank } from '../components/Components';
-import { isGauge } from '../utils';
+import { OVERHAUL, isGauge } from '../utils';
 
 function title(i) {
   switch (i) {
@@ -62,7 +62,8 @@ export default class WaterSystemDrawer extends PureComponent {
     if (!list.length)
       return <Empty />;
     return list.map(item => {
-      const { area, deviceId, location, deviceName, deviceDataList, videoList } = item;
+      const { area, deviceId, location, deviceName, deviceDataList, status: deviceStatus } = item;
+      const isOverhaul = +deviceStatus === OVERHAUL;
       const dataItem = deviceDataList[0];
       const { status } = dataItem;
       const sts = +status;
@@ -71,11 +72,13 @@ export default class WaterSystemDrawer extends PureComponent {
       if (sts !== -1) {
         const img = isGauge(waterTabItem) ? (
           <Gauge
+            isOverhaul={isOverhaul}
             data={dataItem}
             onClick={handleClick}
           />
         ) : (
           <WaterTank
+            isOverhaul={isOverhaul}
             data={dataItem}
             onClick={handleClick}
             tankClassName={styles.tank}

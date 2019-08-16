@@ -43,6 +43,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
     });
     fetchMessageInformList({ dataId: id });
     this.setState(({ index }) => ({ index: index - 1 }));
+    this.drawerTop.resetMsgRead();
   };
 
   handleRightClick = () => {
@@ -72,6 +73,11 @@ export default class FireMonitorFlowDrawer extends PureComponent {
     });
     fetchMessageInformList({ dataId: id });
     this.setState(({ index }) => ({ index: index + 1 }));
+    this.drawerTop.resetMsgRead();
+  };
+
+  onRef = ref => {
+    this.drawerTop = ref;
   };
 
   render() {
@@ -108,6 +114,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
     const headProps = {
       ...dataItem,
       dynamicType: 0,
+      showCompanyName: false,
       videoList: dataItem.cameraMessage || [],
       onCameraClick: () => {
         handleParentChange({ videoList: dataItem.cameraMessage || [] });
@@ -124,11 +131,11 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       <DynamicDrawerTop
         {...headProps}
         {...dataItem}
-        {...{ companyName: undefined }}
         read={read}
         unread={unread}
         msgType={msgFlow}
         msgSendLoading={messageInformListLoading}
+        onRef={this.onRef}
       />
     );
     let left = null;

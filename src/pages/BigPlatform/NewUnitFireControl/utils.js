@@ -1,3 +1,5 @@
+export const CYAN_STYLE = { color: '#0FF' };
+
 export function getMsgIcon(type, list) {
   const target = list.find(({ types }) => types.includes(+type));
   if (target)
@@ -5,8 +7,11 @@ export function getMsgIcon(type, list) {
 }
 
 export function vaguePhone(phone, phoneVisible) {
+  if (!phone)
+    return '';
+
   const newPhone =
-    phoneVisible || !phone ? phone : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+    phoneVisible ? phone : `${phone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
   return newPhone;
 }
 
@@ -24,3 +29,11 @@ export const filterChartValue = (chartData = []) => {
   const newData = chartData.filter(item => !!item.value);
   return newData.length ? newData : NoPieData;
 };
+
+export function getMaxNameLength(list) {
+  list = list.filter(itm => itm);
+  if (!list || !list.length)
+    return 0;
+
+  return Math.max(...list.map(({ name }) => name ? name.length : 0));
+}

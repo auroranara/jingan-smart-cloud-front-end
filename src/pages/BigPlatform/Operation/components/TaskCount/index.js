@@ -56,7 +56,7 @@ export default class TaskCount extends PureComponent {
     ];
 
     return (
-      <CustomSection className={styles.container} title="维保任务统计">
+      <CustomSection className={styles.container} title="运维任务统计">
         <div className={styles.list}>
           {list.map(({ label, value, borderColor }) => (
             <div

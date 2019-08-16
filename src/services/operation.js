@@ -38,25 +38,30 @@ export async function getFireList(params) {
 }
 // 获取大屏消息
 export async function getScreenMessage(params) {
-  return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`)
+  return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`);
 }
 
 // 获取视频列表
 export async function getVideoList(params) {
-  return request(`/acloud_new/v2/hdf/getAllCamera.json?${stringify(params)}`)
+  return request(`/acloud_new/v2/hdf/getAllCamera.json?${stringify(params)}`);
 }
 
 // 获取实时消息
 export async function getMessages(params) {
-  return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`)
+  return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`);
 }
 
 // 获取所有企业的实时消息
 export async function getAllScreenMessage(params) {
-  return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`)
+  return request(`/acloud_new/v2/sdf/screenMessage?${stringify(params)}`);
 }
 
 // 获取视频
 export async function getCameraMessage(params) {
-  return request(`/acloud_new/v2/fireManage/getCameraMessage?${stringify(params)}`)
+  return request(`/acloud_new/v2/fireManage/getCameraMessage?${stringify(params)}`);
+}
+
+// 获取燃气统计
+export async function getGasTotal(params) {
+  return request(`/acloud_new/v2/sdgs/countHistorySmoke?${stringify(params)}`);
 }
