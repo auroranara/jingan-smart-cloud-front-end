@@ -222,17 +222,9 @@ export default class App extends PureComponent {
       pageNum: 1,
       pageSize: 10,
     };
-
     const { pageNum = 1, pageSize = defaultPageSize, startTime, endTime, companyName, ...rest } = payload;
-    // 重置控件
-    companyName && dispatch({
-      type: 'hiddenDangerReport/fetchUnitListFuzzy',
-      payload: {
-        unitName: companyName,
-        pageNum: 1,
-        pageSize: 10,
-      },
-    });
+
+    // 筛选栏填入值
     setFieldsValue({
       createTime:
         startTime && endTime
@@ -241,34 +233,40 @@ export default class App extends PureComponent {
       ...rest,
     });
 
-    // 获取列表
-    this.handleSearch(pageNum, pageSize)
-
     // 获取网格列表
     dispatch({
       type: 'hiddenDangerReport/fetchGridList',
     });
 
+    // 筛选栏模糊查询企业列表
     dispatch({
       type: 'hiddenDangerReport/fetchUnitListFuzzy',
+      payload: companyName ? {
+        unitName: companyName,
+        pageNum: 1,
+        pageSize: 10,
+      } : null,
+      success: (arr) => {
+        this.handleSearch(pageNum, pageSize, arr)
+      },
     });
 
     // 根据用户类型获取单位
-    payload.companyId &&
-      dispatch({
-        type: 'hiddenDangerReport/fetchUnitListFuzzy',
-        payload: {
-          unitName: payload.companyName,
-          pageNum: 1,
-          pageSize: 10,
-        },
-      });
+    // payload.companyId &&
+    //   dispatch({
+    //     type: 'hiddenDangerReport/fetchUnitListFuzzy',
+    //     payload: {
+    //       unitName: payload.companyName,
+    //       pageNum: 1,
+    //       pageSize: 10,
+    //     },
+    //   });
   }
 
   /**
    * 查询
    */
-  handleSearch = (pageNum = 1, pageSize = defaultPageSize) => {
+  handleSearch = (pageNum = 1, pageSize = defaultPageSize, arr) => {
     const {
       dispatch,
       form: { getFieldsValue },
@@ -277,18 +275,20 @@ export default class App extends PureComponent {
         currentUser: { id, companyId: cId, unitType },
       },
     } = this.props;
+
     const { createTime, companyId: serCId, ...rest } = getFieldsValue();
     const [startTime, endTime] = createTime || [];
     // 企业用户登录传currentUser中的企业id
     const companyId = unitType === 4 ? cId : serCId
+    const units = arr || unitIdes
+    const targetCom = units && units.find(item => item.id === companyId)
+
     const payload = {
       ...rest,
       pageNum,
       pageSize,
       companyId,
-      companyName:
-        unitIdes.find(item => item.id === companyId) &&
-        unitIdes.find(item => item.id === companyId).name,
+      companyName: targetCom && targetCom.name,
       startTime: startTime && `${startTime.format('YYYY/MM/DD')} 00:00:00`,
       endTime: endTime && `${endTime.format('YYYY/MM/DD')} 23:59:59`,
     };

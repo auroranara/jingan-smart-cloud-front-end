@@ -395,7 +395,7 @@ export default {
     // 根据单位类型模糊搜索
     *fetchUnitListFuzzy({ payload, success, error }, { call, put }) {
       const response = yield call(queryUnits, payload);
-      if (response.code === 200) {
+      if (response && response.code === 200) {
         yield put({
           type: 'queryUnits',
           payload: response.data.list,
