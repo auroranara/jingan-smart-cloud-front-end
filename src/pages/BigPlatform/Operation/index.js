@@ -809,7 +809,7 @@ export default class Operation extends PureComponent {
           unitTypeName: componentName || undefined,
           companyId: cId,
         };
-        const type = { 1: 0, 4: 1, 2: 3 }[reportType];
+        const type = { 1: 0, 4: 1, 3: 2, 2: 3 }[reportType];
         const flow = fireType - 1;
         const occurData = [
           {

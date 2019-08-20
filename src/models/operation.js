@@ -31,6 +31,8 @@ function error(msg) {
   message.error(msg);
 }
 
+const LABELS = ['消防主机', '独立烟感', '可燃气体', '报修'];
+
 export default {
   namespace: 'operation',
 
@@ -40,6 +42,7 @@ export default {
       count: {
         消防主机: 0,
         独立烟感: 0,
+        可燃气体: 0,
         报修: 0,
       },
     },
@@ -96,27 +99,33 @@ export default {
           call(getTaskList, payload),
           call(getTaskList, { ...payload, pageNum: 1, pageSize: 1, reportType: 1 }),
           call(getTaskList, { ...payload, pageNum: 1, pageSize: 1, reportType: 4 }),
+          call(getTaskList, { ...payload, pageNum: 1, pageSize: 1, reportType: 3 }),
           call(getTaskList, { ...payload, pageNum: 1, pageSize: 1, reportType: 2 }),
         ]);
         response = responseList[0];
         isSuccess = responseList.every(res => res && res.code === 200);
-        count = {
-          消防主机:
-            responseList[1] &&
-            responseList[1].data &&
-            responseList[1].data.pagination &&
-            responseList[1].data.pagination.listSize,
-          独立烟感:
-            responseList[2] &&
-            responseList[2].data &&
-            responseList[2].data.pagination &&
-            responseList[2].data.pagination.listSize,
-          报修:
-            responseList[3] &&
-            responseList[3].data &&
-            responseList[3].data.pagination &&
-            responseList[3].data.pagination.listSize,
-        };
+        count = LABELS.reduce((prev, next, index) => {
+          const i = index + 1;
+          prev[next] = responseList[i] && responseList[i].data && responseList[i].data.pagination && responseList[i].data.pagination.listSize;
+          return prev;
+        }, {});
+        // count = {
+        //   消防主机:
+        //     responseList[1] &&
+        //     responseList[1].data &&
+        //     responseList[1].data.pagination &&
+        //     responseList[1].data.pagination.listSize,
+        //   独立烟感:
+        //     responseList[2] &&
+        //     responseList[2].data &&
+        //     responseList[2].data.pagination &&
+        //     responseList[2].data.pagination.listSize,
+        //   报修:
+        //     responseList[3] &&
+        //     responseList[3].data &&
+        //     responseList[3].data.pagination &&
+        //     responseList[3].data.pagination.listSize,
+        // };
       } else {
         response = yield call(getTaskList, payload);
         isSuccess = response && response.code === 200;
