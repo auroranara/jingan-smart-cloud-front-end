@@ -411,6 +411,32 @@ module.exports = env => {
                 },
               ],
             },
+            // 人员备案
+            {
+              name: 'personnelManagement',
+              code: 'baseInfo.personnelManagement',
+              path: '/base-info/personnel-management',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/personnel-management',
+                  redirect: '/base-info/personnel-management/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.personnelManagement.listView',
+                  path: '/base-info/personnel-management/list',
+                  component: './BaseInfo/PersonnelManagement',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.personnelManagement.add',
+                  path: '/base-info/personnel-management/add',
+                  component: './BaseInfo/PersonnelManagement/PersonnelEdit',
+                },
+              ],
+            },
           ],
         },
 
