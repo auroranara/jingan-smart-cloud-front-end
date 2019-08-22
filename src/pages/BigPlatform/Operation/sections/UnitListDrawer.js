@@ -7,7 +7,7 @@ import {
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import { DotItem } from '@/pages/BigPlatform/Smoke/components/Components';
-import { COUNT_BASE_KEY as COUNT_BASE, COUNT_KEYS, TYPE_COUNTS, TYPE_DESCES, TYPE_KEYS, getAllDevicesCount } from '../utils';
+import { COUNT_BASE_KEY as COUNT_BASE, COUNT_KEYS, TYPE_COUNTS, TYPE_DESCES, TYPE_KEYS } from '../utils';
 
 const TYPE = 'unitList';
 const NO_DATA = '暂无信息';
@@ -48,7 +48,9 @@ export default class UnitListDrawer extends PureComponent {
   render() {
     const {
       visible,
+      listType,
       list=[],
+      aggList=[],
       deviceType,
       // showUnitDetail,
       handleCompanyClick,
@@ -58,7 +60,9 @@ export default class UnitListDrawer extends PureComponent {
     } = this.props;
     const { searchValue } = this.state;
 
-    const filteredList = list.filter(({ companyName }) => companyName.includes(searchValue));
+    const title = listType ? '聚合单位列表' : `单位列表-${TYPE_DESCES[deviceType]}`;
+    const lst = listType ? aggList: list;
+    const filteredList = lst.filter(({ companyName }) => companyName.includes(searchValue));
 
     const left = (
       <SearchBar
@@ -122,7 +126,7 @@ export default class UnitListDrawer extends PureComponent {
 
     return (
       <DrawerContainer
-        title={`单位列表-${TYPE_DESCES[deviceType]}`}
+        title={title}
         width={500}
         visible={visible}
         left={left}

@@ -25,7 +25,7 @@ import {
 } from '@/services/bigPlatform/fireControl';
 import { getDeviceRealTimeData } from '@/services/gas';
 import { getDeviceHistory } from '@/services/gasStation';
-import { getUnitLists } from '@/pages/BigPlatform/Operation/utils';
+import { getUnitLists, aggregateByLocation } from '@/pages/BigPlatform/Operation/utils';
 
 function error(msg) {
   message.error(msg);
@@ -60,6 +60,7 @@ export default {
     },
     unitList: [], // 地图企业列表
     unitLists: [[], [], [], [], [], []], // 企业分类列表的二维数组
+    aggregationUnitLists: [[], [], [], [], []], // 按位置聚合的企业分类列表
     firePie: {},
     fireTrend: [],
     fireList: [],
@@ -428,7 +429,9 @@ export default {
           newUnitList[index] = target;
         // newUnitList[index] = list[0];
       } else newUnitList = list;
-      return { ...state, unitList: newUnitList, unitLists: getUnitLists(newUnitList) };
+      const lists = getUnitLists(newUnitList);
+      const aggregationLists = aggregateByLocation(lists);
+      return { ...state, unitList: newUnitList, unitLists: lists, aggregationUnitLists: aggregationLists };
     },
     saveFirePie(state, action) {
       return { ...state, firePie: action.payload };
