@@ -109,7 +109,7 @@ const breadcrumbList = [
     loading: loading.models.company,
   }),
   dispatch => ({
-    // 获取初始数据列表（参数传family 1 获取人员管理列表）
+    // 获取初始数据列表（参数传family 1 获取家庭档案列表 0 获取企业列表）
     fetch({ payload = {}, ...res }) {
       dispatch({
         type: 'company/fetch',

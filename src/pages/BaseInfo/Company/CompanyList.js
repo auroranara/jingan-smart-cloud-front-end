@@ -110,11 +110,12 @@ const breadcrumbList = [
     loading: loading.models.company,
   }),
   dispatch => ({
-    // 获取初始数据列表
-    fetch(action) {
+    // 获取初始数据列表（参数传family 1 获取家庭档案列表 0 获取企业列表）
+    fetch({ payload = {}, ...res }) {
       dispatch({
         type: 'company/fetch',
-        ...action,
+        payload: { ...payload, family: 0 },
+        ...res,
       });
     },
     // 追加数据列表
@@ -642,17 +643,17 @@ export default class CompanyList extends PureComponent {
                       部门
                     </Link>,
                   ]}
-                  // extra={hasDeleteAuthority ? (
-                  //   <Button
-                  //     onClick={() => {
-                  //       this.handleShowDeleteConfirm(id);
-                  //     }}
-                  //     shape="circle"
-                  //     style={{ border: 'none', fontSize: '20px' }}
-                  //   >
-                  //     <Icon type="close" />
-                  //   </Button>
-                  // ) : null}
+                // extra={hasDeleteAuthority ? (
+                //   <Button
+                //     onClick={() => {
+                //       this.handleShowDeleteConfirm(id);
+                //     }}
+                //     shape="circle"
+                //     style={{ border: 'none', fontSize: '20px' }}
+                //   >
+                //     <Icon type="close" />
+                //   </Button>
+                // ) : null}
                 >
                   <Row>
                     <Col span={16}>
@@ -692,12 +693,12 @@ export default class CompanyList extends PureComponent {
                             />
                           </Popconfirm>
                         ) : (
-                          <img
-                            className={styles.defaultIcon}
-                            src={safetyProduction ? safe : safeGray}
-                            alt="safe"
-                          />
-                        )}
+                            <img
+                              className={styles.defaultIcon}
+                              src={safetyProduction ? safe : safeGray}
+                              alt="safe"
+                            />
+                          )}
                         {unitType === 3 ? (
                           <Popconfirm
                             className={styles.ml30}
@@ -718,12 +719,12 @@ export default class CompanyList extends PureComponent {
                             />
                           </Popconfirm>
                         ) : (
-                          <img
-                            className={`${styles.defaultIcon} ${styles.ml30}`}
-                            src={fireService ? fire : fireGray}
-                            alt="fire"
-                          />
-                        )}
+                            <img
+                              className={`${styles.defaultIcon} ${styles.ml30}`}
+                              src={fireService ? fire : fireGray}
+                              alt="fire"
+                            />
+                          )}
                       </div>
                     </Col>
                     {/* <Col
