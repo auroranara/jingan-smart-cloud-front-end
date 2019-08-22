@@ -32,6 +32,7 @@ import { getCompanyType, getFileList, getImageSize, getImportantTypes } from '..
 
 import styles from './Company.less';
 import Safety from './Safety';
+import FireControl from './FireControl';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -101,6 +102,10 @@ const tabList = [
   {
     key: '1',
     tab: '安全信息',
+  },
+  {
+    key: '2',
+    tab: '消防信息',
   },
 ];
 // 默认选中一般企业
@@ -206,8 +211,6 @@ export default class CompanyDetail extends PureComponent {
 
   /* 生命周期函数 */
   componentDidMount() {
-    // console.log('CompanyEdit.didMount', this.props);
-
     const {
       fetchCompany,
       fetchDict,
@@ -258,36 +261,35 @@ export default class CompanyDetail extends PureComponent {
           const [importantHost, importantSafety] = getImportantTypes(companyType);
           setFieldsValue({ importantHost, importantSafety });
 
-          // console.log(companyIchnographyList);
           // 初始化上传文件
-          this.setState({
-            ichnographyList: Array.isArray(companyIchnographyList)
-              ? companyIchnographyList.map((item, index) => ({
-                  ...item,
-                  uid: index,
-                  status: 'done',
-                }))
-              : JSON.parse(companyIchnographyList.dbUrl).map((item, index) => ({
-                  ...item,
-                  uid: index,
-                  status: 'done',
-                })),
-            firePictureList: fireIchnographyList.map(({ id, dbUrl, webUrl, fileName }, index) => ({
-              uid: id || index,
-              status: 'done',
-              name: fileName,
-              url: webUrl,
-              dbUrl,
-            })),
-            unitPhotoList: unitPhotoList.map(({ id, dbUrl, webUrl, fileName }, index) => ({
-              uid: id || index,
-              status: 'done',
-              name: fileName,
-              url: webUrl,
-              dbUrl,
-            })),
-            isCompany: companyNatureLabel === defaultCompanyNature,
-          });
+          // this.setState({
+          //   ichnographyList: Array.isArray(companyIchnographyList)
+          //     ? companyIchnographyList.map((item, index) => ({
+          //         ...item,
+          //         uid: index,
+          //         status: 'done',
+          //       }))
+          //     : JSON.parse(companyIchnographyList.dbUrl).map((item, index) => ({
+          //         ...item,
+          //         uid: index,
+          //         status: 'done',
+          //       })),
+          //   firePictureList: fireIchnographyList.map(({ id, dbUrl, webUrl, fileName }, index) => ({
+          //     uid: id || index,
+          //     status: 'done',
+          //     name: fileName,
+          //     url: webUrl,
+          //     dbUrl,
+          //   })),
+          //   unitPhotoList: unitPhotoList.map(({ id, dbUrl, webUrl, fileName }, index) => ({
+          //     uid: id || index,
+          //     status: 'done',
+          //     name: fileName,
+          //     url: webUrl,
+          //     dbUrl,
+          //   })),
+          //   isCompany: companyNatureLabel === defaultCompanyNature,
+          // });
           // 获取注册地址列表
           fetchArea({
             payload: {
@@ -494,19 +496,24 @@ export default class CompanyDetail extends PureComponent {
             practicalTown,
             industryCategory: industryCategory.join(','),
             createTime: createTime && createTime.format('YYYY-MM-DD'),
-            companyIchnography: JSON.stringify(
-              ichnographyList.map(({ name, url, dbUrl }) => ({ name, url, dbUrl }))
-            ),
-            fireIchnography: JSON.stringify(
-              firePictureList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
-            ),
-            companyPhoto: JSON.stringify(
-              unitPhotoList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
-            ),
+            // companyIchnography: JSON.stringify(
+            //   ichnographyList.map(({ name, url, dbUrl }) => ({ name, url, dbUrl }))
+            // ),
+            // fireIchnography: JSON.stringify(
+            //   firePictureList.map(({ name, url, dbUrl }) => ({
+            //     fileName: name,
+            //     webUrl: url,
+            //     dbUrl,
+            //   }))
+            // ),
+            // companyPhoto: JSON.stringify(
+            //   unitPhotoList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
+            // ),
             longitude,
             latitude,
             gridId: gridId[gridId.length - 1],
-            companyType: getCompanyType(importantHost, importantSafety),
+            // companyType: getCompanyType(importantHost, importantSafety),
+            companyType: !id ? '2' : undefined,
           };
           // 成功回调
           const success = companyId => {
@@ -556,18 +563,35 @@ export default class CompanyDetail extends PureComponent {
           },
         } = file.response;
         if (result) {
-          this.setState({
-            ichnographyList: fileList.map(item => {
-              if (!item.url && item.response) {
-                return {
-                  ...item,
-                  url: result.webUrl,
-                  dbUrl: result.dbUrl,
-                };
+          getImageSize(
+            result.webUrl,
+            isSatisfied => {
+              let files = [...fileList];
+              if (file.response.code === 200 && isSatisfied && file.type === 'image/png') {
+                files = [...fileList];
+                message.success('上传成功');
+              } else if (file.type !== 'image/png') {
+                message.error('请上传png格式的图片');
+                files = fileList.slice(0, fileList.length - 1);
+              } else {
+                message.error('上传的图片分辨率请不要大于2505*1625');
+                files = fileList.slice(0, fileList.length - 1);
               }
-              return item;
-            }),
-          });
+              this.setState({
+                ichnographyList: files.map(item => {
+                  if (!item.url && item.response) {
+                    return {
+                      ...item,
+                      url: result.webUrl,
+                      dbUrl: result.dbUrl,
+                    };
+                  }
+                  return item;
+                }),
+              });
+            },
+            [2505, 1625]
+          );
         } else {
           // 没有返回值
           message.error('上传失败！');
@@ -675,15 +699,22 @@ export default class CompanyDetail extends PureComponent {
     }
   };
 
-  handleUploadUnitPhoto = info => { // 限制一个文件，但有可能新文件上传失败，所以在新文件上传完成后判断，成功则只保留新的，失败，则保留原来的
+  handleUploadUnitPhoto = info => {
+    // 限制一个文件，但有可能新文件上传失败，所以在新文件上传完成后判断，成功则只保留新的，失败，则保留原来的
     const { fileList: fList, file } = info;
     let fileList = [...fList];
 
-    if (file.status === 'done') { // 上传完成后，查看图片大小
-      const { response: { data: { list: [{ webUrl }] } } } = file;
+    if (file.status === 'done') {
+      // 上传完成后，查看图片大小
+      const {
+        response: {
+          data: {
+            list: [{ webUrl }],
+          },
+        },
+      } = file;
       getImageSize(webUrl, isSatisfied => {
-        if (file.response.code === 200 && isSatisfied)
-          fileList = [file];
+        if (file.response.code === 200 && isSatisfied) fileList = [file];
         else {
           message.error('上传的图片分辨率请不要大于240*320');
           fileList = fileList.slice(0, 1);
@@ -691,7 +722,8 @@ export default class CompanyDetail extends PureComponent {
         fileList = getFileList(fileList);
         this.setState({ unitPhotoList: fileList });
       });
-    } else { // 其他情况，直接用原文件数组
+    } else {
+      // 其他情况，直接用原文件数组
       fileList = getFileList(fileList);
       this.setState({ unitPhotoList: fileList });
     }
@@ -807,7 +839,7 @@ export default class CompanyDetail extends PureComponent {
   };
 
   /* 上传文件按钮 */
-  renderUploadButton = (fileList, onChange, multiple=true) => {
+  renderUploadButton = (fileList, onChange, multiple = true, tips) => {
     return (
       <Upload
         name="files"
@@ -825,6 +857,17 @@ export default class CompanyDetail extends PureComponent {
           <Icon type="plus" style={{ fontSize: '32px' }} />
           <div style={{ marginTop: '8px' }}>点击上传</div>
         </Button>
+        {tips && (
+          <span
+            style={{ whiteSpace: 'nowrap', marginLeft: '25px' }}
+            onClick={e => {
+              e.stopPropagation();
+              return null;
+            }}
+          >
+            {tips}
+          </span>
+        )}
       </Upload>
     );
   };
@@ -1110,7 +1153,7 @@ export default class CompanyDetail extends PureComponent {
               </Row>
             </Col>
           </Row>
-          <Row>
+          {/* <Row>
             <Col lg={12} md={12} sm={24}>
               <Form.Item label={fieldLabels.importantHost} {...itemLayout}>
                 {getFieldDecorator('importantHost', {
@@ -1137,15 +1180,20 @@ export default class CompanyDetail extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24}>
+          </Row> */}
+          {/* <Row gutter={{ lg: 48, md: 24 }}>
+            <Col lg={14} md={16} sm={24}>
               <Form.Item label={fieldLabels.companyIchnography}>
-                {this.renderUploadButton(ichnographyList, this.handleUploadIchnography)}
+                {this.renderUploadButton(
+                  ichnographyList,
+                  this.handleUploadIchnography,
+                  true,
+                  '尺寸限制：2505*1625（宽*高），png格式'
+                )}
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={{ lg: 48, md: 24 }}>
+          </Row> */}
+          {/* <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.fireIchnography}>
                 {this.renderUploadButton(firePictureList, this.handleUploadfireIchnography)}
@@ -1158,7 +1206,7 @@ export default class CompanyDetail extends PureComponent {
                 {this.renderUploadButton(unitPhotoList, this.handleUploadUnitPhoto, false)}
               </Form.Item>
             </Col>
-          </Row>
+          </Row> */}
         </Form>
       </Card>
     );
@@ -1493,11 +1541,9 @@ export default class CompanyDetail extends PureComponent {
       match: {
         params: { id },
       },
+      dispatch,
     } = this.props;
     const { submitting, tabActiveKey, isCompany } = this.state;
-
-    // console.log(loading, safetyLoading, submitting);
-    // console.log(tabActiveKey, typeof tabActiveKey);
     const title = id ? editTitle : addTitle;
     // 面包屑
     const breadcrumbList = [
@@ -1527,7 +1573,7 @@ export default class CompanyDetail extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        tabList={tabList}
+        tabList={this.operation === 'edit' ? tabList : [tabList[0]]}
         onTabChange={this.handleTabChange}
         tabActiveKey={tabActiveKey}
         wrapperClassName={styles.advancedForm}
@@ -1542,6 +1588,14 @@ export default class CompanyDetail extends PureComponent {
           </div>
           <div style={{ display: tabActiveKey === tabList[1].key ? 'block' : 'none' }}>
             <Safety operation={this.operation} companyId={id} setGridTree={this.setGridTree} />
+          </div>
+          <div style={{ display: tabActiveKey === tabList[2].key ? 'block' : 'none' }}>
+            <FireControl
+              dispatch={dispatch}
+              operation={this.operation}
+              companyId={id}
+              detail={this.props.company.detail.data}
+            />
           </div>
         </Spin>
       </PageHeaderLayout>

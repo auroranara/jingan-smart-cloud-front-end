@@ -10,12 +10,9 @@ export function getCompanyType(hostType, safetyType) {
   const host = Number(hostType);
   const safety = Number(safetyType);
 
-  if (host && safety)
-    return 4;
-  if (host && !safety)
-    return 3;
-  if (!host && safety)
-    return 1;
+  if (host && safety) return 4;
+  if (host && !safety) return 3;
+  if (!host && safety) return 1;
   return 2;
 }
 
@@ -23,7 +20,7 @@ export function getCompanyType(hostType, safetyType) {
 export function getImportantTypes(companyType) {
   const type = Number(companyType);
 
-  switch(type) {
+  switch (type) {
     case 1:
       return ['0', '1'];
     case 2:
@@ -37,9 +34,14 @@ export function getImportantTypes(companyType) {
   }
 }
 
+export function getNewCompanyType(companyType, hostType, safetyType) {
+  const importantTypes = getImportantTypes(companyType);
+  return getCompanyType(hostType || importantTypes[0], safetyType || importantTypes[1]);
+}
+
 const MAX_WIDTH = 240;
 const MAX_HEIGHT = 320;
-export function getImageSize(src, callback) {
+export function getImageSize(src, callback, [maxWidth = MAX_WIDTH, maxHeight = MAX_HEIGHT]) {
   if (!src) {
     console.log(src);
     return;
@@ -49,21 +51,50 @@ export function getImageSize(src, callback) {
   img.src = src;
   img.onload = e => {
     const { width, height } = e.target;
-    const isSatisfied = width <= MAX_WIDTH && height <= MAX_HEIGHT;
+    console.log('width', width);
+    console.log('height', height);
+    const isSatisfied = width <= maxWidth && height <= maxHeight;
     callback(isSatisfied);
   };
 }
 
 export function getFileList(list) {
-  if (!Array.isArray(list))
-    return [];
+  if (!Array.isArray(list)) return [];
 
   return list.map(file => {
     if (!file.url && file.response) {
-      const { data: { list: [{ webUrl, dbUrl }] } } = file.response;
+      const {
+        data: {
+          list: [{ webUrl, dbUrl }],
+        },
+      } = file.response;
       file.url = webUrl;
       file.dbUrl = dbUrl;
     }
     return file;
   });
 }
+
+const defaultImgUrl = 'http://data.jingan-china.cn/static/images/';
+export const PhotoStyles = [
+  {
+    value: '1',
+    name: '校园风格',
+    urls: [`${defaultImgUrl}school_bg.png`, `${defaultImgUrl}school.png`],
+  },
+  {
+    value: '2',
+    name: '工厂风格',
+    urls: [`${defaultImgUrl}factory_bg.png`, `${defaultImgUrl}factory.png`],
+  },
+  {
+    value: '3',
+    name: '加油站风格',
+    urls: [`${defaultImgUrl}gas_station.png_bg.png`, `${defaultImgUrl}gas_station.png`],
+  },
+  {
+    value: '4',
+    name: '医院风格',
+    urls: [`${defaultImgUrl}hospital_bg.png`, `${defaultImgUrl}hospital.png`],
+  },
+];

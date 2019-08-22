@@ -17,6 +17,7 @@ import { getImportantTypes } from '../utils';
 
 import styles from './Company.less';
 import SafetyDetail from './SafetyDetail';
+import FireControlDetail from './FireControlDetail';
 
 const { Description } = DescriptionList;
 
@@ -96,6 +97,10 @@ const tabList = [
   {
     key: '1',
     tab: '安全信息',
+  },
+  {
+    key: '2',
+    tab: '消防信息',
   },
 ];
 // 默认选中一般企业
@@ -267,19 +272,19 @@ export default class CompanyDetail extends PureComponent {
       (practicalTownLabel || '') +
       (practicalAddress || '');
 
-    let companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
-    companyIchnographyList = Array.isArray(companyIchnographyList)
-      ? companyIchnographyList
-      : JSON.parse(companyIchnographyList.dbUrl);
-    // console.log(typeof companyIchnographyList);
+    // let companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
+    // companyIchnographyList = Array.isArray(companyIchnographyList)
+    //   ? companyIchnographyList
+    //   : JSON.parse(companyIchnographyList.dbUrl);
+    // // console.log(typeof companyIchnographyList);
 
-    let fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
-    let unitPhotoList = Array.isArray(companyPhotoDetails) ? companyPhotoDetails : [];
+    // let fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
+    // let unitPhotoList = Array.isArray(companyPhotoDetails) ? companyPhotoDetails : [];
     // fireIchnographyList 肯定为true
     // fireIchnographyList = fireIchnographyList ? fireIchnographyList : fireIchnographyList.dbUrl;
 
     return (
-      <Card title="基础信息" className={styles.card} bordered={false}>
+      <Card title="基本信息" className={styles.card} bordered={false}>
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
           <Description term={fieldLabels.companyNature}>
@@ -305,15 +310,15 @@ export default class CompanyDetail extends PureComponent {
             {/* </Ellipsis> */}
           </Description>
         </DescriptionList>
-        <DescriptionList col={3} style={{ marginBottom: 16 }}>
+        {/* <DescriptionList col={3} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.importantHost}>
             {IMPORTANT_TYPES[importantHost]}
           </Description>
           <Description term={fieldLabels.importantSafety}>
             {IMPORTANT_TYPES[importantSafety]}
           </Description>
-        </DescriptionList>
-        <DescriptionList col={1} style={{ marginBottom: 20 }}>
+        </DescriptionList> */}
+        {/* <DescriptionList col={1} style={{ marginBottom: 20 }}>
           <Description term={fieldLabels.companyIchnography}>
             {companyIchnographyList.length !== 0
               ? companyIchnographyList.map(({ name, url }) => (
@@ -324,8 +329,8 @@ export default class CompanyDetail extends PureComponent {
                   </div>
                 ))
               : getEmptyData()}
-          </Description>
-          <Description term={fieldLabels.fireIchnography}>
+          </Description> */}
+        {/* <Description term={fieldLabels.fireIchnography}>
             {fireIchnographyList.length !== 0
               ? fireIchnographyList.map(({ fileName, webUrl }) => (
                   <div key={webUrl}>
@@ -347,7 +352,7 @@ export default class CompanyDetail extends PureComponent {
                 ))
               : getEmptyData()}
           </Description>
-        </DescriptionList>
+        </DescriptionList>*/}
       </Card>
     );
   }
@@ -545,6 +550,9 @@ export default class CompanyDetail extends PureComponent {
           </div>
           <div style={{ display: tabActiveKey === tabList[1].key ? 'block' : 'none' }}>
             <SafetyDetail companyId={id} setGotMenus={this.setGotMenus} />
+          </div>
+          <div style={{ display: tabActiveKey === tabList[2].key ? 'block' : 'none' }}>
+            <FireControlDetail companyId={id} detail={this.props.company.detail.data} />
           </div>
         </Spin>
       </PageHeaderLayout>

@@ -263,10 +263,10 @@ export default {
       // console.log('success', success);
       const response = yield call(updateCompany, payload);
       if (response.code === 200) {
-        yield put({
-          type: 'updateCompany',
-          payload: response.data,
-        });
+        // yield put({
+        //   type: 'updateCompany',
+        //   payload: response.data,
+        // });
         if (success) {
           success();
         }

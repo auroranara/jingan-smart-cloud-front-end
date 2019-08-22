@@ -14,10 +14,25 @@ import newVideo from '@/assets/new-video2.png';
 import ponit from '../imgs/ponit.png';
 import pointDot from '../imgs/dotPoint.png';
 import videoDot from '../imgs/dotVideo.png';
+import { PhotoStyles } from '../../../BaseInfo/utils';
 
 import styles from './index.less';
 
 const { Option } = Select;
+
+const switchBackImg = (uploadImgs = [], photoStyle) => {
+  // 消防运营驾驶舱中间图片显示逻辑：上传图>底图>无图（默认空）
+  if (uploadImgs.length > 0) return uploadImgs;
+  else if (photoStyle)
+    return [
+      {
+        id: 'woyebuzhidaoshaid',
+        fileName: PhotoStyles.find(item => item.value === photoStyle).name,
+        webUrl: PhotoStyles.find(item => item.value === photoStyle).urls[0],
+      },
+    ];
+  else return [];
+};
 
 /**
  * description: 点位巡查统计
@@ -54,8 +69,12 @@ export default class FourColor extends PureComponent {
       videoFireList !== prevVideoFireList
     ) {
       // 初始化选中第一张图
-      const { fireIchnographyUrl = [] } = companyMessage;
-      this.setSelectedFourColorImg(fireIchnographyUrl[0]);
+      const {
+        fireIchnographyUrl = [],
+        companyMessage: { photoStyle },
+      } = companyMessage;
+      const backImg = switchBackImg(fireIchnographyUrl, photoStyle);
+      this.setSelectedFourColorImg(backImg[0]);
     }
     if (latestHiddenDangerId !== prevLatestHiddenDangerId) {
       // 找到对应的点位
@@ -63,8 +82,12 @@ export default class FourColor extends PureComponent {
       if (point) {
         // 找到对应的图片
         const { fix_fire_id } = point;
-        const { fireIchnographyUrl = [] } = companyMessage;
-        const image = fireIchnographyUrl.find(({ id }) => id === fix_fire_id);
+        const {
+          fireIchnographyUrl = [],
+          companyMessage: { photoStyle },
+        } = companyMessage;
+        const backImg = switchBackImg(fireIchnographyUrl, photoStyle);
+        const image = backImg.find(({ id }) => id === fix_fire_id);
         const { selectedFourColorImg } = this.state;
         if (image !== selectedFourColorImg) {
           this.setSelectedFourColorImg(image);
@@ -83,7 +106,9 @@ export default class FourColor extends PureComponent {
     } = this.props;
     // 更新选中的四色图和对应视频列表
     const points = firePoint
-      .filter(({ fix_fire_id, x_fire, y_fire }) => fix_fire_id && fix_fire_id === id && x_fire && y_fire)
+      .filter(
+        ({ fix_fire_id, x_fire, y_fire }) => fix_fire_id && fix_fire_id === id && x_fire && y_fire
+      )
       .map(item => ({
         ...item,
         type: 'marker',
@@ -92,7 +117,9 @@ export default class FourColor extends PureComponent {
         render: this.renderPoint,
       }));
     const videos = videoFireList
-      .filter(({ fix_fire_id, x_fire, y_fire }) => fix_fire_id && fix_fire_id === id && x_fire && y_fire)
+      .filter(
+        ({ fix_fire_id, x_fire, y_fire }) => fix_fire_id && fix_fire_id === id && x_fire && y_fire
+      )
       .map(item => ({
         ...item,
         type: 'marker',
@@ -246,22 +273,23 @@ export default class FourColor extends PureComponent {
     const {
       model: {
         // 企业信息中获取四色图
-        companyMessage: { fireIchnographyUrl = [] } = {},
+        companyMessage: { fireIchnographyUrl = [], companyMessage: { photoStyle } } = {},
       },
     } = this.props;
     //  从state中获取当前选中的四色图id
     const {
       selectedFourColorImg: { id: selectedFourColorImgId },
     } = this.state;
+    const backImg = switchBackImg(fireIchnographyUrl, photoStyle);
     // 当四色图的数量大于1时才显示下拉框
-    return fireIchnographyUrl.length > 1 ? (
+    return backImg.length > 1 ? (
       <Select
         value={selectedFourColorImgId}
         onSelect={this.handleSelect}
         className={styles.fourColorImgSelect}
         dropdownClassName={styles.fourColorImgSelectDropDown}
       >
-        {fireIchnographyUrl.map(item => {
+        {backImg.map(item => {
           const { id, fileName = '未命名' } = item;
           const isSelected = selectedFourColorImgId === id;
           return (
