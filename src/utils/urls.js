@@ -17,7 +17,7 @@ export default {
   },
   personnelManagement: {
     list: '/base-info/personnel-management/list',
-    add: '/base-info/personnel-management/add/',
+    add: '/base-info/personnel-management/add',
     edit: '/base-info/personnel-management/edit/',
     detail: '/base-info/personnel-management/detail/',
   },

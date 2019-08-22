@@ -411,7 +411,7 @@ module.exports = env => {
                 },
               ],
             },
-            // 人员备案
+            // 家庭档案
             {
               name: 'personnelManagement',
               code: 'baseInfo.personnelManagement',
@@ -434,6 +434,18 @@ module.exports = env => {
                   code: 'baseInfo.personnelManagement.add',
                   path: '/base-info/personnel-management/add',
                   component: './BaseInfo/PersonnelManagement/PersonnelEdit',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.personnelManagement.edit',
+                  path: '/base-info/personnel-management/edit/:id',
+                  component: './BaseInfo/PersonnelManagement/PersonnelEdit',
+                },
+                {
+                  name: 'detail',
+                  code: 'baseInfo.personnelManagement.view',
+                  path: '/base-info/personnel-management/detail/:id',
+                  component: './BaseInfo/PersonnelManagement/PersonnelDetail',
                 },
               ],
             },

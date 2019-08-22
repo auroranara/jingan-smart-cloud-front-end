@@ -9,14 +9,13 @@ import {
   Input,
   Cascader,
   Select,
-  DatePicker,
   Popover,
   Icon,
   message,
   Upload,
-  Radio,
   Spin,
   Modal,
+  Tooltip,
 } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
@@ -28,34 +27,22 @@ import { phoneReg, emailReg } from '@/utils/validate';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
 import { getToken } from '@/utils/authority';
-import { getCompanyType, getFileList, getImageSize, getImportantTypes } from '../utils';
+import { getCompanyType, getImportantTypes } from '../utils';
 
 import styles from '../Company/Company.less';
-
-const { TextArea } = Input;
 const { Option } = Select;
 const { confirm } = Modal;
-const { Group: RadioGroup } = Radio;
-
-const itemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 8 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 12 },
-  },
-};
 
 const {
   home: homeUrl,
-  company: { list: listUrl, edit: editUrl },
+  company: { edit: editUrl },
+  personnelManagement: { list: listUrl },
   exception: { 500: exceptionUrl },
 } = urls;
 const {
   home: homeTitle,
-  company: { menu: menuTitle, list: listTitle },
+  company: { menu: menuTitle },
+
 } = titles;
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -88,11 +75,36 @@ const fieldLabels = {
   importantSafety: '安全重点单位',
   importantHost: '消防重点单位',
   unitPhoto: '单位照片',
+  warningCall: '报警接收电话',
 };
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
 // 默认选中一般企业
 const defaultCompanyNature = '一般企业';
+const phoneTypes = [
+  { value: 1, label: '手机' },
+  { value: 0, label: '固话' },
+]
+const companyStatuses = [
+  { value: '正常', key: '1' },
+  { value: '关停', key: '2' },
+]
+// 级联中id => parentIds的映射
+const idMap = {};
+function handleGridTree(gridList = [], idMap) {
+  let gl = gridList;
+  if (typeof gridList === 'string') gl = JSON.parse(gl);
+
+  return traverse(gl, idMap);
+}
+
+function traverse(gl, idMap) {
+  return gl.map(({ id, text, children, nodes, parentIds }) => {
+    // parentIds: 'a,b,c,', split之后['a','b','c',''],要把空字符串过滤掉
+    idMap[id] = parentIds ? [...parentIds.split(',').filter(item => item), id] : [id];
+    return { value: id, label: text, children: children ? traverse(children, idMap) : undefined };
+  });
+}
 
 @connect(
   ({ company, user, loading }) => ({
@@ -176,26 +188,33 @@ const defaultCompanyNature = '一般企业';
 )
 @Form.create()
 export default class CompanyDetail extends PureComponent {
-  state = {
-    ichnographyList: [],
-    firePictureList: [],
-    unitPhotoList: [],
-    isCompany: true,
-    submitting: false,
-    uploading: false,
-    map: {
-      visible: false,
-      center: undefined,
-      point: undefined,
-    },
-    gridTree: [],
-  };
+  constructor(props) {
+    super(props)
+    this.state = {
+      ichnographyList: [],
+      firePictureList: [],
+      unitPhotoList: [],
+      isCompany: true,
+      submitting: false,
+      uploading: false,
+      map: {
+        visible: false,
+        center: undefined,
+        point: undefined,
+      },
+      gridTree: [],
+    };
+    this.operation = null;
+    this.idMap = {};
+    this.gridId = '';
+  }
 
   /* 生命周期函数 */
   componentDidMount() {
     // console.log('CompanyEdit.didMount', this.props);
 
     const {
+      dispatch,
       fetchCompany,
       fetchDict,
       gsafeFetchDict,
@@ -206,13 +225,12 @@ export default class CompanyDetail extends PureComponent {
       match: {
         params: { id },
       },
-      location: {
-        query: { isFromAdd },
-      },
+      // location: {
+      //   query: { isFromAdd },
+      // },
       goToException: error,
       form: { setFieldsValue },
     } = this.props;
-
     // 如果id存在的话，则编辑，否则新增
     if (id) {
       // 获取详情
@@ -240,10 +258,7 @@ export default class CompanyDetail extends PureComponent {
           // 若idMap已获取则设值，未获取时则在获取idMap后设值
           this.gridId = gridId;
           Object.keys(this.idMap).length && setFieldsValue({ gridId: this.idMap[gridId] });
-          const [importantHost, importantSafety] = getImportantTypes(companyType);
-          setFieldsValue({ importantHost, importantSafety });
 
-          // console.log(companyIchnographyList);
           // 初始化上传文件
           this.setState({
             ichnographyList: Array.isArray(companyIchnographyList)
@@ -307,7 +322,17 @@ export default class CompanyDetail extends PureComponent {
         error,
       });
     }
-
+    // 获取网格点树
+    dispatch({
+      type: 'safety/fetchMenus',
+      callback: ({ gridList }) => {
+        const gridTree = handleGridTree(gridList, idMap);
+        this.idMap = idMap;
+        // // 若gridId已获取，则在此设置gridId值，未获取，则在获取详情后设置值
+        this.gridId && setFieldsValue({ gridId: idMap[this.gridId] });
+        this.setState({ gridTree });
+      },
+    })
     // 获取行业类别
     fetchIndustryType({
       error,
@@ -362,10 +387,6 @@ export default class CompanyDetail extends PureComponent {
     });
   }
 
-  operation = null;
-  idMap = {};
-  gridId = '';
-
   // 在safety组件中同步gridTree
   setGridTree = (gridTree, idMap) => {
     const {
@@ -419,6 +440,7 @@ export default class CompanyDetail extends PureComponent {
       match: {
         params: { id },
       },
+      goBack,
     } = this.props;
     // 如果验证通过则提交，没有通过则滚动到错误处
     validateFieldsAndScroll(
@@ -432,12 +454,8 @@ export default class CompanyDetail extends PureComponent {
             practicalDistrict,
             practicalTown,
           ],
-          createTime,
-          industryCategory,
           coordinate,
           gridId,
-          importantHost,
-          importantSafety,
           ...restFields
         }
       ) => {
@@ -445,7 +463,6 @@ export default class CompanyDetail extends PureComponent {
           this.setState({
             submitting: true,
           });
-          const { ichnographyList, firePictureList, unitPhotoList } = this.state;
           const [longitude, latitude] = coordinate ? coordinate.split(',') : [];
           const payload = {
             ...restFields,
@@ -458,29 +475,16 @@ export default class CompanyDetail extends PureComponent {
             practicalCity,
             practicalDistrict,
             practicalTown,
-            industryCategory: industryCategory.join(','),
-            createTime: createTime && createTime.format('YYYY-MM-DD'),
-            companyIchnography: JSON.stringify(
-              ichnographyList.map(({ name, url, dbUrl }) => ({ name, url, dbUrl }))
-            ),
-            fireIchnography: JSON.stringify(
-              firePictureList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
-            ),
-            companyPhoto: JSON.stringify(
-              unitPhotoList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
-            ),
             longitude,
             latitude,
             gridId: gridId[gridId.length - 1],
-            companyType: getCompanyType(importantHost, importantSafety),
+            family: 1,
           };
           // 成功回调
           const success = companyId => {
             const msg = id ? '编辑成功！' : '新增成功！';
-            message.success(msg, 1, () => {
-              this.setState({ submitting: false });
-              this.handleConfirm(companyId);
-            });
+            message.success(msg);
+            goBack()
           };
           // 失败回调
           const error = msg => {
@@ -505,162 +509,6 @@ export default class CompanyDetail extends PureComponent {
         }
       }
     );
-  };
-
-  /* 上传单位平面图 */
-  handleUploadIchnography = ({ fileList, file }) => {
-    if (file.status === 'uploading') {
-      this.setState({
-        ichnographyList: fileList,
-        uploading: true,
-      });
-    } else if (file.status === 'done') {
-      if (file.response.code === 200) {
-        const {
-          data: {
-            list: [result],
-          },
-        } = file.response;
-        if (result) {
-          this.setState({
-            ichnographyList: fileList.map(item => {
-              if (!item.url && item.response) {
-                return {
-                  ...item,
-                  url: result.webUrl,
-                  dbUrl: result.dbUrl,
-                };
-              }
-              return item;
-            }),
-          });
-        } else {
-          // 没有返回值
-          message.error('上传失败！');
-          this.setState({
-            ichnographyList: fileList.filter(item => {
-              return !item.response || item.response.data.list.length !== 0;
-            }),
-          });
-        }
-      } else {
-        // code为500
-        message.error('上传失败！');
-        this.setState({
-          ichnographyList: fileList.filter(item => {
-            return !item.response || item.response.code !== 200;
-          }),
-        });
-      }
-      this.setState({
-        uploading: false,
-      });
-    } else if (file.status === 'removed') {
-      // 删除
-      this.setState({
-        ichnographyList: fileList.filter(item => {
-          return item.status !== 'removed';
-        }),
-      });
-    } else {
-      // error
-      message.error('上传失败！');
-      this.setState({
-        ichnographyList: fileList.filter(item => {
-          return item.status !== 'error';
-        }),
-        uploading: false,
-      });
-    }
-  };
-
-  /* 上传消防平面图 */
-  handleUploadfireIchnography = ({ fileList, file }) => {
-    if (file.status === 'uploading') {
-      this.setState({
-        firePictureList: fileList,
-        uploading: true,
-      });
-    } else if (file.status === 'done') {
-      if (file.response.code === 200) {
-        const {
-          data: {
-            list: [result],
-          },
-        } = file.response;
-        if (result) {
-          this.setState({
-            firePictureList: fileList.map(item => {
-              if (!item.url && item.response) {
-                return {
-                  ...item,
-                  url: result.webUrl,
-                  dbUrl: result.dbUrl,
-                };
-              }
-              return item;
-            }),
-          });
-        } else {
-          // 没有返回值
-          message.error('上传失败！');
-          this.setState({
-            firePictureList: fileList.filter(item => {
-              return !item.response || item.response.data.list.length !== 0;
-            }),
-          });
-        }
-      } else {
-        // code为500
-        message.error('上传失败！');
-        this.setState({
-          firePictureList: fileList.filter(item => {
-            return !item.response || item.response.code !== 200;
-          }),
-        });
-      }
-      this.setState({
-        uploading: false,
-      });
-    } else if (file.status === 'removed') {
-      // 删除
-      this.setState({
-        firePictureList: fileList.filter(item => {
-          return item.status !== 'removed';
-        }),
-      });
-    } else {
-      // error
-      message.error('上传失败！');
-      this.setState({
-        firePictureList: fileList.filter(item => {
-          return item.status !== 'error';
-        }),
-        uploading: false,
-      });
-    }
-  };
-
-  handleUploadUnitPhoto = info => { // 限制一个文件，但有可能新文件上传失败，所以在新文件上传完成后判断，成功则只保留新的，失败，则保留原来的
-    const { fileList: fList, file } = info;
-    let fileList = [...fList];
-
-    if (file.status === 'done') { // 上传完成后，查看图片大小
-      const { response: { data: { list: [{ webUrl }] } } } = file;
-      getImageSize(webUrl, isSatisfied => {
-        if (file.response.code === 200 && isSatisfied)
-          fileList = [file];
-        else {
-          message.error('上传的图片分辨率请不要大于240*320');
-          fileList = fileList.slice(0, 1);
-        }
-        fileList = getFileList(fileList);
-        this.setState({ unitPhotoList: fileList });
-      });
-    } else { // 其他情况，直接用原文件数组
-      fileList = getFileList(fileList);
-      this.setState({ unitPhotoList: fileList });
-    }
   };
 
   /* 区域动态加载 */
@@ -816,73 +664,15 @@ export default class CompanyDetail extends PureComponent {
     );
   };
 
-  /* 渲染行业类别 */
-  renderIndustryCategory() {
+
+  /**
+   * 接收报警电话-电话类型改变
+   */
+  handleChangeCallType = (value) => {
     const {
-      company: {
-        industryCategories,
-        detail: {
-          data: { industryCategory },
-        },
-      },
-      form: { getFieldDecorator },
-    } = this.props;
-
-    return (
-      <Col lg={8} md={12} sm={24}>
-        <Form.Item label={fieldLabels.industryCategory}>
-          {getFieldDecorator('industryCategory', {
-            initialValue: industryCategory ? industryCategory.split(',') : [],
-          })(
-            <Cascader
-              options={industryCategories}
-              fieldNames={{
-                value: 'type_id',
-                label: 'gs_type_name',
-                children: 'children',
-              }}
-              allowClear
-              changeOnSelect
-              notFoundContent
-              placeholder="请选择行业类别"
-              getPopupContainer={getRootChild}
-            />
-          )}
-        </Form.Item>
-      </Col>
-    );
-  }
-
-  /* 渲染单位状态 */
-  renderCompanyStatus() {
-    const {
-      company: {
-        companyStatuses,
-        detail: {
-          data: { companyStatus },
-        },
-      },
-      form: { getFieldDecorator },
-    } = this.props;
-
-    return (
-      <Col lg={8} md={12} sm={24}>
-        <Form.Item label={fieldLabels.companyStatus}>
-          {getFieldDecorator('companyStatus', {
-            initialValue: companyStatus,
-            rules: [{ required: true, message: '请选择单位状态' }],
-          })(
-            <Select placeholder="请选择单位状态" getPopupContainer={getRootChild}>
-              {companyStatuses.map(item => (
-                <Option value={item.key} key={item.key}>
-                  {item.value}
-                </Option>
-              ))}
-            </Select>
-          )}
-        </Form.Item>
-      </Col>
-    );
+      form: { resetFields },
+    } = this.props
+    resetFields(['warningCallNumber'])
   }
 
   /* 渲染地图 */
@@ -908,6 +698,9 @@ export default class CompanyDetail extends PureComponent {
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
+      match: {
+        params: { id },
+      },
       company: {
         detail: {
           data: {
@@ -925,14 +718,18 @@ export default class CompanyDetail extends PureComponent {
             practicalDistrict,
             practicalTown,
             gridId,
+            companyStatus,
+            warningCallType: detailCallType,
+            warningCallNumber,
           },
         },
         registerAddress: registerAddressArea,
         practicalAddress: practicalAddressArea,
       },
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
     } = this.props;
-    const { ichnographyList, firePictureList, unitPhotoList, isCompany, gridTree } = this.state;
+    const { gridTree } = this.state;
+    const warningCallType = getFieldValue('warningCallType')
     return (
       <Card className={styles.card} bordered={false}>
         <Form layout="vertical">
@@ -970,16 +767,18 @@ export default class CompanyDetail extends PureComponent {
                     ref={coordinate => { this.coordinate = coordinate }}
                     addonAfter={
                       <Fragment>
-                        <Icon type="copy" style={{ marginRight: '10px' }} onClick={this.handleCopyCoordinate} />
-                        <Icon type="environment" onClick={this.handleShowMap} />
+                        <Tooltip title="复制" >
+                          <Icon type="copy" style={{ marginRight: '10px' }} onClick={this.handleCopyCoordinate} />
+                        </Tooltip>
+                        <Tooltip title="打开地图" >
+                          <Icon type="environment" onClick={this.handleShowMap} />
+                        </Tooltip>
                       </Fragment>
                     }
                   />
                 )}
               </Form.Item>
             </Col>
-            {!isCompany && this.renderIndustryCategory()}
-            {!isCompany && this.renderCompanyStatus()}
           </Row>
           <Row gutter={{ lg: 48, md: 24 }}>
             <Col span={24}>
@@ -1063,6 +862,54 @@ export default class CompanyDetail extends PureComponent {
               </Row>
             </Col>
           </Row>
+          <Row gutter={12}>
+            <Col md={5} sm={10}>
+              <Form.Item label={fieldLabels.warningCall}>
+                {getFieldDecorator('warningCallType', {
+                  initialValue: id && phoneTypes.find(item => item.value === detailCallType) ? phoneTypes.find(item => item.value === detailCallType).label : undefined,
+                  rules: [{ required: true, message: '请选择电话类型' }],
+                })(
+                  <Select style={{ width: '100%' }} placeholder="电话类型" onChange={this.handleChangeCallType}>
+                    {phoneTypes.map(({ value, label }) => (
+                      <Option value={value} key={value}>{label}</Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col md={7} sm={14}>
+              <Form.Item style={{ paddingTop: '29px' }}>
+                {getFieldDecorator('warningCallNumber', {
+                  initialValue: warningCallNumber,
+                  rules: [
+                    { required: true, message: '请输入电话号码' },
+                    {
+                      pattern: +warningCallType === 1 ? /0?(13|14|15|18|17)[0-9]{9}/ : /^(\d{3,4})?\d{7,14}$/,
+                      message: +warningCallType === 1 ? '请输入正确格式，为11位数字' : '请输入正确格式',
+                    },
+                  ],
+                })(
+                  <Input placeholder="电话号码" />
+                )}
+              </Form.Item>
+            </Col>
+          </Row>
+          <Col md={7} sm={14}>
+            <Form.Item label={fieldLabels.companyStatus}>
+              {getFieldDecorator('companyStatus', {
+                initialValue: companyStatus,
+                rules: [{ required: true, message: '请选择单位状态' }],
+              })(
+                <Select placeholder="请选择单位状态" getPopupContainer={getRootChild}>
+                  {companyStatuses.map(item => (
+                    <Option value={item.key} key={item.key}>
+                      {item.value}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </Form.Item>
+          </Col>
         </Form>
       </Card>
     );
@@ -1075,12 +922,6 @@ export default class CompanyDetail extends PureComponent {
       company: {
         detail: {
           data: {
-            legalName,
-            legalPhone,
-            legalEmail,
-            principalName,
-            principalPhone,
-            principalEmail,
             safetyName,
             safetyPhone,
             safetyEmail,
@@ -1092,35 +933,35 @@ export default class CompanyDetail extends PureComponent {
     return (
       <Card bordered={false}>
         <Form layout="vertical">
-          <h3 className={styles.subTitle}>主要负责人</h3>
+          <h3 className={styles.subTitle}>负责人</h3>
           <Row gutter={{ lg: 48, md: 24 }} className={styles.subBody}>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.principalName}>
-                {getFieldDecorator('principalName', {
-                  initialValue: principalName,
+              <Form.Item label={fieldLabels.safetyName}>
+                {getFieldDecorator('safetyName', {
+                  initialValue: safetyName,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: false, message: '请输入主要负责人姓名' }],
+                  rules: [{ required: false, message: '请输入负责人姓名' }],
                 })(<Input placeholder="请输入姓名" />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.principalPhone}>
-                {getFieldDecorator('principalPhone', {
-                  initialValue: principalPhone,
+              <Form.Item label={fieldLabels.safetyPhone}>
+                {getFieldDecorator('safetyPhone', {
+                  initialValue: safetyPhone,
                   getValueFromEvent: this.handleTrim,
                   rules: [
-                    { required: false, message: '请输入主要负责人联系方式' },
-                    { pattern: phoneReg, message: '主要负责人联系方式格式不正确' },
+                    { required: false, message: '请输入负责人联系方式' },
+                    { pattern: phoneReg, message: '负责人联系方式格式不正确' },
                   ],
                 })(<Input placeholder="请输入联系方式" />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
-              <Form.Item label={fieldLabels.principalEmail}>
-                {getFieldDecorator('principalEmail', {
-                  initialValue: principalEmail,
+              <Form.Item label={fieldLabels.safetyEmail}>
+                {getFieldDecorator('safetyEmail', {
+                  initialValue: safetyEmail,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ pattern: emailReg, message: '主要负责人邮箱格式不正确' }],
+                  rules: [{ pattern: emailReg, message: '负责人邮箱格式不正确' }],
                 })(<Input placeholder="请输入邮箱" />)}
               </Form.Item>
             </Col>
@@ -1196,13 +1037,12 @@ export default class CompanyDetail extends PureComponent {
   render() {
     const {
       loading,
-      safetyLoading,
       match: {
         params: { id },
       },
     } = this.props;
-    const { submitting, isCompany } = this.state;
-    const title = id ? '编辑人员' : '新增人员';
+    const { submitting } = this.state;
+    const title = id ? '编辑家庭' : '新增家庭';
     // 面包屑
     const breadcrumbList = [
       {
@@ -1215,8 +1055,8 @@ export default class CompanyDetail extends PureComponent {
         name: menuTitle,
       },
       {
-        title: listTitle,
-        name: listTitle,
+        title: '家庭档案',
+        name: '家庭档案',
         href: listUrl,
       },
       {
@@ -1234,7 +1074,7 @@ export default class CompanyDetail extends PureComponent {
         onTabChange={this.handleTabChange}
         wrapperClassName={styles.advancedForm}
       >
-        <Spin spinning={loading || safetyLoading || submitting}>
+        <Spin spinning={loading || submitting}>
           <div>
             {this.renderBasicInfo()}
             {this.renderPersonalInfo()}
