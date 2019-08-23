@@ -15,7 +15,7 @@ const { Option } = Select;
 const NO_DATA = '暂无信息';
 const TYPES = ['报警', '故障'];
 const STATUS_MAP = ['待处理', '处理中', '已处理'];
-const LABELS = [['报警', '故障'], ['报警', '故障'], ['报警', '故障'], []];
+const LABELS = [['报警', '故障'], ['报警', '故障'], ['报警', '报警'], []];
 const statusSelector = [
   { value: 'all', name: '类型' },
   { value: 'warning', name: '报警' },
@@ -95,8 +95,8 @@ function OrderCard(props) {
     ],
     [
       { name: '报警值', value: `LEL(${realTimeData}%)` },
-      { name: '所在区域', value: area },
-      { name: '所在位置', value: location },
+      // { name: '所在区域', value: area },
+      // { name: '所在位置', value: location },
       { name: `${timeStr}时间`, value: formatTime(firstTime) },
     ],
     [
@@ -327,16 +327,15 @@ export default class NewWorkOrderDrawer extends PureComponent {
         value: val,
         list: [],
       },
-      // {
-      //   name: '可燃气体',
-      //   value: val,
-      //   list: [],
-      // },
+      {
+        name: '可燃气体',
+        value: val,
+        list: [],
+      },
       { name: '报修', value: val, list: [] },
     ].map((item, index) => {
-      // 去掉了可燃气体
       // 0,1,2,3  ====>  0,1,3
-      const indexs = [0, 1, 3];
+      const indexs = [0, 1, 2, 3];
       const num = indexs[index];
       return {
         ...item,
@@ -430,7 +429,7 @@ export default class NewWorkOrderDrawer extends PureComponent {
                     return (
                       <OrderCard
                         key={index}
-                        type={+fireType - 1}
+                        type={workOrderType === 2 ? 0 : fireType - 1}
                         data={item}
                         hover={hover === index}
                         workOrderType={workOrderType}
@@ -488,7 +487,7 @@ export default class NewWorkOrderDrawer extends PureComponent {
     return (
       <DrawerContainer
         title={`${STATUS_MAP[workOrderStatus]}工单`}
-        width={535}
+        width={600}
         left={left}
         destroyOnClose={true}
         zIndex={1040}

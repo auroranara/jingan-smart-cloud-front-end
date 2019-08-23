@@ -34,7 +34,7 @@ export default class TotalInfo extends PureComponent {
             >
               {name}
               <span className={styles.infoNum} style={{ color }}>
-                （{value}）
+                ({value})
               </span>
             </div>
           );

@@ -172,7 +172,7 @@ export default class WaterMonitor extends PureComponent {
   };
 
   render() {
-    const { onClick, waterList, waterAlarm, fetchWaterSystem } = this.props;
+    const { onClick, waterList, waterAlarm, fetchWaterSystem, handleParentChange } = this.props;
     const { type } = this.state;
 
     const deviceList = waterList.filter(item => item.deviceDataList.length);
@@ -182,6 +182,7 @@ export default class WaterMonitor extends PureComponent {
         onClick: () => {
           this.setState({ type: '101' });
           fetchWaterSystem('101');
+          handleParentChange({ waterTabItem: 0 });
         },
       },
       {
@@ -189,6 +190,7 @@ export default class WaterMonitor extends PureComponent {
         onClick: () => {
           this.setState({ type: '102' });
           fetchWaterSystem('102');
+          handleParentChange({ waterTabItem: 1 });
         },
       },
       {
@@ -196,6 +198,7 @@ export default class WaterMonitor extends PureComponent {
         onClick: () => {
           this.setState({ type: '103' });
           fetchWaterSystem('103');
+          handleParentChange({ waterTabItem: 2 });
         },
       },
     ];

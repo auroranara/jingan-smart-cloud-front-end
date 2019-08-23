@@ -56,7 +56,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       this.getDistributionBoxAlarmCount(STATE.activeType);
       this.setState({
         ...STATE,
-        activeKey: prevActiveKey !== activeKey ? activeKey : STATE.activeKey,
+        activeKey,
       });
       this.scrollTop();
     }

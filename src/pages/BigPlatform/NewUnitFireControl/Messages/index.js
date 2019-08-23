@@ -14,37 +14,8 @@ import {
   outdateIcon,
 } from '@/pages/BigPlatform/GasStation/imgs/links';
 
-const DEFAULT_SHOW_TYPES = [
-  1,
-  2,
-  3,
-  4,
-  7,
-  9,
-  11,
-  13,
-  14,
-  15,
-  16,
-  17,
-  18,
-  32,
-  36,
-  37,
-  38,
-  40,
-  42,
-  43,
-  44,
-  46,
-  47,
-  48,
-  49,
-  50,
-  51,
-];
 const MAX_NAME_LENGTH = 4;
-const TYPES = [
+const DEFAULT_SHOW_TYPES = [
   1, // 发生监管
   2, // 联动
   3, // 反馈
@@ -76,6 +47,8 @@ const TYPES = [
   51, // 独立烟感故障恢复
   54, // 可燃气体失联
   55, // 可燃气体失联恢复
+  56, // 机械臂故障
+  57, // 机械臂故障恢复
 ];
 
 const WATER_LABELS = {
@@ -87,7 +60,7 @@ const WATER_LABELS = {
 const ICON_LIST = [
   { icon: inspectIcon, types: [13, 18] },
   { icon: dangerIcon, types: [14, 15, 16, 17] },
-  { icon: alarmIcon, types: [1, 2, 3, 4, 7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 54, 55] },
+  { icon: alarmIcon, types: [1, 2, 3, 4, 7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 54, 55, 56, 57] },
 ];
 
 const WATER_TITLES = {
@@ -278,11 +251,15 @@ export default class Messages extends PureComponent {
       45: '可燃气体-报警恢复',
       54: '可燃气体-失联',
       55: '可燃气体-失联恢复',
+      56: '可燃气体-报障',
+      57: '可燃气体-报障',
     };
     const gasContent = {
       45: `已恢复正常，当前值${desc || paramName}${realtimeData || realtimeVal}${unit}`,
       54: '设备状态失联',
       55: '设备失联状态恢复正常',
+      56: '机械臂故障',
+      57: '机械臂故障恢复',
     };
 
     [1, 2, 3, 4].forEach(item => {
@@ -520,17 +497,18 @@ export default class Messages extends PureComponent {
         },
       };
     });
-    [45, 54, 55].forEach(item => { // 可燃气体
+    [45, 54, 55, 56, 57].forEach(item => { // 可燃气体
       msgSettings = {
         ...msgSettings,
         [item]: {
-          onClick: () => { handleClickMsgFlow(param, 2, 0, ...restParams); },
+          // onClick: [45, 54, 55].includes(item) && (() => { handleClickMsgFlow(param, 2, 0, ...restParams); }),
           otherTitle: `【${gasTitle[type]}】`,
           items: [
             { value: gasContent[item], style: CYAN_STYLE },
             { name: '所在区域', value: area },
             { name: '所在位置', value: location },
           ],
+          isRepeat: item === 56,
         },
       };
     });
