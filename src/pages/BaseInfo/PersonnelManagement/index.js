@@ -31,7 +31,7 @@ import fire from '../../../assets/fire.png';
 import fireGray from '../../../assets/fire-gray.png';
 
 // import codesMap from '@/utils/codes';
-import styles from './CompanyList.less';
+import styles from '../Company/CompanyList.less';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -39,26 +39,25 @@ const Option = Select.Option;
 // 获取title
 const {
   home: homeTitle,
-  company: { list: title, menu: menuTitle },
+  company: { menu: menuTitle },
 } = titles;
+const title = '家庭档案'
 // 获取链接地址
 const {
   home: homeUrl,
-  company: {
+  personnelManagement: {
     detail: detailUrl,
     edit: editUrl,
     add: addUrl,
-    department: { list: departmentUrl },
   },
 } = urls;
 // 获取code
 const {
-  company: {
-    detail: detailCode,
-    edit: editCode,
+  personnelManagement: {
     add: addCode,
-    delete: deleteCode,
-    department: { list: viewDepCode },
+    edit: editCode,
+    // delete: deleteCode,
+    detail: detailCode,
   },
 } = codes;
 // 默认页面显示数量
@@ -114,7 +113,7 @@ const breadcrumbList = [
     fetch({ payload = {}, ...res }) {
       dispatch({
         type: 'company/fetch',
-        payload: { ...payload, family: 0 },
+        payload: { ...payload, family: 1 },
         ...res,
       });
     },
@@ -272,29 +271,6 @@ export default class CompanyList extends PureComponent {
     const { initPageNum } = this.props;
     initPageNum();
   }
-  // /* 显示删除确认提示框 */
-  // handleShowDeleteConfirm = id => {
-  //   const { remove } = this.props;
-  //   Modal.confirm({
-  //     title: '你确定要删除这个企业单位吗?',
-  //     content: '如果你确定要删除这个企业单位，点击确定按钮',
-  //     okText: '确定',
-  //     cancelText: '取消',
-  //     onOk: () => {
-  //       remove({
-  //         payload: {
-  //           id,
-  //         },
-  //         success: () => {
-  //           message.success('删除成功！');
-  //         },
-  //         error: () => {
-  //           message.error('删除失败，请联系管理人员！');
-  //         },
-  //       });
-  //     },
-  //   });
-  // };
 
   /* 查询按钮点击事件 */
   handleClickToQuery = () => {
@@ -363,32 +339,32 @@ export default class CompanyList extends PureComponent {
   };
 
   /* 更改大屏权限 */
-  handleScreenPermission = (id, safetyProduction, fireService, list) => {
-    const { editScreenPermission, saveNewList } = this.props;
-    const success = () => {
-      list.map(
-        item => (item.id === id ? Object.assign(item, { safetyProduction, fireService }) : item)
-      );
-      saveNewList({
-        payload: {
-          list,
-        },
-      });
-      message.success('更新成功！');
-    };
-    const error = msg => {
-      message.error(msg);
-    };
-    editScreenPermission({
-      payload: {
-        id,
-        safetyProduction,
-        fireService,
-      },
-      success,
-      error,
-    });
-  };
+  // handleScreenPermission = (id, safetyProduction, fireService, list) => {
+  //   const { editScreenPermission, saveNewList } = this.props;
+  //   const success = () => {
+  //     list.map(
+  //       item => (item.id === id ? Object.assign(item, { safetyProduction, fireService }) : item)
+  //     );
+  //     saveNewList({
+  //       payload: {
+  //         list,
+  //       },
+  //     });
+  //     message.success('更新成功！');
+  //   };
+  //   const error = msg => {
+  //     message.error(msg);
+  //   };
+  //   editScreenPermission({
+  //     payload: {
+  //       id,
+  //       safetyProduction,
+  //       fireService,
+  //     },
+  //     success,
+  //     error,
+  //   });
+  // };
 
   handleGotoDivision = id => {
     router.push(`/base-info/company/division/list/${id}`);
@@ -580,9 +556,6 @@ export default class CompanyList extends PureComponent {
     const hasDetailAuthority = hasAuthority(detailCode, permissionCodes);
     // 是否有编辑权限
     const hasEditAuthority = hasAuthority(editCode, permissionCodes);
-    // 是否有查看部门权限
-    const hasViewDepAuthority = hasAuthority(viewDepCode, permissionCodes);
-
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
@@ -634,14 +607,6 @@ export default class CompanyList extends PureComponent {
                     >
                       编辑
                     </Link>,
-                    <Link
-                      to={departmentUrl + id}
-                      onClick={hasViewDepAuthority ? null : preventDefault}
-                      disabled={!hasViewDepAuthority}
-                      target="_blank"
-                    >
-                      部门
-                    </Link>,
                   ]}
                 // extra={hasDeleteAuthority ? (
                 //   <Button
@@ -663,10 +628,6 @@ export default class CompanyList extends PureComponent {
                           {practicalAddressLabel || getEmptyData()}
                         </Ellipsis>
                         <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                          行业类别：
-                          {industryCategoryLabel || getEmptyData()}
-                        </Ellipsis>
-                        <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                           负责人：
                           {safetyName || getEmptyData()}
                         </Ellipsis>
@@ -674,7 +635,7 @@ export default class CompanyList extends PureComponent {
                           联系电话：
                           {safetyPhone || getEmptyData()}
                         </Ellipsis>
-                        {unitType === 3 ? (
+                        {/* {unitType === 3 ? (
                           <Popconfirm
                             title={`确定要${safetyProduction ? '关闭' : '开启'}安全驾驶舱权限吗？`}
                             onConfirm={() =>
@@ -698,8 +659,8 @@ export default class CompanyList extends PureComponent {
                               src={safetyProduction ? safe : safeGray}
                               alt="safe"
                             />
-                          )}
-                        {unitType === 3 ? (
+                          )} */}
+                        {/* {unitType === 3 ? (
                           <Popconfirm
                             className={styles.ml30}
                             title={`确定要${fireService ? '关闭' : '开启'}消防驾驶舱权限吗？`}
@@ -724,7 +685,7 @@ export default class CompanyList extends PureComponent {
                               src={fireService ? fire : fireGray}
                               alt="fire"
                             />
-                          )}
+                          )} */}
                       </div>
                     </Col>
                     {/* <Col

@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import {
   Form,
@@ -17,6 +17,7 @@ import {
   Radio,
   Spin,
   Modal,
+  Tooltip,
 } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
@@ -90,7 +91,13 @@ const fieldLabels = {
   importantSafety: '安全重点单位',
   importantHost: '消防重点单位',
   unitPhoto: '单位照片',
+  warningCall: '报警接收电话',
 };
+// 报警接收电话类型
+const phoneTypes = [
+  { value: 1, label: '手机' },
+  { value: 0, label: '固话' },
+]
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
 // tab列表
@@ -872,6 +879,26 @@ export default class CompanyDetail extends PureComponent {
     );
   };
 
+  /**
+  * 复制经纬度
+  */
+  handleCopyCoordinate = () => {
+    const {
+      form: { getFieldValue },
+    } = this.props
+    const coordinate = getFieldValue('coordinate')
+    if (!coordinate) {
+      message.warning('请先选择经纬度')
+      return
+    }
+    this.coordinate.select()
+    if (document.execCommand('copy')) {
+      document.execCommand('copy');
+      message.success('复制成功')
+    }
+    this.coordinate.blur()
+  }
+
   /* 渲染行业类别 */
   renderIndustryCategory() {
     const {
@@ -964,6 +991,7 @@ export default class CompanyDetail extends PureComponent {
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
+      match: { params: { id } },
       company: {
         detail: {
           data: {
@@ -983,16 +1011,18 @@ export default class CompanyDetail extends PureComponent {
             practicalTown,
             companyNature,
             gridId,
+            warningCallType: detailCallType,
+            warningCallNumber,
           },
         },
         registerAddress: registerAddressArea,
         practicalAddress: practicalAddressArea,
         companyNatures,
       },
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
     } = this.props;
     const { ichnographyList, firePictureList, unitPhotoList, isCompany, gridTree } = this.state;
-
+    const warningCallType = getFieldValue('warningCallType')
     return (
       <Card className={styles.card} bordered={false}>
         <Form layout="vertical">
@@ -1061,9 +1091,18 @@ export default class CompanyDetail extends PureComponent {
                   rules: [{ required: true, message: '请选择经纬度' }],
                 })(
                   <Input
+                    ref={coordinate => { this.coordinate = coordinate }}
                     placeholder="请选择经纬度"
-                    onFocus={e => e.target.blur()}
-                    onClick={this.handleShowMap}
+                    addonAfter={
+                      <Fragment>
+                        <Tooltip title="复制" >
+                          <Icon type="copy" style={{ marginRight: '10px' }} onClick={this.handleCopyCoordinate} />
+                        </Tooltip>
+                        <Tooltip title="打开地图" >
+                          <Icon type="environment" onClick={this.handleShowMap} />
+                        </Tooltip>
+                      </Fragment>
+                    }
                   />
                 )}
               </Form.Item>
@@ -1151,6 +1190,38 @@ export default class CompanyDetail extends PureComponent {
                   </Form.Item>
                 </Col>
               </Row>
+            </Col>
+          </Row>
+          <Row gutter={12}>
+            <Col md={5} sm={10}>
+              <Form.Item label={fieldLabels.warningCall}>
+                {getFieldDecorator('warningCallType', {
+                  initialValue: id && phoneTypes.find(item => item.value === detailCallType) ? phoneTypes.find(item => item.value === detailCallType).label : undefined,
+                  rules: [{ required: true, message: '请选择电话类型' }],
+                })(
+                  <Select style={{ width: '100%' }} placeholder="电话类型" onChange={this.handleChangeCallType}>
+                    {phoneTypes.map(({ value, label }) => (
+                      <Option value={value} key={value}>{label}</Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col md={7} sm={14}>
+              <Form.Item style={{ paddingTop: '29px' }}>
+                {getFieldDecorator('warningCallNumber', {
+                  initialValue: warningCallNumber,
+                  rules: [
+                    { required: true, message: '请输入电话号码' },
+                    {
+                      pattern: +warningCallType === 1 ? /0?(13|14|15|18|17)[0-9]{9}/ : /^(\d{3,4})?\d{7,14}$/,
+                      message: +warningCallType === 1 ? '请输入正确格式，为11位数字' : '请输入正确格式',
+                    },
+                  ],
+                })(
+                  <Input placeholder="电话号码" />
+                )}
+              </Form.Item>
             </Col>
           </Row>
           {/* <Row>

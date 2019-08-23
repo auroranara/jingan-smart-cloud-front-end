@@ -411,6 +411,44 @@ module.exports = env => {
                 },
               ],
             },
+            // 家庭档案
+            {
+              name: 'personnelManagement',
+              code: 'baseInfo.personnelManagement',
+              path: '/base-info/personnel-management',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/personnel-management',
+                  redirect: '/base-info/personnel-management/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.personnelManagement.listView',
+                  path: '/base-info/personnel-management/list',
+                  component: './BaseInfo/PersonnelManagement',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.personnelManagement.add',
+                  path: '/base-info/personnel-management/add',
+                  component: './BaseInfo/PersonnelManagement/PersonnelEdit',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.personnelManagement.edit',
+                  path: '/base-info/personnel-management/edit/:id',
+                  component: './BaseInfo/PersonnelManagement/PersonnelEdit',
+                },
+                {
+                  name: 'detail',
+                  code: 'baseInfo.personnelManagement.view',
+                  path: '/base-info/personnel-management/detail/:id',
+                  component: './BaseInfo/PersonnelManagement/PersonnelDetail',
+                },
+              ],
+            },
           ],
         },
 
