@@ -873,6 +873,7 @@ export default class NewUnitFireControl extends PureComponent {
     const param = {
       dataId: +trueOver === 0 ? msgFlag : undefined,
       id: +trueOver !== 0 ? msgFlag : undefined,
+      deviceId,
     };
     return (
       <div
@@ -2194,10 +2195,7 @@ export default class NewUnitFireControl extends PureComponent {
   handleVideoOpen = () => {
     const { videoList = [] } = this.state;
     if (videoList && videoList.length) {
-      this.setState({
-        videoVisible: true,
-        videoKeyId: videoList && videoList[0] && videoList[0].key_id,
-      });
+      this.handleShowFlowVideo();
       return;
     }
   };

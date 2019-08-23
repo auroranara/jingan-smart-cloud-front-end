@@ -74,6 +74,7 @@ function OrderCard(props) {
     endDate,
     cameraMessage,
     ndeviceName,
+    deviceId,
   } = data;
   const titles = [componentName, area + location, area + location, systemTypeValue];
   const listItems = [
@@ -219,6 +220,7 @@ function OrderCard(props) {
                     ? gasId
                     : id
                   : undefined,
+              deviceId,
             };
             // const repeat = {
             //   times: fireChildren && fireChildren.length,
