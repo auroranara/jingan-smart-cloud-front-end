@@ -37,7 +37,7 @@ const OPE = 3; // 运营或管理员unitType对应值
 const COMPANY_ALL = 'companyIdAll';
 const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 48, 49];
 // const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 48, 49];
-const SHOW_TYPES = [1, 2, 3, 4, 7, 9, 11, 13, 14, 15, 16, 17, 18, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 54, 55];
+const SHOW_TYPES = [1, 2, 3, 4, 7, 9, 11, 13, 14, 15, 16, 17, 18, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 54, 55, 56, 57];
 const ALARM_TYPES = [7, 32, 36, 38, 39];
 
 // websocket配置
@@ -338,12 +338,15 @@ export default class Operation extends PureComponent {
     if (!isAgg) {
       unitDetail = findAggUnit(unitDetail, units);
       unitIndex = unitDetail.list.indexOf(unitDetailTemp);
+      // console.log(unitDetail, unitDetailTemp, unitIndex);
     }
 
     const { longitude, latitude } = unitDetail;
-    mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     this.setState({ unitDetail });
-    setTimeout(() => this.mapChild.handleMapClick(unitDetail, unitIndex), 400); // 解决点击时无法居中的问题
+    setTimeout(() => {
+      mapInstance.setZoomAndCenter(18, [longitude, latitude]);
+      this.mapChild.handleMapClick(unitDetail, unitIndex);
+    }, 400); // 解决点击时无法居中的问题
     this.hideTooltip();
   };
 

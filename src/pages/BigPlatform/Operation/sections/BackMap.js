@@ -173,7 +173,8 @@ export default class MapSection extends PureComponent {
     const { list } = extData;
     const { infoWindowShow, infoWindow } = this.state;
     const notHasIndex = index === undefined;
-    index = 0;
+    if (notHasIndex)
+      index = 0;
     if (notHasIndex && list.length > 1) return;
 
     const companyInfo = list[index];

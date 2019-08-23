@@ -39,8 +39,10 @@ export default class UnitListDrawer extends PureComponent {
     this.setState({ searchValue: '' });
   };
 
-  genCardClick = item => e => {
+  genCardClick = (item, isAgg) => e => {
     const { showUnitDetail } = this.props;
+    // if (isAgg) return;
+
     showUnitDetail(item);
     this.handleClose();
   };
@@ -60,8 +62,9 @@ export default class UnitListDrawer extends PureComponent {
     } = this.props;
     const { searchValue } = this.state;
 
-    const title = listType ? '聚合单位列表' : `单位列表-${TYPE_DESCES[deviceType]}`;
-    const lst = listType ? aggList: list;
+    const isAgg = !!listType;
+    const title = isAgg ? '聚合单位列表' : `单位列表-${TYPE_DESCES[deviceType]}`;
+    const lst = isAgg ? aggList: list;
     const filteredList = lst.filter(({ companyName }) => companyName.includes(searchValue));
 
     const left = (
@@ -101,8 +104,9 @@ export default class UnitListDrawer extends PureComponent {
               person={saferName || NO_DATA}
               phone={saferPhone || NO_DATA}
               style={{ cursor: 'pointer' }}
+              // style={{ cursor: isAgg ? 'auto' : 'pointer' }}
               clickName={ count ? e => handleCompanyClick(companyId) : null }
-              onClick={this.genCardClick(item)}
+              onClick={this.genCardClick(item, isAgg)}
               infoStyle={INFO_STYLE}
               info={
                 <Fragment>
