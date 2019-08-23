@@ -27,7 +27,7 @@ import {
   TaskCount,
   FireCount,
 } from './components/Components';
-import { GAS, PAGE_SIZE } from './utils';
+import { findAggUnit, GAS, PAGE_SIZE } from './utils';
 import { WATER_TYPES, getWaterTotal } from '@/pages/BigPlatform/GasStation/utils';
 import { redLight as iconFire } from '@/pages/BigPlatform/GasStation/imgs/links';
 import iconFault from '@/assets/icon-fault-msg.png';
@@ -37,7 +37,7 @@ const OPE = 3; // 运营或管理员unitType对应值
 const COMPANY_ALL = 'companyIdAll';
 const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 48, 49];
 // const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 48, 49];
-const SHOW_TYPES = [1, 2, 3, 4, 7, 9, 11, 13, 14, 15, 16, 17, 18, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 54, 55];
+const SHOW_TYPES = [1, 2, 3, 4, 7, 9, 11, 13, 14, 15, 16, 17, 18, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 54, 55, 56, 57];
 const ALARM_TYPES = [7, 32, 36, 38, 39];
 
 // websocket配置
@@ -191,6 +191,7 @@ export default class Operation extends PureComponent {
       fireVideoVisible: false,
       videoVisible: false,
       onekeyFlowDrawerVisible: false,
+      unitListType: 0, // 0 企业类别 1 聚合点列表
       unitListDrawerVisible: false, // 企业列表抽屉
       // showVideoList: false,
       videoList: [],
@@ -322,16 +323,30 @@ export default class Operation extends PureComponent {
 
   fireListPageNum = 1;
 
-  showUnitDetail = unitDetail => {
-    // 地图显示某个企业详情
-    if (!unitDetail) {
+  showUnitDetail = (unitDetail, deviceType) => { // 地图显示某个企业详情，这里传入的参数可能是企业详情或者聚合的点，若是企业详情则找到对应的聚合点
+    if (!unitDetail)
       return;
+
+    const { operation: { aggregationUnitLists } } = this.props;
+    const { deviceType: stateDeviceType, mapInstance } =  this.state;
+    const dType = deviceType === undefined ? stateDeviceType : deviceType; // deviceType不传就从state中获取
+    const units = aggregationUnitLists[dType];
+
+    const { isAgg } = unitDetail;
+    const unitDetailTemp = unitDetail;
+    let unitIndex;
+    if (!isAgg) {
+      unitDetail = findAggUnit(unitDetail, units);
+      unitIndex = unitDetail.list.indexOf(unitDetailTemp);
+      // console.log(unitDetail, unitDetailTemp, unitIndex);
     }
-    const { mapInstance } = this.state;
+
     const { longitude, latitude } = unitDetail;
-    mapInstance.setZoomAndCenter(18, [longitude, latitude]);
     this.setState({ unitDetail });
-    setTimeout(() => this.mapChild.handleMapClick(unitDetail), 400); // 解决点击时无法居中的问题
+    setTimeout(() => {
+      mapInstance.setZoomAndCenter(18, [longitude, latitude]);
+      this.mapChild.handleMapClick(unitDetail, unitIndex);
+    }, 400); // 解决点击时无法居中的问题
     this.hideTooltip();
   };
 
@@ -809,7 +824,7 @@ export default class Operation extends PureComponent {
           unitTypeName: componentName || undefined,
           companyId: cId,
         };
-        const type = { 1: 0, 4: 1, 2: 3 }[reportType];
+        const type = { 1: 0, 4: 1, 3: 2, 2: 3 }[reportType];
         const flow = fireType - 1;
         const occurData = [
           {
@@ -1098,8 +1113,8 @@ export default class Operation extends PureComponent {
     this.setState({ waterItemDrawerVisible: false });
   };
 
-  showUnitListDrawer = e => {
-    this.setState({ unitListDrawerVisible: true });
+  showUnitListDrawer = (type=0) => {
+    this.setState({ unitListType: type, unitListDrawerVisible: true });
   };
 
   /**
@@ -1111,6 +1126,7 @@ export default class Operation extends PureComponent {
       operation: {
         // unitList,
         unitLists,
+        aggregationUnitLists,
         firePie,
         fireTrend,
         fireList,
@@ -1156,6 +1172,7 @@ export default class Operation extends PureComponent {
       videoKeyId,
       // unitList,
       onekeyFlowDrawerVisible,
+      unitListType,
       unitListDrawerVisible,
       waterItem,
       waterItemDrawerVisible,
@@ -1174,6 +1191,7 @@ export default class Operation extends PureComponent {
     };
 
     const unitList = unitLists[deviceType];
+    const aggUnitList = aggregationUnitLists[deviceType];
     const handleCameraOpen = videoList && videoList.length ? this.handleVideoOpen : null;
 
     return (
@@ -1192,7 +1210,9 @@ export default class Operation extends PureComponent {
           deviceType={deviceType}
           // units={getUnitList(unitList, deviceType)}
           units={unitList}
+          aggUnits={aggUnitList}
           unitLists={unitLists}
+          aggUnitLists={aggregationUnitLists}
           handleMapClick={this.showUnitDetail}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
@@ -1332,7 +1352,9 @@ export default class Operation extends PureComponent {
         />
         <UnitListDrawer
           visible={unitListDrawerVisible}
+          listType={unitListType}
           list={unitList}
+          aggList={unitDetail && unitDetail.list ? unitDetail.list : []}
           deviceType={deviceType}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           showUnitDetail={this.showUnitDetail}

@@ -49,6 +49,7 @@ export default class TaskCard extends BigPlatformCard {
     repeat: 'repeat', // 重复次数
     firstTime: 'firstTime', // 首次发生时间
     lastTime: 'lastTime', // 最近发生时间
+    alarmValue: 'alarmValue', // 报警值
   };
 
   FIELDS = [
@@ -69,9 +70,16 @@ export default class TaskCard extends BigPlatformCard {
       labelContainerClassName: styles.labelContainer,
     },
     {
+      label: '报警值',
+      key: 'alarmValue',
+      hidden: ({ type }) => type !== '可燃气体',
+      labelWrapperClassName: styles.loopNumberLabelWrapper,
+      labelContainerClassName: styles.labelContainer,
+    },
+    {
       label: '安装位置',
       render: ({ area, location }) => [area, location].filter(v => v).join('-'),
-      hidden: ({ type }) => type !== '独立烟感',
+      hidden: ({ type }) => type !== '独立烟感' && type !== '可燃气体',
       labelContainerClassName: styles.labelContainer,
     },
     {

@@ -88,19 +88,25 @@ export default class MapSection extends PureComponent {
   }
 
   renderMarkers = lvl => {
-    const { units = [], deviceType, unitDetail: { companyId: selectedCompanyId } = {} } = this.props;
+    const {
+      units = [],
+      aggUnits,
+      // unitDetail: { companyId: selectedCompanyId } = {},
+      unitDetail: { key: selectedKey },
+    } = this.props;
     if (units.length === 0) {
       if (this.mapInstance) this.mapInstance.setCity(region);
     }
-    const newUnits = sortUnits(units, deviceType);
-    const markers = newUnits.map(item => {
+    // const newUnits = sortUnits(units, deviceType);
+    const markers = aggUnits.map(item => {
       return {
         ...item,
         position: {
           longitude: item.longitude,
           latitude: item.latitude,
         },
-        zIndex: selectedCompanyId === item.companyId ? 999 : 100,
+        // zIndex: selectedCompanyId === item.companyId ? 999 : 100,
+        zIndex: selectedKey === item.key,
       };
     });
 
@@ -126,43 +132,69 @@ export default class MapSection extends PureComponent {
   };
 
   renderMarkerLayout = extData => {
-    const { deviceType, handleMapClick, showTooltip, hideTooltip } = this.props;
-    const { companyName, companyId } = extData;
-    const status = getMapItemStatus(extData, deviceType);
-    const imgSrc = IMGS[deviceType][status];
+    const { deviceType, handleMapClick, showTooltip, showUnitListDrawer, hideTooltip } = this.props;
+    // const { companyName, companyId } = extData;
+    // const status = getMapItemStatus(extData, deviceType);
+    // const imgSrc = IMGS[deviceType][status];
+    const { key, list, icon } = extData;
+    const isSingle = list.length === 1;
+    const { companyName } = list[0];
+    const imgSrc = IMGS[deviceType][icon];
+
+    const handleClick = e => {
+      handleMapClick(extData);
+      hideTooltip();
+      if (!isSingle)
+        showUnitListDrawer(1);
+    };
 
     return (
       <div
         style={{ position: 'relative' }}
         // className={status ? styles.imgAnimate : styles.imgContainer}
         className={styles.imgContainer}
-        key={companyId}
+        key={key}
       >
         <img
           src={imgSrc}
           alt="dot"
           className={styles.dot}
           // style={{ display: 'block', width: '32px', height: '42px' }}
-          onClick={() => {
-            handleMapClick(extData);
-            hideTooltip();
-          }}
-          onMouseEnter={e => showTooltip(e, companyName)}
-          onMouseLeave={hideTooltip}
+          onClick={handleClick}
+          onMouseEnter={isSingle ? e => showTooltip(e, companyName) : null}
+          onMouseLeave={isSingle ? hideTooltip : null}
         />
+        {!isSingle && <span className={styles.cyanDot}>{list.length}</span>}
       </div>
     );
   };
 
-  handleMapClick = extData => {
-    if (extData.companyId === this.state.infoWindow.companyId && this.state.infoWindowShow) return;
+  handleMapClick = (extData, index) => { // showInfo不传，则为直接在地图上点击，根据长度判断是否显示，要显示，则传入true，不会传false
+    const { list } = extData;
+    const { infoWindowShow, infoWindow } = this.state;
+    const notHasIndex = index === undefined;
+    if (notHasIndex)
+      index = 0;
+    if (notHasIndex && list.length > 1) return;
+
+    const companyInfo = list[index];
+    if (notHasIndex && infoWindowShow && companyInfo.companyId === infoWindow.companyId) return;
+
     this.setState({
       infoWindowShow: true,
-      infoWindow: {
-        ...extData,
-      },
+      infoWindow: companyInfo,
     });
   };
+
+  // handleMapClick = extData => {
+  //   if (extData.companyId === this.state.infoWindow.companyId && this.state.infoWindowShow) return;
+  //   this.setState({
+  //     infoWindowShow: true,
+  //     infoWindow: {
+  //       ...extData,
+  //     },
+  //   });
+  // };
 
   // renderTips = () => {
   //   const { units = [], alarmIds = [], handleAlarmClick } = this.props;
@@ -344,7 +376,7 @@ export default class MapSection extends PureComponent {
       </div>
     );
     const listBtn = (
-      <div className={styles.listBtn} onClick={showUnitListDrawer}>
+      <div className={styles.listBtn} onClick={e => showUnitListDrawer()}>
         单位列表
       </div>
     );
