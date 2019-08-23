@@ -175,7 +175,8 @@ export default class Operation extends PureComponent {
       alarmIds: [],
       companyName: '',
       // unitList: [], // 地图显示的企业列表
-      unitDetail: {},
+      unitDetail: {}, // 聚合点
+      unitSelected: undefined, // 选中的企业，其为聚合点中的list数组中的一个元素
       deviceType: 0, // 地图中间根据设备显示企业列表
       fireListHasMore: true, // 火警统计抽屉右边列表是否有更多
       alarmMessageDrawerVisible: false,
@@ -333,16 +334,17 @@ export default class Operation extends PureComponent {
     const units = aggregationUnitLists[dType];
 
     const { isAgg } = unitDetail;
-    const unitDetailTemp = unitDetail;
+    let unitDetailTemp;
     let unitIndex;
     if (!isAgg) {
+      unitDetailTemp = unitDetail
       unitDetail = findAggUnit(unitDetail, units);
       unitIndex = unitDetail.list.indexOf(unitDetailTemp);
       // console.log(unitDetail, unitDetailTemp, unitIndex);
     }
 
     const { longitude, latitude } = unitDetail;
-    this.setState({ unitDetail });
+    this.setState({ unitDetail, unitSelected: unitDetailTemp });
     setTimeout(() => {
       mapInstance.setZoomAndCenter(18, [longitude, latitude]);
       this.mapChild.handleMapClick(unitDetail, unitIndex);
@@ -1117,6 +1119,10 @@ export default class Operation extends PureComponent {
     this.setState({ unitListType: type, unitListDrawerVisible: true });
   };
 
+  clearUnitSelected = () => {
+    this.setState({ unitSelected: undefined });
+  };
+
   /**
    * 渲染
    */
@@ -1153,6 +1159,7 @@ export default class Operation extends PureComponent {
       selectList,
       searchValue,
       unitDetail,
+      unitSelected,
       tooltipName,
       tooltipVisible,
       tooltipPosition,
@@ -1213,19 +1220,22 @@ export default class Operation extends PureComponent {
           aggUnits={aggUnitList}
           unitLists={unitLists}
           aggUnitLists={aggregationUnitLists}
+          unitDetail={unitDetail}
+          unitSelected={unitSelected}
+          alarmIds={alarmIds}
+          onRef={this.onRef}
           handleMapClick={this.showUnitDetail}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
-          unitDetail={unitDetail}
-          alarmIds={alarmIds}
           handleParentChange={this.handleMapParentChange}
           // handleAlarmClick={this.handleAlarmClick}
           // handleFaultClick={this.handleFaultClick}
-          onRef={this.onRef}
+
           handleCompanyClick={this.handleCompanyClick}
           // fetchMapInfo={this.fetchMapInfo}
           handleDeviceTypeChange={this.handleDeviceTypeChange}
           showUnitListDrawer={this.showUnitListDrawer}
+          clearUnitSelected={this.clearUnitSelected}
         />
         {/* 搜索框 */}
         <MapSearch

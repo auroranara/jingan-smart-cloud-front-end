@@ -67,7 +67,7 @@ function getMapItemStatus1(item, deviceType) {
       break;
     }
 
-  return status;
+  return deviceType ? status : +!!status; // deviceType(0)为全部设备，只有0/1两个图标，所以要特殊处理
 }
 
 export function getMapLegendData(list, deviceType) {
@@ -139,8 +139,7 @@ function getAggregationStatus(lists) {
         prev[prop] = list.reduce((prv, nxt) => prv + (nxt[prop] ? nxt[prop] : 0), 0);
         return prev;
       }, {});
-      const icon = getMapItemStatus1(aggItem, index)
-      item.icon = index ? icon : +!!icon;
+      item.icon = getMapItemStatus1(aggItem, index);
     });
   });
 }
@@ -157,6 +156,7 @@ function addAllStatusCount(list) {
       }, 0);
     });
     item[`${allKey}${COUNT_BASE_KEY}`] = deviceKeys.reduce((prev, next) => prev + item[`${next}${COUNT_BASE_KEY}`], 0);
+    item.icons = TYPE_KEYS.map((k, i) => getMapItemStatus1(item, i));
   });
 }
 
