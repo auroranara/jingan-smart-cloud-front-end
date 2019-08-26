@@ -33,7 +33,7 @@ const {
 // 获取链接地址
 const {
   home: homeUrl,
-  personnelManagement: { list: backUrl, edit: editUrl },
+  familyFile: { list: backUrl, edit: editUrl },
   exception: { 500: exceptionUrl },
 } = urls;
 // 获取code

@@ -36,7 +36,7 @@ const { confirm } = Modal;
 const {
   home: homeUrl,
   company: { edit: editUrl },
-  personnelManagement: { list: listUrl },
+  familyFile: { list: listUrl },
   exception: { 500: exceptionUrl },
 } = urls;
 const {

@@ -45,7 +45,7 @@ const title = '家庭档案'
 // 获取链接地址
 const {
   home: homeUrl,
-  personnelManagement: {
+  familyFile: {
     detail: detailUrl,
     edit: editUrl,
     add: addUrl,
@@ -53,7 +53,7 @@ const {
 } = urls;
 // 获取code
 const {
-  personnelManagement: {
+  familyFile: {
     add: addCode,
     edit: editCode,
     // delete: deleteCode,

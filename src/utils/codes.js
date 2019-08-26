@@ -152,7 +152,7 @@ export default {
     },
   },
   // 个人备案
-  personnelManagement: {
+  familyFile: {
     list: 'baseInfo.personnelManagement.listView',
     add: 'baseInfo.personnelManagement.add',
     edit: 'baseInfo.personnelManagement.edit',

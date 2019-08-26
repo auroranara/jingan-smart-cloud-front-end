@@ -15,11 +15,11 @@ export default {
       list: '/base-info/company/department/list/',
     },
   },
-  personnelManagement: {
-    list: '/base-info/personnel-management/list',
-    add: '/base-info/personnel-management/add',
-    edit: '/base-info/personnel-management/edit/',
-    detail: '/base-info/personnel-management/detail/',
+  familyFile: {
+    list: '/base-info/family-file/list',
+    add: '/base-info/family-file/add',
+    edit: '/base-info/family-file/edit/',
+    detail: '/base-info/family-file/detail/',
   },
   contract: {
     list: '/fire-control/contract/list/',
