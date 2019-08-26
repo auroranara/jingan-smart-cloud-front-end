@@ -221,7 +221,7 @@ export default class App extends PureComponent {
 
     const newList = [];
     list.forEach(element => {
-      element.list.forEach((detail, index) => {
+      (element.list || []).forEach((detail, index) => {
         const item = { ...detail, ...element, rowSpan: index === 0 ? element.list.length : 0 };
         newList.push(item);
       });
