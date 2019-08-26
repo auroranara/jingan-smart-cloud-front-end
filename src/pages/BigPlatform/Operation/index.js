@@ -778,6 +778,7 @@ export default class Operation extends PureComponent {
     const { dispatch } = this.props;
     const {
       id,
+      deviceId,
       gasId,
       proceId,
       companyName,
@@ -814,6 +815,7 @@ export default class Operation extends PureComponent {
       },
       callback: cameraMessage => {
         const param = {
+          deviceId,
           dataId: +reportType !== 2 ? dataId : undefined,
           id: +reportType === 2 ? dataId : undefined,
           proceId,

@@ -166,7 +166,7 @@ export default class MapSection extends PureComponent {
           onMouseEnter={isSingle ? e => showTooltip(e, companyName) : null}
           onMouseLeave={isSingle ? hideTooltip : null}
         />
-        {!isSingle && <span className={styles.cyanDot}>{list.length}</span>}
+        {!unitSelected && !isSingle && <span className={styles.cyanDot}>{list.length}</span>}
       </div>
     );
   };

@@ -236,7 +236,7 @@ export default class Messages extends PureComponent {
     const elecMsg = {
       32: {
         elecTitle: '电气火灾-报警',
-        elecContent: `${paramName}报警${realtimeVal + unit}（参考值≤${limitVal + unit}）`,
+        elecContent: `${paramName}报警${realtimeVal + unit}（参考值<${limitVal + unit}）`,
       },
       44: { elecTitle: '电气火灾-报警恢复', elecContent: `${paramName}报警现已恢复正常` },
       42: { elecTitle: '电气火灾-失联', elecContent: '设备状态失联' },
@@ -362,7 +362,7 @@ export default class Messages extends PureComponent {
         },
         items: [
           // { name: '报警值', value: `${desc || paramName}(${realtimeData || realtimeVal}%)` },
-          { value: `当前值${desc || paramName}${realtimeVal}${unit}（参考值≤${limitVal}${unit}）`, style: CYAN_STYLE },
+          { value: `当前值${desc || paramName}${realtimeVal}${unit}（参考值<${limitVal}${unit}）`, style: CYAN_STYLE },
           { name: '所在区域', value: area },
           { name: '所在位置', value: location },
         ],
