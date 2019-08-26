@@ -417,7 +417,7 @@ module.exports = env => {
               code: 'baseInfo.personnelManagement',
               path: '/base-info/family-file',
               hideChildrenInMenu: true,
-              hideInMenu: env !== 'fire',
+              // hideInMenu: env !== 'fire',
               routes: [
                 {
                   name: 'list',
