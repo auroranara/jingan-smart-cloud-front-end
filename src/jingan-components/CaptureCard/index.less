@@ -1,0 +1,48 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+}
+.image {
+  flex: none;
+  width: 12em;
+  height: 9em;
+  background: no-repeat center;
+  background-size: 100% 100%;
+  border: 1px solid #0ff;
+  box-sizing: content-box;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #fff;
+  }
+}
+.fieldsWrapper {
+  flex: 1;
+  padding: 0 0 0 1em;
+}
+.detail {
+  position: absolute;
+  right: 1em;
+  bottom: calc(~'1.375em + 1px');
+  color: #0ff;
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+  }
+}
+.timeLabelWrapper,
+.locationLabelWrapper {
+  width: 4em;
+}
+.nameLabelWrapper {
+  width: 4em;
+  letter-spacing: 2em;
+}
+.similarityLabelWrapper {
+  width: 4em;
+  letter-spacing: 0.5em;
+}
+.row {
+  padding: 0.375em 0;
+}

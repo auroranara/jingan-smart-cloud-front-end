@@ -67,6 +67,16 @@ import {
   getAllScreenMessage,
   getAllDetail,
   getDangerChartId,
+  // 获取人脸识别统计数据
+  getFaceRecognitionCount,
+  // 获取人脸识别监测点列表
+  getMonitoringPointList,
+  // 获取人脸识别摄像机列表
+  getCameraList,
+  // 获取人脸识别今日抓拍报警列表
+  getCaptureList,
+  // 获取抓拍报警详情
+  getCaptureDetail,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -398,6 +408,17 @@ export default {
       fireId: [],
       faultId: [],
     },
+    /* 人脸识别相关开始 */
+    faceRecognitionCount: {
+      monitoringPoint: 0,
+      camera: 0,
+      capture: 0,
+    },
+    monitoringPointList: {},
+    cameraList: {},
+    captureList: {},
+    captureDetail: {},
+    /* 人脸识别相关结束 */
   },
 
   subscriptions: {
@@ -1151,6 +1172,152 @@ export default {
       }
       if (callback) callback(response.data);
     },
+    // 获取人脸识别统计数据
+    *fetchFaceRecognitionCount({ payload, callback }, { call, put }) {
+      // const response = yield call(getFaceRecognitionCount, payload);
+      const response = {
+        code: 200,
+        data: {
+          monitoringPoint: 10,
+          camera: 10,
+          capture: 10,
+        },
+      };
+      const { code, data } = response || {};
+      if (code === 200) {
+        const faceRecognitionCount = data || {};
+        yield put({
+          type: 'save',
+          payload: { faceRecognitionCount },
+        });
+        callback && callback(faceRecognitionCount);
+      }
+    },
+    // 获取人脸识别监测点列表
+    *fetchMonitoringPointList({ payload, callback }, { call, put }) {
+      // const response = yield call(getMonitoringPointList, payload);
+      const response = {
+        code: 200,
+        data: {
+          list : [{
+            id: 1,
+            name: '入口一',
+            location: '入口一',
+            cameraNumber: 'asgagga',
+          }, {
+            id: 2,
+            name: '入口二',
+            location: '入口二',
+            cameraNumber: 'aganaef',
+          }],
+        },
+      };
+      const { code, data } = response || {};
+      if (code === 200) {
+        const monitoringPointList = data || {};
+        yield put({
+          type: 'save',
+          payload: { monitoringPointList },
+        });
+        callback && callback(monitoringPointList);
+      }
+    },
+  // 获取人脸识别摄像机列表
+  *fetchCameraList({ payload, callback }, { call, put }) {
+    // const response = yield call(getCameraList, payload);
+    const response = {
+      code: 200,
+      data: {
+        list: [{
+          id: 1,
+          name: '入口一',
+          location: '入口一',
+          number: 'asgagga',
+          status: 1,
+          count: 2,
+        }, {
+          id: 2,
+          name: '入口二',
+          location: '入口二',
+          number: 'aganaef',
+          status: 0,
+          count: 2,
+        }],
+      },
+    };
+    const { code, data } = response || {};
+    if (code === 200) {
+      const cameraList = data || {};
+      yield put({
+        type: 'save',
+        payload: { cameraList },
+      });
+      callback && callback(cameraList);
+    }
+  },
+  // 获取人脸识别今日抓拍报警列表
+  *fetchCaptureList({ payload, callback }, { call, put }) {
+    // const response = yield call(getCaptureList, payload);
+    const response = {
+      code: 200,
+      data: {
+        list: [{
+          id: 1,
+          name: '姓名', // 姓名
+          location: '位置', // 位置
+          time: 1566540196974, // 时间
+          similarity: '75', // 相似度
+          image: 'http://data.jingan-china.cn/hello/gsafe/hidden_danger/190816-150437-x0k7.jpg', // 图片
+        }, {
+          id: 2,
+          name: '姓名', // 姓名
+          location: '位置', // 位置
+          time: 1566540196974, // 时间
+          similarity: '85', // 相似度
+          image: 'http://data.jingan-china.cn/hello/gsafe/hidden_danger/190816-150437-x0k7.jpg', // 图片
+        }],
+      },
+    };
+    const { code, data } = response || {};
+    if (code === 200) {
+      const captureList = data || {};
+      yield put({
+        type: 'save',
+        payload: { captureList },
+      });
+      callback && callback(captureList);
+    }
+  },
+  // 获取抓拍报警详情
+  *fetchCaptureDetail({ payload, callback }, { call, put }) {
+    // const response = yield call(getCaptureDetail, payload);
+    const response = {
+      code: 200,
+      data: {
+        name: '王富贵',
+        location: '一号出入口',
+        scene: '一号出入口东侧2号栅栏',
+        time: 1566788594552,
+        sex: '男',
+        phone: 11111111111,
+        number: 14141,
+        birthPlace: '江苏省无锡',
+        birthday: '1993-07-12',
+        type: '身份证',
+        card: '1414141414141412',
+        similarity: 72,
+      },
+    };
+    const { code, data } = response || {};
+    if (code === 200) {
+      const captureDetail = data || {};
+      yield put({
+        type: 'save',
+        payload: { captureDetail },
+      });
+      callback && callback(captureDetail);
+    }
+  },
   },
 
   reducers: {
