@@ -885,7 +885,7 @@ export default class NewUnitFireControl extends PureComponent {
           else if (type === 39) this.handleClickMsgFlow(param, 2, 0, ...restParams);
           else if (type === 40) this.handleClickMsgFlow(param, 1, 1, ...restParams);
           else if (type === 32) this.handleClickElecMsg(deviceId, paramName);
-          else if (type === 36) this.handleClickWater(0, [101, 102, 103].indexOf(+deviceType));
+          else if (type === 36) this.handleClickWater(0, [101, 102, 103].indexOf(+deviceType), deviceId);
           // if (type === 7 || type === 38 || type === 39) this.handleClickMessage(messageFlag, item);
           // else this.handleFaultClick({ ...item });
         }}

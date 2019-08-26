@@ -431,7 +431,7 @@ export default class CompanyDetail extends PureComponent {
     if (this.operation === 'edit')
       confirm({
         title: '提示信息',
-        content: '是否继续编辑安全信息',
+        content: '是否继续编辑安全信息或消防信息',
         okText: '是',
         cancelText: '否',
         onOk: () => {
@@ -443,7 +443,7 @@ export default class CompanyDetail extends PureComponent {
     else
       confirm({
         title: '提示信息',
-        content: '是否需要添加安全信息',
+        content: '是否需要添加安全信息或消防信息',
         okText: '是',
         cancelText: '否',
         onOk() {

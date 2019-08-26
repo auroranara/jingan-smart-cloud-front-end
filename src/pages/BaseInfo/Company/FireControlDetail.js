@@ -124,9 +124,9 @@ export default class FireControlDetail extends PureComponent {
               </div>
             )} */}
           </Description>
-          <p style={{ padding: '0 16px' }}>
+          {/* <p style={{ padding: '0 16px' }}>
             消防运营驾驶舱中间图片显示逻辑：上传图>底图>无图（默认空）
-          </p>
+          </p> */}
           <Description term={fieldLabels.unitPhoto}>
             {unitPhotoList.length
               ? unitPhotoList.map(({ fileName, webUrl }) => (
