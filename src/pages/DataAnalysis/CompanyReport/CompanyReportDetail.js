@@ -1,15 +1,19 @@
 import React, { PureComponent, Fragment } from 'react';
 import { Card, Spin, Table } from 'antd';
 import { connect } from 'dva';
+import Lightbox from 'react-images';
 import Link from 'umi/link';
 import moment from 'moment';
 import Ellipsis from '@/components/Ellipsis';
+import DescriptionList from '@/components/DescriptionList';
 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import hiddenIcon from '@/assets/hiddenIcon.png';
 
 import styles from './CompanyReport.less';
 const title = '企业自查报表详情';
+
+const { Description } = DescriptionList;
 
 /* 面包屑 */
 const breadcrumbList = [
@@ -53,6 +57,8 @@ export default class App extends PureComponent {
     super(props);
     this.state = {
       tab: '1',
+      images: null,
+      currentImage: 0,
     };
   }
 
@@ -82,6 +88,107 @@ export default class App extends PureComponent {
   handleTabChange = tab => {
     this.setState({ tab });
   };
+
+  /**
+   * 切换图片
+   */
+  handleSwitchImage = currentImage => {
+    this.setState({
+      currentImage,
+    });
+  };
+
+  /**
+   * 切换上一张图片
+   */
+  handlePrevImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage - 1,
+    }));
+  };
+
+  /**
+   * 切换下一张图片
+   */
+  handleNextImage = () => {
+    this.setState(({ currentImage }) => ({
+      currentImage: currentImage + 1,
+    }));
+  };
+
+  /**
+   * 关闭图片详情
+   */
+  handleClose = () => {
+    this.setState({
+      images: null,
+    });
+  };
+
+  /**
+   * 图片详情
+   */
+  renderImageDetail() {
+    const { images, currentImage } = this.state;
+    return (
+      images &&
+      images.length > 0 && (
+        <Lightbox
+          images={images}
+          isOpen={true}
+          currentImage={currentImage}
+          onClickPrev={this.handlePrevImage}
+          onClickNext={this.handleNextImage}
+          onClose={this.handleClose}
+          onClickThumbnail={this.handleSwitchImage}
+          showThumbnails
+        />
+      )
+    );
+  }
+
+  /**
+   * 其它
+   */
+  renderOther = () => {
+    const {
+      companyReport: {
+        detail: {
+          paths=[],
+        }={},
+      },
+    } = this.props;
+    const images = paths.map(({ webUrl }) => ({ key: webUrl, src: webUrl }));
+
+    return (
+      <Card
+        className={styles.card}
+        title="其它"
+        bordered={false}
+      >
+        <DescriptionList col={1}>
+          <Description className={styles.description} term="现场照片">
+            {images && images.length > 0 ? (
+              <div className={styles.sitePhotoWrapper}>
+                {images.map(({ key, src }, index) => (
+                  <div
+                    key={key}
+                    className={styles.sitePhoto}
+                    style={{
+                      backgroundImage: `url(${src})`,
+                    }}
+                    onClick={() => {
+                      this.setState({ images, currentImage: index });
+                    }}
+                  />
+                ))}
+              </div>
+            ) : <span className={styles.emptyData}>暂无数据</span>}
+          </Description>
+        </DescriptionList>
+      </Card>
+    );
+  }
 
   /**
    * 渲染函数
@@ -208,7 +315,8 @@ export default class App extends PureComponent {
       >
         <Spin spinning={!!loading}>
           {tab === '1' && (
-            <Card title="检查内容" className={styles.card}>
+            <Fragment>
+            <Card title="检查内容" className={styles.card} bordered={false}>
               <Table
                 className={styles.table}
                 dataSource={newList}
@@ -220,8 +328,11 @@ export default class App extends PureComponent {
                 pagination={false}
               />
             </Card>
+            {this.renderOther()}
+            </Fragment>
           )}
           {/* {tab === '2'} */}
+          {this.renderImageDetail()}
         </Spin>
       </PageHeaderLayout>
     );
