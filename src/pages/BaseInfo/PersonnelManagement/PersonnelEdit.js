@@ -53,28 +53,28 @@ const fieldLabels = {
   administrativeDivision: '行政区域',
   businessScope: '经营范围',
   code: '社会信用代码',
-  companyIchnography: '单位平面图',
+  companyIchnography: '平面图',
   fireIchnography: '消防平面图',
-  companyStatus: '单位状态',
-  companyType: '单位类型',
+  companyStatus: '状态',
+  companyType: '类型',
   createTime: '成立时间',
   economicType: '经济类型',
   groupName: '集团公司名称',
   industryCategory: '行业类别',
   coordinate: '经纬度',
   licenseType: '营业执照类别',
-  name: '	单位名称',
+  name: '	名称',
   practicalAddress: '实际经营地址',
   registerAddress: '注册地址',
   scale: '规模情况',
   principalName: '姓名',
   principalPhone: '联系方式',
   principalEmail: '邮箱',
-  companyNature: '单位性质',
+  companyNature: '性质',
   gridId: '所属网格',
-  importantSafety: '安全重点单位',
-  importantHost: '消防重点单位',
-  unitPhoto: '单位照片',
+  importantSafety: '安全重点',
+  importantHost: '消防重点',
+  unitPhoto: '照片',
   warningCall: '报警接收电话',
 };
 /* root下的div */
@@ -739,8 +739,8 @@ export default class CompanyDetail extends PureComponent {
                 {getFieldDecorator('name', {
                   initialValue: name,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入单位名称' }],
-                })(<Input placeholder="请输入单位名称" />)}
+                  rules: [{ required: true, message: '请输入名称' }],
+                })(<Input placeholder="请输入名称" />)}
               </Form.Item>
             </Col>
             <Col lg={16} md={16} sm={24}>
@@ -866,7 +866,7 @@ export default class CompanyDetail extends PureComponent {
             <Col md={5} sm={10}>
               <Form.Item label={fieldLabels.warningCall}>
                 {getFieldDecorator('warningCallType', {
-                  initialValue: id && phoneTypes.find(item => item.value === detailCallType) ? phoneTypes.find(item => item.value === detailCallType).label : undefined,
+                  initialValue: id && phoneTypes.find(item => item.value === detailCallType) ? phoneTypes.find(item => item.value === detailCallType).value : undefined,
                   rules: [{ required: true, message: '请选择电话类型' }],
                 })(
                   <Select style={{ width: '100%' }} placeholder="电话类型" onChange={this.handleChangeCallType}>
@@ -884,7 +884,7 @@ export default class CompanyDetail extends PureComponent {
                   rules: [
                     { required: true, message: '请输入电话号码' },
                     {
-                      pattern: +warningCallType === 1 ? /0?(13|14|15|18|17)[0-9]{9}/ : /^(\d{3,4})?\d{7,14}$/,
+                      pattern: +warningCallType === 1 ? /0?(13|14|15|18|17)[0-9]{9}/ : /^(0\d{2,3})?([2-9]\d{6,7})+(\d{1,4})?$/,
                       message: +warningCallType === 1 ? '请输入正确格式，为11位数字' : '请输入正确格式',
                     },
                   ],
@@ -898,9 +898,9 @@ export default class CompanyDetail extends PureComponent {
             <Form.Item label={fieldLabels.companyStatus}>
               {getFieldDecorator('companyStatus', {
                 initialValue: companyStatus,
-                rules: [{ required: true, message: '请选择单位状态' }],
+                rules: [{ required: true, message: '请选择状态' }],
               })(
-                <Select placeholder="请选择单位状态" getPopupContainer={getRootChild}>
+                <Select placeholder="请选择状态" getPopupContainer={getRootChild}>
                   {companyStatuses.map(item => (
                     <Option value={item.key} key={item.key}>
                       {item.value}

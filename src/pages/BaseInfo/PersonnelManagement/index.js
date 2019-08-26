@@ -66,8 +66,6 @@ const pageSize = 18;
 const defaultFormData = {
   name: undefined,
   practicalAddress: undefined,
-  industryCategory: undefined,
-  companyType: undefined,
   companyStatus: undefined,
   gridId: undefined,
   isSafetyImp: undefined,
@@ -124,13 +122,6 @@ const breadcrumbList = [
         ...action,
       });
     },
-    // 获取行业类别
-    fetchDict(action) {
-      dispatch({
-        type: 'company/fetchDict',
-        ...action,
-      });
-    },
     // 删除企业
     // remove(action) {
     //   dispatch({
@@ -166,13 +157,6 @@ const breadcrumbList = [
     gsafeFetchDict(action) {
       dispatch({
         type: 'company/gsafeFetchDict',
-        ...action,
-      });
-    },
-    // 获取行业类别
-    fetchIndustryType(action) {
-      dispatch({
-        type: 'company/fetchIndustryType',
         ...action,
       });
     },
@@ -212,13 +196,7 @@ export default class CompanyList extends PureComponent {
       form: { setFieldsValue },
       gsafeFetchDict,
       goToException: error,
-      fetchIndustryType,
-      fetchOptions,
     } = this.props;
-    // 获取行业类别
-    fetchIndustryType({
-      error,
-    });
     // 获取单位列表
     dispatch({
       type: 'unitDivision/fetchDivisionList',
@@ -232,14 +210,6 @@ export default class CompanyList extends PureComponent {
       payload: {
         type: 'companyState',
         key: 'companyStatuses',
-      },
-      error,
-    });
-    // 获取单位类型
-    fetchOptions({
-      payload: {
-        type: 'companyType',
-        key: 'companyTypes',
       },
       error,
     });
@@ -280,7 +250,6 @@ export default class CompanyList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
-    const { industryCategory } = data;
     // 修改表单数据
     // this.formData = data;
     // 重新请求数据
@@ -289,8 +258,6 @@ export default class CompanyList extends PureComponent {
         pageSize,
         pageNum: 1,
         ...data,
-        industryCategory:
-          industryCategory && industryCategory.length > 0 ? industryCategory.join(',') : undefined,
       },
     });
     saveSearchInfo({ payload: data });
@@ -373,7 +340,7 @@ export default class CompanyList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      company: { companyTypes, industryCategories, companyStatuses, isSafetyList, isFireImpList },
+      company: { companyTypes, industryCategories, companyStatuses },
       user: {
         currentUser: { permissionCodes, unitType },
       },
@@ -414,7 +381,7 @@ export default class CompanyList extends PureComponent {
                 {getFieldDecorator('name', {
                   initialValue: defaultFormData.name,
                   getValueFromEvent: e => e.target.value.trim(),
-                })(<Input placeholder="请输入单位名称" style={{ width: '100%' }} />)}
+                })(<Input placeholder="请输入名称" style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
             <Col span={8}>
@@ -422,41 +389,7 @@ export default class CompanyList extends PureComponent {
                 {getFieldDecorator('practicalAddress', {
                   initialValue: defaultFormData.practicalAddress,
                   getValueFromEvent: e => e.target.value.trim(),
-                })(<Input placeholder="请输入单位地址" />)}
-              </FormItem>
-            </Col>
-            <Col span={8}>
-              <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                {getFieldDecorator('industryCategory', {
-                  initialValue: defaultFormData.industryCategory,
-                })(
-                  <Cascader
-                    options={industryCategories}
-                    fieldNames={{
-                      value: 'type_id',
-                      label: 'gs_type_name',
-                      children: 'children',
-                    }}
-                    allowClear
-                    changeOnSelect
-                    notFoundContent
-                    placeholder="请选择行业类别"
-                    getPopupContainer={getRootChild}
-                  />
-                )}
-              </FormItem>
-            </Col>
-            <Col span={8}>
-              <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                {getFieldDecorator('companyType', {
-                  initialValue: defaultFormData.companyType,
-                })(
-                  <Select allowClear placeholder="请选择单位类型" getPopupContainer={getRootChild}>
-                    {companyTypes.map(item => (
-                      <Option key={item.id + ''}>{item.label}</Option>
-                    ))}
-                  </Select>
-                )}
+                })(<Input placeholder="请输入地址" />)}
               </FormItem>
             </Col>
             <Col span={8}>
@@ -464,7 +397,7 @@ export default class CompanyList extends PureComponent {
                 {getFieldDecorator('companyStatus', {
                   initialValue: defaultFormData.companyStatus,
                 })(
-                  <Select allowClear placeholder="请选择单位状态" getPopupContainer={getRootChild}>
+                  <Select allowClear placeholder="请选择状态" getPopupContainer={getRootChild}>
                     {companyStatuses.map(item => (
                       <Option value={item.key} key={item.key}>
                         {item.value}
@@ -727,7 +660,7 @@ export default class CompanyList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            单位总数：
+            家庭总数：
             {total}
           </div>
         }

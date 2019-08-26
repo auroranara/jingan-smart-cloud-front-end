@@ -899,6 +899,16 @@ export default class CompanyDetail extends PureComponent {
     this.coordinate.blur()
   }
 
+  /**
+ * 接收报警电话-电话类型改变
+ */
+  handleChangeCallType = (value) => {
+    const {
+      form: { resetFields },
+    } = this.props
+    resetFields(['warningCallNumber'])
+  }
+
   /* 渲染行业类别 */
   renderIndustryCategory() {
     const {
@@ -1196,7 +1206,7 @@ export default class CompanyDetail extends PureComponent {
             <Col md={5} sm={10}>
               <Form.Item label={fieldLabels.warningCall}>
                 {getFieldDecorator('warningCallType', {
-                  initialValue: id && phoneTypes.find(item => item.value === detailCallType) ? phoneTypes.find(item => item.value === detailCallType).label : undefined,
+                  initialValue: id && phoneTypes.find(item => item.value === detailCallType) ? phoneTypes.find(item => item.value === detailCallType).value : undefined,
                   rules: [{ required: true, message: '请选择电话类型' }],
                 })(
                   <Select style={{ width: '100%' }} placeholder="电话类型" onChange={this.handleChangeCallType}>
@@ -1214,7 +1224,7 @@ export default class CompanyDetail extends PureComponent {
                   rules: [
                     { required: true, message: '请输入电话号码' },
                     {
-                      pattern: +warningCallType === 1 ? /0?(13|14|15|18|17)[0-9]{9}/ : /^(\d{3,4})?\d{7,14}$/,
+                      pattern: +warningCallType === 1 ? /0?(13|14|15|18|17)[0-9]{9}/ : /^(0\d{2,3})?([2-9]\d{6,7})+(\d{1,4})?$/,
                       message: +warningCallType === 1 ? '请输入正确格式，为11位数字' : '请输入正确格式',
                     },
                   ],

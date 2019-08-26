@@ -87,6 +87,7 @@ const fieldLabels = {
   importantSafety: '安全重点单位',
   importantHost: '消防重点单位',
   unitPhoto: '单位图片',
+  warningCall: '报警接收电话',
 };
 // tab列表
 const tabList = [
@@ -251,6 +252,7 @@ export default class CompanyDetail extends PureComponent {
             practicalDistrictLabel,
             practicalTownLabel,
             companyType,
+            warningCallNumber,
           },
         },
       },
@@ -308,6 +310,9 @@ export default class CompanyDetail extends PureComponent {
             {/* <Ellipsis tooltip lines={1} className={styles.ellipsisText}> */}
             {practicalAddressLabel || getEmptyData()}
             {/* </Ellipsis> */}
+          </Description>
+          <Description term={fieldLabels.warningCall} style={{ height: 38 }}>
+            {warningCallNumber || getEmptyData()}
           </Description>
         </DescriptionList>
         {/* <DescriptionList col={3} style={{ marginBottom: 16 }}>
