@@ -13,9 +13,9 @@ import { OVERHAUL, isGauge } from '../utils';
 function title(i) {
   switch (i) {
     case 0:
-      return '消火栓';
+      return '消火栓系统';
     case 1:
-      return '喷淋';
+      return '喷淋系统';
     case 2:
       return '水池/水箱';
     default:
@@ -189,7 +189,7 @@ export default class WaterSystemDrawer extends PureComponent {
       <DrawerContainer
         style={{ overflow: 'hidden' }}
         destroyOnClose={false}
-        title={title(waterTabItem) + '系统'}
+        title={title(waterTabItem)}
         width={700}
         visible={visible}
         left={left}

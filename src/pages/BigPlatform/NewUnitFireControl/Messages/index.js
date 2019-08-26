@@ -583,7 +583,11 @@ export default class Messages extends PureComponent {
                   cssType ? (
                     <span
                       className={styles.msgName}
-                      style={{ marginRight: `${MAX_NAME_LENGTH - name.length}em` }}
+                      style={{
+                        marginRight: `${
+                          MAX_NAME_LENGTH - name.length < 0 ? 0 : MAX_NAME_LENGTH - name.length
+                        }em`,
+                      }}
                     >
                       {name}：
                     </span>

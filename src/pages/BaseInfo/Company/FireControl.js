@@ -362,9 +362,9 @@ export default class FireControl extends PureComponent {
             )}
           </FormItem>
         </Col>
-        <Col span={22} offset={1} style={{ marginBottom: '24px' }}>
+        {/* <Col span={22} offset={1} style={{ marginBottom: '24px' }}>
           消防运营驾驶舱中间图片显示逻辑：上传图>底图>无图（默认空）
-        </Col>
+        </Col> */}
         <Col span={16} offset={1}>
           <Form.Item
             label={
