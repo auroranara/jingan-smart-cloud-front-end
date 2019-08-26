@@ -159,7 +159,7 @@ export default class App extends PureComponent {
     } = this.props;
     const images = paths.map(({ webUrl }) => ({ key: webUrl, src: webUrl }));
 
-    return (
+    return images && images.length > 0 && (
       <Card
         className={styles.card}
         title="其它"
@@ -167,22 +167,20 @@ export default class App extends PureComponent {
       >
         <DescriptionList col={1}>
           <Description className={styles.description} term="现场照片">
-            {images && images.length > 0 ? (
-              <div className={styles.sitePhotoWrapper}>
-                {images.map(({ key, src }, index) => (
-                  <div
-                    key={key}
-                    className={styles.sitePhoto}
-                    style={{
-                      backgroundImage: `url(${src})`,
-                    }}
-                    onClick={() => {
-                      this.setState({ images, currentImage: index });
-                    }}
-                  />
-                ))}
-              </div>
-            ) : <span className={styles.emptyData}>暂无数据</span>}
+            <div className={styles.sitePhotoWrapper}>
+              {images.map(({ key, src }, index) => (
+                <div
+                  key={key}
+                  className={styles.sitePhoto}
+                  style={{
+                    backgroundImage: `url(${src})`,
+                  }}
+                  onClick={() => {
+                    this.setState({ images, currentImage: index });
+                  }}
+                />
+              ))}
+            </div>
           </Description>
         </DescriptionList>
       </Card>
