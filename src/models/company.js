@@ -96,6 +96,7 @@ export default {
       },
     },
     searchInfo: null,
+    familyearchInfo: null,
     // 是否安全重点单位
     isSafetyList: [
       {
@@ -457,6 +458,12 @@ export default {
       return {
         ...state,
         searchInfo: payload || null,
+      };
+    },
+    saveFamilySearchInfo(state, { payload }) {
+      return {
+        ...state,
+        familyearchInfo: payload || null,
       };
     },
     initPageNum(state, { payload }) {
