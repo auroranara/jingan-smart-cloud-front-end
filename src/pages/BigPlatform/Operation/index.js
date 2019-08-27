@@ -431,24 +431,24 @@ export default class Operation extends PureComponent {
   };
 
   renderNotificationTitle = item => {
-    const { type, paramName, deviceTypeName } = item;
+    const { type, unitTypeName, paramName, deviceTypeName } = item;
     const msgItem = switchMsgType(+type);
     let title = '';
     switch(+type) {
       case 7:
-        title = '主机';
+        title = `主机(${unitTypeName})`;
         break;
       case 32:
-        title = `电气火灾探测器(${paramName})`;
+        title = `电气火灾(${paramName})`;
         break;
       case 36:
         title = deviceTypeName;
         break;
       case 38:
-        title = '独立烟感';
+        title = '独立烟感探测器';
         break;
       case 39:
-        title = '可燃气体';
+        title = '可燃气体探测器';
         break;
       default:
         title = '未知';
@@ -551,34 +551,12 @@ export default class Operation extends PureComponent {
         className={styles1.notificationBody}
         onClick={onClick}
       >
-          <span className={styles1.time}>刚刚</span>
-          <span className={styles1.address}>
-            {companyName && `【${companyName}】`}
-            {installAddress || area + location}
-            发生报警，请尽快处理。
-          </span>
-        <div>
-          {type === 7 && unitTypeName && (
-              <span className={styles1.device} style={{ color: msgItem.color }}>
-                【{unitTypeName}】
-              </span>
-            )}
-          {(type === 38 || type === 39 || type === 40) && (
-            <span className={styles1.device} style={{ color: msgItem.color }}>
-              {type === 39 ? `【可燃气体探测器】` : `【独立烟感探测器】`}
-            </span>
-          )}
-          {type === 36 && (
-            <span className={styles.device} style={{ color: msgItem.color }}>
-              {}
-            </span>
-          )}
-          {type === 32 && (
-            <span className={styles.device} style={{ color: msgItem.color }}>
-              {}
-            </span>
-          )}
-        </div>
+        <span className={styles1.time}>刚刚</span>
+        <span className={styles1.address}>
+          {companyName && `【${companyName}】`}
+          {installAddress || area + location}
+          发生报警，请尽快处理。
+        </span>
       </div>
     );
     // return (

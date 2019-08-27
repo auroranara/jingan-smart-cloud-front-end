@@ -14,6 +14,7 @@ import {
   getAllScreenMessage,
   getCameraMessage,
   getGasTotal,
+  getPhoneCount,
 } from '@/services/operation';
 import {
   queryAlarmHandleList,
@@ -90,6 +91,7 @@ export default {
     gasHistory: [],
     gasRealtimeData: {},
     gasTotal: {},
+    phoneCount: {},
   },
   effects: {
     *fetchTaskList({ payload, callback }, { call, put, all }) {
@@ -393,6 +395,14 @@ export default {
         callback && callback(data);
       }
     },
+    *fetchPhoneCount({ payload, callback }, { call, put }) {
+      const response = yield call(getPhoneCount, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({ type: 'savePhoneCount', payload: data || {} });
+        callback && callback(data);
+      }
+    },
   },
 
   reducers: {
@@ -508,6 +518,9 @@ export default {
     },
     saveGasTotal(state, action) {
       return { ...state, gasTotal: action.payload };
+    },
+    savePhoneCount(state, action) {
+      return { ...state, phoneCount: action.payload };
     },
   },
 };
