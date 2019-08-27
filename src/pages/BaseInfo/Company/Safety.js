@@ -421,24 +421,28 @@ export default class Safety extends PureComponent {
           list: [result],
         },
       } = file.response;
-      getImageSize(
-        result.webUrl,
-        isSatisfied => {
-          let files = [...fileList];
-          if (file.response.code === 200 && isSatisfied && file.type === 'image/png') {
-            files = fileList.slice(-1);
-            message.success('上传成功');
-          } else if (file.type !== 'image/png') {
-            message.error('请上传png格式的图片');
-            files = fileList.slice(0, fileList.length - 1);
-          } else {
-            message.error('上传的图片分辨率请不要大于256*45');
-            files = [];
-          }
-          this.setState({ logoList: addUrl(files) });
-        },
-        [256, 45]
-      );
+      if (file.type !== 'image/png') {
+        message.error('请上传png格式的图片');
+        const files = fileList.slice(0, fileList.length - 1);
+        this.setState({ logoList: addUrl(files) });
+      } else {
+        getImageSize(
+          result.webUrl,
+          isSatisfied => {
+            let files = [...fileList];
+            if (file.response.code === 200 && isSatisfied) {
+              files = fileList.slice(-1);
+              message.success('上传成功');
+            } else {
+              message.error('上传的图片分辨率请不要大于256*45');
+              files = [];
+            }
+            this.setState({ logoList: addUrl(files) });
+          },
+          [256, 45]
+        );
+      }
+
       this.setState({ uploading: false });
     } else if (status === 'error' || (status === 'done' && response.code !== 200)) {
       message.error('上传失败，请重新上传');
@@ -485,25 +489,29 @@ export default class Safety extends PureComponent {
           list: [result],
         },
       } = file.response;
-      getImageSize(
-        result.webUrl,
-        isSatisfied => {
-          let files = [...fileList];
-          if (file.response.code === 200 && isSatisfied && file.type === 'image/png') {
-            files = [...fileList];
-            message.success('上传成功');
-          } else if (file.type !== 'image/png') {
-            message.error('请上传png格式的图片');
-            files = fileList.slice(0, fileList.length - 1);
-          } else {
-            message.error('上传的图片分辨率请不要大于1740*990');
-            files = fileList.slice(0, fileList.length - 1);
-          }
-          const filteredList = filterUpList(files);
-          this.setState({ safeList: addUrl(filteredList) });
-        },
-        [1740, 990]
-      );
+      if (file.type !== 'image/png') {
+        message.error('请上传png格式的图片');
+        const files = fileList.slice(0, fileList.length - 1);
+        const filteredList = filterUpList(files);
+        this.setState({ safeList: addUrl(filteredList) });
+      } else {
+        getImageSize(
+          result.webUrl,
+          isSatisfied => {
+            let files = [...fileList];
+            if (file.response.code === 200 && isSatisfied) {
+              files = [...fileList];
+              message.success('上传成功');
+            } else {
+              message.error('上传的图片分辨率请不要大于1740*990');
+              files = fileList.slice(0, fileList.length - 1);
+            }
+            const filteredList = filterUpList(files);
+            this.setState({ safeList: addUrl(filteredList) });
+          },
+          [1740, 990]
+        );
+      }
       this.setState({ uploading: false });
       // this.setState({ safeLoading: false });
       // const filteredList = filterUpList(fileList);
@@ -649,7 +657,12 @@ export default class Safety extends PureComponent {
         // rules: generateRules('安全四色图', '上传', { validator: genCheckFileList('安全四色图') }),
         formItemLayout: itemLayout1,
         component: (
-          <Upload {...defaultUploadProps} fileList={safeList} onChange={this.handleSafeChange} disabled={uploading}>
+          <Upload
+            {...defaultUploadProps}
+            fileList={safeList}
+            onChange={this.handleSafeChange}
+            disabled={uploading}
+          >
             {/* <Button loading={safeLoading} type="primary">
               {UploadIcon}
               上传图片
@@ -677,7 +690,12 @@ export default class Safety extends PureComponent {
         span: 24,
         formItemLayout: itemLayout1,
         component: (
-          <Upload {...defaultUploadProps} fileList={logoList} onChange={this.handleLogoChange} disabled={uploading}>
+          <Upload
+            {...defaultUploadProps}
+            fileList={logoList}
+            onChange={this.handleLogoChange}
+            disabled={uploading}
+          >
             {/* <Button loading={logoLoading} type="primary">
               {UploadIcon}
               上传图片

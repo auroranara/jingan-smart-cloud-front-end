@@ -184,35 +184,49 @@ export default class FireControl extends PureComponent {
           },
         } = file.response;
         if (result) {
-          getImageSize(
-            result.webUrl,
-            isSatisfied => {
-              let files = [...fileList];
-              if (file.response.code === 200 && isSatisfied && file.type === 'image/png') {
-                files = [...fileList];
-                message.success('上传成功');
-              } else if (file.type !== 'image/png') {
-                message.error('请上传png格式的图片');
-                files = fileList.slice(0, fileList.length - 1);
-              } else {
-                message.error('上传的图片分辨率请不要大于3840*2160');
-                files = fileList.slice(0, fileList.length - 1);
-              }
-              this.setState({
-                firePictureList: files.map(item => {
-                  if (!item.url && item.response) {
-                    return {
-                      ...item,
-                      url: result.webUrl,
-                      dbUrl: result.dbUrl,
-                    };
-                  }
-                  return item;
-                }),
-              });
-            },
-            [3840, 2160]
-          );
+          if (file.type !== 'image/png') {
+            message.error('请上传png格式的图片');
+            const files = fileList.slice(0, fileList.length - 1);
+            this.setState({
+              firePictureList: files.map(item => {
+                if (!item.url && item.response) {
+                  return {
+                    ...item,
+                    url: result.webUrl,
+                    dbUrl: result.dbUrl,
+                  };
+                }
+                return item;
+              }),
+            });
+          } else {
+            getImageSize(
+              result.webUrl,
+              isSatisfied => {
+                let files = [...fileList];
+                if (file.response.code === 200 && isSatisfied) {
+                  files = [...fileList];
+                  message.success('上传成功');
+                } else {
+                  message.error('上传的图片分辨率请不要大于3840*2160');
+                  files = fileList.slice(0, fileList.length - 1);
+                }
+                this.setState({
+                  firePictureList: files.map(item => {
+                    if (!item.url && item.response) {
+                      return {
+                        ...item,
+                        url: result.webUrl,
+                        dbUrl: result.dbUrl,
+                      };
+                    }
+                    return item;
+                  }),
+                });
+              },
+              [3840, 2160]
+            );
+          }
         } else {
           // 没有返回值
           message.error('上传失败！');
@@ -267,24 +281,28 @@ export default class FireControl extends PureComponent {
           },
         },
       } = file;
-      getImageSize(
-        webUrl,
-        isSatisfied => {
-          if (file.response.code === 200 && isSatisfied && file.type === 'image/png') {
-            fileList = [file];
-            message.success('上传成功');
-          } else if (file.type !== 'image/png') {
-            message.error('请上传png格式的图片');
-            fileList.splice(-1, 1);
-          } else {
-            message.error('上传的图片分辨率请不要大于240*320');
-            fileList.splice(-1, 1);
-          }
-          fileList = getFileList(fileList);
-          this.setState({ unitPhotoList: fileList });
-        },
-        [240, 320]
-      );
+      if (file.type !== 'image/png') {
+        message.error('请上传png格式的图片');
+        fileList.splice(-1, 1);
+        fileList = getFileList(fileList);
+        this.setState({ unitPhotoList: fileList });
+      } else {
+        getImageSize(
+          webUrl,
+          isSatisfied => {
+            if (file.response.code === 200 && isSatisfied) {
+              fileList = [file];
+              message.success('上传成功');
+            } else {
+              message.error('上传的图片分辨率请不要大于240*320');
+              fileList.splice(-1, 1);
+            }
+            fileList = getFileList(fileList);
+            this.setState({ unitPhotoList: fileList });
+          },
+          [240, 320]
+        );
+      }
       this.setState({ uploading: false });
     } else {
       if (file.status === 'uploading') this.setState({ uploading: true });
