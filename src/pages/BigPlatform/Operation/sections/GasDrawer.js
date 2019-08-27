@@ -60,6 +60,7 @@ export default class GasDrawer extends PureComponent {
         width={535}
         left={left}
         visible={visible}
+        zIndex={1001}
         onClose={this.handleClose}
         {...restProps}
       />

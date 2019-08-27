@@ -132,14 +132,16 @@ export default class MapSection extends PureComponent {
   };
 
   renderMarkerLayout = extData => {
-    const { deviceType, handleMapClick, showTooltip, showUnitListDrawer, hideTooltip } = this.props;
+    const { deviceType, unitSelected, handleMapClick, showTooltip, showUnitListDrawer, hideTooltip } = this.props;
     // const { companyName, companyId } = extData;
     // const status = getMapItemStatus(extData, deviceType);
     // const imgSrc = IMGS[deviceType][status];
     const { key, list, icon } = extData;
     const isSingle = list.length === 1;
     const { companyName } = list[0];
-    const imgSrc = IMGS[deviceType][icon];
+    const iconIndex = unitSelected ? unitSelected.icons[deviceType] : icon;
+    // console.log(unitSelected);
+    const imgSrc = IMGS[deviceType][iconIndex];
 
     const handleClick = e => {
       handleMapClick(extData);
@@ -164,7 +166,7 @@ export default class MapSection extends PureComponent {
           onMouseEnter={isSingle ? e => showTooltip(e, companyName) : null}
           onMouseLeave={isSingle ? hideTooltip : null}
         />
-        {!isSingle && <span className={styles.cyanDot}>{list.length}</span>}
+        {!unitSelected && !isSingle && <span className={styles.cyanDot}>{list.length}</span>}
       </div>
     );
   };
@@ -316,9 +318,7 @@ export default class MapSection extends PureComponent {
         </div>
         <Icon
           type="close"
-          onClick={() => {
-            this.setState({ infoWindowShow: false });
-          }}
+          onClick={this.handleHideInfoWindow}
           style={{
             color: '#FFF',
             position: 'absolute',
@@ -332,8 +332,10 @@ export default class MapSection extends PureComponent {
     );
   };
 
-  handleHideInfoWindow = () => {
-    this.props.handleHideInfoWindow();
+  handleHideInfoWindow = e => {
+    const { clearUnitSelected } = this.props;
+    this.setState({ infoWindowShow: false });
+    clearUnitSelected();
   };
 
   onDeviceTypeChange = v => {

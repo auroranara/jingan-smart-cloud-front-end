@@ -36,7 +36,6 @@ import { FireFlowDrawer, OnekeyFlowDrawer, SmokeFlowDrawer } from '@/pages/BigPl
 const OPE = 3; // 运营或管理员unitType对应值
 const COMPANY_ALL = 'companyIdAll';
 const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 48, 49];
-// const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 48, 49];
 const SHOW_TYPES = [1, 2, 3, 4, 7, 9, 11, 13, 14, 15, 16, 17, 18, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 54, 55, 56, 57];
 const ALARM_TYPES = [7, 32, 36, 38, 39];
 
@@ -175,7 +174,8 @@ export default class Operation extends PureComponent {
       alarmIds: [],
       companyName: '',
       // unitList: [], // 地图显示的企业列表
-      unitDetail: {},
+      unitDetail: {}, // 聚合点
+      unitSelected: undefined, // 选中的企业，其为聚合点中的list数组中的一个元素
       deviceType: 0, // 地图中间根据设备显示企业列表
       fireListHasMore: true, // 火警统计抽屉右边列表是否有更多
       alarmMessageDrawerVisible: false,
@@ -333,16 +333,17 @@ export default class Operation extends PureComponent {
     const units = aggregationUnitLists[dType];
 
     const { isAgg } = unitDetail;
-    const unitDetailTemp = unitDetail;
+    let unitDetailTemp;
     let unitIndex;
     if (!isAgg) {
+      unitDetailTemp = unitDetail
       unitDetail = findAggUnit(unitDetail, units);
       unitIndex = unitDetail.list.indexOf(unitDetailTemp);
       // console.log(unitDetail, unitDetailTemp, unitIndex);
     }
 
     const { longitude, latitude } = unitDetail;
-    this.setState({ unitDetail });
+    this.setState({ unitDetail, unitSelected: unitDetailTemp });
     setTimeout(() => {
       mapInstance.setZoomAndCenter(18, [longitude, latitude]);
       this.mapChild.handleMapClick(unitDetail, unitIndex);
@@ -430,14 +431,34 @@ export default class Operation extends PureComponent {
   };
 
   renderNotificationTitle = item => {
-    const { type } = item;
+    const { type, paramName, deviceTypeName } = item;
     const msgItem = switchMsgType(+type);
+    let title = '';
+    switch(+type) {
+      case 7:
+        title = '主机';
+        break;
+      case 32:
+        title = `电气火灾探测器(${paramName})`;
+        break;
+      case 36:
+        title = deviceTypeName;
+        break;
+      case 38:
+        title = '独立烟感';
+        break;
+      case 39:
+        title = '可燃气体';
+        break;
+      default:
+        title = '未知';
+    }
     return (
       <div className={styles1.notificationTitle} style={{ color: msgItem.color }}>
         <span className={styles1.iconFire}>
           <img src={msgItem.icon} alt="fire" />
         </span>
-        {msgItem.title}
+        {title}报警
       </div>
     );
   };
@@ -530,15 +551,12 @@ export default class Operation extends PureComponent {
         className={styles1.notificationBody}
         onClick={onClick}
       >
-        <div>
-          <span className={styles1.time}>
-            {/* {moment(addTime).format('YYYY-MM-DD HH:mm')} */}
-            刚刚
-          </span>{' '}
-          {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
-          <span className={styles1.address}>{installAddress || area + location}</span>
-        </div>
-        {companyName && <div>【{companyName}】</div>}
+          <span className={styles1.time}>刚刚</span>
+          <span className={styles1.address}>
+            {companyName && `【${companyName}】`}
+            {installAddress || area + location}
+            发生报警，请尽快处理。
+          </span>
         <div>
           {type === 7 && unitTypeName && (
               <span className={styles1.device} style={{ color: msgItem.color }}>
@@ -552,19 +570,57 @@ export default class Operation extends PureComponent {
           )}
           {type === 36 && (
             <span className={styles.device} style={{ color: msgItem.color }}>
-              {`【水系统探测器】${deviceTypeName}`}
+              {}
             </span>
           )}
           {type === 32 && (
             <span className={styles.device} style={{ color: msgItem.color }}>
-              {`【电气火灾探测器】${paramName}`}
+              {}
             </span>
           )}
-          {msgItem.body}
         </div>
-        <div>{msgItem.bottom}</div>
       </div>
     );
+    // return (
+    //   <div
+    //     className={styles1.notificationBody}
+    //     onClick={onClick}
+    //   >
+    //     <div>
+    //       <span className={styles1.time}>
+    //         {/* {moment(addTime).format('YYYY-MM-DD HH:mm')} */}
+    //         刚刚
+    //       </span>{' '}
+    //       {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
+    //       <span className={styles1.address}>{installAddress || area + location}</span>
+    //     </div>
+    //     {companyName && <div>【{companyName}】</div>}
+    //     <div>
+    //       {type === 7 && unitTypeName && (
+    //           <span className={styles1.device} style={{ color: msgItem.color }}>
+    //             【{unitTypeName}】
+    //           </span>
+    //         )}
+    //       {(type === 38 || type === 39 || type === 40) && (
+    //         <span className={styles1.device} style={{ color: msgItem.color }}>
+    //           {type === 39 ? `【可燃气体探测器】` : `【独立烟感探测器】`}
+    //         </span>
+    //       )}
+    //       {type === 36 && (
+    //         <span className={styles.device} style={{ color: msgItem.color }}>
+    //           {`【水系统探测器】${deviceTypeName}`}
+    //         </span>
+    //       )}
+    //       {type === 32 && (
+    //         <span className={styles.device} style={{ color: msgItem.color }}>
+    //           {`【电气火灾探测器】${paramName}`}
+    //         </span>
+    //       )}
+    //       {msgItem.body}
+    //     </div>
+    //     <div>{msgItem.bottom}</div>
+    //   </div>
+    // );
   };
 
   /**
@@ -776,6 +832,7 @@ export default class Operation extends PureComponent {
     const { dispatch } = this.props;
     const {
       id,
+      deviceId,
       gasId,
       proceId,
       companyName,
@@ -812,6 +869,7 @@ export default class Operation extends PureComponent {
       },
       callback: cameraMessage => {
         const param = {
+          deviceId,
           dataId: +reportType !== 2 ? dataId : undefined,
           id: +reportType === 2 ? dataId : undefined,
           proceId,
@@ -1117,6 +1175,10 @@ export default class Operation extends PureComponent {
     this.setState({ unitListType: type, unitListDrawerVisible: true });
   };
 
+  clearUnitSelected = () => {
+    this.setState({ unitSelected: undefined });
+  };
+
   /**
    * 渲染
    */
@@ -1153,6 +1215,7 @@ export default class Operation extends PureComponent {
       selectList,
       searchValue,
       unitDetail,
+      unitSelected,
       tooltipName,
       tooltipVisible,
       tooltipPosition,
@@ -1213,19 +1276,22 @@ export default class Operation extends PureComponent {
           aggUnits={aggUnitList}
           unitLists={unitLists}
           aggUnitLists={aggregationUnitLists}
+          unitDetail={unitDetail}
+          unitSelected={unitSelected}
+          alarmIds={alarmIds}
+          onRef={this.onRef}
           handleMapClick={this.showUnitDetail}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
-          unitDetail={unitDetail}
-          alarmIds={alarmIds}
           handleParentChange={this.handleMapParentChange}
           // handleAlarmClick={this.handleAlarmClick}
           // handleFaultClick={this.handleFaultClick}
-          onRef={this.onRef}
+
           handleCompanyClick={this.handleCompanyClick}
           // fetchMapInfo={this.fetchMapInfo}
           handleDeviceTypeChange={this.handleDeviceTypeChange}
           showUnitListDrawer={this.showUnitListDrawer}
+          clearUnitSelected={this.clearUnitSelected}
         />
         {/* 搜索框 */}
         <MapSearch
