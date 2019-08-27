@@ -22,7 +22,10 @@ import { getNewCompanyType, getImportantTypes, getImageSize } from '../utils';
 import urls from 'utils/urls';
 import { getToken } from 'utils/authority';
 
+import styles from './FireControl.less';
+
 const { RangePicker } = DatePicker;
+const { confirm } = Modal;
 const { Item: FormItem } = Form;
 const { Option } = Select;
 const { Group: RadioGroup } = Radio;
@@ -338,6 +341,7 @@ export default class Safety extends PureComponent {
       safety: {
         detail: { companyType },
       },
+      handleTabChange,
     } = this.props;
 
     e.preventDefault();
@@ -376,6 +380,18 @@ export default class Safety extends PureComponent {
 
           if (code === 200) {
             message.success(msg);
+            confirm({
+              title: '提示信息',
+              content: '是否继续编辑消防信息',
+              okText: '是',
+              cancelText: '否',
+              onOk() {
+                handleTabChange('2');
+              },
+              onCancel: () => {
+                dispatch(routerRedux.push(urls.company.list));
+              },
+            });
             // dispatch(routerRedux.push(urls.company.list));
           } else message.error(msg);
         },
@@ -393,10 +409,9 @@ export default class Safety extends PureComponent {
 
   // 只能有一个文件
   handleLogoChange = ({ file, fileList, event }) => {
-    const { logoLoading } = this.state;
     const { status, response } = file;
     // 文件在上传时，且logoLoading为false，避免重复设值
-    if (status === 'uploading' && !logoLoading) this.setState({ logoLoading: true });
+    if (status === 'uploading') this.setState({ uploading: true });
     // // 其余情况，done,error,removed时均表示loading已结束
     // else this.setState({ logoLoading: false });
     if (status === 'uploading' || status === 'removed') this.setState({ logoList: fileList });
@@ -424,9 +439,11 @@ export default class Safety extends PureComponent {
         },
         [256, 45]
       );
-    } else if (status === 'error' || (status === 'done' && response.code !== 200))
+      this.setState({ uploading: false });
+    } else if (status === 'error' || (status === 'done' && response.code !== 200)) {
       message.error('上传失败，请重新上传');
-
+      this.setState({ uploading: false });
+    }
     // 让列表只显示一个文件，当删除文件时,removed，file为删除的文件，fileList中已不包含当前file，此处为空数组
     // this.setState({ logoList: addUrl(fileList.slice(-1)) });
 
@@ -438,11 +455,10 @@ export default class Safety extends PureComponent {
 
   // 同上
   handleStandardChange = ({ file, fileList, event }) => {
-    const { standardLoading } = this.state;
     const { status, response } = file;
 
-    if (status === 'uploading' && !standardLoading) this.setState({ standardLoading: true });
-    else this.setState({ standardLoading: false });
+    if (status === 'uploading') this.setState({ uploading: true });
+    else this.setState({ uploading: false });
 
     this.setState({ standardList: addUrl(fileList.slice(-1)) });
 
@@ -453,10 +469,9 @@ export default class Safety extends PureComponent {
 
   // 可以上传多个文件
   handleSafeChange = ({ file, fileList, event }) => {
-    const { safeLoading } = this.state;
     const { status } = file;
 
-    if (status === 'uploading' && !safeLoading) this.setState({ safeLoading: true });
+    if (status === 'uploading') this.setState({ uploading: true });
 
     if (status === 'uploading' || status === 'removed') this.setState({ safeList: fileList });
 
@@ -484,12 +499,12 @@ export default class Safety extends PureComponent {
             message.error('上传的图片分辨率请不要大于1740*990');
             files = fileList.slice(0, fileList.length - 1);
           }
-          this.setState({ safeLoading: false });
           const filteredList = filterUpList(files);
           this.setState({ safeList: addUrl(filteredList) });
         },
         [1740, 990]
       );
+      this.setState({ uploading: false });
       // this.setState({ safeLoading: false });
       // const filteredList = filterUpList(fileList);
       // this.setState({ safeList: addUrl(filteredList) });
@@ -557,16 +572,7 @@ export default class Safety extends PureComponent {
       safety: { menus },
       loading,
     } = this.props;
-    const {
-      showMore,
-      submitting,
-      standardLoading,
-      standardList,
-      safeLoading,
-      safeList,
-      logoLoading,
-      logoList,
-    } = this.state;
+    const { showMore, submitting, standardList, safeList, logoList, uploading } = this.state;
 
     const defaultItems = [
       // {
@@ -643,7 +649,7 @@ export default class Safety extends PureComponent {
         // rules: generateRules('安全四色图', '上传', { validator: genCheckFileList('安全四色图') }),
         formItemLayout: itemLayout1,
         component: (
-          <Upload {...defaultUploadProps} fileList={safeList} onChange={this.handleSafeChange}>
+          <Upload {...defaultUploadProps} fileList={safeList} onChange={this.handleSafeChange} disabled={uploading}>
             {/* <Button loading={safeLoading} type="primary">
               {UploadIcon}
               上传图片
@@ -671,7 +677,7 @@ export default class Safety extends PureComponent {
         span: 24,
         formItemLayout: itemLayout1,
         component: (
-          <Upload {...defaultUploadProps} fileList={logoList} onChange={this.handleLogoChange}>
+          <Upload {...defaultUploadProps} fileList={logoList} onChange={this.handleLogoChange} disabled={uploading}>
             {/* <Button loading={logoLoading} type="primary">
               {UploadIcon}
               上传图片
@@ -713,7 +719,7 @@ export default class Safety extends PureComponent {
               {UploadIcon}
               上传附件
             </Button> */}
-            <Button type="dashed" style={{ width: '96px', height: '96px' }}>
+            <Button type="dashed" style={{ width: '96px', height: '96px' }} disabled={uploading}>
               <Icon type="plus" style={{ fontSize: '32px' }} />
               <div style={{ marginTop: '8px' }}>点击上传</div>
             </Button>
@@ -728,11 +734,11 @@ export default class Safety extends PureComponent {
 
     return (
       <Card>
-        <Form onSubmit={this.handleSubmit} labelAlign="left">
+        <Form className={styles.form} onSubmit={this.handleSubmit} labelAlign="left">
           {this.renderFormItems(formItems)}
           <Col span={24}>
             <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 13, offset: 11 } }}>
-              <Button type="primary" htmlType="submit" loading={loading || submitting}>
+              <Button type="primary" htmlType="submit" loading={loading || submitting || uploading}>
                 提交
               </Button>
             </FormItem>

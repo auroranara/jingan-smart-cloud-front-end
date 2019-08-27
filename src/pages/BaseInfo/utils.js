@@ -51,8 +51,6 @@ export function getImageSize(src, callback, [maxWidth = MAX_WIDTH, maxHeight = M
   img.src = src;
   img.onload = e => {
     const { width, height } = e.target;
-    console.log('width', width);
-    console.log('height', height);
     const isSatisfied = width <= maxWidth && height <= maxHeight;
     callback(isSatisfied);
   };

@@ -3,9 +3,15 @@ import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import { message, Button, Card, Col, Form, Icon, Modal, Upload, Radio } from 'antd';
 // import FooterToolbar from 'components/FooterToolbar';
-import { getNewCompanyType, getImportantTypes, PhotoStyles } from '../utils';
+import {
+  getNewCompanyType,
+  getImportantTypes,
+  PhotoStyles,
+  getFileList,
+  getImageSize,
+} from '../utils';
 import Lightbox from 'react-images';
-import { getFileList, getImageSize } from '../utils';
+import urls from 'utils/urls';
 import { getToken } from 'utils/authority';
 import styles from './FireControl.less';
 
@@ -102,12 +108,13 @@ export default class FireControl extends PureComponent {
           unitPhotoList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
         ),
       };
+      this.setState({ submitting: true });
       // 成功回调
       const success = companyId => {
         const msg = '编辑成功！';
         message.success(msg, 1, () => {
           this.setState({ submitting: false });
-          // dispatch(routerRedux.push(urls.company.list));
+          dispatch(routerRedux.push(urls.company.list));
         });
       };
       // 失败回调
@@ -128,6 +135,7 @@ export default class FireControl extends PureComponent {
 
   /* 上传文件按钮 */
   renderUploadButton = (fileList, onChange, multiple = true, tips) => {
+    const { uploading } = this.state;
     return (
       <Upload
         name="files"
@@ -140,6 +148,7 @@ export default class FireControl extends PureComponent {
         onChange={onChange}
         // beforeUpload={this.handleBeforeUploadUnitPhoto}
         headers={{ 'JA-Token': getToken() }}
+        disabled={uploading}
       >
         <Button type="dashed" style={{ width: '96px', height: '96px' }}>
           <Icon type="plus" style={{ fontSize: '32px' }} />
@@ -266,17 +275,19 @@ export default class FireControl extends PureComponent {
             message.success('上传成功');
           } else if (file.type !== 'image/png') {
             message.error('请上传png格式的图片');
-            fileList = fileList.slice(0, fileList.length - 1);
+            fileList.splice(-1, 1);
           } else {
             message.error('上传的图片分辨率请不要大于240*320');
-            fileList = fileList.slice(0, 1);
+            fileList.splice(-1, 1);
           }
           fileList = getFileList(fileList);
           this.setState({ unitPhotoList: fileList });
         },
         [240, 320]
       );
+      this.setState({ uploading: false });
     } else {
+      if (file.status === 'uploading') this.setState({ uploading: true });
       // 其他情况，直接用原文件数组
       fileList = getFileList(fileList);
       this.setState({ unitPhotoList: fileList });
@@ -432,15 +443,20 @@ export default class FireControl extends PureComponent {
 
   render() {
     const { loading } = this.props;
-    const { submitting, images, currentImage, lightBoxVisible } = this.state;
+    const { submitting, uploading, images, currentImage, lightBoxVisible } = this.state;
 
     return (
       <Card>
-        <Form onSubmit={this.handleSubmit} labelAlign={'left'} colon={false}>
+        <Form
+          className={styles.form}
+          onSubmit={this.handleSubmit}
+          labelAlign={'left'}
+          colon={false}
+        >
           {this.renderFormItems()}
           <Col span={24}>
             <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 13, offset: 11 } }}>
-              <Button type="primary" htmlType="submit" loading={loading || submitting}>
+              <Button type="primary" htmlType="submit" loading={loading || submitting || uploading}>
                 提交
               </Button>
             </FormItem>

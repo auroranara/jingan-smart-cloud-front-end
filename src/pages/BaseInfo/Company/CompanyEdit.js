@@ -94,10 +94,7 @@ const fieldLabels = {
   warningCall: '报警接收电话',
 };
 // 报警接收电话类型
-const phoneTypes = [
-  { value: 1, label: '手机' },
-  { value: 0, label: '固话' },
-]
+const phoneTypes = [{ value: 1, label: '手机' }, { value: 0, label: '固话' }];
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
 // tab列表
@@ -259,14 +256,14 @@ export default class CompanyDetail extends PureComponent {
           gridId,
           companyType,
         }) => {
-          const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
-          const fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
-          const unitPhotoList = Array.isArray(companyPhotoDetails) ? companyPhotoDetails : [];
+          // const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
+          // const fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
+          // const unitPhotoList = Array.isArray(companyPhotoDetails) ? companyPhotoDetails : [];
           // 若idMap已获取则设值，未获取时则在获取idMap后设值
           this.gridId = gridId;
           Object.keys(this.idMap).length && setFieldsValue({ gridId: this.idMap[gridId] });
-          const [importantHost, importantSafety] = getImportantTypes(companyType);
-          setFieldsValue({ importantHost, importantSafety });
+          // const [importantHost, importantSafety] = getImportantTypes(companyType);
+          // setFieldsValue({ importantHost, importantSafety });
 
           // 初始化上传文件
           // this.setState({
@@ -880,34 +877,24 @@ export default class CompanyDetail extends PureComponent {
   };
 
   /**
-  * 复制经纬度
-  */
+   * 复制经纬度
+   */
   handleCopyCoordinate = () => {
     const {
       form: { getFieldValue },
-    } = this.props
-    const coordinate = getFieldValue('coordinate')
+    } = this.props;
+    const coordinate = getFieldValue('coordinate');
     if (!coordinate) {
-      message.warning('请先选择经纬度')
-      return
+      message.warning('请先选择经纬度');
+      return;
     }
-    this.coordinate.select()
+    this.coordinate.select();
     if (document.execCommand('copy')) {
       document.execCommand('copy');
-      message.success('复制成功')
+      message.success('复制成功');
     }
-    this.coordinate.blur()
-  }
-
-  /**
- * 接收报警电话-电话类型改变
- */
-  handleChangeCallType = (value) => {
-    const {
-      form: { resetFields },
-    } = this.props
-    resetFields(['warningCallNumber'])
-  }
+    this.coordinate.blur();
+  };
 
   /* 渲染行业类别 */
   renderIndustryCategory() {
@@ -1001,7 +988,9 @@ export default class CompanyDetail extends PureComponent {
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
-      match: { params: { id } },
+      match: {
+        params: { id },
+      },
       company: {
         detail: {
           data: {
@@ -1032,7 +1021,7 @@ export default class CompanyDetail extends PureComponent {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
     const { ichnographyList, firePictureList, unitPhotoList, isCompany, gridTree } = this.state;
-    const warningCallType = getFieldValue('warningCallType')
+    const warningCallType = getFieldValue('warningCallType');
     return (
       <Card className={styles.card} bordered={false}>
         <Form layout="vertical">
@@ -1101,14 +1090,20 @@ export default class CompanyDetail extends PureComponent {
                   rules: [{ required: true, message: '请选择经纬度' }],
                 })(
                   <Input
-                    ref={coordinate => { this.coordinate = coordinate }}
+                    ref={coordinate => {
+                      this.coordinate = coordinate;
+                    }}
                     placeholder="请选择经纬度"
                     addonAfter={
                       <Fragment>
-                        <Tooltip title="复制" >
-                          <Icon type="copy" style={{ marginRight: '10px' }} onClick={this.handleCopyCoordinate} />
+                        <Tooltip title="复制">
+                          <Icon
+                            type="copy"
+                            style={{ marginRight: '10px' }}
+                            onClick={this.handleCopyCoordinate}
+                          />
                         </Tooltip>
-                        <Tooltip title="打开地图" >
+                        <Tooltip title="打开地图">
                           <Icon type="environment" onClick={this.handleShowMap} />
                         </Tooltip>
                       </Fragment>
@@ -1206,12 +1201,21 @@ export default class CompanyDetail extends PureComponent {
             <Col md={5} sm={10}>
               <Form.Item label={fieldLabels.warningCall}>
                 {getFieldDecorator('warningCallType', {
-                  initialValue: id && phoneTypes.find(item => item.value === detailCallType) ? phoneTypes.find(item => item.value === detailCallType).value : undefined,
+                  initialValue:
+                    id && phoneTypes.find(item => item.value === detailCallType)
+                      ? phoneTypes.find(item => item.value === detailCallType).label
+                      : undefined,
                   rules: [{ required: true, message: '请选择电话类型' }],
                 })(
-                  <Select style={{ width: '100%' }} placeholder="电话类型" onChange={this.handleChangeCallType}>
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder="电话类型"
+                    onChange={this.handleChangeCallType}
+                  >
                     {phoneTypes.map(({ value, label }) => (
-                      <Option value={value} key={value}>{label}</Option>
+                      <Option value={value} key={value}>
+                        {label}
+                      </Option>
                     ))}
                   </Select>
                 )}
@@ -1224,13 +1228,15 @@ export default class CompanyDetail extends PureComponent {
                   rules: [
                     { required: true, message: '请输入电话号码' },
                     {
-                      pattern: +warningCallType === 1 ? /0?(13|14|15|18|17)[0-9]{9}/ : /^(0\d{2,3})?([2-9]\d{6,7})+(\d{1,4})?$/,
-                      message: +warningCallType === 1 ? '请输入正确格式，为11位数字' : '请输入正确格式',
+                      pattern:
+                        +warningCallType === 1
+                          ? /0?(13|14|15|18|17)[0-9]{9}/
+                          : /^(\d{3,4})?\d{7,14}$/,
+                      message:
+                        +warningCallType === 1 ? '请输入正确格式，为11位数字' : '请输入正确格式',
                     },
                   ],
-                })(
-                  <Input placeholder="电话号码" />
-                )}
+                })(<Input placeholder="电话号码" />)}
               </Form.Item>
             </Col>
           </Row>
@@ -1668,7 +1674,12 @@ export default class CompanyDetail extends PureComponent {
             {this.renderFooterToolbar()}
           </div>
           <div style={{ display: tabActiveKey === tabList[1].key ? 'block' : 'none' }}>
-            <Safety operation={this.operation} companyId={id} setGridTree={this.setGridTree} />
+            <Safety
+              operation={this.operation}
+              companyId={id}
+              setGridTree={this.setGridTree}
+              handleTabChange={this.handleTabChange}
+            />
           </div>
           <div style={{ display: tabActiveKey === tabList[2].key ? 'block' : 'none' }}>
             <FireControl
@@ -1676,6 +1687,7 @@ export default class CompanyDetail extends PureComponent {
               operation={this.operation}
               companyId={id}
               detail={this.props.company.detail.data}
+              handleTabChange={this.handleTabChange}
             />
           </div>
         </Spin>
