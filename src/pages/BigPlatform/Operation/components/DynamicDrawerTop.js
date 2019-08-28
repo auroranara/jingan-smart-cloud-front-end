@@ -75,6 +75,7 @@ export default class DynamicDrawerTop extends Component {
       msgType = 0, // 0 报警 1 故障
       msgSendLoading = false,
       showCompanyName = true,
+      phoneCount,
     } = this.props;
     // const scTime = moment(firstTime).format('YYYY-MM-DD HH:mm');
     // const zjTime = moment(lastTime).format('YYYY-MM-DD HH:mm');
@@ -199,7 +200,7 @@ export default class DynamicDrawerTop extends Component {
         {totalRead > 0 && (
           <div className={styles.messageSendingContainer}>
             <Spin spinning={msgSendLoading} wrapperClassName={styles.spin}>
-              <PhoneCount />
+              <PhoneCount data={phoneCount} />
               <div className={styles.topLine}>
                 <span>
                   {(dynamicType === 3 && `报修`) ||

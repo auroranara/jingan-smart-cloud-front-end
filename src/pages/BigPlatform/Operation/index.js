@@ -944,7 +944,8 @@ export default class Operation extends PureComponent {
         },
         callback: res => {
           if (res) {
-            const { num, lastTime, firstTime, sdeviceName = null } = res;
+            const { num, lastTime, firstTime, sdeviceName=null, relation_id } = res;
+            this.getPhoneCount(relation_id);
             dispatch({
               type: 'operation/saveWorkOrderDetail',
               payload: [{ ...occurData[0], firstTime, num, lastTime, sdeviceName }],
@@ -954,6 +955,7 @@ export default class Operation extends PureComponent {
               type: 'operation/fetchWorkOrder',
               // payload: { companyId: cId, reportType: reportTypes[type], ...param },
               payload: workOrderPayload,
+              callback: ({ relation_id }) => this.getPhoneCount(relation_id),
             });
           }
         },
@@ -1015,6 +1017,11 @@ export default class Operation extends PureComponent {
     // }
 
     this.locateCompany(cId, type<=2 ? type <=1 ? type + 1 : GAS : undefined);
+  };
+
+  getPhoneCount = id => {
+    const { dispatch } = this.props;
+    id && dispatch({ type: 'operation/fetchPhoneCount', payload: id });
   };
 
   setCameraMessage = cameraMessage => {
@@ -1179,6 +1186,7 @@ export default class Operation extends PureComponent {
         gasHistory,
         gasRealtimeData,
         gasTotal,
+        phoneCount,
       },
       user: {
         currentUser: { unitName },
@@ -1355,6 +1363,7 @@ export default class Operation extends PureComponent {
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
           head={true}
+          phoneCount={phoneCount}
         />
         {/* 独立烟感处理动态 */}
         <SmokeFlowDrawer
@@ -1371,6 +1380,7 @@ export default class Operation extends PureComponent {
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
           head={true}
+          phoneCount={phoneCount}
         />
         {/* 一键报修处理动态 */}
         <OnekeyFlowDrawer
@@ -1385,10 +1395,11 @@ export default class Operation extends PureComponent {
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
           head={true}
+          phoneCount={phoneCount}
         />
         <GasDrawer
           monitorData={{ item: gasRealtimeData, history: gasHistory }}
-          orderData={{ order: workOrderDetail, item: gasRealtimeData, phoneVisible, headProps, messageInformList, messageInformListLoading, gasTotal }}
+          orderData={{ order: workOrderDetail, item: gasRealtimeData, phoneVisible, headProps, messageInformList, messageInformListLoading, gasTotal, phoneCount }}
           visible={gasDrawerVisible}
           handleCameraOpen={handleCameraOpen}
           fetchGasTotal={this.fetchGasTotal}
