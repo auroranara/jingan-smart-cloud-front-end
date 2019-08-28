@@ -11,6 +11,8 @@ import LegendDot from './LegendDot';
 import MapLegend from './MapLegend';
 import MapTypeBar from '@/pages/BigPlatform/Smoke/BackMap/MapTypeBar';
 import Message from './Message';
+import MsgRead from './MsgRead';
+import PhoneCount from './PhoneCount';
 import TaskCount from './TaskCount';
 import TaskDrawer from './TaskDrawer';
 import UnitInfo from './UnitInfo';
@@ -57,6 +59,8 @@ export {
   MapLegend,
   MapTypeBar,
   Message,
+  MsgRead,
+  PhoneCount,
   TaskDrawer,
   TaskCount,
   UnitInfo,

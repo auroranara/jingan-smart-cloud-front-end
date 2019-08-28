@@ -885,7 +885,8 @@ export default class NewUnitFireControl extends PureComponent {
           else if (type === 39) this.handleClickMsgFlow(param, 2, 0, ...restParams);
           else if (type === 40) this.handleClickMsgFlow(param, 1, 1, ...restParams);
           else if (type === 32) this.handleClickElecMsg(deviceId, paramName);
-          else if (type === 36) this.handleClickWater(0, [101, 102, 103].indexOf(+deviceType), deviceId);
+          else if (type === 36)
+            this.handleClickWater(0, [101, 102, 103].indexOf(+deviceType), deviceId);
           // if (type === 7 || type === 38 || type === 39) this.handleClickMessage(messageFlag, item);
           // else this.handleFaultClick({ ...item });
         }}
@@ -1993,10 +1994,24 @@ export default class NewUnitFireControl extends PureComponent {
         type: 'newUnitFireControl/saveWorkOrderDetail',
         payload: occurData,
       });
+      dispatch({
+        type: 'newUnitFireControl/fetchCountNumAndTimeById',
+        payload: {
+          id: param.dataId || param.id,
+          reportType: reportTypes[type],
+          fireType: flow + 1,
+        },
+        callback: res => {
+          if (res) {
+            this.getPhoneCount(res.relation_id);
+          }
+        },
+      });
     } else {
       dispatch({
         type: 'newUnitFireControl/fetchWorkOrder',
         payload: { companyId, reportType: reportTypes[type], ...param },
+        callback: ({ relation_id }) => this.getPhoneCount(relation_id),
       });
     }
     this.fetchMessageInformList(param);
@@ -2013,6 +2028,54 @@ export default class NewUnitFireControl extends PureComponent {
       this.handleShowFlowVideo();
   };
 
+  hanldeClickSwitch = index => {
+    const {
+      newUnitFireControl: {
+        dangerChartId: { fireId = [], faultId = [] },
+      },
+      dispatch,
+      match: {
+        params: { unitId: companyId },
+      },
+    } = this.props;
+    const { msgFlow } = this.state;
+    const ids = msgFlow === 0 ? fireId : faultId;
+    const { id, status } = ids[index];
+    const fetchFlow = msgFlow === 0 ? this.getWarnDetail : this.getFaultDetail;
+    fetchFlow(status, 0, 1, { id, status }, res => {
+      const {
+        data: {
+          list: [{ cameraMessage }],
+        },
+      } = res;
+      this.setState({
+        videoList: cameraMessage || [],
+        fireVideoVisible: Array.isArray(cameraMessage) && cameraMessage.length > 0,
+      });
+    });
+    dispatch({
+      type: 'newUnitFireControl/fetchCountNumAndTimeById',
+      payload: {
+        id,
+        reportType: 1,
+        fireType: msgFlow + 1,
+      },
+      callback: res => {
+        if (res) {
+          this.getPhoneCount(res.relation_id);
+        } else {
+          // 处理中，已完成请求接口流程信息
+          dispatch({
+            type: 'newUnitFireControl/fetchWorkOrder',
+            payload: { companyId, reportType: 1, id },
+            callback: ({ relation_id }) => this.getPhoneCount(relation_id),
+          });
+        }
+      },
+    });
+    this.fetchMessageInformList({ dataId: id });
+  };
+
   handleShowAlarmFlows = flow => {
     const {
       dispatch,
@@ -2024,21 +2087,9 @@ export default class NewUnitFireControl extends PureComponent {
       type: 'newUnitFireControl/fetchDangerChartId',
       payload: { companyId },
       callback: res => {
-        const { fireId, faultId } = res;
-        const ids = flow === 0 ? fireId : faultId;
-        const { id, status } = ids[0];
-        const fetchFlow = flow === 0 ? this.getWarnDetail : this.getFaultDetail;
-        fetchFlow(status, 0, 1, { id, status }, res => {
-          const {
-            data: {
-              list: [{ cameraMessage }],
-            },
-          } = res;
-          this.setState({ videoList: cameraMessage || [] });
-          Array.isArray(cameraMessage) && cameraMessage.length > 0 && this.handleShowFlowVideo();
+        this.setState({ fireMonitorFlowDrawerVisible: true, msgFlow: flow }, () => {
+          this.hanldeClickSwitch(0);
         });
-        this.fetchMessageInformList({ dataId: id });
-        this.setState({ fireMonitorFlowDrawerVisible: true, msgFlow: flow });
       },
     });
     // this.handleFetchAlarmHandle(0, 0, res => {
@@ -2050,6 +2101,11 @@ export default class NewUnitFireControl extends PureComponent {
     //   this.handleShowFireVideo(cameraMessage);
     // });
     // this.setState({ alarmDynamicDrawerVisible: true });
+  };
+
+  getPhoneCount = id => {
+    const { dispatch } = this.props;
+    id && dispatch({ type: 'operation/fetchPhoneCount', payload: id });
   };
 
   handleClickMsgFlow = (
@@ -2085,8 +2141,9 @@ export default class NewUnitFireControl extends PureComponent {
         callback: res => {
           if (res) {
             // 待处理自行拼
-            const { num, lastTime, firstTime } = res;
+            const { num, lastTime, firstTime, relation_id } = res;
             // this.setState({ flowRepeat: { times: num, lastreportTime: lastTime } });
+            this.getPhoneCount(relation_id);
             dispatch({
               type: 'newUnitFireControl/saveWorkOrderDetail',
               payload: [{ ...occurData[0], firstTime, num, lastTime }],
@@ -2096,6 +2153,7 @@ export default class NewUnitFireControl extends PureComponent {
             dispatch({
               type: 'newUnitFireControl/fetchWorkOrder',
               payload: { companyId, reportType: reportTypes[type], ...param },
+              callback: ({ relation_id }) => this.getPhoneCount(relation_id),
               // callback: res => {
               //   if (res.data.list.length === 0) return;
               //   const { num, lastTime } = res.data.list[0];
@@ -2265,7 +2323,7 @@ export default class NewUnitFireControl extends PureComponent {
       allDetailLoading,
       hiddenDangerLoading,
       messageInformListLoading,
-      operation: { gasHistory, gasRealtimeData, gasTotal },
+      operation: { gasHistory, gasRealtimeData, gasTotal, phoneCount },
       gasStation: { pond, spray, hydrant, waterHistory, waterAlarmCount },
     } = this.props;
 
@@ -2838,6 +2896,7 @@ export default class NewUnitFireControl extends PureComponent {
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
           head={true}
+          phoneCount={phoneCount}
         />
         {/* 独立烟感处理动态 */}
         <SmokeFlowDrawer
@@ -2854,6 +2913,7 @@ export default class NewUnitFireControl extends PureComponent {
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
           head={true}
+          phoneCount={phoneCount}
         />
         {/* 一键报修处理动态 */}
         <OnekeyFlowDrawer
@@ -2868,6 +2928,7 @@ export default class NewUnitFireControl extends PureComponent {
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
           head={true}
+          phoneCount={phoneCount}
         />
         {/* 燃气处理动态 */}
         <GasFlowDrawer
@@ -2883,6 +2944,7 @@ export default class NewUnitFireControl extends PureComponent {
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
           head={true}
+          phoneCount={phoneCount}
         />
         {/* 设置抽屉 */}
         <SetDrawer
@@ -2904,12 +2966,12 @@ export default class NewUnitFireControl extends PureComponent {
           faultDetail={faultDetail}
           warnDetailLoading={warnDetailLoading}
           faultDetailLoading={faultDetailLoading}
-          getWarnDetail={this.getWarnDetail}
-          getFaultDetail={this.getFaultDetail}
           handleShowFlowVideo={this.handleShowFlowVideo}
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
           fetchMessageInformList={this.fetchMessageInformList}
+          phoneCount={phoneCount}
+          hanldeClickSwitch={this.hanldeClickSwitch}
         />
         <GasDrawer
           monitorData={{ item: gasRealtimeData, history: gasHistory }}
@@ -2921,6 +2983,7 @@ export default class NewUnitFireControl extends PureComponent {
             messageInformList,
             messageInformListLoading,
             gasTotal,
+            phoneCount,
           }}
           visible={gasDrawerVisible}
           handleCameraOpen={handleCameraOpen}

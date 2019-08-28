@@ -18,60 +18,20 @@ export default class FireMonitorFlowDrawer extends PureComponent {
 
   handleLeftClick = () => {
     const {
-      fireId,
-      faultId,
-      msgFlow,
-      getWarnDetail,
-      getFaultDetail,
-      fetchMessageInformList,
-      handleParentChange,
+      hanldeClickSwitch,
     } = this.props;
     const { index } = this.state;
-    const ids = msgFlow === 0 ? fireId : faultId;
-    const { id, status } = ids[index - 1];
-    const fetchFlow = msgFlow === 0 ? getWarnDetail : getFaultDetail;
-    fetchFlow(status, 0, 1, { id, status }, res => {
-      const {
-        data: {
-          list: [{ cameraMessage }],
-        },
-      } = res;
-      handleParentChange({
-        videoList: cameraMessage || [],
-        fireVideoVisible: Array.isArray(cameraMessage) && cameraMessage.length > 0,
-      });
-    });
-    fetchMessageInformList({ dataId: id });
+    hanldeClickSwitch(index - 1);
     this.setState(({ index }) => ({ index: index - 1 }));
     this.drawerTop.resetMsgRead();
   };
 
   handleRightClick = () => {
     const {
-      fireId,
-      faultId,
-      msgFlow,
-      getWarnDetail,
-      getFaultDetail,
-      fetchMessageInformList,
-      handleParentChange,
+      hanldeClickSwitch,
     } = this.props;
     const { index } = this.state;
-    const ids = msgFlow === 0 ? fireId : faultId;
-    const { id, status } = ids[index + 1];
-    const fetchFlow = msgFlow === 0 ? getWarnDetail : getFaultDetail;
-    fetchFlow(status, 0, 1, { id, status }, res => {
-      const {
-        data: {
-          list: [{ cameraMessage }],
-        },
-      } = res;
-      handleParentChange({
-        videoList: cameraMessage || [],
-        fireVideoVisible: Array.isArray(cameraMessage) && cameraMessage.length > 0,
-      });
-    });
-    fetchMessageInformList({ dataId: id });
+    hanldeClickSwitch(index + 1);
     this.setState(({ index }) => ({ index: index + 1 }));
     this.drawerTop.resetMsgRead();
   };
@@ -101,6 +61,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
       handleParentChange,
       messageInformList = [],
       messageInformListLoading = false,
+      phoneCount,
       ...restProps
     } = this.props;
     const { index } = this.state;
@@ -136,6 +97,7 @@ export default class FireMonitorFlowDrawer extends PureComponent {
         msgType={msgFlow}
         msgSendLoading={messageInformListLoading}
         onRef={this.onRef}
+        phoneCount={phoneCount}
       />
     );
     let left = null;
