@@ -446,10 +446,10 @@ export default class Operation extends PureComponent {
         title = deviceTypeName;
         break;
       case 38:
-        title = '独立烟感探测器';
+        title = '独立烟感';
         break;
       case 39:
-        title = '可燃气体探测器';
+        title = '可燃气体';
         break;
       default:
         title = '未知';
