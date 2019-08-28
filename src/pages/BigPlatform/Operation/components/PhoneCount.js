@@ -12,7 +12,7 @@ export default function PhoneCount(props) {
       {!!countCall && (
         <div className={styles.counts}>
           {[countCall, successCall, noResponseCall, errorCall].map((n, i) => (
-            <span className={styles.countContainer}>
+            <span className={styles.countContainer} key={i}>
               {DESCES[i]}
               <span className={styles.count}>{n}</span>
               次
