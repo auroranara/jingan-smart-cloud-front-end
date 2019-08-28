@@ -37,7 +37,7 @@ export default class DrawerContainer extends PureComponent {
             </h3>
           )}
           {top}
-          <Row style={{ height: hasTitle ? 'calc(100% - 51px)': '100%', ...rowStyle }}>
+          <Row style={{ height: hasTitle ? 'calc(100% - 51px)': '100%', overflow: 'auto', paddingRight: 16, ...rowStyle }}>
             <Col span={right ? 12 : 24} style={COL_STYLE}>
               {left}
             </Col>
