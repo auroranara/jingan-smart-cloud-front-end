@@ -9,7 +9,7 @@ export default function PhoneCount(props) {
   return (
     <div className={styles.container}>
       报警电话{countCall ? '已': '未'}拨打
-      {countCall && (
+      {!!countCall && (
         <div className={styles.counts}>
           {[countCall, successCall, noResponseCall, errorCall].map((n, i) => (
             <span className={styles.countContainer}>
