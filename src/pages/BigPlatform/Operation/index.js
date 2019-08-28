@@ -338,7 +338,8 @@ export default class Operation extends PureComponent {
     if (!isAgg) {
       unitDetailTemp = unitDetail
       unitDetail = findAggUnit(unitDetail, units);
-      unitIndex = unitDetail.list.indexOf(unitDetailTemp);
+      if (unitDetail)
+        unitIndex = unitDetail.list.indexOf(unitDetailTemp);
       // console.log(unitDetail, unitDetailTemp, unitIndex);
     }
 
