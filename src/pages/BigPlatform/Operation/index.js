@@ -437,7 +437,7 @@ export default class Operation extends PureComponent {
     let title = '';
     switch(+type) {
       case 7:
-        title = `主机(${unitTypeName})`;
+        title = unitTypeName;
         break;
       case 32:
         title = `电气火灾(${paramName})`;
