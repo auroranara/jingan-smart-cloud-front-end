@@ -897,16 +897,18 @@ export default {
     // 维保工单列表或维保处理动态
     *fetchWorkOrder({ payload, callback }, { call, put }) {
       const response = yield call(queryWorkOrder, payload);
-      if (response && response.code === 200) {
+      const { code, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list : [];
         yield put({
           type:
             payload.id || payload.dataId
               ? 'saveWorkOrderDetail'
               : `saveWorkOrderList${payload.status}`,
-          payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
+          payload: list,
         });
+        callback && callback(list[0] || {});
       }
-      if (callback) callback(response);
     },
     // 获取火灾报警系统巡检记录
     *fetchCheckRecord({ payload }, { call, put }) {

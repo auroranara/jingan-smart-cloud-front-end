@@ -188,19 +188,21 @@ export default class DynamicDrawerTop extends Component {
               </Fragment>
             )}
             {/* 视频 */}
-            {dynamicType !== 3 && videoList && videoList.length > 0 && (
-              <div
-                onClick={this.handleCameraClick}
-                className={styles.cameraContainer}
-                style={{ backgroundImage: `url(${cameraImg})` }}
-              />
-            )}
+            {dynamicType !== 3 &&
+              videoList &&
+              videoList.length > 0 && (
+                <div
+                  onClick={this.handleCameraClick}
+                  className={styles.cameraContainer}
+                  style={{ backgroundImage: `url(${cameraImg})` }}
+                />
+              )}
           </div>
         )}
         {totalRead > 0 && (
           <div className={styles.messageSendingContainer}>
             <Spin spinning={msgSendLoading} wrapperClassName={styles.spin}>
-              <PhoneCount data={phoneCount} />
+              {msgType !== 1 && <PhoneCount data={phoneCount} />}
               <div className={styles.topLine}>
                 <span>
                   {(dynamicType === 3 && `报修`) ||
