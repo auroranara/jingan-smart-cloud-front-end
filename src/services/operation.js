@@ -65,3 +65,7 @@ export async function getCameraMessage(params) {
 export async function getGasTotal(params) {
   return request(`/acloud_new/v2/sdgs/countHistorySmoke?${stringify(params)}`);
 }
+
+export async function getPhoneCount(id) {
+  return request(`/acloud_new/v2/call/countCall/${id}`);
+}

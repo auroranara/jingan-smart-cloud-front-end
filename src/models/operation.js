@@ -14,6 +14,7 @@ import {
   getAllScreenMessage,
   getCameraMessage,
   getGasTotal,
+  getPhoneCount,
 } from '@/services/operation';
 import {
   queryAlarmHandleList,
@@ -90,6 +91,7 @@ export default {
     gasHistory: [],
     gasRealtimeData: {},
     gasTotal: {},
+    phoneCount: {},
   },
   effects: {
     *fetchTaskList({ payload, callback }, { call, put, all }) {
@@ -319,16 +321,18 @@ export default {
     // 维保工单列表或维保处理动态
     *fetchWorkOrder({ payload, callback }, { call, put }) {
       const response = yield call(queryWorkOrder, payload);
-      if (response && response.code === 200) {
+      const { code, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list : [];
         yield put({
           type:
             payload.id || payload.dataId
               ? 'saveWorkOrderDetail'
               : `saveWorkOrderList${payload.status}`,
-          payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
+          payload: list,
         });
+        callback && callback(list[0] || {});
       }
-      if (callback) callback(response);
     },
     // 企业负责人和维保员信息
     *fetchMaintenanceCompany({ payload, success, error }, { call, put }) {
@@ -390,6 +394,14 @@ export default {
       const { code, data } = response || {};
       if (code === 200) {
         yield put({ type: 'saveGasTotal', payload: data || {} });
+        callback && callback(data);
+      }
+    },
+    *fetchPhoneCount({ payload, callback }, { call, put }) {
+      const response = yield call(getPhoneCount, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({ type: 'savePhoneCount', payload: data || {} });
         callback && callback(data);
       }
     },
@@ -508,6 +520,9 @@ export default {
     },
     saveGasTotal(state, action) {
       return { ...state, gasTotal: action.payload };
+    },
+    savePhoneCount(state, action) {
+      return { ...state, phoneCount: action.payload };
     },
   },
 };

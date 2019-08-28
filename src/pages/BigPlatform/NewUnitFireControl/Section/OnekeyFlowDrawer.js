@@ -44,6 +44,7 @@ export default class OnekeyFlowDrawer extends PureComponent {
       headProps = {},
       messageInformList = [],
       messageInformListLoading = false,
+      phoneCount,
       ...restProps
     } = this.props;
     const { index } = this.state;
@@ -63,6 +64,7 @@ export default class OnekeyFlowDrawer extends PureComponent {
         read={read}
         unread={unread}
         msgSendLoading={messageInformListLoading}
+        phoneCount={phoneCount}
       />
     );
     // 维保只有一个，故障可能是一个或多个

@@ -16,6 +16,7 @@ export default function GasFlow(props) {
       headProps = {},
       messageInformList = [],
       messageInformListLoading = false,
+      phoneCount,
     },
   } = props;
 
@@ -38,6 +39,7 @@ export default function GasFlow(props) {
       unread={unread}
       msgType={0}
       msgSendLoading={messageInformListLoading}
+      phoneCount={phoneCount}
     />
   );
 
