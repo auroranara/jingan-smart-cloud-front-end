@@ -884,9 +884,15 @@ export default class NewUnitFireControl extends PureComponent {
           else if (type === 38) this.handleClickMsgFlow(param, 1, 0, ...restParams);
           else if (type === 39) this.handleClickMsgFlow(param, 2, 0, ...restParams);
           else if (type === 40) this.handleClickMsgFlow(param, 1, 1, ...restParams);
-          else if (type === 32) this.handleClickElecMsg(deviceId, paramName);
+          else if (type === 32) this.handleClickElecMsg(deviceId, paramName, '', cameraMessage);
           else if (type === 36)
-            this.handleClickWater(0, [101, 102, 103].indexOf(+deviceType), deviceId);
+            this.handleClickWater(
+              0,
+              [101, 102, 103].indexOf(+deviceType),
+              deviceId,
+              '',
+              cameraMessage
+            );
           // if (type === 7 || type === 38 || type === 39) this.handleClickMessage(messageFlag, item);
           // else this.handleFaultClick({ ...item });
         }}
@@ -1608,7 +1614,7 @@ export default class NewUnitFireControl extends PureComponent {
   //   });
   // };
 
-  handleClickWater = (index, typeIndex, deviceId) => {
+  handleClickWater = (index, typeIndex, deviceId, _, cameraMessage) => {
     // const { waterTabItem } = this.state;
     const {
       dispatch,
@@ -1632,6 +1638,8 @@ export default class NewUnitFireControl extends PureComponent {
         item && this.showWaterItemDrawer(item);
       },
     });
+    this.setState({ videoList: cameraMessage });
+    Array.isArray(cameraMessage) && cameraMessage.length > 0 && this.handleShowFlowVideo();
   };
 
   handleShowWater = filterIndex => {
@@ -1929,6 +1937,7 @@ export default class NewUnitFireControl extends PureComponent {
     const {
       deviceDataList: [{ deviceId }],
     } = item;
+    const { videoList } = item;
     const state = { waterItem: item, waterItemDrawerVisible: true };
     if (tabIndex !== undefined) state.waterTabItem = tabIndex;
     this.setState(state);
@@ -1937,6 +1946,10 @@ export default class NewUnitFireControl extends PureComponent {
       payload: { deviceId, historyType: 1, queryDate: moment().format('YYYY/MM/DD HH:mm:ss') },
     });
     this.fetchAlarmCount(deviceId, 1);
+    this.setState({
+      videoList,
+    });
+    Array.isArray(videoList) && videoList.length > 0 && this.handleShowFlowVideo();
   };
 
   fetchAlarmCount = (deviceId, type) => {
@@ -1949,11 +1962,21 @@ export default class NewUnitFireControl extends PureComponent {
     electricalFireMonitoringDetailDrawerValue,
     paramName = '漏电电流'
   ) => {
+    const { id } = electricalFireMonitoringDetailDrawerValue;
     this.setState({
       electricalFireMonitoringDetailDrawerVisible: true,
       electricalFireMonitoringDetailDrawerValue,
       electricalFireMonitoringDetailDrawerActiveKey:
         paramName === '漏电电流' ? '漏电电流' : paramName.slice(-2),
+    });
+    this.getDeviceCamera(id, 3, res => {
+      const {
+        data: { list = [] },
+      } = res;
+      this.setState({
+        videoList: list,
+      });
+      Array.isArray(list) && list.length > 0 && this.handleShowFlowVideo();
     });
   };
 
@@ -2203,7 +2226,6 @@ export default class NewUnitFireControl extends PureComponent {
       cameraMessage.length > 0 &&
       type !== 3 &&
       this.handleShowFlowVideo();
-    // this.handleShowFireVideo(cameraMessage);
   };
 
   // handleClickElecMsg = (deviceId, paramName) => {
@@ -2220,7 +2242,7 @@ export default class NewUnitFireControl extends PureComponent {
   //   );
   // };
 
-  handleClickElecMsg = (deviceId, paramName) => {
+  handleClickElecMsg = (deviceId, paramName, companyId, cameraMessage) => {
     const {
       gasStation: {
         distributionBoxClassification: { alarm = [], loss = [], normal = [] },
@@ -2232,6 +2254,8 @@ export default class NewUnitFireControl extends PureComponent {
     } else {
       console.log('未找到设备对应的数据');
     }
+    this.setState({ videoList: cameraMessage });
+    Array.isArray(cameraMessage) && cameraMessage.length > 0 && this.handleShowFlowVideo();
   };
 
   handleShowResetSection = () => {
@@ -3004,19 +3028,25 @@ export default class NewUnitFireControl extends PureComponent {
           visible={this.state.electricalFireMonitoringDetailDrawerVisible}
           value={this.state.electricalFireMonitoringDetailDrawerValue}
           activeKey={this.state.electricalFireMonitoringDetailDrawerActiveKey}
+          handleCameraOpen={handleCameraOpen}
           onClose={() => this.handleDrawerVisibleChange('electricalFireMonitoringDetail')}
+          showCompany
+          showUnit={false}
         />
         {/* 水系统详情抽屉 */}
         <WaterItemDrawer
           visible={this.state.waterItemDrawerVisible}
           tabItem={waterTabItem}
           fetchAlarmCount={this.fetchAlarmCount}
+          handleCameraOpen={handleCameraOpen}
           handleClose={() => this.handleDrawerVisibleChange('waterItem')}
           data={{
             item: this.state.waterItem,
             history: waterHistory,
             total: getWaterTotal(waterAlarmCount),
           }}
+          showCompany
+          showUnit={false}
         />
       </BigPlatformLayout>
     );

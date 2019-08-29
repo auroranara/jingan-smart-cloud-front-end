@@ -1,0 +1,97 @@
+/* 当前时间和额外内容的公共样式 */
+.mixTimeAndExtra() {
+  position: absolute;
+  bottom: 0;
+  width: 21.614583%;
+  height: 50%;
+  line-height: 1;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+/* 容器 */
+.big-platform-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 1200px;
+  min-height: 600px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #fff;
+  background: url('http://data.jingan-china.cn/v2/big-platform/fire-control/gov/new_bg.png') no-repeat center;
+  background-size: cover;
+
+  /* 头部 */
+  .big-platform-header {
+    position: relative;
+    height: 9.62963%;
+    background: url('../../assets/header_bg.png') no-repeat center bottom;
+    background-size: 100% 55.76923%;
+
+    /* 标题 */
+    .big-platform-title {
+      position: absolute;
+      top: 46.153846%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 3em;
+      line-height: 1;
+      white-space: nowrap;
+      z-index: 1;
+    }
+
+    /* 右边时间容器 */
+    .big-platform-time-wrapper {
+      .mixTimeAndExtra;
+      right: 5.989583%;
+    }
+
+    /* 左边额外内容 */
+    .big-platform-extra-wrapper {
+      .mixTimeAndExtra;
+      left: 5.989583%;
+    }
+
+    .big-platform-time,
+    .big-platform-extra {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* 设置按钮 */
+    .big-platform-set-button {
+      position: absolute;
+      top: 22.115385%;
+      right: 1em;
+      font-size: 1.5em;
+      color: rgb(4, 253, 255);
+      transform: translate(0, -50%);
+      z-index: 2;
+      cursor: pointer;
+
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+
+  /* 内容 */
+  .big-platform-content {
+    height: 90.37037%;
+  }
+}
+
+@media screen and (max-width: 1599px) and (min-width: 1400px) {
+  .big-platform-container {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 1399px) {
+  .big-platform-container {
+    font-size: 12px;
+  }
+}
