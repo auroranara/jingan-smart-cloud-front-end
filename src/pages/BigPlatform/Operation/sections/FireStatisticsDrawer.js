@@ -369,7 +369,8 @@ export default class FireStatisticsDrawer extends PureComponent {
         left={left}
         right={right}
         placement="right"
-        // rowStyle={{ height: 'calc(100% - 70px)' }}
+        // containerStyle={{ padding: '16px 0 16px 16px' }}
+        // rowStyle={{ overflow: 'auto', paddingRight: 16 }}
         onClose={this.handleClose}
       />
     );
