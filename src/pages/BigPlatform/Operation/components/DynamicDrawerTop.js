@@ -1,23 +1,13 @@
 import { Component, Fragment } from 'react';
 import { Tooltip, Spin } from 'antd';
-import MsgRead from './MsgRead';
 import moment from 'moment';
-import Ellipsis from '@/components/Ellipsis';
 import styles from './DynamicDrawerTop.less';
 
-import bakFlag from '@/assets/bac-flag.png';
-import bakFlagFill from '@/assets/bac-flag-fill.png';
+import { MsgRead, PhoneCount } from './Components';
+// import bakFlag from '@/assets/bac-flag.png';
+// import bakFlagFill from '@/assets/bac-flag-fill.png';
 import cameraImg from '@/pages/BigPlatform/NewUnitFireControl/imgs/cameralogo.png';
 
-// const users = new Array(17).fill({
-//   id: '1',
-//   name: '张三丰',
-// });
-
-// const users2 = new Array(11).fill({
-//   id: '2',
-//   name: '张丰',
-// });
 const getEmptyData = () => {
   return '暂无数据';
 };
@@ -85,6 +75,7 @@ export default class DynamicDrawerTop extends Component {
       msgType = 0, // 0 报警 1 故障
       msgSendLoading = false,
       showCompanyName = true,
+      phoneCount,
     } = this.props;
     // const scTime = moment(firstTime).format('YYYY-MM-DD HH:mm');
     // const zjTime = moment(lastTime).format('YYYY-MM-DD HH:mm');
@@ -197,25 +188,21 @@ export default class DynamicDrawerTop extends Component {
               </Fragment>
             )}
             {/* 视频 */}
-            {dynamicType !== 3 && videoList && videoList.length > 0 && (
-              <div
-                onClick={this.handleCameraClick}
-                className={styles.cameraContainer}
-                style={{
-                //   top: '10px',
-                //   right: '110px',
-                  backgroundImage: `url(${cameraImg})`,
-                //   backgroundSize: '100%',
-                //   backgroundPosition: 'center center',
-                //   backgroundRepeat: 'no-repeat',
-                }}
-              />
-            )}
+            {dynamicType !== 3 &&
+              videoList &&
+              videoList.length > 0 && (
+                <div
+                  onClick={this.handleCameraClick}
+                  className={styles.cameraContainer}
+                  style={{ backgroundImage: `url(${cameraImg})` }}
+                />
+              )}
           </div>
         )}
         {totalRead > 0 && (
           <div className={styles.messageSendingContainer}>
             <Spin spinning={msgSendLoading} wrapperClassName={styles.spin}>
+              {msgType !== 1 && <PhoneCount data={phoneCount} />}
               <div className={styles.topLine}>
                 <span>
                   {(dynamicType === 3 && `报修`) ||

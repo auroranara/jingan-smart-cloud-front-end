@@ -1,6 +1,7 @@
 @color: rgb(4, 253, 255);
 
-.drawer, .drawer1 {
+.drawer,
+.drawer1 {
   :global {
     // .ant-drawer-content-wrapper {
     //   box-shadow: none;
@@ -53,10 +54,12 @@
 }
 
 .container {
+  // padding: 16px 0 16px 16px;
   padding: 16px;
   height: 100%;
   position: relative;
-  // border: 1px solid @color;
+  border: 1px solid @color;
+  // overflow: auto;
   // background-color: rgb(3, 48, 105);
   // box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
   // border-radius: 10px;
@@ -76,4 +79,10 @@
   margin-right: 15px;
   position: relative;
   top: 3px;
+}
+
+.colInner {
+  padding-right: 2px;
+  height: 100%;
+  overflow: auto;
 }

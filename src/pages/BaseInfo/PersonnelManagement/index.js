@@ -25,13 +25,8 @@ import { hasAuthority } from '@/utils/customAuth';
 import urls from '@/utils/urls';
 import codes from '@/utils/codes';
 import titles from '@/utils/titles';
-import safe from '../../../assets/safe.png';
-import safeGray from '../../../assets/safe-gray.png';
-import fire from '../../../assets/fire.png';
-import fireGray from '../../../assets/fire-gray.png';
 
-// import codesMap from '@/utils/codes';
-import styles from './CompanyList.less';
+import styles from '../Company/CompanyList.less';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -39,26 +34,25 @@ const Option = Select.Option;
 // 获取title
 const {
   home: homeTitle,
-  company: { list: title, menu: menuTitle },
+  company: { menu: menuTitle },
 } = titles;
+const title = '家庭档案'
 // 获取链接地址
 const {
   home: homeUrl,
-  company: {
+  familyFile: {
     detail: detailUrl,
     edit: editUrl,
     add: addUrl,
-    department: { list: departmentUrl },
   },
 } = urls;
 // 获取code
 const {
-  company: {
-    detail: detailCode,
-    edit: editCode,
+  familyFile: {
     add: addCode,
-    delete: deleteCode,
-    department: { list: viewDepCode },
+    edit: editCode,
+    // delete: deleteCode,
+    detail: detailCode,
   },
 } = codes;
 // 默认页面显示数量
@@ -67,8 +61,6 @@ const pageSize = 18;
 const defaultFormData = {
   name: undefined,
   practicalAddress: undefined,
-  industryCategory: undefined,
-  companyType: undefined,
   companyStatus: undefined,
   gridId: undefined,
   isSafetyImp: undefined,
@@ -100,6 +92,10 @@ const breadcrumbList = [
     name: title,
   },
 ];
+const companyStatuses = [
+  { value: '正常', key: '1' },
+  { value: '关停', key: '2' },
+]
 
 @connect(
   ({ company, unitDivision, hiddenDangerReport, user, loading }) => ({
@@ -114,7 +110,7 @@ const breadcrumbList = [
     fetch({ payload = {}, ...res }) {
       dispatch({
         type: 'company/fetch',
-        payload: { ...payload, family: 0 },
+        payload: { ...payload, family: 1 },
         ...res,
       });
     },
@@ -125,20 +121,6 @@ const breadcrumbList = [
         ...action,
       });
     },
-    // 获取行业类别
-    fetchDict(action) {
-      dispatch({
-        type: 'company/fetchDict',
-        ...action,
-      });
-    },
-    // 删除企业
-    // remove(action) {
-    //   dispatch({
-    //     type: 'company/remove',
-    //     ...action,
-    //   });
-    // },
     /* 跳转到详情页面 */
     goToDetail(id) {
       dispatch(routerRedux.push(detailUrl + id));
@@ -163,20 +145,6 @@ const breadcrumbList = [
         ...action,
       });
     },
-    // gsafe版获取字典
-    gsafeFetchDict(action) {
-      dispatch({
-        type: 'company/gsafeFetchDict',
-        ...action,
-      });
-    },
-    // 获取行业类别
-    fetchIndustryType(action) {
-      dispatch({
-        type: 'company/fetchIndustryType',
-        ...action,
-      });
-    },
     fetchOptions(action) {
       dispatch({
         type: 'company/fetchOptions',
@@ -185,7 +153,7 @@ const breadcrumbList = [
     },
     saveSearchInfo(action) {
       dispatch({
-        type: 'company/saveSearchInfo',
+        type: 'company/saveFamilySearchInfo',
         ...action,
       });
     },
@@ -209,17 +177,9 @@ export default class CompanyList extends PureComponent {
     const {
       fetch,
       dispatch,
-      company: { searchInfo },
+      company: { familyearchInfo: searchInfo },
       form: { setFieldsValue },
-      gsafeFetchDict,
-      goToException: error,
-      fetchIndustryType,
-      fetchOptions,
     } = this.props;
-    // 获取行业类别
-    fetchIndustryType({
-      error,
-    });
     // 获取单位列表
     dispatch({
       type: 'unitDivision/fetchDivisionList',
@@ -227,22 +187,6 @@ export default class CompanyList extends PureComponent {
         pageSize,
         pageNum: 1,
       },
-    });
-    // 获取单位状态
-    gsafeFetchDict({
-      payload: {
-        type: 'companyState',
-        key: 'companyStatuses',
-      },
-      error,
-    });
-    // 获取单位类型
-    fetchOptions({
-      payload: {
-        type: 'companyType',
-        key: 'companyTypes',
-      },
-      error,
     });
     // 获取网格列表
     dispatch({
@@ -272,29 +216,6 @@ export default class CompanyList extends PureComponent {
     const { initPageNum } = this.props;
     initPageNum();
   }
-  // /* 显示删除确认提示框 */
-  // handleShowDeleteConfirm = id => {
-  //   const { remove } = this.props;
-  //   Modal.confirm({
-  //     title: '你确定要删除这个企业单位吗?',
-  //     content: '如果你确定要删除这个企业单位，点击确定按钮',
-  //     okText: '确定',
-  //     cancelText: '取消',
-  //     onOk: () => {
-  //       remove({
-  //         payload: {
-  //           id,
-  //         },
-  //         success: () => {
-  //           message.success('删除成功！');
-  //         },
-  //         error: () => {
-  //           message.error('删除失败，请联系管理人员！');
-  //         },
-  //       });
-  //     },
-  //   });
-  // };
 
   /* 查询按钮点击事件 */
   handleClickToQuery = () => {
@@ -304,7 +225,6 @@ export default class CompanyList extends PureComponent {
       form: { getFieldsValue },
     } = this.props;
     const data = getFieldsValue();
-    const { industryCategory } = data;
     // 修改表单数据
     // this.formData = data;
     // 重新请求数据
@@ -313,8 +233,6 @@ export default class CompanyList extends PureComponent {
         pageSize,
         pageNum: 1,
         ...data,
-        industryCategory:
-          industryCategory && industryCategory.length > 0 ? industryCategory.join(',') : undefined,
       },
     });
     saveSearchInfo({ payload: data });
@@ -362,34 +280,6 @@ export default class CompanyList extends PureComponent {
     });
   };
 
-  /* 更改大屏权限 */
-  handleScreenPermission = (id, safetyProduction, fireService, list) => {
-    const { editScreenPermission, saveNewList } = this.props;
-    const success = () => {
-      list.map(
-        item => (item.id === id ? Object.assign(item, { safetyProduction, fireService }) : item)
-      );
-      saveNewList({
-        payload: {
-          list,
-        },
-      });
-      message.success('更新成功！');
-    };
-    const error = msg => {
-      message.error(msg);
-    };
-    editScreenPermission({
-      payload: {
-        id,
-        safetyProduction,
-        fireService,
-      },
-      success,
-      error,
-    });
-  };
-
   handleGotoDivision = id => {
     router.push(`/base-info/company/division/list/${id}`);
   };
@@ -397,7 +287,6 @@ export default class CompanyList extends PureComponent {
   /* 渲染form表单 */
   renderForm() {
     const {
-      company: { companyTypes, industryCategories, companyStatuses, isSafetyList, isFireImpList },
       user: {
         currentUser: { permissionCodes, unitType },
       },
@@ -438,7 +327,7 @@ export default class CompanyList extends PureComponent {
                 {getFieldDecorator('name', {
                   initialValue: defaultFormData.name,
                   getValueFromEvent: e => e.target.value.trim(),
-                })(<Input placeholder="请输入单位名称" style={{ width: '100%' }} />)}
+                })(<Input placeholder="请输入名称" style={{ width: '100%' }} />)}
               </FormItem>
             </Col>
             <Col span={8}>
@@ -446,41 +335,7 @@ export default class CompanyList extends PureComponent {
                 {getFieldDecorator('practicalAddress', {
                   initialValue: defaultFormData.practicalAddress,
                   getValueFromEvent: e => e.target.value.trim(),
-                })(<Input placeholder="请输入单位地址" />)}
-              </FormItem>
-            </Col>
-            <Col span={8}>
-              <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                {getFieldDecorator('industryCategory', {
-                  initialValue: defaultFormData.industryCategory,
-                })(
-                  <Cascader
-                    options={industryCategories}
-                    fieldNames={{
-                      value: 'type_id',
-                      label: 'gs_type_name',
-                      children: 'children',
-                    }}
-                    allowClear
-                    changeOnSelect
-                    notFoundContent
-                    placeholder="请选择行业类别"
-                    getPopupContainer={getRootChild}
-                  />
-                )}
-              </FormItem>
-            </Col>
-            <Col span={8}>
-              <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                {getFieldDecorator('companyType', {
-                  initialValue: defaultFormData.companyType,
-                })(
-                  <Select allowClear placeholder="请选择单位类型" getPopupContainer={getRootChild}>
-                    {companyTypes.map(item => (
-                      <Option key={item.id + ''}>{item.label}</Option>
-                    ))}
-                  </Select>
-                )}
+                })(<Input placeholder="请输入地址" />)}
               </FormItem>
             </Col>
             <Col span={8}>
@@ -488,7 +343,7 @@ export default class CompanyList extends PureComponent {
                 {getFieldDecorator('companyStatus', {
                   initialValue: defaultFormData.companyStatus,
                 })(
-                  <Select allowClear placeholder="请选择单位状态" getPopupContainer={getRootChild}>
+                  <Select allowClear placeholder="请选择状态" getPopupContainer={getRootChild}>
                     {companyStatuses.map(item => (
                       <Option value={item.key} key={item.key}>
                         {item.value}
@@ -498,53 +353,6 @@ export default class CompanyList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-
-            {/* {unitType !== 1 &&
-              unitType !== 4 && (
-                <Col span={8}>
-                  <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                    {getFieldDecorator('isSafetyImp', {
-                      initialValue: defaultFormData.isSafetyImp,
-                    })(
-                      <Select
-                        allowClear
-                        placeholder="是否安全重点单位"
-                        getPopupContainer={getRootChild}
-                      >
-                        {isSafetyList.map(item => (
-                          <Option value={item.key} key={item.key}>
-                            {item.value}
-                          </Option>
-                        ))}
-                      </Select>
-                    )}
-                  </FormItem>
-                </Col>
-              )} */}
-
-            {/* {unitType !== 1 &&
-              unitType !== 4 && (
-                <Col span={8}>
-                  <FormItem style={{ margin: '0', padding: '4px 0' }}>
-                    {getFieldDecorator('isFireImp', {
-                      initialValue: defaultFormData.isFireImp,
-                    })(
-                      <Select
-                        allowClear
-                        placeholder="是否消防重点单位"
-                        getPopupContainer={getRootChild}
-                      >
-                        {isFireImpList.map(item => (
-                          <Option value={item.key} key={item.key}>
-                            {item.value}
-                          </Option>
-                        ))}
-                      </Select>
-                    )}
-                  </FormItem>
-                </Col>
-              )} */}
-
             <Col span={8}>
               <FormItem style={{ margin: '0', padding: '4px 0' }}>
                 <Button
@@ -573,16 +381,13 @@ export default class CompanyList extends PureComponent {
     const {
       company: { list },
       user: {
-        currentUser: { permissionCodes, unitType, permissionCodes: codes },
+        currentUser: { permissionCodes },
       },
     } = this.props;
     // 是否有查看权限
     const hasDetailAuthority = hasAuthority(detailCode, permissionCodes);
     // 是否有编辑权限
     const hasEditAuthority = hasAuthority(editCode, permissionCodes);
-    // 是否有查看部门权限
-    const hasViewDepAuthority = hasAuthority(viewDepCode, permissionCodes);
-
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
@@ -595,16 +400,12 @@ export default class CompanyList extends PureComponent {
               id,
               name,
               practicalAddress,
-              industryCategoryLabel,
               safetyName,
               safetyPhone,
               practicalProvinceLabel,
               practicalCityLabel,
               practicalDistrictLabel,
               practicalTownLabel,
-              safetyProduction,
-              fireService,
-              branchNum,
             } = item;
             const practicalAddressLabel =
               (practicalProvinceLabel || '') +
@@ -634,26 +435,7 @@ export default class CompanyList extends PureComponent {
                     >
                       编辑
                     </Link>,
-                    <Link
-                      to={departmentUrl + id}
-                      onClick={hasViewDepAuthority ? null : preventDefault}
-                      disabled={!hasViewDepAuthority}
-                      target="_blank"
-                    >
-                      部门
-                    </Link>,
                   ]}
-                // extra={hasDeleteAuthority ? (
-                //   <Button
-                //     onClick={() => {
-                //       this.handleShowDeleteConfirm(id);
-                //     }}
-                //     shape="circle"
-                //     style={{ border: 'none', fontSize: '20px' }}
-                //   >
-                //     <Icon type="close" />
-                //   </Button>
-                // ) : null}
                 >
                   <Row>
                     <Col span={16}>
@@ -663,10 +445,6 @@ export default class CompanyList extends PureComponent {
                           {practicalAddressLabel || getEmptyData()}
                         </Ellipsis>
                         <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
-                          行业类别：
-                          {industryCategoryLabel || getEmptyData()}
-                        </Ellipsis>
-                        <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
                           负责人：
                           {safetyName || getEmptyData()}
                         </Ellipsis>
@@ -674,71 +452,8 @@ export default class CompanyList extends PureComponent {
                           联系电话：
                           {safetyPhone || getEmptyData()}
                         </Ellipsis>
-                        {unitType === 3 ? (
-                          <Popconfirm
-                            title={`确定要${safetyProduction ? '关闭' : '开启'}安全驾驶舱权限吗？`}
-                            onConfirm={() =>
-                              this.handleScreenPermission(
-                                id,
-                                Number(!safetyProduction),
-                                fireService,
-                                list
-                              )
-                            }
-                          >
-                            <img
-                              className={styles.screenControlIcon}
-                              src={safetyProduction ? safe : safeGray}
-                              alt="safe"
-                            />
-                          </Popconfirm>
-                        ) : (
-                            <img
-                              className={styles.defaultIcon}
-                              src={safetyProduction ? safe : safeGray}
-                              alt="safe"
-                            />
-                          )}
-                        {unitType === 3 ? (
-                          <Popconfirm
-                            className={styles.ml30}
-                            title={`确定要${fireService ? '关闭' : '开启'}消防驾驶舱权限吗？`}
-                            onConfirm={() =>
-                              this.handleScreenPermission(
-                                id,
-                                safetyProduction,
-                                Number(!fireService),
-                                list
-                              )
-                            }
-                          >
-                            <img
-                              className={styles.screenControlIcon}
-                              src={fireService ? fire : fireGray}
-                              alt="fire"
-                            />
-                          </Popconfirm>
-                        ) : (
-                            <img
-                              className={`${styles.defaultIcon} ${styles.ml30}`}
-                              src={fireService ? fire : fireGray}
-                              alt="fire"
-                            />
-                          )}
                       </div>
                     </Col>
-                    {/* <Col
-                      span={8}
-                      onClick={() => {
-                        if (hasAuthority(codesMap.company.division.list, codes))
-                          this.handleGotoDivision(id);
-                        else message.warn('您没有权限访问对应页面');
-                      }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <span className={styles.quantity}>{branchNum}</span>
-                      <span className={styles.servicenum}>单位分部</span>
-                    </Col> */}
                   </Row>
                 </Card>
               </List.Item>
@@ -766,13 +481,12 @@ export default class CompanyList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            单位总数：
+            家庭总数：
             {total}
           </div>
         }
       >
         {this.renderForm()}
-
         <InfiniteScroll
           initialLoad={false}
           pageStart={0}

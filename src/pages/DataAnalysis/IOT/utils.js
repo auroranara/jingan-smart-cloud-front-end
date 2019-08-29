@@ -76,7 +76,7 @@ export function handleTableData(list = [], indexBase) {
       limitValue: limitValue || limitValue === 0 ? renderVal(limitValue, u) : '-',
       // limitValue: <p style={{color: 'red'}}>limit</p>,
       // condition: sts === -1 ? '设备失联' : `${CONDITION_MAP[condition]}界限值`,
-      condition: sts === -1 ? '设备失联' : `${condition}界限值`,
+      condition: sts === -25 ? '机械臂故障' : sts === -1 ? '设备失联' : `${condition}界限值`,
       parameter: sts === -1 || desc === null ? '-' : desc,
     };
   });

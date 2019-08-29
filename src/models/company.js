@@ -96,6 +96,7 @@ export default {
       },
     },
     searchInfo: null,
+    familyearchInfo: null,
     // 是否安全重点单位
     isSafetyList: [
       {
@@ -263,10 +264,10 @@ export default {
       // console.log('success', success);
       const response = yield call(updateCompany, payload);
       if (response.code === 200) {
-        yield put({
-          type: 'updateCompany',
-          payload: response.data,
-        });
+        // yield put({
+        //   type: 'updateCompany',
+        //   payload: response.data,
+        // });
         if (success) {
           success();
         }
@@ -457,6 +458,12 @@ export default {
       return {
         ...state,
         searchInfo: payload || null,
+      };
+    },
+    saveFamilySearchInfo(state, { payload }) {
+      return {
+        ...state,
+        familyearchInfo: payload || null,
       };
     },
     initPageNum(state, { payload }) {

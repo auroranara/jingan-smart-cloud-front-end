@@ -411,6 +411,45 @@ module.exports = env => {
                 },
               ],
             },
+            // 家庭档案
+            {
+              name: 'familyFile',
+              code: 'baseInfo.personnelManagement',
+              path: '/base-info/family-file',
+              hideChildrenInMenu: true,
+              // hideInMenu: env !== 'fire',
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/family-file',
+                  redirect: '/base-info/family-file/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.personnelManagement.listView',
+                  path: '/base-info/family-file/list',
+                  component: './BaseInfo/PersonnelManagement',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.personnelManagement.add',
+                  path: '/base-info/family-file/add',
+                  component: './BaseInfo/PersonnelManagement/PersonnelEdit',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.personnelManagement.edit',
+                  path: '/base-info/family-file/edit/:id',
+                  component: './BaseInfo/PersonnelManagement/PersonnelEdit',
+                },
+                {
+                  name: 'detail',
+                  code: 'baseInfo.personnelManagement.view',
+                  path: '/base-info/family-file/detail/:id',
+                  component: './BaseInfo/PersonnelManagement/PersonnelDetail',
+                },
+              ],
+            },
           ],
         },
 

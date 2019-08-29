@@ -56,7 +56,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       this.getDistributionBoxAlarmCount(STATE.activeType);
       this.setState({
         ...STATE,
-        activeKey: prevActiveKey !== activeKey ? activeKey : STATE.activeKey,
+        activeKey,
       });
       this.scrollTop();
     }
@@ -520,6 +520,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
       onClose,
       handleCameraOpen,
       value,
+      showUnit,
     } = this.props;
     const { name, location, companyName, params=[] } = value || {};
     const alarmParams = (params || []).filter(({ status }) => status > 0);
@@ -555,6 +556,7 @@ export default class ElectricalFireMonitoringDetailDrawer extends PureComponent 
               name={companyName}
               location={location}
               clickCamera={handleCameraOpen}
+              showUnit={showUnit}
             />
           )}
           <div className={styles.alarmParamsTitleWrapper}>

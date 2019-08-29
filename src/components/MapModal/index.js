@@ -49,7 +49,7 @@ export default class App extends PureComponent {
   render() {
     const {
       // 标题
-      title='地图定位',
+      title = '地图定位',
       // 模态框是否显示
       visible,
       // 确定按钮点击事件
@@ -100,42 +100,42 @@ export default class App extends PureComponent {
           }}
         >
           <div style={{ position: 'absolute', top: 10, left: 10, backgroundColor: 'transparent' }}>
-            <Search placeholder="请输入地址" enterButton onSearch={this.handleSearch} ref={input => {this.input=input;}} />
+            <Search placeholder="请输入地址" enterButton onSearch={this.handleSearch} ref={input => { this.input = input; }} />
           </div>
           {point && (
             <Marker
               position={point}
-              // events={{
-              //   click: () => {
-              //     /* eslint-disable */
-              //     AMap.plugin('AMap.Geocoder', () => {
-              //       const { longitude, latitude } = point;
-              //       const geocoder = new AMap.Geocoder();
-              //       geocoder.getAddress([longitude, latitude], (status, result) => {
-              //         if (status === 'complete' && result.info === 'OK') {
-              //           confirm({
-              //             title: '您确定要选择当前地址吗？',
-              //             content: `当前地址：${result.regeocode.formattedAddress}`,
-              //             okText: '确定',
-              //             cancelText: '取消',
-              //             onOk: () => {
-              //               const {
-              //                 form: { setFieldsValue },
-              //               } = this.props;
-              //               setFieldsValue({
-              //                 coordinate: `${longitude},${latitude}`,
-              //               });
-              //               this.handleHideMap();
-              //             },
-              //           });
-              //         } else {
-              //           message.warning('未匹配到您当前选中的地址！');
-              //         }
-              //       });
-              //     });
-              //     /* eslint-enable */
-              //   },
-              // }}
+            // events={{
+            //   click: () => {
+            //     /* eslint-disable */
+            //     AMap.plugin('AMap.Geocoder', () => {
+            //       const { longitude, latitude } = point;
+            //       const geocoder = new AMap.Geocoder();
+            //       geocoder.getAddress([longitude, latitude], (status, result) => {
+            //         if (status === 'complete' && result.info === 'OK') {
+            //           confirm({
+            //             title: '您确定要选择当前地址吗？',
+            //             content: `当前地址：${result.regeocode.formattedAddress}`,
+            //             okText: '确定',
+            //             cancelText: '取消',
+            //             onOk: () => {
+            //               const {
+            //                 form: { setFieldsValue },
+            //               } = this.props;
+            //               setFieldsValue({
+            //                 coordinate: `${longitude},${latitude}`,
+            //               });
+            //               this.handleHideMap();
+            //             },
+            //           });
+            //         } else {
+            //           message.warning('未匹配到您当前选中的地址！');
+            //         }
+            //       });
+            //     });
+            //     /* eslint-enable */
+            //   },
+            // }}
             />
           )}
         </Map>

@@ -3,13 +3,14 @@ import { Col, Drawer, Icon, Row } from 'antd';
 
 import styles from './DrawerContainer.less';
 
-const COL_STYLE = { height: '100%' };
+const COL_STYLE = { height: '100%', paddingRight: 10 };
+const COL_STYLE_1 = { height: '100%' };
 const ICON_STYLE = { position: 'absolute', right: 10, top: 10, fontSize: 18, color: '#FFF', cursor: 'pointer' };
 const WIDTH = 960;
 
 export default class DrawerContainer extends PureComponent {
   render() {
-    const { title, width, visible, isTop, onClose, left=null, right=null, top=null, rowStyle, ...restProps } = this.props;
+    const { title, width, visible, isTop, onClose, left=null, right=null, top=null, rowStyle, containerStyle, ...restProps } = this.props;
     const hasTitle = !!title;
 
     const zIndex = isTop ? 1001 : 1000;
@@ -28,7 +29,7 @@ export default class DrawerContainer extends PureComponent {
         zIndex={zIndex}
         {...restProps}
       >
-        <div className={styles.container}>
+        <div className={styles.container} style={{ paddingRight: right ? 16 : 0, ...containerStyle }}>
           <Icon type="close" style={ICON_STYLE} onClick={e => onClose()} />
           {hasTitle && (
             <h3 className={styles.title}>
@@ -37,12 +38,13 @@ export default class DrawerContainer extends PureComponent {
             </h3>
           )}
           {top}
+          {/* <Row style={{ height: hasTitle ? 'calc(100% - 51px)': '100%', overflow: 'auto', paddingRight: 16, ...rowStyle }}> */}
           <Row style={{ height: hasTitle ? 'calc(100% - 51px)': '100%', ...rowStyle }}>
             <Col span={right ? 12 : 24} style={COL_STYLE}>
-              {left}
+              <div className={styles.colInner}>{left}</div>
             </Col>
             {right && (
-              <Col span={12} style={COL_STYLE}>
+              <Col span={12} style={COL_STYLE_1}>
                 {right}
               </Col>
             )}

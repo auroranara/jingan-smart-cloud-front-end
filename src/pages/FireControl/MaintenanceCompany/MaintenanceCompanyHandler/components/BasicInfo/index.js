@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import {
   Card,
   Form,
@@ -13,6 +13,7 @@ import {
   message,
   AutoComplete,
   Spin,
+  Tooltip,
 } from 'antd';
 import { getToken } from '@/utils/authority';
 
@@ -137,6 +138,46 @@ export default class App extends PureComponent {
     }
   };
 
+  /**
+   * 复制经纬度
+   */
+  handleCopyCoordinate = () => {
+    const {
+      form: { getFieldValue },
+    } = this.props
+    const coordinate = getFieldValue('coordinate')
+    if (!coordinate) {
+      message.warning('请先选择经纬度')
+      return
+    }
+    this.coordinate.select()
+    if (document.execCommand('copy')) {
+      document.execCommand('copy');
+      message.success('复制成功')
+    }
+    this.coordinate.blur()
+  }
+
+  validateCoordinate = (rule, value, callback) => {
+    if (value) {
+      if (!/^\d+\.?\d*\,\d+\.?\d*$/.test(value)) {
+        callback('格式错误，经度和纬度请使用" , "隔开，并且都为数字')
+        return
+      }
+      // 拆分出经纬度
+      const [longitude, latitude] = value.split(',')
+      if (+longitude < -180 || +longitude > 180) {
+        callback('经度范围为-180~180')
+        return
+      }
+      if (+latitude < -90 || +latitude > 90) {
+        callback('纬度范围为-90~90')
+        return
+      }
+      callback()
+    } else callback('请选择经纬度')
+  }
+
   render() {
     const {
       model: {
@@ -214,15 +255,15 @@ export default class App extends PureComponent {
     let companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
     companyIchnographyList = Array.isArray(companyIchnographyList)
       ? companyIchnographyList.map((item, index) => ({
-          ...item,
-          uid: index,
-          status: 'done',
-        }))
+        ...item,
+        uid: index,
+        status: 'done',
+      }))
       : JSON.parse(companyIchnographyList.dbUrl).map((item, index) => ({
-          ...item,
-          uid: index,
-          status: 'done',
-        }));
+        ...item,
+        uid: index,
+        status: 'done',
+      }));
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -275,12 +316,21 @@ export default class App extends PureComponent {
                 {getFieldDecorator('coordinate', {
                   initialValue: longitude && latitude ? `${longitude},${latitude}` : undefined,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请选择经纬度' }],
+                  rules: [{ required: true, message: '请选择经纬度' }, { validator: this.validateCoordinate }],
                 })(
                   <Input
                     placeholder="请选择经纬度"
-                    onFocus={e => e.target.blur()}
-                    onClick={handleShowMap}
+                    ref={coordinate => { this.coordinate = coordinate }}
+                    addonAfter={
+                      <Fragment>
+                        <Tooltip title="复制" >
+                          <Icon type="copy" style={{ marginRight: '10px' }} onClick={this.handleCopyCoordinate} />
+                        </Tooltip>
+                        <Tooltip title="打开地图" >
+                          <Icon type="environment" onClick={handleShowMap} />
+                        </Tooltip>
+                      </Fragment>
+                    }
                   />
                 )}
               </Form.Item>
@@ -314,9 +364,9 @@ export default class App extends PureComponent {
                       ? defaultParentCompany
                       : parentId && parentUnitName
                         ? {
-                            key: parentId,
-                            label: parentUnitName,
-                          }
+                          key: parentId,
+                          label: parentUnitName,
+                        }
                         : undefined,
                     rules: [
                       {

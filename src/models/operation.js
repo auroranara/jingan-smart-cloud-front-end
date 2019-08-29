@@ -14,6 +14,7 @@ import {
   getAllScreenMessage,
   getCameraMessage,
   getGasTotal,
+  getPhoneCount,
 } from '@/services/operation';
 import {
   queryAlarmHandleList,
@@ -25,11 +26,13 @@ import {
 } from '@/services/bigPlatform/fireControl';
 import { getDeviceRealTimeData } from '@/services/gas';
 import { getDeviceHistory } from '@/services/gasStation';
-import { getUnitLists } from '@/pages/BigPlatform/Operation/utils';
+import { getUnitLists, aggregateByLocation } from '@/pages/BigPlatform/Operation/utils';
 
 function error(msg) {
   message.error(msg);
 }
+
+const LABELS = ['消防主机', '独立烟感', '可燃气体', '报修'];
 
 export default {
   namespace: 'operation',
@@ -40,6 +43,7 @@ export default {
       count: {
         消防主机: 0,
         独立烟感: 0,
+        可燃气体: 0,
         报修: 0,
       },
     },
@@ -57,6 +61,7 @@ export default {
     },
     unitList: [], // 地图企业列表
     unitLists: [[], [], [], [], [], []], // 企业分类列表的二维数组
+    aggregationUnitLists: [[], [], [], [], []], // 按位置聚合的企业分类列表
     firePie: {},
     fireTrend: [],
     fireList: [],
@@ -86,6 +91,7 @@ export default {
     gasHistory: [],
     gasRealtimeData: {},
     gasTotal: {},
+    phoneCount: {},
   },
   effects: {
     *fetchTaskList({ payload, callback }, { call, put, all }) {
@@ -96,27 +102,33 @@ export default {
           call(getTaskList, payload),
           call(getTaskList, { ...payload, pageNum: 1, pageSize: 1, reportType: 1 }),
           call(getTaskList, { ...payload, pageNum: 1, pageSize: 1, reportType: 4 }),
+          call(getTaskList, { ...payload, pageNum: 1, pageSize: 1, reportType: 3 }),
           call(getTaskList, { ...payload, pageNum: 1, pageSize: 1, reportType: 2 }),
         ]);
         response = responseList[0];
         isSuccess = responseList.every(res => res && res.code === 200);
-        count = {
-          消防主机:
-            responseList[1] &&
-            responseList[1].data &&
-            responseList[1].data.pagination &&
-            responseList[1].data.pagination.listSize,
-          独立烟感:
-            responseList[2] &&
-            responseList[2].data &&
-            responseList[2].data.pagination &&
-            responseList[2].data.pagination.listSize,
-          报修:
-            responseList[3] &&
-            responseList[3].data &&
-            responseList[3].data.pagination &&
-            responseList[3].data.pagination.listSize,
-        };
+        count = LABELS.reduce((prev, next, index) => {
+          const i = index + 1;
+          prev[next] = responseList[i] && responseList[i].data && responseList[i].data.pagination && responseList[i].data.pagination.listSize;
+          return prev;
+        }, {});
+        // count = {
+        //   消防主机:
+        //     responseList[1] &&
+        //     responseList[1].data &&
+        //     responseList[1].data.pagination &&
+        //     responseList[1].data.pagination.listSize,
+        //   独立烟感:
+        //     responseList[2] &&
+        //     responseList[2].data &&
+        //     responseList[2].data.pagination &&
+        //     responseList[2].data.pagination.listSize,
+        //   报修:
+        //     responseList[3] &&
+        //     responseList[3].data &&
+        //     responseList[3].data.pagination &&
+        //     responseList[3].data.pagination.listSize,
+        // };
       } else {
         response = yield call(getTaskList, payload);
         isSuccess = response && response.code === 200;
@@ -309,16 +321,18 @@ export default {
     // 维保工单列表或维保处理动态
     *fetchWorkOrder({ payload, callback }, { call, put }) {
       const response = yield call(queryWorkOrder, payload);
-      if (response && response.code === 200) {
+      const { code, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.list) ? data.list : [];
         yield put({
           type:
             payload.id || payload.dataId
               ? 'saveWorkOrderDetail'
               : `saveWorkOrderList${payload.status}`,
-          payload: response.data && Array.isArray(response.data.list) ? response.data.list : [],
+          payload: list,
         });
+        callback && callback(list[0] || {});
       }
-      if (callback) callback(response);
     },
     // 企业负责人和维保员信息
     *fetchMaintenanceCompany({ payload, success, error }, { call, put }) {
@@ -383,6 +397,14 @@ export default {
         callback && callback(data);
       }
     },
+    *fetchPhoneCount({ payload, callback }, { call, put }) {
+      const response = yield call(getPhoneCount, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        yield put({ type: 'savePhoneCount', payload: data || {} });
+        callback && callback(data);
+      }
+    },
   },
 
   reducers: {
@@ -419,7 +441,9 @@ export default {
           newUnitList[index] = target;
         // newUnitList[index] = list[0];
       } else newUnitList = list;
-      return { ...state, unitList: newUnitList, unitLists: getUnitLists(newUnitList) };
+      const lists = getUnitLists(newUnitList);
+      const aggregationLists = aggregateByLocation(lists);
+      return { ...state, unitList: newUnitList, unitLists: lists, aggregationUnitLists: aggregationLists };
     },
     saveFirePie(state, action) {
       return { ...state, firePie: action.payload };
@@ -496,6 +520,9 @@ export default {
     },
     saveGasTotal(state, action) {
       return { ...state, gasTotal: action.payload };
+    },
+    savePhoneCount(state, action) {
+      return { ...state, phoneCount: action.payload };
     },
   },
 };

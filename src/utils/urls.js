@@ -15,6 +15,12 @@ export default {
       list: '/base-info/company/department/list/',
     },
   },
+  familyFile: {
+    list: '/base-info/family-file/list',
+    add: '/base-info/family-file/add',
+    edit: '/base-info/family-file/edit/',
+    detail: '/base-info/family-file/detail/',
+  },
   contract: {
     list: '/fire-control/contract/list/',
     detail: '/fire-control/contract/detail/',

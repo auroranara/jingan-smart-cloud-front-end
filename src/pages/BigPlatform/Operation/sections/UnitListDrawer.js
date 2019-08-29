@@ -7,7 +7,7 @@ import {
   SearchBar,
 } from '@/pages/BigPlatform/NewFireControl/components/Components';
 import { DotItem } from '@/pages/BigPlatform/Smoke/components/Components';
-import { COUNT_BASE_KEY as COUNT_BASE, COUNT_KEYS, TYPE_COUNTS, TYPE_DESCES, TYPE_KEYS, getAllDevicesCount } from '../utils';
+import { COUNT_BASE_KEY as COUNT_BASE, COUNT_KEYS, TYPE_COUNTS, TYPE_DESCES, TYPE_KEYS } from '../utils';
 
 const TYPE = 'unitList';
 const NO_DATA = '暂无信息';
@@ -39,8 +39,10 @@ export default class UnitListDrawer extends PureComponent {
     this.setState({ searchValue: '' });
   };
 
-  genCardClick = item => e => {
+  genCardClick = (item, isAgg) => e => {
     const { showUnitDetail } = this.props;
+    // if (isAgg) return;
+
     showUnitDetail(item);
     this.handleClose();
   };
@@ -48,7 +50,9 @@ export default class UnitListDrawer extends PureComponent {
   render() {
     const {
       visible,
+      listType,
       list=[],
+      aggList=[],
       deviceType,
       // showUnitDetail,
       handleCompanyClick,
@@ -58,7 +62,10 @@ export default class UnitListDrawer extends PureComponent {
     } = this.props;
     const { searchValue } = this.state;
 
-    const filteredList = list.filter(({ companyName }) => companyName.includes(searchValue));
+    const isAgg = !!listType;
+    const title = isAgg ? '聚合单位列表' : `单位列表-${TYPE_DESCES[deviceType]}`;
+    const lst = isAgg ? aggList: list;
+    const filteredList = lst.filter(({ companyName }) => companyName.includes(searchValue));
 
     const left = (
       <SearchBar
@@ -97,8 +104,9 @@ export default class UnitListDrawer extends PureComponent {
               person={saferName || NO_DATA}
               phone={saferPhone || NO_DATA}
               style={{ cursor: 'pointer' }}
+              // style={{ cursor: isAgg ? 'auto' : 'pointer' }}
               clickName={ count ? e => handleCompanyClick(companyId) : null }
-              onClick={this.genCardClick(item)}
+              onClick={this.genCardClick(item, isAgg)}
               infoStyle={INFO_STYLE}
               info={
                 <Fragment>
@@ -122,7 +130,7 @@ export default class UnitListDrawer extends PureComponent {
 
     return (
       <DrawerContainer
-        title={`单位列表-${TYPE_DESCES[deviceType]}`}
+        title={title}
         width={500}
         visible={visible}
         left={left}

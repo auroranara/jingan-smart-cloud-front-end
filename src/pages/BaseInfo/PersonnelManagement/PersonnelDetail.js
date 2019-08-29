@@ -15,30 +15,32 @@ import codes from '@/utils/codes';
 import titles from '@/utils/titles';
 import { getImportantTypes } from '../utils';
 
-import styles from './Company.less';
-import SafetyDetail from './SafetyDetail';
-import FireControlDetail from './FireControlDetail';
+import styles from '../Company/Company.less';
 
 const { Description } = DescriptionList;
 
 // const companyTypes = ['', '重点单位', '一般单位', '九小场所'];
 const IMPORTANT_TYPES = ['否', '是'];
-
+const phoneTypes = [
+  { value: 1, label: '手机' },
+  { value: 0, label: '固话' },
+]
 // 获取title
 const {
   home: homeTitle,
-  company: { list: listTitle, menu: menuTitle, detail: title },
+  company: { list: listTitle, menu: menuTitle },
 } = titles;
 // 获取链接地址
 const {
   home: homeUrl,
-  company: { list: backUrl, edit: editUrl },
+  familyFile: { list: backUrl, edit: editUrl },
   exception: { 500: exceptionUrl },
 } = urls;
 // 获取code
 const {
   company: { edit: editCode },
 } = codes;
+const title = '家庭详情'
 // 面包屑
 const breadcrumbList = [
   {
@@ -51,8 +53,8 @@ const breadcrumbList = [
     name: menuTitle,
   },
   {
-    title: listTitle,
-    name: listTitle,
+    title: '家庭档案',
+    name: '家庭档案',
     href: backUrl,
   },
   {
@@ -99,10 +101,6 @@ const tabList = [
     key: '1',
     tab: '安全信息',
   },
-  {
-    key: '2',
-    tab: '消防信息',
-  },
 ];
 // 默认选中一般企业
 const defaultCompanyNature = '一般企业';
@@ -110,12 +108,23 @@ const defaultCompanyNature = '一般企业';
 const getEmptyData = () => {
   return <span style={{ color: 'rgba(0,0,0,0.45)' }}>暂无数据</span>;
 };
+const idMap = {};
+const textMap = {};
+function traverse(tree) {
+  tree.forEach(({ id, parentIds, text, children }) => {
+    // parentIds: 'a,b,c,', split之后['a','b','c',''],要把空字符串过滤掉
+    idMap[id] = parentIds ? [...parentIds.split(','), id].filter(item => item) : [id];
+    textMap[id] = text;
+    children && traverse(children);
+  });
+}
 
 @connect(
-  ({ company, user, loading }) => ({
+  ({ company, user, safety, loading }) => ({
     company,
     user,
-    loading: loading.models.company || loading.models.safety,
+    safety,
+    loading: loading.models.company,
   }),
   dispatch => ({
     // 获取详情
@@ -133,6 +142,7 @@ const getEmptyData = () => {
     goToException() {
       dispatch(routerRedux.push(exceptionUrl));
     },
+    dispatch,
   })
 )
 @Form.create()
@@ -147,6 +157,7 @@ export default class CompanyDetail extends PureComponent {
   /* 生命周期函数 */
   componentDidMount() {
     const {
+      dispatch,
       fetchCompany,
       match: {
         params: { id },
@@ -166,6 +177,14 @@ export default class CompanyDetail extends PureComponent {
       },
       error: () => {
         goToException();
+      },
+    });
+    dispatch({
+      type: 'safety/fetchMenus',
+      callback: (menus) => {
+        traverse(JSON.parse(menus.gridList));
+        // 将值缓存到上层组件中，在上层组件中渲染
+        this.setGotMenus(idMap, textMap);
       },
     });
   }
@@ -234,13 +253,8 @@ export default class CompanyDetail extends PureComponent {
         detail: {
           data: {
             name,
-            code,
             longitude,
             latitude,
-            companyNatureLabel,
-            companyIchnography,
-            fireIchnographyDetails,
-            companyPhotoDetails,
             registerAddress,
             registerProvinceLabel,
             registerCityLabel,
@@ -251,16 +265,13 @@ export default class CompanyDetail extends PureComponent {
             practicalCityLabel,
             practicalDistrictLabel,
             practicalTownLabel,
-            companyType,
+            companyStatusLabel,
             warningCallNumber,
+            warningCallType,
           },
         },
       },
     } = this.props;
-    const { isCompany } = this.state;
-
-    const [importantHost, importantSafety] = getImportantTypes(companyType);
-
     const registerAddressLabel =
       (registerProvinceLabel || '') +
       (registerCityLabel || '') +
@@ -274,30 +285,19 @@ export default class CompanyDetail extends PureComponent {
       (practicalTownLabel || '') +
       (practicalAddress || '');
 
-    // let companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
-    // companyIchnographyList = Array.isArray(companyIchnographyList)
-    //   ? companyIchnographyList
-    //   : JSON.parse(companyIchnographyList.dbUrl);
-    // // console.log(typeof companyIchnographyList);
-
-    // let fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
-    // let unitPhotoList = Array.isArray(companyPhotoDetails) ? companyPhotoDetails : [];
     // fireIchnographyList 肯定为true
     // fireIchnographyList = fireIchnographyList ? fireIchnographyList : fireIchnographyList.dbUrl;
 
     return (
-      <Card title="基本信息" className={styles.card} bordered={false}>
+      <Card title="基础信息" className={styles.card} bordered={false}>
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.name}>{name || getEmptyData()}</Description>
-          <Description term={fieldLabels.companyNature}>
-            {companyNatureLabel || getEmptyData()}
-          </Description>
-          <Description term={fieldLabels.code}>{code || getEmptyData()}</Description>
           <Description term={fieldLabels.coordinate}>
             {longitude && latitude ? `${longitude},${latitude}` : getEmptyData()}
           </Description>
-          {!isCompany && this.renderIndustryCategory()}
-          {!isCompany && this.renderCompanyStatus()}
+          <Description term={fieldLabels.companyStatus}>
+            {companyStatusLabel || getEmptyData()}
+          </Description>
         </DescriptionList>
         <DescriptionList col={1} style={{ marginBottom: 16 }}>
           <Description term={fieldLabels.gridId}>{this.getGridLabel()}</Description>
@@ -315,49 +315,6 @@ export default class CompanyDetail extends PureComponent {
             {warningCallNumber || getEmptyData()}
           </Description>
         </DescriptionList>
-        {/* <DescriptionList col={3} style={{ marginBottom: 16 }}>
-          <Description term={fieldLabels.importantHost}>
-            {IMPORTANT_TYPES[importantHost]}
-          </Description>
-          <Description term={fieldLabels.importantSafety}>
-            {IMPORTANT_TYPES[importantSafety]}
-          </Description>
-        </DescriptionList> */}
-        {/* <DescriptionList col={1} style={{ marginBottom: 20 }}>
-          <Description term={fieldLabels.companyIchnography}>
-            {companyIchnographyList.length !== 0
-              ? companyIchnographyList.map(({ name, url }) => (
-                  <div key={url}>
-                    <a href={url} target="_blank" rel="noopener noreferrer">
-                      {name || '预览'}
-                    </a>
-                  </div>
-                ))
-              : getEmptyData()}
-          </Description> */}
-        {/* <Description term={fieldLabels.fireIchnography}>
-            {fireIchnographyList.length !== 0
-              ? fireIchnographyList.map(({ fileName, webUrl }) => (
-                  <div key={webUrl}>
-                    <a href={webUrl} target="_blank" rel="noopener noreferrer">
-                      {fileName || '预览'}
-                    </a>
-                  </div>
-                ))
-              : getEmptyData()}
-          </Description>
-          <Description term={fieldLabels.unitPhoto}>
-            {unitPhotoList.length
-              ? unitPhotoList.map(({ fileName, webUrl }) => (
-                  <div key={webUrl}>
-                    <a href={webUrl} target="_blank" rel="noopener noreferrer">
-                      {fileName || '预览'}
-                    </a>
-                  </div>
-                ))
-              : getEmptyData()}
-          </Description>
-        </DescriptionList>*/}
       </Card>
     );
   }
@@ -393,63 +350,12 @@ export default class CompanyDetail extends PureComponent {
     );
   }
 
-  /* 渲染更多信息 */
-  renderMoreInfo() {
-    const {
-      company: {
-        detail: {
-          data: {
-            economicTypeLabel,
-            scaleLabel,
-            licenseTypeLabel,
-            createTime,
-            groupName,
-            businessScope,
-            companyTypeLabel,
-          },
-        },
-      },
-    } = this.props;
-
-    return (
-      <Card title="更多信息" className={styles.card} bordered={false}>
-        <DescriptionList col={3}>
-          {this.renderIndustryCategory()}
-          <Description term={fieldLabels.economicType}>
-            {economicTypeLabel || getEmptyData()}
-          </Description>
-          {this.renderCompanyStatus()}
-          {/* <Description term={fieldLabels.companyType}>
-            {companyTypeLabel || getEmptyData()}
-          </Description> */}
-          <Description term={fieldLabels.scale}>{scaleLabel || getEmptyData()}</Description>
-          <Description term={fieldLabels.licenseType}>
-            {licenseTypeLabel || getEmptyData()}
-          </Description>
-          <Description term={fieldLabels.createTime}>
-            {createTime ? moment(+createTime).format('YYYY-MM-DD') : getEmptyData()}
-          </Description>
-          <Description term={fieldLabels.groupName}>{groupName || getEmptyData()}</Description>
-          <Description term={fieldLabels.businessScope}>
-            {businessScope || getEmptyData()}
-          </Description>
-        </DescriptionList>
-      </Card>
-    );
-  }
-
   /* 渲染人员信息 */
   renderPersonalInfo() {
     const {
       company: {
         detail: {
           data: {
-            legalName,
-            legalPhone,
-            legalEmail,
-            principalName,
-            principalPhone,
-            principalEmail,
             safetyName,
             safetyPhone,
             safetyEmail,
@@ -460,29 +366,7 @@ export default class CompanyDetail extends PureComponent {
     return (
       <Fragment>
         <Card title="人员信息" bordered={false}>
-          <DescriptionList title="法定代表人" col={3} style={{ marginBottom: 32 }}>
-            <Description term={fieldLabels.principalName}>
-              {legalName || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalPhone}>
-              {legalPhone || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalEmail}>
-              {legalEmail || getEmptyData()}
-            </Description>
-          </DescriptionList>
-          <DescriptionList title="主要负责人" col={3} style={{ marginBottom: 32 }}>
-            <Description term={fieldLabels.principalName}>
-              {principalName || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalPhone}>
-              {principalPhone || getEmptyData()}
-            </Description>
-            <Description term={fieldLabels.principalEmail}>
-              {principalEmail || getEmptyData()}
-            </Description>
-          </DescriptionList>
-          <DescriptionList title="安全管理员" col={3} style={{ marginBottom: 32 }}>
+          <DescriptionList title="负责人" col={3} style={{ marginBottom: 32 }}>
             <Description term={fieldLabels.principalName}>
               {safetyName || getEmptyData()}
             </Description>
@@ -535,30 +419,17 @@ export default class CompanyDetail extends PureComponent {
         params: { id },
       },
     } = this.props;
-    const { tabActiveKey, isCompany } = this.state;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        tabList={tabList}
-        onTabChange={this.handleTabChange}
-        tabActiveKey={tabActiveKey}
         wrapperClassName={styles.advancedForm}
       >
         <Spin spinning={loading}>
-          <div style={{ display: tabActiveKey === tabList[0].key ? 'block' : 'none' }}>
-            {this.renderBasicInfo()}
-            {this.renderMap()}
-            {isCompany && this.renderMoreInfo()}
-            {this.renderPersonalInfo()}
-            {this.renderFooterToolbar()}
-          </div>
-          <div style={{ display: tabActiveKey === tabList[1].key ? 'block' : 'none' }}>
-            <SafetyDetail companyId={id} setGotMenus={this.setGotMenus} />
-          </div>
-          <div style={{ display: tabActiveKey === tabList[2].key ? 'block' : 'none' }}>
-            <FireControlDetail companyId={id} detail={this.props.company.detail.data} />
-          </div>
+          {this.renderBasicInfo()}
+          {this.renderMap()}
+          {this.renderPersonalInfo()}
+          {this.renderFooterToolbar()}
         </Spin>
       </PageHeaderLayout>
     );

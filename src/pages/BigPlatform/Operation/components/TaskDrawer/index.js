@@ -13,6 +13,7 @@ import styles from './index.less';
 const typeDict = {
   消防主机: 1,
   独立烟感: 4,
+  可燃气体: 3,
   报修: 2,
 };
 const processDict = {
@@ -37,6 +38,7 @@ const proceDict = {
 const typeDict2 = {
   1: '消防主机',
   2: '报修',
+  3: '可燃气体',
   4: '独立烟感',
 };
 const statusList = [
@@ -62,7 +64,7 @@ const EmptyData = ({ msg, ...props }) => (
 );
 const FIELDNAMES = {
   id: ({ id, gasId, proceId, reportType }) =>
-    ({ 消防主机: id, 独立烟感: id || gasId, 报修: proceId }[typeDict2[reportType]]),
+    ({ 消防主机: id, 独立烟感: id || gasId, 可燃气体: gasId || proceId, 报修: proceId }[typeDict2[reportType]]),
   type: ({ reportType }) => typeDict2[reportType], // 类型
   companyName: ({ companyName, rcompanyName, reportType }) =>
     typeDict2[reportType] !== '报修' ? companyName : rcompanyName, // 企业名称
@@ -73,7 +75,7 @@ const FIELDNAMES = {
   location: ({ installAddress, location, reportType }) =>
     typeDict2[reportType] === '消防主机' ? installAddress : location, // 位置
   startTime: ({ createDate, reportType, lastTime }) =>
-    ({ 消防主机: lastTime, 独立烟感: lastTime, 报修: createDate }[typeDict2[reportType]]), // 报警/报修时间
+    ({ 消防主机: lastTime, 独立烟感: lastTime, 可燃气体: lastTime, 报修: createDate }[typeDict2[reportType]]), // 报警/报修时间
   endTime: 'endDate', // 结束时间
   status: ({ fireType }) => statusDict2[fireType], // 状态
   systemType: 'systemTypeValue', // 系统类型
@@ -83,6 +85,7 @@ const FIELDNAMES = {
     createByPhone && `${createByPhone}`.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'), // 报修人员手机号
   process: ({ proceStatus }) => proceDict[proceStatus], // 处理状态
   repeat: ({ fireChildren }) => fireChildren && fireChildren.length, // 重复次数
+  alarmValue: ({ realTimeData }) => `LEL(${realTimeData}%)`, // 报警值
 };
 
 @connect(({ operation, loading }) => ({
@@ -186,7 +189,7 @@ export default class TaskDrawer extends PureComponent {
         taskList: {
           list = [],
           pagination: { pageNum = 1, pageSize = DEFAULT_PAGE_SIZE, total = 0 } = {},
-          count: { 消防主机: fire = 0, 独立烟感: gas = 0, 报修: repair = 0 } = {},
+          count: { 消防主机: fire = 0, 独立烟感: gas = 0, 可燃气体: fireGas=0, 报修: repair = 0 } = {},
         } = {},
       } = {},
       loading,
@@ -206,6 +209,10 @@ export default class TaskDrawer extends PureComponent {
         value: `独立烟感${process !== '已处理' ? ` (${gas})` : ''}`,
       },
       {
+        key: '可燃气体',
+        value: `可燃气体${process !== '已处理' ? ` (${fireGas})` : ''}`,
+      },
+      {
         key: '报修',
         value: `报修${process !== '已处理' ? ` (${repair})` : ''}`,
       },
@@ -213,6 +220,7 @@ export default class TaskDrawer extends PureComponent {
 
     return (
       <CustomDrawer
+        width={600}
         title={`${process}任务`}
         visible={visible}
         onClose={onClose}
@@ -223,7 +231,7 @@ export default class TaskDrawer extends PureComponent {
                 <CustomTabs activeKey={activeType} data={tabs} onClick={this.handleTabClick} />
               </div>
               <div>
-                {activeType !== tabs[2].key && (
+                {activeType !== tabs[3].key && (
                   <CustomSelect
                     data={statusList}
                     value={activeStatus}

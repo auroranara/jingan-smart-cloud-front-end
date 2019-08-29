@@ -151,6 +151,14 @@ export default {
       floorDelete: 'baseInfo.buildingsInfo.floorDelete',
     },
   },
+  // 个人备案
+  familyFile: {
+    list: 'baseInfo.personnelManagement.listView',
+    add: 'baseInfo.personnelManagement.add',
+    edit: 'baseInfo.personnelManagement.edit',
+    delete: 'baseInfo.personnelManagement.delete',
+    detail: 'baseInfo.personnelManagement.view',
+  },
   contract: {
     list: 'fireControl.contract.listView',
     detail: 'fireControl.contract.view',

@@ -50,9 +50,14 @@ export function getStatusImg(list, imgs) {
 }
 
 export function getMapItemStatus(item, deviceType) { // 0 正常 1 报警 2 故障 3 失联
+  const COUNT_KEYS_1 = COUNT_KEYS.slice(1);
   if (deviceType === ALL_DEVICES) // 所有设备，判断每一种，只要有报警/失联/故障，就显示为红色
-    return +TYPE_KEYS.slice(1).some(k =>  COUNT_KEYS.slice(1).some(countKey => item[`${k}${COUNT_BASE_KEY}For${countKey}`]));
+    return +TYPE_KEYS.slice(1).some(k => COUNT_KEYS_1.some(countKey => item[`${k}${COUNT_BASE_KEY}For${countKey}`]));
 
+  return getMapItemStatus1(item, deviceType);
+}
+
+function getMapItemStatus1(item, deviceType) {
   let status = 0;
   const typeKey = TYPE_KEYS[deviceType];
   const typeCount = TYPE_COUNTS[deviceType];
@@ -62,9 +67,8 @@ export function getMapItemStatus(item, deviceType) { // 0 正常 1 报警 2 故�
       break;
     }
 
-  return status;
+  return deviceType ? status : +!!status; // deviceType(0)为全部设备，只有0/1两个图标，所以要特殊处理
 }
-
 
 export function getMapLegendData(list, deviceType) {
   function lambda(prev, next) {
@@ -110,6 +114,36 @@ export function getUnitLists(list) {
   return allLists;
 }
 
+export function aggregateByLocation(lists) {
+  const aggregationLists =  lists.map(list => list.reduce((prev, next) => {
+    const { latitude, longitude } = next;
+    const target = prev.find(({ latitude: lat, longitude: lon }) => lat === latitude && lon === longitude);
+    if (target)
+      target.list.push(next);
+    else
+      prev.push({ isAgg: true, latitude, longitude, key: `${latitude}${longitude}`, list: [next], icon: undefined });
+    return prev;
+  }, []));
+  getAggregationStatus(aggregationLists);
+  // console.log(aggregationLists);
+  return aggregationLists;
+}
+
+function getAggregationStatus(lists) {
+  lists.forEach((lst, index) => {
+    const baseKey = `${TYPE_KEYS[index]}${COUNT_BASE_KEY}`;
+    lst.forEach(item => {
+      const { list } = item;
+      const aggItem = COUNT_KEYS.reduce((prev, next) => {
+        const prop = `${baseKey}For${next}`;
+        prev[prop] = list.reduce((prv, nxt) => prv + (nxt[prop] ? nxt[prop] : 0), 0);
+        return prev;
+      }, {});
+      item.icon = getMapItemStatus1(aggItem, index);
+    });
+  });
+}
+
 function addAllStatusCount(list) {
   const allKey = TYPE_KEYS[0];
   const deviceKeys = TYPE_KEYS.slice(1);
@@ -122,6 +156,7 @@ function addAllStatusCount(list) {
       }, 0);
     });
     item[`${allKey}${COUNT_BASE_KEY}`] = deviceKeys.reduce((prev, next) => prev + item[`${next}${COUNT_BASE_KEY}`], 0);
+    item.icons = TYPE_KEYS.map((k, i) => getMapItemStatus1(item, i));
   });
 }
 
@@ -195,4 +230,9 @@ export function getAllDevicesCount(item) {
     });
     return prev;
   }, [0, [0, 0, 0, 0]]);
+}
+
+export function findAggUnit(origin, units) {
+  const { companyId } = origin;
+  return units.find(({ list }) => list.map(({ companyId }) => companyId).includes(companyId));
 }

@@ -4,11 +4,13 @@
 
   .tabs {
     .tab {
+      width: 80px;
       display: inline-block;
       color: #fff;
       border-bottom: 1px solid transparent;
-      margin-right: 20px;
+      // margin-right: 20px;
       cursor: pointer;
+      text-align: center;
     }
 
     .active {
@@ -27,7 +29,7 @@
     width: 100%;
     overflow: hidden;
     font-size: 12px;
-    // padding-right: 70px;
+    // padding: 0 16px;
     position: relative;
     transition: all 1s cubic-bezier(.01, .69, .92, .34);
 
@@ -49,7 +51,7 @@
     .shwoMore {
       position: absolute;
       bottom: 0;
-      right: 0;
+      right: 16px;
       color: #00FFFF;
       transition: all .3s ease-in;
       cursor: pointer;

@@ -27,7 +27,7 @@ import {
   TaskCount,
   FireCount,
 } from './components/Components';
-import { GAS, PAGE_SIZE } from './utils';
+import { findAggUnit, GAS, PAGE_SIZE } from './utils';
 import { WATER_TYPES, getWaterTotal } from '@/pages/BigPlatform/GasStation/utils';
 import { redLight as iconFire } from '@/pages/BigPlatform/GasStation/imgs/links';
 import iconFault from '@/assets/icon-fault-msg.png';
@@ -36,8 +36,7 @@ import { FireFlowDrawer, OnekeyFlowDrawer, SmokeFlowDrawer } from '@/pages/BigPl
 const OPE = 3; // 运营或管理员unitType对应值
 const COMPANY_ALL = 'companyIdAll';
 const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 48, 49];
-// const TYPE_CLICK_LIST = [7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 48, 49];
-const SHOW_TYPES = [1, 2, 3, 4, 7, 9, 11, 13, 14, 15, 16, 17, 18, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 54, 55];
+const SHOW_TYPES = [1, 2, 3, 4, 7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 54, 55, 56, 57];
 const ALARM_TYPES = [7, 32, 36, 38, 39];
 
 // websocket配置
@@ -175,7 +174,8 @@ export default class Operation extends PureComponent {
       alarmIds: [],
       companyName: '',
       // unitList: [], // 地图显示的企业列表
-      unitDetail: {},
+      unitDetail: {}, // 聚合点
+      unitSelected: undefined, // 选中的企业，其为聚合点中的list数组中的一个元素
       deviceType: 0, // 地图中间根据设备显示企业列表
       fireListHasMore: true, // 火警统计抽屉右边列表是否有更多
       alarmMessageDrawerVisible: false,
@@ -191,6 +191,7 @@ export default class Operation extends PureComponent {
       fireVideoVisible: false,
       videoVisible: false,
       onekeyFlowDrawerVisible: false,
+      unitListType: 0, // 0 企业类别 1 聚合点列表
       unitListDrawerVisible: false, // 企业列表抽屉
       // showVideoList: false,
       videoList: [],
@@ -322,16 +323,32 @@ export default class Operation extends PureComponent {
 
   fireListPageNum = 1;
 
-  showUnitDetail = unitDetail => {
-    // 地图显示某个企业详情
-    if (!unitDetail) {
+  showUnitDetail = (unitDetail, deviceType) => { // 地图显示某个企业详情，这里传入的参数可能是企业详情或者聚合的点，若是企业详情则找到对应的聚合点
+    if (!unitDetail)
       return;
+
+    const { operation: { aggregationUnitLists } } = this.props;
+    const { deviceType: stateDeviceType, mapInstance } =  this.state;
+    const dType = deviceType === undefined ? stateDeviceType : deviceType; // deviceType不传就从state中获取
+    const units = aggregationUnitLists[dType];
+
+    const { isAgg } = unitDetail;
+    let unitDetailTemp;
+    let unitIndex;
+    if (!isAgg) {
+      unitDetailTemp = unitDetail
+      unitDetail = findAggUnit(unitDetail, units);
+      if (unitDetail)
+        unitIndex = unitDetail.list.indexOf(unitDetailTemp);
+      // console.log(unitDetail, unitDetailTemp, unitIndex);
     }
-    const { mapInstance } = this.state;
+
     const { longitude, latitude } = unitDetail;
-    mapInstance.setZoomAndCenter(18, [longitude, latitude]);
-    this.setState({ unitDetail });
-    setTimeout(() => this.mapChild.handleMapClick(unitDetail), 400); // 解决点击时无法居中的问题
+    this.setState({ unitDetail, unitSelected: unitDetailTemp });
+    setTimeout(() => {
+      mapInstance.setZoomAndCenter(18, [longitude, latitude]);
+      this.mapChild.handleMapClick(unitDetail, unitIndex);
+    }, 400); // 解决点击时无法居中的问题
     this.hideTooltip();
   };
 
@@ -415,14 +432,34 @@ export default class Operation extends PureComponent {
   };
 
   renderNotificationTitle = item => {
-    const { type } = item;
+    const { type, unitTypeName, paramName, deviceTypeName } = item;
     const msgItem = switchMsgType(+type);
+    let title = '';
+    switch(+type) {
+      case 7:
+        title = unitTypeName;
+        break;
+      case 32:
+        title = `电气火灾(${paramName})`;
+        break;
+      case 36:
+        title = deviceTypeName;
+        break;
+      case 38:
+        title = '独立烟感';
+        break;
+      case 39:
+        title = '可燃气体';
+        break;
+      default:
+        title = '未知';
+    }
     return (
       <div className={styles1.notificationTitle} style={{ color: msgItem.color }}>
         <span className={styles1.iconFire}>
           <img src={msgItem.icon} alt="fire" />
         </span>
-        {msgItem.title}
+        {title}报警
       </div>
     );
   };
@@ -515,41 +552,54 @@ export default class Operation extends PureComponent {
         className={styles1.notificationBody}
         onClick={onClick}
       >
-        <div>
-          <span className={styles1.time}>
-            {/* {moment(addTime).format('YYYY-MM-DD HH:mm')} */}
-            刚刚
-          </span>{' '}
-          {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
-          <span className={styles1.address}>{installAddress || area + location}</span>
-        </div>
-        {companyName && <div>【{companyName}】</div>}
-        <div>
-          {type === 7 && unitTypeName && (
-              <span className={styles1.device} style={{ color: msgItem.color }}>
-                【{unitTypeName}】
-              </span>
-            )}
-          {(type === 38 || type === 39 || type === 40) && (
-            <span className={styles1.device} style={{ color: msgItem.color }}>
-              {type === 39 ? `【可燃气体探测器】` : `【独立烟感探测器】`}
-            </span>
-          )}
-          {type === 36 && (
-            <span className={styles.device} style={{ color: msgItem.color }}>
-              {`【水系统探测器】${deviceTypeName}`}
-            </span>
-          )}
-          {type === 32 && (
-            <span className={styles.device} style={{ color: msgItem.color }}>
-              {`【电气火灾探测器】${paramName}`}
-            </span>
-          )}
-          {msgItem.body}
-        </div>
-        <div>{msgItem.bottom}</div>
+        <span className={styles1.time}>刚刚</span>
+        <span className={styles1.address}>
+          {companyName && `【${companyName}】`}
+          {installAddress || area + location}
+          发生报警，请尽快处理。
+        </span>
       </div>
     );
+    // return (
+    //   <div
+    //     className={styles1.notificationBody}
+    //     onClick={onClick}
+    //   >
+    //     <div>
+    //       <span className={styles1.time}>
+    //         {/* {moment(addTime).format('YYYY-MM-DD HH:mm')} */}
+    //         刚刚
+    //       </span>{' '}
+    //       {/* <span className={styles.time}>{addTimeStr}</span>{' '} */}
+    //       <span className={styles1.address}>{installAddress || area + location}</span>
+    //     </div>
+    //     {companyName && <div>【{companyName}】</div>}
+    //     <div>
+    //       {type === 7 && unitTypeName && (
+    //           <span className={styles1.device} style={{ color: msgItem.color }}>
+    //             【{unitTypeName}】
+    //           </span>
+    //         )}
+    //       {(type === 38 || type === 39 || type === 40) && (
+    //         <span className={styles1.device} style={{ color: msgItem.color }}>
+    //           {type === 39 ? `【可燃气体探测器】` : `【独立烟感探测器】`}
+    //         </span>
+    //       )}
+    //       {type === 36 && (
+    //         <span className={styles.device} style={{ color: msgItem.color }}>
+    //           {`【水系统探测器】${deviceTypeName}`}
+    //         </span>
+    //       )}
+    //       {type === 32 && (
+    //         <span className={styles.device} style={{ color: msgItem.color }}>
+    //           {`【电气火灾探测器】${paramName}`}
+    //         </span>
+    //       )}
+    //       {msgItem.body}
+    //     </div>
+    //     <div>{msgItem.bottom}</div>
+    //   </div>
+    // );
   };
 
   /**
@@ -761,6 +811,7 @@ export default class Operation extends PureComponent {
     const { dispatch } = this.props;
     const {
       id,
+      deviceId,
       gasId,
       proceId,
       companyName,
@@ -787,7 +838,7 @@ export default class Operation extends PureComponent {
       createTime,
       rcompanyId = null,
     } = data;
-    const dataId = { 1: id, 4: id || gasId, 2: proceId }[reportType];
+    const dataId = { 1: id, 4: id || gasId, 2: proceId, 3: gasId }[reportType];
     const cId = (+reportType !== 2 ? companyId : rcompanyId) || undefined;
     dispatch({
       type: 'operation/fetchCameraMessage',
@@ -797,6 +848,7 @@ export default class Operation extends PureComponent {
       },
       callback: cameraMessage => {
         const param = {
+          deviceId,
           dataId: +reportType !== 2 ? dataId : undefined,
           id: +reportType === 2 ? dataId : undefined,
           proceId,
@@ -809,10 +861,11 @@ export default class Operation extends PureComponent {
           unitTypeName: componentName || undefined,
           companyId: cId,
         };
-        const type = { 1: 0, 4: 1, 2: 3 }[reportType];
+        const type = { 1: 0, 4: 1, 3: 2, 2: 3 }[reportType];
         const flow = fireType - 1;
         const occurData = [
           {
+            companyName,
             create_time: createTime,
             create_date: createDate,
             firstTime,
@@ -893,16 +946,19 @@ export default class Operation extends PureComponent {
         },
         callback: res => {
           if (res) {
-            const { num, lastTime, firstTime, sdeviceName = null } = res;
+            const { num, lastTime, firstTime, sdeviceName=null, relation_id, realtime_data, limit_value } = res;
+            this.getPhoneCount(relation_id);
             dispatch({
               type: 'operation/saveWorkOrderDetail',
-              payload: [{ ...occurData[0], firstTime, num, lastTime, sdeviceName }],
+              // payload: [{ ...occurData[0], firstTime, num, lastTime, sdeviceName }],
+              payload: [{ ...occurData[0], ...res }],
             });
           } else {
             dispatch({
               type: 'operation/fetchWorkOrder',
               // payload: { companyId: cId, reportType: reportTypes[type], ...param },
               payload: workOrderPayload,
+              callback: ({ relation_id }) => this.getPhoneCount(relation_id),
             });
           }
         },
@@ -964,6 +1020,11 @@ export default class Operation extends PureComponent {
     // }
 
     this.locateCompany(cId, type<=2 ? type <=1 ? type + 1 : GAS : undefined);
+  };
+
+  getPhoneCount = id => {
+    const { dispatch } = this.props;
+    id && dispatch({ type: 'operation/fetchPhoneCount', payload: id });
   };
 
   setCameraMessage = cameraMessage => {
@@ -1098,8 +1159,12 @@ export default class Operation extends PureComponent {
     this.setState({ waterItemDrawerVisible: false });
   };
 
-  showUnitListDrawer = e => {
-    this.setState({ unitListDrawerVisible: true });
+  showUnitListDrawer = (type=0) => {
+    this.setState({ unitListType: type, unitListDrawerVisible: true });
+  };
+
+  clearUnitSelected = () => {
+    this.setState({ unitSelected: undefined });
   };
 
   /**
@@ -1111,6 +1176,7 @@ export default class Operation extends PureComponent {
       operation: {
         // unitList,
         unitLists,
+        aggregationUnitLists,
         firePie,
         fireTrend,
         fireList,
@@ -1123,6 +1189,7 @@ export default class Operation extends PureComponent {
         gasHistory,
         gasRealtimeData,
         gasTotal,
+        phoneCount,
       },
       user: {
         currentUser: { unitName },
@@ -1137,6 +1204,7 @@ export default class Operation extends PureComponent {
       selectList,
       searchValue,
       unitDetail,
+      unitSelected,
       tooltipName,
       tooltipVisible,
       tooltipPosition,
@@ -1156,6 +1224,7 @@ export default class Operation extends PureComponent {
       videoKeyId,
       // unitList,
       onekeyFlowDrawerVisible,
+      unitListType,
       unitListDrawerVisible,
       waterItem,
       waterItemDrawerVisible,
@@ -1174,6 +1243,7 @@ export default class Operation extends PureComponent {
     };
 
     const unitList = unitLists[deviceType];
+    const aggUnitList = aggregationUnitLists[deviceType];
     const handleCameraOpen = videoList && videoList.length ? this.handleVideoOpen : null;
 
     return (
@@ -1192,20 +1262,24 @@ export default class Operation extends PureComponent {
           deviceType={deviceType}
           // units={getUnitList(unitList, deviceType)}
           units={unitList}
+          aggUnits={aggUnitList}
           unitLists={unitLists}
+          aggUnitLists={aggregationUnitLists}
+          unitDetail={unitDetail}
+          unitSelected={unitSelected}
+          alarmIds={alarmIds}
+          onRef={this.onRef}
           handleMapClick={this.showUnitDetail}
           showTooltip={this.showTooltip}
           hideTooltip={this.hideTooltip}
-          unitDetail={unitDetail}
-          alarmIds={alarmIds}
           handleParentChange={this.handleMapParentChange}
           // handleAlarmClick={this.handleAlarmClick}
           // handleFaultClick={this.handleFaultClick}
-          onRef={this.onRef}
           handleCompanyClick={this.handleCompanyClick}
           // fetchMapInfo={this.fetchMapInfo}
           handleDeviceTypeChange={this.handleDeviceTypeChange}
           showUnitListDrawer={this.showUnitListDrawer}
+          clearUnitSelected={this.clearUnitSelected}
         />
         {/* 搜索框 */}
         <MapSearch
@@ -1291,6 +1365,7 @@ export default class Operation extends PureComponent {
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
           head={true}
+          phoneCount={phoneCount}
         />
         {/* 独立烟感处理动态 */}
         <SmokeFlowDrawer
@@ -1307,6 +1382,7 @@ export default class Operation extends PureComponent {
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
           head={true}
+          phoneCount={phoneCount}
         />
         {/* 一键报修处理动态 */}
         <OnekeyFlowDrawer
@@ -1321,10 +1397,11 @@ export default class Operation extends PureComponent {
           messageInformList={messageInformList}
           messageInformListLoading={messageInformListLoading}
           head={true}
+          phoneCount={phoneCount}
         />
         <GasDrawer
           monitorData={{ item: gasRealtimeData, history: gasHistory }}
-          orderData={{ order: workOrderDetail, item: gasRealtimeData, phoneVisible, headProps, messageInformList, messageInformListLoading, gasTotal }}
+          orderData={{ order: workOrderDetail, item: gasRealtimeData, phoneVisible, headProps, messageInformList, messageInformListLoading, gasTotal, phoneCount }}
           visible={gasDrawerVisible}
           handleCameraOpen={handleCameraOpen}
           fetchGasTotal={this.fetchGasTotal}
@@ -1332,7 +1409,9 @@ export default class Operation extends PureComponent {
         />
         <UnitListDrawer
           visible={unitListDrawerVisible}
+          listType={unitListType}
           list={unitList}
+          aggList={unitDetail && unitDetail.list ? unitDetail.list : []}
           deviceType={deviceType}
           handleDrawerVisibleChange={this.handleDrawerVisibleChange}
           showUnitDetail={this.showUnitDetail}

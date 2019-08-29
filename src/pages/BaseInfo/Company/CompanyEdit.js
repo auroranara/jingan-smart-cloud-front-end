@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import {
   Form,
@@ -17,6 +17,7 @@ import {
   Radio,
   Spin,
   Modal,
+  Tooltip,
 } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
@@ -32,6 +33,7 @@ import { getCompanyType, getFileList, getImageSize, getImportantTypes } from '..
 
 import styles from './Company.less';
 import Safety from './Safety';
+import FireControl from './FireControl';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -89,7 +91,10 @@ const fieldLabels = {
   importantSafety: '安全重点单位',
   importantHost: '消防重点单位',
   unitPhoto: '单位照片',
+  warningCall: '报警接收电话',
 };
+// 报警接收电话类型
+const phoneTypes = [{ value: 1, label: '手机' }, { value: 0, label: '固话' }];
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
 // tab列表
@@ -102,9 +107,15 @@ const tabList = [
     key: '1',
     tab: '安全信息',
   },
+  {
+    key: '2',
+    tab: '消防信息',
+  },
 ];
 // 默认选中一般企业
 const defaultCompanyNature = '一般企业';
+// 默认经纬度坐标
+const defaultPosition = { longitude: 120.30, latitude: 31.57 };
 
 @connect(
   ({ company, user, loading }) => ({
@@ -206,8 +217,6 @@ export default class CompanyDetail extends PureComponent {
 
   /* 生命周期函数 */
   componentDidMount() {
-    // console.log('CompanyEdit.didMount', this.props);
-
     const {
       fetchCompany,
       fetchDict,
@@ -249,45 +258,44 @@ export default class CompanyDetail extends PureComponent {
           gridId,
           companyType,
         }) => {
-          const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
-          const fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
-          const unitPhotoList = Array.isArray(companyPhotoDetails) ? companyPhotoDetails : [];
+          // const companyIchnographyList = companyIchnography ? JSON.parse(companyIchnography) : [];
+          // const fireIchnographyList = fireIchnographyDetails ? fireIchnographyDetails : [];
+          // const unitPhotoList = Array.isArray(companyPhotoDetails) ? companyPhotoDetails : [];
           // 若idMap已获取则设值，未获取时则在获取idMap后设值
           this.gridId = gridId;
           Object.keys(this.idMap).length && setFieldsValue({ gridId: this.idMap[gridId] });
-          const [importantHost, importantSafety] = getImportantTypes(companyType);
-          setFieldsValue({ importantHost, importantSafety });
+          // const [importantHost, importantSafety] = getImportantTypes(companyType);
+          // setFieldsValue({ importantHost, importantSafety });
 
-          // console.log(companyIchnographyList);
           // 初始化上传文件
-          this.setState({
-            ichnographyList: Array.isArray(companyIchnographyList)
-              ? companyIchnographyList.map((item, index) => ({
-                  ...item,
-                  uid: index,
-                  status: 'done',
-                }))
-              : JSON.parse(companyIchnographyList.dbUrl).map((item, index) => ({
-                  ...item,
-                  uid: index,
-                  status: 'done',
-                })),
-            firePictureList: fireIchnographyList.map(({ id, dbUrl, webUrl, fileName }, index) => ({
-              uid: id || index,
-              status: 'done',
-              name: fileName,
-              url: webUrl,
-              dbUrl,
-            })),
-            unitPhotoList: unitPhotoList.map(({ id, dbUrl, webUrl, fileName }, index) => ({
-              uid: id || index,
-              status: 'done',
-              name: fileName,
-              url: webUrl,
-              dbUrl,
-            })),
-            isCompany: companyNatureLabel === defaultCompanyNature,
-          });
+          // this.setState({
+          //   ichnographyList: Array.isArray(companyIchnographyList)
+          //     ? companyIchnographyList.map((item, index) => ({
+          //         ...item,
+          //         uid: index,
+          //         status: 'done',
+          //       }))
+          //     : JSON.parse(companyIchnographyList.dbUrl).map((item, index) => ({
+          //         ...item,
+          //         uid: index,
+          //         status: 'done',
+          //       })),
+          //   firePictureList: fireIchnographyList.map(({ id, dbUrl, webUrl, fileName }, index) => ({
+          //     uid: id || index,
+          //     status: 'done',
+          //     name: fileName,
+          //     url: webUrl,
+          //     dbUrl,
+          //   })),
+          //   unitPhotoList: unitPhotoList.map(({ id, dbUrl, webUrl, fileName }, index) => ({
+          //     uid: id || index,
+          //     status: 'done',
+          //     name: fileName,
+          //     url: webUrl,
+          //     dbUrl,
+          //   })),
+          //   isCompany: companyNatureLabel === defaultCompanyNature,
+          // });
           // 获取注册地址列表
           fetchArea({
             payload: {
@@ -422,7 +430,7 @@ export default class CompanyDetail extends PureComponent {
     if (this.operation === 'edit')
       confirm({
         title: '提示信息',
-        content: '是否继续编辑安全信息',
+        content: '是否继续编辑安全信息或消防信息',
         okText: '是',
         cancelText: '否',
         onOk: () => {
@@ -434,7 +442,7 @@ export default class CompanyDetail extends PureComponent {
     else
       confirm({
         title: '提示信息',
-        content: '是否需要添加安全信息',
+        content: '是否需要添加安全信息或消防信息',
         okText: '是',
         cancelText: '否',
         onOk() {
@@ -494,19 +502,24 @@ export default class CompanyDetail extends PureComponent {
             practicalTown,
             industryCategory: industryCategory.join(','),
             createTime: createTime && createTime.format('YYYY-MM-DD'),
-            companyIchnography: JSON.stringify(
-              ichnographyList.map(({ name, url, dbUrl }) => ({ name, url, dbUrl }))
-            ),
-            fireIchnography: JSON.stringify(
-              firePictureList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
-            ),
-            companyPhoto: JSON.stringify(
-              unitPhotoList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
-            ),
+            // companyIchnography: JSON.stringify(
+            //   ichnographyList.map(({ name, url, dbUrl }) => ({ name, url, dbUrl }))
+            // ),
+            // fireIchnography: JSON.stringify(
+            //   firePictureList.map(({ name, url, dbUrl }) => ({
+            //     fileName: name,
+            //     webUrl: url,
+            //     dbUrl,
+            //   }))
+            // ),
+            // companyPhoto: JSON.stringify(
+            //   unitPhotoList.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }))
+            // ),
             longitude,
             latitude,
             gridId: gridId[gridId.length - 1],
-            companyType: getCompanyType(importantHost, importantSafety),
+            // companyType: getCompanyType(importantHost, importantSafety),
+            companyType: !id ? '2' : undefined,
           };
           // 成功回调
           const success = companyId => {
@@ -556,18 +569,35 @@ export default class CompanyDetail extends PureComponent {
           },
         } = file.response;
         if (result) {
-          this.setState({
-            ichnographyList: fileList.map(item => {
-              if (!item.url && item.response) {
-                return {
-                  ...item,
-                  url: result.webUrl,
-                  dbUrl: result.dbUrl,
-                };
+          getImageSize(
+            result.webUrl,
+            isSatisfied => {
+              let files = [...fileList];
+              if (file.response.code === 200 && isSatisfied && file.type === 'image/png') {
+                files = [...fileList];
+                message.success('上传成功');
+              } else if (file.type !== 'image/png') {
+                message.error('请上传png格式的图片');
+                files = fileList.slice(0, fileList.length - 1);
+              } else {
+                message.error('上传的图片分辨率请不要大于2505*1625');
+                files = fileList.slice(0, fileList.length - 1);
               }
-              return item;
-            }),
-          });
+              this.setState({
+                ichnographyList: files.map(item => {
+                  if (!item.url && item.response) {
+                    return {
+                      ...item,
+                      url: result.webUrl,
+                      dbUrl: result.dbUrl,
+                    };
+                  }
+                  return item;
+                }),
+              });
+            },
+            [2505, 1625]
+          );
         } else {
           // 没有返回值
           message.error('上传失败！');
@@ -675,15 +705,22 @@ export default class CompanyDetail extends PureComponent {
     }
   };
 
-  handleUploadUnitPhoto = info => { // 限制一个文件，但有可能新文件上传失败，所以在新文件上传完成后判断，成功则只保留新的，失败，则保留原来的
+  handleUploadUnitPhoto = info => {
+    // 限制一个文件，但有可能新文件上传失败，所以在新文件上传完成后判断，成功则只保留新的，失败，则保留原来的
     const { fileList: fList, file } = info;
     let fileList = [...fList];
 
-    if (file.status === 'done') { // 上传完成后，查看图片大小
-      const { response: { data: { list: [{ webUrl }] } } } = file;
+    if (file.status === 'done') {
+      // 上传完成后，查看图片大小
+      const {
+        response: {
+          data: {
+            list: [{ webUrl }],
+          },
+        },
+      } = file;
       getImageSize(webUrl, isSatisfied => {
-        if (file.response.code === 200 && isSatisfied)
-          fileList = [file];
+        if (file.response.code === 200 && isSatisfied) fileList = [file];
         else {
           message.error('上传的图片分辨率请不要大于240*320');
           fileList = fileList.slice(0, 1);
@@ -691,7 +728,8 @@ export default class CompanyDetail extends PureComponent {
         fileList = getFileList(fileList);
         this.setState({ unitPhotoList: fileList });
       });
-    } else { // 其他情况，直接用原文件数组
+    } else {
+      // 其他情况，直接用原文件数组
       fileList = getFileList(fileList);
       this.setState({ unitPhotoList: fileList });
     }
@@ -724,7 +762,6 @@ export default class CompanyDetail extends PureComponent {
    */
   handleShowMap = () => {
     const coord = this.getCoordinateFromInput();
-
     this.setState(({ map }) => ({
       map: {
         visible: true,
@@ -806,8 +843,18 @@ export default class CompanyDetail extends PureComponent {
     }));
   };
 
+  /**
+  * 接收报警电话-电话类型改变
+  */
+  handleChangeCallType = (value) => {
+    const {
+      form: { setFieldsValue },
+    } = this.props
+    setFieldsValue({ warningCallNumber: undefined })
+  }
+
   /* 上传文件按钮 */
-  renderUploadButton = (fileList, onChange, multiple=true) => {
+  renderUploadButton = (fileList, onChange, multiple = true, tips) => {
     return (
       <Upload
         name="files"
@@ -825,9 +872,60 @@ export default class CompanyDetail extends PureComponent {
           <Icon type="plus" style={{ fontSize: '32px' }} />
           <div style={{ marginTop: '8px' }}>点击上传</div>
         </Button>
+        {tips && (
+          <span
+            style={{ whiteSpace: 'nowrap', marginLeft: '25px' }}
+            onClick={e => {
+              e.stopPropagation();
+              return null;
+            }}
+          >
+            {tips}
+          </span>
+        )}
       </Upload>
     );
   };
+
+  /**
+   * 复制经纬度
+   */
+  handleCopyCoordinate = () => {
+    const {
+      form: { getFieldValue },
+    } = this.props;
+    const coordinate = getFieldValue('coordinate');
+    if (!coordinate) {
+      message.warning('请先选择经纬度');
+      return;
+    }
+    this.coordinate.select();
+    if (document.execCommand('copy')) {
+      document.execCommand('copy');
+      message.success('复制成功');
+    }
+    this.coordinate.blur();
+  };
+
+  validateCoordinate = (rule, value, callback) => {
+    if (value) {
+      if (!/^\d+\.?\d*\,\d+\.?\d*$/.test(value)) {
+        callback('格式错误，经度和纬度请使用" , "隔开，并且都为数字')
+        return
+      }
+      // 拆分出经纬度
+      const [longitude, latitude] = value.split(',')
+      if (+longitude < -180 || +longitude > 180) {
+        callback('经度范围为-180~180')
+        return
+      }
+      if (+latitude < -90 || +latitude > 90) {
+        callback('纬度范围为-90~90')
+        return
+      }
+      callback()
+    } else callback('请选择经纬度')
+  }
 
   /* 渲染行业类别 */
   renderIndustryCategory() {
@@ -901,7 +999,7 @@ export default class CompanyDetail extends PureComponent {
   /* 渲染地图 */
   renderMap() {
     const {
-      map: { visible, center, point },
+      map: { visible, center = defaultPosition, point },
     } = this.state;
 
     return (
@@ -921,6 +1019,9 @@ export default class CompanyDetail extends PureComponent {
   /* 渲染基础信息 */
   renderBasicInfo() {
     const {
+      match: {
+        params: { id },
+      },
       company: {
         detail: {
           data: {
@@ -940,16 +1041,18 @@ export default class CompanyDetail extends PureComponent {
             practicalTown,
             companyNature,
             gridId,
+            warningCallType: detailCallType,
+            warningCallNumber,
           },
         },
         registerAddress: registerAddressArea,
         practicalAddress: practicalAddressArea,
         companyNatures,
       },
-      form: { getFieldDecorator },
+      form: { getFieldDecorator, getFieldValue },
     } = this.props;
     const { ichnographyList, firePictureList, unitPhotoList, isCompany, gridTree } = this.state;
-
+    const warningCallType = getFieldValue('warningCallType');
     return (
       <Card className={styles.card} bordered={false}>
         <Form layout="vertical">
@@ -1015,12 +1118,27 @@ export default class CompanyDetail extends PureComponent {
                 {getFieldDecorator('coordinate', {
                   initialValue: longitude && latitude ? `${longitude},${latitude}` : undefined,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请选择经纬度' }],
+                  rules: [{ required: true, message: '请选择经纬度' }, { validator: this.validateCoordinate }],
                 })(
                   <Input
+                    ref={coordinate => {
+                      this.coordinate = coordinate;
+                    }}
                     placeholder="请选择经纬度"
-                    onFocus={e => e.target.blur()}
-                    onClick={this.handleShowMap}
+                    addonAfter={
+                      <Fragment>
+                        <Tooltip title="复制">
+                          <Icon
+                            type="copy"
+                            style={{ marginRight: '10px' }}
+                            onClick={this.handleCopyCoordinate}
+                          />
+                        </Tooltip>
+                        <Tooltip title="打开地图">
+                          <Icon type="environment" onClick={this.handleShowMap} />
+                        </Tooltip>
+                      </Fragment>
+                    }
                   />
                 )}
               </Form.Item>
@@ -1110,7 +1228,50 @@ export default class CompanyDetail extends PureComponent {
               </Row>
             </Col>
           </Row>
-          <Row>
+          <Row gutter={12}>
+            <Col md={5} sm={10}>
+              <Form.Item label={fieldLabels.warningCall}>
+                {getFieldDecorator('warningCallType', {
+                  initialValue:
+                    id && phoneTypes.find(item => item.value === detailCallType)
+                      ? phoneTypes.find(item => item.value === detailCallType).value
+                      : undefined,
+                  rules: [{ required: true, message: '请选择电话类型' }],
+                })(
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder="电话类型"
+                    onChange={this.handleChangeCallType}
+                  >
+                    {phoneTypes.map(({ value, label }) => (
+                      <Option value={value} key={value}>
+                        {label}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col md={7} sm={14}>
+              <Form.Item style={{ paddingTop: '29px' }}>
+                {getFieldDecorator('warningCallNumber', {
+                  initialValue: warningCallNumber,
+                  rules: [
+                    { required: true, message: '请输入电话号码' },
+                    {
+                      pattern:
+                        +warningCallType === 1
+                          ? /^0?(13|14|15|18|17)[0-9]{9}$/
+                          : /^(0\d{2,3})?([2-9]\d{6,7})+(\d{1,4})?$/,
+                      message:
+                        +warningCallType === 1 ? '请输入正确格式，为11位数字' : '请输入正确格式',
+                    },
+                  ],
+                })(<Input placeholder="电话号码" />)}
+              </Form.Item>
+            </Col>
+          </Row>
+          {/* <Row>
             <Col lg={12} md={12} sm={24}>
               <Form.Item label={fieldLabels.importantHost} {...itemLayout}>
                 {getFieldDecorator('importantHost', {
@@ -1137,15 +1298,20 @@ export default class CompanyDetail extends PureComponent {
                 )}
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={{ lg: 48, md: 24 }}>
-            <Col lg={8} md={12} sm={24}>
+          </Row> */}
+          {/* <Row gutter={{ lg: 48, md: 24 }}>
+            <Col lg={14} md={16} sm={24}>
               <Form.Item label={fieldLabels.companyIchnography}>
-                {this.renderUploadButton(ichnographyList, this.handleUploadIchnography)}
+                {this.renderUploadButton(
+                  ichnographyList,
+                  this.handleUploadIchnography,
+                  true,
+                  '尺寸限制：2505*1625（宽*高），png格式'
+                )}
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={{ lg: 48, md: 24 }}>
+          </Row> */}
+          {/* <Row gutter={{ lg: 48, md: 24 }}>
             <Col lg={8} md={12} sm={24}>
               <Form.Item label={fieldLabels.fireIchnography}>
                 {this.renderUploadButton(firePictureList, this.handleUploadfireIchnography)}
@@ -1158,7 +1324,7 @@ export default class CompanyDetail extends PureComponent {
                 {this.renderUploadButton(unitPhotoList, this.handleUploadUnitPhoto, false)}
               </Form.Item>
             </Col>
-          </Row>
+          </Row> */}
         </Form>
       </Card>
     );
@@ -1493,11 +1659,9 @@ export default class CompanyDetail extends PureComponent {
       match: {
         params: { id },
       },
+      dispatch,
     } = this.props;
     const { submitting, tabActiveKey, isCompany } = this.state;
-
-    // console.log(loading, safetyLoading, submitting);
-    // console.log(tabActiveKey, typeof tabActiveKey);
     const title = id ? editTitle : addTitle;
     // 面包屑
     const breadcrumbList = [
@@ -1527,7 +1691,7 @@ export default class CompanyDetail extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        tabList={tabList}
+        tabList={this.operation === 'edit' ? tabList : [tabList[0]]}
         onTabChange={this.handleTabChange}
         tabActiveKey={tabActiveKey}
         wrapperClassName={styles.advancedForm}
@@ -1541,7 +1705,21 @@ export default class CompanyDetail extends PureComponent {
             {this.renderFooterToolbar()}
           </div>
           <div style={{ display: tabActiveKey === tabList[1].key ? 'block' : 'none' }}>
-            <Safety operation={this.operation} companyId={id} setGridTree={this.setGridTree} />
+            <Safety
+              operation={this.operation}
+              companyId={id}
+              setGridTree={this.setGridTree}
+              handleTabChange={this.handleTabChange}
+            />
+          </div>
+          <div style={{ display: tabActiveKey === tabList[2].key ? 'block' : 'none' }}>
+            <FireControl
+              dispatch={dispatch}
+              operation={this.operation}
+              companyId={id}
+              detail={this.props.company.detail.data}
+              handleTabChange={this.handleTabChange}
+            />
           </div>
         </Spin>
       </PageHeaderLayout>
