@@ -90,7 +90,7 @@ const companyStatuses = [
   { value: '关停', key: '2' },
 ]
 // 默认经纬度坐标
-const defaultPosition = { longitude: 116.40, latitude: 39.90 };
+const defaultPosition = { longitude: 120.30, latitude: 31.57 };
 // 级联中id => parentIds的映射
 const idMap = {};
 function handleGridTree(gridList = [], idMap) {
@@ -544,7 +544,7 @@ export default class CompanyDetail extends PureComponent {
     this.setState(({ map }) => ({
       map: {
         visible: true,
-        center: coord || defaultPosition,
+        center: coord,
         point: coord,
       },
     }));
@@ -590,7 +590,7 @@ export default class CompanyDetail extends PureComponent {
     this.setState(({ map }) => ({
       map: {
         ...map,
-        center: coord || defaultPosition,
+        center: coord,
         point: coord,
       },
     }));
@@ -679,7 +679,7 @@ export default class CompanyDetail extends PureComponent {
   /* 渲染地图 */
   renderMap() {
     const {
-      map: { visible, center, point },
+      map: { visible, center = defaultPosition, point },
     } = this.state;
 
     return (
