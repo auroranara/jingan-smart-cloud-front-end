@@ -59,6 +59,7 @@ export default class WaterItemDrawer extends PureComponent {
         // cameraList = [],
       },
       handleCameraOpen,
+      showUnit,
     } = this.props;
     // const { videoVisible, videoKeyId } = this.state;
     const { dateType } = this.state;
@@ -82,6 +83,7 @@ export default class WaterItemDrawer extends PureComponent {
               name={companyName}
               location={loc}
               clickCamera={handleCameraOpen}
+              showUnit={showUnit}
             />
           )}
           <h3 className={styles.chartTitle}>
