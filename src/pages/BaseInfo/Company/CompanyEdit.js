@@ -1213,7 +1213,7 @@ export default class CompanyDetail extends PureComponent {
                 {getFieldDecorator('warningCallType', {
                   initialValue:
                     id && phoneTypes.find(item => item.value === detailCallType)
-                      ? phoneTypes.find(item => item.value === detailCallType).label
+                      ? phoneTypes.find(item => item.value === detailCallType).value
                       : undefined,
                   rules: [{ required: true, message: '请选择电话类型' }],
                 })(
