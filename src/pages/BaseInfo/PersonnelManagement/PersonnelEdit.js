@@ -670,9 +670,9 @@ export default class CompanyDetail extends PureComponent {
    */
   handleChangeCallType = (value) => {
     const {
-      form: { resetFields },
+      form: { setFieldsValue },
     } = this.props
-    resetFields(['warningCallNumber'])
+    setFieldsValue({ warningCallNumber: undefined })
   }
 
   /* 渲染地图 */
@@ -884,7 +884,7 @@ export default class CompanyDetail extends PureComponent {
                   rules: [
                     { required: true, message: '请输入电话号码' },
                     {
-                      pattern: +warningCallType === 1 ? /0?(13|14|15|18|17)[0-9]{9}/ : /^(0\d{2,3})?([2-9]\d{6,7})+(\d{1,4})?$/,
+                      pattern: +warningCallType === 1 ? /^0?(13|14|15|18|17)[0-9]{9}$/ : /^(0\d{2,3})?([2-9]\d{6,7})+(\d{1,4})?$/,
                       message: +warningCallType === 1 ? '请输入正确格式，为11位数字' : '请输入正确格式',
                     },
                   ],
