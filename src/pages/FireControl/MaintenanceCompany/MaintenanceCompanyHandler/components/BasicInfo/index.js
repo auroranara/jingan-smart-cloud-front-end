@@ -158,6 +158,26 @@ export default class App extends PureComponent {
     this.coordinate.blur()
   }
 
+  validateCoordinate = (rule, value, callback) => {
+    if (value) {
+      if (!/^\d+\.?\d*\,\d+\.?\d*$/.test(value)) {
+        callback('格式错误，经度和纬度请使用" , "隔开，并且都为数字')
+        return
+      }
+      // 拆分出经纬度
+      const [longitude, latitude] = value.split(',')
+      if (+longitude < -180 || +longitude > 180) {
+        callback('经度范围为-180~180')
+        return
+      }
+      if (+latitude < -90 || +latitude > 90) {
+        callback('纬度范围为-90~90')
+        return
+      }
+      callback()
+    } else callback('请选择经纬度')
+  }
+
   render() {
     const {
       model: {
@@ -296,7 +316,7 @@ export default class App extends PureComponent {
                 {getFieldDecorator('coordinate', {
                   initialValue: longitude && latitude ? `${longitude},${latitude}` : undefined,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请选择经纬度' }],
+                  rules: [{ required: true, message: '请选择经纬度' }, { validator: this.validateCoordinate }],
                 })(
                   <Input
                     placeholder="请选择经纬度"
