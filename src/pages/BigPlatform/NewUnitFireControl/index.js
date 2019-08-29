@@ -2014,10 +2014,6 @@ export default class NewUnitFireControl extends PureComponent {
     const reportTypes = [1, 4, 3, 2];
     if (occurData) {
       dispatch({
-        type: 'newUnitFireControl/saveWorkOrderDetail',
-        payload: occurData,
-      });
-      dispatch({
         type: 'newUnitFireControl/fetchCountNumAndTimeById',
         payload: {
           id: param.dataId || param.id,
@@ -2027,6 +2023,10 @@ export default class NewUnitFireControl extends PureComponent {
         callback: res => {
           if (res) {
             this.getPhoneCount(res.relation_id);
+            dispatch({
+              type: 'newUnitFireControl/saveWorkOrderDetail',
+              payload: [{ ...occurData[0], ...res }],
+            });
           }
         },
       });
@@ -2169,7 +2169,7 @@ export default class NewUnitFireControl extends PureComponent {
             this.getPhoneCount(relation_id);
             dispatch({
               type: 'newUnitFireControl/saveWorkOrderDetail',
-              payload: [{ ...occurData[0], firstTime, num, lastTime }],
+              payload: [{ ...occurData[0], ...res }],
             });
           } else {
             // 处理中，已完成请求接口流程信息
