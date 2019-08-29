@@ -167,39 +167,6 @@ function addUrl(fileList) {
   return fileList;
 }
 
-function handleFormValues(fieldsValue) {
-  const formValues = { ...fieldsValue };
-
-  // RangePicker中对应的validity [moment1, moment2] => [timestamp1,timestamp2]
-  const timestampArray = fieldsValue.validity.map(m => +m);
-
-  delete formValues.validity;
-  [formValues.startTime, formValues.endTime] = timestampArray;
-
-  // const ids = formValues.gridId;
-  // formValues.gridId = ids[ids.length - 1];
-
-  // 处理提交按钮，提交dbUrl即可
-  UPLOADERS.forEach(key => {
-    if (!formValues[key]) return;
-
-    const { fileList } = formValues[key];
-    const file = fileList[0];
-    // 筛选成功上传的文件上传
-    if (fileList.length && file.status === 'done' && file.response.code === 200)
-      formValues[key] = file.dbUrl;
-    else formValues[key] = '';
-  });
-
-  const { fileList } = formValues.safetyFourPicture;
-  const newFileList = fileList
-    .filter(({ status, response: { code } }) => status === 'done' && code === 200)
-    .map(({ name, url, dbUrl }) => ({ fileName: name, dbUrl }));
-  formValues.safetyFourPicture = JSON.stringify(newFileList);
-
-  return formValues;
-}
-
 function handleGridTree(gridList = [], idMap) {
   let gl = gridList;
   if (typeof gridList === 'string') gl = JSON.parse(gl);
@@ -332,6 +299,39 @@ export default class Safety extends PureComponent {
     }, {});
   };
 
+  handleFormValues = fieldsValue => {
+    const formValues = { ...fieldsValue };
+    const { safeList } = this.state;
+
+    // RangePicker中对应的validity [moment1, moment2] => [timestamp1,timestamp2]
+    const timestampArray = fieldsValue.validity.map(m => +m);
+
+    delete formValues.validity;
+    [formValues.startTime, formValues.endTime] = timestampArray;
+
+    // const ids = formValues.gridId;
+    // formValues.gridId = ids[ids.length - 1];
+
+    // 处理提交按钮，提交dbUrl即可
+    UPLOADERS.forEach(key => {
+      if (!formValues[key]) return;
+
+      const { fileList } = formValues[key];
+      const file = fileList[0];
+      // 筛选成功上传的文件上传
+      if (fileList.length && file.status === 'done' && file.response.code === 200)
+        formValues[key] = file.dbUrl;
+      else formValues[key] = '';
+    });
+    // const { fileList } = formValues.safetyFourPicture;
+    const newFileList = safeList
+      .filter(({ status, response: { code } }) => status === 'done' && code === 200)
+      .map(({ name, url, dbUrl }) => ({ fileName: name, dbUrl }));
+    formValues.safetyFourPicture = JSON.stringify(newFileList);
+
+    return formValues;
+  };
+
   handleSubmit = e => {
     const that = this;
     const {
@@ -363,8 +363,7 @@ export default class Safety extends PureComponent {
 
       if (err) return;
 
-      const formValues = handleFormValues(fieldsValue);
-
+      const formValues = this.handleFormValues(fieldsValue);
       this.setState({ submitting: true });
       dispatch({
         type: 'safety/update',
@@ -435,7 +434,7 @@ export default class Safety extends PureComponent {
               message.success('上传成功');
             } else {
               message.error('上传的图片分辨率请不要大于256*45');
-              files = [];
+              files.splice(-1, 1);
             }
             this.setState({ logoList: addUrl(files) });
           },
