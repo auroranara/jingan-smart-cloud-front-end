@@ -40,6 +40,8 @@ const fieldLabels = {
   isBranch: '是否为分公司',
   parentId: '总公司',
 };
+// 默认经纬度坐标
+const defaultPosition = { longitude: 120.30, latitude: 31.57 };
 
 /**
  * 维保单位新增及编辑
@@ -550,7 +552,7 @@ export default class App extends PureComponent {
       isBranch,
       isMaintenanceUser,
       defaultParentCompany,
-      map: { visible, center, point },
+      map: { visible, center = defaultPosition, point },
     } = this.state;
     const title = id ? '编辑维保单位' : '新增维保单位';
     const spinning = loading || submitting || uploading;
