@@ -838,7 +838,7 @@ export default class Operation extends PureComponent {
       createTime,
       rcompanyId = null,
     } = data;
-    const dataId = { 1: id, 4: id || gasId, 2: proceId }[reportType];
+    const dataId = { 1: id, 4: id || gasId, 2: proceId, 3: gasId }[reportType];
     const cId = (+reportType !== 2 ? companyId : rcompanyId) || undefined;
     dispatch({
       type: 'operation/fetchCameraMessage',
@@ -1273,7 +1273,6 @@ export default class Operation extends PureComponent {
           handleParentChange={this.handleMapParentChange}
           // handleAlarmClick={this.handleAlarmClick}
           // handleFaultClick={this.handleFaultClick}
-
           handleCompanyClick={this.handleCompanyClick}
           // fetchMapInfo={this.fetchMapInfo}
           handleDeviceTypeChange={this.handleDeviceTypeChange}
