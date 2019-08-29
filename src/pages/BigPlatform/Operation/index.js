@@ -865,6 +865,7 @@ export default class Operation extends PureComponent {
         const flow = fireType - 1;
         const occurData = [
           {
+            companyName,
             create_time: createTime,
             create_date: createDate,
             firstTime,
@@ -945,11 +946,12 @@ export default class Operation extends PureComponent {
         },
         callback: res => {
           if (res) {
-            const { num, lastTime, firstTime, sdeviceName=null, relation_id } = res;
+            const { num, lastTime, firstTime, sdeviceName=null, relation_id, realtime_data, limit_value } = res;
             this.getPhoneCount(relation_id);
             dispatch({
               type: 'operation/saveWorkOrderDetail',
-              payload: [{ ...occurData[0], firstTime, num, lastTime, sdeviceName }],
+              // payload: [{ ...occurData[0], firstTime, num, lastTime, sdeviceName }],
+              payload: [{ ...occurData[0], ...res }],
             });
           } else {
             dispatch({
