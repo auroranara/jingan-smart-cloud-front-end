@@ -114,6 +114,8 @@ const tabList = [
 ];
 // 默认选中一般企业
 const defaultCompanyNature = '一般企业';
+// 默认经纬度坐标
+const defaultPosition = { longitude: 116.40, latitude: 39.90 };
 
 @connect(
   ({ company, user, loading }) => ({
@@ -760,11 +762,10 @@ export default class CompanyDetail extends PureComponent {
    */
   handleShowMap = () => {
     const coord = this.getCoordinateFromInput();
-
     this.setState(({ map }) => ({
       map: {
         visible: true,
-        center: coord,
+        center: coord || defaultPosition,
         point: coord,
       },
     }));
@@ -811,7 +812,7 @@ export default class CompanyDetail extends PureComponent {
     this.setState(({ map }) => ({
       map: {
         ...map,
-        center: coord,
+        center: coord || defaultPosition,
         point: coord,
       },
     }));
