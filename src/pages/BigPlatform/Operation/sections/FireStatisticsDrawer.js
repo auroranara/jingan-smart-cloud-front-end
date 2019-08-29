@@ -233,7 +233,7 @@ export default class FireStatisticsDrawer extends PureComponent {
 
     const extra = <GraphSwitch handleSwitch={this.handleSwitch} />;
     const dateSelect = (
-      <OvSelect options={DATE_OPTIONS} value={dateType} handleChange={this.onDateTypeChange} />
+      <OvSelect options={DATE_OPTIONS} value={dateType} handleChange={this.onDateTypeChange} style={{ top: 2 }}/>
     );
     const selects = (
       <div className={styles.selects}>
@@ -369,7 +369,8 @@ export default class FireStatisticsDrawer extends PureComponent {
         left={left}
         right={right}
         placement="right"
-        rowStyle={{ height: 'calc(100% - 70px)' }}
+        // containerStyle={{ padding: '16px 0 16px 16px' }}
+        // rowStyle={{ overflow: 'auto', paddingRight: 16 }}
         onClose={this.handleClose}
       />
     );
