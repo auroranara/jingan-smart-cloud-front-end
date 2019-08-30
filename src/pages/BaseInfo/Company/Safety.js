@@ -492,7 +492,7 @@ export default class Safety extends PureComponent {
         message.error('请上传png格式的图片');
         const files = fileList.slice(0, fileList.length - 1);
         const filteredList = filterUpList(files);
-        this.setState({ safeList: addUrl(filteredList) });
+        this.setState({ safeList: addUrl(filteredList), uploading: false });
       } else {
         getImageSize(
           result.webUrl,
@@ -506,12 +506,11 @@ export default class Safety extends PureComponent {
               files = fileList.slice(0, fileList.length - 1);
             }
             const filteredList = filterUpList(files);
-            this.setState({ safeList: addUrl(filteredList) });
+            this.setState({ safeList: addUrl(filteredList), uploading: false });
           },
           [1740, 990]
         );
       }
-      this.setState({ uploading: false });
       // this.setState({ safeLoading: false });
       // const filteredList = filterUpList(fileList);
       // this.setState({ safeList: addUrl(filteredList) });

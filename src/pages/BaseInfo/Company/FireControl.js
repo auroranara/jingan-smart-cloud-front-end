@@ -198,6 +198,7 @@ export default class FireControl extends PureComponent {
                 }
                 return item;
               }),
+              uploading: false,
             });
           } else {
             getImageSize(
@@ -222,6 +223,7 @@ export default class FireControl extends PureComponent {
                     }
                     return item;
                   }),
+                  uploading: false,
                 });
               },
               [3840, 2160]
@@ -234,6 +236,7 @@ export default class FireControl extends PureComponent {
             firePictureList: fileList.filter(item => {
               return !item.response || item.response.data.list.length !== 0;
             }),
+            uploading: false,
           });
         }
       } else {
@@ -243,11 +246,9 @@ export default class FireControl extends PureComponent {
           firePictureList: fileList.filter(item => {
             return !item.response || item.response.code !== 200;
           }),
+          uploading: false,
         });
       }
-      this.setState({
-        uploading: false,
-      });
     } else if (file.status === 'removed') {
       // 删除
       this.setState({
@@ -285,7 +286,7 @@ export default class FireControl extends PureComponent {
         message.error('请上传png格式的图片');
         fileList.splice(-1, 1);
         fileList = getFileList(fileList);
-        this.setState({ unitPhotoList: fileList });
+        this.setState({ unitPhotoList: fileList, uploading: false });
       } else {
         getImageSize(
           webUrl,
@@ -298,12 +299,11 @@ export default class FireControl extends PureComponent {
               fileList.splice(-1, 1);
             }
             fileList = getFileList(fileList);
-            this.setState({ unitPhotoList: fileList });
+            this.setState({ unitPhotoList: fileList, uploading: false });
           },
           [240, 320]
         );
       }
-      this.setState({ uploading: false });
     } else {
       if (file.status === 'uploading') this.setState({ uploading: true });
       // 其他情况，直接用原文件数组

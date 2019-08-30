@@ -71,17 +71,18 @@ const WATER_TITLES = {
 };
 
 const formatTime = time => {
-  const diff = moment().diff(moment(time));
-  if (diff > 2 * 24 * 60 * 60 * 1000) {
-    return moment(time).format('YYYY-MM-DD HH:mm');
-  } else if (diff > 24 * 60 * 60 * 1000) {
-    return `昨日 ${moment(time).format('HH:mm')}`;
-  } else if (diff > 60 * 60 * 1000) {
-    return `今日 ${moment(time).format('HH:mm')}`;
-  } else if (diff > 60 * 1000) {
-    return `${moment.duration(diff).minutes() + 1}分钟前`;
+  const diffNow = moment().diff(moment(time));
+  const diffStartofDay = moment().startOf('day').diff(moment(time));
+  if (diffStartofDay >= 24 * 60 * 60 * 1000) {
+    return moment(time).format('YYYY-MM-DD HH:mm:ss');
+  } else if (diffStartofDay < 24 * 60 * 60 * 1000 && diffStartofDay > 0) {
+    return moment(time).format('昨日 HH:mm:ss');
+  } else if (diffNow >= 60 * 60 * 1000) {
+    return moment(time).format('今日 HH:mm:ss');
+  } else if (diffNow >= 60 * 1000) {
+    return `${moment.duration(diffNow).minutes()}分钟前`;
   } else {
-    return `刚刚`;
+    return '刚刚';
   }
 };
 
