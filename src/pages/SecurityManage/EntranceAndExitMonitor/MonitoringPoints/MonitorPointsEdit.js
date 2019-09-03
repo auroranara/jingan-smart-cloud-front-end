@@ -148,6 +148,9 @@ export default class MonitorPointsEdit extends PureComponent {
     });
   };
 
+  // 去除左右两边空白
+  handleTrim = e => e.target.value.trim();
+
   handleCameraModal = () => {
     this.setState({ visible: true });
   };
@@ -175,12 +178,6 @@ export default class MonitorPointsEdit extends PureComponent {
     });
     this.setState({ videoCameraId: value.map(item => item.id).join(',') });
     this.handleClose();
-  };
-
-  handleSelectedKeys = keys => {
-    console.log('keys', keys);
-    this.setState({ cameraInfo: keys });
-    console.log('1233', this.state.cameraInfo);
   };
 
   handleClose = () => {
@@ -215,10 +212,16 @@ export default class MonitorPointsEdit extends PureComponent {
         key: 'hasBuliding',
         align: 'center',
         render: (val, text) => {
-          const { buildingInfo = {}, floorInfo = {}, videoCameraArea, location } = text;
+          const {
+            locationType,
+            buildingInfo = {},
+            floorInfo = {},
+            videoCameraArea,
+            location,
+          } = text;
           return (
             <span>
-              {buildingInfo !== null
+              {buildingInfo !== null && +locationType === 1
                 ? buildingInfo.buildingName + floorInfo.floorName
                 : videoCameraArea + location}
             </span>
@@ -246,7 +249,6 @@ export default class MonitorPointsEdit extends PureComponent {
         fetch={this.fetchCameraList}
         onSelect={this.handleSelect}
         onClose={this.handleClose}
-        handleSelectedKeys={this.handleSelectedKeys}
         rowSelection={{ type: 'checkbox ' }}
         field={setField}
         multiSelect={true}
@@ -289,6 +291,7 @@ export default class MonitorPointsEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.pointName}>
             {getFieldDecorator('monitorDotName', {
               initialValue: monitorDotName,
+              getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
@@ -301,6 +304,7 @@ export default class MonitorPointsEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.pointArea}>
             {getFieldDecorator('monitorDotPlace', {
               initialValue: monitorDotPlace,
+              getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,

@@ -303,8 +303,8 @@ export default class FaceDatabase extends PureComponent {
       province: registerProvince,
       city: registerCity,
     } = item;
-    console.log(registerProvince, registerCity);
     setFieldsValue({
+      faceUrl: faceDetails,
       faceName: faceName,
       faceType: faceType,
       faceTel: faceTel,
@@ -907,7 +907,7 @@ export default class FaceDatabase extends PureComponent {
           <Form className={styles.modalForm}>
             <FormItem {...formItemLayout} label={fieldLabels.picArea}>
               {getFieldDecorator('faceUrl', {
-                rules: [{ required: true, message: '请输入姓名' }],
+                rules: [{ required: true, message: '请上传jpg格式照片' }],
               })(
                 <Upload
                   name="files"
