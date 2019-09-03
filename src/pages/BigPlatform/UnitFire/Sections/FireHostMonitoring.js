@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Tooltip } from 'antd';
 import Section from '../components/Section/Section.js';
-import SignalAnime from '../../Monitor/Components/SignalAnime';
+import SignalAnime from '../../Monitor/components/SignalAnime';
 import logoFireHost from '../images/fire-host.png';
 import dashedArrow from '../images/dashed-arrow.png';
 import styles from './FireHostMonitoring.less';

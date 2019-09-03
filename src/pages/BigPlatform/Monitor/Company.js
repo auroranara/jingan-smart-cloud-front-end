@@ -22,7 +22,7 @@ import RealTimeAlarm from './sections/RealTimeAlarm.js';
 import TopCenter from './sections/TopCenter.js';
 import AlarmHistory from './sections/AlarmHistory.js';
 
-import ElectricityCharts from './Sections/ElectricityCharts';
+import ElectricityCharts from './sections/ElectricityCharts';
 
 import videoBtn from './imgs/videoBtn.png';
 
@@ -185,7 +185,10 @@ export default class App extends PureComponent {
     } = this.props;
     const { waterSelectVal, exhaustSelectVal } = this.state;
 
-    dispatch({ type: 'monitor/fetchRealTimeAlarm', payload: { companyId, overFlag: 0, screenType: 1 } });
+    dispatch({
+      type: 'monitor/fetchRealTimeAlarm',
+      payload: { companyId, overFlag: 0, screenType: 1 },
+    });
     dispatch({ type: 'monitor/fetchCountAndExponent', payload: { companyId } });
     dispatch({ type: 'monitor/fetchGasCount', payload: { companyId, type: 2 } });
     dispatch({ type: 'monitor/fetchGasList', payload: { companyId, type: 2 } });
