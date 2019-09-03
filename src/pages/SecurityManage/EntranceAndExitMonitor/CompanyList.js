@@ -83,14 +83,19 @@ export default class CompanyList extends PureComponent {
 
   // 挂载后
   componentDidMount() {
-    const { dispatch } = this.props;
-
+    const {
+      dispatch,
+      user: {
+        currentUser: { unitType, companyId },
+      },
+    } = this.props;
     // 获取监测单位列表
     dispatch({
       type: 'securityManage/fetchMonitorCompanyList',
       payload: {
         pageSize,
         pageNum: 1,
+        companyId: +unitType === 4 ? companyId : undefined,
       },
     });
 
@@ -105,6 +110,9 @@ export default class CompanyList extends PureComponent {
     const {
       form: { getFieldsValue },
       dispatch,
+      user: {
+        currentUser: { unitType, companyId },
+      },
     } = this.props;
     const { company_id } = getFieldsValue();
     const payload = {
@@ -114,6 +122,7 @@ export default class CompanyList extends PureComponent {
     dispatch({
       type: 'securityManage/fetchMonitorCompanyList',
       payload: {
+        companyId: +unitType === 4 ? companyId : undefined,
         pageSize,
         pageNum: 1,
         ...payload,
@@ -126,6 +135,9 @@ export default class CompanyList extends PureComponent {
     const {
       dispatch,
       form: { resetFields },
+      user: {
+        currentUser: { unitType, companyId },
+      },
     } = this.props;
     // 清除筛选条件
     resetFields();
@@ -135,6 +147,7 @@ export default class CompanyList extends PureComponent {
     dispatch({
       type: 'securityManage/fetchMonitorCompanyList',
       payload: {
+        companyId: +unitType === 4 ? companyId : undefined,
         pageSize,
         pageNum: 1,
       },
@@ -146,6 +159,9 @@ export default class CompanyList extends PureComponent {
     const {
       dispatch,
       securityManage: { isLast },
+      user: {
+        currentUser: { unitType, companyId },
+      },
     } = this.props;
     if (isLast) {
       return;
@@ -157,6 +173,7 @@ export default class CompanyList extends PureComponent {
     dispatch({
       type: 'securityManage/appendCompanyList',
       payload: {
+        companyId: +unitType === 4 ? companyId : undefined,
         pageSize,
         pageNum: pageNum + 1,
         ...this.formData,
@@ -335,7 +352,7 @@ export default class CompanyList extends PureComponent {
                     <AuthLink
                       code={codesMap.securityManage.entranceAndExitMonitor.faceDatabaseView}
                       codes={codes}
-                      to={`/security-manage/entrance-and-exit-monitor/face-database/${id}?faceDataBaseId=${faceDataBaseId}&&name=${companyName}`}
+                      to={`/security-manage/entrance-and-exit-monitor/face-database/${id}?faceDataBaseId=${faceDataBaseId}&&name=${companyName}&&companyId=${companyId}`}
                       target="_blank"
                     >
                       <Tooltip
@@ -389,25 +406,25 @@ export default class CompanyList extends PureComponent {
                       </Tooltip>
                     </AuthLink>,
                   ]}
-                  extra={
-                    <AuthButton
-                      code={codesMap.securityManage.entranceAndExitMonitor.view}
-                      codes={codes}
-                      onClick={() => {
-                        this.handleShowDeleteConfirm();
-                      }}
-                      shape="circle"
-                      style={{
-                        border: 'none',
-                        fontSize: '16px',
-                        position: 'absolute',
-                        right: '8px',
-                        top: '12px',
-                      }}
-                    >
-                      <Icon type="close" />
-                    </AuthButton>
-                  }
+                  // extra={
+                  //   <AuthButton
+                  //     code={codesMap.securityManage.entranceAndExitMonitor.view}
+                  //     codes={codes}
+                  //     onClick={() => {
+                  //       this.handleShowDeleteConfirm();
+                  //     }}
+                  //     shape="circle"
+                  //     style={{
+                  //       border: 'none',
+                  //       fontSize: '16px',
+                  //       position: 'absolute',
+                  //       right: '8px',
+                  //       top: '12px',
+                  //     }}
+                  //   >
+                  //     <Icon type="close" />
+                  //   </AuthButton>
+                  // }
                 >
                   <Row>
                     <Col span={23}>

@@ -842,16 +842,10 @@ export default class CameraEdit extends PureComponent {
 
     return (
       <Card className={styles.card} bordered={false}>
-        <Form hideRequiredMark style={{ marginTop: 8 }}>
+        <Form style={{ marginTop: 8 }}>
           <FormItem {...formItemLayout} label={fieldLabels.companyName}>
             {getFieldDecorator('companyId', {
               initialValue: companyName,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择单位',
-                },
-              ],
             })(<Input {...itemStyles} disabled placeholder="请选择单位" />)}
           </FormItem>
 

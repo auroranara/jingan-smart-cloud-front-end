@@ -101,8 +101,8 @@ export default class AlarmRecord extends PureComponent {
     } = this.props;
     const { startDate, endDate } = getFieldsValue();
     const payload = {
-      startDate: startDate ? moment(startDate).format('YYYY-MM-DD') : undefined,
-      endDate: endDate ? moment(endDate).format('YYYY-MM-DD') : undefined,
+      startDate: startDate ? moment(startDate).format('YYYY-MM-DD HH:mm:ss') : undefined,
+      endDate: endDate ? moment(endDate).format('YYYY-MM-DD HH:mm:ss') : undefined,
     };
 
     // 重新请求数据
@@ -197,9 +197,9 @@ export default class AlarmRecord extends PureComponent {
           <FormItem label="开始时间">
             {getFieldDecorator('startDate')(
               <DatePicker
-                // showTime
-                showToday={false}
-                format="YYYY-MM-DD"
+                showTime
+                // showToday={false}
+                format="YYYY-MM-DD HH:mm:ss"
                 placeholder="请选择开始时间"
                 style={{ width: 260 }}
               />
@@ -208,9 +208,9 @@ export default class AlarmRecord extends PureComponent {
           <FormItem label="结束时间">
             {getFieldDecorator('endDate')(
               <DatePicker
-                // showTime
-                showToday={false}
-                format="YYYY-MM-DD"
+                showTime
+                // showToday={false}
+                format="YYYY-MM-DD HH:mm:ss"
                 placeholder="请选择结束时间"
                 style={{ width: 260 }}
               />

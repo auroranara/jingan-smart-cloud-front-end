@@ -481,30 +481,33 @@ export default class FaceDatabase extends PureComponent {
       dispatch,
       form: { validateFieldsAndScroll },
       location: {
-        query: { faceDataBaseId },
+        query: { faceDataBaseId, companyId },
       },
     } = this.props;
     const { exportList } = this.state;
-
-    const success = () => {
-      message.success('导入成功');
-      this.setState({ modalExportVisible: false, exportList: [], submittingModal: false });
-      // 获取人脸列表
-      dispatch({
-        type: 'securityManage/fetchFaceList',
-        payload: {
-          pageSize,
-          pageNum: 1,
-        },
-      });
-    };
-    const error = () => {
-      message.error('导入失败');
-      this.setState({ modalExportVisible: true, submittingModal: false });
-    };
-
+    if (exportList.length === 0) {
+      return message.error('请先上传jpg格式图片');
+    }
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
+        const success = () => {
+          message.success('导入成功');
+          this.setState({ modalExportVisible: false, exportList: [], submittingModal: false });
+          // 获取人脸列表
+          dispatch({
+            type: 'securityManage/fetchFaceList',
+            payload: {
+              // companyId,
+              pageSize,
+              pageNum: 1,
+            },
+          });
+        };
+        const error = () => {
+          message.error('导入失败');
+          this.setState({ modalExportVisible: true, submittingModal: false });
+        };
+
         this.setState({ submittingModal: true });
         const payload = {
           faceUrl: JSON.stringify(
@@ -528,7 +531,7 @@ export default class FaceDatabase extends PureComponent {
       form: { resetFields },
     } = this.props;
     const error = () => {
-      message.error('上传失败');
+      // message.error('上传失败');
       resetFields(['faceUrl']);
     };
     if (file.status === 'uploading') {
@@ -563,7 +566,7 @@ export default class FaceDatabase extends PureComponent {
       message.error('尚未上传结束');
     }
     if (!isImage) {
-      message.error('请上传图片');
+      message.error('请上传jpg格式图片');
     }
     return isImage && !faceLoading;
   };
@@ -764,7 +767,7 @@ export default class FaceDatabase extends PureComponent {
                   actions={[
                     <span onClick={() => this.handleClickEdit('edit', item)}>编辑</span>,
                     <Popconfirm
-                      title="确认要删除该人脸信息吗？"
+                      title="删除数据将无法恢复，是否继续？"
                       onConfirm={() => this.handleCardDelete(id)}
                     >
                       <span>删除</span>
