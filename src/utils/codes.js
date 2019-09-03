@@ -328,4 +328,16 @@ export default {
       detailView: 'riskControl.gridPointManage.detailView',
     },
   },
+
+  /** 安防管理 */
+  securityManage: {
+    entranceAndExitMonitor: {
+      listView: 'securityManage.entranceAndExitMonitor.listView',
+      addCompany: 'securityManage.entranceAndExitMonitor.addCompany',
+      faceDatabaseView: 'securityManage.entranceAndExitMonitor.faceDatabaseView',
+      cameraView: 'securityManage.entranceAndExitMonitor.cameraView',
+      monitorPointView: 'securityManage.entranceAndExitMonitor.monitorPointView',
+      alarmRecordView: 'securityManage.entranceAndExitMonitor.alarmRecordView',
+    },
+  },
 };
