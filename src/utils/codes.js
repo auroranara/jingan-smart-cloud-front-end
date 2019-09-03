@@ -102,6 +102,12 @@ export default {
         alarmStrategy: 'deviceManagement.sensorModel.model.alarmStrategy',
       },
     },
+    monitoringType: {
+      listView: 'deviceManagement.monitoringType.listView',
+      add: 'deviceManagement.monitoringType.add',
+      edit: 'deviceManagement.monitoringType.edit',
+      delete: 'deviceManagement.monitoringType.delete',
+    },
   },
   videoSurveillance: {
     hikVideoTree: {

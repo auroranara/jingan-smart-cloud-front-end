@@ -132,6 +132,8 @@ export default {
   'menu.deviceManagement.sensorModel': '传感器型号管理',
   'menu.deviceManagement.sensorModel.listView': '传感器型号管理',
   'menu.deviceManagement.sensorModel.modelParameter': '型号参数管理',
+  'menu.deviceManagement.monitoringType': '监测类型',
+  'menu.deviceManagement.monitoringType.listView': '监测类型',
   'menu.fireControl': '消防维保',
   'menu.fireControl.maintenanceCompany': '维保单位',
   'menu.fireControl.maintenanceCompany.maintenanceCompany': '维保单位',

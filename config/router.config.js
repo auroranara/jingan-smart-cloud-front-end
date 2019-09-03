@@ -1446,6 +1446,26 @@ module.exports = env => {
                 },
               ],
             },
+            // 监测类型
+            {
+              path: '/device-management/monitoring-type',
+              code: 'deviceManagement.monitoringType.listView',
+              name: 'monitoringType',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/monitoring-type',
+                  name: 'monitoringType',
+                  redirect: '/device-management/monitoring-type/list',
+                },
+                {
+                  path: '/device-management/monitoring-type/list',
+                  name: 'listView',
+                  code: 'deviceManagement.monitoringType.listView',
+                  component: './DeviceManagement/MonitoringType',
+                },
+              ],
+            },
           ],
         },
 
