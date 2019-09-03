@@ -21,7 +21,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
-import styles from './CompanyList.less';
+import styles from './companyList.less';
 import codesMap from '@/utils/codes';
 import { hasAuthority, AuthButton } from '@/utils/customAuth';
 import BlackList from './images/blackList.png';

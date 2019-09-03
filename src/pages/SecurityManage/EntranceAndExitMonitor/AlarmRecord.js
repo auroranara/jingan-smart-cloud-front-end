@@ -18,7 +18,7 @@ import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroller';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 
-import styles from './CompanyList.less';
+import styles from './companyList.less';
 
 const FormItem = Form.Item;
 
