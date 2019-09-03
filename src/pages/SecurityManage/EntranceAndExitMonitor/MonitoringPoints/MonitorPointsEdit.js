@@ -319,7 +319,7 @@ export default class MonitorPointsEdit extends PureComponent {
                   message: '请选择摄像机编号',
                 },
               ],
-            })(<Input placeholder="请选择摄像机编号" {...itemStyles} />)}
+            })(<Input placeholder="请选择摄像机编号" {...itemStyles} disabled />)}
             <Button type="primary" onClick={this.handleCameraModal}>
               选择
             </Button>

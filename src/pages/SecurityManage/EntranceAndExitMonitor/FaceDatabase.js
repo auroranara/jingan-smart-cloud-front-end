@@ -498,6 +498,7 @@ export default class FaceDatabase extends PureComponent {
             type: 'securityManage/fetchFaceList',
             payload: {
               // companyId,
+              faceDatabase: faceDataBaseId,
               pageSize,
               pageNum: 1,
             },
@@ -743,6 +744,7 @@ export default class FaceDatabase extends PureComponent {
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
         <List
+          styles={{ height: '258px' }}
           rowKey="id"
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
@@ -760,6 +762,8 @@ export default class FaceDatabase extends PureComponent {
               cityDetail,
               provinceDetail,
             } = item;
+            const city = cityDetail ? cityDetail : '';
+            const province = provinceDetail ? provinceDetail : '';
             return (
               <List.Item key={''}>
                 <Card
@@ -781,11 +785,10 @@ export default class FaceDatabase extends PureComponent {
                         style={{
                           background:
                             faceDetails.length > 0
-                              ? `url(${faceDetails.map(item => item.webUrl).join('')})`
-                              : `url(${pic})`,
-                          backgroundSize: '100% 100%',
-                          backgroundRepeat: 'no-repeat',
-                          backgroundPosition: 'center center',
+                              ? `url(${faceDetails
+                                  .map(item => item.webUrl)
+                                  .join('')}) center center / 100% 100% no-repeat`
+                              : `url(${pic}) center center / 100% 100% no-repeat`,
                         }}
                       />
                     </Col>
@@ -813,7 +816,7 @@ export default class FaceDatabase extends PureComponent {
                       </div>
                       <div className={styles.line}>
                         籍贯：
-                        {provinceDetail + cityDetail || getEmptyData()}
+                        {province + city || getEmptyData()}
                       </div>
                       <div className={styles.line}>
                         {(+identityCardType === 1 && '军官证') ||
@@ -903,7 +906,9 @@ export default class FaceDatabase extends PureComponent {
         >
           <Form className={styles.modalForm}>
             <FormItem {...formItemLayout} label={fieldLabels.picArea}>
-              {getFieldDecorator('faceUrl', {})(
+              {getFieldDecorator('faceUrl', {
+                rules: [{ required: true, message: '请输入姓名' }],
+              })(
                 <Upload
                   name="files"
                   listType="picture-card"
@@ -926,11 +931,12 @@ export default class FaceDatabase extends PureComponent {
                   )}
                 </Upload>
               )}
+              <span style={{ color: 'red' }}>（只能上传 jpg格式图片）</span>
             </FormItem>
 
             <FormItem {...formItemLayout} label={fieldLabels.name}>
               {getFieldDecorator('faceName', {
-                // rules: [{ required: true, message: '请输入姓名' }],
+                rules: [{ required: true, message: '请输入姓名' }],
               })(<Input placeholder="请输入姓名" />)}
             </FormItem>
 

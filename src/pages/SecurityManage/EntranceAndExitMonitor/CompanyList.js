@@ -5,7 +5,6 @@ import {
   List,
   Card,
   Button,
-  Icon,
   Modal,
   BackTop,
   Spin,
@@ -16,18 +15,30 @@ import {
   Tooltip,
   message,
 } from 'antd';
+import { Link } from 'dva/router';
 import debounce from 'lodash/debounce';
 import InfiniteScroll from 'react-infinite-scroller';
 import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-
+import codes from '@/utils/codes';
 import styles from './CompanyList.less';
 import codesMap from '@/utils/codes';
-import { AuthButton, AuthLink } from '@/utils/customAuth';
+import { hasAuthority, AuthButton } from '@/utils/customAuth';
 import BlackList from './images/blackList.png';
 import MonitorIcon from './images/monitorIcon.png';
 import CameraIcon from './images/cameraIcon.png';
 import AlarmIcon from './images/alarmIcon.png';
+import AlarmIconDis from './images/alarmIconDis.png';
+import MonitorDis from './images/monitorDis.png';
+import CameraDis from './images/cameraDis.png';
+import BlackListDis from './images/blackListDis.png';
+
+// 权限代码
+const {
+  securityManage: {
+    entranceAndExitMonitor: { faceDatabaseView, cameraView, monitorPointView, alarmRecordView },
+  },
+} = codes;
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -310,9 +321,15 @@ export default class CompanyList extends PureComponent {
         data: { list = [] },
       },
       user: {
-        currentUser: { permissionCodes: codes },
+        currentUser: { permissionCodes },
       },
     } = this.props;
+
+    // 添加权限
+    const faceAuth = hasAuthority(faceDatabaseView, permissionCodes);
+    const cameraAuth = hasAuthority(cameraView, permissionCodes);
+    const monitorAuth = hasAuthority(monitorPointView, permissionCodes);
+    const alarmAuth = hasAuthority(alarmRecordView, permissionCodes);
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
@@ -349,62 +366,78 @@ export default class CompanyList extends PureComponent {
                   title={companyName}
                   className={styles.card}
                   actions={[
-                    <AuthLink
-                      code={codesMap.securityManage.entranceAndExitMonitor.faceDatabaseView}
-                      codes={codes}
-                      to={`/security-manage/entrance-and-exit-monitor/face-database/${id}?faceDataBaseId=${faceDataBaseId}&&name=${companyName}&&companyId=${companyId}`}
-                      target="_blank"
-                    >
-                      <Tooltip
-                        placement="bottomLeft"
-                        title="黑名单"
-                        overlayClassName={styles.tooltipStyle}
+                    faceAuth ? (
+                      <Link
+                        to={`/security-manage/entrance-and-exit-monitor/face-database/${id}?faceDataBaseId=${faceDataBaseId}&&name=${companyName}&&companyId=${companyId}`}
+                        target="_blank"
                       >
-                        <img src={BlackList} alt="" width="27" height="27" />
-                      </Tooltip>
-                    </AuthLink>,
-                    <AuthLink
-                      code={codesMap.securityManage.entranceAndExitMonitor.cameraView}
-                      codes={codes}
-                      to={`/security-manage/entrance-and-exit-monitor/face-recognition-camera/${id}?faceDataBaseId=${faceDataBaseId}&&companyId=${companyId}&&companyName=${companyName}`}
-                      target="_blank"
-                    >
-                      <Tooltip
-                        placement="bottomLeft"
-                        title="人脸识别摄像机"
-                        overlayClassName={styles.tooltipStyle}
+                        <Tooltip
+                          placement="bottomLeft"
+                          title="黑名单"
+                          overlayClassName={styles.tooltipStyle}
+                        >
+                          <img src={BlackList} alt="" width="27" height="27" />
+                        </Tooltip>
+                      </Link>
+                    ) : (
+                      <span style={{ cursor: 'auto' }}>
+                        <img src={BlackListDis} alt="" width="27" height="27" />
+                      </span>
+                    ),
+                    cameraAuth ? (
+                      <Link
+                        to={`/security-manage/entrance-and-exit-monitor/face-recognition-camera/${id}?faceDataBaseId=${faceDataBaseId}&&companyId=${companyId}&&companyName=${companyName}`}
+                        target="_blank"
                       >
-                        <img src={CameraIcon} alt="" width="27" height="27" />
-                      </Tooltip>
-                    </AuthLink>,
-                    <AuthLink
-                      code={codesMap.securityManage.entranceAndExitMonitor.monitorPointView}
-                      codes={codes}
-                      to={`/security-manage/entrance-and-exit-monitor/monitoring-points-list/${id}?companyName=${companyName}&&faceDataBaseId=${faceDataBaseId}`}
-                      target="_blank"
-                    >
-                      <Tooltip
-                        placement="bottomLeft"
-                        title="监测点"
-                        overlayClassName={styles.tooltipStyle}
+                        <Tooltip
+                          placement="bottomLeft"
+                          title="人脸识别摄像机"
+                          overlayClassName={styles.tooltipStyle}
+                        >
+                          <img src={CameraIcon} alt="" width="27" height="27" />
+                        </Tooltip>
+                      </Link>
+                    ) : (
+                      <span style={{ cursor: 'auto' }}>
+                        <img src={CameraDis} alt="" width="27" height="27" />
+                      </span>
+                    ),
+                    monitorAuth ? (
+                      <Link
+                        to={`/security-manage/entrance-and-exit-monitor/monitoring-points-list/${id}?companyName=${companyName}&&faceDataBaseId=${faceDataBaseId}`}
+                        target="_blank"
                       >
-                        <img src={MonitorIcon} alt="" width="27" height="27" />
-                      </Tooltip>
-                    </AuthLink>,
-                    <AuthLink
-                      code={codesMap.securityManage.entranceAndExitMonitor.alarmRecordView}
-                      codes={codes}
-                      to={`/security-manage/entrance-and-exit-monitor/alarm-record/${companyId}`}
-                      target="_blank"
-                    >
-                      <Tooltip
-                        placement="bottomLeft"
-                        title="报警历史记录"
-                        overlayClassName={styles.tooltipStyle}
+                        <Tooltip
+                          placement="bottomLeft"
+                          title="监测点"
+                          overlayClassName={styles.tooltipStyle}
+                        >
+                          <img src={MonitorIcon} alt="" width="27" height="27" />
+                        </Tooltip>
+                      </Link>
+                    ) : (
+                      <span style={{ cursor: 'auto' }}>
+                        <img src={MonitorDis} alt="" width="27" height="27" />
+                      </span>
+                    ),
+                    alarmAuth ? (
+                      <Link
+                        to={`/security-manage/entrance-and-exit-monitor/alarm-record/${companyId}`}
+                        target="_blank"
                       >
-                        <img src={AlarmIcon} alt="" width="27" height="27" />
-                      </Tooltip>
-                    </AuthLink>,
+                        <Tooltip
+                          placement="bottomLeft"
+                          title="报警历史记录"
+                          overlayClassName={styles.tooltipStyle}
+                        >
+                          <img src={AlarmIcon} alt="" width="27" height="27" />
+                        </Tooltip>
+                      </Link>
+                    ) : (
+                      <span style={{ cursor: 'auto' }}>
+                        <img src={AlarmIconDis} alt="" width="27" height="27" />
+                      </span>
+                    ),
                   ]}
                   // extra={
                   //   <AuthButton

@@ -263,10 +263,7 @@ export default class AlarmRecord extends PureComponent {
                       <div
                         className={styles.imgConatiner}
                         style={{
-                          background: `url(${url})`,
-                          backgroundSize: '100% 100%',
-                          backgroundRepeat: 'no-repeat',
-                          backgroundPosition: 'center center',
+                          background: `url(${url}) center center / 100% 100% no-repeat`,
                         }}
                       />
                     </Col>

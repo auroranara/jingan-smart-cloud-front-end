@@ -948,6 +948,7 @@ export default class CameraEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.hasArea}>
             {getFieldDecorator('videoCameraArea', {
               initialValue: videoCameraArea,
+              getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
@@ -960,6 +961,7 @@ export default class CameraEdit extends PureComponent {
           <FormItem {...formItemLayout} label={fieldLabels.areaDetail}>
             {getFieldDecorator('location', {
               initialValue: location,
+              getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
