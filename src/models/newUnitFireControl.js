@@ -67,6 +67,16 @@ import {
   getAllScreenMessage,
   getAllDetail,
   getDangerChartId,
+  // // 获取人脸识别统计数据
+  // getFaceRecognitionCount,
+  // 获取人脸识别监测点列表
+  getMonitoringPointList,
+  // 获取人脸识别摄像机列表
+  getCameraList,
+  // 获取人脸识别今日抓拍报警列表
+  getCaptureList,
+  // 获取抓拍报警详情
+  getCaptureDetail,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -398,6 +408,17 @@ export default {
       fireId: [],
       faultId: [],
     },
+    /* 人脸识别相关开始 */
+    faceRecognitionCount: {
+      monitoringPoint: 0,
+      camera: 0,
+      capture: 0,
+    },
+    monitoringPointList: {},
+    cameraList: {},
+    captureList: {},
+    captureDetail: {},
+    /* 人脸识别相关结束 */
   },
 
   subscriptions: {
@@ -1153,6 +1174,93 @@ export default {
       }
       if (callback) callback(response.data);
     },
+    // 获取人脸识别统计数据
+    *fetchFaceRecognitionCount({ payload, callback }, { call, put, all }) {
+      // const response = yield call(getFaceRecognitionCount, payload);
+      const responseList = yield all([
+        call(getMonitoringPointList, payload),
+        call(getCameraList, payload),
+        call(getCaptureList, payload),
+      ]);
+      if (responseList.every(response => response && response.code === 200)) {
+        const [monitoringPoint, camera, capture] = responseList.map(({ data }) => data && data.total || 0);
+        const faceRecognitionCount = {
+          monitoringPoint,
+          camera,
+          capture,
+        };
+        yield put({
+          type: 'save',
+          payload: { faceRecognitionCount },
+        });
+        callback && callback(faceRecognitionCount);
+      }
+    },
+    // 获取人脸识别监测点列表
+    *fetchMonitoringPointList({ payload, callback }, { call, put }) {
+      const response = yield call(getMonitoringPointList, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const monitoringPointList = data || {};
+        yield put({
+          type: 'saveMonitoringPointList',
+          payload: monitoringPointList,
+        });
+        callback && callback(monitoringPointList);
+      }
+    },
+    // 获取人脸识别摄像机列表
+    *fetchCameraList({ payload, callback }, { call, put }) {
+      const response = yield call(getCameraList, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const cameraList = data || {};
+        yield put({
+          type: 'saveCameraList',
+          payload: cameraList,
+        });
+        callback && callback(cameraList);
+      }
+    },
+    // 获取人脸识别今日抓拍报警列表
+    *fetchCaptureList({ payload, callback }, { call, put }) {
+      const response = yield call(getCaptureList, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const captureList = data || {};
+        yield put({
+          type: 'saveCaptureList',
+          payload: {
+            ...captureList,
+            list: captureList.list ? captureList.list.reduce((result, item) => {
+              return (item.monitorDots || []).reduce((result2, item2) => {
+                result2.push({
+                  ...item,
+                  monitorDots: [item2],
+                });
+                return result2;
+              }, result);
+            }, []) : [],
+          },
+        });
+        callback && callback(captureList);
+      }
+    },
+    // 获取人脸识别今日抓拍报警详情
+    *fetchCaptureDetail({ payload, callback }, { call, put }) {
+      const response = yield call(getCaptureDetail, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const captureDetail = data && data.list && data.list[0] || {};
+        yield put({
+          type: 'save',
+          payload: {
+            captureDetail,
+          },
+        });
+        callback && callback(captureDetail);
+      }
+    },
   },
 
   reducers: {
@@ -1450,6 +1558,39 @@ export default {
       return {
         ...state,
         dangerChartId: payload,
+      };
+    },
+    // 保存监测点列表
+    saveMonitoringPointList(state, { payload }) {
+      const monitoringPointList = payload.pageNum > 1 ? {
+        ...payload,
+        list: (state.monitoringPointList.list || []).concat(payload.list),
+      } : payload;
+      return {
+        ...state,
+        monitoringPointList,
+      };
+    },
+    // 保存摄像机列表
+    saveCameraList(state, { payload }) {
+      const cameraList = payload.pageNum > 1 ? {
+        ...payload,
+        list: (state.cameraList.list || []).concat(payload.list),
+      } : payload;
+      return {
+        ...state,
+        cameraList,
+      };
+    },
+    // 保存抓拍列表
+    saveCaptureList(state, { payload }) {
+      const captureList = payload.pageNum > 1 ? {
+        ...payload,
+        list: (state.captureList.list || []).concat(payload.list),
+      } : payload;
+      return {
+        ...state,
+        captureList,
       };
     },
   },
