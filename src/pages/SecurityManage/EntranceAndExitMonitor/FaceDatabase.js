@@ -259,7 +259,7 @@ export default class FaceDatabase extends PureComponent {
         message.success('删除成功！');
       },
       error: () => {
-        message.error('删除失败!');
+        message.error('已存在报警记录，删除失败!');
       },
     });
   };
@@ -348,6 +348,10 @@ export default class FaceDatabase extends PureComponent {
       form: { validateFieldsAndScroll },
     } = this.props;
     const { status, uploadFace, currentId } = this.state;
+
+    if (!uploadFace.length) {
+      return message.warning('请上传jpg格式照片，照片不能为空！');
+    }
 
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
@@ -484,12 +488,12 @@ export default class FaceDatabase extends PureComponent {
       dispatch,
       form: { validateFieldsAndScroll },
       location: {
-        query: { faceDataBaseId, companyId },
+        query: { faceDataBaseId },
       },
     } = this.props;
     const { exportList } = this.state;
     if (exportList.length === 0) {
-      return message.error('请先上传jpg格式图片');
+      return message.error('请先上传jpg格式照片');
     }
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
@@ -570,7 +574,7 @@ export default class FaceDatabase extends PureComponent {
       message.error('尚未上传结束');
     }
     if (!isImage) {
-      message.error('请上传jpg格式图片');
+      message.error('请上传jpg格式照片');
     }
     return isImage && !faceLoading;
   };
@@ -578,13 +582,14 @@ export default class FaceDatabase extends PureComponent {
   /* 区域动态加载 */
   handleLoadData = (keys, selectedOptions) => {
     const { dispatch } = this.props;
-    const cityIds = selectedOptions.map(item => item.id).join(',');
+    const cityIds = selectedOptions.map(item => item.id).splice(0, 1);
+    const newCityIds = cityIds.map(item => item).join(',');
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
     dispatch({
       type: 'company/fetchArea',
       payload: {
-        cityIds,
+        cityIds: newCityIds,
         keys,
       },
       success: () => {
@@ -905,7 +910,7 @@ export default class FaceDatabase extends PureComponent {
           onCancel={this.handleCloseForm}
           onOk={this.handleSubmitForm}
           className={styles.moadFormBody}
-          confirmLoading={loading || submitting}
+          confirmLoading={faceLoading || submitting}
         >
           <Form className={styles.modalForm}>
             <FormItem {...formItemLayout} label={fieldLabels.picArea}>
@@ -936,7 +941,7 @@ export default class FaceDatabase extends PureComponent {
                   )}
                 </Upload>
               )}
-              <span style={{ color: 'red' }}>（只能上传 jpg格式图片）</span>
+              <span style={{ color: 'red' }}>（只能上传 jpg格式照片）</span>
             </FormItem>
 
             <FormItem {...formItemLayout} label={fieldLabels.name}>
@@ -1040,7 +1045,7 @@ export default class FaceDatabase extends PureComponent {
                   fileList={exportList}
                   onChange={this.handleFaceExportChange}
                 >
-                  <Button>
+                  <Button disabled={exportLoading === true ? true : false}>
                     {uploadExportButton}
                     浏览
                   </Button>

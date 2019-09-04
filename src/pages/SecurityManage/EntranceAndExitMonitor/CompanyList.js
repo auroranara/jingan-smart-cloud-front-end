@@ -258,7 +258,8 @@ export default class CompanyList extends PureComponent {
     validateFieldsAndScroll((error, values) => {
       if (!error) {
         const { companyId } = values;
-        const payload = { companyId };
+
+        const payload = { companyId: companyId.key };
         const success = () => {
           const msg = '添加成功';
           message.success(msg, 1, this.setState({ modalVisible: false }));
@@ -508,7 +509,7 @@ export default class CompanyList extends PureComponent {
                       </p>
                       <p>
                         监测点数量：
-                        {monitorDotNum || getEmptyData()}
+                        {monitorDotNum || 0}
                       </p>
                     </Col>
                   </Row>
@@ -579,11 +580,18 @@ export default class CompanyList extends PureComponent {
           <Form>
             <FormItem {...formItemLayout} label="单位名称">
               {getFieldDecorator('companyId', {
-                rules: [{ required: true, message: '请选择单位名称' }],
+                rules: [
+                  {
+                    required: true,
+                    transform: value => value && value.label,
+                    message: '请选择单位名称',
+                  },
+                ],
               })(
                 <AutoComplete
                   allowClear
                   mode="combobox"
+                  labelInValue
                   optionLabelProp="children"
                   placeholder="请选择"
                   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}

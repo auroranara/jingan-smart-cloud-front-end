@@ -410,8 +410,8 @@ export default class CameraList extends PureComponent {
                         监控状态：
                         <Switch
                           checked={checkedArray[index]}
-                          checkedChildren="是"
-                          unCheckedChildren="否"
+                          checkedChildren="启用"
+                          unCheckedChildren="禁用"
                           onChange={checked => {
                             // 修改本地状态，并显示为正在加载
                             this.switchOnChange(index, checked);
