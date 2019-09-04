@@ -1,15 +1,17 @@
 import React, { PureComponent } from 'react';
 import CustomDrawer from '@/jingan-components/CustomDrawer';
 import CaptureCard from '@/jingan-components/CaptureCard';
+import LoadMore from '@/jingan-components/LoadMore';
 import { connect } from 'dva';
+import moment from 'moment';
 import styles from './index.less';
 
 const FIELDNAMES = {
-  name: 'name', // 姓名
-  location: 'location', // 位置
+  name: ({ faceId, faceInfo }) => faceId && faceInfo.faceName, // 姓名
+  location: ({ monitorDots: [item] }) => item && item.monitorDotPlace, // 位置
   time: 'time', // 时间
   similarity: 'similarity', // 相似度
-  image: 'image', // 图片
+  image: ({ picDetails }) => picDetails ? picDetails.map(({ webUrl }) => webUrl) : [], // 图片
 };
 
 @connect(({ newUnitFireControl, loading }) => ({
@@ -25,12 +27,18 @@ export default class CaptureListDrawer extends PureComponent {
     }
   }
 
-  getCaptureList = () => {
-    const { dispatch } = this.props;
+  getCaptureList = (pageNum=1) => {
+    const { dispatch, companyId, value } = this.props;
+    const { id } = value || {};
     dispatch({
       type: 'newUnitFireControl/fetchCaptureList',
       payload: {
-
+        companyId,
+        startDate: moment().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+        endDate: moment().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+        pageSize: 10,
+        pageNum,
+        deviceId: id,
       },
     });
   }
@@ -39,16 +47,25 @@ export default class CaptureListDrawer extends PureComponent {
     this.scroll = scroll && scroll.dom;
   }
 
+  loadMore = () => {
+    const {
+      newUnitFireControl: {
+        captureList: {
+          pageNum,
+        }={},
+      },
+    } = this.props;
+    this.getCaptureList(pageNum + 1);
+  }
+
   render() {
     const {
       newUnitFireControl: {
         captureList: {
           list=[],
-          // pagination: {
-          //   pageSize=0,
-          //   pageNum=0,
-          //   total=0,
-          // }={},
+          pageSize=0,
+          pageNum=0,
+          total=0,
         }={},
       },
       visible,
@@ -60,10 +77,11 @@ export default class CaptureListDrawer extends PureComponent {
 
     return (
       <CustomDrawer
-        title="今日抓拍报警——出入口监测"
+        title="今日抓拍报警"
         width="33.5em"
         visible={visible}
         onClose={onClose}
+        zIndex={1001}
         sectionProps={{
           scrollProps: {
             ref: this.setScrollReference,
@@ -84,6 +102,7 @@ export default class CaptureListDrawer extends PureComponent {
               onClickImage={onClickImage}
             />
           ))}
+          {pageSize * pageNum < total && <LoadMore onClick={this.loadMore} />}
         </div>
       </CustomDrawer>
     );

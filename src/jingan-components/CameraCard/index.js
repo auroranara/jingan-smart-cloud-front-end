@@ -29,6 +29,11 @@ export default class CameraCard extends BigPlatformCard {
     },
   ];
 
+  handleClick = () => {
+    const { data, onClick } = this.props;
+    onClick && onClick(data);
+  }
+
   renderStatus(status) {
     if (status > 0) {
       return (
@@ -45,6 +50,7 @@ export default class CameraCard extends BigPlatformCard {
     const {
       className, // 容器类名
       style, // 容器样式
+      onClick,
     } = this.props;
     const fieldsValue = this.getFieldsValue();
     const { location, count, status } = fieldsValue;
@@ -59,7 +65,7 @@ export default class CameraCard extends BigPlatformCard {
           {this.renderStatus(status)}
         </div>
         {this.renderFields(fieldsValue)}
-        <div className={styles.count}>今日抓拍报警：<span>{count}</span> 次</div>
+        <div className={styles.count}>今日抓拍报警：<span className={count && onClick ? styles.clickable : undefined} onClick={count ? this.handleClick : undefined}>{count || 0}</span> 次</div>
       </Container>
     );
   }

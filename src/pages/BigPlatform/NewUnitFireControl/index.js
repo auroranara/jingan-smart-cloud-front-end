@@ -252,6 +252,7 @@ export default class NewUnitFireControl extends PureComponent {
     monitoringPointListDrawerVisible: false, // 监测点列表抽屉是否显示
     cameraListDrawerVisible: false, // 摄像机列表抽屉是否显示
     captureListDrawerVisible: false, // 今日抓拍报警列表抽屉是否显示
+    captureListDrawerValue: null, // 今日抓拍报警列表抽屉值
     captureDetailDrawerVisible: false, // 抓拍报警详情抽屉是否显示
     captureDetailDrawerValue: null, // 抓拍报警详情抽屉值
     images: null, // 预览图片
@@ -264,13 +265,6 @@ export default class NewUnitFireControl extends PureComponent {
         params: { unitId: companyId },
       },
     } = this.props;
-
-    setTimeout(() => {
-      this.showFaceRecognitionAlarmNotification({ id: 1 });
-      setTimeout(() => {
-        this.showFaceRecognitionAlarmNotification({ id: 2 });
-      }, 1000);
-    }, 1000);
 
     const { NanXiaoWebsocket: ws } = global;
     if (!ws) return;
@@ -718,7 +712,17 @@ export default class NewUnitFireControl extends PureComponent {
       });
       if (checkResult === '无隐患') this.removeFourColorTip2(pointId);
     }
+
+    // 人脸识别报警
+    if (type === 58) {
+      this.faceRecognition.refresh();
+      this.showFaceRecognitionAlarmNotification(result);
+    }
   };
+
+  setFaceRecognitionReference = (faceRecognition) => {
+    this.faceRecognition = faceRecognition.getWrappedInstance();
+  }
 
   handleFetchRealTimeData = deviceId => {
     const { dispatch } = this.props;
@@ -1783,15 +1787,15 @@ export default class NewUnitFireControl extends PureComponent {
   };
 
   /* 显示人脸识别报警通知框 */
-  showFaceRecognitionAlarmNotification = (data) => {
+  showFaceRecognitionAlarmNotification = ({ messageFlag, messageContent, title }) => {
     this.setState({
       faceRecognitionAlarmNotificationOption: {
-        key: data.id,
-        message: '人脸识别报警',
-        description: `${'刚刚'}，在【${'应用场景位置'}】发现可疑人员，请尽快查看！`,
+        key: messageFlag,
+        message: title,
+        description: `刚刚，${messageContent}`,
         onClick: () => {
-          this.showCaptureDetailDrawer(data);
-          notification.close(data.id);
+          this.showCaptureDetailDrawer({ id: messageFlag });
+          CustomNotification.close(messageFlag);
         },
       },
     });
@@ -1841,9 +1845,10 @@ export default class NewUnitFireControl extends PureComponent {
   }
 
   /* 显示今日抓拍报警列表抽屉 */
-  showCaptureListDrawer = () => {
+  showCaptureListDrawer = (data) => {
     this.setState({
       captureListDrawerVisible: true,
+      captureListDrawerValue: data,
     });
   }
 
@@ -1856,9 +1861,8 @@ export default class NewUnitFireControl extends PureComponent {
 
   /* 显示图片预览 */
   showImagePreview = (images) => {
-    console.log(images);
     this.setState({
-      images: images,
+      images,
     });
   }
 
@@ -2354,6 +2358,8 @@ export default class NewUnitFireControl extends PureComponent {
             {/* 人脸识别 */}
             <FaceRecognition
               onClick={this.handleFaceRecognitionClick}
+              companyId={companyId}
+              ref={this.setFaceRecognitionReference}
             />
           </div>
         </div>
@@ -2374,6 +2380,7 @@ export default class NewUnitFireControl extends PureComponent {
           handleClickElecMsg={this.handleClickElecMsg}
           handleClickSmoke={this.handleClickSmoke}
           handleClickWater={this.handleClickWater}
+          showCaptureDetailDrawer={this.showCaptureDetailDrawer}
         />
         <div className={styles.bottom}>
           <div className={styles.bottomInner}>
@@ -2858,18 +2865,23 @@ export default class NewUnitFireControl extends PureComponent {
         <MonitoringPointListDrawer
           visible={this.state.monitoringPointListDrawerVisible}
           onClose={this.hideMonitoringPointListDrawer}
+          companyId={companyId}
         />
         {/* 人脸识别-摄像机列表 */}
         <CameraListDrawer
           visible={this.state.cameraListDrawerVisible}
           onClose={this.hideCameraListDrawer}
+          onClick={this.showCaptureListDrawer}
+          companyId={companyId}
         />
         {/* 人脸识别-今日抓拍报警列表 */}
         <CaptureListDrawer
           visible={this.state.captureListDrawerVisible}
+          value={this.state.captureListDrawerValue}
           onClose={this.hideCaptureListDrawer}
           onClick={this.showCaptureDetailDrawer}
           onClickImage={this.showImagePreview}
+          companyId={companyId}
         />
         {/* 人脸识别-抓拍报警详情 */}
         <CaptureDetailDrawer
@@ -2877,9 +2889,12 @@ export default class NewUnitFireControl extends PureComponent {
           value={this.state.captureDetailDrawerValue}
           onClose={this.hideCaptureDetailDrawer}
           onClickImage={this.showImagePreview}
+          companyId={companyId}
         />
         {/* 图片预览 */}
-        <ImagePreview images={this.state.images} />
+        <ImagePreview
+          images={this.state.images}
+        />
       </BigPlatformLayout>
     );
   }

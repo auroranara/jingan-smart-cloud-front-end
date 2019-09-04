@@ -490,27 +490,27 @@ export async function getDangerChartId(params) {
   return request(`/acloud_new/v2/fireData/countDangerId.json?${stringify(params)}`);
 }
 
-// 获取人脸识别统计数据
-export async function getFaceRecognitionCount(params) {
-  return request(`/acloud_new/v2/fireData/countDangerId.json?${stringify(params)}`);
-}
+// // 获取人脸识别统计数据
+// export async function getFaceRecognitionCount(params) {
+//   return request(`/acloud_new/v2/fireData/countDangerId.json?${stringify(params)}`);
+// }
 
 // 获取人脸识别监测点列表
 export async function getMonitoringPointList(params) {
-  return request(`/acloud_new/v2/fireData/countDangerId.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/monitorDot/list?${stringify(params)}`);
 }
 
 // 获取人脸识别摄像机列表
 export async function getCameraList(params) {
-  return request(`/acloud_new/v2/fireData/countDangerId.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/videoCamera/list?${stringify(params)}`);
 }
 
 // 获取人脸识别今日抓拍报警列表
 export async function getCaptureList(params) {
-  return request(`/acloud_new/v2/fireData/countDangerId.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/faceHistory/list?${stringify(params)}`);
 }
 
-// 获取抓拍报警详情
+// 获取人脸识别今日抓拍报警详情
 export async function getCaptureDetail(params) {
-  return request(`/acloud_new/v2/fireData/countDangerId.json?${stringify(params)}`);
+  return request(`/acloud_new/v2/faceHistory/list?${stringify(params)}`);
 }

@@ -2,12 +2,13 @@ import React, { PureComponent } from 'react';
 import CustomDrawer from '@/jingan-components/CustomDrawer';
 import MonitoringPointCard from '@/jingan-components/MonitoringPointCard';
 import { connect } from 'dva';
+import LoadMore from '@/jingan-components/LoadMore';
 import styles from './index.less';
 
 const FIELDNAMES = {
-  name: 'name',
-  location: 'location',
-  cameraNumber: 'cameraNumber',
+  name: 'monitorDotName',
+  location: 'monitorDotPlace',
+  cameraNumber: ({ videoCameras }) => videoCameras && videoCameras.map(({ number }) => number).join('、'),
 };
 
 @connect(({ newUnitFireControl, loading }) => ({
@@ -23,12 +24,14 @@ export default class MonitoringPointListDrawer extends PureComponent {
     }
   }
 
-  getMonitoringPointList = () => {
-    const { dispatch } = this.props;
+  getMonitoringPointList = (pageNum=1) => {
+    const { dispatch, companyId } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchMonitoringPointList',
       payload: {
-
+        companyId,
+        pageSize: 10,
+        pageNum,
       },
     });
   }
@@ -37,16 +40,25 @@ export default class MonitoringPointListDrawer extends PureComponent {
     this.scroll = scroll && scroll.dom;
   }
 
+  loadMore = () => {
+    const {
+      newUnitFireControl: {
+        monitoringPointList: {
+          pageNum,
+        }={},
+      },
+    } = this.props;
+    this.getMonitoringPointList(pageNum + 1);
+  }
+
   render() {
     const {
       newUnitFireControl: {
         monitoringPointList: {
           list=[],
-          // pagination: {
-          //   pageSize=0,
-          //   pageNum=0,
-          //   total=0,
-          // }={},
+          pageSize=0,
+          pageNum=0,
+          total=0,
         }={},
       },
       visible,
@@ -78,6 +90,7 @@ export default class MonitoringPointListDrawer extends PureComponent {
               fieldNames={FIELDNAMES}
             />
           ))}
+          {pageSize * pageNum < total && <LoadMore onClick={this.loadMore} />}
         </div>
       </CustomDrawer>
     );

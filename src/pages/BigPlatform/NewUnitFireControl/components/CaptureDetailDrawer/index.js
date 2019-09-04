@@ -7,9 +7,16 @@ import alarmIcon from '@/assets/alarm-icon.png';
 import unknownPersonIcon from '@/assets/unknown-person.png';
 import locationIcon from '../../imgs/icon-location.png';
 import compareIcon from '../../imgs/icon-compare.png';
-import captureImage2 from '../../imgs/captureImage.png';
-import recognizeImage2 from '../../imgs/recognizeImage.png';
 import styles from './index.less';
+
+const sexDict = {
+  1: '男',
+  2: '女',
+};
+const typeDict = {
+  1: '军官证',
+  2: '身份证',
+};
 
 @connect(({ newUnitFireControl, loading }) => ({
   newUnitFireControl,
@@ -25,11 +32,16 @@ export default class CaptureDetailDrawer extends PureComponent {
   }
 
   getCaptureDetail = () => {
-    const { dispatch, value } = this.props;
+    const { dispatch, companyId, value } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchCaptureDetail',
       payload: {
-
+        companyId,
+        startDate: moment().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+        endDate: moment().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+        pageSize: 1,
+        pageNum: 1,
+        id: value,
       },
     });
   }
@@ -42,27 +54,42 @@ export default class CaptureDetailDrawer extends PureComponent {
     const {
       newUnitFireControl: {
         captureDetail: {
-          name,
-          location,
-          scene,
-          captureImage=captureImage2,
-          recognizeImage=recognizeImage2,
+          faceId,
+          faceInfo,
+          videoCamera,
+          monitorDots,
+          picDetails,
           time,
-          sex,
-          phone,
-          number,
-          birthPlace,
-          birthday,
-          type,
-          card,
           similarity,
         }={},
       },
+      loading,
       visible,
       onClose,
       onClickImage,
-      loading,
     } = this.props;
+    const {
+      faceName,
+      facePhotoUrl,
+      faceType,
+      faceTel,
+      jobNumber,
+      provinceDetail,
+      cityDetail,
+      faceBirthday,
+      identityCardType,
+      identityCardNo,
+    } = faceInfo || {};
+    const {
+      videoCameraArea,
+      location,
+    } = videoCamera || {};
+    const [{
+      monitorDotPlace,
+    }={}] = monitorDots || [];
+    const captureImage = (picDetails || []).map(({ webUrl }) => webUrl);
+    const recognizeImage = (JSON.parse(facePhotoUrl || null) || []).map(({ webUrl }) => webUrl);
+    const recognized = !!(faceId && faceName);
 
     return (
       <CustomDrawer
@@ -70,7 +97,7 @@ export default class CaptureDetailDrawer extends PureComponent {
         visible={visible}
         onClose={onClose}
         width="46em"
-        zIndex={1001}
+        zIndex={1002}
         sectionProps={{
           scrollProps: {
             ref: this.setScrollReference,
@@ -83,65 +110,65 @@ export default class CaptureDetailDrawer extends PureComponent {
         <div className={styles.container}>
           <div className={styles.infoWrapper}>
             <div className={styles.infoIcon} style={{ backgroundImage: `url(${alarmIcon})` }} />
-            <div className={styles.info}>{`发现可疑人员【${name || '未知人员'}】进入【${location || scene || '未知位置'}】监控区域`}</div>
+            <div className={styles.info}>{`发现可疑人员【${recognized ? faceName : '未知人员'}】进入【${`${videoCameraArea || ''}${location || ''}` || '未知位置'}】监控区域`}</div>
           </div>
           <div className={styles.locationWrapper}>
             <div className={styles.locationIcon} style={{ backgroundImage: `url(${locationIcon})` }} />
             <div className={styles.locationLabel}>位置：</div>
-            <div className={styles.location}>{scene || location || '未知位置'}</div>
+            <div className={styles.location}>{monitorDotPlace || '未知位置'}</div>
           </div>
           <div className={styles.imageWrapper}>
             <div
-              className={classNames(styles.leftImage, captureImage && styles.enableClick)}
-              style={{ backgroundImage: `url(${captureImage})` }}
-              onClick={captureImage ? () => onClickImage && onClickImage([captureImage]) : undefined}
+              className={classNames(styles.leftImage, captureImage.length > 0 && styles.enableClick)}
+              style={{ backgroundImage: `url(${captureImage[0]})` }}
+              onClick={captureImage.length > 0 ? () => onClickImage && onClickImage(Array.from(captureImage)) : undefined}
             />
             <div className={styles.centerImage} style={{ backgroundImage: `url(${compareIcon})` }} />
             <div
-              className={classNames(styles.rightImage, recognizeImage && styles.enableClick)}
-              style={recognizeImage ? { backgroundImage: `url(${recognizeImage})` } : { backgroundImage: `url(${unknownPersonIcon})`, backgroundSize: '64%' }}
-              onClick={recognizeImage ? () => onClickImage && onClickImage([recognizeImage]) : undefined}
+              className={classNames(styles.rightImage, recognized && recognizeImage.length > 0 && styles.enableClick)}
+              style={recognized && recognizeImage.length > 0 ? { backgroundImage: `url(${recognizeImage[0]})` } : { backgroundImage: `url(${unknownPersonIcon})`, backgroundSize: '64%' }}
+              onClick={recognized && recognizeImage.length > 0 ? () => onClickImage && onClickImage(Array.from(recognizeImage)) : undefined}
             />
           </div>
-          {name && (
+          {recognized && (
             <div className={styles.table}>
               {[{
                 label: '抓拍时间',
                 value: moment(time).format('YYYY-MM-DD HH:mm:ss'),
               }, {
                 label: '姓名',
-                value: name,
+                value: faceName,
                 labelClassName: styles.space,
               }, {
                 label: '性别',
-                value: sex,
+                value: sexDict[faceType],
                 labelClassName: styles.space,
               }, {
                 label: '手机',
-                value: phone,
+                value: faceTel,
                 labelClassName: styles.space,
               }, {
                 label: '工号',
-                value: number,
+                value: jobNumber,
                 labelClassName: styles.space,
               }, {
                 label: '籍贯',
-                value: birthPlace,
+                value: `${provinceDetail || ''}${cityDetail || ''}`,
                 labelClassName: styles.space,
               }, {
                 label: '生日',
-                value: birthday,
+                value: faceBirthday && faceBirthday.slice(0, 10),
                 labelClassName: styles.space,
               }, {
                 label: '证件类型',
-                value: type,
+                value: typeDict[identityCardType],
               }, {
                 label: '证件号',
-                value: card,
+                value: identityCardNo,
                 labelClassName: styles.space2,
               }, {
                 label: '相似度',
-                value: `${similarity}%`,
+                value: `${Math.round(similarity * 100)}%`,
                 labelClassName: styles.space2,
                 className: styles.similarityRow,
               }].map(({ label, value, labelClassName, className }) => (

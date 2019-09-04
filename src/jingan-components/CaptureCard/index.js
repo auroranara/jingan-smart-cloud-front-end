@@ -32,16 +32,16 @@ export default class CaptureCard extends BigPlatformCard {
     },
     {
       label: '姓名',
-      key: 'name',
+      render: ({ name }) => name || '未知人员',
       labelWrapperClassName: styles.nameLabelWrapper,
       className: styles.row,
     },
     {
       label: '相似度',
-      // key: 'similarity',
-      render: ({ similarity }) => `${similarity}%`,
+      render: ({ similarity }) => `${Math.round(similarity * 100)}%`,
       labelWrapperClassName: styles.similarityLabelWrapper,
       className: styles.row,
+      hidden: ({ name }) => !name,
     },
   ];
 
@@ -69,7 +69,7 @@ export default class CaptureCard extends BigPlatformCard {
           <div
             className={styles.image}
             style={{ backgroundImage: `url(${images[0]})` }}
-            onClick={() => onClickImage && onClickImage(images)}
+            onClick={() => onClickImage && onClickImage(Array.from(images))}
           />
           <div className={styles.fieldsWrapper}>
             {this.renderFields(fieldsValue)}

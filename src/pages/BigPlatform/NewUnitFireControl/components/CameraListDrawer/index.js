@@ -1,15 +1,16 @@
 import React, { PureComponent } from 'react';
 import CustomDrawer from '@/jingan-components/CustomDrawer';
 import CameraCard from '@/jingan-components/CameraCard';
+import LoadMore from '@/jingan-components/LoadMore';
 import { connect } from 'dva';
 import styles from './index.less';
 
 const FIELDNAMES = {
   name: 'name',
-  location: 'location',
+  location: ({ videoCameraArea, location }) => `${videoCameraArea || ''}${location || ''}`,
   number: 'number',
-  status: 'status',
-  count: 'count',
+  status: 'state',
+  count: ({ faceHistory }) => faceHistory ? faceHistory.length : 0,
 };
 
 @connect(({ newUnitFireControl, loading }) => ({
@@ -25,12 +26,14 @@ export default class CameraListDrawer extends PureComponent {
     }
   }
 
-  getCameraList = () => {
-    const { dispatch } = this.props;
+  getCameraList = (pageNum=1) => {
+    const { dispatch, companyId } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchCameraList',
       payload: {
-
+        companyId,
+        pageSize: 10,
+        pageNum,
       },
     });
   }
@@ -39,19 +42,29 @@ export default class CameraListDrawer extends PureComponent {
     this.scroll = scroll && scroll.dom;
   }
 
+  loadMore = () => {
+    const {
+      newUnitFireControl: {
+        cameraList: {
+          pageNum,
+        }={},
+      },
+    } = this.props;
+    this.getCameraList(pageNum + 1);
+  }
+
   render() {
     const {
       newUnitFireControl: {
         cameraList: {
           list=[],
-          // pagination: {
-          //   pageSize=0,
-          //   pageNum=0,
-          //   total=0,
-          // }={},
+          pageSize=0,
+          pageNum=0,
+          total=0,
         }={},
       },
       visible,
+      onClick,
       onClose,
       loading,
     } = this.props;
@@ -78,8 +91,10 @@ export default class CameraListDrawer extends PureComponent {
               className={styles.item}
               data={item}
               fieldNames={FIELDNAMES}
+              onClick={onClick}
             />
           ))}
+          {pageSize * pageNum < total && <LoadMore onClick={this.loadMore} />}
         </div>
       </CustomDrawer>
     );

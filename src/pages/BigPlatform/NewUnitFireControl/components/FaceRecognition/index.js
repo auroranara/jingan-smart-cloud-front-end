@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Section2 as CustomSection } from '@/jingan-components/CustomSection';
 import { connect } from 'dva';
+import moment from 'moment';
 import classNames from 'classnames';
 import cyanFace from '../../imgs/cyan-face.png';
 import redFace from '../../imgs/red-face.png';
@@ -9,20 +10,28 @@ import styles from './index.less';
 /* 人脸识别 */
 @connect(({ newUnitFireControl }) => ({
   newUnitFireControl,
-}))
+}), undefined, undefined, { withRef: true })
 export default class FaceRecognition extends Component {
   componentDidMount() {
     this.getFaceRecognitionCount();
   }
 
   getFaceRecognitionCount() {
-    const { dispatch } = this.props;
+    const { dispatch, companyId } = this.props;
     dispatch({
       type: 'newUnitFireControl/fetchFaceRecognitionCount',
       payload: {
-
+        companyId,
+        startDate: moment().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+        endDate: moment().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+        pageSize: 1,
+        pageNum: 1,
       },
     });
+  }
+
+  refresh = () => {
+    this.getFaceRecognitionCount();
   }
 
   handleClick = (e) => {
@@ -32,7 +41,8 @@ export default class FaceRecognition extends Component {
   }
 
   handleHistoryClick = () => {
-    window.open('/');
+    const { companyId } = this.props;
+    window.open(`/#/security-manage/entrance-and-exit-monitor/alarm-record/${companyId}`);
   }
 
   render() {

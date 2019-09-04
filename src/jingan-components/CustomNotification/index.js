@@ -17,6 +17,8 @@ const THEME_DICT = {
 
 // 自定义通知框
 export default class CustomNotification extends PureComponent {
+  static close = notification.close
+
   componentDidMount() {
     const { option } = this.props;
     if (option) {

@@ -36,9 +36,11 @@ export default class ImagePreview extends PureComponent {
    * 关闭图片详情
    */
   handleClose = () => {
+    const { onClose } = this.props;
     this.setState({
       images: null,
     });
+    onClose && onClose();
   };
 
   /**
