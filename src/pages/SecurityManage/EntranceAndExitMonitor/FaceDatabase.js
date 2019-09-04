@@ -454,6 +454,7 @@ export default class FaceDatabase extends PureComponent {
                 ...item,
                 url: result.webUrl,
                 dbUrl: result.dbUrl,
+                status: file.status,
               };
             }
             return item;
@@ -492,9 +493,17 @@ export default class FaceDatabase extends PureComponent {
       },
     } = this.props;
     const { exportList } = this.state;
+
+    const status = exportList.map(item => item.status);
+    const hasUploading = status.includes('uploading');
+    if (hasUploading === true) {
+      return message.warning('照片还在上传中，请等待！');
+    }
+
     if (exportList.length === 0) {
       return message.error('请先上传jpg格式照片');
     }
+
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const success = () => {
@@ -865,7 +874,6 @@ export default class FaceDatabase extends PureComponent {
       submitting,
       submittingModal,
     } = this.state;
-
     const uploadButton = (
       <div>
         <Icon type={faceLoading ? 'loading' : 'plus'} />
@@ -1046,7 +1054,7 @@ export default class FaceDatabase extends PureComponent {
                   fileList={exportList}
                   onChange={this.handleFaceExportChange}
                 >
-                  <Button disabled={exportLoading === true ? true : false}>
+                  <Button disabled={exportLoading}>
                     {uploadExportButton}
                     浏览
                   </Button>

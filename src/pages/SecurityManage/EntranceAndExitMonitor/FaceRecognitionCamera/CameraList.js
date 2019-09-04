@@ -88,6 +88,7 @@ export default class CameraList extends PureComponent {
     keyId: undefined,
     checkedArray: [],
     deviceId: undefined,
+    videoCameraUrl: undefined,
   };
 
   // 生命周期函数
@@ -259,13 +260,23 @@ export default class CameraList extends PureComponent {
   };
 
   // 显示视频模态框
-  videoOnClick = (keyId, deviceId) => {
-    this.setState({ videoVisible: true, keyId: keyId, deviceId: deviceId });
+  videoOnClick = (equipmentNo, videoCameraNo, videoCameraUrl) => {
+    this.setState({
+      videoVisible: true,
+      keyId: videoCameraNo,
+      deviceId: equipmentNo,
+      videoCameraUrl: videoCameraUrl,
+    });
   };
 
   // 关闭视频模态框
   handleVideoClose = () => {
-    this.setState({ videoVisible: false, keyId: undefined, deviceId: undefined });
+    this.setState({
+      videoVisible: false,
+      keyId: undefined,
+      deviceId: undefined,
+      videoCameraUrl: undefined,
+    });
   };
 
   handleAdd = id => {
@@ -368,7 +379,17 @@ export default class CameraList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={(item, index) => {
-            const { id, name, number, state, videoCameraArea, location } = item;
+            const {
+              id,
+              name,
+              number,
+              state,
+              videoCameraArea,
+              location,
+              equipmentNo,
+              videoCameraNo,
+              videoCameraUrl,
+            } = item;
             const title = videoCameraArea + location;
 
             return (
@@ -435,9 +456,9 @@ export default class CameraList extends PureComponent {
                     </Col>
                     <Col span={8} style={{ cursor: 'pointer' }}>
                       <span
-                        // onClick={() => {
-                        //   this.videoOnClick(keyId, deviceId);
-                        // }}
+                        onClick={() => {
+                          this.videoOnClick(equipmentNo, videoCameraNo, videoCameraUrl);
+                        }}
                         className={styles.iconStyles}
                         style={{ backgroundImage: `url(${videoIcon})` }}
                       />
@@ -465,7 +486,7 @@ export default class CameraList extends PureComponent {
       },
     } = this.props;
 
-    const { videoVisible, keyId, deviceId } = this.state;
+    const { videoVisible, keyId, deviceId, videoCameraUrl } = this.state;
 
     return (
       <PageHeaderLayout
@@ -511,6 +532,7 @@ export default class CameraList extends PureComponent {
           videoList={[]}
           keyId={keyId}
           deviceId={deviceId}
+          videoCameraUrl={videoCameraUrl}
           handleVideoClose={this.handleVideoClose}
         />
       </PageHeaderLayout>
