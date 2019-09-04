@@ -45,6 +45,9 @@ const fieldLabels = {
   cameraArea: '摄像机区域-位置',
   hasArea: '所在区域',
   areaDetail: '位置详情',
+  equipmentNo: '设备ID',
+  videoCameraNo: '摄像机ID',
+  videoCameraUrl: '视频Url',
   picLocation: '平面图定位',
 };
 
@@ -237,6 +240,9 @@ export default class CameraEdit extends PureComponent {
           videoCameraArea,
           location,
           state,
+          equipmentNo,
+          videoCameraNo,
+          videoCameraUrl,
         } = values;
 
         const payload = {
@@ -250,6 +256,9 @@ export default class CameraEdit extends PureComponent {
           floorId: picList.map(item => item.floorId).join('') || floorId,
           pointFixInfoList: picList.filter(item => item.imgType),
           state: +state,
+          equipmentNo,
+          videoCameraNo,
+          videoCameraUrl,
         };
 
         const success = () => {
@@ -838,6 +847,9 @@ export default class CameraEdit extends PureComponent {
       videoCameraArea,
       location,
       state,
+      equipmentNo,
+      videoCameraNo,
+      videoCameraUrl,
     } = currentList;
 
     return (
@@ -969,6 +981,27 @@ export default class CameraEdit extends PureComponent {
                 },
               ],
             })(<Input {...itemStyles} placeholder="请输入位置详情" />)}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label={fieldLabels.equipmentNo}>
+            {getFieldDecorator('equipmentNo', {
+              initialValue: equipmentNo,
+              getValueFromEvent: this.handleTrim,
+            })(<Input {...itemStyles} placeholder="请输入设备ID" />)}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label={fieldLabels.videoCameraNo}>
+            {getFieldDecorator('videoCameraNo', {
+              initialValue: videoCameraNo,
+              getValueFromEvent: this.handleTrim,
+            })(<Input {...itemStyles} placeholder="请输入摄像头ID" />)}
+          </FormItem>
+
+          <FormItem {...formItemLayout} label={fieldLabels.videoCameraUrl}>
+            {getFieldDecorator('videoCameraUrl', {
+              initialValue: videoCameraUrl,
+              getValueFromEvent: this.handleTrim,
+            })(<Input {...itemStyles} placeholder="请输入视频URL" />)}
           </FormItem>
 
           <Form.Item
