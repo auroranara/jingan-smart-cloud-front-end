@@ -512,25 +512,25 @@ export default class BuildingInfoEdit extends PureComponent {
                   )}
                 </div>
               ) : (
-                  <div>
-                    {getFieldDecorator('companyId', {
-                      initialValue:
-                        unitType === 4 || unitType === 1
-                          ? company_name || defaultName
-                          : company_name
-                            ? company_name
-                            : undefined,
-                    })(
-                      <Input
-                        disabled
-                        ref={input => {
-                          this.CompanyIdInput = input;
-                        }}
-                        placeholder="请选择单位名称"
-                      />
-                    )}
-                  </div>
-                )}
+                <div>
+                  {getFieldDecorator('companyId', {
+                    initialValue:
+                      unitType === 4 || unitType === 1
+                        ? company_name || defaultName
+                        : company_name
+                          ? company_name
+                          : undefined,
+                  })(
+                    <Input
+                      disabled
+                      ref={input => {
+                        this.CompanyIdInput = input;
+                      }}
+                      placeholder="请选择单位名称"
+                    />
+                  )}
+                </div>
+              )}
             </Col>
             {defaultName || (company_Id && unitType !== 2) ? null : (
               <Col span={1}>
@@ -639,7 +639,7 @@ export default class BuildingInfoEdit extends PureComponent {
         component: (
           <div>
             {getFieldDecorator('floorLevel', {
-              initialValue: id?floorLevel:null,
+              initialValue: id ? floorLevel : null,
             })(
               <InputNumber
                 style={{ width: '100%' }}
@@ -747,7 +747,7 @@ export default class BuildingInfoEdit extends PureComponent {
             {this.renderMoreItems(moreForemItems)}
             <Col span={24} style={{ marginTop: '40px' }}>
               <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 13, offset: 11 } }}>
-                <Button type="primary" onClick={this.handleClickValidate}>
+                <Button loading={uploading} type="primary" onClick={this.handleClickValidate}>
                   确定
                 </Button>
                 {company_Id ? (
@@ -760,15 +760,15 @@ export default class BuildingInfoEdit extends PureComponent {
                     返回
                   </Button>
                 ) : (
-                    <Button
-                      loading={uploading}
-                      href="#/base-info/buildings-info/list"
-                      type="primary"
-                      style={{ marginLeft: '10px' }}
-                    >
-                      返回
+                  <Button
+                    loading={uploading}
+                    href="#/base-info/buildings-info/list"
+                    type="primary"
+                    style={{ marginLeft: '10px' }}
+                  >
+                    返回
                   </Button>
-                  )}
+                )}
               </FormItem>
             </Col>
           </Form>

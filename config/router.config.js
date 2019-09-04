@@ -1298,7 +1298,8 @@ module.exports = env => {
                   component: './DeviceManagement/UserTransmissionDevice/TransmissionDeviceAdd',
                 },
                 {
-                  path: '/device-management/user-transmission-device/:companyId/point-managament/:hostId',
+                  path:
+                    '/device-management/user-transmission-device/:companyId/point-managament/:hostId',
                   code: 'deviceManagement.userTransmissionDevice.pointManagement.listView',
                   name: 'pointManagement',
                   component: './DeviceManagement/UserTransmissionDevice/PointManagement',
@@ -2396,6 +2397,102 @@ module.exports = env => {
                   code: 'personnelPosition.sectionManagement.divide',
                   path: '/personnel-position/section-management/company/:companyId/zoning/:id',
                   component: './PersonnelPosition/SectionManagement/Zoning',
+                },
+              ],
+            },
+          ],
+        },
+        // 安防管理
+        {
+          path: '/security-manage',
+          code: 'securityManage',
+          icon: 'file-protect',
+          name: 'securityManage',
+          routes: [
+            {
+              path: '/security-manage/entrance-and-exit-monitor',
+              code: 'securityManage.entranceAndExitMonitor',
+              name: 'entranceAndExitMonitor',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/security-manage/entrance-and-exit-monitor',
+                  name: 'entranceAndExitMonitor',
+                  redirect: '/security-manage/entrance-and-exit-monitor/company-list',
+                },
+                {
+                  path: '/security-manage/entrance-and-exit-monitor/company-list',
+                  code: 'securityManage.entranceAndExitMonitor.listView',
+                  name: 'companyList',
+                  component: './SecurityManage/EntranceAndExitMonitor/CompanyList',
+                },
+                {
+                  path: '/security-manage/entrance-and-exit-monitor/face-database/:id',
+                  code: 'securityManage.entranceAndExitMonitor.faceDatabaseView',
+                  name: 'faceDatabase',
+                  component: './SecurityManage/EntranceAndExitMonitor/FaceDatabase',
+                },
+                {
+                  path: '/security-manage/entrance-and-exit-monitor/face-recognition-camera/:id',
+                  code: 'securityManage.entranceAndExitMonitor.cameraView',
+                  name: 'faceRecognitionCamera',
+                  component:
+                    './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraList',
+                },
+                {
+                  path: '/security-manage/entrance-and-exit-monitor/camera-add',
+                  code: 'securityManage.entranceAndExitMonitor.cameraView',
+                  name: 'cameraAdd',
+                  component:
+                    './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraEdit',
+                },
+                {
+                  path: '/security-manage/entrance-and-exit-monitor/camera-edit/:id',
+                  code: 'securityManage.entranceAndExitMonitor.cameraView',
+                  name: 'cameraEdit',
+                  component:
+                    './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraEdit',
+                },
+                {
+                  path: '/security-manage/entrance-and-exit-monitor/camera-detail/:id',
+                  code: 'securityManage.entranceAndExitMonitor.cameraView',
+                  name: 'cameraDetail',
+                  component:
+                    './SecurityManage/EntranceAndExitMonitor/FaceRecognitionCamera/CameraDetail',
+                },
+                {
+                  path: '/security-manage/entrance-and-exit-monitor/monitoring-points-list/:id',
+                  code: 'securityManage.entranceAndExitMonitor.monitorPointView',
+                  name: 'monitoringPoints',
+                  component:
+                    './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsList',
+                },
+                {
+                  path: '/security-manage/entrance-and-exit-monitor/monitoring-points-detail/:id',
+                  code: 'securityManage.entranceAndExitMonitor.monitorPointView',
+                  name: 'monitoringPointsDetail',
+                  component:
+                    './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsDetail',
+                },
+                {
+                  path: '/security-manage/entrance-and-exit-monitor/monitoring-points-add',
+                  code: 'securityManage.entranceAndExitMonitor.monitorPointView',
+                  name: 'monitoringPointsAdd',
+                  component:
+                    './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsEdit',
+                },
+                {
+                  path: '/security-manage/entrance-and-exit-monitor/monitoring-points-edit/:id',
+                  code: 'securityManage.entranceAndExitMonitor.monitorPointView',
+                  name: 'monitoringPointsEdit',
+                  component:
+                    './SecurityManage/EntranceAndExitMonitor/MonitoringPoints/MonitorPointsEdit',
+                },
+                {
+                  path: '/security-manage/entrance-and-exit-monitor/alarm-record/:id',
+                  code: 'securityManage.entranceAndExitMonitor.alarmRecordView',
+                  name: 'alarmRecord',
+                  component: './SecurityManage/EntranceAndExitMonitor/AlarmRecord',
                 },
               ],
             },

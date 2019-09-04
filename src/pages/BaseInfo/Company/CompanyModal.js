@@ -71,11 +71,18 @@ export default class CompanyModal extends PureComponent {
         pagination: { pageSize },
       },
       payload,
+      cameraKeys,
     } = this.props;
-    this.setState({
-      ...value,
-      selectedRowKeys: [],
-    });
+    if (cameraKeys) {
+      this.setState({
+        ...value,
+      });
+    } else {
+      this.setState({
+        ...value,
+        selectedRowKeys: [],
+      });
+    }
     fetch({
       payload: {
         ...value,
@@ -115,11 +122,19 @@ export default class CompanyModal extends PureComponent {
         pagination: { pageSize },
       },
       payload,
+      cameraKeys,
     } = this.props;
-    this.setState({
-      ...value,
-      selectedRowKeys: [],
-    });
+    if (cameraKeys) {
+      this.setState({
+        ...value,
+      });
+    } else {
+      this.setState({
+        ...value,
+        selectedRowKeys: [],
+      });
+    }
+
     fetch({
       payload: {
         ...value,
@@ -139,11 +154,13 @@ export default class CompanyModal extends PureComponent {
 
   /* 更换页码或显示数量 */
   handleChangePagination = ({ current, pageSize }) => {
-    const { fetch, payload } = this.props;
+    const { fetch, payload, cameraKeys } = this.props;
     const { name } = this.state;
-    this.setState({
-      selectedRowKeys: [],
-    });
+    if (!cameraKeys) {
+      this.setState({
+        selectedRowKeys: [],
+      });
+    }
     fetch({
       payload: {
         name,

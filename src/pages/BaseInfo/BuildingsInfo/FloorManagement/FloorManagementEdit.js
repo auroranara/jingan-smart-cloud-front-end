@@ -110,7 +110,7 @@ export default class FloorManagementEdit extends PureComponent {
       message.success(id ? '编辑成功' : '新增成功');
       router.push(
         `/base-info/buildings-info/floor/list/${newbuildingId ||
-        buildingId}?companyId=${companyId}&&name=${name}`
+          buildingId}?companyId=${companyId}&&name=${name}`
       );
     };
 
@@ -250,7 +250,7 @@ export default class FloorManagementEdit extends PureComponent {
         md: { span: 10 },
       },
     };
-
+    console.log('floorList', floorList);
     return (
       <Card className={styles.card} bordered={false}>
         <Form style={{ marginTop: 8 }}>
@@ -320,14 +320,14 @@ export default class FloorManagementEdit extends PureComponent {
               返回
             </Button>
           ) : (
-              <Button
-                loading={uploading}
-                href={`#/base-info/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`}
-                style={{ marginLeft: '10px' }}
-              >
-                返回
+            <Button
+              loading={uploading}
+              href={`#/base-info/buildings-info/floor/list/${buildingId}?companyId=${companyId}&&name=${name}`}
+              style={{ marginLeft: '10px' }}
+            >
+              返回
             </Button>
-            )}
+          )}
         </div>
       </Card>
     );
