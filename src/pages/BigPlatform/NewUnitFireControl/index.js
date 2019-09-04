@@ -721,7 +721,7 @@ export default class NewUnitFireControl extends PureComponent {
   };
 
   setFaceRecognitionReference = (faceRecognition) => {
-    this.faceRecognition = faceRecognition.getWrappedInstance();
+    this.faceRecognition = faceRecognition && faceRecognition.getWrappedInstance();
   }
 
   handleFetchRealTimeData = deviceId => {
