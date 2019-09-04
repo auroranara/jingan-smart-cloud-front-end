@@ -194,12 +194,19 @@ export default class CompanyList extends PureComponent {
 
   // 显示新增企业模态框
   handleClickAdd = () => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
     this.setState({ modalVisible: true });
+    setFieldsValue({
+      companyId: undefined,
+    });
   };
 
   // 单位下拉框输入
   handleUnitIdChange = value => {
     const { dispatch } = this.props;
+
     // 根据输入值获取列表
     dispatch({
       type: 'hiddenDangerReport/fetchUnitListFuzzy',
@@ -209,6 +216,28 @@ export default class CompanyList extends PureComponent {
         pageSize: 10,
       },
     });
+  };
+
+  // 单位下拉框失焦
+  handleUnitIdBlur = value => {
+    const {
+      dispatch,
+      form: { setFieldsValue },
+    } = this.props;
+    // 根据value判断是否是手动输入
+    if (value && value.key === value.label) {
+      this.handleUnitIdChange.cancel();
+      setFieldsValue({
+        companyId: undefined,
+      });
+      dispatch({
+        type: 'hiddenDangerReport/fetchUnitListFuzzy',
+        payload: {
+          pageNum: 1,
+          pageSize: 18,
+        },
+      });
+    }
   };
 
   // 关闭新增企业模态框
@@ -221,6 +250,9 @@ export default class CompanyList extends PureComponent {
     const {
       form: { validateFieldsAndScroll },
       dispatch,
+      user: {
+        currentUser: { unitType, companyId: newCompanyId },
+      },
     } = this.props;
 
     validateFieldsAndScroll((error, values) => {
@@ -234,13 +266,14 @@ export default class CompanyList extends PureComponent {
           dispatch({
             type: 'securityManage/fetchMonitorCompanyList',
             payload: {
+              companyId: +unitType === 4 ? newCompanyId : undefined,
               pageSize,
               pageNum: 1,
             },
           });
         };
-        const error = () => {
-          const msg = '添加失败';
+        const error = res => {
+          const msg = '单位已存在，请勿重复添加';
           message.error(msg, 1, this.setState({ modalVisible: true }));
         };
         dispatch({
@@ -545,7 +578,9 @@ export default class CompanyList extends PureComponent {
         >
           <Form>
             <FormItem {...formItemLayout} label="单位名称">
-              {getFieldDecorator('companyId')(
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位名称' }],
+              })(
                 <AutoComplete
                   allowClear
                   mode="combobox"
@@ -553,6 +588,7 @@ export default class CompanyList extends PureComponent {
                   placeholder="请选择"
                   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                   onSearch={this.handleUnitIdChange}
+                  onBlur={this.handleUnitIdBlur}
                   filterOption={false}
                 >
                   {unitIdes.map(({ id, name }) => (

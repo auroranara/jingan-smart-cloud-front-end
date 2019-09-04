@@ -197,8 +197,7 @@ export default class AlarmRecord extends PureComponent {
           <FormItem label="开始时间">
             {getFieldDecorator('startDate')(
               <DatePicker
-                showTime
-                // showToday={false}
+                showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
                 format="YYYY-MM-DD HH:mm:ss"
                 placeholder="请选择开始时间"
                 style={{ width: 260 }}
@@ -208,7 +207,7 @@ export default class AlarmRecord extends PureComponent {
           <FormItem label="结束时间">
             {getFieldDecorator('endDate')(
               <DatePicker
-                showTime
+                showTime={{ defaultValue: moment('23:59:59', 'HH:mm:ss') }}
                 // showToday={false}
                 format="YYYY-MM-DD HH:mm:ss"
                 placeholder="请选择结束时间"

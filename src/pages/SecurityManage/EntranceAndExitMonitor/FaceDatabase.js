@@ -232,6 +232,9 @@ export default class FaceDatabase extends PureComponent {
     });
   };
 
+  /* 去除左右两边空白 */
+  handleTrim = e => e.target.value.trim();
+
   // 删除
   handleCardDelete = id => {
     const {
@@ -907,7 +910,9 @@ export default class FaceDatabase extends PureComponent {
           <Form className={styles.modalForm}>
             <FormItem {...formItemLayout} label={fieldLabels.picArea}>
               {getFieldDecorator('faceUrl', {
-                rules: [{ required: true, message: '请上传jpg格式照片' }],
+                rules: [
+                  { required: modalVisible === true ? true : false, message: '请上传jpg格式照片' },
+                ],
               })(
                 <Upload
                   name="files"
@@ -936,7 +941,8 @@ export default class FaceDatabase extends PureComponent {
 
             <FormItem {...formItemLayout} label={fieldLabels.name}>
               {getFieldDecorator('faceName', {
-                rules: [{ required: true, message: '请输入姓名' }],
+                rules: [{ required: modalVisible === true ? true : false, message: '请输入姓名' }],
+                getValueFromEvent: this.handleTrim,
               })(<Input placeholder="请输入姓名" />)}
             </FormItem>
 
@@ -953,11 +959,15 @@ export default class FaceDatabase extends PureComponent {
             </FormItem>
 
             <FormItem {...formItemLayout} label={fieldLabels.phone}>
-              {getFieldDecorator('faceTel', {})(<Input placeholder="请输入手机号" />)}
+              {getFieldDecorator('faceTel', { getValueFromEvent: this.handleTrim })(
+                <Input placeholder="请输入手机号" />
+              )}
             </FormItem>
 
             <FormItem {...formItemLayout} label={fieldLabels.jobNum}>
-              {getFieldDecorator('jobNumber', {})(<Input placeholder="请输入工号" />)}
+              {getFieldDecorator('jobNumber', { getValueFromEvent: this.handleTrim })(
+                <Input placeholder="请输入工号" />
+              )}
             </FormItem>
 
             <FormItem {...formItemLayout} label={fieldLabels.provincialLevel}>
