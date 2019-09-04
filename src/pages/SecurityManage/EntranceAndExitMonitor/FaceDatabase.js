@@ -1038,6 +1038,7 @@ export default class FaceDatabase extends PureComponent {
               {getFieldDecorator('photoMessage')(
                 <Upload
                   name="files"
+                  multiple
                   headers={{ 'JA-Token': getToken() }}
                   accept=".jpg" // 接收的文件格式
                   data={{ folder: 'securityManageInfo' }} // 附带的参数
