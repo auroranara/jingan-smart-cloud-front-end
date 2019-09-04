@@ -108,6 +108,10 @@ export default {
       edit: 'deviceManagement.monitoringType.edit',
       delete: 'deviceManagement.monitoringType.delete',
     },
+    deviceType: {
+      listView: 'deviceManagement.deviceType.listView',
+      edit: 'deviceManagement.deviceType.edit',
+    },
   },
   videoSurveillance: {
     hikVideoTree: {

@@ -147,13 +147,9 @@ export default class DepartmentList extends PureComponent {
   getMonitoringTypes = () => {
     const {
       dispatch,
-      match: {
-        params: { id },
-      },
     } = this.props;
     dispatch({
       type: 'device/fetchMonitoringTypes',
-      payload: { companyId: id },
       callback: list => {
         if (list.length === 0) return;
         let total = 0;
