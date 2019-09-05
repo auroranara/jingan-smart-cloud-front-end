@@ -79,7 +79,11 @@ const RenderModal = Form.create()(props => {
       return <TreeNode disabled={disabled} title={name} key={id} value={id} />;
     });
   };
-
+  /*
+    说明：
+    1、根节点已经预先添加，用户无法添加、编辑；
+    2、所以子节点必须选择上级监测类型
+  */
   return (
     <Modal title={modalTitle} visible={modalVisible} onCancel={handleClos} onOk={okHandle}>
       <Form>
@@ -100,9 +104,10 @@ const RenderModal = Form.create()(props => {
               (modalStatus === 'addUnder' && detail.id) ||
               (modalStatus === 'edit' && detail.parentId !== '0' && detail.parentId) ||
               '',
+            rules: modalStatus === 'edit' && detail.parentId === '0' ? null : [{ required: true, message: '请选择上级监测类型' }],
           })(
             <TreeSelect
-              disabled={modalStatus === 'addUnder'}
+              disabled={modalStatus === 'addUnder' || detail.parentId === '0'}
               dropdownStyle={{ maxHeight: 600, overflow: 'auto' }}
               allowClear
             >

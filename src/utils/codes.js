@@ -112,6 +112,18 @@ export default {
       listView: 'deviceManagement.deviceType.listView',
       edit: 'deviceManagement.deviceType.edit',
     },
+    brand: {
+      listView: 'deviceManagement.brand.listView',
+      add: 'deviceManagement.brand.add',
+      edit: 'deviceManagement.brand.edit',
+      delete: 'deviceManagement.brand.delete',
+    },
+    tagLibrary: {
+      listView: 'deviceManagement.tagLibrary.listView',
+      add: 'deviceManagement.tagLibrary.add',
+      edit: 'deviceManagement.tagLibrary.edit',
+      delete: 'deviceManagement.tagLibrary.delete',
+    },
   },
   videoSurveillance: {
     hikVideoTree: {

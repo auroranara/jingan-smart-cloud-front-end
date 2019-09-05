@@ -1486,6 +1486,46 @@ module.exports = env => {
                 },
               ],
             },
+            // 品牌
+            {
+              path: '/device-management/brand',
+              code: 'deviceManagement.brand',
+              name: 'brand',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/brand',
+                  name: 'brand',
+                  redirect: '/device-management/brand/list',
+                },
+                {
+                  path: '/device-management/brand/list',
+                  name: 'listView',
+                  code: 'deviceManagement.brand.listView',
+                  component: '/DeviceManagement/Brand',
+                },
+              ],
+            },
+            // 标签库
+            {
+              path: '/device-management/tag-library',
+              name: 'tagLibrary',
+              code: 'deviceManagement.tagLibrary',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/tag-library',
+                  name: 'tagLibrary',
+                  redirect: '/device-management/tag-library/list',
+                },
+                {
+                  path: '/device-management/tag-library/list',
+                  code: 'deviceManagement.tagLibrary.listView',
+                  name: 'listView',
+                  component: '/DeviceManagement/TagLibrary',
+                },
+              ],
+            },
           ],
         },
 
