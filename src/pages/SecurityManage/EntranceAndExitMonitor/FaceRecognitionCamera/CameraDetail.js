@@ -4,6 +4,7 @@ import { Form, Card, Row, Col, Select, Input, Button, Badge } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import { routerRedux } from 'dva/router';
 import DescriptionList from '@/components/DescriptionList';
+import Ellipsis from '@/components/Ellipsis';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 // import Ellipsis from '@/components/Ellipsis';
 import styles from './CameraDetail.less';
@@ -151,6 +152,9 @@ export default class CameraDetail extends PureComponent {
       videoCameraArea,
       location,
       state,
+      equipmentNo,
+      videoCameraNo,
+      videoCameraUrl,
     } = currentList;
 
     const { buildingName } = buildingInfo || {};
@@ -172,6 +176,13 @@ export default class CameraDetail extends PureComponent {
           )}
           <Description term="所在区域">{videoCameraArea || getEmptyData()}</Description>
           <Description term="位置详情">{location || getEmptyData()}</Description>
+          <Description term="设备ID">{equipmentNo || getEmptyData()}</Description>
+          <Description term="摄像头ID">{videoCameraNo || getEmptyData()}</Description>
+          <Description term="视频URL" style={{ height: '38px' }}>
+            <Ellipsis tooltip lines={1} className={styles.ellipsisText}>
+              {videoCameraUrl || getEmptyData()}
+            </Ellipsis>
+          </Description>
           <Description term="视频监控状态">
             <Badge color={+state === 1 ? 'green' : 'red'} />
             {+state === 1 ? '启用' : '禁用' || getEmptyData()}
