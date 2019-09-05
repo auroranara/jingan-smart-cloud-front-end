@@ -34,6 +34,15 @@ const { Option } = Select;
 
 const title = '人脸库';
 
+const sexList = {
+  1: '男',
+  2: '女',
+};
+
+const documentTypeList = {
+  1: '军官证',
+  2: '身份证',
+};
 //面包屑
 const breadcrumbList = [
   {
@@ -588,12 +597,13 @@ export default class FaceDatabase extends PureComponent {
     return isImage && !faceLoading;
   };
 
-  /* 区域动态加载 */
+  // 区域动态加载
   handleLoadData = (keys, selectedOptions) => {
     const { dispatch } = this.props;
     const cityIds = selectedOptions.map(item => item.id).splice(0, 1);
     const newCityIds = cityIds.map(item => item).join(',');
     const targetOption = selectedOptions[selectedOptions.length - 1];
+
     targetOption.loading = true;
     dispatch({
       type: 'company/fetchArea',
@@ -619,6 +629,22 @@ export default class FaceDatabase extends PureComponent {
       securityManage: { sexList, documentTypeList },
       company: { registerAddress: provincial },
     } = this.props;
+
+    const newProvincial = provincial.map(item => {
+      const { children } = item;
+      return {
+        ...item,
+        children: children
+          ? children.map(child => {
+              return {
+                ...child,
+                isLeaf: true,
+              };
+            })
+          : null,
+      };
+    });
+
     return (
       <Card className={styles.formCard}>
         <Form className={styles.form}>
@@ -655,7 +681,7 @@ export default class FaceDatabase extends PureComponent {
               <FormItem label={fieldLabels.provincialLevel}>
                 {getFieldDecorator('province')(
                   <Cascader
-                    options={provincial}
+                    options={newProvincial}
                     fieldNames={{
                       value: 'id',
                       label: 'name',
@@ -815,7 +841,7 @@ export default class FaceDatabase extends PureComponent {
                       </Ellipsis>
                       <div className={styles.line}>
                         性别：
-                        {+faceType === 1 ? '男' : +faceType === 2 ? '女' : getEmptyData()}
+                        {sexList[faceType] || getEmptyData()}
                       </div>
                       <div className={styles.line}>
                         手机：
@@ -836,10 +862,8 @@ export default class FaceDatabase extends PureComponent {
                         {province + city || getEmptyData()}
                       </div>
                       <div className={styles.line}>
-                        {(+identityCardType === 1 && '军官证') ||
-                          (+identityCardType === 2 && '身份证') ||
-                          '未知'}{' '}
-                        : {identityCardNo || getEmptyData()}
+                        {documentTypeList[identityCardType] || '未知'} :{' '}
+                        {identityCardNo || getEmptyData()}
                       </div>
                     </Col>
                   </Row>
@@ -862,6 +886,21 @@ export default class FaceDatabase extends PureComponent {
       securityManage: { isLast, sexList, documentTypeList },
       company: { registerAddress: provincial },
     } = this.props;
+
+    const newProvincial = provincial.map(item => {
+      const { children } = item;
+      return {
+        ...item,
+        children: children
+          ? children.map(child => {
+              return {
+                ...child,
+                isLeaf: true,
+              };
+            })
+          : null,
+      };
+    });
 
     const {
       modalVisible,
@@ -971,22 +1010,22 @@ export default class FaceDatabase extends PureComponent {
               )}
             </FormItem>
 
-            <FormItem {...formItemLayout} label={fieldLabels.phone}>
-              {getFieldDecorator('faceTel', { getValueFromEvent: this.handleTrim })(
-                <Input placeholder="请输入手机号" />
-              )}
-            </FormItem>
-
-            <FormItem {...formItemLayout} label={fieldLabels.jobNum}>
-              {getFieldDecorator('jobNumber', { getValueFromEvent: this.handleTrim })(
-                <Input placeholder="请输入工号" />
+            <FormItem {...formItemLayout} label={fieldLabels.birthTime}>
+              {getFieldDecorator('faceBirthday', {})(
+                <DatePicker
+                  // showTime
+                  showToday={false}
+                  // format="YYYY-MM-DD"
+                  placeholder="请选择生日时间"
+                  style={{ width: 315 }}
+                />
               )}
             </FormItem>
 
             <FormItem {...formItemLayout} label={fieldLabels.provincialLevel}>
               {getFieldDecorator('provincial', {})(
                 <Cascader
-                  options={provincial}
+                  options={newProvincial}
                   fieldNames={{
                     value: 'id',
                     label: 'name',
@@ -1000,7 +1039,20 @@ export default class FaceDatabase extends PureComponent {
                   placeholder="请选择省级地市"
                   allowClear
                   getPopupContainer={getRootChild}
+                  popupClassName={styles.cascaderStyle}
                 />
+              )}
+            </FormItem>
+
+            <FormItem {...formItemLayout} label={fieldLabels.phone}>
+              {getFieldDecorator('faceTel', { getValueFromEvent: this.handleTrim })(
+                <Input placeholder="请输入手机号" />
+              )}
+            </FormItem>
+
+            <FormItem {...formItemLayout} label={fieldLabels.jobNum}>
+              {getFieldDecorator('jobNumber', { getValueFromEvent: this.handleTrim })(
+                <Input placeholder="请输入工号" />
               )}
             </FormItem>
 
@@ -1018,18 +1070,6 @@ export default class FaceDatabase extends PureComponent {
 
             <FormItem {...formItemLayout} label={fieldLabels.documentNum}>
               {getFieldDecorator('identityCardNo', {})(<Input placeholder="请输入证件号" />)}
-            </FormItem>
-
-            <FormItem {...formItemLayout} label={fieldLabels.birthTime}>
-              {getFieldDecorator('faceBirthday', {})(
-                <DatePicker
-                  // showTime
-                  showToday={false}
-                  // format="YYYY-MM-DD"
-                  placeholder="请选择生日时间"
-                  style={{ width: 260 }}
-                />
-              )}
             </FormItem>
           </Form>
         </Modal>

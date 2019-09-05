@@ -24,6 +24,15 @@ const FormItem = Form.Item;
 
 const title = '报警历史记录';
 
+const sexList = {
+  1: '男',
+  2: '女',
+};
+
+const documentTypeList = {
+  1: '军官证',
+  2: '身份证',
+};
 //面包屑
 const breadcrumbList = [
   {
@@ -380,7 +389,7 @@ export default class AlarmRecord extends PureComponent {
                   </div>
                   <div className={styles.itemLabel}>
                     性别：
-                    {+faceType === 1 ? '男' : +faceType === 2 ? '女' : '暂无数据'}
+                    {sexList[faceType] || '暂无数据'}
                   </div>
                   <div className={styles.itemLabel}>
                     籍贯：
@@ -396,11 +405,7 @@ export default class AlarmRecord extends PureComponent {
                 <div className={styles.item}>
                   <div className={styles.itemLabel}>
                     证件类型：
-                    {+identityCardType === 1
-                      ? '军官证'
-                      : +identityCardType === 2
-                        ? '身份证'
-                        : '未知'}
+                    {documentTypeList[identityCardType] || '未知'}
                   </div>
                   <div className={styles.itemLabel}>
                     证件号：
@@ -417,7 +422,7 @@ export default class AlarmRecord extends PureComponent {
                 <div className={styles.item}>
                   <span>
                     相似度：
-                    {similarity}
+                    {Math.round(similarity * 100)}%
                   </span>
                 </div>
               </div>
