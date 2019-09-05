@@ -94,19 +94,13 @@ export default class CompanyList extends PureComponent {
 
   // 挂载后
   componentDidMount() {
-    const {
-      dispatch,
-      user: {
-        currentUser: { unitType, companyId },
-      },
-    } = this.props;
+    const { dispatch } = this.props;
     // 获取监测单位列表
     dispatch({
       type: 'securityManage/fetchMonitorCompanyList',
       payload: {
         pageSize,
         pageNum: 1,
-        companyId: +unitType === 4 ? companyId : undefined,
       },
     });
 
@@ -121,9 +115,6 @@ export default class CompanyList extends PureComponent {
     const {
       form: { getFieldsValue },
       dispatch,
-      user: {
-        currentUser: { unitType, companyId: companyIdAuth },
-      },
     } = this.props;
     const { company_id } = getFieldsValue();
     const payload = {
@@ -133,7 +124,6 @@ export default class CompanyList extends PureComponent {
     dispatch({
       type: 'securityManage/fetchMonitorCompanyList',
       payload: {
-        companyId: +unitType === 4 ? companyIdAuth : undefined,
         pageSize,
         pageNum: 1,
         ...payload,
@@ -146,9 +136,6 @@ export default class CompanyList extends PureComponent {
     const {
       dispatch,
       form: { resetFields },
-      user: {
-        currentUser: { unitType, companyId },
-      },
     } = this.props;
     // 清除筛选条件
     resetFields();
@@ -158,7 +145,6 @@ export default class CompanyList extends PureComponent {
     dispatch({
       type: 'securityManage/fetchMonitorCompanyList',
       payload: {
-        companyId: +unitType === 4 ? companyId : undefined,
         pageSize,
         pageNum: 1,
       },
@@ -170,9 +156,6 @@ export default class CompanyList extends PureComponent {
     const {
       dispatch,
       securityManage: { isLast },
-      user: {
-        currentUser: { unitType, companyId },
-      },
     } = this.props;
     if (isLast) {
       return;
@@ -184,7 +167,6 @@ export default class CompanyList extends PureComponent {
     dispatch({
       type: 'securityManage/appendCompanyList',
       payload: {
-        companyId: +unitType === 4 ? companyId : undefined,
         pageSize,
         pageNum: pageNum + 1,
         ...this.formData,
