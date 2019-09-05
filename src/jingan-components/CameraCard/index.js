@@ -19,7 +19,7 @@ export default class CameraCard extends BigPlatformCard {
   FIELDS = [
     {
       label: '名称',
-      key: 'location',
+      key: 'name',
       labelWrapperClassName: styles.nameLabelWrapper,
     },
     {
