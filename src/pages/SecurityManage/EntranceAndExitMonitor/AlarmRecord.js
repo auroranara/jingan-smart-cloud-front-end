@@ -154,17 +154,20 @@ export default class AlarmRecord extends PureComponent {
   handleLoadMore = () => {
     const {
       dispatch,
-      securityManage: { isLast },
+      securityManage: { isLast, pageNum },
       match: {
         params: { companyId },
       },
+      form: { getFieldsValue },
     } = this.props;
     if (isLast) {
       return;
     }
-    const {
-      securityManage: { pageNum },
-    } = this.props;
+    const { startDate, endDate } = getFieldsValue();
+    const payload = {
+      startDate: startDate ? moment(startDate).format('YYYY-MM-DD HH:mm:ss') : undefined,
+      endDate: endDate ? moment(endDate).format('YYYY-MM-DD HH:mm:ss') : undefined,
+    };
     // 请求数据
     dispatch({
       type: 'securityManage/fetchAlarmRecordMore',
@@ -173,6 +176,7 @@ export default class AlarmRecord extends PureComponent {
         pageSize,
         pageNum: pageNum + 1,
         ...this.formData,
+        ...payload,
       },
     });
   };

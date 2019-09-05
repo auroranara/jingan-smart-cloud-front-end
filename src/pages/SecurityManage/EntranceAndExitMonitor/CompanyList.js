@@ -122,7 +122,7 @@ export default class CompanyList extends PureComponent {
       form: { getFieldsValue },
       dispatch,
       user: {
-        currentUser: { unitType, companyId },
+        currentUser: { unitType, companyId: companyIdAuth },
       },
     } = this.props;
     const { company_id } = getFieldsValue();
@@ -133,7 +133,7 @@ export default class CompanyList extends PureComponent {
     dispatch({
       type: 'securityManage/fetchMonitorCompanyList',
       payload: {
-        companyId: +unitType === 4 ? companyId : undefined,
+        companyId: +unitType === 4 ? companyIdAuth : undefined,
         pageSize,
         pageNum: 1,
         ...payload,
