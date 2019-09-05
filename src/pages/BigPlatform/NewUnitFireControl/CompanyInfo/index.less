@@ -1,66 +1,161 @@
-.companyInfo {
-  width: 100%;
-  height: 100%;
-  position: relative;
+.container {
   :global {
-    .antd-pro\\components\\-description-list\\index-descriptionList .antd-pro\\components\\-description-list\\index-term {
-      color: #fff;
-      line-height: 26px;
+    .custom-section2-title-container {
+      background-size: 62.5% 100%;
     }
-    .antd-pro-components-description-list-index-descriptionList .antd-pro-components-description-list-index-term {
-      color: #fff;
-      line-height: 26px;
+    .custom-section2-content-container {
+      padding: 0;
     }
-    .antd-pro\\components\\-description-list\\index-descriptionList .antd-pro\\components\\-description-list\\index-detail {
-      color: #fff;
-      line-height: 26px;
-    }
-    .antd-pro-components-description-list-index-descriptionList .antd-pro-components-description-list-index-detail {
-      color: #fff;
-      line-height: 26px;
-    }
-    .antd-pro\\components\\-description-list\\index-descriptionList {
-      .ant-col-xs-24+.ant-col-xs-24 {
-        margin-top: -16px;
-      }
-    }
-    .antd-pro-components-description-list-index-descriptionList {
-      .ant-col-xs-24+.ant-col-xs-24 {
-        margin-top: -16px;
-      }
-    }
-  }
-  .divider {
-    height: 2px;
-    width: 100%;
-    background: linear-gradient(to right, transparent, #0967d3, transparent);
-    opacity: 0.73;
-  }
-  .infoWrapper {
-    display: flex;
-    flex-direction: row;
-    width: calc(100% - 50px);
-    .iconInfo {
-      width: 50px;
-    }
-    .infoWrapper {
-      flex: 1;
-      flex-direction: column;
-      .manWrapper {
-        // width: 150px;
-        .phone {
-          // float: right;
-          margin-left: 20px;
-        }
-      }
-      .checkNum {
-        color: #04fdff;
-        font-size: 24px;
-      }
-    }
-  }
-  .companyName {
-    font-size: 17px;
-    line-height: 35px;
   }
 }
+.wrapper {
+  padding: 0 1em;
+}
+.top, .center {
+  display: flex;
+  padding: 0.75em 0;
+  background: linear-gradient(to right, transparent, #0967d3, transparent) no-repeat center bottom;
+  background-size: 100% 2px;
+}
+.topIcon, .centerIcon {
+  flex: none;
+  margin-right: 0.75em;
+  width: 2.25em;
+  height: 2.25em;
+  background: no-repeat center;
+  background-size: 2.1875em;
+}
+.topContent {
+  flex: 1;
+}
+.companyName {
+  margin-bottom: 0.5em;
+  padding: 0.15em 0;
+  font-size: 1.25em;
+}
+.person {
+  white-space: nowrap;
+}
+.maintenanceCompany {
+  margin-bottom: 0.5em;
+  white-space: nowrap;
+}
+.maintenancePeople {
+  display: flex;
+  &>:first-child {
+    flex: none;
+  }
+  &>:nth-child(2) {
+    flex: 1;
+    &>:not(:last-child) {
+      margin-bottom: 0.5em;
+    }
+  }
+}
+.maintenancePerson {
+  white-space: nowrap;
+}
+.bottom {
+  display: flex;
+  padding: 0.75em 0;
+  justify-content: space-between;
+}
+.bottomItem {
+  flex: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    .bottomItemValue {
+      color: #fff;
+    }
+  }
+}
+.bottomItemIcon {
+  flex: none;
+  margin-right: 1.5em;
+  width: 3em;
+  height: 3em;
+  background: no-repeat center;
+  background-size: contain;
+}
+.bottomItemContent {
+  flex: 1;
+}
+.bottomItemLabel {
+  margin-bottom: 0.5em;
+  width: 4em;
+  white-space: nowrap;
+}
+.bottomItemValue {
+  font-size: 1.5em;
+  line-height: 1;
+  color: #0ff;
+}
+// .companyInfo {
+//   width: 100%;
+//   height: 100%;
+//   position: relative;
+//   :global {
+//     .antd-pro\\components\\-description-list\\index-descriptionList .antd-pro\\components\\-description-list\\index-term {
+//       color: #fff;
+//       line-height: 26px;
+//     }
+//     .antd-pro-components-description-list-index-descriptionList .antd-pro-components-description-list-index-term {
+//       color: #fff;
+//       line-height: 26px;
+//     }
+//     .antd-pro\\components\\-description-list\\index-descriptionList .antd-pro\\components\\-description-list\\index-detail {
+//       color: #fff;
+//       line-height: 26px;
+//     }
+//     .antd-pro-components-description-list-index-descriptionList .antd-pro-components-description-list-index-detail {
+//       color: #fff;
+//       line-height: 26px;
+//     }
+//     .antd-pro\\components\\-description-list\\index-descriptionList {
+//       .ant-col-xs-24+.ant-col-xs-24 {
+//         margin-top: -16px;
+//       }
+//     }
+//     .antd-pro-components-description-list-index-descriptionList {
+//       .ant-col-xs-24+.ant-col-xs-24 {
+//         margin-top: -16px;
+//       }
+//     }
+//   }
+//   .divider {
+//     height: 2px;
+//     width: 100%;
+//     background: linear-gradient(to right, transparent, #0967d3, transparent);
+//     opacity: 0.73;
+//   }
+//   .infoWrapper {
+//     display: flex;
+//     flex-direction: row;
+//     width: calc(100% - 50px);
+//     .iconInfo {
+//       width: 50px;
+//     }
+//     .infoWrapper {
+//       flex: 1;
+//       flex-direction: column;
+//       .manWrapper {
+//         // width: 150px;
+//         .phone {
+//           // float: right;
+//           margin-left: 20px;
+//         }
+//       }
+//       .checkNum {
+//         color: #04fdff;
+//         font-size: 24px;
+//       }
+//     }
+//   }
+//   .companyName {
+//     font-size: 17px;
+//     line-height: 35px;
+//   }
+// }
