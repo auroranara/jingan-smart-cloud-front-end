@@ -2498,6 +2498,56 @@ module.exports = env => {
             },
           ],
         },
+
+        // 人员在岗在位管理系统
+        {
+          path: '/personnel-management',
+          code: 'personnelManagement',
+          icon: 'team',
+          name: 'personnelManagement',
+          routes: [
+            // 人员基本信息
+            {
+              path: '/personnel-management/personnel-info',
+              code: 'personnelManagement.personnelInfo',
+              name: 'personnelInfo',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/personnel-management/personnel-info',
+                  name: 'personnelInfo',
+                  redirect: '/personnel-management/personnel-info/company-list',
+                },
+                {
+                  path: '/personnel-management/personnel-info/company-list',
+                  code: 'personnelManagement.personnelInfo.listView',
+                  name: 'companyList',
+                  component: './PersonnelManagement/PersonnelInfo/CompanyList',
+                },
+              ],
+            },
+            // 车辆基本信息
+            {
+              path: '/personnel-management/vehicle-info',
+              code: 'personnelManagement.vehicleInfo',
+              name: 'vehicleInfo',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/personnel-management/vehicle-info',
+                  name: 'vehicleInfo',
+                  redirect: '/personnel-management/vehicle-info/company-list',
+                },
+                {
+                  path: '/personnel-management/vehicle-info/company-list',
+                  code: 'personnelManagement.vehicleInfo.listView',
+                  name: 'companyList',
+                  component: './PersonnelManagement/VehicleInfo/CompanyList',
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ];
