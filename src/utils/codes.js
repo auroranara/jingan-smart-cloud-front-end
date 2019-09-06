@@ -117,6 +117,12 @@ export default {
       add: 'deviceManagement.brand.add',
       edit: 'deviceManagement.brand.edit',
       delete: 'deviceManagement.brand.delete',
+      model: {
+        listView: 'deviceManagement.brand.model.listView',
+        add: 'deviceManagement.brand.model.add',
+        edit: 'deviceManagement.brand.model.edit',
+        delete: 'deviceManagement.brand.model.delete',
+      },
     },
     tagLibrary: {
       listView: 'deviceManagement.tagLibrary.listView',

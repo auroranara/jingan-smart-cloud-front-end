@@ -4,6 +4,7 @@ import { Card, Form, Table, Divider, Popconfirm, Button, Modal, Input, message }
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { AuthButton, AuthA } from '@/utils/customAuth';
 import codes from '@/utils/codes';
+import router from 'umi/router';
 
 const FormItem = Form.Item;
 
@@ -153,6 +154,10 @@ export default class Brand extends PureComponent {
     this.setState({ modalVisible: false })
   }
 
+  jumpToModel = (brandId) => {
+    router.push(`/device-management/brand/${brandId}/model`)
+  }
+
   /**
    * 渲染品牌列表
    */
@@ -185,7 +190,11 @@ export default class Brand extends PureComponent {
               <AuthA code={codes.deviceManagement.brand.delete}>删除</AuthA>
             </Popconfirm>
             <Divider type="vertical" />
-            <a>型号管理</a>
+            <AuthA
+              code={codes.deviceManagement.brand.model.listView}
+              onClick={() => this.jumpToModel(row.id)}>
+              型号管理
+               </AuthA>
           </Fragment>
         ),
       },

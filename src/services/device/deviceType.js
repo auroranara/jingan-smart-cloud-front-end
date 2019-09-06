@@ -13,3 +13,8 @@ export async function deployMonitoringType(body) {
     body,
   })
 }
+
+// 获取全部设备类型
+export async function fetchAllDeviceTypes(params) {
+  return request(`/acloud_new/v2/monitor/equipmentType?${stringify(params)}`)
+}

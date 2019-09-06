@@ -10,6 +10,7 @@ import {
   Popconfirm,
   TreeSelect,
   message,
+  Select,
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
@@ -38,13 +39,15 @@ const RenderModal = Form.create()(props => {
     handleCloseModal,
     doAdd,
     doEdit,
+    tagList,
   } = props;
   const formItemCol = {
     labelCol: {
       span: 5,
+      offset: 2,
     },
     wrapperCol: {
-      span: 15,
+      span: 12,
     },
   };
   const okHandle = () => {
@@ -85,7 +88,7 @@ const RenderModal = Form.create()(props => {
     2、所以子节点必须选择上级监测类型
   */
   return (
-    <Modal title={modalTitle} visible={modalVisible} onCancel={handleClos} onOk={okHandle}>
+    <Modal width={600} title={modalTitle} visible={modalVisible} onCancel={handleClos} onOk={okHandle}>
       <Form>
         <FormItem {...formItemCol} label="监测类型名称：">
           {getFieldDecorator('name', {
@@ -115,6 +118,23 @@ const RenderModal = Form.create()(props => {
             </TreeSelect>
           )}
         </FormItem>
+        <FormItem {...formItemCol} label="图标选择：">
+          {getFieldDecorator('logoId', {
+            initialValue: modalStatus === 'edit' ? detail.logoId : undefined,
+          })(
+            <Select placeholder="请选择">
+              {tagList.map(({ id, name, webUrl }) => (
+                <Select.Option
+                  key={id}
+                  value={id}
+                >
+                  <img width="27" height="27" src={webUrl} alt="图标"></img>
+                  <span style={{ paddingLeft: '1em' }}>{name}</span>
+                </Select.Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
       </Form>
     </Modal>
   );
@@ -138,6 +158,7 @@ export default class DepartmentList extends PureComponent {
 
   componentDidMount() {
     this.getMonitoringTypes();
+    this.fetchAllTags()
   }
 
   componentWillUnmount() {
@@ -148,11 +169,18 @@ export default class DepartmentList extends PureComponent {
     });
   }
 
+
+  /**
+   * 获取全部图标
+   */
+  fetchAllTags = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'device/fetchAllTags', payload: {} })
+  }
+
   // 获取监测类型列表
   getMonitoringTypes = () => {
-    const {
-      dispatch,
-    } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'device/fetchMonitoringTypes',
       callback: list => {
@@ -230,19 +258,15 @@ export default class DepartmentList extends PureComponent {
   // 删除监测类型
   handleDelete = rows => {
     const { dispatch } = this.props;
-    if (rows.allUserCount > 0) {
-      message.error('该监测类型拥有下属用户，不可删除！');
-    } else {
-      dispatch({
-        type: 'device/deleteMonitoringTypes',
-        payload: { id: rows.id },
-        success: () => {
-          this.getMonitoringTypes();
-          message.success('删除成功！');
-        },
-        error: (response) => { message.success(response.msg) },
-      });
-    }
+    dispatch({
+      type: 'device/deleteMonitoringTypes',
+      payload: { id: rows.id },
+      success: () => {
+        this.getMonitoringTypes();
+        message.success('删除成功！');
+      },
+      error: (response) => { message.success(response.msg) },
+    });
   };
 
   // 新建监测类型
@@ -315,6 +339,8 @@ export default class DepartmentList extends PureComponent {
     );
   }
 
+  renderTableImg = src => src ? (<img width="30" height="30" style={{ marginLeft: '1em' }} src={src} alt="图标"></img>) : null
+
   // 渲染监测类型树
   renderTable() {
     const {
@@ -329,17 +355,21 @@ export default class DepartmentList extends PureComponent {
         title: '监测类型名称',
         dataIndex: 'name',
         key: 'name',
-        width: '50%',
-        render: val => {
+        width: '60%',
+        render: (val, { logoWebUrl }) => {
           const index = val.indexOf(searchName);
           return searchName && index > -1 ? (
             <span>
               {val.substr(0, index)}
               <span style={{ color: '#f50' }}>{searchName}</span>
               {val.substr(index + searchName.length)}
+              {this.renderTableImg(logoWebUrl)}
             </span>
           ) : (
-              <span>{val}</span>
+              <Fragment>
+                <span>{val}</span>
+                {this.renderTableImg(logoWebUrl)}
+              </Fragment>
             );
         },
       },
@@ -393,6 +423,7 @@ export default class DepartmentList extends PureComponent {
     const {
       device: {
         monitoringType: list,
+        tagLibrary: { list: tagList },
       },
     } = this.props;
     const { total } = this.state;
@@ -402,6 +433,7 @@ export default class DepartmentList extends PureComponent {
       doAdd: this.doAdd,
       doEdit: this.doEdit,
       list,
+      tagList,
     };
 
     const content = (

@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 import { stringify } from 'qs';
 
-// 获取图标库列表
+// 获取图标库列表（分页）
 export async function fetchTagsForPage(params) {
   return request(`/acloud_new/v2/monitor/monitorParamLogoForPage?${stringify(params)}`)
 }
@@ -27,4 +27,9 @@ export async function deleteTag(params) {
   return request(`/acloud_new/v2/monitor/monitorParamLogo/${params.id}`, {
     method: 'DELETE',
   })
+}
+
+// 获取全部图标
+export async function fetchAllTags(params) {
+  return request(`/acloud_new/v2/monitor/monitorParamLogo?${stringify(params)}`)
 }

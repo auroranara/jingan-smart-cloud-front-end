@@ -7,18 +7,24 @@ import {
 import {
   fetchDeviceTypes,
   deployMonitoringType,
+  fetchAllDeviceTypes,
 } from '@/services/device/deviceType'
 import {
   fetchBrandsForPage,
   addBrand,
   editBrand,
   deleteBrand,
+  fetchModelsForPage,
+  addModel,
+  editModel,
+  deleteModel,
 } from '@/services/device/brand'
 import {
   fetchTagsForPage,
   editTag,
   addTag,
   deleteTag,
+  fetchAllTags,
 } from '@/services/device/tagLibrary'
 
 const defaultPagination = {
@@ -54,7 +60,7 @@ export default {
     },
   },
   effects: {
-    // 获取监测类型列表
+    // 获取监测类型列表树
     *fetchMonitoringTypes({ callback }, { call, put }) {
       const response = yield call(fetchMonitoringTypes)
       if (response && response.code === 200) {
@@ -73,14 +79,14 @@ export default {
         success && success()
       } else if (error) error(response)
     },
-    // 监测类型
+    // 编辑监测类型
     *editMonitoringTypes({ payload, success, error }, { call }) {
       const response = yield call(editMonitoringTypes, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
-    // 监测类型
+    // 删除监测类型
     *deleteMonitoringTypes({ payload, success, error }, { call }) {
       const response = yield call(deleteMonitoringTypes, payload)
       if (response && response.code === 200) {
@@ -90,6 +96,16 @@ export default {
     // 获取设备类型列表（分页）
     *fetchDeviceTypes({ payload }, { call, put }) {
       const response = yield call(fetchDeviceTypes, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveDeviceTypes',
+          payload: response.data,
+        })
+      }
+    },
+    // 获取全部设备类型列表
+    *fetchAllDeviceTypes({ payload }, { call, put }) {
+      const response = yield call(fetchAllDeviceTypes, payload)
       if (response && response.code === 200) {
         yield put({
           type: 'saveDeviceTypes',
@@ -135,7 +151,7 @@ export default {
         success && success()
       } else if (error) error(response)
     },
-    // 获取图标库列表
+    // 获取图标库列表（分页）
     *fetchTagsForPage({ payload }, { call, put }) {
       const response = yield call(fetchTagsForPage, payload)
       if (response && response.code === 200) {
@@ -162,6 +178,47 @@ export default {
     // 删除图标库
     *deleteTag({ payload, success, error }, { call }) {
       const response = yield call(deleteTag, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 获取全部图标
+    *fetchAllTags({ payload }, { call, put }) {
+      const response = yield call(fetchAllTags, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveTags',
+          payload: response.data,
+        })
+      }
+    },
+    // 获取型号列表
+    *fetchModelsForPage({ payload }, { call, put }) {
+      const response = yield call(fetchModelsForPage, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveModels',
+          payload: response.data,
+        })
+      }
+    },
+    // 新增型号
+    *addModel({ payload, success, error }, { call }) {
+      const response = yield call(addModel, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 编辑型号
+    *editModel({ payload, success, error }, { call }) {
+      const response = yield call(editModel, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 删除型号
+    *deleteModel({ payload, success, error }, { call }) {
+      const response = yield call(deleteModel, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
@@ -217,6 +274,20 @@ export default {
       return {
         ...state,
         tagLibrary: {
+          list,
+          pagination,
+        },
+      }
+    },
+    saveModels(state, {
+      payload: {
+        list = [],
+        pagination = defaultPagination,
+      } = {},
+    }) {
+      return {
+        ...state,
+        model: {
           list,
           pagination,
         },

@@ -28,3 +28,31 @@ export async function deleteBrand(params) {
     method: 'DELETE',
   })
 }
+
+// 获取型号列表
+export async function fetchModelsForPage(params) {
+  return request(`/acloud_new/v2/monitor/equipmentModelForPage?${stringify(params)}`)
+}
+
+// 新增型号
+export async function addModel(body) {
+  return request('/acloud_new/v2/monitor/equipmentModel', {
+    method: 'POST',
+    body,
+  })
+}
+
+// 编辑型号
+export async function editModel(body) {
+  return request('/acloud_new/v2/monitor/equipmentModel', {
+    method: 'PUT',
+    body,
+  })
+}
+
+// 删除型号
+export async function deleteModel(params) {
+  return request(`/acloud_new/v2/monitor/equipmentModel/${params.id}`, {
+    method: 'DELETE',
+  })
+}

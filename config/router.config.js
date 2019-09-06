@@ -1504,6 +1504,12 @@ module.exports = env => {
                   code: 'deviceManagement.brand.listView',
                   component: '/DeviceManagement/Brand',
                 },
+                {
+                  path: '/device-management/brand/:brandId/model',
+                  name: 'model',
+                  code: 'deviceManagement.brand.model.listView',
+                  component: '/DeviceManagement/Brand/ModelList',
+                },
               ],
             },
             // 标签库
