@@ -12,8 +12,36 @@ import styles from './index.less';
   newUnitFireControl,
 }), undefined, undefined, { withRef: true })
 export default class FaceRecognition extends Component {
+  state = {
+    visible: false,
+  }
+
   componentDidMount() {
-    this.getFaceRecognitionCount();
+    this.monitorScene();
+  }
+
+  monitorScene() {
+    const { dispatch, companyId } = this.props;
+    dispatch({
+      type: 'newUnitFireControl/fetchMonitorScene',
+      payload: {
+        companyId,
+        pageNum: 1,
+        pageSize: 1,
+      },
+      callback: (response) => {
+        const { code, data } = response || {};
+        if (code === 200) {
+          const visible = data && data.list && data.list.length > 0 || false;
+          if (visible) {
+            this.setState({
+              visible,
+            });
+            this.getFaceRecognitionCount();
+          }
+        }
+      },
+    });
   }
 
   getFaceRecognitionCount() {
@@ -55,8 +83,9 @@ export default class FaceRecognition extends Component {
         }={},
       },
     } = this.props;
+    const { visible } = this.state;
 
-    return (
+    return visible ? (
       <CustomSection
         className={styles.container}
         title="人脸识别"
@@ -94,6 +123,6 @@ export default class FaceRecognition extends Component {
           ))}
         </div>
       </CustomSection>
-    );
+    ) : null;
   }
 }

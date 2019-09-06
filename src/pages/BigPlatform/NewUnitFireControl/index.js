@@ -764,7 +764,7 @@ export default class NewUnitFireControl extends PureComponent {
 
     // 人脸识别报警
     if (type === 58) {
-      this.faceRecognition.refresh();
+      this.faceRecognition && this.faceRecognition.refresh();
       this.showFaceRecognitionAlarmNotification(result);
     }
   };

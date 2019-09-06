@@ -77,6 +77,8 @@ import {
   getCaptureList,
   // 获取抓拍报警详情
   getCaptureDetail,
+  // 场景检测
+  monitorScene,
 } from '../services/bigPlatform/fireControl';
 import { getRiskDetail } from '../services/bigPlatform/bigPlatform';
 import { queryMaintenanceRecordDetail } from '../services/maintenanceRecord.js';
@@ -1173,6 +1175,11 @@ export default {
         });
       }
       if (callback) callback(response.data);
+    },
+    // 场景检测
+    *fetchMonitorScene({ payload, callback }, { call }) {
+      const response = yield call(monitorScene, payload);
+      callback && callback(response);
     },
     // 获取人脸识别统计数据
     *fetchFaceRecognitionCount({ payload, callback }, { call, put, all }) {

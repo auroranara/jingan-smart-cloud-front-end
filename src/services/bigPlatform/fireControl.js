@@ -514,3 +514,8 @@ export async function getCaptureList(params) {
 export async function getCaptureDetail(params) {
   return request(`/acloud_new/v2/faceHistory/list?${stringify(params)}`);
 }
+
+// 场景检测
+export async function monitorScene(params) {
+  return request(`/acloud_new/v2/monitorScene/list?${stringify(params)}`);
+}
