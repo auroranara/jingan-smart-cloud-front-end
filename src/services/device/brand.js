@@ -56,3 +56,37 @@ export async function deleteModel(params) {
     method: 'DELETE',
   })
 }
+
+// 获取参数列表（分页）
+export async function fetchParameterForPage(params) {
+  return request(`/acloud_new/v2/monitor/sensorMonitorParamForPage?${stringify(params)}`)
+}
+
+// 新增参数
+export async function addParameter(body) {
+  return request('/acloud_new/v2/monitor/sensorMonitorParam', {
+    method: 'POST',
+    body,
+  })
+}
+
+// 编辑参数
+export async function editParameter(body) {
+  return request('/acloud_new/v2/monitor/sensorMonitorParam', {
+    method: 'PUT',
+    body,
+  })
+}
+
+// 查询报警策略
+export async function fetchAlarmStrategy(params) {
+  return request(`/acloud_new/v2/monitor/paramWarnStrategy?${stringify(params)}`)
+}
+
+// 保存报警策略
+export async function submitAlarmStrategy(body) {
+  return request('/acloud_new/v2/monitor/paramWarnStrategy', {
+    method: 'POST',
+    body,
+  })
+}

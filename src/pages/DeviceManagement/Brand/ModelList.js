@@ -2,8 +2,9 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Form, Table, Divider, Popconfirm, Button, Modal, Input, message, Select, TreeSelect } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import { AuthButton, AuthA } from '@/utils/customAuth';
+import { hasAuthority, AuthA } from '@/utils/customAuth';
 import codes from '@/utils/codes';
+import Link from 'umi/link';
 
 const FormItem = Form.Item;
 const { TreeNode } = TreeSelect;
@@ -26,7 +27,6 @@ const deviceTypes = [
   { key: 3, label: '监测对象' },
   { key: 4, label: '传感器' },
 ]
-
 /* 渲染树节点 */
 const renderTreeNodes = data => {
   return data.map(item => {
@@ -45,7 +45,7 @@ const renderTreeNodes = data => {
 // 渲染新增/编辑弹窗
 const RenderModal = Form.create()(props => {
   const {
-    form: { validateFields, getFieldDecorator, getFieldValue },
+    form: { validateFields, getFieldDecorator },
     detail,
     visible,
     onOk,
@@ -90,7 +90,7 @@ const RenderModal = Form.create()(props => {
             initialValue: isEdit ? detail.type : undefined,
             rules: [{ required: true, message: '请选择设备类型分类' }],
           })(
-            <Select placeholder="请选择" onSelect={onTypeSelect}>
+            <Select placeholder="请选择" onSelect={onTypeSelect} disabled={isEdit}>
               {deviceTypes.map(({ key, label }) => (
                 <Select.Option key={key} value={key}>{label}</Select.Option>
               ))}
@@ -265,19 +265,25 @@ export default class ModelList extends PureComponent {
     this.setState({ ...newState })
   }
 
+  jumpToParameter = () => { }
+
   /**
    * 渲染型号列表
    */
   renderTable = () => {
     const {
       tableLoading,
+      match: { params: { brandId } },
       device: {
         model: {
           list = [],
           pagination: { total, pageNum, pageSize },
         },
       },
+      user: { currentUser: { permissionCodes } },
     } = this.props
+    // 跳转到配置参数页面
+    const parameterAuth = hasAuthority(codes.deviceManagement.brand.model.deployParameter, permissionCodes)
     const columns = [
       {
         title: '型号名称',
@@ -303,6 +309,10 @@ export default class ModelList extends PureComponent {
             <Popconfirm title="确认要删除该监测类型吗？" onConfirm={() => this.handleDelete(row.id)}>
               <AuthA code={codes.deviceManagement.brand.delete}>删除</AuthA>
             </Popconfirm>
+            {row.type === 4 && parameterAuth && (<Divider type="vertical" />)}
+            {row.type === 4 && parameterAuth && (
+              <Link to={`/device-management/brand/${brandId}/model/${row.id}/parameter`}>配置参数</Link>
+            )}
           </Fragment>
         ),
       },

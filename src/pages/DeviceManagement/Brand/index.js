@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Form, Table, Divider, Popconfirm, Button, Modal, Input, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import { AuthButton, AuthA } from '@/utils/customAuth';
+import { AuthA } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import router from 'umi/router';
 

@@ -18,6 +18,11 @@ import {
   addModel,
   editModel,
   deleteModel,
+  fetchParameterForPage,
+  addParameter,
+  editParameter,
+  fetchAlarmStrategy,
+  submitAlarmStrategy,
 } from '@/services/device/brand'
 import {
   fetchTagsForPage,
@@ -58,6 +63,13 @@ export default {
       list: [],
       pagination: defaultPagination,
     },
+    // 参数列表
+    parameters: {
+      list: [],
+      pagination: defaultPagination,
+    },
+    // 报警策略
+    alarmStrategy: [],
   },
   effects: {
     // 获取监测类型列表树
@@ -223,6 +235,48 @@ export default {
         success && success()
       } else if (error) error(response)
     },
+    // 获取参数列表（分页）
+    *fetchParameterForPage({ payload }, { call, put }) {
+      const response = yield call(fetchParameterForPage, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveParameters',
+          payload: response.data,
+        })
+      }
+    },
+    // 新增参数
+    *addParameter({ payload, success, error }, { call }) {
+      const response = yield call(addParameter, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 编辑参数
+    *editParameter({ payload, success, error }, { call }) {
+      const response = yield call(editParameter, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 获取报警策略
+    *fetchAlarmStrategy({ payload, callback }, { call, put }) {
+      const response = yield call(fetchAlarmStrategy, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveAlarmStrategy',
+          payload: response.data.list || [],
+        })
+        if (callback) callback()
+      }
+    },
+    // 保存报警策略
+    *submitAlarmStrategy({ payload, success, error }, { call }) {
+      const response = yield call(submitAlarmStrategy, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
   },
   reducers: {
     save(state, action) {
@@ -291,6 +345,27 @@ export default {
           list,
           pagination,
         },
+      }
+    },
+    saveParameters(state, {
+      payload: {
+        list = [],
+        pagination = defaultPagination,
+      } = {},
+    }) {
+      return {
+        ...state,
+        parameters: {
+          list,
+          pagination,
+        },
+      }
+    },
+    // 保存报警策略
+    saveAlarmStrategy(state, { payload = [] }) {
+      return {
+        ...state,
+        alarmStrategy: payload,
       }
     },
   },

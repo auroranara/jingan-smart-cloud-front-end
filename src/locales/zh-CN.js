@@ -140,6 +140,7 @@ export default {
   'menu.deviceManagement.brand.listView': '品牌管理',
   'menu.deviceManagement.brand.model': '型号管理',
   'menu.deviceManagement.brand.model.listView': '型号管理',
+  'menu.deviceManagement.brand.deployParameter': '型号管理',
   'menu.deviceManagement.tagLibrary': '图标库',
   'menu.deviceManagement.tagLibrary.listView': '图标库',
   'menu.fireControl': '消防维保',

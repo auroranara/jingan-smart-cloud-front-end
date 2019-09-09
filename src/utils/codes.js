@@ -122,6 +122,7 @@ export default {
         add: 'deviceManagement.brand.model.add',
         edit: 'deviceManagement.brand.model.edit',
         delete: 'deviceManagement.brand.model.delete',
+        deployParameter: 'deviceManagement.brand.model.deployParameter',
       },
     },
     tagLibrary: {

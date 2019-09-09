@@ -1510,6 +1510,12 @@ module.exports = env => {
                   code: 'deviceManagement.brand.model.listView',
                   component: '/DeviceManagement/Brand/ModelList',
                 },
+                {
+                  path: '/device-management/brand/:brandId/model/:modelId/parameter',
+                  name: 'deployParameter',
+                  code: 'deviceManagement.brand.model.deployParameter',
+                  component: '/DeviceManagement/Brand/DeployParameter',
+                },
               ],
             },
             // 标签库
