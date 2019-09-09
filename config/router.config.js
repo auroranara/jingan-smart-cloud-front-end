@@ -2546,6 +2546,25 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              path: '/personnel-management/check-point',
+              code: 'personnelManagement.checkPoint',
+              name: 'checkPoint',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/personnel-management/check-point',
+                  name: 'checkPoint',
+                  redirect: '/personnel-management/check-point/company-list',
+                },
+                {
+                  path: '/personnel-management/check-point/company-list',
+                  code: 'personnelManagement.checkPoint.listView',
+                  name: 'companyList',
+                  component: './PersonnelManagement/CheckPoint/CompanyList',
+                },
+              ],
+            },
           ],
         },
       ],
