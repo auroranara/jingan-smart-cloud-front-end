@@ -7,7 +7,7 @@ import { Button, Card, Input, List, message } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import styles from './CheckList.less';
+import styles from './CompanyList.less';
 import { getAddress } from './utils';
 
 const title = '卡口列表';
