@@ -233,6 +233,8 @@ export default {
   'menu.personnelManagement.vehicleInfo.vehicleAdd': '新增车辆信息',
   'menu.personnelManagement.vehicleInfo.vehicleEdit': '编辑车辆信息',
   'menu.personnelManagement.vehicleInfo.vehicleDetail': '查看车辆信息',
+  'menu.personnelManagement.checkPoint': '卡口信息',
+  'menu.personnelManagement.checkPoint.companyList': '企业列表',
   'menu.dashboard.analysis': '分析页',
   'menu.dashboard.monitor': '监控页',
   'menu.dashboard.workplace': '工作台',
