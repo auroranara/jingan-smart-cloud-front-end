@@ -24,10 +24,14 @@ const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
 const TABS = ['卡口点位', '卡口设备', '显示屏'];
 const TAB_LIST = TABS.map((tab, index) => ({ key: index.toString(), tab }));
+const EQUIPMENT = 'equipment';
+const SCREEN = 'screen';
+const EQUIPMENT_INDEX = 1;
+const SCREEN_INDEX = 2;
 
 @connect(({ checkPoint, loading }) => ({ checkPoint, loading: loading.effects['checkPoint/fetchCheckList'] }))
 export default class CheckList extends PureComponent {
-  state={ tabIndex: 0, statusList: [undefined, {}, {}] };
+  state={ tabIndex: 0, equipmentStatus: {}, screenStatus: {} };
 
   componentDidMount() {
     const { match: { params: { tabIndex } } } = this.props;
@@ -76,8 +80,8 @@ export default class CheckList extends PureComponent {
   };
 
   fetchInitCheckList = index => {
-    const { tabIndex, statusList } = this.state;
-    const idx = index === undefined ? tabIndex : index;
+    const { tabIndex } = this.state;
+    const idx = index === undefined ? tabIndex : index; // 传了就用传的，不传用state里的
     const callback = (total, list) => {
       if (total <= PAGE_SIZE) this.hasMore = false;  // 如果第一页已经返回了所有结果，则hasMore置为false
       const newStatus = list.reduce((prev, next) => {
@@ -85,8 +89,7 @@ export default class CheckList extends PureComponent {
         prev[id] = status;
         return prev;
       }, {});
-      const newStatusList = statusList.map((sts, index) => index === +idx ? newStatus : sts);
-      this.setState({ statusList: newStatusList });
+      this.setState({ [`${+idx === EQUIPMENT_INDEX ? EQUIPMENT : SCREEN}Status`]: newStatus });
     };
 
     this.fetchCheckList(1, callback);
@@ -123,6 +126,13 @@ export default class CheckList extends PureComponent {
     this.setState({
       tabIndex: key,
     });
+  };
+
+  genSwitchChange = (id, tabIndex) => checked => {
+    const prop = `${+tabIndex === EQUIPMENT_INDEX ? EQUIPMENT : SCREEN}Status`;
+    const status = this.state[prop];
+    const newStatus = { ...status, [id]: checked };
+    this.setState({ [prop]: newStatus });
   };
 
   renderPoint = item => {
@@ -174,6 +184,8 @@ export default class CheckList extends PureComponent {
       status,
     } = item;
 
+    const { equipmentStatus } = this.state;
+
     const actions = ['查看', '编辑', '删除'];
     const address = `区域位置：${!area && !location ? NO_DATA : `${area || ''}${location || ''}`}`;
     return (
@@ -200,7 +212,12 @@ export default class CheckList extends PureComponent {
           </p>
           <p className={styles.pLast}>
             设备状态：
-            {status || NO_DATA}
+            <Switch
+              checkedChildren="启用"
+              unCheckedChildren="禁用"
+              checked={equipmentStatus[id]}
+              onChange={this.genSwitchChange(id, EQUIPMENT_INDEX)}
+            />
           </p>
         </Card>
       </List.Item>
@@ -215,6 +232,8 @@ export default class CheckList extends PureComponent {
       ipAddress,
       status,
     } = item;
+
+    const { screenStatus } = this.state;
 
     const actions = ['查看', '编辑', '删除'];
     const address = ` 地址：${getAddress(item) || NO_DATA}`;
@@ -242,7 +261,12 @@ export default class CheckList extends PureComponent {
           </p>
           <p className={styles.pLast}>
             设备状态：
-            {status || NO_DATA}
+            <Switch
+              checkedChildren="启用"
+              unCheckedChildren="禁用"
+              checked={screenStatus[id]}
+              onChange={this.genSwitchChange(id, SCREEN_INDEX)}
+            />
           </p>
         </Card>
       </List.Item>
