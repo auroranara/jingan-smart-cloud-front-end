@@ -362,4 +362,26 @@ export default {
       delete: 'personnelManagement.vehicleInfo.delete',
     },
   },
+
+  // 应急管理
+  emergencyManagement: {
+    emergencyEquipment: {
+      listView: 'emergencyManagement.emergencyEquipment.listView',
+      add: 'emergencyManagement.emergencyEquipment.add',
+      edit: 'emergencyManagement.emergencyEquipment.edit',
+      detail: 'emergencyManagement.emergencyEquipment.detail',
+    },
+    emergencySupplies: {
+      listView: 'emergencyManagement.emergencySupplies.listView',
+      add: 'emergencyManagement.emergencySupplies.add',
+      edit: 'emergencyManagement.emergencySupplies.edit',
+      detail: 'emergencyManagement.emergencySupplies.detail',
+    },
+    emergencyDrill: {
+      listView: 'emergencyManagement.emergencyDrill.listView',
+      add: 'emergencyManagement.emergencyDrill.add',
+      edit: 'emergencyManagement.emergencyDrill.edit',
+      detail: 'emergencyManagement.emergencyDrill.detail',
+    },
+  },
 };

@@ -12,7 +12,6 @@ import {
   message,
   InputNumber,
   DatePicker,
-  TextArea,
   Upload,
   Icon,
   Cascader,
@@ -26,6 +25,7 @@ import { getToken } from 'utils/authority';
 import styles from './index.less';
 
 const FormItem = Form.Item;
+const { TextArea } = Input;
 const Option = Select.Option;
 const { Group: RadioGroup } = Radio;
 /* root下的div */
@@ -50,8 +50,8 @@ const defaultUploadProps = {
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 
 @Form.create()
-@connect(({ EmergencyEquipment, loading }) => ({
-  EmergencyEquipment,
+@connect(({ sensor, loading }) => ({
+  sensor,
   companyLoading: loading.effects['sensor/fetchModelList'],
 }))
 export default class EmergencyEquipmentHandler extends PureComponent {
@@ -283,12 +283,12 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="装备名称" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('equipName', {
               rules: [{ required: true, message: '请输入装备名称' }],
             })(<Input placeholder="请输入装备名称" {...itemStyles} />)}
           </FormItem>
           <FormItem label="装备类型" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('equipType', {
               rules: [{ required: true, message: '请选择装备类型' }],
             })(
               <Cascader
@@ -311,21 +311,21 @@ export default class EmergencyEquipmentHandler extends PureComponent {
           </FormItem>
           <p>装备编码:</p>
           <FormItem label="装备来源" {...formItemLayout}>
-            {getFieldDecorator('importantHost')(
+            {getFieldDecorator('equipSource')(
               <RadioGroup {...itemStyles}>
                 <Radio value="1">国配</Radio>
-                <Radio value="0">自购</Radio>
-                <Radio value="2">社会装备</Radio>
+                <Radio value="2">自购</Radio>
+                <Radio value="3">社会装备</Radio>
               </RadioGroup>
             )}
           </FormItem>
           <FormItem label="规格型号" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('equipModel', {
               rules: [{ required: true, message: '请输入规格型号' }],
             })(<Input placeholder="请输入规格型号" {...itemStyles} />)}
           </FormItem>
           <FormItem label="装备数量" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('equipCount', {
               rules: [{ required: true, message: '请输入装备数量' }],
             })(
               <InputNumber
@@ -338,7 +338,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="装备单价（元）" {...formItemLayout}>
-            {getFieldDecorator('brandName')(
+            {getFieldDecorator('equipPrice')(
               <InputNumber
                 {...itemStyles}
                 min={0}
@@ -349,15 +349,15 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="计量单位" {...formItemLayout}>
-            {getFieldDecorator('brandName')(<Input placeholder="请输入计量单位" {...itemStyles} />)}
+            {getFieldDecorator('unit')(<Input placeholder="请输入计量单位" {...itemStyles} />)}
           </FormItem>
           <FormItem label="生产厂家" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('equipProducer', {
               rules: [{ required: true, message: '请输入生产厂家' }],
             })(<Input placeholder="请输入生产厂家" {...itemStyles} />)}
           </FormItem>
           <FormItem label="出厂日期" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('produceDate', {
               rules: [{ required: true, message: '请选择出厂日期' }],
             })(
               <DatePicker
@@ -368,7 +368,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="使用年限" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('limitYear', {
               rules: [{ required: true, message: '请输入使用年限' }],
             })(
               <InputNumber
@@ -381,7 +381,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="购买日期" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId')(
+            {getFieldDecorator('buyDate')(
               <DatePicker
                 placeholder="请选择购买日期"
                 getCalendarContainer={getRootChild}
@@ -390,38 +390,38 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="装备用途" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('use', {
               rules: [{ required: true, message: '请输入装备用途' }],
             })(<TextArea rows={4} placeholder="请输入装备用途" maxLength="500" />)}
           </FormItem>
           <FormItem label="装备状态" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
+            {getFieldDecorator('status', {
               rules: [{ required: true, message: '请选择装备状态' }],
             })(
               <RadioGroup {...itemStyles}>
                 <Radio value="1">正常</Radio>
-                <Radio value="0">维检</Radio>
-                <Radio value="2">报废</Radio>
-                <Radio value="3">使用中</Radio>
+                <Radio value="2">维检</Radio>
+                <Radio value="3">报废</Radio>
+                <Radio value="4">使用中</Radio>
               </RadioGroup>
             )}
           </FormItem>
           <FormItem label="装备库名称" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId')(
+            {getFieldDecorator('storeName')(
               <Input placeholder="请输入装备库名称" {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="登记类型" {...formItemLayout}>
-            {getFieldDecorator('importantHost')(
+            {getFieldDecorator('registerType')(
               <RadioGroup {...itemStyles}>
                 <Radio value="1">救援队装备</Radio>
-                <Radio value="0">社会装备</Radio>
-                <Radio value="2">储备库装备</Radio>
+                <Radio value="2">社会装备</Radio>
+                <Radio value="3">储备库装备</Radio>
               </RadioGroup>
             )}
           </FormItem>
           <FormItem label="定期保修间隔（天）" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId')(
+            {getFieldDecorator('daySpace')(
               <InputNumber
                 {...itemStyles}
                 min={0}
@@ -432,12 +432,12 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="备注" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId')(
+            {getFieldDecorator('remark')(
               <TextArea rows={4} placeholder="请输入备注" maxLength="500" />
             )}
           </FormItem>
           <FormItem label="图片" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId')(
+            {getFieldDecorator('picture')(
               <Upload
                 {...defaultUploadProps}
                 fileList={[]}
@@ -472,7 +472,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
     const {
       companyLoading,
       match: { prams: { id = null } = {} },
-      sensor: { companyModal },
+      sensor: { companyModal = [] },
     } = this.props;
     const { companyModalVisible } = this.state;
     const title = id ? '编辑' : '新增';

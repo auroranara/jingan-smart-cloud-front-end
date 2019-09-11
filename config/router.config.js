@@ -2596,6 +2596,130 @@ module.exports = env => {
             },
           ],
         },
+
+        // 应急管理
+        {
+          path: '/emergency-management',
+          code: 'emergencyManagement',
+          icon: 'alert',
+          name: 'emergencyManagement',
+          routes: [
+            // 应急装备
+            {
+              path: '/emergency-management/emergency-equipment',
+              code: 'emergencyManagement.emergencyEquipment',
+              name: 'emergencyEquipment',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-equipment',
+                  name: 'emergencyEquipment',
+                  redirect: '/emergency-management/emergency-equipment/list',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/list',
+                  code: 'emergencyManagement.emergencyEquipment.listView',
+                  name: 'list',
+                  component: './EmergencyManagement/EmergencyEquipment/List/index',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/add',
+                  code: 'emergencyManagement.emergencyEquipment.add',
+                  name: 'add',
+                  component: './EmergencyManagement/EmergencyEquipment/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/edit/:id',
+                  code: 'emergencyManagement.emergencyEquipment.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/EmergencyEquipment/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/detail/:id',
+                  code: 'emergencyManagement.emergencyEquipment.detail',
+                  name: 'detail',
+                  component: './EmergencyManagement/EmergencyEquipment/Detail/index',
+                },
+              ],
+            },
+            // 应急物资
+            {
+              path: '/emergency-management/emergency-supplies',
+              code: 'emergencyManagement.emergencySupplies',
+              name: 'emergencySupplies',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-supplies',
+                  name: 'emergencySupplies',
+                  redirect: '/emergency-management/emergency-supplies/list',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/list',
+                  code: 'emergencyManagement.emergencySupplies.listView',
+                  name: 'list',
+                  component: './EmergencyManagement/emergencySupplies/List/index',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/add',
+                  code: 'emergencyManagement.emergencySupplies.add',
+                  name: 'add',
+                  component: './EmergencyManagement/emergencySupplies/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/edit/:id',
+                  code: 'emergencyManagement.emergencySupplies.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/emergencySupplies/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/detail/:id',
+                  code: 'emergencyManagement.emergencySupplies.detail',
+                  name: 'detail',
+                  component: './EmergencyManagement/emergencySupplies/Detail/index',
+                },
+              ],
+            },
+            // 应急演练计划
+            {
+              path: '/emergency-management/emergency-drill',
+              code: 'emergencyManagement.emergencyDrill',
+              name: 'emergencyDrill',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-drill',
+                  name: 'emergencyDrill',
+                  redirect: '/emergency-management/emergency-drill/list',
+                },
+                {
+                  path: '/emergency-management/emergency-drill/list',
+                  code: 'emergencyManagement.emergencyDrill.listView',
+                  name: 'list',
+                  component: './EmergencyManagement/emergencyDrill/List/index',
+                },
+                {
+                  path: '/emergency-management/emergency-drill/add',
+                  code: 'emergencyManagement.emergencyDrill.add',
+                  name: 'add',
+                  component: './EmergencyManagement/emergencyDrill/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-drill/edit/:id',
+                  code: 'emergencyManagement.emergencyDrill.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/emergencyDrill/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-drill/detail/:id',
+                  code: 'emergencyManagement.emergencyDrill.detail',
+                  name: 'detail',
+                  component: './EmergencyManagement/emergencyDrill/Detail/index',
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ];

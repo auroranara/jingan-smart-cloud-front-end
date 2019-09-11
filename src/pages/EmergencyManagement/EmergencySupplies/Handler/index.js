@@ -12,7 +12,6 @@ import {
   message,
   InputNumber,
   DatePicker,
-  TextArea,
   Upload,
   Icon,
   Cascader,
@@ -26,6 +25,7 @@ import { getToken } from 'utils/authority';
 import styles from './index.less';
 
 const FormItem = Form.Item;
+const { TextArea } = Input;
 const Option = Select.Option;
 const { Group: RadioGroup } = Radio;
 /* root下的div */
