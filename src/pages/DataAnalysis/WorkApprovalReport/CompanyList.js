@@ -9,7 +9,7 @@ import { hasAuthority, AuthLink, ERROR_MSG } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import styles from './CompanyList.less';
 
-const title = '作业审批报表';
+const title = '危险作业管理';
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '数据分析', name: '数据分析' },

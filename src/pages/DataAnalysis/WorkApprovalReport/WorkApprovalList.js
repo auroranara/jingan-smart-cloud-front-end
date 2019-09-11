@@ -25,7 +25,7 @@ const TITLE = '作业审批列表'
 const BREADCRUMBLIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '数据分析', name: '数据分析' },
-  { title: '作业审批报表', name: '作业审批报表', href: '/data-analysis/work-approval-report/list' },
+  { title: '危险作业管理', name: '危险作业管理', href: '/data-analysis/work-approval-report/list' },
   { title: TITLE, name: TITLE },
 ]
 // 审批状态颜色
@@ -149,7 +149,7 @@ export default class WorkApprovalList extends PureComponent {
   }
 
   /**
-   * 获取作业审批报表列表
+   * 获取危险作业管理列表
    */
   fetchWorkApprovalList = actions => {
     const { dispatch } = this.props

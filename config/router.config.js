@@ -1218,7 +1218,7 @@ module.exports = env => {
                 },
               ],
             },
-            // 作业审批报表
+            // 危险作业管理
             {
               path: '/data-analysis/work-approval-report',
               code: 'dataAnalysis.workApprovalReport',

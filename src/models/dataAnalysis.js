@@ -37,7 +37,7 @@ export default {
       },
     },
     repairRecordDetail: { realStatus: '' },
-    // 作业审批报表-企业列表
+    // 危险作业管理-企业列表
     // workApprovalCompany: {
     //   list: [],
     //   pagination: {
@@ -56,7 +56,7 @@ export default {
         pageSize: 10,
       },
     },
-    workApprovalDetail: {}, // 作业审批报表详情
+    workApprovalDetail: {}, // 危险作业管理详情
     approvalStatus: [], // 审批状态
     jobLevel: [],       // 作业级别（类别）
     dangerChemicals: [], // 危险化学品
@@ -117,7 +117,7 @@ export default {
         })
       }
     },
-    // 获取作业审批报表列表
+    // 获取危险作业管理列表
     *fetchWorkApprovalList({ payload }, { call, put }) {
       const response = yield call(fetchWorkApprovalList, payload)
       if (response && response.code === 200) {
@@ -127,7 +127,7 @@ export default {
         })
       }
     },
-    // 获取作业审批报表详情
+    // 获取危险作业管理详情
     *fetchWorkApprovalDetail({ payload }, { call, put }) {
       const response = yield call(fetchWorkApprovalDetail, payload)
       if (response && response.code === 200) {

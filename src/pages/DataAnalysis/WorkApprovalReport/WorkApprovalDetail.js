@@ -499,7 +499,7 @@ export default class WorkApprovalDetail extends PureComponent {
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '数据分析', name: '数据分析' },
-      { title: '作业审批报表', name: '作业审批报表', href: '/data-analysis/work-approval-report/list' },
+      { title: '危险作业管理', name: '危险作业管理', href: '/data-analysis/work-approval-report/list' },
       { title: '作业审批列表', name: '作业审批列表', href: `/data-analysis/work-approval-report/company/${companyId}/${type}?companyName=${companyName}` },
       { title, name: title },
     ]
