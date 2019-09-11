@@ -21,7 +21,7 @@ const {
   },
 } = codes
 
-const TITLE = '作业审批列表'
+const TITLE = '危险作业列表'
 const BREADCRUMBLIST = [
   { title: '首页', name: '首页', href: '/' },
   { title: '数据分析', name: '数据分析' },

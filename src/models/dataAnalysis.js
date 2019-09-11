@@ -47,7 +47,7 @@ export default {
     //   },
     //   isLast: true,
     // },
-    // 作业审批列表
+    // 危险作业列表
     workApproval: {
       list: [],
       pagination: {

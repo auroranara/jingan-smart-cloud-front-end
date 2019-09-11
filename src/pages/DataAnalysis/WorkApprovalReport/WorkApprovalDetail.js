@@ -181,7 +181,7 @@ export default class WorkApprovalDetail extends PureComponent {
 
 
   /**
-   * 渲染作业审批信息
+   * 渲染危险作业信息
    */
   renderApprovalInfo = () => {
     const {
@@ -441,7 +441,7 @@ export default class WorkApprovalDetail extends PureComponent {
     }
     const fields = fieldsConfig[type].map(item => allFields[item])
     return (
-      <Card style={{ marginTop: '24px' }} title="作业审批信息">
+      <Card style={{ marginTop: '24px' }} title="危险作业信息">
         <DescriptionList style={{ marginBottom: 16 }}>
           {fields.map((item) => {
             const { term, render = null, colWrapper = null, value = null } = item
@@ -500,7 +500,7 @@ export default class WorkApprovalDetail extends PureComponent {
       { title: '首页', name: '首页', href: '/' },
       { title: '数据分析', name: '数据分析' },
       { title: '危险作业管理', name: '危险作业管理', href: '/data-analysis/work-approval-report/list' },
-      { title: '作业审批列表', name: '作业审批列表', href: `/data-analysis/work-approval-report/company/${companyId}/${type}?companyName=${companyName}` },
+      { title: '危险作业列表', name: '危险作业列表', href: `/data-analysis/work-approval-report/company/${companyId}/${type}?companyName=${companyName}` },
       { title, name: title },
     ]
     return (

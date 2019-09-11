@@ -103,7 +103,7 @@ export default {
   'menu.dataAnalysis.govermentReport.detail': '政府监督报表详情',
   'menu.dataAnalysis.workApprovalReport': '危险作业管理',
   'menu.dataAnalysis.workApprovalReport.list': '危险作业管理',
-  'menu.dataAnalysis.workApprovalReport.workApprovalList': '作业审批列表',
+  'menu.dataAnalysis.workApprovalReport.workApprovalList': '危险作业列表',
   'menu.dataAnalysis.workApprovalReport.detail': '详情页',
   'menu.deviceManagement': '设备管理',
   'menu.deviceManagement.userTransmissionDevice': '用户传输装置',
