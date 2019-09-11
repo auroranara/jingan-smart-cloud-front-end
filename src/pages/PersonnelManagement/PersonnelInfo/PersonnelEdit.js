@@ -68,12 +68,10 @@ export default class PersonnelEdit extends PureComponent {
   goBack = () => {
     const {
       location: {
-        query: { listId, companyName },
+        query: { listId },
       },
     } = this.props;
-    router.push(
-      `/personnel-management/personnel-info/personnel-list/${listId}?companyName=${companyName}`
-    );
+    router.push(`/personnel-management/personnel-info/personnel-list/${listId}`);
   };
 
   goCompanyList = () => {
@@ -101,7 +99,7 @@ export default class PersonnelEdit extends PureComponent {
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         this.setState({ submitting: true });
-        const { name, sex, tel, duty, profession, personType, workCode } = values;
+        const { name, sex, tel, duty, profession, personType, personCompany, workCode } = values;
         const payload = {
           companyId: companyId || listId,
           name,
@@ -110,6 +108,7 @@ export default class PersonnelEdit extends PureComponent {
           duty,
           profession,
           personType,
+          personCompany,
           workCode,
           photo: JSON.stringify(
             uploadPic.map(({ name, webUrl, dbUrl }) => ({ name, webUrl, dbUrl }))
@@ -222,12 +221,12 @@ export default class PersonnelEdit extends PureComponent {
       form: { getFieldDecorator },
       personnelInfo: { sexTypeList, personnelTypeList },
       location: {
-        query: { companyName, companyId },
+        query: { companyId },
       },
     } = this.props;
 
     const { picLoading, uploadPic, submitting, detailList } = this.state;
-    const { name, sex, tel, duty, profession, personType, workCode } = detailList;
+    const { name, sex, tel, duty, profession, personType, workCode, personCompany } = detailList;
 
     const uploadButton = (
       <div>
@@ -322,10 +321,10 @@ export default class PersonnelEdit extends PureComponent {
             <Col lg={8} md={12} sm={24}>
               <Form.Item label="所属单位">
                 {getFieldDecorator('personCompany', {
-                  initialValue: companyName,
+                  initialValue: personCompany,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入所属单位' }],
-                })(<Input placeholder="请输入所属单位" disabled />)}
+                })(<Input placeholder="请输入所属单位" />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -387,7 +386,7 @@ export default class PersonnelEdit extends PureComponent {
         params: { id },
       },
       location: {
-        query: { listId, companyId, companyName },
+        query: { listId, companyId },
       },
     } = this.props;
     const title = id ? editTitle : addTitle;
@@ -408,7 +407,7 @@ export default class PersonnelEdit extends PureComponent {
         name: companyId ? '企业列表' : '人员基本信息',
         href: companyId
           ? '/personnel-management/personnel-info/company-list'
-          : `/personnel-management/personnel-info/personnel-list/${listId}?companyName=${companyName}`,
+          : `/personnel-management/personnel-info/personnel-list/${listId}`,
       },
       {
         title,

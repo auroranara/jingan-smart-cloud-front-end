@@ -89,14 +89,10 @@ export default class PersonnelDetail extends PureComponent {
     const {
       dispatch,
       location: {
-        query: { listId, companyName },
+        query: { listId },
       },
     } = this.props;
-    dispatch(
-      routerRedux.push(
-        `/personnel-management/personnel-info/personnel-list/${listId}?companyName=${companyName}`
-      )
-    );
+    dispatch(routerRedux.push(`/personnel-management/personnel-info/personnel-list/${listId}`));
   };
 
   // 编辑
@@ -106,14 +102,12 @@ export default class PersonnelDetail extends PureComponent {
         params: { id },
       },
       location: {
-        query: { listId, companyName },
+        query: { listId },
       },
       dispatch,
     } = this.props;
     dispatch(
-      routerRedux.push(
-        `/personnel-management/personnel-info/personnel-edit/${id}?listId=${listId}&&companyName=${companyName}`
-      )
+      routerRedux.push(`/personnel-management/personnel-info/personnel-edit/${id}?listId=${listId}`)
     );
   };
 
@@ -137,7 +131,7 @@ export default class PersonnelDetail extends PureComponent {
 
     // 是否有编辑权限
     const editAuth = hasAuthority(editCode, permissionCodes);
-    const { name, sex, tel, duty, profession, personType, workCode } = detailList;
+    const { name, sex, tel, duty, profession, personType, workCode, personCompany } = detailList;
 
     return (
       <Card title="人员信息详情" bordered={false} className={styles.cardDetail}>
@@ -148,6 +142,7 @@ export default class PersonnelDetail extends PureComponent {
           <Description term="职务">{duty || getEmptyData()}</Description>
           <Description term="工种">{profession || getEmptyData()}</Description>
           <Description term="人员类型">{personList[personType] || getEmptyData()}</Description>
+          <Description term="所属单位">{personCompany || getEmptyData()}</Description>
           <Description term="作业证书编号">{workCode || getEmptyData()}</Description>
         </DescriptionList>
         <DescriptionList col={3} style={{ marginBottom: 16 }}>
@@ -181,7 +176,7 @@ export default class PersonnelDetail extends PureComponent {
   render() {
     const {
       location: {
-        query: { listId, companyName },
+        query: { listId },
       },
     } = this.props;
 
@@ -201,7 +196,7 @@ export default class PersonnelDetail extends PureComponent {
       {
         title: '人员基本信息',
         name: '人员基本信息',
-        href: `/personnel-management/personnel-info/personnel-list/${listId}?companyName=${companyName}`,
+        href: `/personnel-management/personnel-info/personnel-list/${listId}`,
       },
       {
         title,

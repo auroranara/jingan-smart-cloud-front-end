@@ -362,7 +362,7 @@ export default class VehicleList extends PureComponent {
                     <Col span={13}>
                       <div className={styles.cardTitle}>
                         <span className={styles.title}>
-                          <Ellipsis tooltip length={9}>
+                          <Ellipsis tooltip length={9} style={{ marginBottom: -5 }}>
                             {number}
                           </Ellipsis>
                         </span>

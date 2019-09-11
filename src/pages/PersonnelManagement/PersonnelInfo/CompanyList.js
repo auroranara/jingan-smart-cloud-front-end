@@ -234,9 +234,7 @@ export default class CompanyList extends PureComponent {
         const { companyId } = values;
         dispatch(
           routerRedux.push(
-            `/personnel-management/personnel-info/personnel-add?companyId=${
-              companyId.key
-            }&&companyName=${companyId.label}`
+            `/personnel-management/personnel-info/personnel-add?companyId=${companyId.key}`
           )
         );
       }
@@ -331,7 +329,6 @@ export default class CompanyList extends PureComponent {
                 practicalAddress,
                 safetyName,
                 safetyPhone,
-                name,
               },
             } = item;
             const practicalAddressLabel =
@@ -362,7 +359,7 @@ export default class CompanyList extends PureComponent {
                     {viewAuth ? (
                       <Col span={8} style={{ cursor: 'pointer' }}>
                         <Link
-                          to={`/personnel-management/personnel-info/personnel-list/${company_id}?companyName=${name}`}
+                          to={`/personnel-management/personnel-info/personnel-list/${company_id}`}
                           target="_blank"
                         >
                           <span className={styles.quantity}>{num}</span>

@@ -189,16 +189,9 @@ export default class PersonnelList extends PureComponent {
       match: {
         params: { id },
       },
-      location: {
-        query: { companyName },
-      },
       dispatch,
     } = this.props;
-    dispatch(
-      routerRedux.push(
-        `/personnel-management/personnel-info/personnel-add?listId=${id}&&companyName=${companyName}`
-      )
-    );
+    dispatch(routerRedux.push(`/personnel-management/personnel-info/personnel-add?listId=${id}`));
   };
 
   // 删除
@@ -246,11 +239,11 @@ export default class PersonnelList extends PureComponent {
       <Card className={styles.formCard}>
         <Form>
           <Row gutter={30}>
-            {/* <Col span={8}>
+            <Col span={8}>
               <FormItem>
                 {getFieldDecorator('personCompany')(<Input placeholder="请输入所属单位" />)}
               </FormItem>
-            </Col> */}
+            </Col>
             <Col span={8}>
               <FormItem>{getFieldDecorator('name')(<Input placeholder="请输入姓名" />)}</FormItem>
             </Col>
@@ -311,9 +304,6 @@ export default class PersonnelList extends PureComponent {
       user: {
         currentUser: { permissionCodes },
       },
-      location: {
-        query: { companyName },
-      },
     } = this.props;
 
     const editAuth = hasAuthority(editCode, permissionCodes);
@@ -337,6 +327,7 @@ export default class PersonnelList extends PureComponent {
               personType,
               profession,
               photoDetails,
+              personCompany,
             } = item;
             return (
               <List.Item key={id}>
@@ -345,14 +336,14 @@ export default class PersonnelList extends PureComponent {
                   actions={[
                     <Link
                       disabled={!detailAuth}
-                      to={`/personnel-management/personnel-info/personnel-detail/${id}?listId=${companyId}&&companyName=${companyName}`}
+                      to={`/personnel-management/personnel-info/personnel-detail/${id}?listId=${companyId}`}
                       target="_blank"
                     >
                       查看
                     </Link>,
                     <Link
                       disabled={!editAuth}
-                      to={`/personnel-management/personnel-info/personnel-edit/${id}?listId=${companyId}&&companyName=${companyName}`}
+                      to={`/personnel-management/personnel-info/personnel-edit/${id}?listId=${companyId}`}
                       target="_blank"
                     >
                       编辑
@@ -386,7 +377,7 @@ export default class PersonnelList extends PureComponent {
                     <Col span={13}>
                       <div className={styles.cardTitle}>
                         <span className={styles.title}>
-                          <Ellipsis tooltip length={5}>
+                          <Ellipsis tooltip length={5} style={{ marginBottom: -5 }}>
                             {name}
                           </Ellipsis>
                         </span>
@@ -407,7 +398,7 @@ export default class PersonnelList extends PureComponent {
                       <div className={styles.line}>
                         <Ellipsis tooltip lines={1}>
                           单位：
-                          {companyName || getEmptyData()}
+                          {personCompany || getEmptyData()}
                         </Ellipsis>
                       </div>
                       <div className={styles.line}>
