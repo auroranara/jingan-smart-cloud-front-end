@@ -3,12 +3,12 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import Ellipsis from '@/components/Ellipsis';
-import { Button, Card, Input, List, message } from 'antd';
+import { Button, Card, Form, Input, List, Modal, Select } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './CompanyList.less';
-import { getAddress } from './utils';
+import { getAddress, FORMITEM_LAYOUT, TAB_LIST } from './utils';
 
 const title = '企业列表';
 const breadcrumbList = [
@@ -22,6 +22,8 @@ const documentElem = document.documentElement;
 
 const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
+const { Item: FormItem } = Form;
+const { Option } = Select;
 
 const LIST = [...Array(10).keys()].map(i => ({
   id: i,
@@ -30,8 +32,11 @@ const LIST = [...Array(10).keys()].map(i => ({
   safetyPhone: 13011112222,
 }));
 
+@Form.create()
 @connect(({ checkPoint, loading }) => ({ checkPoint, loading: loading.effects['checkPoint/fetchCompanyList'] }))
 export default class CompanyList extends PureComponent {
+  state={ modalVisible: false };
+
   componentDidMount() {
     this.childElem = document.querySelector('#root div');
     document.addEventListener('scroll', this.handleScroll, false);
@@ -113,6 +118,49 @@ export default class CompanyList extends PureComponent {
     return <Link to={`/personnel-management/check-point/list/${companyId}/${index}`}>{label}</Link>;
   };
 
+  showModal = () => {
+    this.setState({ modalVisible: true });
+  };
+
+  hideModal = () => {
+    this.setState({ modalVisible: false });
+  };
+
+  handleSubmit = () => {
+    const { form: { validateFields } } =  this.props;
+    // validateFields((error, fields) => {
+    //     if (!error)
+    // });
+  }
+
+  renderModal = () => {
+    const { form: { getFieldDecorator } } = this.props;
+    const { modalVisible } = this.state;
+    return (
+      <Modal
+        title="添加卡口信息"
+        visible={modalVisible}
+        onOk={this.handleSubmit}
+        onCancel={this.hideModal}
+      >
+        <Form {...FORMITEM_LAYOUT}>
+          <FormItem label="单位名称">
+            {getFieldDecorator('company', { rules: [{ required: true, message: '请选择单位' }] })(
+              <Select />
+            )}
+          </FormItem>
+          <FormItem label="卡口信息">
+            {getFieldDecorator('point', { rules: [{ required: true, message: '请选择卡口信息' }] })(
+              <Select>
+                {TAB_LIST.map(({ key, tab }) => <Option key={key}>{tab}</Option>)}
+              </Select>
+            )}
+          </FormItem>
+        </Form>
+      </Modal>
+    );
+  };
+
   render() {
     const list = LIST;
     const {
@@ -120,7 +168,7 @@ export default class CompanyList extends PureComponent {
     } = this.props;
 
     const toolBarAction = (
-      <Button type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
+      <Button type="primary" onClick={this.showModal} style={{ marginTop: '8px' }}>
         新增卡口信息
       </Button>
     );
@@ -140,7 +188,7 @@ export default class CompanyList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles.total}>
-            试卷总数：
+            卡口总数：
             {list.length}
           </p>
         }
@@ -197,6 +245,7 @@ export default class CompanyList extends PureComponent {
             );
           }}
         />
+        {this.renderModal()}
       </PageHeaderLayout>
     );
   }

@@ -8,7 +8,7 @@ import { Button, Card, Input, List, Switch, message } from 'antd';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './CompanyList.less';
-import { getAddress } from './utils';
+import { getAddress, TAB_LIST } from './utils';
 
 const title = '卡口列表';
 const breadcrumbList = [
@@ -22,8 +22,6 @@ const documentElem = document.documentElement;
 
 const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
-const TABS = ['卡口点位', '卡口设备', '显示屏'];
-const TAB_LIST = TABS.map((tab, index) => ({ key: index.toString(), tab }));
 const EQUIPMENT = 'equipment';
 const SCREEN = 'screen';
 const EQUIPMENT_INDEX = 1;
@@ -138,20 +136,22 @@ export default class CheckList extends PureComponent {
   renderPoint = item => {
     const {
       id,
-      companyName,
-      safetyName,
-      safetyPhone,
+      companyId,
+      name,
+      location,
+      direction,
+      photoList,
     } = item;
 
     const actions = ['查看', '编辑', '删除'];
-    const address = ` 地址：${getAddress(item) || NO_DATA}`;
+    const address = location || NO_DATA;
     return (
       <List.Item key={id}>
         <Card
           className={styles.card}
           title={
             <Ellipsis lines={1} tooltip style={{ height: 24 }}>
-              {companyName}
+              {name}
             </Ellipsis>
           }
           actions={actions}
@@ -159,13 +159,9 @@ export default class CheckList extends PureComponent {
           <p className={styles.p}>
             {address.length > 20 ? <Ellipsis lines={1} tooltip>{address}</Ellipsis> : address}
           </p>
-          <p className={styles.p}>
-            安全负责人：
-            {safetyName || NO_DATA}
-          </p>
           <p className={styles.pLast}>
-            联系电话：
-            {safetyPhone || NO_DATA}
+            方向：
+            {direction || NO_DATA}
           </p>
         </Card>
       </List.Item>
