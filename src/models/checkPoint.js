@@ -29,7 +29,8 @@ export default {
       const { code, data } = response || {};
       if (code === 200) {
         const total = data.pagination && data.pagination.total ? data.pagination.total : 0;
-        callback && callback(total);
+        const list = data && Array.isArray(data.list) ? data.list : [];
+        callback && callback(total, list);
         data.type = type;
         yield put({ type: 'saveCheckList', payload: data });
       }

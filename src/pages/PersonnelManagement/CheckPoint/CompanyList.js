@@ -169,7 +169,7 @@ export default class CompanyList extends PureComponent {
             } = item;
 
             const actions = ['点位', '设备', 'LED'].map(this.genActions(id));
-            const address = ` 地址：${getAddress(item) || NO_DATA}`;
+            const address = `地址：${getAddress(item) || NO_DATA}`;
             return (
               <List.Item key={id}>
                 <Card

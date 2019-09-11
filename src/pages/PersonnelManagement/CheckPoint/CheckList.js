@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import Ellipsis from '@/components/Ellipsis';
-import { Button, Card, Input, List, message } from 'antd';
+import { Button, Card, Input, List, Switch, message } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -22,30 +22,18 @@ const documentElem = document.documentElement;
 
 const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
-const TABS = [
-  {
-    key: '0',
-    tab: '卡口点位',
-  },
-  {
-    key: '1',
-    tab: '卡口设备',
-  },
-  {
-    key: '2',
-    tab: '显示屏',
-  },
-];
+const TABS = ['卡口点位', '卡口设备', '显示屏'];
+const TAB_LIST = TABS.map((tab, index) => ({ key: index.toString(), tab }));
 
 @connect(({ checkPoint, loading }) => ({ checkPoint, loading: loading.effects['checkPoint/fetchCheckList'] }))
 export default class CheckList extends PureComponent {
-  state={ tabIndex: 0 };
+  state={ tabIndex: 0, statusList: [undefined, {}, {}] };
 
   componentDidMount() {
     const { match: { params: { tabIndex } } } = this.props;
     this.childElem = document.querySelector('#root div');
     document.addEventListener('scroll', this.handleScroll, false);
-    // this.fetchInitCheckList();
+    // this.fetchInitCheckList(tabIndex);
 
     this.setState({ tabIndex });
   }
@@ -87,9 +75,18 @@ export default class CheckList extends PureComponent {
     this.fetchInitCheckList();
   };
 
-  fetchInitCheckList = () => {
-    const callback = total => {
+  fetchInitCheckList = index => {
+    const { tabIndex, statusList } = this.state;
+    const idx = index === undefined ? tabIndex : index;
+    const callback = (total, list) => {
       if (total <= PAGE_SIZE) this.hasMore = false;  // 如果第一页已经返回了所有结果，则hasMore置为false
+      const newStatus = list.reduce((prev, next) => {
+        const { id, status } = next;
+        prev[id] = status;
+        return prev;
+      }, {});
+      const newStatusList = statusList.map((sts, index) => index === +idx ? newStatus : sts);
+      this.setState({ statusList: newStatusList });
     };
 
     this.fetchCheckList(1, callback);
@@ -113,8 +110,8 @@ export default class CheckList extends PureComponent {
       pageNum: pageIndex,
       pageSize: PAGE_SIZE,
     };
-    if (name)
-      payload.companyName = name;
+    // if (name)
+    //   payload.companyName = name;
     dispatch({
       type: 'checkPoint/fetchCheckList',
       payload,
@@ -168,20 +165,24 @@ export default class CheckList extends PureComponent {
   renderEquipment = item => {
     const {
       id,
-      companyName,
-      safetyName,
-      safetyPhone,
+      companyId,
+      name,
+      area,
+      location,
+      code,
+      number,
+      status,
     } = item;
 
     const actions = ['查看', '编辑', '删除'];
-    const address = ` 地址：${getAddress(item) || NO_DATA}`;
+    const address = `区域位置：${!area && !location ? NO_DATA : `${area || ''}${location || ''}`}`;
     return (
       <List.Item key={id}>
         <Card
           className={styles.card}
           title={
             <Ellipsis lines={1} tooltip style={{ height: 24 }}>
-              {companyName}
+              {name}
             </Ellipsis>
           }
           actions={actions}
@@ -190,12 +191,16 @@ export default class CheckList extends PureComponent {
             {address.length > 20 ? <Ellipsis lines={1} tooltip>{address}</Ellipsis> : address}
           </p>
           <p className={styles.p}>
-            安全负责人：
-            {safetyName || NO_DATA}
+            设备编号：
+            {code || NO_DATA}
+          </p>
+          <p className={styles.p}>
+            设备ID：
+            {number || NO_DATA}
           </p>
           <p className={styles.pLast}>
-            联系电话：
-            {safetyPhone || NO_DATA}
+            设备状态：
+            {status || NO_DATA}
           </p>
         </Card>
       </List.Item>
@@ -205,9 +210,10 @@ export default class CheckList extends PureComponent {
   renderScreen = item => {
     const {
       id,
-      companyName,
-      safetyName,
-      safetyPhone,
+      name,
+      code,
+      ipAddress,
+      status,
     } = item;
 
     const actions = ['查看', '编辑', '删除'];
@@ -218,7 +224,7 @@ export default class CheckList extends PureComponent {
           className={styles.card}
           title={
             <Ellipsis lines={1} tooltip style={{ height: 24 }}>
-              {companyName}
+              {name}
             </Ellipsis>
           }
           actions={actions}
@@ -227,12 +233,16 @@ export default class CheckList extends PureComponent {
             {address.length > 20 ? <Ellipsis lines={1} tooltip>{address}</Ellipsis> : address}
           </p>
           <p className={styles.p}>
-            安全负责人：
-            {safetyName || NO_DATA}
+            设备编号：
+            {code || NO_DATA}
+          </p>
+          <p className={styles.p}>
+            所在卡口：
+            {ipAddress || NO_DATA}
           </p>
           <p className={styles.pLast}>
-            联系电话：
-            {safetyPhone || NO_DATA}
+            设备状态：
+            {status || NO_DATA}
           </p>
         </Card>
       </List.Item>
@@ -268,7 +278,7 @@ export default class CheckList extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        tabList={TABS}
+        tabList={TAB_LIST}
         onTabChange={this.handleTabChange}
         tabActiveKey={tabIndex}
         content={
