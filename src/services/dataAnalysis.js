@@ -31,12 +31,12 @@ export async function fetchRepairRecords(params) {
   return request(`${URL_REPAIR}/fireManage/selectFaultReport?${stringify(params)}`);
 }
 
-// 获取作业审批报表列表
+// 获取危险作业管理列表
 export async function fetchWorkApprovalList(params) {
   return request(`${URL_WH}/eightJob/queryEightJobList?${stringify(params)}`)
 }
 
-// 获取作业审批报表详情
+// 获取危险作业管理详情
 export async function fetchWorkApprovalDetail(params) {
   return request(`${URL_WH}/eightJob/detailEightJob/${params.id}`)
 }

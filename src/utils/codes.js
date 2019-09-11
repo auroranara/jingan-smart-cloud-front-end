@@ -340,4 +340,26 @@ export default {
       alarmRecordView: 'securityManage.entranceAndExitMonitor.alarmRecordView',
     },
   },
+
+  /** 人员在岗在位管理系统 */
+  personnelManagement: {
+    personnelInfo: {
+      listView: 'personnelManagement.personnelInfo.listView',
+      addCompany: 'personnelManagement.personnelInfo.addCompany',
+      view: 'personnelManagement.personnelInfo.view',
+      add: 'personnelManagement.personnelInfo.add',
+      edit: 'personnelManagement.personnelInfo.edit',
+      detail: 'personnelManagement.personnelInfo.detail',
+      delete: 'personnelManagement.personnelInfo.delete',
+    },
+    vehicleInfo: {
+      listView: 'personnelManagement.vehicleInfo.listView',
+      addCompany: 'personnelManagement.vehicleInfo.addCompany',
+      view: 'personnelManagement.vehicleInfo.view',
+      add: 'personnelManagement.vehicleInfo.add',
+      edit: 'personnelManagement.vehicleInfo.edit',
+      detail: 'personnelManagement.vehicleInfo.detail',
+      delete: 'personnelManagement.vehicleInfo.delete',
+    },
+  },
 };
