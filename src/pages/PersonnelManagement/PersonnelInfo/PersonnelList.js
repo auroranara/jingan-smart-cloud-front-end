@@ -344,14 +344,14 @@ export default class PersonnelList extends PureComponent {
                   className={styles.card}
                   actions={[
                     <Link
-                      disabled={!editAuth}
+                      disabled={!detailAuth}
                       to={`/personnel-management/personnel-info/personnel-detail/${id}?listId=${companyId}&&companyName=${companyName}`}
                       target="_blank"
                     >
                       查看
                     </Link>,
                     <Link
-                      disabled={!detailAuth}
+                      disabled={!editAuth}
                       to={`/personnel-management/personnel-info/personnel-edit/${id}?listId=${companyId}&&companyName=${companyName}`}
                       target="_blank"
                     >
@@ -385,7 +385,11 @@ export default class PersonnelList extends PureComponent {
                     </Col>
                     <Col span={13}>
                       <div className={styles.cardTitle}>
-                        <span className={styles.title}>{name || getEmptyData()}</span>
+                        <span className={styles.title}>
+                          <Ellipsis tooltip length={5}>
+                            {name}
+                          </Ellipsis>
+                        </span>
                         <span className={styles.titleLabel}>
                           {personList[personType] || getEmptyData()}
                         </span>
@@ -395,8 +399,10 @@ export default class PersonnelList extends PureComponent {
                         {sexList[sex] || getEmptyData()}
                       </div>
                       <div className={styles.line}>
-                        电话：
-                        {tel || getEmptyData()}
+                        <Ellipsis tooltip lines={1}>
+                          电话：
+                          {tel || getEmptyData()}
+                        </Ellipsis>
                       </div>
                       <div className={styles.line}>
                         <Ellipsis tooltip lines={1}>
@@ -405,12 +411,16 @@ export default class PersonnelList extends PureComponent {
                         </Ellipsis>
                       </div>
                       <div className={styles.line}>
-                        职务：
-                        {duty || getEmptyData()}
+                        <Ellipsis tooltip lines={1}>
+                          职务：
+                          {duty || getEmptyData()}
+                        </Ellipsis>
                       </div>
                       <div className={styles.line}>
-                        工种：
-                        {profession || getEmptyData()}
+                        <Ellipsis tooltip lines={1}>
+                          工种：
+                          {profession || getEmptyData()}
+                        </Ellipsis>
                       </div>
                     </Col>
                   </Row>

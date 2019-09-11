@@ -324,8 +324,8 @@ export default class PersonnelEdit extends PureComponent {
                 {getFieldDecorator('personCompany', {
                   initialValue: companyName,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入所属单位', whitespace: true }],
-                })(<Input placeholder="请输入所属单位" />)}
+                  rules: [{ required: true, message: '请输入所属单位' }],
+                })(<Input placeholder="请输入所属单位" disabled />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>

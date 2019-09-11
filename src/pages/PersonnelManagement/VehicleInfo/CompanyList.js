@@ -138,6 +138,10 @@ export default class CompanyList extends PureComponent {
         pageNum: 1,
       },
     });
+    // 获取模糊搜索单位列表
+    dispatch({
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
+    });
   };
 
   // 滚动加载
@@ -166,11 +170,16 @@ export default class CompanyList extends PureComponent {
   // 显示新增企业模态框
   handleClickAdd = () => {
     const {
+      dispatch,
       form: { setFieldsValue },
     } = this.props;
     this.setState({ modalVisible: true });
     setFieldsValue({
       companyId: undefined,
+    });
+    // 获取模糊搜索单位列表
+    dispatch({
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
     });
   };
 
@@ -414,12 +423,12 @@ export default class CompanyList extends PureComponent {
         content={
           <div>
             <span>
-              单位总数:
+              单位总数：
               {total}
             </span>
-            <span style={{ paddingLeft: '30px' }}>
+            <span style={{ paddingLeft: 20 }}>
               车辆总数:
-              {carTotal}
+              <span style={{ paddingLeft: 8 }}>{carTotal}</span>
             </span>
           </div>
         }

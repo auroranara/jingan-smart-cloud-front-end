@@ -19,6 +19,7 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { routerRedux } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
+import Ellipsis from '@/components/Ellipsis';
 import styles from './VehicleList.less';
 import { hasAuthority } from '@/utils/customAuth';
 import pic from '../PersonnelInfo/pic.png';
@@ -31,7 +32,7 @@ const title = '车辆基本信息';
 // 权限代码
 const {
   personnelManagement: {
-    vehicleInfo: { add: addCode, delete: deleteCode },
+    vehicleInfo: { add: addCode, edit: editCode, detail: detailCode, delete: deleteCode },
   },
 } = codes;
 
@@ -292,6 +293,8 @@ export default class VehicleList extends PureComponent {
     } = this.props;
 
     const deleteAuth = hasAuthority(deleteCode, permissionCodes);
+    const editAuth = hasAuthority(editCode, permissionCodes);
+    const detailAuth = hasAuthority(detailCode, permissionCodes);
 
     return (
       <div className={styles.cardList} style={{ marginTop: '24px' }}>
@@ -317,12 +320,14 @@ export default class VehicleList extends PureComponent {
                   className={styles.card}
                   actions={[
                     <Link
+                      disabled={!detailAuth}
                       to={`/personnel-management/vehicle-info/vehicle-detail/${id}?listId=${companyId}`}
                       target="_blank"
                     >
                       查看
                     </Link>,
                     <Link
+                      disabled={!editAuth}
                       to={`/personnel-management/vehicle-info/vehicle-edit/${id}?listId=${companyId}`}
                       target="_blank"
                     >
@@ -356,26 +361,38 @@ export default class VehicleList extends PureComponent {
                     </Col>
                     <Col span={13}>
                       <div className={styles.cardTitle}>
-                        <span className={styles.title}>{number || getEmptyData()}</span>
+                        <span className={styles.title}>
+                          <Ellipsis tooltip length={9}>
+                            {number}
+                          </Ellipsis>
+                        </span>
                         <span className={styles.titleLabel}>
                           {stateList[state] || getEmptyData()}
                         </span>
                       </div>
                       <div className={styles.line}>
-                        品牌：
-                        {brand || getEmptyData()}
+                        <Ellipsis tooltip lines={1}>
+                          品牌：
+                          {brand || getEmptyData()}
+                        </Ellipsis>
                       </div>
                       <div className={styles.line}>
-                        型号：
-                        {model || getEmptyData()}
+                        <Ellipsis tooltip lines={1}>
+                          型号：
+                          {model || getEmptyData()}
+                        </Ellipsis>
                       </div>
                       <div className={styles.line}>
-                        驾驶员：
-                        {driver || getEmptyData()}
+                        <Ellipsis tooltip lines={1}>
+                          驾驶员：
+                          {driver || getEmptyData()}
+                        </Ellipsis>
                       </div>
                       <div className={styles.line}>
-                        联系电话：
-                        {driverTel || getEmptyData()}
+                        <Ellipsis tooltip lines={1}>
+                          联系电话：
+                          {driverTel || getEmptyData()}
+                        </Ellipsis>
                       </div>
                     </Col>
                   </Row>
