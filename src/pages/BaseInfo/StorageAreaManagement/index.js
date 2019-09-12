@@ -8,6 +8,13 @@ const { Option } = Select;
 // 标题
 const title = '储罐区管理';
 
+const dangerTypeList = [
+  { key: '1', value: '一级' },
+  { key: '2', value: '二级' },
+  { key: '3', value: '三级' },
+  { key: '4', value: '四级' },
+];
+
 //面包屑
 const breadcrumbList = [
   {
@@ -61,10 +68,11 @@ const fields = [
     span: spanStyle,
     render: () => (
       <Select allowClear placeholder="请选择危险性类别">
-        <Option value="1">一级</Option>
-        <Option value="2">二级</Option>
-        <Option value="3">三级</Option>
-        <Option value="4">四级</Option>
+        {dangerTypeList.map(({ key, value }) => (
+          <Option key={key} value={value}>
+            {value}
+          </Option>
+        ))}
       </Select>
     ),
   },

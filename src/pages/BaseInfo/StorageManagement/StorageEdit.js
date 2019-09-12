@@ -17,6 +17,49 @@ const editTitle = '编辑储罐';
 // 添加页面标题
 const addTitle = '新增储罐';
 
+const storageAreaList = [
+  { key: '1', value: '地上' },
+  { key: '2', value: '地下' },
+  { key: '3', value: '海上' },
+  { key: '4', value: '海底' },
+];
+
+const storagTypeList = [
+  { key: '1', value: '立式' },
+  { key: '2', value: '卧式' },
+  { key: '3', value: '球式' },
+];
+
+const constructList = [
+  { key: '1', value: '拱顶式' },
+  { key: '2', value: '浮顶式' },
+  { key: '3', value: '内浮顶' },
+  { key: '4', value: '卧式' },
+];
+
+const materialList = [
+  { key: '1', value: '碳钢' },
+  { key: '2', value: '不锈钢' },
+  { key: '3', value: '聚乙烯' },
+  { key: '4', value: '玻璃钢' },
+];
+
+const dangerLevelList = [
+  { key: '1', value: '甲' },
+  { key: '2', value: '乙' },
+  { key: '3', value: '丙' },
+  { key: '4', value: '丁' },
+];
+
+const pressureList = [
+  { key: '1', value: '低压' },
+  { key: '2', value: '中压' },
+  { key: '3', value: '高压' },
+  { key: '4', value: '超高压' },
+];
+
+const selectTypeList = [{ key: '1', value: '是' }, { key: '2', value: '否' }];
+
 // 表单标签
 const fieldLabels = {};
 
@@ -129,11 +172,12 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} placeholder="请选择储罐位置分类">
-                <Option value="1">地上</Option>
-                <Option value="2">地下</Option>
-                <Option value="3">海上</Option>
-                <Option value="4">海底</Option>
+              <Select {...itemStyles} allowClear placeholder="请选择储罐位置分类">
+                {storageAreaList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -174,10 +218,12 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} placeholder="请选择储罐形式">
-                <Option value="1">立式</Option>
-                <Option value="2">卧式</Option>
-                <Option value="3">球式</Option>
+              <Select {...itemStyles} allowClear placeholder="请选择储罐形式">
+                {storagTypeList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -190,11 +236,12 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} placeholder="请选择储罐结构">
-                <Option value="1">拱顶式</Option>
-                <Option value="2">浮顶式</Option>
-                <Option value="3">内浮顶</Option>
-                <Option value="3">卧式</Option>
+              <Select {...itemStyles} allowClear placeholder="请选择储罐结构">
+                {constructList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -207,11 +254,12 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} placeholder="请选择储罐材质">
-                <Option value="1">碳钢</Option>
-                <Option value="2">不锈钢</Option>
-                <Option value="3">聚乙烯</Option>
-                <Option value="3">玻璃钢</Option>
+              <Select {...itemStyles} allowClear placeholder="请选择储罐材质">
+                {materialList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -224,9 +272,12 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} placeholder="请选择是否压力容器">
-                <Option value="1">否</Option>
-                <Option value="2">是</Option>
+              <Select {...itemStyles} allowClear placeholder="请选择是否压力容器">
+                {selectTypeList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -239,10 +290,12 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} placeholder="请选择压力等级">
-                <Option value="1">低压</Option>
-                <Option value="2">中压</Option>
-                <Option value="3">高压</Option>
+              <Select {...itemStyles} allowClear placeholder="请选择压力等级">
+                {pressureList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -309,7 +362,6 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="是否构成重大危险源">
             {getFieldDecorator('dangerChemicals', {
-              getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
@@ -318,8 +370,11 @@ export default class StorageEdit extends PureComponent {
               ],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择是否构成重大危险源">
-                <Option value="1">是</Option>
-                <Option value="2">否</Option>
+                {selectTypeList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -330,8 +385,7 @@ export default class StorageEdit extends PureComponent {
             <Button type="primary"> 选择</Button>
           </FormItem>
           <FormItem {...formItemLayout} label="是否高危储罐">
-            {getFieldDecorator('dangerChemicals', {
-              getValueFromEvent: this.handleTrim,
+            {getFieldDecorator('dangerChemicals1', {
               rules: [
                 {
                   required: true,
@@ -340,8 +394,11 @@ export default class StorageEdit extends PureComponent {
               ],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择是否高危储罐">
-                <Option value="1">是</Option>
-                <Option value="2">否</Option>
+                {selectTypeList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -362,8 +419,7 @@ export default class StorageEdit extends PureComponent {
             })(<Input {...itemStyles} placeholder="请输入安全设备" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="有无围堰">
-            {getFieldDecorator('hasAccept', {
-              getValueFromEvent: this.handleTrim,
+            {getFieldDecorator('hasCofferdam', {
               rules: [
                 {
                   required: true,
@@ -397,11 +453,12 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} placeholder="请选择火灾危险性等级">
-                <Option value="1">甲</Option>
-                <Option value="2">乙</Option>
-                <Option value="3">丙</Option>
-                <Option value="4">丁</Option>
+              <Select {...itemStyles} allowClear placeholder="请选择火灾危险性等级">
+                {dangerLevelList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -414,9 +471,12 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} placeholder="请选择是否配套火柜">
-                <Option value="1">是</Option>
-                <Option value="2">否</Option>
+              <Select {...itemStyles} allowClear placeholder="请选择是否配套火柜">
+                {selectTypeList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -429,15 +489,17 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} placeholder="请选择是否设置保温/保冷">
-                <Option value="1">是</Option>
-                <Option value="2">否</Option>
+              <Select {...itemStyles} allowClear placeholder="请选择是否设置保温/保冷">
+                {selectTypeList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="是否设置自动喷淋">
             {getFieldDecorator('select11', {
-              getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
@@ -445,15 +507,17 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} placeholder="请选择是否设置自动喷淋">
-                <Option value="1">是</Option>
-                <Option value="2">否</Option>
+              <Select {...itemStyles} allowClear placeholder="请选择是否设置自动喷淋">
+                {selectTypeList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="是否设置消防水炮/泡沫炮">
             {getFieldDecorator('select12', {
-              getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
@@ -461,9 +525,12 @@ export default class StorageEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} placeholder="请选择是否设置消防水炮/泡沫炮">
-                <Option value="1">是</Option>
-                <Option value="2">否</Option>
+              <Select {...itemStyles} allowClear placeholder="请选择是否设置消防水炮/泡沫炮">
+                {selectTypeList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>

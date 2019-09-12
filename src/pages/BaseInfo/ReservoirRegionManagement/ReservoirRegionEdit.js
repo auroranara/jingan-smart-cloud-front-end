@@ -10,6 +10,14 @@ import styles from '../StorageAreaManagement/Edit.less';
 const { Option } = Select;
 const FormItem = Form.Item;
 
+const envirTypeList = [
+  { key: '1', value: '一类区' },
+  { key: '2', value: '二类区' },
+  { key: '3', value: '三类区' },
+];
+
+const selectTypeList = [{ key: '1', value: '是' }, { key: '2', value: '否' }];
+
 // 编辑页面标题
 const editTitle = '编辑库区';
 // 添加页面标题
@@ -114,9 +122,11 @@ export default class ReservoirRegionEdit extends PureComponent {
               ],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择所处环境功能区">
-                <Option value="1">一类区</Option>
-                <Option value="2">二类区</Option>
-                <Option value="3">三类区</Option>
+                {envirTypeList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -185,8 +195,11 @@ export default class ReservoirRegionEdit extends PureComponent {
               ],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择是否构成重大危险源">
-                <Option value="1">是</Option>
-                <Option value="2">否</Option>
+                {selectTypeList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>

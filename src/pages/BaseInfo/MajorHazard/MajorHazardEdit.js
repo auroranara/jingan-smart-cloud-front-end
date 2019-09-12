@@ -11,6 +11,26 @@ const { TextArea } = Input;
 const { Option } = Select;
 const FormItem = Form.Item;
 
+const productTypeList = [
+  { key: '1', value: '生产' },
+  { key: '2', value: '经营' },
+  { key: '3', value: '使用' },
+  { key: '4', value: '存储' },
+];
+
+const dangerTypeList = [
+  { key: '1', value: '一级' },
+  { key: '2', value: '二级' },
+  { key: '3', value: '三级' },
+  { key: '4', value: '四级' },
+];
+
+const dangerChemicalsList = [
+  { key: '1', value: '易燃' },
+  { key: '2', value: '有毒' },
+  { key: '3', value: '兼易燃有毒' },
+];
+
 // 编辑页面标题
 const editTitle = '编辑重大危险源';
 // 添加页面标题
@@ -111,7 +131,6 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="生产经营活动类型">
             {getFieldDecorator('productType', {
-              getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
@@ -120,16 +139,16 @@ export default class MajorHazardEdit extends PureComponent {
               ],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
-                <Option value="1">生产</Option>
-                <Option value="2">经营</Option>
-                <Option value="3">使用</Option>
-                <Option value="4">存储</Option>
+                {productTypeList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="生产存储场所产权">
             {getFieldDecorator('productArea', {
-              getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
@@ -145,7 +164,6 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="防雷防静电设施是否定期接受检测">
             {getFieldDecorator('hasAccept', {
-              getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
@@ -221,10 +239,11 @@ export default class MajorHazardEdit extends PureComponent {
               ],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择重大危险源等级">
-                <Option value="1">一级</Option>
-                <Option value="2">二级</Option>
-                <Option value="3">三级</Option>
-                <Option value="4">四级</Option>
+                {dangerTypeList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
@@ -249,7 +268,6 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="危险化学品性质">
             {getFieldDecorator('dangerChemicals', {
-              getValueFromEvent: this.handleTrim,
               rules: [
                 {
                   required: true,
@@ -258,9 +276,11 @@ export default class MajorHazardEdit extends PureComponent {
               ],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择危险化学品性质">
-                <Option value="1">易燃</Option>
-                <Option value="2">有毒</Option>
-                <Option value="3">兼有易燃有毒</Option>
+                {dangerChemicalsList.map(({ key, value }) => (
+                  <Option key={key} value={value}>
+                    {value}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
