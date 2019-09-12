@@ -80,6 +80,7 @@ export default class CompanyList extends PureComponent {
     this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
     this.state = {
       modalVisible: false, // 企业模态框是否可见
+      scrollPage: 1,
     };
   }
 
@@ -240,6 +241,25 @@ export default class CompanyList extends PureComponent {
       }
     });
   };
+
+  // popupScrollcroll = e => {
+  //   const { dispatch } = this.props;
+  //   e.persist();
+  //   const { target } = e;
+  //   if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
+  //     console.log('567', target.scrollTop, target.offsetHeight, target.scrollHeight);
+  //     const { scrollPage } = this.state;
+  //     const nextScrollPage = scrollPage + 1;
+  //     this.setState({ scrollPage: nextScrollPage });
+  //     dispatch({
+  //       type: 'hiddenDangerReport/fetchUnitListFuzzy',
+  //       payload: {
+  //         pageNum: nextScrollPage,
+  //         pageSize: 18,
+  //       },
+  //     });
+  //   }
+  // };
 
   // 渲染form表单
   renderForm() {
@@ -477,6 +497,7 @@ export default class CompanyList extends PureComponent {
                   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                   onSearch={this.handleUnitIdChange}
                   onBlur={this.handleUnitIdBlur}
+                  // onPopupScroll={this.popupScrollcroll}
                   filterOption={false}
                 >
                   {unitIdes.map(({ id, name }) => (

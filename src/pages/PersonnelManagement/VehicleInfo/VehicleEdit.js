@@ -16,6 +16,7 @@ import {
 import router from 'umi/router';
 import { getToken } from '@/utils/authority';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import { phoneReg } from '@/utils/validate';
 import moment from 'moment';
 const { Option } = Select;
 
@@ -292,7 +293,7 @@ export default class VehicleEdit extends PureComponent {
                   initialValue: number,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入车牌号', whitespace: true }],
-                })(<Input placeholder="请输入车牌号" />)}
+                })(<Input placeholder="请输入车牌号" maxlength={15} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -300,7 +301,7 @@ export default class VehicleEdit extends PureComponent {
                 {getFieldDecorator('brand', {
                   initialValue: brand,
                   getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入品牌" />)}
+                })(<Input placeholder="请输入品牌" maxlength={15} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -308,7 +309,7 @@ export default class VehicleEdit extends PureComponent {
                 {getFieldDecorator('model', {
                   initialValue: model,
                   getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入型号" />)}
+                })(<Input placeholder="请输入型号" maxlength={15} />)}
               </Form.Item>
             </Col>
 
@@ -318,7 +319,7 @@ export default class VehicleEdit extends PureComponent {
                   initialValue: type,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入车辆类型', whitespace: true }],
-                })(<Input placeholder="请输入车辆类型" />)}
+                })(<Input placeholder="请输入车辆类型" maxlength={15} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -353,7 +354,7 @@ export default class VehicleEdit extends PureComponent {
                   initialValue: load,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入载重', whitespace: true }],
-                })(<Input placeholder="请输入载重" />)}
+                })(<Input placeholder="请输入载重" maxlength={15} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -362,7 +363,7 @@ export default class VehicleEdit extends PureComponent {
                   initialValue: carCompany,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入所属单位', whitespace: true }],
-                })(<Input placeholder="请输入所属单位" />)}
+                })(<Input placeholder="请输入所属单位" maxlength={20} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -371,7 +372,7 @@ export default class VehicleEdit extends PureComponent {
                   initialValue: driver,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入驾驶员姓名', whitespace: true }],
-                })(<Input placeholder="请输入驾驶员姓名" />)}
+                })(<Input placeholder="请输入驾驶员姓名" maxlength={10} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -379,8 +380,11 @@ export default class VehicleEdit extends PureComponent {
                 {getFieldDecorator('driverTel', {
                   initialValue: driverTel,
                   getValueFromEvent: this.handleTrim,
-                  rules: [{ required: true, message: '请输入驾驶员联系电话', whitespace: true }],
-                })(<Input placeholder="请输入驾驶员联系电话" />)}
+                  rules: [
+                    { required: true, message: '请输入驾驶员联系电话', whitespace: true },
+                    { pattern: phoneReg, message: '联系电话格式不正确' },
+                  ],
+                })(<Input placeholder="请输入驾驶员联系电话" maxlength={12} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -396,7 +400,11 @@ export default class VehicleEdit extends PureComponent {
                 {getFieldDecorator('supercargoTel', {
                   initialValue: supercargoTel,
                   getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入押运员联系电话" />)}
+                  rules: [
+                    { required: false, message: '请输入押运员联系电话', whitespace: true },
+                    { pattern: phoneReg, message: '联系电话格式不正确' },
+                  ],
+                })(<Input placeholder="请输入押运员联系电话" maxlength={12} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>

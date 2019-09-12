@@ -4,6 +4,7 @@ import { Form, Card, Button, message, Row, Col, Input, Select, Upload, Icon } fr
 import router from 'umi/router';
 import { getToken } from '@/utils/authority';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import { phoneReg } from '@/utils/validate';
 const { Option } = Select;
 
 // 标题
@@ -245,7 +246,7 @@ export default class PersonnelEdit extends PureComponent {
                   initialValue: name,
                   rules: [{ required: true, message: '请输入姓名', whitespace: true }],
                   getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入姓名" />)}
+                })(<Input placeholder="请输入姓名" maxlength={15} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -274,9 +275,12 @@ export default class PersonnelEdit extends PureComponent {
               <Form.Item label="手机号">
                 {getFieldDecorator('tel', {
                   initialValue: tel,
-                  rules: [{ required: true, message: '请输入手机号', whitespace: true }],
+                  rules: [
+                    { required: true, message: '请输入手机号', whitespace: true },
+                    { pattern: phoneReg, message: '联系电话格式不正确' },
+                  ],
                   getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入手机号" />)}
+                })(<Input placeholder="请输入手机号" maxlength={15} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -285,7 +289,7 @@ export default class PersonnelEdit extends PureComponent {
                   initialValue: duty,
                   rules: [{ message: '请输入职务', whitespace: true }],
                   getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入职务" />)}
+                })(<Input placeholder="请输入职务" maxlength={25} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -294,7 +298,7 @@ export default class PersonnelEdit extends PureComponent {
                   initialValue: profession,
                   rules: [{ message: '请输入工种', whitespace: true }],
                   getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入工种" />)}
+                })(<Input placeholder="请输入工种" maxlength={25} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -324,7 +328,7 @@ export default class PersonnelEdit extends PureComponent {
                   initialValue: personCompany,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入所属单位' }],
-                })(<Input placeholder="请输入所属单位" />)}
+                })(<Input placeholder="请输入所属单位" maxlength={25} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -333,7 +337,7 @@ export default class PersonnelEdit extends PureComponent {
                   initialValue: workCode,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ message: '请输入作业证书编号', whitespace: true }],
-                })(<Input placeholder="请输入作业证书编号" />)}
+                })(<Input placeholder="请输入作业证书编号" maxlength={30} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>

@@ -334,20 +334,26 @@ export default class PersonnelList extends PureComponent {
                 <Card
                   className={styles.card}
                   actions={[
-                    <Link
-                      disabled={!detailAuth}
-                      to={`/personnel-management/personnel-info/personnel-detail/${id}?listId=${companyId}`}
-                      target="_blank"
-                    >
-                      查看
-                    </Link>,
-                    <Link
-                      disabled={!editAuth}
-                      to={`/personnel-management/personnel-info/personnel-edit/${id}?listId=${companyId}`}
-                      target="_blank"
-                    >
-                      编辑
-                    </Link>,
+                    detailAuth ? (
+                      <Link
+                        to={`/personnel-management/personnel-info/personnel-detail/${id}?listId=${companyId}`}
+                        target="_blank"
+                      >
+                        查看
+                      </Link>
+                    ) : (
+                      <span style={{ color: 'rgba(0, 0, 0, 0.25)', cursor: 'default' }}>查看</span>
+                    ),
+                    editAuth ? (
+                      <Link
+                        to={`/personnel-management/personnel-info/personnel-edit/${id}?listId=${companyId}`}
+                        target="_blank"
+                      >
+                        编辑
+                      </Link>
+                    ) : (
+                      <span style={{ color: 'rgba(0, 0, 0, 0.25)', cursor: 'default' }}>编辑</span>
+                    ),
                     deleteAuth ? (
                       <Popconfirm
                         title="删除数据将无法恢复，是否继续？"
