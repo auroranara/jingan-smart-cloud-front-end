@@ -16,6 +16,10 @@ const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
+const statusList = [
+  { key: '1', label: '已执行' },
+  { key: '2', label: '未执行' },
+]
 
 @Form.create()
 @connect(({ emergencyPlan, loading }) => ({
@@ -85,22 +89,41 @@ export default class EmergencyDrillList extends Component {
             </Col> */}
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('name')(
+                {getFieldDecorator('aa')(
                   <Input placeholder="应急演练编码" />
                 )}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('name')(
+                {getFieldDecorator('aaa')(
                   <Input placeholder="单位名称" />
                 )}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
+                {getFieldDecorator('cc')(
+                  <Select placeholder="计划状态">
+                    {statusList.map(({ key, label }) => (
+                      <Select.Option key={key} value={key}>{label}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('ccc')(
+                  <Input placeholder="演练名称" />
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary">查询</Button>
-                <Button>重置</Button>
+                <Button style={{ marginRight: '10px' }}>重置</Button>
+                <Button type="primary">新增</Button>
               </FormItem>
             </Col>
           </Row>
@@ -196,7 +219,7 @@ export default class EmergencyDrillList extends Component {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={`单位数量： 演练计划： 未执行： 已执行：`}
+        content={`单位数量：0 演练计划：0 未执行：0 已执行：0`}
       >
         {this.renderFilter()}
         {this.renderTable()}
