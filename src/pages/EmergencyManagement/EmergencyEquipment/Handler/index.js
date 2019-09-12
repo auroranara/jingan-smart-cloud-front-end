@@ -59,6 +59,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
     super(props);
     this.state = {
       uploading: false,
+      submitting: false,
       // 当前监测参数
       currentParameter: {},
       // 储存配置报警策略
@@ -73,58 +74,58 @@ export default class EmergencyEquipmentHandler extends PureComponent {
   }
 
   componentDidMount() {
-    const {
-      dispatch,
-      match: {
-        params: { id },
-      },
-      form: { setFieldsValue },
-    } = this.props;
-    this.fetchMonitoringTypeDict();
-    // this.fetchSensorBrandDict()
-    // 如果编辑
-    if (id) {
-      // 获取传感器详情
-      dispatch({
-        type: 'sensor/fetchSensorDetail',
-        payload: { id },
-        callback: response => {
-          const {
-            companyId,
-            companyName,
-            monitoringParameters,
-            monitoringTypeId,
-            typeId,
-            brandName,
-            deviceName,
-            relationDeviceId,
-            area,
-            location,
-          } = response.data;
-          setFieldsValue({
-            companyId,
-            monitoringTypeId,
-            typeId,
-            brandName,
-            deviceName,
-            relationDeviceId,
-            area,
-            location,
-          });
-          this.setState({
-            selectedCompany: { id: companyId, name: companyName },
-          });
-          this.fetchSensorTypeDict({ payload: { monitoringTypeId } });
-          dispatch({
-            type: 'sensor/saveState',
-            payload: { key: 'monitoringParameters', value: monitoringParameters },
-          });
-        },
-      });
-    } else {
-      // 如果新增
-      this.saveTypeDict();
-    }
+    // const {
+    //   dispatch,
+    //   match: {
+    //     params: { id },
+    //   },
+    //   form: { setFieldsValue },
+    // } = this.props;
+    // this.fetchMonitoringTypeDict();
+    // // this.fetchSensorBrandDict()
+    // // 如果编辑
+    // if (id) {
+    //   // 获取传感器详情
+    //   dispatch({
+    //     type: 'sensor/fetchSensorDetail',
+    //     payload: { id },
+    //     callback: response => {
+    //       const {
+    //         companyId,
+    //         companyName,
+    //         monitoringParameters,
+    //         monitoringTypeId,
+    //         typeId,
+    //         brandName,
+    //         deviceName,
+    //         relationDeviceId,
+    //         area,
+    //         location,
+    //       } = response.data;
+    //       setFieldsValue({
+    //         companyId,
+    //         monitoringTypeId,
+    //         typeId,
+    //         brandName,
+    //         deviceName,
+    //         relationDeviceId,
+    //         area,
+    //         location,
+    //       });
+    //       this.setState({
+    //         selectedCompany: { id: companyId, name: companyName },
+    //       });
+    //       this.fetchSensorTypeDict({ payload: { monitoringTypeId } });
+    //       dispatch({
+    //         type: 'sensor/saveState',
+    //         payload: { key: 'monitoringParameters', value: monitoringParameters },
+    //       });
+    //     },
+    //   });
+    // } else {
+    //   // 如果新增
+    //   this.saveTypeDict();
+    // }
   }
 
   /**
@@ -180,6 +181,8 @@ export default class EmergencyEquipmentHandler extends PureComponent {
   };
 
   handleSubmit = () => {
+    router.push('/emergency-management/emergency-equipment/list');
+    return;
     const {
       dispatch,
       sensor: { monitoringParameters },
@@ -192,7 +195,6 @@ export default class EmergencyEquipmentHandler extends PureComponent {
     validateFields((error, { normalLower, normalUpper, ...formData }) => {
       if (!error) {
         const payload = { ...formData, monitoringParameters };
-        // console.log('提交',payload)
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
           router.push('/device-management/sensor/list');
@@ -306,10 +308,13 @@ export default class EmergencyEquipmentHandler extends PureComponent {
                 placeholder="请选择装备类型"
                 allowClear
                 getPopupContainer={getRootChild}
+                {...itemStyles}
               />
             )}
           </FormItem>
-          <p>装备编码:</p>
+          <FormItem label="装备编码" {...formItemLayout}>
+            {getFieldDecorator('equipCode')(<span>66666</span>)}
+          </FormItem>
           <FormItem label="装备来源" {...formItemLayout}>
             {getFieldDecorator('equipSource')(
               <RadioGroup {...itemStyles}>
@@ -392,7 +397,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
           <FormItem label="装备用途" {...formItemLayout}>
             {getFieldDecorator('use', {
               rules: [{ required: true, message: '请输入装备用途' }],
-            })(<TextArea rows={4} placeholder="请输入装备用途" maxLength="500" />)}
+            })(<TextArea rows={4} placeholder="请输入装备用途" maxLength="500" {...itemStyles} />)}
           </FormItem>
           <FormItem label="装备状态" {...formItemLayout}>
             {getFieldDecorator('status', {
@@ -433,7 +438,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
           </FormItem>
           <FormItem label="备注" {...formItemLayout}>
             {getFieldDecorator('remark')(
-              <TextArea rows={4} placeholder="请输入备注" maxLength="500" />
+              <TextArea rows={4} placeholder="请输入备注" maxLength="500" {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="图片" {...formItemLayout}>
@@ -453,14 +458,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
           </FormItem>
         </Form>
         <Row style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button
-            onClick={() => {
-              router.push('/device-management/sensor/list');
-            }}
-          >
-            取消
-          </Button>
-          <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
+          <Button type="primary" onClick={this.handleSubmit}>
             提交
           </Button>
         </Row>

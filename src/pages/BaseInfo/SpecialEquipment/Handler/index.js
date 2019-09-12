@@ -126,7 +126,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
   };
 
   handleSubmit = () => {
-    router.push('/emergency-management/emergency-supplies/list');
+    router.push('/base-info/special-equipment/list');
     return;
     const {
       dispatch,
@@ -230,74 +230,129 @@ export default class EmergencySuppliesHandler extends PureComponent {
               </Fragment>
             )}
           </FormItem>
-          <FormItem label="物资名称" {...formItemLayout}>
+          <FormItem label="代码" {...formItemLayout}>
             {getFieldDecorator('relationDeviceId', {
-              rules: [{ required: true, message: '请输入物资名称' }],
-            })(<Input placeholder="请输入物资名称" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="资源编码" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
-              rules: [{ required: true, message: '请选择资源编码' }],
+              rules: [{ required: true, message: '请选择代码' }],
             })(
-              <Select placeholder="请选择资源编码" {...itemStyles}>
-                <Option value={'666'}>lalala</Option>
+              <Select placeholder="请选择代码" {...itemStyles}>
+                {/* <Option value={'666'}>lalala</Option> */}
               </Select>
             )}
           </FormItem>
-          <FormItem label="级别编码" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
-              rules: [{ required: true, message: '请选择级别编码' }],
+          <FormItem label="种类" {...formItemLayout}>
+            {getFieldDecorator('relationDeviceId', {
+              rules: [{ required: true, message: '请选择种类' }],
             })(
-              <RadioGroup {...itemStyles}>
-                <Radio value="1">01 国家级</Radio>
-                <Radio value="0">02 社会力量</Radio>
-                <Radio value="2">99 其他</Radio>
-              </RadioGroup>
+              <Select placeholder="请选择种类" {...itemStyles}>
+                {/* <Option value={'666'}>lalala</Option> */}
+              </Select>
             )}
           </FormItem>
-
-          <FormItem label="物资类型" {...formItemLayout}>
+          <FormItem label="类别" {...formItemLayout}>
             {getFieldDecorator('relationDeviceId', {
-              rules: [{ required: true, message: '请选择物资类型' }],
+              rules: [{ required: true, message: '请选择类别' }],
             })(
-              <Cascader
-                options={[]}
-                fieldNames={{
-                  value: 'id',
-                  label: 'name',
-                  children: 'children',
-                  isLeaf: 'isLeaf',
-                }}
-                loadData={selectedOptions => {
-                  this.handleLoadData(['registerAddress'], selectedOptions);
-                }}
-                changeOnSelect
-                placeholder="请选择物资类型"
-                allowClear
-                getPopupContainer={getRootChild}
-                {...itemStyles}
-              />
+              <Select placeholder="请选择类别" {...itemStyles}>
+                {/* <Option value={'666'}>lalala</Option> */}
+              </Select>
             )}
           </FormItem>
-          <FormItem label="物资编码" {...formItemLayout}>
-            {getFieldDecorator('equipCode')(<span> </span>)}
-          </FormItem>
-          <FormItem label="物资数量" {...formItemLayout}>
+          <FormItem label="品种" {...formItemLayout}>
             {getFieldDecorator('relationDeviceId', {
-              rules: [{ required: true, message: '请输入物资数量' }],
+              rules: [{ required: true, message: '请选择品种' }],
             })(
+              <Select placeholder="请选择品种" {...itemStyles}>
+                {/* <Option value={'666'}>lalala</Option> */}
+              </Select>
+            )}
+          </FormItem>
+          <FormItem label="品牌" {...formItemLayout}>
+            {getFieldDecorator('relationDeviceId', {
+              rules: [{ required: true, message: '请选择品牌' }],
+            })(
+              <Select placeholder="请选择品牌" {...itemStyles}>
+                {/* <Option value={'666'}>lalala</Option> */}
+              </Select>
+            )}
+          </FormItem>
+          <FormItem label="规格型号" {...formItemLayout}>
+            {getFieldDecorator('relationDeviceId', {
+              rules: [{ required: true, message: '请选择规格型号' }],
+            })(
+              <Select placeholder="请选择规格型号" {...itemStyles}>
+                {/* <Option value={'666'}>lalala</Option> */}
+              </Select>
+            )}
+          </FormItem>
+          <FormItem label="出厂编号" {...formItemLayout}>
+            {getFieldDecorator('relationDeviceId', {
+              rules: [{ required: true, message: '请输入出厂编号' }],
+            })(<Input placeholder="请输入出厂编号" {...itemStyles} />)}
+          </FormItem>
+          <FormItem label="设备名称" {...formItemLayout}>
+            {getFieldDecorator('relationDeviceId', {
+              rules: [{ required: true, message: '请输入设备名称' }],
+            })(<Input placeholder="请输入设备名称" {...itemStyles} />)}
+          </FormItem>
+          <FormItem label="使用证编号" {...formItemLayout}>
+            {getFieldDecorator('relationDeviceId')(
+              <Input placeholder="请输入使用证编号" {...itemStyles} />
+            )}
+          </FormItem>
+          <FormItem label="使用部位" {...formItemLayout}>
+            {getFieldDecorator('relationDeviceId')(
+              <Input placeholder="请输入使用部位" {...itemStyles} />
+            )}
+          </FormItem>
+          <FormItem label="数量" {...formItemLayout}>
+            {getFieldDecorator('limitYear')(
               <InputNumber
                 {...itemStyles}
                 min={0}
-                placeholder="请输入物资数量"
+                placeholder="请输入数量"
                 formatter={value => (!value || isNaN(value) ? '' : Math.round(value))}
                 parser={value => (!value || isNaN(value) ? '' : Math.round(value))}
               />
             )}
           </FormItem>
-          <FormItem label="备注" {...formItemLayout}>
+          <FormItem label="联系人" {...formItemLayout}>
             {getFieldDecorator('relationDeviceId')(
-              <TextArea rows={4} placeholder="请输入备注" maxLength="500" {...itemStyles} />
+              <Input placeholder="请输入联系人" {...itemStyles} />
+            )}
+          </FormItem>
+          <FormItem label="联系电话" {...formItemLayout}>
+            {getFieldDecorator('relationDeviceId')(
+              <Input placeholder="请输入联系电话" {...itemStyles} />
+            )}
+          </FormItem>
+          <FormItem label="生产单位名称" {...formItemLayout}>
+            {getFieldDecorator('relationDeviceId')(
+              <Input placeholder="请输入生产单位名称" {...itemStyles} />
+            )}
+          </FormItem>
+          <FormItem label="生产单位电话" {...formItemLayout}>
+            {getFieldDecorator('relationDeviceId')(
+              <Input placeholder="请输入生产单位电话" {...itemStyles} />
+            )}
+          </FormItem>
+          <FormItem label="生产日期" {...formItemLayout}>
+            {getFieldDecorator('buyDate')(
+              <DatePicker
+                placeholder="请选择生产日期"
+                getCalendarContainer={getRootChild}
+                {...itemStyles}
+              />
+            )}
+          </FormItem>
+          <FormItem label="使用期限（月）" {...formItemLayout}>
+            {getFieldDecorator('limitYear')(
+              <InputNumber
+                {...itemStyles}
+                min={0}
+                placeholder="请输入使用期限"
+                formatter={value => (!value || isNaN(value) ? '' : Math.round(value))}
+                parser={value => (!value || isNaN(value) ? '' : Math.round(value))}
+              />
             )}
           </FormItem>
         </Form>

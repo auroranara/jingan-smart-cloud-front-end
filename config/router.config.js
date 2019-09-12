@@ -450,6 +450,158 @@ module.exports = env => {
                 },
               ],
             },
+            // 库房管理
+            {
+              path: '/base-info/storehouse',
+              code: 'baseInfo.storehouse',
+              name: 'storehouse',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/base-info/storehouse',
+                  name: 'storehouse',
+                  redirect: '/base-info/storehouse/list',
+                },
+                {
+                  path: '/base-info/storehouse/list',
+                  code: 'baseInfo.storehouse.listView',
+                  name: 'list',
+                  component: './BaseInfo/Storehouse/List/index',
+                },
+                {
+                  path: '/base-info/storehouse/add',
+                  code: 'baseInfo.storehouse.add',
+                  name: 'add',
+                  component: './BaseInfo/Storehouse/Handler/index',
+                },
+                {
+                  path: '/base-info/storehouse/edit/:id',
+                  code: 'baseInfo.storehouse.edit',
+                  name: 'edit',
+                  component: './BaseInfo/Storehouse/Handler/index',
+                },
+                {
+                  path: '/base-info/storehouse/detail/:id',
+                  code: 'baseInfo.storehouse.detail',
+                  name: 'detail',
+                  component: './BaseInfo/Storehouse/Detail/index',
+                },
+              ],
+            },
+            // 物料信息
+            {
+              path: '/base-info/materials',
+              code: 'baseInfo.materials',
+              name: 'materials',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/base-info/materials',
+                  name: 'materials',
+                  redirect: '/base-info/materials/list',
+                },
+                {
+                  path: '/base-info/materials/list',
+                  code: 'baseInfo.materials.listView',
+                  name: 'list',
+                  component: './BaseInfo/Materials/List/index',
+                },
+                {
+                  path: '/base-info/materials/add',
+                  code: 'baseInfo.materials.add',
+                  name: 'add',
+                  component: './BaseInfo/Materials/Handler/index',
+                },
+                {
+                  path: '/base-info/materials/edit/:id',
+                  code: 'baseInfo.materials.edit',
+                  name: 'edit',
+                  component: './BaseInfo/Materials/Handler/index',
+                },
+                {
+                  path: '/base-info/materials/detail/:id',
+                  code: 'baseInfo.materials.detail',
+                  name: 'detail',
+                  component: './BaseInfo/Materials/Detail/index',
+                },
+              ],
+            },
+            // 高危工艺流程
+            {
+              path: '/base-info/high-risk-process',
+              code: 'baseInfo.highRiskProcess',
+              name: 'highRiskProcess',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/base-info/high-risk-process',
+                  name: 'highRiskProcess',
+                  redirect: '/base-info/highRiskProcess/list',
+                },
+                {
+                  path: '/base-info/high-risk-process/list',
+                  code: 'baseInfo.highRiskProcess.listView',
+                  name: 'list',
+                  component: './BaseInfo/HighRiskProcess/List/index',
+                },
+                {
+                  path: '/base-info/high-risk-process/add',
+                  code: 'baseInfo.highRiskProcess.add',
+                  name: 'add',
+                  component: './BaseInfo/HighRiskProcess/Handler/index',
+                },
+                {
+                  path: '/base-info/high-risk-process/edit/:id',
+                  code: 'baseInfo.highRiskProcess.edit',
+                  name: 'edit',
+                  component: './BaseInfo/HighRiskProcess/Handler/index',
+                },
+                {
+                  path: '/base-info/high-risk-process/detail/:id',
+                  code: 'baseInfo.highRiskProcess.detail',
+                  name: 'detail',
+                  component: './BaseInfo/HighRiskProcess/Detail/index',
+                },
+              ],
+            },
+            // 特种设备管理
+            {
+              path: '/base-info/special-equipment',
+              code: 'baseInfo.specialEquipment',
+              name: 'specialEquipment',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/base-info/special-equipment',
+                  name: 'specialEquipment',
+                  redirect: '/base-info/specialEquipment/list',
+                },
+                {
+                  path: '/base-info/special-equipment/list',
+                  code: 'baseInfo.specialEquipment.listView',
+                  name: 'list',
+                  component: './BaseInfo/SpecialEquipment/List/index',
+                },
+                {
+                  path: '/base-info/special-equipment/add',
+                  code: 'baseInfo.specialEquipment.add',
+                  name: 'add',
+                  component: './BaseInfo/SpecialEquipment/Handler/index',
+                },
+                {
+                  path: '/base-info/special-equipment/edit/:id',
+                  code: 'baseInfo.specialEquipment.edit',
+                  name: 'edit',
+                  component: './BaseInfo/SpecialEquipment/Handler/index',
+                },
+                {
+                  path: '/base-info/special-equipment/detail/:id',
+                  code: 'baseInfo.specialEquipment.detail',
+                  name: 'detail',
+                  component: './BaseInfo/SpecialEquipment/Detail/index',
+                },
+              ],
+            },
           ],
         },
 

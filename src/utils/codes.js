@@ -384,4 +384,35 @@ export default {
       detail: 'emergencyManagement.emergencyDrill.detail',
     },
   },
+
+  baseInfo: {
+    // 库房管理
+    storehouse: {
+      listView: 'baseInfo.storehouse.listView',
+      add: 'baseInfo.storehouse.add',
+      edit: 'baseInfo.storehouse.edit',
+      detail: 'baseInfo.storehouse.detail',
+    },
+    // 物料信息
+    materials: {
+      listView: 'baseInfo.materials.listView',
+      add: 'baseInfo.materials.add',
+      edit: 'baseInfo.materials.edit',
+      detail: 'baseInfo.materials.detail',
+    },
+    // 高危工艺流程
+    highRiskProcess: {
+      listView: 'baseInfo.highRiskProcess.listView',
+      add: 'baseInfo.highRiskProcess.add',
+      edit: 'baseInfo.highRiskProcess.edit',
+      detail: 'baseInfo.highRiskProcess.detail',
+    },
+    // 特种设备管理
+    specialEquipment: {
+      listView: 'baseInfo.specialEquipment.listView',
+      add: 'baseInfo.specialEquipment.add',
+      edit: 'baseInfo.specialEquipment.edit',
+      detail: 'baseInfo.specialEquipment.detail',
+    },
+  },
 };

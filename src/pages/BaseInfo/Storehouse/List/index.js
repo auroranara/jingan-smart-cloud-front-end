@@ -11,14 +11,14 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
 
 const {
-  emergencyManagement: {
-    emergencySupplies: { detail: detailCode, edit: editCode, add: addCode },
+  baseInfo: {
+    storehouse: { detail: detailCode, edit: editCode, add: addCode },
   },
 } = codes;
-const addUrl = '/emergency-management/emergency-supplies/add';
+const addUrl = '/base-info/storehouse/add';
 
 const { Option } = Select;
-const title = '应急物资';
+const title = '库房管理';
 const breadcrumbList = [
   {
     title: '首页',
@@ -26,8 +26,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '应急管理',
-    name: '应急管理',
+    title: '一企一档',
+    name: '一企一档',
   },
   {
     title,
@@ -58,14 +58,52 @@ export default class EmergencyPlanList extends PureComponent {
       {
         id: 'unitCompanyName',
         render() {
-          return <Input placeholder="请输入物资名称" />;
+          return <Input placeholder="请输入库房名称" />;
         },
         transform,
       },
       {
         id: 'companyName',
         render() {
-          return <Input placeholder="请输入物资编码" />;
+          return <Input placeholder="请输入库房编号" />;
+        },
+        transform,
+      },
+      {
+        id: 'companyName',
+        render() {
+          return <Input placeholder="请输入区域位置" />;
+        },
+        transform,
+      },
+      {
+        id: 'deviceCode',
+        render() {
+          const options = [{ value: '1', name: '是' }, { value: '0', name: '否' }];
+          return (
+            <Select
+              allowClear
+              showSearch
+              placeholder="是否是重大危险源"
+              getPopupContainer={getRootChild}
+              style={{ width: '100%' }}
+            >
+              {options.map(item => {
+                const { value, name } = item;
+                return (
+                  <Option value={value} key={value}>
+                    {name}
+                  </Option>
+                );
+              })}
+            </Select>
+          );
+        },
+      },
+      {
+        id: 'companyName',
+        render() {
+          return <Input placeholder="请输入库房名称" />;
         },
         transform,
       },
@@ -75,62 +113,6 @@ export default class EmergencyPlanList extends PureComponent {
           return <Input placeholder="请输入单位名称" />;
         },
         transform,
-      },
-      {
-        id: 'deviceCode',
-        render() {
-          const options = [
-            // { value: '1', name: '未到期' },
-            // { value: '2', name: '即将到期' },
-            // { value: '3', name: '已过期' },
-          ];
-          return (
-            <Select
-              allowClear
-              showSearch
-              placeholder="请选择资源编码"
-              getPopupContainer={getRootChild}
-              style={{ width: '100%' }}
-            >
-              {options.map(item => {
-                const { value, name } = item;
-                return (
-                  <Option value={value} key={value}>
-                    {name}
-                  </Option>
-                );
-              })}
-            </Select>
-          );
-        },
-      },
-      {
-        id: 'deviceCode',
-        render() {
-          const options = [
-            // { value: '1', name: '国配' },
-            // { value: '2', name: '自购' },
-            // { value: '3', name: '社会物资' },
-          ];
-          return (
-            <Select
-              allowClear
-              showSearch
-              placeholder="请选择级别编码"
-              getPopupContainer={getRootChild}
-              style={{ width: '100%' }}
-            >
-              {options.map(item => {
-                const { value, name } = item;
-                return (
-                  <Option value={value} key={value}>
-                    {name}
-                  </Option>
-                );
-              })}
-            </Select>
-          );
-        },
       },
     ];
 
@@ -146,7 +128,7 @@ export default class EmergencyPlanList extends PureComponent {
           onReset={this.handleReset}
           action={
             <Button type="primary" onClick={this.goToAdd} disabled={!hasAddAuthority}>
-              新增
+              新增库房
             </Button>
           }
         />
@@ -181,6 +163,8 @@ export default class EmergencyPlanList extends PureComponent {
           <div>
             单位数量：
             {total}
+            <span style={{ marginLeft: 15 }}>库房数量：0</span>
+            <span style={{ marginLeft: 15 }}>已绑传感器数：0</span>
           </div>
         }
       >
