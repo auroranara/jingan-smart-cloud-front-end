@@ -23,7 +23,7 @@ export default class MEdit extends PureComponent {
           { name: 'chemicalEN', label: '化学品英文名称' },
           { name: 'chemicalCN2', label: '化学品中文名称二', required: false },
           { name: 'chemicalEN2', label: '化学品英文名称二', required: false },
-          { name: 'book', label: '技术说明书编码' },
+          { name: 'bookCode', label: '技术说明书编码' },
           { name: 'cas', label: 'CAS号' },
           { name: 'formula', label: '分子式' },
           { name: 'weight', label: '化学量' },
