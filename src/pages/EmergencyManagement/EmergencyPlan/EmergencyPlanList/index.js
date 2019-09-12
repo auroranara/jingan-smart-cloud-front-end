@@ -124,29 +124,31 @@ export default class EmergencyPlanList extends Component {
 
   // 编辑按钮点击事件
   handleEditClick = (e) => {
-    const { id } = e.currentTarget.dataset.id;
+    const { id } = e.currentTarget.dataset;
     router.push(`/emergency-management/emergency-plan/edit/${id}`);
   }
 
   // 查看按钮点击事件
   handleViewClick = (e) => {
-    const { id } = e.currentTarget.dataset.id;
+    const { id } = e.currentTarget.dataset;
     router.push(`/emergency-management/emergency-plan/detail/${id}`);
   }
 
   // 确认发布
-  handlePublishConfirm = () => {
+  handlePublishConfirm = (id) => {
+    console.log(id);
     alert('确认发布');
   }
 
   // 审核通过
-  handleAuditConfirm = (e) => {
-    console.log(e);
+  handleAuditConfirm = (id) => {
+    console.log(id);
     alert('审核通过');
   }
 
   // 审核不通过
-  handleAuditCancel = () => {
+  handleAuditCancel = (id) => {
+    console.log(id);
     alert('审核不通过');
   }
 
@@ -220,7 +222,7 @@ export default class EmergencyPlanList extends Component {
           action={hasAddAuthority && (
             <Button type="primary" onClick={this.handleAddClick}>新增</Button>
           )}
-          wrappedComponentRef={this.setFormReference}
+          ref={this.setFormReference}
         />
       </Card>
     );
@@ -333,13 +335,13 @@ export default class EmergencyPlanList extends Component {
           <Fragment>
             {hasDetailAuthority && <span className={classNames(styles.clickable, styles.operation)} onClick={this.handleViewClick} data-id={id}>查看</span>}
             {hasAuditAuthority && +auditStatus === 0 && (
-              <Popconfirm title="是否通过这个应急预案?" onConfirm={this.handleAuditConfirm} onCancel={this.handleAuditCancel} okText="通过" cancelText="不通过">
-                <span className={classNames(styles.clickable, styles.operation)} data-id={id}>审核</span>
+              <Popconfirm title="是否通过这个应急预案?" onConfirm={() => this.handleAuditConfirm(id)} onCancel={() => this.handleAuditCancel(id)} okText="通过" cancelText="不通过">
+                <span className={classNames(styles.clickable, styles.operation)}>审核</span>
               </Popconfirm>
             )}
             {hasPublishAuthority && +auditStatus > 0 && +publishStatus === 0 && (
-              <Popconfirm title="你确定要发布这个应急预案吗?" onConfirm={this.handlePublishConfirm}>
-                <span className={classNames(styles.clickable, styles.operation)} data-id={id}>发布</span>
+              <Popconfirm title="你确定要发布这个应急预案吗?" onConfirm={() => this.handlePublishConfirm(id)}>
+                <span className={classNames(styles.clickable, styles.operation)}>发布</span>
               </Popconfirm>
             )}
             {hasEditAuthority && (+auditStatus === -1 || (+auditStatus > 0 && +publishStatus > 0)) && <span className={classNames(styles.clickable, styles.operation)} onClick={this.handleEditClick} data-id={id}>编辑</span>}

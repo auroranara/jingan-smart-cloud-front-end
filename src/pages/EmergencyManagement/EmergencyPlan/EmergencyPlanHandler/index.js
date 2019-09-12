@@ -3,6 +3,7 @@ import { Card, Button, Input, Select, message, Spin, Radio, DatePicker } from 'a
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
+import CustomUpload from '@/jingan-components/CustomUpload';
 import Text from './Text';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -82,6 +83,7 @@ export default class EmergencyPlanHandler extends Component {
   handleSubmitButtonClick = () => {
     const { dispatch, match: { params: { id } } } = this.props;
     const { validateFieldsAndScroll } = this.form;
+    console.log(this.form);
     validateFieldsAndScroll((errors, values) => {
       console.log(values);
       if (!errors) {
@@ -144,6 +146,8 @@ export default class EmergencyPlanHandler extends Component {
           recordStatus,
           recordNumber,
           recordDate,
+          recordCredential,
+          attachment,
           remark,
         }={},
       },
@@ -216,7 +220,7 @@ export default class EmergencyPlanHandler extends Component {
         label: '预案类型',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <Text transform={VERSION_TYPE_MAPPER} />,
+        render: () => <Text transform={TYPE_MAPPER} />,
         options: {
           initialValue: 0,
         },
@@ -226,7 +230,7 @@ export default class EmergencyPlanHandler extends Component {
         label: '版本类',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <Text transform={TYPE_MAPPER} />,
+        render: () => <Text transform={VERSION_TYPE_MAPPER} />,
         options: {
           initialValue: +!!id,
         },
@@ -440,9 +444,9 @@ export default class EmergencyPlanHandler extends Component {
         label: '备案证明',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <DatePicker placeholder="请选择备案日期" allowClear={false} className={styles.datePicker} />,
+        render: () => <CustomUpload folder="emergencyPlan" />,
         options: {
-          initialValue: recordDate && moment(recordDate),
+          initialValue: recordCredential || [],
           rules: [
             {
               required: true,
@@ -456,9 +460,9 @@ export default class EmergencyPlanHandler extends Component {
         label: '应急预案附件',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <DatePicker placeholder="请选择备案日期" allowClear={false} className={styles.datePicker} />,
+        render: () => <CustomUpload folder="emergencyPlan" />,
         options: {
-          initialValue: recordDate && moment(recordDate),
+          initialValue: attachment || [],
           rules: [
             {
               required: true,
@@ -492,7 +496,7 @@ export default class EmergencyPlanHandler extends Component {
               fields={FIELDS}
               searchable={false}
               resetable={false}
-              wrappedComponentRef={this.setFormReference}
+              ref={this.setFormReference}
               action={
                 <Fragment>
                   <Button onClick={this.handleBackButtonClick}>返回</Button>
