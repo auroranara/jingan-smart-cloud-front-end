@@ -10,7 +10,6 @@ import {
   Divider,
   Row,
   Col,
-  Collapse,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import urls from '@/utils/urls';
@@ -18,17 +17,19 @@ import titles from '@/utils/titles';
 import router from 'umi/router';
 
 const FormItem = Form.Item;
-const { Panel } = Collapse;
 
+const title = '特种设备作业人员'
 const {
   home: homeUrl,
+  baseInfo: {
+    specialEquipmentOperators: { add: addUrl },
+  },
 } = urls;
 
 const {
   home: homeTitle,
-  specialoPerationPermit: { menu: menuTitle },
+  specialEquipmentOperators: { menu: menuTitle },
 } = titles;
-const title = "特种作业操作证人员"
 const breadcrumbList = [
   {
     title: homeTitle,
@@ -43,7 +44,7 @@ const breadcrumbList = [
     title,
     name: title,
   },
-];
+]
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
 const expirationStatusList = [
@@ -56,12 +57,13 @@ const expirationStatusList = [
 @connect(({ baseInfo }) => ({
   baseInfo,
 }))
-export default class SpecialoPerationPermitList extends PureComponent {
+export default class SpecialEquipmentOperatorsList extends PureComponent {
+
 
   handleQuery = (pageNum = 1, pageSize = 10) => { }
 
   handleToAdd = () => {
-    router.push('/base-info/specialo-peration-permit/add')
+    router.push(addUrl)
   }
 
   /**
@@ -103,7 +105,18 @@ export default class SpecialoPerationPermitList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('type')(
-                  <Select placeholder="作业类别">
+                  <Select placeholder="作业种类">
+                    {[].map(({ key, label }) => (
+                      <Select.Option key={key} value={key}>{label}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('project')(
+                  <Select placeholder="作业项目">
                     {[].map(({ key, label }) => (
                       <Select.Option key={key} value={key}>{label}</Select.Option>
                     ))}
@@ -137,7 +150,7 @@ export default class SpecialoPerationPermitList extends PureComponent {
   renderTable = () => {
     const {
       baseInfo: {
-        specialoPerationPermit: {
+        specialEquipmentOperators: {
           list = [],
           pagination: { total = 0, pageNum = 1, pageSize = 10 },
         },
@@ -157,16 +170,22 @@ export default class SpecialoPerationPermitList extends PureComponent {
         width: 300,
       },
       {
-        title: '作业类别',
+        title: '作业种类',
         dataIndex: 'type',
         align: 'center',
         width: 250,
       },
       {
-        title: '操作证',
-        dataIndex: 'operationPermit',
+        title: '作业项目',
+        dataIndex: 'project',
         align: 'center',
-        width: 300,
+        width: 250,
+      },
+      {
+        title: '作业人员证',
+        dataIndex: 'permit',
+        align: 'center',
+        width: 250,
       },
       {
         title: '附件',

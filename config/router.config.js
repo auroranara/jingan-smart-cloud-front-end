@@ -482,6 +482,70 @@ module.exports = env => {
                 },
               ],
             },
+            // 特种设备作业人员
+            {
+              name: 'specialEquipmentOperators',
+              code: 'baseInfo.specialEquipmentOperators',
+              path: '/base-info/special-equipment-operators',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/base-info/special-equipment-operators',
+                  name: 'specialEquipmentOperators',
+                  redirect: '/base-info/special-equipment-operators/list',
+                },
+                {
+                  path: '/base-info/special-equipment-operators/list',
+                  name: 'list',
+                  code: 'baseInfo.specialEquipmentOperators.listView',
+                  component: './BaseInfo/SpecialEquipmentOperators/List',
+                },
+                {
+                  path: '/base-info/special-equipment-operators/add',
+                  name: 'add',
+                  code: 'baseInfo.specialEquipmentOperators.add',
+                  component: './BaseInfo/SpecialEquipmentOperators/Handle',
+                },
+                {
+                  path: '/base-info/special-equipment-operators/edit/:id',
+                  name: 'edit',
+                  code: 'baseInfo.specialEquipmentOperators.edit',
+                  component: './BaseInfo/SpecialEquipmentOperators/Handle',
+                },
+              ],
+            },
+            // 危险化学品企业安全许可证
+            {
+              name: 'dangerChemicalsPermit',
+              code: 'baseInfo.dangerChemicalsPermit',
+              path: '/base-info/danger-chemicals-permit',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/base-info/danger-chemicals-permit',
+                  name: 'dangerChemicalsPermit',
+                  redirect: '/base-info/danger-chemicals-permit/list',
+                },
+                {
+                  path: '/base-info/danger-chemicals-permit/list',
+                  name: 'list',
+                  code: 'baseInfo.dangerChemicalsPermit.listView',
+                  component: './BaseInfo/DangerChemicalsPermit/List',
+                },
+                {
+                  path: '/base-info/danger-chemicals-permit/add',
+                  name: 'add',
+                  code: 'baseInfo.dangerChemicalsPermit.add',
+                  component: './BaseInfo/DangerChemicalsPermit/Handle',
+                },
+                {
+                  path: '/base-info/danger-chemicals-permit/edit/:id',
+                  name: 'edit',
+                  code: 'baseInfo.dangerChemicalsPermit.edit',
+                  component: './BaseInfo/DangerChemicalsPermit/Handle',
+                },
+              ],
+            },
           ],
         },
 

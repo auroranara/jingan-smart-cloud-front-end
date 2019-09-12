@@ -18,17 +18,19 @@ import titles from '@/utils/titles';
 import router from 'umi/router';
 
 const FormItem = Form.Item;
-const { Panel } = Collapse;
 
+const title = '危险化学品企业安全许可证'
 const {
   home: homeUrl,
+  baseInfo: {
+    dangerChemicalsPermit: { add: addUrl },
+  },
 } = urls;
 
 const {
   home: homeTitle,
-  specialoPerationPermit: { menu: menuTitle },
+  dangerChemicalsPermit: { menu: menuTitle },
 } = titles;
-const title = "特种作业操作证人员"
 const breadcrumbList = [
   {
     title: homeTitle,
@@ -43,25 +45,40 @@ const breadcrumbList = [
     title,
     name: title,
   },
-];
+]
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
+// 证书种类
+const typeList = [
+  { key: '1', label: '生产' },
+  { key: '2', label: '经营' },
+  { key: '3', label: '使用' },
+]
+// 到期状态
 const expirationStatusList = [
   { key: '1', label: '未到期' },
   { key: '2', label: '即将到期' },
   { key: '3', label: '已过期' },
+]
+// 证书状态
+const permitStatusList = [
+  { key: '1', label: '现用' },
+  { key: '2', label: '吊销' },
+  { key: '3', label: '注销' },
+  { key: '4', label: '暂扣' },
+  { key: '5', label: '曾用' },
 ]
 
 @Form.create()
 @connect(({ baseInfo }) => ({
   baseInfo,
 }))
-export default class SpecialoPerationPermitList extends PureComponent {
+export default class SpecialEquipmentOperatorsList extends PureComponent {
 
   handleQuery = (pageNum = 1, pageSize = 10) => { }
 
   handleToAdd = () => {
-    router.push('/base-info/specialo-peration-permit/add')
+    router.push(addUrl)
   }
 
   /**
@@ -77,15 +94,19 @@ export default class SpecialoPerationPermitList extends PureComponent {
           <Row gutter={16}>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('name')(
-                  <Input placeholder="姓名" />
+                {getFieldDecorator('type')(
+                  <Select placeholder="证书种类">
+                    {typeList.map(({ key, label }) => (
+                      <Select.Option key={key} value={key}>{label}</Select.Option>
+                    ))}
+                  </Select>
                 )}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('num')(
-                  <Input placeholder="证号" />
+                  <Input placeholder="证书编号" />
                 )}
               </FormItem>
             </Col>
@@ -102,9 +123,9 @@ export default class SpecialoPerationPermitList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('type')(
-                  <Select placeholder="作业类别">
-                    {[].map(({ key, label }) => (
+                {getFieldDecorator('permitStatus')(
+                  <Select placeholder="证书状态">
+                    {permitStatusList.map(({ key, label }) => (
                       <Select.Option key={key} value={key}>{label}</Select.Option>
                     ))}
                   </Select>
@@ -132,12 +153,12 @@ export default class SpecialoPerationPermitList extends PureComponent {
   }
 
   /**
-   * 渲染表格
-   */
+    * 渲染表格
+    */
   renderTable = () => {
     const {
       baseInfo: {
-        specialoPerationPermit: {
+        dangerChemicalsPermit: {
           list = [],
           pagination: { total = 0, pageNum = 1, pageSize = 10 },
         },
@@ -157,14 +178,14 @@ export default class SpecialoPerationPermitList extends PureComponent {
         width: 300,
       },
       {
-        title: '作业类别',
-        dataIndex: 'type',
+        title: '证件状态',
+        dataIndex: 'permitStatus',
         align: 'center',
-        width: 250,
+        width: 300,
       },
       {
-        title: '操作证',
-        dataIndex: 'operationPermit',
+        title: '有效期至',
+        dataIndex: 'validityPeriod',
         align: 'center',
         width: 300,
       },
@@ -172,7 +193,7 @@ export default class SpecialoPerationPermitList extends PureComponent {
         title: '附件',
         dataIndex: 'dannex',
         align: 'center',
-        width: 250,
+        width: 300,
       },
       {
         title: '操作',
@@ -214,12 +235,13 @@ export default class SpecialoPerationPermitList extends PureComponent {
     ) : (<div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>)
   }
 
+
   render() {
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={`单位数量：1 人员数量：1`}
+        content={`单位数量：1 许可证数量：2`}
       >
         {this.renderFilter()}
         {this.renderTable()}
