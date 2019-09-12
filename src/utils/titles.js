@@ -37,4 +37,11 @@ export default {
     add: '新增试卷',
     edit: '编辑规则',
   },
+  specialoPerationPermit: {
+    menu: '一企一档',
+    list: '特种作业操作证人员',
+    add: '新增操作证人员',
+    edit: '编辑操作证人员',
+    detail: '操作证人员详情',
+  },
 };

@@ -15,6 +15,14 @@ export default {
       list: '/base-info/company/department/list/',
     },
   },
+  baseInfo: {
+    specialoPerationPermit: {
+      list: '/base-info/specialo-peration-permit/list',
+      add: '/base-info/specialo-peration-permit/add',
+      edit: '/base-info/specialo-peration-permit/edit/',
+      detail: '/base-info/specialo-peration-permit/detail/',
+    },
+  },
   familyFile: {
     list: '/base-info/family-file/list',
     add: '/base-info/family-file/add',

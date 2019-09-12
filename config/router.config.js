@@ -450,6 +450,38 @@ module.exports = env => {
                 },
               ],
             },
+            // 特种作业操作证人员
+            {
+              name: 'specialoPerationPermit',
+              code: 'baseInfo.specialoPerationPermit',
+              path: '/base-info/specialo-peration-permit',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/base-info/specialo-peration-permit',
+                  name: 'specialoPerationPermit',
+                  redirect: '/base-info/specialo-peration-permit/list',
+                },
+                {
+                  path: '/base-info/specialo-peration-permit/list',
+                  name: 'list',
+                  code: 'baseInfo.specialoPerationPermit.listView',
+                  component: './BaseInfo/SpecialoPerationPermit/List',
+                },
+                {
+                  path: '/base-info/specialo-peration-permit/add',
+                  name: 'add',
+                  code: 'baseInfo.specialoPerationPermit.add',
+                  component: './BaseInfo/SpecialoPerationPermit/Handle',
+                },
+                {
+                  path: '/base-info/specialo-peration-permit/edit/:id',
+                  name: 'edit',
+                  code: 'baseInfo.specialoPerationPermit.edit',
+                  component: './BaseInfo/SpecialoPerationPermit/Handle',
+                },
+              ],
+            },
           ],
         },
 
