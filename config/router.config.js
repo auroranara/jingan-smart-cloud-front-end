@@ -2591,6 +2591,47 @@ module.exports = env => {
             },
           ],
         },
+        // 安全生产知识库
+        {
+          path: '/safety-knowledge-base',
+          code: 'safetyKnowledgeBase',
+          icon: 'book',
+          name: 'safetyKnowledgeBase',
+          routes: [
+            // 化学品安全说明书
+            {
+              path: '/safety-knowledge-base/msds',
+              code: 'safetyKnowledgeBase.msds',
+              name: 'msds',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-knowledge-base/msds',
+                  name: 'msds',
+                  redirect: '/safety-knowledge-base/msds/list',
+                },
+                {
+                  path: '/safety-knowledge-base/msds/list',
+                  code: 'safetyKnowledgeBase.msds.listView',
+                  name: 'list',
+                  component: './SafetyKnowledgeBase/MSDS/MList',
+                },
+                {
+                  path: '/safety-knowledge-base/msds/add',
+                  code: 'safetyKnowledgeBase.msds.add',
+                  name: 'add',
+                  component: './SafetyKnowledgeBase/MSDS/MEdit',
+                },
+                {
+                  path: '/safety-knowledge-base/msds/edit/:id',
+                  code: 'safetyKnowledgeBase.msds.edit',
+                  name: 'edit',
+                  component: './SafetyKnowledgeBase/MSDS/MEdit',
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ];
