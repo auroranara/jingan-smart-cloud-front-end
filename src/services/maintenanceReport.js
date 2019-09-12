@@ -29,14 +29,14 @@ export async function getGridList() {
  * 导出
  */
 export async function exportData(params) {
-  return request(`/acloud_new/v2/statistics/maintenanceExport?${stringify(params)}`);
+  return request(`/acloud_new/v2/statistics/exportNew?${stringify(params)}`);
 }
 
 /**
  * 导出---政府报表
  */
 export async function exportGovData(params) {
-  return request(`/acloud_new/v2/statistics/govExport?${stringify(params)}`);
+  return request(`/acloud_new/v2/statistics/exportNew?${stringify(params)}`);
 }
 
 

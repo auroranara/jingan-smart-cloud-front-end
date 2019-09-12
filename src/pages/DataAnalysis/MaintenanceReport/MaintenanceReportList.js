@@ -13,6 +13,7 @@ import {
   Badge,
   AutoComplete,
   TreeSelect,
+  Modal,
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -197,6 +198,8 @@ export default class App extends PureComponent {
       // 当前显示的表格字段
       columns: defaultColumns,
       i: 0,
+      selectedRowKeys: [],
+      visible: false,
     };
     // 是否是企业
     this.isCompany = isCompany;
@@ -262,6 +265,13 @@ export default class App extends PureComponent {
           pageSize: 10,
         },
       });
+  }
+
+  componentDidUpdate({ maintenanceReport: { data: { list: prevList } } }) {
+    const { maintenanceReport: { data: { list } } } = this.props;
+    if (prevList !== list) {
+      this.handleTableSelectClear();
+    }
   }
 
   /**
@@ -339,21 +349,8 @@ export default class App extends PureComponent {
    * 导出
    */
   handleExport = () => {
-    const {
-      dispatch,
-      user: {
-        currentUser: { id },
-      },
-    } = this.props;
-    // 从sessionStorage中获取存储的控件值
-    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
-    dispatch({
-      type: 'maintenanceReport/exportData',
-      payload: {
-        ...payload,
-        reportSource: 3,
-      },
-    });
+    // this.setState({ visible: true });
+    this.handleOk();
   };
 
   /**
@@ -422,6 +419,68 @@ export default class App extends PureComponent {
     });
   };
 
+  // 表格选中
+  handleTableSelectChange = selectedRowKeys => {
+    this.setState({ selectedRowKeys });
+  };
+
+  // 清空表格选中
+  handleTableSelectClear = () => {
+    this.setState({ selectedRowKeys: [] });
+  }
+
+  /* 导出需要详情 */
+  handleOk = () => {
+    const {
+      dispatch,
+    } = this.props;
+    const { selectedRowKeys } = this.state;
+    dispatch({
+      type: 'companyReport/exportData',
+      payload: {
+        type: 2,
+        ids: selectedRowKeys.join(','),
+      },
+    });
+    this.setState({ visible: false });
+  }
+
+  /* 导出不需要详情 */
+  handleCancel = (e) => {
+    if (e.target.tagName === 'BUTTON') {
+      const {
+        dispatch,
+      } = this.props;
+      const { selectedRowKeys } = this.state;
+      dispatch({
+        type: 'maintenanceReport/exportData',
+        payload: {
+          ids: selectedRowKeys.join(','),
+        },
+      });
+    }
+    this.setState({ visible: false });
+  }
+
+  /* 确认框 */
+  renderConfirm() {
+    const { visible } = this.state;
+
+    return (
+      <Modal
+        title="信息"
+        visible={visible}
+        okText="需要"
+        cancelText="不需要"
+        onOk={this.handleOk}
+        onCancel={this.handleCancel}
+        zIndex={9999}
+      >
+        需要导出检查详情吗？
+      </Modal>
+    );
+  }
+
   /**
    * 筛选表单
    **/
@@ -435,6 +494,7 @@ export default class App extends PureComponent {
       },
       loading,
     } = this.props;
+    const { selectedRowKeys } = this.state;
     return (
       <Form className={styles.form}>
         <Row gutter={{ md: 24 }}>
@@ -546,7 +606,7 @@ export default class App extends PureComponent {
               <Button onClick={this.handleReset} style={{ marginRight: 16 }}>
                 重置
               </Button>
-              <Button type="primary" onClick={this.handleExport}>
+              <Button type="primary" onClick={this.handleExport} disabled={selectedRowKeys.length === 0}>
                 导出
               </Button>
             </Form.Item>
@@ -568,13 +628,17 @@ export default class App extends PureComponent {
         },
       },
     } = this.props;
-    const { columns } = this.state;
+    const { columns, selectedRowKeys } = this.state;
     return list.length > 0 ? (
       <Table
         className={styles.table}
         rowKey="check_id"
         dataSource={list}
         columns={columns}
+        rowSelection={{
+          selectedRowKeys,
+          onChange: this.handleTableSelectChange,
+        }}
         scroll={{
           x: true,
         }}
@@ -626,6 +690,7 @@ export default class App extends PureComponent {
           <Card bordered={false}>
             {this.renderFilterForm()}
             {this.renderTable()}
+            {this.renderConfirm()}
           </Card>
         </Spin>
       </PageHeaderLayout>
