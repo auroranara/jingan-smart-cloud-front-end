@@ -20,7 +20,7 @@ const hosts = {
   lm: '192.168.10.2', // 吕旻
   sj: '192.168.10.3', // 沈杰
   gjm: '192.168.10.55', // 顾家铭
-  ct: '192.168.10.11:8080', //陈涛
+  ct: '192.168.10.29:8080', //陈涛
   sqz: '192.168.10.56', //孙启政
   dev: '192.168.10.68:18081', // 开发
   test: 'test.jinganyun.net', // 测试
@@ -42,7 +42,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.gj}`,
+      target: `http://${hosts.ct}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -52,7 +52,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.gj}`,
+      target: `http://${hosts.test}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },
