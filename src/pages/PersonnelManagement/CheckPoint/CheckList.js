@@ -29,7 +29,7 @@ const SCREEN_INDEX = 2;
 
 @connect(({ checkPoint, loading }) => ({ checkPoint, loading: loading.effects['checkPoint/fetchCheckList'] }))
 export default class CheckList extends PureComponent {
-  state={ tabIndex: 0, equipmentStatus: {}, screenStatus: {} };
+  state={ tabIndex: '0', equipmentStatus: {}, screenStatus: {} };
 
   componentDidMount() {
     const { match: { params: { tabIndex } } } = this.props;
@@ -267,6 +267,12 @@ export default class CheckList extends PureComponent {
         </Card>
       </List.Item>
     );
+  };
+
+  handleAdd = () => {
+    const { match: { params: { companyId } } } = this.props;
+    const { tabIndex } = this.state;
+    router.push(`/personnel-management/check-point/add/${companyId}/${tabIndex}`);
   };
 
   render() {

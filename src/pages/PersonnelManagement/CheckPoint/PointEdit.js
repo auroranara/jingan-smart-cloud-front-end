@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import router from 'umi/router';
-import { Button, Col, Form, Input, Row } from 'antd';
+import { Button, Col, Form, Input, Row, Upload } from 'antd';
 
-import { getFieldDecConfig } from './utils';
+import { getFieldDecConfig, UploadButton } from './utils';
 
 const { Item: FormItem } = Form;
 
@@ -46,11 +46,15 @@ export default class PointEdit extends PureComponent {
           </Col>
         </Row>
         <Row gutter={{ lg: 48, md: 24 }}>
-          <FormItem label="卡口照片">
-            卡口照片
-          </FormItem>
+          <Col lg={8} md={12} sm={24}>
+            <FormItem label="卡口照片">
+              <Upload listType="picture-card">
+                <UploadButton />
+              </Upload>
+            </FormItem>
+          </Col>
         </Row>
-        <Form.Item wrapperCol={{ span: 12, offset: 5 }}>
+        <Form.Item wrapperCol={{ span: 24, offset: 11 }}>
           <Button type="primary" htmlType="submit">
             提交
           </Button>

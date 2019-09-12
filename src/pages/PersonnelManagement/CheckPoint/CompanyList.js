@@ -25,12 +25,12 @@ const PAGE_SIZE = 18;
 const { Item: FormItem } = Form;
 const { Option } = Select;
 
-const LIST = [...Array(10).keys()].map(i => ({
-  id: i,
+const LIST = [{
+  id: 0,
   companyName: '晶安',
   safetyName: '张三',
   safetyPhone: 13011112222,
-}));
+}];
 
 @Form.create()
 @connect(({ checkPoint, loading }) => ({ checkPoint, loading: loading.effects['checkPoint/fetchCompanyList'] }))
@@ -128,9 +128,13 @@ export default class CompanyList extends PureComponent {
 
   handleSubmit = () => {
     const { form: { validateFields } } =  this.props;
-    // validateFields((error, fields) => {
-    //     if (!error)
-    // });
+    validateFields((error, fields) => {
+        if (error)
+          return;
+
+        const { company, point } = fields;
+        router.push(`/personnel-management/check-point/add/${company}/${point}`);
+    });
   }
 
   renderModal = () => {

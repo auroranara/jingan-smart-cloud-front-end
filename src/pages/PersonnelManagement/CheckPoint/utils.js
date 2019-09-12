@@ -1,3 +1,5 @@
+import { Icon } from 'antd';
+
 export const CARDS = ['单双色控制卡', '多彩控制卡', '全彩控制卡'];
 export const TABS = ['卡口点位', '卡口设备', '显示屏'];
 export const TAB_LIST = TABS.map((tab, index) => ({ key: index.toString(), tab }));
@@ -27,4 +29,13 @@ export function getFieldDecConfig(msg, required=true) {
     validateTrigger: 'onBlur',
     rules: [{ required, whitespace: true, message: msg }],
   };
+}
+
+export function UploadButton(props) {
+  return (
+    <div>
+      <Icon type="plus" />
+      <div className="ant-upload-text">上传</div>
+    </div>
+  )
 }

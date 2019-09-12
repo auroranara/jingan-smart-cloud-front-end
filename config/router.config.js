@@ -2576,7 +2576,7 @@ module.exports = env => {
                   component: './PersonnelManagement/CheckPoint/CheckDetail',
                 },
                 {
-                  path: '/personnel-management/check-point/add/:tabIndex',
+                  path: '/personnel-management/check-point/add/:companyId/:tabIndex',
                   code: 'personnelManagement.checkPoint.add',
                   name: 'add',
                   component: './PersonnelManagement/CheckPoint/CheckEdit',

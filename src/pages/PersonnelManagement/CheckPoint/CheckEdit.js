@@ -1,6 +1,9 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
+import { Card } from 'antd';
 
+import { TABS } from './utils';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import PointEdit from './PointEdit';
 import EquipmentEdit from './EquipmentEdit';
 import ScreenEdit from './ScreenEdit';
@@ -12,6 +15,25 @@ export default class CheckEdit extends PureComponent {
   render() {
     const { match: { params: { tabIndex } } } = this.props;
     const Component = TAB_COMS[tabIndex];
-    return <Component {...this.props} />;
+
+    const title = TABS[tabIndex];
+    const breadcrumbList = [
+      { title: '首页', name: '首页', href: '/' },
+      { title: '人员在岗在位管理', name: '人员在岗在位管理' },
+      { title: '卡口信息', name: '卡口信息' },
+      { title, name: title },
+      { title: '新增', name: '新增' },
+    ];
+
+    return (
+      <PageHeaderLayout
+        title={title}
+        breadcrumbList={breadcrumbList}
+      >
+        <Card style={{ marginBottom: 15 }}>
+          <Component {...this.props} />
+        </Card>
+      </PageHeaderLayout>
+    );
   }
 }

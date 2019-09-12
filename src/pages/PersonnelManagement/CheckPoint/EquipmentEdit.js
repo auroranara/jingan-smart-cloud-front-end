@@ -62,7 +62,7 @@ export default class EquipmentEdit extends PureComponent {
             </FormItem>
           </Col>
         </Row>
-        <Form.Item wrapperCol={{ span: 12, offset: 5 }}>
+        <Form.Item wrapperCol={{ span: 24, offset: 11 }}>
           <Button type="primary" htmlType="submit">
             提交
           </Button>
