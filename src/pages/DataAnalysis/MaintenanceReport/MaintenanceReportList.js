@@ -349,8 +349,7 @@ export default class App extends PureComponent {
    * 导出
    */
   handleExport = () => {
-    // this.setState({ visible: true });
-    this.handleOk();
+    this.setState({ visible: true });
   };
 
   /**
@@ -439,6 +438,7 @@ export default class App extends PureComponent {
       type: 'maintenanceReport/exportData',
       payload: {
         type: 2,
+        detail: 1,
         ids: selectedRowKeys.join(','),
       },
     });
@@ -455,6 +455,8 @@ export default class App extends PureComponent {
       dispatch({
         type: 'maintenanceReport/exportData',
         payload: {
+          type: 2,
+          detail: 0,
           ids: selectedRowKeys.join(','),
         },
       });

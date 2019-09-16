@@ -339,8 +339,7 @@ export default class App extends PureComponent {
    * 导出
    */
   handleExport = () => {
-    // this.setState({ visible: true });
-    this.handleOk();
+    this.setState({ visible: true });
   };
 
   // 单位下拉框输入
@@ -377,6 +376,7 @@ export default class App extends PureComponent {
       type: 'maintenanceReport/exportGovData',
       payload: {
         type: 3,
+        detail: 1,
         ids: selectedRowKeys.join(','),
       },
     });
@@ -393,6 +393,8 @@ export default class App extends PureComponent {
       dispatch({
         type: 'maintenanceReport/exportGovData',
         payload: {
+          type: 3,
+          detail: 0,
           ids: selectedRowKeys.join(','),
         },
       });
