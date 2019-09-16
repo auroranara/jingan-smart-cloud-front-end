@@ -536,7 +536,7 @@ module.exports = env => {
                 {
                   path: '/base-info/high-risk-process',
                   name: 'highRiskProcess',
-                  redirect: '/base-info/highRiskProcess/list',
+                  redirect: '/base-info/high-risk-process/list',
                 },
                 {
                   path: '/base-info/high-risk-process/list',
@@ -574,7 +574,7 @@ module.exports = env => {
                 {
                   path: '/base-info/special-equipment',
                   name: 'specialEquipment',
-                  redirect: '/base-info/specialEquipment/list',
+                  redirect: '/base-info/special-equipment/list',
                 },
                 {
                   path: '/base-info/special-equipment/list',
