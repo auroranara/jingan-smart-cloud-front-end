@@ -698,6 +698,110 @@ module.exports = env => {
                 },
               ],
             },
+            // 重大危险源
+            {
+              name: 'majorHazard',
+              code: 'baseInfo.majorHazard',
+              path: '/base-info/major-hazard',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/major-hazard',
+                  redirect: '/base-info/major-hazard/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.majorHazard.listView',
+                  path: '/base-info/major-hazard/list',
+                  component: './BaseInfo/MajorHazard/MajorHazardList',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.majorHazard.add',
+                  path: '/base-info/major-hazard/add',
+                  component: './BaseInfo/MajorHazard/MajorHazardEdit',
+                },
+              ],
+            },
+            // 储罐区管理
+            {
+              name: 'storageAreaManagement',
+              code: 'baseInfo.storageAreaManagement',
+              path: '/base-info/storage-area-management',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/storage-area-management',
+                  redirect: '/base-info/storage-area-management/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.storageAreaManagement.listView',
+                  path: '/base-info/storage-area-management/list',
+                  component: './BaseInfo/StorageAreaManagement/index',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.storageAreaManagement.add',
+                  path: '/base-info/storage-area-management/add',
+                  component: './BaseInfo/StorageAreaManagement/Edit',
+                },
+              ],
+            },
+            // 储罐管理
+            {
+              name: 'storageManagement',
+              code: 'baseInfo.storageManagement',
+              path: '/base-info/storage-management',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/storage-management',
+                  redirect: '/base-info/storage-management/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.storageManagement.listView',
+                  path: '/base-info/storage-management/list',
+                  component: './BaseInfo/StorageManagement/StorageList',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.storageAreaManagement.add',
+                  path: '/base-info/storage-management/add',
+                  component: './BaseInfo/StorageManagement/StorageEdit',
+                },
+              ],
+            },
+            // 库区管理
+            {
+              name: 'reservoirRegionManagement',
+              code: 'baseInfo.reservoirRegionManagement',
+              path: '/base-info/reservoir-region-management',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/reservoir-region-management',
+                  redirect: '/base-info/reservoir-region-management/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.reservoirRegionManagement.listView',
+                  path: '/base-info/reservoir-region-management/list',
+                  component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionList',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.reservoirRegionManagement.add',
+                  path: '/base-info/reservoir-region-management/add',
+                  component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionEdit',
+                },
+              ],
+            },
           ],
         },
 
