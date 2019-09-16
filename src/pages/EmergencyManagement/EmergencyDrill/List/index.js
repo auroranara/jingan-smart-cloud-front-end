@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Table, Card, Button, Divider, Form, Row, Col, Input, Select, Cascader } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './index.less';
+import router from 'umi/router';
 
 const FormItem = Form.Item;
 
@@ -40,6 +41,14 @@ export default class EmergencyDrillList extends Component {
       type: 'emergencyManagement/fetchDrillList',
       payload: { pageNum, pageSize },
     })
+  }
+
+
+  /**
+   * 跳转到新增页面
+   */
+  jumpToAddPage = () => {
+    router.push('/emergency-management/emergency-drill/add')
   }
 
   /**
@@ -122,7 +131,7 @@ export default class EmergencyDrillList extends Component {
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary">查询</Button>
                 <Button style={{ marginRight: '10px' }}>重置</Button>
-                <Button type="primary">新增</Button>
+                <Button type="primary" onClick={this.jumpToAddPage}>新增</Button>
               </FormItem>
             </Col>
           </Row>
@@ -183,7 +192,7 @@ export default class EmergencyDrillList extends Component {
         ),
       },
     ]
-    return (
+    return list && list.length ? (
       <Card style={{ marginTop: '24px' }}>
         <Table
           rowKey="id"
@@ -206,7 +215,11 @@ export default class EmergencyDrillList extends Component {
           }}
         />
       </Card>
-    )
+    ) : (
+        <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+          <span>暂无数据</span>
+        </Card>
+      )
   }
 
   render() {

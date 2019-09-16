@@ -50,8 +50,9 @@ const defaultUploadProps = {
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 
 @Form.create()
-@connect(({ EmergencyEquipment, loading }) => ({
+@connect(({ EmergencyEquipment, loading, sensor }) => ({
   EmergencyEquipment,
+  sensor,
   companyLoading: loading.effects['sensor/fetchModelList'],
 }))
 export default class EmergencyEquipmentHandler extends PureComponent {
