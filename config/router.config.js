@@ -3042,6 +3042,47 @@ module.exports = env => {
           icon: 'alert',
           name: 'emergencyManagement',
           routes: [
+            {
+              path: '/emergency-management',
+              redirect: '/emergency-management/emergency-plan/list',
+            },
+            // 应急预案
+            {
+              path: '/emergency-management/emergency-plan',
+              code: 'emergencyManagement.emergencyPlan',
+              name: 'emergencyPlan',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-plan',
+                  redirect: '/emergency-management/emergency-plan/list',
+                },
+                {
+                  path: '/emergency-management/emergency-plan/list',
+                  name: 'list',
+                  code: 'emergencyManagement.emergencyPlan.list',
+                  component: './EmergencyManagement/EmergencyPlan/EmergencyPlanList',
+                },
+                {
+                  path: '/emergency-management/emergency-plan/add',
+                  name: 'add',
+                  code: 'emergencyManagement.emergencyPlan.add',
+                  component: './EmergencyManagement/EmergencyPlan/EmergencyPlanHandler',
+                },
+                {
+                  path: '/emergency-management/emergency-plan/edit/:id',
+                  name: 'edit',
+                  code: 'emergencyManagement.emergencyPlan.edit',
+                  component: './EmergencyManagement/EmergencyPlan/EmergencyPlanHandler',
+                },
+                {
+                  path: '/emergency-management/emergency-plan/detail/:id',
+                  name: 'detail',
+                  code: 'emergencyManagement.emergencyPlan.detail',
+                  component: './EmergencyManagement/EmergencyPlan/EmergencyPlanDetail',
+                },
+              ],
+            },
             // 应急装备
             {
               path: '/emergency-management/emergency-equipment',

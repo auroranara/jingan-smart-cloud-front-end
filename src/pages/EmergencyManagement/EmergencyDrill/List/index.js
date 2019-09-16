@@ -22,9 +22,8 @@ const statusList = [
 ]
 
 @Form.create()
-@connect(({ emergencyPlan, loading }) => ({
-  emergencyPlan,
-  // loading: loading.models.emergencyPlan,
+@connect(({ emergencyManagement }) => ({
+  emergencyManagement,
 }))
 export default class EmergencyDrillList extends Component {
 
@@ -38,7 +37,7 @@ export default class EmergencyDrillList extends Component {
   handleQuery = (pageNum = 1, pageSize = 10) => {
     const { dispatch } = this.props
     dispatch({
-      type: 'emergencyPlan/fetchDrillList',
+      type: 'emergencyManagement/fetchDrillList',
       payload: { pageNum, pageSize },
     })
   }
@@ -138,7 +137,7 @@ export default class EmergencyDrillList extends Component {
    */
   renderTable = () => {
     const {
-      emergencyPlan: {
+      emergencyManagement: {
         drill: {
           list,
           pagination: { pageNum, pageSize, total },
@@ -212,7 +211,7 @@ export default class EmergencyDrillList extends Component {
 
   render() {
     const {
-      emergencyPlan,
+      emergencyManagement,
     } = this.props;
 
     return (

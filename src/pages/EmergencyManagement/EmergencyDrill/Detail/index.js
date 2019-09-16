@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 import styles from './index.less';
 
-@connect(({ emergencyPlan, loading }) => ({
-  emergencyPlan,
-  loading: loading.models.emergencyPlan,
+@connect(({ emergencyManagement, loading }) => ({
+  emergencyManagement,
+  loading: loading.models.emergencyManagement,
 }))
-export default class EmergencyPlanDetail extends Component {
+export default class EmergencyDrillDetail extends Component {
   render() {
     const {
-      emergencyPlan,
+      emergencyManagement,
     } = this.props;
 
     return (

@@ -149,7 +149,14 @@ export default class CompanyList extends PureComponent {
       >
         <Form {...FORMITEM_LAYOUT}>
           <FormItem label="单位名称">
-            {getFieldDecorator('company', { rules: [{ required: true, message: '请选择单位' }] })(
+            {getFieldDecorator('company', {
+              rules: [
+                {
+                  // required: true,
+                  message: '请选择单位',
+                },
+              ],
+            })(
               <Select />
             )}
           </FormItem>

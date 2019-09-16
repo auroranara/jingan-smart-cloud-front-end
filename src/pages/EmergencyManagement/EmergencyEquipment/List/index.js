@@ -40,12 +40,12 @@ const transform = value => value.trim();
 /* 设置相对定位 */
 const getRootChild = () => document.querySelector('#root>div');
 
-@connect(({ emergencyPlan, user, loading }) => ({
-  emergencyPlan,
+@connect(({ emergencyManagement, user, loading }) => ({
+  emergencyManagement,
   user,
-  loading: loading.models.emergencyPlan,
+  loading: loading.models.emergencyManagement,
 }))
-export default class EmergencyPlanList extends PureComponent {
+export default class EmergencyEquipmentList extends PureComponent {
   state = {};
 
   renderForm = () => {

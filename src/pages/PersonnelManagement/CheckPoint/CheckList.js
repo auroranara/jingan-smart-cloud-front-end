@@ -34,7 +34,7 @@ export default class CheckList extends PureComponent {
   componentDidMount() {
     const { match: { params: { tabIndex } } } = this.props;
     this.childElem = document.querySelector('#root div');
-    document.addEventListener('scroll', this.handleScroll, false);
+    // document.addEventListener('scroll', this.handleScroll, false);
     // this.fetchInitCheckList(tabIndex);
 
     this.setState({ tabIndex });
