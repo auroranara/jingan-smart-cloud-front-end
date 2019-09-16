@@ -37,7 +37,7 @@ class VideoPlay extends Component {
   // VideoList的值发生改变或者keyId发生改变时，重新获取对应视频
   getSnapshotBeforeUpdate(prevProps, prevState) {
     return (
-      this.props.videoList.toString() !== prevProps.videoList.toString() ||
+      JSON.stringify(this.props.videoList) !== JSON.stringify(prevProps.videoList) ||
       this.props.keyId !== prevProps.keyId
     );
   }

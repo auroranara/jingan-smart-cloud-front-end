@@ -769,9 +769,9 @@ export default class NewUnitFireControl extends PureComponent {
     }
   };
 
-  setFaceRecognitionReference = (faceRecognition) => {
+  setFaceRecognitionReference = faceRecognition => {
     this.faceRecognition = faceRecognition && faceRecognition.getWrappedInstance();
-  }
+  };
 
   handleFetchRealTimeData = deviceId => {
     const { dispatch } = this.props;
@@ -1903,72 +1903,72 @@ export default class NewUnitFireControl extends PureComponent {
         },
       },
     });
-  }
+  };
 
   /* 显示人脸识别报警详情抽屉 */
-  showCaptureDetailDrawer = (data) => {
+  showCaptureDetailDrawer = data => {
     this.setState({
       captureDetailDrawerVisible: true,
       captureDetailDrawerValue: data.id,
     });
-  }
+  };
 
   /* 隐藏人脸识别报警详情抽屉 */
   hideCaptureDetailDrawer = () => {
     this.setState({
       captureDetailDrawerVisible: false,
     });
-  }
+  };
 
   /* 显示监测点列表抽屉 */
   showMonitoringPointListDrawer = () => {
     this.setState({
       monitoringPointListDrawerVisible: true,
     });
-  }
+  };
 
   /* 隐藏监测点列表抽屉 */
   hideMonitoringPointListDrawer = () => {
     this.setState({
       monitoringPointListDrawerVisible: false,
     });
-  }
+  };
 
   /* 显示摄像机列表抽屉 */
   showCameraListDrawer = () => {
     this.setState({
       cameraListDrawerVisible: true,
     });
-  }
+  };
 
   /* 隐藏摄像机列表抽屉 */
   hideCameraListDrawer = () => {
     this.setState({
       cameraListDrawerVisible: false,
     });
-  }
+  };
 
   /* 显示今日抓拍报警列表抽屉 */
-  showCaptureListDrawer = (data) => {
+  showCaptureListDrawer = data => {
     this.setState({
       captureListDrawerVisible: true,
       captureListDrawerValue: data,
     });
-  }
+  };
 
   /* 隐藏今日抓拍报警列表抽屉 */
   hideCaptureListDrawer = () => {
     this.setState({
       captureListDrawerVisible: false,
     });
-  }
+  };
 
   /* 显示图片预览 */
-  showImagePreview = (images) => {
+  showImagePreview = images => {
     this.setState({
       images,
     });
-  }
+  };
 
   // 复位单个主机
   handleResetSingleHost = id => {
@@ -2388,7 +2388,7 @@ export default class NewUnitFireControl extends PureComponent {
   };
 
   /* 人脸识别点击事件 */
-  handleFaceRecognitionClick = (index) => {
+  handleFaceRecognitionClick = index => {
     if (index === 0) {
       this.showMonitoringPointListDrawer();
     } else if (index === 1) {
@@ -2396,7 +2396,7 @@ export default class NewUnitFireControl extends PureComponent {
     } else if (index === 2) {
       this.showCaptureListDrawer();
     }
-  }
+  };
 
   render() {
     // 从props中获取数据
@@ -3204,9 +3204,7 @@ export default class NewUnitFireControl extends PureComponent {
           companyId={companyId}
         />
         {/* 图片预览 */}
-        <ImagePreview
-          images={this.state.images}
-        />
+        <ImagePreview images={this.state.images} />
       </BigPlatformLayout>
     );
   }
