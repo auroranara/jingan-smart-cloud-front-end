@@ -391,7 +391,7 @@ export default class App extends PureComponent {
       } = this.props;
       const { selectedRowKeys } = this.state;
       dispatch({
-        type: 'companyReport/exportData',
+        type: 'maintenanceReport/exportGovData',
         payload: {
           ids: selectedRowKeys.join(','),
         },
