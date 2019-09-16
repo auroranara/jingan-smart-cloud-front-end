@@ -256,6 +256,19 @@ export default class MEdit extends PureComponent {
     );
   }
 
+  handleClickValidate = () => {
+    // const {
+    //   form: { validateFieldsAndScroll },
+    // } = this.props;
+    // validateFieldsAndScroll((errors, values) => {
+    //   if (!errors) {
+    //     const {} = values;
+    //   }
+    // });
+
+    router.push('/safety-knowledge-base/msds/list');
+  };
+
   render() {
     const {
       form: { getFieldDecorator },

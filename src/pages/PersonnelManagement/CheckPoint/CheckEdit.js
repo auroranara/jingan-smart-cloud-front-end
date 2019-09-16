@@ -16,13 +16,13 @@ export default class CheckEdit extends PureComponent {
     const { match: { params: { tabIndex } } } = this.props;
     const Component = TAB_COMS[tabIndex];
 
-    const title = TABS[tabIndex];
+    const title = `新增${TABS[tabIndex]}`;
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '人员在岗在位管理', name: '人员在岗在位管理' },
-      { title: '卡口信息', name: '卡口信息' },
+      { title: '卡口信息', name: '卡口信息', href: '/personnel-management/check-point/company-list' },
+      { title: '卡口列表', name: '卡口列表', href: `/personnel-management/check-point/list/companyId/${tabIndex}` },
       { title, name: title },
-      { title: '新增', name: '新增' },
     ];
 
     return (

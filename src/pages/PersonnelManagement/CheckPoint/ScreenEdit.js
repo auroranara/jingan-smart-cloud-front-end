@@ -9,11 +9,23 @@ const { Option } = Select;
 
 @Form.create()
 export default class ScreenEdit extends PureComponent {
+  handleSubmit = e => {
+    // const { validateFields } = this.props.form;
+    // e.preventDefault();
+    // validateFields((err, values) => {
+    //   if (!err) {
+    //     console.log('Received values of form: ', values);
+    //   }
+    // });
+
+    router.push(`/personnel-management/check-point/list/companyId/2`);
+  };
+
   render() {
     const { form: { getFieldDecorator } } = this.props;
 
     return (
-      <Form layout="vertical">
+      <Form layout="vertical" onSubmit={this.handleSubmit}>
         <Row gutter={{ lg: 48, md: 24 }}>
           <Col lg={8} md={12} sm={24}>
             <FormItem label="显示屏名称">
