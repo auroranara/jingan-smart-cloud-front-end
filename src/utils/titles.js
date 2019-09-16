@@ -37,4 +37,22 @@ export default {
     add: '新增试卷',
     edit: '编辑规则',
   },
+  specialoPerationPermit: {
+    menu: '一企一档',
+    list: '特种作业操作证人员',
+    add: '新增操作证人员',
+    edit: '编辑操作证人员',
+  },
+  specialEquipmentOperators: {
+    menu: '一企一档',
+    list: '特种设备作业人员',
+    add: '新增作业人员',
+    edit: '编辑作业人员',
+  },
+  dangerChemicalsPermit: {
+    menu: '一企一档',
+    list: '危险化学品企业安全许可证',
+    add: '新增许可证',
+    edit: '编辑许可证',
+  },
 };
