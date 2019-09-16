@@ -450,6 +450,158 @@ module.exports = env => {
                 },
               ],
             },
+            // 库房管理
+            {
+              path: '/base-info/storehouse',
+              code: 'baseInfo.storehouse',
+              name: 'storehouse',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/base-info/storehouse',
+                  name: 'storehouse',
+                  redirect: '/base-info/storehouse/list',
+                },
+                {
+                  path: '/base-info/storehouse/list',
+                  code: 'baseInfo.storehouse.listView',
+                  name: 'list',
+                  component: './BaseInfo/Storehouse/List/index',
+                },
+                {
+                  path: '/base-info/storehouse/add',
+                  code: 'baseInfo.storehouse.add',
+                  name: 'add',
+                  component: './BaseInfo/Storehouse/Handler/index',
+                },
+                {
+                  path: '/base-info/storehouse/edit/:id',
+                  code: 'baseInfo.storehouse.edit',
+                  name: 'edit',
+                  component: './BaseInfo/Storehouse/Handler/index',
+                },
+                {
+                  path: '/base-info/storehouse/detail/:id',
+                  code: 'baseInfo.storehouse.detail',
+                  name: 'detail',
+                  component: './BaseInfo/Storehouse/Detail/index',
+                },
+              ],
+            },
+            // 物料信息
+            {
+              path: '/base-info/materials',
+              code: 'baseInfo.materials',
+              name: 'materials',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/base-info/materials',
+                  name: 'materials',
+                  redirect: '/base-info/materials/list',
+                },
+                {
+                  path: '/base-info/materials/list',
+                  code: 'baseInfo.materials.listView',
+                  name: 'list',
+                  component: './BaseInfo/Materials/List/index',
+                },
+                {
+                  path: '/base-info/materials/add',
+                  code: 'baseInfo.materials.add',
+                  name: 'add',
+                  component: './BaseInfo/Materials/Handler/index',
+                },
+                {
+                  path: '/base-info/materials/edit/:id',
+                  code: 'baseInfo.materials.edit',
+                  name: 'edit',
+                  component: './BaseInfo/Materials/Handler/index',
+                },
+                {
+                  path: '/base-info/materials/detail/:id',
+                  code: 'baseInfo.materials.detail',
+                  name: 'detail',
+                  component: './BaseInfo/Materials/Detail/index',
+                },
+              ],
+            },
+            // 高危工艺流程
+            {
+              path: '/base-info/high-risk-process',
+              code: 'baseInfo.highRiskProcess',
+              name: 'highRiskProcess',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/base-info/high-risk-process',
+                  name: 'highRiskProcess',
+                  redirect: '/base-info/highRiskProcess/list',
+                },
+                {
+                  path: '/base-info/high-risk-process/list',
+                  code: 'baseInfo.highRiskProcess.listView',
+                  name: 'list',
+                  component: './BaseInfo/HighRiskProcess/List/index',
+                },
+                {
+                  path: '/base-info/high-risk-process/add',
+                  code: 'baseInfo.highRiskProcess.add',
+                  name: 'add',
+                  component: './BaseInfo/HighRiskProcess/Handler/index',
+                },
+                {
+                  path: '/base-info/high-risk-process/edit/:id',
+                  code: 'baseInfo.highRiskProcess.edit',
+                  name: 'edit',
+                  component: './BaseInfo/HighRiskProcess/Handler/index',
+                },
+                {
+                  path: '/base-info/high-risk-process/detail/:id',
+                  code: 'baseInfo.highRiskProcess.detail',
+                  name: 'detail',
+                  component: './BaseInfo/HighRiskProcess/Detail/index',
+                },
+              ],
+            },
+            // 特种设备管理
+            {
+              path: '/base-info/special-equipment',
+              code: 'baseInfo.specialEquipment',
+              name: 'specialEquipment',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/base-info/special-equipment',
+                  name: 'specialEquipment',
+                  redirect: '/base-info/specialEquipment/list',
+                },
+                {
+                  path: '/base-info/special-equipment/list',
+                  code: 'baseInfo.specialEquipment.listView',
+                  name: 'list',
+                  component: './BaseInfo/SpecialEquipment/List/index',
+                },
+                {
+                  path: '/base-info/special-equipment/add',
+                  code: 'baseInfo.specialEquipment.add',
+                  name: 'add',
+                  component: './BaseInfo/SpecialEquipment/Handler/index',
+                },
+                {
+                  path: '/base-info/special-equipment/edit/:id',
+                  code: 'baseInfo.specialEquipment.edit',
+                  name: 'edit',
+                  component: './BaseInfo/SpecialEquipment/Handler/index',
+                },
+                {
+                  path: '/base-info/special-equipment/detail/:id',
+                  code: 'baseInfo.specialEquipment.detail',
+                  name: 'detail',
+                  component: './BaseInfo/SpecialEquipment/Detail/index',
+                },
+              ],
+            },
           ],
         },
 
@@ -2682,6 +2834,130 @@ module.exports = env => {
           ],
         },
 
+
+        // 应急管理
+        {
+          path: '/emergency-management',
+          code: 'emergencyManagement',
+          icon: 'alert',
+          name: 'emergencyManagement',
+          routes: [
+            // 应急装备
+            {
+              path: '/emergency-management/emergency-equipment',
+              code: 'emergencyManagement.emergencyEquipment',
+              name: 'emergencyEquipment',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-equipment',
+                  name: 'emergencyEquipment',
+                  redirect: '/emergency-management/emergency-equipment/list',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/list',
+                  code: 'emergencyManagement.emergencyEquipment.listView',
+                  name: 'list',
+                  component: './EmergencyManagement/EmergencyEquipment/List/index',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/add',
+                  code: 'emergencyManagement.emergencyEquipment.add',
+                  name: 'add',
+                  component: './EmergencyManagement/EmergencyEquipment/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/edit/:id',
+                  code: 'emergencyManagement.emergencyEquipment.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/EmergencyEquipment/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-equipment/detail/:id',
+                  code: 'emergencyManagement.emergencyEquipment.detail',
+                  name: 'detail',
+                  component: './EmergencyManagement/EmergencyEquipment/Detail/index',
+                },
+              ],
+            },
+            // 应急物资
+            {
+              path: '/emergency-management/emergency-supplies',
+              code: 'emergencyManagement.emergencySupplies',
+              name: 'emergencySupplies',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-supplies',
+                  name: 'emergencySupplies',
+                  redirect: '/emergency-management/emergency-supplies/list',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/list',
+                  code: 'emergencyManagement.emergencySupplies.listView',
+                  name: 'list',
+                  component: './EmergencyManagement/emergencySupplies/List/index',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/add',
+                  code: 'emergencyManagement.emergencySupplies.add',
+                  name: 'add',
+                  component: './EmergencyManagement/emergencySupplies/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/edit/:id',
+                  code: 'emergencyManagement.emergencySupplies.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/emergencySupplies/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-supplies/detail/:id',
+                  code: 'emergencyManagement.emergencySupplies.detail',
+                  name: 'detail',
+                  component: './EmergencyManagement/emergencySupplies/Detail/index',
+                },
+              ],
+            },
+            // 应急演练计划
+            {
+              path: '/emergency-management/emergency-drill',
+              code: 'emergencyManagement.emergencyDrill',
+              name: 'emergencyDrill',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-drill',
+                  name: 'emergencyDrill',
+                  redirect: '/emergency-management/emergency-drill/list',
+                },
+                {
+                  path: '/emergency-management/emergency-drill/list',
+                  code: 'emergencyManagement.emergencyDrill.listView',
+                  name: 'list',
+                  component: './EmergencyManagement/emergencyDrill/List/index',
+                },
+                {
+                  path: '/emergency-management/emergency-drill/add',
+                  code: 'emergencyManagement.emergencyDrill.add',
+                  name: 'add',
+                  component: './EmergencyManagement/emergencyDrill/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-drill/edit/:id',
+                  code: 'emergencyManagement.emergencyDrill.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/emergencyDrill/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-drill/detail/:id',
+                  code: 'emergencyManagement.emergencyDrill.detail',
+                  name: 'detail',
+                  component: './EmergencyManagement/emergencyDrill/Detail/index',
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ];
