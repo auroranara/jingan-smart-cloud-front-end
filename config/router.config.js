@@ -2594,8 +2594,94 @@ module.exports = env => {
                 },
               ],
             },
+            // 卡口信息
+            {
+              path: '/personnel-management/check-point',
+              code: 'personnelManagement.checkPoint',
+              name: 'checkPoint',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/personnel-management/check-point',
+                  name: 'checkPoint',
+                  redirect: '/personnel-management/check-point/company-list',
+                },
+                {
+                  path: '/personnel-management/check-point/company-list',
+                  code: 'personnelManagement.checkPoint.companyListView',
+                  name: 'companyList',
+                  component: './PersonnelManagement/CheckPoint/CompanyList',
+                },
+                {
+                  path: '/personnel-management/check-point/list/:companyId/:tabIndex',
+                  code: 'personnelManagement.checkPoint.listView',
+                  name: 'list',
+                  component: './PersonnelManagement/CheckPoint/CheckList',
+                },
+                {
+                  path: '/personnel-management/check-point/detail/:id/:tabIndex',
+                  code: 'personnelManagement.checkPoint.view',
+                  name: 'detail',
+                  component: './PersonnelManagement/CheckPoint/CheckDetail',
+                },
+                {
+                  path: '/personnel-management/check-point/add/:companyId/:tabIndex',
+                  code: 'personnelManagement.checkPoint.add',
+                  name: 'add',
+                  component: './PersonnelManagement/CheckPoint/CheckEdit',
+                },
+                {
+                  path: '/personnel-management/check-point/edit/:id/:tabIndex',
+                  code: 'personnelManagement.checkPoint.add',
+                  name: 'edit',
+                  component: './PersonnelManagement/CheckPoint/CheckEdit',
+                },
+              ],
+            },
           ],
         },
+        // 安全生产知识库
+        {
+          path: '/safety-knowledge-base',
+          code: 'safetyKnowledgeBase',
+          icon: 'book',
+          name: 'safetyKnowledgeBase',
+          routes: [
+            // 化学品安全说明书
+            {
+              path: '/safety-knowledge-base/msds',
+              code: 'safetyKnowledgeBase.msds',
+              name: 'msds',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-knowledge-base/msds',
+                  name: 'msds',
+                  redirect: '/safety-knowledge-base/msds/list',
+                },
+                {
+                  path: '/safety-knowledge-base/msds/list',
+                  code: 'safetyKnowledgeBase.msds.listView',
+                  name: 'list',
+                  component: './SafetyKnowledgeBase/MSDS/MList',
+                },
+                {
+                  path: '/safety-knowledge-base/msds/add',
+                  code: 'safetyKnowledgeBase.msds.add',
+                  name: 'add',
+                  component: './SafetyKnowledgeBase/MSDS/MEdit',
+                },
+                {
+                  path: '/safety-knowledge-base/msds/edit/:id',
+                  code: 'safetyKnowledgeBase.msds.edit',
+                  name: 'edit',
+                  component: './SafetyKnowledgeBase/MSDS/MEdit',
+                },
+              ],
+            },
+          ],
+        },
+
       ],
     },
   ];
