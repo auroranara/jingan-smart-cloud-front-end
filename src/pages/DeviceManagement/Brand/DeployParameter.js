@@ -409,6 +409,25 @@ export default class DeployParameter extends PureComponent {
     })
   }
 
+
+  /**
+   * 删除参数
+   */
+  handleDelete = (id) => {
+    const {
+      dispatch,
+    } = this.props
+    dispatch({
+      type: 'device/deleteParameter',
+      payload: { id },
+      success: () => {
+        message.success('删除成功')
+        this.handleQuery()
+      },
+      error: (res) => { message.error(res ? res.msg : '删除失败') },
+    })
+  }
+
   /**
   * 渲染表格
   */
@@ -467,7 +486,7 @@ export default class DeployParameter extends PureComponent {
             <Divider type="vertical" />
             <a onClick={() => this.handleToEdit(row)}>编辑</a>
             <Divider type="vertical" />
-            <Popconfirm title="确认要删除该型号参数吗？" onConfirm={() => this.handleDelete(row)}>
+            <Popconfirm title="确认要删除该型号参数吗？" onConfirm={() => this.handleDelete(row.id)}>
               <a>删除</a>
             </Popconfirm>
           </Fragment>

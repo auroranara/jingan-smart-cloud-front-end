@@ -78,6 +78,13 @@ export async function editParameter(body) {
   })
 }
 
+// 删除参数
+export async function deleteParameter(params) {
+  return request(`/acloud_new/v2/monitor/sensorMonitorParam/${params.id}`, {
+    method: 'DELETE',
+  })
+}
+
 // 查询报警策略
 export async function fetchAlarmStrategy(params) {
   return request(`/acloud_new/v2/monitor/paramWarnStrategy?${stringify(params)}`)
@@ -90,3 +97,4 @@ export async function submitAlarmStrategy(body) {
     body,
   })
 }
+

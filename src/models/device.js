@@ -23,6 +23,7 @@ import {
   editParameter,
   fetchAlarmStrategy,
   submitAlarmStrategy,
+  deleteParameter,
 } from '@/services/device/brand'
 import {
   fetchTagsForPage,
@@ -273,6 +274,13 @@ export default {
     // 保存报警策略
     *submitAlarmStrategy({ payload, success, error }, { call }) {
       const response = yield call(submitAlarmStrategy, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 删除参数
+    *deleteParameter({ payload, success, error }, { call }) {
+      const response = yield call(deleteParameter, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
