@@ -263,7 +263,7 @@ export default {
   'menu.emergencyManagement.emergencySupplies.detail': '查看应急物资',
   'menu.emergencyManagement.emergencySupplies.edit': '编辑应急物资',
   'menu.emergencyManagement.emergencyDrill': '应急演练计划',
-  'menu.emergencyManagement.emergencyDrill.list': '应急演练计划列表',
+  'menu.emergencyManagement.emergencyDrill.list': '应急演练计划',
   'menu.emergencyManagement.emergencyDrill.add': '新增应急演练计划',
   'menu.emergencyManagement.emergencyDrill.detail': '查看应急演练计划',
   'menu.emergencyManagement.emergencyDrill.edit': '编辑应急演练计划',
