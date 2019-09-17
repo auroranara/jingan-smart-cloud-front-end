@@ -33,6 +33,7 @@ const {
     associateSensor: {
       addCompany: addCompanyCode,
       waterSystem: { listView: waterViewmCode },
+      temperatureAndHumidity: { listView: tAndHViewCode },
     },
   },
 } = codes;
@@ -56,7 +57,7 @@ export default class SensorCompanyList extends Component {
     const { dispatch } = this.props;
     this.fetchSensorCompanies({ payload: { pageNum: 1, pageSize: defaultPageSize } });
     // 获取设备类型列表
-    dispatch({ type: 'sensor/fetchDeviceTypes' });
+    dispatch({ type: 'sensor/fetchDeviceTypesForAll' });
   }
 
   /**
@@ -283,7 +284,7 @@ export default class SensorCompanyList extends Component {
                         key={'tAndH'}
                         title={'温湿度'}
                         url={iconTAndH}
-                        code={waterViewmCode}
+                        code={tAndHViewCode}
                         to={`/device-management/associate-sensor/company/${id}/temperature-and-humidity?name=${name}`}
                         style={{
                           width: 30,
