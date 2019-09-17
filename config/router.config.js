@@ -1739,6 +1739,12 @@ module.exports = env => {
                   code: 'deviceManagement.associateSensor.waterSystem',
                   component: './DeviceManagement/AssociateSensor/WaterSystem',
                 },
+                {
+                  path: '/device-management/associate-sensor/company/:companyId/temperature-and-humidity',
+                  name: 'temperatureAndHumidity',
+                  code: 'deviceManagement.associateSensor.temperatureAndHumidity',
+                  component: './DeviceManagement/AssociateSensor/TemperatureAndHumidity',
+                },
               ],
             },
             // 设备管理

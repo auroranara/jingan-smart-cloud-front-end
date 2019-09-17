@@ -149,6 +149,7 @@ export default {
   'menu.deviceManagement.associateSensor': '设备关联传感',
   'menu.deviceManagement.associateSensor.listView': '设备关联传感',
   'menu.deviceManagement.associateSensor.waterSystem': '消防给水系统',
+  'menu.deviceManagement.associateSensor.temperatureAndHumidity': '温湿度',
   'menu.deviceManagement.sensor': '传感器管理',
   'menu.deviceManagement.sensor.listView': '传感器管理',
   'menu.deviceManagement.sensor.add': '新增传感器',
