@@ -34,7 +34,7 @@ const { Option } = Select;
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '数据分析', name: '数据分析' },
-  { title: 'IOT异常数据分析', name: 'IOT异常数据分析' },
+  { title: 'IOT数据分析', name: 'IOT数据分析' },
 ];
 
 const NO_DATA = '暂无信息';
@@ -318,7 +318,7 @@ export default class DataAnalysisList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="IOT异常数据分析"
+        title="IOT数据分析"
         breadcrumbList={breadcrumbList}
         content={
           <div className={styles.total}>

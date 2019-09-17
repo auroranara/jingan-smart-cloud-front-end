@@ -18,8 +18,8 @@ const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '数据分析', name: '数据分析' },
   {
-    title: 'IOT异常数据分析',
-    name: 'IOT异常数据分析',
+    title: 'IOT数据分析',
+    name: 'IOT数据分析',
     href: '/data-analysis/IOT-abnormal-data/list',
   },
   { title: TYPE_LABEL, name: TYPE_LABEL },
