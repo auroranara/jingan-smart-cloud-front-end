@@ -11,9 +11,24 @@ export async function fetchCompanyDevice(params) {
   return request(`/acloud_new/v2/virtualDeviceInfo/virtualDeviceList?${stringify(params)}`)
 }
 
+// 获取企业下绑定的传感器列表（温湿度）
+export async function fetchCompanyDeviceForHumiture(params) {
+  return request(`/acloud_new/v2/virtualDeviceInfo/virtualDeviceListForHumiture?${stringify(params)}`)
+}
+
 // 获取设备类型列表
 export async function fetchDeviceTypes() {
   return request(`/acloud_new/v2/virtualDeviceInfo/options`)
+}
+
+// 获取设备类型列表（温湿度）
+export async function fetchDeviceTypesForHumiture() {
+  return request(`/acloud_new/v2/virtualDeviceInfo/optionsForHumiture`)
+}
+
+// 获取设备类型列表（全部）
+export async function fetchDeviceTypesForAll() {
+  return request(`/acloud_new/v2/virtualDeviceInfo/optionsForAll`)
 }
 
 // 设备关联传感器新增单位（同时新增设备）

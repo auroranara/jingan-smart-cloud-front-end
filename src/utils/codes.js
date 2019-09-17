@@ -81,6 +81,14 @@ export default {
         bindSensor: 'deviceManagement.associateSensor.waterSystem.bindSensor',
         unbindSensor: 'deviceManagement.associateSensor.waterSystem.unbindSensor',
       },
+      temperatureAndHumidity: {
+        listView: 'deviceManagement.associateSensor.temperatureAndHumidity.listView',
+        add: 'deviceManagement.associateSensor.temperatureAndHumidity.add',
+        delete: 'deviceManagement.associateSensor.temperatureAndHumidity.delete',
+        edit: 'deviceManagement.associateSensor.temperatureAndHumidity.edit',
+        bindSensor: 'deviceManagement.associateSensor.temperatureAndHumidity.bindSensor',
+        unbindSensor: 'deviceManagement.associateSensor.temperatureAndHumidity.unbindSensor',
+      },
     },
     sensor: {
       listView: 'deviceManagement.sensor.listView',
