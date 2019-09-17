@@ -17,12 +17,16 @@ import {
   electricityDarkIcon,
   fireIcon,
   fireDarkIcon,
+  humitureIcon,
+  humitureDarkIcon,
   toxicGasIcon,
   toxicGasDarkIcon,
   wasteWaterIcon,
   wasteWaterDarkIcon,
   wasteGasIcon,
   wasteGasDarkIcon,
+  waterIcon,
+  waterDarkIcon,
   storageTankIcon,
   storageTankDarkIcon,
   smokeDetectorIcon,
@@ -42,9 +46,11 @@ const PAGE_SIZE = 18;
 const ICON_STYLE = {
   width: 30,
   height: 30,
-  marginRight: 15,
+  // marginRight: 15,
+  marginRight: 8,
   backgroundSize: '100% 100%',
 };
+const LAST_ICON_STYLE = { ...ICON_STYLE, marginRight: 0 };
 
 const ICONS = [
   'electricity',
@@ -54,6 +60,8 @@ const ICONS = [
   'storage-tank',
   'smoke-detector',
   'fire',
+  'humiture',
+  'water',
 ];
 const ICONS_URL = {
   electricity: electricityIcon,
@@ -70,15 +78,21 @@ const ICONS_URL = {
   'smoke-detector-d': smokeDetectorDarkIcon,
   fire: fireIcon,
   'fire-d': fireDarkIcon,
+  humiture: humitureIcon,
+  'humiture-d': humitureDarkIcon,
+  water: waterIcon,
+  'water-d': waterDarkIcon,
 };
 const ICONS_CN = {
-  electricity: '电气火灾异常数据分析',
-  'toxic-gas': '可燃有毒气体异常数据分析',
-  'waste-water': '废水异常数据分析',
-  'waste-gas': '废气异常数据分析',
-  'storage-tank': '储罐异常数据分析',
-  'smoke-detector': '独立烟感异常数据分析',
+  electricity: '电气火灾数据分析',
+  'toxic-gas': '可燃有毒气体数据分析',
+  'waste-water': '废水数据分析',
+  'waste-gas': '废气数据分析',
+  'storage-tank': '储罐数据分析',
+  'smoke-detector': '独立烟感数据分析',
   fire: '火灾自动报警系统',
+  humiture: '温湿度传感器数据分析',
+  water: '水系统数据分析',
 };
 const OPTIONS = [
   { name: '全部', key: 0 },
@@ -89,8 +103,9 @@ const OPTIONS = [
   { name: '储罐', key: 5 },
   { name: '独立烟感', key: 6 },
   { name: '火灾自动报警系统', key: 7 },
+  { name: '温湿度传感器', key: 8 },
+  { name: '水系统', key: 9 },
 ];
-// const INPUT_SPAN = { lg: 6, md: 12, sm: 24 };
 
 const fields = [
   {
@@ -228,11 +243,13 @@ export default class DataAnalysisList extends PureComponent {
               safetyPhone,
               elecNum,
               gasNum,
-              smokeNum = 0,
+              smokeNum=0,
               pollutionWaterNum,
               pollutionGasNum,
               opcNum,
               transmissionNum,
+              humitureNum=0,
+              waterNum=0,
               industryCategoryLabel,
               practicalProvinceLabel,
               practicalCityLabel,
@@ -256,7 +273,11 @@ export default class DataAnalysisList extends PureComponent {
               'storage-tank': opcNum,
               'smoke-detector': smokeNum,
               fire: transmissionNum,
+              humiture: humitureNum,
+              water: waterNum,
             };
+
+            const icons = ICONS.filter(icon => iconNums[icon]);
 
             return (
               <List.Item key={id}>
@@ -279,7 +300,7 @@ export default class DataAnalysisList extends PureComponent {
                   </p>
                   <p className={styles.icons}>
                     {/* {ICONS.map(icon => ( */}
-                    {ICONS.filter(icon => iconNums[icon]).map(icon => (
+                    {icons.map((icon, i) => (
                       <AuthIcon
                         key={icon}
                         title={ICONS_CN[icon]}
@@ -295,7 +316,7 @@ export default class DataAnalysisList extends PureComponent {
                             ? `fire-alarm/company/${id}`
                             : `${icon}/${id}/count/${iconNums[icon]}`
                         }`}
-                        style={ICON_STYLE}
+                        style={i === icons.length - 1 ? LAST_ICON_STYLE : ICON_STYLE}
                         target="_blank"
                       />
                     ))}
