@@ -95,11 +95,6 @@ export default class CompanyList extends PureComponent {
         pageNum: 1,
       },
     });
-
-    // 获取模糊搜索单位列表
-    dispatch({
-      type: 'hiddenDangerReport/fetchUnitListFuzzy',
-    });
   }
 
   // 查询
@@ -142,6 +137,10 @@ export default class CompanyList extends PureComponent {
     // 获取模糊搜索单位列表
     dispatch({
       type: 'hiddenDangerReport/fetchUnitListFuzzy',
+      payload: {
+        pageNum: 1,
+        pageSize: 300,
+      },
     });
   };
 
@@ -178,6 +177,10 @@ export default class CompanyList extends PureComponent {
     // 获取模糊搜索单位列表
     dispatch({
       type: 'hiddenDangerReport/fetchUnitListFuzzy',
+      payload: {
+        pageNum: 1,
+        pageSize: 300,
+      },
     });
   };
 
@@ -191,7 +194,7 @@ export default class CompanyList extends PureComponent {
       payload: {
         unitName: value && value.trim(),
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 18,
       },
     });
   };
@@ -241,25 +244,6 @@ export default class CompanyList extends PureComponent {
       }
     });
   };
-
-  // popupScrollcroll = e => {
-  //   const { dispatch } = this.props;
-  //   e.persist();
-  //   const { target } = e;
-  //   if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
-  //     console.log('567', target.scrollTop, target.offsetHeight, target.scrollHeight);
-  //     const { scrollPage } = this.state;
-  //     const nextScrollPage = scrollPage + 1;
-  //     this.setState({ scrollPage: nextScrollPage });
-  //     dispatch({
-  //       type: 'hiddenDangerReport/fetchUnitListFuzzy',
-  //       payload: {
-  //         pageNum: nextScrollPage,
-  //         pageSize: 18,
-  //       },
-  //     });
-  //   }
-  // };
 
   // 渲染form表单
   renderForm() {
@@ -497,7 +481,7 @@ export default class CompanyList extends PureComponent {
                   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                   onSearch={this.handleUnitIdChange}
                   onBlur={this.handleUnitIdBlur}
-                  // onPopupScroll={this.popupScrollcroll}
+                  getPopupContainer={() => document.querySelector('#root>div')}
                   filterOption={false}
                 >
                   {unitIdes.map(({ id, name }) => (
