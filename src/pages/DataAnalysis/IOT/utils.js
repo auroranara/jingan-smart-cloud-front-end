@@ -33,7 +33,7 @@ export function handleFormVals(vals) {
   const newVals = { ...vals };
   delete newVals.date;
   // 若查询状态为全部，则删除该属性
-  if (vals.status === '0') delete newVals.status;
+  // if (vals.status === '0') delete newVals.status;
 
   // 若没有参数，或者参数选择的是全部，即code=0，将code属性删除，默认全部
   if (!vals.code || vals.code === '0') delete newVals.code;
@@ -47,7 +47,7 @@ export function handleFormVals(vals) {
   return newVals;
 }
 
-export function handleTableData(list = [], indexBase, deviceTypeMap) {
+export function handleTableData(list = [], indexBase, deviceTypeMap={}) {
   return list.map((item, index) => {
     const {
       id,
