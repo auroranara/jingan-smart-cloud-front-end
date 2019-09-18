@@ -56,6 +56,7 @@ export default {
   'menu.baseInfo.reservoirRegionManagement': '库区管理',
   'menu.baseInfo.reservoirRegionManagement.list': '库区管理列表',
   'menu.baseInfo.reservoirRegionManagement.add': '新增库区',
+  'menu.baseInfo.reservoirRegionManagement.edit': '编辑库区',
   'menu.roleAuthorization': '角色权限',
   'menu.roleAuthorization.account': '账号管理',
   'menu.roleAuthorization.account.account': '账号管理',

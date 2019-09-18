@@ -800,6 +800,12 @@ module.exports = env => {
                   path: '/base-info/reservoir-region-management/add',
                   component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionEdit',
                 },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.reservoirRegionManagement.edit',
+                  path: '/base-info/reservoir-region-management/edit/:id',
+                  component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionEdit',
+                },
               ],
             },
           ],
@@ -1740,7 +1746,8 @@ module.exports = env => {
                   component: './DeviceManagement/AssociateSensor/WaterSystem',
                 },
                 {
-                  path: '/device-management/associate-sensor/company/:companyId/temperature-and-humidity',
+                  path:
+                    '/device-management/associate-sensor/company/:companyId/temperature-and-humidity',
                   name: 'temperatureAndHumidity',
                   code: 'deviceManagement.associateSensor.temperatureAndHumidity',
                   component: './DeviceManagement/AssociateSensor/TemperatureAndHumidity',

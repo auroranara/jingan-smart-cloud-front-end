@@ -422,5 +422,13 @@ export default {
       edit: 'baseInfo.specialEquipment.edit',
       detail: 'baseInfo.specialEquipment.detail',
     },
+
+    // 库区管理
+    reservoirRegionManagement: {
+      list: 'baseInfo.reservoirRegionManagement.listView',
+      add: 'baseInfo.reservoirRegionManagement.add',
+      edit: 'baseInfo.reservoirRegionManagement.edit',
+      delete: 'baseInfo.reservoirRegionManagement.delete',
+    },
   },
 };
