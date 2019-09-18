@@ -1,0 +1,68 @@
+.container {
+  padding: 0 1em;
+}
+.info {
+  padding-left: 1.625em;
+}
+.name {
+  position: relative;
+  padding: 0.25em 2em 0.25em 0;
+}
+.field {
+  display: flex;
+  padding: 0.25em 0;
+}
+.fieldLabel {
+  flex: none;
+}
+.fieldValue {
+  flex: 1;
+}
+.splitLine {
+  margin: 1em -1em;
+  height: 2px;
+  background-color: #195e8e;
+}
+.subTitle {
+  font-size: 14px;
+  line-height: 1;
+
+  span {
+    color: #0ff;
+  }
+}
+.realTimeContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+.realTimeWrapper {
+  flex: none;
+  width: 50%;
+}
+.echarts {
+  height: 240px !important;
+}
+/* 当天监测数据 */
+.lineChart {
+  height: 200px !important;
+}
+.emptyTrend {
+  padding: 1em 0;
+  height: 14em;
+  background: no-repeat center;
+  background-size: contain;
+}
+
+@media screen and (max-width: 1599px) {
+  .subTitle {
+    font-size: 13px;
+  }
+}
+
+@media screen and (max-width: 1399px) {
+  .subTitle {
+    font-size: 12px;
+  }
+}

@@ -188,3 +188,18 @@ export async function getSpecialEquipmentList(params) {
 export async function getDeviceCountList(params) {
   return request(`/acloud_new/v2/fireData/getMonitorForAll?${stringify(params)}`);
 }
+
+// 获取温湿度监测点列表
+export async function getHumiturePointList(params) {
+  return request(`/acloud_new/v2/virtualDeviceInfo/getMonitorForHumiture?${stringify(params)}`);
+}
+
+// 获取温湿度监测点统计
+export async function getHumiturePointCount(params) {
+  return request(`/acloud_new/v2/fireData/getMonitorForAll?${stringify(params)}`);
+}
+
+// 获取温湿度监测点详情
+export async function getHumiturePointDetail(params) {
+  return request(`/acloud_new/v2/fireData/getMonitorForAll?${stringify(params)}`);
+}

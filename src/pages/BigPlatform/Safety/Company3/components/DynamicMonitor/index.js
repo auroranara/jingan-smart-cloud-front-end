@@ -20,6 +20,8 @@ import exhaustGasIcon from '../../imgs/dynamic-monitor/exhaust_gas.png';
 import videoMonitorIcon from '../../imgs/dynamic-monitor/video_monitor.png';
 // 水系统
 import waterSystemIcon from '../../imgs/dynamic-monitor/water_system.png';
+// 温湿度
+import humitureIcon from '../../imgs/dynamic-monitor/humiture.png';
 // 引入样式文件
 import styles from './index.less';
 
@@ -101,10 +103,12 @@ export default class DynamicMonitor extends PureComponent {
           exhaustGas,
           videoMonitor,
           waterSystem,
+          humiture,
         }={},
       },
       handleClickVideo,
       // handleClickGas,
+      onHumitureClick,
     } = this.props;
 
     const list = [
@@ -189,6 +193,13 @@ export default class DynamicMonitor extends PureComponent {
         onClick: () => {
           onShow('8');
         },
+      },
+      {
+        key: '温湿度监测',
+        value: getValue(humiture),
+        icon: humitureIcon,
+        originalValue: humiture,
+        onClick: onHumitureClick,
       },
     ].filter(({ originalValue: { totalNum } = {} }) => totalNum);
     const newList = [];
