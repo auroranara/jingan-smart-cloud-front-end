@@ -2,22 +2,37 @@ import React, { PureComponent } from 'react';
 import router from 'umi/router';
 import { Button, Col, Form, Input, Row, Switch } from 'antd';
 
-import { getFieldDecConfig } from './utils';
+import { genOperateCallback, getFieldDecConfig } from './utils';
 
 const { Item: FormItem } = Form;
 
 @Form.create()
 export default class EquipmentEdit extends PureComponent {
   handleSubmit = e => {
-    // const { validateFields } = this.props.form;
-    // e.preventDefault();
-    // validateFields((err, values) => {
-    //   if (!err) {
-    //     console.log('Received values of form: ', values);
-    //   }
-    // });
+    const {
+      dispatch,
+      match: { params: { companyId, id } },
+      form: { validateFields },
+    } = this.props;
 
-    router.push(`/personnel-management/check-point/list/companyId/1`);
+    e.preventDefault();
+    validateFields((err, values) => {
+      if (!err) {
+        const { status } = values;
+        const params = { ...values, status: +status };
+        if (companyId)
+          params.companyId = companyId;
+        if (id)
+          params.id = id;
+        dispatch({
+          type: `checkPoint/${id ? 'edit' : 'add'}CheckPoint`,
+          index: 1,
+          payload: params,
+          callback: genOperateCallback(companyId, 1),
+        });
+
+      }
+    });
   };
 
   render() {
@@ -64,7 +79,9 @@ export default class EquipmentEdit extends PureComponent {
           <Col lg={8} md={12} sm={24}>
             <FormItem label="设备状态">
               {getFieldDecorator('status', {
+                initialValue: true,
                 rules: [{ required: true, message: '请选择设备状态' }],
+                valuePropName: 'checked',
               })(
                 <Switch
                   checkedChildren="启用"

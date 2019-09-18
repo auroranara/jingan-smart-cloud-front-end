@@ -34,8 +34,8 @@ export default class CheckList extends PureComponent {
   componentDidMount() {
     const { match: { params: { tabIndex } } } = this.props;
     this.childElem = document.querySelector('#root div');
-    // document.addEventListener('scroll', this.handleScroll, false);
-    // this.fetchInitCheckList(tabIndex);
+    document.addEventListener('scroll', this.handleScroll, false);
+    [0, 1, 2].forEach(n => this.fetchInitCheckList(n));
 
     this.setState({ tabIndex });
   }
@@ -45,13 +45,15 @@ export default class CheckList extends PureComponent {
   }
 
   value = '';
-  hasMore = true;
+  hasMore = [true, true, true];
   childElem = null;
-  currentpageNum = 2;
+  currentpageNum = [2, 2, 2];
 
   handleScroll = e => {
     const { loading } = this.props;
-    const hasMore = this.hasMore;
+    const { tabIndex } = this.state;
+
+    const hasMore = this.hasMore[tabIndex];
     const childElem = this.childElem;
     // 滚动时子元素相对定高的父元素滚动，事件加在父元素上，且查看父元素scrollTop，当滚到底时，父元素scrollTop+父元素高度=子元素高度
     // 判断页面是否滚到底部
@@ -64,16 +66,20 @@ export default class CheckList extends PureComponent {
   };
 
   handleSearch = vals => {
+    const { tabIndex } = this.state;
+
     this.value = vals && vals.title ? vals.title : '';
-    this.hasMore = true;
-    this.currentpageNum = 2;
+    this.hasMore[tabIndex] = true;
+    this.currentpageNum[tabIndex] = 2;
     this.fetchInitCheckList();
   };
 
   handleReset = () => {
+    const { tabIndex } = this.state;
+
     this.value = '';
-    this.hasMore = true;
-    this.currentpageNum = 2;
+    this.hasMore[tabIndex] = true;
+    this.currentpageNum[tabIndex] = 2;
     this.fetchInitCheckList();
   };
 
@@ -81,29 +87,30 @@ export default class CheckList extends PureComponent {
     const { tabIndex } = this.state;
     const idx = index === undefined ? tabIndex : index; // 传了就用传的，不传用state里的
     const callback = (total, list) => {
-      if (total <= PAGE_SIZE) this.hasMore = false;  // 如果第一页已经返回了所有结果，则hasMore置为false
+      if (total <= PAGE_SIZE) this.hasMore[idx] = false;  // 如果第一页已经返回了所有结果，则hasMore置为false
       const newStatus = list.reduce((prev, next) => {
         const { id, status } = next;
-        prev[id] = status;
+        prev[id] = !!+status;
         return prev;
       }, {});
       this.setState({ [`${+idx === EQUIPMENT_INDEX ? EQUIPMENT : SCREEN}Status`]: newStatus });
     };
 
-    this.fetchCheckList(1, callback);
+    this.fetchCheckList(idx, 1, callback);
   };
 
   handleLoadMore = () => {
-    const currentPageIndex = this.currentpageNum;
+    const { tabIndex } = this.state;
+    const currentPageIndex = this.currentpageNum[tabIndex];
     const callback = total => {
       const currentLength = currentPageIndex * PAGE_SIZE;
-      this.currentpageNum += 1;
-      if (currentLength >= total) this.hasMore = false;
+      this.currentpageNum[tabIndex] += 1;
+      if (currentLength >= total) this.hasMore[tabIndex] = false;
     };
-    this.fetchCheckList(currentPageIndex, callback);
+    this.fetchCheckList(tabIndex, currentPageIndex, callback);
   };
 
-  fetchCheckList = (pageIndex, callback) => {
+  fetchCheckList = (index, pageIndex, callback) => {
     const { dispatch, match: { params: { companyId } } } = this.props;
     const name = this.value;
     const payload = {
@@ -115,6 +122,7 @@ export default class CheckList extends PureComponent {
     //   payload.companyName = name;
     dispatch({
       type: 'checkPoint/fetchCheckList',
+      index,
       payload,
       callback,
     });

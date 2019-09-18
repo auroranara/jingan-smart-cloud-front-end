@@ -1,27 +1,54 @@
 import React, { PureComponent } from 'react';
-import router from 'umi/router';
-import { Button, Col, Form, Input, Row, Upload } from 'antd';
+import { Button, Col, Form, Icon, Input, Row, Upload } from 'antd';
 
-import { getFieldDecConfig, UploadButton } from './utils';
+import { getToken } from '@/utils/authority';
+import { genOperateCallback, getFieldDecConfig, uploadConvertToOrigin, uploadConvertToResult, FOLDER, UPLOAD_ACTION } from './utils';
+import { getFileList } from '@/pages/BaseInfo/utils';
 
 const { Item: FormItem } = Form;
 
 @Form.create()
 export default class PointEdit extends PureComponent {
-  handleSubmit = e => {
-    // const { validateFields } = this.props.form;
-    // e.preventDefault();
-    // validateFields((err, values) => {
-    //   if (!err) {
-    //     console.log('Received values of form: ', values);
-    //   }
-    // });
+  state={ fileList: [] };
 
-    router.push(`/personnel-management/check-point/list/companyId/0`);
+  handleSubmit = e => {
+    const {
+      dispatch,
+      match: { params: { companyId, id } },
+      form: { validateFields },
+    } = this.props;
+    const { fileList } = this.state;
+
+    e.preventDefault();
+    validateFields((err, values) => {
+      if (!err) {
+        const params = { ...values, photoList: uploadConvertToResult(fileList) };
+        if (companyId)
+          params.companyId = companyId;
+        if (id)
+          params.id = id;
+        dispatch({
+          type: `checkPoint/${id ? 'edit' : 'add'}CheckPoint`,
+          index: 0,
+          payload: params,
+          callback: genOperateCallback(companyId, 0),
+        });
+
+      }
+    });
+  };
+
+  handleUploadChange = info => {
+    const { fileList, file } = info;
+    let fList = fileList;
+    if (file.status === 'done')
+      fList = fList.filter(f => f.response && f.response.code === 200);
+    this.setState({ fileList: getFileList(fList) });
   };
 
   render() {
     const { form: { getFieldDecorator } } = this.props;
+    const { fileList } = this.state;
 
     return (
       <Form layout="vertical" onSubmit={this.handleSubmit}>
@@ -60,9 +87,19 @@ export default class PointEdit extends PureComponent {
         <Row gutter={{ lg: 48, md: 24 }}>
           <Col lg={8} md={12} sm={24}>
             <FormItem label="卡口照片">
-              <Upload listType="picture-card">
-                <UploadButton />
-              </Upload>
+            <Upload
+              name="files"
+              data={{ FOLDER }}
+              action={UPLOAD_ACTION}
+              fileList={fileList}
+              onChange={this.handleUploadChange}
+              headers={{ 'JA-Token': getToken() }}
+            >
+              <Button type="dashed" style={{ width: '96px', height: '96px' }}>
+                <Icon type="plus" style={{ fontSize: '32px' }} />
+                <div style={{ marginTop: '8px' }}>点击上传</div>
+              </Button>
+            </Upload>
             </FormItem>
           </Col>
         </Row>

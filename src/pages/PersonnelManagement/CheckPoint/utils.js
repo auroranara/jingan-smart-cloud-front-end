@@ -1,4 +1,8 @@
-import { Icon } from 'antd';
+import router from 'umi/router';
+import { Icon, message } from 'antd';
+
+export const FOLDER = 'checkPoints';
+export const UPLOAD_ACTION = '/acloud_new/v2/uploadFile';
 
 export const CARDS = ['单双色控制卡', '多彩控制卡', '全彩控制卡'];
 export const TABS = ['卡口点位', '卡口设备', '显示屏'];
@@ -38,4 +42,28 @@ export function UploadButton(props) {
       <div className="ant-upload-text">上传</div>
     </div>
   )
+}
+
+export function uploadConvertToOrigin(list) {
+  return list.map(({ id, dbUrl, webUrl, fileName }, index) => ({
+    uid: id || index,
+    status: 'done',
+    name: fileName,
+    url: webUrl,
+    dbUrl,
+  }));
+}
+
+export function uploadConvertToResult(list) {
+  return list.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }));
+}
+
+export function genOperateCallback(companyId, index) {
+  return function (code, msg) {
+    if (code === 200) {
+      message.success('操作成功！');
+      router.push(`/personnel-management/check-point/list/${companyId}/${index}`);
+    } else
+    message.error(msg);
+  };
 }
