@@ -406,9 +406,9 @@ export default class EmergencyPlanList extends Component {
             <div>备案编号：{recordCode}</div>
             <div>备案日期：{moment(recordDate).format('YYYY.M.D')}</div>
             <div>备案证明：
-              {recordCertificateList && recordCertificateList.map(({ webUrl, name }, index) => (
+              {recordCertificateList && recordCertificateList.map(({ webUrl, fileName }, index) => (
                 <div key={index}>
-                  <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>
+                  <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
                 </div>
               ))}
             </div>
@@ -421,9 +421,9 @@ export default class EmergencyPlanList extends Component {
         dataIndex: 'emergencyFilesList',
         render: (emergencyFilesList) => (
           <Fragment>
-            {emergencyFilesList && emergencyFilesList.map(({ webUrl, name }, index) => (
+            {emergencyFilesList && emergencyFilesList.map(({ webUrl, fileName }, index) => (
               <div key={index}>
-                <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>
+                <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
               </div>
             ))}
           </Fragment>
@@ -433,7 +433,10 @@ export default class EmergencyPlanList extends Component {
       {
         title: '状态',
         dataIndex: 'status',
-        render: (status) => ({ 1: '待审核', 2: '审核通过待发布', 3: '审核不通过', 4: '审核通过已发布' })[status],
+        render: (status) => {
+          status = STATUSES.filter(({ key }) => key === status)[0];
+          return status && status.value;
+        },
         align: 'center',
       },
       {
