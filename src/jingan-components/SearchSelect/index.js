@@ -37,9 +37,11 @@ export default class SearchSelect extends Component {
       list=[],
       loading,
       fieldNames,
+      getList,
+      setList,
       ...restProps
     } = this.props;
-    const { key, value } = { ...fieldNames, ...FIELDNAMES }
+    const { key, value } = {  ...FIELDNAMES, ...fieldNames };
 
     return (
       <AutoComplete
