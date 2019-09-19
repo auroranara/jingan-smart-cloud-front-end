@@ -28,7 +28,8 @@ export default class SearchSelect extends Component {
   handleBlur = (value) => {
     const { fieldNames, list, onChange } = this.props;
     const { key } = { ...FIELDNAMES, ...fieldNames };
-    if (list.filter(({ [key]: k }) => k === value).length === 0) {
+    const id = typeof value === 'object' ? value.key : value;
+    if (list.filter(({ [key]: k }) => k === id).length === 0) {
       onChange && onChange();
     }
   }
