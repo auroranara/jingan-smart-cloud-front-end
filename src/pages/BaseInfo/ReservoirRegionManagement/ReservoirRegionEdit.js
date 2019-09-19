@@ -363,7 +363,7 @@ export default class ReservoirRegionEdit extends PureComponent {
                   message: '请输入库区编号',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入库区编号" maxlength={15} />)}
+            })(<Input {...itemStyles} placeholder="请输入库区编号" maxLength={15} />)}
           </FormItem>
           <FormItem {...formItemLayout} label="库区名称">
             {getFieldDecorator('name', {
@@ -375,7 +375,7 @@ export default class ReservoirRegionEdit extends PureComponent {
                   message: '请输入库区名称',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入库区名称" maxlength={15} />)}
+            })(<Input {...itemStyles} placeholder="请输入库区名称" maxLength={15} />)}
           </FormItem>
           <FormItem {...formItemLayout} label="区域位置">
             {getFieldDecorator('position', {
@@ -387,7 +387,7 @@ export default class ReservoirRegionEdit extends PureComponent {
                   message: '请输入区域位置',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入区域位置" maxlength={15} />)}
+            })(<Input {...itemStyles} placeholder="请输入区域位置" maxLength={15} />)}
           </FormItem>
           <FormItem {...formItemLayout} label="所处环境功能区">
             {getFieldDecorator('environment', {
@@ -418,7 +418,7 @@ export default class ReservoirRegionEdit extends PureComponent {
                   message: '请输入周边安全防护间距（m）',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入周边安全防护间距（m）" maxlength={10} />)}
+            })(<Input {...itemStyles} placeholder="请输入周边安全防护间距（m）" maxLength={10} />)}
           </FormItem>
           <FormItem {...formItemLayout} label="与周边装置的距离">
             {getFieldDecorator('deviceDistance', {
@@ -430,7 +430,7 @@ export default class ReservoirRegionEdit extends PureComponent {
                   message: '请输入与周边装置的距离',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入与周边装置的距离" maxlength={10} />)}
+            })(<Input {...itemStyles} placeholder="请输入与周边装置的距离" maxLength={10} />)}
           </FormItem>
           <FormItem {...formItemLayout} label="库区面积（㎡）">
             {getFieldDecorator('area', {
@@ -442,7 +442,7 @@ export default class ReservoirRegionEdit extends PureComponent {
                   message: '请输入库区面积（㎡）',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入库区面积（㎡）" maxlength={10} />)}
+            })(<Input {...itemStyles} placeholder="请输入库区面积（㎡）" maxLength={10} />)}
           </FormItem>
           <FormItem {...formItemLayout} label="库房个数">
             {getFieldDecorator('count', {
@@ -453,7 +453,7 @@ export default class ReservoirRegionEdit extends PureComponent {
                   message: '请输入库房个数',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入库房个数" maxlength={10} />)}
+            })(<Input {...itemStyles} placeholder="请输入库房个数" maxLength={10} />)}
           </FormItem>
           <FormItem {...formItemLayout} label="相邻库房最小间距（m）">
             {getFieldDecorator('spaceBetween', {
@@ -465,7 +465,7 @@ export default class ReservoirRegionEdit extends PureComponent {
                   message: '请输入相邻库房最小间距（m）',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入相邻库房最小间距（m）" maxlength={10} />)}
+            })(<Input {...itemStyles} placeholder="请输入相邻库房最小间距（m）" maxLength={10} />)}
           </FormItem>
           <FormItem {...formItemLayout} label="是否构成重大危险源">
             {getFieldDecorator('dangerSource', {
@@ -500,7 +500,7 @@ export default class ReservoirRegionEdit extends PureComponent {
                 <Input
                   {...itemStyles}
                   placeholder="请输入所属危险化学品重大危险源单元"
-                  maxlength={15}
+                  maxLength={15}
                 />
               )}
               <Button type="primary" onClick={this.handleShowDangerSource}>

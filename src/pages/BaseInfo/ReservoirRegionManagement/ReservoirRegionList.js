@@ -44,77 +44,81 @@ const {
 
 const spanStyle = { md: 8, sm: 12, xs: 24 };
 
+/* session前缀 */
+const sessionPrefix = 'reservoir_region_list_';
+
 @connect(({ reservoirRegion, user, loading }) => ({
   reservoirRegion,
   user,
   loading: loading.models.reservoirRegion,
 }))
-@Form.create()
-export default class StorageList extends PureComponent {
+// @Form.create()
+export default class ReservoirRegionList extends PureComponent {
   state = { formData: {} };
 
   // 挂载后
   componentDidMount() {
-    const { dispatch } = this.props;
-
-    // 获取列表
-    dispatch({
-      type: 'reservoirRegion/fetchAreaList',
-      payload: {
-        pageNum: 1,
-        pageSize: 10,
+    const {
+      user: {
+        currentUser: { id },
       },
-    });
-    dispatch({
-      type: 'reservoirRegion/fetchCount',
-    });
+    } = this.props;
+    // 从sessionStorage中获取存储的控件值
+    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
+      pageNum: 1,
+      pageSize: 10,
+    };
+    this.fetchList({ ...payload });
+    this.fetchCountNum({ ...payload });
+    this.form.setFieldsValue({ ...payload });
   }
 
-  // 查询
-  handleSearch = ({ ...restValues }) => {
+  // 获取列表
+  fetchList = params => {
     const { dispatch } = this.props;
-    const formData = {
-      ...restValues,
-    };
     dispatch({
       type: 'reservoirRegion/fetchAreaList',
       payload: {
-        ...formData,
+        ...params,
         pageNum: 1,
         pageSize: 10,
-      },
-      callback: () => {
-        this.setState({
-          formData: formData,
-        });
-      },
-    });
-    dispatch({
-      type: 'reservoirRegion/fetchCount',
-      payload: {
-        ...formData,
       },
     });
   };
 
-  // 重置
-  handleReset = () => {
+  // 获取数量
+  fetchCountNum = params => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'reservoirRegion/fetchAreaList',
-      payload: {
-        pageNum: 1,
-        pageSize: 10,
-      },
-      callback: () => {
-        this.setState({
-          formData: {},
-        });
-      },
-    });
-    dispatch({
       type: 'reservoirRegion/fetchCount',
+      payload: {
+        ...params,
+      },
     });
+  };
+
+  setFormReference = toobar => {
+    this.form = toobar && toobar.props && toobar.props.form;
+  };
+
+  // 查询
+  handleSearch = () => {
+    const {
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+    const { name, number, position, ...rest } = this.form.getFieldsValue();
+    const payload = { name, number, position, ...rest };
+    this.fetchList(payload);
+    this.fetchCountNum(payload);
+    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
+  };
+
+  // 重置
+  handleReset = () => {
+    this.fetchList();
+    this.fetchCountNum();
   };
 
   // 删除
@@ -124,17 +128,8 @@ export default class StorageList extends PureComponent {
       type: 'reservoirRegion/fetchAreaDelete',
       payload: { ids: id },
       success: () => {
-        dispatch({
-          type: 'reservoirRegion/fetchCount',
-        });
-        // 获取列表
-        dispatch({
-          type: 'reservoirRegion/fetchAreaList',
-          payload: {
-            pageNum: 1,
-            pageSize: 10,
-          },
-        });
+        this.fetchList();
+        this.fetchCountNum();
         message.success('删除成功！');
       },
       error: () => {
@@ -146,11 +141,9 @@ export default class StorageList extends PureComponent {
   // 分页变动
   handlePageChange = (pageNum, pageSize) => {
     const { dispatch } = this.props;
-    const { formData } = this.state;
     dispatch({
       type: 'reservoirRegion/fetchAreaList',
       payload: {
-        ...formData,
         pageSize,
         pageNum,
       },
@@ -171,6 +164,7 @@ export default class StorageList extends PureComponent {
       },
     } = this.props;
 
+    // 权限
     const editCode = hasAuthority(editAuth, permissionCodes);
     const deleteCode = hasAuthority(deleteAuth, permissionCodes);
 
@@ -383,6 +377,7 @@ export default class StorageList extends PureComponent {
                 新增库区
               </Button>
             }
+            wrappedComponentRef={this.setFormReference}
           />
         </Card>
 
