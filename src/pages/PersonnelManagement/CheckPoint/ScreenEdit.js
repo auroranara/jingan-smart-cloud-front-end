@@ -2,7 +2,9 @@ import React, { PureComponent } from 'react';
 import router from 'umi/router';
 import { Button, Col, Form, Input, Row, Select, Switch } from 'antd';
 
+import SearchSelect from '@/jingan-components/SearchSelect';
 import { getFieldDecConfig, genOperateCallback } from './utils';
+import styles from './ScreenEdit.less';
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
@@ -18,6 +20,16 @@ export default class ScreenEdit extends PureComponent {
     dispatch({ type: 'checkPoint/fetchCardTypes' });
   }
 
+  getList = name => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'checkPoint/fetchCheckList', index: 0, payload: { pageNum: 1, pageSize: 10, name } });
+  };
+
+  setList = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'checkPoint/saveCheckList', payload: { index: 0, list: [], pagination: { pageNum: 1 } } });
+  };
+
   handleSubmit = e => {
     const {
       dispatch,
@@ -29,7 +41,7 @@ export default class ScreenEdit extends PureComponent {
     validateFields((err, values) => {
       if (!err) {
         const { status } = values;
-        const params = { ...values, status: +status };
+        const params = { ...values, status: +status, pointId: (values.pointId || {}).key };
         if (companyId)
           params.companyId = companyId;
         if (id)
@@ -47,7 +59,8 @@ export default class ScreenEdit extends PureComponent {
 
   render() {
     const {
-      checkPoint: { cardTypes },
+      listLoading,
+      checkPoint: { lists, cardTypes },
       form: { getFieldDecorator },
     } = this.props;
 
@@ -66,7 +79,15 @@ export default class ScreenEdit extends PureComponent {
               {getFieldDecorator('pointId', {
                 // rules: [{ required: true, message: '请选择卡口点位' }],
               })(
-                <Select placeholder="请选择卡口点位" />
+                <SearchSelect
+                  className={styles.searchSelect}
+                  loading={listLoading}
+                  list={lists[0]}
+                  fieldNames={{ key: 'id', value: 'name' }}
+                  getList={this.getList}
+                  setList={this.setList}
+                  placeholder="请选择卡口点位"
+                />
               )}
             </FormItem>
           </Col>
@@ -97,7 +118,7 @@ export default class ScreenEdit extends PureComponent {
                 rules: [{ required: true, message: '请选择控制卡型号' }],
               })(
                 <Select placeholder="控制卡型号">
-                  {cardTypes.map((label, index) => <Option key={index}>{label}</Option>)}
+                  {cardTypes.map(({ value, desc }) => <Option key={value}>{desc}</Option>)}
                 </Select>
               )}
             </FormItem>

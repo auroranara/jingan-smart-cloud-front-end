@@ -10,7 +10,11 @@ import ScreenEdit from './ScreenEdit';
 
 const TAB_COMS = [PointEdit, EquipmentEdit, ScreenEdit];
 
-@connect(({ checkPoint, loading }) => ({ checkPoint, loading: loading.models.checkPoint }))
+@connect(({ checkPoint, loading }) => ({
+  checkPoint,
+  loading: loading.models.checkPoint,
+  listLoading: loading.effects['checkPoint/fetchCheckList'],
+}))
 export default class CheckEdit extends PureComponent {
   render() {
     const { match: { params: { tabIndex } } } = this.props;
