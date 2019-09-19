@@ -13,14 +13,17 @@ export default class CustomUpload extends Component {
         if (url) {
           result.push(item);
         } else {
-          const { webUrl, dbUrl } = response && response.data && response.data.list && response.data.list[0] || {};
+          const { webUrl, dbUrl, success, fileName } = response && response.data && response.data.list && response.data.list[0] || {};
           if (webUrl) {
             result.push({
               uid,
               name,
               url: webUrl,
+              webUrl,
               dbUrl,
               status,
+              fileName,
+              success,
             });
           } else {
             message.error('上传失败！');

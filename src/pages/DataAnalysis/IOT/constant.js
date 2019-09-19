@@ -729,7 +729,7 @@ export function getFields(type, params, methods) {
           labelCol: LABEL_COL_6,
           wrapperCol: WRAPPER_COL,
           inputSpan: INPUT_SPAN,
-          options: { initialValue: '0' },
+          // options: { initialValue: '0' },
           render: () => (
             <Select placeholder="请选择状态类别" allowClear>
               {OPTIONS.map(({ name, key }) => (
@@ -745,7 +745,7 @@ export function getFields(type, params, methods) {
           labelCol: LABEL_COL_6,
           wrapperCol: WRAPPER_COL,
           inputSpan: INPUT_SPAN,
-          options: { initialValue: '0' },
+          // options: { initialValue: '0' },
           render: () => (
             <Select placeholder="请选择监测参数" allowClear>
               {params.map(({ name, key }) => (
@@ -801,7 +801,7 @@ export function getFields(type, params, methods) {
         {
           id: 'status',
           label: '状态类别',
-          options: { initialValue: '0' },
+          // options: { initialValue: '0' },
           render: () => (
             <Select placeholder="请选择状态类别" allowClear>
               {OPTIONS.map(({ name, key }) => (
@@ -859,7 +859,7 @@ export function getFields(type, params, methods) {
           label: '状态类别：',
           labelCol: LABEL_COL_6,
           wrapperCol: WRAPPER_COL,
-          options: { initialValue: '0' },
+          // options: { initialValue: '0' },
           render: () => (
             <Select placeholder="请选择状态类别" allowClear>
               {SMOKE_OPTIONS.map(({ name, key }) => (

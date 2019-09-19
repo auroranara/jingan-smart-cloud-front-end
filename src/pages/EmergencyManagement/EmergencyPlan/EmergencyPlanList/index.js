@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Card, Input, Select, Button, Table, Popconfirm, Modal } from 'antd';
+import { Card, Input, Select, Button, Table, Popconfirm, Modal, Spin, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import { connect } from 'dva';
@@ -20,6 +20,8 @@ import {
   DETAIL_CODE,
   AUDIT_CODE,
   PUBLISH_CODE,
+  SECRET_CODES,
+  STATUSES,
 } from './config';
 import styles from './index.less';
 
@@ -28,13 +30,16 @@ const { Option } = Select;
 @connect(({ emergencyPlan, user, loading }) => ({
   emergencyPlan,
   user,
-  listLoading: loading.effects['emergencyPlan/fetchList'],
-  // historyLoading: loading.effects['emergencyPlan/fetchHistory'],
+  loadingList: loading.effects['emergencyPlan/fetchList'],
+  loadingHistory: loading.effects['emergencyPlan/fetchHistory'],
+  auditing: loading.effects['emergencyPlan/audit'],
+  publishing: loading.effects['emergencyPlan/publish'],
 }))
 export default class EmergencyPlanList extends Component {
   state = {
     historyVisible: false,
     history: undefined,
+    currentAuditStatus: undefined,
   }
 
   componentDidMount() {
@@ -55,17 +60,17 @@ export default class EmergencyPlanList extends Component {
     });
   }
 
-  // getHistory = (payload) => {
-  //   const { dispatch } = this.props;
-  //   dispatch({
-  //     type: 'emergencyPlan/fetchHistory',
-  //     payload: {
-  //       pageNum: DEFAULT_PAGE_NUM,
-  //       pageSize: DEFAULT_PAGE_SIZE,
-  //       ...payload,
-  //     },
-  //   });
-  // }
+  getHistory = (payload) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'emergencyPlan/fetchHistory',
+      payload: {
+        pageNum: DEFAULT_PAGE_NUM,
+        pageSize: DEFAULT_PAGE_SIZE,
+        ...payload,
+      },
+    });
+  }
 
   setFormReference = form => {
     this.form = form;
@@ -73,6 +78,7 @@ export default class EmergencyPlanList extends Component {
 
   // 显示历史版本
   showHistory = (history) => {
+    this.getHistory({ id: history.id });
     this.setState({
       historyVisible: true,
       history,
@@ -88,12 +94,31 @@ export default class EmergencyPlanList extends Component {
 
   // 查询按钮点击事件
   handleSearch = (values) => {
-    this.getList(values);
+    const { auditStatus, publishStatus, ...rest } = values;
+    let status;
+    if (!auditStatus && !publishStatus) {
+      status = undefined;
+    } else if (auditStatus === '0' && !publishStatus) {
+      status = '1';
+    } else if (auditStatus === '-1' && !publishStatus){
+      status = '3';
+    } else if ((auditStatus === '1' || !auditStatus) && publishStatus === '0') {
+      status = '2';
+    } else if ((auditStatus === '1' || !auditStatus) && publishStatus === '1') {
+      status = '4';
+    } else {
+      status = '-1';
+    }
+    this.getList({ ...rest, status });
   }
 
   // 重置按钮点击事件
   handleReset = (values) => {
-    this.getList(values);
+    const { auditStatus } = values;
+    this.handleSearch(values);
+    this.setState({
+      currentAuditStatus: auditStatus,
+    });
   }
 
   // 列表change事件
@@ -109,9 +134,9 @@ export default class EmergencyPlanList extends Component {
 
   // 历史change事件
   handleHistoryChange = (pageNum, pageSize) => {
-    const { historyId } = this.state;
+    const { history: { id } } = this.state;
     this.getHistory({
-      id: historyId,
+      id,
       pageNum,
       pageSize,
     });
@@ -136,20 +161,94 @@ export default class EmergencyPlanList extends Component {
 
   // 确认发布
   handlePublishConfirm = (id) => {
-    console.log(id);
-    alert('确认发布');
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'emergencyPlan/publish',
+      payload: {
+        id,
+      },
+      callback: (isSuccess) => {
+        if (isSuccess) {
+          message.success('发布成功！');
+          const {
+            emergencyPlan: {
+              list: {
+                pagination: {
+                  pageSize=DEFAULT_PAGE_SIZE,
+                }={},
+              },
+            },
+          } = this.props;
+          this.handleListChange(DEFAULT_PAGE_NUM, pageSize);
+        } else {
+          message.error('发布失败，请稍后重试！');
+        }
+      },
+    });
   }
 
   // 审核通过
   handleAuditConfirm = (id) => {
-    console.log(id);
-    alert('审核通过');
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'emergencyPlan/audit',
+      payload: {
+        id,
+        status: 2,
+      },
+      callback: (isSuccess) => {
+        if (isSuccess) {
+          message.success('审核成功！');
+          const {
+            emergencyPlan: {
+              list: {
+                pagination: {
+                  pageSize=DEFAULT_PAGE_SIZE,
+                }={},
+              },
+            },
+          } = this.props;
+          this.handleListChange(DEFAULT_PAGE_NUM, pageSize);
+        } else {
+          message.error('审核失败，请稍后重试！');
+        }
+      },
+    });
   }
 
   // 审核不通过
   handleAuditCancel = (id) => {
-    console.log(id);
-    alert('审核不通过');
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'emergencyPlan/audit',
+      payload: {
+        id,
+        status: 3,
+      },
+      callback: (isSuccess) => {
+        if (isSuccess) {
+          message.success('审核成功！');
+          const {
+            emergencyPlan: {
+              list: {
+                pagination: {
+                  pageSize=DEFAULT_PAGE_SIZE,
+                }={},
+              },
+            },
+          } = this.props;
+          this.handleListChange(DEFAULT_PAGE_NUM, pageSize);
+        } else {
+          message.error('审核失败，请稍后重试！');
+        }
+      },
+    });
+  }
+
+  handleAuditStatusChange = (currentAuditStatus) => {
+    this.setState({
+      currentAuditStatus,
+    });
   }
 
   renderForm() {
@@ -160,17 +259,18 @@ export default class EmergencyPlanList extends Component {
         },
       },
     } = this.props;
+    const { currentAuditStatus } = this.state;
     const hasAddAuthority = permissionCodes.includes(ADD_CODE);
 
     const FIELDS = [
       {
-        id: 'planName',
+        id: 'name',
         label: '预案名称',
         transform: value => value.trim(),
         render: _this => <Input placeholder="请输入预案名称" onPressEnter={_this.handleSearch} maxLength={50} />,
       },
       {
-        id: 'code',
+        id: 'lxLevelCode',
         label: '预案类型代码',
         render: () => (
           <Select placeholder="请选择预案类型代码" allowClear>
@@ -179,7 +279,7 @@ export default class EmergencyPlanList extends Component {
         ),
       },
       {
-        id: 'recordStatus',
+        id: 'isRecord',
         label: '是否已备案',
         render: () => (
           <Select placeholder="请选择是否已备案" allowClear>
@@ -197,12 +297,12 @@ export default class EmergencyPlanList extends Component {
         id: 'auditStatus',
         label: '审核状态',
         render: () => (
-          <Select placeholder="请选择审核状态" allowClear>
+          <Select placeholder="请选择审核状态" allowClear onChange={this.handleAuditStatusChange}>
             {AUDIT_STATUSES.map(({ key, value }) => <Option key={key}>{value}</Option>)}
           </Select>
         ),
       },
-      {
+      ...(+currentAuditStatus === 1 ? [{
         id: 'publishStatus',
         label: '发布状态',
         render: () => (
@@ -210,7 +310,7 @@ export default class EmergencyPlanList extends Component {
             {PUBLISH_STATUSES.map(({ key, value }) => <Option key={key}>{value}</Option>)}
           </Select>
         ),
-      },
+      }] : []),
     ];
 
     return (
@@ -246,6 +346,9 @@ export default class EmergencyPlanList extends Component {
           unitType,
         },
       },
+      loadingList,
+      auditing,
+      publishing,
     } = this.props;
     const isNotCompany = unitType !== 4;
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
@@ -263,98 +366,104 @@ export default class EmergencyPlanList extends Component {
       {
         title: '预案基本信息',
         dataIndex: 'basicInfo',
-        render: (_, { name, majorHazard, applicationArea, versionType, version }) => (
+        render: (_, { name, isMajorHazard, applicationArea, editionType, editionCode }) => (
           <div className={styles.multi}>
             <div>预案名称：{name}</div>
-            <div>重大危险源：{+majorHazard ? '是' : '否'}</div>
+            <div>重大危险源：{+isMajorHazard ? '是' : '否'}</div>
             <div>使用领域：{applicationArea}</div>
-            <div>{+versionType === 0 ? '创建' : '修订'}，{`V${version}`}</div>
+            <div>{+editionType !== 2 ? '创建' : '修订'}，{`V${editionCode}`}</div>
           </div>
         ),
         align: 'center',
       },
       {
         title: '有效期至',
-        dataIndex: 'expiryDate',
-        render: expiryDate => expiryDate && moment(expiryDate).format('YYYY.M.D'),
+        dataIndex: 'endDate',
+        render: endDate => endDate && moment(endDate).format('YYYY.M.D'),
         align: 'center',
       },
       {
         title: '代码',
         dataIndex: 'code',
-        render: (_, { typeCode, securityCode }) => (
-          <div className={styles.multi}>
-            <div>类型代码：{typeCode}</div>
-            <div>密级代码：{securityCode}</div>
-          </div>
-        ),
+        render: (_, { lxLevelCode, mjLevelCode }) => {
+          lxLevelCode = TYPE_CODES.filter(({ key }) => key === lxLevelCode)[0];
+          mjLevelCode = SECRET_CODES.filter(({ key }) => key === mjLevelCode)[0];
+          return (
+            <div className={styles.multi}>
+              <div>类型代码：{lxLevelCode && lxLevelCode.value}</div>
+              <div>密级代码：{mjLevelCode && mjLevelCode.value}</div>
+            </div>
+          );
+        },
         align: 'center',
       },
       {
         title: '备案',
         dataIndex: 'record',
-        render: (_, { recordStatus, recordNumber, recordDate, recordCredential: { webUrl, name } }) => +recordStatus > 0 ? (
+        render: (_, { isRecord, recordCode, recordDate, recordCertificateList }) => isRecord > 0 ? (
           <div className={styles.multi}>
             <div>已备案</div>
-            <div>备案编号：{recordNumber}</div>
+            <div>备案编号：{recordCode}</div>
             <div>备案日期：{moment(recordDate).format('YYYY.M.D')}</div>
-            <div>备案证明：<a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a></div>
+            <div>备案证明：
+              {recordCertificateList && recordCertificateList.map(({ webUrl, name }, index) => (
+                <div key={index}>
+                  <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>
+                </div>
+              ))}
+            </div>
           </div>
         ) : '未备案',
         align: 'center',
       },
       {
         title: '预案附件',
-        dataIndex: 'attachment',
-        render: ({ webUrl, name }) => <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>,
+        dataIndex: 'emergencyFilesList',
+        render: (emergencyFilesList) => (
+          <Fragment>
+            {emergencyFilesList && emergencyFilesList.map(({ webUrl, name }, index) => (
+              <div key={index}>
+                <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>
+              </div>
+            ))}
+          </Fragment>
+        ),
         align: 'center',
       },
       {
         title: '状态',
-        dataIndex: 'auditStatus',
-        render: (_, { auditStatus, publishStatus }) => {
-          if (+auditStatus === 0) {
-            return '待审核';
-          } else if (auditStatus > 0) {
-            if (+publishStatus === 0) {
-              return '审核通过待发布';
-            } else {
-              return '审核通过已发布'
-            }
-          } else {
-            return '审核不通过';
-          }
-        },
+        dataIndex: 'status',
+        render: (status) => ({ 1: '待审核', 2: '审核通过待发布', 3: '审核不通过', 4: '审核通过已发布' })[status],
         align: 'center',
       },
       {
         title: '操作',
         dataIndex: 'operation',
         fixed: list && list.length > 0 ? 'right' : false,
-        render: (_, { id, auditStatus, publishStatus }) => (
+        render: (_, { id, status }) => (
           <Fragment>
             {hasDetailAuthority && <span className={classNames(styles.clickable, styles.operation)} onClick={this.handleViewClick} data-id={id}>查看</span>}
-            {hasAuditAuthority && +auditStatus === 0 && (
+            {hasAuditAuthority && +status === 1 && (
               <Popconfirm title="是否通过这个应急预案?" onConfirm={() => this.handleAuditConfirm(id)} onCancel={() => this.handleAuditCancel(id)} okText="通过" cancelText="不通过">
                 <span className={classNames(styles.clickable, styles.operation)}>审核</span>
               </Popconfirm>
             )}
-            {hasPublishAuthority && +auditStatus > 0 && +publishStatus === 0 && (
+            {hasPublishAuthority && +status === 2 && (
               <Popconfirm title="你确定要发布这个应急预案吗?" onConfirm={() => this.handlePublishConfirm(id)}>
                 <span className={classNames(styles.clickable, styles.operation)}>发布</span>
               </Popconfirm>
             )}
-            {hasEditAuthority && (+auditStatus === -1 || (+auditStatus > 0 && +publishStatus > 0)) && <span className={classNames(styles.clickable, styles.operation)} onClick={this.handleEditClick} data-id={id}>编辑</span>}
+            {hasEditAuthority && (+status === 3 || +status === 4) && <span className={classNames(styles.clickable, styles.operation)} onClick={this.handleEditClick} data-id={id}>编辑</span>}
           </Fragment>
         ),
         align: 'center',
       },
       {
         title: '历史版本',
-        dataIndex: 'history',
+        dataIndex: 'versionCount',
         fixed: list && list.length > 0 ? 'right' : false,
-        render: history => (
-          <span className={classNames(styles.clickable, styles.operation)} onClick={() => this.showHistory(history)}>{history && history.length || 0}</span>
+        render: (versionCount, item) => (
+          <span className={classNames(styles.clickable, styles.operation)} onClick={() => this.showHistory(item)}>{versionCount || 1}</span>
         ),
         align: 'center',
       },
@@ -362,91 +471,102 @@ export default class EmergencyPlanList extends Component {
 
     return (
       <Card className={styles.card} bordered={false}>
-        <Table
-          className={styles.table}
-          dataSource={list}
-          columns={COLUMNS}
-          rowKey="id"
-          scroll={{
-            x: true,
-          }}
-          pagination={{
-            current: pageNum,
-            pageSize,
-            total,
-            pageSizeOptions: ['5', '10', '15', '20'],
-            // showTotal: total => `共 ${total} 条`,
-            showQuickJumper: true,
-            showSizeChanger: true,
-            onChange: this.handleListChange,
-            onShowSizeChange: (num, size) => {
-              this.handleListChange(1, size);
-            },
-          }}
-        />
+        <Spin spinning={loadingList || auditing || publishing || false}>
+          <Table
+            className={styles.table}
+            dataSource={list}
+            columns={COLUMNS}
+            rowKey="id"
+            scroll={{
+              x: true,
+            }}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              pageSizeOptions: ['5', '10', '15', '20'],
+              // showTotal: total => `共 ${total} 条`,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              onChange: this.handleListChange,
+              onShowSizeChange: (num, size) => {
+                this.handleListChange(1, size);
+              },
+            }}
+          />
+        </Spin>
       </Card>
     );
   }
 
   // 历史版本
   renderHistory() {
-    const { historyVisible, history } = this.state;
+    const {
+      emergencyPlan: {
+        history: {
+          list=[],
+          pagination: {
+            total=0,
+            pageSize=0,
+            pageNum=0,
+          }={},
+        },
+      },
+      loadingHistory,
+    } = this.props;
+    const { historyVisible } = this.state;
     const COLUMNS = [
       {
         title: '版本号',
-        dataIndex: 'version',
-        render: (version) => `V${version}`,
-        // width: 96,
+        dataIndex: 'editionCode',
+        render: (editionCode) => `V${editionCode}`,
         width: 128,
         align: 'center',
       },
       {
         title: '状态',
         dataIndex: 'status',
-        render: (status) => ({ 0: '待审核', 1: '已发布', 2: '已作废' }[status]),
-        // width: 96,
+        render: (status) => {
+          status = STATUSES.filter(({ key }) => key === status)[0];
+          return status && status.value;
+        },
         width: 128,
         align: 'center',
       },
       {
         title: '创建时间',
-        dataIndex: 'createTime',
-        render: (time) => moment(time).format('YYYY.M.D'),
-        // width: 96,
+        dataIndex: 'createDate',
+        render: (time) => time && moment(time).format('YYYY.M.D'),
         width: 128,
         align: 'center',
       },
       {
         title: '创建人',
-        dataIndex: 'createPerson',
-        // width: 96,
+        dataIndex: 'createName',
         align: 'center',
       },
       {
         title: '审核通过时间',
-        dataIndex: 'auditPassTime',
-        render: (time) => moment(time).format('YYYY.M.D'),
+        dataIndex: 'approveDate',
+        render: (time) => time && moment(time).format('YYYY.M.D'),
         width: 128,
         align: 'center',
       },
       {
         title: '审核人',
-        dataIndex: 'auditPerson',
-        // width: 96,
+        dataIndex: 'approveName',
         align: 'center',
       },
       {
         title: '发布时间',
-        dataIndex: 'publishTime',
-        render: (time) => moment(time).format('YYYY.M.D'),
-        // width: 96,
+        dataIndex: 'publishDate',
+        render: (time) => time && moment(time).format('YYYY.M.D'),
         width: 128,
         align: 'center',
       },
       {
         title: '发布人',
-        dataIndex: 'publishPerson',
-        // width: 96,
+        dataIndex: 'publishName',
         align: 'center',
       },
       {
@@ -465,21 +585,36 @@ export default class EmergencyPlanList extends Component {
         visible={historyVisible}
         onCancel={this.hideHistory}
         footer={null}
-        width="50%"
+        width="60%"
         className={styles.modal}
         zIndex={9999}
       >
-        <Table
-          // className={styles.table}
-          dataSource={history || []}
-          columns={COLUMNS}
-          rowKey="id"
-          scroll={{
-            x: 976,
-            y: 300,
-          }}
-          pagination={false}
-        />
+        <Spin spinning={!!loadingHistory}>
+          <Table
+            className={styles.table}
+            dataSource={list || []}
+            columns={COLUMNS}
+            rowKey="id"
+            scroll={{
+              x: true,
+              // x: 976,
+              // y: 300,
+            }}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              pageSizeOptions: ['5', '10', '15', '20'],
+              // showTotal: total => `共 ${total} 条`,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              onChange: this.handleHistoryChange,
+              onShowSizeChange: (num, size) => {
+                this.handleHistoryChange(1, size);
+              },
+            }}
+          />
+        </Spin>
       </Modal>
     );
   }

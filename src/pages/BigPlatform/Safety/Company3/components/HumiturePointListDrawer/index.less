@@ -1,0 +1,45 @@
+.tabs {
+  padding: 0 1em 1em;
+}
+.spin {
+  height: calc(~'100% - 3.5em') !important;
+}
+.container {
+  padding: 0 1em;
+}
+.allCount {
+  color: #fff;
+}
+.normalCount {
+  color: #0ff;
+}
+.alarmCount {
+  color: #f83329;
+}
+.lossCount {
+  color: #9f9f9f;
+}
+.card {
+  margin-bottom: 1em;
+
+  &:last-child {
+    margin-bottom: 1px;
+  }
+}
+.emptyData {
+  position: absolute;
+  top: 50%;
+  left: 25%;
+  right: 25%;
+  transform: translateY(-50%);
+
+  &>:first-child {
+    width: 100%;
+    vertical-align: top;
+  }
+  &>:nth-child(2) {
+    text-align: center;
+    padding: 1em 0;
+    color: #4F6793;
+  }
+}
