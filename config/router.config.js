@@ -1341,6 +1341,18 @@ module.exports = env => {
                   component: './DataAnalysis/IOT/SmokeDetector',
                 },
                 {
+                  path: '/data-analysis/IOT-abnormal-data/humiture/:id/count/:count',
+                  code: 'dataAnalysis.IOTAbnormalData.humiture',
+                  name: 'humiture',
+                  component: './DataAnalysis/IOT/Humiture',
+                },
+                {
+                  path: '/data-analysis/IOT-abnormal-data/water/:id/count/:count',
+                  code: 'dataAnalysis.IOTAbnormalData.water',
+                  name: 'water',
+                  component: './DataAnalysis/IOT/Water',
+                },
+                {
                   path: '/data-analysis/IOT-abnormal-data/fire-alarm/company/:companyId',
                   code: 'dataAnalysis.IOTAbnormalData.fireDetailView',
                   name: 'companyDetail',

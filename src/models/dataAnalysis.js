@@ -10,6 +10,7 @@ import {
   fetchJobLevel,
   fetchDangerChemicals, // 获取危险化学品/供货方单位
 } from '@/services/dataAnalysis';
+import { fetchDeviceTypes } from '@/services/sensor';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
 
@@ -61,6 +62,7 @@ export default {
     jobLevel: [],       // 作业级别（类别）
     dangerChemicals: [], // 危险化学品
     supplierUnits: [],    // 供货方单位
+    deviceOptions: [],
   },
 
   effects: {
@@ -177,6 +179,14 @@ export default {
         })
       }
     },
+    *fetchDeviceOptions({ payload }, { call, put }) {
+      const response = yield call(fetchDeviceTypes, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.deviceType) ? data.deviceType : [];
+        yield put({ type: 'saveDeviceOptions', payload: list });
+      }
+    },
   },
 
   reducers: {
@@ -238,6 +248,9 @@ export default {
           pagination,
         },
       }
+    },
+    saveDeviceOptions(state, action) {
+      return { ...state, deviceOptions: action.payload };
     },
   },
 };
