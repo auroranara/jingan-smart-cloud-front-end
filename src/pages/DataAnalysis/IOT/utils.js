@@ -85,11 +85,14 @@ export function handleTableData(list = [], indexBase, deviceTypeMap={}) {
   });
 }
 
-function getCondition(sts, condition, desc) {
+function getCondition(status, condition, desc) {
+  const sts = +status;
   if (sts === -25)
     return '机械臂故障';
   if (sts === -1)
     return '设备失联';
+  if (sts === 0)
+    return `${desc}正常`;
   if (!condition)
     return '-';
   return `${desc}过${condition === '<=' ? '低' : '高'}`;
