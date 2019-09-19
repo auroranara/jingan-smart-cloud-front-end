@@ -46,7 +46,7 @@ export default class SearchSelect extends Component {
         mode="combobox"
         labelInValue
         optionLabelProp="children"
-        placeholder="请选择单位名称"
+        placeholder="请选择"
         defaultActiveFirstOption={false}
         filterOption={false}
         onSearch={this.debouncedHandleSearch}
