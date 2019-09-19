@@ -4,6 +4,8 @@ import ReactEcharts from "echarts-for-react";
 import { connect } from 'dva';
 import moment from 'moment';
 import videoCameraIcon from '@/assets/videoCamera.png';
+import alarmIcon from '@/assets/icon-alarm2.png';
+import lossIcon from '@/assets/icon-loss.png';
 import noTrend from '@/pages/BigPlatform/Gas/imgs/no-monitor.png';
 import styles from './index.less';
 
@@ -16,7 +18,9 @@ export default class HumiturePointDetailDrawer extends Component {
   componentDidUpdate({ visible: prevVisible }) {
     const { visible } = this.props;
     if (!prevVisible && visible) {
-      // this.getHumiturePointDetail();
+      this.getHumiturePointDetail();
+    } else if (prevVisible && !visible) {
+      clearTimeout(this.myTimer);
     }
   }
 
@@ -25,10 +29,26 @@ export default class HumiturePointDetailDrawer extends Component {
     dispatch({
       type: 'unitSafety/fetchHumiturePointDetail',
       payload: {
-        id: value,
+        deviceId: value,
+      },
+      callback: ({ tDeviceId, tCode, hDeviceId, hCode }) => {
+        this.getHumiturePointTrend({ temperatureId: tDeviceId, temperatureCode: tCode, humidityId: hDeviceId, humidityCode: hCode });
+        this.setTimer();
       },
     });
     this.scroll && this.scroll.scrollTop();
+  }
+
+  getHumiturePointTrend = (payload) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'unitSafety/fetchHumiturePointTrend',
+      payload: {
+        ...payload,
+        queryDate: moment().startOf('day').format('YYYY/MM/DD HH:mm:ss'),
+        historyDataType: 1,
+      },
+    });
   }
 
   getGaugeOption = ({ name, value, unit, min, max, normalMin, normalMax, status }) => {
@@ -173,17 +193,34 @@ export default class HumiturePointDetailDrawer extends Component {
     this.scroll = scroll && scroll.dom;
   }
 
+  setTimer = () => {
+    this.myTimer = setTimeout(() => {
+      const {
+        unitSafety: {
+          humiturePointDetail: {
+            tDeviceId,
+            tCode,
+            hDeviceId,
+            hCode,
+          },
+        },
+      } = this.props;
+      this.getHumiturePointTrend({ temperatureId: tDeviceId, temperatureCode: tCode, humidityId: hDeviceId, humidityCode: hCode });
+      this.setTimer();
+    }, 5 * 60 * 1000);
+  }
+
   handleVideoClick = () => {
     const {
       unitSafety: {
         humiturePointDetail: {
-          videoList,
+          cameraMessage,
         },
       },
       onVideoClick,
     } = this.props;
-    const [{ keyId }] = videoList;
-    onVideoClick && onVideoClick(keyId, videoList);
+    const [{ key_id }] = cameraMessage;
+    onVideoClick && onVideoClick(key_id, cameraMessage);
   }
 
   /* 实时监测数据 */
@@ -191,10 +228,27 @@ export default class HumiturePointDetailDrawer extends Component {
     const {
       unitSafety: {
         humiturePointDetail: {
-          params=[],
+          tDeviceId,
+          temperature,
+          tMin,
+          tMax,
+          tLower,
+          tUpper,
+          tstatus,
+          hDeviceId,
+          humidity,
+          hMin,
+          hMax,
+          hLower,
+          hUpper,
+          hstatus,
         },
       },
     } = this.props;
+    const params = [
+      tDeviceId && { name: '温度', value: Number.parseFloat(temperature), unit: '℃', min: tMin !== null ? tMin : -40, max: tMax !== null ? tMax : 120, normalMin: Number.parseFloat(tLower), normalMax: Number.parseFloat(tUpper), status: tstatus },
+      hDeviceId && { name: '湿度', value: Number.parseFloat(humidity), unit: '%', min: hMin !== null ? hMin : 0, max: hMax !== null ? hMax : 100 , normalMin: Number.parseFloat(hLower), normalMax: Number.parseFloat(hUpper), status: hstatus },
+    ].filter(v => v);
 
     return (
       <Fragment>
@@ -217,30 +271,34 @@ export default class HumiturePointDetailDrawer extends Component {
   renderTodayMonitoringDataTrend() {
     const {
       unitSafety: {
-        humiturePointDetail: {
-          temperatureTrend=[],
-          humidityTrend=[],
+        humiturePointTrend: {
+          temperature=[],
+          humidity=[],
         },
       },
     } = this.props;
-    const list1 = temperatureTrend.map(({ timeFlag, value }) => ({ name: timeFlag, value: [+moment(timeFlag, 'HH:mm'), parseFloat(value)] }));
-    const list2 = humidityTrend.map(({ timeFlag, value }) => ({ name: timeFlag, value: [+moment(timeFlag, 'HH:mm'), parseFloat(value)] }));
+    const list1 = (temperature || []).map(({ timeFlag, value }) => ({ name: timeFlag, value: [+moment(timeFlag, 'HH:mm'), parseFloat(value)] }));
+    const list2 = (humidity || []).map(({ timeFlag, value }) => ({ name: timeFlag, value: [+moment(timeFlag, 'HH:mm'), parseFloat(value)] }));
     const option1 = this.getLineOption('温度', list1);
     const option2 = this.getLineOption('湿度', list2);
 
     return (
       <Fragment>
         <div className={styles.subTitle}><span>>></span>当天监测数据趋势</div>
-        {(temperatureTrend && temperatureTrend.length > 0) || (humidityTrend && humidityTrend.length > 0) ? (
+        {list1.length > 0 || list2.length > 0 ? (
           <Fragment>
-            <ReactEcharts
-              className={styles.lineChart}
-              option={option1}
-            />
-            <ReactEcharts
-              className={styles.lineChart}
-              option={option2}
-            />
+            {list1.length > 0 && (
+              <ReactEcharts
+                className={styles.lineChart}
+                option={option1}
+              />
+            )}
+            {list2.length > 0 && (
+              <ReactEcharts
+                className={styles.lineChart}
+                option={option2}
+              />
+            )}
           </Fragment>
         ) : (
           <div className={styles.emptyTrend} style={{ backgroundImage: `url(${noTrend})` }} />
@@ -249,25 +307,35 @@ export default class HumiturePointDetailDrawer extends Component {
     );
   }
 
+  renderStatus = () => {
+    const {
+      unitSafety: {
+        humiturePointDetail: {
+          status,
+        },
+      },
+    } = this.props;
+    if (+status === 2) {
+      return <span className={styles.alarmIcon} style={{ backgroundImage: `url(${alarmIcon})` }}>报警</span>
+    } else if (+status === -1) {
+      return <span className={styles.lossIcon} style={{ backgroundImage: `url(${lossIcon})` }}>失联</span>
+    }
+  }
+
   render() {
     const {
-      // unitSafety: {
-      //   humiturePointDetail: {
-      //    name,
-      //    videoList,
-      //    area,
-      //    location,
-      //   },
-      // },
+      unitSafety: {
+        humiturePointDetail: {
+          deviceName,
+          cameraMessage,
+          area,
+          location,
+        },
+      },
       visible,
       onClose,
       loading,
     } = this.props;
-
-    const name = "name";
-    const videoList = [];
-    const area = "area";
-    const location = "location";
 
     return (
       <CustomDrawer
@@ -286,8 +354,9 @@ export default class HumiturePointDetailDrawer extends Component {
         <div className={styles.container}>
           <div className={styles.info}>
             <div className={styles.name}>
-              {name}
-              {Array.isArray(videoList) && videoList.length > 0 && <div className={styles.video} style={{ backgroundImage: `url(${videoCameraIcon})` }} onClick={this.handleVideoClick} />}
+              {deviceName}
+              {/* {this.renderStatus()} */}
+              {Array.isArray(cameraMessage) && cameraMessage.length > 0 && <div className={styles.video} style={{ backgroundImage: `url(${videoCameraIcon})` }} onClick={this.handleVideoClick} />}
             </div>
             <div className={styles.field}>
               <div className={styles.fieldLabel}>所在区域：</div>

@@ -4,6 +4,8 @@ import {
   getDetail,
   add,
   edit,
+  audit,
+  publish,
 } from '@/services/emergencyPlan';
 
 export default {
@@ -29,13 +31,7 @@ export default {
       }
     },
     *fetchHistory({ payload }, { call, put }) {
-      // const response = yield call(getHistory, payload);
-      const response = {
-        code: 200,
-        data: {
-
-        },
-      };
+      const response = yield call(getHistory, payload);
       const { code, data } = response || {};
       if (code === 200) {
         yield put({
@@ -50,7 +46,12 @@ export default {
       const response = yield call(getDetail, payload);
       const { code, data } = response || {};
       if (code === 200) {
-        const detail = data || {};
+        const { recordCertificateList, emergencyFilesList } = data || {};
+        const detail = {
+          ...data,
+          recordCertificateList: recordCertificateList && recordCertificateList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1-index, status: 'done' })),
+          emergencyFilesList: emergencyFilesList && emergencyFilesList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1-index, status: 'done' })),
+        };
         yield put({
           type: 'save',
           payload: {
@@ -67,6 +68,16 @@ export default {
     },
     *edit({ payload, callback }, { call }) {
       const response = yield call(edit, payload);
+      const { code } = response || {};
+      callback && callback(code === 200);
+    },
+    *audit({ payload, callback }, { call }) {
+      const response = yield call(audit, payload);
+      const { code } = response || {};
+      callback && callback(code === 200);
+    },
+    *publish({ payload, callback }, { call }) {
+      const response = yield call(publish, payload);
       const { code } = response || {};
       callback && callback(code === 200);
     },

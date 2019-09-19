@@ -41,14 +41,12 @@ export default class EmergencyPlanHandler extends Component {
   componentDidMount() {
     const { match: { params: { id } } } = this.props;
     if (id) {
-      this.getDetail(({ isRecord }) => {
-        this.setState({
-          currentRecordStatus: isRecord,
-        });
-      });
-    } else {
-      this.clearDetail();
+      this.getDetail();
     }
+  }
+
+  componentWillUnmount() {
+    this.clearDetail();
   }
 
   getDetail = () => {
@@ -57,6 +55,11 @@ export default class EmergencyPlanHandler extends Component {
       type: 'emergencyPlan/fetchDetail',
       payload: {
         id,
+      },
+      callback: ({ isRecord }) => {
+        this.setState({
+          currentRecordStatus: isRecord,
+        });
       },
     });
   }
@@ -82,23 +85,23 @@ export default class EmergencyPlanHandler extends Component {
 
   // 提交按钮点击事件
   handleSubmitButtonClick = () => {
-    const { dispatch, match: { params: { id } } } = this.props;
+    const { dispatch, match: { params: { id } }, emergencyPlan: { detail: { historyType, status, relationId }={} } } = this.props;
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         this.setState({ submitting: true });
-        const { company, expiryDate: [startDate, endDate]=[], recordDate, recordCertificate, emergencyFiles, ...rest } = values;
+        const { company, expiryDate: [startDate, endDate]=[], recordDate, ...rest } = values;
         const payload = {
           id,
+          historyType,
+          status,
+          relationId,
           companyId: company.key,
           startDate: startDate && startDate.format('YYYY-MM-DD'),
           endDate: endDate && endDate.format('YYYY-MM-DD'),
           recordDate: recordDate && recordDate.format('YYYY-MM-DD'),
-          recordCertificate: recordCertificate.map(({ name, dbUrl, url }) => ({ name, dbUrl, webUrl: url })),
-          emergencyFiles: emergencyFiles.map(({ name, dbUrl, url }) => ({ name, dbUrl, webUrl: url })),
           ...rest,
         };
-        console.log(payload);
         const callback = (isSuccess) => {
           if (isSuccess) {
             message.success(`${id ? '编辑' : '添加'}成功！`, () => {
@@ -152,8 +155,8 @@ export default class EmergencyPlanHandler extends Component {
           isRecord,
           recordCode,
           recordDate,
-          recordCertificate,
-          emergencyFiles,
+          recordCertificateList,
+          emergencyFilesList,
           remark,
         }={},
       },
@@ -447,13 +450,13 @@ export default class EmergencyPlanHandler extends Component {
         },
       },
       {
-        id: 'recordCertificate',
+        id: 'recordCertificateList',
         label: '备案证明',
         span: SPAN,
         labelCol: LABEL_COL,
         render: () => <CustomUpload folder="emergencyPlan" />,
         options: {
-          initialValue: recordCertificate || [],
+          initialValue: recordCertificateList || [],
           rules: [
             {
               required: true,
@@ -463,13 +466,13 @@ export default class EmergencyPlanHandler extends Component {
         },
       }] : []),
       {
-        id: 'emergencyFiles',
+        id: 'emergencyFilesList',
         label: '应急预案附件',
         span: SPAN,
         labelCol: LABEL_COL,
         render: () => <CustomUpload folder="emergencyPlan" />,
         options: {
-          initialValue: emergencyFiles || [],
+          initialValue: emergencyFilesList || [],
           rules: [
             {
               required: true,

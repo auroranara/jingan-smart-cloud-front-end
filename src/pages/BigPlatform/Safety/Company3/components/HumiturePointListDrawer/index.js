@@ -8,22 +8,24 @@ import { connect } from 'dva';
 import styles from './index.less';
 
 const STATUS_MAPPER = {
-  '正常': 1,
+  '正常': 0,
   '报警': 2,
-  '失联': 4,
+  '失联': -1,
 };
 const FIELDNAMES = {
-  name: 'name', // 点位名称
+  name: 'deviceName', // 点位名称
+  temperatureId: 'tDeviceId',
   temperature: 'temperature', // 当前温度
-  minTemperature: 'minTemperature', // 最小温度
-  maxTemperature: 'maxTemperature', // 最大温度
+  minTemperature: 'tLower', // 最小温度
+  maxTemperature: 'tUpper', // 最大温度
+  humidityId: 'hDeviceId',
   humidity: 'humidity', // 当前湿度
-  minHumidity: 'minHumidity', // 最小湿度
-  maxHumidity: 'maxHumidity', // 最大湿度
+  minHumidity: 'hLower', // 最小湿度
+  maxHumidity: 'hUpper', // 最大湿度
   area: 'area', // 所在区域
   location: 'location', // 所在位置
   status: 'status', // 状态
-  videoList: 'videoList', // 视频列表
+  videoList: 'cameraMessage', // 视频列表
 };
 
 // 温湿度监测点列表抽屉
@@ -41,7 +43,7 @@ export default class HumiturePointListDrawer extends Component {
     const { visible } = this.props;
     if (!prevVisible && visible) {
       this.handleTabClick('全部');
-      // this.getHumiturePointCount();
+      this.getHumiturePointCount();
     }
   }
 
@@ -62,8 +64,8 @@ export default class HumiturePointListDrawer extends Component {
       type: 'unitSafety/fetchHumiturePointList',
       payload: {
         companyId,
-        pageSize: activeKey ? 1 : pageNum + 1,
-        pageNum: 10,
+        pageSize: 10,
+        pageNum: activeKey ? 1 : pageNum + 1,
         status: STATUS_MAPPER[activeKey || prevActiveKey],
       },
     });
@@ -77,7 +79,6 @@ export default class HumiturePointListDrawer extends Component {
         companyId,
         pageSize: 1,
         pageNum: 1,
-        type: 200,
       },
     });
   }
@@ -98,15 +99,15 @@ export default class HumiturePointListDrawer extends Component {
     this.getHumiturePointList();
   }
 
-  handleClick = ({ id }) => {
+  handleClick = ({ deviceId }) => {
     const { onClick } = this.props;
-    onClick && onClick(id);
+    onClick && onClick(deviceId);
   }
 
   handleVideoClick = (videoList) => {
     const { onVideoClick } = this.props;
-    const [{ keyId }] = videoList;
-    onVideoClick && onVideoClick(keyId, videoList);
+    const [{ key_id }] = videoList;
+    onVideoClick && onVideoClick(key_id, videoList);
   }
 
   render() {
@@ -129,42 +130,10 @@ export default class HumiturePointListDrawer extends Component {
       },
       visible,
       onClose,
-      onClick,
-      onVideoClick,
       loadingList,
       loadingCount,
     } = this.props;
     const { activeKey } = this.state;
-    // const list = [
-    //   {
-    //     id: 1,
-    //     name: 'name', // 点位名称
-    //     temperature: 'temperature', // 当前温度
-    //     minTemperature: 'minTemperature', // 最小温度
-    //     maxTemperature: 'maxTemperature', // 最大温度
-    //     humidity: 'humidity', // 当前湿度
-    //     minHumidity: 'minHumidity', // 最小湿度
-    //     maxHumidity: 'maxHumidity', // 最大湿度
-    //     area: 'area', // 所在区域
-    //     location: 'location', // 所在位置
-    //     status: '2', // 状态
-    //     videoList: [{ keyId: 1 }], // 视频列表
-    //   },
-    //   {
-    //     id: 2,
-    //     name: 'name', // 点位名称
-    //     temperature: 'temperature', // 当前温度
-    //     minTemperature: 'minTemperature', // 最小温度
-    //     maxTemperature: 'maxTemperature', // 最大温度
-    //     humidity: 'humidity', // 当前湿度
-    //     minHumidity: 'minHumidity', // 最小湿度
-    //     maxHumidity: 'maxHumidity', // 最大湿度
-    //     area: 'area', // 所在区域
-    //     location: 'location', // 所在位置
-    //     status: '3', // 状态
-    //     videoList: [{ keyId: 2 }], // 视频列表
-    //   },
-    // ];
 
     const tabs = [
       {
@@ -203,7 +172,7 @@ export default class HumiturePointListDrawer extends Component {
             ref: this.setScrollReference,
           },
           spinProps: {
-            loading: loadingList && loadingCount || false,
+            loading: loadingList || loadingCount || false,
             wrapperClassName: styles.spin,
           },
         }}
@@ -212,12 +181,12 @@ export default class HumiturePointListDrawer extends Component {
           {Array.isArray(list) && list.length > 0 ? (
             list.map((item) => (
               <HumiturePointCard
-                key={item.id}
+                key={item.deviceId}
                 className={styles.card}
                 data={item}
                 fieldNames={FIELDNAMES}
-                onClick={onClick}
-                onVideoClick={onVideoClick}
+                onClick={this.handleClick}
+                onVideoClick={this.handleVideoClick}
               />
             ))
           ) : (

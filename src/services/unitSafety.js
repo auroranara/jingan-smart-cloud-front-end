@@ -194,12 +194,12 @@ export async function getHumiturePointList(params) {
   return request(`/acloud_new/v2/virtualDeviceInfo/getMonitorForHumiture?${stringify(params)}`);
 }
 
-// 获取温湿度监测点统计
-export async function getHumiturePointCount(params) {
-  return request(`/acloud_new/v2/fireData/getMonitorForAll?${stringify(params)}`);
-}
-
 // 获取温湿度监测点详情
 export async function getHumiturePointDetail(params) {
-  return request(`/acloud_new/v2/fireData/getMonitorForAll?${stringify(params)}`);
+  return request(`/acloud_new/v2/virtualDeviceInfo/getRealTimeDataForHumiture?${stringify(params)}`);
+}
+
+// 获取温湿度监测点监测趋势
+export async function getHumiturePointTrend(params) {
+  return request(`/acloud_new/v2/deviceInfo/getDeviceDataHistory?${stringify(params)}`);
 }

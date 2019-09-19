@@ -47,10 +47,10 @@ import {
   getDeviceCountList,
   // 获取温湿度监测点列表
   getHumiturePointList,
-  // 获取温湿度监测点统计
-  getHumiturePointCount,
   // 获取温湿度监测点详情
   getHumiturePointDetail,
+  // 获取温湿度监测点监测趋势
+  getHumiturePointTrend,
 } from '../services/unitSafety';
 import moment from 'moment';
 import { message } from 'antd';
@@ -412,6 +412,8 @@ export default {
     humiturePointCount: {},
     // 温湿度监测点详情
     humiturePointDetail: {},
+    // 温湿度监测点监测趋势
+    humiturePointTrend: {},
   },
 
   effects: {
@@ -987,19 +989,30 @@ export default {
       }
     },
     // 获取温湿度监测点统计
-    *fetchHumiturePointCount({ payload, callback }, { call, put }) {
-      const response = yield call(getHumiturePointCount, payload);
-      const { code, data, msg='获取温湿度监测点统计失败，请稍后重试！' } = response || {};
-      if (code === 200 && data) {
+    *fetchHumiturePointCount({ payload, callback }, { call, put, all }) {
+      const responseList = yield all([
+        call(getHumiturePointList, payload),
+        call(getHumiturePointList, { ...payload, status: 0 }),
+        call(getHumiturePointList, { ...payload, status: 2 }),
+        call(getHumiturePointList, { ...payload, status: -1 }),
+      ]);
+      if (responseList && responseList.every(response => response && response.code === 200 && response.data)) {
+        const [
+          { data: { pagination: { total: all } } },
+          { data: { pagination: { total: normal } } },
+          { data: { pagination: { total: alarm } } },
+          { data: { pagination: { total: loss } } },
+        ] = responseList;
+        const humiturePointCount = { all, normal, alarm, loss }
         yield put({
           type: 'save',
           payload: {
-            humiturePointCount: data,
+            humiturePointCount,
           },
         });
-        callback && callback(data);
+        callback && callback(humiturePointCount);
       } else {
-        error(msg);
+        error("获取温湿度监测点统计失败，请稍后重试！");
       }
     },
     // 获取温湿度监测点详情
@@ -1016,6 +1029,29 @@ export default {
         callback && callback(data);
       } else {
         error(msg);
+      }
+    },
+    // 获取温湿度监测点监测趋势
+    *fetchHumiturePointTrend({ payload: { temperatureId, temperatureCode, humidityId, humidityCode, queryDate, historyDataType }, callback }, { call, put, all }) {
+      const responseList = yield all([
+        call(getHumiturePointTrend, { deviceId: temperatureId || humidityId, queryDate, historyDataType, code: temperatureCode }),
+        call(getHumiturePointTrend, { deviceId: humidityId || temperatureId, queryDate, historyDataType, code: humidityCode }),
+      ]);
+      if (responseList && responseList.every(response => response && response.code === 200 && response.data)) {
+        const [
+          { data: { list: temperature } },
+          { data: { list: humidity } },
+        ] = responseList;
+        const humiturePointTrend = { temperature: temperatureId && temperature, humidity: humidityId && humidity };
+        yield put({
+          type: 'save',
+          payload: {
+            humiturePointTrend,
+          },
+        });
+        callback && callback(humiturePointTrend);
+      } else {
+        error('获取温湿度监测点监测趋势失败，请稍后重试！');
       }
     },
   },

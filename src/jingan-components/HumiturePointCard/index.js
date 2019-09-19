@@ -12,9 +12,11 @@ const { Container } = BigPlatformCard;
 export default class HumiturePointCard extends BigPlatformCard {
   FIELDNAMES = {
     name: 'name', // 点位名称
+    temperatureId: 'temperatureId', // 温度id
     temperature: 'temperature', // 当前温度
     minTemperature: 'minTemperature', // 最小温度
     maxTemperature: 'maxTemperature', // 最大温度
+    humidityId: 'humidityId', // 湿度id
     humidity: 'humidity', // 当前湿度
     minHumidity: 'minHumidity', // 最小湿度
     maxHumidity: 'maxHumidity', // 最大湿度
@@ -36,6 +38,7 @@ export default class HumiturePointCard extends BigPlatformCard {
         </span>
       ),
       className: styles.row,
+      hidden: ({ temperatureId }) => !temperatureId,
     },
     {
       label: '当前湿度',
@@ -48,6 +51,7 @@ export default class HumiturePointCard extends BigPlatformCard {
         </span>
       ),
       className: styles.row,
+      hidden: ({ humidityId }) => !humidityId,
     },
     {
       label: '所在区域',
@@ -69,7 +73,7 @@ export default class HumiturePointCard extends BigPlatformCard {
   renderStatus = (status) => {
     if (+status === 2) {
       return <span className={styles.alarmIcon} style={{ backgroundImage: `url(${alarmIcon})` }}>报警</span>
-    } else if (+status === 3) {
+    } else if (+status === -1) {
       return <span className={styles.lossIcon} style={{ backgroundImage: `url(${lossIcon})` }}>失联</span>
     }
   }
