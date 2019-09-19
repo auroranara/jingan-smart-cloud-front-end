@@ -81,13 +81,15 @@ export default class Water extends PureComponent {
       },
     } = this.props;
     const { formVals } = this.state;
+    const { deviceType } = formVals;
+    console.log(formVals);
 
     if (list && list.length)
       dispatch({
         companyName,
         typeLabel: TYPE_LABEL,
         type: 'dataAnalysis/fetchExport',
-        payload: { ...handleFormVals(formVals), classType: TYPE, companyId: id },
+        payload: { ...handleFormVals(formVals), classType: deviceType || TYPE, companyId: id },
       });
     else
       notification.warning({
@@ -117,7 +119,6 @@ export default class Water extends PureComponent {
       },
     } = this.props;
     const { deviceType } = values;
-    delete values.deviceType;
     let payload = { pageSize: PAGE_SIZE, pageNum, classType: deviceType || TYPE, companyId: id };
     if (values) payload = { ...payload, ...handleFormVals(values) };
     dispatch({
