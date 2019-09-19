@@ -208,27 +208,45 @@ export default class ReservoirRegionEdit extends PureComponent {
   // 显示重大危险源弹框
   handleShowDangerSource = () => {
     this.setState({ dangerVisible: true });
+    const payload = { pageSize: 10, pageNum: 1 };
+    this.fetchDangerSourseList({ payload });
   };
 
-  fetchDangerSourseList = () => {};
-  handleSelectDSList = () => {};
+  // 获取危险源列表
+  fetchDangerSourseList = ({ payload }) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'reservoirRegion/fetchSourceList', payload });
+  };
+
+  handleSelectDSList = item => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    const { unitChemicla, code } = item;
+    setFieldsValue({
+      dangerSourceUnit: unitChemicla,
+      unitCode: code,
+    });
+    this.handleDSListClose();
+  };
 
   handleDSListClose = () => {
     this.setState({ dangerVisible: false });
   };
 
-  // 渲染企业模态框
+  // 渲染危险源模态框
   renderDangerModal() {
     const {
-      videoMonitor: { modal },
+      reservoirRegion: { sourceData },
       loading,
     } = this.props;
 
     const { dangerVisible } = this.state;
-
+    const spanStyle = { md: 8, sm: 12, xs: 24 };
     const FIELD = [
       {
-        id: 'codeSame',
+        id: 'code',
+        span: spanStyle,
         render() {
           return <Input placeholder="请输统一编码" />;
         },
@@ -237,7 +255,7 @@ export default class ReservoirRegionEdit extends PureComponent {
         },
       },
       {
-        id: 'dangerName',
+        id: 'name',
         render() {
           return <Input placeholder="请输危险源名称" />;
         },
@@ -250,29 +268,29 @@ export default class ReservoirRegionEdit extends PureComponent {
     const COLUMNS = [
       {
         title: '统一编码',
-        dataIndex: 'codeSame',
+        dataIndex: 'code',
         key: 'code',
         align: 'center',
         width: 120,
       },
       {
         title: '危险源名称',
-        dataIndex: 'dangerName',
-        key: 'dangerName',
+        dataIndex: 'name',
+        key: 'name',
         align: 'center',
         width: 90,
       },
       {
         title: '重大危险源等级',
-        dataIndex: 'level',
-        key: 'level',
+        dataIndex: 'dangerLevel',
+        key: 'dangerLevel',
         align: 'center',
         width: 150,
       },
       {
         title: '单元内涉及的危险化学品',
-        dataIndex: 'objectTitles',
-        key: 'objectTitles',
+        dataIndex: 'unitChemicla',
+        key: 'unitChemicla',
         align: 'center',
         width: 200,
       },
@@ -285,7 +303,7 @@ export default class ReservoirRegionEdit extends PureComponent {
         visible={dangerVisible}
         columns={COLUMNS}
         field={FIELD}
-        modal={modal}
+        modal={sourceData}
         fetch={this.fetchDangerSourseList}
         onSelect={this.handleSelectDSList}
         onClose={this.handleDSListClose}

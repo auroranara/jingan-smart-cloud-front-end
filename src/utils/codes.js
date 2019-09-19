@@ -432,5 +432,12 @@ export default {
       edit: 'baseInfo.reservoirRegionManagement.edit',
       delete: 'baseInfo.reservoirRegionManagement.delete',
     },
+    // 重大危险源
+    majorHazard: {
+      list: 'baseInfo.majorHazard.listView',
+      add: 'baseInfo.majorHazard.add',
+      edit: 'baseInfo.majorHazard.edit',
+      delete: 'baseInfo.majorHazard.delete',
+    },
   },
 };

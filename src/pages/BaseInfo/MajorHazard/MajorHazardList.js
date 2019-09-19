@@ -1,21 +1,15 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Input, Select, Table, Divider } from 'antd';
-// import { routerRedux } from 'dva/router';
-// import router from 'umi/router';
+import { Card, Button, Input, Select, Table, Divider, Popconfirm, message } from 'antd';
+import { Link } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import ToolBar from '@/components/ToolBar';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
 const { Option } = Select;
 
 // 标题
 const title = '重大危险源';
-
-const dangerTypeList = [
-  { key: '1', value: '一级' },
-  { key: '2', value: '二级' },
-  { key: '3', value: '三级' },
-  { key: '4', value: '四级' },
-];
 
 //面包屑
 const breadcrumbList = [
@@ -34,88 +28,129 @@ const breadcrumbList = [
   },
 ];
 
-const spanStyle = { md: 8, sm: 12, xs: 24 };
-const fields = [
-  {
-    id: 'name',
-    label: '危险源名称',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入危险源名称" />,
-    transform: v => v.trim(),
+// 权限
+const {
+  baseInfo: {
+    majorHazard: { add: addAuth, edit: editAuth, delete: deleteAuth },
   },
-  {
-    id: 'code',
-    label: '统一编码',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入统一编码" />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'area',
-    label: '区域-位置',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入区域位置" />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'level：',
-    label: '重大危险源等级',
-    span: spanStyle,
-    render: () => (
-      <Select allowClear placeholder="请选择危险性类别">
-        {dangerTypeList.map(({ key, value }) => (
-          <Option key={key} value={value}>
-            {value}
-          </Option>
-        ))}
-      </Select>
-    ),
-  },
-  {
-    id: 'companyName',
-    label: '单位名称',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入单位名称" />,
-    transform: v => v.trim(),
-  },
-];
+} = codes;
 
-@connect(({ loading }) => ({}))
-@Form.create()
+const spanStyle = { md: 8, sm: 12, xs: 24 };
+
+/* session前缀 */
+const sessionPrefix = 'major_hazard_list_';
+
+@connect(({ reservoirRegion, user, loading }) => ({
+  reservoirRegion,
+  user,
+  loading: loading.models.reservoirRegion,
+}))
 export default class MajorHazardList extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {};
-    this.exportButton = (
-      <Button type="primary" href={`#/base-info/major-hazard/add`}>
-        新增重大危险源
-      </Button>
-    );
   }
 
   // 挂载后
-  componentDidMount() {}
+  componentDidMount() {
+    const {
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+    // 从sessionStorage中获取存储的控件值
+    const sessionData = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
+    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
+      pageNum: 1,
+      pageSize: 10,
+    };
+    this.fetchList({ ...payload });
+    if (sessionData) {
+      this.form.setFieldsValue({ ...payload });
+    }
+  }
+
+  // 获取列表
+  fetchList = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'reservoirRegion/fetchSourceList',
+      payload: {
+        ...params,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
+  };
+
+  setFormReference = toobar => {
+    this.form = toobar && toobar.props && toobar.props.form;
+  };
 
   // 查询
-  handleSearch = () => {};
+  handleSearch = () => {
+    const {
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+    const { ...rest } = this.form.getFieldsValue();
+    const payload = { ...rest };
+    this.fetchList(payload);
+    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
+  };
 
   // 重置
-  handleReset = () => {};
+  handleReset = () => {
+    this.fetchList();
+    sessionStorage.clear();
+  };
 
-  handlePageChange = () => {};
+  // 删除
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'reservoirRegion/fetchSourceDelete',
+      payload: { ids: id },
+      success: () => {
+        this.fetchList();
+        message.success('删除成功！');
+      },
+      error: () => {
+        message.error('删除失败!');
+      },
+    });
+  };
 
+  // 分页变动
+  handlePageChange = (pageNum, pageSize) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'reservoirRegion/fetchSourceList',
+      payload: {
+        pageSize,
+        pageNum,
+      },
+    });
+  };
   // 渲染表格
   renderTable = () => {
-    const list = [
-      {
-        id: '1',
-        companyName: '利民化工股份有限公司',
-        info: '统一编码、重大危险源名称',
-        desc: '---',
-        chemicals: '---',
-        area: '一车间一楼  液氨储罐A',
+    const {
+      loading,
+      reservoirRegion: {
+        sourceData: {
+          list = [],
+          pagination: { pageNum, pageSize, total },
+        },
       },
-    ];
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
+
+    // 权限
+    const editCode = hasAuthority(editAuth, permissionCodes);
+    const deleteCode = hasAuthority(deleteAuth, permissionCodes);
 
     const columns = [
       {
@@ -129,6 +164,25 @@ export default class MajorHazardList extends PureComponent {
         dataIndex: 'info',
         align: 'center',
         width: 300,
+        render: (val, text) => {
+          const { code, name, dangerLevel } = text;
+          return (
+            <div>
+              <p>
+                统一编码:
+                {code}
+              </p>
+              <p>
+                重大危险源名称:
+                {name}
+              </p>
+              <p>
+                重大危险源等级:
+                {dangerLevel}
+              </p>
+            </div>
+          );
+        },
       },
       {
         title: '重大危险源描述',
@@ -138,13 +192,13 @@ export default class MajorHazardList extends PureComponent {
       },
       {
         title: '单元内涉及的危险化学品',
-        dataIndex: 'chemicals',
+        dataIndex: 'unitChemicla',
         align: 'center',
         width: 200,
       },
       {
         title: '区域位置',
-        dataIndex: 'area',
+        dataIndex: 'location',
         align: 'center',
         width: 200,
       },
@@ -155,9 +209,19 @@ export default class MajorHazardList extends PureComponent {
         width: 150,
         render: (val, row) => (
           <Fragment>
-            <a>编辑</a>
+            {editCode ? (
+              <Link to={`/base-info/major-hazard/edit/${row.id}`}>编辑</Link>
+            ) : (
+              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
+            )}
             <Divider type="vertical" />
-            <a>删除</a>
+            {deleteCode ? (
+              <Popconfirm title="确认要删除数据吗？" onConfirm={() => this.handleDelete(row.id)}>
+                <a>删除</a>
+              </Popconfirm>
+            ) : (
+              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
+            )}
           </Fragment>
         ),
       },
@@ -166,23 +230,23 @@ export default class MajorHazardList extends PureComponent {
       <Card style={{ marginTop: '24px' }}>
         <Table
           rowKey="id"
-          // loading={loading}
+          loading={loading}
           columns={columns}
           dataSource={list}
           bordered
           scroll={{ x: 1300 }}
-          // pagination={{
-          //   current: pageNum,
-          //   pageSize,
-          //   total,
-          //   showQuickJumper: true,
-          //   showSizeChanger: true,
-          //   pageSizeOptions: ['5', '10', '15', '20'],
-          //   onChange: this.handleQuery,
-          //   onShowSizeChange: (num, size) => {
-          //     this.handleQuery(1, size);
-          //   },
-          // }}
+          pagination={{
+            current: pageNum,
+            pageSize,
+            total,
+            showQuickJumper: true,
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '15', '20'],
+            onChange: this.handlePageChange,
+            onShowSizeChange: (num, size) => {
+              this.handlePageChange(1, size);
+            },
+          }}
         />
       </Card>
     ) : (
@@ -191,6 +255,66 @@ export default class MajorHazardList extends PureComponent {
   };
 
   render() {
+    const {
+      reservoirRegion: {
+        sourceData: {
+          pagination: { total },
+        },
+        msg,
+        dangerTypeList,
+      },
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
+
+    const addCode = hasAuthority(addAuth, permissionCodes);
+
+    const fields = [
+      {
+        id: 'name',
+        label: '危险源名称',
+        span: spanStyle,
+        render: () => <Input placeholder="请输入危险源名称" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'code',
+        label: '统一编码',
+        span: spanStyle,
+        render: () => <Input placeholder="请输入统一编码" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'area',
+        label: '区域-位置',
+        span: spanStyle,
+        render: () => <Input placeholder="请输入区域位置" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'level',
+        label: '重大危险源等级',
+        span: spanStyle,
+        render: () => (
+          <Select allowClear placeholder="请选择危险性类别">
+            {dangerTypeList.map(({ key, value }) => (
+              <Option key={key} value={value}>
+                {value}
+              </Option>
+            ))}
+          </Select>
+        ),
+      },
+      {
+        id: 'companyName',
+        label: '单位名称',
+        span: spanStyle,
+        render: () => <Input placeholder="请输入单位名称" />,
+        transform: v => v.trim(),
+      },
+    ];
+
     return (
       <PageHeaderLayout
         title={title}
@@ -199,11 +323,11 @@ export default class MajorHazardList extends PureComponent {
           <div>
             <span>
               单位数量：
-              {1}
+              {msg}
             </span>
             <span style={{ paddingLeft: 20 }}>
               重大危险源：
-              {1}
+              {total}
             </span>
           </div>
         }
@@ -213,7 +337,12 @@ export default class MajorHazardList extends PureComponent {
             fields={fields}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
-            action={this.exportButton}
+            action={
+              <Button type="primary" disabled={!addCode} href={`#/base-info/major-hazard/add`}>
+                新增重大危险源
+              </Button>
+            }
+            wrappedComponentRef={this.setFormReference}
           />
         </Card>
         {this.renderTable()}

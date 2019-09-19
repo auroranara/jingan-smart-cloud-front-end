@@ -722,6 +722,12 @@ module.exports = env => {
                   path: '/base-info/major-hazard/add',
                   component: './BaseInfo/MajorHazard/MajorHazardEdit',
                 },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.majorHazard.edit',
+                  path: '/base-info/major-hazard/edit/:id',
+                  component: './BaseInfo/MajorHazard/MajorHazardEdit',
+                },
               ],
             },
             // 储罐区管理

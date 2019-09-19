@@ -64,13 +64,16 @@ export default class ReservoirRegionList extends PureComponent {
       },
     } = this.props;
     // 从sessionStorage中获取存储的控件值
+    const sessionData = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
     const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
       pageNum: 1,
       pageSize: 10,
     };
     this.fetchList({ ...payload });
     this.fetchCountNum({ ...payload });
-    this.form.setFieldsValue({ ...payload });
+    if (sessionData) {
+      this.form.setFieldsValue({ ...payload });
+    }
   }
 
   // 获取列表
@@ -97,7 +100,7 @@ export default class ReservoirRegionList extends PureComponent {
     });
   };
 
-  setFormReference = toobar => {
+  handleFormRef = toobar => {
     this.form = toobar && toobar.props && toobar.props.form;
   };
 
@@ -119,6 +122,7 @@ export default class ReservoirRegionList extends PureComponent {
   handleReset = () => {
     this.fetchList();
     this.fetchCountNum();
+    sessionStorage.clear();
   };
 
   // 删除
@@ -377,7 +381,7 @@ export default class ReservoirRegionList extends PureComponent {
                 新增库区
               </Button>
             }
-            wrappedComponentRef={this.setFormReference}
+            wrappedComponentRef={this.handleFormRef}
           />
         </Card>
 

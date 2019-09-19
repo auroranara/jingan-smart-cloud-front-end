@@ -47,6 +47,7 @@ export default {
   'menu.baseInfo.majorHazard': '重大危险源',
   'menu.baseInfo.majorHazard.list': '重大危险源列表',
   'menu.baseInfo.majorHazard.add': '新增重大危险源',
+  'menu.baseInfo.majorHazard.edit': '编辑重大危险源',
   'menu.baseInfo.storageAreaManagement': '储罐区管理',
   'menu.baseInfo.storageAreaManagement.list': '储罐区管理列表',
   'menu.baseInfo.storageAreaManagement.add': '新增储罐区',
