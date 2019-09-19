@@ -39,6 +39,7 @@ export default class ScreenEdit extends PureComponent {
 
     e.preventDefault();
     validateFields((err, values) => {
+      console.log(values);
       if (!err) {
         const { status } = values;
         const params = { ...values, status: +status };
@@ -80,6 +81,7 @@ export default class ScreenEdit extends PureComponent {
                 // rules: [{ required: true, message: '请选择卡口点位' }],
               })(
                 <SearchSelect
+                  showArrow={false}
                   className={styles.searchSelect}
                   loading={listLoading}
                   list={lists[0]}
