@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Select, Spin } from 'antd';
+import { Select, Spin, AutoComplete } from 'antd';
 import debounce from 'lodash/debounce';
 
-const { Option } = Select;
 const FIELDNAMES = {
   key: 'key',
   value: 'value',
@@ -39,17 +38,17 @@ export default class SearchSelect extends Component {
       list,
       loading,
       fieldNames,
-      getList,
-      setList,
+      mode,
       notFoundContent='未找到数据',
       ...restProps
     } = this.props;
     const { key, value } = { ...FIELDNAMES, ...fieldNames };
     // console.log({ key, value });
 
-    return (
+    return mode === 'multiple' ? (
       <Select
-        showSearch
+        mode="multiple"
+        showArrow={false}
         placeholder="请选择"
         defaultActiveFirstOption={false}
         filterOption={false}
@@ -59,9 +58,23 @@ export default class SearchSelect extends Component {
         {...restProps}
       >
         {list && list.map(({ [key]: k, [value]: v }) => (
-          <Option key={k}>{v}</Option>
+          <Select.Option key={k}>{v}</Select.Option>
         ))}
       </Select>
+    ) : (
+      <AutoComplete
+        placeholder="请选择"
+        defaultActiveFirstOption={false}
+        filterOption={false}
+        onSearch={this.debouncedHandleSearch}
+        onBlur={this.handleBlur}
+        notFoundContent={loading ? <Spin size="small" /> : notFoundContent}
+        {...restProps}
+      >
+        {list && list.map(({ [key]: k, [value]: v }) => (
+          <AutoComplete.Option key={k}>{v}</AutoComplete.Option>
+        ))}
+      </AutoComplete>
     );
   }
 }
