@@ -46,6 +46,7 @@ export default class SearchSelect extends Component {
 
     return (
       <Select
+        showSearch
         placeholder="请选择"
         defaultActiveFirstOption={false}
         filterOption={false}
