@@ -293,7 +293,7 @@ export default class VehicleEdit extends PureComponent {
                   initialValue: number,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入车牌号', whitespace: true }],
-                })(<Input placeholder="请输入车牌号" maxlength={15} />)}
+                })(<Input placeholder="请输入车牌号" maxlength={10} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -301,7 +301,7 @@ export default class VehicleEdit extends PureComponent {
                 {getFieldDecorator('brand', {
                   initialValue: brand,
                   getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入品牌" maxlength={15} />)}
+                })(<Input placeholder="请输入品牌" maxlength={10} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -309,7 +309,7 @@ export default class VehicleEdit extends PureComponent {
                 {getFieldDecorator('model', {
                   initialValue: model,
                   getValueFromEvent: this.handleTrim,
-                })(<Input placeholder="请输入型号" maxlength={15} />)}
+                })(<Input placeholder="请输入型号" maxlength={10} />)}
               </Form.Item>
             </Col>
 
@@ -319,7 +319,7 @@ export default class VehicleEdit extends PureComponent {
                   initialValue: type,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入车辆类型', whitespace: true }],
-                })(<Input placeholder="请输入车辆类型" maxlength={15} />)}
+                })(<Input placeholder="请输入车辆类型" maxlength={10} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -354,7 +354,7 @@ export default class VehicleEdit extends PureComponent {
                   initialValue: load,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入载重', whitespace: true }],
-                })(<Input placeholder="请输入载重" maxlength={15} />)}
+                })(<Input placeholder="请输入载重" maxlength={10} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>
@@ -363,7 +363,7 @@ export default class VehicleEdit extends PureComponent {
                   initialValue: carCompany,
                   getValueFromEvent: this.handleTrim,
                   rules: [{ required: true, message: '请输入所属单位', whitespace: true }],
-                })(<Input placeholder="请输入所属单位" maxlength={20} />)}
+                })(<Input placeholder="请输入所属单位" maxlength={16} />)}
               </Form.Item>
             </Col>
             <Col lg={8} md={12} sm={24}>

@@ -6,32 +6,42 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 export const ELECTRICITY_TYPE = 1;
-export const ELECTRICITY_TYPE_LABEL = '电气火灾异常数据分析';
+export const ELECTRICITY_TYPE_LABEL = '电气火灾数据分析';
 export const TOXIC_GAS_TYPE = 2;
-export const TOXIC_GAS_TYPE_LABEL = '可燃有毒气体异常数据分析';
+export const TOXIC_GAS_TYPE_LABEL = '可燃有毒气体数据分析';
 export const WASTE_WATER_TYPE = 3;
-export const WASTE_WATER_TYPE_LABEL = '废水异常数据分析';
+export const WASTE_WATER_TYPE_LABEL = '废水数据分析';
 export const WASTE_GAS_TYPE = 4;
-export const WASTE_GAS_TYPE_LABEL = '废气异常数据分析';
+export const WASTE_GAS_TYPE_LABEL = '废气数据分析';
 export const STORAGE_TANK_TYPE = 5;
-export const STORAGE_TANK_TYPE_LABEL = '储罐异常数据分析';
+export const STORAGE_TANK_TYPE_LABEL = '储罐数据分析';
 export const SMOKE_DETECTOR_TYPE = 6;
-export const SMOKE_DETECTOR_TYPE_LABEL = '独立烟感异常数据分析';
+export const SMOKE_DETECTOR_TYPE_LABEL = '独立烟感数据分析';
+export const HUMITURE_TYPE = 8;
+export const HUMITURE_TYPE_LABEL = '温湿度传感器数据分析';
+export const WATER_TYPE = 9;
+export const WATER_TYPE_LABEL = '水系统数据分析';
 
 export const PAGE_SIZE = 10;
-const STATUS_MAP = { '-1': '失联', 1: '报警', 2: '报警' };
-const SMOKE_STATUS_MAP = { '-1': '失联', 2: '火警' };
-const STATUS_COLOR_MAP = { '-1': 'rgba(0,0,0,0.65)', 1: 'orange', 2: 'red' };
+const STATUS_MAP = { '-1': '失联', 1: '报警', 2: '报警', 0: '正常' };
+const SMOKE_STATUS_MAP = { '-1': '失联', 2: '火警', 0: '正常' };
+const STATUS_COLOR_MAP = {
+  '-1': 'rgba(0,0,0,0.65)',
+  1: 'orange',
+  2: 'red',
+  // 0: '#1890ff',
+};
 
 const OPTIONS = [
-  { name: '全部', key: 0 },
+  // { name: '全部', key: ALL },
+  { name: '正常', key: 0 },
   // { name: '预警', key: 1 },
   { name: '报警', key: 1 },
   { name: '失联', key: -1 },
 ];
 
 const SMOKE_OPTIONS = [
-  { name: '全部', key: 0 },
+  // { name: '全部', key: 0 },
   { name: '火警', key: 2 },
   { name: '失联', key: -1 },
 ];
@@ -53,7 +63,7 @@ export const INPUT_SPAN = { lg: 6, md: 12, sm: 24 };
 export const CONDITION_MAP = { 1: '≥', 2: '≤' };
 
 export const ELECTRICITY_PARAMS = [
-  { name: '全部', key: 0 },
+  // { name: '全部', key: 0 },
   { name: '漏电电流', key: 'v1' },
   { name: 'A相温度', key: 'v2' },
   { name: 'B相温度', key: 'v3' },
@@ -89,13 +99,13 @@ export const ELECTRICITY_COLUMNS = [
     key: 'location',
   },
   {
-    title: '异常类别',
+    title: '状态类别',
     dataIndex: 'status',
     key: 'status',
     render: sts => <span style={{ color: STATUS_COLOR_MAP[sts] }}>{STATUS_MAP[sts]}</span>,
   },
   {
-    title: '异常参数',
+    title: '监测参数',
     dataIndex: 'parameter',
     key: 'parameter',
   },
@@ -139,7 +149,7 @@ export const TOXIC_GAS_COLUMNS = [
     key: 'location',
   },
   {
-    title: '异常类别',
+    title: '状态类别',
     dataIndex: 'status',
     key: 'status',
     render: sts => <span style={{ color: STATUS_COLOR_MAP[sts] }}>{STATUS_MAP[sts]}</span>,
@@ -163,7 +173,7 @@ export const TOXIC_GAS_COLUMNS = [
 ];
 
 export const WASTE_WATER_PARAMS = [
-  { name: '全部', key: 0 },
+  // { name: '全部', key: 0 },
   // {
   //   name: (
   //     <span>
@@ -214,13 +224,13 @@ export const WASTE_WATER_COLUMNS = [
     key: 'location',
   },
   {
-    title: '异常类别',
+    title: '状态类别',
     dataIndex: 'status',
     key: 'status',
     render: sts => <span style={{ color: STATUS_COLOR_MAP[sts] }}>{STATUS_MAP[sts]}</span>,
   },
   {
-    title: '异常参数',
+    title: '监测参数',
     dataIndex: 'parameter',
     key: 'parameter',
     render: param => handleChemicalFormula(param),
@@ -244,7 +254,7 @@ export const WASTE_WATER_COLUMNS = [
 ];
 
 export const WASTE_GAS_PARAMS = [
-  { name: '全部', key: 0 },
+  // { name: '全部', key: 0 },
   // {
   //   name: (
   //     <span>
@@ -326,13 +336,13 @@ export const WASTE_GAS_COLUMNS = [
     key: 'location',
   },
   {
-    title: '异常类别',
+    title: '状态类别',
     dataIndex: 'status',
     key: 'status',
     render: sts => <span style={{ color: STATUS_COLOR_MAP[sts] }}>{STATUS_MAP[sts]}</span>,
   },
   {
-    title: '异常参数',
+    title: '监测参数',
     dataIndex: 'parameter',
     key: 'parameter',
     render: param => handleChemicalFormula(param),
@@ -356,7 +366,7 @@ export const WASTE_GAS_COLUMNS = [
 ];
 
 export const STORAGE_TANK_PARAMS = [
-  { name: '全部', key: 0 },
+  // { name: '全部', key: 0 },
   // { name: '液位', key: 2 },
   // { name: '压力', key: 3 },
   // { name: '温度', key: 4 },
@@ -387,13 +397,13 @@ export const STORAGE_TANK_COLUMNS = [
     key: 'location',
   },
   {
-    title: '异常类别',
+    title: '状态类别',
     dataIndex: 'status',
     key: 'status',
     render: sts => <span style={{ color: STATUS_COLOR_MAP[sts] }}>{STATUS_MAP[sts]}</span>,
   },
   {
-    title: '异常参数',
+    title: '监测参数',
     dataIndex: 'parameter',
     key: 'parameter',
     // render: param => handleChemicalFormula(param),
@@ -444,7 +454,7 @@ export const SMOKE_DETECTOR_COLUMNS = [
     key: 'location',
   },
   {
-    title: '异常类别',
+    title: '状态类别',
     dataIndex: 'status',
     key: 'status',
     render: sts => <span style={{ color: STATUS_COLOR_MAP[sts] }}>{SMOKE_STATUS_MAP[sts]}</span>,
@@ -455,6 +465,119 @@ export const SMOKE_DETECTOR_COLUMNS = [
   //   key: 'parameter',
   //   // render: param => handleChemicalFormula(param),
   // },
+];
+
+export const HUMITURE_COLUMNS = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    key: 'index',
+  },
+  {
+    title: '时间',
+    dataIndex: 'time',
+    key: 'time',
+  },
+  {
+    title: '区域',
+    dataIndex: 'area',
+    key: 'area',
+  },
+  {
+    title: '位置',
+    dataIndex: 'location',
+    key: 'location',
+  },
+  {
+    title: '状态类别',
+    dataIndex: 'status',
+    key: 'status',
+    render: sts => <span style={{ color: STATUS_COLOR_MAP[sts] }}>{STATUS_MAP[sts]}</span>,
+  },
+  {
+    title: '监测参数',
+    dataIndex: 'parameter',
+    key: 'parameter',
+  },
+  {
+    title: '监测数值',
+    dataIndex: 'value',
+    key: 'value',
+    render: (txt, record) => (
+      <span style={{ color: STATUS_COLOR_MAP[record.status] }}>
+        {txt}
+      </span>
+    ),
+  },
+  {
+    title: '报警界限值',
+    dataIndex: 'limitValue',
+    key: 'limitValue',
+  },
+  {
+    title: '描述',
+    dataIndex: 'condition',
+    key: 'condition',
+  },
+];
+
+export const WATER_COLUMNS = [
+  {
+    title: '序号',
+    dataIndex: 'index',
+    key: 'index',
+  },
+  {
+    title: '时间',
+    dataIndex: 'time',
+    key: 'time',
+  },
+  {
+    title: '区域',
+    dataIndex: 'area',
+    key: 'area',
+  },
+  {
+    title: '位置',
+    dataIndex: 'location',
+    key: 'location',
+  },
+  {
+    title: '监测类别',
+    dataIndex: 'deviceType',
+    key: 'deviceType',
+  },
+  {
+    title: '状态类别',
+    dataIndex: 'status',
+    key: 'status',
+    render: sts => <span style={{ color: STATUS_COLOR_MAP[sts] }}>{STATUS_MAP[sts]}</span>,
+  },
+  {
+    title: '监测参数',
+    dataIndex: 'parameter',
+    key: 'parameter',
+  },
+  {
+    title: '监测数值',
+    dataIndex: 'value',
+    key: 'value',
+    render: (txt, record) => (
+      <span style={{ color: STATUS_COLOR_MAP[record.status] }}>
+        {txt}
+      </span>
+    ),
+  },
+  {
+    title: '报警界限值',
+    dataIndex: 'limitValue',
+    key: 'limitValue',
+  },
+  {
+    title: '描述',
+    dataIndex: 'condition',
+    key: 'condition',
+  },
 ];
 
 function dateValidator(rule, value, callback) {
@@ -477,6 +600,7 @@ export function getFields(type, params, methods) {
     case ELECTRICITY_TYPE:
     case WASTE_WATER_TYPE:
     case WASTE_GAS_TYPE:
+    case HUMITURE_TYPE:
       return [
         {
           id: 'area',
@@ -492,28 +616,16 @@ export function getFields(type, params, methods) {
         },
         {
           id: 'status',
-          label: '异常类别：',
-          options: { initialValue: '0' },
+          label: '状态类别：',
+          // options: { initialValue: '0' },
           render: () => (
-            <Select placeholder="请选择异常类别">
+            <Select placeholder="请选择状态类别" allowClear>
               {OPTIONS.map(({ name, key }) => (
                 <Option key={key}>{name}</Option>
               ))}
             </Select>
           ),
         },
-        // {
-        //   id: 'code',
-        //   label: '异常参数：',
-        //   options: { initialValue: '0' },
-        //   render: () => (
-        //     <Select placeholder="请选择异常参数">
-        //       {params.map(({ name, key }) => (
-        //         <Option key={key}>{name}</Option>
-        //       ))}
-        //     </Select>
-        //   ),
-        // },
         {
           id: 'date',
           label: '日期：',
@@ -534,84 +646,63 @@ export function getFields(type, params, methods) {
           ),
         },
       ];
-    // case WASTE_WATER_TYPE:
-    // case WASTE_GAS_TYPE:
-    //   return [
-    //     {
-    //       id: 'area',
-    //       label: '区域：',
-    //       labelCol: LABEL_COL_4,
-    //       wrapperCol: WRAPPER_COL,
-    //       inputSpan: INPUT_SPAN,
-    //       render: () => <Input placeholder="请输入区域" />,
-    //       transform: v => v.trim(),
-    //     },
-    //     {
-    //       id: 'location',
-    //       label: '位置：',
-    //       labelCol: LABEL_COL_4,
-    //       wrapperCol: WRAPPER_COL,
-    //       inputSpan: INPUT_SPAN,
-    //       render: () => <Input placeholder="请输入位置" />,
-    //       transform: v => v.trim(),
-    //     },
-    //     {
-    //       id: 'status',
-    //       label: '异常类别：',
-    //       labelCol: LABEL_COL_6,
-    //       wrapperCol: WRAPPER_COL,
-    //       inputSpan: INPUT_SPAN,
-    //       options: { initialValue: '0' },
-    //       render: () => (
-    //         <Select placeholder="请选择异常类别">
-    //           {OPTIONS.map(({ name, key }) => (
-    //             <Option key={key}>{name}</Option>
-    //           ))}
-    //         </Select>
-    //       ),
-    //     },
-    //     {
-    //       id: 'code',
-    //       label: '异常参数：',
-    //       labelCol: LABEL_COL_6,
-    //       wrapperCol: WRAPPER_COL,
-    //       inputSpan: INPUT_SPAN,
-    //       options: { initialValue: '0' },
-    //       render: () => (
-    //         <Select placeholder="请选择异常参数">
-    //           {params.map(({ name, key }) => (
-    //             <Option key={key}>{name}</Option>
-    //           ))}
-    //         </Select>
-    //       ),
-    //     },
-    //     {
-    //       id: 'date',
-    //       label: '日期：',
-    //       labelCol: { span: 2 },
-    //       wrapperCol: WRAPPER_COL,
-    //       inputSpan: { span: 18 },
-    //       options: {
-    //         initialValue: getThisMonth(),
-    //         rules: [{ validator: dateValidator }],
-    //       },
-    //       render: () => (
-    //         <RangePicker
-    //           // 在Form表单中，由于被getFieldDecorator包裹了，所以只能在options中设定初始值
-    //           // defaultValue={[moment().startOf('month'), moment()]}
-    //           // 禁用日期后有些小bug，且体验不太好
-    //           // disabledDate={methods.disabledDate}
-    //           // onCalendarChange={methods.onCalendarChange}
-    //           format="YYYY-MM-DD HH:mm"
-    //           placeholder={['开始时间', '结束时间']}
-    //           showTime={{
-    //             format: 'HH:mm',
-    //             defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
-    //           }}
-    //         />
-    //       ),
-    //     },
-    //   ];
+    case WATER_TYPE:
+      return [
+        {
+          id: 'area',
+          label: '区域：',
+          render: () => <Input placeholder="请输入区域" />,
+          transform: v => v.trim(),
+        },
+        {
+          id: 'location',
+          label: '位置：',
+          render: () => <Input placeholder="请输入位置" />,
+          transform: v => v.trim(),
+        },
+        {
+          id: 'status',
+          label: '状态类别：',
+          // options: { initialValue: '0' },
+          render: () => (
+            <Select placeholder="请选择状态类别" allowClear>
+              {OPTIONS.map(({ name, key }) => (
+                <Option key={key}>{name}</Option>
+              ))}
+            </Select>
+          ),
+        },
+        {
+          id: 'deviceType',
+          label: '监测类型：',
+          render: () => (
+            <Select placeholder="请选择监测类型" allowClear>
+              {params.map(({ type, typeDesc }) => (
+                <Option key={type}>{typeDesc}</Option>
+              ))}
+            </Select>
+          ),
+        },
+        {
+          id: 'date',
+          label: '日期：',
+          span: { md: 10, sm: 24, xs: 24 },
+          options: {
+            initialValue: getThisMonth(),
+            rules: [{ validator: dateValidator }],
+          },
+          render: () => (
+            <RangePicker
+              format="YYYY-MM-DD HH:mm"
+              placeholder={['开始时间', '结束时间']}
+              showTime={{
+                format: 'HH:mm',
+                defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+              }}
+            />
+          ),
+        },
+      ];
     case STORAGE_TANK_TYPE:
       return [
         {
@@ -634,13 +725,13 @@ export function getFields(type, params, methods) {
         },
         {
           id: 'status',
-          label: '异常类别：',
+          label: '状态类别：',
           labelCol: LABEL_COL_6,
           wrapperCol: WRAPPER_COL,
           inputSpan: INPUT_SPAN,
-          options: { initialValue: '0' },
+          // options: { initialValue: '0' },
           render: () => (
-            <Select placeholder="请选择异常类别">
+            <Select placeholder="请选择状态类别" allowClear>
               {OPTIONS.map(({ name, key }) => (
                 <Option key={key}>{name}</Option>
               ))}
@@ -650,13 +741,13 @@ export function getFields(type, params, methods) {
         {
           // id: 'modelCode',
           id: 'classModel',
-          label: '异常参数：',
+          label: '监测参数：',
           labelCol: LABEL_COL_6,
           wrapperCol: WRAPPER_COL,
           inputSpan: INPUT_SPAN,
-          options: { initialValue: '0' },
+          // options: { initialValue: '0' },
           render: () => (
-            <Select placeholder="请选择异常参数">
+            <Select placeholder="请选择监测参数" allowClear>
               {params.map(({ name, key }) => (
                 <Option key={key}>{name}</Option>
               ))}
@@ -704,21 +795,15 @@ export function getFields(type, params, methods) {
         {
           id: 'location',
           label: '位置',
-          // labelCol: LABEL_COL_4,
-          // wrapperCol: WRAPPER_COL,
-          // inputSpan: INPUT_SPAN,
           render: () => <Input placeholder="请输入位置" />,
           transform: v => v.trim(),
         },
         {
           id: 'status',
-          label: '异常类别',
-          // labelCol: LABEL_COL_6,
-          // wrapperCol: WRAPPER_COL,
-          // inputSpan: INPUT_SPAN,
-          options: { initialValue: '0' },
+          label: '状态类别',
+          // options: { initialValue: '0' },
           render: () => (
-            <Select placeholder="请选择异常类别">
+            <Select placeholder="请选择状态类别" allowClear>
               {OPTIONS.map(({ name, key }) => (
                 <Option key={key}>{name}</Option>
               ))}
@@ -728,8 +813,6 @@ export function getFields(type, params, methods) {
         {
           id: 'date',
           label: '日期',
-          // labelCol: LABEL_COL_2,
-          // wrapperCol: WRAPPER_COL,
           span: {
             md: 12,
             sm: 24,
@@ -741,8 +824,6 @@ export function getFields(type, params, methods) {
           },
           render: () => (
             <RangePicker
-              // disabledDate={methods.disabledDate}
-              // onCalendarChange={methods.onCalendarChange}
               style={{ width: '100%' }}
               format="YYYY-MM-DD HH:mm"
               placeholder={['开始时间', '结束时间']}
@@ -770,19 +851,17 @@ export function getFields(type, params, methods) {
           label: '位置：',
           labelCol: LABEL_COL_4,
           wrapperCol: WRAPPER_COL,
-          // inputSpan: INPUT_SPAN,
           render: () => <Input placeholder="请输入位置" />,
           transform: v => v.trim(),
         },
         {
           id: 'status',
-          label: '异常类别：',
+          label: '状态类别：',
           labelCol: LABEL_COL_6,
           wrapperCol: WRAPPER_COL,
-          // inputSpan: INPUT_SPAN,
-          options: { initialValue: '0' },
+          // options: { initialValue: '0' },
           render: () => (
-            <Select placeholder="请选择异常类别">
+            <Select placeholder="请选择状态类别" allowClear>
               {SMOKE_OPTIONS.map(({ name, key }) => (
                 <Option key={key}>{name}</Option>
               ))}
@@ -801,8 +880,6 @@ export function getFields(type, params, methods) {
           },
           render: () => (
             <RangePicker
-              // disabledDate={methods.disabledDate}
-              // onCalendarChange={methods.onCalendarChange}
               format="YYYY-MM-DD HH:mm"
               placeholder={['开始时间', '结束时间']}
               showTime={{
@@ -814,7 +891,6 @@ export function getFields(type, params, methods) {
         },
       ];
     default:
-      // console.log('default');
       return [];
   }
 }

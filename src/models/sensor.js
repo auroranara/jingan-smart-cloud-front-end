@@ -32,6 +32,9 @@ import {
   fetchUnsetModelList,
   fetchAllUnsetModelList,
   deleteSensorModel,
+  fetchDeviceTypesForHumiture,
+  fetchCompanyDeviceForHumiture,
+  fetchDeviceTypesForAll,
 } from '../services/sensor'
 const defaultPagination = { pageNum: 1, pageSize: 10, total: 0 }
 export default {
@@ -144,9 +147,39 @@ export default {
         })
       }
     },
+    // 获取企业下绑定的设备列表（温湿度）
+    *fetchCompanyDeviceForHumiture({ payload }, { call, put }) {
+      const response = yield call(fetchCompanyDeviceForHumiture, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveCompanyDevice',
+          payload: response.data,
+        })
+      }
+    },
     // 获取设备类型列表
     *fetchDeviceTypes({ payload }, { call, put }) {
       const response = yield call(fetchDeviceTypes, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveState',
+          payload: { key: 'deviceTypes', value: response.data.deviceType || [] },
+        })
+      }
+    },
+    // 获取设备类型列表（温湿度）
+    *fetchDeviceTypesForHumiture({ payload }, { call, put }) {
+      const response = yield call(fetchDeviceTypesForHumiture, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveState',
+          payload: { key: 'deviceTypes', value: response.data.deviceType || [] },
+        })
+      }
+    },
+    // 获取设备类型列表（全部）
+    *fetchDeviceTypesForAll({ payload }, { call, put }) {
+      const response = yield call(fetchDeviceTypesForAll, payload)
       if (response && response.code === 200) {
         yield put({
           type: 'saveState',

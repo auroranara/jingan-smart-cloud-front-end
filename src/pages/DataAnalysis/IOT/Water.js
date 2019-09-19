@@ -1,18 +1,20 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Button, Card, message, notification, Table } from 'antd';
+import { Button, Card, message, notification, Select, Table } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 
 import styles from './index.less';
 import ToolBar from '@/components/ToolBar';
 import {
-  TOXIC_GAS_TYPE as TYPE,
-  TOXIC_GAS_TYPE_LABEL as TYPE_LABEL,
-  TOXIC_GAS_COLUMNS as COLUMNS,
+  WATER_TYPE as TYPE,
+  WATER_TYPE_LABEL as TYPE_LABEL,
+  WATER_COLUMNS as COLUMNS,
   PAGE_SIZE,
   getFields,
 } from './constant';
 import { addAlign, getThisMonth, handleFormVals, handleTableData } from './utils';
+
+const { Option } = Select;
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
@@ -29,9 +31,8 @@ const breadcrumbList = [
   dataAnalysis,
   loading: loading.effects['dataAnalysis/fetchData'],
 }))
-export default class ToxicGas extends PureComponent {
+export default class Water extends PureComponent {
   state = {
-    // moments: null,
     formVals: null,
     currentPage: 1,
   };
@@ -41,6 +42,7 @@ export default class ToxicGas extends PureComponent {
     this.setState({ formVals: vals });
     this.fetchData(1, vals);
     this.fetchCompanyInfo();
+    this.fetchDeviceOptions();
   }
 
   fetchCompanyInfo() {
@@ -53,14 +55,20 @@ export default class ToxicGas extends PureComponent {
     dispatch({ type: 'dataAnalysis/fetchCompanyInfo', payload: { companyId: id } });
   }
 
+  fetchDeviceOptions = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'dataAnalysis/fetchDeviceOptions' });
+  };
+
   renderExportButton() {
     return (
-      <Button type="primary" onClick={this.handleExport} ghost /* style={{ marginTop: '8px' }} */>
+      <Button type="primary" onClick={this.handleExport} ghost style={{ marginTop: '8px' }}>
         导出报表
       </Button>
     );
   }
 
+  // 先查询后才能记录form表单的状态，然后导出，不能选完就导出，那样并不会记录form表单的状态
   handleExport = () => {
     const {
       dispatch,
@@ -73,13 +81,15 @@ export default class ToxicGas extends PureComponent {
       },
     } = this.props;
     const { formVals } = this.state;
+    const { deviceType } = formVals;
+    console.log(formVals);
 
     if (list && list.length)
       dispatch({
         companyName,
         typeLabel: TYPE_LABEL,
         type: 'dataAnalysis/fetchExport',
-        payload: { ...handleFormVals(formVals), classType: TYPE, companyId: id },
+        payload: { ...handleFormVals(formVals), classType: deviceType || TYPE, companyId: id },
       });
     else
       notification.warning({
@@ -90,6 +100,7 @@ export default class ToxicGas extends PureComponent {
   };
 
   handleSearch = values => {
+    // console.log(values);
     this.setState({ formVals: values });
     this.fetchData(1, values, (code, msg) => this.setPage(code, 1, msg));
   };
@@ -107,7 +118,8 @@ export default class ToxicGas extends PureComponent {
         params: { id },
       },
     } = this.props;
-    let payload = { pageSize: PAGE_SIZE, pageNum, classType: TYPE, companyId: id };
+    const { deviceType } = values;
+    let payload = { pageSize: PAGE_SIZE, pageNum, classType: deviceType || TYPE, companyId: id };
     if (values) payload = { ...payload, ...handleFormVals(values) };
     dispatch({
       type: 'dataAnalysis/fetchData',
@@ -128,16 +140,6 @@ export default class ToxicGas extends PureComponent {
     this.fetchData(current, formVals, (code, msg) => this.setPage(code, current, msg));
   };
 
-  // onCalendarChange = (dates, dateStrings) => {
-  //   // console.log(dates);
-  //   this.setState({ moments: dates });
-  // };
-
-  // disabledDate = (current) => {
-  //   const { moments } = this.state;
-  //   return isDateDisabled(current, moments);
-  // };
-
   render() {
     const {
       loading,
@@ -147,17 +149,19 @@ export default class ToxicGas extends PureComponent {
       dataAnalysis: {
         companyInfo: { name: companyName },
         analysis: { list = [], pagination: { total } = { total: 0 } },
+        deviceOptions,
       },
     } = this.props;
 
     const { currentPage } = this.state;
     const indexBase = (currentPage - 1) * PAGE_SIZE;
+    const deviceTypeMap = deviceOptions.reduce((prev, next) => {
+      const { type, typeDesc } = next;
+      prev[type] = typeDesc;
+      return prev;
+    }, {});
 
-    // const methods = {
-    //   disabledDate: this.disabledDate,
-    //   onCalendarChange: this.onCalendarChange,
-    // };
-    const fields = getFields(TYPE);
+    const fields = getFields(TYPE, deviceOptions);
 
     return (
       <PageHeaderLayout
@@ -177,15 +181,10 @@ export default class ToxicGas extends PureComponent {
           <ToolBar
             fields={fields}
             action={this.renderExportButton()}
-            // buttonSpan={{ xl: 8, md: 12, sm: 24 }}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
-            buttonStyle={{ textAlign: 'right' }}
-            buttonSpan={{
-              xl: 12,
-              sm: 24,
-              xs: 24,
-            }}
+            // buttonStyle={{ textAlign: 'right' }}
+            buttonSpan={{ xxl: 6, xl: 8, sm: 24, xs: 24 }}
           />
         </Card>
         <div className={styles.container}>
@@ -197,7 +196,7 @@ export default class ToxicGas extends PureComponent {
             rowKey="id"
             loading={loading}
             columns={addAlign(COLUMNS)}
-            dataSource={handleTableData(list, indexBase)}
+            dataSource={handleTableData(list, indexBase, deviceTypeMap)}
             onChange={this.onTableChange}
             pagination={{ pageSize: PAGE_SIZE, total, current: currentPage }}
           />

@@ -6,9 +6,9 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './index.less';
 import ToolBar from '@/components/ToolBar';
 import {
-  TOXIC_GAS_TYPE as TYPE,
-  TOXIC_GAS_TYPE_LABEL as TYPE_LABEL,
-  TOXIC_GAS_COLUMNS as COLUMNS,
+  HUMITURE_TYPE as TYPE,
+  HUMITURE_TYPE_LABEL as TYPE_LABEL,
+  HUMITURE_COLUMNS as COLUMNS,
   PAGE_SIZE,
   getFields,
 } from './constant';
@@ -29,9 +29,8 @@ const breadcrumbList = [
   dataAnalysis,
   loading: loading.effects['dataAnalysis/fetchData'],
 }))
-export default class ToxicGas extends PureComponent {
+export default class Humiture extends PureComponent {
   state = {
-    // moments: null,
     formVals: null,
     currentPage: 1,
   };
@@ -55,12 +54,13 @@ export default class ToxicGas extends PureComponent {
 
   renderExportButton() {
     return (
-      <Button type="primary" onClick={this.handleExport} ghost /* style={{ marginTop: '8px' }} */>
+      <Button type="primary" onClick={this.handleExport} ghost style={{ marginTop: '8px' }}>
         导出报表
       </Button>
     );
   }
 
+  // 先查询后才能记录form表单的状态，然后导出，不能选完就导出，那样并不会记录form表单的状态
   handleExport = () => {
     const {
       dispatch,
@@ -90,6 +90,7 @@ export default class ToxicGas extends PureComponent {
   };
 
   handleSearch = values => {
+    // console.log(values);
     this.setState({ formVals: values });
     this.fetchData(1, values, (code, msg) => this.setPage(code, 1, msg));
   };
@@ -128,16 +129,6 @@ export default class ToxicGas extends PureComponent {
     this.fetchData(current, formVals, (code, msg) => this.setPage(code, current, msg));
   };
 
-  // onCalendarChange = (dates, dateStrings) => {
-  //   // console.log(dates);
-  //   this.setState({ moments: dates });
-  // };
-
-  // disabledDate = (current) => {
-  //   const { moments } = this.state;
-  //   return isDateDisabled(current, moments);
-  // };
-
   render() {
     const {
       loading,
@@ -153,10 +144,6 @@ export default class ToxicGas extends PureComponent {
     const { currentPage } = this.state;
     const indexBase = (currentPage - 1) * PAGE_SIZE;
 
-    // const methods = {
-    //   disabledDate: this.disabledDate,
-    //   onCalendarChange: this.onCalendarChange,
-    // };
     const fields = getFields(TYPE);
 
     return (
@@ -177,15 +164,10 @@ export default class ToxicGas extends PureComponent {
           <ToolBar
             fields={fields}
             action={this.renderExportButton()}
-            // buttonSpan={{ xl: 8, md: 12, sm: 24 }}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             buttonStyle={{ textAlign: 'right' }}
-            buttonSpan={{
-              xl: 12,
-              sm: 24,
-              xs: 24,
-            }}
+            buttonSpan={{ xl: 12, sm: 24, xs: 24 }}
           />
         </Card>
         <div className={styles.container}>

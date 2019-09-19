@@ -95,11 +95,6 @@ export default class CompanyList extends PureComponent {
         pageNum: 1,
       },
     });
-
-    // 获取模糊搜索单位列表
-    dispatch({
-      type: 'hiddenDangerReport/fetchUnitListFuzzy',
-    });
   }
 
   // 查询
@@ -140,9 +135,7 @@ export default class CompanyList extends PureComponent {
       },
     });
     // 获取模糊搜索单位列表
-    dispatch({
-      type: 'hiddenDangerReport/fetchUnitListFuzzy',
-    });
+    this.fetchUnitList();
   };
 
   // 滚动加载
@@ -165,10 +158,20 @@ export default class CompanyList extends PureComponent {
     });
   };
 
+  fetchUnitList = payload => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
+      payload: {
+        pageNum: payload || 1,
+        pageSize: 18,
+      },
+    });
+  };
+
   // 显示新增企业模态框
   handleClickAdd = () => {
     const {
-      dispatch,
       form: { setFieldsValue },
     } = this.props;
     this.setState({ modalVisible: true });
@@ -176,9 +179,7 @@ export default class CompanyList extends PureComponent {
       companyId: undefined,
     });
     // 获取模糊搜索单位列表
-    dispatch({
-      type: 'hiddenDangerReport/fetchUnitListFuzzy',
-    });
+    this.fetchUnitList();
   };
 
   // 单位下拉框输入
@@ -191,7 +192,7 @@ export default class CompanyList extends PureComponent {
       payload: {
         unitName: value && value.trim(),
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 18,
       },
     });
   };
@@ -199,7 +200,6 @@ export default class CompanyList extends PureComponent {
   // 单位下拉框失焦
   handleUnitIdBlur = value => {
     const {
-      dispatch,
       form: { setFieldsValue },
     } = this.props;
     // 根据value判断是否是手动输入
@@ -208,19 +208,25 @@ export default class CompanyList extends PureComponent {
       setFieldsValue({
         companyId: undefined,
       });
-      dispatch({
-        type: 'hiddenDangerReport/fetchUnitListFuzzy',
-        payload: {
-          pageNum: 1,
-          pageSize: 18,
-        },
-      });
+      this.fetchUnitList();
     }
   };
 
   // 关闭新增企业模态框
   handleCloseModal = () => {
-    this.setState({ modalVisible: false });
+    this.setState({ modalVisible: false, scrollPage: 1 });
+  };
+
+  onPopupScroll = e => {
+    const { target } = e;
+    if (target.scrollTop === 0 && target.scrollTop + target.clientHeight === target.scrollHeight)
+      return;
+    if (target.scrollTop + target.clientHeight === target.scrollHeight) {
+      const { scrollPage } = this.state;
+      const nextScrollPage = scrollPage + 1;
+      this.setState({ scrollPage: nextScrollPage });
+      this.fetchUnitList(scrollPage);
+    }
   };
 
   // 提交
@@ -241,25 +247,6 @@ export default class CompanyList extends PureComponent {
       }
     });
   };
-
-  // popupScrollcroll = e => {
-  //   const { dispatch } = this.props;
-  //   e.persist();
-  //   const { target } = e;
-  //   if (target.scrollTop + target.offsetHeight === target.scrollHeight) {
-  //     console.log('567', target.scrollTop, target.offsetHeight, target.scrollHeight);
-  //     const { scrollPage } = this.state;
-  //     const nextScrollPage = scrollPage + 1;
-  //     this.setState({ scrollPage: nextScrollPage });
-  //     dispatch({
-  //       type: 'hiddenDangerReport/fetchUnitListFuzzy',
-  //       payload: {
-  //         pageNum: nextScrollPage,
-  //         pageSize: 18,
-  //       },
-  //     });
-  //   }
-  // };
 
   // 渲染form表单
   renderForm() {
@@ -479,34 +466,37 @@ export default class CompanyList extends PureComponent {
         >
           <Form>
             <FormItem {...formItemLayout} label="单位名称">
-              {getFieldDecorator('companyId', {
-                rules: [
-                  {
-                    required: true,
-                    transform: value => value && value.label,
-                    message: '请选择单位名称',
-                  },
-                ],
-              })(
-                <AutoComplete
-                  allowClear
-                  mode="combobox"
-                  labelInValue
-                  optionLabelProp="children"
-                  placeholder="请选择"
-                  notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                  onSearch={this.handleUnitIdChange}
-                  onBlur={this.handleUnitIdBlur}
-                  // onPopupScroll={this.popupScrollcroll}
-                  filterOption={false}
-                >
-                  {unitIdes.map(({ id, name }) => (
-                    <Option value={id} key={id}>
-                      {name}
-                    </Option>
-                  ))}
-                </AutoComplete>
-              )}
+              <div id="companyDiv">
+                {getFieldDecorator('companyId', {
+                  rules: [
+                    {
+                      required: true,
+                      transform: value => value && value.label,
+                      message: '请选择单位名称',
+                    },
+                  ],
+                })(
+                  <AutoComplete
+                    allowClear
+                    mode="combobox"
+                    labelInValue
+                    optionLabelProp="children"
+                    placeholder="请选择"
+                    notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+                    onSearch={this.handleUnitIdChange}
+                    onBlur={this.handleUnitIdBlur}
+                    onPopupScroll={this.onPopupScroll}
+                    getPopupContainer={() => document.getElementById('companyDiv')}
+                    filterOption={false}
+                  >
+                    {unitIdes.map(({ id, name }) => (
+                      <Option value={id} key={id}>
+                        {name}
+                      </Option>
+                    ))}
+                  </AutoComplete>
+                )}
+              </div>
             </FormItem>
           </Form>
         </Modal>

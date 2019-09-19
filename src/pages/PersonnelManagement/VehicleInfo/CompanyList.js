@@ -80,6 +80,7 @@ export default class CompanyList extends PureComponent {
     this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
     this.state = {
       modalVisible: false, // 企业模态框是否可见
+      scrollPage: 1,
     };
   }
 
@@ -93,11 +94,6 @@ export default class CompanyList extends PureComponent {
         pageSize,
         pageNum: 1,
       },
-    });
-
-    // 获取模糊搜索单位列表
-    dispatch({
-      type: 'hiddenDangerReport/fetchUnitListFuzzy',
     });
   }
 
@@ -139,9 +135,7 @@ export default class CompanyList extends PureComponent {
       },
     });
     // 获取模糊搜索单位列表
-    dispatch({
-      type: 'hiddenDangerReport/fetchUnitListFuzzy',
-    });
+    this.fetchUnitList();
   };
 
   // 滚动加载
@@ -167,10 +161,20 @@ export default class CompanyList extends PureComponent {
     });
   };
 
+  fetchUnitList = payload => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
+      payload: {
+        pageNum: payload || 1,
+        pageSize: 18,
+      },
+    });
+  };
+
   // 显示新增企业模态框
   handleClickAdd = () => {
     const {
-      dispatch,
       form: { setFieldsValue },
     } = this.props;
     this.setState({ modalVisible: true });
@@ -178,9 +182,7 @@ export default class CompanyList extends PureComponent {
       companyId: undefined,
     });
     // 获取模糊搜索单位列表
-    dispatch({
-      type: 'hiddenDangerReport/fetchUnitListFuzzy',
-    });
+    this.fetchUnitList();
   };
 
   // 单位下拉框输入
@@ -193,7 +195,7 @@ export default class CompanyList extends PureComponent {
       payload: {
         unitName: value && value.trim(),
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 300,
       },
     });
   };
@@ -201,7 +203,6 @@ export default class CompanyList extends PureComponent {
   // 单位下拉框失焦
   handleUnitIdBlur = value => {
     const {
-      dispatch,
       form: { setFieldsValue },
     } = this.props;
     // 根据value判断是否是手动输入
@@ -210,19 +211,25 @@ export default class CompanyList extends PureComponent {
       setFieldsValue({
         companyId: undefined,
       });
-      dispatch({
-        type: 'hiddenDangerReport/fetchUnitListFuzzy',
-        payload: {
-          pageNum: 1,
-          pageSize: 18,
-        },
-      });
+      this.fetchUnitList();
     }
   };
 
   // 关闭新增企业模态框
   handleCloseModal = () => {
     this.setState({ modalVisible: false });
+  };
+
+  onPopupScroll = e => {
+    const { target } = e;
+    if (target.scrollTop === 0 && target.scrollTop + target.clientHeight === target.scrollHeight)
+      return;
+    if (target.scrollTop + target.clientHeight === target.scrollHeight) {
+      const { scrollPage } = this.state;
+      const nextScrollPage = scrollPage + 1;
+      this.setState({ scrollPage: nextScrollPage });
+      this.fetchUnitList(scrollPage);
+    }
   };
 
   // 提交
@@ -481,6 +488,7 @@ export default class CompanyList extends PureComponent {
                   notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
                   onSearch={this.handleUnitIdChange}
                   onBlur={this.handleUnitIdBlur}
+                  onPopupScroll={this.onPopupScroll}
                   filterOption={false}
                 >
                   {unitIdes.map(({ id, name }) => (

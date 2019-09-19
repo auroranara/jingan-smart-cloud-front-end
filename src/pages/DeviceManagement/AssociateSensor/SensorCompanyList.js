@@ -9,7 +9,8 @@ import codes from '@/utils/codes';
 import { hasAuthority, AuthIcon } from '@/utils/customAuth';
 import router from 'umi/router';
 import styles from './SensorCompanyList.less';
-import iconWater from '@/assets/water-syatem.png';
+import iconWater from '@/assets/water-syatem.png';  // 水系统logo
+import iconTAndH from '@/assets/temperature-and-humidity.png'; // 温湿度logo
 
 const FormItem = Form.Item;
 
@@ -32,6 +33,7 @@ const {
     associateSensor: {
       addCompany: addCompanyCode,
       waterSystem: { listView: waterViewmCode },
+      temperatureAndHumidity: { listView: tAndHViewCode },
     },
   },
 } = codes;
@@ -55,7 +57,7 @@ export default class SensorCompanyList extends Component {
     const { dispatch } = this.props;
     this.fetchSensorCompanies({ payload: { pageNum: 1, pageSize: defaultPageSize } });
     // 获取设备类型列表
-    dispatch({ type: 'sensor/fetchDeviceTypes' });
+    dispatch({ type: 'sensor/fetchDeviceTypesForAll' });
   }
 
   /**
@@ -239,9 +241,9 @@ export default class SensorCompanyList extends Component {
               return (
                 <List.Item
                   key={id}
-                  // actions={[
+                // actions={[
 
-                  // ]}
+                // ]}
                 >
                   <Card title={name} className={styles.card}>
                     <Ellipsis tooltip className={styles.ellipsis} lines={1}>
@@ -270,6 +272,20 @@ export default class SensorCompanyList extends Component {
                         //   num: iconNums[icon],
                         // }}
                         to={`/device-management/associate-sensor/company/${id}/water-system?name=${name}`}
+                        style={{
+                          width: 30,
+                          height: 30,
+                          marginRight: 15,
+                          backgroundSize: '100% 100%',
+                        }}
+                        target="_blank"
+                      />
+                      <AuthIcon
+                        key={'tAndH'}
+                        title={'温湿度'}
+                        url={iconTAndH}
+                        code={tAndHViewCode}
+                        to={`/device-management/associate-sensor/company/${id}/temperature-and-humidity?name=${name}`}
                         style={{
                           width: 30,
                           height: 30,

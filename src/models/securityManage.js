@@ -429,10 +429,18 @@ export default {
     // 获取更多企业列表
     saveMonitorCompanyList(state, { payload }) {
       const { list, pageNum, pageSize, total } = payload;
+      let nextList = list;
+      if (pageNum !== 1) nextList = state.list.concat(list);
       return {
         ...state,
-        list: [...state.list, ...list],
+        data: {
+          list: nextList,
+          pageNum,
+          pageSize,
+          total,
+        },
         pageNum,
+        list: nextList,
         isLast: pageNum * pageSize >= total,
       };
     },

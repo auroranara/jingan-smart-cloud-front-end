@@ -103,11 +103,6 @@ export default class CompanyList extends PureComponent {
         pageNum: 1,
       },
     });
-
-    // 获取模糊搜索单位列表
-    dispatch({
-      type: 'hiddenDangerReport/fetchUnitListFuzzy',
-    });
   }
 
   // 查询
