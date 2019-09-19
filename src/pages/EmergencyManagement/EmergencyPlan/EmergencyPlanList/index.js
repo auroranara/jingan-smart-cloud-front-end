@@ -538,7 +538,7 @@ export default class EmergencyPlanList extends Component {
       },
       {
         title: '创建时间',
-        dataIndex: 'createDate',
+        dataIndex: 'createTime',
         render: (time) => time && moment(time).format('YYYY.M.D'),
         width: 128,
         align: 'center',
