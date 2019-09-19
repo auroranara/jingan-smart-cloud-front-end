@@ -13,6 +13,25 @@ const { Item: FormItem } = Form;
 export default class PointEdit extends PureComponent {
   state={ fileList: [] };
 
+  componentDidMount() {
+    const { match: { params: { id } } } = this.props;
+    id && this.fetchDetail();
+  }
+
+  fetchDetail() {
+    const {
+      dispatch,
+      match: { params: { tabIndex, id } },
+      form: { setFieldsValue },
+    } = this.props;
+    dispatch({
+      type: 'checkPoint/fetchCheckPoint',
+      index: tabIndex,
+      payload: id,
+      callback: detail => setFieldsValue(detail),
+    });
+  }
+
   getList = name => {
     const { dispatch } = this.props;
     dispatch({ type: 'checkPoint/fetchCheckList', index: 1, payload: { pageNum: 1, pageSize: 20, name } });

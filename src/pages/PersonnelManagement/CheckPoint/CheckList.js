@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import Link from 'umi/link';
 import Ellipsis from '@/components/Ellipsis';
 import { Button, Card, Input, List, Switch, message } from 'antd';
 

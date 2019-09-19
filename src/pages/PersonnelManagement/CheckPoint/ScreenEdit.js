@@ -12,7 +12,23 @@ const { Option } = Select;
 @Form.create()
 export default class ScreenEdit extends PureComponent {
   componentDidMount() {
+    const { match: { params: { id } } } = this.props;
+    id && this.fetchDetail();
     this.getCardTypes();
+  }
+
+  fetchDetail() {
+    const {
+      dispatch,
+      match: { params: { tabIndex, id } },
+      form: { setFieldsValue },
+    } = this.props;
+    dispatch({
+      type: 'checkPoint/fetchCheckPoint',
+      index: tabIndex,
+      payload: id,
+      callback: detail => setFieldsValue(detail),
+    });
   }
 
   getCardTypes() {

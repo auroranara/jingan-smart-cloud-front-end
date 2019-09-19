@@ -1,4 +1,5 @@
 import router from 'umi/router';
+import Link from 'umi/link';
 import { Icon, message } from 'antd';
 
 export const FOLDER = 'checkPoints';
@@ -66,4 +67,8 @@ export function genOperateCallback(companyId, index) {
     } else
     message.error(msg);
   };
+}
+
+export function genListLink(companyId, index) {
+  return ['查看', '编辑', '删除'].map(label => <Link to={``}>{label}</Link>);
 }

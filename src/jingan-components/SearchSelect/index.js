@@ -39,11 +39,12 @@ export default class SearchSelect extends Component {
       loading,
       fieldNames,
       mode,
+      getList,
+      setList,
       notFoundContent='未找到数据',
       ...restProps
     } = this.props;
     const { key, value } = { ...FIELDNAMES, ...fieldNames };
-    // console.log({ key, value });
 
     return mode === 'multiple' ? (
       <Select

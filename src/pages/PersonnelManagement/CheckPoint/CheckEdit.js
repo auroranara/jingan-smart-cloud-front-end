@@ -16,17 +16,6 @@ const TAB_COMS = [PointEdit, EquipmentEdit, ScreenEdit];
   listLoading: loading.effects['checkPoint/fetchCheckList'],
 }))
 export default class CheckEdit extends PureComponent {
-  // componentDidMount() {
-  //   const {  } = this.props;
-  //   if (this.isEdit())
-
-  // }
-
-  isEdit() {
-    const { match: { params: { id } } } = this.props;
-    return !!id;
-  }
-
   render() {
     const { match: { params: { tabIndex } } } = this.props;
     const Component = TAB_COMS[tabIndex];

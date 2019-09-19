@@ -8,6 +8,25 @@ const { Item: FormItem } = Form;
 
 @Form.create()
 export default class EquipmentEdit extends PureComponent {
+  componentDidMount() {
+    const { match: { params: { id } } } = this.props;
+    id && this.fetchDetail();
+  }
+
+  fetchDetail() {
+    const {
+      dispatch,
+      match: { params: { tabIndex, id } },
+      form: { setFieldsValue },
+    } = this.props;
+    dispatch({
+      type: 'checkPoint/fetchCheckPoint',
+      index: tabIndex,
+      payload: id,
+      callback: detail => setFieldsValue(detail),
+    });
+  }
+
   handleSubmit = e => {
     const {
       dispatch,

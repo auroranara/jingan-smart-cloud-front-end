@@ -61,11 +61,13 @@ export default {
         yield put({ type: 'saveCheckList', payload: data });
       }
     },
-    *fetchCheckPoint({ index, payload }, { call, put }) {
+    *fetchCheckPoint({ index, payload, callback }, { call, put }) {
       const response = yield call(GET_APIS[index], payload);
       const { code, data } = response || {};
-      if (code === 200)
+      if (code === 200) {
         yield put({ type: `save${TYPES[index]}`, payload: data });
+        callback && callback(data);
+      }
     },
     *addCheckPoint({ index, payload, callback }, { call }) {
       const response = yield call(POST_APIS[index], payload);
