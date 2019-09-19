@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { AutoComplete, Spin } from 'antd';
+import { Select, Spin } from 'antd';
 import debounce from 'lodash/debounce';
 
-const { Option } = AutoComplete;
+const { Option } = Select;
 const FIELDNAMES = {
   key: 'key',
   value: 'value',
@@ -28,7 +28,8 @@ export default class SearchSelect extends Component {
   handleBlur = (value) => {
     const { fieldNames, list, onChange } = this.props;
     const { key } = { ...FIELDNAMES, ...fieldNames };
-    if (list.filter(({ [key]: k }) => k === value).length === 0) {
+    const id = typeof value === 'object' ? value.key : value;
+    if (list.filter(({ [key]: k }) => k === id).length === 0) {
       onChange && onChange();
     }
   }
@@ -47,7 +48,8 @@ export default class SearchSelect extends Component {
     // console.log({ key, value });
 
     return (
-      <AutoComplete
+      <Select
+        showSearch
         placeholder="请选择"
         defaultActiveFirstOption={false}
         filterOption={false}
@@ -59,7 +61,7 @@ export default class SearchSelect extends Component {
         {list && list.map(({ [key]: k, [value]: v }) => (
           <Option key={k}>{v}</Option>
         ))}
-      </AutoComplete>
+      </Select>
     );
   }
 }

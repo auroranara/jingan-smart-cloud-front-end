@@ -94,6 +94,7 @@ export default class EmergencyPlanDetail extends Component {
           emergencyFilesList,
           remark,
           historyType,
+          status,
         }={},
       },
       loading,
@@ -280,7 +281,7 @@ export default class EmergencyPlanDetail extends Component {
               action={
                 <Fragment>
                   <Button onClick={this.handleBackButtonClick}>返回</Button>
-                  {+historyType === 1 && <Button type="primary" onClick={this.handleEditButtonClick}>编辑</Button>}
+                  {/* {+historyType === 1 && (+status === 3 || +status === 4) && <Button type="primary" onClick={this.handleEditButtonClick}>编辑</Button>} */}
                 </Fragment>
               }
             />
