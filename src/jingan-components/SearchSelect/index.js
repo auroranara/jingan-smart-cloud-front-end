@@ -21,40 +21,39 @@ export default class SearchSelect extends Component {
 
   handleSearch = (value) => {
     const { setList, getList } = this.props;
-    setList({});
-    getList(value);
+    setList && setList({});
+    getList && getList(value);
   }
 
-  handleBlur = ({ key, label }={}) => {
-    if (key && key === label) {
-      const { onChange } = this.props;
+  handleBlur = (value) => {
+    const { fieldNames, list, onChange } = this.props;
+    const { key } = { ...FIELDNAMES, ...fieldNames };
+    if (list.filter(({ [key]: k }) => k === value).length === 0) {
       onChange && onChange();
     }
   }
 
   render() {
     const {
-      list=[],
+      list,
       loading,
       fieldNames,
+      notFoundContent='未找到数据',
       ...restProps
     } = this.props;
-    const { key, value } = { ...fieldNames, ...FIELDNAMES }
+    const { key, value } = { ...FIELDNAMES, ...fieldNames };
 
     return (
       <AutoComplete
-        mode="combobox"
-        labelInValue
-        optionLabelProp="children"
         placeholder="请选择"
         defaultActiveFirstOption={false}
         filterOption={false}
         onSearch={this.debouncedHandleSearch}
         onBlur={this.handleBlur}
-        notFoundContent={loading ? <Spin size="small" /> : '未找到数据'}
+        notFoundContent={loading ? <Spin size="small" /> : notFoundContent}
         {...restProps}
       >
-        {list.map(({ [key]: k, [value]: v }) => (
+        {list && list.map(({ [key]: k, [value]: v }) => (
           <Option key={k}>{v}</Option>
         ))}
       </AutoComplete>
