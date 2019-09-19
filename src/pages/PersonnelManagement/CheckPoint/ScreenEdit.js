@@ -4,7 +4,7 @@ import { Button, Col, Form, Input, Row, Select, Switch } from 'antd';
 
 import SearchSelect from '@/jingan-components/SearchSelect';
 import { getFieldDecConfig, genOperateCallback } from './utils';
-import styles from './ScreenEdit.less';
+import styles from './CompanyList.less';
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
@@ -22,7 +22,7 @@ export default class ScreenEdit extends PureComponent {
 
   getList = name => {
     const { dispatch } = this.props;
-    dispatch({ type: 'checkPoint/fetchCheckList', index: 0, payload: { pageNum: 1, pageSize: 10, name } });
+    dispatch({ type: 'checkPoint/fetchCheckList', index: 0, payload: { pageNum: 1, pageSize: 20, name } });
   };
 
   setList = () => {
@@ -41,7 +41,7 @@ export default class ScreenEdit extends PureComponent {
     validateFields((err, values) => {
       if (!err) {
         const { status } = values;
-        const params = { ...values, status: +status, pointId: (values.pointId || {}).key };
+        const params = { ...values, status: +status };
         if (companyId)
           params.companyId = companyId;
         if (id)

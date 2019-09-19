@@ -44,6 +44,7 @@ export default class SearchSelect extends Component {
       ...restProps
     } = this.props;
     const { key, value } = { ...FIELDNAMES, ...fieldNames };
+    // console.log({ key, value });
 
     return (
       <AutoComplete

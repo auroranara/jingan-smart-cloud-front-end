@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { Button, Col, Form, Icon, Input, Row, Upload } from 'antd';
 
+import styles from './CompanyList.less';
+import SearchSelect from '@/jingan-components/SearchSelect';
 import { getToken } from '@/utils/authority';
 import { genOperateCallback, getFieldDecConfig, uploadConvertToOrigin, uploadConvertToResult, FOLDER, UPLOAD_ACTION } from './utils';
 import { getFileList } from '@/pages/BaseInfo/utils';
@@ -10,6 +12,16 @@ const { Item: FormItem } = Form;
 @Form.create()
 export default class PointEdit extends PureComponent {
   state={ fileList: [] };
+
+  getList = name => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'checkPoint/fetchCheckList', index: 1, payload: { pageNum: 1, pageSize: 20, name } });
+  };
+
+  setList = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'checkPoint/saveCheckList', payload: { index: 1, list: [], pagination: { pageNum: 1 } } });
+  };
 
   handleSubmit = e => {
     const {
@@ -47,7 +59,11 @@ export default class PointEdit extends PureComponent {
   };
 
   render() {
-    const { form: { getFieldDecorator } } = this.props;
+    const {
+      listLoading,
+      checkPoint: { lists },
+      form: { getFieldDecorator },
+    } = this.props;
     const { fileList } = this.state;
 
     return (
@@ -79,7 +95,16 @@ export default class PointEdit extends PureComponent {
               {getFieldDecorator('equipmentList', {
                 // rules: [{ required: true, whitespace: true, message: '请选择关联设备' }],
               })(
-                <Input placeholder="请选择关联设备" min={1} max={20} />
+                <SearchSelect
+                  mode="multiple"
+                  className={styles.searchSelect}
+                  loading={listLoading}
+                  list={lists[1]}
+                  fieldNames={{ key: 'id', value: 'name' }}
+                  getList={this.getList}
+                  setList={this.setList}
+                  placeholder="请选择卡口点位"
+                />
               )}
             </FormItem>
           </Col>
