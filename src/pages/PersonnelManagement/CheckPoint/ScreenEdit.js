@@ -2,27 +2,54 @@ import React, { PureComponent } from 'react';
 import router from 'umi/router';
 import { Button, Col, Form, Input, Row, Select, Switch } from 'antd';
 
-import { getFieldDecConfig, CARDS } from './utils';
+import { getFieldDecConfig, genOperateCallback } from './utils';
 
 const { Item: FormItem } = Form;
 const { Option } = Select;
 
 @Form.create()
 export default class ScreenEdit extends PureComponent {
-  handleSubmit = e => {
-    // const { validateFields } = this.props.form;
-    // e.preventDefault();
-    // validateFields((err, values) => {
-    //   if (!err) {
-    //     console.log('Received values of form: ', values);
-    //   }
-    // });
+  componentDidMount() {
+    this.getCardTypes();
+  }
 
-    router.push(`/personnel-management/check-point/list/companyId/2`);
+  getCardTypes() {
+    const { dispatch } = this.props;
+    dispatch({ type: 'checkPoint/fetchCardTypes' });
+  }
+
+  handleSubmit = e => {
+    const {
+      dispatch,
+      match: { params: { companyId, id } },
+      form: { validateFields },
+    } = this.props;
+
+    e.preventDefault();
+    validateFields((err, values) => {
+      if (!err) {
+        const { status } = values;
+        const params = { ...values, status: +status };
+        if (companyId)
+          params.companyId = companyId;
+        if (id)
+          params.id = id;
+        dispatch({
+          type: `checkPoint/${id ? 'edit' : 'add'}CheckPoint`,
+          index: 2,
+          payload: params,
+          callback: genOperateCallback(companyId, 2),
+        });
+
+      }
+    });
   };
 
   render() {
-    const { form: { getFieldDecorator } } = this.props;
+    const {
+      checkPoint: { cardTypes },
+      form: { getFieldDecorator },
+    } = this.props;
 
     return (
       <Form layout="vertical" onSubmit={this.handleSubmit}>
@@ -37,7 +64,7 @@ export default class ScreenEdit extends PureComponent {
           <Col lg={8} md={12} sm={24}>
             <FormItem label="卡口点位">
               {getFieldDecorator('pointId', {
-                rules: [{ required: true, message: '请选择卡口点位' }],
+                // rules: [{ required: true, message: '请选择卡口点位' }],
               })(
                 <Select placeholder="请选择卡口点位" />
               )}
@@ -70,7 +97,7 @@ export default class ScreenEdit extends PureComponent {
                 rules: [{ required: true, message: '请选择控制卡型号' }],
               })(
                 <Select placeholder="控制卡型号">
-                  {CARDS.map((label, index) => <Option key={index}>{label}</Option>)}
+                  {cardTypes.map((label, index) => <Option key={index}>{label}</Option>)}
                 </Select>
               )}
             </FormItem>
@@ -92,7 +119,9 @@ export default class ScreenEdit extends PureComponent {
           <Col lg={8} md={12} sm={24}>
             <FormItem label="设备状态">
               {getFieldDecorator('status', {
+                initialValue: true,
                 rules: [{ required: true, message: '请选择设备状态' }],
+                valuePropName: 'checked',
               })(
                 <Switch
                   checkedChildren="启用"

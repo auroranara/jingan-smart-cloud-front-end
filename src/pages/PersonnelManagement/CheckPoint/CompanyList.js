@@ -38,7 +38,7 @@ export default class CompanyList extends PureComponent {
   componentDidMount() {
     this.childElem = document.querySelector('#root div');
     document.addEventListener('scroll', this.handleScroll, false);
-    // this.fetchInitCompanyList();
+    this.fetchInitCompanyList();
     this.lazyFetchUnits = _.debounce(this.fetchUnits, 300);
   }
 
