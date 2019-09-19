@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { AutoComplete, Spin } from 'antd';
+import { Select, Spin } from 'antd';
 import debounce from 'lodash/debounce';
 
-const { Option } = AutoComplete;
+const { Option } = Select;
 const FIELDNAMES = {
   key: 'key',
   value: 'value',
@@ -45,7 +45,7 @@ export default class SearchSelect extends Component {
     const { key, value } = { ...FIELDNAMES, ...fieldNames };
 
     return (
-      <AutoComplete
+      <Select
         placeholder="请选择"
         defaultActiveFirstOption={false}
         filterOption={false}
@@ -57,7 +57,7 @@ export default class SearchSelect extends Component {
         {list && list.map(({ [key]: k, [value]: v }) => (
           <Option key={k}>{v}</Option>
         ))}
-      </AutoComplete>
+      </Select>
     );
   }
 }
