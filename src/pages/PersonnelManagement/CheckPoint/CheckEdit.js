@@ -17,7 +17,7 @@ const TAB_COMS = [PointEdit, EquipmentEdit, ScreenEdit];
 }))
 export default class CheckEdit extends PureComponent {
   render() {
-    const { match: { params: { tabIndex } } } = this.props;
+    const { match: { params: { companyId, tabIndex } } } = this.props;
     const Component = TAB_COMS[tabIndex];
 
     const title = `新增${TABS[tabIndex]}`;
@@ -25,7 +25,7 @@ export default class CheckEdit extends PureComponent {
       { title: '首页', name: '首页', href: '/' },
       { title: '人员在岗在位管理', name: '人员在岗在位管理' },
       { title: '卡口信息', name: '卡口信息', href: '/personnel-management/check-point/company-list' },
-      { title: '卡口列表', name: '卡口列表', href: `/personnel-management/check-point/list/companyId/${tabIndex}` },
+      { title: '卡口列表', name: '卡口列表', href: `/personnel-management/check-point/list/${companyId}/${tabIndex}` },
       { title, name: title },
     ];
 

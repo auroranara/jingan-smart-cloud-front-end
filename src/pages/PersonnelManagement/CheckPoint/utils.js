@@ -8,6 +8,9 @@ export const UPLOAD_ACTION = '/acloud_new/v2/uploadFile';
 export const CARDS = ['单双色控制卡', '多彩控制卡', '全彩控制卡'];
 export const TABS = ['卡口点位', '卡口设备', '显示屏'];
 export const TAB_LIST = TABS.map((tab, index) => ({ key: index.toString(), tab }));
+export const POINT_INDEX = 0;
+export const EQUIPMENT_INDEX = 1;
+export const SCREEN_INDEX = 2;
 export const FORMITEM_LAYOUT = {
   labelCol: {
     xs: { span: 24 },
@@ -59,16 +62,43 @@ export function uploadConvertToResult(list) {
   return list.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }));
 }
 
-export function genOperateCallback(companyId, index) {
+export function genOperateCallback(url) {
   return function (code, msg) {
     if (code === 200) {
       message.success('操作成功！');
-      router.push(`/personnel-management/check-point/list/${companyId}/${index}`);
+      url && router.push(url);
     } else
     message.error(msg);
   };
 }
 
-export function genListLink(companyId, index) {
-  return ['查看', '编辑', '删除'].map(label => <Link to={``}>{label}</Link>);
+export function genListLink(dispatch, companyId, index, id) {
+  return [
+    <Link to={`/personnel-management/check-point/detail/${companyId}/${index}/${id}`}>查看</Link>,
+    <Link to={`/personnel-management/check-point/edit/${companyId}/${index}/${id}`}>编辑</Link>,
+    <span onClick={e => {
+      dispatch({
+        index,
+        type: 'checkPoint/deleteCheckPoint',
+        callback: genOperateCallback(),
+      });
+    }}>删除</span>,
+  ];
+}
+
+const PROPS = [
+  ['name', 'location', 'direction', 'bayonetEquipmentList', 'photoList'],
+  ['name', 'code', 'number', 'area', 'location', 'status'],
+  ['name', 'pointId', 'code', 'ipAddress', 'portNumber', 'controllerCardType', 'modelType', 'modelNumber', 'status'],
+]
+
+export function initFormValues(values, index) {
+  return PROPS[index].reduce((prev, next) => {
+    const v = values[next];
+    if (next === 'status')
+      prev[next] = !!+v;
+    else
+      prev[next] = v;
+    return prev;
+  }, {});
 }

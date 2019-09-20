@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import router from 'umi/router';
 import { Button, Col, Form, Input, Row, Switch } from 'antd';
 
-import { genOperateCallback, getFieldDecConfig } from './utils';
+import { genOperateCallback, getFieldDecConfig, initFormValues, EQUIPMENT_INDEX } from './utils';
 
 const { Item: FormItem } = Form;
 
@@ -23,7 +23,7 @@ export default class EquipmentEdit extends PureComponent {
       type: 'checkPoint/fetchCheckPoint',
       index: tabIndex,
       payload: id,
-      callback: detail => setFieldsValue(detail),
+      callback: detail => setFieldsValue(initFormValues(detail, EQUIPMENT_INDEX)),
     });
   }
 
@@ -38,16 +38,16 @@ export default class EquipmentEdit extends PureComponent {
     validateFields((err, values) => {
       if (!err) {
         const { status } = values;
-        const params = { ...values, status: +status };
-        if (companyId)
-          params.companyId = companyId;
+        const params = { ...values, companyId, status: +status };
+        // if (companyId)
+        //   params.companyId = companyId;
         if (id)
           params.id = id;
         dispatch({
           type: `checkPoint/${id ? 'edit' : 'add'}CheckPoint`,
-          index: 1,
+          index: EQUIPMENT_INDEX,
           payload: params,
-          callback: genOperateCallback(companyId, 1),
+          callback: genOperateCallback(`/personnel-management/check-point/list/${companyId}/${EQUIPMENT_INDEX}`),
         });
 
       }

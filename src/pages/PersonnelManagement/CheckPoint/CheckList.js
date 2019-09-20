@@ -7,7 +7,7 @@ import { Button, Card, Input, List, Switch, message } from 'antd';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './CompanyList.less';
-import { getAddress, TAB_LIST } from './utils';
+import { genListLink, getAddress, TAB_LIST, POINT_INDEX, EQUIPMENT_INDEX, SCREEN_INDEX } from './utils';
 
 const title = '卡口列表';
 const breadcrumbList = [
@@ -23,8 +23,6 @@ const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
 const EQUIPMENT = 'equipment';
 const SCREEN = 'screen';
-const EQUIPMENT_INDEX = 1;
-const SCREEN_INDEX = 2;
 
 @connect(({ checkPoint, loading }) => ({ checkPoint, loading: loading.effects['checkPoint/fetchCheckList'] }))
 export default class CheckList extends PureComponent {
@@ -140,17 +138,15 @@ export default class CheckList extends PureComponent {
     this.setState({ [prop]: newStatus });
   };
 
-  renderPoint = item => {
-    const {
-      id,
-      companyId,
-      name,
-      location,
-      direction,
-      photoList,
-    } = item;
+  genLink = (index, id) => {
+    const { dispatch, match: { params: { companyId } } } = this.props;
+    return genListLink(dispatch, companyId, index, id);
+  };
 
-    const actions = ['查看', '编辑', '删除'];
+  renderPoint = item => {
+    const { id, name, location, direction, photoList } = item;
+
+    const actions = this.genLink(POINT_INDEX, id);
     const address = location || NO_DATA;
     return (
       <List.Item key={id}>
@@ -176,20 +172,11 @@ export default class CheckList extends PureComponent {
   };
 
   renderEquipment = item => {
-    const {
-      id,
-      companyId,
-      name,
-      area,
-      location,
-      code,
-      number,
-      status,
-    } = item;
+    const { id, name, area, location, code, number, status } = item;
 
     const { equipmentStatus } = this.state;
 
-    const actions = ['查看', '编辑', '删除'];
+    const actions = this.genLink(EQUIPMENT_INDEX, id);
     const address = `区域位置：${!area && !location ? NO_DATA : `${area || ''}${location || ''}`}`;
     return (
       <List.Item key={id}>
@@ -228,17 +215,11 @@ export default class CheckList extends PureComponent {
   };
 
   renderScreen = item => {
-    const {
-      id,
-      name,
-      code,
-      ipAddress,
-      status,
-    } = item;
+    const { id, name, code, ipAddress, status } = item;
 
     const { screenStatus } = this.state;
 
-    const actions = ['查看', '编辑', '删除'];
+    const actions = this.genLink(SCREEN_INDEX, id);
     const address = ` 地址：${getAddress(item) || NO_DATA}`;
     return (
       <List.Item key={id}>

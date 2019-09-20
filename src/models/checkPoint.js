@@ -84,12 +84,13 @@ export default {
       const { code, msg } = response || {};
       callback && callback(code, msg);
     },
-    *fetchCardTypes({ payload }, { call, put }) {
+    *fetchCardTypes({ payload, callback }, { call, put }) {
       const response = yield call(getCardTypes, payload);
       const { code, data } = response || {};
       if (code === 200) {
         const list = getList(data);
         yield put({ type: 'saveCardTypes', payload: list });
+        callback && callback();
       }
     },
     *fetchUnits({ payload, callback }, { call, put }) {

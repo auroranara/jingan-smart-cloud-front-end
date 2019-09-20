@@ -4,7 +4,7 @@ import { Button, Col, Form, Icon, Input, Row, Upload } from 'antd';
 import styles from './CompanyList.less';
 import SearchSelect from '@/jingan-components/SearchSelect';
 import { getToken } from '@/utils/authority';
-import { genOperateCallback, getFieldDecConfig, uploadConvertToOrigin, uploadConvertToResult, FOLDER, UPLOAD_ACTION } from './utils';
+import { genOperateCallback, getFieldDecConfig, initFormValues, uploadConvertToOrigin, uploadConvertToResult, EQUIPMENT_INDEX, FOLDER, UPLOAD_ACTION, POINT_INDEX } from './utils';
 import { getFileList } from '@/pages/BaseInfo/utils';
 
 const { Item: FormItem } = Form;
@@ -28,18 +28,18 @@ export default class PointEdit extends PureComponent {
       type: 'checkPoint/fetchCheckPoint',
       index: tabIndex,
       payload: id,
-      callback: detail => setFieldsValue(detail),
+      callback: detail => setFieldsValue(initFormValues(detail, POINT_INDEX)),
     });
   }
 
   getList = name => {
     const { dispatch } = this.props;
-    dispatch({ type: 'checkPoint/fetchCheckList', index: 1, payload: { pageNum: 1, pageSize: 20, name } });
+    dispatch({ type: 'checkPoint/fetchCheckList', index: EQUIPMENT_INDEX, payload: { pageNum: 1, pageSize: 20, name } });
   };
 
   setList = () => {
     const { dispatch } = this.props;
-    dispatch({ type: 'checkPoint/saveCheckList', payload: { index: 1, list: [], pagination: { pageNum: 1 } } });
+    dispatch({ type: 'checkPoint/saveCheckList', payload: { index: EQUIPMENT_INDEX, list: [], pagination: { pageNum: 1 } } });
   };
 
   handleSubmit = e => {
@@ -60,9 +60,9 @@ export default class PointEdit extends PureComponent {
           params.id = id;
         dispatch({
           type: `checkPoint/${id ? 'edit' : 'add'}CheckPoint`,
-          index: 0,
+          index: POINT_INDEX,
           payload: params,
-          callback: genOperateCallback(companyId, 0),
+          callback: genOperateCallback(`/personnel-management/check-point/list/${companyId}/${POINT_INDEX}`),
         });
 
       }
@@ -111,14 +111,14 @@ export default class PointEdit extends PureComponent {
           </Col>
           <Col lg={8} md={12} sm={24}>
             <FormItem label="关联设备">
-              {getFieldDecorator('equipmentList', {
+              {getFieldDecorator('bayonetEquipmentList', {
                 // rules: [{ required: true, whitespace: true, message: '请选择关联设备' }],
               })(
                 <SearchSelect
                   mode="multiple"
                   className={styles.searchSelect}
                   loading={listLoading}
-                  list={lists[1]}
+                  list={lists[EQUIPMENT_INDEX]}
                   fieldNames={{ key: 'id', value: 'name' }}
                   getList={this.getList}
                   setList={this.setList}

@@ -3,7 +3,7 @@ import router from 'umi/router';
 import { Button, Col, Form, Input, Row, Select, Switch } from 'antd';
 
 import SearchSelect from '@/jingan-components/SearchSelect';
-import { getFieldDecConfig, genOperateCallback } from './utils';
+import { getFieldDecConfig, genOperateCallback, initFormValues, POINT_INDEX, SCREEN_INDEX } from './utils';
 import styles from './CompanyList.less';
 
 const { Item: FormItem } = Form;
@@ -13,8 +13,8 @@ const { Option } = Select;
 export default class ScreenEdit extends PureComponent {
   componentDidMount() {
     const { match: { params: { id } } } = this.props;
-    id && this.fetchDetail();
     this.getCardTypes();
+    id && this.fetchDetail();
   }
 
   fetchDetail() {
@@ -27,23 +27,23 @@ export default class ScreenEdit extends PureComponent {
       type: 'checkPoint/fetchCheckPoint',
       index: tabIndex,
       payload: id,
-      callback: detail => setFieldsValue(detail),
+      callback: detail => setFieldsValue(initFormValues(detail, SCREEN_INDEX)),
     });
   }
 
-  getCardTypes() {
+  getCardTypes(callback) {
     const { dispatch } = this.props;
-    dispatch({ type: 'checkPoint/fetchCardTypes' });
+    dispatch({ type: 'checkPoint/fetchCardTypes', callback });
   }
 
   getList = name => {
     const { dispatch } = this.props;
-    dispatch({ type: 'checkPoint/fetchCheckList', index: 0, payload: { pageNum: 1, pageSize: 20, name } });
+    dispatch({ type: 'checkPoint/fetchCheckList', index: POINT_INDEX, payload: { pageNum: 1, pageSize: 20, name } });
   };
 
   setList = () => {
     const { dispatch } = this.props;
-    dispatch({ type: 'checkPoint/saveCheckList', payload: { index: 0, list: [], pagination: { pageNum: 1 } } });
+    dispatch({ type: 'checkPoint/saveCheckList', payload: { index: POINT_INDEX, list: [], pagination: { pageNum: 1 } } });
   };
 
   handleSubmit = e => {
@@ -55,19 +55,19 @@ export default class ScreenEdit extends PureComponent {
 
     e.preventDefault();
     validateFields((err, values) => {
-      console.log(values);
+      // console.log(values);
       if (!err) {
         const { status } = values;
-        const params = { ...values, status: +status };
-        if (companyId)
-          params.companyId = companyId;
+        const params = { ...values, companyId, status: +status };
+        // if (companyId)
+        //   params.companyId = companyId;
         if (id)
           params.id = id;
         dispatch({
           type: `checkPoint/${id ? 'edit' : 'add'}CheckPoint`,
-          index: 2,
+          index: SCREEN_INDEX,
           payload: params,
-          callback: genOperateCallback(companyId, 2),
+          callback: genOperateCallback(`/personnel-management/check-point/list/${companyId}/${SCREEN_INDEX}`),
         });
 
       }
@@ -100,7 +100,7 @@ export default class ScreenEdit extends PureComponent {
                   showArrow={false}
                   className={styles.searchSelect}
                   loading={listLoading}
-                  list={lists[0]}
+                  list={lists[POINT_INDEX]}
                   fieldNames={{ key: 'id', value: 'name' }}
                   getList={this.getList}
                   setList={this.setList}
