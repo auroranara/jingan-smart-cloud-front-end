@@ -370,7 +370,7 @@ export default class EmergencyPlanList extends Component {
           <div className={styles.multi}>
             <div>预案名称：{name}</div>
             <div>重大危险源：{+isMajorHazard ? '是' : '否'}</div>
-            <div>使用领域：{applicationArea}</div>
+            <div>适用领域：{applicationArea}</div>
             <div>{+editionType !== 2 ? '创建' : '修订'}，{`V${editionCode}`}</div>
           </div>
         ),

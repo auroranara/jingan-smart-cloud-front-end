@@ -104,11 +104,11 @@ export default class EmergencyPlanHandler extends Component {
         };
         const callback = (isSuccess) => {
           if (isSuccess) {
-            message.success(`${id ? '编辑' : '添加'}成功！`, () => {
-              router.goBack();
+            message.success(`${id ? '编辑' : '新增'}成功！`, () => {
+              router.push('/emergency-management/emergency-plan/list');
             });
           } else {
-            message.error(`${id ? '编辑' : '添加'}失败，请稍后重试！`, () => {
+            message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`, () => {
               this.setState({
                 submitting: false,
               });
