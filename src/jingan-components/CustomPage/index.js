@@ -66,7 +66,7 @@ export default class CustomPage extends Component {
             });
           }
         };
-        (id ? edit : add)({ detail, values, callback });
+        (id ? edit : add)({ ...detail, ...values}, callback);
       }
     });
   }
@@ -74,7 +74,7 @@ export default class CustomPage extends Component {
   // 编辑按钮点击事件
   handleEditButtonClick = () => {
     const { editPath, match: { params: { id } } } = this.props;
-    router.replace(`${editPath}${id}`);
+    router.replace(`${editPath}${editPath.endsWith('/') ? id : `/${id}`}`);
   }
 
   render() {
@@ -82,19 +82,21 @@ export default class CustomPage extends Component {
       match: {
         params,
       },
+      detail,
       getBreadcrumbList,
       getTitle,
       getFields,
       enableEdit,
       loading,
+      listPath,
     } = this.props;
     const { submitting } = this.state;
     const { type } = params;
-    const title = getTitle(params);
-    const breadcrumbList = getBreadcrumbList(params);
-    const values = this.form && this.form.getFieldsValue() || {};
-    const fields = getFields(params, values);
-    const editable = enableEdit(params, values);
+    const title = getTitle(type);
+    const breadcrumbList = getBreadcrumbList(title, listPath);
+    const values = this.form && this.form.getFieldsValue();
+    const fields = getFields(type, detail, values);
+    const editable = enableEdit(detail, values);
 
     return (
       <PageHeaderLayout
