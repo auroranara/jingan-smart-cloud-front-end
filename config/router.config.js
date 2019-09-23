@@ -2463,6 +2463,32 @@ module.exports = env => {
                 },
               ],
             },
+            // // 培训计划
+            // {
+            //   name: 'trainingProgram',
+            //   path: '/training/training-program',
+            //   code: 'training.trainingProgram',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/training/training-program',
+            //       name: 'list',
+            //       redirect: '/training/training-program/list',
+            //     },
+            //     {
+            //       path: '/training/training-program/list',
+            //       code: 'training.trainingProgram.list',
+            //       name: 'list',
+            //       component: './Training/TrainingProgram/List',
+            //     },
+            //     {
+            //       path: '/training/training-program/:type/:id?',
+            //       code: 'training.trainingProgram.detail',
+            //       name: 'detail',
+            //       component: './Training/TrainingProgram/Other',
+            //     },
+            //   ],
+            // },
           ],
         },
         // 人员定位

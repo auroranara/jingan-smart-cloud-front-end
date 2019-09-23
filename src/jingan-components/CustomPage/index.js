@@ -20,29 +20,29 @@ export default class CustomPage extends Component {
     if (['add', 'edit', 'detail'].includes(type)) {
       if (type !== 'add') {
         if (id) {
-          getDetail && getDetail();
+          getDetail && getDetail({ id }, () => {
+            setTimeout(() => {
+              this.forceUpdate();
+            }, 0);
+          });
         } else {
           router.replace('/500');
         }
       } else {
-        setDetail && setDetail();
+        setDetail && setDetail({});
       }
     } else {
-      router.replace('/500');
+      router.replace('/404');
     }
   }
 
   componentWillUnmount() {
     const { setDetail } = this.props;
-    setDetail && setDetail();
+    setDetail && setDetail({});
   }
 
   setFormReference = form => {
     this.form = form;
-  }
-
-  refresh = () => {
-    this.forceUpdate();
   }
 
   // 返回按钮点击事件
@@ -101,7 +101,7 @@ export default class CustomPage extends Component {
     const breadcrumbList = getBreadcrumbList(title, listPath);
     const values = this.form && this.form.getFieldsValue();
     const fields = getFields(type, detail, values);
-    const editable = enableEdit(detail);
+    const editable = enableEdit ? enableEdit(detail) : true;
 
     return (
       <PageHeaderLayout
@@ -117,7 +117,7 @@ export default class CustomPage extends Component {
               searchable={false}
               resetable={false}
               ref={this.setFormReference}
-              refresh={this.refresh}
+              refresh={this.forceUpdate}
               action={
                 <Fragment>
                   <Button onClick={this.handleBackButtonClick}>返回</Button>

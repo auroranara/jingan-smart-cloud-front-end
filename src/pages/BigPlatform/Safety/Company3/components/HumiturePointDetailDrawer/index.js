@@ -97,7 +97,7 @@ export default class HumiturePointDetailDrawer extends Component {
             width: 4,
           },
           detail: {
-            formatter: `{a|${status < 0 || isNaN(value) ? '--' : value}}\n{b|${name}}`,
+            formatter: `{a|${status < 0 || isNaN(value) ? '--' : value.toFixed(2)}}\n{b|${name}}`,
             offsetCenter: [0, '65%'],
             rich: {
               a: {
