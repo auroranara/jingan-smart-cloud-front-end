@@ -17,14 +17,18 @@ export default class CustomPage extends Component {
 
   componentDidMount() {
     const { getDetail, setDetail, match: { params: { type, id } } } = this.props;
-    if (type !== 'add') {
-      if (id) {
-        getDetail && getDetail();
+    if (['add', 'edit', 'detail'].includes(type)) {
+      if (type !== 'add') {
+        if (id) {
+          getDetail && getDetail();
+        } else {
+          router.replace('/500');
+        }
       } else {
-        router.replace('/500');
+        setDetail && setDetail();
       }
     } else {
-      setDetail && setDetail();
+      router.replace('/500');
     }
   }
 
@@ -66,7 +70,7 @@ export default class CustomPage extends Component {
             });
           }
         };
-        (id ? edit : add)({ ...detail, ...values}, callback);
+        (id ? edit : add)({ ...detail, ...values }, callback);
       }
     });
   }
@@ -74,13 +78,15 @@ export default class CustomPage extends Component {
   // 编辑按钮点击事件
   handleEditButtonClick = () => {
     const { editPath, match: { params: { id } } } = this.props;
-    router.replace(`${editPath}${editPath.endsWith('/') ? id : `/${id}`}`);
+    router.push(`${editPath}${editPath.endsWith('/') ? id : `/${id}`}`);
   }
 
   render() {
     const {
       match: {
-        params,
+        params: {
+          type,
+        },
       },
       detail,
       getBreadcrumbList,
@@ -91,12 +97,11 @@ export default class CustomPage extends Component {
       listPath,
     } = this.props;
     const { submitting } = this.state;
-    const { type } = params;
     const title = getTitle(type);
     const breadcrumbList = getBreadcrumbList(title, listPath);
     const values = this.form && this.form.getFieldsValue();
     const fields = getFields(type, detail, values);
-    const editable = enableEdit(detail, values);
+    const editable = enableEdit(detail);
 
     return (
       <PageHeaderLayout
