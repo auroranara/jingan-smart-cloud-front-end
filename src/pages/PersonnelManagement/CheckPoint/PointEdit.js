@@ -28,7 +28,11 @@ export default class PointEdit extends PureComponent {
       type: 'checkPoint/fetchCheckPoint',
       index: tabIndex,
       payload: id,
-      callback: detail => setFieldsValue(initFormValues(detail, POINT_INDEX)),
+      callback: detail => {
+        const { photoList } = detail;
+        setFieldsValue(initFormValues(detail, POINT_INDEX));
+        this.setState({ fileList: uploadConvertToOrigin(photoList) });
+      },
     });
   }
 
@@ -54,6 +58,7 @@ export default class PointEdit extends PureComponent {
     validateFields((err, values) => {
       if (!err) {
         const params = { ...values, photoList: uploadConvertToResult(fileList) };
+        params.bayonetEquipmentList = [];
         if (companyId)
           params.companyId = companyId;
         if (id)
@@ -133,7 +138,7 @@ export default class PointEdit extends PureComponent {
             <FormItem label="卡口照片">
             <Upload
               name="files"
-              data={{ FOLDER }}
+              data={{ folder: FOLDER }}
               action={UPLOAD_ACTION}
               fileList={fileList}
               onChange={this.handleUploadChange}

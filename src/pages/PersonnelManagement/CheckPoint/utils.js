@@ -62,11 +62,12 @@ export function uploadConvertToResult(list) {
   return list.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }));
 }
 
-export function genOperateCallback(url) {
+export function genOperateCallback(url, callback) {
   return function (code, msg) {
     if (code === 200) {
       message.success('操作成功！');
       url && router.push(url);
+      callback && callback();
     } else
     message.error(msg);
   };
@@ -87,18 +88,17 @@ export function genListLink(dispatch, companyId, index, id) {
 }
 
 const PROPS = [
-  ['name', 'location', 'direction', 'bayonetEquipmentList', 'photoList'],
+  ['name', 'location', 'direction', 'bayonetEquipmentList'],
   ['name', 'code', 'number', 'area', 'location', 'status'],
   ['name', 'pointId', 'code', 'ipAddress', 'portNumber', 'controllerCardType', 'modelType', 'modelNumber', 'status'],
 ]
 
 export function initFormValues(values, index) {
   return PROPS[index].reduce((prev, next) => {
-    const v = values[next];
+    let v = values[next];
     if (next === 'status')
-      prev[next] = !!+v;
-    else
-      prev[next] = v;
+      v = !!+v;
+    prev[next] = v;
     return prev;
   }, {});
 }

@@ -7,7 +7,7 @@ import { Button, Card, Input, List, Switch, message } from 'antd';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './CompanyList.less';
-import { genListLink, getAddress, TAB_LIST, POINT_INDEX, EQUIPMENT_INDEX, SCREEN_INDEX } from './utils';
+import { genListLink, genOperateCallback, getAddress, TAB_LIST, POINT_INDEX, EQUIPMENT_INDEX, SCREEN_INDEX, TABS } from './utils';
 
 const title = '卡口列表';
 const breadcrumbList = [
@@ -65,7 +65,7 @@ export default class CheckList extends PureComponent {
   handleSearch = vals => {
     const { tabIndex } = this.state;
 
-    this.value = vals && vals.title ? vals.title : '';
+    this.value = vals && vals.name ? vals.name : '';
     this.hasMore[tabIndex] = true;
     this.currentpageNum[tabIndex] = 2;
     this.fetchInitCheckList();
@@ -115,8 +115,8 @@ export default class CheckList extends PureComponent {
       pageNum: pageIndex,
       pageSize: PAGE_SIZE,
     };
-    // if (name)
-    //   payload.companyName = name;
+    if (name)
+      payload.name = name;
     dispatch({
       type: 'checkPoint/fetchCheckList',
       index,
@@ -131,11 +131,19 @@ export default class CheckList extends PureComponent {
     });
   };
 
-  genSwitchChange = (id, tabIndex) => checked => {
+  genSwitchChange = (item, tabIndex) => checked => {
+    const { dispatch } = this.props;
+    const { id } = item;
     const prop = `${+tabIndex === EQUIPMENT_INDEX ? EQUIPMENT : SCREEN}Status`;
     const status = this.state[prop];
     const newStatus = { ...status, [id]: checked };
-    this.setState({ [prop]: newStatus });
+
+    dispatch({
+      index: tabIndex,
+      type: 'checkPoint/editCheckPoint',
+      payload: { ...item, status: +checked },
+      callback: genOperateCallback('', () => this.setState({ [prop]: newStatus })),
+    });
   };
 
   genLink = (index, id) => {
@@ -206,7 +214,7 @@ export default class CheckList extends PureComponent {
               checkedChildren="启用"
               unCheckedChildren="禁用"
               checked={equipmentStatus[id]}
-              onChange={this.genSwitchChange(id, EQUIPMENT_INDEX)}
+              onChange={this.genSwitchChange(item, EQUIPMENT_INDEX)}
             />
           </p>
         </Card>
@@ -249,7 +257,7 @@ export default class CheckList extends PureComponent {
               checkedChildren="启用"
               unCheckedChildren="禁用"
               checked={screenStatus[id]}
-              onChange={this.genSwitchChange(id, SCREEN_INDEX)}
+              onChange={this.genSwitchChange(item, SCREEN_INDEX)}
             />
           </p>
         </Card>
@@ -282,7 +290,7 @@ export default class CheckList extends PureComponent {
         id: 'name',
         // label: '单位名称：',
         span: { md: 8, sm: 12, xs: 24 },
-        render: () => <Input placeholder="请输入单位名称" />,
+        render: () => <Input placeholder={`请输入${TABS[tabIndex]}名称`} />,
         transform: v => v.trim(),
       },
     ];
@@ -297,13 +305,14 @@ export default class CheckList extends PureComponent {
         tabActiveKey={tabIndex}
         content={
           <p className={styles.total}>
-            卡口总数：
+            {TABS[tabIndex]}总数：
             {list.length}
           </p>
         }
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
+            key={tabIndex}
             fields={fields}
             action={toolBarAction}
             onSearch={this.handleSearch}
