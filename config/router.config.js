@@ -1752,7 +1752,8 @@ module.exports = env => {
                   component: './DeviceManagement/AssociateSensor/WaterSystem',
                 },
                 {
-                  path: '/device-management/associate-sensor/company/:companyId/temperature-and-humidity',
+                  path:
+                    '/device-management/associate-sensor/company/:companyId/temperature-and-humidity',
                   name: 'temperatureAndHumidity',
                   code: 'deviceManagement.associateSensor.temperatureAndHumidity',
                   component: './DeviceManagement/AssociateSensor/TemperatureAndHumidity',
@@ -3047,6 +3048,38 @@ module.exports = env => {
                   code: 'safetyKnowledgeBase.msds.edit',
                   name: 'edit',
                   component: './SafetyKnowledgeBase/MSDS/MEdit',
+                },
+              ],
+            },
+            // 典型事故案例
+            {
+              path: '/safety-knowledge-base/typical-accident-case',
+              code: 'safetyKnowledgeBase.typicalAccidentCase',
+              name: 'typicalAccidentCase',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-knowledge-base/typical-accident-case',
+                  name: 'typicalAccidentCase',
+                  redirect: '/safety-knowledge-base/typical-accident-case/list',
+                },
+                {
+                  path: '/safety-knowledge-base/typical-accident-case/list',
+                  code: 'safetyKnowledgeBase.typicalAccidentCase.listView',
+                  name: 'list',
+                  component: './SafetyKnowledgeBase/TypicalAccidentCase/TList',
+                },
+                {
+                  path: '/safety-knowledge-base/typical-accident-case/add',
+                  code: 'safetyKnowledgeBase.typicalAccidentCase.add',
+                  name: 'add',
+                  component: './SafetyKnowledgeBase/TypicalAccidentCase/TEdit',
+                },
+                {
+                  path: '/safety-knowledge-base/typical-accident-case/edit/:id',
+                  code: 'safetyKnowledgeBase.typicalAccidentCase.edit',
+                  name: 'edit',
+                  component: './SafetyKnowledgeBase/TypicalAccidentCase/TEdit',
                 },
               ],
             },

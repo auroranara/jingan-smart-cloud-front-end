@@ -425,4 +425,13 @@ export default {
       detail: 'baseInfo.specialEquipment.detail',
     },
   },
+  safetyKnowledgeBase: {
+    // 典型事故案例
+    typicalAccidentCase: {
+      listView: 'safetyKnowledgeBase.typicalAccidentCase.listView',
+      add: 'safetyKnowledgeBase.typicalAccidentCase.add',
+      edit: 'safetyKnowledgeBase.typicalAccidentCase.edit',
+      delete: 'safetyKnowledgeBase.typicalAccidentCase.delete',
+    },
+  },
 };
