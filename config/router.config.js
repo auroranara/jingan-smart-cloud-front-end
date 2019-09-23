@@ -1388,7 +1388,7 @@ module.exports = env => {
                 },
               ],
             },
-            // 设备管理
+            // 传感器管理
             {
               path: '/device-management/sensor',
               code: 'deviceManagement.sensor',
@@ -1420,7 +1420,7 @@ module.exports = env => {
                 },
               ],
             },
-            // 设备型号
+            // 传感器型号
             {
               path: '/device-management/sensor-model',
               code: 'deviceManagement.sensorModel',
@@ -1535,6 +1535,38 @@ module.exports = env => {
                   code: 'deviceManagement.tagLibrary.listView',
                   name: 'listView',
                   component: '/DeviceManagement/TagLibrary',
+                },
+              ],
+            },
+            // 传感器（新）
+            {
+              path: '/device-management/new-sensor',
+              name: 'newSensor',
+              code: 'deviceManagement.newSensor',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/new-sensor',
+                  name: 'newSensor',
+                  redirect: '/device-management/new-sensor/list',
+                },
+                {
+                  path: '/device-management/new-sensor/list',
+                  name: 'list',
+                  code: 'deviceManagement.newSensor.listView',
+                  component: '/DeviceManagement/NewSensor',
+                },
+                {
+                  path: '/device-management/new-sensor/add',
+                  name: 'add',
+                  code: 'deviceManagement.newSensor.add',
+                  component: '/DeviceManagement/NewSensor/AddSensor',
+                },
+                {
+                  path: '/device-management/new-sensor/edit/:id',
+                  name: 'edit',
+                  code: 'deviceManagement.newSensor.edit',
+                  component: '/DeviceManagement/NewSensor/AddSensor',
                 },
               ],
             },

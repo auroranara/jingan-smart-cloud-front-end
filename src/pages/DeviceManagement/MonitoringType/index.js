@@ -107,7 +107,7 @@ const RenderModal = Form.create()(props => {
               (modalStatus === 'addUnder' && detail.id) ||
               (modalStatus === 'edit' && detail.parentId !== '0' && detail.parentId) ||
               '',
-            rules: modalStatus === 'edit' && detail.parentId === '0' ? null : [{ required: true, message: '请选择上级监测类型' }],
+            // rules: modalStatus === 'edit' && detail.parentId === '0' ? null : [{ required: true, message: '请选择上级监测类型' }],
           })(
             <TreeSelect
               disabled={modalStatus === 'addUnder' || detail.parentId === '0'}

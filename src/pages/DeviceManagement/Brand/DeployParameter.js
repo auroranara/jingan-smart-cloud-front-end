@@ -47,6 +47,7 @@ const RenderAddModal = Form.create()(props => {
     onOk,
     onCancel,
     tagList, // 标签列表
+    parameterGroupTypes, // 分组类型数组
   } = props
   const isEdit = detail && detail.id
   const handleConfirm = () => {
@@ -138,6 +139,22 @@ const RenderAddModal = Form.create()(props => {
             </Select>
           )}
         </FormItem>
+        <FormItem {...formItemLayout} label="分组类型：">
+          {getFieldDecorator('fixType', {
+            initialValue: isEdit ? detail.fixType : undefined,
+          })(
+            <Select placeholder="请选择">
+              {parameterGroupTypes.map(item => (
+                <Select.Option
+                  key={item.value}
+                  value={item.value}
+                >
+                  {item.desc}
+                </Select.Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
       </Form>
     </Modal>
   )
@@ -152,6 +169,8 @@ const RenderAlarmStrategyModal = Form.create()(props => {
     onOk,
     alarmStrategy = [], // 报警策略数组
     saveAlarmStrategy,
+    historyVisible,
+    handleViewHistory,
   } = props
   // 添加报警项
   const handleAddItem = () => {
@@ -187,8 +206,10 @@ const RenderAlarmStrategyModal = Form.create()(props => {
       onOk={onOk}
       onCancel={onCancel}
       destroyOnClose
+      width={700}
     >
-      <Button type="primary" onClick={handleAddItem}>添加</Button>
+      <Button type="primary" onClick={handleAddItem} style={{ marginRight: '10px' }}>添加</Button>
+      <Button onClick={handleViewHistory}>配置历史纪录</Button>
       {alarmStrategy.length > 0 && alarmStrategy.map((row, i) => (
         <div key={i} style={{
           marginTop: '10px',
@@ -252,11 +273,13 @@ export default class DeployParameter extends PureComponent {
     addModalVisible: false, // 添加/编辑弹窗可见
     detail: {}, // 编辑时保存参数信息
     alarmModalVisible: false, // 配置报警策略弹窗可见
+    historyVisible: false, // 配置报警策略弹窗
   }
 
   componentDidMount() {
     this.handleQuery()
     this.fetchAllTags()
+    this.fetchParameterGroupTypes()
   }
 
   /**
@@ -279,6 +302,15 @@ export default class DeployParameter extends PureComponent {
   fetchAllTags = () => {
     const { dispatch } = this.props;
     dispatch({ type: 'device/fetchAllTags', payload: {} })
+  }
+
+
+  /**
+   * 获取参数分组类型数组
+   */
+  fetchParameterGroupTypes = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'device/fetchParameterGroupTypes' })
   }
 
   /**
@@ -348,10 +380,6 @@ export default class DeployParameter extends PureComponent {
    */
   closeAlarmModal = () => {
     this.setState({ alarmModalVisible: false, detail: {} })
-  }
-
-  saveState = (newState) => {
-    this.setState({ ...newState })
   }
 
   /**
@@ -426,6 +454,21 @@ export default class DeployParameter extends PureComponent {
       },
       error: (res) => { message.error(res ? res.msg : '删除失败') },
     })
+  }
+
+
+  /**
+   * 打开配置报警策略历史纪录弹窗
+   */
+  handleViewHistory = () => {
+    const { dispatch } = this.props
+    const { detail } = this.state
+    // 获取历史纪录
+    dispatch({
+      type: 'device/fetchParameterStrategyHistory',
+      payload: { paramId: detail.id, defaultFlag: '0' },
+    })
+    this.setState({ historyVisible: true })
   }
 
   /**
@@ -512,9 +555,10 @@ export default class DeployParameter extends PureComponent {
         parameters: { pagination: { total = 0 } },
         tagLibrary: { list: tagList },
         alarmStrategy,
+        parameterGroupTypes, // 分组类型数组
       },
     } = this.props
-    const { addModalVisible, alarmModalVisible } = this.state
+    const { addModalVisible, alarmModalVisible, historyVisible } = this.state
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '设备管理', name: '设备管理' },
@@ -528,6 +572,7 @@ export default class DeployParameter extends PureComponent {
       onOk: this.handleAdd,
       onCancel: this.closeAddModal,
       tagList,
+      parameterGroupTypes,
     }
     const alarmProps = {
       ...this.state,
@@ -536,6 +581,8 @@ export default class DeployParameter extends PureComponent {
       onCancel: this.closeAlarmModal,
       saveAlarmStrategy: this.saveAlarmStrategy,
       alarmStrategy,
+      historyVisible,
+      handleViewHistory: this.handleViewHistory,
     }
     return (
       <PageHeaderLayout

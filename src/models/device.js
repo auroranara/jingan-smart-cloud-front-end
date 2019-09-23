@@ -24,6 +24,9 @@ import {
   fetchAlarmStrategy,
   submitAlarmStrategy,
   deleteParameter,
+  fetchParameterGroupTypes,
+  fetchAllParameters,
+  fetchParameterStrategyHistory,
 } from '@/services/device/brand'
 import {
   fetchTagsForPage,
@@ -32,6 +35,13 @@ import {
   deleteTag,
   fetchAllTags,
 } from '@/services/device/tagLibrary'
+import {
+  fetchSensors,
+  fetchSensorDetail,
+  addSensor,
+  editSensor,
+  deleteSensor,
+} from '@/services/device/newSensor'
 
 const defaultPagination = {
   total: 0,
@@ -71,6 +81,26 @@ export default {
     },
     // 报警策略
     alarmStrategy: [],
+    // 报警策略（自定义）
+    cusAlarmStrategy: [],
+    // 传感器
+    sensor: {
+      list: [],
+      pagination: defaultPagination,
+    },
+    // 传感器详情
+    sensorDetail: {
+      pointFixInfoList: [],// 平面图标注
+    },
+    // 参数分组类型数组
+    parameterGroupTypes: [],
+    // 设备类型配置
+    deviceTypeOptions: [
+      { key: 1, label: '数据处理设备' },
+      { key: 2, label: '网关设备' },
+      { key: 3, label: '监测对象' },
+      { key: 4, label: '传感器' },
+    ],
   },
   effects: {
     // 获取监测类型列表树
@@ -246,6 +276,16 @@ export default {
         })
       }
     },
+    // 获取参数列表（分页）
+    *fetchAllParameters({ payload }, { call, put }) {
+      const response = yield call(fetchAllParameters, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveParameters',
+          payload: response.data,
+        })
+      }
+    },
     // 新增参数
     *addParameter({ payload, success, error }, { call }) {
       const response = yield call(addParameter, payload)
@@ -271,6 +311,17 @@ export default {
         if (callback) callback()
       }
     },
+    // 获取报警策略（自定义）
+    *fetchCusAlarmStrategy({ payload, callback }, { call, put }) {
+      const response = yield call(fetchAlarmStrategy, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { cus: response.data.list || [] },
+        })
+        if (callback) callback(response.data.list || [])
+      }
+    },
     // 保存报警策略
     *submitAlarmStrategy({ payload, success, error }, { call }) {
       const response = yield call(submitAlarmStrategy, payload)
@@ -284,6 +335,69 @@ export default {
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
+    },
+    // 获取参数分组类型数组
+    *fetchParameterGroupTypes({ payload }, { call, put }) {
+      const response = yield call(fetchParameterGroupTypes, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { parameterGroupTypes: response.data.list || [] },
+        })
+      }
+    },
+    // 获取传感器列表（新）
+    *fetchSensors({ payload, callback }, { call, put }) {
+      const response = yield call(fetchSensors, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveSensor',
+          payload: response.data || [],
+        })
+        if (callback) callback()
+      }
+    },
+    // 获取传感器详情
+    *fetchSensorDetail({ payload, callback }, { call, put }) {
+      const response = yield call(fetchSensorDetail, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { sensorDetail: response.data || {} },
+        })
+        if (callback) callback(response.data || {})
+      }
+    },
+    // 新增传感器（新）
+    *addSensor({ payload, success, error }, { call }) {
+      const response = yield call(addSensor, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 编辑传感器（新）
+    *editSensor({ payload, success, error }, { call }) {
+      const response = yield call(editSensor, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 删除传感器（新）
+    *deleteSensor({ payload, success, error }, { call }) {
+      const response = yield call(deleteSensor, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 获取配置参数历史纪录
+    *fetchParameterStrategyHistory({ payload }, { call, put }) {
+      const response = yield call(fetchParameterStrategyHistory, payload)
+      if (response && response.code === 200) {
+        // yield put({
+        //   type: 'save',
+        //   payload:{},
+        // })
+      }
     },
   },
   reducers: {
@@ -374,6 +488,21 @@ export default {
       return {
         ...state,
         alarmStrategy: payload,
+      }
+    },
+    // 保存传感器列表
+    saveSensor(state, {
+      payload: {
+        list = [],
+        pagination = defaultPagination,
+      } = {},
+    }) {
+      return {
+        ...state,
+        sensor: {
+          list,
+          pagination,
+        },
       }
     },
   },

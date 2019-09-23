@@ -621,7 +621,7 @@ export default class AddSensor extends Component {
   render() {
     const {
       companyLoading,
-      match: { prams: { id = null } = {} },
+      match: { params: { id = null } = {} },
       sensor: { companyModal },
     } = this.props
     const { companyModalVisible } = this.state

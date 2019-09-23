@@ -1,0 +1,929 @@
+import { Component, Fragment } from 'react';
+import {
+  Card,
+  Form,
+  Input,
+  Select,
+  Button,
+  Table,
+  Row,
+  Modal,
+  Col,
+  message,
+  Radio,
+  DatePicker,
+  Popconfirm,
+  TreeSelect,
+  Upload,
+  Icon,
+} from 'antd';
+import { connect } from 'dva';
+import { getToken } from '@/utils/authority';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import router from 'umi/router';
+import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
+import BrandModelModal from './Components/BrandModelModal';
+import MonitoringParameterTable from './Components/MonitoringParameterTable';
+import Coordinate from '@/pages/RiskControl/RiskPointManage/Coordinate/index';
+import styles from './AddSensor.less';
+
+const FormItem = Form.Item;
+const Option = Select.Option;
+const { TreeNode } = TreeSelect;
+
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
+};
+const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
+const defaultPageSize = 10;
+const numberReg = /^(0|[1-9][0-9]*)(\.[0-9]{1,3})?$/;
+const UPLOAD_ACTION = '/acloud_new/v2/uploadFile';
+const FOLDER = 'monitor';
+// 平面图标志
+const flatGraphic = [
+  {
+    key: 1,
+    value: '单位平面图',
+  },
+  {
+    key: 2,
+    value: '楼层平面图',
+  },
+  {
+    key: 3,
+    value: '安全四色图',
+  },
+  {
+    key: 4,
+    value: '消防平面图',
+  },
+]
+/* 渲染树节点 */
+const renderTreeNodes = data => {
+  return data.map(item => {
+    const { id, name, child } = item;
+    if (child) {
+      return (
+        <TreeNode title={name} key={id} value={id}>
+          {renderTreeNodes(child)}
+        </TreeNode>
+      );
+    }
+    return <TreeNode title={name} key={id} value={id} />;
+  });
+};
+
+
+@Form.create()
+@connect(({ sensor, device, riskPointManage, buildingsInfo, personnelPosition, loading }) => ({
+  sensor,
+  device,
+  personnelPosition,
+  riskPointManage,
+  buildingsInfo,
+  companyLoading: loading.effects['sensor/fetchModelList'],
+}))
+export default class AddNewSensor extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      pointFixInfoList: [],  // 平面图标志
+      editingIndex: undefined, // 当前编辑的平面图标志下标
+      brandModelModalVisible: false, // 选择品牌型号弹窗可见
+      brand: {},
+      model: {},
+      monitorType: undefined,
+      paramWarnStrategyDtos: [], // 参数报警策略（自定义）
+      fileList: [], // 安装图片
+      uploading: false,
+      picModalVisible: false, // 定位弹窗可见
+      imgIdCurrent: '',
+      isImgSelect: true,
+    }
+  }
+
+  componentDidMount() {
+    const {
+      dispatch,
+      match: { params: { id } },
+      form: { setFieldsValue },
+    } = this.props
+    this.fetchMonitoringTypeDict()
+    // TODO: 编辑时获取数据
+    if (id) {
+      // 获取传感器详情
+      dispatch({
+        type: 'device/fetchSensorDetail',
+        payload: { id },
+        callback: ({
+          companyId,
+          pointFixInfoList,
+          brand,
+          brandName,
+          model,
+          modelName,
+          monitorType,
+          buildingId,
+        }) => {
+          setFieldsValue({ companyId })
+          this.setState({
+            pointFixInfoList,
+            brand: { id: brand, name: brandName },
+            model: { id: model, name: modelName },
+            monitorType,
+          })
+          model && this.fetchParameterList(model)
+          this.fetchMonitoringTypes()
+          companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+          buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } })
+        },
+      })
+    }
+  }
+
+  /**
+  * 获取企业列表（弹窗）
+  */
+  fetchCompany = ({ payload }) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'sensor/fetchModelList', payload });
+  };
+
+  /**
+ * 获取监测类型列表（字典）
+ */
+  fetchMonitoringTypeDict = actions => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/fetchMonitoringTypeDict',
+      ...actions,
+    })
+  }
+
+  /**
+    * 获取传感器类型列表（字典）
+    */
+  fetchAllUnsetModelList = actions => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/fetchAllUnsetModelList',
+      ...actions,
+    })
+  }
+
+  /**
+   * 获取监测参数列表（全部）
+   */
+  fetchParameterList = (modelId) => {
+    const { dispatch } = this.props
+    const { model } = this.state
+    const sensorModel = modelId || model.id
+    dispatch({
+      type: 'device/fetchAllParameters',
+      payload: { sensorModel, strategyDefaultFlag: '0' },
+    })
+  }
+
+
+  /**
+   * 获取所属建筑列表
+   */
+  fetchBuildings = (actions) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'personnelPosition/fetchBuildings',
+      ...actions,
+    })
+  }
+
+
+  /**
+   * 获取楼层
+   */
+  fetchFloors = (actions) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'personnelPosition/fetchFloors',
+      ...actions,
+    })
+  }
+
+  /**
+* 获取监测类型列表树
+*/
+  fetchMonitoringTypes = () => {
+    const { dispatch } = this.props
+    dispatch({ type: 'device/fetchMonitoringTypes' })
+  }
+
+  /**
+   * 添加平面图标志
+   */
+  handleAddFlatGraphic = () => {
+    this.setState(({ pointFixInfoList }) => ({
+      editingIndex: pointFixInfoList.length,
+      pointFixInfoList: [...pointFixInfoList, { imgType: undefined, ynum: undefined, xnum: undefined, fixImgId: undefined }],
+    }))
+  }
+
+
+  /**
+   * 新平面图标志--平面图类型改变
+   */
+  handleChangeImageType = (item, i) => {
+    const {
+      dispatch,
+      form: { getFieldValue },
+    } = this.props
+    const companyId = getFieldValue('companyId')
+    const type = +item.imgType
+    if (type === 1 || type === 3 || type === 4) {
+      dispatch({
+        type: 'riskPointManage/fetchFixImgInfo',
+        payload: {
+          companyId,
+          type,
+        },
+      });
+    }
+    if (type === 2) {
+      dispatch({
+        type: 'buildingsInfo/fetchBuildingList',
+        payload: {
+          company_id: companyId,
+          pageSize: 0,
+          pageNum: 1,
+        },
+      });
+    }
+    this.setState(({ pointFixInfoList }) => {
+      let temp = [...pointFixInfoList]
+      temp.splice(i, 1, item)
+      return {
+        pointFixInfoList: temp,
+        picModalVisible: false,
+        isImgSelect: false,
+      }
+    })
+  }
+
+  /**
+    * 新平面图标志--坐标轴改变
+    */
+  handleChangeCoordinate = (item, value, i, key) => {
+    if (isNaN(value)) {
+      message.warning('坐标轴为数字')
+      return
+    }
+    item[key] = value
+    this.setState(({ pointFixInfoList }) => {
+      let temp = [...pointFixInfoList]
+      temp.splice(i, 1, item)
+      return { pointFixInfoList: temp }
+    })
+  }
+
+
+  /**
+   * 新平面图标志--保存
+   */
+  handleSavePointFix = (oldIndex = undefined, i, item) => {
+    // 如果正在编辑且点击其他项
+    if (i !== oldIndex) {
+      message.warning('请先保存')
+      return
+    }
+    if (isNaN(item.imgType)) {
+      message.warning('请填写平面图类型')
+      return
+    }
+    if (isNaN(item.xnum) || isNaN(item.ynum)) {
+      message.warning('请完善坐标位置')
+      return
+    }
+    this.setState({ editingIndex: undefined })
+  }
+
+  /**
+   * 新平面图标志--编辑
+   */
+  handleEditPointFix = (oldIndex = undefined, i) => {
+    if (!isNaN(oldIndex)) {
+      message.warning('请先保存')
+      return
+    }
+    this.setState({ editingIndex: i })
+  }
+
+  /**
+   * 新平面图标志--删除
+   */
+  handleDeletePointFix = (i) => {
+    this.setState(({ pointFixInfoList }) => {
+      let temp = [...pointFixInfoList]
+      temp.splice(i, 1)
+      return { pointFixInfoList: temp, editingIndex: undefined }
+    })
+  }
+
+  /**
+   * 显示定位模态框
+   */
+  showModalCoordinate = (index, item) => {
+    const {
+      dispatch,
+      form: { getFieldsValue },
+      match: { params: { id } },
+    } = this.props
+    const { companyId, buildingId, floorId } = getFieldsValue()
+    // 当前编辑的平面图标注
+    const { imgType, fixImgId } = item
+    const callback = payload => {
+      if (payload.list && payload.list.length) {
+        this.setState({
+          picModalVisible: true,
+          imgIdCurrent: fixImgId, // 当前选择的定位图片id
+        });
+      } else message.error('该单位暂无图片！');
+    }
+    // 如果没有选择平面图类型
+    if (!imgType) return message.error('请先选择平面图类型!');
+    // 如果是楼层平面图，需要选择建筑物和楼层后才能定位
+    if (+imgType === 2) {
+      if (!buildingId) return message.error('请选择所属建筑物!');
+      if (!floorId) return message.error('请选择所属楼层!');
+      dispatch({
+        type: 'riskPointManage/fetchFixImgInfo',
+        payload: {
+          companyId,
+          type: imgType,
+          buildingId: buildingId,
+          floorId: floorId,
+        },
+        callback,
+      });
+    } else {
+      // 如果平面图是其他类型
+      dispatch({
+        type: 'riskPointManage/fetchFixImgInfo',
+        payload: {
+          companyId,
+          type: imgType,
+        },
+        callback,
+      });
+    }
+  }
+
+
+  /**
+   * 保存定位信息
+   */
+  handleCoordinateOk = (value, fourColorImg) => {
+    const fixImgId = fourColorImg.id
+    if (!value || !value.x || !value.y) return message.warning('请选择坐标')
+    this.setState(({ editingIndex, pointFixInfoList }) => {
+      // 当前编辑的平面图标注
+      let editingItem = pointFixInfoList[editingIndex]
+      const newItem = {
+        ...editingItem,
+        xnum: value.x.toFixed(3),
+        ynum: value.y.toFixed(3),
+        fixImgId,
+      }
+      pointFixInfoList.splice(editingIndex, 1, newItem)
+      return {
+        editingIndex,
+        pointFixInfoList,
+        picModalVisible: false,
+        isImgSelect: true,
+      }
+    })
+  }
+
+  /**
+   * 提交
+   */
+  handleSubmit = () => {
+    const {
+      dispatch,
+      match: { params: { id } },
+      form: { validateFields },
+    } = this.props
+    const {
+      editingIndex,
+      paramWarnStrategyDtos, // 报警策略
+      fileList, // 安装图片
+      pointFixInfoList, // 平面图标志
+    } = this.state
+    if (!isNaN(editingIndex)) {
+      message.warning('请先保存平面图信息')
+    }
+    validateFields((err, values) => {
+      if (err) return
+      const payload = {
+        ...values,
+        paramWarnStrategyDtos, // 参数报警策略列表（自定义）
+        installPhotoList: fileList, // 安装图片列表
+        pointFixInfoList, // 平面图标注列表
+      }
+      console.log('payload', payload);
+      const tag = id ? '编辑' : '新增'
+      const success = () => {
+        message.success(`${tag}成功`)
+        router.push('/device-management/new-sensor/list')
+      }
+      const error = (res) => { message.error(res ? res.msg : `${tag}失败`) }
+      // 如果编辑
+      if (id) {
+        // 如果新增
+        dispatch({
+          type: 'device/editSensor',
+          payload: { ...payload, id },
+          success,
+          error,
+        })
+      } else {
+        // 如果新增
+        dispatch({
+          type: 'device/addSensor',
+          payload,
+          success,
+          error,
+        })
+      }
+    })
+  }
+
+  /**
+   * 数据类型改变
+   */
+  handleDataTypeChange = (type) => {
+    const { form: { resetFields } } = this.props
+    this.fetchAllUnsetModelList({ payload: { type } })
+    resetFields(['dataCode'])
+  }
+
+  /**
+   * 打开选择品牌型号弹窗
+   */
+  handleViewBrandModal = () => {
+    this.setState({ brandModelModalVisible: true })
+  }
+
+  /**
+   * 选择型号
+   */
+  onSelectModel = values => {
+    const {
+      form: { setFieldsValue },
+    } = this.props
+    setFieldsValue({ model: values.model.id })
+    // 关闭弹窗 获取监测参数列表
+    this.setState({ ...values, brandModelModalVisible: false }, () => {
+      this.fetchParameterList()
+    })
+  }
+
+  // 选择所属建筑物
+  handleSelectBuilding = (value) => {
+    const {
+      form: { setFieldsValue },
+    } = this.props
+    // 获取楼层
+    this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: value } })
+    setFieldsValue({ floorId: undefined })
+  }
+
+  /**
+   * 保存配置的报警策略
+   */
+  handleConfirmParameter = (paramId, list) => {
+    this.setState(({ paramWarnStrategyDtos }) => {
+      let newList = [...paramWarnStrategyDtos]
+      const index = paramWarnStrategyDtos.findIndex(item => item.paramId === paramId)
+      const item = { paramId, paramWarnStrategyList: list }
+      if (index < 0) {
+        newList.push(item)
+      } else if (list && list.length) {
+        newList.splice(index, 1, item)
+      } else {
+        newList.splice(index, 1)
+      }
+      return { paramWarnStrategyDtos: newList }
+    })
+  }
+
+  handleUploadChange = ({ file, fileList }) => {
+    if (file.status === 'uploading') {
+      this.setState({ uploading: true, fileList })
+    } else if (file.status === 'done') {
+      if (file.response && file.response.code === 200) {
+        const result = file.response.data.list[0]
+        const list = fileList.map((item) => ({ ...item, url: result.webUrl }))
+        this.setState({
+          uploading: false,
+          fileList: list,
+        })
+      } else {
+        message.error('上传失败！');
+        this.setState({
+          fileList: fileList.filter(item => {
+            return !item.response || item.response.code !== 200;
+          }),
+        });
+      }
+      this.setState({
+        uploading: false,
+      });
+    } else if (file.status === 'removed') {
+      // 删除
+      this.setState({
+        fileList: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+        uploading: false,
+      });
+    } else {
+      message.error('上传失败')
+      this.setState({ uploading: false })
+    }
+  }
+
+  /**
+   * 渲染平面图标志
+   */
+  renderPicInfo = () => {
+    const {
+      form: { getFieldValue, getFieldDecorator },
+      personnelPosition: {
+        map: {
+          buildings = [], // 建筑物列表
+          floors = [],      // 楼层列表
+        },
+      },
+      riskPointManage: {
+        imgData: { list: imgList = [] },
+      },
+    } = this.props
+    const {
+      pointFixInfoList = [],
+      editingIndex, // 当前编辑的下标
+      picModalVisible,
+      isImgSelect,
+      imgIdCurrent,
+    } = this.state
+    // 地址录入方式
+    const locationType = getFieldValue('locationType')
+    const editingItem = pointFixInfoList.length ? pointFixInfoList[editingIndex] : {}
+    return (
+      <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative' }}>
+        {pointFixInfoList.map((item, index) => (
+          <Col span={24} key={index} style={{ marginBottom: +item.imgType === 2 ? '-23px' : '' }}>
+            <Row gutter={12}>
+              <Col span={4}>
+                <Select
+                  allowClear
+                  placeholder="平面图类型"
+                  onChange={(imgType) => this.handleChangeImageType({ ...item, imgType, xnum: undefined, ynum: undefined }, index)}
+                  disabled={editingIndex !== index}
+                  value={item.imgType}
+                >
+                  {flatGraphic.map(({ key, value }) => (
+                    <Option value={key} key={key} disabled={pointFixInfoList.some(row => row.imgType === key)}>
+                      {value}
+                    </Option>
+                  ))}
+                </Select>
+              </Col>
+              {/* 如果平面图选择楼层平面图 */}
+              {+item.imgType === 2 && (
+                <Fragment>
+                  <Col span={4}>
+                    <FormItem>
+                      {getFieldDecorator('buildingId')(
+                        <Select disabled={+locationType === 0} placeholder="所属建筑" style={{ width: '100%' }} onSelect={this.handleSelectBuilding} allowClear>
+                          {buildings.map((item, i) => (
+                            <Select.Option key={i} value={item.id}>{item.buildingName}</Select.Option>
+                          ))}
+                        </Select>
+                      )}
+                    </FormItem>
+                  </Col>
+                  <Col span={4}>
+                    <FormItem>
+                      {getFieldDecorator('floorId')(
+                        <Select disabled={+locationType === 0} placeholder="所属楼层" style={{ width: '100%' }} allowClear>
+                          {floors.map((item, i) => (
+                            <Select.Option key={i} value={item.id}>{item.floorName}</Select.Option>
+                          ))}
+                        </Select>
+                      )}
+                    </FormItem>
+                  </Col>
+                </Fragment>
+              )}
+              <Col span={3}>
+                <Input placeholder="X轴" disabled={editingIndex !== index} value={item.xnum} onChange={e => { this.handleChangeCoordinate(item, e.target.value, index, 'xnum') }} />
+              </Col>
+              <Col span={3}>
+                <Input placeholder="Y轴" disabled={editingIndex !== index} value={item.ynum} onChange={e => { this.handleChangeCoordinate(item, e.target.value, index, 'ynum') }} />
+              </Col>
+              <Col span={6}>
+                <Button
+                  className={styles.mr10}
+                  onClick={() => this.showModalCoordinate(index, item)}
+                  disabled={editingIndex !== index}
+                >
+                  定位
+                  </Button>
+                {editingIndex === index ? (
+                  <span>
+                    <a className={styles.mr10} onClick={() => this.handleSavePointFix(editingIndex, index, item)}>保存</a>
+                    <Popconfirm
+                      title="确认要删除该内容吗？"
+                      onConfirm={() => this.handleDeletePointFix(index)}
+                      okText="确认"
+                      cancelText="取消"
+                    >
+                      <a>删除</a>
+                    </Popconfirm>
+                  </span>
+                ) : (
+                    <span>
+                      <a onClick={() => this.handleEditPointFix(editingIndex, index)}>编辑</a>
+                    </span>
+                  )}
+              </Col>
+            </Row>
+          </Col>
+        ))}
+        <Coordinate
+          width="920px"
+          visible={picModalVisible}
+          urls={imgList}
+          onOk={this.handleCoordinateOk}
+          onCancel={() => {
+            this.setState({
+              picModalVisible: false,
+            });
+          }}
+          xNum={editingItem ? editingItem.xnum : ''}
+          yNum={editingItem ? editingItem.ynum : ''}
+          imgIdCurrent={imgIdCurrent}
+          isImgSelect={isImgSelect}
+        />
+      </Row>
+    )
+  }
+
+  /**
+     * 渲染表单
+     */
+  renderForm = () => {
+    const {
+      form: { getFieldDecorator, getFieldValue },
+      match: { params: { id } },
+      device: {
+        monitoringType, // 监测参数列表树
+        sensorDetail: detail = {},
+      },
+      personnelPosition: {
+        map: {
+          buildings = [], // 建筑物列表
+          floors = [],      // 楼层列表
+        },
+      },
+    } = this.props
+    const { editingIndex, pointFixInfoList, model, brand, monitorType, fileList, uploading, paramWarnStrategyDtos } = this.state
+    // 地址录入方式
+    const locationType = getFieldValue('locationType')
+    const companyId = getFieldValue('companyId')
+    return (
+      <Card>
+        <Form>
+          <FormItem label="所属单位" {...formItemLayout}>
+            {getFieldDecorator('companyId')(
+              <Fragment>
+                {detail.companyName || '暂无绑定单位'}
+              </Fragment>
+            )}
+          </FormItem>
+          <FormItem label="型号" {...formItemLayout}>
+            {getFieldDecorator('model', {
+              initialValue: id ? detail.model : undefined,
+              rules: [{ required: true, message: '请选择型号' }],
+            })(
+              <Fragment>
+                <Input disabled value={model.name} placeholder="请选择" {...itemStyles} />
+                <Button type="primary" onClick={this.handleViewBrandModal}>选择品牌型号</Button>
+              </Fragment>
+            )}
+          </FormItem>
+          <FormItem label="品牌" {...formItemLayout}>
+            <Input value={brand.name} disabled placeholder="请先选择型号" {...itemStyles} />
+          </FormItem>
+          <FormItem label="监测类型" {...formItemLayout}>
+            <TreeSelect
+              disabled
+              value={monitorType}
+              placeholder="请先选择型号"
+              dropdownStyle={{ maxHeight: 600, overflow: 'auto' }}
+              allowClear
+              {...itemStyles}
+            >
+              {renderTreeNodes(monitoringType)}
+            </TreeSelect>
+          </FormItem>
+          {model && model.id && (
+            <FormItem label="监测参数" {...formItemLayout}>
+              <Fragment>
+                <MonitoringParameterTable
+                  modelId={model.id}
+                  onConfirm={this.handleConfirmParameter}
+                  sensorId={id}
+                  paramWarnStrategyDtos={paramWarnStrategyDtos}
+                />
+              </Fragment>
+            </FormItem>
+          )}
+          <FormItem label="传感器Token" {...formItemLayout}>
+            {getFieldDecorator('token', {
+              initialValue: id ? detail.token : undefined,
+              rules: [{ required: true, message: '请输入传感器Token' }],
+            })(
+              <Input placeholder="请输入" {...itemStyles} />
+            )}
+          </FormItem>
+          <FormItem label="可用性" {...formItemLayout}>
+            {getFieldDecorator('useStatus', {
+              initialValue: id ? detail.useStatus : undefined,
+            })(
+              <Radio.Group>
+                <Radio value={1}>启用</Radio>
+                <Radio value={2}>禁用</Radio>
+              </Radio.Group>
+            )}
+          </FormItem>
+          {companyId && (
+            <Fragment>
+              <FormItem label="入库时间" {...formItemLayout}>
+                {getFieldDecorator('storageDate', {
+                  initialValue: id ? detail.storageDate : undefined,
+                })(
+                  <DatePicker />
+                )}
+              </FormItem>
+              <FormItem label="安装人" {...formItemLayout}>
+                {getFieldDecorator('installer', {
+                  initialValue: id ? detail.installer : undefined,
+                })(
+                  <Input placeholder="请输入" {...itemStyles} />
+                )}
+              </FormItem>
+              <FormItem label="安装电话" {...formItemLayout}>
+                {getFieldDecorator('installerPhone', {
+                  initialValue: id ? detail.installerPhone : undefined,
+                  rules: [{ pattern: /^\d*$/, message: '请输入数字' }],
+                })(
+                  <Input placeholder="请输入" {...itemStyles} />
+                )}
+              </FormItem>
+              <FormItem label="安装日期" {...formItemLayout}>
+                {getFieldDecorator('installDate', {
+                  initialValue: id ? detail.installDate : undefined,
+                })(
+                  <DatePicker />
+                )}
+              </FormItem>
+              <FormItem label="施工照片" {...formItemLayout}>
+                <Upload
+                  name="files"
+                  action={UPLOAD_ACTION}
+                  data={{ folder: FOLDER }}
+                  listType="picture"
+                  headers={{ 'JA-Token': getToken() }}
+                  onChange={this.handleUploadChange}
+                  fileList={fileList}
+                  className={styles.uploadList}
+                >
+                  <Button>
+                    <Icon type={uploading ? 'loading' : "upload"} /> 上传
+            </Button>
+                </Upload>
+              </FormItem>
+              <FormItem label="区域位置录入方式" {...formItemLayout}>
+                {getFieldDecorator('locationType', {
+                  initialValue: id ? detail.locationType : 0,
+                })(
+                  <Radio.Group>
+                    <Radio value={0}>选择建筑物-楼层</Radio>
+                    <Radio value={1}>手填</Radio>
+                  </Radio.Group>
+                )}
+              </FormItem>
+              {(!locationType || locationType === 0) && (
+                <Fragment>
+                  <FormItem label="所属建筑物楼层" {...formItemLayout}>
+                    <Col span={5} style={{ marginRight: '10px' }}>
+                      {getFieldDecorator('buildingId', {
+                        initialValue: id ? detail.buildingId : undefined,
+                      })(
+                        <Select placeholder="建筑物" style={{ width: '100%' }} onSelect={this.handleSelectBuilding} allowClear>
+                          {buildings.map((item, i) => (
+                            <Select.Option key={i} value={item.id}>{item.buildingName}</Select.Option>
+                          ))}
+                        </Select>
+                      )}
+                    </Col>
+                    <Col span={5} style={{ marginRight: '10px' }}>
+                      {getFieldDecorator('floorId', {
+                        initialValue: id ? detail.floorId : undefined,
+                      })(
+                        <Select placeholder="楼层" style={{ width: '100%' }} allowClear>
+                          {floors.map((item, i) => (
+                            <Select.Option key={i} value={item.id}>{item.floorName}</Select.Option>
+                          ))}
+                        </Select>
+                      )}
+                    </Col>
+                    <Button type="primary">新增建筑物楼层</Button>
+                  </FormItem>
+                  <FormItem label="详细位置" {...formItemLayout}>
+                    {getFieldDecorator('location', {
+                      initialValue: id ? detail.location : undefined,
+                    })(
+                      <Input placeholder="请输入" {...itemStyles} />
+                    )}
+                  </FormItem>
+                </Fragment>
+              )}
+              {locationType === 1 && (
+                <Fragment>
+                  <FormItem label="所在区域" {...formItemLayout}>
+                    {getFieldDecorator('area', {
+                      initialValue: id ? detail.area : undefined,
+                    })(
+                      <Input placeholder="请输入" {...itemStyles} />
+                    )}
+                  </FormItem>
+                  <FormItem label="位置详情" {...formItemLayout}>
+                    {getFieldDecorator('location', {
+                      initialValue: id ? detail.location : undefined,
+                    })(
+                      <Input placeholder="请输入" {...itemStyles} />
+                    )}
+                  </FormItem>
+                </Fragment>
+              )}
+              <FormItem label="平面图标注" {...formItemLayout}>
+                <Button
+                  type="primary"
+                  style={{ padding: '0 12px' }}
+                  onClick={this.handleAddFlatGraphic}
+                  disabled={!isNaN(editingIndex) || pointFixInfoList.length >= 4}
+                >
+                  新增
+              </Button>
+                {this.renderPicInfo()}
+              </FormItem>
+            </Fragment>
+          )}
+        </Form>
+        <Row style={{ textAlign: 'center', marginTop: '24px' }}>
+          <Button onClick={() => { router.push('/device-management/new-sensor/list') }}>取消</Button>
+          <Button type="primary" className={styles.ml10} onClick={this.handleSubmit}>确定</Button>
+        </Row>
+      </Card>
+    )
+  }
+
+  render() {
+    const {
+      match: { params: { id = null } = {} },
+    } = this.props
+    const { brandModelModalVisible } = this.state
+    const title = id ? '编辑传感器' : '新增传感器'
+    const breadcrumbList = [
+      { title: '首页', name: '首页', href: '/' },
+      { title: '设备管理', name: '设备管理' },
+      { title: '传感器管理', name: '传感器管理', href: '/device-management/new-sensor/list' },
+      { title, name: title },
+    ]
+    return (
+      <PageHeaderLayout
+        title={title}
+        breadcrumbList={breadcrumbList}
+      >
+        {this.renderForm()}
+        {/* 选择品牌型号弹窗 */}
+        <BrandModelModal
+          visible={brandModelModalVisible}
+          onSelectModel={this.onSelectModel}
+          onCancel={() => { this.setState({ brandModelModalVisible: false }) }}
+        />
+      </PageHeaderLayout>
+    )
+  }
+}

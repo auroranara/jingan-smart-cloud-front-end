@@ -131,6 +131,12 @@ export default {
       edit: 'deviceManagement.tagLibrary.edit',
       delete: 'deviceManagement.tagLibrary.delete',
     },
+    newSensor: {
+      listView: 'deviceManagement.newSensor.listView',
+      add: 'deviceManagement.newSensor.add',
+      edit: 'deviceManagement.newSensor.edit',
+      delete: 'deviceManagement.newSensor.delete',
+    },
   },
   videoSurveillance: {
     hikVideoTree: {

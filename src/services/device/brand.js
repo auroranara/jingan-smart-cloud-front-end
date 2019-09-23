@@ -62,6 +62,11 @@ export async function fetchParameterForPage(params) {
   return request(`/acloud_new/v2/monitor/sensorMonitorParamForPage?${stringify(params)}`)
 }
 
+// 获取参数列表（全部）
+export async function fetchAllParameters(params) {
+  return request(`/acloud_new/v2/monitor/sensorMonitorParam?${stringify(params)}`)
+}
+
 // 新增参数
 export async function addParameter(body) {
   return request('/acloud_new/v2/monitor/sensorMonitorParam', {
@@ -98,3 +103,12 @@ export async function submitAlarmStrategy(body) {
   })
 }
 
+// 获取参数分组类型数组
+export async function fetchParameterGroupTypes() {
+  return request('/acloud_new/v2/monitor/groupFixType')
+}
+
+// 获取配置参数历史纪录
+export async function fetchParameterStrategyHistory(params) {
+  return request(`/acloud_new/v2/monitor/paramWarnStrategyHistory?${stringify(params)}`)
+}

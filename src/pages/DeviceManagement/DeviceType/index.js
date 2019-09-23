@@ -191,6 +191,7 @@ export default class DeviceType extends PureComponent {
       },
       user: { currentUser: { permissionCodes } },
     } = this.props
+    const { activeTabKey } = this.state
     const editAuth = hasAuthority(codes.deviceManagement.deviceType.edit, permissionCodes)
     const columns = [
       {
@@ -202,7 +203,7 @@ export default class DeviceType extends PureComponent {
         title: '操作',
         key: '操作',
         align: 'center',
-        render: (val, row) => editAuth ? (
+        render: (val, row) => +activeTabKey !== 2 && editAuth ? (
           <a onClick={() => this.handleViewDeploy(row)}>配置监测类型</a>
         ) : noAuth('配置监测类型'),
       },

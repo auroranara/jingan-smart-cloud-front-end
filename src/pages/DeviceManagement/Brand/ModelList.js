@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Table, Divider, Popconfirm, Button, Modal, Input, message, Select, TreeSelect } from 'antd';
+import { Card, Form, Table, Divider, Popconfirm, Button, Modal, Input, message, Select, TreeSelect, Row, Col } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority, AuthA } from '@/utils/customAuth';
 import codes from '@/utils/codes';
@@ -20,13 +20,8 @@ const formItemCol = {
     span: 13,
   },
 };
-// 设备类型配置
-const deviceTypes = [
-  { key: 1, label: '数据处理设备' },
-  { key: 2, label: '网关设备' },
-  { key: 3, label: '监测对象' },
-  { key: 4, label: '传感器' },
-]
+const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
+const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
 /* 渲染树节点 */
 const renderTreeNodes = data => {
   return data.map(item => {
@@ -41,11 +36,26 @@ const renderTreeNodes = data => {
     return <TreeNode title={name} key={id} value={id} />;
   });
 };
+// 展开列表树
+const expandTree = (list) => {
+  if (!list || list.length === 0) return []
+  let arr = []
+  let temp = []
+  temp = [...list]
+  while (temp.length) {
+    const { child, ...res } = temp.shift()
+    arr.push(res)
+    if (child && child.length) {
+      temp = [...temp, ...child]
+    }
+  }
+  return arr
+}
 
 // 渲染新增/编辑弹窗
 const RenderModal = Form.create()(props => {
   const {
-    form: { validateFields, getFieldDecorator },
+    form: { validateFields, getFieldDecorator, resetFields },
     detail,
     visible,
     onOk,
@@ -55,8 +65,12 @@ const RenderModal = Form.create()(props => {
     deviceTypeList, // 设备类型列表
     currentType: type,
     saveState,
+    deviceTypeOptions,
+    monitoringTypeDict,
+    allModelCodeList,
+    fetchAllUnsetModelList,
   } = props
-  const isEdit = detail && detail.id
+  const isEdit = detail && !!detail.id
   const handleConfirm = () => {
     validateFields((err, values) => {
       if (err) return
@@ -67,6 +81,13 @@ const RenderModal = Form.create()(props => {
   const onTypeSelect = (type) => {
     [1, 2, 3].includes(+type) && fetchAllDeviceTypes({ payload: { type } })
     saveState({ currentType: type })
+  }
+  /**
+ * 数据类型改变
+ */
+  const handleDataTypeChange = (type) => {
+    fetchAllUnsetModelList({ payload: { type } })
+    resetFields(['dataCode'])
   }
 
   /*
@@ -91,7 +112,7 @@ const RenderModal = Form.create()(props => {
             rules: [{ required: true, message: '请选择设备类型分类' }],
           })(
             <Select placeholder="请选择" onSelect={onTypeSelect} disabled={isEdit}>
-              {deviceTypes.map(({ key, label }) => (
+              {deviceTypeOptions.map(({ key, label }) => (
                 <Select.Option key={key} value={key}>{label}</Select.Option>
               ))}
             </Select>
@@ -127,14 +148,40 @@ const RenderModal = Form.create()(props => {
             )}
           </FormItem>
         )}
+        <FormItem label="数据类型" {...formItemCol}>
+          {getFieldDecorator('dataType', {
+            initialValue: isEdit ? detail.dataType : undefined,
+            rules: [{ required: true, message: '请选择数据类型' }],
+          })(
+            <Select placeholder="请选择" onChange={handleDataTypeChange} allowClear>
+              {monitoringTypeDict.map(({ key, value }) => (
+                <Select.Option key={key} value={key}>{key}</Select.Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
+        <FormItem label="数据编码" {...formItemCol}>
+          {getFieldDecorator('dataCode', {
+            initialValue: isEdit ? detail.dataCode : undefined,
+            rules: [{ required: true, message: '请选择数据编码' }],
+          })(
+            <Select placeholder="请选择">
+              {allModelCodeList.map(({ model }) => (
+                <Select.Option key={model} value={model}>{model}</Select.Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
       </Form>
     </Modal>
   )
 })
 
-@connect(({ user, device, loading }) => ({
+@Form.create()
+@connect(({ user, device, sensor, loading }) => ({
   user,
   device,
+  sensor,
   tableLoading: loading.effects['device/fetchModelsForPage'],
 }))
 export default class ModelList extends PureComponent {
@@ -143,11 +190,13 @@ export default class ModelList extends PureComponent {
     detail: null, // 型号信息
     modalVisible: false,  // 编辑/新增弹窗可见
     currentType: undefined,
+    expandedTree: [], // 展开后的监测类型列表
   }
 
   componentDidMount() {
     this.handleQuery()
     this.fetchMonitoringTypes()
+    this.fetchMonitoringTypeDict()
   }
 
 
@@ -156,7 +205,13 @@ export default class ModelList extends PureComponent {
    */
   fetchMonitoringTypes = () => {
     const { dispatch } = this.props
-    dispatch({ type: 'device/fetchMonitoringTypes' })
+    dispatch({
+      type: 'device/fetchMonitoringTypes',
+      callback: (list) => {
+        const expandedTree = expandTree(list)
+        this.setState({ expandedTree })
+      },
+    })
   }
 
   /**
@@ -177,19 +232,54 @@ export default class ModelList extends PureComponent {
     const {
       dispatch,
       match: { params: { brandId } },
+      form: { getFieldsValue },
     } = this.props
+    const formValues = getFieldsValue()
     dispatch({
       type: 'device/fetchModelsForPage',
-      payload: { pageNum, pageSize, brand: brandId },
+      payload: { pageNum, pageSize, brand: brandId, ...formValues },
+    })
+  }
+
+  /**
+   * 重置筛选
+   */
+  handleReset = () => {
+    const { form: { resetFields } } = this.props
+    resetFields()
+    this.handleQuery()
+  }
+
+  /**
+    * 获取数据编码列表
+    */
+  fetchAllUnsetModelList = actions => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/fetchAllUnsetModelList',
+      ...actions,
     })
   }
 
 
   /**
+ * 获取数据类型
+ */
+  fetchMonitoringTypeDict = actions => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'sensor/fetchMonitoringTypeDict',
+      ...actions,
+    })
+  }
+
+  /**
    * 点击打开编辑弹窗
    */
   handleViewEdit = (detail) => {
-    this.setState({ detail, modalVisible: true, currentType: detail.type })
+    const type = detail.type
+    this.setState({ detail, modalVisible: true, currentType: type })
+    type && this.fetchAllUnsetModelList({ payload: { type } })
   }
 
 
@@ -275,6 +365,8 @@ export default class ModelList extends PureComponent {
       tableLoading,
       match: { params: { brandId } },
       device: {
+        deviceTypeOptions, // 参数分组类型数组
+        monitoringType, // 监测类型列表树
         model: {
           list = [],
           pagination: { total, pageNum, pageSize },
@@ -282,6 +374,7 @@ export default class ModelList extends PureComponent {
       },
       user: { currentUser: { permissionCodes } },
     } = this.props
+    const { expandedTree } = this.state
     // 跳转到配置参数页面
     const parameterAuth = hasAuthority(codes.deviceManagement.brand.model.deployParameter, permissionCodes)
     const columns = [
@@ -295,7 +388,15 @@ export default class ModelList extends PureComponent {
         dataIndex: 'type',
         align: 'center',
         width: 300,
-        render: (val) => val ? deviceTypes[+val - 1].label : null,
+        render: (val, row) => {
+          const type = val ? deviceTypeOptions[+val - 1].label : null
+          // 如果不是传感器
+          if (+val !== 4) {
+            return type
+          }
+          const target = expandedTree.find(item => item.id === row.monitorType) || {}
+          return `（${target.name}）${type}`
+        },
       },
       {
         title: '操作',
@@ -346,6 +447,52 @@ export default class ModelList extends PureComponent {
     );
   }
 
+
+  /**
+   * 筛选栏
+   */
+  renderFilter = () => {
+    const {
+      form: { getFieldDecorator },
+      device: {
+        deviceTypeOptions,
+      },
+    } = this.props
+    return (
+      <Card style={{ marginBottom: '20px' }}>
+        <Form>
+          <Row gutter={16}>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('name')(
+                  <Input placeholder="名称" />
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('type')(
+                  <Select placeholder="设备类型">
+                    {deviceTypeOptions.map(({ key, label }) => (
+                      <Select.Option key={key} value={key}>{label}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                <Button onClick={() => this.handleQuery()} style={{ marginRight: '10px' }} type="primary">查询</Button>
+                <Button onClick={this.handleReset} style={{ marginRight: '10px' }}>重置</Button>
+                <Button type="primary" onClick={this.handleViewAdd}>新增</Button>
+              </FormItem>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+    )
+  }
+
   render() {
     const {
       device: {
@@ -355,6 +502,11 @@ export default class ModelList extends PureComponent {
           pagination: { total = 0 },
         },
         deviceType: { list: deviceTypeList },
+        deviceTypeOptions,
+      },
+      sensor: {
+        monitoringTypeDict = [], // 监测类型字典
+        allModelCodeList = [], // 传感器型号字典
       },
     } = this.props
     const { detail, modalVisible, currentType } = this.state
@@ -374,16 +526,18 @@ export default class ModelList extends PureComponent {
       deviceTypeList,
       saveState: this.saveState,
       currentType,
+      deviceTypeOptions,
+      monitoringTypeDict,
+      allModelCodeList,
+      fetchAllUnsetModelList: this.fetchAllUnsetModelList,
     }
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         content={`型号总数：${total}`}
-        extraContent={
-          (<Button type="primary" onClick={this.handleViewAdd}>新增</Button>)
-        }
       >
+        {this.renderFilter()}
         {this.renderTable()}
         <RenderModal {...modalProps} />
       </PageHeaderLayout>
