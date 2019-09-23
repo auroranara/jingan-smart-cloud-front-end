@@ -29,7 +29,7 @@ const {
     },
   },
 } = codes
-const numberReg = /^(0|[1-9][0-9]*)(\.[0-9]{1,3})?$/;
+const numberReg = /^\-?(0?|[1-9][0-9]*)(\.[0-9]{1,3})?$/;
 
 @Form.create()
 @connect(({ sensor, user, loading }) => ({
@@ -164,8 +164,6 @@ export default class ModelParameterList extends PureComponent {
   validateRange = (rule, { minValue, maxValue } = {}, callback) => {
     if (minValue && maxValue && +minValue > +maxValue) {
       callback('量程下限需小于上限')
-    } else if (+minValue < 0 || +maxValue < 0) {
-      callback('请输入大于0的数字')
     } else callback()
   }
 
@@ -176,10 +174,6 @@ export default class ModelParameterList extends PureComponent {
     if (!value) {
       callback()
     } else if (numberReg.test(value)) {
-      if (+value < 0) {
-        callback('请输入大于0的数字')
-        return
-      }
       callback()
     } else callback('请输入数字')
   }
@@ -463,37 +457,6 @@ export default class ModelParameterList extends PureComponent {
             </Col>
           </Form>
         </Card>
-        {/* <Card className={styles.alarmStrategyModalCard} style={{ marginTop: '15px' }}>
-          <Form>
-            <Col span={7}>
-              <FormItem>
-                <span className={styles.labelText}>报警等级：</span>
-                告警
-              </FormItem>
-            </Col>
-            <Col span={11}>
-              <FormItem style={{ display: 'inline-block' }} label="告警阈值"></FormItem>
-              <FormItem style={{ width: '180px', display: 'inline-block' }}>
-                {getFieldDecorator('gLower', {
-                  rules: [{ validator: this.validateSmallLower }],
-                  getValueFromEvent: e => e.target.value.trim() || null,
-                })(
-                  <Input addonBefore="≤" addonAfter={unit} style={{ width: '100%' }} />
-                )}
-              </FormItem>
-            </Col>
-            <Col span={6}>
-              <FormItem>
-                {getFieldDecorator('gUpper', {
-                  rules: [{ validator: this.validateLargeUpper }],
-                  getValueFromEvent: e => e.target.value.trim() || null,
-                })(
-                  <Input addonBefore="≥" addonAfter={unit} style={{ width: '180px' }} />
-                )}
-              </FormItem>
-            </Col>
-          </Form>
-        </Card> */}
       </Modal>
     )
   }
