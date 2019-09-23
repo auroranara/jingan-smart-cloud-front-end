@@ -48,7 +48,7 @@ export default class AlarmHistory extends PureComponent {
                 backgroundPosition: 'center center',
                 backgroundSize: '65% 65%',
               }}></div>
-              <div className={styles.remarks}>{item.remarks || '暂无数据'}</div>
+              <div className={styles.remarks}>{(item.remarks === '储罐监测/水系统监测 报警' ? '储罐监测 报警' : item.remarks) || '暂无数据'}</div>
             </div>
             <span style={{ textAlign: 'right', color: '#516895' }}>{item.warningTime}</span>
           </div>
