@@ -32,6 +32,7 @@ const alarmColumns = [
     dataIndex: 'typeName',
     align: 'center',
     width: 160,
+    render: (val) => (<span>{val === '储罐监测/水系统监测' ? '储罐监测' : val}</span>),
   },
   {
     title: '报警参数',
@@ -426,8 +427,8 @@ export default class TopCenter extends PureComponent {
         onClick={
           isHover
             ? () => {
-                this.handleViewModal(title);
-              }
+              this.handleViewModal(title);
+            }
             : null
         }
       >
