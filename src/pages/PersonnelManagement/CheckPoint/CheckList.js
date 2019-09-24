@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import Ellipsis from '@/components/Ellipsis';
-import { Button, Card, Input, List, Switch, message } from 'antd';
+import { Button, Card, Input, List, Switch } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -175,7 +175,7 @@ export default class CheckList extends PureComponent {
             方向：
             {direction || NO_DATA}
           </p>
-          {<div className={styles.photo} style={{ backgroundImage: `url(${photo})` }} />}
+          {photo && <div className={styles.photo} style={{ backgroundImage: `url(${photo})` }} />}
         </Card>
       </List.Item>
     );
@@ -199,7 +199,7 @@ export default class CheckList extends PureComponent {
             </Ellipsis>
           }
           actions={actions}
-          extra={sts ? null : <span className={styles.red}>禁用</span>}
+          extra={sts === undefined || sts ? null : <span className={styles.red}>禁用</span>}
         >
           <p className={styles.p}>
             {address.length > 20 ? <Ellipsis lines={1} tooltip>{address}</Ellipsis> : address}
@@ -244,7 +244,7 @@ export default class CheckList extends PureComponent {
             </Ellipsis>
           }
           actions={actions}
-          extra={sts ? null : <span className={styles.red}>禁用</span>}
+          extra={sts === undefined || sts ? null : <span className={styles.red}>禁用</span>}
         >
           <p className={styles.p}>
             {address.length > 20 ? <Ellipsis lines={1} tooltip>{address}</Ellipsis> : address}
