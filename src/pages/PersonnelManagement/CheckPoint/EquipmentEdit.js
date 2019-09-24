@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import router from 'umi/router';
 import { Button, Col, Form, Input, Row, Switch } from 'antd';
 
+import styles from './CompanyList.less';
 import { genOperateCallback, getFieldDecConfig, initFormValues, EQUIPMENT_INDEX } from './utils';
 
 const { Item: FormItem } = Form;
@@ -49,9 +50,13 @@ export default class EquipmentEdit extends PureComponent {
           payload: params,
           callback: genOperateCallback(`/personnel-management/check-point/list/${companyId}/${EQUIPMENT_INDEX}`),
         });
-
       }
     });
+  };
+
+  back = () => {
+    const { match: { params: { companyId } } } = this.props;
+    router.push(`/personnel-management/check-point/list/${companyId}/${EQUIPMENT_INDEX}`);
   };
 
   render() {
@@ -111,6 +116,7 @@ export default class EquipmentEdit extends PureComponent {
           </Col>
         </Row>
         <Form.Item wrapperCol={{ span: 24, offset: 11 }}>
+          <Button onClick={this.back} className={styles.back}>返回</Button>
           <Button type="primary" htmlType="submit">
             提交
           </Button>

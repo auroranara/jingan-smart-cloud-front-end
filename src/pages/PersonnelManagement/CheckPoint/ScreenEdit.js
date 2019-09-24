@@ -74,6 +74,11 @@ export default class ScreenEdit extends PureComponent {
     });
   };
 
+  back = () => {
+    const { match: { params: { companyId } } } = this.props;
+    router.push(`/personnel-management/check-point/list/${companyId}/${SCREEN_INDEX}`);
+  };
+
   render() {
     const {
       listLoading,
@@ -171,6 +176,7 @@ export default class ScreenEdit extends PureComponent {
           </Col>
         </Row>
         <Form.Item wrapperCol={{ span: 24, offset: 11 }}>
+          <Button onClick={this.back} className={styles.back}>返回</Button>
           <Button type="primary" htmlType="submit">
             提交
           </Button>

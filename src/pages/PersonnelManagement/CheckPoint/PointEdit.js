@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import router from 'umi/router';
 import { Button, Col, Form, Icon, Input, Row, Upload } from 'antd';
 
 import styles from './CompanyList.less';
@@ -57,8 +58,12 @@ export default class PointEdit extends PureComponent {
     e.preventDefault();
     validateFields((err, values) => {
       if (!err) {
+        const { bayonetEquipmentList } = values;
         const params = { ...values, photoList: uploadConvertToResult(fileList) };
-        params.bayonetEquipmentList = [];
+        let list = [];
+        if (bayonetEquipmentList)
+          list = bayonetEquipmentList.map(({ key, label }) => ({ id: key, name: label }));
+        params.bayonetEquipmentList = list;
         if (companyId)
           params.companyId = companyId;
         if (id)
@@ -72,6 +77,11 @@ export default class PointEdit extends PureComponent {
 
       }
     });
+  };
+
+  back = () => {
+    const { match: { params: { companyId } } } = this.props;
+    router.push(`/personnel-management/check-point/list/${companyId}/${POINT_INDEX}`);
   };
 
   handleUploadChange = info => {
@@ -121,6 +131,7 @@ export default class PointEdit extends PureComponent {
               })(
                 <SearchSelect
                   mode="multiple"
+                  labelInValue
                   className={styles.searchSelect}
                   loading={listLoading}
                   list={lists[EQUIPMENT_INDEX]}
@@ -152,7 +163,8 @@ export default class PointEdit extends PureComponent {
             </FormItem>
           </Col>
         </Row>
-        <Form.Item wrapperCol={{ span: 24, offset: 11 }}>
+        <Form.Item wrapperCol={{ span: 24, offset: 10 }}>
+          <Button onClick={this.back} className={styles.back}>返回</Button>
           <Button type="primary" htmlType="submit">
             提交
           </Button>

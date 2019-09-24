@@ -113,7 +113,7 @@ export default class CompanyList extends PureComponent {
       pageSize: PAGE_SIZE,
     };
     if (name)
-      payload.name = name;
+      payload.companyName = name;
     dispatch({
       type: 'checkPoint/fetchCompanyList',
       payload,
@@ -210,7 +210,7 @@ export default class CompanyList extends PureComponent {
     );
     const fields = [
       {
-        id: 'companyName',
+        id: 'title',
         label: '单位名称：',
         span: { md: 8, sm: 12, xs: 24 },
         render: () => <Input placeholder="请输入单位名称" />,
@@ -224,7 +224,7 @@ export default class CompanyList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles.total}>
-            卡口总数：
+            企业总数：
             {list.length}
           </p>
         }

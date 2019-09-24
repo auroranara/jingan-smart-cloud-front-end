@@ -127,7 +127,13 @@ export default {
       const { pageNum } = pagination;
       let nextList = Array.isArray(list) ? list : [];
       if (pageNum !== 1)
-        nextList = state.companyList.concat(list);
+        nextList = state.lists[index].concat(list);
+      const nextLists = state.lists.map((lst, i) => i === +index ? nextList : lst);
+      return { ...state, lists: nextLists };
+    },
+    deleteInCheckList(state, action) {
+      const { index, payload: deleted } = action;
+      const nextList = state.lists[index].filter(({ id }) => id !== deleted);
       const nextLists = state.lists.map((lst, i) => i === +index ? nextList : lst);
       return { ...state, lists: nextLists };
     },

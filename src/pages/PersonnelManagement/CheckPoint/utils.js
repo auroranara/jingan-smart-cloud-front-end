@@ -81,10 +81,18 @@ export function genListLink(dispatch, companyId, index, id) {
       dispatch({
         index,
         type: 'checkPoint/deleteCheckPoint',
-        callback: genOperateCallback(),
+        callback: genOperateCallback('', deleteItem(dispatch, id, index)),
       });
     }}>删除</span>,
   ];
+}
+
+function deleteItem(dispatch, id, index) {
+  dispatch({
+    index,
+    type: 'checkPoint/deleteInCheckList',
+    payload: id,
+  });
 }
 
 const PROPS = [
@@ -98,6 +106,8 @@ export function initFormValues(values, index) {
     let v = values[next];
     if (next === 'status')
       v = !!+v;
+    if (next === 'bayonetEquipmentList')
+      v = v.map(({ id, name }) => ({ key: id, label: name }));
     prev[next] = v;
     return prev;
   }, {});

@@ -17,10 +17,10 @@ const TAB_COMS = [PointEdit, EquipmentEdit, ScreenEdit];
 }))
 export default class CheckEdit extends PureComponent {
   render() {
-    const { match: { params: { companyId, tabIndex } } } = this.props;
+    const { match: { params: { companyId, tabIndex, id } } } = this.props;
     const Component = TAB_COMS[tabIndex];
 
-    const title = `新增${TABS[tabIndex]}`;
+    const title = `${id ? '编辑' : '新增'}${TABS[tabIndex]}`;
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '人员在岗在位管理', name: '人员在岗在位管理' },

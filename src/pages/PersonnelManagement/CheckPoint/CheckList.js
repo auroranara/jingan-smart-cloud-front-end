@@ -156,10 +156,11 @@ export default class CheckList extends PureComponent {
 
     const actions = this.genLink(POINT_INDEX, id);
     const address = location || NO_DATA;
+    const photo = photo && photoList.length ? photoList[0].webUrl : '';
     return (
       <List.Item key={id}>
         <Card
-          className={styles.card}
+          className={styles.card1}
           title={
             <Ellipsis lines={1} tooltip style={{ height: 24 }}>
               {name}
@@ -174,18 +175,20 @@ export default class CheckList extends PureComponent {
             方向：
             {direction || NO_DATA}
           </p>
+          {<div className={styles.photo} style={{ backgroundImage: `url(${photo})` }} />}
         </Card>
       </List.Item>
     );
   };
 
   renderEquipment = item => {
-    const { id, name, area, location, code, number, status } = item;
+    const { id, name, area, location, code, number } = item;
 
     const { equipmentStatus } = this.state;
 
     const actions = this.genLink(EQUIPMENT_INDEX, id);
     const address = `区域位置：${!area && !location ? NO_DATA : `${area || ''}${location || ''}`}`;
+    const sts = equipmentStatus[id];
     return (
       <List.Item key={id}>
         <Card
@@ -196,6 +199,7 @@ export default class CheckList extends PureComponent {
             </Ellipsis>
           }
           actions={actions}
+          extra={sts ? null : <span className={styles.red}>禁用</span>}
         >
           <p className={styles.p}>
             {address.length > 20 ? <Ellipsis lines={1} tooltip>{address}</Ellipsis> : address}
@@ -213,7 +217,7 @@ export default class CheckList extends PureComponent {
             <Switch
               checkedChildren="启用"
               unCheckedChildren="禁用"
-              checked={equipmentStatus[id]}
+              checked={sts}
               onChange={this.genSwitchChange(item, EQUIPMENT_INDEX)}
             />
           </p>
@@ -223,10 +227,11 @@ export default class CheckList extends PureComponent {
   };
 
   renderScreen = item => {
-    const { id, name, code, ipAddress, status } = item;
+    const { id, name, code, ipAddress } = item;
 
     const { screenStatus } = this.state;
 
+    const sts = screenStatus[id];
     const actions = this.genLink(SCREEN_INDEX, id);
     const address = ` 地址：${getAddress(item) || NO_DATA}`;
     return (
@@ -239,6 +244,7 @@ export default class CheckList extends PureComponent {
             </Ellipsis>
           }
           actions={actions}
+          extra={sts ? null : <span className={styles.red}>禁用</span>}
         >
           <p className={styles.p}>
             {address.length > 20 ? <Ellipsis lines={1} tooltip>{address}</Ellipsis> : address}
