@@ -16,6 +16,7 @@ import {
   TYPE_MAPPER,
   VERSION_MAPPER,
   LEVEL_CODE_MAPPER,
+  DEFAULT_RECORD_STATUS,
 } from './config';
 import {
   TYPE_CODES,
@@ -34,20 +35,18 @@ const { RangePicker } = DatePicker;
 export default class EmergencyPlanHandler extends Component {
   state = {
     submitting: false,
-    currentRecordStatus: 0,
+    currentRecordStatus: DEFAULT_RECORD_STATUS,
   }
 
   componentDidMount() {
     const { match: { params: { id } } } = this.props;
     if (id) {
-      this.getDetail(({ recordStatus }) => {
-        this.setState({
-          currentRecordStatus: recordStatus,
-        });
-      });
-    } else {
-      this.clearDetail();
+      this.getDetail();
     }
+  }
+
+  componentWillUnmount() {
+    this.clearDetail();
   }
 
   getDetail = () => {
@@ -56,6 +55,11 @@ export default class EmergencyPlanHandler extends Component {
       type: 'emergencyPlan/fetchDetail',
       payload: {
         id,
+      },
+      callback: ({ isRecord }) => {
+        this.setState({
+          currentRecordStatus: isRecord,
+        });
       },
     });
   }
@@ -81,19 +85,20 @@ export default class EmergencyPlanHandler extends Component {
 
   // 提交按钮点击事件
   handleSubmitButtonClick = () => {
-    const { dispatch, match: { params: { id } } } = this.props;
+    const { dispatch, match: { params: { id } }, emergencyPlan: { detail: { historyType, status, relationId }={} } } = this.props;
     const { validateFieldsAndScroll } = this.form;
-    console.log(this.form);
     validateFieldsAndScroll((errors, values) => {
-      console.log(values);
       if (!errors) {
         this.setState({ submitting: true });
-        const { companyName, expiryDate: [startExpiryDate, endExpiryDate]=[], recordDate, ...rest } = values;
+        const { company, expiryDate: [startDate, endDate]=[], recordDate, ...rest } = values;
         const payload = {
           id,
-          companyName: companyName.key,
-          startExpiryDate: startExpiryDate && startExpiryDate.format('YYYY-MM-DD'),
-          endExpiryDate: endExpiryDate && endExpiryDate.format('YYYY-MM-DD'),
+          historyType,
+          status,
+          relationId,
+          companyId: company.key,
+          startDate: startDate && startDate.format('YYYY-MM-DD'),
+          endDate: endDate && endDate.format('YYYY-MM-DD'),
           recordDate: recordDate && recordDate.format('YYYY-MM-DD'),
           ...rest,
         };
@@ -133,21 +138,25 @@ export default class EmergencyPlanHandler extends Component {
           companyId,
           companyName,
           name,
-          version,
-          majorHazard,
-          applyArea,
-          abstract,
-          content,
+          planType,
+          editionType,
+          editionCode,
+          status,
+          isMajorHazard,
+          applicationArea,
+          emergencyMain,
+          emergencyAll,
           keyword,
-          startExpiryDate,
-          endExpiryDate,
-          typeCode,
-          secretCode,
-          recordStatus,
-          recordNumber,
+          startDate,
+          endDate,
+          jbLevelCode,
+          lxLevelCode,
+          mjLevelCode,
+          isRecord,
+          recordCode,
           recordDate,
-          recordCredential,
-          attachment,
+          recordCertificateList,
+          emergencyFilesList,
           remark,
         }={},
       },
@@ -182,7 +191,7 @@ export default class EmergencyPlanHandler extends Component {
     ];
     const FIELDS = [
       {
-        id: 'companyName',
+        id: 'company',
         label: '单位名称',
         span: SPAN,
         labelCol: LABEL_COL,
@@ -216,37 +225,37 @@ export default class EmergencyPlanHandler extends Component {
         },
       },
       {
-        id: 'type',
+        id: 'planType',
         label: '预案类型',
         span: SPAN,
         labelCol: LABEL_COL,
         render: () => <Text transform={TYPE_MAPPER} />,
         options: {
-          initialValue: 0,
+          initialValue: planType || '1',
         },
       },
       {
-        id: 'versionType',
+        id: 'editionType',
         label: '版本类',
         span: SPAN,
         labelCol: LABEL_COL,
         render: () => <Text transform={VERSION_TYPE_MAPPER} />,
         options: {
-          initialValue: +!!id,
+          initialValue: +status === 4 ? '2' : editionType || '1',
         },
       },
       {
-        id: 'version',
+        id: 'editionCode',
         label: '版本号',
         span: SPAN,
         labelCol: LABEL_COL,
         render: () => <Text transform={VERSION_MAPPER} />,
         options: {
-          initialValue: version ? (+version+0.01).toFixed(2) : '1.00',
+          initialValue: +status === 4 ? (+editionCode+0.01).toFixed(2) : editionCode || '1.00',
         },
       },
       {
-        id: 'majorHazard',
+        id: 'isMajorHazard',
         label: '是否重大危险源',
         span: SPAN,
         labelCol: LABEL_COL,
@@ -257,17 +266,17 @@ export default class EmergencyPlanHandler extends Component {
           </Radio.Group>
         ),
         options: {
-          initialValue: majorHazard >= 0 ? `${majorHazard}` : undefined,
+          initialValue: isMajorHazard || undefined,
         },
       },
       {
-        id: 'applyArea',
+        id: 'applicationArea',
         label: '适用领域',
         span: SPAN,
         labelCol: LABEL_COL,
         render: () => <Input placeholder="请输入适用领域" />,
         options: {
-          initialValue: applyArea,
+          initialValue: applicationArea,
           rules: [
             {
               required: true,
@@ -278,13 +287,13 @@ export default class EmergencyPlanHandler extends Component {
         },
       },
       {
-        id: 'abstract',
+        id: 'emergencyMain',
         label: '预案摘要',
         span: SPAN,
         labelCol: LABEL_COL,
         render: () => <Input.TextArea placeholder="请输入预案摘要" autosize={{ minRows: 3 }} />,
         options: {
-          initialValue: abstract,
+          initialValue: emergencyMain,
           rules: [
             {
               required: true,
@@ -295,13 +304,13 @@ export default class EmergencyPlanHandler extends Component {
         },
       },
       {
-        id: 'content',
+        id: 'emergencyAll',
         label: '预案内容',
         span: SPAN,
         labelCol: LABEL_COL,
         render: () => <Input.TextArea placeholder="请输入预案内容" autosize={{ minRows: 3 }} />,
         options: {
-          initialValue: content,
+          initialValue: emergencyAll,
           rules: [
             {
               required: true,
@@ -335,21 +344,21 @@ export default class EmergencyPlanHandler extends Component {
         labelCol: LABEL_COL,
         render: () => <RangePicker className={styles.datePicker} />,
         options: {
-          initialValue: [startExpiryDate && moment(startExpiryDate), endExpiryDate && moment(endExpiryDate)],
+          initialValue: [startDate && moment(startDate) || undefined, endDate && moment(endDate) || undefined],
         },
       },
       {
-        id: 'levelCode',
+        id: 'jbLevelCode',
         label: '预案级别代码',
         span: SPAN,
         labelCol: LABEL_COL,
         render: () => <Text transform={LEVEL_CODE_MAPPER} />,
         options: {
-          initialValue: 0,
+          initialValue: jbLevelCode || '66000',
         },
       },
       {
-        id: 'typeCode',
+        id: 'lxLevelCode',
         label: '预案类型代码',
         span: SPAN,
         labelCol: LABEL_COL,
@@ -359,7 +368,7 @@ export default class EmergencyPlanHandler extends Component {
           </Select>
         ),
         options: {
-          initialValue: typeCode,
+          initialValue: lxLevelCode,
           rules: [
             {
               required: true,
@@ -369,7 +378,7 @@ export default class EmergencyPlanHandler extends Component {
         },
       },
       {
-        id: 'secretCode',
+        id: 'mjLevelCode',
         label: '预案密级代码',
         span: SPAN,
         labelCol: LABEL_COL,
@@ -379,16 +388,17 @@ export default class EmergencyPlanHandler extends Component {
           </Radio.Group>
         ),
         options: {
-          initialValue: `${secretCode || 0}`,
+          initialValue: mjLevelCode,
           rules: [
             {
               required: true,
+              message: '预案密级代码不能为空',
             },
           ],
         },
       },
       {
-        id: 'recordStatus',
+        id: 'isRecord',
         label: '是否已备案',
         span: SPAN,
         labelCol: LABEL_COL,
@@ -398,7 +408,7 @@ export default class EmergencyPlanHandler extends Component {
           </Radio.Group>
         ),
         options: {
-          initialValue: `${recordStatus || currentRecordStatus}`,
+          initialValue: isRecord || DEFAULT_RECORD_STATUS,
           rules: [
             {
               required: true,
@@ -407,13 +417,13 @@ export default class EmergencyPlanHandler extends Component {
         },
       },
       ...(currentRecordStatus > 0 ? [{
-        id: 'recordNumber',
+        id: 'recordCode',
         label: '备案编号',
         span: SPAN,
         labelCol: LABEL_COL,
         render: () => <Input placeholder="请输入备案编号" />,
         options: {
-          initialValue: recordNumber,
+          initialValue: recordCode,
           rules: [
             {
               required: true,
@@ -440,13 +450,13 @@ export default class EmergencyPlanHandler extends Component {
         },
       },
       {
-        id: 'recordCredential',
+        id: 'recordCertificateList',
         label: '备案证明',
         span: SPAN,
         labelCol: LABEL_COL,
         render: () => <CustomUpload folder="emergencyPlan" />,
         options: {
-          initialValue: recordCredential || [],
+          initialValue: recordCertificateList || [],
           rules: [
             {
               required: true,
@@ -456,13 +466,13 @@ export default class EmergencyPlanHandler extends Component {
         },
       }] : []),
       {
-        id: 'attachment',
+        id: 'emergencyFilesList',
         label: '应急预案附件',
         span: SPAN,
         labelCol: LABEL_COL,
         render: () => <CustomUpload folder="emergencyPlan" />,
         options: {
-          initialValue: attachment || [],
+          initialValue: emergencyFilesList || [],
           rules: [
             {
               required: true,
@@ -478,7 +488,7 @@ export default class EmergencyPlanHandler extends Component {
         labelCol: LABEL_COL,
         render: () => <Input.TextArea placeholder="请输入备注" autosize={{ minRows: 3 }} />,
         options: {
-          initialValue: remark,
+          initialValue: remark || undefined,
         },
       },
     ];

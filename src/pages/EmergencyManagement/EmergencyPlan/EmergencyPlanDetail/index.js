@@ -18,6 +18,10 @@ import {
   VERSION_MAPPER,
   LEVEL_CODE_MAPPER,
 } from '../EmergencyPlanHandler/config';
+import {
+  TYPE_CODES,
+  SECRET_CODES,
+} from '../EmergencyPlanList/config';
 import styles from './index.less';
 
 @connect(({ emergencyPlan, loading }) => ({
@@ -29,12 +33,26 @@ export default class EmergencyPlanDetail extends Component {
     this.getDetail();
   }
 
+  componentWillUnmount() {
+    this.clearDetail();
+  }
+
   getDetail = () => {
     const { dispatch, match: { params: { id } } } = this.props;
     dispatch({
       type: 'emergencyPlan/fetchDetail',
       payload: {
         id,
+      },
+    });
+  }
+
+  clearDetail = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'emergencyPlan/save',
+      payload: {
+        detail: {},
       },
     });
   }
@@ -56,23 +74,26 @@ export default class EmergencyPlanDetail extends Component {
         detail: {
           companyName,
           name,
-          versionType,
-          version,
-          majorHazard,
-          applyArea,
-          abstract,
-          content,
+          planType,
+          editionType,
+          editionCode,
+          isMajorHazard,
+          applicationArea,
+          emergencyMain,
+          emergencyAll,
           keyword,
-          startExpiryDate,
-          endExpiryDate,
-          typeCode,
-          secretCode,
-          recordStatus,
-          recordNumber,
+          startDate,
+          endDate,
+          jbLevelCode,
+          lxLevelCode,
+          mjLevelCode,
+          isRecord,
+          recordCode,
           recordDate,
-          recordCredential,
-          attachment,
+          recordCertificateList,
+          emergencyFilesList,
           remark,
+          historyType,
         }={},
       },
       loading,
@@ -94,53 +115,53 @@ export default class EmergencyPlanDetail extends Component {
         render: () => <span>{name}</span>,
       },
       {
-        id: 'type',
+        id: 'planType',
         label: '预案类型',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{TYPE_MAPPER(0)}</span>,
+        render: () => <span>{planType && TYPE_MAPPER(planType)}</span>,
       },
       {
-        id: 'versionType',
+        id: 'editionType',
         label: '版本类',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{versionType && VERSION_TYPE_MAPPER(versionType)}</span>,
+        render: () => <span>{editionType && VERSION_TYPE_MAPPER(editionType)}</span>,
       },
       {
-        id: 'version',
+        id: 'editionCode',
         label: '版本号',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{version && VERSION_MAPPER(version)}</span>,
+        render: () => <span>{editionCode && VERSION_MAPPER(editionCode)}</span>,
       },
       {
-        id: 'majorHazard',
+        id: 'isMajorHazard',
         label: '是否重大危险源',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{+majorHazard ? '是' : '否'}</span>,
+        render: () => <span>{+isMajorHazard ? '是' : '否'}</span>,
       },
       {
-        id: 'applyArea',
+        id: 'applicationArea',
         label: '适用领域',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{applyArea}</span>,
+        render: () => <span>{applicationArea}</span>,
       },
       {
-        id: 'abstract',
+        id: 'emergencyMain',
         label: '预案摘要',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{abstract}</span>,
+        render: () => <span>{emergencyMain}</span>,
       },
       {
-        id: 'content',
+        id: 'emergencyAll',
         label: '预案内容',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{content}</span>,
+        render: () => <span>{emergencyAll}</span>,
       },
       {
         id: 'keyword',
@@ -154,63 +175,85 @@ export default class EmergencyPlanDetail extends Component {
         label: '预案有效期',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{(startExpiryDate || endExpiryDate) && `${startExpiryDate ? moment(startExpiryDate).format('YYYY-MM-DD') : '?'} ~ ${endExpiryDate ? moment(endExpiryDate).format('YYYY-MM-DD') : '?'}`}</span>,
+        render: () => <span>{(startDate || endDate) && `${startDate ? moment(startDate).format('YYYY.M.D') : '?'} ~ ${endDate ? moment(endDate).format('YYYY.M.D') : '?'}`}</span>,
       },
       {
-        id: 'levelCode',
+        id: 'jbLevelCode',
         label: '预案级别代码',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{LEVEL_CODE_MAPPER(0)}</span>,
+        render: () => <span>{jbLevelCode && LEVEL_CODE_MAPPER(jbLevelCode)}</span>,
       },
       {
-        id: 'typeCode',
+        id: 'lxLevelCode',
         label: '预案类型代码',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{typeCode}</span>,
+        render: () => {
+          const typeCode = TYPE_CODES.filter(({ key }) => key === lxLevelCode)[0];
+          return <span>{typeCode && typeCode.value}</span>
+        },
       },
       {
-        id: 'secretCode',
+        id: 'mjLevelCode',
         label: '预案密级代码',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{secretCode}</span>,
+        render: () => {
+          const secretCode = SECRET_CODES.filter(({ key }) => key === mjLevelCode)[0];
+          return <span>{secretCode && secretCode.value}</span>
+        },
       },
       {
-        id: 'recordStatus',
+        id: 'isRecord',
         label: '是否已备案',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{recordStatus}</span>,
+        render: () => <span>{+isRecord ? '是' : '否'}</span>,
       },
-      ...(recordStatus > 0 ? [{
-        id: 'recordNumber',
+      ...(isRecord > 0 ? [{
+        id: 'recordCode',
         label: '备案编号',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{recordNumber}</span>,
+        render: () => <span>{recordCode}</span>,
       },
       {
         id: 'recordDate',
         label: '备案日期',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{recordDate && moment(recordDate).format('YYYY-MM-DD')}</span>,
+        render: () => <span>{recordDate && moment(recordDate).format('YYYY.M.D')}</span>,
       },
       {
-        id: 'recordCredential',
+        id: 'recordCertificateList',
         label: '备案证明',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{recordCredential}</span>,
+        render: () => (
+          <div>
+            {recordCertificateList && recordCertificateList.map(({ webUrl, name }, index) => (
+              <div key={index}>
+                <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>
+              </div>
+            ))}
+          </div>
+        ),
       }] : []),
       {
-        id: 'attachment',
+        id: 'emergencyFilesList',
         label: '应急预案附件',
         span: SPAN,
         labelCol: LABEL_COL,
-        render: () => <span>{attachment}</span>,
+        render: () => (
+          <div>
+            {emergencyFilesList && emergencyFilesList.map(({ webUrl, name }, index) => (
+              <div key={index}>
+                <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>
+              </div>
+            ))}
+          </div>
+        ),
       },
       {
         id: 'remark',
@@ -237,7 +280,7 @@ export default class EmergencyPlanDetail extends Component {
               action={
                 <Fragment>
                   <Button onClick={this.handleBackButtonClick}>返回</Button>
-                  <Button type="primary" onClick={this.handleEditButtonClick}>编辑</Button>
+                  {+historyType === 1 && <Button type="primary" onClick={this.handleEditButtonClick}>编辑</Button>}
                 </Fragment>
               }
             />

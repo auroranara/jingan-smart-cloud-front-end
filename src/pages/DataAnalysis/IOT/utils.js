@@ -27,10 +27,10 @@ export function handleListFormVals(vals) {
 // 将RangePicker中获取的moment数组转化成startTime及endTime属性
 export function handleFormVals(vals) {
   if (!vals) return {};
-
   if (!('date' in vals)) return vals;
 
   const newVals = { ...vals };
+  delete newVals.deviceType;
   delete newVals.date;
   // 若查询状态为全部，则删除该属性
   // if (vals.status === '0') delete newVals.status;
@@ -77,11 +77,25 @@ export function handleTableData(list = [], indexBase, deviceTypeMap={}) {
       limitValue: limitValue || limitValue === 0 ? renderVal(limitValue, u) : '-',
       // limitValue: <p style={{color: 'red'}}>limit</p>,
       // condition: sts === -1 ? '设备失联' : `${CONDITION_MAP[condition]}界限值`,
-      condition: sts === -25 ? '机械臂故障' : sts === -1 ? '设备失联' : condition ? `${condition}界限值` : '-',
+      // condition: sts === -25 ? '机械臂故障' : sts === -1 ? '设备失联' : condition ? `${condition}界限值` : '-',
+      condition: getCondition(sts, condition, desc),
       parameter: sts === -1 || desc === null ? '-' : desc,
       deviceType: deviceTypeMap[deviceType],
     };
   });
+}
+
+function getCondition(status, condition, desc) {
+  const sts = +status;
+  if (sts === -25)
+    return '机械臂故障';
+  if (sts === -1)
+    return '设备失联';
+  if (sts === 0)
+    return desc ? `${desc}正常` : '-';
+  if (!condition)
+    return '-';
+  return `${desc}过${condition === '<=' ? '低' : '高'}`;
 }
 
 export function handleChemicalFormula(param = '') {

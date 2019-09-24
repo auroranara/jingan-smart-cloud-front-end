@@ -3063,6 +3063,38 @@ module.exports = env => {
                 },
               ],
             },
+            // 典型事故案例
+            {
+              path: '/safety-knowledge-base/typical-accident-case',
+              code: 'safetyKnowledgeBase.typicalAccidentCase',
+              name: 'typicalAccidentCase',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-knowledge-base/typical-accident-case',
+                  name: 'typicalAccidentCase',
+                  redirect: '/safety-knowledge-base/typical-accident-case/list',
+                },
+                {
+                  path: '/safety-knowledge-base/typical-accident-case/list',
+                  code: 'safetyKnowledgeBase.typicalAccidentCase.listView',
+                  name: 'list',
+                  component: './SafetyKnowledgeBase/TypicalAccidentCase/TList',
+                },
+                {
+                  path: '/safety-knowledge-base/typical-accident-case/add',
+                  code: 'safetyKnowledgeBase.typicalAccidentCase.add',
+                  name: 'add',
+                  component: './SafetyKnowledgeBase/TypicalAccidentCase/TEdit',
+                },
+                {
+                  path: '/safety-knowledge-base/typical-accident-case/edit/:id',
+                  code: 'safetyKnowledgeBase.typicalAccidentCase.edit',
+                  name: 'edit',
+                  component: './SafetyKnowledgeBase/TypicalAccidentCase/TEdit',
+                },
+              ],
+            },
           ],
         },
 

@@ -45,12 +45,12 @@ export default class DeviceCountDrawer extends PureComponent {
   componentDidUpdate({ visible: prevVisible }) {
     const { visible } = this.props;
     if (!prevVisible && visible) {
-      this.scroll.dom.scrollTop();
+      this.scroll && this.scroll.scrollTop();
     }
   }
 
   refScroll = (scroll) => {
-    this.scroll = scroll;
+    this.scroll = scroll && scroll.dom;
   }
 
   /**

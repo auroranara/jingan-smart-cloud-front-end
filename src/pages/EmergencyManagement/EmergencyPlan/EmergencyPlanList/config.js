@@ -66,6 +66,30 @@ export const PUBLISH_STATUSES = [
     value: '已发布',
   },
 ];
+export const STATUSES = [
+  {
+    key: '1',
+    value: '待审核',
+  },
+  {
+    key: '2',
+    // value: '审核通过待发布',
+    value: '待发布',
+  },
+  {
+    key: '3',
+    value: '审核不通过',
+  },
+  {
+    key: '4',
+    // value: '审核通过已发布',
+    value: '已发布',
+  },
+  {
+    key: '5',
+    value: '已作废',
+  },
+];
 export const SECRET_CODES = [
   {
     key: '0',
