@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Input, Popconfirm, Table, Divider, Cascader } from 'antd';
+import { Form, Card, Button, Input, Popconfirm, Table, Divider, message, Cascader } from 'antd';
 import { Link } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Lightbox from 'react-images';
@@ -41,7 +41,7 @@ const spanStyle = { md: 8, sm: 12, xs: 24 };
 const getRootChild = () => document.querySelector('#root>div');
 
 /* session前缀 */
-// const sessionPrefix = 'typical_accident_list';
+const sessionPrefix = 'typical_accident_list';
 
 @connect(({ typicalAccidentCase, user, company, loading }) => ({
   typicalAccidentCase,
@@ -62,20 +62,95 @@ export default class CaseList extends PureComponent {
 
   // 挂载后
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {
+      user: {
+        currentUser: { id },
+      },
+      dispatch,
+    } = this.props;
+    // 从sessionStorage中获取存储的控件值
+    const sessionData = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
+    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
+      pageNum: 1,
+      pageSize: 10,
+    };
+    this.fetchList({ ...payload });
+    if (sessionData) {
+      this.form.setFieldsValue({ ...payload });
+    }
     // 获取行政区域
     dispatch({
       type: 'company/fetchIndustryType',
     });
   }
 
+  // 获取列表
+  fetchList = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'typicalAccidentCase/fetchCaseList',
+      payload: {
+        ...params,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
+  };
+
+  setFormReference = toobar => {
+    this.form = toobar && toobar.props && toobar.props.form;
+  };
+
   // 查询
-  handleSearch = () => {};
+  handleSearch = () => {
+    const {
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+    const { industyCategory, ...rest } = this.form.getFieldsValue();
+    const payload = {
+      industyCategory:
+        industyCategory && industyCategory.length > 0 ? industyCategory.join(',') : undefined,
+      ...rest,
+    };
+    this.fetchList(payload);
+    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
+  };
 
   // 重置
-  handleReset = () => {};
+  handleReset = () => {
+    this.fetchList();
+    sessionStorage.clear();
+  };
 
-  handlePageChange = () => {};
+  // 删除
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'typicalAccidentCase/fetchCaseDelete',
+      payload: { id: id },
+      success: () => {
+        this.fetchList();
+        message.success('删除成功！');
+      },
+      error: () => {
+        message.error('删除失败!');
+      },
+    });
+  };
+
+  // 分页变动
+  handlePageChange = (pageNum, pageSize) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'typicalAccidentCase/fetchCaseList',
+      payload: {
+        pageSize,
+        pageNum,
+      },
+    });
+  };
 
   // 查看附件
   handleShowModal = files => {
@@ -147,7 +222,7 @@ export default class CaseList extends PureComponent {
       },
       {
         title: '行业类别',
-        dataIndex: 'industyCategory',
+        dataIndex: 'industyCategoryLabel',
         align: 'center',
         width: 300,
       },
@@ -169,15 +244,27 @@ export default class CaseList extends PureComponent {
         align: 'center',
         width: 200,
         render: (val, record) => {
-          const { accidProcess, deriReason, inderiReason, otherFile } = record;
+          const { accidProcessList, deriReasonList, inderiReasonList, otherFileList } = record;
           return (
             <Fragment>
               {[
-                { label: '事故经过', value: accidProcess },
-                { label: '直接原因', value: deriReason },
-                { label: '间接原因', value: inderiReason },
-                { label: '其他附件', value: otherFile },
-              ].map(({ label, value }) => {
+                {
+                  label: '事故经过',
+                  value: accidProcessList,
+                },
+                {
+                  label: '直接原因',
+                  value: deriReasonList,
+                },
+                {
+                  label: '间接原因',
+                  value: inderiReasonList,
+                },
+                {
+                  label: '其他附件',
+                  value: otherFileList,
+                },
+              ].map(({ label, value, id }) => {
                 return value && value.length ? (
                   <p
                     onClick={() => {
@@ -204,7 +291,7 @@ export default class CaseList extends PureComponent {
         render: (val, row) => (
           <Fragment>
             {editCode ? (
-              <Link to={`/base-info/major-hazard/edit/${row.id}`}>编辑</Link>
+              <Link to={`/safety-knowledge-base/typical-accident-case/edit/${row.id}`}>编辑</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}
@@ -255,7 +342,9 @@ export default class CaseList extends PureComponent {
         currentUser: { permissionCodes },
       },
       typicalAccidentCase: {
-        data: { list = [] },
+        data: {
+          pagination: { total },
+        },
       },
     } = this.props;
 
@@ -266,21 +355,21 @@ export default class CaseList extends PureComponent {
 
     const fields = [
       {
-        id: 'name',
+        id: 'expName',
         label: '案例名称',
         span: spanStyle,
         render: () => <Input placeholder="请输入案例名称" />,
         transform: v => v.trim(),
       },
       {
-        id: 'code',
+        id: 'keyWords',
         label: '关键字',
         span: spanStyle,
         render: () => <Input placeholder="请输入关键字" />,
         transform: v => v.trim(),
       },
       {
-        id: 'area',
+        id: 'industyCategory',
         label: '行业类别',
         span: spanStyle,
         render: () => (
@@ -298,7 +387,6 @@ export default class CaseList extends PureComponent {
             getPopupContainer={getRootChild}
           />
         ),
-        transform: v => v.trim(),
       },
     ];
 
@@ -310,7 +398,7 @@ export default class CaseList extends PureComponent {
           <div>
             <span>
               共计：
-              {list.length}
+              {total}
             </span>
           </div>
         }

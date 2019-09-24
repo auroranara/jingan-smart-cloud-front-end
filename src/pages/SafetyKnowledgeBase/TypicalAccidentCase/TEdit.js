@@ -42,12 +42,68 @@ export default class TEdit extends PureComponent {
     indirectLoading: false,
     adjunctPicList: [],
     adjunctLoading: false,
+    detailList: {},
   };
 
   // 挂载后
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
 
+    if (id) {
+      // 获取列表
+      dispatch({
+        type: 'typicalAccidentCase/fetchCaseList',
+        payload: {
+          pageSize: 18,
+          pageNum: 1,
+        },
+        callback: res => {
+          const { list } = res;
+          const currentList = list.find(item => item.id === id) || {};
+          const { accidProcessList, deriReasonList, inderiReasonList, otherFileList } = currentList;
+          this.setState({
+            detailList: currentList,
+            accidentPicList: accidProcessList.map(({ dbUrl, webUrl }, index) => ({
+              uid: index,
+              status: 'done',
+              name: `附件${index + 1}`,
+              webUrl,
+              dbUrl,
+            })),
+            directPicList: deriReasonList.map(({ dbUrl, webUrl }, index) => ({
+              uid: index,
+              status: 'done',
+              name: `附件${index + 1}`,
+              webUrl,
+              dbUrl,
+            })),
+            indirectPicList: inderiReasonList.map(({ dbUrl, webUrl }, index) => ({
+              uid: index,
+              status: 'done',
+              name: `附件${index + 1}`,
+              webUrl,
+              dbUrl,
+            })),
+            adjunctPicList: otherFileList.map(({ dbUrl, webUrl }, index) => ({
+              uid: index,
+              status: 'done',
+              name: `附件${index + 1}`,
+              webUrl,
+              dbUrl,
+            })),
+          });
+        },
+      });
+    } else {
+      dispatch({
+        type: 'typicalAccidentCase/clearDetail',
+      });
+    }
     // 获取行政区域
     dispatch({
       type: 'company/fetchIndustryType',
@@ -262,19 +318,28 @@ export default class TEdit extends PureComponent {
       dispatch,
       form: { validateFieldsAndScroll },
     } = this.props;
+    const { accidentPicList, directPicList, indirectPicList, adjunctPicList } = this.state;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const { expName, industyCategory, keyWords, abstractDesc } = values;
-        const { accidentPicList, directPicList, indirectPicList, adjunctPicList } = this.state;
         const payload = {
+          id,
           expName,
           industyCategory: industyCategory.join(','),
           keyWords,
           abstractDesc,
-          accidProcess: accidentPicList.map(file => file.dbUrl).join(','),
-          deriReason: directPicList.map(file => file.dbUrl).join(','),
-          inderiReason: indirectPicList.map(file => file.dbUrl).join(','),
-          adjunctPicList: adjunctPicList.map(file => file.dbUrl).join(','),
+          accidProcess: JSON.stringify(
+            accidentPicList.map(({ name, webUrl, dbUrl }) => ({ name, webUrl, dbUrl }))
+          ),
+          deriReason: JSON.stringify(
+            directPicList.map(({ name, webUrl, dbUrl }) => ({ name, webUrl, dbUrl }))
+          ),
+          inderiReason: JSON.stringify(
+            indirectPicList.map(({ name, webUrl, dbUrl }) => ({ name, webUrl, dbUrl }))
+          ),
+          otherFile: JSON.stringify(
+            adjunctPicList.map(({ name, webUrl, dbUrl }) => ({ name, webUrl, dbUrl }))
+          ),
         };
         const success = () => {
           const msg = id ? '编辑成功' : '新增成功';
@@ -319,8 +384,10 @@ export default class TEdit extends PureComponent {
       directLoading,
       indirectLoading,
       adjunctLoading,
+      detailList,
     } = this.state;
 
+    const { expName, industyCategory, keyWords, abstractDesc } = detailList;
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
@@ -333,6 +400,7 @@ export default class TEdit extends PureComponent {
         <Form style={{ marginTop: 8 }}>
           <FormItem {...formItemLayout} label="案例名称">
             {getFieldDecorator('expName', {
+              initialValue: expName,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -345,6 +413,7 @@ export default class TEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label="行业类别">
             {getFieldDecorator('industyCategory', {
+              initialValue: industyCategory ? industyCategory.split(',') : [],
               rules: [
                 {
                   required: true,
@@ -371,6 +440,7 @@ export default class TEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label="关键字">
             {getFieldDecorator('keyWords', {
+              initialValue: keyWords,
               rules: [
                 {
                   required: true,
@@ -382,6 +452,7 @@ export default class TEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label="事故概述">
             {getFieldDecorator('abstractDesc', {
+              initialValue: abstractDesc,
               rules: [
                 {
                   required: true,
@@ -393,6 +464,7 @@ export default class TEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label="事故经过">
             {getFieldDecorator('accidProcess', {
+              initialValue: accidentPicList,
               rules: [
                 {
                   required: true,
@@ -423,6 +495,7 @@ export default class TEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label="直接原因">
             {getFieldDecorator('deriReason', {
+              initialValue: directPicList,
               rules: [
                 {
                   required: true,
@@ -476,6 +549,7 @@ export default class TEdit extends PureComponent {
 
           <FormItem {...formItemLayout} label="其他附件">
             {getFieldDecorator('otherFile', {
+              initialValue: adjunctPicList,
               rules: [
                 {
                   required: true,
@@ -554,10 +628,16 @@ export default class TEdit extends PureComponent {
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
+    const { accidentLoading, adjunctLoading, indirectLoading, directLoading } = this.state;
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        <Button type="primary" size="large" onClick={this.handleClickValidate}>
+        <Button
+          type="primary"
+          size="large"
+          loading={adjunctLoading || indirectLoading || directLoading || accidentLoading}
+          onClick={this.handleClickValidate}
+        >
           提交
         </Button>
         <Button type="primary" size="large" onClick={this.goBack}>
