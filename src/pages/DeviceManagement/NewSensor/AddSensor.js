@@ -5,14 +5,11 @@ import {
   Input,
   Select,
   Button,
-  Table,
   Row,
-  Modal,
   Col,
   message,
   Radio,
   DatePicker,
-  Popconfirm,
   TreeSelect,
   Upload,
   Icon,
@@ -21,14 +18,19 @@ import { connect } from 'dva';
 import { getToken } from '@/utils/authority';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
-import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
+// 选择品牌型号弹窗
 import BrandModelModal from './Components/BrandModelModal';
+// 监测参数表格
 import MonitoringParameterTable from './Components/MonitoringParameterTable';
-import Coordinate from '@/pages/RiskControl/RiskPointManage/Coordinate/index';
+import { AuthButton } from '@/utils/customAuth';
+import codesMap from '@/utils/codes';
+import moment from 'moment';
+import { phoneReg } from '@/utils/validate';
+// 片面图标注
+import PicInfo from '@/pages/DeviceManagement/Components/PicInfo';
 import styles from './AddSensor.less';
 
 const FormItem = Form.Item;
-const Option = Select.Option;
 const { TreeNode } = TreeSelect;
 
 const formItemLayout = {
@@ -36,29 +38,8 @@ const formItemLayout = {
   wrapperCol: { span: 18 },
 };
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
-const defaultPageSize = 10;
-const numberReg = /^(0|[1-9][0-9]*)(\.[0-9]{1,3})?$/;
 const UPLOAD_ACTION = '/acloud_new/v2/uploadFile';
 const FOLDER = 'monitor';
-// 平面图标志
-const flatGraphic = [
-  {
-    key: 1,
-    value: '单位平面图',
-  },
-  {
-    key: 2,
-    value: '楼层平面图',
-  },
-  {
-    key: 3,
-    value: '安全四色图',
-  },
-  {
-    key: 4,
-    value: '消防平面图',
-  },
-]
 /* 渲染树节点 */
 const renderTreeNodes = data => {
   return data.map(item => {
@@ -76,12 +57,13 @@ const renderTreeNodes = data => {
 
 
 @Form.create()
-@connect(({ sensor, device, riskPointManage, buildingsInfo, personnelPosition, loading }) => ({
+@connect(({ sensor, device, riskPointManage, buildingsInfo, personnelPosition, user, loading }) => ({
   sensor,
   device,
   personnelPosition,
   riskPointManage,
   buildingsInfo,
+  user,
   companyLoading: loading.effects['sensor/fetchModelList'],
 }))
 export default class AddNewSensor extends Component {
@@ -113,6 +95,7 @@ export default class AddNewSensor extends Component {
     // TODO: 编辑时获取数据
     if (id) {
       // 获取传感器详情
+      // paramWarnStrategyDtos这个参数只有修改或者添加报警策略后 {paramId}对象才会进入paramWarnStrategyDtos数组
       dispatch({
         type: 'device/fetchSensorDetail',
         payload: { id },
@@ -205,6 +188,18 @@ export default class AddNewSensor extends Component {
     const { dispatch } = this.props
     dispatch({
       type: 'personnelPosition/fetchFloors',
+      ...actions,
+    })
+  }
+
+
+  /**
+   * 保存参数列表
+   */
+  saveParameters = actions => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'device/saveParameters',
       ...actions,
     })
   }
@@ -334,7 +329,6 @@ export default class AddNewSensor extends Component {
     const {
       dispatch,
       form: { getFieldsValue },
-      match: { params: { id } },
     } = this.props
     const { companyId, buildingId, floorId } = getFieldsValue()
     // 当前编辑的平面图标注
@@ -419,6 +413,7 @@ export default class AddNewSensor extends Component {
     } = this.state
     if (!isNaN(editingIndex)) {
       message.warning('请先保存平面图信息')
+      return
     }
     validateFields((err, values) => {
       if (err) return
@@ -428,7 +423,7 @@ export default class AddNewSensor extends Component {
         installPhotoList: fileList, // 安装图片列表
         pointFixInfoList, // 平面图标注列表
       }
-      console.log('payload', payload);
+      // console.log('payload', payload);
       const tag = id ? '编辑' : '新增'
       const success = () => {
         message.success(`${tag}成功`)
@@ -500,17 +495,31 @@ export default class AddNewSensor extends Component {
    * 保存配置的报警策略
    */
   handleConfirmParameter = (paramId, list) => {
+    const {
+      device: {
+        parameters: { list: parameterList },
+      },
+    } = this.props
     this.setState(({ paramWarnStrategyDtos }) => {
       let newList = [...paramWarnStrategyDtos]
+      // 寻找保存在state中的paramWarnStrategyDtos [ {paramId,paramWarnStrategyList[]} ]
       const index = paramWarnStrategyDtos.findIndex(item => item.paramId === paramId)
       const item = { paramId, paramWarnStrategyList: list }
+      // 如果该参数下的报警策略刚添加或者修改过
       if (index < 0) {
         newList.push(item)
       } else if (list && list.length) {
+        // 如果修改
         newList.splice(index, 1, item)
       } else {
+        // 删除
         newList.splice(index, 1)
       }
+      // 参数列表更新 参数--报警策略数量
+      const customStrategyCount = list.length
+      const paramIndex = parameterList.findIndex(item => item.id === paramId)
+      parameterList.splice(paramIndex, 1, { ...parameterList[paramIndex], customStrategyCount })
+      this.saveParameters({ payload: { list: parameterList } })
       return { paramWarnStrategyDtos: newList }
     })
   }
@@ -552,11 +561,19 @@ export default class AddNewSensor extends Component {
   }
 
   /**
-   * 渲染平面图标志
-   */
-  renderPicInfo = () => {
+     * 渲染表单
+     */
+  renderForm = () => {
     const {
-      form: { getFieldValue, getFieldDecorator },
+      dispatch,
+      form,
+      form: { getFieldDecorator, getFieldValue },
+      match: { params: { id } },
+      device: {
+        monitoringType, // 监测参数列表树
+        sensorDetail: detail = {},
+        flatGraphic,
+      },
       personnelPosition: {
         map: {
           buildings = [], // 建筑物列表
@@ -568,135 +585,39 @@ export default class AddNewSensor extends Component {
       },
     } = this.props
     const {
-      pointFixInfoList = [],
-      editingIndex, // 当前编辑的下标
+      editingIndex,
+      pointFixInfoList,
+      model,
+      brand,
+      monitorType,
+      fileList,
+      uploading,
+      paramWarnStrategyDtos,
       picModalVisible,
       isImgSelect,
       imgIdCurrent,
     } = this.state
-    // 地址录入方式
-    const locationType = getFieldValue('locationType')
-    const editingItem = pointFixInfoList.length ? pointFixInfoList[editingIndex] : {}
-    return (
-      <Row gutter={{ lg: 24, md: 12 }} style={{ position: 'relative' }}>
-        {pointFixInfoList.map((item, index) => (
-          <Col span={24} key={index} style={{ marginBottom: +item.imgType === 2 ? '-23px' : '' }}>
-            <Row gutter={12}>
-              <Col span={4}>
-                <Select
-                  allowClear
-                  placeholder="平面图类型"
-                  onChange={(imgType) => this.handleChangeImageType({ ...item, imgType, xnum: undefined, ynum: undefined }, index)}
-                  disabled={editingIndex !== index}
-                  value={item.imgType}
-                >
-                  {flatGraphic.map(({ key, value }) => (
-                    <Option value={key} key={key} disabled={pointFixInfoList.some(row => row.imgType === key)}>
-                      {value}
-                    </Option>
-                  ))}
-                </Select>
-              </Col>
-              {/* 如果平面图选择楼层平面图 */}
-              {+item.imgType === 2 && (
-                <Fragment>
-                  <Col span={4}>
-                    <FormItem>
-                      {getFieldDecorator('buildingId')(
-                        <Select disabled={+locationType === 0} placeholder="所属建筑" style={{ width: '100%' }} onSelect={this.handleSelectBuilding} allowClear>
-                          {buildings.map((item, i) => (
-                            <Select.Option key={i} value={item.id}>{item.buildingName}</Select.Option>
-                          ))}
-                        </Select>
-                      )}
-                    </FormItem>
-                  </Col>
-                  <Col span={4}>
-                    <FormItem>
-                      {getFieldDecorator('floorId')(
-                        <Select disabled={+locationType === 0} placeholder="所属楼层" style={{ width: '100%' }} allowClear>
-                          {floors.map((item, i) => (
-                            <Select.Option key={i} value={item.id}>{item.floorName}</Select.Option>
-                          ))}
-                        </Select>
-                      )}
-                    </FormItem>
-                  </Col>
-                </Fragment>
-              )}
-              <Col span={3}>
-                <Input placeholder="X轴" disabled={editingIndex !== index} value={item.xnum} onChange={e => { this.handleChangeCoordinate(item, e.target.value, index, 'xnum') }} />
-              </Col>
-              <Col span={3}>
-                <Input placeholder="Y轴" disabled={editingIndex !== index} value={item.ynum} onChange={e => { this.handleChangeCoordinate(item, e.target.value, index, 'ynum') }} />
-              </Col>
-              <Col span={6}>
-                <Button
-                  className={styles.mr10}
-                  onClick={() => this.showModalCoordinate(index, item)}
-                  disabled={editingIndex !== index}
-                >
-                  定位
-                  </Button>
-                {editingIndex === index ? (
-                  <span>
-                    <a className={styles.mr10} onClick={() => this.handleSavePointFix(editingIndex, index, item)}>保存</a>
-                    <Popconfirm
-                      title="确认要删除该内容吗？"
-                      onConfirm={() => this.handleDeletePointFix(index)}
-                      okText="确认"
-                      cancelText="取消"
-                    >
-                      <a>删除</a>
-                    </Popconfirm>
-                  </span>
-                ) : (
-                    <span>
-                      <a onClick={() => this.handleEditPointFix(editingIndex, index)}>编辑</a>
-                    </span>
-                  )}
-              </Col>
-            </Row>
-          </Col>
-        ))}
-        <Coordinate
-          width="920px"
-          visible={picModalVisible}
-          urls={imgList}
-          onOk={this.handleCoordinateOk}
-          onCancel={() => {
-            this.setState({
-              picModalVisible: false,
-            });
-          }}
-          xNum={editingItem ? editingItem.xnum : ''}
-          yNum={editingItem ? editingItem.ynum : ''}
-          imgIdCurrent={imgIdCurrent}
-          isImgSelect={isImgSelect}
-        />
-      </Row>
-    )
-  }
-
-  /**
-     * 渲染表单
-     */
-  renderForm = () => {
-    const {
-      form: { getFieldDecorator, getFieldValue },
-      match: { params: { id } },
-      device: {
-        monitoringType, // 监测参数列表树
-        sensorDetail: detail = {},
-      },
-      personnelPosition: {
-        map: {
-          buildings = [], // 建筑物列表
-          floors = [],      // 楼层列表
-        },
-      },
-    } = this.props
-    const { editingIndex, pointFixInfoList, model, brand, monitorType, fileList, uploading, paramWarnStrategyDtos } = this.state
+    const picInfoProps = {
+      visible: picModalVisible,
+      onCancel: () => { this.setState({ picModalVisible: false }) },
+      form,
+      buildings, // 建筑物列表
+      floors,      // 楼层列表
+      imgList,
+      pointFixInfoList,
+      editingIndex,
+      isImgSelect,
+      imgIdCurrent,
+      flatGraphic,
+      handleCoordinateOk: this.handleCoordinateOk,
+      handleChangeImageType: this.handleChangeImageType,
+      handleSelectBuilding: this.handleSelectBuilding,
+      showModalCoordinate: this.showModalCoordinate,
+      handleSavePointFix: this.handleSavePointFix,
+      handleDeletePointFix: this.handleDeletePointFix,
+      handleChangeCoordinate: this.handleChangeCoordinate,
+      handleEditPointFix: this.handleEditPointFix,
+    }
     // 地址录入方式
     const locationType = getFieldValue('locationType')
     const companyId = getFieldValue('companyId')
@@ -706,7 +627,7 @@ export default class AddNewSensor extends Component {
           <FormItem label="所属单位" {...formItemLayout}>
             {getFieldDecorator('companyId')(
               <Fragment>
-                {detail.companyName || '暂无绑定单位'}
+                {id ? (detail.companyName || '暂无绑定单位') : '暂无绑定单位'}
               </Fragment>
             )}
           </FormItem>
@@ -770,7 +691,7 @@ export default class AddNewSensor extends Component {
             <Fragment>
               <FormItem label="入库时间" {...formItemLayout}>
                 {getFieldDecorator('storageDate', {
-                  initialValue: id ? detail.storageDate : undefined,
+                  initialValue: id && detail.storageDate ? moment(detail.storageDate) : undefined,
                 })(
                   <DatePicker />
                 )}
@@ -785,14 +706,14 @@ export default class AddNewSensor extends Component {
               <FormItem label="安装电话" {...formItemLayout}>
                 {getFieldDecorator('installerPhone', {
                   initialValue: id ? detail.installerPhone : undefined,
-                  rules: [{ pattern: /^\d*$/, message: '请输入数字' }],
+                  rules: [{ pattern: phoneReg, message: '电话格式不正确' }],
                 })(
                   <Input placeholder="请输入" {...itemStyles} />
                 )}
               </FormItem>
               <FormItem label="安装日期" {...formItemLayout}>
                 {getFieldDecorator('installDate', {
-                  initialValue: id ? detail.installDate : undefined,
+                  initialValue: id && detail.installDate ? moment(detail.installDate) : undefined,
                 })(
                   <DatePicker />
                 )}
@@ -848,7 +769,13 @@ export default class AddNewSensor extends Component {
                         </Select>
                       )}
                     </Col>
-                    <Button type="primary">新增建筑物楼层</Button>
+                    <AuthButton
+                      onClick={() => { router.push('/base-info/buildings-info/list') }}
+                      code={codesMap.company.buildingsInfo.add}
+                      type="primary"
+                    >
+                      新增建筑物楼层
+                      </AuthButton>
                   </FormItem>
                   <FormItem label="详细位置" {...formItemLayout}>
                     {getFieldDecorator('location', {
@@ -886,7 +813,7 @@ export default class AddNewSensor extends Component {
                 >
                   新增
               </Button>
-                {this.renderPicInfo()}
+                <PicInfo {...picInfoProps} />
               </FormItem>
             </Fragment>
           )}

@@ -55,7 +55,7 @@ const expandTree = (list) => {
 // 渲染新增/编辑弹窗
 const RenderModal = Form.create()(props => {
   const {
-    form: { validateFields, getFieldDecorator, resetFields },
+    form: { validateFields, getFieldDecorator, setFieldsValue },
     detail,
     visible,
     onOk,
@@ -86,8 +86,9 @@ const RenderModal = Form.create()(props => {
  * 数据类型改变
  */
   const handleDataTypeChange = (type) => {
+    // 获取数据编码
     fetchAllUnsetModelList({ payload: { type } })
-    resetFields(['dataCode'])
+    setFieldsValue({ dataCode: undefined })
   }
 
   /*
@@ -108,6 +109,7 @@ const RenderModal = Form.create()(props => {
         </FormItem>
         <FormItem {...formItemCol} label="设备类型分类：">
           {getFieldDecorator('type', {
+            // type 1 数据处理设备 2 网关设备 3 监测对象 4  传感器
             initialValue: isEdit ? detail.type : undefined,
             rules: [{ required: true, message: '请选择设备类型分类' }],
           })(
@@ -133,45 +135,47 @@ const RenderModal = Form.create()(props => {
           </FormItem>
         )}
         {type === 4 && (
-          <FormItem {...formItemCol} label="监测类型：">
-            {getFieldDecorator('monitorType', {
-              initialValue: isEdit ? detail.monitorType : undefined,
-              rules: [{ required: true, message: '请选择监测类型' }],
-            })(
-              <TreeSelect
-                placeholder="请选择"
-                dropdownStyle={{ maxHeight: 600, overflow: 'auto' }}
-                allowClear
-              >
-                {renderTreeNodes(monitoringType)}
-              </TreeSelect>
-            )}
-          </FormItem>
+          <Fragment>
+            <FormItem {...formItemCol} label="监测类型：">
+              {getFieldDecorator('monitorType', {
+                initialValue: isEdit ? detail.monitorType : undefined,
+                rules: [{ required: true, message: '请选择监测类型' }],
+              })(
+                <TreeSelect
+                  placeholder="请选择"
+                  dropdownStyle={{ maxHeight: 600, overflow: 'auto' }}
+                  allowClear
+                >
+                  {renderTreeNodes(monitoringType)}
+                </TreeSelect>
+              )}
+            </FormItem>
+            <FormItem label="数据类型" {...formItemCol}>
+              {getFieldDecorator('dataType', {
+                initialValue: isEdit ? detail.dataType : undefined,
+                rules: [{ required: true, message: '请选择数据类型' }],
+              })(
+                <Select placeholder="请选择" onChange={handleDataTypeChange} allowClear>
+                  {monitoringTypeDict.map(({ key, value }) => (
+                    <Select.Option key={key} value={key}>{key}</Select.Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+            <FormItem label="数据编码" {...formItemCol}>
+              {getFieldDecorator('dataCode', {
+                initialValue: isEdit ? detail.dataCode : undefined,
+                rules: [{ required: true, message: '请选择数据编码' }],
+              })(
+                <Select placeholder="请选择">
+                  {allModelCodeList.map(({ model }) => (
+                    <Select.Option key={model} value={model}>{model}</Select.Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          </Fragment>
         )}
-        <FormItem label="数据类型" {...formItemCol}>
-          {getFieldDecorator('dataType', {
-            initialValue: isEdit ? detail.dataType : undefined,
-            rules: [{ required: true, message: '请选择数据类型' }],
-          })(
-            <Select placeholder="请选择" onChange={handleDataTypeChange} allowClear>
-              {monitoringTypeDict.map(({ key, value }) => (
-                <Select.Option key={key} value={key}>{key}</Select.Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
-        <FormItem label="数据编码" {...formItemCol}>
-          {getFieldDecorator('dataCode', {
-            initialValue: isEdit ? detail.dataCode : undefined,
-            rules: [{ required: true, message: '请选择数据编码' }],
-          })(
-            <Select placeholder="请选择">
-              {allModelCodeList.map(({ model }) => (
-                <Select.Option key={model} value={model}>{model}</Select.Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
       </Form>
     </Modal>
   )
@@ -287,7 +291,12 @@ export default class ModelList extends PureComponent {
    * 点击打开新增弹窗
    */
   handleViewAdd = () => {
+    const { dispatch } = this.props
     this.setState({ detail: null, modalVisible: true, currentType: undefined })
+    dispatch({
+      type: 'sensor/saveState',
+      payload: { value: [], key: 'allModelCodeList' },
+    })
   }
 
 

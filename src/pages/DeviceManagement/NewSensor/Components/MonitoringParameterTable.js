@@ -12,30 +12,23 @@ import {
   Row,
   Col,
 } from 'antd';
+import moment from 'moment';
+import HistoryModal from '@/pages/DeviceManagement/Components/ParameterHistoryModal';
 
 const FormItem = Form.Item;
-
-/*
-报警策略类型选项
-key: condition 和 warnLevel 中间有空格拼接而成
-*/
-const alarmTypes = [
-  { key: '>= 1', condition: '>=', warnLevel: 1, label: '预警上限' },
-  { key: '<= 1', condition: '<=', warnLevel: 1, label: '预警下限' },
-  { key: '>= 2', condition: '>=', warnLevel: 2, label: '告警上限' },
-  { key: '<= 2', condition: '<=', warnLevel: 2, label: '告警下限' },
-]
 
 // 渲染配置报警策略弹窗
 const RenderAlarmStrategyModal = Form.create()(props => {
   const {
-    detail: { paramDesc },
+    detail: { paramDesc, id, paramUnit },
     visible,
     onCancel,
     onOk,
     alarmStrategy = [], // 报警策略数组
     defaultAlarmStrategy = [], // 默认报警策略
     saveAlarmStrategy,
+    handleViewHistory, // 查看历史
+    alarmTypes,
   } = props
   // 添加报警项
   const handleAddItem = () => {
@@ -98,7 +91,10 @@ const RenderAlarmStrategyModal = Form.create()(props => {
         />
       </Card>
       <Card title={(
-        <span>自定义配置</span>
+        <Fragment>
+          <span>自定义配置</span>
+          <span style={{ float: 'right', color: '#1890ff', cursor: 'pointer' }} onClick={() => handleViewHistory(id)}>配置历史 >></span>
+        </Fragment>
       )}
         style={{ marginTop: '15px' }}
       >
@@ -138,6 +134,7 @@ const RenderAlarmStrategyModal = Form.create()(props => {
                   <Input
                     style={{ width: '100%' }}
                     placeholder="请输入"
+                    addonAfter={paramUnit || null}
                     value={row.limitValue}
                     onChange={(e) => onInputChange(isNaN(e.target.value) ? row.limitValue : +e.target.value, row, i)}
                   />
@@ -168,6 +165,7 @@ export default class DeployParameterTable extends PureComponent {
     alarmModalVisible: false, // 配置报警策略弹窗可见
     // defaultAlarmStrategy: [], // 自定义报警策略
     alarmStrategy: [], // 自定义报警策略
+    historyModalVisible: false, // 历史配置弹窗
   }
 
   /**
@@ -219,7 +217,7 @@ export default class DeployParameterTable extends PureComponent {
       // 获取自定义报警策略
       dispatch({
         type: 'device/fetchCusAlarmStrategy',
-        payload: { paramId },
+        payload: { paramId, sensorId },
         callback,
       })
     }
@@ -230,7 +228,6 @@ export default class DeployParameterTable extends PureComponent {
    */
   handleDeployAlarm = () => {
     const {
-      dispatch,
       onConfirm,
     } = this.props
     const { detail, alarmStrategy } = this.state
@@ -240,19 +237,6 @@ export default class DeployParameterTable extends PureComponent {
         return [...arr, { ...res, condition, warnLevel, limitValue }]
       } else return arr
     }, [])
-    // dispatch({
-    //   type: 'device/submitAlarmStrategy',
-    //   payload: {
-    //     paramId: detail.id,
-    //     paramWarnStrategyList,
-    //   },
-    //   success: () => {
-    //     message.success('配置报警策略成功')
-    //     this.setState({ alarmModalVisible: false, detail: {} })
-    //     this.handleQuery()
-    //   },
-    //   error: (res) => { message.error(res ? res.msg : '配置报警策略失败') },
-    // })
     this.setState({ alarmModalVisible: false })
     onConfirm(detail.id, paramWarnStrategyList)
   }
@@ -262,7 +246,7 @@ export default class DeployParameterTable extends PureComponent {
    * 关闭配置报警策略弹窗
    */
   closeAlarmModal = () => {
-    this.setState({ alarmModalVisible: false, detail: {} })
+    this.setState({ alarmModalVisible: false, detail: {}, historyModalVisible: false })
   }
 
   /**
@@ -272,9 +256,25 @@ export default class DeployParameterTable extends PureComponent {
     this.setState({ alarmStrategy: list })
   }
 
+
   /**
- * 渲染表格
- */
+   * 打开历史配置弹窗
+   */
+  handleViewHistory = (paramId) => {
+    const {
+      dispatch,
+      sensorId,
+    } = this.props
+    dispatch({
+      type: 'device/fetchParameterStrategyHistory',
+      payload: { paramId, sensorId },
+    })
+    this.setState({ historyModalVisible: true })
+  }
+
+  /**
+   * 渲染表格
+   */
   renderTable = () => {
     const {
       tableLoading,
@@ -342,13 +342,15 @@ export default class DeployParameterTable extends PureComponent {
       />
     )
   }
+
   render() {
     const {
       device: {
         alarmStrategy: defaultAlarmStrategy,
+        alarmTypes,
       },
     } = this.props
-    const { alarmModalVisible, alarmStrategy } = this.state
+    const { alarmModalVisible, alarmStrategy, detail, historyModalVisible } = this.state
     const alarmProps = {
       ...this.state,
       visible: alarmModalVisible,
@@ -357,11 +359,19 @@ export default class DeployParameterTable extends PureComponent {
       saveAlarmStrategy: this.saveAlarmStrategy,
       alarmStrategy,
       defaultAlarmStrategy,
+      handleViewHistory: this.handleViewHistory,
+      alarmTypes,
+    }
+    const historyProps = {
+      visible: historyModalVisible,
+      onCancel: () => { this.setState({ historyModalVisible: false }) },
+      detail,
     }
     return (
       <Fragment>
         {this.renderTable()}
         <RenderAlarmStrategyModal {...alarmProps} />
+        <HistoryModal {...historyProps} />
       </Fragment>
     )
   }

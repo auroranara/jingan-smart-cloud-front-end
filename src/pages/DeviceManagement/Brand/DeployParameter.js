@@ -15,8 +15,7 @@ import {
   Col,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-// import { AuthLink, AuthA } from '@/utils/customAuth';
-// import codes from '@/utils/codes';
+import HistoryModal from '@/pages/DeviceManagement/Components/ParameterHistoryModal';
 
 const FormItem = Form.Item;
 
@@ -27,16 +26,6 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 15 },
 };
-/*
-报警策略类型选项
-key: condition 和 warnLevel 中间有空格拼接而成
-*/
-const alarmTypes = [
-  { key: '>= 1', condition: '>=', warnLevel: 1, label: '预警上限' },
-  { key: '<= 1', condition: '<=', warnLevel: 1, label: '预警下限' },
-  { key: '>= 2', condition: '>=', warnLevel: 2, label: '告警上限' },
-  { key: '<= 2', condition: '<=', warnLevel: 2, label: '告警上限' },
-]
 
 // 渲染新增/删除弹窗
 const RenderAddModal = Form.create()(props => {
@@ -163,14 +152,14 @@ const RenderAddModal = Form.create()(props => {
 // 渲染配置报警策略弹窗
 const RenderAlarmStrategyModal = Form.create()(props => {
   const {
-    detail: { paramDesc },
+    detail: { paramDesc, paramUnit },
     visible,
     onCancel,
     onOk,
     alarmStrategy = [], // 报警策略数组
     saveAlarmStrategy,
-    historyVisible,
     handleViewHistory,
+    alarmTypes,
   } = props
   // 添加报警项
   const handleAddItem = () => {
@@ -209,7 +198,7 @@ const RenderAlarmStrategyModal = Form.create()(props => {
       width={700}
     >
       <Button type="primary" onClick={handleAddItem} style={{ marginRight: '10px' }}>添加</Button>
-      <Button onClick={handleViewHistory}>配置历史纪录</Button>
+      <Button onClick={handleViewHistory}>历史配置纪录</Button>
       {alarmStrategy.length > 0 && alarmStrategy.map((row, i) => (
         <div key={i} style={{
           marginTop: '10px',
@@ -244,6 +233,7 @@ const RenderAlarmStrategyModal = Form.create()(props => {
               <FormItem>
                 <Input
                   style={{ width: '100%' }}
+                  addonAfter={paramUnit || null}
                   placeholder="请输入"
                   value={row.limitValue}
                   onChange={(e) => onInputChange(isNaN(e.target.value) ? row.limitValue : +e.target.value, row, i)}
@@ -548,6 +538,7 @@ export default class DeployParameter extends PureComponent {
       </Card>
     )
   }
+
   render() {
     const {
       match: { params: { brandId } },
@@ -556,9 +547,10 @@ export default class DeployParameter extends PureComponent {
         tagLibrary: { list: tagList },
         alarmStrategy,
         parameterGroupTypes, // 分组类型数组
+        alarmTypes,
       },
     } = this.props
-    const { addModalVisible, alarmModalVisible, historyVisible } = this.state
+    const { addModalVisible, alarmModalVisible, historyVisible, detail } = this.state
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '设备管理', name: '设备管理' },
@@ -583,6 +575,12 @@ export default class DeployParameter extends PureComponent {
       alarmStrategy,
       historyVisible,
       handleViewHistory: this.handleViewHistory,
+      alarmTypes,
+    }
+    const historyProps = {
+      visible: historyVisible,
+      onCancel: () => { this.setState({ historyVisible: false }) },
+      detail,
     }
     return (
       <PageHeaderLayout
@@ -596,6 +594,7 @@ export default class DeployParameter extends PureComponent {
         {this.renderTable()}
         <RenderAddModal {...addModalProps} />
         <RenderAlarmStrategyModal {...alarmProps} />
+        <HistoryModal  {...historyProps} />
       </PageHeaderLayout>
     )
   }

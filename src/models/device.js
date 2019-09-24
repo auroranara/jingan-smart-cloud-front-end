@@ -101,6 +101,46 @@ export default {
       { key: 3, label: '监测对象' },
       { key: 4, label: '传感器' },
     ],
+    // 参数配置历史
+    historyList: [],
+    // 参数配置类型枚举
+    operationTypeEnum: {
+      1: '新增',
+      2: '修改',
+      3: '删除',
+      '新增': 1,
+      '修改': 2,
+      '删除': 3,
+    },
+    /*
+    配置参数---报警策略类型选项
+    key: condition 空格 warnLevel拼接而成
+    */
+    alarmTypes: [
+      { key: '>= 1', condition: '>=', warnLevel: 1, label: '预警上限' },
+      { key: '<= 1', condition: '<=', warnLevel: 1, label: '预警下限' },
+      { key: '>= 2', condition: '>=', warnLevel: 2, label: '告警上限' },
+      { key: '<= 2', condition: '<=', warnLevel: 2, label: '告警上限' },
+    ],
+    // 平面图标注
+    flatGraphic: [
+      {
+        key: 1,
+        value: '单位平面图',
+      },
+      {
+        key: 2,
+        value: '楼层平面图',
+      },
+      {
+        key: 3,
+        value: '安全四色图',
+      },
+      {
+        key: 4,
+        value: '消防平面图',
+      },
+    ],
   },
   effects: {
     // 获取监测类型列表树
@@ -276,7 +316,7 @@ export default {
         })
       }
     },
-    // 获取参数列表（分页）
+    // 获取参数列表（全部）
     *fetchAllParameters({ payload }, { call, put }) {
       const response = yield call(fetchAllParameters, payload)
       if (response && response.code === 200) {
@@ -393,10 +433,10 @@ export default {
     *fetchParameterStrategyHistory({ payload }, { call, put }) {
       const response = yield call(fetchParameterStrategyHistory, payload)
       if (response && response.code === 200) {
-        // yield put({
-        //   type: 'save',
-        //   payload:{},
-        // })
+        yield put({
+          type: 'save',
+          payload: { historyList: response.data.list || [] },
+        })
       }
     },
   },
