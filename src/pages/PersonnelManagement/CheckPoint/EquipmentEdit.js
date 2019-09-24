@@ -39,7 +39,7 @@ export default class EquipmentEdit extends PureComponent {
     validateFields((err, values) => {
       if (!err) {
         const { status } = values;
-        const params = { ...values, companyId, status: +status };
+        const params = { ...values, companyId, status: +!status };
         // if (companyId)
         //   params.companyId = companyId;
         if (id)
@@ -60,7 +60,12 @@ export default class EquipmentEdit extends PureComponent {
   };
 
   render() {
-    const { form: { getFieldDecorator } } = this.props;
+    const {
+      isDetail,
+      form: { getFieldDecorator },
+    } = this.props;
+
+    const btn = isDetail ? null :  <Button type="primary" htmlType="submit">提交</Button>;
 
     return (
       <Form layout="vertical" onSubmit={this.handleSubmit}>
@@ -117,9 +122,7 @@ export default class EquipmentEdit extends PureComponent {
         </Row>
         <Form.Item wrapperCol={{ span: 24, offset: 11 }}>
           <Button onClick={this.back} className={styles.back}>返回</Button>
-          <Button type="primary" htmlType="submit">
-            提交
-          </Button>
+          {btn}
         </Form.Item>
       </Form>
     )

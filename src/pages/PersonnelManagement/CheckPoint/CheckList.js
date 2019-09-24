@@ -87,7 +87,7 @@ export default class CheckList extends PureComponent {
       if (total <= PAGE_SIZE) this.hasMore[idx] = false;  // 如果第一页已经返回了所有结果，则hasMore置为false
       const newStatus = list.reduce((prev, next) => {
         const { id, status } = next;
-        prev[id] = !!+status;
+        prev[id] = !+status;
         return prev;
       }, {});
       this.setState({ [`${+idx === EQUIPMENT_INDEX ? EQUIPMENT : SCREEN}Status`]: newStatus });
@@ -141,7 +141,7 @@ export default class CheckList extends PureComponent {
     dispatch({
       index: tabIndex,
       type: 'checkPoint/editCheckPoint',
-      payload: { ...item, status: +checked },
+      payload: { ...item, status: +!checked },
       callback: genOperateCallback('', () => this.setState({ [prop]: newStatus })),
     });
   };
@@ -156,7 +156,7 @@ export default class CheckList extends PureComponent {
 
     const actions = this.genLink(POINT_INDEX, id);
     const address = location || NO_DATA;
-    const photo = photo && photoList.length ? photoList[0].webUrl : '';
+    const photo = photoList && photoList.length ? photoList[0].webUrl : '';
     return (
       <List.Item key={id}>
         <Card

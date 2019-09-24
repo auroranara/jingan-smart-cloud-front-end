@@ -1,6 +1,6 @@
 import router from 'umi/router';
 import Link from 'umi/link';
-import { Icon, message } from 'antd';
+import { Icon, message, Popconfirm } from 'antd';
 
 export const FOLDER = 'checkPoints';
 export const UPLOAD_ACTION = '/acloud_new/v2/uploadFile';
@@ -74,16 +74,26 @@ export function genOperateCallback(url, callback) {
 }
 
 export function genListLink(dispatch, companyId, index, id) {
+  const handleDelete = e => {
+    dispatch({
+      index,
+      type: 'checkPoint/deleteCheckPoint',
+      payload: id,
+      callback: genOperateCallback('', deleteItem(dispatch, id, index)),
+    });
+  };
+
   return [
     <Link to={`/personnel-management/check-point/detail/${companyId}/${index}/${id}`}>查看</Link>,
     <Link to={`/personnel-management/check-point/edit/${companyId}/${index}/${id}`}>编辑</Link>,
-    <span onClick={e => {
-      dispatch({
-        index,
-        type: 'checkPoint/deleteCheckPoint',
-        callback: genOperateCallback('', deleteItem(dispatch, id, index)),
-      });
-    }}>删除</span>,
+    (<Popconfirm
+      title="确定删除当前项目？"
+      onConfirm={handleDelete}
+      okText="确定"
+      cancelText="取消"
+    >
+      删除
+    </Popconfirm>),
   ];
 }
 
@@ -105,7 +115,7 @@ export function initFormValues(values, index) {
   return PROPS[index].reduce((prev, next) => {
     let v = values[next];
     if (next === 'status')
-      v = !!+v;
+      v = !+v;
     if (next === 'bayonetEquipmentList')
       v = v.map(({ id, name }) => ({ key: id, label: name }));
     prev[next] = v;

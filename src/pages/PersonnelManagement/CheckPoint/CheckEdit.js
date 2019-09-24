@@ -17,10 +17,11 @@ const TAB_COMS = [PointEdit, EquipmentEdit, ScreenEdit];
 }))
 export default class CheckEdit extends PureComponent {
   render() {
-    const { match: { params: { companyId, tabIndex, id } } } = this.props;
+    const { match: { params: { companyId, tabIndex, id }, url } } = this.props;
     const Component = TAB_COMS[tabIndex];
 
-    const title = `${id ? '编辑' : '新增'}${TABS[tabIndex]}`;
+    const isDetail = url && url.includes('detail');
+    const title = `${TABS[tabIndex]}${isDetail ? '详情' : id ? '编辑' : '新增'}`;
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '人员在岗在位管理', name: '人员在岗在位管理' },
@@ -35,7 +36,7 @@ export default class CheckEdit extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         <Card style={{ marginBottom: 15 }}>
-          <Component {...this.props} />
+          <Component {...this.props} isDetail={isDetail} />
         </Card>
       </PageHeaderLayout>
     );

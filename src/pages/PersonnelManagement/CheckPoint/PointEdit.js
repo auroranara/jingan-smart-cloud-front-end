@@ -39,7 +39,7 @@ export default class PointEdit extends PureComponent {
 
   getList = name => {
     const { dispatch } = this.props;
-    dispatch({ type: 'checkPoint/fetchCheckList', index: EQUIPMENT_INDEX, payload: { pageNum: 1, pageSize: 20, name } });
+    dispatch({ type: 'checkPoint/fetchCheckList', index: EQUIPMENT_INDEX, payload: { pageNum: 1, pageSize: 20, status: 0, name } });
   };
 
   setList = () => {
@@ -94,11 +94,14 @@ export default class PointEdit extends PureComponent {
 
   render() {
     const {
+      isDetail,
       listLoading,
       checkPoint: { lists },
       form: { getFieldDecorator },
     } = this.props;
     const { fileList } = this.state;
+
+    const btn = isDetail ? null :  <Button type="primary" htmlType="submit">提交</Button>;
 
     return (
       <Form layout="vertical" onSubmit={this.handleSubmit}>
@@ -165,9 +168,7 @@ export default class PointEdit extends PureComponent {
         </Row>
         <Form.Item wrapperCol={{ span: 24, offset: 10 }}>
           <Button onClick={this.back} className={styles.back}>返回</Button>
-          <Button type="primary" htmlType="submit">
-            提交
-          </Button>
+          {btn}
         </Form.Item>
       </Form>
     )
