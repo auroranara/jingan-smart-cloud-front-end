@@ -27,7 +27,7 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
 const {
   deviceManagement: {
     associateSensor: {
-      waterSystem: {
+      temperatureAndHumidity: {
         add: addCode,
         delete: deleteCode,
         edit: editCode,

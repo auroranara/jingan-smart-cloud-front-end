@@ -45,7 +45,11 @@ const DEFAULT_STYLE = {
   padding: '4px 0',
 };
 
-@Form.create()
+@Form.create({
+  onValuesChange({ refresh }) {
+    refresh && refresh();
+  },
+})
 export default class CustomForm extends PureComponent {
   /**
    * 搜索按钮点击事件

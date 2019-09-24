@@ -370,7 +370,7 @@ export default class EmergencyPlanList extends Component {
           <div className={styles.multi}>
             <div>预案名称：{name}</div>
             <div>重大危险源：{+isMajorHazard ? '是' : '否'}</div>
-            <div>使用领域：{applicationArea}</div>
+            <div>适用领域：{applicationArea}</div>
             <div>{+editionType !== 2 ? '创建' : '修订'}，{`V${editionCode}`}</div>
           </div>
         ),
@@ -406,9 +406,9 @@ export default class EmergencyPlanList extends Component {
             <div>备案编号：{recordCode}</div>
             <div>备案日期：{moment(recordDate).format('YYYY.M.D')}</div>
             <div>备案证明：
-              {recordCertificateList && recordCertificateList.map(({ webUrl, name }, index) => (
+              {recordCertificateList && recordCertificateList.map(({ webUrl, fileName }, index) => (
                 <div key={index}>
-                  <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>
+                  <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
                 </div>
               ))}
             </div>
@@ -421,9 +421,9 @@ export default class EmergencyPlanList extends Component {
         dataIndex: 'emergencyFilesList',
         render: (emergencyFilesList) => (
           <Fragment>
-            {emergencyFilesList && emergencyFilesList.map(({ webUrl, name }, index) => (
+            {emergencyFilesList && emergencyFilesList.map(({ webUrl, fileName }, index) => (
               <div key={index}>
-                <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>
+                <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
               </div>
             ))}
           </Fragment>
@@ -433,7 +433,10 @@ export default class EmergencyPlanList extends Component {
       {
         title: '状态',
         dataIndex: 'status',
-        render: (status) => ({ 1: '待审核', 2: '审核通过待发布', 3: '审核不通过', 4: '审核通过已发布' })[status],
+        render: (status) => {
+          status = STATUSES.filter(({ key }) => key === status)[0];
+          return status && status.value;
+        },
         align: 'center',
       },
       {
@@ -442,18 +445,18 @@ export default class EmergencyPlanList extends Component {
         fixed: list && list.length > 0 ? 'right' : false,
         render: (_, { id, status }) => (
           <Fragment>
-            {hasDetailAuthority && <span className={classNames(styles.clickable, styles.operation)} onClick={this.handleViewClick} data-id={id}>查看</span>}
+            {hasDetailAuthority && <span className={styles.operation} onClick={this.handleViewClick} data-id={id}>查看</span>}
             {hasAuditAuthority && +status === 1 && (
               <Popconfirm title="是否通过这个应急预案?" onConfirm={() => this.handleAuditConfirm(id)} onCancel={() => this.handleAuditCancel(id)} okText="通过" cancelText="不通过">
-                <span className={classNames(styles.clickable, styles.operation)}>审核</span>
+                <span className={styles.operation}>审核</span>
               </Popconfirm>
             )}
             {hasPublishAuthority && +status === 2 && (
               <Popconfirm title="你确定要发布这个应急预案吗?" onConfirm={() => this.handlePublishConfirm(id)}>
-                <span className={classNames(styles.clickable, styles.operation)}>发布</span>
+                <span className={styles.operation}>发布</span>
               </Popconfirm>
             )}
-            {hasEditAuthority && (+status === 3 || +status === 4) && <span className={classNames(styles.clickable, styles.operation)} onClick={this.handleEditClick} data-id={id}>编辑</span>}
+            {hasEditAuthority && (+status === 3 || +status === 4) && <span className={styles.operation} onClick={this.handleEditClick} data-id={id}>编辑</span>}
           </Fragment>
         ),
         align: 'center',
@@ -463,7 +466,7 @@ export default class EmergencyPlanList extends Component {
         dataIndex: 'versionCount',
         fixed: list && list.length > 0 ? 'right' : false,
         render: (versionCount, item) => (
-          <span className={classNames(styles.clickable, styles.operation)} onClick={() => this.showHistory(item)}>{versionCount || 1}</span>
+          <span className={styles.operation} onClick={() => this.showHistory(item)}>{versionCount || 1}</span>
         ),
         align: 'center',
       },
@@ -535,7 +538,7 @@ export default class EmergencyPlanList extends Component {
       },
       {
         title: '创建时间',
-        dataIndex: 'createDate',
+        dataIndex: 'createTime',
         render: (time) => time && moment(time).format('YYYY.M.D'),
         width: 128,
         align: 'center',
@@ -573,7 +576,7 @@ export default class EmergencyPlanList extends Component {
         title: '详情',
         dataIndex: 'operation',
         fixed: 'right',
-        render: (_, { id }) => <span className={classNames(styles.clickable, styles.operation)} onClick={this.handleViewClick} data-id={id}>查看</span>,
+        render: (_, { id }) => <span className={styles.operation} onClick={this.handleViewClick} data-id={id}>查看</span>,
         width: 80,
         align: 'center',
       },
@@ -642,7 +645,7 @@ export default class EmergencyPlanList extends Component {
         breadcrumbList={BREADCRUMB_LIST}
         content={
           <Fragment>
-            {isNotCompany && <span className={styles.companyNumber}>{`单位数量：${0}`}</span>}
+            {/* {isNotCompany && <span className={styles.companyNumber}>{`单位数量：${0}`}</span>} */}
             <span>{`预案数量：${total}`}</span>
           </Fragment>
         }

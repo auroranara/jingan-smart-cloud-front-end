@@ -384,7 +384,7 @@ export default class UnitSafety extends PureComponent {
    * 显示视频
    */
   showVideo = (videoKeyId, videoList=this.props.unitSafety.videoTree) => {
-    this.setState({ videoVisible: true, videoKeyId, videoList });
+    this.setState({ videoVisible: true, videoKeyId, videoList: videoList.map(item => ({ ...item, id: item.id || item.key_id })) });
   };
 
   /**
@@ -836,6 +836,7 @@ export default class UnitSafety extends PureComponent {
           value={this.state.humiturePointDetailDrawerValue}
           visible={this.state.humiturePointDetailDrawerVisible}
           onClose={this.handleHumiturePointDetailDrawerClose}
+          onVideoClick={this.showVideo}
         />
       </BigPlatformLayout>
     );

@@ -16,7 +16,7 @@ const formItemLayout = {
 };
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const defaultPageSize = 10;
-const numberReg = /^(0|[1-9][0-9]*)(\.[0-9]{1,3})?$/;
+const numberReg = /^\-?(0|[1-9][0-9]*)(\.[0-9]{1,3})?$/;
 
 @Form.create()
 @connect(({ sensor, loading }) => ({
@@ -289,105 +289,16 @@ export default class AddSensor extends Component {
   };
 
   /**
-   * 验证--预警下限
+   * 验证--数字（可以是负数）
    */
-  validateNormalLower = (rule, value, callback) => {
+  validateNumber = (rule, value, callback) => {
     if (!value) {
       callback();
     } else if (numberReg.test(value)) {
-      // 如果是数字
-      // const { getFieldsValue } = this.props.form
-      // const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
-      if (+value < 0) {
-        callback('请输入大于0的数字');
-        return;
-      }
-      // if (normalUpper && +value >= +normalUpper) {
-      //   callback('预警下限需小于预警上限')
-      //   return
-      // }
-      // if (smallLower && +value <= +smallLower) {
-      //   callback('预警下限需大于告警下限')
-      //   return
-      // }
       callback();
     } else callback('请输入数字');
   };
 
-  /**
-   * 验证--预警上限
-   */
-  validateNormalUpper = (rule, value, callback) => {
-    if (!value) {
-      callback();
-    } else if (numberReg.test(value)) {
-      // const { getFieldsValue } = this.props.form
-      // const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
-      if (+value < 0) {
-        callback('请输入大于0的数字');
-        return;
-      }
-      // if (normalLower && +value <= +normalLower) {
-      //   callback('预警上限需大于预警下限')
-      //   return
-      // }
-      // if (largeUpper && +value >= +largeUpper) {
-      //   callback('预警上限需小于告警上限')
-      //   return
-      // }
-      callback();
-    } else callback('请输入数字');
-  };
-
-  /**
-   * 验证--告警下限
-   */
-  validateSmallLower = (rule, value, callback) => {
-    if (!value) {
-      callback();
-    } else if (numberReg.test(value)) {
-      // const { getFieldsValue } = this.props.form
-      // const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
-      if (+value < 0) {
-        callback('请输入大于0的数字');
-        return;
-      }
-      // if (largeUpper && +value >= +largeUpper) {
-      //   callback('告警下限需小于告警上限')
-      //   return
-      // }
-      // if (normalLower && +value >= +normalLower) {
-      //   callback('告警下限需小于预警下限')
-      //   return
-      // }
-      callback();
-    } else callback('请输入数字');
-  };
-
-  /**
-   * 验证--告警上限
-   */
-  validateLargeUpper = (rule, value, callback) => {
-    if (!value) {
-      callback();
-    } else if (numberReg.test(value)) {
-      // const { getFieldsValue } = this.props.form
-      // const { normalLower, normalUpper, smallLower, largeUpper } = getFieldsValue()
-      if (+value < 0) {
-        callback('请输入大于0的数字');
-        return;
-      }
-      // if (smallLower && +value <= +smallLower) {
-      //   callback('告警上限需大于告警下限')
-      //   return
-      // }
-      // if (normalUpper && +value <= +normalUpper) {
-      //   callback('告警上限需大于预警上限')
-      //   return
-      // }
-      callback();
-    } else callback('请输入数字');
-  };
 
   /**
    * 渲染表单
@@ -573,7 +484,7 @@ export default class AddSensor extends Component {
               <FormItem style={{ display: 'inline-block' }} label="报警阈值" />
               <FormItem style={{ width: '180px', display: 'inline-block' }}>
                 {getFieldDecorator('normalLower', {
-                  rules: [{ validator: this.validateNormalLower }],
+                  rules: [{ validator: this.validateNumber }],
                   getValueFromEvent: e => e.target.value.trim() || null,
                 })(<Input addonBefore="≤" addonAfter={unit} style={{ width: '100%' }} />)}
               </FormItem>
@@ -581,44 +492,13 @@ export default class AddSensor extends Component {
             <Col span={10}>
               <FormItem>
                 {getFieldDecorator('normalUpper', {
-                  rules: [{ validator: this.validateNormalUpper }],
+                  rules: [{ validator: this.validateNumber }],
                   getValueFromEvent: e => e.target.value.trim() || null,
                 })(<Input addonBefore="≥" addonAfter={unit} style={{ width: '180px' }} />)}
               </FormItem>
             </Col>
           </Form>
         </Card>
-        {/* <Card className={styles.alarmStrategyModalCard} style={{ marginTop: '15px' }}>
-          <Form>
-            <Col span={7}>
-              <FormItem>
-                <span className={styles.labelText}>报警等级：</span>
-                告警
-              </FormItem>
-            </Col>
-            <Col span={10}>
-              <FormItem style={{ display: 'inline-block' }} label="告警阈值"></FormItem>
-              <FormItem style={{ width: '180px', display: 'inline-block' }}>
-                {getFieldDecorator('normalLower', {
-                  rules: [{ validator: this.validateSmallLower }],
-                  getValueFromEvent: e => e.target.value.trim() || null,
-                })(
-                  <Input addonBefore="≤" addonAfter={unit} style={{ width: '100%' }} />
-                )}
-              </FormItem>
-            </Col>
-            <Col span={10}>
-              <FormItem>
-                {getFieldDecorator('normalUpper', {
-                  rules: [{ validator: this.validateLargeUpper }],
-                  getValueFromEvent: e => e.target.value.trim() || null,
-                })(
-                  <Input addonBefore="≥" addonAfter={unit} style={{ width: '180px' }} />
-                )}
-              </FormItem>
-            </Col>
-          </Form>
-        </Card> */}
       </Modal>
     );
   };

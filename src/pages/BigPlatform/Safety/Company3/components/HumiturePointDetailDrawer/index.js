@@ -97,7 +97,7 @@ export default class HumiturePointDetailDrawer extends Component {
             width: 4,
           },
           detail: {
-            formatter: `{a|${status < 0 || isNaN(value) ? '--' : value}}\n{b|${name}}`,
+            formatter: `{a|${status < 0 || isNaN(value) ? '--' : +value.toFixed(2)}}\n{b|${name}}`,
             offsetCenter: [0, '65%'],
             rich: {
               a: {
@@ -246,7 +246,7 @@ export default class HumiturePointDetailDrawer extends Component {
       },
     } = this.props;
     const params = [
-      tDeviceId && { name: '温度', value: Number.parseFloat(temperature), unit: '℃', min: tMin !== null ? tMin : -40, max: tMax !== null ? tMax : 120, normalMin: Number.parseFloat(tLower), normalMax: Number.parseFloat(tUpper), status: tstatus },
+      tDeviceId && { name: '温度', value: Number.parseFloat(temperature), unit: '℃', min: tMin !== null ? tMin : -60, max: tMax !== null ? tMax : 140, normalMin: Number.parseFloat(tLower), normalMax: Number.parseFloat(tUpper), status: tstatus },
       hDeviceId && { name: '湿度', value: Number.parseFloat(humidity), unit: '%', min: hMin !== null ? hMin : 0, max: hMax !== null ? hMax : 100 , normalMin: Number.parseFloat(hLower), normalMax: Number.parseFloat(hUpper), status: hstatus },
     ].filter(v => v);
 

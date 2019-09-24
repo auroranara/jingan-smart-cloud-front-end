@@ -24,8 +24,9 @@ import {
 } from '../EmergencyPlanList/config';
 import styles from './index.less';
 
-@connect(({ emergencyPlan, loading }) => ({
+@connect(({ emergencyPlan, user, loading }) => ({
   emergencyPlan,
+  user,
   loading: loading.effects['emergencyPlan/fetchDetail'],
 }))
 export default class EmergencyPlanDetail extends Component {
@@ -94,19 +95,26 @@ export default class EmergencyPlanDetail extends Component {
           emergencyFilesList,
           remark,
           historyType,
+          status,
         }={},
+      },
+      user: {
+        currentUser: {
+          unitType,
+        },
       },
       loading,
     } = this.props;
+    const isNotCompany = +unitType !== 4;
 
     const FIELDS = [
-      {
+      ...(isNotCompany ? [{
         id: 'companyName',
         label: '单位名称',
         span: SPAN,
         labelCol: LABEL_COL,
         render: () => <span>{companyName}</span>,
-      },
+      }] : []),
       {
         id: 'name',
         label: '预案名称',
@@ -280,7 +288,7 @@ export default class EmergencyPlanDetail extends Component {
               action={
                 <Fragment>
                   <Button onClick={this.handleBackButtonClick}>返回</Button>
-                  {+historyType === 1 && <Button type="primary" onClick={this.handleEditButtonClick}>编辑</Button>}
+                  {+historyType === 1 && (+status === 3 || +status === 4) && <Button type="primary" onClick={this.handleEditButtonClick}>编辑</Button>}
                 </Fragment>
               }
             />
