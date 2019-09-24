@@ -626,6 +626,7 @@ export default class EmergencyPlanList extends Component {
     const {
       emergencyPlan: {
         list: {
+          a,
           pagination: {
             total=0,
           }={},
@@ -645,7 +646,7 @@ export default class EmergencyPlanList extends Component {
         breadcrumbList={BREADCRUMB_LIST}
         content={
           <Fragment>
-            {/* {isNotCompany && <span className={styles.companyNumber}>{`单位数量：${0}`}</span>} */}
+            {isNotCompany && <span className={styles.companyNumber}>{`单位数量：${a || 0}`}</span>}
             <span>{`预案数量：${total}`}</span>
           </Fragment>
         }
