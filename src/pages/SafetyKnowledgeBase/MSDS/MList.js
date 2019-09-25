@@ -1,14 +1,14 @@
-import React, { PureComponent } from 'react';
+import React, { Fragment, PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
-import Ellipsis from '@/components/Ellipsis';
-import { Button, Card, Input, Select } from 'antd';
+import { Button, Card, Input, message, Popconfirm, Select, Table } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './MList.less';
-import { RISK_CATEGORIES } from './utils';
+import { genOperateCallback } from '@/pages/PersonnelManagement/CheckPoint/utils';
+import { handleTableData, INDEXES, RISK_CATEGORIES } from './utils';
 
 const { Option } = Select;
 
@@ -19,34 +19,31 @@ const breadcrumbList = [
   { title: '列表', name: '列表' },
 ];
 
-const NO_DATA = '暂无信息';
-const PAGE_SIZE = 18;
-const LIST = [];
-
+const PAGE_SIZE = 20;
 const SPAN = { md: 8, sm: 12, xs: 24 };
 const FIELDS = [
   {
-    id: 'name1',
+    id: 'chineName',
     label: '中文名称一：',
     span: SPAN,
     render: () => <Input placeholder="请输入中文名称一" />,
     transform: v => v.trim(),
   },
   {
-    id: 'name2',
+    id: 'chineName2',
     label: '中文名称二：',
     span: SPAN,
     render: () => <Input placeholder="请输入中文名称二" />,
     transform: v => v.trim(),
   },
   {
-    id: 'type',
+    id: 'riskCateg',
     label: '危险品类别',
     span: SPAN,
     render: () => <Select placeholder="请选择危险性类别">{RISK_CATEGORIES.map((r, i) => <Option key={i}>{r}</Option>)}</Select>,
   },
   {
-    id: 'CAS',
+    id: 'casNo',
     label: 'CAS号：',
     span: SPAN,
     render: () => <Input placeholder="CAS号" />,
@@ -54,27 +51,140 @@ const FIELDS = [
   },
 ];
 
-// @connect(({ checkPoint, loading }) => ({ checkPoint, loading: loading.effects['checkPoint/fetchCheckList'] }))
-export default class MList extends PureComponent {
-  handleSearch = vals => {
+function getColumns(genHandleDelete) {
+  return [
+    {
+      title: '序号',
+      dataIndex: 'index',
+      key: 'index',
+    },
+    {
+      title: '中文名',
+      dataIndex: 'chineNames',
+      key: 'chineNames',
+      render(names) {
+        return names.length === 2 ? names.map((n, i) => <p key={n} className={styles.p}>名称{INDEXES[i]}：{n}</p>) : names[0];
+      },
+    },
+    {
+      title: '英文名',
+      dataIndex: 'engName',
+      key: 'engNames',
+      render(names) {
+        return names.length === 2 ? names.map((n, i) => <p key={n} className={styles.p}>名称{INDEXES[i]}：{n}</p>) : names[0];
+      },
+    },
+    {
+      title: 'CAS号',
+      dataIndex: 'casNo',
+      key: 'casNo',
+    },
+    {
+      title: '危险性类别',
+      dataIndex: 'riskCateg',
+      key: 'riskCateg',
+    },
+    {
+      title: '技术说明书编码',
+      dataIndex: 'bookCode',
+      key: 'bookCode',
+      align: 'center',
+      render(txt, record) {
+        return <Link to={`/safety-knowledge-base/msds/detail/${record.id}`}>{txt}</Link>;
+      },
+    },
+    {
+      title: '操作',
+      dataIndex: 'id',
+      key: 'id',
+      align: 'center',
+      render(id, record) {
+        return (
+          <Fragment>
+            <Link to={`/safety-knowledge-base/msds/edit/${id}`}>编辑</Link>
+            <Popconfirm
+              title="确定删除当前项目？"
+              onConfirm={genHandleDelete(id)}
+              okText="确定"
+              cancelText="取消"
+            ><span className={styles.delete}>删除</span></Popconfirm>
+          </Fragment>
+        );
+      },
+    },
+  ];
+}
 
+@connect(({ msds, loading }) => ({ msds, loading: loading.models.msds }))
+export default class MList extends PureComponent {
+  state = {
+    currentPage: 1,
+    formVals: null,
+  };
+
+  componentDidMount() {
+    this.fetchTableList(1);
+  }
+
+  handleSearch = values => {
+    this.setState({ formVals: values });
+    this.fetchTableList(1, values, (code, msg) => this.setPage(code, 1, msg));
   };
 
   handleReset = () => {
+    this.setState({ formVals: {} });
+    this.fetchTableList(1, null, (code, msg) => this.setPage(code, 1, msg));
+  };
+
+  fetchTableList = (pageNum, values, callback) => {
+    const { dispatch } = this.props;
+    let payload = { pageSize: PAGE_SIZE, pageNum };
+    if (values) payload = { ...payload, ...values };
+    dispatch({
+      type: 'msds/fetchTableList',
+      payload,
+      callback,
+    });
+  };
+
+  getCurrentList = () => {
+    const { currentPage, formVals } = this.state;
+    this.fetchTableList(currentPage, formVals);
   };
 
   handleAdd = () => {
-    // const { match: { params: { companyId } } } = this.props;
     router.push(`/safety-knowledge-base/msds/add`);
+  };
+
+  setPage = (code, current, msg) => {
+    if (code === 200) this.setState({ currentPage: current });
+    else if (msg) message.error(msg);
+  };
+
+  onTableChange = (pagination, filters, sorter) => {
+    const { current } = pagination;
+    const { formVals } = this.state;
+    this.fetchTableList(current, formVals, (code, msg) => this.setPage(code, current, msg));
+  };
+
+  genHandleDelete = id => e => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'msds/deleteMSDS',
+      payload: id,
+      callback: genOperateCallback('', () => this.getCurrentList()),
+    });
   };
 
   render() {
     const {
       loading,
-      // checkPoint: { lists },
+      msds: { total, list },
     } = this.props;
 
-    const list = LIST;
+    const { currentPage } = this.state;
+    const indexBase = (currentPage - 1) * PAGE_SIZE;
+
     const toolBarAction = (
       <Button type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
         新增MSDS
@@ -87,8 +197,7 @@ export default class MList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles.total}>
-            共计：
-            {list.length}
+            共计：{total}
           </p>
         }
       >
@@ -102,7 +211,16 @@ export default class MList extends PureComponent {
             buttonSpan={{ xl: 16, sm: 12, xs: 24 }}
           />
         </Card>
-        {/* <Table /> */}
+        <div className={styles.container}>
+          <Table
+            rowKey="id"
+            loading={loading}
+            columns={getColumns(this.genHandleDelete)}
+            dataSource={handleTableData(list, indexBase)}
+            onChange={this.onTableChange}
+            pagination={{ pageSize: PAGE_SIZE, total, current: currentPage }}
+          />
+        </div>
       </PageHeaderLayout>
     );
   }

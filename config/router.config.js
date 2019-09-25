@@ -3069,6 +3069,12 @@ module.exports = env => {
                   component: './SafetyKnowledgeBase/MSDS/MEdit',
                 },
                 {
+                  path: '/safety-knowledge-base/msds/detail/:id',
+                  code: 'safetyKnowledgeBase.msds.view',
+                  name: 'view',
+                  component: './SafetyKnowledgeBase/MSDS/MEdit',
+                },
+                {
                   path: '/safety-knowledge-base/msds/edit/:id',
                   code: 'safetyKnowledgeBase.msds.edit',
                   name: 'edit',

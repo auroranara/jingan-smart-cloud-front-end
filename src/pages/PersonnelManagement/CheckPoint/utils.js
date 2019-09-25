@@ -79,7 +79,7 @@ export function genListLink(dispatch, companyId, index, id) {
       index,
       type: 'checkPoint/deleteCheckPoint',
       payload: id,
-      callback: genOperateCallback('', deleteItem(dispatch, id, index)),
+      callback: genOperateCallback('', () => deleteItem(dispatch, id, index)),
     });
   };
 
