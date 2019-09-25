@@ -20,6 +20,7 @@
     "build": "cross-env ESLINT=none umi build",
     "build:default": "cross-env ESLINT=none umi build",
     "build:wuxi": "cross-env PROJECT_ENV=wuxi ESLINT=none umi build",
+    "build:shimin": "cross-env PROJECT_ENV=wuxi ESLINT=none umi build",
     "build:xuzhou": "cross-env PROJECT_ENV=xuzhou ESLINT=none umi build",
     "build:changshu": "cross-env PROJECT_ENV=changshu ESLINT=none umi build",
     "build:eye": "cross-env PROJECT_ENV=eye ESLINT=none umi build",
