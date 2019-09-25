@@ -20,7 +20,7 @@ export async function addItem(params) {
 
 // 编辑说明书
 export async function editItem(params) {
-  return request(`${URL_PREFIX}/msds/${params.id}`, { method: 'PUT', body: params });
+  return request(`${URL_PREFIX}/msds`, { method: 'PUT', body: params });
 }
 
 // 删除说明书

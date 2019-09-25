@@ -68,7 +68,7 @@ function genFormItem(field, getFieldDecorator) {
   }
 
   return (
-    <FormItem label={label}>
+    <FormItem label={label} key={name}>
       {getFieldDecorator(name, { rules: [{ required, message: placeholder }] })(component)}
     </FormItem>
   )
