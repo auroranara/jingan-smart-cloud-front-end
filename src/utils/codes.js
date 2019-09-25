@@ -137,6 +137,11 @@ export default {
       edit: 'deviceManagement.newSensor.edit',
       delete: 'deviceManagement.newSensor.delete',
     },
+    dataProcessing: {
+      listView: 'deviceManagement.dataProcessing.companyList',
+      addEquipmentType: 'deviceManagement.dataProcessing.addEquipmentType',
+      editEquipmentType: 'deviceManagement.dataProcessing.editEquipmentType',
+    },
   },
   videoSurveillance: {
     hikVideoTree: {

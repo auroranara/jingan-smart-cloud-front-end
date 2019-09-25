@@ -42,6 +42,11 @@ import {
   editSensor,
   deleteSensor,
 } from '@/services/device/newSensor'
+import {
+  fetchCompaniesForPage, // 获取数据处理设备企业列表
+  addDeviceType,
+  editDeviceType,
+} from '@/services/device/dataProcessing';
 
 const defaultPagination = {
   total: 0,
@@ -52,6 +57,44 @@ const defaultPagination = {
 export default {
   namespace: 'device',
   state: {
+    // 参数配置类型枚举
+    operationTypeEnum: {
+      1: '新增',
+      2: '修改',
+      3: '删除',
+      '新增': 1,
+      '修改': 2,
+      '删除': 3,
+    },
+    /*
+    配置参数---报警策略类型选项
+    key: condition 空格 warnLevel拼接而成
+    */
+    alarmTypes: [
+      { key: '>= 1', condition: '>=', warnLevel: 1, label: '预警上限' },
+      { key: '<= 1', condition: '<=', warnLevel: 1, label: '预警下限' },
+      { key: '>= 2', condition: '>=', warnLevel: 2, label: '告警上限' },
+      { key: '<= 2', condition: '<=', warnLevel: 2, label: '告警上限' },
+    ],
+    // 平面图标注
+    flatGraphic: [
+      {
+        key: 1,
+        value: '单位平面图',
+      },
+      {
+        key: 2,
+        value: '楼层平面图',
+      },
+      {
+        key: 3,
+        value: '安全四色图',
+      },
+      {
+        key: 4,
+        value: '消防平面图',
+      },
+    ],
     // 监测类型树
     monitoringType: [],
     // 设备类型列表
@@ -103,44 +146,12 @@ export default {
     ],
     // 参数配置历史
     historyList: [],
-    // 参数配置类型枚举
-    operationTypeEnum: {
-      1: '新增',
-      2: '修改',
-      3: '删除',
-      '新增': 1,
-      '修改': 2,
-      '删除': 3,
+    // 企业列表
+    company: {
+      list: [],
+      pagination: defaultPagination,
+      isLast: false,
     },
-    /*
-    配置参数---报警策略类型选项
-    key: condition 空格 warnLevel拼接而成
-    */
-    alarmTypes: [
-      { key: '>= 1', condition: '>=', warnLevel: 1, label: '预警上限' },
-      { key: '<= 1', condition: '<=', warnLevel: 1, label: '预警下限' },
-      { key: '>= 2', condition: '>=', warnLevel: 2, label: '告警上限' },
-      { key: '<= 2', condition: '<=', warnLevel: 2, label: '告警上限' },
-    ],
-    // 平面图标注
-    flatGraphic: [
-      {
-        key: 1,
-        value: '单位平面图',
-      },
-      {
-        key: 2,
-        value: '楼层平面图',
-      },
-      {
-        key: 3,
-        value: '安全四色图',
-      },
-      {
-        key: 4,
-        value: '消防平面图',
-      },
-    ],
   },
   effects: {
     // 获取监测类型列表树
@@ -439,6 +450,30 @@ export default {
         })
       }
     },
+    // 数据处理设备企业列表（分页）
+    *fetchCompaniesForPage({ payload }, { call, put }) {
+      const response = yield call(fetchCompaniesForPage, payload)
+      if (response && response.code === 200) {
+        yield put({
+          tyoe: 'saveCompanies',
+          payload: response.data,
+        })
+      }
+    },
+    // 新增数据处理设备类型
+    *addDeviceType({ payload, success, error }, { call }) {
+      const response = yield call(addDeviceType, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 编辑数据处理设备类型
+    *editDeviceType({ payload, success, error }, { call }) {
+      const response = yield call(editDeviceType, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
   },
   reducers: {
     save(state, action) {
@@ -542,6 +577,24 @@ export default {
         sensor: {
           list,
           pagination,
+        },
+      }
+    },
+    // 数据处理设备企业列表（分页）
+    saveCompanies(state, {
+      payload: {
+        list = [],
+        pagination = defaultPagination,
+        pagination: { pageNum, pageSize, total } = defaultPagination,
+      } = {},
+    }) {
+      return {
+        ...state,
+        company: {
+          ...state.company,
+          list: pageNum > 1 ? [...state.company.list, ...list] : list,
+          pagination,
+          isLast: pageNum * pageSize >= total,
         },
       }
     },

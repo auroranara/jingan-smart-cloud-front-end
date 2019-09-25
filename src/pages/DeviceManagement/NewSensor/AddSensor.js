@@ -19,9 +19,9 @@ import { getToken } from '@/utils/authority';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 // 选择品牌型号弹窗
-import BrandModelModal from './Components/BrandModelModal';
+import BrandModelModal from '@/pages/DeviceManagement/Components/BrandModelModal';
 // 监测参数表格
-import MonitoringParameterTable from './Components/MonitoringParameterTable';
+import MonitoringParameterTable from '@/pages/DeviceManagement/Components/MonitoringParameterTable';
 import { AuthButton } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
 import moment from 'moment';
@@ -560,12 +560,20 @@ export default class AddNewSensor extends Component {
     }
   }
 
+
+  /**
+   * 跳转到建筑物管理页面
+   */
+  jumpToBuildingManagement = () => {
+    const win = window.open(`${window.publicPath}#/base-info/buildings-info/list`, '_blank');
+    win.focus();
+  }
+
   /**
      * 渲染表单
      */
   renderForm = () => {
     const {
-      dispatch,
       form,
       form: { getFieldDecorator, getFieldValue },
       match: { params: { id } },
@@ -770,7 +778,7 @@ export default class AddNewSensor extends Component {
                       )}
                     </Col>
                     <AuthButton
-                      onClick={() => { router.push('/base-info/buildings-info/list') }}
+                      onClick={this.jumpToBuildingManagement}
                       code={codesMap.company.buildingsInfo.add}
                       type="primary"
                     >

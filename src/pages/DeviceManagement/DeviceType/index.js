@@ -1,6 +1,6 @@
 import { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Card, Form, Modal, Table, Input, TreeSelect, message } from 'antd';
+import { Card, Form, Modal, Table, Input, TreeSelect, message, Select } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
@@ -63,6 +63,7 @@ const RenderModal = Form.create()(props => {
     monitoringType, // 监测类型树
     onOk,
     onCancel,
+    tagList,
   } = props
   const handleConfirm = () => {
     validateFields((err, values) => {
@@ -97,6 +98,23 @@ const RenderModal = Form.create()(props => {
             </TreeSelect>
           )}
         </FormItem>
+        <FormItem {...formItemCol} label="图标选择：">
+          {getFieldDecorator('logoId', {
+            initialValue: detail ? detail.logoId : undefined,
+          })(
+            <Select placeholder="请选择">
+              {tagList.map(({ id, name, webUrl }) => (
+                <Select.Option
+                  key={id}
+                  value={id}
+                >
+                  <img width="27" height="27" src={webUrl} alt="图标"></img>
+                  <span style={{ paddingLeft: '1em' }}>{name}</span>
+                </Select.Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
       </Form>
     </Modal>
   )
@@ -120,6 +138,7 @@ export default class DeviceType extends PureComponent {
     this.handleQuery()
     // 获取监测类型树
     dispatch({ type: 'device/fetchMonitoringTypes' })
+    this.fetchAllTags()
   }
 
   handleQuery = (pageNum = 1, pageSize = 10) => {
@@ -127,6 +146,14 @@ export default class DeviceType extends PureComponent {
     this.fetchDeviceTypes({
       payload: { pageNum, pageSize, type },
     })
+  }
+
+  /**
+  * 获取全部图标
+  */
+  fetchAllTags = () => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'device/fetchAllTags', payload: {} })
   }
 
   /**
@@ -246,6 +273,7 @@ export default class DeviceType extends PureComponent {
         deviceType: {
           pagination: { total = 0 },
         },
+        tagLibrary: { list: tagList },
       },
     } = this.props
     const { activeTabKey, modalVisible, detail } = this.state
@@ -261,6 +289,7 @@ export default class DeviceType extends PureComponent {
       monitoringType,
       onOk: this.handleEdit,
       onCancel: this.handleClose,
+      tagList,
     }
     return (
       <PageHeaderLayout

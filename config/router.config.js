@@ -1570,6 +1570,38 @@ module.exports = env => {
                 },
               ],
             },
+            // 单位数据处理设备
+            {
+              path: '/device-management/data-processing',
+              name: 'dataProcessing',
+              code: 'deviceManagement.dataProcessing',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/data-processing',
+                  name: 'dataProcessing',
+                  redirect: '/device-management/data-processing/list',
+                },
+                {
+                  path: '/device-management/data-processing/list',
+                  name: 'listView',
+                  code: 'deviceManagement.dataProcessing.companyList',
+                  component: '/DeviceManagement/DataProcessingEquipment/CompanyList',
+                },
+                {
+                  path: '/device-management/data-processing/add',
+                  name: 'addEquipmentType',
+                  code: 'deviceManagement.dataProcessing.addEquipmentType',
+                  component: '/DeviceManagement/DataProcessingEquipment/AddEquipmentType',
+                },
+                {
+                  path: '/device-management/data-processing/edit/:companyId',
+                  name: 'editEquipmentType',
+                  code: 'deviceManagement.dataProcessing.editEquipmentType',
+                  component: '/DeviceManagement/DataProcessingEquipment/AddEquipmentType',
+                },
+              ],
+            },
           ],
         },
 
