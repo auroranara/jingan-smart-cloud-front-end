@@ -1759,7 +1759,7 @@ module.exports = env => {
                 },
               ],
             },
-            // 设备管理
+            // 传感器管理
             {
               path: '/device-management/sensor',
               code: 'deviceManagement.sensor',
@@ -1791,7 +1791,7 @@ module.exports = env => {
                 },
               ],
             },
-            // 设备型号
+            // 传感器型号
             {
               path: '/device-management/sensor-model',
               code: 'deviceManagement.sensorModel',
@@ -1843,6 +1843,162 @@ module.exports = env => {
             //     },
             //   ],
             // },
+            // 监测类型
+            {
+              path: '/device-management/monitoring-type',
+              code: 'deviceManagement.monitoringType',
+              name: 'monitoringType',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/monitoring-type',
+                  name: 'monitoringType',
+                  redirect: '/device-management/monitoring-type/list',
+                },
+                {
+                  path: '/device-management/monitoring-type/list',
+                  name: 'listView',
+                  code: 'deviceManagement.monitoringType.listView',
+                  component: './DeviceManagement/MonitoringType',
+                },
+              ],
+            },
+            // 设备类型
+            {
+              path: '/device-management/device-type',
+              code: 'deviceManagement.deviceType',
+              name: 'deviceType',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/device-type',
+                  name: 'deviceType',
+                  redirect: '/device-management/device-type/list',
+                },
+                {
+                  path: '/device-management/device-type/list',
+                  code: 'deviceManagement.deviceType.listView',
+                  name: 'listView',
+                  component: '/DeviceManagement/DeviceType',
+                },
+              ],
+            },
+            // 品牌
+            {
+              path: '/device-management/brand',
+              code: 'deviceManagement.brand',
+              name: 'brand',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/brand',
+                  name: 'brand',
+                  redirect: '/device-management/brand/list',
+                },
+                {
+                  path: '/device-management/brand/list',
+                  name: 'listView',
+                  code: 'deviceManagement.brand.listView',
+                  component: '/DeviceManagement/Brand',
+                },
+                {
+                  path: '/device-management/brand/:brandId/model',
+                  name: 'model',
+                  code: 'deviceManagement.brand.model.listView',
+                  component: '/DeviceManagement/Brand/ModelList',
+                },
+                {
+                  path: '/device-management/brand/:brandId/model/:modelId/parameter',
+                  name: 'deployParameter',
+                  code: 'deviceManagement.brand.model.deployParameter',
+                  component: '/DeviceManagement/Brand/DeployParameter',
+                },
+              ],
+            },
+            // 标签库
+            {
+              path: '/device-management/tag-library',
+              name: 'tagLibrary',
+              code: 'deviceManagement.tagLibrary',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/tag-library',
+                  name: 'tagLibrary',
+                  redirect: '/device-management/tag-library/list',
+                },
+                {
+                  path: '/device-management/tag-library/list',
+                  code: 'deviceManagement.tagLibrary.listView',
+                  name: 'listView',
+                  component: '/DeviceManagement/TagLibrary',
+                },
+              ],
+            },
+            // 传感器（新）
+            {
+              path: '/device-management/new-sensor',
+              name: 'newSensor',
+              code: 'deviceManagement.newSensor',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/new-sensor',
+                  name: 'newSensor',
+                  redirect: '/device-management/new-sensor/list',
+                },
+                {
+                  path: '/device-management/new-sensor/list',
+                  name: 'list',
+                  code: 'deviceManagement.newSensor.listView',
+                  component: '/DeviceManagement/NewSensor',
+                },
+                {
+                  path: '/device-management/new-sensor/add',
+                  name: 'add',
+                  code: 'deviceManagement.newSensor.add',
+                  component: '/DeviceManagement/NewSensor/AddSensor',
+                },
+                {
+                  path: '/device-management/new-sensor/edit/:id',
+                  name: 'edit',
+                  code: 'deviceManagement.newSensor.edit',
+                  component: '/DeviceManagement/NewSensor/AddSensor',
+                },
+              ],
+            },
+            // 单位数据处理设备
+            {
+              path: '/device-management/data-processing',
+              name: 'dataProcessing',
+              code: 'deviceManagement.dataProcessing',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/data-processing',
+                  name: 'dataProcessing',
+                  redirect: '/device-management/data-processing/list',
+                },
+                {
+                  path: '/device-management/data-processing/list',
+                  name: 'listView',
+                  code: 'deviceManagement.dataProcessing.companyList',
+                  component: '/DeviceManagement/DataProcessingEquipment/CompanyList',
+                },
+                {
+                  path: '/device-management/data-processing/add',
+                  name: 'addEquipmentType',
+                  code: 'deviceManagement.dataProcessing.addEquipmentType',
+                  component: '/DeviceManagement/DataProcessingEquipment/AddEquipmentType',
+                },
+                {
+                  path: '/device-management/data-processing/edit/:companyId',
+                  name: 'editEquipmentType',
+                  code: 'deviceManagement.dataProcessing.editEquipmentType',
+                  component: '/DeviceManagement/DataProcessingEquipment/AddEquipmentType',
+                },
+              ],
+            },
           ],
         },
 
