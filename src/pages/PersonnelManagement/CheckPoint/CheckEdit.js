@@ -10,18 +10,23 @@ import ScreenEdit from './ScreenEdit';
 
 const TAB_COMS = [PointEdit, EquipmentEdit, ScreenEdit];
 
-@connect(({ checkPoint, loading }) => ({ checkPoint, loading: loading.models.checkPoint }))
+@connect(({ checkPoint, loading }) => ({
+  checkPoint,
+  loading: loading.models.checkPoint,
+  listLoading: loading.effects['checkPoint/fetchCheckList'],
+}))
 export default class CheckEdit extends PureComponent {
   render() {
-    const { match: { params: { tabIndex } } } = this.props;
+    const { match: { params: { companyId, tabIndex, id }, url } } = this.props;
     const Component = TAB_COMS[tabIndex];
 
-    const title = `新增${TABS[tabIndex]}`;
+    const isDetail = url && url.includes('detail');
+    const title = `${TABS[tabIndex]}${isDetail ? '详情' : id ? '编辑' : '新增'}`;
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '人员在岗在位管理', name: '人员在岗在位管理' },
       { title: '卡口信息', name: '卡口信息', href: '/personnel-management/check-point/company-list' },
-      { title: '卡口列表', name: '卡口列表', href: `/personnel-management/check-point/list/companyId/${tabIndex}` },
+      { title: '卡口列表', name: '卡口列表', href: `/personnel-management/check-point/list/${companyId}/${tabIndex}` },
       { title, name: title },
     ];
 
@@ -31,7 +36,7 @@ export default class CheckEdit extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         <Card style={{ marginBottom: 15 }}>
-          <Component {...this.props} />
+          <Component {...this.props} isDetail={isDetail} />
         </Card>
       </PageHeaderLayout>
     );

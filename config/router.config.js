@@ -3015,19 +3015,19 @@ module.exports = env => {
                   component: './PersonnelManagement/CheckPoint/CheckList',
                 },
                 {
-                  path: '/personnel-management/check-point/detail/:id/:tabIndex',
-                  code: 'personnelManagement.checkPoint.view',
-                  name: 'detail',
-                  component: './PersonnelManagement/CheckPoint/CheckDetail',
-                },
-                {
                   path: '/personnel-management/check-point/add/:companyId/:tabIndex',
                   code: 'personnelManagement.checkPoint.add',
                   name: 'add',
                   component: './PersonnelManagement/CheckPoint/CheckEdit',
                 },
                 {
-                  path: '/personnel-management/check-point/edit/:id/:tabIndex',
+                  path: '/personnel-management/check-point/detail/:companyId/:tabIndex/:id',
+                  code: 'personnelManagement.checkPoint.view',
+                  name: 'detail',
+                  component: './PersonnelManagement/CheckPoint/CheckEdit',
+                },
+                {
+                  path: '/personnel-management/check-point/edit/:companyId/:tabIndex/:id',
                   code: 'personnelManagement.checkPoint.add',
                   name: 'edit',
                   component: './PersonnelManagement/CheckPoint/CheckEdit',

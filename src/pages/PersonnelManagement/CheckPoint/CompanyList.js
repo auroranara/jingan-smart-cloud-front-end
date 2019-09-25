@@ -1,9 +1,10 @@
 import React, { PureComponent } from 'react';
+import _ from 'lodash';
 import { connect } from 'dva';
 import router from 'umi/router';
 import Link from 'umi/link';
 import Ellipsis from '@/components/Ellipsis';
-import { Button, Card, Form, Input, List, Modal, Select } from 'antd';
+import { Button, Card, Form, Input, List, Modal, Select, Spin } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -25,22 +26,20 @@ const PAGE_SIZE = 18;
 const { Item: FormItem } = Form;
 const { Option } = Select;
 
-const LIST = [{
-  id: 0,
-  companyName: '晶安',
-  safetyName: '张三',
-  safetyPhone: 13011112222,
-}];
-
 @Form.create()
-@connect(({ checkPoint, loading }) => ({ checkPoint, loading: loading.effects['checkPoint/fetchCompanyList'] }))
+@connect(({ checkPoint, loading }) => ({
+  checkPoint,
+  loading: loading.effects['checkPoint/fetchCompanyList'],
+  unitsLoading: loading.effects['checkPoint/fetchUnits'],
+}))
 export default class CompanyList extends PureComponent {
   state={ modalVisible: false };
 
   componentDidMount() {
     this.childElem = document.querySelector('#root div');
     document.addEventListener('scroll', this.handleScroll, false);
-    // this.fetchInitCompanyList();
+    this.fetchInitCompanyList();
+    this.lazyFetchUnits = _.debounce(this.fetchUnits, 300);
   }
 
   componentWillUnmount() {
@@ -64,6 +63,14 @@ export default class CompanyList extends PureComponent {
     const scrollToBottom = documentElem.scrollTop + documentElem.offsetHeight >= childElem.offsetHeight;
     // 当页面滚到底部且当前并不在请求数据且数据库还有数据时，才能再次请求
     if (scrollToBottom && !loading && hasMore) this.handleLoadMore();
+  };
+
+  fetchUnits = name => {
+    const { dispatch } = this.props;
+    const payload = { pageNum: 1, pageSize: PAGE_SIZE };
+    if (name)
+      payload.name = name;
+    dispatch({ type: 'checkPoint/fetchUnits', payload });
   };
 
   handleSearch = vals => {
@@ -120,6 +127,7 @@ export default class CompanyList extends PureComponent {
 
   showModal = () => {
     this.setState({ modalVisible: true });
+    this.fetchUnits();
   };
 
   hideModal = () => {
@@ -129,19 +137,29 @@ export default class CompanyList extends PureComponent {
   handleSubmit = () => {
     const { form: { validateFields } } =  this.props;
     validateFields((error, fields) => {
-        if (error)
-          return;
+      if (error)
+        return;
 
-        const { company, point } = fields;
-        router.push(`/personnel-management/check-point/add/${company}/${point}`);
+      const { company, point } = fields;
+      router.push(`/personnel-management/check-point/add/${company}/${point}`);
     });
   }
 
+  handleUnitValueChange = value => {
+    this.lazyFetchUnits(value);
+  };
+
   renderModal = () => {
-    const { form: { getFieldDecorator } } = this.props;
+    const {
+      unitsLoading,
+      form: { getFieldDecorator },
+      checkPoint: { unitList },
+    } = this.props;
     const { modalVisible } = this.state;
+
     return (
       <Modal
+        destroyOnClose
         title="添加卡口信息"
         visible={modalVisible}
         onOk={this.handleSubmit}
@@ -150,14 +168,21 @@ export default class CompanyList extends PureComponent {
         <Form {...FORMITEM_LAYOUT}>
           <FormItem label="单位名称">
             {getFieldDecorator('company', {
-              rules: [
-                {
-                  // required: true,
-                  message: '请选择单位',
-                },
-              ],
+              rules: [{ required: true, message: '请选择单位' }],
             })(
-              <Select />
+              <Select
+                showSearch
+                placeholder="请选择所属单位"
+                notFoundContent={unitsLoading ? <Spin size="small" /> : '暂无数据'}
+                onSearch={this.handleUnitValueChange}
+                filterOption={false}
+              >
+                {unitList.map(item => (
+                  <Option value={item.id} key={item.id}>
+                    {item.name}
+                  </Option>
+                ))}
+              </Select>
             )}
           </FormItem>
           <FormItem label="卡口信息">
@@ -173,9 +198,9 @@ export default class CompanyList extends PureComponent {
   };
 
   render() {
-    const list = LIST;
     const {
       loading,
+      checkPoint: { companyList: list },
     } = this.props;
 
     const toolBarAction = (
@@ -185,7 +210,7 @@ export default class CompanyList extends PureComponent {
     );
     const fields = [
       {
-        id: 'companyName',
+        id: 'title',
         label: '单位名称：',
         span: { md: 8, sm: 12, xs: 24 },
         render: () => <Input placeholder="请输入单位名称" />,
@@ -199,7 +224,7 @@ export default class CompanyList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles.total}>
-            卡口总数：
+            企业总数：
             {list.length}
           </p>
         }

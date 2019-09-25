@@ -27,9 +27,11 @@ export default class SearchSelect extends Component {
   handleBlur = (value) => {
     const { fieldNames, list, onChange } = this.props;
     const { key } = { ...FIELDNAMES, ...fieldNames };
-    const id = typeof value === 'object' ? value.key : value;
-    if (list.filter(({ [key]: k }) => k === id).length === 0) {
-      onChange && onChange();
+    if (!Array.isArray(value)) {
+      const id = typeof value === 'object' ? value.key : value;
+      if (list.filter(({ [key]: k }) => k === id).length === 0) {
+        onChange && onChange();
+      }
     }
   }
 
@@ -39,6 +41,8 @@ export default class SearchSelect extends Component {
       loading,
       fieldNames,
       mode,
+      getList,
+      setList,
       notFoundContent='未找到数据',
       ...restProps
     } = this.props;

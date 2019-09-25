@@ -1,14 +1,13 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import Link from 'umi/link';
 import Ellipsis from '@/components/Ellipsis';
-import { Button, Card, Input, List, Switch, message } from 'antd';
+import { Button, Card, Input, List, Switch } from 'antd';
 
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './CompanyList.less';
-import { getAddress, TAB_LIST } from './utils';
+import { genListLink, genOperateCallback, getAddress, TAB_LIST, POINT_INDEX, EQUIPMENT_INDEX, SCREEN_INDEX, TABS } from './utils';
 
 const title = '卡口列表';
 const breadcrumbList = [
@@ -24,8 +23,6 @@ const NO_DATA = '暂无信息';
 const PAGE_SIZE = 18;
 const EQUIPMENT = 'equipment';
 const SCREEN = 'screen';
-const EQUIPMENT_INDEX = 1;
-const SCREEN_INDEX = 2;
 
 @connect(({ checkPoint, loading }) => ({ checkPoint, loading: loading.effects['checkPoint/fetchCheckList'] }))
 export default class CheckList extends PureComponent {
@@ -34,8 +31,8 @@ export default class CheckList extends PureComponent {
   componentDidMount() {
     const { match: { params: { tabIndex } } } = this.props;
     this.childElem = document.querySelector('#root div');
-    // document.addEventListener('scroll', this.handleScroll, false);
-    // this.fetchInitCheckList(tabIndex);
+    document.addEventListener('scroll', this.handleScroll, false);
+    [0, 1, 2].forEach(n => this.fetchInitCheckList(n));
 
     this.setState({ tabIndex });
   }
@@ -45,13 +42,15 @@ export default class CheckList extends PureComponent {
   }
 
   value = '';
-  hasMore = true;
+  hasMore = [true, true, true];
   childElem = null;
-  currentpageNum = 2;
+  currentpageNum = [2, 2, 2];
 
   handleScroll = e => {
     const { loading } = this.props;
-    const hasMore = this.hasMore;
+    const { tabIndex } = this.state;
+
+    const hasMore = this.hasMore[tabIndex];
     const childElem = this.childElem;
     // 滚动时子元素相对定高的父元素滚动，事件加在父元素上，且查看父元素scrollTop，当滚到底时，父元素scrollTop+父元素高度=子元素高度
     // 判断页面是否滚到底部
@@ -64,16 +63,20 @@ export default class CheckList extends PureComponent {
   };
 
   handleSearch = vals => {
-    this.value = vals && vals.title ? vals.title : '';
-    this.hasMore = true;
-    this.currentpageNum = 2;
+    const { tabIndex } = this.state;
+
+    this.value = vals && vals.name ? vals.name : '';
+    this.hasMore[tabIndex] = true;
+    this.currentpageNum[tabIndex] = 2;
     this.fetchInitCheckList();
   };
 
   handleReset = () => {
+    const { tabIndex } = this.state;
+
     this.value = '';
-    this.hasMore = true;
-    this.currentpageNum = 2;
+    this.hasMore[tabIndex] = true;
+    this.currentpageNum[tabIndex] = 2;
     this.fetchInitCheckList();
   };
 
@@ -81,29 +84,30 @@ export default class CheckList extends PureComponent {
     const { tabIndex } = this.state;
     const idx = index === undefined ? tabIndex : index; // 传了就用传的，不传用state里的
     const callback = (total, list) => {
-      if (total <= PAGE_SIZE) this.hasMore = false;  // 如果第一页已经返回了所有结果，则hasMore置为false
+      if (total <= PAGE_SIZE) this.hasMore[idx] = false;  // 如果第一页已经返回了所有结果，则hasMore置为false
       const newStatus = list.reduce((prev, next) => {
         const { id, status } = next;
-        prev[id] = status;
+        prev[id] = !+status;
         return prev;
       }, {});
       this.setState({ [`${+idx === EQUIPMENT_INDEX ? EQUIPMENT : SCREEN}Status`]: newStatus });
     };
 
-    this.fetchCheckList(1, callback);
+    this.fetchCheckList(idx, 1, callback);
   };
 
   handleLoadMore = () => {
-    const currentPageIndex = this.currentpageNum;
+    const { tabIndex } = this.state;
+    const currentPageIndex = this.currentpageNum[tabIndex];
     const callback = total => {
       const currentLength = currentPageIndex * PAGE_SIZE;
-      this.currentpageNum += 1;
-      if (currentLength >= total) this.hasMore = false;
+      this.currentpageNum[tabIndex] += 1;
+      if (currentLength >= total) this.hasMore[tabIndex] = false;
     };
-    this.fetchCheckList(currentPageIndex, callback);
+    this.fetchCheckList(tabIndex, currentPageIndex, callback);
   };
 
-  fetchCheckList = (pageIndex, callback) => {
+  fetchCheckList = (index, pageIndex, callback) => {
     const { dispatch, match: { params: { companyId } } } = this.props;
     const name = this.value;
     const payload = {
@@ -111,10 +115,11 @@ export default class CheckList extends PureComponent {
       pageNum: pageIndex,
       pageSize: PAGE_SIZE,
     };
-    // if (name)
-    //   payload.companyName = name;
+    if (name)
+      payload.name = name;
     dispatch({
       type: 'checkPoint/fetchCheckList',
+      index,
       payload,
       callback,
     });
@@ -126,29 +131,36 @@ export default class CheckList extends PureComponent {
     });
   };
 
-  genSwitchChange = (id, tabIndex) => checked => {
+  genSwitchChange = (item, tabIndex) => checked => {
+    const { dispatch } = this.props;
+    const { id } = item;
     const prop = `${+tabIndex === EQUIPMENT_INDEX ? EQUIPMENT : SCREEN}Status`;
     const status = this.state[prop];
     const newStatus = { ...status, [id]: checked };
-    this.setState({ [prop]: newStatus });
+
+    dispatch({
+      index: tabIndex,
+      type: 'checkPoint/editCheckPoint',
+      payload: { ...item, status: +!checked },
+      callback: genOperateCallback('', () => this.setState({ [prop]: newStatus })),
+    });
+  };
+
+  genLink = (index, id) => {
+    const { dispatch, match: { params: { companyId } } } = this.props;
+    return genListLink(dispatch, companyId, index, id);
   };
 
   renderPoint = item => {
-    const {
-      id,
-      companyId,
-      name,
-      location,
-      direction,
-      photoList,
-    } = item;
+    const { id, name, location, direction, photoList } = item;
 
-    const actions = ['查看', '编辑', '删除'];
+    const actions = this.genLink(POINT_INDEX, id);
     const address = location || NO_DATA;
+    const photo = photoList && photoList.length ? photoList[0].webUrl : '';
     return (
       <List.Item key={id}>
         <Card
-          className={styles.card}
+          className={styles.card1}
           title={
             <Ellipsis lines={1} tooltip style={{ height: 24 }}>
               {name}
@@ -163,27 +175,20 @@ export default class CheckList extends PureComponent {
             方向：
             {direction || NO_DATA}
           </p>
+          {photo && <div className={styles.photo} style={{ backgroundImage: `url(${photo})` }} />}
         </Card>
       </List.Item>
     );
   };
 
   renderEquipment = item => {
-    const {
-      id,
-      companyId,
-      name,
-      area,
-      location,
-      code,
-      number,
-      status,
-    } = item;
+    const { id, name, area, location, code, number } = item;
 
     const { equipmentStatus } = this.state;
 
-    const actions = ['查看', '编辑', '删除'];
+    const actions = this.genLink(EQUIPMENT_INDEX, id);
     const address = `区域位置：${!area && !location ? NO_DATA : `${area || ''}${location || ''}`}`;
+    const sts = equipmentStatus[id];
     return (
       <List.Item key={id}>
         <Card
@@ -194,6 +199,7 @@ export default class CheckList extends PureComponent {
             </Ellipsis>
           }
           actions={actions}
+          extra={sts === undefined || sts ? null : <span className={styles.red}>禁用</span>}
         >
           <p className={styles.p}>
             {address.length > 20 ? <Ellipsis lines={1} tooltip>{address}</Ellipsis> : address}
@@ -211,8 +217,8 @@ export default class CheckList extends PureComponent {
             <Switch
               checkedChildren="启用"
               unCheckedChildren="禁用"
-              checked={equipmentStatus[id]}
-              onChange={this.genSwitchChange(id, EQUIPMENT_INDEX)}
+              checked={sts}
+              onChange={this.genSwitchChange(item, EQUIPMENT_INDEX)}
             />
           </p>
         </Card>
@@ -221,17 +227,12 @@ export default class CheckList extends PureComponent {
   };
 
   renderScreen = item => {
-    const {
-      id,
-      name,
-      code,
-      ipAddress,
-      status,
-    } = item;
+    const { id, name, code, ipAddress } = item;
 
     const { screenStatus } = this.state;
 
-    const actions = ['查看', '编辑', '删除'];
+    const sts = screenStatus[id];
+    const actions = this.genLink(SCREEN_INDEX, id);
     const address = ` 地址：${getAddress(item) || NO_DATA}`;
     return (
       <List.Item key={id}>
@@ -243,6 +244,7 @@ export default class CheckList extends PureComponent {
             </Ellipsis>
           }
           actions={actions}
+          extra={sts === undefined || sts ? null : <span className={styles.red}>禁用</span>}
         >
           <p className={styles.p}>
             {address.length > 20 ? <Ellipsis lines={1} tooltip>{address}</Ellipsis> : address}
@@ -261,7 +263,7 @@ export default class CheckList extends PureComponent {
               checkedChildren="启用"
               unCheckedChildren="禁用"
               checked={screenStatus[id]}
-              onChange={this.genSwitchChange(id, SCREEN_INDEX)}
+              onChange={this.genSwitchChange(item, SCREEN_INDEX)}
             />
           </p>
         </Card>
@@ -294,7 +296,7 @@ export default class CheckList extends PureComponent {
         id: 'name',
         // label: '单位名称：',
         span: { md: 8, sm: 12, xs: 24 },
-        render: () => <Input placeholder="请输入单位名称" />,
+        render: () => <Input placeholder={`请输入${TABS[tabIndex]}名称`} />,
         transform: v => v.trim(),
       },
     ];
@@ -309,13 +311,14 @@ export default class CheckList extends PureComponent {
         tabActiveKey={tabIndex}
         content={
           <p className={styles.total}>
-            卡口总数：
+            {TABS[tabIndex]}总数：
             {list.length}
           </p>
         }
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
+            key={tabIndex}
             fields={fields}
             action={toolBarAction}
             onSearch={this.handleSearch}
