@@ -10,9 +10,11 @@ const LABEL_COL = { span: 6 }
 
 export default connect(({
   common,
+  user,
   loading,
 }) => ({
   detail: common.detail,
+  user,
   loading: loading.effects['common/getDetail'],
 }), (dispatch) => ({
   getDetail(payload, callback) {
@@ -85,6 +87,8 @@ export default connect(({
   },
   enableEdit(detail) {
     console.log(detail);
-    return true;
+    const { user: { permissionCodes } } = stateProps;
+    const hasEditAuthority = permissionCodes.includes('emergencyManagement.emergencyPlan.edit');
+    return hasEditAuthority;
   },
 }))(CustomPage);

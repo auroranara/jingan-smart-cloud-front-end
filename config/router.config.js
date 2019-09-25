@@ -1817,6 +1817,32 @@ module.exports = env => {
                 },
               ],
             },
+            // // 网关
+            // {
+            //   path: '/device-management/gateway',
+            //   code: 'deviceManagement.gateway',
+            //   name: 'gateway',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/device-management/gateway',
+            //       name: 'list',
+            //       redirect: '/device-management/gateway/list',
+            //     },
+            //     {
+            //       path: '/device-management/gateway/list',
+            //       name: 'list',
+            //       code: 'deviceManagement.gateway.list',
+            //       component: './DeviceManagement/Gateway/List',
+            //     },
+            //     {
+            //       path: '/device-management/gateway/:type/:id?',
+            //       name: 'list',
+            //       code: 'deviceManagement.gateway.list',
+            //       component: './DeviceManagement/Gateway/Other',
+            //     },
+            //   ],
+            // },
           ],
         },
 
@@ -2483,8 +2509,8 @@ module.exports = env => {
             //     },
             //     {
             //       path: '/training/training-program/:type/:id?',
-            //       code: 'training.trainingProgram.detail',
-            //       name: 'detail',
+            //       code: 'training.trainingProgram.list',
+            //       name: 'list',
             //       component: './Training/TrainingProgram/Other',
             //     },
             //   ],

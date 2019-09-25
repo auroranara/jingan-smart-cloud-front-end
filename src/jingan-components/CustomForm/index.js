@@ -1,5 +1,5 @@
-import React, { PureComponent } from 'react';
-import { Form, Button, Row, Col } from 'antd';
+import React, { PureComponent, Fragment } from 'react';
+import { Form, Button, Row, Col, Card } from 'antd';
 import classNames from 'classnames';
 // 引入样式文件
 import styles from './index.less';
@@ -37,6 +37,11 @@ const DEFAULT_SPAN = {
   sm: 24,
   xs: 24,
 };
+// 默认多重容器格数
+const DEFAULT_MULTIPLE_BUTTON_WRAPPER_SPAN = {
+  sm: 24,
+  xs: 24,
+};
 // 默认容器间隔
 const DEFAULT_GUTTER = 24;
 // 默认内容样式
@@ -51,6 +56,20 @@ const DEFAULT_STYLE = {
   },
 })
 export default class CustomForm extends PureComponent {
+  getTransformedData = (fields, values) => {
+    return fields && fields.reduce((result, { id, transform, fields }) => {
+      if (fields) {
+        result = {
+          ...result,
+          ...this.getTransformedData(fields, values),
+        };
+      } else if (values[id] && transform) {
+        result[id] = transform(values[id]);
+      }
+      return result;
+    }, {});
+  }
+
   /**
    * 搜索按钮点击事件
    * 内部逻辑：根据验证规则验证，通过后调用父组件传入的onSearch函数并将表单值作为参数传入
@@ -63,12 +82,7 @@ export default class CustomForm extends PureComponent {
     } = this.props;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const transformedData = {};
-        fields.forEach(field => {
-          if (values[field.id] && field.transform) {
-            transformedData[field.id] = field.transform(values[field.id]);
-          }
-        });
+        const transformedData = this.getTransformedData(fields, values);
         setFieldsValue(transformedData);
         if (onSearch) {
           onSearch({
@@ -96,17 +110,33 @@ export default class CustomForm extends PureComponent {
     }
   };
 
-  /**
-   * 渲染
-   */
-  render() {
+  renderFields = (fields) => {
+    const { form: { getFieldDecorator } } = this.props;
+
+    return fields && fields.map(({
+      id,
+      span=DEFAULT_SPAN,
+      options,
+      render,
+      style,
+      ...restProps
+    }) => (
+      <Col
+        key={id}
+        {...(typeof span === 'number' ? { span } : span)}
+      >
+        <FormItem
+          style={{ ...DEFAULT_STYLE, ...style }}
+          {...restProps}
+        >
+          {getFieldDecorator(id, options)(render(this))}
+        </FormItem>
+      </Col>
+    ));
+  }
+
+  renderButtons = () => {
     const {
-      // 通过Form.create()生成的参数，无需父组件传入
-      form: { getFieldDecorator },
-      // 类名
-      className,
-      // 输入控件
-      fields,
       // 搜索按钮的参数，具体见Button组件
       searchProps,
       // 搜索按钮的文本
@@ -127,54 +157,74 @@ export default class CustomForm extends PureComponent {
       buttonWrapperClassName,
       // 按钮容器样式
       buttonWrapperStyle,
+      // 模式
+      mode,
+    } = this.props;
+    const span = mode === 'multiple' ? DEFAULT_MULTIPLE_BUTTON_WRAPPER_SPAN : buttonWrapperSpan;
+
+    return (
+      <Col {...(typeof buttonSpan === 'number' ? { span } : span)}>
+        <FormItem className={classNames(styles.buttonWrapper, buttonWrapperClassName)} style={{ textAlign: mode === 'multiple' ? 'center': undefined, ...DEFAULT_STYLE, ...buttonWrapperStyle }}>
+          {/* 搜索按钮 */}
+          {searchable && (
+            <Button type="primary" {...searchProps} onClick={this.handleSearch}>
+              {searchText || '查询'}
+            </Button>
+          )}
+          {/* 重置按钮 */}
+          {resetable && (
+            <Button type="default" {...resetProps} onClick={this.handleReset}>
+              {resetText || '重置'}
+            </Button>
+          )}
+          {/* 其他按钮 */}
+          {action}
+        </FormItem>
+      </Col>
+    );
+  }
+
+  /**
+   * 渲染
+   */
+  render() {
+    const {
+      // 类名
+      className,
+      // 输入控件
+      fields,
       // 容器的间隔，具体见Row组件
       gutter=DEFAULT_GUTTER,
+      // 模式
+      mode,
     } = this.props;
 
     return (
       <Form className={classNames(styles.form, className)}>
-        <Row gutter={gutter}>
-          {/* 控件 */}
-          {fields && fields.map(({
-            id,
-            span=DEFAULT_SPAN,
-            options,
-            render,
-            style,
-            ...restProps
-          }) => (
-            <Col
-              key={id}
-              {...(typeof span === 'number' ? { span } : span)}
-            >
-              <FormItem
-                style={{ ...DEFAULT_STYLE, ...style }}
-                {...restProps}
-              >
-                {getFieldDecorator(id, options)(render(this))}
-              </FormItem>
-            </Col>
-          ))}
-          {/* 按钮 */}
-          <Col {...(typeof buttonSpan === 'number' ? { span: buttonWrapperSpan } : buttonWrapperSpan)}>
-            <FormItem className={classNames(styles.buttonWrapper, buttonWrapperClassName)} style={{ ...DEFAULT_STYLE, ...buttonWrapperStyle }}>
-              {/* 搜索按钮 */}
-              {searchable && (
-                <Button type="primary" {...searchProps} onClick={this.handleSearch}>
-                  {searchText || '查询'}
-                </Button>
-              )}
-              {/* 重置按钮 */}
-              {resetable && (
-                <Button type="default" {...resetProps} onClick={this.handleReset}>
-                  {resetText || '重置'}
-                </Button>
-              )}
-              {/* 其他按钮 */}
-              {action}
-            </FormItem>
-          </Col>
-        </Row>
+        {mode === 'multiple' ? (
+          <Fragment>
+            {fields.map(({ key, title, fields: list }) => (
+              <Card className={styles.card} title={title} bordered={false} key={key || title}>
+                <Row gutter={gutter}>
+                  {this.renderFields(list)}
+                  {fields.length === 1 && this.renderButtons()}
+                </Row>
+              </Card>
+            ))}
+            {fields.length > 1 && (
+              <Card className={styles.card} bordered={false}>
+                <Row gutter={gutter}>
+                  {this.renderButtons()}
+                </Row>
+              </Card>
+            )}
+          </Fragment>
+        ) : (
+          <Row gutter={gutter}>
+            {this.renderFields(fields)}
+            {this.renderButtons()}
+          </Row>
+        )}
       </Form>
     );
   }

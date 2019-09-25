@@ -19,6 +19,7 @@ import {
   LEVEL_CODE_MAPPER,
 } from '../EmergencyPlanHandler/config';
 import {
+  EDIT_CODE,
   TYPE_CODES,
   SECRET_CODES,
 } from '../EmergencyPlanList/config';
@@ -101,11 +102,13 @@ export default class EmergencyPlanDetail extends Component {
       user: {
         currentUser: {
           unitType,
+          permissionCodes,
         },
       },
       loading,
     } = this.props;
     const isNotCompany = +unitType !== 4;
+    const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
 
     const FIELDS = [
       ...(isNotCompany ? [{
@@ -288,7 +291,7 @@ export default class EmergencyPlanDetail extends Component {
               action={
                 <Fragment>
                   <Button onClick={this.handleBackButtonClick}>返回</Button>
-                  {+historyType === 1 && (+status === 3 || +status === 4) && <Button type="primary" onClick={this.handleEditButtonClick}>编辑</Button>}
+                  {hasEditAuthority && +historyType === 1 && (+status === 3 || +status === 4) && <Button type="primary" onClick={this.handleEditButtonClick}>编辑</Button>}
                 </Fragment>
               }
             />

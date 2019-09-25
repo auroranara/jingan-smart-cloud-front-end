@@ -45,6 +45,10 @@ export default class CustomPage extends Component {
     this.form = form;
   }
 
+  refresh = () => {
+    this.forceUpdate();
+  }
+
   // 返回按钮点击事件
   handleBackButtonClick = () => {
     router.goBack();
@@ -117,7 +121,7 @@ export default class CustomPage extends Component {
               searchable={false}
               resetable={false}
               ref={this.setFormReference}
-              refresh={this.forceUpdate}
+              refresh={this.refresh}
               action={
                 <Fragment>
                   <Button onClick={this.handleBackButtonClick}>返回</Button>

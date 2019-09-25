@@ -255,11 +255,13 @@ export default class EmergencyPlanList extends Component {
     const {
       user: {
         currentUser: {
+          unitType,
           permissionCodes,
         },
       },
     } = this.props;
     const { currentAuditStatus } = this.state;
+    const isNotCompany = +unitType !== 4;
     const hasAddAuthority = permissionCodes.includes(ADD_CODE);
 
     const FIELDS = [
@@ -287,12 +289,12 @@ export default class EmergencyPlanList extends Component {
           </Select>
         ),
       },
-      {
+      ...(isNotCompany ? [{
         id: 'companyName',
         label: '单位名称',
         transform: value => value.trim(),
         render: _this => <Input placeholder="请输入单位名称" onPressEnter={_this.handleSearch} maxLength={50} />,
-      },
+      }] : []),
       {
         id: 'auditStatus',
         label: '审核状态',

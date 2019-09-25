@@ -6,7 +6,7 @@ const SPAN = {
   sm: 16,
   xs: 24,
 };
-const LABEL_COL = { span: 6 }
+const LABEL_COL = { span: 6 };
 
 export default connect(({
   common,
@@ -62,10 +62,10 @@ export default connect(({
   },
   getFields(type, detail, values) {
     const { companyId, companyName } = detail || {};
-    const isNotDetail = type === 'detail';
+    const isNotDetail = type !== 'detail';
     return [
       {
-        id: 'companyName',
+        id: 'company',
         label: '单位名称',
         span: SPAN,
         labelCol: LABEL_COL,

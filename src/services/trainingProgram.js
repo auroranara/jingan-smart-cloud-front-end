@@ -26,3 +26,11 @@ export async function edit(params) {
     body: params,
   });
 }
+
+// 删除培训计划
+export async function remove(params) {
+  return request(`/acloud_new/v2/emergency/emergencyPlan`, {
+    method: 'DELETE',
+    body: params,
+  });
+}

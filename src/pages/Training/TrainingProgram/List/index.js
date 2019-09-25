@@ -186,19 +186,21 @@ export default class TrainingProgramList extends Component {
     const {
       user: {
         currentUser: {
+          unitType,
           permissionCodes,
         },
       },
     } = this.props;
+    const isNotCompany = +unitType !== 4;
     const hasAddAuthority = permissionCodes.includes(ADD_CODE);
 
     const FIELDS = [
-      {
+      ...(isNotCompany ? [{
         id: 'companyName',
         label: '单位名称',
         transform: value => value.trim(),
         render: _this => <Input placeholder="请输入单位名称" onPressEnter={_this.handleSearch} maxLength={50} />,
-      },
+      }] : []),
       {
         id: 'name',
         label: '培训计划名称',
