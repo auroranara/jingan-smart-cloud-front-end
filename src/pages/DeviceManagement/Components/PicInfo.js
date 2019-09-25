@@ -16,7 +16,7 @@ const FormItem = Form.Item;
 // 平面图标注
 const PicInfo = (props) => {
   const {
-    form: { getFieldValue, getFieldDecorator },
+    form: { getFieldsValue, getFieldDecorator },
     floors = [],      // 楼层列表
     buildings = [], // 建筑物列表
     pointFixInfoList = [],
@@ -36,8 +36,8 @@ const PicInfo = (props) => {
     handleChangeCoordinate,
     handleEditPointFix,
   } = props
-  // 地址录入方式
-  const locationType = getFieldValue('locationType')
+  // 地址录入方式 0 选择 1 手填
+  const { locationType, buildingId, floorId } = getFieldsValue()
   const editingItem = pointFixInfoList.length ? pointFixInfoList[editingIndex] : {}
 
   return (
@@ -65,24 +65,40 @@ const PicInfo = (props) => {
               <Fragment>
                 <Col span={4}>
                   <FormItem>
-                    {getFieldDecorator('buildingId')(
-                      <Select disabled={+locationType === 0} placeholder="所属建筑" style={{ width: '100%' }} onSelect={handleSelectBuilding} allowClear>
+                    {+locationType === 0 ? (
+                      <Select value={buildingId} disabled placeholder="所属建筑" style={{ width: '100%' }} onSelect={handleSelectBuilding} allowClear>
                         {buildings.map((item, i) => (
                           <Select.Option key={i} value={item.id}>{item.buildingName}</Select.Option>
                         ))}
                       </Select>
-                    )}
+                    ) : (
+                        getFieldDecorator('buildingId')(
+                          <Select placeholder="所属建筑" style={{ width: '100%' }} onSelect={handleSelectBuilding} allowClear>
+                            {buildings.map((item, i) => (
+                              <Select.Option key={i} value={item.id}>{item.buildingName}</Select.Option>
+                            ))}
+                          </Select>
+                        )
+                      )}
                   </FormItem>
                 </Col>
                 <Col span={4}>
                   <FormItem>
-                    {getFieldDecorator('floorId')(
-                      <Select disabled={+locationType === 0} placeholder="所属楼层" style={{ width: '100%' }} allowClear>
+                    {+locationType === 0 ? (
+                      <Select value={floorId} disabled placeholder="所属楼层" style={{ width: '100%' }} allowClear>
                         {floors.map((item, i) => (
                           <Select.Option key={i} value={item.id}>{item.floorName}</Select.Option>
                         ))}
                       </Select>
-                    )}
+                    ) : (
+                        getFieldDecorator('floorId')(
+                          <Select placeholder="所属楼层" style={{ width: '100%' }} allowClear>
+                            {floors.map((item, i) => (
+                              <Select.Option key={i} value={item.id}>{item.floorName}</Select.Option>
+                            ))}
+                          </Select>
+                        )
+                      )}
                   </FormItem>
                 </Col>
               </Fragment>

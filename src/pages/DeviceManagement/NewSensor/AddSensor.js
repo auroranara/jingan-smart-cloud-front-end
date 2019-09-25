@@ -267,7 +267,7 @@ export default class AddNewSensor extends Component {
     * 新平面图标志--坐标轴改变
     */
   handleChangeCoordinate = (item, value, i, key) => {
-    if (isNaN(value)) {
+    if (value && isNaN(value)) {
       message.warning('坐标轴为数字')
       return
     }
@@ -569,6 +569,26 @@ export default class AddNewSensor extends Component {
     win.focus();
   }
 
+
+  /**
+   * 区域位置录入方式改变
+   */
+  handleLocationTypeChange = (e) => {
+    const {
+      form: { setFieldsValue },
+    } = this.props
+    const { pointFixInfoList } = this.state
+    // 清空选择建筑物和楼层
+    setFieldsValue({ buildingId: undefined, floorId: undefined })
+    // 从保存的平面图标注列表中找类型为 楼层平面图的，如果找到 清空定位信息,并且该条平面图标注需要重新编辑
+    const i = pointFixInfoList.findIndex(item => +item.imgType === 2)
+    if (i < 0) return
+    const item = pointFixInfoList[i]
+    this.handleChangeCoordinate(item, undefined, i, 'xnum')
+    this.handleChangeCoordinate(item, undefined, i, 'ynum')
+    this.setState({ editingIndex: i })
+  }
+
   /**
      * 渲染表单
      */
@@ -746,7 +766,7 @@ export default class AddNewSensor extends Component {
                 {getFieldDecorator('locationType', {
                   initialValue: id ? detail.locationType : 0,
                 })(
-                  <Radio.Group>
+                  <Radio.Group onChange={this.handleLocationTypeChange}>
                     <Radio value={0}>选择建筑物-楼层</Radio>
                     <Radio value={1}>手填</Radio>
                   </Radio.Group>
