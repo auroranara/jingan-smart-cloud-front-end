@@ -65,6 +65,17 @@ const configs = {
     android:
       'http://58.215.178.100:12083/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
+  shimin: {
+    region: '无锡市',
+    projectKey: 'jiangxi_pro',
+    projectShortName: '无锡晶安智慧云',
+    code,
+    layer: 'http://data.jingan-china.cn/v2/login/wuxi_download_layer.png',
+    ios:
+      'itms-services://?action=download-manifest&url=https://www.jingan-china.cn/download/jxjd/official_version/JXJDInterSafe.plist&ran=',
+    android:
+      'http://58.215.178.100:12083/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
+  },
   ehu: {
     region: '无锡市',
     projectKey: 'jiangxi_pro',

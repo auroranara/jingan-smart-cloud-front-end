@@ -1,8 +1,16 @@
-import { Icon } from 'antd';
+import router from 'umi/router';
+import Link from 'umi/link';
+import { Icon, message, Popconfirm } from 'antd';
+
+export const FOLDER = 'checkPoints';
+export const UPLOAD_ACTION = '/acloud_new/v2/uploadFile';
 
 export const CARDS = ['单双色控制卡', '多彩控制卡', '全彩控制卡'];
 export const TABS = ['卡口点位', '卡口设备', '显示屏'];
 export const TAB_LIST = TABS.map((tab, index) => ({ key: index.toString(), tab }));
+export const POINT_INDEX = 0;
+export const EQUIPMENT_INDEX = 1;
+export const SCREEN_INDEX = 2;
 export const FORMITEM_LAYOUT = {
   labelCol: {
     xs: { span: 24 },
@@ -38,4 +46,79 @@ export function UploadButton(props) {
       <div className="ant-upload-text">上传</div>
     </div>
   )
+}
+
+export function uploadConvertToOrigin(list) {
+  return list.map(({ id, dbUrl, webUrl, fileName }, index) => ({
+    uid: id || index,
+    status: 'done',
+    name: fileName,
+    url: webUrl,
+    dbUrl,
+  }));
+}
+
+export function uploadConvertToResult(list) {
+  return list.map(({ name, url, dbUrl }) => ({ fileName: name, webUrl: url, dbUrl }));
+}
+
+export function genOperateCallback(url, callback) {
+  return function (code, msg) {
+    if (code === 200) {
+      message.success('操作成功！');
+      url && router.push(url);
+      callback && callback();
+    } else
+    message.error(msg);
+  };
+}
+
+export function genListLink(dispatch, companyId, index, id) {
+  const handleDelete = e => {
+    dispatch({
+      index,
+      type: 'checkPoint/deleteCheckPoint',
+      payload: id,
+      callback: genOperateCallback('', () => deleteItem(dispatch, id, index)),
+    });
+  };
+
+  return [
+    <Link to={`/personnel-management/check-point/detail/${companyId}/${index}/${id}`}>查看</Link>,
+    <Link to={`/personnel-management/check-point/edit/${companyId}/${index}/${id}`}>编辑</Link>,
+    (<Popconfirm
+      title="确定删除当前项目？"
+      onConfirm={handleDelete}
+      okText="确定"
+      cancelText="取消"
+    >
+      删除
+    </Popconfirm>),
+  ];
+}
+
+function deleteItem(dispatch, id, index) {
+  dispatch({
+    index,
+    type: 'checkPoint/deleteInCheckList',
+    payload: id,
+  });
+}
+
+const PROPS = [
+  ['name', 'location', 'direction', 'bayonetEquipmentList'],
+  ['name', 'code', 'number', 'area', 'location', 'status'],
+  ['name', 'pointId', 'code', 'ipAddress', 'portNumber', 'controllerCardType', 'modelType', 'modelNumber', 'status'],
+]
+
+export function initFormValues(values, index) {
+  return PROPS[index].reduce((prev, next) => {
+    let v = values[next];
+    if (next === 'status')
+      v = !+v;
+    if (next === 'bayonetEquipmentList')
+      v = v.map(({ id, name }) => ({ key: id, label: name }));
+    prev[next] = v;
+    return prev;
+  }, {});
 }

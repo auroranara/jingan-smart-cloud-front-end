@@ -3,30 +3,33 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import { Button, Card, Form, Icon, Popover } from 'antd';
 
-// import styles from './MEdit.less';
 import styles1 from '@/pages/BaseInfo/Company/Company.less';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { getFieldLabels, renderSections, RISK_CATEGORIES } from './utils';
+import { genOperateCallback } from '@/pages/PersonnelManagement/CheckPoint/utils';
+import { getFieldLabels, renderSections, LIST_URL, RISK_CATEGORIES } from './utils';
 
 @Form.create()
-// @connect(({ checkPoint, loading }) => ({ checkPoint, loading: loading.effects['checkPoint/fetchCheckList'] }))
+@connect(({ msds, loading }) => ({ msds, loading: loading.models.msds }))
 export default class MEdit extends PureComponent {
   state={ sections: [] };
 
   componentDidMount() {
+    const {
+      match: { params: { id } },
+    } = this.props;
     const sections = [
       {
         title: '第一部分：化学品名称',
         fields: [
-          { name: 'chemicalCN', label: '化学品中文名称' },
-          { name: 'chemicalEN', label: '化学品英文名称' },
-          { name: 'chemicalCN2', label: '化学品中文名称二', required: false },
-          { name: 'chemicalEN2', label: '化学品英文名称二', required: false },
+          { name: 'chineName', label: '化学品中文名称' },
+          { name: 'chineName2', label: '化学品中文名称二', required: false },
+          { name: 'engName', label: '化学品英文名称' },
+          { name: 'engName2', label: '化学品英文名称二', required: false },
           { name: 'bookCode', label: '技术说明书编码' },
-          { name: 'cas', label: 'CAS号' },
-          { name: 'formula', label: '分子式' },
-          { name: 'weight', label: '化学量' },
+          { name: 'casNo', label: 'CAS号' },
+          { name: 'molecFormu', label: '分子式' },
+          { name: 'molecWeight', label: '化学量' },
         ],
       },
       {
@@ -34,13 +37,13 @@ export default class MEdit extends PureComponent {
         fields: [
           { name: 'injurant', label: '有害物成分' },
           { name: 'content', label: '含量', required: false },
-          { name: 'injurantCAS', label: '有害物CAS号' },
+          { name: 'injurantCas', label: '有害物CAS号' },
         ],
       },
       {
         title: '第三部分：危险性概述',
         fields: [
-          { name: 'riskCategories', label: '危险性类别', options: RISK_CATEGORIES },
+          { name: 'riskCateg', label: '危险性类别', options: RISK_CATEGORIES },
           { name: 'invasionRoute', label: '侵入途径', type: 'text', required: false },
           { name: 'healthHazard', label: '健康危害', type: 'text' },
           { name: 'environmentalHarm', label: '环境危害', type: 'text' },
@@ -52,29 +55,29 @@ export default class MEdit extends PureComponent {
         fields: [
           { name: 'skinContact', label: '皮肤接触', type: 'text' },
           { name: 'eyeContact', label: '眼睛接触', type: 'text' },
-          { name: 'infusibleHsazard', label: '吸入危害', type: 'text', required: false },
-          { name: 'ingestionHazard', label: '食入危害', type: 'text' },
+          { name: 'inhalHazard', label: '吸入危害', type: 'text', required: false },
+          { name: 'ingestHazard', label: '食入危害', type: 'text' },
         ],
       },
       {
         title: '第五部分：消防措施',
         fields: [
-          { name: 'hazardProperty', label: '危险特性', type: 'text' },
+          { name: 'hazardChara', label: '危险特性', type: 'text' },
           { name: 'combustionProducts', label: '有害燃烧产物', type: 'text' },
-          { name: 'extinguishingMethod', label: '灭火方法', type: 'text' },
+          { name: 'extinMethod', label: '灭火方法', type: 'text' },
         ],
       },
       {
         title: '第六部分：泄露应急处理',
         fields: [
-          { name: 'hazardProperty', label: '泄露处理', type: 'text' },
+          { name: 'leakDisposal', label: '泄露处理', type: 'text' },
         ],
       },
       {
         title: '第七部分：操作处置与储存',
         fields: [
           { name: 'operationCautions', label: '操作注意事项', type: 'text' },
-          { name: 'storeCautions', label: '存储注意事项', type: 'text' },
+          { name: 'storaTransNotice', label: '存储注意事项', type: 'text' },
         ],
       },
       {
@@ -82,41 +85,41 @@ export default class MEdit extends PureComponent {
         fields: [
           { name: 'occupationalExposureLimit', label: '职业接触限值' },
           // { name: 'MAC_CN', label: <span>中国MAC(mg/m<sub>3</sub>)</span> },
-          { name: 'MAC_CN', label: '中国MAC(mg/m3)' },
-          { name: 'MAC_SOV', label: '前苏联MAC(mg/m3)' },
-          { name: 'TLVTN', label: 'TLVTN' },
-          { name: 'TLVWN', label: 'TLVWN' },
+          { name: 'macCn', label: '中国MAC(mg/m3)' },
+          { name: 'macSov', label: '前苏联MAC(mg/m3)' },
+          { name: 'tlvtn', label: 'TLVTN' },
+          { name: 'tlvwn', label: 'TLVWN' },
           { name: 'monitoringMethod', label: '监测方法', type: 'text' },
-          { name: 'engineeringControl', label: '工程控制', type: 'text' },
-          { name: 'respiratoryProtection', label: '呼吸系统防护', type: 'text' },
-          { name: 'eyeProtection', label: '眼睛防护', type: 'text' },
-          { name: 'bodyProtection', label: '身体防护', type: 'text' },
-          { name: 'handProtection', label: '手防护', type: 'text' },
-          { name: 'otherProtection', label: '其他防护', type: 'text' },
+          { name: 'enginContr', label: '工程控制', type: 'text' },
+          { name: 'respiProtect', label: '呼吸系统防护', type: 'text' },
+          { name: 'eyeProtect', label: '眼睛防护', type: 'text' },
+          { name: 'bodyProtect', label: '身体防护', type: 'text' },
+          { name: 'handProtect', label: '手防护', type: 'text' },
+          { name: 'otherProtect', label: '其他防护', type: 'text' },
         ],
       },
       {
         title: '第九部分：理化特性',
         fields: [
-          { name: 'occupationalExposureLimit', label: '主要成分' },
+          { name: 'mainComponents', label: '主要成分' },
           { name: 'shape', label: '外形与形状', type: 'text' },
-          { name: 'pH', label: 'pH值', required: false },
-          { name: 'meltingPoint', label: '熔点(℃)', required: false },
-          { name: 'boilingPoint', label: '沸点(℃)', required: false },
-          { name: 'relativeDensity', label: '相对密度(水=1)', required: false },
-          { name: 'relativeSteamDensity', label: '相对蒸汽密度(空气=1)', required: false },
+          { name: 'ph', label: 'pH值', required: false },
+          { name: 'meltPoint', label: '熔点(℃)', required: false },
+          { name: 'boilPoint', label: '沸点(℃)', required: false },
+          { name: 'relatDensiWater', label: '相对密度(水=1)', required: false },
+          { name: 'relatDensiAir', label: '相对蒸汽密度(空气=1)', required: false },
           { name: 'saturatedVaporPressure', label: '饱和蒸汽压(KPa)' },
           { name: 'combustionHeat', label: '燃烧热(KJ/mol)' },
           { name: 'criticalTemperature', label: '临界温度(℃)' },
           { name: 'criticalPressure', label: '临界压力(MPa)' },
-          { name: 'logKOW', label: '辛醇/水分配系数的对数值' },
-          { name: 'flashingPoint', label: '闪点(℃)', required: false },
-          { name: 'firePoint', label: '燃点(℃)', required: false },
+          { name: 'logKow', label: '辛醇/水分配系数的对数值' },
+          { name: 'flashPoint', label: '闪点(℃)', required: false },
+          { name: 'ignitTemp', label: '燃点(℃)', required: false },
           { name: 'upperExplosionLimit', label: '爆炸上限%(V/V)' },
           { name: 'lowerExplosionLimit', label: '爆炸下限%(V/V)' },
           { name: 'solubility', label: '溶解性' },
-          { name: 'mainAppilications', label: '主要用途', type: 'text' },
-          { name: 'firePoint', label: '其他理化性质', type: 'text', required: false },
+          { name: 'mainUsage', label: '主要用途', type: 'text' },
+          { name: 'others', label: '其他理化性质', type: 'text', required: false },
         ],
       },
       {
@@ -163,7 +166,7 @@ export default class MEdit extends PureComponent {
         title: '第十四部分：运输信息',
         fields: [
           { name: 'dangerousGoodsCode', label: '危险货物编号', required: false },
-          { name: 'UNCode', label: 'UN编号', required: false },
+          { name: 'uncode', label: 'UN编号', required: false },
           { name: 'packingMark', label: '包装标志', required: false },
           { name: 'packingKind', label: '包装类别', required: false },
           { name: 'packingMethod', label: '包装方法', required: false },
@@ -183,17 +186,30 @@ export default class MEdit extends PureComponent {
           { name: 'fillingDepartment', label: '填报部门', required: false },
           { name: 'auditingDepartment', label: '数据审核单位', required: false },
           { name: 'modifyDescription', label: '修改说明', type: 'text', required: false },
-          { name: 'otherInformation', label: '其他信息', type: 'text', required: false },
+          { name: 'otherMatters', label: '其他信息', type: 'text', required: false },
         ],
       },
     ];
 
     this.fieldLabels = getFieldLabels(sections);
 
-    this.setState({ sections });
+    this.setState({ sections }, id ? this.getDetail() : null);
   }
 
   fieldLabels = {};
+
+  getDetail = () => {
+    const {
+      dispatch,
+      match: { params: { id } },
+      form: { setFieldsValue },
+    } = this.props;
+    dispatch({
+      type: 'msds/getMSDS',
+      payload: id,
+      callback: detail => setFieldsValue(detail),
+    });
+  };
 
   renderErrorInfo() {
     const {
@@ -244,42 +260,76 @@ export default class MEdit extends PureComponent {
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
-        <Button
-          type="primary"
-          size="large"
-          onClick={this.handleClickValidate}
-          loading={loading}
-        >
-          提交
-        </Button>
+        <Button onClick={e => router.push(LIST_URL)}>返回</Button>
+        {!this.isDetail() && (
+          <Button
+            type="primary"
+            size="large"
+            onClick={this.handleClickValidate}
+            loading={loading}
+          >
+            提交
+          </Button>
+        )}
       </FooterToolbar>
     );
   }
 
-  handleClickValidate = () => {
-    // const {
-    //   form: { validateFieldsAndScroll },
-    // } = this.props;
-    // validateFieldsAndScroll((errors, values) => {
-    //   if (!errors) {
-    //     const {} = values;
-    //   }
-    // });
+  add = values => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'msds/addMSDS',
+      payload: values,
+      callback: genOperateCallback(LIST_URL),
+    })
+  };
 
-    router.push('/safety-knowledge-base/msds/list');
+  update = values => {
+    const {
+      dispatch,
+      match: { params: { id } },
+    } = this.props;
+    dispatch({
+      type: 'msds/editMSDS',
+      payload: { ...values, id },
+      callback: genOperateCallback(LIST_URL),
+    })
+  };
+
+  handleClickValidate = () => {
+    const {
+      match: { params: { id } },
+      form: { validateFieldsAndScroll },
+    } = this.props;
+
+    validateFieldsAndScroll((errors, values) => {
+      if (!errors) {
+        if (id)
+          this.update(values);
+        else
+          this.add(values);
+      }
+    });
+  };
+
+  isDetail = () => {
+    const { match: { url } } = this.props;
+    return url && url.includes('detail');
   };
 
   render() {
     const {
+      match: { params: { id } },
       form: { getFieldDecorator },
     } = this.props;
     const { sections } = this.state;
 
+    const title = this.isDetail() ? '详情' : id ? '编辑' : '新增';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '安全生产知识库', name: '安全生产知识库' },
-      { title: '化学品安全说明书', name: '化学品安全说明书', href: '/safety-knowledge-base/msds/list' },
-      { title: '新增', name: '新增' },
+      { title: '化学品安全说明书', name: '化学品安全说明书', href: LIST_URL },
+      { title, name: title },
     ];
 
     return (

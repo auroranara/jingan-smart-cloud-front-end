@@ -28,8 +28,9 @@ import styles from './index.less';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-@connect(({ emergencyPlan, loading }) => ({
+@connect(({ emergencyPlan, user, loading }) => ({
   emergencyPlan,
+  user,
   loading: loading.effects['emergencyPlan/fetchDetail'],
 }))
 export default class EmergencyPlanHandler extends Component {
@@ -42,6 +43,8 @@ export default class EmergencyPlanHandler extends Component {
     const { match: { params: { id } } } = this.props;
     if (id) {
       this.getDetail();
+    } else {
+      this.clearDetail();
     }
   }
 
@@ -85,7 +88,27 @@ export default class EmergencyPlanHandler extends Component {
 
   // 提交按钮点击事件
   handleSubmitButtonClick = () => {
-    const { dispatch, match: { params: { id } }, emergencyPlan: { detail: { historyType, status, relationId }={} } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: {
+          id,
+        },
+      },
+      emergencyPlan: {
+        detail: {
+          historyType,
+          status,
+          relationId,
+        }={},
+      },
+      user: {
+        currentUser: {
+          unitType,
+          unitId,
+        },
+      },
+    } = this.props;
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
@@ -96,7 +119,7 @@ export default class EmergencyPlanHandler extends Component {
           historyType,
           status,
           relationId,
-          companyId: company.key,
+          companyId: +unitType !== 4 ? company.key : unitId,
           startDate: startDate && startDate.format('YYYY-MM-DD'),
           endDate: endDate && endDate.format('YYYY-MM-DD'),
           recordDate: recordDate && recordDate.format('YYYY-MM-DD'),
@@ -160,6 +183,11 @@ export default class EmergencyPlanHandler extends Component {
           remark,
         }={},
       },
+      user: {
+        currentUser: {
+          unitType,
+        },
+      },
       match: {
         params: {
           id,
@@ -168,6 +196,7 @@ export default class EmergencyPlanHandler extends Component {
       loading,
     } = this.props;
     const { submitting, currentRecordStatus } = this.state;
+    const isNotCompany = +unitType !== 4;
     const TITLE = id ? '编辑应急预案' : '新增应急预案';
     const BREADCRUMB_LIST = [
       {
@@ -190,7 +219,7 @@ export default class EmergencyPlanHandler extends Component {
       },
     ];
     const FIELDS = [
-      {
+      ...(isNotCompany ? [{
         id: 'company',
         label: '单位名称',
         span: SPAN,
@@ -206,7 +235,7 @@ export default class EmergencyPlanHandler extends Component {
             },
           ],
         },
-      },
+      }] : []),
       {
         id: 'name',
         label: '预案名称',

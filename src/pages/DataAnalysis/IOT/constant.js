@@ -34,6 +34,14 @@ const STATUS_COLOR_MAP = {
 
 const OPTIONS = [
   // { name: '全部', key: ALL },
+  // { name: '正常', key: 0 },
+  // { name: '预警', key: 1 },
+  { name: '报警', key: 1 },
+  { name: '失联', key: -1 },
+];
+
+const OPTIONS1 = [
+  // { name: '全部', key: ALL },
   { name: '正常', key: 0 },
   // { name: '预警', key: 1 },
   { name: '报警', key: 1 },
@@ -601,6 +609,7 @@ export function getFields(type, params, methods) {
     case WASTE_WATER_TYPE:
     case WASTE_GAS_TYPE:
     case HUMITURE_TYPE:
+      const OPTS = type === HUMITURE_TYPE ? OPTIONS1 : OPTIONS;
       return [
         {
           id: 'area',
@@ -620,7 +629,7 @@ export function getFields(type, params, methods) {
           // options: { initialValue: '0' },
           render: () => (
             <Select placeholder="请选择状态类别" allowClear>
-              {OPTIONS.map(({ name, key }) => (
+              {OPTS.map(({ name, key }) => (
                 <Option key={key}>{name}</Option>
               ))}
             </Select>

@@ -2463,6 +2463,32 @@ module.exports = env => {
                 },
               ],
             },
+            // // 培训计划
+            // {
+            //   name: 'trainingProgram',
+            //   path: '/training/training-program',
+            //   code: 'training.trainingProgram',
+            //   hideChildrenInMenu: true,
+            //   routes: [
+            //     {
+            //       path: '/training/training-program',
+            //       name: 'list',
+            //       redirect: '/training/training-program/list',
+            //     },
+            //     {
+            //       path: '/training/training-program/list',
+            //       code: 'training.trainingProgram.list',
+            //       name: 'list',
+            //       component: './Training/TrainingProgram/List',
+            //     },
+            //     {
+            //       path: '/training/training-program/:type/:id?',
+            //       code: 'training.trainingProgram.detail',
+            //       name: 'detail',
+            //       component: './Training/TrainingProgram/Other',
+            //     },
+            //   ],
+            // },
           ],
         },
         // 人员定位
@@ -2989,19 +3015,19 @@ module.exports = env => {
                   component: './PersonnelManagement/CheckPoint/CheckList',
                 },
                 {
-                  path: '/personnel-management/check-point/detail/:id/:tabIndex',
-                  code: 'personnelManagement.checkPoint.view',
-                  name: 'detail',
-                  component: './PersonnelManagement/CheckPoint/CheckDetail',
-                },
-                {
                   path: '/personnel-management/check-point/add/:companyId/:tabIndex',
                   code: 'personnelManagement.checkPoint.add',
                   name: 'add',
                   component: './PersonnelManagement/CheckPoint/CheckEdit',
                 },
                 {
-                  path: '/personnel-management/check-point/edit/:id/:tabIndex',
+                  path: '/personnel-management/check-point/detail/:companyId/:tabIndex/:id',
+                  code: 'personnelManagement.checkPoint.view',
+                  name: 'detail',
+                  component: './PersonnelManagement/CheckPoint/CheckEdit',
+                },
+                {
+                  path: '/personnel-management/check-point/edit/:companyId/:tabIndex/:id',
                   code: 'personnelManagement.checkPoint.add',
                   name: 'edit',
                   component: './PersonnelManagement/CheckPoint/CheckEdit',
@@ -3040,6 +3066,12 @@ module.exports = env => {
                   path: '/safety-knowledge-base/msds/add',
                   code: 'safetyKnowledgeBase.msds.add',
                   name: 'add',
+                  component: './SafetyKnowledgeBase/MSDS/MEdit',
+                },
+                {
+                  path: '/safety-knowledge-base/msds/detail/:id',
+                  code: 'safetyKnowledgeBase.msds.view',
+                  name: 'view',
                   component: './SafetyKnowledgeBase/MSDS/MEdit',
                 },
                 {
