@@ -121,7 +121,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           spaceBetween,
           dangerSource,
           dangerSourceUnit:
-            dangerSourceUnitId.length > 0
+            dangerSourceUnitId && dangerSourceUnitId.length > 0
               ? dangerSourceUnitId.map(item => item.id).join(',')
               : undefined,
           unitCode,
@@ -217,14 +217,19 @@ export default class ReservoirRegionEdit extends PureComponent {
   // 显示重大危险源弹框
   handleShowDangerSource = () => {
     this.setState({ dangerVisible: true });
-    const payload = { pageSize: 10, pageNum: 1 };
+    const payload = { pageSize: 10, pageNum: 1, companyId: this.companyId };
     this.fetchDangerSourseList({ payload });
   };
 
   // 获取危险源列表
   fetchDangerSourseList = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'reservoirRegion/fetchSourceList', payload });
+    const { detailList } = this.state;
+    const { companyId } = detailList;
+    dispatch({
+      type: 'reservoirRegion/fetchSourceList',
+      payload: { ...payload, companyId: this.companyId || companyId },
+    });
   };
 
   handleSelectDSList = item => {
@@ -329,7 +334,13 @@ export default class ReservoirRegionEdit extends PureComponent {
 
   // 选择变化
   onChangeDanger = i => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
     this.setState({ hasDangerSourse: +i === 1 ? 1 : 2 });
+    setFieldsValue({
+      unitCode: undefined,
+    });
   };
 
   renderInfo() {
@@ -529,7 +540,7 @@ export default class ReservoirRegionEdit extends PureComponent {
             <FormItem {...formItemLayout} label="所属危险化学品重大危险源单元">
               {getFieldDecorator('dangerSourceUnit', {
                 initialValue:
-                  dangerSourceUnitId.length > 0
+                  dangerSourceUnitId && dangerSourceUnitId.length > 0
                     ? dangerSourceUnitId.map(item => item.name).join(',')
                     : undefined,
                 getValueFromEvent: this.handleTrim,
