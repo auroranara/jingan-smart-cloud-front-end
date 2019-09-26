@@ -41,9 +41,19 @@ export async function getModelList(params) {
   return request(`/acloud_new/v2/monitor/equipmentModel?${stringify(params)}`);
 }
 
-// 获取型号列表
+// 获取运营商列表
 export async function getOperatorList() {
   return request(`/acloud_new/v2/monitor/operatorDict`);
+}
+
+// 获取建筑物列表
+export async function getBuildingList(params) {
+  return request(`/acloud_new/v2/buildingInfo/buildingList.json?${stringify(params)}`);
+}
+
+// 获取楼层列表
+export async function getFloorList(params) {
+  return request(`/acloud_new/v2/buildingInfo/floorList.json?${stringify(params)}`);
 }
 
 // 新增网关

@@ -8,6 +8,8 @@ import {
   getBrandList,
   getModelList,
   getOperatorList,
+  getBuildingList,
+  getFloorList,
   add,
   edit,
   remove,
@@ -25,6 +27,8 @@ export default {
     brandList: [],
     modelList: [],
     operatorList: [],
+    buildingList: [],
+    floorList: [],
     detail: {},
   },
 
@@ -128,6 +132,32 @@ export default {
           type: 'save',
           payload: {
             operatorList: data.list,
+          },
+        });
+        callback && callback(data.list);
+      }
+    },
+    *fetchBuildingList({ payload, callback }, { call, put }) {
+      const response = yield call(getBuildingList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data && data.list) {
+        yield put({
+          type: 'save',
+          payload: {
+            buildingList: data.list,
+          },
+        });
+        callback && callback(data.list);
+      }
+    },
+    *fetchFloorList({ payload, callback }, { call, put }) {
+      const response = yield call(getFloorList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data && data.list) {
+        yield put({
+          type: 'save',
+          payload: {
+            floorList: data.list,
           },
         });
         callback && callback(data.list);

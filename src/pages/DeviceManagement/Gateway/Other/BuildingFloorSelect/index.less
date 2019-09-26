@@ -1,0 +1,30 @@
+.container {
+
+}
+.buildingSelect, .floorSelect {
+  margin-right: 16px;
+  width: calc(~'30% - 8px') !important;
+}
+.addButton {
+  margin-right: 16px;
+}
+.reloadIcon {
+  font-size: 16px;
+  cursor: pointer;
+
+  &:hover {
+    color: #40a9ff
+  }
+  &:active {
+    color: #096dd9;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .buildingSelect, .floorSelect {
+    width: calc(~'50% - 8px') !important;
+  }
+  .floorSelect {
+    margin-right: 0;
+  }
+}

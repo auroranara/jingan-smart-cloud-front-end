@@ -163,7 +163,7 @@ export default class CustomForm extends PureComponent {
     const span = mode === 'multiple' ? DEFAULT_MULTIPLE_BUTTON_WRAPPER_SPAN : buttonWrapperSpan;
 
     return (
-      <Col {...(typeof buttonSpan === 'number' ? { span } : span)}>
+      <Col {...(typeof span === 'number' ? { span } : span)}>
         <FormItem className={classNames(styles.buttonWrapper, buttonWrapperClassName)} style={{ textAlign: mode === 'multiple' ? 'center': undefined, ...DEFAULT_STYLE, ...buttonWrapperStyle }}>
           {/* 搜索按钮 */}
           {searchable && (

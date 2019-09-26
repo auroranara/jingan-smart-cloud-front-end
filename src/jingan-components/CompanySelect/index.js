@@ -60,6 +60,8 @@ export default class CompanySelect extends Component {
           list=[],
         },
       },
+      className,
+      style,
       loading,
       value,
       onChange,
@@ -67,6 +69,8 @@ export default class CompanySelect extends Component {
 
     return (
       <AutoComplete
+        className={className}
+        style={style}
         mode="combobox"
         labelInValue
         value={value}
