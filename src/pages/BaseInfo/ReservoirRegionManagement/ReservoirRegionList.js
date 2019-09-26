@@ -238,7 +238,7 @@ export default class ReservoirRegionList extends PureComponent {
         width: 200,
         render: (val, row) => (
           <Fragment>
-            <Link to="">绑定传感器</Link>
+            <Link to="/base-info/reservoir-region-management/list">绑定传感器</Link>
             <Divider type="vertical" />
             {editCode ? (
               <Link to={`/base-info/reservoir-region-management/edit/${row.id}`}>编辑</Link>

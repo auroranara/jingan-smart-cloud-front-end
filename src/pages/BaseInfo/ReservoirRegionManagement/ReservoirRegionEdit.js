@@ -34,7 +34,7 @@ export default class ReservoirRegionEdit extends PureComponent {
     submitting: false,
     detailList: {}, // 详情列表
     dangerVisible: false,
-    dangerSourceUnitId: '',
+    dangerSourceUnitId: [],
   };
 
   // 挂载后
@@ -235,7 +235,7 @@ export default class ReservoirRegionEdit extends PureComponent {
       dangerSourceUnit: item.map(item => item.name).join(','),
       unitCode: item.map(item => item.code).join(','),
     });
-    this.setState({ dangerSourceUnitId: item.map(item => item.id).join(',') });
+    this.setState({ dangerSourceUnitId: item });
     this.handleDSListClose();
   };
 
@@ -536,7 +536,7 @@ export default class ReservoirRegionEdit extends PureComponent {
               })(
                 <Input
                   {...itemStyles}
-                  placeholder="请输入所属危险化学品重大危险源单元"
+                  placeholder="请选择所属危险化学品重大危险源单元"
                   maxLength={15}
                   disabled
                 />
