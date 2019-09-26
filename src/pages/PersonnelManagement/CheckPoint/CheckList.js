@@ -155,7 +155,7 @@ export default class CheckList extends PureComponent {
     const { id, name, location, direction, photoList } = item;
 
     const actions = this.genLink(POINT_INDEX, id);
-    const address = location || NO_DATA;
+    const address = `卡口位置：${location || NO_DATA}`;
     const photo = photoList && photoList.length ? photoList[0].webUrl : '';
     return (
       <List.Item key={id}>
@@ -169,7 +169,7 @@ export default class CheckList extends PureComponent {
           actions={actions}
         >
           <p className={styles.p}>
-            {address.length > 20 ? <Ellipsis lines={1} tooltip>{address}</Ellipsis> : address}
+            {address.length > 20 ? <Ellipsis lines={1} tooltip style={{ height: '1.5em' }}>{address}</Ellipsis> : address}
           </p>
           <p className={styles.pLast}>
             方向：
@@ -202,7 +202,7 @@ export default class CheckList extends PureComponent {
           extra={sts === undefined || sts ? null : <span className={styles.red}>禁用</span>}
         >
           <p className={styles.p}>
-            {address.length > 20 ? <Ellipsis lines={1} tooltip>{address}</Ellipsis> : address}
+            {address.length > 20 ? <Ellipsis lines={1} tooltip style={{ height: '1.5em' }}>{address}</Ellipsis> : address}
           </p>
           <p className={styles.p}>
             设备编号：
@@ -233,7 +233,6 @@ export default class CheckList extends PureComponent {
 
     const sts = screenStatus[id];
     const actions = this.genLink(SCREEN_INDEX, id);
-    const address = ` 地址：${getAddress(item) || NO_DATA}`;
     return (
       <List.Item key={id}>
         <Card
@@ -246,9 +245,6 @@ export default class CheckList extends PureComponent {
           actions={actions}
           extra={sts === undefined || sts ? null : <span className={styles.red}>禁用</span>}
         >
-          <p className={styles.p}>
-            {address.length > 20 ? <Ellipsis lines={1} tooltip>{address}</Ellipsis> : address}
-          </p>
           <p className={styles.p}>
             设备编号：
             {code || NO_DATA}

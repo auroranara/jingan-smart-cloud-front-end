@@ -29,7 +29,7 @@ export default class MEdit extends PureComponent {
           { name: 'bookCode', label: '技术说明书编码' },
           { name: 'casNo', label: 'CAS号' },
           { name: 'molecFormu', label: '分子式' },
-          { name: 'molecWeight', label: '化学量' },
+          { name: 'molecWeight', label: '分子量' },
         ],
       },
       {
@@ -89,7 +89,7 @@ export default class MEdit extends PureComponent {
           { name: 'macSov', label: '前苏联MAC(mg/m3)' },
           { name: 'tlvtn', label: 'TLVTN' },
           { name: 'tlvwn', label: 'TLVWN' },
-          { name: 'monitoringMethod', label: '监测方法', type: 'text' },
+          { name: 'monitoringMethod', label: '监测方法', type: 'text', required: false },
           { name: 'enginContr', label: '工程控制', type: 'text' },
           { name: 'respiProtect', label: '呼吸系统防护', type: 'text' },
           { name: 'eyeProtect', label: '眼睛防护', type: 'text' },
@@ -145,7 +145,7 @@ export default class MEdit extends PureComponent {
         ],
       },
       {
-        title: '第十二部分：生物学资料',
+        title: '第十二部分：生态学资料',
         fields: [
           { name: 'ecotoxicology', label: '生态毒理特性', type: 'text', required: false },
           { name: 'biodegradability', label: '生物降解性', type: 'text', required: false },
@@ -183,7 +183,7 @@ export default class MEdit extends PureComponent {
         title: '第十六部分：其他信息',
         fields: [
           { name: 'reference', label: '参考文献', type: 'text', required: false },
-          { name: 'fillingDepartment', label: '填报部门', required: false },
+          { name: 'fillingDepartment', label: '填表部门', required: false },
           { name: 'auditingDepartment', label: '数据审核单位', required: false },
           { name: 'modifyDescription', label: '修改说明', type: 'text', required: false },
           { name: 'otherMatters', label: '其他信息', type: 'text', required: false },

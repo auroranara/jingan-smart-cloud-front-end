@@ -116,7 +116,9 @@ export function initFormValues(values, index) {
     let v = values[next];
     if (next === 'status')
       v = !+v;
-    if (next === 'bayonetEquipmentList')
+    else if (next === 'controllerCardType')
+      v = v.toString();
+    else if (next === 'bayonetEquipmentList')
       v = v.map(({ id, name }) => ({ key: id, label: name }));
     prev[next] = v;
     return prev;

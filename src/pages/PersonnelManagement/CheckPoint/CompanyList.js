@@ -11,7 +11,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './CompanyList.less';
 import { getAddress, FORMITEM_LAYOUT, TAB_LIST } from './utils';
 
-const title = '企业列表';
+const title = '单位列表';
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '人员在岗在位管理', name: '人员在岗在位管理' },
@@ -224,7 +224,7 @@ export default class CompanyList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles.total}>
-            企业总数：
+            单位总数：
             {list.length}
           </p>
         }
@@ -266,7 +266,7 @@ export default class CompanyList extends PureComponent {
                   actions={actions}
                 >
                   <p className={styles.p}>
-                    {address.length > 20 ? <Ellipsis lines={1} tooltip>{address}</Ellipsis> : address}
+                    {address.length > 20 ? <Ellipsis lines={1} tooltip style={{ height: '1.5em' }}>{address}</Ellipsis> : address}
                   </p>
                   <p className={styles.p}>
                     安全负责人：
