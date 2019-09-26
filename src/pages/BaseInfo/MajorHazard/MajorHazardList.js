@@ -219,14 +219,14 @@ export default class MajorHazardList extends PureComponent {
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}
-            <Divider type="vertical" />
+            {/* <Divider type="vertical" />
             {deleteCode ? (
               <Popconfirm title="确认要删除数据吗？" onConfirm={() => this.handleDelete(row.id)}>
                 <a>删除</a>
               </Popconfirm>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
-            )}
+            )} */}
           </Fragment>
         ),
       },
