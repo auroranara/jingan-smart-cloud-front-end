@@ -1,14 +1,16 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Input, Pagination, Select, Button, Table, Spin } from 'antd';
+import { Form, Card, Input, Pagination, Select, Button, Table, Spin, Divider } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';
 
-import { hasAuthority } from '@/utils/customAuth';
+import { hasAuthority, AuthA } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
+
+import styles from './index.less';
 
 const {
   emergencyManagement: {
@@ -35,18 +37,46 @@ const breadcrumbList = [
   },
 ];
 
+const Source = ['国配', '自购', '社会装备'];
+const Status = ['正常', '维检', '报废', '使用中'];
+const RegisterType = ['救援队装备', '社会装备', '储备库装备'];
+
 /* 去除两边空格 */
 const transform = value => value.trim();
 /* 设置相对定位 */
 const getRootChild = () => document.querySelector('#root>div');
+const NO_DATA = '暂无数据';
 
+@Form.create()
 @connect(({ emergencyManagement, user, loading }) => ({
   emergencyManagement,
   user,
   loading: loading.models.emergencyManagement,
 }))
 export default class EmergencyEquipmentList extends PureComponent {
-  state = {};
+  state = {
+    formData: {},
+    scrollX: 1250,
+    currentPage: 1,
+  };
+
+  pageSize = 10;
+
+  componentDidMount() {
+    this.fetchList(1);
+  }
+
+  fetchList = (pageNum, pageSize = 10, filters = {}) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'emergencyManagement/fetchEquipList',
+      payload: {
+        pageNum,
+        pageSize,
+        ...filters,
+      },
+    });
+  };
 
   renderForm = () => {
     const {
@@ -56,14 +86,14 @@ export default class EmergencyEquipmentList extends PureComponent {
     } = this.props;
     const fields = [
       {
-        id: 'unitCompanyName',
+        id: 'equipName',
         render() {
           return <Input placeholder="请输入装备名称" />;
         },
         transform,
       },
       {
-        id: 'companyName',
+        id: 'equipCode',
         render() {
           return <Input placeholder="请输入装备编码" />;
         },
@@ -105,7 +135,7 @@ export default class EmergencyEquipmentList extends PureComponent {
         },
       },
       {
-        id: 'deviceCode',
+        id: 'equipSource',
         render() {
           const options = [
             { value: '1', name: '国配' },
@@ -133,7 +163,7 @@ export default class EmergencyEquipmentList extends PureComponent {
         },
       },
       {
-        id: 'deviceCode',
+        id: 'status',
         render() {
           const options = [
             { value: '1', name: '正常' },
@@ -187,28 +217,165 @@ export default class EmergencyEquipmentList extends PureComponent {
     router.push(addUrl);
   };
 
-  handleSearch = () => {
-    return null;
+  handleSearch = values => {
+    this.setState({ formData: { ...values } });
+    this.fetchList(1, this.pageSize, { ...values });
   };
 
   handleReset = () => {
-    return null;
+    this.setState({ formData: {} });
+    this.fetchList(1, this.pageSize);
+  };
+
+  goDetail = id => {
+    router.push(`/emergency-management/emergency-equipment/detail/${id}`);
+  };
+
+  goEdit = id => {
+    router.push(`/emergency-management/emergency-equipment/edit/${id}`);
+  };
+
+  // 表格改变触发，包含分页变动
+  handleTableChange = (pageNum, pageSize) => {
+    const { formData } = this.state;
+    this.pageSize = pageSize;
+    this.fetchList(pageNum, pageSize, { ...formData });
   };
 
   render() {
-    const { loading = false } = this.props;
-    const list = [];
-    const { pageNum = 1, pageSize = 10, total = 0 } = {};
-    const { currentPage } = this.state;
+    const {
+      loading = false,
+      emergencyManagement: {
+        equipment: { list, pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} },
+      },
+    } = this.props;
+    const { currentPage, scrollX } = this.state;
 
-    const columns = [];
+    const columns = [
+      {
+        title: '单位名称',
+        dataIndex: 'companyName',
+        key: 'companyName',
+        align: 'center',
+        width: 160,
+      },
+      {
+        title: '基本信息',
+        dataIndex: 'basicInfo',
+        key: 'basicInfo',
+        align: 'center',
+        width: 250,
+        render: (data, record) => {
+          const { equipName, equipType, equipCode, equipModel } = record;
+          return (
+            <div className={styles.multi}>
+              <div>
+                名称：
+                {equipName}
+              </div>
+              <div>
+                类型：
+                {equipType || NO_DATA}
+              </div>
+              <div>
+                编码：
+                {equipCode || NO_DATA}
+              </div>
+              <div>
+                规格型号：
+                {equipModel}
+              </div>
+            </div>
+          );
+        },
+      },
+      {
+        title: '来源/登记类型',
+        dataIndex: 'equipSource',
+        key: 'equipSource',
+        align: 'center',
+        width: 200,
+        render: (data, record) => {
+          const { equipSource, registerType } = record;
+          return (
+            <div className={styles.multi}>
+              <div>
+                来源：
+                {Source[equipSource - 1]}
+              </div>
+              <div>
+                登记类型：
+                {RegisterType[registerType - 1]}
+              </div>
+            </div>
+          );
+        },
+      },
+      {
+        title: '状态',
+        dataIndex: 'status',
+        key: 'status',
+        align: 'center',
+        width: 120,
+        render: data => {
+          return Status[data - 1];
+        },
+      },
+      {
+        title: '有效期至',
+        dataIndex: 'expiryDate',
+        key: 'expiryDate',
+        align: 'center',
+        width: 120,
+        render: (data, record) => {
+          return '2019.7.11';
+        },
+      },
+      {
+        title: '装备数量',
+        dataIndex: 'number',
+        key: 'number',
+        align: 'center',
+        width: 120,
+        render: (data, record) => {
+          const { equipCount, equipUnit } = record;
+          return equipCount + (equipUnit || '个');
+        },
+      },
+      {
+        title: '装备单价（元）',
+        dataIndex: 'equipPrice',
+        key: 'equipPrice',
+        align: 'center',
+        width: 120,
+      },
+      {
+        title: '操作',
+        dataIndex: 'operation',
+        key: 'operation',
+        fixed: 'right',
+        align: 'center',
+        width: 120,
+        render: (data, record) => (
+          <span>
+            <AuthA code={detailCode} onClick={() => this.goDetail(record.id)}>
+              查看
+            </AuthA>
+            <Divider type="vertical" />
+            <AuthA code={editCode} onClick={() => this.goEdit(record.id)}>
+              编辑
+            </AuthA>
+          </span>
+        ),
+      },
+    ];
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            单位数量：
+            应急装备数量：
             {total}
           </div>
         }
@@ -217,11 +384,12 @@ export default class EmergencyEquipmentList extends PureComponent {
         {list && list.length ? (
           <Card style={{ marginTop: '24px' }}>
             <Table
-              rowKey="index"
+              rowKey="id"
               loading={loading}
               columns={columns}
-              dataSource={[]}
+              dataSource={list}
               pagination={false}
+              // scroll={{ x: true }}
             />
             <Pagination
               style={{ marginTop: '20px', float: 'right' }}

@@ -1,4 +1,4 @@
-.card {
+.card, .card1 {
   position: relative;
 
   :global {
@@ -6,6 +6,16 @@
       display: block;
       font-weight: bold;
       white-space: normal;
+    }
+  }
+}
+
+.card1 {
+  :global {
+    .ant-card-body {
+      position: relative;
+      height: 120px;
+      padding-left: 100px;
     }
   }
 }
@@ -27,4 +37,32 @@
 
 .pLast {
   margin: 0;
+}
+
+.searchSelect {
+  :global {
+    .ant-input {
+      vertical-align: top;
+    }
+  }
+}
+
+.back {
+  margin-right: 20px;
+}
+
+.red {
+  color: #F00;
+}
+
+.photo {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  width: 80px;
+  height: calc(100% - 16px);
+  // background-color: grey;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
 }

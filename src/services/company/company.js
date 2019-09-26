@@ -119,3 +119,8 @@ export async function deleteDivision({ id }) {
 export async function queryDivisionDetail({ id }) {
   return request(`/acloud_new/v2/companyBranch/companyBranch/${id}`);
 }
+
+/* 企业列表弹出框 */
+export async function queryModelList(params) {
+  return request(`/acloud_new/v2/baseInfo/getCompanyByUser?${stringify(params)}`);
+}

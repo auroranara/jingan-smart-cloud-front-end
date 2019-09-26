@@ -402,6 +402,7 @@ export default {
       add: 'baseInfo.storehouse.add',
       edit: 'baseInfo.storehouse.edit',
       detail: 'baseInfo.storehouse.detail',
+      delete: 'baseInfo.storehouse.delete',
     },
     // 物料信息
     materials: {
@@ -409,6 +410,7 @@ export default {
       add: 'baseInfo.materials.add',
       edit: 'baseInfo.materials.edit',
       detail: 'baseInfo.materials.detail',
+      delete: 'baseInfo.materials.delete',
     },
     // 高危工艺流程
     highRiskProcess: {
