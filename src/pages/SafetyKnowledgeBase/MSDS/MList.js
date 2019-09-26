@@ -8,7 +8,7 @@ import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './MList.less';
 import { genOperateCallback } from '@/pages/PersonnelManagement/CheckPoint/utils';
-import { handleTableData, INDEXES, RISK_CATEGORIES } from './utils';
+import { deleteEmptyProps, handleTableData, INDEXES, RISK_CATEGORIES } from './utils';
 
 const { Option } = Select;
 
@@ -26,27 +26,27 @@ const FIELDS = [
     id: 'chineName',
     label: '中文名称一：',
     span: SPAN,
-    render: () => <Input placeholder="请输入中文名称一" />,
+    render: () => <Input placeholder="请输入中文名称一" allowClear />,
     transform: v => v.trim(),
   },
   {
     id: 'chineName2',
     label: '中文名称二：',
     span: SPAN,
-    render: () => <Input placeholder="请输入中文名称二" />,
+    render: () => <Input placeholder="请输入中文名称二" allowClear />,
     transform: v => v.trim(),
   },
   {
     id: 'riskCateg',
     label: '危险品类别',
     span: SPAN,
-    render: () => <Select placeholder="请选择危险性类别">{RISK_CATEGORIES.map((r, i) => <Option key={i}>{r}</Option>)}</Select>,
+    render: () => <Select placeholder="请选择危险性类别" allowClear>{RISK_CATEGORIES.map((r, i) => <Option key={i}>{r}</Option>)}</Select>,
   },
   {
     id: 'casNo',
     label: 'CAS号：',
     span: SPAN,
-    render: () => <Input placeholder="CAS号" />,
+    render: () => <Input placeholder="CAS号" allowClear />,
     transform: v => v.trim(),
   },
 ];
@@ -139,7 +139,7 @@ export default class MList extends PureComponent {
   fetchTableList = (pageNum, values, callback) => {
     const { dispatch } = this.props;
     let payload = { pageSize: PAGE_SIZE, pageNum };
-    if (values) payload = { ...payload, ...values };
+    if (values) payload = { ...payload, ...deleteEmptyProps(values) };
     dispatch({
       type: 'msds/fetchTableList',
       payload,

@@ -77,7 +77,7 @@ function genFormItem(field, getFieldDecorator) {
 function renderSection(section, getFieldDecorator) {
   const { title, fields } = section;
   return (
-    <Fragment>
+    <Fragment key={title}>
       <FormItem><p style={{ margin: 0, textAlign: 'center' }}>{title}</p></FormItem>
       {fields.map(field => genFormItem(field, getFieldDecorator))}
     </Fragment>
@@ -112,7 +112,15 @@ export function handleTableData(list = [], indexBase) {
       engName: [engName, engName2].filter(n => n),
       casNo,
       bookCode,
-      riskCateg,
+      riskCateg: RISK_CATEGORIES[riskCateg],
     };
   });
+}
+
+export function deleteEmptyProps(obj) {
+  Object.entries(obj).forEach(([k, v]) => {
+    if (v === '')
+      obj[k] = undefined;
+  });
+  return obj;
 }
