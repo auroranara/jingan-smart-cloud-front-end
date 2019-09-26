@@ -137,7 +137,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
       },
     } = this.props;
 
-    validateFields((error, { normalLower, normalUpper, ...formData }) => {
+    validateFields((error, formData) => {
       if (!error) {
         const payload = { ...formData, monitoringParameters };
         // console.log('提交',payload)
@@ -466,7 +466,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
   render() {
     const {
       companyLoading,
-      match: { prams: { id = null } = {} },
+      match: { params: { id = null } = {} },
       sensor: { companyModal },
     } = this.props;
     const { companyModalVisible } = this.state;
