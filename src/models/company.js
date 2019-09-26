@@ -12,6 +12,7 @@ import {
   gsafeQueryIndustryType,
   editScreenPermission,
   queryAddCompanyOptions,
+  queryModelList,
 } from '../services/company/company.js';
 
 export default {
@@ -88,6 +89,14 @@ export default {
       },
     },
     modal: {
+      list: [],
+      pagination: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0,
+      },
+    },
+    companyModal: {
       list: [],
       pagination: {
         pageNum: 1,
@@ -345,6 +354,16 @@ export default {
         error(response.msg);
       }
     },
+    // 企业列表弹出框
+    *fetchModelList({ payload }, { call, put }) {
+      const response = yield call(queryModelList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveModelList',
+          payload: response.data,
+        });
+      }
+    },
   },
 
   reducers: {
@@ -478,6 +497,13 @@ export default {
             pageNum: 1,
           },
         },
+      };
+    },
+    // 企业弹出框
+    saveModelList(state, { payload }) {
+      return {
+        ...state,
+        companyModal: payload,
       };
     },
   },

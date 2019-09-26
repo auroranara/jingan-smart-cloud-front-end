@@ -11,16 +11,14 @@ import {
   Col,
   message,
   InputNumber,
-  DatePicker,
-  Upload,
   Icon,
   Cascader,
 } from 'antd';
 import { connect } from 'dva';
+import moment from 'moment';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import debounce from 'lodash/debounce';
 import { getToken } from 'utils/authority';
 import styles from './index.less';
 
@@ -34,36 +32,31 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
-
-// 上传文件地址
-const uploadAction = '/acloud_new/v2/uploadFile';
-// 上传文件夹
-const folder = 'safetyinfo';
-const defaultUploadProps = {
-  name: 'files',
-  data: { folder },
-  multiple: true,
-  action: uploadAction,
-  headers: { 'JA-Token': getToken() },
-};
+const listUrl = '/emergency-management/emergency-supplies/list';
 
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 
+const SuppliesCodes = [
+  { key: '43B01', name: '43B01 防汛抗旱专用物资' },
+  { key: '43B02', name: '43B02 防震减灾专用物资' },
+  { key: '43B03', name: '43B03 防疫应急专用物资' },
+  { key: '43B04', name: '43B04 有害生物灾害应急防控专用物资' },
+  { key: '43B05', name: '43B05 危险化学品事故救援专用物资' },
+  { key: '43B06', name: '43B06 矿山事故救援专用物资' },
+  { key: '43B07', name: '43B07 油污染处置物资' },
+  { key: '43B99', name: '43B99 其他专项救援物资储备' },
+];
+
 @Form.create()
-@connect(({ sensor, loading }) => ({
-  sensor,
-  companyLoading: loading.effects['sensor/fetchModelList'],
+@connect(({ emergencyManagement, company, loading }) => ({
+  emergencyManagement,
+  company,
+  companyLoading: loading.effects['company/fetchModelList'],
 }))
 export default class EmergencySuppliesHandler extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      // 当前监测参数
-      currentParameter: {},
-      // 储存配置报警策略
-      alarmStrategy: [],
-      // 配置报警策略弹窗可见
-      alarmStrategyModalVisible: false,
       // 选择企业弹窗
       compayModalVisible: false,
       // 选中的企业
@@ -71,93 +64,89 @@ export default class EmergencySuppliesHandler extends PureComponent {
     };
   }
 
-  componentDidMount() {}
-
-  /**
-   * 获取监测类型列表（字典）
-   */
-  fetchMonitoringTypeDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/fetchMonitoringTypeDict',
-      ...actions,
-    });
-  };
-
-  /**
-   * 获取传感器品牌列表（字典）
-   */
-  fetchSensorBrandDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/fetchSensorBrandDict',
-      ...actions,
-    });
-  };
-
-  /**
-   * 获取传感器类型列表（字典）
-   */
-  fetchSensorTypeDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/fetchSensorTypeDict',
-      ...actions,
-    });
-  };
+  componentDidMount() {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+      form: { setFieldsValue },
+    } = this.props;
+    // this.fetchMonitoringTypeDict();
+    // this.fetchSensorBrandDict()
+    // 如果编辑
+    if (id) {
+      // 获取详情
+      dispatch({
+        type: 'emergencyManagement/fetchSuppliesDetail',
+        payload: { id },
+        callback: response => {
+          const {
+            companyId,
+            materialName,
+            code,
+            levelCode,
+            materialType,
+            materialCode,
+            materialCount,
+            remark,
+            companyName,
+          } = response.data;
+          setFieldsValue({
+            companyId,
+            materialName,
+            code,
+            levelCode,
+            materialType,
+            materialCode,
+            materialCount,
+            remark,
+          });
+          this.setState({
+            selectedCompany: { id: companyId, name: companyName },
+          });
+        },
+      });
+    }
+  }
 
   /**
    * 获取企业列表（弹窗）
    */
   fetchCompany = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'sensor/fetchModelList', payload });
-  };
-
-  /**
-   * 保存型号代码列表
-   */
-  saveTypeDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/saveTypeDict',
-      ...actions,
-    });
+    dispatch({ type: 'company/fetchModelList', payload });
   };
 
   handleSubmit = () => {
-    router.push('/emergency-management/emergency-supplies/list');
-    return;
     const {
       dispatch,
-      sensor: { monitoringParameters },
       form: { validateFields },
       match: {
         params: { id },
       },
     } = this.props;
 
-    validateFields((error, { normalLower, normalUpper, ...formData }) => {
+    validateFields((error, formData) => {
       if (!error) {
-        const payload = { ...formData, monitoringParameters };
-        // console.log('提交',payload)
+        const payload = { ...formData };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          router.push('/device-management/sensor/list');
+          router.push(listUrl);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
         };
         if (id) {
           dispatch({
-            type: 'sensor/editSensor',
-            payload: { ...payload, deviceId: id },
+            type: 'emergencyManagement/editSupplies',
+            payload: { ...payload, id },
             success,
             error,
           });
         } else {
           dispatch({
-            type: 'sensor/addSensor',
+            type: 'emergencyManagement/addSupplies',
             payload,
             success,
             error,
@@ -197,16 +186,6 @@ export default class EmergencySuppliesHandler extends PureComponent {
   renderForm = () => {
     const {
       form: { getFieldDecorator, getFieldValue },
-      sensor: {
-        // 监测类型字典
-        monitoringTypeDict = [],
-        // 传感器品牌字典
-        brandDict = [],
-        // 传感器型号字典
-        typeDict = [],
-        // 监测参数列表
-        monitoringParameters = [],
-      },
     } = this.props;
     const { selectedCompany } = this.state;
 
@@ -231,34 +210,37 @@ export default class EmergencySuppliesHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="物资名称" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('materialName', {
               rules: [{ required: true, message: '请输入物资名称' }],
             })(<Input placeholder="请输入物资名称" {...itemStyles} />)}
           </FormItem>
           <FormItem label="资源编码" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('code', {
               rules: [{ required: true, message: '请选择资源编码' }],
             })(
               <Select placeholder="请选择资源编码" {...itemStyles}>
-                <Option value={'666'}>lalala</Option>
+                {SuppliesCodes.map(item => (
+                  <Option value={item.key} key={item.key}>
+                    {item.name}
+                  </Option>
+                ))}
               </Select>
             )}
           </FormItem>
           <FormItem label="级别编码" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
+            {getFieldDecorator('levelCode', {
               rules: [{ required: true, message: '请选择级别编码' }],
             })(
               <RadioGroup {...itemStyles}>
                 <Radio value="1">01 国家级</Radio>
-                <Radio value="0">02 社会力量</Radio>
-                <Radio value="2">99 其他</Radio>
+                <Radio value="2">02 社会力量</Radio>
+                <Radio value="3">99 其他</Radio>
               </RadioGroup>
             )}
           </FormItem>
-
           <FormItem label="物资类型" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
-              rules: [{ required: true, message: '请选择物资类型' }],
+            {getFieldDecorator('materialType', {
+              // rules: [{ required: true, message: '请选择物资类型' }],
             })(
               <Cascader
                 options={[]}
@@ -280,10 +262,10 @@ export default class EmergencySuppliesHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="物资编码" {...formItemLayout}>
-            {getFieldDecorator('equipCode')(<span> </span>)}
+            {getFieldDecorator('materialCode')(<span> </span>)}
           </FormItem>
           <FormItem label="物资数量" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('materialCount', {
               rules: [{ required: true, message: '请输入物资数量' }],
             })(
               <InputNumber
@@ -296,7 +278,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="备注" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId')(
+            {getFieldDecorator('remark')(
               <TextArea rows={4} placeholder="请输入备注" maxLength="500" {...itemStyles} />
             )}
           </FormItem>
@@ -313,15 +295,15 @@ export default class EmergencySuppliesHandler extends PureComponent {
   render() {
     const {
       companyLoading,
-      match: { prams: { id = null } = {} },
-      sensor: { companyModal },
+      match: { params: { id = null } = {} },
+      company: { companyModal },
     } = this.props;
     const { companyModalVisible } = this.state;
-    const title = id ? '编辑' : '新增';
+    const title = id ? '编辑应急物资' : '新增应急物资';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '应急管理', name: '应急管理' },
-      { title: '应急物资', name: '应急物资', href: '/device-management/sensor/list' },
+      { title: '应急物资', name: '应急物资', href: listUrl },
       { title, name: title },
     ];
     return (

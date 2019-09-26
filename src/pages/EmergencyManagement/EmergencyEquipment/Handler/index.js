@@ -7,8 +7,6 @@ import {
   Button,
   Radio,
   Row,
-  Modal,
-  Col,
   message,
   InputNumber,
   DatePicker,
@@ -17,11 +15,12 @@ import {
   Cascader,
 } from 'antd';
 import { connect } from 'dva';
+import moment from 'moment';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import debounce from 'lodash/debounce';
 import { getToken } from 'utils/authority';
+import { getFileList, getImageSize } from '../../../BaseInfo/utils';
 import styles from './index.less';
 
 const FormItem = Form.Item;
@@ -34,11 +33,12 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
+const listUrl = '/emergency-management/emergency-equipment/list';
 
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 // 上传文件夹
-const folder = 'safetyinfo';
+const folder = 'emergency';
 const defaultUploadProps = {
   name: 'files',
   data: { folder },
@@ -48,24 +48,30 @@ const defaultUploadProps = {
 };
 
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
+const limitDecimals = value => {
+  const reg = /^(\-)*(\d+)\.(\d\d).*$/;
+  if (typeof value === 'string') {
+    return !isNaN(Number(value)) ? value.replace(reg, '$1$2.$3') : '';
+  } else if (typeof value === 'number') {
+    return !isNaN(value) ? String(value).replace(reg, '$1$2.$3') : '';
+  } else {
+    return '';
+  }
+};
 
 @Form.create()
-@connect(({ sensor, loading }) => ({
-  sensor,
-  companyLoading: loading.effects['sensor/fetchModelList'],
+@connect(({ emergencyManagement, company, loading }) => ({
+  emergencyManagement,
+  company,
+  companyLoading: loading.effects['company/fetchModelList'],
 }))
 export default class EmergencyEquipmentHandler extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      fileList: [],
       uploading: false,
       submitting: false,
-      // 当前监测参数
-      currentParameter: {},
-      // 储存配置报警策略
-      alarmStrategy: [],
-      // 配置报警策略弹窗可见
-      alarmStrategyModalVisible: false,
       // 选择企业弹窗
       compayModalVisible: false,
       // 选中的企业
@@ -74,144 +80,134 @@ export default class EmergencyEquipmentHandler extends PureComponent {
   }
 
   componentDidMount() {
-    // const {
-    //   dispatch,
-    //   match: {
-    //     params: { id },
-    //   },
-    //   form: { setFieldsValue },
-    // } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+      form: { setFieldsValue },
+    } = this.props;
     // this.fetchMonitoringTypeDict();
-    // // this.fetchSensorBrandDict()
-    // // 如果编辑
-    // if (id) {
-    //   // 获取传感器详情
-    //   dispatch({
-    //     type: 'sensor/fetchSensorDetail',
-    //     payload: { id },
-    //     callback: response => {
-    //       const {
-    //         companyId,
-    //         companyName,
-    //         monitoringParameters,
-    //         monitoringTypeId,
-    //         typeId,
-    //         brandName,
-    //         deviceName,
-    //         relationDeviceId,
-    //         area,
-    //         location,
-    //       } = response.data;
-    //       setFieldsValue({
-    //         companyId,
-    //         monitoringTypeId,
-    //         typeId,
-    //         brandName,
-    //         deviceName,
-    //         relationDeviceId,
-    //         area,
-    //         location,
-    //       });
-    //       this.setState({
-    //         selectedCompany: { id: companyId, name: companyName },
-    //       });
-    //       this.fetchSensorTypeDict({ payload: { monitoringTypeId } });
-    //       dispatch({
-    //         type: 'sensor/saveState',
-    //         payload: { key: 'monitoringParameters', value: monitoringParameters },
-    //       });
-    //     },
-    //   });
-    // } else {
-    //   // 如果新增
-    //   this.saveTypeDict();
-    // }
+    // this.fetchSensorBrandDict()
+    // 如果编辑
+    if (id) {
+      // 获取详情
+      dispatch({
+        type: 'emergencyManagement/fetchEquipmentDetail',
+        payload: { id },
+        callback: response => {
+          const {
+            companyId,
+            companyName,
+            equipName,
+            equipType,
+            equipCode,
+            equipSource,
+            equipModel,
+            equipCount,
+            equipPrice,
+            equipUnit,
+            equipProducer,
+            produceDate,
+            limitYear,
+            buyDate,
+            use,
+            status,
+            storeName,
+            registerType,
+            daySpace,
+            remark,
+            fileList,
+          } = response.data;
+          setFieldsValue({
+            companyId,
+            equipName,
+            equipType,
+            equipCode,
+            equipSource,
+            equipModel,
+            equipCount,
+            equipPrice,
+            equipUnit,
+            equipProducer,
+            produceDate: moment(+produceDate),
+            limitYear,
+            buyDate: moment(+buyDate),
+            use,
+            status,
+            storeName,
+            registerType,
+            daySpace,
+            remark,
+          });
+          this.setState({
+            selectedCompany: { id: companyId, name: companyName },
+            fileList: fileList.map(({ id, dbUrl, webUrl, fileName }, index) => ({
+              uid: id || index,
+              status: 'done',
+              name: fileName,
+              url: webUrl,
+              dbUrl,
+            })),
+          });
+
+          // this.fetchSensorTypeDict({ payload: { monitoringTypeId } });
+          // dispatch({
+          //   type: 'sensor/saveState',
+          //   payload: { key: 'monitoringParameters', value: monitoringParameters },
+          // });
+        },
+      });
+    }
   }
-
-  /**
-   * 获取监测类型列表（字典）
-   */
-  fetchMonitoringTypeDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/fetchMonitoringTypeDict',
-      ...actions,
-    });
-  };
-
-  /**
-   * 获取传感器品牌列表（字典）
-   */
-  fetchSensorBrandDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/fetchSensorBrandDict',
-      ...actions,
-    });
-  };
-
-  /**
-   * 获取传感器类型列表（字典）
-   */
-  fetchSensorTypeDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/fetchSensorTypeDict',
-      ...actions,
-    });
-  };
 
   /**
    * 获取企业列表（弹窗）
    */
   fetchCompany = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'sensor/fetchModelList', payload });
-  };
-
-  /**
-   * 保存型号代码列表
-   */
-  saveTypeDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/saveTypeDict',
-      ...actions,
-    });
+    dispatch({ type: 'company/fetchModelList', payload });
   };
 
   handleSubmit = () => {
-    router.push('/emergency-management/emergency-equipment/list');
-    return;
     const {
       dispatch,
-      sensor: { monitoringParameters },
       form: { validateFields },
       match: {
         params: { id },
       },
     } = this.props;
+    const { fileList } = this.state;
 
-    validateFields((error, { normalLower, normalUpper, ...formData }) => {
+    validateFields((error, formData) => {
       if (!error) {
-        const payload = { ...formData, monitoringParameters };
+        const payload = {
+          ...formData,
+          equipCode: 66666,
+          fileList: fileList.map(({ name, url, dbUrl }) => ({
+            fileName: name,
+            webUrl: url,
+            dbUrl,
+            name,
+          })),
+        };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          router.push('/device-management/sensor/list');
+          router.push(listUrl);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
         };
         if (id) {
           dispatch({
-            type: 'sensor/editSensor',
-            payload: { ...payload, deviceId: id },
+            type: 'emergencyManagement/editEquipment',
+            payload: { ...payload, id },
             success,
             error,
           });
         } else {
           dispatch({
-            type: 'sensor/addSensor',
+            type: 'emergencyManagement/addEquipment',
             payload,
             success,
             error,
@@ -245,24 +241,34 @@ export default class EmergencyEquipmentHandler extends PureComponent {
     });
   };
 
+  handleImgChange = ({ fileList, file }) => {
+    if (file.status === 'done') {
+      let fList = [...fileList];
+      if (file.response.code === 200) {
+        message.success('上传成功');
+      } else {
+        message.error('上传失败');
+        fList.splice(-1, 1);
+      }
+      fList = getFileList(fList);
+      this.setState({ fileList: fList, uploading: false });
+    } else {
+      if (file.status === 'uploading') this.setState({ uploading: true });
+      // 其他情况，直接用原文件数组
+      fileList = getFileList(fileList);
+      this.setState({ fileList });
+    }
+    return fileList;
+  };
+
   /**
    * 渲染表单
    */
   renderForm = () => {
     const {
       form: { getFieldDecorator, getFieldValue },
-      sensor: {
-        // 监测类型字典
-        monitoringTypeDict = [],
-        // 传感器品牌字典
-        brandDict = [],
-        // 传感器型号字典
-        typeDict = [],
-        // 监测参数列表
-        monitoringParameters = [],
-      },
     } = this.props;
-    const { selectedCompany, uploading } = this.state;
+    const { selectedCompany, uploading, fileList } = this.state;
 
     return (
       <Card>
@@ -291,7 +297,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
           </FormItem>
           <FormItem label="装备类型" {...formItemLayout}>
             {getFieldDecorator('equipType', {
-              rules: [{ required: true, message: '请选择装备类型' }],
+              // rules: [{ required: true, message: '请选择装备类型' }],
             })(
               <Cascader
                 options={[]}
@@ -313,7 +319,7 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="装备编码" {...formItemLayout}>
-            {getFieldDecorator('equipCode')(<span>66666</span>)}
+            {getFieldDecorator('equipCode')(<span>{}</span>)}
           </FormItem>
           <FormItem label="装备来源" {...formItemLayout}>
             {getFieldDecorator('equipSource')(
@@ -348,13 +354,13 @@ export default class EmergencyEquipmentHandler extends PureComponent {
                 {...itemStyles}
                 min={0}
                 placeholder="请输入装备单价"
-                formatter={value => (!value || isNaN(value) ? '' : Math.round(100 * value) / 100)}
-                parser={value => (!value || isNaN(value) ? '' : Math.round(100 * value) / 100)}
+                formatter={limitDecimals}
+                parser={limitDecimals}
               />
             )}
           </FormItem>
           <FormItem label="计量单位" {...formItemLayout}>
-            {getFieldDecorator('unit')(<Input placeholder="请输入计量单位" {...itemStyles} />)}
+            {getFieldDecorator('equipUnit')(<Input placeholder="请输入计量单位" {...itemStyles} />)}
           </FormItem>
           <FormItem label="生产厂家" {...formItemLayout}>
             {getFieldDecorator('equipProducer', {
@@ -442,19 +448,17 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="图片" {...formItemLayout}>
-            {getFieldDecorator('picture')(
-              <Upload
-                {...defaultUploadProps}
-                fileList={[]}
-                onChange={this.handleSafeChange}
-                disabled={uploading}
-              >
-                <Button type="dashed" style={{ width: '96px', height: '96px' }}>
-                  <Icon type="plus" style={{ fontSize: '32px' }} />
-                  <div style={{ marginTop: '8px' }}>点击上传</div>
-                </Button>
-              </Upload>
-            )}
+            <Upload
+              {...defaultUploadProps}
+              fileList={fileList}
+              onChange={this.handleImgChange}
+              disabled={uploading}
+            >
+              <Button type="dashed" style={{ width: '96px', height: '96px' }}>
+                <Icon type="plus" style={{ fontSize: '32px' }} />
+                <div style={{ marginTop: '8px' }}>点击上传</div>
+              </Button>
+            </Upload>
           </FormItem>
         </Form>
         <Row style={{ textAlign: 'center', marginTop: '24px' }}>
@@ -469,15 +473,15 @@ export default class EmergencyEquipmentHandler extends PureComponent {
   render() {
     const {
       companyLoading,
-      match: { prams: { id = null } = {} },
-      sensor: { companyModal = [] },
+      match: { params: { id = null } = {} },
+      company: { companyModal = [] },
     } = this.props;
     const { companyModalVisible } = this.state;
-    const title = id ? '编辑' : '新增';
+    const title = id ? '编辑应急装备' : '新增应急装备';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '应急管理', name: '应急管理' },
-      { title: '应急装备', name: '应急装备', href: '/device-management/sensor/list' },
+      { title: '应急装备', name: '应急装备', href: listUrl },
       { title, name: title },
     ];
     return (
