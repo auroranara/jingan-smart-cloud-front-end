@@ -9,8 +9,6 @@ const PageSize = 5;
 @Form.create()
 export default class CompanyModal extends PureComponent {
   state = {
-    // object_title: undefined,
-    // business_type: undefined,
     checkList: [],
     clickContent: false,
   };
@@ -43,6 +41,7 @@ export default class CompanyModal extends PureComponent {
     } = this.props;
     this.setState({
       ...value,
+      searchPayload: value,
     });
     fetch({
       payload: {
@@ -76,13 +75,12 @@ export default class CompanyModal extends PureComponent {
   /* 更换页码或显示数量 */
   handleChangePagination = ({ current, pageSize }) => {
     const { fetch, payload } = this.props;
-    // const { object_title, business_type } = this.state;
+    const { searchPayload } = this.state;
     fetch({
       payload: {
-        // object_title,
-        // business_type,
         pageNum: current,
         pageSize,
+        ...searchPayload,
         ...payload,
       },
     });

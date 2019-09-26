@@ -1,14 +1,16 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Input, Pagination, Select, Button, Table, Spin } from 'antd';
+import { Cascader, Card, Input, Pagination, Select, Button, Table, Spin, Divider } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';
 
-import { hasAuthority } from '@/utils/customAuth';
+import { hasAuthority, AuthA } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
+
+import styles from './index.less';
 
 const {
   emergencyManagement: {
@@ -40,13 +42,49 @@ const transform = value => value.trim();
 /* 设置相对定位 */
 const getRootChild = () => document.querySelector('#root>div');
 
+const SuppliesCodes = [
+  { value: '43B01', name: '43B01 防汛抗旱专用物资' },
+  { value: '43B02', name: '43B02 防震减灾专用物资' },
+  { value: '43B03', name: '43B03 防疫应急专用物资' },
+  { value: '43B04', name: '43B04 有害生物灾害应急防控专用物资' },
+  { value: '43B05', name: '43B05 危险化学品事故救援专用物资' },
+  { value: '43B06', name: '43B06 矿山事故救援专用物资' },
+  { value: '43B07', name: '43B07 油污染处置物资' },
+  { value: '43B99', name: '43B99 其他专项救援物资储备' },
+];
+const LvlCodes = [
+  { value: '1', name: '01 国家级' },
+  { value: '2', name: '02 社会力量' },
+  { value: '3', name: '99 其他' },
+];
+
 @connect(({ emergencyManagement, user, loading }) => ({
   emergencyManagement,
   user,
   loading: loading.models.emergencyManagement,
 }))
 export default class EmergencySuppliesList extends PureComponent {
-  state = {};
+  state = {
+    formData: {},
+  };
+
+  pageSize = 10;
+
+  componentDidMount() {
+    this.fetchList(1);
+  }
+
+  fetchList = (pageNum, pageSize = 10, filters = {}) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'emergencyManagement/fetchSuppliesList',
+      payload: {
+        pageNum,
+        pageSize,
+        ...filters,
+      },
+    });
+  };
 
   renderForm = () => {
     const {
@@ -56,14 +94,38 @@ export default class EmergencySuppliesList extends PureComponent {
     } = this.props;
     const fields = [
       {
-        id: 'unitCompanyName',
+        id: 'materialName',
         render() {
           return <Input placeholder="请输入物资名称" />;
         },
         transform,
       },
       {
-        id: 'companyName',
+        id: 'materialType',
+        render() {
+          return (
+            <Cascader
+              options={[]}
+              fieldNames={{
+                value: 'id',
+                label: 'name',
+                children: 'children',
+                isLeaf: 'isLeaf',
+              }}
+              // loadData={selectedOptions => {
+              //   this.handleLoadData(['registerAddress'], selectedOptions);
+              // }}
+              changeOnSelect
+              placeholder="请选择物资分类"
+              allowClear
+              getPopupContainer={getRootChild}
+            />
+          );
+        },
+        transform,
+      },
+      {
+        id: 'materialCode',
         render() {
           return <Input placeholder="请输入物资编码" />;
         },
@@ -77,13 +139,8 @@ export default class EmergencySuppliesList extends PureComponent {
         transform,
       },
       {
-        id: 'deviceCode',
+        id: 'code',
         render() {
-          const options = [
-            // { value: '1', name: '未到期' },
-            // { value: '2', name: '即将到期' },
-            // { value: '3', name: '已过期' },
-          ];
           return (
             <Select
               allowClear
@@ -92,7 +149,7 @@ export default class EmergencySuppliesList extends PureComponent {
               getPopupContainer={getRootChild}
               style={{ width: '100%' }}
             >
-              {options.map(item => {
+              {SuppliesCodes.map(item => {
                 const { value, name } = item;
                 return (
                   <Option value={value} key={value}>
@@ -105,13 +162,8 @@ export default class EmergencySuppliesList extends PureComponent {
         },
       },
       {
-        id: 'deviceCode',
+        id: 'levelCode',
         render() {
-          const options = [
-            // { value: '1', name: '国配' },
-            // { value: '2', name: '自购' },
-            // { value: '3', name: '社会物资' },
-          ];
           return (
             <Select
               allowClear
@@ -120,7 +172,7 @@ export default class EmergencySuppliesList extends PureComponent {
               getPopupContainer={getRootChild}
               style={{ width: '100%' }}
             >
-              {options.map(item => {
+              {LvlCodes.map(item => {
                 const { value, name } = item;
                 return (
                   <Option value={value} key={value}>
@@ -158,28 +210,125 @@ export default class EmergencySuppliesList extends PureComponent {
     router.push(addUrl);
   };
 
-  handleSearch = () => {
-    return null;
+  handleSearch = values => {
+    this.setState({ formData: { ...values } });
+    this.fetchList(1, this.pageSize, { ...values });
   };
 
   handleReset = () => {
-    return null;
+    this.setState({ formData: {} });
+    this.fetchList(1, this.pageSize);
+  };
+
+  goDetail = id => {
+    router.push(`/emergency-management/emergency-supplies/detail/${id}`);
+  };
+
+  goEdit = id => {
+    router.push(`/emergency-management/emergency-supplies/edit/${id}`);
+  };
+
+  // 表格改变触发，包含分页变动
+  handleTableChange = (pageNum, pageSize) => {
+    const { formData } = this.state;
+    this.pageSize = pageSize;
+    this.fetchList(pageNum, pageSize, { ...formData });
   };
 
   render() {
-    const { loading = false } = this.props;
-    const list = [];
-    const { pageNum = 1, pageSize = 10, total = 0 } = {};
+    const {
+      loading = false,
+      emergencyManagement: {
+        supplies: { list, pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} },
+      },
+    } = this.props;
     const { currentPage } = this.state;
 
-    const columns = [];
+    const columns = [
+      {
+        title: '单位名称',
+        dataIndex: 'companyName',
+        key: 'companyName',
+        align: 'center',
+        width: 160,
+      },
+      {
+        title: '物资名称',
+        dataIndex: 'materialName',
+        key: 'materialName',
+        align: 'center',
+        width: 120,
+      },
+      {
+        title: '资源编码',
+        dataIndex: 'code',
+        key: 'code',
+        align: 'center',
+        width: 160,
+        render: data => {
+          return SuppliesCodes.find(item => item.value === data).name;
+        },
+      },
+      {
+        title: '级别编码',
+        dataIndex: 'levelCode',
+        key: 'levelCode',
+        align: 'center',
+        width: 120,
+        render: data => {
+          return LvlCodes[data - 1].name;
+        },
+      },
+      {
+        title: '物资分类及编码',
+        dataIndex: 'materialType',
+        key: 'materialType',
+        align: 'center',
+        width: 200,
+        render: (data, record) => {
+          const { materialType, materialCode } = record;
+          return (
+            <div className={styles.multi}>
+              <div>{materialType}</div>
+              <div>{materialCode}</div>
+            </div>
+          );
+        },
+      },
+      {
+        title: '物资数量',
+        dataIndex: 'materialCount',
+        key: 'materialCount',
+        align: 'center',
+        width: 100,
+      },
+      {
+        title: '操作',
+        dataIndex: 'operation',
+        key: 'operation',
+        // fixed: 'right',
+        align: 'center',
+        width: 120,
+        render: (data, record) => (
+          <span>
+            <AuthA code={detailCode} onClick={() => this.goDetail(record.id)}>
+              查看
+            </AuthA>
+            <Divider type="vertical" />
+            <AuthA code={editCode} onClick={() => this.goEdit(record.id)}>
+              编辑
+            </AuthA>
+          </span>
+        ),
+      },
+    ];
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            单位数量：
+            应急物资数量：
             {total}
           </div>
         }
@@ -188,11 +337,12 @@ export default class EmergencySuppliesList extends PureComponent {
         {list && list.length ? (
           <Card style={{ marginTop: '24px' }}>
             <Table
-              rowKey="index"
+              rowKey="id"
               loading={loading}
               columns={columns}
-              dataSource={[]}
+              dataSource={list}
               pagination={false}
+              // scroll={{ x: scrollX }}
             />
             <Pagination
               style={{ marginTop: '20px', float: 'right' }}

@@ -30,6 +30,7 @@ const hosts = {
   gj: '192.168.10.9', //高进
   tw: '192.168.10.5', // 田伟
   cfm: '192.168.10.6', // 崔富民
+  tg: '192.168.14.230:8080', // 汤归
   jiangxi: '58.215.178.100:12083',
   xuzhou: 'xuzhou.jinganyun.net',
   shanxi: '58.215.178.100:12085',
@@ -42,7 +43,7 @@ const hosts = {
 export default {
   proxy: {
     '/acloud_new': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.gj}`,
       changeOrigin: true,
       pathRewrite: { '^/acloud_new': '/acloud_new' },
     },
@@ -52,7 +53,7 @@ export default {
       pathRewrite: { '^/mock': '/mock' },
     },
     '/gsafe': {
-      target: `http://${hosts.test}`,
+      target: `http://${hosts.gj}`,
       changeOrigin: true,
       pathRewrite: { '^/gsafe': '/gsafe' },
     },

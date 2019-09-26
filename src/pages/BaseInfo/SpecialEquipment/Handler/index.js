@@ -34,6 +34,7 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
+const listUrl = '/base-info/special-equipment/list';
 
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
@@ -126,8 +127,6 @@ export default class EmergencySuppliesHandler extends PureComponent {
   };
 
   handleSubmit = () => {
-    router.push('/base-info/special-equipment/list');
-    return;
     const {
       dispatch,
       sensor: { monitoringParameters },
@@ -137,13 +136,13 @@ export default class EmergencySuppliesHandler extends PureComponent {
       },
     } = this.props;
 
-    validateFields((error, { normalLower, normalUpper, ...formData }) => {
+    validateFields((error, formData) => {
       if (!error) {
         const payload = { ...formData, monitoringParameters };
         // console.log('提交',payload)
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          router.push('/device-management/sensor/list');
+          router.push(listUrl);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
@@ -368,7 +367,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
   render() {
     const {
       companyLoading,
-      match: { prams: { id = null } = {} },
+      match: { params: { id = null } = {} },
       sensor: { companyModal },
     } = this.props;
     const { companyModalVisible } = this.state;
@@ -376,7 +375,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '应急管理', name: '应急管理' },
-      { title: '应急物资', name: '应急物资', href: '/device-management/sensor/list' },
+      { title: '应急物资', name: '应急物资', href: listUrl },
       { title, name: title },
     ];
     return (

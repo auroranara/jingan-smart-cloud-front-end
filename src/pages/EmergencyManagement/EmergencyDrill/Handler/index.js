@@ -7,21 +7,16 @@ import {
   Button,
   Radio,
   Row,
-  Modal,
-  Col,
   message,
   InputNumber,
   DatePicker,
-  Upload,
-  Icon,
   Cascader,
 } from 'antd';
 import { connect } from 'dva';
+import moment from 'moment';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import debounce from 'lodash/debounce';
-import { getToken } from 'utils/authority';
 import styles from './index.less';
 
 const FormItem = Form.Item;
@@ -34,38 +29,30 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
-
-// 上传文件地址
-const uploadAction = '/acloud_new/v2/uploadFile';
-// 上传文件夹
-const folder = 'safetyinfo';
-const defaultUploadProps = {
-  name: 'files',
-  data: { folder },
-  multiple: true,
-  action: uploadAction,
-  headers: { 'JA-Token': getToken() },
-};
+const listUrl = '/emergency-management/emergency-drill/list';
 
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
+const limitDecimals = value => {
+  const reg = /^(\-)*(\d+)\.(\d\d).*$/;
+  if (typeof value === 'string') {
+    return !isNaN(Number(value)) ? value.replace(reg, '$1$2.$3') : '';
+  } else if (typeof value === 'number') {
+    return !isNaN(value) ? String(value).replace(reg, '$1$2.$3') : '';
+  } else {
+    return '';
+  }
+};
 
 @Form.create()
-@connect(({ EmergencyEquipment, loading, sensor }) => ({
-  EmergencyEquipment,
-  sensor,
-  companyLoading: loading.effects['sensor/fetchModelList'],
+@connect(({ emergencyManagement, loading, company }) => ({
+  emergencyManagement,
+  company,
+  companyLoading: loading.effects['company/fetchModelList'],
 }))
-export default class EmergencyEquipmentHandler extends PureComponent {
+export default class EmergencyDrillHandler extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      uploading: false,
-      // 当前监测参数
-      currentParameter: {},
-      // 储存配置报警策略
-      alarmStrategy: [],
-      // 配置报警策略弹窗可见
-      alarmStrategyModalVisible: false,
       // 选择企业弹窗
       compayModalVisible: false,
       // 选中的企业
@@ -81,136 +68,101 @@ export default class EmergencyEquipmentHandler extends PureComponent {
       },
       form: { setFieldsValue },
     } = this.props;
-    this.fetchMonitoringTypeDict();
-    // this.fetchSensorBrandDict()
     // 如果编辑
     if (id) {
       // 获取传感器详情
       dispatch({
-        type: 'sensor/fetchSensorDetail',
+        type: 'emergencyManagement/fetchDrillDetail',
         payload: { id },
         callback: response => {
           const {
             companyId,
             companyName,
-            monitoringParameters,
-            monitoringTypeId,
-            typeId,
-            brandName,
-            deviceName,
-            relationDeviceId,
-            area,
-            location,
+            projectName,
+            projectCode,
+            projectStatus,
+            draftBy,
+            draftDate,
+            reportBy,
+            planName,
+            planType,
+            typeCode,
+            planBack,
+            planCode,
+            planLocation,
+            planGoal,
+            planClaim,
+            planContent,
+            keyword,
+            budget,
           } = response.data;
           setFieldsValue({
             companyId,
-            monitoringTypeId,
-            typeId,
-            brandName,
-            deviceName,
-            relationDeviceId,
-            area,
-            location,
+            projectName,
+            projectCode,
+            projectStatus,
+            draftBy,
+            draftDate: moment(draftDate),
+            reportBy,
+            planName,
+            planType,
+            typeCode,
+            planBack,
+            planCode,
+            planLocation,
+            planGoal,
+            planClaim,
+            planContent,
+            keyword,
+            budget,
           });
           this.setState({
             selectedCompany: { id: companyId, name: companyName },
           });
-          this.fetchSensorTypeDict({ payload: { monitoringTypeId } });
-          dispatch({
-            type: 'sensor/saveState',
-            payload: { key: 'monitoringParameters', value: monitoringParameters },
-          });
         },
       });
-    } else {
-      // 如果新增
-      this.saveTypeDict();
     }
   }
-
-  /**
-   * 获取监测类型列表（字典）
-   */
-  fetchMonitoringTypeDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/fetchMonitoringTypeDict',
-      ...actions,
-    });
-  };
-
-  /**
-   * 获取传感器品牌列表（字典）
-   */
-  fetchSensorBrandDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/fetchSensorBrandDict',
-      ...actions,
-    });
-  };
-
-  /**
-   * 获取传感器类型列表（字典）
-   */
-  fetchSensorTypeDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/fetchSensorTypeDict',
-      ...actions,
-    });
-  };
 
   /**
    * 获取企业列表（弹窗）
    */
   fetchCompany = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'sensor/fetchModelList', payload });
-  };
-
-  /**
-   * 保存型号代码列表
-   */
-  saveTypeDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/saveTypeDict',
-      ...actions,
-    });
+    dispatch({ type: 'company/fetchModelList', payload });
   };
 
   handleSubmit = () => {
     const {
       dispatch,
-      sensor: { monitoringParameters },
       form: { validateFields },
       match: {
         params: { id },
       },
     } = this.props;
 
-    validateFields((error, { normalLower, normalUpper, ...formData }) => {
+    validateFields((error, formData) => {
+      console.log('formData', formData);
+
       if (!error) {
-        const payload = { ...formData, monitoringParameters };
-        // console.log('提交',payload)
+        const payload = { ...formData };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          router.push('/device-management/sensor/list');
+          router.push(listUrl);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
         };
         if (id) {
           dispatch({
-            type: 'sensor/editSensor',
-            payload: { ...payload, deviceId: id },
+            type: 'emergencyManagement/editDrill',
+            payload: { ...payload, id },
             success,
             error,
           });
         } else {
           dispatch({
-            type: 'sensor/addSensor',
+            type: 'emergencyManagement/addDrill',
             payload,
             success,
             error,
@@ -250,18 +202,8 @@ export default class EmergencyEquipmentHandler extends PureComponent {
   renderForm = () => {
     const {
       form: { getFieldDecorator, getFieldValue },
-      sensor: {
-        // 监测类型字典
-        monitoringTypeDict = [],
-        // 传感器品牌字典
-        brandDict = [],
-        // 传感器型号字典
-        typeDict = [],
-        // 监测参数列表
-        monitoringParameters = [],
-      },
     } = this.props;
-    const { selectedCompany, uploading } = this.state;
+    const { selectedCompany } = this.state;
 
     return (
       <Card>
@@ -284,17 +226,15 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="计划名称" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('projectName', {
               rules: [{ required: true, message: '请输入计划名称' }],
             })(<Input placeholder="请输入计划名称" {...itemStyles} />)}
           </FormItem>
           <FormItem label="版本号" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId')(
-              <Input placeholder="请输入版本号" {...itemStyles} />
-            )}
+            {getFieldDecorator('projectCode')(<Input placeholder="请输入版本号" {...itemStyles} />)}
           </FormItem>
           <FormItem label="计划状态" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
+            {getFieldDecorator('projectStatus', {
               rules: [{ required: true, message: '请选择计划状态' }],
             })(
               <RadioGroup {...itemStyles}>
@@ -304,12 +244,12 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="制定人" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('draftBy', {
               rules: [{ required: true, message: '请输入制定人' }],
             })(<Input placeholder="请输入制定人" {...itemStyles} />)}
           </FormItem>
           <FormItem label="制定日期" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId')(
+            {getFieldDecorator('draftDate')(
               <DatePicker
                 placeholder="请选择制定日期"
                 getCalendarContainer={getRootChild}
@@ -318,18 +258,18 @@ export default class EmergencyEquipmentHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="上报人" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('reportBy', {
               rules: [{ required: true, message: '请输入上报人' }],
             })(<Input placeholder="请输入上报人" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练名称" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('planName', {
               rules: [{ required: true, message: '请输入演练名称' }],
             })(<Input placeholder="请输入演练名称" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练类型" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
-              rules: [{ required: true, message: '请选择演练类型' }],
+            {getFieldDecorator('planType', {
+              // rules: [{ required: true, message: '请选择演练类型' }],
             })(
               <Cascader
                 options={[]}
@@ -346,65 +286,57 @@ export default class EmergencyEquipmentHandler extends PureComponent {
                 placeholder="请选择演练类型"
                 allowClear
                 getPopupContainer={getRootChild}
+                {...itemStyles}
               />
             )}
           </FormItem>
-          <p>演练类型代码:</p>
+          <FormItem label="演练类型代码" {...formItemLayout}>
+            {getFieldDecorator('typeCode')(<span>{}</span>)}
+          </FormItem>
           <FormItem label="演练背景" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId')(
-              <Input placeholder="请输入演练背景" {...itemStyles} />
-            )}
+            {getFieldDecorator('planBack')(<Input placeholder="请输入演练背景" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练编号" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('planCode', {
               rules: [{ required: true, message: '请输入演练编号' }],
             })(<Input placeholder="请输入演练编号" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练地点" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('planLocation', {
               rules: [{ required: true, message: '请输入演练地点' }],
             })(<Input placeholder="请输入演练地点" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练目的" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('planGoal', {
               rules: [{ required: true, message: '请输入演练目的' }],
-            })(<TextArea rows={4} placeholder="请输入演练目的" maxLength="500" />)}
+            })(<TextArea rows={4} placeholder="请输入演练目的" maxLength="500" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练要求" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('planClaim', {
               rules: [{ required: true, message: '请输入演练要求' }],
-            })(<TextArea rows={4} placeholder="请输入演练要求" maxLength="500" />)}
+            })(<TextArea rows={4} placeholder="请输入演练要求" maxLength="500" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练内容" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('planContent', {
               rules: [{ required: true, message: '请输入演练内容' }],
-            })(<TextArea rows={4} placeholder="请输入演练内容" maxLength="500" />)}
+            })(<TextArea rows={4} placeholder="请输入演练内容" maxLength="500" {...itemStyles} />)}
           </FormItem>
           <FormItem label="关键字" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId')(
-              <Input placeholder="请输入关键字" {...itemStyles} />
-            )}
+            {getFieldDecorator('keyword')(<Input placeholder="请输入关键字" {...itemStyles} />)}
           </FormItem>
           <FormItem label="经费预算（元）" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId')(
+            {getFieldDecorator('budget')(
               <InputNumber
                 {...itemStyles}
                 min={0}
                 placeholder="请输入经费预算"
-                formatter={value => (!value || isNaN(value) ? '' : Math.round(100 * value) / 100)}
-                parser={value => (!value || isNaN(value) ? '' : Math.round(100 * value) / 100)}
+                formatter={limitDecimals}
+                parser={limitDecimals}
               />
             )}
           </FormItem>
         </Form>
         <Row style={{ textAlign: 'center', marginTop: '24px' }}>
-          <Button
-            onClick={() => {
-              router.push('/device-management/sensor/list');
-            }}
-          >
-            取消
-          </Button>
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>
             提交
           </Button>
@@ -416,15 +348,15 @@ export default class EmergencyEquipmentHandler extends PureComponent {
   render() {
     const {
       companyLoading,
-      match: { prams: { id = null } = {} },
-      sensor: { companyModal },
+      match: { params: { id = null } = {} },
+      company: { companyModal },
     } = this.props;
     const { companyModalVisible } = this.state;
-    const title = id ? '编辑' : '新增';
+    const title = id ? '编辑应急演练计划' : '新增应急演练计划';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '应急管理', name: '应急管理' },
-      { title: '应急装备', name: '应急装备', href: '/device-management/sensor/list' },
+      { title: '应急演练计划', name: '应急演练计划', href: listUrl },
       { title, name: title },
     ];
     return (

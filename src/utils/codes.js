@@ -402,6 +402,7 @@ export default {
       add: 'baseInfo.storehouse.add',
       edit: 'baseInfo.storehouse.edit',
       detail: 'baseInfo.storehouse.detail',
+      delete: 'baseInfo.storehouse.delete',
     },
     // 物料信息
     materials: {
@@ -409,6 +410,7 @@ export default {
       add: 'baseInfo.materials.add',
       edit: 'baseInfo.materials.edit',
       detail: 'baseInfo.materials.detail',
+      delete: 'baseInfo.materials.delete',
     },
     // 高危工艺流程
     highRiskProcess: {
@@ -423,6 +425,30 @@ export default {
       add: 'baseInfo.specialEquipment.add',
       edit: 'baseInfo.specialEquipment.edit',
       detail: 'baseInfo.specialEquipment.detail',
+    },
+
+    // 库区管理
+    reservoirRegionManagement: {
+      list: 'baseInfo.reservoirRegionManagement.listView',
+      add: 'baseInfo.reservoirRegionManagement.add',
+      edit: 'baseInfo.reservoirRegionManagement.edit',
+      delete: 'baseInfo.reservoirRegionManagement.delete',
+    },
+    // 重大危险源
+    majorHazard: {
+      list: 'baseInfo.majorHazard.listView',
+      add: 'baseInfo.majorHazard.add',
+      edit: 'baseInfo.majorHazard.edit',
+      delete: 'baseInfo.majorHazard.delete',
+    },
+  },
+  safetyKnowledgeBase: {
+    // 典型事故案例
+    typicalAccidentCase: {
+      listView: 'safetyKnowledgeBase.typicalAccidentCase.listView',
+      add: 'safetyKnowledgeBase.typicalAccidentCase.add',
+      edit: 'safetyKnowledgeBase.typicalAccidentCase.edit',
+      delete: 'safetyKnowledgeBase.typicalAccidentCase.delete',
     },
   },
 };
