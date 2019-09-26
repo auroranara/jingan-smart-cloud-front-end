@@ -47,12 +47,18 @@ function getOptions(options) {
   return options;
 }
 
+// function getValueFromEvent(e) {
+//   return e.target.value.trim();
+// }
+
 function genFormItem(field, getFieldDecorator) {
   const { type='input', name, label, required=true, options } = field;
   const typ = options ? 'select' : type;
   const opts = getOptions(options);
+  const formOptions = {};
   let component = null;
   let placeholder;
+  let rules = [{ whitespace: true, message: `${label}不能全为空字符串` }];
   switch(typ) {
     case 'text':
       placeholder = `请输入${label}`;
@@ -60,6 +66,7 @@ function genFormItem(field, getFieldDecorator) {
       break;
     case 'select':
       placeholder = `请选择${label}`;
+      rules = [];
       component = <Select placeholder={placeholder}>{opts.map(({ key, value }) => <Option key={key}>{value}</Option>)}</Select>;
       break;
     default:
@@ -67,9 +74,12 @@ function genFormItem(field, getFieldDecorator) {
       component = <Input placeholder={placeholder} />;
   }
 
+  rules.unshift({ required, message: `${label}不能为空` });
+  formOptions.rules = rules;
+
   return (
     <FormItem label={label} key={name}>
-      {getFieldDecorator(name, { rules: [{ required, message: placeholder }] })(component)}
+      {getFieldDecorator(name, formOptions)(component)}
     </FormItem>
   )
 }

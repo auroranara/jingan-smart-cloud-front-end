@@ -37,8 +37,12 @@ export default class ScreenEdit extends PureComponent {
   }
 
   getList = name => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'checkPoint/fetchCheckList', index: POINT_INDEX, payload: { pageNum: 1, pageSize: 20, name } });
+    const { dispatch, match: { params: { companyId } } } = this.props;
+    dispatch({
+      index: POINT_INDEX,
+      type: 'checkPoint/fetchCheckList',
+      payload: { pageNum: 1, pageSize: 20, companyId, name },
+    });
   };
 
   setList = () => {
@@ -102,7 +106,7 @@ export default class ScreenEdit extends PureComponent {
           <Col lg={8} md={12} sm={24}>
             <FormItem label="卡口点位">
               {getFieldDecorator('pointId', {
-                // rules: [{ required: true, message: '请选择卡口点位' }],
+                rules: [{ required: true, message: '请选择卡口点位' }],
               })(
                 <SearchSelect
                   showArrow={false}
@@ -144,7 +148,7 @@ export default class ScreenEdit extends PureComponent {
                 rules: [{ required: true, message: '请选择控制卡型号' }],
               })(
                 <Select placeholder="控制卡型号">
-                  {cardTypes.map(({ value, desc }) => <Option key={value}>{desc}</Option>)}
+                  {cardTypes.map(({ value, desc }) => <Option key={value.toString()}>{desc}</Option>)}
                 </Select>
               )}
             </FormItem>

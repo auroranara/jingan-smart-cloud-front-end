@@ -38,8 +38,12 @@ export default class PointEdit extends PureComponent {
   }
 
   getList = name => {
-    const { dispatch } = this.props;
-    dispatch({ type: 'checkPoint/fetchCheckList', index: EQUIPMENT_INDEX, payload: { pageNum: 1, pageSize: 20, status: 0, name } });
+    const { dispatch, match: { params: { companyId } } } = this.props;
+    dispatch({
+      index: EQUIPMENT_INDEX,
+      type: 'checkPoint/fetchCheckList',
+      payload: { pageNum: 1, pageSize: 20, status: 0, companyId, name },
+    });
   };
 
   setList = () => {
@@ -123,7 +127,7 @@ export default class PointEdit extends PureComponent {
           <Col lg={8} md={12} sm={24}>
             <FormItem label="卡口方向">
               {getFieldDecorator('direction', getFieldDecConfig('请输入卡口方向'))(
-                <Input placeholder="请输入卡口名称" min={1} max={20} />
+                <Input placeholder="请输入卡口方向" min={1} max={20} />
               )}
             </FormItem>
           </Col>
@@ -141,7 +145,7 @@ export default class PointEdit extends PureComponent {
                   fieldNames={{ key: 'id', value: 'name' }}
                   getList={this.getList}
                   setList={this.setList}
-                  placeholder="请选择卡口点位"
+                  placeholder="请选择关联设备"
                 />
               )}
             </FormItem>
