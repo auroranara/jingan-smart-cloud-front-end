@@ -12,6 +12,8 @@ import {
   message,
   Upload,
   Icon,
+  Row,
+  Col,
 } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Lightbox from 'react-images';
@@ -24,6 +26,8 @@ const FormItem = Form.Item;
 const title = '图标库'
 const UPLOAD_ACTION = '/acloud_new/v2/uploadFile';
 const FOLDER = 'monitor';
+const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
+const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
 
 const formItemCol = {
   labelCol: {
@@ -84,31 +88,34 @@ const RenderModal = Form.create()(props => {
             <Input placeholder="请输入" />
           )}
         </FormItem>
-        <FormItem {...formItemCol} label="图片：">
-          {getFieldDecorator('dbUrl', {
-            initialValue: detail ? detail.dbUrl : undefined,
-            rules: [{ required: true, message: '请上传图标' }],
-          })(
-            <Fragment>
-              <Upload
-                name="files"
-                action={UPLOAD_ACTION}
-                data={{ folder: FOLDER }}
-                listType="picture-card"
-                showUploadList={false}
-                onChange={handleUploadChange}
-                headers={{ 'JA-Token': getToken() }}
-              >
-                {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton(uploading)}
-              </Upload>
-            </Fragment>
-          )}
-        </FormItem>
+        {visible && (
+          <FormItem {...formItemCol} label="图片：">
+            {getFieldDecorator('dbUrl', {
+              initialValue: detail ? detail.dbUrl : undefined,
+              rules: [{ required: true, message: '请上传图标' }],
+            })(
+              <Fragment>
+                <Upload
+                  name="files"
+                  action={UPLOAD_ACTION}
+                  data={{ folder: FOLDER }}
+                  listType="picture-card"
+                  showUploadList={false}
+                  onChange={handleUploadChange}
+                  headers={{ 'JA-Token': getToken() }}
+                >
+                  {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton(uploading)}
+                </Upload>
+              </Fragment>
+            )}
+          </FormItem>
+        )}
       </Form>
     </Modal>
   )
 })
 
+@Form.create()
 @connect(({ user, device, loading }) => ({
   user,
   device,
@@ -132,10 +139,14 @@ export default class TagLibrary extends PureComponent {
    * 搜索图标库列表
    */
   handleQuery = (pageNum = 1, pageSize = 10) => {
-    const { dispatch } = this.props
+    const {
+      dispatch,
+      form: { getFieldsValue },
+    } = this.props
+    const values = getFieldsValue()
     dispatch({
       type: 'device/fetchTagsForPage',
-      payload: { pageNum, pageSize },
+      payload: { pageNum, pageSize, ...values },
     })
   }
 
@@ -239,6 +250,49 @@ export default class TagLibrary extends PureComponent {
     } else return null;
   }
 
+
+  /**
+   * 点击重置列表数据
+   */
+  handleReset = () => {
+    const {
+      form: { resetFields },
+    } = this.props
+    resetFields()
+    this.handleQuery()
+  }
+
+
+  /**
+   * 渲染筛选栏
+   */
+  renderFilter = () => {
+    const {
+      form: { getFieldDecorator },
+    } = this.props
+    return (
+      <Card>
+        <Form>
+          <Row gutter={16}>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('name')(
+                  <Input placeholder="名称" />
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
+                <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
+              </FormItem>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+    )
+  }
+
   /**
    * 渲染图标列表
    */
@@ -265,7 +319,7 @@ export default class TagLibrary extends PureComponent {
         width: 250,
         render: (val) => val ? (
           <img
-            style={{ width: 30, height: 40, cursor: 'pointer' }}
+            style={{ width: 40, height: 40, cursor: 'pointer', objectFit: 'contain' }}
             src={val}
             alt=""
             onClick={() => {
@@ -353,6 +407,7 @@ export default class TagLibrary extends PureComponent {
           (<Button type="primary" onClick={this.handleViewAdd}>新增</Button>)
         }
       >
+        {this.renderFilter()}
         {this.renderTable()}
         <RenderModal {...modalProps} />
         {this.renderImageDetail()}

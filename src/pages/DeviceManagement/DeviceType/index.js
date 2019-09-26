@@ -108,7 +108,7 @@ const RenderModal = Form.create()(props => {
                   key={id}
                   value={id}
                 >
-                  <img width="27" height="27" src={webUrl} alt="图标"></img>
+                  <img style={{ objectFit: 'contain' }} width="27" height="27" src={webUrl} alt="图标"></img>
                   <span style={{ paddingLeft: '1em' }}>{name}</span>
                 </Select.Option>
               ))}

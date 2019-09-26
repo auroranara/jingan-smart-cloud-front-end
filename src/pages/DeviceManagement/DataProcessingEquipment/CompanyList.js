@@ -1,9 +1,9 @@
-import { PureComponent } from 'react';
-import { Card, Button, Form, Input, Row, Col, Select, Spin, List } from 'antd';
+import { PureComponent, Fragment } from 'react';
+import { Card, Button, Form, Input, Row, Col, Select, Spin, List, Table } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import InfiniteScroll from 'react-infinite-scroller';
-import { AuthButton } from '@/utils/customAuth';
+// import InfiniteScroll from 'react-infinite-scroller';
+import { AuthButton, AuthA, AuthLink } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import router from 'umi/router';
 import styles from './CompanyList.less';
@@ -30,19 +30,8 @@ const {
 @Form.create()
 @connect(({ device, loading }) => ({
   device,
-  loading: loading.effects['device/fetchCompaniesForPage'],
-}),
-  dispatch => ({
-    // 获取列表数据
-    fetchList(actions) {
-      dispatch({
-        type: 'device/fetchCompaniesForPage',
-        ...actions,
-      })
-    },
-    dispatch,
-  })
-)
+  tableLoading: loading.effects['device/fetchCompaniesForPage'],
+}))
 export default class CompanyList extends PureComponent {
 
   // 获取数据处理设备类型列表
@@ -59,12 +48,24 @@ export default class CompanyList extends PureComponent {
     dispatch({ type: 'device/fetchAllDeviceTypes', payload: { type: 1 } });
   }
 
+  // 获取列表
+  fetchList = actions => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'device/fetchCompaniesForPage',
+      ...actions,
+    })
+  }
+
   /**
    * 点击查询，获取列表
    */
   handleQuery = (pageNum = 1, pageSize = 10) => {
-    const { fetchList } = this.props
-    fetchList({ payload: { pageNum, pageSize } })
+    const {
+      form: { getFieldsValue },
+    } = this.props
+    const values = getFieldsValue()
+    this.fetchList({ payload: { pageNum, pageSize, ...values } })
   }
 
 
@@ -142,45 +143,87 @@ export default class CompanyList extends PureComponent {
     )
   }
 
-
-  /**
-   * 渲染列表
-   */
-  renderList = () => {
+  renderTable = () => {
     const {
+      tableLoading,
       device: {
-        company: { list = [] },
+        company: {
+          list = [],
+          pagination: { total, pageNum, pageSize },
+        },
       },
     } = this.props
+    const columns = [
+      {
+        title: '单位名称',
+        dataIndex: 'companyName',
+        align: 'center',
+        width: 400,
+      },
+      {
+        title: '数据处理设备',
+        dataIndex: 'equipmentTypeList',
+        align: 'center',
+        width: 700,
+        render: (val, row) => (
+          <div className={styles.typeContainer}>
+            {val.length ? val.map(({ id, logoWebUrl, name, count }) => (
+              <div key={id} className={styles.iconContainer}>
+                <div className={styles.imgContainer}>
+                  <img src={logoWebUrl} alt="" />
+                  <div>{name}</div>
+                </div>
+                <div className={styles.num}>{count}</div>
+              </div>
+            )) : null}
+          </div>
+        ),
+      },
+      {
+        title: '操作',
+        key: '操作',
+        align: 'center',
+        fixed: 'right',
+        width: 150,
+        render: (val, row) => (
+          <AuthLink code={editTypeCode} to={`/device-management/data-processing/edit/${row.companyId}`}>编辑</AuthLink>
+        ),
+      },
+    ]
     return (
-      <div className={styles.cardList} style={{ marginTop: '24px' }}>
-        <List
-          rowKey="id"
-          grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
-          dataSource={list}
-          renderItem={this.renderCard}
-        />
-      </div>
-    )
-  }
+      <Card style={{ marginTop: '24px' }}>
+        {list && list.length > 0 ? (
+          <Table
+            rowKey="id"
+            loading={tableLoading}
+            columns={columns}
+            dataSource={list}
+            bordered
+            scroll={{ x: 'max-content' }}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: this.handleQuery,
+              onShowSizeChange: (num, size) => {
+                this.handleQuery(1, size);
+              },
+            }}
+          />
+        ) : (
+            <div style={{ width: '100%', textAlign: 'center' }}><span>暂无数据</span></div>
+          )}
 
-  renderCard = item => {
-    const {
-      id,
-
-    } = item
-    return (
-      <List.Item key={id}>
-        <Card title={name} className={styles.card}>
-
-        </Card>
-      </List.Item>
+      </Card>
     )
   }
 
   render() {
     const {
-      loading,
+      tableLoading,
       device: {
         company: {
           isLast,
@@ -194,26 +237,7 @@ export default class CompanyList extends PureComponent {
         content={`单位总数：0`}
       >
         {this.renderFilter()}
-        <InfiniteScroll
-          initialLoad={false}
-          pageStart={0}
-          loadMore={() => {
-            // 防止多次加载
-            !loading && this.handleLoadMore();
-          }}
-          hasMore={!isLast}
-          loader={
-            <div className="loader" key={0}>
-              {loading && (
-                <div style={{ paddingTop: '50px', textAlign: 'center' }}>
-                  <Spin />
-                </div>
-              )}
-            </div>
-          }
-        >
-          {this.renderList()}
-        </InfiniteScroll>
+        {this.renderTable()}
       </PageHeaderLayout>
     )
   }

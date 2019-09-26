@@ -46,6 +46,8 @@ import {
   fetchCompaniesForPage, // 获取数据处理设备企业列表
   addDeviceType,
   editDeviceType,
+  fetchCompanyDetail,
+  fetchCompanyiesForAdd,
 } from '@/services/device/dataProcessing';
 
 const defaultPagination = {
@@ -146,11 +148,15 @@ export default {
     ],
     // 参数配置历史
     historyList: [],
-    // 企业列表
+    // 数据处理设备--企业列表
     company: {
       list: [],
       pagination: defaultPagination,
-      isLast: false,
+    },
+    // 新增数据处理设备--企业列表（筛选掉已添加）
+    companyModal: {
+      list: [],
+      pagination: defaultPagination,
     },
   },
   effects: {
@@ -450,14 +456,25 @@ export default {
         })
       }
     },
-    // 数据处理设备企业列表（分页）
+    // 数据处理设备--企业列表（分页）
     *fetchCompaniesForPage({ payload }, { call, put }) {
       const response = yield call(fetchCompaniesForPage, payload)
       if (response && response.code === 200) {
         yield put({
-          tyoe: 'saveCompanies',
+          type: 'saveCompanies',
           payload: response.data,
         })
+      }
+    },
+    // 获取数据处理设备--企业详情
+    *fetchCompanyDetail({ payload, callback }, { call, put }) {
+      const response = yield call(fetchCompanyDetail, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { companyDetail: response.data },
+        })
+        if (callback) callback(response.data)
       }
     },
     // 新增数据处理设备类型
@@ -473,6 +490,16 @@ export default {
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
+    },
+    // 新增数据处理设备企业列表
+    *fetchCompanyiesForAdd({ payload }, { call, put }) {
+      const response = yield call(fetchCompanyiesForAdd, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveCompaniesForAdd',
+          payload: response.data,
+        })
+      }
     },
   },
   reducers: {
@@ -585,16 +612,27 @@ export default {
       payload: {
         list = [],
         pagination = defaultPagination,
-        pagination: { pageNum, pageSize, total } = defaultPagination,
       } = {},
     }) {
       return {
         ...state,
         company: {
-          ...state.company,
-          list: pageNum > 1 ? [...state.company.list, ...list] : list,
+          list,
           pagination,
-          isLast: pageNum * pageSize >= total,
+        },
+      }
+    },
+    saveCompaniesForAdd(state, {
+      payload: {
+        list = [],
+        pagination = defaultPagination,
+      } = {},
+    }) {
+      return {
+        ...state,
+        companyModal: {
+          list,
+          pagination,
         },
       }
     },

@@ -70,3 +70,42 @@
 //   height: 25px;
 //   background-size: 100% 100%;
 // }
+
+.typeContainer {
+  display: flex;
+  flex-wrap: nowrap;
+
+  .iconContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+
+    .imgContainer {
+      img {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+        filter: grayscale(100%);
+      }
+
+      div {
+        max-width: 4em;
+      }
+    }
+
+    .num {
+      font-size: 26px;
+      font-weight: 600;
+      padding: 0 18px;
+    }
+
+    &:hover {
+      color: #1890ff;
+
+      img {
+        filter: grayscale(0);
+      }
+    }
+  }
+}

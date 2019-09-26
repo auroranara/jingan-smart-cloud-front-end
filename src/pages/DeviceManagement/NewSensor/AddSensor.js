@@ -27,7 +27,7 @@ import codesMap from '@/utils/codes';
 import moment from 'moment';
 import { phoneReg } from '@/utils/validate';
 // 片面图标注
-import PicInfo from '@/pages/DeviceManagement/Components/PicInfo';
+import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 import styles from './AddSensor.less';
 
 const FormItem = Form.Item;
@@ -222,47 +222,6 @@ export default class AddNewSensor extends Component {
     }))
   }
 
-
-  /**
-   * 新平面图标志--平面图类型改变
-   */
-  handleChangeImageType = (item, i) => {
-    const {
-      dispatch,
-      form: { getFieldValue },
-    } = this.props
-    const companyId = getFieldValue('companyId')
-    const type = +item.imgType
-    if (type === 1 || type === 3 || type === 4) {
-      dispatch({
-        type: 'riskPointManage/fetchFixImgInfo',
-        payload: {
-          companyId,
-          type,
-        },
-      });
-    }
-    if (type === 2) {
-      dispatch({
-        type: 'buildingsInfo/fetchBuildingList',
-        payload: {
-          company_id: companyId,
-          pageSize: 0,
-          pageNum: 1,
-        },
-      });
-    }
-    this.setState(({ pointFixInfoList }) => {
-      let temp = [...pointFixInfoList]
-      temp.splice(i, 1, item)
-      return {
-        pointFixInfoList: temp,
-        picModalVisible: false,
-        isImgSelect: false,
-      }
-    })
-  }
-
   /**
     * 新平面图标志--坐标轴改变
     */
@@ -276,123 +235,6 @@ export default class AddNewSensor extends Component {
       let temp = [...pointFixInfoList]
       temp.splice(i, 1, item)
       return { pointFixInfoList: temp }
-    })
-  }
-
-
-  /**
-   * 新平面图标志--保存
-   */
-  handleSavePointFix = (oldIndex = undefined, i, item) => {
-    // 如果正在编辑且点击其他项
-    if (i !== oldIndex) {
-      message.warning('请先保存')
-      return
-    }
-    if (isNaN(item.imgType)) {
-      message.warning('请填写平面图类型')
-      return
-    }
-    if (isNaN(item.xnum) || isNaN(item.ynum)) {
-      message.warning('请完善坐标位置')
-      return
-    }
-    this.setState({ editingIndex: undefined })
-  }
-
-  /**
-   * 新平面图标志--编辑
-   */
-  handleEditPointFix = (oldIndex = undefined, i) => {
-    if (!isNaN(oldIndex)) {
-      message.warning('请先保存')
-      return
-    }
-    this.setState({ editingIndex: i })
-  }
-
-  /**
-   * 新平面图标志--删除
-   */
-  handleDeletePointFix = (i) => {
-    this.setState(({ pointFixInfoList }) => {
-      let temp = [...pointFixInfoList]
-      temp.splice(i, 1)
-      return { pointFixInfoList: temp, editingIndex: undefined }
-    })
-  }
-
-  /**
-   * 显示定位模态框
-   */
-  showModalCoordinate = (index, item) => {
-    const {
-      dispatch,
-      form: { getFieldsValue },
-    } = this.props
-    const { companyId, buildingId, floorId } = getFieldsValue()
-    // 当前编辑的平面图标注
-    const { imgType, fixImgId } = item
-    const callback = payload => {
-      if (payload.list && payload.list.length) {
-        this.setState({
-          picModalVisible: true,
-          imgIdCurrent: fixImgId, // 当前选择的定位图片id
-        });
-      } else message.error('该单位暂无图片！');
-    }
-    // 如果没有选择平面图类型
-    if (!imgType) return message.error('请先选择平面图类型!');
-    // 如果是楼层平面图，需要选择建筑物和楼层后才能定位
-    if (+imgType === 2) {
-      if (!buildingId) return message.error('请选择所属建筑物!');
-      if (!floorId) return message.error('请选择所属楼层!');
-      dispatch({
-        type: 'riskPointManage/fetchFixImgInfo',
-        payload: {
-          companyId,
-          type: imgType,
-          buildingId: buildingId,
-          floorId: floorId,
-        },
-        callback,
-      });
-    } else {
-      // 如果平面图是其他类型
-      dispatch({
-        type: 'riskPointManage/fetchFixImgInfo',
-        payload: {
-          companyId,
-          type: imgType,
-        },
-        callback,
-      });
-    }
-  }
-
-
-  /**
-   * 保存定位信息
-   */
-  handleCoordinateOk = (value, fourColorImg) => {
-    const fixImgId = fourColorImg.id
-    if (!value || !value.x || !value.y) return message.warning('请选择坐标')
-    this.setState(({ editingIndex, pointFixInfoList }) => {
-      // 当前编辑的平面图标注
-      let editingItem = pointFixInfoList[editingIndex]
-      const newItem = {
-        ...editingItem,
-        xnum: value.x.toFixed(3),
-        ynum: value.y.toFixed(3),
-        fixImgId,
-      }
-      pointFixInfoList.splice(editingIndex, 1, newItem)
-      return {
-        editingIndex,
-        pointFixInfoList,
-        picModalVisible: false,
-        isImgSelect: true,
-      }
     })
   }
 
@@ -530,7 +372,7 @@ export default class AddNewSensor extends Component {
     } else if (file.status === 'done') {
       if (file.response && file.response.code === 200) {
         const result = file.response.data.list[0]
-        const list = fileList.map((item) => ({ ...item, url: result.webUrl }))
+        const list = fileList.map((item) => ({ ...item, url: result.webUrl, ...result }))
         this.setState({
           uploading: false,
           fileList: list,
@@ -594,6 +436,7 @@ export default class AddNewSensor extends Component {
      */
   renderForm = () => {
     const {
+      dispatch,
       form,
       form: { getFieldDecorator, getFieldValue },
       match: { params: { id } },
@@ -625,26 +468,21 @@ export default class AddNewSensor extends Component {
       isImgSelect,
       imgIdCurrent,
     } = this.state
-    const picInfoProps = {
+    const FlatPicProps = {
       visible: picModalVisible,
       onCancel: () => { this.setState({ picModalVisible: false }) },
       form,
       buildings, // 建筑物列表
       floors,      // 楼层列表
-      imgList,
-      pointFixInfoList,
+      imgList,  // 定位图列表
+      pointFixInfoList, // 平面图标注列表
       editingIndex,
       isImgSelect,
       imgIdCurrent,
       flatGraphic,
-      handleCoordinateOk: this.handleCoordinateOk,
-      handleChangeImageType: this.handleChangeImageType,
-      handleSelectBuilding: this.handleSelectBuilding,
-      showModalCoordinate: this.showModalCoordinate,
-      handleSavePointFix: this.handleSavePointFix,
-      handleDeletePointFix: this.handleDeletePointFix,
-      handleChangeCoordinate: this.handleChangeCoordinate,
-      handleEditPointFix: this.handleEditPointFix,
+      fetchFloors: this.fetchFloors,
+      setState: (newState) => { this.setState(newState) },
+      dispatch,
     }
     // 地址录入方式
     const locationType = getFieldValue('locationType')
@@ -841,7 +679,7 @@ export default class AddNewSensor extends Component {
                 >
                   新增
               </Button>
-                <PicInfo {...picInfoProps} />
+                <FlatPic {...FlatPicProps} />
               </FormItem>
             </Fragment>
           )}

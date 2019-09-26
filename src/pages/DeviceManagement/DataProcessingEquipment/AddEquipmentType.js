@@ -15,10 +15,9 @@ const formItemLayout = {
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
 
 @Form.create()
-@connect(({ device, sensor, loading }) => ({
+@connect(({ device, loading }) => ({
   device,
-  sensor,
-  companyLoading: loading.effects['sensor/fetchModelList'],
+  companyLoading: loading.effects['device/fetchCompanyiesForAdd'],
 }))
 export default class AddEquipmentType extends PureComponent {
 
@@ -30,7 +29,24 @@ export default class AddEquipmentType extends PureComponent {
   }
 
   componentDidMount() {
+    const {
+      dispatch,
+      form: { setFieldsValue },
+      match: { params: { companyId } },
+    } = this.props
     this.fetchAllDeviceTypes()
+    // 如果编辑
+    if (companyId) {
+      dispatch({
+        type: 'device/fetchCompanyDetail',
+        payload: { id: companyId },
+        callback: ({ equipmentTypeList, companyName }) => {
+          const keys = equipmentTypeList.map(item => item.id)
+          this.setState({ selectedCompany: { id: companyId, name: companyName } })
+          setFieldsValue({ companyId, equipmentTypeList: keys })
+        },
+      })
+    }
   }
 
   /**
@@ -38,7 +54,7 @@ export default class AddEquipmentType extends PureComponent {
    */
   fetchCompany = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'sensor/fetchModelList', payload });
+    dispatch({ type: 'device/fetchCompanyiesForAdd', payload });
   };
 
 
@@ -83,9 +99,19 @@ export default class AddEquipmentType extends PureComponent {
       dispatch,
       form: { validateFields },
       match: { params: { companyId } },
+      device: {
+        deviceType: { list: deviceTypeList }, // 设备类型列表
+      },
     } = this.props
     validateFields((err, values) => {
       if (err) return
+      // 处理 数据处理设备类型 数据
+      const { equipmentTypeList } = values
+      const newList = equipmentTypeList.map(id => {
+        const item = deviceTypeList.find(item => item.id === id)
+        return item
+      })
+      const payload = { ...values, equipmentTypeList: newList }
       const tag = companyId ? '编辑' : '新增'
       const success = () => {
         message.success(`${tag}成功`)
@@ -96,7 +122,7 @@ export default class AddEquipmentType extends PureComponent {
       if (companyId) {
         dispatch({
           type: 'device/editDeviceType',
-          payload: { ...values, id: companyId },
+          payload: { ...payload, id: companyId },
           success,
           error,
         })
@@ -104,12 +130,18 @@ export default class AddEquipmentType extends PureComponent {
         // 如果新增
         dispatch({
           type: 'device/addDeviceType',
-          payload: values,
+          payload,
           success,
           error,
         })
       }
     })
+  }
+
+  validateTypeList = (rule, value, callback) => {
+    if (value && value.length) {
+      callback()
+    } else callback('请选择数据处理设备类型')
   }
 
   /**
@@ -127,7 +159,9 @@ export default class AddEquipmentType extends PureComponent {
       <Card>
         <Form>
           <FormItem label="所属单位" {...formItemLayout}>
-            {getFieldDecorator('companyId')(
+            {getFieldDecorator('companyId', {
+              rules: [{ required: true, message: '请选择所属单位' }],
+            })(
               <Fragment>
                 <Input {...itemStyles} disabled value={selectedCompany.name} placeholder="请选择" />
                 <Button type="primary" onClick={this.handleViewCompanyModal}>选择单位</Button>
@@ -135,8 +169,10 @@ export default class AddEquipmentType extends PureComponent {
             )}
           </FormItem>
           <FormItem label="数据处理设备类型" {...formItemLayout}>
-            {getFieldDecorator('type')(
-              <Checkbox.Group>
+            {getFieldDecorator('equipmentTypeList', {
+              rules: [{ required: true, validator: this.validateTypeList }],
+            })(
+              <Checkbox.Group >
                 {deviceTypeList.map(({ id, name }) => (
                   <Col span={8} key={id}>
                     <Checkbox value={id}>{name}</Checkbox>
@@ -158,7 +194,7 @@ export default class AddEquipmentType extends PureComponent {
     const {
       companyLoading,
       match: { params: { companyId } },
-      sensor: { companyModal },
+      device: { companyModal },
     } = this.props
     const { companyModalVisible } = this.state
     const title = companyId ? '编辑数据处理设备类型' : '新增数据处理设备类型'
