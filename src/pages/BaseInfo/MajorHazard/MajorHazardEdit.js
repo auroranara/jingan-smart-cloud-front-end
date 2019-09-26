@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
@@ -30,7 +30,8 @@ export default class MajorHazardEdit extends PureComponent {
     companyVisible: false,
     submitting: false,
     detailList: {}, // 详情列表
-    technologyVisible: false,
+    ChemicalsVisible: false,
+    chemicalList: [], // 危险化学品列表
   };
 
   // 挂载后
@@ -53,8 +54,10 @@ export default class MajorHazardEdit extends PureComponent {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
+          const { unitChemiclaNumDetail } = currentList;
           this.setState({
             detailList: currentList,
+            chemicalList: unitChemiclaNumDetail,
           });
         },
       });
@@ -84,6 +87,8 @@ export default class MajorHazardEdit extends PureComponent {
           submitting: true,
         });
 
+        const { chemicalList } = this.state;
+
         const {
           companyName,
           code,
@@ -97,7 +102,6 @@ export default class MajorHazardEdit extends PureComponent {
           useDate,
           r,
           dangerLevel,
-          unitChemicla,
           chemiclaNature,
           industryArea,
           environmentType,
@@ -123,7 +127,15 @@ export default class MajorHazardEdit extends PureComponent {
           useDate: useDate && useDate.format('YYYY-MM-DD'),
           r,
           dangerLevel,
-          unitChemicla,
+          // unitChemicla: chemicalList.map(item => item.id).join(','),
+          unitChemiclaNum: JSON.stringify(
+            chemicalList.map(({ materialId, chineName, unitChemiclaNum, unitChemiclaNumUnit }) => ({
+              materialId,
+              chineName,
+              unitChemiclaNum,
+              unitChemiclaNumUnit,
+            }))
+          ),
           chemiclaNature,
           industryArea,
           environmentType,
@@ -223,30 +235,56 @@ export default class MajorHazardEdit extends PureComponent {
   }
 
   // 显示化学品弹框
-  handleShowTechnology = () => {
-    this.setState({ technologyVisible: true });
+  handleShowChemicals = () => {
+    this.setState({ ChemicalsVisible: true });
+    const payload = { pageSize: 10, pageNum: 1 };
+    this.fetchChemicalsList({ payload });
   };
 
-  fetchTechnologyList = () => {};
-  handleSelectDSList = () => {};
+  fetchChemicalsList = ({ payload }) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'reservoirRegion/fetchMaterialInfoList', payload });
+  };
+
+  handleSelectChemicals = item => {
+    const {
+      form: { setFieldsValue, getFieldValue },
+    } = this.props;
+    const chemicalList = item.map(item => {
+      const { id } = item;
+      return {
+        ...item,
+        materialId: id,
+        unitChemiclaNum: getFieldValue(`unitChemiclaNum${id}`),
+        unitChemiclaNumUnit: getFieldValue(`unitChemiclaNumUnit${id}`),
+      };
+    });
+    setFieldsValue({
+      unitChemicla: chemicalList
+        .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
+        .join(','),
+    });
+    this.setState({ chemicalList: chemicalList });
+    this.handleChemicalsClose();
+  };
 
   // 关闭化学品弹框
-  handleTechnologyClose = () => {
-    this.setState({ technologyVisible: false });
+  handleChemicalsClose = () => {
+    this.setState({ ChemicalsVisible: false });
   };
 
   // 渲染危险化学品弹框
   renderTechnologyModal() {
     const {
-      videoMonitor: { modal },
+      form: { getFieldDecorator },
+      reservoirRegion: { materialData },
       loading,
     } = this.props;
 
-    const { dangerVisible } = this.state;
-
+    const { ChemicalsVisible } = this.state;
     const FIELD = [
       {
-        id: 'codeSame',
+        id: 'casNo',
         render() {
           return <Input placeholder="请输CAS号" />;
         },
@@ -255,7 +293,7 @@ export default class MajorHazardEdit extends PureComponent {
         },
       },
       {
-        id: 'dangerName',
+        id: 'chineName',
         render() {
           return <Input placeholder="请输品名" />;
         },
@@ -268,29 +306,29 @@ export default class MajorHazardEdit extends PureComponent {
     const COLUMNS = [
       {
         title: '统一编码',
-        dataIndex: 'codeSame',
-        key: 'code',
+        dataIndex: 'unifiedCode',
+        key: 'unifiedCode',
         align: 'center',
         width: 120,
       },
       {
         title: '品名',
-        dataIndex: 'dangerName',
-        key: 'dangerName',
+        dataIndex: 'chineName',
+        key: 'chineName',
         align: 'center',
         width: 90,
       },
       {
         title: 'CAS号',
-        dataIndex: 'level',
-        key: 'level',
+        dataIndex: 'casNo',
+        key: 'casNo',
         align: 'center',
         width: 150,
       },
       {
         title: '危险性类别',
-        dataIndex: 'objectTitles',
-        key: 'objectTitles',
+        dataIndex: 'riskCateg',
+        key: 'riskCateg',
         align: 'center',
         width: 200,
       },
@@ -300,6 +338,18 @@ export default class MajorHazardEdit extends PureComponent {
         key: 'a',
         align: 'center',
         width: 200,
+        render: (val, text) => {
+          return (
+            <Fragment>
+              {getFieldDecorator(`unitChemiclaNum${text.id}`)(
+                <Input style={{ width: 80, marginRight: 10 }} placeholder="数量" />
+              )}
+              {getFieldDecorator(`unitChemiclaNumUnit${text.id}`)(
+                <Input style={{ width: 80 }} placeholder="单位" />
+              )}
+            </Fragment>
+          );
+        },
       },
     ];
 
@@ -307,13 +357,15 @@ export default class MajorHazardEdit extends PureComponent {
       <CompanyModal
         title="选择危险化学品"
         loading={loading}
-        visible={dangerVisible}
+        visible={ChemicalsVisible}
         columns={COLUMNS}
         field={FIELD}
-        modal={modal}
-        fetch={this.fetchDangerSourseList}
-        onSelect={this.handleSelectDSList}
-        onClose={this.handleDSListClose}
+        modal={materialData}
+        fetch={this.fetchChemicalsList}
+        onSelect={this.handleSelectChemicals}
+        onClose={this.handleChemicalsClose}
+        rowSelection={{ type: 'checkbox ' }}
+        multiSelect={true}
       />
     );
   }
@@ -330,7 +382,7 @@ export default class MajorHazardEdit extends PureComponent {
       },
     } = this.props;
 
-    const { detailList } = this.state;
+    const { detailList, chemicalList } = this.state;
     const {
       companyName,
       code,
@@ -344,7 +396,7 @@ export default class MajorHazardEdit extends PureComponent {
       useDate,
       r,
       dangerLevel,
-      unitChemicla,
+      // unitChemiclaNum,
       chemiclaNature,
       industryArea,
       environmentType,
@@ -564,7 +616,9 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="单元内涉及的危险化学品">
             {getFieldDecorator('unitChemicla', {
-              initialValue: unitChemicla,
+              initialValue: chemicalList
+                .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
+                .join(','),
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -577,10 +631,11 @@ export default class MajorHazardEdit extends PureComponent {
                 {...itemStyles}
                 placeholder="请选择单元内涉及的危险化学品"
                 rows={4}
+                disabled
                 maxLength="2000"
               />
             )}
-            <Button type="primary" onClick={this.handleShowTechnology}>
+            <Button type="primary" onClick={this.handleShowChemicals}>
               {' '}
               选择
             </Button>

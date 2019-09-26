@@ -8,6 +8,7 @@ import {
   queryDangerSourceaAdd,
   queryDangerSourceEdit,
   queryDangerSourceDelete,
+  queryMaterialInfoList,
 } from '../services/company/reservoirRegion';
 
 export default {
@@ -55,6 +56,10 @@ export default {
     ],
     memoryPlaceList: [{ key: '1', value: '自有' }, { key: '2', value: '租赁' }],
     antiStaticList: [{ key: '1', value: '是' }, { key: '2', value: '否' }],
+    materialData: {
+      list: [],
+      pagination: {},
+    },
   },
 
   effects: {
@@ -173,6 +178,18 @@ export default {
         error(response.msg);
       }
     },
+
+    // 获取物料列表
+    *fetchMaterialInfoList({ payload, callback }, { call, put }) {
+      const response = yield call(queryMaterialInfoList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveMaterialInfoList',
+          payload: response,
+        });
+        if (callback) callback(response.data);
+      }
+    },
   },
 
   reducers: {
@@ -225,8 +242,7 @@ export default {
     },
 
     // 删除库区
-    saveAreaDelete(state, { payload }) {
-      const { id } = payload;
+    saveAreaDelete(state, { payload: id }) {
       return {
         ...state,
         areaData: {
@@ -274,14 +290,26 @@ export default {
     },
 
     // 删除危险源
-    saveSourceDelete(state, { payload }) {
-      const { id } = payload;
+    saveSourceDelete(state, { payload: id }) {
       return {
         ...state,
         sourceData: {
           ...state.sourceData,
           list: state.sourceData.list.filter(item => item.id !== id),
         },
+      };
+    },
+
+    // 物料列表
+    saveMaterialInfoList(state, { payload }) {
+      const {
+        data,
+        data: { list },
+      } = payload;
+      return {
+        ...state,
+        list,
+        materialData: data,
       };
     },
   },

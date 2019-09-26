@@ -61,3 +61,8 @@ export async function queryDangerSourceDelete({ ids }) {
     method: 'DELETE',
   });
 }
+
+// 获取物料列表列表
+export async function queryMaterialInfoList(params) {
+  return request(`/acloud_new/v2/materialInfo/list?${stringify(params)}`);
+}

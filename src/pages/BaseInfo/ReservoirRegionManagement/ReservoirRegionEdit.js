@@ -11,7 +11,7 @@ import styles from './ReservoirRegion.less';
 const { Option } = Select;
 const FormItem = Form.Item;
 
-const selectTypeList = [{ key: 1, value: '是' }, { key: 2, value: '否' }];
+const selectTypeList = [{ key: '1', value: '是' }, { key: '2', value: '否' }];
 
 // 编辑页面标题
 const editTitle = '编辑库区';
@@ -34,6 +34,7 @@ export default class ReservoirRegionEdit extends PureComponent {
     submitting: false,
     detailList: {}, // 详情列表
     dangerVisible: false,
+    dangerSourceUnitId: '',
   };
 
   // 挂载后
@@ -56,8 +57,11 @@ export default class ReservoirRegionEdit extends PureComponent {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
+          const { dangerSource, dangerSourceMessage } = currentList;
           this.setState({
             detailList: currentList,
+            hasDangerSourse: dangerSource,
+            dangerSourceUnitId: dangerSourceMessage,
           });
         },
       });
@@ -87,6 +91,8 @@ export default class ReservoirRegionEdit extends PureComponent {
           submitting: true,
         });
 
+        const { dangerSourceUnitId } = this.state;
+
         const {
           number,
           name,
@@ -98,7 +104,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           count,
           spaceBetween,
           dangerSource,
-          dangerSourceUnit,
+          // dangerSourceUnit,
           unitCode,
         } = values;
 
@@ -114,7 +120,10 @@ export default class ReservoirRegionEdit extends PureComponent {
           count,
           spaceBetween,
           dangerSource,
-          dangerSourceUnit,
+          dangerSourceUnit:
+            dangerSourceUnitId.length > 0
+              ? dangerSourceUnitId.map(item => item.id).join(',')
+              : undefined,
           unitCode,
         };
 
@@ -222,11 +231,11 @@ export default class ReservoirRegionEdit extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
-    const { unitChemicla, code } = item;
     setFieldsValue({
-      dangerSourceUnit: unitChemicla,
-      unitCode: code,
+      dangerSourceUnit: item.map(item => item.name).join(','),
+      unitCode: item.map(item => item.code).join(','),
     });
+    this.setState({ dangerSourceUnitId: item.map(item => item.id).join(',') });
     this.handleDSListClose();
   };
 
@@ -289,10 +298,15 @@ export default class ReservoirRegionEdit extends PureComponent {
       },
       {
         title: '单元内涉及的危险化学品',
-        dataIndex: 'unitChemicla',
-        key: 'unitChemicla',
+        dataIndex: 'unitChemiclaNumDetail',
+        key: 'unitChemiclaNumDetail',
         align: 'center',
         width: 200,
+        render: val => {
+          return val
+            .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
+            .join(',');
+        },
       },
     ];
 
@@ -307,6 +321,8 @@ export default class ReservoirRegionEdit extends PureComponent {
         fetch={this.fetchDangerSourseList}
         onSelect={this.handleSelectDSList}
         onClose={this.handleDSListClose}
+        rowSelection={{ type: 'checkbox ' }}
+        multiSelect={true}
       />
     );
   }
@@ -322,7 +338,7 @@ export default class ReservoirRegionEdit extends PureComponent {
       reservoirRegion: { envirTypeList },
     } = this.props;
 
-    const { hasDangerSourse, detailList } = this.state;
+    const { hasDangerSourse, detailList, dangerSourceUnitId } = this.state;
 
     const {
       companyName,
@@ -336,7 +352,7 @@ export default class ReservoirRegionEdit extends PureComponent {
       count,
       spaceBetween,
       dangerSource,
-      dangerSourceUnit,
+      // dangerSourceUnit,
       unitCode,
     } = detailList;
     const formItemLayout = {
@@ -512,13 +528,17 @@ export default class ReservoirRegionEdit extends PureComponent {
           {+hasDangerSourse === 1 && (
             <FormItem {...formItemLayout} label="所属危险化学品重大危险源单元">
               {getFieldDecorator('dangerSourceUnit', {
-                initialValue: dangerSourceUnit,
+                initialValue:
+                  dangerSourceUnitId.length > 0
+                    ? dangerSourceUnitId.map(item => item.name).join(',')
+                    : undefined,
                 getValueFromEvent: this.handleTrim,
               })(
                 <Input
                   {...itemStyles}
                   placeholder="请输入所属危险化学品重大危险源单元"
                   maxLength={15}
+                  disabled
                 />
               )}
               <Button type="primary" onClick={this.handleShowDangerSource}>
