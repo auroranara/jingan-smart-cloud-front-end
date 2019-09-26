@@ -137,7 +137,7 @@ export default class ReservoirRegionList extends PureComponent {
         message.success('删除成功！');
       },
       error: () => {
-        message.error('删除失败!');
+        message.error('已绑定库房，删除失败!');
       },
     });
   };
