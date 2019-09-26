@@ -394,7 +394,7 @@ export default class PointManagement extends Component {
               validateTrigger: 'onBlur',
               rules: [
                 { required: true, message: '请输入安装位置' },
-                { message: '请勿输入特殊字符', pattern: /^[\u4e00-\u9fa5a-z0-9\-]+$/gi },
+                { message: '请勿输入特殊字符', pattern: /^[\u4e00-\u9fa5a-z0-9\-\(\)\（\）]+$/gi },
                 { message: '输入限制为100个字符', max: 100 },
               ],
             })(
