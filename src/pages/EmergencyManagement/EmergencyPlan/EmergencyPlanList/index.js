@@ -445,18 +445,22 @@ export default class EmergencyPlanList extends Component {
         fixed: list && list.length > 0 ? 'right' : false,
         render: (_, { id, status }) => (
           <Fragment>
-            {hasDetailAuthority && <span className={styles.operation} onClick={this.handleViewClick} data-id={id}>查看</span>}
-            {hasAuditAuthority && +status === 1 && (
+            {<Button type="link" className={styles.operation} onClick={this.handleViewClick} data-id={id} disabled={!hasDetailAuthority}>查看</Button>}
+            {+status === 1 && (hasAuditAuthority ? (
               <Popconfirm title="是否通过这个应急预案?" onConfirm={() => this.handleAuditConfirm(id)} onCancel={() => this.handleAuditCancel(id)} okText="通过" cancelText="不通过">
-                <span className={styles.operation}>审核</span>
+                <Button type="link" className={styles.operation} disabled={!hasAuditAuthority}>审核</Button>
               </Popconfirm>
-            )}
-            {hasPublishAuthority && +status === 2 && (
+            ) : (
+              <Button type="link" className={styles.operation} disabled={!hasAuditAuthority}>审核</Button>
+            ))}
+            {+status === 2 && (hasPublishAuthority ? (
               <Popconfirm title="你确定要发布这个应急预案吗?" onConfirm={() => this.handlePublishConfirm(id)}>
-                <span className={styles.operation}>发布</span>
+                <Button type="link" className={styles.operation} disabled={!hasPublishAuthority}>发布</Button>
               </Popconfirm>
-            )}
-            {hasEditAuthority && (+status === 3 || +status === 4) && <span className={styles.operation} onClick={this.handleEditClick} data-id={id}>编辑</span>}
+            ) : (
+              <Button type="link" className={styles.operation} disabled={!hasPublishAuthority}>发布</Button>
+            ))}
+            {(+status === 3 || +status === 4) && <Button type="link" className={styles.operation} onClick={this.handleEditClick} data-id={id} disabled={!hasEditAuthority}>编辑</Button>}
           </Fragment>
         ),
         align: 'center',
@@ -466,7 +470,7 @@ export default class EmergencyPlanList extends Component {
         dataIndex: 'versionCount',
         fixed: list && list.length > 0 ? 'right' : false,
         render: (versionCount, item) => (
-          <span className={styles.operation} onClick={() => this.showHistory(item)}>{versionCount || 1}</span>
+          <Button type="link" className={styles.operation} onClick={() => this.showHistory(item)}>{versionCount || 1}</Button>
         ),
         align: 'center',
       },
@@ -515,9 +519,15 @@ export default class EmergencyPlanList extends Component {
           }={},
         },
       },
+      user: {
+        currentUser: {
+          permissionCodes,
+        },
+      },
       loadingHistory,
     } = this.props;
     const { historyVisible } = this.state;
+    const hasDetailAuthority = permissionCodes.includes(DETAIL_CODE);
     const COLUMNS = [
       {
         title: '版本号',
@@ -576,7 +586,7 @@ export default class EmergencyPlanList extends Component {
         title: '详情',
         dataIndex: 'operation',
         fixed: 'right',
-        render: (_, { id }) => <span className={styles.operation} onClick={this.handleViewClick} data-id={id}>查看</span>,
+        render: (_, { id }) => <Button type="link" className={styles.operation} onClick={this.handleViewClick} data-id={id} disabled={!hasDetailAuthority}>查看</Button>,
         width: 80,
         align: 'center',
       },

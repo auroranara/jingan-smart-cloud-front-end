@@ -21,6 +21,7 @@ import {
 import {
   TYPE_CODES,
   SECRET_CODES,
+  EDIT_CODE,
 } from '../EmergencyPlanList/config';
 import styles from './index.less';
 
@@ -101,11 +102,13 @@ export default class EmergencyPlanDetail extends Component {
       user: {
         currentUser: {
           unitType,
+          permissionCodes,
         },
       },
       loading,
     } = this.props;
     const isNotCompany = +unitType !== 4;
+    const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
 
     const FIELDS = [
       ...(isNotCompany ? [{
@@ -288,7 +291,7 @@ export default class EmergencyPlanDetail extends Component {
               action={
                 <Fragment>
                   <Button onClick={this.handleBackButtonClick}>返回</Button>
-                  {+historyType === 1 && (+status === 3 || +status === 4) && <Button type="primary" onClick={this.handleEditButtonClick}>编辑</Button>}
+                  {+historyType === 1 && (+status === 3 || +status === 4) && <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>}
                 </Fragment>
               }
             />
