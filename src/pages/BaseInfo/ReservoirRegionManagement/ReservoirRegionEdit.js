@@ -124,7 +124,7 @@ export default class ReservoirRegionEdit extends PureComponent {
             dangerSourceUnitId && dangerSourceUnitId.length > 0
               ? dangerSourceUnitId.map(item => item.id).join(',')
               : undefined,
-          unitCode,
+          unitCode: +dangerSource === 1 ? unitCode : '',
         };
 
         const success = () => {
@@ -216,19 +216,21 @@ export default class ReservoirRegionEdit extends PureComponent {
 
   // 显示重大危险源弹框
   handleShowDangerSource = () => {
+    const { detailList } = this.state;
+    const { companyId } = detailList;
     this.setState({ dangerVisible: true });
-    const payload = { pageSize: 10, pageNum: 1, companyId: this.companyId };
-    this.fetchDangerSourseList({ payload });
+    if (this.companyId || companyId) {
+      const payload = { pageSize: 10, pageNum: 1, companyId: this.companyId || companyId };
+      this.fetchDangerSourseList({ payload });
+    }
   };
 
   // 获取危险源列表
   fetchDangerSourseList = ({ payload }) => {
     const { dispatch } = this.props;
-    const { detailList } = this.state;
-    const { companyId } = detailList;
     dispatch({
       type: 'reservoirRegion/fetchSourceList',
-      payload: { ...payload, companyId: this.companyId || companyId },
+      payload: { ...payload },
     });
   };
 
@@ -242,6 +244,17 @@ export default class ReservoirRegionEdit extends PureComponent {
     });
     this.setState({ dangerSourceUnitId: item });
     this.handleDSListClose();
+  };
+
+  // 选择变化
+  onChangeDanger = i => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState({ hasDangerSourse: +i === 1 ? 1 : 2, dangerSourceUnitId: [] });
+    setFieldsValue({
+      unitCode: undefined,
+    });
   };
 
   handleDSListClose = () => {
@@ -331,17 +344,6 @@ export default class ReservoirRegionEdit extends PureComponent {
       />
     );
   }
-
-  // 选择变化
-  onChangeDanger = i => {
-    const {
-      form: { setFieldsValue },
-    } = this.props;
-    this.setState({ hasDangerSourse: +i === 1 ? 1 : 2 });
-    setFieldsValue({
-      unitCode: undefined,
-    });
-  };
 
   renderInfo() {
     const {

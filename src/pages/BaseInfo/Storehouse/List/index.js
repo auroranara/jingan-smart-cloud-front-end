@@ -240,14 +240,14 @@ export default class StorehouseList extends PureComponent {
         dataIndex: 'companyName',
         key: 'companyName',
         align: 'center',
-        width: 160,
+        width: 180,
       },
       {
         title: '基本信息',
         dataIndex: 'basicInfo',
         key: 'basicInfo',
         align: 'center',
-        width: 200,
+        width: 250,
         render: (data, record) => {
           const { code, number, name, area, dangerSource } = record;
           return (
@@ -281,7 +281,7 @@ export default class StorehouseList extends PureComponent {
         dataIndex: 'areaInfo',
         key: 'areaInfo',
         align: 'center',
-        width: 160,
+        width: 240,
         render: (data, record) => {
           const { anumber, aname } = record;
           return (
@@ -303,7 +303,17 @@ export default class StorehouseList extends PureComponent {
         dataIndex: 'materialsName',
         key: 'materialsName',
         align: 'center',
-        width: 160,
+        width: 250,
+        render: data =>
+          data ? (
+            <div className={styles.multi}>
+              {JSON.parse(data).map(item => (
+                <div key={item.materialId}>{item.chineName + item.unitChemiclaNum + '吨'}</div>
+              ))}
+            </div>
+          ) : (
+            ''
+          ),
       },
       {
         title: '区域位置',
@@ -326,7 +336,7 @@ export default class StorehouseList extends PureComponent {
         title: '操作',
         dataIndex: 'operation',
         key: 'operation',
-        // fixed: 'right',
+        fixed: 'right',
         align: 'center',
         width: 200,
         render: (data, record) => (
@@ -371,6 +381,7 @@ export default class StorehouseList extends PureComponent {
               columns={columns}
               dataSource={list}
               pagination={false}
+              scroll={{ x: 'max-content' }}
             />
             <Pagination
               style={{ marginTop: '20px', float: 'right' }}

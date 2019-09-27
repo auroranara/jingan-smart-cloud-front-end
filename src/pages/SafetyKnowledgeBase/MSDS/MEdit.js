@@ -169,7 +169,7 @@ export default class MEdit extends PureComponent {
           { name: 'uncode', label: 'UN编号', required: false },
           { name: 'packingMark', label: '包装标志', required: false },
           { name: 'packingKind', label: '包装类别', required: false },
-          { name: 'packingMethod', label: '包装方法', required: false },
+          { name: 'packingMethod', label: '包装方法', type: 'text', required: false },
           { name: 'transportationAttention', label: '运输注意事项', type: 'text' },
         ],
       },

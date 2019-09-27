@@ -16,6 +16,7 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import router from 'umi/router';
 import moment from 'moment';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
@@ -198,6 +199,7 @@ export default class StorehouseHandler extends PureComponent {
       selectedDangerSource: {},
       materialsModalVisible: false,
       selectedMaterials: [],
+      materialsNum: {},
     };
   }
 
@@ -267,6 +269,15 @@ export default class StorehouseHandler extends PureComponent {
           selectedRegion: { id: areaId, name: aname, number: anumber },
           dangerSourceUnitVisible: dangerSource === '1',
           selectedDangerSource: { ...dangerSourceMessage },
+          selectedMaterials: JSON.parse(materialsName).map(item => ({
+            ...item,
+            id: item.materialId,
+          })),
+          materialsNum: JSON.parse(materialsName).reduce((prev, next) => {
+            const { materialId, unitChemiclaNum } = next;
+            prev[materialId] = unitChemiclaNum;
+            return prev;
+          }, {}),
         });
       });
     }
@@ -374,13 +385,20 @@ export default class StorehouseHandler extends PureComponent {
   };
 
   handleSelectMaterials = selectedMaterials => {
-    console.log('selectedMaterials', selectedMaterials);
-
     const {
       form: { setFieldsValue },
     } = this.props;
+    const { materialsNum } = this.state;
     this.setState({ selectedMaterials, materialsModalVisible: false });
-    setFieldsValue({ materialsName: selectedMaterials.id });
+    setFieldsValue({
+      materialsName: JSON.stringify(
+        selectedMaterials.map(item => ({
+          chineName: item.chineName,
+          materialId: item.id,
+          unitChemiclaNum: materialsNum[item.id],
+        }))
+      ),
+    });
   };
 
   /**
@@ -443,6 +461,7 @@ export default class StorehouseHandler extends PureComponent {
       selectedRegion,
       selectedDangerSource,
       selectedMaterials,
+      materialsNum,
     } = this.state;
 
     return (
@@ -562,7 +581,9 @@ export default class StorehouseHandler extends PureComponent {
                   disabled
                   rows={4}
                   placeholder="请选择贮存物质名称"
-                  value={selectedMaterials.map(item => item.chineName).join('，')}
+                  value={selectedMaterials
+                    .map(item => item.chineName + materialsNum[item.id] + '吨')
+                    .join('，')}
                 />
                 <Button type="primary" onClick={this.handleMaterialsModal}>
                   选择
@@ -672,13 +693,16 @@ export default class StorehouseHandler extends PureComponent {
       match: { params: { id = null } = {} },
       company: { companyModal },
       storehouse: { regionModal, dangerSourceModal },
-      materials: materialsModal,
+      materials,
+      form: { getFieldValue },
     } = this.props;
     const {
       companyModalVisible,
       regionModalVisible,
       dangerSourceModalVisible,
       materialsModalVisible,
+      selectedMaterials,
+      materialsNum,
     } = this.state;
 
     const title = id ? '编辑库房' : '新增库房';
@@ -688,6 +712,14 @@ export default class StorehouseHandler extends PureComponent {
       { title: '库房管理', name: '库房管理', href: listUrl },
       { title, name: title },
     ];
+
+    const materialsModal = {
+      ...materials,
+      list: materials.list.map(item => {
+        const material = selectedMaterials.find(material => material.materialId === item.id) || {};
+        return { ...item, unitChemiclaNum: material.unitChemiclaNum };
+      }),
+    };
 
     const materialsColumns = [
       {
@@ -709,29 +741,31 @@ export default class StorehouseHandler extends PureComponent {
         title: '危险性类别',
         dataIndex: 'riskCateg',
         key: 'riskCateg',
+        render: data => RISK_CATEGORIES[data],
       },
       {
         title: '设计储量（吨）',
         dataIndex: 'unitChemiclaNum',
         key: 'unitChemiclaNum',
-        render: (data, row) => {
-          return (
-            <InputNumber
-              placeholder="请输入设计储量（吨）"
-              min={0}
-              ref={node => (this.input = node)}
-              onBlur={e => {
-                console.log('e', e);
-
-                console.log('e.currentTarget', e.currentTarget);
-                console.log('this.input', e.target.value);
-              }}
-              onChange={e => {
-                console.log('e.target.value', e.target);
-              }}
-            />
-          );
-        },
+        render: (data, row) => (
+          <InputNumber
+            placeholder="请输入设计储量（吨）"
+            min={0}
+            ref={node => (this.input = node)}
+            onBlur={e => {
+              this.setState({
+                materialsNum: {
+                  ...materialsNum,
+                  [row.id]: e.target.value,
+                },
+              });
+            }}
+            defaultValue={data}
+            formatter={value => (!value || isNaN(value) ? '' : value)}
+            parser={value => (!value || isNaN(value) ? '' : value)}
+            style={{ width: '100%' }}
+          />
+        ),
       },
     ];
     const materialsFields = [

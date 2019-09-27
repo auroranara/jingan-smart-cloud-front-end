@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Card, Button, Input, Select, Table, Divider, Popconfirm, message } from 'antd';
 import { Link } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import Ellipsis from '@/components/Ellipsis';
 import ToolBar from '@/components/ToolBar';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
@@ -37,6 +38,12 @@ const {
 
 const spanStyle = { md: 8, sm: 12, xs: 24 };
 
+const dangerList = {
+  1: '一级',
+  2: '二级',
+  3: '三级',
+  4: '四级',
+};
 /* session前缀 */
 const sessionPrefix = 'major_hazard_list_';
 
@@ -178,7 +185,7 @@ export default class MajorHazardList extends PureComponent {
               </p>
               <p>
                 重大危险源等级:
-                {dangerLevel}
+                {dangerList[dangerLevel]}
               </p>
             </div>
           );
@@ -189,6 +196,11 @@ export default class MajorHazardList extends PureComponent {
         dataIndex: 'desc',
         align: 'center',
         width: 200,
+        render: val => (
+          <Ellipsis tooltip length={50} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       },
       {
         title: '单元内涉及的危险化学品',
@@ -197,7 +209,12 @@ export default class MajorHazardList extends PureComponent {
         width: 200,
         render: val => {
           return val
-            .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
+            .map(item => {
+              const name = item.chineName ? item.chineName : '';
+              const num = item.unitChemiclaNum ? item.unitChemiclaNum : '';
+              const unit = item.unitChemiclaNumUnit ? item.unitChemiclaNumUnit : '';
+              return name + ' ' + num + unit;
+            })
             .join(',');
         },
       },
@@ -291,20 +308,20 @@ export default class MajorHazardList extends PureComponent {
         transform: v => v.trim(),
       },
       {
-        id: 'area',
+        id: 'location',
         label: '区域-位置',
         span: spanStyle,
         render: () => <Input placeholder="请输入区域位置" />,
         transform: v => v.trim(),
       },
       {
-        id: 'level',
+        id: 'dangerLevel',
         label: '重大危险源等级',
         span: spanStyle,
         render: () => (
           <Select allowClear placeholder="请选择危险性类别">
             {dangerTypeList.map(({ key, value }) => (
-              <Option key={key} value={value}>
+              <Option key={key} value={key}>
                 {value}
               </Option>
             ))}

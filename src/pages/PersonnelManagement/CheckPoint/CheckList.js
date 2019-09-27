@@ -7,7 +7,7 @@ import { Button, Card, Input, List, Switch } from 'antd';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles from './CompanyList.less';
-import { genListLink, genOperateCallback, getAddress, TAB_LIST, POINT_INDEX, EQUIPMENT_INDEX, SCREEN_INDEX, TABS } from './utils';
+import { genListLink, genOperateCallback, TAB_LIST, POINT_INDEX, EQUIPMENT_INDEX, SCREEN_INDEX, TABS } from './utils';
 
 const title = '卡口列表';
 const breadcrumbList = [
@@ -227,7 +227,7 @@ export default class CheckList extends PureComponent {
   };
 
   renderScreen = item => {
-    const { id, name, code, ipAddress } = item;
+    const { id, name, code, pointName } = item;
 
     const { screenStatus } = this.state;
 
@@ -251,7 +251,7 @@ export default class CheckList extends PureComponent {
           </p>
           <p className={styles.p}>
             所在卡口：
-            {ipAddress || NO_DATA}
+            {pointName || NO_DATA}
           </p>
           <p className={styles.pLast}>
             设备状态：
