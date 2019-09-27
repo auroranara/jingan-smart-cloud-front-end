@@ -814,6 +814,70 @@ module.exports = env => {
                 },
               ],
             },
+            // 工业产品生产许可证
+            {
+              name: 'industrialProductLicence',
+              code: 'baseInfo.industrialProductLicence',
+              path: '/base-info/industrial-product-licence',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/industrial-product-licence',
+                  redirect: '/base-info/industrial-product-licence/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.industrialProductLicence.listView',
+                  path: '/base-info/industrial-product-licence/list',
+                  component: './BaseInfo/IndustrialProductLicence/index',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.industrialProductLicence.add',
+                  path: '/base-info/industrial-product-licence/add',
+                  component: './BaseInfo/IndustrialProductLicence/edit',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.industrialProductLicence.edit',
+                  path: '/base-info/industrial-product-licence/edit/:id',
+                  component: './BaseInfo/IndustrialProductLicence/edit',
+                },
+              ],
+            },
+            // 注册安全工程师管理
+            {
+              name: 'registeredEngineerManagement',
+              code: 'baseInfo.registeredEngineerManagement',
+              path: '/base-info/registered-engineer-management',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/registered-engineer-management',
+                  redirect: '/base-info/registered-engineer-management/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.registeredEngineerManagement.listView',
+                  path: '/base-info/registered-engineer-management/list',
+                  component: './BaseInfo/RegisteredEngineerManagement/index',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.registeredEngineerManagement.add',
+                  path: '/base-info/registered-engineer-management/add',
+                  component: './BaseInfo/RegisteredEngineerManagement/Handle',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.registeredEngineerManagement.edit',
+                  path: '/base-info/registered-engineer-management/edit/:id',
+                  component: './BaseInfo/RegisteredEngineerManagement/Handle',
+                },
+              ],
+            },
           ],
         },
 

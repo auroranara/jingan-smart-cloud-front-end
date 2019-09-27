@@ -441,6 +441,21 @@ export default {
       edit: 'baseInfo.majorHazard.edit',
       delete: 'baseInfo.majorHazard.delete',
     },
+
+    // 工业产品生产许可证
+    industrialProductLicence: {
+      list: 'baseInfo.industrialProductLicence.listView',
+      add: 'baseInfo.industrialProductLicence.add',
+      edit: 'baseInfo.industrialProductLicence.edit',
+      delete: 'baseInfo.industrialProductLicence.delete',
+    },
+    // 注册安全工程师管理
+    registeredEngineerManagement: {
+      list: 'baseInfo.registeredEngineerManagement.listView',
+      add: 'baseInfo.registeredEngineerManagement.add',
+      edit: 'baseInfo.registeredEngineerManagement.edit',
+      delete: 'baseInfo.registeredEngineerManagement.delete',
+    },
   },
   safetyKnowledgeBase: {
     // 典型事故案例
