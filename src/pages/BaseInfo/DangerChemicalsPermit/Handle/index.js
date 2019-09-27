@@ -34,7 +34,7 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
 
-const dateFormat = 'YYYY/MM/DD';
+const dateFormat = 'YYYY-MM-DD';
 
 // 上传文件夹
 const folder = 'dangerChemicalsInfo';
@@ -340,7 +340,7 @@ export default class dangerChemicalsPermitHandle extends PureComponent {
           </FormItem>
           <FormItem label="发证日期" {...formItemLayout}>
             {getFieldDecorator('issuingDate', {
-              initialValue: issuingDate ? moment(+issuingDate) : moment(),
+              initialValue: issuingDate ? moment(+issuingDate) : '',
               rules: [{ required: true, message: '请选择发证日期' }],
             })(
               <DatePicker
@@ -360,7 +360,13 @@ export default class dangerChemicalsPermitHandle extends PureComponent {
             {getFieldDecorator('period', {
               initialValue: startDate && endDate ? [moment(+startDate), moment(+endDate)] : [],
               rules: [{ required: true, message: '请选择证书有效期' }],
-            })(<RangePicker {...itemStyles} format={dateFormat} />)}
+            })(
+              <RangePicker
+                {...itemStyles}
+                format={dateFormat}
+                getCalendarContainer={getRootChild}
+              />
+            )}
           </FormItem>
           <FormItem label="许可范围" {...formItemLayout}>
             {getFieldDecorator('permissionScope', {
@@ -370,6 +376,7 @@ export default class dangerChemicalsPermitHandle extends PureComponent {
           </FormItem>
           <FormItem label="证书附件" {...formItemLayout}>
             {getFieldDecorator('certificateFile', {
+              initialValue: photoUrl,
               rules: [{ required: true, message: '请上传证书附件' }],
             })(
               <Upload

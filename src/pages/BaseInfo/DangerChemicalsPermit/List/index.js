@@ -80,6 +80,13 @@ const certificateState = {
   4: '暂扣',
   5: '曾用',
 };
+
+const paststatusVal = {
+  0: '未到期 ',
+  1: '即将到期',
+  2: '已过期',
+};
+
 @Form.create()
 @connect(({ reservoirRegion, user, loading }) => ({
   reservoirRegion,
@@ -95,7 +102,18 @@ export default class DangerChemicalsPermitList extends PureComponent {
       currentImage: 0, // 展示附件大图下标
     };
   }
-
+  getColorVal = status => {
+    switch (+status) {
+      case 1:
+        return '#faad14';
+      case 2:
+        return '#f5222d';
+      case 3:
+        return '#1890ff';
+      default:
+        return;
+    }
+  };
   // 挂载后
   componentDidMount() {
     const {
@@ -105,15 +123,15 @@ export default class DangerChemicalsPermitList extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     // 从sessionStorage中获取存储的控件值
-    const sessionData = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
     const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
       pageNum: 1,
       pageSize: 10,
     };
+    // 重置控件
+    setFieldsValue({
+      ...payload,
+    });
     this.fetchList({ ...payload });
-    if (sessionData) {
-      setFieldsValue({ ...payload });
-    }
   }
 
   // 获取列表
@@ -150,6 +168,7 @@ export default class DangerChemicalsPermitList extends PureComponent {
     const {
       form: { setFieldsValue },
     } = this.props;
+    sessionStorage.clear();
     this.fetchList();
     setFieldsValue({
       issuingType: undefined,
@@ -158,7 +177,6 @@ export default class DangerChemicalsPermitList extends PureComponent {
       certificateState: undefined,
       companyName: undefined,
     });
-    sessionStorage.clear();
   };
 
   // 分页变动
@@ -273,7 +291,7 @@ export default class DangerChemicalsPermitList extends PureComponent {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('permitStatus')(
+                {getFieldDecorator('paststatus')(
                   <Select placeholder="到期状态">
                     {expirationStatusList.map(({ key, value }) => (
                       <Select.Option key={key} value={key}>
@@ -393,10 +411,13 @@ export default class DangerChemicalsPermitList extends PureComponent {
         align: 'center',
         width: 300,
         render: (val, record) => {
+          const { endDate, paststatus } = record;
           return (
             <div>
-              <span>{moment(record.endDate).format('YYYY-MM-DD')}</span>
-              <span>{record.paststatus}</span>
+              <span>{moment(endDate).format('YYYY-MM-DD')}</span>
+              <span style={{ color: this.getColorVal(paststatus) }}>
+                {paststatusVal[paststatus]}
+              </span>
             </div>
           );
         },
@@ -478,12 +499,19 @@ export default class DangerChemicalsPermitList extends PureComponent {
   };
 
   render() {
+    const {
+      reservoirRegion: {
+        cerData: {
+          pagination: { total = 0 },
+        },
+      },
+    } = this.props;
     const { visible, imgUrl, currentImage } = this.state;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={`单位数量：1 许可证数量：2`}
+        content={`单位数量：1 许可证数量：${total}`}
       >
         {this.renderFilter()}
         {this.renderTable()}
