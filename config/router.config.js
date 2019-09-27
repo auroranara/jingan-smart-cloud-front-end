@@ -814,6 +814,44 @@ module.exports = env => {
                 },
               ],
             },
+            // 三同时审批记录
+            {
+              name: 'threeSimultaneity',
+              code: 'baseInfo.threeSimultaneity',
+              path: '/base-info/three-simultaneity',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/three-simultaneity',
+                  redirect: '/base-info/three-simultaneity/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.threeSimultaneity.listView',
+                  path: '/base-info/three-simultaneity/list',
+                  component: './BaseInfo/ThreeSimu/ThreeSimuList',
+                },
+                {
+                  name: 'view',
+                  code: 'baseInfo.threeSimultaneity.view',
+                  path: '/base-info/three-simultaneity/detail/:id',
+                  component: './BaseInfo/ThreeSimu/ThreeSimuEdit',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.threeSimultaneity.add',
+                  path: '/base-info/three-simultaneity/add',
+                  component: './BaseInfo/ThreeSimu/ThreeSimuEdit',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.threeSimultaneity.edit',
+                  path: '/base-info/three-simultaneity/edit/:id',
+                  component: './BaseInfo/ThreeSimu/ThreeSimuEdit',
+                },
+              ],
+            },
           ],
         },
 
