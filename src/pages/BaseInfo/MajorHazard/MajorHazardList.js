@@ -37,6 +37,12 @@ const {
 
 const spanStyle = { md: 8, sm: 12, xs: 24 };
 
+const dangerList = {
+  1: '一级',
+  2: '二级',
+  3: '三级',
+  4: '四级',
+};
 /* session前缀 */
 const sessionPrefix = 'major_hazard_list_';
 
@@ -178,7 +184,7 @@ export default class MajorHazardList extends PureComponent {
               </p>
               <p>
                 重大危险源等级:
-                {dangerLevel}
+                {dangerList[dangerLevel]}
               </p>
             </div>
           );
@@ -303,7 +309,7 @@ export default class MajorHazardList extends PureComponent {
         transform: v => v.trim(),
       },
       {
-        id: 'level',
+        id: 'dangerLevel',
         label: '重大危险源等级',
         span: spanStyle,
         render: () => (

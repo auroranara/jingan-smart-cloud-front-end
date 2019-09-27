@@ -120,33 +120,34 @@ export default class TEdit extends PureComponent {
 
   // 事故经过上传照片处理
   handleAccidentChange = ({ fileList, file }) => {
-    const { status, response } = file;
-    if (status === 'uploading') {
+    if (file.status === 'uploading') {
       this.setState({
         accidentPicList: fileList,
         accidentLoading: true,
       });
-    } else if (status === 'done' && response.code === 200) {
+    } else if (file.status === 'done' && file.response.code === 200) {
       const {
         data: {
           list: [result],
         },
-      } = response;
-      this.setState({
-        accidentPicList: fileList.map(item => {
-          if (!item.url && item.response) {
-            return {
-              ...item,
-              webUrl: result.webUrl,
-              dbUrl: result.dbUrl,
-            };
-          }
-          return item;
-        }),
-        accidentLoading: false,
-      });
-      message.success('上传成功！');
-    } else if (status === 'removed') {
+      } = file.response;
+      if (result) {
+        this.setState({
+          accidentPicList: fileList.map(item => {
+            if (!item.url && item.response) {
+              return {
+                ...item,
+                url: result.webUrl,
+                dbUrl: result.dbUrl,
+              };
+            }
+            return item;
+          }),
+          accidentLoading: false,
+        });
+        message.success('上传成功！');
+      }
+    } else if (file.status === 'removed') {
       // 删除
       this.setState({
         accidentPicList: fileList.filter(item => {
@@ -168,33 +169,34 @@ export default class TEdit extends PureComponent {
 
   // 直接原因照片处理
   handleDirectChange = ({ file, fileList }) => {
-    const { status, response } = file;
-    if (status === 'uploading') {
+    if (file.status === 'uploading') {
       this.setState({
         directPicList: fileList,
         directLoading: true,
       });
-    } else if (status === 'done' && response.code === 200) {
+    } else if (file.status === 'done' && file.response.code === 200) {
       const {
         data: {
           list: [result],
         },
-      } = response;
-      this.setState({
-        directPicList: fileList.map(item => {
-          if (!item.url && item.response) {
-            return {
-              ...item,
-              webUrl: result.webUrl,
-              dbUrl: result.dbUrl,
-            };
-          }
-          return item;
-        }),
-        directLoading: false,
-      });
-      message.success('上传成功！');
-    } else if (status === 'removed') {
+      } = file.response;
+      if (result) {
+        this.setState({
+          directPicList: fileList.map(item => {
+            if (!item.url && item.response) {
+              return {
+                ...item,
+                url: result.webUrl,
+                dbUrl: result.dbUrl,
+              };
+            }
+            return item;
+          }),
+          directLoading: false,
+        });
+        message.success('上传成功！');
+      }
+    } else if (file.status === 'removed') {
       // 删除
       this.setState({
         directPicList: fileList.filter(item => {
@@ -216,33 +218,34 @@ export default class TEdit extends PureComponent {
 
   // 间接原因照片处理
   handleIndirectChange = ({ file, fileList }) => {
-    const { status, response } = file;
-    if (status === 'uploading') {
+    if (file.status === 'uploading') {
       this.setState({
         indirectPicList: fileList,
         indirectLoading: true,
       });
-    } else if (status === 'done' && response.code === 200) {
+    } else if (file.status === 'done' && file.response.code === 200) {
       const {
         data: {
           list: [result],
         },
-      } = response;
-      this.setState({
-        indirectPicList: fileList.map(item => {
-          if (!item.url && item.response) {
-            return {
-              ...item,
-              webUrl: result.webUrl,
-              dbUrl: result.dbUrl,
-            };
-          }
-          return item;
-        }),
-        indirectLoading: false,
-      });
-      message.success('上传成功！');
-    } else if (status === 'removed') {
+      } = file.response;
+      if (result) {
+        this.setState({
+          indirectPicList: fileList.map(item => {
+            if (!item.url && item.response) {
+              return {
+                ...item,
+                url: result.webUrl,
+                dbUrl: result.dbUrl,
+              };
+            }
+            return item;
+          }),
+          indirectLoading: false,
+        });
+        message.success('上传成功！');
+      }
+    } else if (file.status === 'removed') {
       // 删除
       this.setState({
         indirectPicList: fileList.filter(item => {
@@ -264,33 +267,34 @@ export default class TEdit extends PureComponent {
 
   // 其他附件照片处理
   handleAdjunctChange = ({ file, fileList }) => {
-    const { status, response } = file;
-    if (status === 'uploading') {
+    if (file.status === 'uploading') {
       this.setState({
         adjunctPicList: fileList,
         adjunctLoading: true,
       });
-    } else if (status === 'done' && response.code === 200) {
+    } else if (file.status === 'done' && file.response.code === 200) {
       const {
         data: {
           list: [result],
         },
-      } = response;
-      this.setState({
-        adjunctPicList: fileList.map(item => {
-          if (!item.url && item.response) {
-            return {
-              ...item,
-              webUrl: result.webUrl,
-              dbUrl: result.dbUrl,
-            };
-          }
-          return item;
-        }),
-        adjunctLoading: false,
-      });
-      message.success('上传成功！');
-    } else if (status === 'removed') {
+      } = file.response;
+      if (result) {
+        this.setState({
+          adjunctPicList: fileList.map(item => {
+            if (!item.url && item.response) {
+              return {
+                ...item,
+                url: result.webUrl,
+                dbUrl: result.dbUrl,
+              };
+            }
+            return item;
+          }),
+          adjunctLoading: false,
+        });
+        message.success('上传成功！');
+      }
+    } else if (file.status === 'removed') {
       // 删除
       this.setState({
         adjunctPicList: fileList.filter(item => {
@@ -329,16 +333,16 @@ export default class TEdit extends PureComponent {
           keyWords,
           abstractDesc,
           accidProcess: JSON.stringify(
-            accidentPicList.map(({ name, webUrl, dbUrl }) => ({ name, webUrl, dbUrl }))
+            accidentPicList.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl }))
           ),
           deriReason: JSON.stringify(
-            directPicList.map(({ name, webUrl, dbUrl }) => ({ name, webUrl, dbUrl }))
+            directPicList.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl }))
           ),
           inderiReason: JSON.stringify(
-            indirectPicList.map(({ name, webUrl, dbUrl }) => ({ name, webUrl, dbUrl }))
+            indirectPicList.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl }))
           ),
           otherFile: JSON.stringify(
-            adjunctPicList.map(({ name, webUrl, dbUrl }) => ({ name, webUrl, dbUrl }))
+            adjunctPicList.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl }))
           ),
         };
         const success = () => {
