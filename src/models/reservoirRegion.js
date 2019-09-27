@@ -9,6 +9,10 @@ import {
   queryDangerSourceEdit,
   queryDangerSourceDelete,
   queryMaterialInfoList,
+  queryCertificateList,
+  queryCertificateaAdd,
+  queryCertificateEdit,
+  queryCertificateDelete,
 } from '../services/company/reservoirRegion';
 
 export default {
@@ -59,6 +63,31 @@ export default {
     materialData: {
       list: [],
       pagination: {},
+    },
+    issuingTypeList: [
+      { key: '1', value: '生产' },
+      { key: '2', value: '经营' },
+      { key: '3', value: '使用' },
+    ],
+    certificateStateList: [
+      { key: '1', value: '现用' },
+      { key: '2', value: '吊销' },
+      { key: '3', value: '注销' },
+      { key: '4', value: '暂扣' },
+      { key: '5', value: '曾用' },
+    ],
+    expirationStatusList: [
+      { key: '1', value: '即将到期' },
+      { key: '2', value: '已过期' },
+      { key: '0', value: '未到期' },
+    ],
+    // 危险化学品许可证数据源
+    cerData: {
+      list: [],
+      pagination: {},
+    },
+    cerDetail: {
+      data: [],
     },
   },
 
@@ -190,6 +219,58 @@ export default {
         if (callback) callback(response.data);
       }
     },
+
+    // 许可证列表
+    *fetchCertificateList({ payload, callback }, { call, put }) {
+      const response = yield call(queryCertificateList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveCertificateList',
+          payload: response,
+        });
+        if (callback) callback(response.data);
+      }
+    },
+
+    // 新增许可证
+    *fetchCertificateAdd({ payload, success, error }, { call, put }) {
+      const response = yield call(queryCertificateaAdd, payload);
+      const { code, data } = response;
+      if (code === 200) {
+        yield put({ type: 'saveCertificateAdd', payload: data });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 修改许可证
+    *fetchCertificateEdit({ payload, success, error }, { call, put }) {
+      const response = yield call(queryCertificateEdit, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveCertificateEdit', payload: response.data });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 删除许可证
+    *fetchCertificateDelete({ payload, success, error }, { call, put }) {
+      const response = yield call(queryCertificateDelete, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveCertificateDelete', payload: payload.id });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
   },
 
   reducers: {
@@ -310,6 +391,54 @@ export default {
         ...state,
         list,
         materialData: data,
+      };
+    },
+
+    // 许可证列表
+    saveCertificateList(state, { payload }) {
+      const { data, msg } = payload;
+      return {
+        ...state,
+        msg,
+        cerData: data,
+      };
+    },
+
+    // 新增许可证
+    saveCertificateAdd(state, { payload }) {
+      return {
+        ...state,
+        cerDetail: payload,
+      };
+    },
+
+    // 编辑许可证
+    saveCertificateEdit(state, { payload }) {
+      return {
+        ...state,
+        cerDetail: {
+          ...state.cerDetail,
+          data: payload,
+        },
+      };
+    },
+
+    // 清除详情
+    clearCertificateDetail(state) {
+      return {
+        ...state,
+        sourceDetail: { data: {} },
+      };
+    },
+
+    // 删除许可证
+    saveCertificateDelete(state, { payload: id }) {
+      return {
+        ...state,
+        cerData: {
+          ...state.cerData,
+          list: state.cerData.list.filter(item => item.id !== id),
+        },
       };
     },
   },
