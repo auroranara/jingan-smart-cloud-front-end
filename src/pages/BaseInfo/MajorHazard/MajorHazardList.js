@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Card, Button, Input, Select, Table, Divider, Popconfirm, message } from 'antd';
 import { Link } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import Ellipsis from '@/components/Ellipsis';
 import ToolBar from '@/components/ToolBar';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
@@ -195,6 +196,11 @@ export default class MajorHazardList extends PureComponent {
         dataIndex: 'desc',
         align: 'center',
         width: 200,
+        render: val => (
+          <Ellipsis tooltip length={50} style={{ overflow: 'visible' }}>
+            {val}
+          </Ellipsis>
+        ),
       },
       {
         title: '单元内涉及的危险化学品',

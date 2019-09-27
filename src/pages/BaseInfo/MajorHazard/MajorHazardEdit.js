@@ -492,7 +492,7 @@ export default class MajorHazardEdit extends PureComponent {
                 {...itemStyles}
                 placeholder="请输入重大危险源描述"
                 rows={4}
-                maxLength="200"
+                maxLength="500"
               />
             )}
           </FormItem>
