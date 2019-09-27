@@ -216,19 +216,21 @@ export default class ReservoirRegionEdit extends PureComponent {
 
   // 显示重大危险源弹框
   handleShowDangerSource = () => {
+    const { detailList } = this.state;
+    const { companyId } = detailList;
     this.setState({ dangerVisible: true });
-    const payload = { pageSize: 10, pageNum: 1, companyId: this.companyId };
-    this.fetchDangerSourseList({ payload });
+    if (this.companyId || companyId) {
+      const payload = { pageSize: 10, pageNum: 1, companyId: this.companyId || companyId };
+      this.fetchDangerSourseList({ payload });
+    }
   };
 
   // 获取危险源列表
   fetchDangerSourseList = ({ payload }) => {
     const { dispatch } = this.props;
-    const { detailList } = this.state;
-    const { companyId } = detailList;
     dispatch({
       type: 'reservoirRegion/fetchSourceList',
-      payload: { ...payload, companyId: this.companyId || companyId },
+      payload: { ...payload },
     });
   };
 

@@ -237,17 +237,19 @@ export default class MajorHazardEdit extends PureComponent {
   // 显示化学品弹框
   handleShowChemicals = () => {
     this.setState({ ChemicalsVisible: true });
-    const payload = { pageSize: 10, pageNum: 1, companyId: this.companyId };
-    this.fetchChemicalsList({ payload });
+    const { detailList } = this.state;
+    const { companyId } = detailList;
+    if (this.companyId || companyId) {
+      const payload = { pageSize: 10, pageNum: 1, companyId: this.companyId || companyId };
+      this.fetchChemicalsList({ payload });
+    }
   };
 
   fetchChemicalsList = ({ payload }) => {
     const { dispatch } = this.props;
-    const { detailList } = this.state;
-    const { companyId } = detailList;
     dispatch({
       type: 'reservoirRegion/fetchMaterialInfoList',
-      payload: { ...payload, companyId: this.companyId || companyId },
+      payload: { ...payload },
     });
   };
 
