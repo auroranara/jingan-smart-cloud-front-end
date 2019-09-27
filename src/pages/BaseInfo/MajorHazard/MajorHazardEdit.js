@@ -237,13 +237,18 @@ export default class MajorHazardEdit extends PureComponent {
   // 显示化学品弹框
   handleShowChemicals = () => {
     this.setState({ ChemicalsVisible: true });
-    const payload = { pageSize: 10, pageNum: 1 };
+    const payload = { pageSize: 10, pageNum: 1, companyId: this.companyId };
     this.fetchChemicalsList({ payload });
   };
 
   fetchChemicalsList = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'reservoirRegion/fetchMaterialInfoList', payload });
+    const { detailList } = this.state;
+    const { companyId } = detailList;
+    dispatch({
+      type: 'reservoirRegion/fetchMaterialInfoList',
+      payload: { ...payload, companyId: this.companyId || companyId },
+    });
   };
 
   handleSelectChemicals = item => {
@@ -261,7 +266,13 @@ export default class MajorHazardEdit extends PureComponent {
     });
     setFieldsValue({
       unitChemicla: chemicalList
-        .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
+        .map(item => {
+          const { chineName, unitChemiclaNum, unitChemiclaNumUnit } = item;
+          const name = chineName ? chineName : '';
+          const num = unitChemiclaNum ? unitChemiclaNum : '';
+          const unit = unitChemiclaNumUnit ? unitChemiclaNumUnit : '';
+          return name + ' ' + num + unit;
+        })
         .join(','),
     });
     this.setState({ chemicalList: chemicalList });
@@ -422,7 +433,7 @@ export default class MajorHazardEdit extends PureComponent {
               rules: [
                 {
                   required: true,
-                  message: '请输入单位',
+                  message: '请选择单位',
                 },
               ],
             })(
@@ -479,7 +490,7 @@ export default class MajorHazardEdit extends PureComponent {
                 {...itemStyles}
                 placeholder="请输入重大危险源描述"
                 rows={4}
-                maxLength="2000"
+                maxLength="200"
               />
             )}
           </FormItem>
@@ -493,9 +504,9 @@ export default class MajorHazardEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
+              <Select {...itemStyles} allowClear placeholder="请选择生产经营活动类型">
                 {productTypeList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -512,7 +523,7 @@ export default class MajorHazardEdit extends PureComponent {
                 },
               ],
             })(
-              <Select {...itemStyles} allowClear placeholder="请选择">
+              <Select {...itemStyles} allowClear placeholder="请选择生产存储场所产权">
                 {memoryPlaceList.map(({ key, value }) => (
                   <Option key={key} value={key}>
                     {value}
@@ -533,7 +544,7 @@ export default class MajorHazardEdit extends PureComponent {
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {antiStaticList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -571,7 +582,7 @@ export default class MajorHazardEdit extends PureComponent {
               rules: [
                 {
                   required: true,
-                  message: '请输入投用日期',
+                  message: '请选择投用日期',
                 },
               ],
             })(
@@ -607,7 +618,7 @@ export default class MajorHazardEdit extends PureComponent {
             })(
               <Select {...itemStyles} allowClear placeholder="请选择重大危险源等级">
                 {dangerTypeList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -652,7 +663,7 @@ export default class MajorHazardEdit extends PureComponent {
             })(
               <Select {...itemStyles} allowClear placeholder="请选择危险化学品性质">
                 {dangerChemicalsList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}

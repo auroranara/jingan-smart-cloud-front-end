@@ -197,7 +197,12 @@ export default class MajorHazardList extends PureComponent {
         width: 200,
         render: val => {
           return val
-            .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
+            .map(item => {
+              const name = item.chineName ? item.chineName : '';
+              const num = item.unitChemiclaNum ? item.unitChemiclaNum : '';
+              const unit = item.unitChemiclaNumUnit ? item.unitChemiclaNumUnit : '';
+              return name + ' ' + num + unit;
+            })
             .join(',');
         },
       },
@@ -291,7 +296,7 @@ export default class MajorHazardList extends PureComponent {
         transform: v => v.trim(),
       },
       {
-        id: 'area',
+        id: 'location',
         label: '区域-位置',
         span: spanStyle,
         render: () => <Input placeholder="请输入区域位置" />,
@@ -304,7 +309,7 @@ export default class MajorHazardList extends PureComponent {
         render: () => (
           <Select allowClear placeholder="请选择危险性类别">
             {dangerTypeList.map(({ key, value }) => (
-              <Option key={key} value={value}>
+              <Option key={key} value={key}>
                 {value}
               </Option>
             ))}
