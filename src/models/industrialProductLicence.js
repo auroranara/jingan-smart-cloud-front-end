@@ -31,7 +31,21 @@ export default {
       { key: '3', value: '暂扣' },
       { key: '4', value: '曾用' },
     ],
-    engineerLevelList: [],
+    engineerLevelList: [
+      { key: '0', value: '初级' },
+      { key: '1', value: '中级' },
+      { key: '2', value: '高级' },
+    ],
+    sexList: [{ key: '0', value: '男' }, { key: '1', value: '女' }],
+    specialityList: [
+      { key: '0', value: '煤矿安全' },
+      { key: '1', value: '金属非金属矿山安全' },
+      { key: '2', value: '化工安全' },
+      { key: '3', value: '金属冶炼安全' },
+      { key: '4', value: '建筑施工安全' },
+      { key: '4', value: '道路运输安全' },
+      { key: '4', value: '其他安全（不包括消防安全）' },
+    ],
   },
 
   effects: {},

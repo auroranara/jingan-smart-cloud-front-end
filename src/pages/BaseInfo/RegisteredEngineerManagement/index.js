@@ -9,7 +9,7 @@ import codes from '@/utils/codes';
 const { Option } = Select;
 
 // 标题
-const title = '工业产品生产许可证';
+const title = '注册安全工程师管理';
 
 //面包屑
 const breadcrumbList = [
@@ -24,7 +24,7 @@ const breadcrumbList = [
   },
   {
     title,
-    name: '工业产品生产许可证',
+    name: '注册安全工程师管理',
   },
 ];
 
@@ -109,19 +109,19 @@ export default class licenceList extends PureComponent {
           return (
             <div>
               <p>
-                种类:
+                姓名:
                 {code}
               </p>
               <p>
-                发证机关:
+                性别:
                 {name}
               </p>
               <p>
-                发证日期:
+                出生年月:
                 {dangerLevel}
               </p>
               <p>
-                证书编号:
+                联系电话:
                 {dangerLevel}
               </p>
             </div>
@@ -129,20 +129,54 @@ export default class licenceList extends PureComponent {
         },
       },
       {
-        title: '证件状态',
+        title: '执业资格证',
         dataIndex: 'desc',
         align: 'center',
         width: 200,
+        render: (val, text) => {
+          const { code, name, dangerLevel } = text;
+          return (
+            <div>
+              <p>
+                工程师级别:
+                {code}
+              </p>
+              <p>
+                专业类别:
+                {name}
+              </p>
+              <p>
+                执业资格证书编号:
+                {dangerLevel}
+              </p>
+            </div>
+          );
+        },
       },
       {
-        title: '有效期至',
+        title: '注册证',
         dataIndex: 'unitChemiclaNumDetail',
         align: 'center',
         width: 200,
-        render: val => {
-          return val
-            .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
-            .join(',');
+        render: (val, text) => {
+          const { name, dangerLevel } = text;
+          return (
+            <div>
+              <p>即将到期</p>
+              <p>
+                注册日期:
+                {name}
+              </p>
+              <p>
+                注册证书编号:
+                {dangerLevel}
+              </p>
+              <p>
+                注册有效日期:
+                {dangerLevel}
+              </p>
+            </div>
+          );
         },
       },
       {
@@ -150,6 +184,37 @@ export default class licenceList extends PureComponent {
         dataIndex: 'location',
         align: 'center',
         width: 200,
+        render: (val, record) => {
+          const { accidProcessList, deriReasonList } = record;
+          return (
+            <Fragment>
+              {[
+                {
+                  label: '执业资格证书附件',
+                  value: accidProcessList,
+                },
+                {
+                  label: '注册证书附件',
+                  value: deriReasonList,
+                },
+              ].map(({ label, value, id }) => {
+                return value && value.length ? (
+                  <p
+                    onClick={() => {
+                      this.handleShowModal(value);
+                    }}
+                  >
+                    {label}:<a>查看附件</a>
+                  </p>
+                ) : (
+                  <p>
+                    {label}: <span style={{ color: '#aaa' }}>查看附件</span>
+                  </p>
+                );
+              })}
+            </Fragment>
+          );
+        },
       },
       {
         title: '操作',
@@ -209,9 +274,8 @@ export default class licenceList extends PureComponent {
         industrialData: {
           pagination: { total },
         },
-        credentialTypeList,
         expireList,
-        credentialStatusList,
+        engineerLevelList,
       },
       user: {
         currentUser: { permissionCodes },
@@ -256,13 +320,20 @@ export default class licenceList extends PureComponent {
         span: spanStyle,
         render: () => (
           <Select allowClear placeholder="请选择工程师级别">
-            {credentialStatusList.map(({ key, value }) => (
+            {engineerLevelList.map(({ key, value }) => (
               <Option key={key} value={value}>
                 {value}
               </Option>
             ))}
           </Select>
         ),
+      },
+      {
+        id: 'companyName',
+        label: '注册证书编号',
+        span: spanStyle,
+        render: () => <Input placeholder="请输入注册证书编号" />,
+        transform: v => v.trim(),
       },
       {
         id: 'companyName',
@@ -299,7 +370,7 @@ export default class licenceList extends PureComponent {
               <Button
                 type="primary"
                 disabled={!addCode}
-                href={`#/base-info/industrial-product-licence/add`}
+                href={`#/base-info/registered-engineer-management/add`}
               >
                 新增人员
               </Button>
