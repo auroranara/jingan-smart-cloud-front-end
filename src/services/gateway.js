@@ -3,22 +3,22 @@ import request from '@/utils/request';
 
 // 获取网关列表
 export async function getList(params) {
-  return request(`/acloud_new/v2/transmission/companies?${stringify(params)}`);
+  return request(`/acloud_new/v2/monitor/gatewayEquipmentForPage?${stringify(params)}`);
 }
 
 // 获取绑定设备列表
 export async function getBindingList(params) {
-  return request(`/acloud_new/v2/transmission/companies?${stringify(params)}`);
+  return request(`/acloud_new/v2/monitor/dataExecuteEquipmentForPage?${stringify(params)}`);
 }
 
 // 获取网关详情
-export async function getDetail(params) {
-  return request(`/acloud_new/v2/transmission/companies?${stringify(params)}`);
+export async function getDetail({ id }) {
+  return request(`/acloud_new/v2/monitor/gatewayEquipment/${id}`);
 }
 
 // 获取网关设备类型
-export async function getTypeList() {
-  return request(`/acloud_new/v2/monitor/equipmentType?type=2`);
+export async function getTypeList(params) {
+  return request(`/acloud_new/v2/monitor/equipmentType?${stringify(params)}`);
 }
 
 // 获取协议列表
@@ -32,8 +32,8 @@ export async function getNetworkingList() {
 }
 
 // 获取品牌列表
-export async function getBrandList() {
-  return request(`/acloud_new/v2/monitor/equipmentBrand?type=2`);
+export async function getBrandList(params) {
+  return request(`/acloud_new/v2/monitor/equipmentBrand?${stringify(params)}`);
 }
 
 // 获取型号列表
@@ -56,9 +56,14 @@ export async function getFloorList(params) {
   return request(`/acloud_new/v2/buildingInfo/floorList.json?${stringify(params)}`);
 }
 
+// 图片列表
+export async function getPictureList(params) {
+  return request(`/acloud_new/v2/pointManage/fixImgInfo?${stringify(params)}`);
+}
+
 // 新增网关
 export async function add(params) {
-  return request(`/acloud_new/v2/emergency/emergencyPlan`, {
+  return request(`/acloud_new/v2/monitor/gatewayEquipment`, {
     method: 'POST',
     body: params,
   });
@@ -66,16 +71,15 @@ export async function add(params) {
 
 // 编辑网关
 export async function edit(params) {
-  return request(`/acloud_new/v2/emergency/emergencyPlan`, {
+  return request(`/acloud_new/v2/monitor/gatewayEquipment`, {
     method: 'PUT',
     body: params,
   });
 }
 
 // 删除网关
-export async function remove(params) {
-  return request(`/acloud_new/v2/emergency/emergencyPlan`, {
+export async function remove({ id }) {
+  return request(`/acloud_new/v2/monitor/gatewayEquipment/${id}`, {
     method: 'DELETE',
-    body: params,
   });
 }

@@ -10,6 +10,7 @@ import {
   getOperatorList,
   getBuildingList,
   getFloorList,
+  getPictureList,
   add,
   edit,
   remove,
@@ -60,7 +61,7 @@ export default {
       }
     },
     *fetchTypeList({ payload, callback }, { call, put }) {
-      const response = yield call(getTypeList, payload);
+      const response = yield call(getTypeList, { ...payload, type: 2 });
       const { code, data } = response || {};
       if (code === 200 && data && data.list) {
         yield put({
@@ -99,7 +100,7 @@ export default {
       }
     },
     *fetchBrandList({ payload, callback }, { call, put }) {
-      const response = yield call(getBrandList, payload);
+      const response = yield call(getBrandList, { ...payload, type: 2 });
       const { code, data } = response || {};
       if (code === 200 && data && data.list) {
         yield put({
@@ -163,17 +164,30 @@ export default {
         callback && callback(data.list);
       }
     },
+    *fetchPictureList({ payload, callback }, { call, put }) {
+      const response = yield call(getPictureList, payload);
+      const { code, data } = response || {};
+      if (code === 200 && data && data.list) {
+        callback && callback(data.list);
+      }
+    },
     *fetchDetail({ payload, callback }, { call, put }) {
       const response = yield call(getDetail, payload);
       const { code, data } = response || {};
       if (code === 200 && data) {
+        const { installPhotoList, pointFixInfoList, buildingId, floorId } = data;
+        const detail = {
+          ...data,
+          installPhotoList: installPhotoList && installPhotoList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1-index, status: 'done' })),
+          marker: pointFixInfoList && pointFixInfoList.map(({ fixImgId, imgType, xnum, ynum }) => ({ key: Math.random(), id: fixImgId, ichnographyType: `${imgType}`, xNum: xnum, yNum: ynum, ...(+imgType === 2 && { buildingId, floorId }) })),
+        };
         yield put({
           type: 'save',
           payload: {
-            detail: data,
+            detail,
           },
         });
-        callback && callback(data);
+        callback && callback(detail);
       }
     },
     *add({ payload, callback }, { call }) {

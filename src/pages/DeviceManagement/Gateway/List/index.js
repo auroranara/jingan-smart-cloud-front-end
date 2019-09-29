@@ -24,7 +24,7 @@ const breadcrumbList = [
     name: title,
   },
 ];
-const DEFAULT_FORMAT = 'YYYY.M.D';
+const DEFAULT_FORMAT = 'YYYY.MM.DD';
 const DEFAULT_PAGE_NUM = 1;
 const DEFAULT_PAGE_SIZE = 10;
 const DETAIL_CODE = 'deviceManagement.gateway.detail';
@@ -86,7 +86,7 @@ export default class GatewayList extends Component {
   componentDidMount() {
     const { getTypeList, getList } = this.props;
     getTypeList();
-    // getList();
+    getList();
   }
 
   setFormReference = form => {
@@ -95,7 +95,7 @@ export default class GatewayList extends Component {
 
   showBinding = (data) => {
     const { getBindingList } = this.props;
-    // getBindingList({ id: data.id });
+    getBindingList({ id: data.id });
     this.setState({
       visible: true,
       data,
@@ -185,7 +185,7 @@ export default class GatewayList extends Component {
         render: _this => <Input placeholder="请输入单位名称" onPressEnter={_this.handleSearch} maxLength={50} />,
       }]: []),
       {
-        id: 'type',
+        id: 'equipmentType',
         label: '设备类型',
         render: () => (
           <Select placeholder="请选择设备类型" allowClear>
@@ -213,8 +213,9 @@ export default class GatewayList extends Component {
   renderTable = () => {
     const {
       gateway: {
+        typeList,
         list: {
-          // list=[],
+          list=[],
           pagination: {
             pageSize=DEFAULT_PAGE_SIZE,
             pageNum=DEFAULT_PAGE_NUM,
@@ -234,23 +235,17 @@ export default class GatewayList extends Component {
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
     const hasDetailAuthority = permissionCodes.includes(DETAIL_CODE);
     const hasDeleteAuthority = permissionCodes.includes(DELETE_CODE);
-    const list = [{
-      id: 1,
-      name: '213',
-      status: '0',
-      binding: 3,
-    }];
 
     const columns = [
       {
         title: '设备基本信息',
         dataIndex: 'basicInfo',
-        render: (_, { type, brand, model, name, code }) => {
+        render: (_, { equipmentType, brandName, modelName, name, code }) => {
           return (
             <div className={styles.multi}>
-              <div>类型：{type}</div>
-              <div>品牌：{brand}</div>
-              <div>型号：{model}</div>
+              <div>类型：{(typeList.filter(({ id }) => id === equipmentType)[0] || {}).name}</div>
+              <div>品牌：{brandName}</div>
+              <div>型号：{modelName}</div>
               <div>名称：{name}</div>
               <div>编号：{code}</div>
             </div>
@@ -260,8 +255,16 @@ export default class GatewayList extends Component {
       },
       {
         title: '有效期至',
-        dataIndex: 'endDate',
-        render: endDate => endDate && moment(endDate).format(DEFAULT_FORMAT),
+        dataIndex: 'expireDate',
+        render: (expireDate, { expireStatus }) => {
+          const label = ({ 0: '', 1: '即将到期', 2: '已过期' })[expireStatus];
+          return (
+            <div className={styles.multi}>
+              {label && <div className={styles.red}>{label}</div>}
+              <div>{expireDate && moment(expireDate).format(DEFAULT_FORMAT)}</div>
+            </div>
+          );
+        },
         align: 'center',
       },
       ...(isNotCompany ? [
@@ -274,13 +277,13 @@ export default class GatewayList extends Component {
       {
         title: '区域位置',
         dataIndex: 'location',
-        render: (_, { area, location }) => [area, location].filter(v => v).join(''),
+        render: (_, { locationType, buildingName, floorName, area, location }) => (({ 0: [buildingName, floorName, location], 1: [area, location] })[locationType] || []).filter(v => v).join(''),
         align: 'center',
       },
       {
         title: '已绑定数据处理设备',
-        dataIndex: 'binding',
-        render: (binding, data) => <span className={binding > 0 ? styles.operation : undefined} onClick={() => this.showBinding(data)}>{binding}</span>,
+        dataIndex: 'dataExecuteEquipmentCount',
+        render: (dataExecuteEquipmentCount, data) => <Button type="link" className={styles.operation} onClick={() => this.showBinding(data)} disabled={(dataExecuteEquipmentCount || 0) === 0}>{dataExecuteEquipmentCount || 0}</Button>,
         align: 'center',
       },
       {
@@ -288,12 +291,14 @@ export default class GatewayList extends Component {
         dataIndex: 'operation',
         render: (_, { id }) => (
           <Fragment>
-            {hasDetailAuthority && <span className={styles.operation} onClick={this.handleViewClick} data-id={id}>查看</span>}
-            {hasEditAuthority && <span className={styles.operation} onClick={this.handleEditClick} data-id={id}>编辑</span>}
-            {hasDeleteAuthority && (
+            {<Button type="link" className={styles.operation} onClick={this.handleViewClick} data-id={id} disabled={!hasDetailAuthority}>查看</Button>}
+            {<Button type="link" className={styles.operation} onClick={this.handleEditClick} data-id={id} disabled={!hasEditAuthority}>编辑</Button>}
+            {hasDeleteAuthority ? (
               <Popconfirm title="你确定要删除这个网关设备吗?" onConfirm={() => this.handleDeleteClick(id)}>
-                <span className={styles.operation}>删除</span>
+                <Button type="link" className={styles.operation}>删除</Button>
               </Popconfirm>
+            ) : (
+              <Button type="link" className={styles.operation} disabled>删除</Button>
             )}
           </Fragment>
         ),
@@ -378,7 +383,7 @@ export default class GatewayList extends Component {
       {
         title: '已绑定传感器',
         dataIndex: 'binding',
-        render: (binding, data) => <span className={binding > 0 ? styles.operation : undefined}>{binding}</span>,
+        render: (binding, data) => <Button type="link" className={styles.operation} disabled={binding === 0}>{binding}</Button>,
         align: 'center',
       },
     ];

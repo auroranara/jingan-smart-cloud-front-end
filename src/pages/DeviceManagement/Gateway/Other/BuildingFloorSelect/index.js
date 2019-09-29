@@ -46,12 +46,32 @@ export default class BuildingFloorSelect extends Component {
   }
 
   componentDidMount() {
-    const { getBuildingList, companyId } = this.props;
-    if (companyId) {
+    const { getBuildingList, getFloorList, companyId, marker, onChange, value } = this.props;
+    const [buildingId] = value || [];
+    let flag = true;
+    (marker || []).forEach(({ ichnographyType, buildingId, floorId }) => {
+      if (ichnographyType === '2') {
+        // getFloorList({
+        //   pageNum: 1,
+        //   pageSize: 0,
+        //   building_id: buildingId,
+        // });
+        onChange && onChange([buildingId, floorId]);
+        flag = false;
+      }
+    });
+    if (flag && companyId) {
       getBuildingList({
         pageNum: 1,
         pageSize: 0,
         company_id: companyId,
+      });
+    }
+    if (flag && buildingId) {
+      getFloorList({
+        pageNum: 1,
+        pageSize: 0,
+        building_id: buildingId,
       });
     }
   }
@@ -60,10 +80,6 @@ export default class BuildingFloorSelect extends Component {
     const { companyId } = this.props;
     if (companyId !== prevCompanyId) {
       this.handleReload();
-      if (companyId) {
-        const { onHelpChange } = this.props;
-        onHelpChange && onHelpChange();
-      }
     }
   }
 
@@ -75,20 +91,12 @@ export default class BuildingFloorSelect extends Component {
       building_id,
     });
     onChange && onChange([building_id]);
-    this.setState({
-      floorOpen: true,
-    });
   }
 
   handleBuildingDropdownVisibleChange = (buildingOpen) => {
-    const { companyId, onHelpChange } = this.props;
-    if (buildingOpen && !companyId) {
-      onHelpChange && onHelpChange(true);
-    } else {
-      this.setState({
-        buildingOpen,
-      });
-    }
+    this.setState({
+      buildingOpen,
+    });
   }
 
   handleFloorChange = (floorId) => {
@@ -97,16 +105,12 @@ export default class BuildingFloorSelect extends Component {
   }
 
   handleFloorDropdownVisibleChange = (floorOpen) => {
-    const { companyId, value, onHelpChange } = this.props;
+    const { value } = this.props;
     const [building] = value || [];
     if (!building && floorOpen) {
-      if (companyId) {
-        this.setState({
-          buildingOpen: true,
-        });
-      } else {
-        onHelpChange && onHelpChange(true);
-      }
+      this.setState({
+        buildingOpen: true,
+      });
     } else {
       this.setState({
         floorOpen,
