@@ -66,3 +66,33 @@ export async function queryDangerSourceDelete({ ids }) {
 export async function queryMaterialInfoList(params) {
   return request(`/acloud_new/v2/materialInfo/list?${stringify(params)}`);
 }
+
+// 获取危险化学品企业证书列表
+export async function queryCertificateList(params) {
+  return request(
+    `/acloud_new/v2/hazardChemicalCertificate/hazardchemicalCertificateForPage?${stringify(params)}`
+  );
+}
+
+// 新增危险化学品企业证书
+export async function queryCertificateaAdd(params) {
+  return request(`/acloud_new/v2/hazardChemicalCertificate/hazardchemicalCertificate`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+// 编辑危险化学品企业证书
+export async function queryCertificateEdit(params) {
+  return request(`/acloud_new/v2/hazardChemicalCertificate/hazardchemicalCertificate`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+// 删除危险化学品企业证书
+export async function queryCertificateDelete({ id }) {
+  return request(`/acloud_new/v2/hazardChemicalCertificate/hazardChemicalCertificate/${id}`, {
+    method: 'DELETE',
+  });
+}
