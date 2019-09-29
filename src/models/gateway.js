@@ -202,8 +202,8 @@ export default {
     },
     *remove({ payload, callback }, { call }) {
       const response = yield call(remove, payload);
-      const { code } = response || {};
-      callback && callback(code === 200);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
     },
   },
 

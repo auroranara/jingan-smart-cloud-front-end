@@ -95,7 +95,7 @@ export default class GatewayList extends Component {
 
   showBinding = (data) => {
     const { getBindingList } = this.props;
-    getBindingList({ id: data.id });
+    getBindingList({ gateway_equipment: data.id });
     this.setState({
       visible: true,
       data,
@@ -140,13 +140,13 @@ export default class GatewayList extends Component {
   // 删除按钮点击事件
   handleDeleteClick = (id) => {
     const { remove } = this.props;
-    remove({ id }, (isSuccess) => {
+    remove({ id }, (isSuccess, msg) => {
       if (isSuccess) {
         const { gateway: { list: { pagination: { pageNum, pageSize } } } } = this.props;
         message.success('删除成功');
         this.handleListChange(pageNum, pageSize);
       } else {
-        message.error('删除失败，请稍后重试！');
+        message.error(msg || '删除失败，请稍后重试！');
       }
     });
   }
@@ -356,13 +356,13 @@ export default class GatewayList extends Component {
       {
         title: '数据处理设备',
         dataIndex: 'basicInfo',
-        render: (_, { type, brand, name, code }) => {
+        render: (_, { equipmentTypeName, brandName, name, code }) => {
           return (
             <div className={styles.multi}>
-              <div>类型：{type}</div>
-              <div>品牌：{brand}</div>
-              <div>名称：{name}</div>
-              <div>编号：{code}</div>
+              <div>设备类型：{equipmentTypeName}</div>
+              <div>品牌：{brandName}</div>
+              <div>设备名称：{name}</div>
+              <div>设备编号：{code}</div>
             </div>
           );
         },
@@ -370,20 +370,28 @@ export default class GatewayList extends Component {
       },
       {
         title: '有效期至',
-        dataIndex: 'endDate',
-        render: endDate => endDate && moment(endDate).format(DEFAULT_FORMAT),
+        dataIndex: 'expireDate',
+        render: (expireDate, { expireStatus }) => {
+          const label = ({ 0: '', 1: '即将到期', 2: '已过期' })[expireStatus];
+          return (
+            <div className={styles.multi}>
+              {label && <div className={styles.red}>{label}</div>}
+              <div>{expireDate && moment(expireDate).format(DEFAULT_FORMAT)}</div>
+            </div>
+          );
+        },
         align: 'center',
       },
       {
         title: '区域位置',
         dataIndex: 'location',
-        render: (_, { area, location }) => [area, location].filter(v => v).join(''),
+        render: (_, { locationType, buildingName, floorName, area, location }) => (({ 0: [buildingName, floorName, location], 1: [area, location] })[locationType] || []).filter(v => v).join(''),
         align: 'center',
       },
       {
         title: '已绑定传感器',
-        dataIndex: 'binding',
-        render: (binding, data) => <Button type="link" className={styles.operation} disabled={binding === 0}>{binding}</Button>,
+        dataIndex: 'sensorCount',
+        render: (sensorCount, { id }) => <Button type="link" className={styles.operation} href={`/#/device-management/new-sensor/list?dataExecuteEquipmentId=${id}`} target="_blank" disabled={(sensorCount || 0) === 0}>{sensorCount || 0}</Button>,
         align: 'center',
       },
     ];
@@ -394,7 +402,7 @@ export default class GatewayList extends Component {
         visible={visible}
         onCancel={this.hideBinding}
         footer={null}
-        width="60%"
+        width={600}
         className={styles.modal}
         zIndex={9999}
       >
