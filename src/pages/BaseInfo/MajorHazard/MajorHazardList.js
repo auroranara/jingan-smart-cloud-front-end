@@ -131,10 +131,21 @@ export default class MajorHazardList extends PureComponent {
 
   // 分页变动
   handlePageChange = (pageNum, pageSize) => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+
+    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
+      pageNum: 1,
+      pageSize: 10,
+    };
     dispatch({
-      type: 'reservoirRegion/fetchSourceList',
+      type: 'reservoirRegion/fetchCertificateList',
       payload: {
+        ...payload,
         pageSize,
         pageNum,
       },

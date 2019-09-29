@@ -2,28 +2,14 @@ import { PureComponent } from 'react';
 import { connect } from 'dva';
 import { Card, Button, Form, Input, Select, Upload, DatePicker, Icon, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import urls from '@/utils/urls';
-import titles from '@/utils/titles';
+import FooterToolbar from '@/components/FooterToolbar';
 import router from 'umi/router';
 import moment from 'moment';
 import { getToken } from 'utils/authority';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 
 const FormItem = Form.Item;
-const { TextArea } = Input;
 const { RangePicker } = DatePicker;
-
-const {
-  home: homeUrl,
-  baseInfo: {
-    dangerChemicalsPermit: { list: listUrl },
-  },
-} = urls;
-
-const {
-  home: homeTitle,
-  dangerChemicalsPermit: { menu: menuTitle, list: listTitle },
-} = titles;
 
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -31,28 +17,25 @@ const formItemLayout = {
 };
 
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
-/* root下的div */
-const getRootChild = () => document.querySelector('#root>div');
-
-const dateFormat = 'YYYY-MM-DD';
 
 // 上传文件夹
-const folder = 'dangerChemicalsInfo';
+const folder = 'safetyEngInfo';
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 
 @Form.create()
-@connect(({ reservoirRegion, industrialProductLicence, videoMonitor, loading }) => ({
+@connect(({ reservoirRegion, videoMonitor, loading }) => ({
   reservoirRegion,
   videoMonitor,
-  industrialProductLicence,
-  loading: loading.models.industrialProductLicence,
+  loading: loading.models.reservoirRegion,
 }))
-export default class industrialEdit extends PureComponent {
+export default class RegSafetyEngEdit extends PureComponent {
   state = {
     companyVisible: false, // 弹框是否显示
-    uploading: false, // 上传是否加载
-    photoUrl: [], // 上传照片
+    requireFilesList: [],
+    regFilesList: [],
+    reqUploading: false, // 上传是否加载
+    regUploading: false,
     detailList: {},
   };
 
@@ -67,18 +50,25 @@ export default class industrialEdit extends PureComponent {
 
     if (id) {
       dispatch({
-        type: 'reservoirRegion/fetchCertificateList',
+        type: 'reservoirRegion/fetchSafetyEngList',
         payload: {
-          pageSize: 10,
+          pageSize: 48,
           pageNum: 1,
         },
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { certificateFileList } = currentList;
+          const { requirementsFilesList, regFilesList } = currentList;
           this.setState({
             detailList: currentList,
-            photoUrl: certificateFileList.map(({ dbUrl, webUrl }, index) => ({
+            requireFilesList: requirementsFilesList.map(({ dbUrl, webUrl }, index) => ({
+              uid: index,
+              status: 'done',
+              name: `附件${index + 1}`,
+              webUrl,
+              dbUrl,
+            })),
+            regFilesList: regFilesList.map(({ dbUrl, webUrl }, index) => ({
               uid: index,
               status: 'done',
               name: `附件${index + 1}`,
@@ -90,13 +80,13 @@ export default class industrialEdit extends PureComponent {
       });
     } else {
       dispatch({
-        type: 'reservoirRegion/clearCertificateDetail',
+        type: 'reservoirRegion/clearSafetyEngDetail',
       });
     }
   }
 
   goBack = () => {
-    router.push(listUrl);
+    router.push('/base-info/registered-engineer-management/list');
   };
 
   handleSubmit = () => {
@@ -109,31 +99,39 @@ export default class industrialEdit extends PureComponent {
     } = this.props;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const { photoUrl } = this.state;
-        console.log('photoUrl', photoUrl);
+        const { requireFilesList, regFilesList } = this.state;
         const {
-          issuingType,
-          certificateState,
-          issuingOrgan,
-          issuingDate,
-          certificateNumber,
+          name,
+          sex,
+          birth,
+          phone,
+          level,
+          category,
+          requirementsCode,
+          regDate,
+          regCode,
           period: [startTime, endTime],
-          permissionScope,
         } = values;
         const payload = {
           id,
           companyId: this.companyId,
-          issuingType,
-          certificateState,
-          issuingOrgan,
-          issuingDate: issuingDate.format('YYYY-MM-DD'),
+          name,
+          sex,
+          birth: birth.format('YYYY-MM-DD'),
+          phone,
+          level,
+          category,
+          requirementsCode,
+          regDate: regDate.format('YYYY-MM-DD'),
+          regCode,
           startDate: startTime.format('YYYY-MM-DD'),
           endDate: endTime.format('YYYY-MM-DD'),
-          certificateNumber,
-          permissionScope,
-          certificateFile: JSON.stringify(
-            photoUrl.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl }))
-          ),
+          requirementsFilesList: requireFilesList.map(({ name, url, dbUrl }) => ({
+            name,
+            webUrl: url,
+            dbUrl,
+          })),
+          regFilesList: regFilesList.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl })),
         };
 
         const success = () => {
@@ -147,14 +145,14 @@ export default class industrialEdit extends PureComponent {
 
         if (id) {
           dispatch({
-            type: 'reservoirRegion/fetchCertificateEdit',
+            type: 'reservoirRegion/fetchSafetyEngEdit',
             payload,
             success,
             error,
           });
         } else {
           dispatch({
-            type: 'reservoirRegion/fetchCertificateAdd',
+            type: 'reservoirRegion/fetchSafetyEngAdd',
             payload,
             success,
             error,
@@ -217,8 +215,8 @@ export default class industrialEdit extends PureComponent {
   handleUploadChange = ({ file, fileList }) => {
     if (file.status === 'uploading') {
       this.setState({
-        photoUrl: fileList,
-        uploading: true,
+        requireFilesList: fileList,
+        reqUploading: true,
       });
     } else if (file.status === 'done' && file.response.code === 200) {
       const {
@@ -228,7 +226,7 @@ export default class industrialEdit extends PureComponent {
       } = file.response;
       if (result) {
         this.setState({
-          photoUrl: fileList.map(item => {
+          requireFilesList: fileList.map(item => {
             if (!item.url && item.response) {
               return {
                 ...item,
@@ -238,26 +236,74 @@ export default class industrialEdit extends PureComponent {
             }
             return item;
           }),
-          uploading: false,
+          reqUploading: false,
         });
         message.success('上传成功！');
       }
     } else if (status === 'removed') {
       // 删除
       this.setState({
-        photoUrl: fileList.filter(item => {
+        requireFilesList: fileList.filter(item => {
           return item.status !== 'removed';
         }),
-        uploading: false,
+        reqUploading: false,
       });
     } else {
       // error
       message.error('上传失败！');
       this.setState({
-        photoUrl: fileList.filter(item => {
+        requireFilesList: fileList.filter(item => {
           return item.status !== 'error';
         }),
-        uploading: false,
+        reqUploading: false,
+      });
+    }
+  };
+
+  handleRegUploadChange = ({ file, fileList }) => {
+    if (file.status === 'uploading') {
+      this.setState({
+        regFilesList: fileList,
+        regUploading: true,
+      });
+    } else if (file.status === 'done' && file.response.code === 200) {
+      const {
+        data: {
+          list: [result],
+        },
+      } = file.response;
+      if (result) {
+        this.setState({
+          regFilesList: fileList.map(item => {
+            if (!item.url && item.response) {
+              return {
+                ...item,
+                url: result.webUrl,
+                dbUrl: result.dbUrl,
+              };
+            }
+            return item;
+          }),
+          regUploading: false,
+        });
+        message.success('上传成功！');
+      }
+    } else if (status === 'removed') {
+      // 删除
+      this.setState({
+        regFilesList: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+        regUploading: false,
+      });
+    } else {
+      // error
+      message.error('上传失败！');
+      this.setState({
+        regFilesList: fileList.filter(item => {
+          return item.status !== 'error';
+        }),
+        regUploading: false,
       });
     }
   };
@@ -268,20 +314,23 @@ export default class industrialEdit extends PureComponent {
   renderForm = () => {
     const {
       form: { getFieldDecorator },
-      industrialProductLicence: { sexList, engineerLevelList, specialityList },
+      reservoirRegion: { sexList, engineerLevelList, specialityList },
     } = this.props;
-    const { uploading, photoUrl, detailList } = this.state;
+    const { reqUploading, regUploading, requireFilesList, regFilesList, detailList } = this.state;
 
     const {
       companyName,
-      issuingType,
-      certificateState,
-      issuingOrgan,
-      issuingDate,
+      name,
+      sex,
+      birth,
+      phone,
+      level,
+      category,
+      requirementsCode,
+      regDate,
+      regCode,
       startDate,
       endDate,
-      certificateNumber,
-      permissionScope,
     } = detailList;
 
     return (
@@ -298,7 +347,7 @@ export default class industrialEdit extends PureComponent {
                   this.CompanyIdInput = input;
                 }}
                 disabled
-                placeholder="请选择"
+                placeholder="请选择单位名称"
               />
             )}
             <Button type="primary" onClick={this.handleCompanyModal}>
@@ -307,13 +356,13 @@ export default class industrialEdit extends PureComponent {
           </FormItem>
           <FormItem label="姓名" {...formItemLayout}>
             {getFieldDecorator('name', {
-              initialValue: issuingOrgan,
+              initialValue: name,
               rules: [{ required: true, message: '请输入姓名' }],
             })(<Input placeholder="请输入姓名" {...itemStyles} />)}
           </FormItem>
           <FormItem label="性别" {...formItemLayout}>
-            {getFieldDecorator('issuingType', {
-              initialValue: issuingType,
+            {getFieldDecorator('sex', {
+              initialValue: sex,
               rules: [{ required: true, message: '请选择性别' }],
             })(
               <Select placeholder="请选择性别" {...itemStyles}>
@@ -326,26 +375,20 @@ export default class industrialEdit extends PureComponent {
             )}
           </FormItem>
           <FormItem label="出生年月" {...formItemLayout}>
-            {getFieldDecorator('issuingDate', {
-              initialValue: issuingDate ? moment(+issuingDate) : '',
+            {getFieldDecorator('birth', {
+              initialValue: birth ? moment(+birth) : undefined,
               rules: [{ required: true, message: '请选择出生年月' }],
-            })(
-              <DatePicker
-                placeholder="请选择出生年月"
-                getCalendarContainer={getRootChild}
-                {...itemStyles}
-              />
-            )}
+            })(<DatePicker placeholder="请选择出生年月" format="YYYY-MM-DD" {...itemStyles} />)}
           </FormItem>
           <FormItem label="联系电话" {...formItemLayout}>
             {getFieldDecorator('phone', {
-              initialValue: issuingOrgan,
+              initialValue: phone,
               rules: [{ required: true, message: '请输入联系电话' }],
             })(<Input placeholder="请输入联系电话" {...itemStyles} />)}
           </FormItem>
           <FormItem label="工程师级别" {...formItemLayout}>
-            {getFieldDecorator('certificateState', {
-              initialValue: certificateState,
+            {getFieldDecorator('level', {
+              initialValue: level,
               rules: [{ required: true, message: '请选择工程师级别' }],
             })(
               <Select placeholder="请选择工程师级别" {...itemStyles}>
@@ -358,8 +401,8 @@ export default class industrialEdit extends PureComponent {
             )}
           </FormItem>
           <FormItem label="专业类别" {...formItemLayout}>
-            {getFieldDecorator('issuingOrgan', {
-              initialValue: issuingOrgan,
+            {getFieldDecorator('category', {
+              initialValue: category,
               rules: [{ required: true, message: '请输入专业类别' }],
             })(
               <Select placeholder="请选择专业类别" {...itemStyles}>
@@ -372,26 +415,20 @@ export default class industrialEdit extends PureComponent {
             )}
           </FormItem>
           <FormItem label="执业资格证书编号" {...formItemLayout}>
-            {getFieldDecorator('certificateNumber', {
-              initialValue: certificateNumber,
+            {getFieldDecorator('requirementsCode', {
+              initialValue: requirementsCode,
               rules: [{ required: true, message: '请输入执业资格证书编号' }],
             })(<Input placeholder="请输入执业资格证书编号" {...itemStyles} />)}
           </FormItem>
           <FormItem label="注册日期" {...formItemLayout}>
-            {getFieldDecorator('issuingDate', {
-              initialValue: issuingDate ? moment(+issuingDate) : '',
+            {getFieldDecorator('regDate', {
+              initialValue: regDate ? moment(+regDate) : undefined,
               rules: [{ required: true, message: '请选择注册日期' }],
-            })(
-              <DatePicker
-                placeholder="请选择注册日期"
-                getCalendarContainer={getRootChild}
-                {...itemStyles}
-              />
-            )}
+            })(<DatePicker placeholder="请选择注册日期" format="YYYY-MM-DD" {...itemStyles} />)}
           </FormItem>
           <FormItem label="注册证书编号" {...formItemLayout}>
-            {getFieldDecorator('certificateNumber', {
-              initialValue: certificateNumber,
+            {getFieldDecorator('regCode', {
+              initialValue: regCode,
               rules: [{ required: true, message: '请输入注册证书编号' }],
             })(<Input placeholder="请输入注册证书编号" {...itemStyles} />)}
           </FormItem>
@@ -399,17 +436,11 @@ export default class industrialEdit extends PureComponent {
             {getFieldDecorator('period', {
               initialValue: startDate && endDate ? [moment(+startDate), moment(+endDate)] : [],
               rules: [{ required: true, message: '请选择注册有效日期' }],
-            })(
-              <RangePicker
-                {...itemStyles}
-                format={dateFormat}
-                getCalendarContainer={getRootChild}
-              />
-            )}
+            })(<RangePicker {...itemStyles} format="YYYY-MM-DD" />)}
           </FormItem>
           <FormItem label="执业资格证书附件" {...formItemLayout}>
-            {getFieldDecorator('certificateFile', {
-              initialValue: photoUrl,
+            {getFieldDecorator('requireFilesList', {
+              initialValue: requireFilesList,
               rules: [{ required: true, message: '请上传执业资格证书附件' }],
             })(
               <Upload
@@ -418,13 +449,13 @@ export default class industrialEdit extends PureComponent {
                 headers={{ 'JA-Token': getToken() }} // 上传的请求头部
                 data={{ folder }} // 附带参数
                 action={uploadAction} // 上传地址
-                fileList={photoUrl}
+                fileList={requireFilesList}
                 onChange={this.handleUploadChange}
               >
                 <Button
                   type="dashed"
                   style={{ width: '96px', height: '96px' }}
-                  disabled={uploading}
+                  disabled={reqUploading}
                 >
                   <Icon type="plus" style={{ fontSize: '32px' }} />
                   <div style={{ marginTop: '8px' }}>点击上传</div>
@@ -433,8 +464,8 @@ export default class industrialEdit extends PureComponent {
             )}
           </FormItem>
           <FormItem label="注册证书附件" {...formItemLayout}>
-            {getFieldDecorator('certificateFile', {
-              initialValue: photoUrl,
+            {getFieldDecorator('regFilesList', {
+              initialValue: regFilesList,
               rules: [{ required: true, message: '请上传注册证书附件' }],
             })(
               <Upload
@@ -443,13 +474,13 @@ export default class industrialEdit extends PureComponent {
                 headers={{ 'JA-Token': getToken() }} // 上传的请求头部
                 data={{ folder }} // 附带参数
                 action={uploadAction} // 上传地址
-                fileList={photoUrl}
-                onChange={this.handleUploadChange}
+                fileList={regFilesList}
+                onChange={this.handleRegUploadChange}
               >
                 <Button
                   type="dashed"
                   style={{ width: '96px', height: '96px' }}
-                  disabled={uploading}
+                  disabled={regUploading}
                 >
                   <Icon type="plus" style={{ fontSize: '32px' }} />
                   <div style={{ marginTop: '8px' }}>点击上传</div>
@@ -462,27 +493,47 @@ export default class industrialEdit extends PureComponent {
     );
   };
 
+  /* 渲染底部工具栏 */
+  renderFooterToolbar() {
+    const { regUploading, reqUploading } = this.state;
+    return (
+      <FooterToolbar>
+        <Button
+          type="primary"
+          size="large"
+          loading={reqUploading || regUploading}
+          onClick={this.handleSubmit}
+        >
+          提交
+        </Button>
+        <Button type="primary" size="large" onClick={this.goBack}>
+          返回
+        </Button>
+      </FooterToolbar>
+    );
+  }
+
   render() {
     const {
       match: {
         params: { id },
       },
     } = this.props;
-    const title = id ? '编辑许可证' : '新增许可证';
+    const title = id ? '编辑人员' : '新增人员';
     const breadcrumbList = [
       {
-        title: homeTitle,
-        name: homeTitle,
-        href: homeUrl,
+        title: '首页',
+        name: '首页',
+        href: '/',
       },
       {
-        title: menuTitle,
-        name: menuTitle,
+        title: '一企一档',
+        name: '一企一档',
       },
       {
-        title: listTitle,
-        name: listTitle,
-        href: listUrl,
+        title: '注册安全工程师管理',
+        name: '注册安全工程师管理',
+        href: '/base-info/registered-engineer-management/list',
       },
       {
         title,
@@ -492,14 +543,8 @@ export default class industrialEdit extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
-        <Button
-          style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-          type="primary"
-          onClick={this.handleSubmit}
-        >
-          提交
-        </Button>
         {this.renderModal()}
+        {this.renderFooterToolbar()}{' '}
       </PageHeaderLayout>
     );
   }

@@ -26,21 +26,60 @@ const editTitle = '编辑许可证';
 // 添加页面标题
 const addTitle = '新增许可证';
 
-@connect(({ industrialProductLicence, videoMonitor, user, loading }) => ({
-  industrialProductLicence,
+@connect(({ reservoirRegion, videoMonitor, user, loading }) => ({
+  reservoirRegion,
   user,
   videoMonitor,
-  loading: loading.models.industrialProductLicence,
+  loading: loading.models.reservoirRegion,
 }))
 @Form.create()
-export default class MajorHazardEdit extends PureComponent {
+export default class IndustriallicenceEdit extends PureComponent {
   state = {
     companyVisible: false,
     submitting: false,
+    accessoryList: [],
+    fileLoading: false,
+    detailList: {},
   };
 
   // 挂载后
-  componentDidMount() {}
+  componentDidMount() {
+    const {
+      dispatch,
+      match: {
+        params: { id },
+      },
+    } = this.props;
+
+    if (id) {
+      dispatch({
+        type: 'reservoirRegion/fetchIndustrialList',
+        payload: {
+          pageSize: 48,
+          pageNum: 1,
+        },
+        callback: res => {
+          const { list } = res;
+          const currentList = list.find(item => item.id === id) || {};
+          const { accessoryDetails } = currentList;
+          this.setState({
+            detailList: currentList,
+            accessoryList: accessoryDetails.map(({ dbUrl, webUrl }, index) => ({
+              uid: index,
+              status: 'done',
+              name: `附件${index + 1}`,
+              webUrl,
+              dbUrl,
+            })),
+          });
+        },
+      });
+    } else {
+      dispatch({
+        type: 'reservoirRegion/clearIndustrialDetail',
+      });
+    }
+  }
 
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
@@ -50,7 +89,71 @@ export default class MajorHazardEdit extends PureComponent {
     dispatch(routerRedux.push(`/base-info/industrial-product-licence/list`));
   };
 
-  handleClickValidate = () => {};
+  handleClickValidate = () => {
+    const {
+      match: {
+        params: { id },
+      },
+      dispatch,
+      form: { validateFieldsAndScroll },
+    } = this.props;
+    validateFieldsAndScroll((errors, values) => {
+      if (!errors) {
+        const { accessoryList } = this.state;
+        const {
+          status,
+          licenceOffice,
+          licenceDate,
+          licenceCode,
+          scope,
+          period: [startTime, endTime],
+        } = values;
+        const payload = {
+          id,
+          companyId: this.companyId,
+          status,
+          licenceOffice,
+          licenceDate: licenceDate.format('YYYY-MM-DD'),
+          licenceCode,
+          scope,
+          startDate: startTime.format('YYYY-MM-DD'),
+          endDate: endTime.format('YYYY-MM-DD'),
+          accessory: JSON.stringify(
+            accessoryList.map(({ name, url, dbUrl }) => ({
+              name,
+              webUrl: url,
+              dbUrl,
+            }))
+          ),
+        };
+
+        const success = () => {
+          const msg = id ? '编辑成功' : '新增成功';
+          message.success(msg, 1, this.goBack());
+        };
+
+        const error = () => {
+          message.error(id ? '编辑失败' : '新增失败');
+        };
+
+        if (id) {
+          dispatch({
+            type: 'reservoirRegion/fetchIndustrialEdit',
+            payload,
+            success,
+            error,
+          });
+        } else {
+          dispatch({
+            type: 'reservoirRegion/fetchIndustrialAdd',
+            payload,
+            success,
+            error,
+          });
+        }
+      }
+    });
+  };
 
   // 显示企业弹框
   handleCompanyModal = () => {
@@ -102,23 +205,85 @@ export default class MajorHazardEdit extends PureComponent {
     );
   }
 
+  handleUploadChange = ({ file, fileList }) => {
+    if (file.status === 'uploading') {
+      this.setState({
+        accessoryList: fileList,
+        fileLoading: true,
+      });
+    } else if (file.status === 'done' && file.response.code === 200) {
+      const {
+        data: {
+          list: [result],
+        },
+      } = file.response;
+      if (result) {
+        this.setState({
+          accessoryList: fileList.map(item => {
+            if (!item.url && item.response) {
+              return {
+                ...item,
+                url: result.webUrl,
+                dbUrl: result.dbUrl,
+              };
+            }
+            return item;
+          }),
+          fileLoading: false,
+        });
+        message.success('上传成功！');
+      }
+    } else if (status === 'removed') {
+      // 删除
+      this.setState({
+        accessoryList: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+        fileLoading: false,
+      });
+    } else {
+      // error
+      message.error('上传失败！');
+      this.setState({
+        accessoryList: fileList.filter(item => {
+          return item.status !== 'error';
+        }),
+        fileLoading: false,
+      });
+    }
+  };
+
   renderInfo() {
     const {
       form: { getFieldDecorator },
-      industrialProductLicence: { credentialStatusList },
+      reservoirRegion: { certificateStateList },
     } = this.props;
+
+    const { detailList, accessoryList, fileLoading } = this.state;
 
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
     const itemStyles = { style: { width: '70%', marginRight: '10px' } };
+
+    const {
+      companyName,
+      status,
+      licenceOffice,
+      licenceDate,
+      licenceCode,
+      startDate,
+      endDate,
+      scope,
+    } = detailList;
+
     return (
       <Card className={styles.card} bordered={false}>
         <Form style={{ marginTop: 8 }}>
           <FormItem {...formItemLayout} label="单位名称">
             {getFieldDecorator('companyId', {
-              // initialValue: companyName,
+              initialValue: companyName,
               rules: [
                 {
                   required: true,
@@ -142,7 +307,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="证件状态">
             {getFieldDecorator('status', {
-              // initialValue: status,
+              initialValue: status,
               rules: [
                 {
                   required: true,
@@ -151,8 +316,8 @@ export default class MajorHazardEdit extends PureComponent {
               ],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择证件状态">
-                {credentialStatusList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                {certificateStateList.map(({ key, value }) => (
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -160,8 +325,8 @@ export default class MajorHazardEdit extends PureComponent {
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="发证机关">
-            {getFieldDecorator('licenceAuthority', {
-              // initialValue: licenceAuthority,
+            {getFieldDecorator('licenceOffice', {
+              initialValue: licenceOffice,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -172,8 +337,8 @@ export default class MajorHazardEdit extends PureComponent {
             })(<Input {...itemStyles} placeholder="请输入发证机关" maxLength={15} />)}
           </FormItem>
           <FormItem {...formItemLayout} label="发证日期">
-            {getFieldDecorator('certificateDate', {
-              // initialValue: certificateDate ? moment(+certificateDate) : undefined,
+            {getFieldDecorator('licenceDate', {
+              initialValue: licenceDate ? moment(+licenceDate) : undefined,
               rules: [
                 {
                   required: true,
@@ -190,8 +355,8 @@ export default class MajorHazardEdit extends PureComponent {
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="证书编号">
-            {getFieldDecorator('certificateNum', {
-              // initialValue: certificateNum,
+            {getFieldDecorator('licenceCode', {
+              initialValue: licenceCode,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -202,9 +367,8 @@ export default class MajorHazardEdit extends PureComponent {
             })(<Input {...itemStyles} placeholder="请输入证书编号" maxLength={15} />)}
           </FormItem>
           <FormItem {...formItemLayout} label="证书有效期">
-            {getFieldDecorator('useDate', {
-              // initialValue: useDate,
-              getValueFromEvent: this.handleTrim,
+            {getFieldDecorator('period', {
+              initialValue: startDate && endDate ? [moment(+startDate), moment(+endDate)] : [],
               rules: [
                 {
                   required: true,
@@ -214,17 +378,14 @@ export default class MajorHazardEdit extends PureComponent {
             })(
               <RangePicker
                 {...itemStyles}
-                format="YYYY-MM-DD HH:mm:ss"
+                format="YYYY-MM-DD "
                 placeholder={['开始时间', '结束时间']}
-                showTime={{
-                  defaultValue: [moment('0:0:0', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
-                }}
               />
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="许可范围">
-            {getFieldDecorator('toleranceRange', {
-              // initialValue: toleranceRange,
+            {getFieldDecorator('scope', {
+              initialValue: scope,
               rules: [
                 {
                   required: true,
@@ -235,8 +396,8 @@ export default class MajorHazardEdit extends PureComponent {
             })(<TextArea {...itemStyles} placeholder="请输入许可范围" rows={4} maxLength="2000" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="证照附件">
-            {getFieldDecorator('file', {
-              // initialValue: file,
+            {getFieldDecorator('accessory', {
+              initialValue: accessoryList,
               rules: [
                 {
                   required: true,
@@ -250,13 +411,13 @@ export default class MajorHazardEdit extends PureComponent {
                 headers={{ 'JA-Token': getToken() }} // 上传的请求头部
                 data={{ folder }} // 附带参数
                 action={uploadAction} // 上传地址
-                // fileList={adjunctPicList}
-                onChange={this.handleAdjunctChange}
+                fileList={accessoryList}
+                onChange={this.handleUploadChange}
               >
                 <Button
                   type="dashed"
                   style={{ width: '96px', height: '96px' }}
-                  // disabled={fileLoading}
+                  disabled={fileLoading}
                 >
                   <Icon type="plus" style={{ fontSize: '32px' }} />
                   <div style={{ marginTop: '8px' }}>点击上传</div>
@@ -271,10 +432,15 @@ export default class MajorHazardEdit extends PureComponent {
 
   /* 渲染底部工具栏 */
   renderFooterToolbar() {
-    const { submitting } = this.state;
+    const { submitting, fileLoading } = this.state;
     return (
       <FooterToolbar>
-        <Button type="primary" size="large" loading={submitting} onClick={this.handleClickValidate}>
+        <Button
+          type="primary"
+          size="large"
+          loading={submitting || fileLoading}
+          onClick={this.handleClickValidate}
+        >
           提交
         </Button>
         <Button type="primary" size="large" onClick={this.goBack}>

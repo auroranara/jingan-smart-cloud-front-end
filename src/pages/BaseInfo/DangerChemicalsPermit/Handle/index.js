@@ -45,7 +45,7 @@ const uploadAction = '/acloud_new/v2/uploadFile';
   videoMonitor,
   loading: loading.models.reservoirRegion,
 }))
-export default class dangerChemicalsPermitHandle extends PureComponent {
+export default class DangerChemicalsHandle extends PureComponent {
   state = {
     companyVisible: false, // 弹框是否显示
     uploading: false, // 上传是否加载

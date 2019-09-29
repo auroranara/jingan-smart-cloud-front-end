@@ -4,6 +4,8 @@ import { Card, Button, Input, Select, Table, Divider, Popconfirm, message } from
 import { Link } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import ToolBar from '@/components/ToolBar';
+import moment from 'moment';
+import Lightbox from 'react-images';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 const { Option } = Select;
@@ -35,49 +37,175 @@ const {
   },
 } = codes;
 
+const certificateState = {
+  1: '现用',
+  2: '吊销',
+  3: '注销',
+  4: '暂扣',
+  5: '曾用',
+};
+
 const spanStyle = { md: 8, sm: 12, xs: 24 };
 
 /* session前缀 */
-// const sessionPrefix = 'product_licence_list_';
+const sessionPrefix = 'industrial_licence_list_';
 
-@connect(({ industrialProductLicence, user, loading }) => ({
-  industrialProductLicence,
+@connect(({ reservoirRegion, user, loading }) => ({
+  reservoirRegion,
   user,
-  loading: loading.models.industrialProductLicence,
+  loading: loading.models.reservoirRegion,
 }))
-export default class licenceList extends PureComponent {
+export default class IndustriallicenceList extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      visible: false,
+      imgUrl: [], // 附件图片列表
+      currentImage: 0, // 展示附件大图下标
+    };
   }
 
   // 挂载后
-  componentDidMount() {}
+  componentDidMount() {
+    const {
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+    // 从sessionStorage中获取存储的控件值
+    const sessionData = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
+    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
+      pageNum: 1,
+      pageSize: 10,
+    };
+    this.fetchList({ ...payload });
+    if (sessionData) {
+      this.form.setFieldsValue({ ...payload });
+    }
+  }
 
   // 获取列表
-  fetchList = params => {};
+  fetchList = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'reservoirRegion/fetchIndustrialList',
+      payload: {
+        ...params,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
+  };
 
   setFormReference = toobar => {
     this.form = toobar && toobar.props && toobar.props.form;
   };
 
   // 查询
-  handleSearch = () => {};
+  handleSearch = () => {
+    const {
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+    const { ...rest } = this.form.getFieldsValue();
+    const payload = { ...rest };
+    this.fetchList(payload);
+    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
+  };
 
   // 重置
-  handleReset = () => {};
+  handleReset = () => {
+    this.fetchList();
+    sessionStorage.clear();
+  };
 
   // 删除
-  handleDelete = id => {};
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'reservoirRegion/fetchIndustrialDelete',
+      payload: { ids: id },
+      success: () => {
+        this.fetchList();
+        message.success('删除成功！');
+      },
+      error: () => {
+        message.error('删除失败!');
+      },
+    });
+  };
 
   // 分页变动
-  handlePageChange = (pageNum, pageSize) => {};
+  handlePageChange = (pageNum, pageSize) => {
+    const {
+      dispatch,
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+
+    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
+      pageNum: 1,
+      pageSize: 10,
+    };
+    dispatch({
+      type: 'reservoirRegion/fetchCertificateList',
+      payload: {
+        ...payload,
+        pageSize,
+        pageNum,
+      },
+    });
+  };
+
+  // 查看附件
+  handleShowModal = files => {
+    const newFiles = files.map(({ webUrl }) => {
+      return {
+        src: webUrl,
+      };
+    });
+    this.setState({
+      visible: true,
+      imgUrl: newFiles,
+      currentImage: 0,
+    });
+  };
+
+  // 关闭查看附件弹窗
+  handleModalClose = () => {
+    this.setState({
+      visible: false,
+    });
+  };
+
+  // 附件图片的点击翻入上一页
+  gotoPrevious = () => {
+    let { currentImage } = this.state;
+    if (currentImage <= 0) return;
+    this.setState({ currentImage: --currentImage });
+  };
+
+  // 附件图片的点击翻入下一页
+  gotoNext = () => {
+    let { currentImage, imgUrl } = this.state;
+    if (currentImage >= imgUrl.length - 1) return;
+    this.setState({ currentImage: ++currentImage });
+  };
+
+  // 附件图片点击下方缩略图
+  handleClickThumbnail = i => {
+    const { currentImage } = this.state;
+    if (currentImage === i) return;
+    this.setState({ currentImage: i });
+  };
 
   // 渲染表格
   renderTable = () => {
     const {
       loading,
-      industrialProductLicence: {
+      reservoirRegion: {
         industrialData: {
           list = [],
           pagination: { pageNum, pageSize, total },
@@ -87,7 +215,6 @@ export default class licenceList extends PureComponent {
         currentUser: { permissionCodes },
       },
     } = this.props;
-
     // 权限
     const editCode = hasAuthority(editAuth, permissionCodes);
     const deleteCode = hasAuthority(deleteAuth, permissionCodes);
@@ -105,24 +232,24 @@ export default class licenceList extends PureComponent {
         align: 'center',
         width: 300,
         render: (val, text) => {
-          const { code, name, dangerLevel } = text;
+          const { licenceOffice, licenceDate, licenceCode } = text;
           return (
             <div>
-              <p>
+              {/* <p>
                 种类:
                 {code}
-              </p>
+              </p> */}
               <p>
                 发证机关:
-                {name}
+                {licenceOffice}
               </p>
               <p>
                 发证日期:
-                {dangerLevel}
+                {moment(licenceDate).format('YYYY-MM-DD')}
               </p>
               <p>
                 证书编号:
-                {dangerLevel}
+                {licenceCode}
               </p>
             </div>
           );
@@ -130,19 +257,28 @@ export default class licenceList extends PureComponent {
       },
       {
         title: '证件状态',
-        dataIndex: 'desc',
-        align: 'center',
-        width: 200,
-      },
-      {
-        title: '有效期至',
-        dataIndex: 'unitChemiclaNumDetail',
+        dataIndex: 'status',
         align: 'center',
         width: 200,
         render: val => {
-          return val
-            .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
-            .join(',');
+          return <span>{certificateState[val]}</span>;
+        },
+      },
+      {
+        title: '有效期至',
+        dataIndex: 'endDate',
+        align: 'center',
+        width: 200,
+        render: (val, record) => {
+          const { endDate } = record;
+          return (
+            <div>
+              <span>{moment(endDate).format('YYYY-MM-DD')}</span>
+              {/* <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
+                {paststatusVal[paststatus]}
+              </span> */}
+            </div>
+          );
         },
       },
       {
@@ -150,6 +286,24 @@ export default class licenceList extends PureComponent {
         dataIndex: 'location',
         align: 'center',
         width: 200,
+        render: (val, record) => {
+          const { accessoryDetails } = record;
+          return (
+            <Fragment>
+              {accessoryDetails && accessoryDetails.length ? (
+                <a
+                  onClick={() => {
+                    this.handleShowModal(accessoryDetails);
+                  }}
+                >
+                  查看附件
+                </a>
+              ) : (
+                <span style={{ color: '#aaa' }}>查看附件</span>
+              )}
+            </Fragment>
+          );
+        },
       },
       {
         title: '操作',
@@ -159,7 +313,7 @@ export default class licenceList extends PureComponent {
         render: (val, row) => (
           <Fragment>
             {editCode ? (
-              <Link to={`/base-info/major-hazard/edit/${row.id}`}>编辑</Link>
+              <Link to={`/base-info/industrial-product-licence/edit/${row.id}`}>编辑</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}
@@ -205,39 +359,40 @@ export default class licenceList extends PureComponent {
 
   render() {
     const {
-      industrialProductLicence: {
+      reservoirRegion: {
         industrialData: {
           pagination: { total },
         },
-        credentialTypeList,
-        expireList,
-        credentialStatusList,
+        msg,
+        // issuingTypeList,
+        expirationStatusList,
+        certificateStateList,
       },
       user: {
         currentUser: { permissionCodes },
       },
     } = this.props;
-
+    const { visible, imgUrl, currentImage } = this.state;
     const addCode = hasAuthority(addAuth, permissionCodes);
 
     const fields = [
+      // {
+      //   id: 'name',
+      //   label: '证书种类',
+      //   span: spanStyle,
+      //   render: () => (
+      //     <Select allowClear placeholder="请选择证书种类">
+      //       {issuingTypeList.map(({ key, value }) => (
+      //         <Option key={key} value={value}>
+      //           {value}
+      //         </Option>
+      //       ))}
+      //     </Select>
+      //   ),
+      //   transform: v => v.trim(),
+      // },
       {
-        id: 'name',
-        label: '证书种类',
-        span: spanStyle,
-        render: () => (
-          <Select allowClear placeholder="请选择证书种类">
-            {credentialTypeList.map(({ key, value }) => (
-              <Option key={key} value={value}>
-                {value}
-              </Option>
-            ))}
-          </Select>
-        ),
-        transform: v => v.trim(),
-      },
-      {
-        id: 'code',
+        id: 'licenceCode',
         label: '证书编号',
         span: spanStyle,
         render: () => <Input placeholder="请输入证书编号" />,
@@ -249,7 +404,7 @@ export default class licenceList extends PureComponent {
         span: spanStyle,
         render: () => (
           <Select allowClear placeholder="请选择到期状态">
-            {expireList.map(({ key, value }) => (
+            {expirationStatusList.map(({ key, value }) => (
               <Option key={key} value={value}>
                 {value}
               </Option>
@@ -259,12 +414,12 @@ export default class licenceList extends PureComponent {
         transform: v => v.trim(),
       },
       {
-        id: 'level',
+        id: 'status',
         label: '证件状态',
         span: spanStyle,
         render: () => (
           <Select allowClear placeholder="请选择证件状态">
-            {credentialStatusList.map(({ key, value }) => (
+            {certificateStateList.map(({ key, value }) => (
               <Option key={key} value={value}>
                 {value}
               </Option>
@@ -289,10 +444,10 @@ export default class licenceList extends PureComponent {
           <div>
             <span>
               单位数量：
-              {''}
+              {msg}
             </span>
             <span style={{ paddingLeft: 20 }}>
-              许可证数量:
+              许可证数量：
               {total}
             </span>
           </div>
@@ -316,6 +471,17 @@ export default class licenceList extends PureComponent {
           />
         </Card>
         {this.renderTable()}
+        <Lightbox
+          images={imgUrl}
+          isOpen={visible}
+          currentImage={currentImage}
+          onClickPrev={this.gotoPrevious}
+          onClickNext={this.gotoNext}
+          onClose={this.handleModalClose}
+          showThumbnails
+          onClickThumbnail={this.handleClickThumbnail}
+          imageCountSeparator="/"
+        />
       </PageHeaderLayout>
     );
   }

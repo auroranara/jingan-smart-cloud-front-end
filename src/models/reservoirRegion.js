@@ -13,6 +13,14 @@ import {
   queryCertificateaAdd,
   queryCertificateEdit,
   queryCertificateDelete,
+  querySafetyEngList,
+  querySafetyEngAdd,
+  querySafetyEngEdit,
+  querySafetyEngDelete,
+  queryProductLicenceList,
+  queryProductLicenceAdd,
+  queryProductLicenceEdit,
+  queryProductLicenceDelete,
 } from '../services/company/reservoirRegion';
 
 export default {
@@ -60,6 +68,7 @@ export default {
     ],
     memoryPlaceList: [{ key: '1', value: '自有' }, { key: '2', value: '租赁' }],
     antiStaticList: [{ key: '1', value: '是' }, { key: '2', value: '否' }],
+    // 物料数据源
     materialData: {
       list: [],
       pagination: {},
@@ -87,6 +96,37 @@ export default {
       pagination: {},
     },
     cerDetail: {
+      data: [],
+    },
+    // 注册安全工程师数据源
+    safetyEngData: {
+      list: [],
+      pagination: {},
+    },
+    safetyEngDetail: {
+      data: [],
+    },
+    engineerLevelList: [
+      { key: '0', value: '初级' },
+      { key: '1', value: '中级' },
+      { key: '2', value: '高级' },
+    ],
+    sexList: [{ key: '1', value: '男' }, { key: '2', value: '女' }],
+    specialityList: [
+      { key: '0', value: '煤矿安全' },
+      { key: '1', value: '金属非金属矿山安全' },
+      { key: '2', value: '化工安全' },
+      { key: '3', value: '金属冶炼安全' },
+      { key: '4', value: '建筑施工安全' },
+      { key: '5', value: '道路运输安全' },
+      { key: '6', value: '其他安全（不包括消防安全）' },
+    ],
+    // 工业产品许可证数据源
+    industrialData: {
+      list: [],
+      pagination: {},
+    },
+    industrialDetail: {
       data: [],
     },
   },
@@ -220,7 +260,7 @@ export default {
       }
     },
 
-    // 许可证列表
+    // 危险化学品许可证列表
     *fetchCertificateList({ payload, callback }, { call, put }) {
       const response = yield call(queryCertificateList, payload);
       if (response.code === 200) {
@@ -232,7 +272,7 @@ export default {
       }
     },
 
-    // 新增许可证
+    // 新增危险化学品许可证
     *fetchCertificateAdd({ payload, success, error }, { call, put }) {
       const response = yield call(queryCertificateaAdd, payload);
       const { code, data } = response;
@@ -246,7 +286,7 @@ export default {
       }
     },
 
-    // 修改许可证
+    // 修改危险化学品许可证
     *fetchCertificateEdit({ payload, success, error }, { call, put }) {
       const response = yield call(queryCertificateEdit, payload);
       if (response.code === 200) {
@@ -259,11 +299,115 @@ export default {
       }
     },
 
-    // 删除许可证
+    // 删除危险化学品许可证
     *fetchCertificateDelete({ payload, success, error }, { call, put }) {
       const response = yield call(queryCertificateDelete, payload);
       if (response.code === 200) {
         yield put({ type: 'saveCertificateDelete', payload: payload.id });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 注册工程师列表
+    *fetchSafetyEngList({ payload, callback }, { call, put }) {
+      const response = yield call(querySafetyEngList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveSafetyEngList',
+          payload: response,
+        });
+        if (callback) callback(response.data);
+      }
+    },
+
+    // 新增注册工程师
+    *fetchSafetyEngAdd({ payload, success, error }, { call, put }) {
+      const response = yield call(querySafetyEngAdd, payload);
+      const { code, data } = response;
+      if (code === 200) {
+        yield put({ type: 'saveSafetyEngAdd', payload: data });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 修改注册工程师
+    *fetchSafetyEngEdit({ payload, success, error }, { call, put }) {
+      const response = yield call(querySafetyEngEdit, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveSafetyEngEdit', payload: response.data });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 删除注册工程师
+    *fetchSafetyEngDelete({ payload, success, error }, { call, put }) {
+      const response = yield call(querySafetyEngDelete, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveSafetyEngDelete', payload: payload.id });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 工业产品许可证列表
+    *fetchIndustrialList({ payload, callback }, { call, put }) {
+      const response = yield call(queryProductLicenceList, payload);
+      if (response.code === 200) {
+        yield put({
+          type: 'saveIndustrialList',
+          payload: response,
+        });
+        if (callback) callback(response.data);
+      }
+    },
+
+    // 新增工业产品许可证
+    *fetchIndustrialAdd({ payload, success, error }, { call, put }) {
+      const response = yield call(queryProductLicenceAdd, payload);
+      const { code, data } = response;
+      if (code === 200) {
+        yield put({ type: 'saveIndustrialAdd', payload: data });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 修改工业产品许可证
+    *fetchIndustrialEdit({ payload, success, error }, { call, put }) {
+      const response = yield call(queryProductLicenceEdit, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveIndustrialEdit', payload: response.data });
+        if (success) {
+          success();
+        }
+      } else if (error) {
+        error(response.msg);
+      }
+    },
+
+    // 删除工业产品许可证
+    *fetchIndustrialDelete({ payload, success, error }, { call, put }) {
+      const response = yield call(queryProductLicenceDelete, payload);
+      if (response.code === 200) {
+        yield put({ type: 'saveIndustrialDelete', payload: payload.id });
         if (success) {
           success();
         }
@@ -394,17 +538,17 @@ export default {
       };
     },
 
-    // 许可证列表
+    // 危险化学品许可证列表
     saveCertificateList(state, { payload }) {
-      const { data, msg } = payload;
+      const { data } = payload;
       return {
         ...state,
-        msg,
+
         cerData: data,
       };
     },
 
-    // 新增许可证
+    // 新增危险化学品许可证
     saveCertificateAdd(state, { payload }) {
       return {
         ...state,
@@ -412,7 +556,7 @@ export default {
       };
     },
 
-    // 编辑许可证
+    // 编辑危险化学品许可证
     saveCertificateEdit(state, { payload }) {
       return {
         ...state,
@@ -423,7 +567,7 @@ export default {
       };
     },
 
-    // 清除详情
+    // 清除危险化学品详情
     clearCertificateDetail(state) {
       return {
         ...state,
@@ -431,13 +575,109 @@ export default {
       };
     },
 
-    // 删除许可证
+    // 删除危险化学品许可证
     saveCertificateDelete(state, { payload: id }) {
       return {
         ...state,
         cerData: {
           ...state.cerData,
           list: state.cerData.list.filter(item => item.id !== id),
+        },
+      };
+    },
+
+    // 注册工程师列表
+    saveSafetyEngList(state, { payload }) {
+      const { data, msg } = payload;
+      return {
+        ...state,
+        msg,
+        safetyEngData: data,
+      };
+    },
+
+    // 新增注册工程师
+    saveSafetyEngAdd(state, { payload }) {
+      return {
+        ...state,
+        safetyEngDetail: payload,
+      };
+    },
+
+    // 编辑注册工程师
+    saveSafetyEngEdit(state, { payload }) {
+      return {
+        ...state,
+        safetyEngDetail: {
+          ...state.safetyEngDetail,
+          data: payload,
+        },
+      };
+    },
+
+    // 清除注册工程师详情
+    clearSafetyEngDetail(state) {
+      return {
+        ...state,
+        safetyEngDetail: { data: {} },
+      };
+    },
+
+    // 删除注册工程师
+    saveSafetyEngDelete(state, { payload: id }) {
+      return {
+        ...state,
+        safetyEngData: {
+          ...state.safetyEngData,
+          list: state.safetyEngData.list.filter(item => item.id !== id),
+        },
+      };
+    },
+
+    // 工业产品许可证列表
+    saveIndustrialList(state, { payload }) {
+      const { data, msg } = payload;
+      return {
+        ...state,
+        msg,
+        industrialData: data,
+      };
+    },
+
+    // 新增工业产品许可证
+    saveIndustrialAdd(state, { payload }) {
+      return {
+        ...state,
+        industrialDetail: payload,
+      };
+    },
+
+    // 编辑工业产品许可证
+    saveIndustrialEdit(state, { payload }) {
+      return {
+        ...state,
+        industrialDetail: {
+          ...state.industrialDetail,
+          data: payload,
+        },
+      };
+    },
+
+    // 清除工业产品许可证
+    clearIndustrialDetail(state) {
+      return {
+        ...state,
+        industrialDetail: { data: {} },
+      };
+    },
+
+    // 删除工业产品许可证
+    saveIndustrialDelete(state, { payload: id }) {
+      return {
+        ...state,
+        industrialData: {
+          ...state.industrialData,
+          list: state.industrialData.list.filter(item => item.id !== id),
         },
       };
     },

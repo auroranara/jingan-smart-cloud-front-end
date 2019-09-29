@@ -65,7 +65,7 @@ const {
 } = codes;
 
 /* session前缀 */
-const sessionPrefix = 'danger_chemicals_list';
+const sessionPrefix = 'danger_chemical_list';
 
 const issuingList = {
   1: '生产',
@@ -93,7 +93,7 @@ const paststatusVal = {
   user,
   loading: loading.models.reservoirRegion,
 }))
-export default class DangerChemicalsPermitList extends PureComponent {
+export default class DangerChemicalList extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -516,6 +516,7 @@ export default class DangerChemicalsPermitList extends PureComponent {
     const {
       reservoirRegion: {
         cerData: {
+          a,
           pagination: { total = 0 },
         },
       },
@@ -525,7 +526,18 @@ export default class DangerChemicalsPermitList extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={`单位数量：1    许可证数量：${total}`}
+        content={
+          <div>
+            <span>
+              单位数量：
+              {a}
+            </span>
+            <span style={{ paddingLeft: 20 }}>
+              许可证数量：
+              {total}
+            </span>
+          </div>
+        }
       >
         {this.renderFilter()}
         {this.renderTable()}

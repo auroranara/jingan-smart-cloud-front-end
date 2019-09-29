@@ -96,3 +96,59 @@ export async function queryCertificateDelete({ id }) {
     method: 'DELETE',
   });
 }
+
+// 获取注册工程师列表
+export async function querySafetyEngList(params) {
+  return request(`/acloud_new/v2/companyFiles/safetyEngForPage?${stringify(params)}`);
+}
+
+// 新增注册工程师
+export async function querySafetyEngAdd(params) {
+  return request(`/acloud_new/v2/companyFiles/safetyEng`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+// 编辑注册工程师
+export async function querySafetyEngEdit(params) {
+  return request(`/acloud_new/v2/companyFiles/safetyEng`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+// 删除注册工程师
+export async function querySafetyEngDelete({ ids }) {
+  return request(`/acloud_new/v2/companyFiles/safetyEng/${ids}`, {
+    method: 'DELETE',
+  });
+}
+
+// 获取生产许可证列表
+export async function queryProductLicenceList(params) {
+  return request(`/acloud_new/v2/productLicence/list?${stringify(params)}`);
+}
+
+// 新增生产许可证
+export async function queryProductLicenceAdd(params) {
+  return request(`/acloud_new/v2/productLicence/add`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+// 编辑生产许可证
+export async function queryProductLicenceEdit(params) {
+  return request(`/acloud_new/v2/productLicence/edit`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+// 删除生产许可证
+export async function queryProductLicenceDelete({ ids }) {
+  return request(`/acloud_new/v2/productLicence/delete/${ids}`, {
+    method: 'DELETE',
+  });
+}
