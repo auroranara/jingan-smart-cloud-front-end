@@ -294,7 +294,7 @@ export default class GatewayList extends Component {
             {<Button type="link" className={styles.operation} onClick={this.handleViewClick} data-id={id} disabled={!hasDetailAuthority}>查看</Button>}
             {<Button type="link" className={styles.operation} onClick={this.handleEditClick} data-id={id} disabled={!hasEditAuthority}>编辑</Button>}
             {hasDeleteAuthority ? (
-              <Popconfirm title="你确定要删除这个网关设备吗?" onConfirm={() => this.handleDeleteClick(id)}>
+              <Popconfirm title="你确定要删除吗?" onConfirm={() => this.handleDeleteClick(id)}>
                 <Button type="link" className={styles.operation}>删除</Button>
               </Popconfirm>
             ) : (
@@ -436,9 +436,11 @@ export default class GatewayList extends Component {
 
   render() {
     const {
-      trainingProgram: {
+      gateway: {
         list: {
-          a,
+          pagination: {
+            total=0,
+          }={},
         }={},
       }={},
       user: {
@@ -453,7 +455,7 @@ export default class GatewayList extends Component {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={isNotCompany && <span>{`单位数量：${a || 0}`}</span>}
+        content={isNotCompany && <span>{`设备总数：${total}`}</span>}
       >
         {this.renderForm()}
         {this.renderTable()}

@@ -27,6 +27,14 @@ export async function edit(params) {
   });
 }
 
+// 执行培训计划
+export async function execute(params) {
+  return request(`/acloud_new/v2/emergency/emergencyPlan`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
 // 删除培训计划
 export async function remove(params) {
   return request(`/acloud_new/v2/emergency/emergencyPlan`, {

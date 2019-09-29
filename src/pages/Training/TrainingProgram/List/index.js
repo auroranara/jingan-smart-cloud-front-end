@@ -42,6 +42,20 @@ const STATUSES = [
     value: '已执行',
   },
 ];
+const LEVELS = [
+  {
+    key: '1',
+    value: '厂级',
+  },
+  {
+    key: '2',
+    value: '车间级',
+  },
+  {
+    key: '3',
+    value: '班组级',
+  },
+];
 const SPAN = {
   sm: 24,
   xs: 24,
@@ -56,6 +70,33 @@ const LABEL_COL = { span: 6 };
   trainingProgram,
   user,
   loaidng: loading.effects['trainingProgram/fetchList'],
+  executing: loading.effects['trainingProgram/execute'],
+}), (dispatch) => ({
+  getList(payload, callback) {
+    dispatch({
+      type: 'trainingProgram/fetchList',
+      payload: {
+        pageNum: DEFAULT_PAGE_NUM,
+        pageSize: DEFAULT_PAGE_SIZE,
+        ...payload,
+      },
+      callback,
+    });
+  },
+  remove(payload, callback) {
+    dispatch({
+      type: 'trainingProgram/remove',
+      payload,
+      callback,
+    });
+  },
+  execute(payload, callback) {
+    dispatch({
+      type: 'trainingProgram/execute',
+      payload,
+      callback,
+    });
+  },
 }))
 export default class TrainingProgramList extends Component {
   state = {
@@ -64,21 +105,8 @@ export default class TrainingProgramList extends Component {
   }
 
   componentDidMount() {
-    // this.getList();
-  }
-
-  getList = (payload) => {
-    const {
-      dispatch,
-    } = this.props;
-    dispatch({
-      type: 'trainingProgram/fetchList',
-      payload: {
-        pageNum: DEFAULT_PAGE_NUM,
-        pageSize: DEFAULT_PAGE_SIZE,
-        ...payload,
-      },
-    });
+    const { getList } = this.props;
+    // getList();
   }
 
   setFormReference = form => {
@@ -91,7 +119,8 @@ export default class TrainingProgramList extends Component {
 
   // 查询按钮点击事件
   handleSearch = (values) => {
-    this.getList(values);
+    const { getList } = this.props;
+    getList(values);
   }
 
   // 重置按钮点击事件
@@ -129,7 +158,16 @@ export default class TrainingProgramList extends Component {
 
   // 删除按钮点击事件
   handleDeleteClick = (id) => {
-    console.log(id);
+    const { remove } = this.props;
+    remove({ id }, (isSuccess, msg) => {
+      if (isSuccess) {
+        const { trainingProgram: { list: { pagination: { pageNum, pageSize } } } } = this.props;
+        message.success('删除成功');
+        this.handleListChange(pageNum, pageSize);
+      } else {
+        message.error(msg || '删除失败，请稍后重试！');
+      }
+    });
   }
 
   // 执行按钮点击事件
@@ -149,35 +187,24 @@ export default class TrainingProgramList extends Component {
 
   // 模态框确定事件
   handleModalConfirm = () => {
-    const {
-      dispatch,
-    } = this.props;
+    const { execute } = this.props;
     const { data: { id } } = this.state;
     const { validateFieldsAndScroll } = this.form2;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        this.setState({ connecting: true });
-        const payload = {
+        execute({
           id,
           ...values,
-        };
-        console.log(payload);
-        const callback = (isSuccess) => {
+        }, (isSuccess) => {
           if (isSuccess) {
-            message.success(`关联成功！`, () => {
-              this.setState({
-                visible: false,
-              });
-            });
+            message.success(`关联成功！`);
           } else {
             message.error(`关联失败，请稍后重试！`);
           }
-        };
-        // dispatch({
-        //   type: 'training/connect',
-        //   payload,
-        //   callback,
-        // });
+          this.setState({
+            visible: false,
+          });
+        });
       }
     });
   }
@@ -213,6 +240,15 @@ export default class TrainingProgramList extends Component {
         render: _this => <Input placeholder="请输入培训类型" onPressEnter={_this.handleSearch} maxLength={50} />,
       },
       {
+        id: 'level',
+        label: '培训分级',
+        render: () => (
+          <Select placeholder="请选择培训分级" allowClear>
+            {LEVELS.map(({ key, value }) => <Option key={key}>{value}</Option>)}
+          </Select>
+        ),
+      },
+      {
         id: 'status',
         label: '计划状态',
         render: () => (
@@ -229,9 +265,7 @@ export default class TrainingProgramList extends Component {
           fields={FIELDS}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
-          action={hasAddAuthority && (
-            <Button type="primary" onClick={this.handleAddClick}>新增</Button>
-          )}
+          action={<Button type="primary" onClick={this.handleAddClick} disabled={!hasAddAuthority}>新增</Button>}
           ref={this.setFormReference}
         />
       </Card>
@@ -288,6 +322,11 @@ export default class TrainingProgramList extends Component {
       {
         title: '培训形式',
         dataIndex: 'form',
+        align: 'center',
+      },
+      {
+        title: '培训分级',
+        dataIndex: 'level',
         align: 'center',
       },
       {
@@ -352,14 +391,16 @@ export default class TrainingProgramList extends Component {
           const { id, status } = data;
           return (
             <Fragment>
-              {hasEditAuthority && +status === 0 && <span className={styles.operation} onClick={() => this.handleExecuteClick(data)}>执行</span>}
-              {hasDetailAuthority && <span className={styles.operation} onClick={this.handleViewClick} data-id={id}>查看</span>}
-              {hasEditAuthority && +status === 0 && <span className={styles.operation} onClick={this.handleEditClick} data-id={id}>编辑</span>}
-              {hasDeleteAuthority && +status === 0 && (
-                <Popconfirm title="你确定要删除这个培训计划吗?" onConfirm={() => this.handleDeleteClick(id)}>
-                  <span className={styles.operation}>删除</span>
+              {+status === 0 && <Button type='link' className={styles.operation} onClick={() => this.handleExecuteClick(data)} disabled={!hasEditAuthority}>执行</Button>}
+              {<Button type='link' className={styles.operation} onClick={this.handleViewClick} data-id={id} disabled={!hasDetailAuthority}>查看</Button>}
+              {+status === 0 && <Button type='link' className={styles.operation} onClick={this.handleEditClick} data-id={id} disabled={!hasEditAuthority}>编辑</Button>}
+              {+status === 0 && (hasDeleteAuthority ? (
+                <Popconfirm title="你确定要删除吗?" onConfirm={() => this.handleDeleteClick(id)}>
+                  <Button type='link' className={styles.operation}>删除</Button>
                 </Popconfirm>
-              )}
+              ) : (
+                <Button type='link' className={styles.operation} disabled>删除</Button>
+              ))}
             </Fragment>
           );
         },
@@ -432,7 +473,7 @@ export default class TrainingProgramList extends Component {
         visible={visible}
         onCancel={this.handleModalCancel}
         onOk={this.handleModalConfirm}
-        zIndex={9999}
+        zIndex={1009}
       >
         <CustomForm
           fields={fields}

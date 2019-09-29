@@ -3,6 +3,8 @@ import {
   getDetail,
   add,
   edit,
+  execute,
+  remove,
 } from '@/services/trainingProgram';
 
 export default {
@@ -42,13 +44,23 @@ export default {
     },
     *add({ payload, callback }, { call }) {
       const response = yield call(add, payload);
-      const { code } = response || {};
-      callback && callback(code === 200);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
     },
     *edit({ payload, callback }, { call }) {
       const response = yield call(edit, payload);
-      const { code } = response || {};
-      callback && callback(code === 200);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    *execute({ payload, callback }, { call }) {
+      const response = yield call(execute, payload);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
+    },
+    *remove({ payload, callback }, { call }) {
+      const response = yield call(remove, payload);
+      const { code, msg } = response || {};
+      callback && callback(code === 200, msg);
     },
   },
 
