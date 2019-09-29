@@ -43,7 +43,7 @@ export default class MEdit extends PureComponent {
       {
         title: '第三部分：危险性概述',
         fields: [
-          { name: 'riskCateg', label: '危险性类别', options: RISK_CATEGORIES },
+          { name: 'riskCateg', label: '危险性类别', type: 'select', options: RISK_CATEGORIES },
           { name: 'invasionRoute', label: '侵入途径', type: 'text', required: false },
           { name: 'healthHazard', label: '健康危害', type: 'text' },
           { name: 'environmentalHarm', label: '环境危害', type: 'text' },

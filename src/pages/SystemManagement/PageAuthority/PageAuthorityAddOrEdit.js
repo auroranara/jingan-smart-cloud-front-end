@@ -63,7 +63,8 @@ export default class PageAuthorityAdd extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         // console.log('Received values of form: ', values);
-        const { parentId, code, sort } = values;
+        const { parentId, code, sort, mode } = values;
+        delete values.mode;
         const parentCode = this.codeMap[parentId];
         const newVals = {
           ...values,
@@ -83,21 +84,67 @@ export default class PageAuthorityAdd extends Component {
             newVals.sort = nextSort;
         }
 
-        dispatch({
-          type: `pageAuth/${isAdd ? 'postAuth' :'putAuth'}`,
-          payload: newVals,
-          callback: (code, msg) => {
-            if (code === 200) {
-              message.success('成功');
-              router.push('/system-management/page-authority/index');
-            }
-            else
-              message.warn(msg);
-          },
-        });
+        const callback = +mode ? detail => this.batchAdd(detail) : null;
+        this.postOrPutAuth(isAdd, newVals, callback);
+
+        // dispatch({
+        //   type: `pageAuth/${isAdd ? 'postAuth' :'putAuth'}`,
+        //   payload: newVals,
+        //   callback: (code, msg, detail) => {
+        //     if (code === 200) {
+        //       message.success('成功');
+        //       router.push('/system-management/page-authority/index');
+        //       this.batchPost(detail);
+        //     }
+        //     else
+        //       message.warn(msg);
+        //   },
+        // });
       }
     });
   };
+
+  batchAdd = detail => {
+    const { id, code, parentId, parentIds: pIds } = detail;
+    if (parentId === '0') {
+      message.warn('不要在根节点批量生成权限');
+      return;
+    }
+    const parentIds = `${pIds},${id}`;
+    const auths = [
+      { ename: 'listView', showZname: '查看列表' },
+      { ename: 'view', showZname: '查看' },
+      { ename: 'add', showZname: '新增' },
+      { ename: 'edit', showZname: '编辑' },
+      { ename: 'delete', showZname: '删除' },
+    ].map(({ ename, showZname }, i) => ({
+      code: `${code}.${ename}`,
+      ename,
+      parentId: id,
+      parentIds,
+      showZname,
+      sort: i,
+    }));
+
+    auths.forEach(v => this.postOrPutAuth(true, v));
+  };
+
+  postOrPutAuth = (isAdd, values, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: `pageAuth/${isAdd ? 'postAuth' :'putAuth'}`,
+      payload: values,
+      callback: (code, msg, detail) => {
+        if (code === 200) {
+          message.success('成功');
+          router.push('/system-management/page-authority/index');
+          callback && callback(detail);
+        }
+        else
+          message.warn(msg);
+      },
+    });
+  }
 
   render() {
     const {
@@ -179,6 +226,14 @@ export default class PageAuthorityAdd extends Component {
               <FormItem label="请求路径" {...formItemLayout}>
                 {getFieldDecorator('url', {})(
                   <Input placeholder="请输入节点类型" />
+                )}
+              </FormItem>
+              <FormItem label="批量模式" {...formItemLayout}>
+                {getFieldDecorator('mode')(
+                  <Select placeholder="请选择批量模式">
+                    <Option key={1} value={1}>是</Option>
+                    <Option key={0} value={0}>否</Option>
+                  </Select>
                 )}
               </FormItem>
               <FormItem {...tailFormItemLayout}>
