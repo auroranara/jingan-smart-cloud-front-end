@@ -104,12 +104,12 @@ export default class DangerChemicalsPermitList extends PureComponent {
   }
   getColorVal = status => {
     switch (+status) {
+      case 0:
+        return '#1890ff';
       case 1:
         return '#faad14';
       case 2:
         return '#f5222d';
-      case 3:
-        return '#1890ff';
       default:
         return;
     }
@@ -123,14 +123,17 @@ export default class DangerChemicalsPermitList extends PureComponent {
       form: { setFieldsValue },
     } = this.props;
     // 从sessionStorage中获取存储的控件值
+    const session = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
     const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
       pageNum: 1,
       pageSize: 10,
     };
-    // 重置控件
-    setFieldsValue({
-      ...payload,
-    });
+    if (session) {
+      setFieldsValue({
+        ...payload,
+      });
+    }
+
     this.fetchList({ ...payload });
   }
 
@@ -173,7 +176,7 @@ export default class DangerChemicalsPermitList extends PureComponent {
     setFieldsValue({
       issuingType: undefined,
       certificateNumber: undefined,
-      permitStatus: undefined,
+      paststatus: undefined,
       certificateState: undefined,
       companyName: undefined,
     });
@@ -181,10 +184,21 @@ export default class DangerChemicalsPermitList extends PureComponent {
 
   // 分页变动
   handlePageChange = (pageNum, pageSize) => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+
+    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
+      pageNum: 1,
+      pageSize: 10,
+    };
     dispatch({
       type: 'reservoirRegion/fetchCertificateList',
       payload: {
+        ...payload,
         pageSize,
         pageNum,
       },
@@ -415,7 +429,7 @@ export default class DangerChemicalsPermitList extends PureComponent {
           return (
             <div>
               <span>{moment(endDate).format('YYYY-MM-DD')}</span>
-              <span style={{ color: this.getColorVal(paststatus) }}>
+              <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
                 {paststatusVal[paststatus]}
               </span>
             </div>
@@ -511,7 +525,7 @@ export default class DangerChemicalsPermitList extends PureComponent {
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={`单位数量：1 许可证数量：${total}`}
+        content={`单位数量：1    许可证数量：${total}`}
       >
         {this.renderFilter()}
         {this.renderTable()}

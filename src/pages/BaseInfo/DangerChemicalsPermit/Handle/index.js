@@ -34,8 +34,6 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
 
-const dateFormat = 'YYYY-MM-DD';
-
 // 上传文件夹
 const folder = 'dangerChemicalsInfo';
 // 上传文件地址
@@ -68,7 +66,7 @@ export default class dangerChemicalsPermitHandle extends PureComponent {
       dispatch({
         type: 'reservoirRegion/fetchCertificateList',
         payload: {
-          pageSize: 10,
+          pageSize: 48,
           pageNum: 1,
         },
         callback: res => {
@@ -109,7 +107,6 @@ export default class dangerChemicalsPermitHandle extends PureComponent {
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
         const { photoUrl } = this.state;
-        console.log('photoUrl', photoUrl);
         const {
           issuingType,
           certificateState,
@@ -340,15 +337,9 @@ export default class dangerChemicalsPermitHandle extends PureComponent {
           </FormItem>
           <FormItem label="发证日期" {...formItemLayout}>
             {getFieldDecorator('issuingDate', {
-              initialValue: issuingDate ? moment(+issuingDate) : '',
+              initialValue: issuingDate ? moment(+issuingDate) : undefined,
               rules: [{ required: true, message: '请选择发证日期' }],
-            })(
-              <DatePicker
-                placeholder="请选择"
-                getCalendarContainer={getRootChild}
-                {...itemStyles}
-              />
-            )}
+            })(<DatePicker placeholder="请选择" format="YYYY-MM-DD" {...itemStyles} />)}
           </FormItem>
           <FormItem label="发证编号" {...formItemLayout}>
             {getFieldDecorator('certificateNumber', {
@@ -363,7 +354,7 @@ export default class dangerChemicalsPermitHandle extends PureComponent {
             })(
               <RangePicker
                 {...itemStyles}
-                format={dateFormat}
+                format="YYYY-MM-DD"
                 getCalendarContainer={getRootChild}
               />
             )}
