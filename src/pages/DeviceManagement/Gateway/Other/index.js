@@ -63,10 +63,11 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD';
       callback,
     });
   },
-  getModelList(payload) {
+  getModelList(payload, callback) {
     dispatch({
       type: 'gateway/fetchModelList',
       payload,
+      callback,
     });
   },
   getOperatorList() {

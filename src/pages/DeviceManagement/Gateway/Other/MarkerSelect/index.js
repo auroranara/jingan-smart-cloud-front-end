@@ -84,8 +84,8 @@ export default class MarkerSelect extends Component {
   }
 
   componentDidMount() {
-    const { isBuildingFloorEntryForm, getBuildingList, getFloorList, companyId, value } = this.props;
-    if (!isBuildingFloorEntryForm && companyId) {
+    const { getBuildingList, getFloorList, companyId, value } = this.props;
+    if (companyId) {
       getBuildingList({
         pageNum: 1,
         pageSize: 0,
@@ -93,7 +93,7 @@ export default class MarkerSelect extends Component {
       });
     }
     (value || []).forEach(({ ichnographyType, buildingId }) => {
-      if (!isBuildingFloorEntryForm && ichnographyType === '2') {
+      if (ichnographyType === '2') {
         getFloorList({
           pageNum: 1,
           pageSize: 0,

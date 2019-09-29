@@ -48,7 +48,6 @@ export default class BuildingFloorSelect extends Component {
   componentDidMount() {
     const { getBuildingList, getFloorList, companyId, marker, onChange, value } = this.props;
     const [buildingId] = value || [];
-    let flag = true;
     (marker || []).forEach(({ ichnographyType, buildingId, floorId }) => {
       if (ichnographyType === '2') {
         // getFloorList({
@@ -57,17 +56,16 @@ export default class BuildingFloorSelect extends Component {
         //   building_id: buildingId,
         // });
         onChange && onChange([buildingId, floorId]);
-        flag = false;
       }
     });
-    if (flag && companyId) {
+    if (companyId) {
       getBuildingList({
         pageNum: 1,
         pageSize: 0,
         company_id: companyId,
       });
     }
-    if (flag && buildingId) {
+    if (buildingId) {
       getFloorList({
         pageNum: 1,
         pageSize: 0,
