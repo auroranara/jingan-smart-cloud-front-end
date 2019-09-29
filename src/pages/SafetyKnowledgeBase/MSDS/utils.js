@@ -4,7 +4,29 @@ const { Item: FormItem } = Form;
 const { TextArea } = Input;
 const { Option } = Select;
 
-export const RISK_CATEGORIES = ['爆炸物', '易燃气体', '气溶胶', '氧化性气体', '有机过氧化物'];
+export const LIST_URL = '/safety-knowledge-base/msds/list';
+// 只能在最后面加，顺序不可以变化，不然和后台对应的类型就全部乱了
+export const RISK_CATEGORIES = [
+  '爆炸物',
+  '易燃气体',
+  '气溶胶',
+  '氧化性气体',
+  '加压气体',
+  '易燃液体',
+  '易燃固体',
+  '自反应物质和混合物',
+  '自燃液体',
+  '自燃固体',
+  '自热物质和混合物',
+  '遇水放出易燃气体的物质和混合物',
+  '氧化性液体',
+  '液化性固体',
+  '有机过氧化物',
+  '金属腐蚀物',
+  '急性毒性物质',
+  '腐蚀刺激性物质',
+  '其他危害物质',
+];
 export const FORMITEM_LAYOUT = {
   labelCol: {
     xs: { span: 24 },
@@ -25,12 +47,18 @@ function getOptions(options) {
   return options;
 }
 
+// function getValueFromEvent(e) {
+//   return e.target.value.trim();
+// }
+
 function genFormItem(field, getFieldDecorator) {
   const { type='input', name, label, required=true, options } = field;
   const typ = options ? 'select' : type;
   const opts = getOptions(options);
+  const formOptions = {};
   let component = null;
   let placeholder;
+  let rules = [{ whitespace: true, message: `${label}不能全为空字符串` }];
   switch(typ) {
     case 'text':
       placeholder = `请输入${label}`;
@@ -38,6 +66,7 @@ function genFormItem(field, getFieldDecorator) {
       break;
     case 'select':
       placeholder = `请选择${label}`;
+      rules = [];
       component = <Select placeholder={placeholder}>{opts.map(({ key, value }) => <Option key={key}>{value}</Option>)}</Select>;
       break;
     default:
@@ -45,9 +74,12 @@ function genFormItem(field, getFieldDecorator) {
       component = <Input placeholder={placeholder} />;
   }
 
+  rules.unshift({ required, message: `${label}不能为空` });
+  formOptions.rules = rules;
+
   return (
-    <FormItem label={label}>
-      {getFieldDecorator(name, { rules: [{ required, message: placeholder }] })(component)}
+    <FormItem label={label} key={name}>
+      {getFieldDecorator(name, formOptions)(component)}
     </FormItem>
   )
 }
@@ -55,7 +87,7 @@ function genFormItem(field, getFieldDecorator) {
 function renderSection(section, getFieldDecorator) {
   const { title, fields } = section;
   return (
-    <Fragment>
+    <Fragment key={title}>
       <FormItem><p style={{ margin: 0, textAlign: 'center' }}>{title}</p></FormItem>
       {fields.map(field => genFormItem(field, getFieldDecorator))}
     </Fragment>
@@ -75,4 +107,30 @@ export function getFieldLabels(sections) {
     next.fields.forEach(({ name, label }) => prev[name] = label);
     return prev;
   }, {});
+}
+
+export const INDEXES = ['一', '二'];
+
+export function handleTableData(list = [], indexBase) {
+  return list.map((item, index) => {
+    const { id, casNo, chineName, chineName2, engName, engName2, riskCateg, bookCode } = item;
+
+    return {
+      id,
+      index: indexBase + index + 1,
+      chineNames: [chineName, chineName2].filter(n => n),
+      engName: [engName, engName2].filter(n => n),
+      casNo,
+      bookCode,
+      riskCateg: RISK_CATEGORIES[riskCateg],
+    };
+  });
+}
+
+export function deleteEmptyProps(obj) {
+  Object.entries(obj).forEach(([k, v]) => {
+    if (v === '')
+      obj[k] = undefined;
+  });
+  return obj;
 }

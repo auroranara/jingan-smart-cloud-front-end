@@ -105,6 +105,7 @@ export default class InlineForm extends PureComponent {
       bindPoint,
       onChangeCheckBox,
       checked = false,
+      butonStyles = {},
     } = this.props;
 
     return (
@@ -126,7 +127,7 @@ export default class InlineForm extends PureComponent {
                 </Col>
               );
             })}
-          <Col {...buttonSpan} style={{ width: '65%' }}>
+          <Col {...buttonSpan} style={{ width: '65%', ...butonStyles }}>
             <FormItem style={{ margin: '0', padding: '4px 0' }}>
               {!hideSearch && (
                 <Button

@@ -1,19 +1,22 @@
 import React, { PureComponent, Fragment } from 'react';
-// import { connect } from 'dva';
-import { Form, Card, Button, Input, Table, Select, Divider } from 'antd';
+import { connect } from 'dva';
+import { Form, Card, Button, Input, Table, Select, Divider, Popconfirm, message } from 'antd';
 import ToolBar from '@/components/ToolBar';
+import { Link } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import codes from '@/utils/codes';
+import { hasAuthority } from '@/utils/customAuth';
 
 const { Option } = Select;
 
 // 标题
 const title = '库区管理';
 
-const envirTypeList = [
-  { key: '1', value: '一类区' },
-  { key: '2', value: '二类区' },
-  { key: '3', value: '三类区' },
-];
+const envirList = {
+  1: '一类区',
+  2: '二类区',
+  3: '三类区',
+};
 
 //面包屑
 const breadcrumbList = [
@@ -32,89 +35,142 @@ const breadcrumbList = [
   },
 ];
 
-const spanStyle = { md: 8, sm: 12, xs: 24 };
-const fields = [
-  {
-    id: 'name',
-    label: '库区名称',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入库区名称" />,
-    transform: v => v.trim(),
+// 权限
+const {
+  baseInfo: {
+    reservoirRegionManagement: { add: addAuth, edit: editAuth, delete: deleteAuth },
   },
-  {
-    id: 'code',
-    label: '库区编号',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入库区编号" />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'area',
-    label: '区域-位置',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入区域位置" />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'level：',
-    label: '所处环境功能区',
-    span: { md: 16, sm: 16, xs: 24 },
-    render: () => (
-      <Select allowClear placeholder="请选择所处环境功能区">
-        {envirTypeList.map(({ key, value }) => (
-          <Option key={key} value={value}>
-            {value}
-          </Option>
-        ))}
-      </Select>
-    ),
-  },
-  {
-    id: 'companyName',
-    label: '单位名称：',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入单位名称" />,
-    transform: v => v.trim(),
-  },
-];
+} = codes;
 
-// @connect(({ loading }) => ({}))
-@Form.create()
-export default class StorageList extends PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {};
-    this.exportButton = (
-      <Button type="primary" href={`#/base-info/reservoir-region-management/add`}>
-        新增库区
-      </Button>
-    );
-  }
+const spanStyle = { md: 8, sm: 12, xs: 24 };
+
+/* session前缀 */
+const sessionPrefix = 'reservoir_region_list_';
+
+@connect(({ reservoirRegion, user, loading }) => ({
+  reservoirRegion,
+  user,
+  loading: loading.models.reservoirRegion,
+}))
+// @Form.create()
+export default class ReservoirRegionList extends PureComponent {
+  state = { formData: {} };
 
   // 挂载后
-  componentDidMount() {}
+  componentDidMount() {
+    const {
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+    // 从sessionStorage中获取存储的控件值
+    const sessionData = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
+    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
+      pageNum: 1,
+      pageSize: 10,
+    };
+    this.fetchList({ ...payload });
+    this.fetchCountNum({ ...payload });
+    if (sessionData) {
+      this.form.setFieldsValue({ ...payload });
+    }
+  }
+
+  // 获取列表
+  fetchList = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'reservoirRegion/fetchAreaList',
+      payload: {
+        ...params,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
+  };
+
+  // 获取数量
+  fetchCountNum = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'reservoirRegion/fetchCount',
+      payload: {
+        ...params,
+      },
+    });
+  };
+
+  handleFormRef = toobar => {
+    this.form = toobar && toobar.props && toobar.props.form;
+  };
 
   // 查询
-  handleSearch = () => {};
+  handleSearch = () => {
+    const {
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+    const { name, number, position, ...rest } = this.form.getFieldsValue();
+    const payload = { name, number, position, ...rest };
+    this.fetchList(payload);
+    this.fetchCountNum(payload);
+    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
+  };
 
   // 重置
-  handleReset = () => {};
+  handleReset = () => {
+    this.fetchList();
+    this.fetchCountNum();
+    sessionStorage.clear();
+  };
 
-  handlePageChange = () => {};
+  // 删除
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'reservoirRegion/fetchAreaDelete',
+      payload: { ids: id },
+      success: () => {
+        this.fetchList();
+        this.fetchCountNum();
+        message.success('删除成功！');
+      },
+      error: () => {
+        message.error('已绑定库房，删除失败!');
+      },
+    });
+  };
+
+  // 分页变动
+  handlePageChange = (pageNum, pageSize) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'reservoirRegion/fetchAreaList',
+      payload: {
+        pageSize,
+        pageNum,
+      },
+    });
+  };
 
   // 渲染表格
   renderTable = () => {
-    const list = [
-      {
-        id: '1',
-        companyName: '利民化工股份有限公司',
-        info: '库区名称：---',
-        desc: '1',
-        chemicals: '一类区',
-        area: '二车间二楼',
-        bind: '3',
+    const {
+      reservoirRegion: {
+        areaData: {
+          list = [],
+          pagination: { pageNum, pageSize, total },
+        },
       },
-    ];
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
+
+    // 权限
+    const editCode = hasAuthority(editAuth, permissionCodes);
+    const deleteCode = hasAuthority(deleteAuth, permissionCodes);
 
     const columns = [
       {
@@ -128,41 +184,75 @@ export default class StorageList extends PureComponent {
         dataIndex: 'info',
         align: 'center',
         width: 250,
+        render: (val, text) => {
+          const { number, name, area } = text;
+          return (
+            <div>
+              <p>
+                库区编号:
+                {number}
+              </p>
+              <p>
+                库区名称:
+                {name}
+              </p>
+              <p>
+                库区面积（㎡）:
+                {area}
+              </p>
+            </div>
+          );
+        },
       },
       {
         title: '库房个数',
-        dataIndex: 'desc',
+        dataIndex: 'count',
         align: 'center',
         width: 200,
       },
       {
         title: '所处环境功能区',
-        dataIndex: 'chemicals',
+        dataIndex: 'environment',
         align: 'center',
         width: 200,
+        render: val => {
+          return envirList[val];
+        },
       },
       {
         title: '区域位置',
-        dataIndex: 'area',
+        dataIndex: 'position',
         align: 'center',
-        width: 200,
+        width: 180,
       },
       {
         title: '已绑传感器',
         dataIndex: 'bind',
         align: 'center',
-        width: 150,
+        width: 120,
       },
       {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 150,
+        width: 200,
         render: (val, row) => (
           <Fragment>
-            <a>编辑</a>
+            <Link to="/base-info/reservoir-region-management/list">绑定传感器</Link>
             <Divider type="vertical" />
-            <a>删除</a>
+            {editCode ? (
+              <Link to={`/base-info/reservoir-region-management/edit/${row.id}`}>编辑</Link>
+            ) : (
+              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
+            )}
+            <Divider type="vertical" />
+            {deleteCode ? (
+              <Popconfirm title="确认要删除数据吗？" onConfirm={() => this.handleDelete(row.id)}>
+                <a>删除</a>
+              </Popconfirm>
+            ) : (
+              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
+            )}
           </Fragment>
         ),
       },
@@ -172,23 +262,22 @@ export default class StorageList extends PureComponent {
       <Card style={{ marginTop: '24px' }}>
         <Table
           rowKey="id"
-          // loading={loading}
           columns={columns}
           dataSource={list}
           bordered
           scroll={{ x: 1400 }}
-          // pagination={{
-          //   current: pageNum,
-          //   pageSize,
-          //   total,
-          //   showQuickJumper: true,
-          //   showSizeChanger: true,
-          //   pageSizeOptions: ['5', '10', '15', '20'],
-          //   onChange: this.handleQuery,
-          //   onShowSizeChange: (num, size) => {
-          //     this.handleQuery(1, size);
-          //   },
-          // }}
+          pagination={{
+            current: pageNum,
+            pageSize,
+            total,
+            showQuickJumper: true,
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '15', '20'],
+            onChange: this.handlePageChange,
+            onShowSizeChange: (num, size) => {
+              this.handlePageChange(1, size);
+            },
+          }}
         />
       </Card>
     ) : (
@@ -197,6 +286,66 @@ export default class StorageList extends PureComponent {
   };
 
   render() {
+    const {
+      reservoirRegion: {
+        areaData: {
+          pagination: { total },
+        },
+        envirTypeList,
+        areaCount: { companyNum },
+      },
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
+    const addCode = hasAuthority(addAuth, permissionCodes);
+
+    const fields = [
+      {
+        id: 'name',
+        label: '库区名称',
+
+        span: spanStyle,
+        render: () => <Input placeholder="请输入库区名称" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'number',
+        label: '库区编号',
+        span: spanStyle,
+        render: () => <Input placeholder="请输入库区编号" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'position',
+        label: '区域-位置',
+        span: spanStyle,
+        render: () => <Input placeholder="请输入区域位置" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'environment',
+        label: '所处环境功能区',
+        span: { md: 16, sm: 16, xs: 24 },
+        render: () => (
+          <Select allowClear placeholder="请选择所处环境功能区">
+            {envirTypeList.map(({ key, value }) => (
+              <Option key={key} value={key}>
+                {value}
+              </Option>
+            ))}
+          </Select>
+        ),
+      },
+      {
+        id: 'companyName',
+        label: '单位名称：',
+        span: spanStyle,
+        render: () => <Input placeholder="请输入单位名称" />,
+        transform: v => v.trim(),
+      },
+    ];
+
     return (
       <PageHeaderLayout
         title={title}
@@ -205,15 +354,15 @@ export default class StorageList extends PureComponent {
           <div>
             <span>
               单位数量：
-              {1}
+              {companyNum}
             </span>
             <span style={{ paddingLeft: 20 }}>
-              储罐总数：
-              {1}
+              库区总数：
+              {total}
             </span>
             <span style={{ paddingLeft: 20 }}>
               已绑传感器数：
-              {3}
+              {0}
             </span>
           </div>
         }
@@ -223,7 +372,16 @@ export default class StorageList extends PureComponent {
             fields={fields}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
-            action={this.exportButton}
+            action={
+              <Button
+                type="primary"
+                href={`#/base-info/reservoir-region-management/add`}
+                disabled={!addCode}
+              >
+                新增库区
+              </Button>
+            }
+            wrappedComponentRef={this.handleFormRef}
           />
         </Card>
 

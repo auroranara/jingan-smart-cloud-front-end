@@ -722,6 +722,12 @@ module.exports = env => {
                   path: '/base-info/major-hazard/add',
                   component: './BaseInfo/MajorHazard/MajorHazardEdit',
                 },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.majorHazard.edit',
+                  path: '/base-info/major-hazard/edit/:id',
+                  component: './BaseInfo/MajorHazard/MajorHazardEdit',
+                },
               ],
             },
             // 储罐区管理
@@ -798,6 +804,12 @@ module.exports = env => {
                   name: 'add',
                   code: 'baseInfo.reservoirRegionManagement.add',
                   path: '/base-info/reservoir-region-management/add',
+                  component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionEdit',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.reservoirRegionManagement.edit',
+                  path: '/base-info/reservoir-region-management/edit/:id',
                   component: './BaseInfo/ReservoirRegionManagement/ReservoirRegionEdit',
                 },
               ],
@@ -1752,7 +1764,8 @@ module.exports = env => {
                   component: './DeviceManagement/AssociateSensor/WaterSystem',
                 },
                 {
-                  path: '/device-management/associate-sensor/company/:companyId/temperature-and-humidity',
+                  path:
+                    '/device-management/associate-sensor/company/:companyId/temperature-and-humidity',
                   name: 'temperatureAndHumidity',
                   code: 'deviceManagement.associateSensor.temperatureAndHumidity',
                   component: './DeviceManagement/AssociateSensor/TemperatureAndHumidity',
@@ -3197,19 +3210,19 @@ module.exports = env => {
                   component: './PersonnelManagement/CheckPoint/CheckList',
                 },
                 {
-                  path: '/personnel-management/check-point/detail/:id/:tabIndex',
-                  code: 'personnelManagement.checkPoint.view',
-                  name: 'detail',
-                  component: './PersonnelManagement/CheckPoint/CheckDetail',
-                },
-                {
                   path: '/personnel-management/check-point/add/:companyId/:tabIndex',
                   code: 'personnelManagement.checkPoint.add',
                   name: 'add',
                   component: './PersonnelManagement/CheckPoint/CheckEdit',
                 },
                 {
-                  path: '/personnel-management/check-point/edit/:id/:tabIndex',
+                  path: '/personnel-management/check-point/detail/:companyId/:tabIndex/:id',
+                  code: 'personnelManagement.checkPoint.view',
+                  name: 'detail',
+                  component: './PersonnelManagement/CheckPoint/CheckEdit',
+                },
+                {
+                  path: '/personnel-management/check-point/edit/:companyId/:tabIndex/:id',
                   code: 'personnelManagement.checkPoint.add',
                   name: 'edit',
                   component: './PersonnelManagement/CheckPoint/CheckEdit',
@@ -3251,10 +3264,48 @@ module.exports = env => {
                   component: './SafetyKnowledgeBase/MSDS/MEdit',
                 },
                 {
+                  path: '/safety-knowledge-base/msds/detail/:id',
+                  code: 'safetyKnowledgeBase.msds.view',
+                  name: 'view',
+                  component: './SafetyKnowledgeBase/MSDS/MEdit',
+                },
+                {
                   path: '/safety-knowledge-base/msds/edit/:id',
                   code: 'safetyKnowledgeBase.msds.edit',
                   name: 'edit',
                   component: './SafetyKnowledgeBase/MSDS/MEdit',
+                },
+              ],
+            },
+            // 典型事故案例
+            {
+              path: '/safety-knowledge-base/typical-accident-case',
+              code: 'safetyKnowledgeBase.typicalAccidentCase',
+              name: 'typicalAccidentCase',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/safety-knowledge-base/typical-accident-case',
+                  name: 'typicalAccidentCase',
+                  redirect: '/safety-knowledge-base/typical-accident-case/list',
+                },
+                {
+                  path: '/safety-knowledge-base/typical-accident-case/list',
+                  code: 'safetyKnowledgeBase.typicalAccidentCase.listView',
+                  name: 'list',
+                  component: './SafetyKnowledgeBase/TypicalAccidentCase/TList',
+                },
+                {
+                  path: '/safety-knowledge-base/typical-accident-case/add',
+                  code: 'safetyKnowledgeBase.typicalAccidentCase.add',
+                  name: 'add',
+                  component: './SafetyKnowledgeBase/TypicalAccidentCase/TEdit',
+                },
+                {
+                  path: '/safety-knowledge-base/typical-accident-case/edit/:id',
+                  code: 'safetyKnowledgeBase.typicalAccidentCase.edit',
+                  name: 'edit',
+                  component: './SafetyKnowledgeBase/TypicalAccidentCase/TEdit',
                 },
               ],
             },

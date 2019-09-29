@@ -200,6 +200,7 @@ export default class CompanyModal extends PureComponent {
       bindPoint,
       onChangeCheckBox,
       checked,
+      butonStyles,
     } = this.props;
     const { selectedRowKeys } = this.state;
 
@@ -223,6 +224,7 @@ export default class CompanyModal extends PureComponent {
           bindPoint={bindPoint}
           onChangeCheckBox={onChangeCheckBox}
           checked={checked}
+          butonStyles={butonStyles}
         />
         <Table
           style={{ marginTop: '16px' }}

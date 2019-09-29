@@ -7,102 +7,257 @@ import {
   Button,
   Radio,
   Row,
-  Modal,
-  Col,
   message,
-  InputNumber,
-  DatePicker,
-  Upload,
-  Icon,
   Cascader,
+  InputNumber,
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import debounce from 'lodash/debounce';
-import { getToken } from 'utils/authority';
+import { KEYSUPERVISION } from '../utils.js';
+
 import styles from './index.less';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const Option = Select.Option;
 const { Group: RadioGroup } = Radio;
+const NO_DATA = '暂无数据';
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
 const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
+const listUrl = '/base-info/materials/list';
 
-// 上传文件地址
-const uploadAction = '/acloud_new/v2/uploadFile';
-// 上传文件夹
-const folder = 'safetyinfo';
-const defaultUploadProps = {
-  name: 'files',
-  data: { folder },
-  multiple: true,
-  action: uploadAction,
-  headers: { 'JA-Token': getToken() },
+const itemStyles = { style: { width: '70%', marginRight: '10px' } };
+const unitLayout = {
+  label: '',
+  colon: false,
+  labelCol: { span: 0 },
+  wrapperCol: { span: 14 },
+  style: { position: 'absolute', left: '78%', top: 0, width: '20%' },
 };
 
-const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
+const dangerSourceColumns = [
+  {
+    title: '统一编码',
+    dataIndex: 'code',
+    key: 'code',
+  },
+  {
+    title: '危险源名称',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: '重大危险源等级',
+    dataIndex: 'dangerLevel',
+    key: 'dangerLevel',
+  },
+  {
+    title: '单元内涉及的危险化学品',
+    dataIndex: 'unitChemicla',
+    key: 'unitChemicla',
+  },
+];
+const dangerSourceFields = [
+  {
+    id: 'code',
+    render() {
+      return <Input placeholder="统一编码" />;
+    },
+    transform(value) {
+      return value.trim();
+    },
+  },
+  {
+    id: 'name',
+    render() {
+      return <Input placeholder="危险源名称" />;
+    },
+    transform(value) {
+      return value.trim();
+    },
+  },
+];
+
+const msdsColumns = [
+  {
+    title: '中文名称',
+    dataIndex: 'chineName',
+    key: 'chineName',
+  },
+  {
+    title: '英文名称',
+    dataIndex: 'engName',
+    key: 'engName',
+  },
+  {
+    title: 'CAS号',
+    dataIndex: 'casNo',
+    key: 'casNo',
+  },
+];
+const msdsFields = [
+  {
+    id: 'chineName',
+    render() {
+      return <Input placeholder="中文名称" />;
+    },
+    transform(value) {
+      return value.trim();
+    },
+  },
+  {
+    id: 'casNo',
+    render() {
+      return <Input placeholder="CAS号" />;
+    },
+    transform(value) {
+      return value.trim();
+    },
+  },
+];
 
 @Form.create()
-@connect(({ sensor, loading }) => ({
-  sensor,
-  companyLoading: loading.effects['sensor/fetchModelList'],
+@connect(({ company, materials, loading }) => ({
+  materials,
+  company,
+  companyLoading: loading.effects['company/fetchModelList'],
+  dangerSourceLoadinng: loading.effects['materials/fetchDangerSourceModel'],
+  msdsLoading: loading.effects['materials/fetchMsdsModel'],
 }))
-export default class EmergencySuppliesHandler extends PureComponent {
+export default class MaterialsHandler extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      // 当前监测参数
-      currentParameter: {},
-      // 储存配置报警策略
-      alarmStrategy: [],
-      // 配置报警策略弹窗可见
-      alarmStrategyModalVisible: false,
       // 选择企业弹窗
       compayModalVisible: false,
       // 选中的企业
       selectedCompany: {},
+      amountVisible: false,
+      annualThroughputVisible: false,
+      majorHazardVisible: false,
+      keySupervisionVisible: false,
+      selectedMsds: {},
+      selectedDangerSource: {},
+      dangerSourceModalVisible: false,
+      msdsModalVisible: false,
+      dangerSources: [], // 重大危险源
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    const {
+      form: { setFieldsValue },
+      match: { params: { id = null } = {} },
+    } = this.props;
+    if (id) {
+      this.fetchList(res => {
+        const {
+          list: [
+            {
+              companyId,
+              companyName,
+              type, //类型
+              unifiedCode, //编码
+              dangerChemcataSn, //危险化学品目录序号
+              materialForm, //物质形态
+              superviseChemicals, //是否重点监管的危险化学品
+              msds, //msds
+              annualConsumption, //年消耗量
+              annualConsumptionUnit, //年消耗量单位
+              maxStoreDay, //最大存储量
+              maxStoreDayUnit, //最大存储量单位
+              actualReserves, //实际存储量
+              actualReservesUnit, //实际存储量单位
+              annualThroughput, //年生产能力
+              annualThroughputUnit, //年生产能力单位
+              reservesLocation, //存储场所
+              highRiskStorefacil, //是否属于高危储存设施
+              // majorHazard, //是否构成危险化学品重大危险源
+              // dangerId, //所属危险源id
+              technologyId, //所在工艺流程id
+              keySupervisionProcess, //所在工艺流程是否属于重点监管危险化工工艺
+              keySupervision, //重点监管危险化工工艺
+              highRiskChemicals, //高危化学品
+              highlyToxicChem, //是否剧毒化学品
+              safetyMeasures, //安全措施
+              emergencyMeasure, //应急处置措施
+              easyMakePoison, //是否易制毒
+              easyMakeExplode, //是否易制爆
+              chineName, //品名
+              casNo, //cas
+              riskCateg, //危险性类别
+              dangerSources,
+            },
+          ],
+        } = res.data;
 
-  /**
-   * 获取监测类型列表（字典）
-   */
-  fetchMonitoringTypeDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/fetchMonitoringTypeDict',
-      ...actions,
-    });
-  };
+        setFieldsValue({
+          companyId,
+          type, //类型
+          unifiedCode, //编码
+          dangerChemcataSn, //危险化学品目录序号
+          materialForm, //物质形态
+          superviseChemicals, //是否重点监管的危险化学品
+          msds, //msds
+          reservesLocation, //存储场所
+          highRiskStorefacil, //是否属于高危储存设施
+          // majorHazard, //是否构成危险化学品重大危险源
+          technologyId, //所在工艺流程id
+          keySupervisionProcess, //所在工艺流程是否属于重点监管危险化工工艺
+          highRiskChemicals, //高危化学品
+          highlyToxicChem, //是否剧毒化学品
+          safetyMeasures, //安全措施
+          emergencyMeasure, //应急处置措施
+          easyMakePoison, //是否易制毒
+          easyMakeExplode, //是否易制爆
+        });
+        this.setState(
+          {
+            selectedCompany: { id: companyId, name: companyName },
+            amountVisible: true,
+            annualThroughputVisible: type === '1',
+            // majorHazardVisible: majorHazard === '1',
+            keySupervisionVisible: keySupervisionProcess === '1',
+            selectedMsds: { id: msds, chineName, riskCateg, casNo },
+            dangerSources,
+          },
+          () => {
+            setFieldsValue({
+              annualConsumption, //年消耗量
+              annualConsumptionUnit, //年消耗量单位
+              maxStoreDay, //最大存储量
+              maxStoreDayUnit, //最大存储量单位
+              actualReserves, //实际存储量
+              actualReservesUnit, //实际存储量单位
+              annualThroughput, //年生产能力
+              annualThroughputUnit, //年生产能力单位
+              keySupervision: +keySupervision,
+            });
+          }
+        );
+      });
+    }
+  }
 
-  /**
-   * 获取传感器品牌列表（字典）
-   */
-  fetchSensorBrandDict = actions => {
-    const { dispatch } = this.props;
+  fetchList = callback => {
+    const {
+      dispatch,
+      match: { params: { id = null } = {} },
+    } = this.props;
     dispatch({
-      type: 'sensor/fetchSensorBrandDict',
-      ...actions,
-    });
-  };
-
-  /**
-   * 获取传感器类型列表（字典）
-   */
-  fetchSensorTypeDict = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/fetchSensorTypeDict',
-      ...actions,
+      type: 'materials/fetchMaterialsList',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        id,
+      },
+      callback,
     });
   };
 
@@ -111,53 +266,48 @@ export default class EmergencySuppliesHandler extends PureComponent {
    */
   fetchCompany = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'sensor/fetchModelList', payload });
+    dispatch({ type: 'company/fetchModelList', payload });
   };
 
-  /**
-   * 保存型号代码列表
-   */
-  saveTypeDict = actions => {
+  fetchDangerSource = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'sensor/saveTypeDict',
-      ...actions,
-    });
+    dispatch({ type: 'materials/fetchDangerSourceModel', payload });
+  };
+
+  fetchMsds = ({ payload }) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'materials/fetchMsdsModel', payload });
   };
 
   handleSubmit = () => {
-    router.push('/base-info/materials/list');
-    return;
     const {
       dispatch,
-      sensor: { monitoringParameters },
       form: { validateFields },
       match: {
         params: { id },
       },
     } = this.props;
 
-    validateFields((error, { normalLower, normalUpper, ...formData }) => {
+    validateFields((error, formData) => {
       if (!error) {
-        const payload = { ...formData, monitoringParameters };
-        // console.log('提交',payload)
+        const payload = { ...formData };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
-          router.push('/device-management/sensor/list');
+          router.push(listUrl);
         };
         const error = () => {
           message.error(id ? '编辑失败' : '新增失败！');
         };
         if (id) {
           dispatch({
-            type: 'sensor/editSensor',
-            payload: { ...payload, deviceId: id },
+            type: 'materials/editMaterials',
+            payload: { ...payload, id },
             success,
             error,
           });
         } else {
           dispatch({
-            type: 'sensor/addSensor',
+            type: 'materials/addMaterials',
             payload,
             success,
             error,
@@ -178,6 +328,23 @@ export default class EmergencySuppliesHandler extends PureComponent {
     setFieldsValue({ companyId: selectedCompany.id });
   };
 
+  handleSelectDangerSource = selectedDangerSource => {
+    console.log('selectedDangerSource', selectedDangerSource);
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState({ selectedDangerSource, dangerSourceModalVisible: false });
+    setFieldsValue({ dangerId: selectedDangerSource.id });
+  };
+
+  handleSelectMsds = selectedMsds => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    this.setState({ selectedMsds, msdsModalVisible: false });
+    setFieldsValue({ msds: selectedMsds.id });
+  };
+
   /**
    * 打开选择单位弹窗
    */
@@ -191,24 +358,58 @@ export default class EmergencySuppliesHandler extends PureComponent {
     });
   };
 
+  handleDangerSourceModal = () => {
+    this.setState({ dangerSourceModalVisible: true });
+    this.fetchDangerSource({
+      payload: {
+        pageSize: 10,
+        pageNum: 1,
+      },
+    });
+  };
+
+  handleViewMsdsModal = () => {
+    this.setState({ msdsModalVisible: true });
+    this.fetchMsds({
+      payload: {
+        pageSize: 10,
+        pageNum: 1,
+      },
+    });
+  };
+
+  handleTypeChange = e => {
+    this.setState({ amountVisible: true, annualThroughputVisible: e.target.value === '1' });
+  };
+
+  handleMajorHazardChange = e => {
+    this.setState({ majorHazardVisible: e.target.value === '1' });
+  };
+
+  handleKeySupervisionChange = e => {
+    this.setState({ keySupervisionVisible: e.target.value === '1' });
+  };
+
   /**
    * 渲染表单
    */
   renderForm = () => {
     const {
       form: { getFieldDecorator, getFieldValue },
-      sensor: {
-        // 监测类型字典
-        monitoringTypeDict = [],
-        // 传感器品牌字典
-        brandDict = [],
-        // 传感器型号字典
-        typeDict = [],
-        // 监测参数列表
-        monitoringParameters = [],
+      match: {
+        params: { id },
       },
     } = this.props;
-    const { selectedCompany } = this.state;
+    const {
+      selectedCompany,
+      amountVisible,
+      annualThroughputVisible,
+      majorHazardVisible,
+      keySupervisionVisible,
+      selectedMsds,
+      selectedDangerSource,
+      dangerSources,
+    } = this.state;
 
     return (
       <Card>
@@ -230,30 +431,51 @@ export default class EmergencySuppliesHandler extends PureComponent {
               </Fragment>
             )}
           </FormItem>
+          <FormItem label="统一编码" {...formItemLayout}>
+            {getFieldDecorator('unifiedCode', {
+              rules: [{ required: true, message: '请输入统一编码' }],
+            })(<Input placeholder="请输入统一编码" {...itemStyles} />)}
+          </FormItem>
           <FormItem label="物料类型" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
+            {getFieldDecorator('type', {
               rules: [{ required: true, message: '请选择物料类型' }],
             })(
-              <RadioGroup {...itemStyles}>
+              <RadioGroup {...itemStyles} onChange={this.handleTypeChange}>
                 <Radio value="1">生产原料</Radio>
                 <Radio value="2">中间产品</Radio>
                 <Radio value="3">最终产品</Radio>
               </RadioGroup>
             )}
           </FormItem>
-          <FormItem label="统一编码" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+          {/* <FormItem label="统一编码" {...formItemLayout}>
+            {getFieldDecorator('unifiedCode')(<span>{selectedMsds.casNo}</span>)}
+          </FormItem> */}
+          {id &&
+            dangerSources &&
+            dangerSources.length > 0 && (
+              <Fragment>
+                <FormItem label="是否构成危险化学品重大危险源" {...formItemLayout}>
+                  {getFieldDecorator('isDangerSource')(<span>{'是'}</span>)}
+                </FormItem>
+                <FormItem label="所属危险源名称" {...formItemLayout}>
+                  {getFieldDecorator('casNo')(
+                    <span>{dangerSources.map(item => item.name).join('，')}</span>
+                  )}
+                </FormItem>
+              </Fragment>
+            )}
+          {/* <FormItem label="统一编码" {...formItemLayout}>
+            {getFieldDecorator('unifiedCode', {
               rules: [{ required: true, message: '请输入统一编码' }],
             })(<Input placeholder="请输入统一编码" {...itemStyles} />)}
-          </FormItem>
-
+          </FormItem> */}
           <FormItem label="危险化学品目录序号" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId')(
+            {getFieldDecorator('dangerChemcataSn')(
               <Input placeholder="请输入危险化学品目录序号" {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="物质形态" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
+            {getFieldDecorator('materialForm', {
               rules: [{ required: true, message: '请选择物质形态' }],
             })(
               <RadioGroup {...itemStyles}>
@@ -265,7 +487,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="是否重点监管的危险化学品" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
+            {getFieldDecorator('superviseChemicals', {
               rules: [{ required: true, message: '请选择是否重点监管的危险化学品' }],
             })(
               <RadioGroup {...itemStyles}>
@@ -275,48 +497,107 @@ export default class EmergencySuppliesHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="品名" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择品名' }],
+            {getFieldDecorator('msds', {
+              // rules: [{ required: true, message: '请选择品名' }],
             })(
               <Fragment>
                 <Input
                   {...itemStyles}
                   disabled
-                  value={selectedCompany.name}
+                  value={selectedMsds.chineName}
                   placeholder="请选择品名"
                 />
-                <Button type="primary">选择</Button>
+                <Button type="primary" onClick={this.handleViewMsdsModal}>
+                  选择
+                </Button>
               </Fragment>
             )}
           </FormItem>
           <FormItem label="CAS号" {...formItemLayout}>
-            {getFieldDecorator('equipCode')(<span> </span>)}
+            {getFieldDecorator('casNo')(<span>{selectedMsds.casNo}</span>)}
           </FormItem>
           <FormItem label="危险性类别" {...formItemLayout}>
-            {getFieldDecorator('equipCode')(<span> </span>)}
+            {getFieldDecorator('riskCateg')(<span>{selectedMsds.riskCateg || NO_DATA}</span>)}
           </FormItem>
-          <FormItem label="年消耗量" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
-              rules: [{ required: true, message: '请输年消耗量' }],
-            })(<Input placeholder="请输入年消耗量" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="最大存储量" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
-              rules: [{ required: true, message: '请输入最大存储量' }],
-            })(<Input placeholder="请输入最大存储量" {...itemStyles} />)}
-          </FormItem>
-          <FormItem label="实际存储量" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
-              rules: [{ required: true, message: '请输入实际存储量' }],
-            })(<Input placeholder="请输入实际存储量" {...itemStyles} />)}
-          </FormItem>
+          {amountVisible && (
+            <Fragment>
+              {annualThroughputVisible ? (
+                <div className={styles.unitWrapper}>
+                  {/* <FormItem label="年生产能力" {...formItemLayout}>
+                    {getFieldDecorator('annualThroughput', {
+                      rules: [{ required: true, message: '请输入年生产能力' }],
+                    })(<Input placeholder="请输入最大存储量" {...itemStyles} />)}
+                  </FormItem> */}
+                  <FormItem label="年生产能力" {...formItemLayout}>
+                    {getFieldDecorator('annualThroughput', {
+                      rules: [{ required: true, message: '请输入年生产能力' }],
+                    })(<InputNumber {...itemStyles} min={0} placeholder="请输入年生产能力" />)}
+                  </FormItem>
+                  <FormItem {...unitLayout}>
+                    {getFieldDecorator('annualThroughputUnit', {
+                      rules: [{ required: true, message: '请输入单位' }],
+                    })(<Input placeholder="单位" />)}
+                  </FormItem>
+                </div>
+              ) : (
+                <Fragment>
+                  <div className={styles.unitWrapper}>
+                    {/* <FormItem label="年消耗量" {...formItemLayout}>
+                      {getFieldDecorator('annualConsumption', {
+                        rules: [{ required: true, message: '请输年消耗量' }],
+                      })(<Input placeholder="请输入年消耗量" {...itemStyles} />)}
+                    </FormItem> */}
+                    <FormItem label="年消耗量" {...formItemLayout}>
+                      {getFieldDecorator('annualConsumption', {
+                        rules: [{ required: true, message: '请输年消耗量' }],
+                      })(<InputNumber {...itemStyles} min={0} placeholder="请输年消耗量" />)}
+                    </FormItem>
+                    <FormItem {...unitLayout}>
+                      {getFieldDecorator('annualConsumptionUnit', {
+                        rules: [{ required: true, message: '请输入单位' }],
+                      })(<Input placeholder="单位" />)}
+                    </FormItem>
+                  </div>
+                  <div className={styles.unitWrapper}>
+                    {/* <FormItem label="最大存储量" {...formItemLayout}>
+                      {getFieldDecorator('maxStoreDay', {
+                        rules: [{ required: true, message: '请输入最大存储量' }],
+                      })(<Input placeholder="请输入最大存储量" {...itemStyles} />)}
+                    </FormItem> */}
+                    <FormItem label="最大存储量" {...formItemLayout}>
+                      {getFieldDecorator('maxStoreDay', {
+                        rules: [{ required: true, message: '请输入最大存储量' }],
+                      })(<InputNumber {...itemStyles} min={0} placeholder="请输入最大存储量" />)}
+                    </FormItem>
+                    <FormItem {...unitLayout}>
+                      {getFieldDecorator('maxStoreDayUnit', {
+                        rules: [{ required: true, message: '请输入单位' }],
+                      })(<Input placeholder="单位" />)}
+                    </FormItem>
+                  </div>
+                </Fragment>
+              )}
+            </Fragment>
+          )}
+          <div className={styles.unitWrapper}>
+            <FormItem label="实际存储量" {...formItemLayout}>
+              {getFieldDecorator('actualReserves', {
+                rules: [{ required: true, message: '请输入实际存储量' }],
+              })(<InputNumber {...itemStyles} min={0} placeholder="请输入实际存储量" />)}
+            </FormItem>
+            <FormItem {...unitLayout}>
+              {getFieldDecorator('actualReservesUnit', {
+                rules: [{ required: true, message: '请输入单位' }],
+              })(<Input placeholder="单位" />)}
+            </FormItem>
+          </div>
           <FormItem label="存储场所" {...formItemLayout}>
-            {getFieldDecorator('relationDeviceId', {
+            {getFieldDecorator('reservesLocation', {
               rules: [{ required: true, message: '请输入存储场所' }],
             })(<Input placeholder="请输入存储场所" {...itemStyles} />)}
           </FormItem>
           <FormItem label="是否属于高危储存设施" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
+            {getFieldDecorator('highRiskStorefacil', {
               rules: [{ required: true, message: '请选择是否属于高危储存设施' }],
             })(
               <RadioGroup {...itemStyles}>
@@ -325,67 +606,73 @@ export default class EmergencySuppliesHandler extends PureComponent {
               </RadioGroup>
             )}
           </FormItem>
-          <FormItem label="是否构成危险化学品重大危险源" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
+          {/* <FormItem label="是否构成危险化学品重大危险源" {...formItemLayout}>
+            {getFieldDecorator('majorHazard', {
               rules: [{ required: true, message: '请选择是否构成危险化学品重大危险源' }],
             })(
-              <RadioGroup {...itemStyles}>
+              <RadioGroup {...itemStyles} onChange={this.handleMajorHazardChange}>
                 <Radio value="0">否</Radio>
                 <Radio value="1">是</Radio>
               </RadioGroup>
             )}
           </FormItem>
-          <FormItem label="所属危险源名称" {...formItemLayout}>
-            {getFieldDecorator('companyId')(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedCompany.name}
-                  placeholder="请选择所属危险源名称"
-                />
-                <Button type="primary">选择</Button>
-              </Fragment>
-            )}
-          </FormItem>
-          <FormItem label="危险化学品重大危险源等级" {...formItemLayout}>
-            {getFieldDecorator('equipCode')(<span> </span>)}
-          </FormItem>
+          {majorHazardVisible && (
+            <Fragment>
+              <FormItem label="所属危险源名称" {...formItemLayout}>
+                {getFieldDecorator('dangerId')(
+                  <Fragment>
+                    <Input
+                      {...itemStyles}
+                      disabled
+                      value={selectedDangerSource.name}
+                      placeholder="请选择所属危险源名称"
+                    />
+                    <Button type="primary" onClick={this.handleDangerSourceModal}>
+                      选择
+                    </Button>
+                  </Fragment>
+                )}
+              </FormItem>
+              <FormItem label="危险化学品重大危险源等级" {...formItemLayout}>
+                {getFieldDecorator('equipCode')(<span>{selectedDangerSource.dangerLevel}</span>)}
+              </FormItem>
+            </Fragment>
+          )} */}
           <FormItem label="所在工艺流程" {...formItemLayout}>
-            {getFieldDecorator('companyId')(
+            {getFieldDecorator('technologyId')(
               <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedCompany.name}
-                  placeholder="请选择所在工艺流程"
-                />
+                <Input {...itemStyles} disabled value={''} placeholder="请选择所在工艺流程" />
                 <Button type="primary">选择</Button>
               </Fragment>
             )}
           </FormItem>
           <FormItem label="是否属于重点监管危险化工工艺" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
+            {getFieldDecorator('keySupervisionProcess', {
               rules: [{ required: true, message: '所在工艺流程是否属于重点监管危险化工工艺' }],
             })(
-              <RadioGroup {...itemStyles}>
+              <RadioGroup {...itemStyles} onChange={this.handleKeySupervisionChange}>
                 <Radio value="0">否</Radio>
                 <Radio value="1">是</Radio>
               </RadioGroup>
             )}
           </FormItem>
-          <FormItem label="重点监管危险化工工艺" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
-              rules: [{ required: true, message: '请选择重点监管危险化工工艺' }],
-            })(
-              <Select placeholder="请选择重点监管危险化工工艺" {...itemStyles}>
-                <Option value={'0'}>氯化工艺</Option>
-                <Option value={'1'}>硝化工艺</Option>
-              </Select>
-            )}
-          </FormItem>
+          {keySupervisionVisible && (
+            <FormItem label="重点监管危险化工工艺" {...formItemLayout}>
+              {getFieldDecorator('keySupervision', {
+                rules: [{ required: true, message: '请选择重点监管危险化工工艺' }],
+              })(
+                <Select placeholder="请选择重点监管危险化工工艺" {...itemStyles}>
+                  {KEYSUPERVISION.map((item, index) => (
+                    <Option value={index} key={index}>
+                      {item}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          )}
           <FormItem label="高危化学品" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
+            {getFieldDecorator('highRiskChemicals', {
               rules: [{ required: true, message: '请选择高危化学品' }],
             })(
               <Select placeholder="请选择重点监管危险化工工艺" {...itemStyles}>
@@ -396,7 +683,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="是否剧毒化学品" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
+            {getFieldDecorator('highlyToxicChem', {
               rules: [{ required: true, message: '是否剧毒化学品' }],
             })(
               <RadioGroup {...itemStyles}>
@@ -406,19 +693,19 @@ export default class EmergencySuppliesHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="安全措施" {...formItemLayout}>
-            {getFieldDecorator('use', {
+            {getFieldDecorator('safetyMeasures', {
               rules: [{ required: true, message: '请输入安全措施' }],
             })(<TextArea rows={4} placeholder="请输入安全措施" maxLength="500" {...itemStyles} />)}
           </FormItem>
           <FormItem label="应急处置措施" {...formItemLayout}>
-            {getFieldDecorator('use', {
+            {getFieldDecorator('emergencyMeasure', {
               rules: [{ required: true, message: '请输入应急处置措施' }],
             })(
               <TextArea rows={4} placeholder="请输入应急处置措施" maxLength="500" {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="是否易制毒" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
+            {getFieldDecorator('easyMakePoison', {
               rules: [{ required: true, message: '请选择是否易制毒' }],
             })(
               <RadioGroup {...itemStyles}>
@@ -428,7 +715,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
             )}
           </FormItem>
           <FormItem label="是否易制爆" {...formItemLayout}>
-            {getFieldDecorator('importantHost', {
+            {getFieldDecorator('easyMakeExplode', {
               rules: [{ required: true, message: '请选择是否易制爆' }],
             })(
               <RadioGroup {...itemStyles}>
@@ -450,15 +737,18 @@ export default class EmergencySuppliesHandler extends PureComponent {
   render() {
     const {
       companyLoading,
-      match: { prams: { id = null } = {} },
-      sensor: { companyModal },
+      dangerSourceLoading,
+      msdsLoading,
+      match: { params: { id = null } = {} },
+      company: { companyModal },
+      materials: { dangerSourceModal, msdsModal },
     } = this.props;
-    const { companyModalVisible } = this.state;
-    const title = id ? '编辑' : '新增';
+    const { companyModalVisible, dangerSourceModalVisible, msdsModalVisible } = this.state;
+    const title = id ? '编辑物料' : '新增物料';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '应急管理', name: '应急管理' },
-      { title: '应急物资', name: '应急物资', href: '/device-management/sensor/list' },
+      { title: '物料信息', name: '物料信息', href: listUrl },
       { title, name: title },
     ];
     return (
@@ -474,6 +764,38 @@ export default class EmergencySuppliesHandler extends PureComponent {
           onSelect={this.handleSelectCompany}
           onClose={() => {
             this.setState({ companyModalVisible: false });
+          }}
+        />
+        {/* 重大危险源 */}
+        <CompanyModal
+          title="选择重大危险源"
+          multiSelect
+          columns={dangerSourceColumns}
+          field={dangerSourceFields}
+          butonStyles={{ width: 'auto' }}
+          rowSelection={{ type: 'checkbox' }}
+          loading={dangerSourceLoading}
+          visible={dangerSourceModalVisible}
+          modal={dangerSourceModal}
+          fetch={this.fetchDangerSource}
+          onSelect={this.handleSelectDangerSource}
+          onClose={() => {
+            this.setState({ dangerSourceModalVisible: false });
+          }}
+        />
+        {/* msds */}
+        <CompanyModal
+          title="选择MSDS"
+          columns={msdsColumns}
+          field={msdsFields}
+          butonStyles={{ width: 'auto' }}
+          loading={msdsLoading}
+          visible={msdsModalVisible}
+          modal={msdsModal}
+          fetch={this.fetchMsds}
+          onSelect={this.handleSelectMsds}
+          onClose={() => {
+            this.setState({ msdsModalVisible: false });
           }}
         />
       </PageHeaderLayout>
