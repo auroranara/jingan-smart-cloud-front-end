@@ -49,8 +49,8 @@ export default {
     *putAuth({ payload, callback }, { call, put }) {
       let response = yield call(putAuth, payload);
       response = response || EMPTY_OBJECT;
-      const { code = DEFAULT_CODE, data = EMPTY_OBJECT, msg } = response;
-      callback && callback(code, msg);
+      const { code = DEFAULT_CODE, data, msg } = response;
+      callback && callback(code, msg, data || {});
     },
   },
   reducers: {

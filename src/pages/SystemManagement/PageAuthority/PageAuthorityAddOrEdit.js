@@ -136,7 +136,7 @@ export default class PageAuthorityAdd extends Component {
       payload: values,
       callback: (code, msg, detail) => {
         if (code === 200) {
-          message.success(`${detail.code}权限添加成功`);
+          message.success(`${detail.code}权限${isAdd ? '添加' : '修改'}成功`);
           router.push('/system-management/page-authority/index');
           callback && callback(detail);
         }
