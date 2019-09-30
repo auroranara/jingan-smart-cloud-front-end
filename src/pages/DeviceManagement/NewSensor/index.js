@@ -18,7 +18,6 @@ const breadcrumbList = [
 const noAuthStyle = { style: { color: 'rgba(0, 0, 0, 0.25)', cursor: 'not-allowed' } }
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
-const defaultPageSize = 10;
 const {
   deviceManagement: {
     newSensor: {
@@ -64,11 +63,12 @@ export default class NewSensorList extends Component {
     const {
       dispatch,
       form: { getFieldsValue },
+      location: { query: { dataExecuteEquipmentId } },
     } = this.props;
     const values = getFieldsValue()
     dispatch({
       type: 'device/fetchSensors',
-      payload: { pageNum, pageSize, ...values },
+      payload: { pageNum, pageSize, ...values, dataExecuteEquipmentId },
     })
   }
 

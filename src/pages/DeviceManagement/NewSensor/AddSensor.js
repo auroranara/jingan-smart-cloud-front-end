@@ -13,6 +13,7 @@ import {
   TreeSelect,
   Upload,
   Icon,
+  Tooltip,
 } from 'antd';
 import { connect } from 'dva';
 import { getToken } from '@/utils/authority';
@@ -108,6 +109,8 @@ export default class AddNewSensor extends Component {
           modelName,
           monitorType,
           buildingId,
+          floorId,
+          installPhotoList = [],
         }) => {
           setFieldsValue({ companyId })
           this.setState({
@@ -115,6 +118,14 @@ export default class AddNewSensor extends Component {
             brand: { id: brand, name: brandName },
             model: { id: model, name: modelName },
             monitorType,
+            fileList: installPhotoList.map(item => ({
+              ...item,
+              uid: item.id,
+              url: item.webUrl,
+              name: item.fileName,
+            })),
+          }, () => {
+            setFieldsValue({ buildingId, floorId })
           })
           model && this.fetchParameterList(model)
           this.fetchMonitoringTypes()
@@ -200,6 +211,18 @@ export default class AddNewSensor extends Component {
     const { dispatch } = this.props
     dispatch({
       type: 'device/saveParameters',
+      ...actions,
+    })
+  }
+
+
+  /**
+   * 清空楼层列表
+   */
+  resetFloors = actions => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'personnelPosition/saveFloors',
       ...actions,
     })
   }
@@ -323,14 +346,20 @@ export default class AddNewSensor extends Component {
     })
   }
 
-  // 选择所属建筑物
-  handleSelectBuilding = (value) => {
+  // 所属建筑物改变
+  handleBuildingChange = (value) => {
     const {
       form: { setFieldsValue },
     } = this.props
+    setFieldsValue({ floorId: undefined })
+    this.handleRefreshBuilding()
+    if (!value) {
+      // 清空楼层下拉
+      this.resetFloors({ payload: [] })
+      return
+    }
     // 获取楼层
     this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: value } })
-    setFieldsValue({ floorId: undefined })
   }
 
   /**
@@ -411,23 +440,38 @@ export default class AddNewSensor extends Component {
     win.focus();
   }
 
-
   /**
-   * 区域位置录入方式改变
+   * 刷新建筑物楼层图下拉
+   * @param {Boolean} 是否刷新建筑物下拉
    */
-  handleLocationTypeChange = (e) => {
+  handleRefreshBuilding = (weatherFetch = false) => {
     const {
-      form: { setFieldsValue },
+      form: { setFieldsValue, getFieldValue },
     } = this.props
-    const { pointFixInfoList } = this.state
+    const companyId = getFieldValue('companyId')
     // 清空选择建筑物和楼层
     setFieldsValue({ buildingId: undefined, floorId: undefined })
+    // 获取建筑物下拉 清空楼层下拉
+    weatherFetch && companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+    this.resetFloors({ payload: [] })
+    // 改变 平面图标注--楼层平面定位信息
+    this.changeFlatPicBuildingNum()
+  }
+
+
+  /**
+   * 改变 平面图标注--楼层平面定位信息
+   */
+  changeFlatPicBuildingNum = (xnum = undefined, ynum = undefined) => {
+    const { pointFixInfoList, editingIndex } = this.state
     // 从保存的平面图标注列表中找类型为 楼层平面图的，如果找到 清空定位信息,并且该条平面图标注需要重新编辑
     const i = pointFixInfoList.findIndex(item => +item.imgType === 2)
-    if (i < 0) return
+    // 如果未找到，或者当前正在编辑平面图标注为楼层平面图类型
+    if (i < 0 || +editingIndex === i) return
+    message.warning('请重新编辑平面图标注中楼层平面图')
     const item = pointFixInfoList[i]
-    this.handleChangeCoordinate(item, undefined, i, 'xnum')
-    this.handleChangeCoordinate(item, undefined, i, 'ynum')
+    this.handleChangeCoordinate(item, xnum, i, 'xnum')
+    this.handleChangeCoordinate(item, ynum, i, 'ynum')
     this.setState({ editingIndex: i })
   }
 
@@ -438,7 +482,7 @@ export default class AddNewSensor extends Component {
     const {
       dispatch,
       form,
-      form: { getFieldDecorator, getFieldValue },
+      form: { getFieldDecorator, getFieldsValue },
       match: { params: { id } },
       device: {
         monitoringType, // 监测参数列表树
@@ -468,6 +512,8 @@ export default class AddNewSensor extends Component {
       isImgSelect,
       imgIdCurrent,
     } = this.state
+    // 地址录入方式
+    const { locationType, companyId } = getFieldsValue()
     const FlatPicProps = {
       visible: picModalVisible,
       onCancel: () => { this.setState({ picModalVisible: false }) },
@@ -483,10 +529,10 @@ export default class AddNewSensor extends Component {
       fetchFloors: this.fetchFloors,
       setState: (newState) => { this.setState(newState) },
       dispatch,
+      companyId,
+      handleBuildingChange: this.handleBuildingChange,
+      changeFlatPicBuildingNum: this.changeFlatPicBuildingNum,
     }
-    // 地址录入方式
-    const locationType = getFieldValue('locationType')
-    const companyId = getFieldValue('companyId')
     return (
       <Card>
         <Form>
@@ -597,14 +643,14 @@ export default class AddNewSensor extends Component {
                 >
                   <Button>
                     <Icon type={uploading ? 'loading' : "upload"} /> 上传
-            </Button>
+                  </Button>
                 </Upload>
               </FormItem>
               <FormItem label="区域位置录入方式" {...formItemLayout}>
                 {getFieldDecorator('locationType', {
                   initialValue: id ? detail.locationType : 0,
                 })(
-                  <Radio.Group onChange={this.handleLocationTypeChange}>
+                  <Radio.Group onChange={(e) => this.handleRefreshBuilding()}>
                     <Radio value={0}>选择建筑物-楼层</Radio>
                     <Radio value={1}>手填</Radio>
                   </Radio.Group>
@@ -615,9 +661,8 @@ export default class AddNewSensor extends Component {
                   <FormItem label="所属建筑物楼层" {...formItemLayout}>
                     <Col span={5} style={{ marginRight: '10px' }}>
                       {getFieldDecorator('buildingId', {
-                        initialValue: id ? detail.buildingId : undefined,
                       })(
-                        <Select placeholder="建筑物" style={{ width: '100%' }} onSelect={this.handleSelectBuilding} allowClear>
+                        <Select placeholder="建筑物" style={{ width: '100%' }} onChange={this.handleBuildingChange} allowClear>
                           {buildings.map((item, i) => (
                             <Select.Option key={i} value={item.id}>{item.buildingName}</Select.Option>
                           ))}
@@ -626,22 +671,26 @@ export default class AddNewSensor extends Component {
                     </Col>
                     <Col span={5} style={{ marginRight: '10px' }}>
                       {getFieldDecorator('floorId', {
-                        initialValue: id ? detail.floorId : undefined,
                       })(
-                        <Select placeholder="楼层" style={{ width: '100%' }} allowClear>
+                        <Select placeholder="楼层" style={{ width: '100%' }} onChange={() => this.changeFlatPicBuildingNum()} allowClear>
                           {floors.map((item, i) => (
                             <Select.Option key={i} value={item.id}>{item.floorName}</Select.Option>
                           ))}
                         </Select>
                       )}
                     </Col>
+                    <Tooltip title="刷新建筑物楼层" className={styles.mr10}>
+                      <Button onClick={() => this.handleRefreshBuilding(true)}>
+                        <Icon type="reload" />
+                      </Button>
+                    </Tooltip>
                     <AuthButton
                       onClick={this.jumpToBuildingManagement}
                       code={codesMap.company.buildingsInfo.add}
                       type="primary"
                     >
                       新增建筑物楼层
-                      </AuthButton>
+                    </AuthButton>
                   </FormItem>
                   <FormItem label="详细位置" {...formItemLayout}>
                     {getFieldDecorator('location', {

@@ -126,7 +126,7 @@ const RenderModal = Form.create()(props => {
               initialValue: isEdit ? detail.equipmentType : undefined,
               rules: [{ required: true, message: '请选择设备类型' }],
             })(
-              <Select placeholder="请选择">
+              <Select placeholder="请选择" disabled={isEdit}>
                 {deviceTypeList.map(({ id, name }) => (
                   <Select.Option key={id} value={id}>{name}</Select.Option>
                 ))}

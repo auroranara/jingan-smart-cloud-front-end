@@ -1,8 +1,7 @@
-import { PureComponent, Fragment } from 'react';
-import { Card, Button, Form, Input, Row, Col, Select, Spin, List, Table } from 'antd';
+import { PureComponent } from 'react';
+import { Card, Button, Form, Input, Row, Col, Select, Icon, Table } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-// import InfiniteScroll from 'react-infinite-scroller';
 import { AuthButton, AuthA, AuthLink } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import router from 'umi/router';
@@ -33,6 +32,10 @@ const {
   tableLoading: loading.effects['device/fetchCompaniesForPage'],
 }))
 export default class CompanyList extends PureComponent {
+
+  state = {
+    expandId: undefined, // 列表中展开项的id
+  }
 
   // 获取数据处理设备类型列表
   componentDidMount() {
@@ -66,6 +69,7 @@ export default class CompanyList extends PureComponent {
     } = this.props
     const values = getFieldsValue()
     this.fetchList({ payload: { pageNum, pageSize, ...values } })
+    this.setState({ expandId: undefined })
   }
 
 
@@ -97,6 +101,24 @@ export default class CompanyList extends PureComponent {
     router.push('/device-management/data-processing/add')
   }
 
+
+  /**
+   * 点击展开/收起
+   */
+  handleExpand = (id) => {
+    this.setState(({ expandId }) => ({ expandId: expandId && expandId === id ? undefined : id }))
+  }
+
+
+  /**
+   * 跳转到设备列表
+   * @param {string} 类型id
+   * @param {string} 单位id
+   */
+  jumpToDeviceList = (id, companyId) => {
+    router.push(`/device-management/data-processing/list/${id}?companyId=${companyId}`)
+  }
+
   /**
    * 渲染筛选栏
    */
@@ -104,7 +126,6 @@ export default class CompanyList extends PureComponent {
     const {
       form: { getFieldDecorator },
       device: {
-        monitoringType,
         deviceType: { list: deviceTypeList }, // 设备类型列表
       },
     } = this.props
@@ -143,6 +164,34 @@ export default class CompanyList extends PureComponent {
     )
   }
 
+  renderType = (val = [], row) => {
+    const { expandId } = this.state
+    // 是否展开
+    const isExpand = row.id === expandId
+    const list = isExpand ? val : val.slice(0, 5)
+    return (
+      <div className={styles.container}>
+        <div className={styles.typeContainer}>
+          {list.map(({ id, logoWebUrl, name, count }) => (
+            <div key={id} className={styles.typeItem} onClick={() => this.jumpToDeviceList(id, row.companyId)}>
+              <div className={styles.imgContainer}>
+                <img src={logoWebUrl} alt="" />
+                <div>{name}</div>
+              </div>
+              <div className={styles.num}>{count}</div>
+            </div>
+          ))}
+        </div>
+        {val.length >= 5 && (
+          <div className={styles.iconContainer} onClick={() => this.handleExpand(row.id)}>
+            <a>{isExpand ? '收起' : '展开'}</a>
+            <Icon className={isExpand ? styles.expandIcon : styles.icon} type="down" />
+          </div>
+        )}
+      </div>
+    )
+  }
+
   renderTable = () => {
     const {
       tableLoading,
@@ -158,26 +207,13 @@ export default class CompanyList extends PureComponent {
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
-        width: 400,
       },
       {
         title: '数据处理设备',
         dataIndex: 'equipmentTypeList',
         align: 'center',
-        width: 700,
-        render: (val, row) => (
-          <div className={styles.typeContainer}>
-            {val.length ? val.map(({ id, logoWebUrl, name, count }) => (
-              <div key={id} className={styles.iconContainer}>
-                <div className={styles.imgContainer}>
-                  <img src={logoWebUrl} alt="" />
-                  <div>{name}</div>
-                </div>
-                <div className={styles.num}>{count}</div>
-              </div>
-            )) : null}
-          </div>
-        ),
+        width: 650,
+        render: this.renderType,
       },
       {
         title: '操作',
@@ -186,7 +222,7 @@ export default class CompanyList extends PureComponent {
         fixed: 'right',
         width: 150,
         render: (val, row) => (
-          <AuthLink code={editTypeCode} to={`/device-management/data-processing/edit/${row.companyId}`}>编辑</AuthLink>
+          <AuthLink code={editTypeCode} to={`/device-management/data-processing/edit/${row.id}`}>编辑</AuthLink>
         ),
       },
     ]
@@ -199,7 +235,7 @@ export default class CompanyList extends PureComponent {
             columns={columns}
             dataSource={list}
             bordered
-            scroll={{ x: 'max-content' }}
+            // scroll={{ x: 'max-content' }}
             pagination={{
               current: pageNum,
               pageSize,
@@ -222,14 +258,6 @@ export default class CompanyList extends PureComponent {
   }
 
   render() {
-    const {
-      tableLoading,
-      device: {
-        company: {
-          isLast,
-        },
-      },
-    } = this.props
     return (
       <PageHeaderLayout
         title={title}

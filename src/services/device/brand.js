@@ -29,9 +29,19 @@ export async function deleteBrand(params) {
   })
 }
 
-// 获取型号列表
+// 获取品牌列表（全部）
+export async function fetchBrands(params) {
+  return request(`/acloud_new/v2/monitor/equipmentBrand?${stringify(params)}`)
+}
+
+// 获取型号列表（分页）
 export async function fetchModelsForPage(params) {
   return request(`/acloud_new/v2/monitor/equipmentModelForPage?${stringify(params)}`)
+}
+
+// 获取型号列表（全部）
+export async function fetchModels(params) {
+  return request(`/acloud_new/v2/monitor/equipmentModel?${stringify(params)}`)
 }
 
 // 新增型号

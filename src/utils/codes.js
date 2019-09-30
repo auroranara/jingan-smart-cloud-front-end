@@ -141,6 +141,14 @@ export default {
       listView: 'deviceManagement.dataProcessing.companyList',
       addEquipmentType: 'deviceManagement.dataProcessing.addEquipmentType',
       editEquipmentType: 'deviceManagement.dataProcessing.editEquipmentType',
+      device: {
+        listView: 'deviceManagement.dataProcessing.device.list',
+        add: 'deviceManagement.dataProcessing.device.add',
+        edit: 'deviceManagement.dataProcessing.device.edit',
+        delete: 'deviceManagement.dataProcessing.device.delete',
+        bindSensor: 'deviceManagement.dataProcessing.device.bindSensor',
+        unbindSensor: 'deviceManagement.dataProcessing.device.unbindSensor',
+      },
     },
   },
   videoSurveillance: {

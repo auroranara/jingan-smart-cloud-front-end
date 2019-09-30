@@ -27,6 +27,8 @@ import {
   fetchParameterGroupTypes,
   fetchAllParameters,
   fetchParameterStrategyHistory,
+  fetchBrands,
+  fetchModels,
 } from '@/services/device/brand'
 import {
   fetchTagsForPage,
@@ -48,6 +50,16 @@ import {
   editDeviceType,
   fetchCompanyDetail,
   fetchCompanyiesForAdd,
+  fetchAgreementNameDict,
+  fetchNetworkTypeDict,
+  fetchOperatorDict,
+  fetchConnectTypeDict,
+  fetchGatewayEquipmentForPage,
+  fetchGatewayEquipment,
+  addEquipment,
+  editEquipment,
+  fetchEquipmentsForPage,
+  fetchEquipmentDetail,
 } from '@/services/device/dataProcessing';
 
 const defaultPagination = {
@@ -109,11 +121,15 @@ export default {
       list: [],
       pagination: defaultPagination,
     },
+    // 所有品牌
+    brandList: [],
     // 型号
     model: {
       list: [],
       pagination: defaultPagination,
     },
+    // 所有型号
+    modelList: [],
     // 图标库
     tagLibrary: {
       list: [],
@@ -155,6 +171,28 @@ export default {
     },
     // 新增数据处理设备--企业列表（筛选掉已添加）
     companyModal: {
+      list: [],
+      pagination: defaultPagination,
+    },
+    // 单位数据处理设备--设备列表
+    equipment: {
+      list: [],
+      pagination: defaultPagination,
+    },
+    // 设备详情
+    equipmentDetail: {
+      pointFixInfoList: [],// 平面图标注
+    },
+    // 协议名称字典
+    agreementNameDict: [],
+    // 联网方式字典
+    networkTypeDict: [],
+    // 运营商字典
+    operatorDict: [],
+    // 连接方式字典
+    connectTypeDict: [],
+    // 网关设备
+    gatewayDevice: {
       list: [],
       pagination: defaultPagination,
     },
@@ -230,6 +268,16 @@ export default {
         })
       }
     },
+    // 获取品牌列表（全部）
+    *fetchBrands({ payload }, { call, put }) {
+      const response = yield call(fetchBrands, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { brandList: response.data.list || [] },
+        })
+      }
+    },
     // 新增品牌
     *addBrand({ payload, success, error }, { call }) {
       const response = yield call(addBrand, payload)
@@ -292,13 +340,23 @@ export default {
         })
       }
     },
-    // 获取型号列表
+    // 获取型号列表（分页）
     *fetchModelsForPage({ payload }, { call, put }) {
       const response = yield call(fetchModelsForPage, payload)
       if (response && response.code === 200) {
         yield put({
           type: 'saveModels',
           payload: response.data,
+        })
+      }
+    },
+    // 获取型号列表（全部）
+    *fetchModels({ payload }, { call, put }) {
+      const response = yield call(fetchModels, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { modelList: response.data.list || [] },
         })
       }
     },
@@ -501,6 +559,101 @@ export default {
         })
       }
     },
+    // 获取--协议名称字典
+    *fetchAgreementNameDict({ payload }, { call, put }) {
+      const response = yield call(fetchAgreementNameDict, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { agreementNameDict: response.data.list || [] },
+        })
+      }
+    },
+    // 获取--联网方式字典
+    *fetchNetworkTypeDict({ payload }, { call, put }) {
+      const response = yield call(fetchNetworkTypeDict, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { networkTypeDict: response.data.list || [] },
+        })
+      }
+    },
+    // 获取--运营商字典
+    *fetchOperatorDict({ payload }, { call, put }) {
+      const response = yield call(fetchOperatorDict, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { operatorDict: response.data.list || [] },
+        })
+      }
+    },
+    // 获取--连接方式字典
+    *fetchConnectTypeDict({ payload }, { call, put }) {
+      const response = yield call(fetchConnectTypeDict, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { connectTypeDict: response.data.list || [] },
+        })
+      }
+    },
+    // 获取网关设备列表（分页）
+    *fetchGatewayEquipmentForPage({ payload }, { call, put }) {
+      const response = yield call(fetchGatewayEquipmentForPage, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveGatewayDevice',
+          payload: response.data,
+        })
+      }
+    },
+    // 获取网关设备列表（全部）
+    *fetchGatewayEquipment({ payload }, { call, put }) {
+      const response = yield call(fetchGatewayEquipmentForPage, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveGatewayDevice',
+          payload: response.data,
+        })
+      }
+    },
+    // 新增数据处理设备
+    *addEquipment({ payload, success, error }, { call }) {
+      const response = yield call(addEquipment, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 编辑数据处理设备
+    *editEquipment({ payload, success, error }, { call }) {
+      const response = yield call(editEquipment, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 获取数据处理设备--设备列表（分页）
+    *fetchEquipmentsForPage({ payload }, { call, put }) {
+      const response = yield call(fetchEquipmentsForPage, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveEquipments',
+          payload: response.data,
+        })
+      }
+    },
+    // 获取数据处理设备详情
+    *fetchEquipmentDetail({ payload, callback }, { call, put }) {
+      const response = yield call(fetchEquipmentDetail, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { equipmentDetail: response.data || {} },
+        })
+        if (callback) callback(response.data || {})
+      }
+    },
   },
   reducers: {
     save(state, action) {
@@ -631,6 +784,34 @@ export default {
       return {
         ...state,
         companyModal: {
+          list,
+          pagination,
+        },
+      }
+    },
+    saveGatewayDevice(state, {
+      payload: {
+        list = [],
+        pagination = defaultPagination,
+      } = {},
+    }) {
+      return {
+        ...state,
+        gatewayDevice: {
+          list,
+          pagination,
+        },
+      }
+    },
+    saveEquipments(state, {
+      payload: {
+        list = [],
+        pagination = defaultPagination,
+      } = {},
+    }) {
+      return {
+        ...state,
+        equipment: {
           list,
           pagination,
         },

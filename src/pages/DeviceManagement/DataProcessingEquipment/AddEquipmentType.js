@@ -32,17 +32,17 @@ export default class AddEquipmentType extends PureComponent {
     const {
       dispatch,
       form: { setFieldsValue },
-      match: { params: { companyId } },
+      match: { params: { id } },
     } = this.props
     this.fetchAllDeviceTypes()
     // 如果编辑
-    if (companyId) {
+    if (id) {
       dispatch({
         type: 'device/fetchCompanyDetail',
-        payload: { id: companyId },
-        callback: ({ equipmentTypeList, companyName }) => {
+        payload: { id },
+        callback: ({ equipmentTypeList, companyName, companyId }) => {
           const keys = equipmentTypeList.map(item => item.id)
-          this.setState({ selectedCompany: { id: companyId, name: companyName } })
+          this.setState({ selectedCompany: { id, name: companyName } })
           setFieldsValue({ companyId, equipmentTypeList: keys })
         },
       })
@@ -98,7 +98,7 @@ export default class AddEquipmentType extends PureComponent {
     const {
       dispatch,
       form: { validateFields },
-      match: { params: { companyId } },
+      match: { params: { id } },
       device: {
         deviceType: { list: deviceTypeList }, // 设备类型列表
       },
@@ -112,17 +112,17 @@ export default class AddEquipmentType extends PureComponent {
         return item
       })
       const payload = { ...values, equipmentTypeList: newList }
-      const tag = companyId ? '编辑' : '新增'
+      const tag = id ? '编辑' : '新增'
       const success = () => {
         message.success(`${tag}成功`)
         router.push(listUrl)
       }
       const error = (res) => { message.error(res ? res.msg : `${tag}失败`) }
       // 如果编辑
-      if (companyId) {
+      if (id) {
         dispatch({
           type: 'device/editDeviceType',
-          payload: { ...payload, id: companyId },
+          payload: { ...payload, id },
           success,
           error,
         })
@@ -193,11 +193,11 @@ export default class AddEquipmentType extends PureComponent {
   render() {
     const {
       companyLoading,
-      match: { params: { companyId } },
+      match: { params: { id } },
       device: { companyModal },
     } = this.props
     const { companyModalVisible } = this.state
-    const title = companyId ? '编辑数据处理设备类型' : '新增数据处理设备类型'
+    const title = id ? '编辑数据处理设备类型' : '新增数据处理设备类型'
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '设备管理', name: '设备管理' },

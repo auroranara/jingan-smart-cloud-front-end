@@ -1595,10 +1595,30 @@ module.exports = env => {
                   component: '/DeviceManagement/DataProcessingEquipment/AddEquipmentType',
                 },
                 {
-                  path: '/device-management/data-processing/edit/:companyId',
+                  path: '/device-management/data-processing/edit/:id',
                   name: 'editEquipmentType',
                   code: 'deviceManagement.dataProcessing.editEquipmentType',
                   component: '/DeviceManagement/DataProcessingEquipment/AddEquipmentType',
+                },
+                // 设备列表
+                {
+                  path: '/device-management/data-processing/list/:type',
+                  name: 'deviceList',
+                  code: 'deviceManagement.dataProcessing.device.list',
+                  component: '/DeviceManagement/DataProcessingEquipment/EquipmentList',
+                },
+                // 新增设备
+                {
+                  path: '/device-management/data-processing/:type/add',
+                  name: 'addDevice',
+                  code: 'deviceManagement.dataProcessing.device.add',
+                  component: '/DeviceManagement/DataProcessingEquipment/AddEquipment',
+                },
+                {
+                  path: '/device-management/data-processing/:type/edit/:id',
+                  name: 'editDevice',
+                  code: 'deviceManagement.dataProcessing.device.edit',
+                  component: '/DeviceManagement/DataProcessingEquipment/AddEquipment',
                 },
               ],
             },

@@ -17,7 +17,7 @@ const FormItem = Form.Item;
 // 平面图标注
 const FlatInfo = (props) => {
   const {
-    form: { getFieldsValue, getFieldDecorator, getFieldValue, setFieldsValue },
+    form: { getFieldsValue, getFieldDecorator },
     floors = [],      // 楼层列表
     buildings = [], // 建筑物列表
     pointFixInfoList = [],
@@ -29,8 +29,10 @@ const FlatInfo = (props) => {
     imgList,
     flatGraphic,
     setState,
-    fetchFloors,
     dispatch,
+    companyId,
+    handleBuildingChange,
+    changeFlatPicBuildingNum,
   } = props
   // 地址录入方式 0 选择 1 手填
   const { locationType, buildingId, floorId } = getFieldsValue()
@@ -62,7 +64,6 @@ const FlatInfo = (props) => {
  * 新平面图标志--平面图类型改变
  */
   const handleChangeImageType = (item, i) => {
-    const companyId = getFieldValue('companyId')
     const type = +item.imgType
     if (type === 1 || type === 3 || type === 4) {
       dispatch({
@@ -92,18 +93,11 @@ const FlatInfo = (props) => {
     })
   }
 
-  // 选择所属建筑物
-  const handleSelectBuilding = (value) => {
-    // 获取楼层
-    fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: value } })
-    setFieldsValue({ floorId: undefined })
-  }
-
   /**
      * 显示定位模态框
      */
   const showModalCoordinate = (index, item) => {
-    const { companyId, buildingId, floorId } = getFieldsValue()
+    const { buildingId, floorId } = getFieldsValue()
     // 当前编辑的平面图标注
     const { imgType, fixImgId } = item
     const callback = payload => {
@@ -224,14 +218,14 @@ const FlatInfo = (props) => {
                 <Col span={4}>
                   <FormItem>
                     {+locationType === 0 ? (
-                      <Select value={buildingId} disabled placeholder="所属建筑" style={{ width: '100%' }} onSelect={handleSelectBuilding} allowClear>
+                      <Select value={buildingId} disabled placeholder="所属建筑" style={{ width: '100%' }} allowClear>
                         {buildings.map((item, i) => (
                           <Select.Option key={i} value={item.id}>{item.buildingName}</Select.Option>
                         ))}
                       </Select>
                     ) : (
                         getFieldDecorator('buildingId')(
-                          <Select placeholder="所属建筑" style={{ width: '100%' }} onSelect={handleSelectBuilding} allowClear>
+                          <Select placeholder="所属建筑" style={{ width: '100%' }} onChange={handleBuildingChange} allowClear>
                             {buildings.map((item, i) => (
                               <Select.Option key={i} value={item.id}>{item.buildingName}</Select.Option>
                             ))}
@@ -250,7 +244,7 @@ const FlatInfo = (props) => {
                       </Select>
                     ) : (
                         getFieldDecorator('floorId')(
-                          <Select placeholder="所属楼层" style={{ width: '100%' }} allowClear>
+                          <Select placeholder="所属楼层" style={{ width: '100%' }} onChange={() => changeFlatPicBuildingNum()} allowClear>
                             {floors.map((item, i) => (
                               <Select.Option key={i} value={item.id}>{item.floorName}</Select.Option>
                             ))}
