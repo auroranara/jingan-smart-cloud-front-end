@@ -112,7 +112,7 @@ export default class PageAuthorityAdd extends Component {
     }
     const parentIds = `${pIds},${id}`;
     const auths = [
-      { ename: 'listView', showZname: '查看列表' },
+      { ename: 'list', showZname: '查看列表' },
       { ename: 'view', showZname: '查看' },
       { ename: 'add', showZname: '新增' },
       { ename: 'edit', showZname: '编辑' },
@@ -136,7 +136,7 @@ export default class PageAuthorityAdd extends Component {
       payload: values,
       callback: (code, msg, detail) => {
         if (code === 200) {
-          message.success('成功');
+          message.success(`${detail.code}权限添加成功`);
           router.push('/system-management/page-authority/index');
           callback && callback(detail);
         }
