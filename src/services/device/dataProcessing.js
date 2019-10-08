@@ -87,3 +87,8 @@ export async function fetchEquipmentsForPage(params) {
 export async function fetchEquipmentDetail(params) {
   return request(`/acloud_new/v2/monitor/dataExecuteEquipment/${params.id}`)
 }
+
+// 获取已绑定传感器统计
+export async function fetchBindedSensorStatistics(params) {
+  return request(`/acloud_new/v2/monitor/dataExecuteEquipmentSensorCount?${stringify(params)}`)
+}

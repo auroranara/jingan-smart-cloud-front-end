@@ -78,11 +78,12 @@ export default class BrandModelModal extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      equipmentType,
     } = this.props
     const { brandName: name, brandMonitorType: monitorType } = getFieldsValue()
     dispatch({
       type: 'device/fetchBrandsForPage',
-      payload: { pageNum, pageSize, type: 4, name, monitorType },
+      payload: { pageNum, pageSize, type: 4, name, monitorType, equipmentType },
     })
   }
 
@@ -93,12 +94,13 @@ export default class BrandModelModal extends PureComponent {
     const {
       dispatch,
       form: { getFieldsValue },
+      equipmentType,
     } = this.props
     const { brandId } = this.state
     const { modelName: name, modelMonitorType: monitorType } = getFieldsValue()
     dispatch({
       type: 'device/fetchModelsForPage',
-      payload: { pageNum, pageSize, brand: brandId, type: 4, name, monitorType },
+      payload: { pageNum, pageSize, brand: brandId, type: 4, name, monitorType, equipmentType },
     })
   }
 

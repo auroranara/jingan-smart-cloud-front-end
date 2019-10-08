@@ -381,7 +381,7 @@ export default class AddEquipment extends Component {
       dispatch,
       form,
       form: { getFieldDecorator, getFieldsValue },
-      match: { params: { id, type } },
+      match: { params: { id } },
       location: { query: { companyId } },
       device: {
         equipmentDetail: detail = {},

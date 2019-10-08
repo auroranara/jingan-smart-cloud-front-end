@@ -90,10 +90,10 @@ export default class AddNewSensor extends Component {
     const {
       dispatch,
       match: { params: { id } },
+      location: { query: { deviceId } },
       form: { setFieldsValue },
     } = this.props
     this.fetchMonitoringTypeDict()
-    // TODO: 编辑时获取数据
     if (id) {
       // 获取传感器详情
       // paramWarnStrategyDtos这个参数只有修改或者添加报警策略后 {paramId}对象才会进入paramWarnStrategyDtos数组
@@ -111,8 +111,14 @@ export default class AddNewSensor extends Component {
           buildingId,
           floorId,
           installPhotoList = [],
+          dataExecuteEquipmentId, // 绑定的设备id
         }) => {
           setFieldsValue({ companyId })
+          // 获取设备信息
+          dataExecuteEquipmentId && dispatch({
+            type: 'device/fetchEquipmentDetail',
+            payload: { id: dataExecuteEquipmentId },
+          })
           this.setState({
             pointFixInfoList,
             brand: { id: brand, name: brandName },
@@ -131,6 +137,18 @@ export default class AddNewSensor extends Component {
           this.fetchMonitoringTypes()
           companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
           buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } })
+        },
+      })
+    } else {
+      // 新增时根据设备id获取设备信息
+      deviceId && dispatch({
+        type: 'device/fetchEquipmentDetail',
+        payload: { id: deviceId },
+        callback: ({
+          companyId,
+        }) => {
+          setFieldsValue({ companyId })
+          companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
         },
       })
     }
@@ -268,6 +286,7 @@ export default class AddNewSensor extends Component {
     const {
       dispatch,
       match: { params: { id } },
+      location: { query: { deviceId } },
       form: { validateFields },
     } = this.props
     const {
@@ -308,7 +327,7 @@ export default class AddNewSensor extends Component {
         // 如果新增
         dispatch({
           type: 'device/addSensor',
-          payload,
+          payload: { ...payload, dataExecuteEquipmentId: deviceId },
           success,
           error,
         })
@@ -488,6 +507,7 @@ export default class AddNewSensor extends Component {
         monitoringType, // 监测参数列表树
         sensorDetail: detail = {},
         flatGraphic,
+        equipmentDetail = {}, // 设备详情
       },
       personnelPosition: {
         map: {
@@ -539,7 +559,7 @@ export default class AddNewSensor extends Component {
           <FormItem label="所属单位" {...formItemLayout}>
             {getFieldDecorator('companyId')(
               <Fragment>
-                {id ? (detail.companyName || '暂无绑定单位') : '暂无绑定单位'}
+                {(id ? detail.companyName : equipmentDetail.companyName) || '暂无绑定单位'}
               </Fragment>
             )}
           </FormItem>
@@ -599,7 +619,8 @@ export default class AddNewSensor extends Component {
               </Radio.Group>
             )}
           </FormItem>
-          {companyId && (
+          {/*  connectGateway 1-是 0 否 集成数据采集--是，则传感器中 入库日期开始不显示 */}
+          {companyId && +equipmentDetail.connectGateway === 0 && (
             <Fragment>
               <FormItem label="入库时间" {...formItemLayout}>
                 {getFieldDecorator('storageDate', {
@@ -744,6 +765,10 @@ export default class AddNewSensor extends Component {
   render() {
     const {
       match: { params: { id = null } = {} },
+      location: { query: { deviceId } }, // 新增绑定传感器时传递的设备id
+      device: {
+        equipmentDetail = {}, // 设备详情
+      },
     } = this.props
     const { brandModelModalVisible } = this.state
     const title = id ? '编辑传感器' : '新增传感器'
@@ -764,6 +789,7 @@ export default class AddNewSensor extends Component {
           visible={brandModelModalVisible}
           onSelectModel={this.onSelectModel}
           onCancel={() => { this.setState({ brandModelModalVisible: false }) }}
+          equipmentType={deviceId ? equipmentDetail.equipmentType : undefined}
         />
       </PageHeaderLayout>
     )

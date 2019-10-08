@@ -33,3 +33,19 @@ export async function deleteSensor(params) {
     method: 'DELETE',
   })
 }
+
+// 绑定传感器
+export async function bindSensor(body) {
+  return request('/acloud_new/v2/monitor/bindSensor', {
+    method: 'PUT',
+    body,
+  })
+}
+
+// 解绑传感器
+export async function unbindSensor(body) {
+  return request('/acloud_new/v2/monitor/unbindSensor', {
+    method: 'PUT',
+    body,
+  })
+}

@@ -115,8 +115,8 @@ export default class CompanyList extends PureComponent {
    * @param {string} 类型id
    * @param {string} 单位id
    */
-  jumpToDeviceList = (id, companyId) => {
-    router.push(`/device-management/data-processing/list/${id}?companyId=${companyId}`)
+  jumpToDeviceList = (id, companyId, companyName) => {
+    router.push(`/device-management/data-processing/list/${id}?companyId=${companyId}&companyName=${companyName}`)
   }
 
   /**
@@ -143,7 +143,7 @@ export default class CompanyList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('equipmentType')(
-                  <Select placeholder="设备类型">
+                  <Select placeholder="设备类型" allowClear>
                     {deviceTypeList.map(({ id, name }) => (
                       <Select.Option key={id} value={id}>{name}</Select.Option>
                     ))}
@@ -173,7 +173,7 @@ export default class CompanyList extends PureComponent {
       <div className={styles.container}>
         <div className={styles.typeContainer}>
           {list.map(({ id, logoWebUrl, name, count }) => (
-            <div key={id} className={styles.typeItem} onClick={() => this.jumpToDeviceList(id, row.companyId)}>
+            <div key={id} className={styles.typeItem} onClick={() => this.jumpToDeviceList(id, row.companyId, row.companyName)}>
               <div className={styles.imgContainer}>
                 <img src={logoWebUrl} alt="" />
                 <div>{name}</div>
@@ -258,11 +258,18 @@ export default class CompanyList extends PureComponent {
   }
 
   render() {
+    const {
+      device: {
+        company: {
+          pagination: { total = 0 },
+        },
+      },
+    } = this.props
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={`单位总数：0`}
+        content={`单位总数：${total}`}
       >
         {this.renderFilter()}
         {this.renderTable()}

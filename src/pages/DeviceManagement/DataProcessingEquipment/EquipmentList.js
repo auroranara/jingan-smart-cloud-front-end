@@ -19,8 +19,11 @@ const {
         edit: editCode,
         delete: deleteCode,
         bindSensor: bindSensorCode,
-        unbindSensor: unbindSensorCode,
+        // unbindSensor: unbindSensorCode,
       },
+    },
+    newSensor: {
+      add: addSensorCode,
     },
   },
 } = codes
@@ -36,17 +39,21 @@ const tagSetting = [
 @connect(({ device, loading }) => ({
   device,
   tableLoading: loading.effects['device/fetchEquipmentsForPage'],
+  sensorLoading: loading.effects['device/fetchSensors'],
 }))
 export default class EquipmentList extends PureComponent {
 
   state = {
-    snesorModalVisible: false, // 绑定传感器弹窗
+    bindSensorModalVisible: false, // 绑定传感器弹窗
+    bindedSensorModalVisible: false, // 已绑定传感器弹窗
     deviceInfo: {}, // 设备信息
     selectedSensorKeys: [], // 选择的传感器key数组
   }
 
   componentDidMount() {
     this.handleQuery()
+    // 获取已绑定传感器统计
+    this.fetchBindedSensorStatistics()
   }
 
   /**
@@ -63,14 +70,14 @@ export default class EquipmentList extends PureComponent {
   /**
   * 获取可绑定传感器列表
   */
-  querySensors = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res }) => {
+  querySensors = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
     const {
       dispatch,
       location: { query: { companyId } },
     } = this.props
     const { deviceInfo } = this.state
     dispatch({
-      type: 'sensor/fetchCompanySensor',
+      type: 'device/fetchSensors',
       ...res,
       payload: {
         ...payload,
@@ -78,6 +85,42 @@ export default class EquipmentList extends PureComponent {
         dataExecuteEquipmentBindStatus: 0, // 未绑定传感器
         bindDataExecuteEquipmentId: deviceInfo.id,
       },
+    })
+  }
+
+  /**
+* 获取可绑定传感器列表
+*/
+  queryBindedSensors = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
+    const {
+      dispatch,
+      location: { query: { companyId } },
+    } = this.props
+    const { deviceInfo } = this.state
+    dispatch({
+      type: 'device/fetchSensors',
+      ...res,
+      payload: {
+        ...payload,
+        companyId,
+        dataExecuteEquipmentId: deviceInfo.id,
+      },
+    })
+  }
+
+
+  /**
+   * 获取已绑定传感器数量
+   */
+  fetchBindedSensorStatistics = () => {
+    const {
+      dispatch,
+      location: { query: { companyId } },
+      match: { params: { type } },
+    } = this.props
+    dispatch({
+      type: 'device/fetchBindedSensorStatistics',
+      payload: { companyId, equipmentType: type },
     })
   }
 
@@ -127,10 +170,9 @@ export default class EquipmentList extends PureComponent {
    * 点击打开可绑定传感器弹窗
    */
   handleViewBind = (deviceInfo) => {
-    // 获取传感器类型
-    this.setState({ deviceInfo }, () => {
+    this.setState({ deviceInfo, selectedSensorKeys: [] }, () => {
       this.querySensors()
-      this.setState({ snesorModalVisible: true })
+      this.setState({ bindSensorModalVisible: true })
     })
   }
 
@@ -147,25 +189,60 @@ export default class EquipmentList extends PureComponent {
    */
   handleBindSensor = () => {
     const { dispatch } = this.props
-    const { selectedSensorKeys } = this.state
+    const { selectedSensorKeys, deviceInfo } = this.state
     if (!selectedSensorKeys || selectedSensorKeys.length === 0) {
       message.warning('请勾选传感器！')
       return
     }
-    console.log('selectedSensorKeys', selectedSensorKeys);
+    dispatch({
+      type: 'device/bindSensor',
+      payload: {
+        bindDataExecuteEquipmentId: deviceInfo.id,
+        bindSensorIdList: selectedSensorKeys,
+      },
+      success: () => {
+        message.success('绑定传感器成功')
+        this.setState({ bindSensorModalVisible: false, deviceInfo: {} })
+        this.handleQuery()
+        this.fetchBindedSensorStatistics()
+      },
+      error: (res) => { message.error(res ? res.msg : '绑定传感器失败') },
+    })
+  }
 
-    // dispatch({
-    //   type: 'sensor/bindDeviceSensor',
-    //   payload: {
-    //     realDeviceIds: selectedSensorKeys.join(','),
-    //   },
-    //   success: () => {
-    //     message.success('绑定传感器成功！')
-    //     this.setState({ bindModalVisible: false, deviceInfo: {} })
-    //     this.handleQuery()
-    //   },
-    //   error: () => { message.error('绑定传感器失败！') },
-    // })
+
+  /**
+   * 打开已绑定传感器弹窗
+   */
+  handleViewBindedSensorModal = (deviceInfo) => {
+    this.setState({ deviceInfo }, () => {
+      this.queryBindedSensors()
+      this.setState({ bindedSensorModalVisible: true })
+    })
+  }
+
+  /**
+   * 解绑传感器
+   */
+  handleunBindSensor = (unbindSensorId) => {
+    const {
+      dispatch,
+    } = this.props
+    const { deviceInfo } = this.state
+    dispatch({
+      type: 'device/unbindSensor',
+      payload: {
+        bindDataExecuteEquipmentId: deviceInfo.id, // 设备id
+        unbindSensorId, // 传感器id
+      },
+      success: () => {
+        message.success('解绑传感器成功')
+        this.queryBindedSensors()
+        this.handleQuery()
+        this.fetchBindedSensorStatistics()
+      },
+      error: (res) => { message.error(res ? res.msg : '解绑传感器失败') },
+    })
   }
 
   /**
@@ -203,7 +280,7 @@ export default class EquipmentList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('connectGateway')(
-                  <Select placeholder="集成数据采集">
+                  <Select placeholder="集成数据采集" allowClear>
                     <Select.Option value={1}>是，独立式</Select.Option>
                     <Select.Option value={0}>否，非独立式</Select.Option>
                   </Select>
@@ -213,7 +290,7 @@ export default class EquipmentList extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('inheritGather')(
-                  <Select placeholder="接入网关设备">
+                  <Select placeholder="接入网关设备" allowClear>
                     <Select.Option value={1}>已接入</Select.Option>
                     <Select.Option value={0}>未接入</Select.Option>
                   </Select>
@@ -274,7 +351,8 @@ export default class EquipmentList extends PureComponent {
         title: '有效期至',
         key: '有效期至',
         align: 'center',
-        render: (val, { expireStatus, expireDate }) => (
+        width: 200,
+        render: (val, { expireStatus, expireDate }) => expireDate && (
           <Fragment>
             {[1, 2].includes(expireStatus) && (
               <Tag color={tagSetting[expireStatus - 1].color}>{tagSetting[expireStatus - 1].label}</Tag>
@@ -314,8 +392,13 @@ export default class EquipmentList extends PureComponent {
         dataIndex: 'sensorCount',
         align: 'center',
         width: 120,
-        render: (val) => (
-          <span style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}>{val}</span>
+        render: (val, row) => (
+          <span
+            onClick={() => this.handleViewBindedSensorModal(row)}
+            style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+          >
+            {val}
+          </span>
         ),
       },
       {
@@ -325,7 +408,7 @@ export default class EquipmentList extends PureComponent {
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <AuthA code={bindSensorCode}>新增绑定传感器</AuthA>
+            <AuthLink code={bindSensorCode} to={`/device-management/new-sensor/add?deviceId=${row.id}`}>新增绑定传感器</AuthLink>
             <Divider type />
             <AuthA code={bindSensorCode} onClick={() => this.handleViewBind(row)}>绑定已有传感器</AuthA>
             <Divider type />
@@ -370,9 +453,16 @@ export default class EquipmentList extends PureComponent {
 
   render() {
     const {
+      sensorLoading,
       match: { params: { type } },
+      location: { query: { companyName = '' } },
+      device: {
+        sensor,
+        equipment: { pagination: { total = 0 } },
+        bindedSensorCount = 0,
+      },
     } = this.props
-    const { snesorModalVisible, selectedSensorKeys } = this.state
+    const { bindSensorModalVisible, bindedSensorModalVisible, selectedSensorKeys } = this.state
     const title = dataProcessingType[type]
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
@@ -381,12 +471,30 @@ export default class EquipmentList extends PureComponent {
       { title, name: title },
     ]
     const bindSensorProps = {
-      visible: snesorModalVisible,
+      tag: 'bind',
+      title: '绑定传感器',
+      visible: bindSensorModalVisible,
       fetch: this.querySensors,
-      onCancel: () => { this.setState({ snesorModalVisible: false }) },
+      onCancel: () => { this.setState({ bindSensorModalVisible: false }) },
       selectedSensorKeys,
       onOk: this.handleBindSensor,
-      onSensorChange: this.onSensorChange,
+      model: sensor,
+      loading: sensorLoading,
+      rowSelection: {
+        selectedSensorKeys,
+        onChange: this.onSensorChange,
+      },
+    }
+    const bindedSensorProps = {
+      tag: 'unbind',
+      title: '已绑定传感器',
+      visible: bindedSensorModalVisible,
+      fetch: this.queryBindedSensors,
+      onCancel: () => { this.setState({ bindedSensorModalVisible: false }) },
+      model: sensor,
+      loading: sensorLoading,
+      handleUnbind: this.handleunBindSensor,
+      footer: null,
     }
     return (
       <PageHeaderLayout
@@ -394,15 +502,23 @@ export default class EquipmentList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={(
           <Fragment>
-            <div>TODO：企业名称</div>
-            <div>设备总数： 已绑定传感器数：</div>
+            <div>企业名称：{companyName}</div>
+            <div>
+              <span style={{ marginRight: '30px' }}>设备总数：{total}</span>
+              <span>已绑定传感器数：{bindedSensorCount}</span>
+            </div>
           </Fragment>
         )}
       >
         {this.renderFilter()}
         {this.renderTable()}
+        {/* 绑定已有传感器弹窗 */}
         <BindSensorModal
           {...bindSensorProps}
+        />
+        {/* 已绑定传感器弹窗 */}
+        <BindSensorModal
+          {...bindedSensorProps}
         />
       </PageHeaderLayout>
     )

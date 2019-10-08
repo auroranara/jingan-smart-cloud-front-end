@@ -43,6 +43,8 @@ import {
   addSensor,
   editSensor,
   deleteSensor,
+  bindSensor,
+  unbindSensor,
 } from '@/services/device/newSensor'
 import {
   fetchCompaniesForPage, // 获取数据处理设备企业列表
@@ -60,6 +62,7 @@ import {
   editEquipment,
   fetchEquipmentsForPage,
   fetchEquipmentDetail,
+  fetchBindedSensorStatistics,
 } from '@/services/device/dataProcessing';
 
 const defaultPagination = {
@@ -196,6 +199,7 @@ export default {
       list: [],
       pagination: defaultPagination,
     },
+    bindedSensorCount: 0, // 已绑定传感器数量
   },
   effects: {
     // 获取监测类型列表树
@@ -611,7 +615,7 @@ export default {
     },
     // 获取网关设备列表（全部）
     *fetchGatewayEquipment({ payload }, { call, put }) {
-      const response = yield call(fetchGatewayEquipmentForPage, payload)
+      const response = yield call(fetchGatewayEquipment, payload)
       if (response && response.code === 200) {
         yield put({
           type: 'saveGatewayDevice',
@@ -652,6 +656,30 @@ export default {
           payload: { equipmentDetail: response.data || {} },
         })
         if (callback) callback(response.data || {})
+      }
+    },
+    // 绑定传感器
+    *bindSensor({ payload, success, error }, { call }) {
+      const response = yield call(bindSensor, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 解绑传感器
+    *unbindSensor({ payload, success, error }, { call }) {
+      const response = yield call(unbindSensor, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 获取已绑定传感器数量
+    *fetchBindedSensorStatistics({ payload }, { call, put }) {
+      const response = yield call(fetchBindedSensorStatistics, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { bindedSensorCount: response.data || 0 },
+        })
       }
     },
   },

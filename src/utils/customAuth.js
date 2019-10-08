@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import pathToRegexp from 'path-to-regexp';
 import { Link } from 'react-router-dom';
 import UmiLink from 'umi/link';
-import { message, Button } from 'antd';
+import { message, Button, Popconfirm } from 'antd';
 import { connect } from 'dva';
 
 // import styles from './customAuth.less';
@@ -76,7 +76,7 @@ export function getCodeMap(menuData, codeMap, pathArray) {
       // 需要考虑不同path对应相同code时，会覆盖的问题，所以直接用一个数组接收所有path更好，因为也用不到code -> path的映射，所以这个也没啥用
       // codeMap[code] = path;
       pathArray.push(path);
-    // 当未设置code时，默认使用locale来替代
+      // 当未设置code时，默认使用locale来替代
     } else if (locale) {
       // locle = 'menu.fuck.me',去掉 'menu.'
       const loc = locale.slice(5);
@@ -132,7 +132,7 @@ export function authWrapper(WrappedComponent) {
     const perCodes = codes || permissionCodes;
     // 如果自定义hasAuthFn，即自己判断是否有权限，则不通过hasAuthority(code, codes)判断是否有权限
     // hasAuthFn(code: string, codes: string[]): boolean
-    if (hasAuthFn !== undefined && typeof hasAuthFn === 'function' ) authorized = hasAuthFn(perCodes);
+    if (hasAuthFn !== undefined && typeof hasAuthFn === 'function') authorized = hasAuthFn(perCodes);
     else authorized = hasAuthority(code, perCodes);
 
     // console.log(authorized);
@@ -209,15 +209,43 @@ export class AuthIcon extends PureComponent {
     // console.log(darkUrl);
     return (
       <Link
-        to={ authorized ? to : ''}
+        to={authorized ? to : ''}
         style={{
           ...style,
           backgroundImage: `url(${authorized ? url : darkUrl})`,
           cursor: authorized ? 'pointer' : 'auto',
         }}
-        onClick={ authorized ? onClick : ev => ev.preventDefault() }
+        onClick={authorized ? onClick : ev => ev.preventDefault()}
         {...restProps}
       />
     );
   }
 }
+
+// 气泡确认框
+export const AuthPopConfirm = connect(({ user }) => ({ user }))(function (props) {
+  const {
+    code,
+    onConfirm,
+    title,
+    okText = '确认',
+    cancelText = '取消',
+    codes,
+    user: { currentUser: { permissionCodes } },
+    children,
+  } = props
+  const perCodes = codes || permissionCodes;
+  const auth = hasAuthority(code, perCodes);
+  return auth ? (
+    <Popconfirm
+      title={title}
+      onConfirm={onConfirm}
+      okText={okText}
+      cancelText={cancelText}
+    >
+      {children}
+    </Popconfirm>
+  ) : (
+      <span style={{ color: 'rgba(0,0,0,0.25)', cursor: 'not-allowed' }}>{children}</span>
+    )
+})

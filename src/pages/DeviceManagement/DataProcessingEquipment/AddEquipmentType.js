@@ -26,6 +26,7 @@ export default class AddEquipmentType extends PureComponent {
     companyModalVisible: false,
     // 选中的企业
     selectedCompany: {},
+    disabledKeys: [],
   }
 
   componentDidMount() {
@@ -42,7 +43,10 @@ export default class AddEquipmentType extends PureComponent {
         payload: { id },
         callback: ({ equipmentTypeList, companyName, companyId }) => {
           const keys = equipmentTypeList.map(item => item.id)
-          this.setState({ selectedCompany: { id, name: companyName } })
+          const disabledKeys = equipmentTypeList.reduce((arr, item) => {
+            return +item.count > 0 ? [...arr, item.id] : arr
+          }, [])
+          this.setState({ selectedCompany: { id, name: companyName }, disabledKeys })
           setFieldsValue({ companyId, equipmentTypeList: keys })
         },
       })
@@ -154,7 +158,7 @@ export default class AddEquipmentType extends PureComponent {
         deviceType: { list: deviceTypeList }, // 设备类型列表
       },
     } = this.props
-    const { selectedCompany } = this.state
+    const { selectedCompany, disabledKeys } = this.state
     return (
       <Card>
         <Form>
@@ -175,7 +179,7 @@ export default class AddEquipmentType extends PureComponent {
               <Checkbox.Group >
                 {deviceTypeList.map(({ id, name }) => (
                   <Col span={8} key={id}>
-                    <Checkbox value={id}>{name}</Checkbox>
+                    <Checkbox disabled={disabledKeys.includes(id)} value={id}>{name}</Checkbox>
                   </Col>
                 ))}
               </Checkbox.Group>
