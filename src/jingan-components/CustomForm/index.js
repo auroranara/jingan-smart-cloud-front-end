@@ -51,8 +51,8 @@ const DEFAULT_STYLE = {
 };
 
 @Form.create({
-  onValuesChange({ refresh }) {
-    refresh && refresh();
+  onValuesChange({ refresh }, changedValues) {
+    refresh && refresh(changedValues);
   },
 })
 export default class CustomForm extends PureComponent {

@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Spin, message, Input, Select, Form, DatePicker, Radio, InputNumber } from 'antd';
+import { Button, Spin, message, Input, Select, DatePicker, Radio, InputNumber } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
@@ -98,7 +98,6 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD';
     });
   },
 }))
-@Form.create()
 export default class GatewayOther extends Component {
   componentDidMount() {
     const {
@@ -266,13 +265,13 @@ export default class GatewayOther extends Component {
             render: () => isNotDetail ? <CompanySelect disabled={isEdit} className={styles.item} /> : <span>{companyName}</span>,
             options: {
               initialValue: companyId && { key: companyId, label: companyName },
-              rules: [
+              rules: isNotDetail ? [
                 {
                   required: true,
                   message: '单位名称不能为空',
                   transform: value => value && value.label,
                 },
-              ],
+              ] : undefined,
             },
           }] : []),
           {
@@ -287,12 +286,12 @@ export default class GatewayOther extends Component {
             ) : <span>{equipmentTypeName}</span>,
             options: {
               initialValue: equipmentType,
-              rules: [
+              rules: isNotDetail ? [
                 {
                   required: true,
                   message: '设备类型不能为空',
                 },
-              ],
+              ] : undefined,
             },
           },
           {
@@ -307,12 +306,12 @@ export default class GatewayOther extends Component {
             ) : <span>{brandName}</span>,
             options: {
               initialValue: brand,
-              rules: [
+              rules: isNotDetail ? [
                 {
                   required: true,
                   message: '品牌不能为空',
                 },
-              ],
+              ] : undefined,
             },
           },
           {
@@ -327,12 +326,12 @@ export default class GatewayOther extends Component {
             ) : <span>{modelName}</span>,
             options: {
               initialValue: model,
-              rules: [
+              rules: isNotDetail ? [
                 {
                   required: true,
                   message: '型号不能为空',
                 },
-              ],
+              ] : undefined,
             },
           },
           {
@@ -343,13 +342,13 @@ export default class GatewayOther extends Component {
             render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入设备名称" maxLength={50} /> : <span>{name}</span>,
             options: {
               initialValue: name,
-              rules: [
+              rules: isNotDetail ? [
                 {
                   required: true,
                   whitespace: true,
                   message: '设备名称不能为空',
                 },
-              ],
+              ] : undefined,
             },
           },
           {
@@ -360,13 +359,13 @@ export default class GatewayOther extends Component {
             render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入设备编号" maxLength={50} /> : <span>{code}</span>,
             options: {
               initialValue: code,
-              rules: [
+              rules: isNotDetail ? [
                 {
                   required: true,
                   whitespace: true,
                   message: '设备编号不能为空',
                 },
-              ],
+              ] : undefined,
             },
           },
         ],
@@ -400,12 +399,12 @@ export default class GatewayOther extends Component {
             ) : <span>{networkingTypeName}</span>,
             options: {
               initialValue: networkingType && `${networkingType}`,
-              rules: [
+              rules: isNotDetail ? [
                 {
                   required: true,
                   message: '联网方式不能为空',
                 },
-              ],
+              ] : undefined,
             },
           },
           ...(showMoreNetworkingInfo ? [
@@ -524,12 +523,12 @@ export default class GatewayOther extends Component {
               ) : <span>{['选择建筑物-楼层', '手填'][locationType]}</span>,
               options: {
                 initialValue: locationType && `${locationType}` || '0',
-                rules: [
+                rules: isNotDetail ? [
                   {
                     required: true,
                     message: '录入方式不能为空',
                   },
-                ],
+                ] : undefined,
               },
             },
             ...(isBuildingFloorEntryForm ? [
@@ -541,12 +540,12 @@ export default class GatewayOther extends Component {
                 render: () => isNotDetail ? <BuildingFloorSelect companyId={unitId || realCompanyId} marker={values.marker} /> : <span>{[buildingName, floorName].filter(v => v).join('')}</span>,
                 options: {
                   initialValue: [buildingId, floorId],
-                  rules: [
+                  rules: isNotDetail ? [
                     {
                       required: true,
                       validator: this.validateBuildingFloor,
                     },
-                  ],
+                  ] : undefined,
                 },
               },
               {
@@ -568,12 +567,12 @@ export default class GatewayOther extends Component {
                 render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入所在区域" maxLength={50} /> : <span>{area}</span>,
                 options: {
                   initialValue: area,
-                  rules: [
+                  rules: isNotDetail ? [
                     {
                       required: true,
                       message: '所在区域不能为空',
                     },
-                  ],
+                  ] : undefined,
                 },
               },
               {
@@ -584,12 +583,12 @@ export default class GatewayOther extends Component {
                 render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入位置详情" maxLength={50} /> : <span>{location}</span>,
                 options: {
                   initialValue: location,
-                  rules: [
+                  rules: isNotDetail ? [
                     {
                       required: true,
                       message: '位置详情不能为空',
                     },
-                  ],
+                  ] : undefined,
                 },
               },
             ]),
@@ -607,12 +606,12 @@ export default class GatewayOther extends Component {
               render: () => <MarkerSelect companyId={unitId || realCompanyId} isBuildingFloorEntryForm={isBuildingFloorEntryForm} buildingFloor={values.buildingFloor} readonly={!isNotDetail} />,
               options: {
                 initialValue: marker || [],
-                rules: [
+                rules: isNotDetail ? [
                   {
                     required: true,
                     validator: this.validateMarker,
                   },
-                ],
+                ] : undefined,
               },
             },
           ],

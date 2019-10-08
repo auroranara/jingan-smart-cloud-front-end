@@ -5,6 +5,7 @@ import CustomForm from '@/jingan-components/CustomForm';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
+import classNames from 'classnames';
 import styles from './index.less';
 
 const { Option } = Select;
@@ -162,6 +163,11 @@ export default class GatewayList extends Component {
     });
   }
 
+  handleSensorCountClick = (e) => {
+    const { id } = e.currentTarget.dataset;
+    window.open(`/#/device-management/new-sensor/list?dataExecuteEquipmentId=${id}`);
+  }
+
   renderForm() {
     const {
       user: {
@@ -283,7 +289,7 @@ export default class GatewayList extends Component {
       {
         title: '已绑定数据处理设备',
         dataIndex: 'dataExecuteEquipmentCount',
-        render: (dataExecuteEquipmentCount, data) => <Button type="link" className={styles.operation} onClick={() => this.showBinding(data)} disabled={(dataExecuteEquipmentCount || 0) === 0}>{dataExecuteEquipmentCount || 0}</Button>,
+        render: (dataExecuteEquipmentCount, data) => <span className={classNames(styles.operation, +dataExecuteEquipmentCount === 0 && styles.disabled)} onClick={dataExecuteEquipmentCount > 0 ? () => this.showBinding(data) : undefined}>{dataExecuteEquipmentCount || 0}</span>,
         align: 'center',
       },
       {
@@ -291,14 +297,14 @@ export default class GatewayList extends Component {
         dataIndex: 'operation',
         render: (_, { id }) => (
           <Fragment>
-            {<Button type="link" className={styles.operation} onClick={this.handleViewClick} data-id={id} disabled={!hasDetailAuthority}>查看</Button>}
-            {<Button type="link" className={styles.operation} onClick={this.handleEditClick} data-id={id} disabled={!hasEditAuthority}>编辑</Button>}
+            {<span className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)} onClick={hasDetailAuthority ? this.handleViewClick : undefined} data-id={id}>查看</span>}
+            {<span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={hasEditAuthority ? this.handleEditClick : undefined} data-id={id}>编辑</span>}
             {hasDeleteAuthority ? (
               <Popconfirm title="你确定要删除吗?" onConfirm={() => this.handleDeleteClick(id)}>
-                <Button type="link" className={styles.operation}>删除</Button>
+                <span className={styles.operation}>删除</span>
               </Popconfirm>
             ) : (
-              <Button type="link" className={styles.operation} disabled>删除</Button>
+              <span className={classNames(styles.operation, styles.disabled)}>删除</span>
             )}
           </Fragment>
         ),
@@ -391,7 +397,7 @@ export default class GatewayList extends Component {
       {
         title: '已绑定传感器',
         dataIndex: 'sensorCount',
-        render: (sensorCount, { id }) => <Button type="link" className={styles.operation} href={`/#/device-management/new-sensor/list?dataExecuteEquipmentId=${id}`} target="_blank" disabled={(sensorCount || 0) === 0}>{sensorCount || 0}</Button>,
+        render: (sensorCount, { id }) => <span className={classNames(styles.operation, +sensorCount === 0 && styles.disabled)} onClick={sensorCount > 0 ? this.handleSensorCountClick : undefined} data-id={id}>{sensorCount || 0}</span>,
         align: 'center',
       },
     ];

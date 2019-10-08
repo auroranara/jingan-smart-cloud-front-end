@@ -6,61 +6,28 @@ import CustomUpload from '@/jingan-components/CustomUpload';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
+import classNames from 'classnames';
+import {
+  TITLE,
+  BREADCRUMB_LIST,
+  DEFAULT_FORMAT,
+  DEFAULT_PAGE_NUM,
+  DEFAULT_PAGE_SIZE,
+  DETAIL_CODE,
+  ADD_CODE,
+  EDIT_CODE,
+  DELETE_CODE,
+  STATUSES,
+  LEVELS,
+  SPAN,
+  LABEL_COL,
+  EDIT_PATH,
+  ADD_PATH,
+  DETAIL_PATH,
+} from '../const';
 import styles from './index.less';
 
 const { Option } = Select;
-const title = '安全生产培训计划';
-const breadcrumbList = [
-  {
-    title: '首页',
-    name: '首页',
-    href: '/',
-  },
-  {
-    title: '教育培训',
-    name: '教育培训',
-  },
-  {
-    title,
-    name: title,
-  },
-];
-const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-const DEFAULT_PAGE_NUM = 1;
-const DEFAULT_PAGE_SIZE = 10;
-const DETAIL_CODE = 'training.trainingProgram.detail';
-const ADD_CODE = 'training.trainingProgram.add';
-const EDIT_CODE = 'training.trainingProgram.edit';
-const DELETE_CODE = 'training.trainingProgram.delete';
-const STATUSES = [
-  {
-    key: '0',
-    value: '未执行',
-  },
-  {
-    key: '1',
-    value: '已执行',
-  },
-];
-const LEVELS = [
-  {
-    key: '1',
-    value: '厂级',
-  },
-  {
-    key: '2',
-    value: '车间级',
-  },
-  {
-    key: '3',
-    value: '班组级',
-  },
-];
-const SPAN = {
-  sm: 24,
-  xs: 24,
-};
-const LABEL_COL = { span: 6 };
 
 @connect(({
   trainingProgram,
@@ -141,19 +108,19 @@ export default class TrainingProgramList extends Component {
 
   // 新增按钮点击事件
   handleAddClick = () => {
-    router.push('/training/training-program/add');
+    router.push(ADD_PATH);
   }
 
   // 编辑按钮点击事件
   handleEditClick = (e) => {
     const { id } = e.currentTarget.dataset;
-    router.push(`/training/training-program/edit/${id}`);
+    router.push(`${EDIT_PATH}/${id}`);
   }
 
   // 查看按钮点击事件
   handleViewClick = (e) => {
     const { id } = e.currentTarget.dataset;
-    router.push(`/training/training-program/detail/${id}`);
+    router.push(`${DETAIL_PATH}/${id}`);
   }
 
   // 删除按钮点击事件
@@ -391,15 +358,15 @@ export default class TrainingProgramList extends Component {
           const { id, status } = data;
           return (
             <Fragment>
-              {+status === 0 && <Button type='link' className={styles.operation} onClick={() => this.handleExecuteClick(data)} disabled={!hasEditAuthority}>执行</Button>}
-              {<Button type='link' className={styles.operation} onClick={this.handleViewClick} data-id={id} disabled={!hasDetailAuthority}>查看</Button>}
-              {+status === 0 && <Button type='link' className={styles.operation} onClick={this.handleEditClick} data-id={id} disabled={!hasEditAuthority}>编辑</Button>}
+              {+status === 0 && <span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={hasEditAuthority ? () => this.handleExecuteClick(data) : undefined}>执行</span>}
+              {<span className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)} onClick={hasDetailAuthority ? this.handleViewClick : undefined} data-id={id}>查看</span>}
+              {+status === 0 && <span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={hasEditAuthority ? this.handleEditClick : undefined} data-id={id}>编辑</span>}
               {+status === 0 && (hasDeleteAuthority ? (
                 <Popconfirm title="你确定要删除吗?" onConfirm={() => this.handleDeleteClick(id)}>
-                  <Button type='link' className={styles.operation}>删除</Button>
+                  <span className={styles.operation}>删除</span>
                 </Popconfirm>
               ) : (
-                <Button type='link' className={styles.operation} disabled>删除</Button>
+                <span className={classNames(styles.operation, styles.disabled)}>删除</span>
               ))}
             </Fragment>
           );
@@ -504,8 +471,8 @@ export default class TrainingProgramList extends Component {
 
     return (
       <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
+        title={TITLE}
+        breadcrumbList={BREADCRUMB_LIST}
         content={
           <Fragment>
             {isNotCompany && <span className={styles.companyNumber}>{`单位数量：${0}`}</span>}
