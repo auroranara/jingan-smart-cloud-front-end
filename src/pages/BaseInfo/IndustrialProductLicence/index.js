@@ -150,7 +150,7 @@ export default class IndustriallicenceList extends PureComponent {
       pageSize: 10,
     };
     dispatch({
-      type: 'reservoirRegion/fetchCertificateList',
+      type: 'reservoirRegion/fetchIndustrialList',
       payload: {
         ...payload,
         pageSize,
@@ -208,7 +208,7 @@ export default class IndustriallicenceList extends PureComponent {
       reservoirRegion: {
         industrialData: {
           list = [],
-          pagination: { pageNum, pageSize, total },
+          pagination: { total = 0, pageNum = 1, pageSize = 10 },
         },
       },
       user: {

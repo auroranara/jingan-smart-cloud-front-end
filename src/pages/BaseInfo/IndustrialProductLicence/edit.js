@@ -97,9 +97,12 @@ export default class IndustriallicenceEdit extends PureComponent {
       dispatch,
       form: { validateFieldsAndScroll },
     } = this.props;
+    const { accessoryList } = this.state;
+    if (accessoryList.length === 0) {
+      return message.warning('请先上传证照附件！');
+    }
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const { accessoryList } = this.state;
         const {
           status,
           licenceOffice,
@@ -233,7 +236,7 @@ export default class IndustriallicenceEdit extends PureComponent {
         });
         message.success('上传成功！');
       }
-    } else if (status === 'removed') {
+    } else if (file.status === 'removed') {
       // 删除
       this.setState({
         accessoryList: fileList.filter(item => {

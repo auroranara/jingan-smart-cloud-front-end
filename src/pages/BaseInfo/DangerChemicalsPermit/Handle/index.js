@@ -96,6 +96,9 @@ export default class DangerChemicalsHandle extends PureComponent {
     router.push(listUrl);
   };
 
+  /* 去除左右两边空白 */
+  handleTrim = e => e.target.value.trim();
+
   handleSubmit = () => {
     const {
       match: {
@@ -104,9 +107,12 @@ export default class DangerChemicalsHandle extends PureComponent {
       dispatch,
       form: { validateFieldsAndScroll },
     } = this.props;
+    const { photoUrl } = this.state;
+    if (photoUrl.length === 0) {
+      return message.warning('请先上传证书附件！');
+    }
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const { photoUrl } = this.state;
         const {
           issuingType,
           certificateState,
@@ -238,7 +244,7 @@ export default class DangerChemicalsHandle extends PureComponent {
         });
         message.success('上传成功！');
       }
-    } else if (status === 'removed') {
+    } else if (file.status === 'removed') {
       // 删除
       this.setState({
         photoUrl: fileList.filter(item => {
@@ -332,8 +338,9 @@ export default class DangerChemicalsHandle extends PureComponent {
           <FormItem label="发证机关" {...formItemLayout}>
             {getFieldDecorator('issuingOrgan', {
               initialValue: issuingOrgan,
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入发证机关' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
+            })(<Input placeholder="请输入" {...itemStyles} maxLength="15" />)}
           </FormItem>
           <FormItem label="发证日期" {...formItemLayout}>
             {getFieldDecorator('issuingDate', {
@@ -344,8 +351,9 @@ export default class DangerChemicalsHandle extends PureComponent {
           <FormItem label="发证编号" {...formItemLayout}>
             {getFieldDecorator('certificateNumber', {
               initialValue: certificateNumber,
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入发证编号' }],
-            })(<Input placeholder="请输入" {...itemStyles} />)}
+            })(<Input placeholder="请输入" {...itemStyles} maxLength="15" />)}
           </FormItem>
           <FormItem label="证书有效期" {...formItemLayout}>
             {getFieldDecorator('period', {
@@ -362,8 +370,9 @@ export default class DangerChemicalsHandle extends PureComponent {
           <FormItem label="许可范围" {...formItemLayout}>
             {getFieldDecorator('permissionScope', {
               initialValue: permissionScope,
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入许可范围' }],
-            })(<TextArea rows={5} placeholder="请输入" {...itemStyles} />)}
+            })(<TextArea rows={5} placeholder="请输入" {...itemStyles} maxLength="300" />)}
           </FormItem>
           <FormItem label="证书附件" {...formItemLayout}>
             {getFieldDecorator('certificateFile', {
@@ -401,6 +410,7 @@ export default class DangerChemicalsHandle extends PureComponent {
         params: { id },
       },
     } = this.props;
+    const { uploading } = this.state;
     const title = id ? '编辑许可证' : '新增许可证';
     const breadcrumbList = [
       {
@@ -429,6 +439,7 @@ export default class DangerChemicalsHandle extends PureComponent {
           style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
           type="primary"
           onClick={this.handleSubmit}
+          loading={uploading}
         >
           提交
         </Button>

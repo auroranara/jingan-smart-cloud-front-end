@@ -240,7 +240,7 @@ export default class RegSafetyEngEdit extends PureComponent {
         });
         message.success('上传成功！');
       }
-    } else if (status === 'removed') {
+    } else if (file.status === 'removed') {
       // 删除
       this.setState({
         requireFilesList: fileList.filter(item => {
@@ -288,7 +288,7 @@ export default class RegSafetyEngEdit extends PureComponent {
         });
         message.success('上传成功！');
       }
-    } else if (status === 'removed') {
+    } else if (file.status === 'removed') {
       // 删除
       this.setState({
         regFilesList: fileList.filter(item => {
@@ -441,7 +441,7 @@ export default class RegSafetyEngEdit extends PureComponent {
           <FormItem label="执业资格证书附件" {...formItemLayout}>
             {getFieldDecorator('requireFilesList', {
               initialValue: requireFilesList,
-              rules: [{ required: true, message: '请上传执业资格证书附件' }],
+              // rules: [{ required: true, message: '请上传执业资格证书附件' }],
             })(
               <Upload
                 name="files"
@@ -466,7 +466,7 @@ export default class RegSafetyEngEdit extends PureComponent {
           <FormItem label="注册证书附件" {...formItemLayout}>
             {getFieldDecorator('regFilesList', {
               initialValue: regFilesList,
-              rules: [{ required: true, message: '请上传注册证书附件' }],
+              // rules: [{ required: true, message: '请上传注册证书附件' }],
             })(
               <Upload
                 name="files"

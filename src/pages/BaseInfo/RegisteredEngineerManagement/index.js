@@ -232,7 +232,7 @@ export default class RegSafetyEngList extends PureComponent {
               </p>
               <p>
                 性别:
-                {+sex === 1 ? '女生' : '男生'}
+                {+sex === 1 ? '男生' : '女生'}
               </p>
               <p>
                 出生年月:
