@@ -26,3 +26,10 @@ export async function updateDrill(params) {
 export async function drillDetail({ id }) {
   return request(`/acloud_new/v2/emergency/emergencyProject/${id}`);
 }
+
+export async function deleteDrill(params) {
+  return request(`/acloud_new/v2/emergency/emergencyProject`, {
+    method: 'DELETE',
+    body: params,
+  });
+}

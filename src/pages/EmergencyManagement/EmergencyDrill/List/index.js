@@ -1,7 +1,21 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import { Table, Card, Button, Divider, Form, Row, Col, Input, Select, Cascader, Spin } from 'antd';
+import {
+  Table,
+  Card,
+  Button,
+  Divider,
+  Form,
+  Row,
+  Col,
+  Input,
+  Select,
+  Cascader,
+  Spin,
+  Popconfirm,
+  message,
+} from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { hasAuthority, AuthA } from '@/utils/customAuth';
 import codes from '@/utils/codes';
@@ -10,7 +24,7 @@ import router from 'umi/router';
 
 const {
   emergencyManagement: {
-    emergencyDrill: { detail: detailCode, edit: editCode, add: addCode },
+    emergencyDrill: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode },
   },
 } = codes;
 
@@ -193,6 +207,26 @@ export default class EmergencyDrillList extends Component {
     this.fetchList(pageNum, pageSize, { ...getFieldsValue() });
   };
 
+  handleDelete = id => {
+    const {
+      form: { getFieldsValue },
+      dispatch,
+    } = this.props;
+    dispatch({
+      type: 'emergencyManagement/deleteDrill',
+      payload: {
+        id,
+      },
+      success: () => {
+        message.success('删除成功！');
+        this.fetchList(this.pageNum, this.pageSize, { ...getFieldsValue() });
+      },
+      error: msg => {
+        message.error(msg);
+      },
+    });
+  };
+
   /**
    * 渲染列表
    */
@@ -311,6 +345,13 @@ export default class EmergencyDrillList extends Component {
             <AuthA code={editCode} onClick={() => this.goEdit(row.id)}>
               编辑
             </AuthA>
+            <Divider type="vertical" />
+            <Popconfirm
+              title="确认要删除该应急演练计划吗？"
+              onConfirm={() => this.handleDelete(row.id)}
+            >
+              <AuthA code={deleteCode}>删除</AuthA>
+            </Popconfirm>
           </Fragment>
         ),
       },

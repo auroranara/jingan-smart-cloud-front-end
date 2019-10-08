@@ -3356,6 +3356,44 @@ module.exports = env => {
                 },
               ],
             },
+            // 应急演练评估
+            {
+              path: '/emergency-management/emergency-estimate',
+              code: 'emergencyManagement.emergencyEstimate',
+              name: 'emergencyEstimate',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-estimate',
+                  name: 'emergencyEstimate',
+                  redirect: '/emergency-management/emergency-estimate/list',
+                },
+                {
+                  path: '/emergency-management/emergency-estimate/list',
+                  code: 'emergencyManagement.emergencyEstimate.listView',
+                  name: 'list',
+                  component: './EmergencyManagement/EmergencyEstimate/List/index',
+                },
+                {
+                  path: '/emergency-management/emergency-estimate/add',
+                  code: 'emergencyManagement.emergencyEstimate.add',
+                  name: 'add',
+                  component: './EmergencyManagement/EmergencyEstimate/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-estimate/edit/:id',
+                  code: 'emergencyManagement.emergencyEstimate.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/EmergencyEstimate/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-estimate/detail/:id',
+                  code: 'emergencyManagement.emergencyEstimate.detail',
+                  name: 'detail',
+                  component: './EmergencyManagement/EmergencyEstimate/Detail/index',
+                },
+              ],
+            },
           ],
         },
       ],

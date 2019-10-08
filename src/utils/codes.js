@@ -380,18 +380,28 @@ export default {
       add: 'emergencyManagement.emergencyEquipment.add',
       edit: 'emergencyManagement.emergencyEquipment.edit',
       detail: 'emergencyManagement.emergencyEquipment.detail',
+      delete: 'emergencyManagement.emergencyEquipment.delete',
     },
     emergencySupplies: {
       listView: 'emergencyManagement.emergencySupplies.listView',
       add: 'emergencyManagement.emergencySupplies.add',
       edit: 'emergencyManagement.emergencySupplies.edit',
       detail: 'emergencyManagement.emergencySupplies.detail',
+      delete: 'emergencyManagement.emergencySupplies.delete',
     },
     emergencyDrill: {
       listView: 'emergencyManagement.emergencyDrill.listView',
       add: 'emergencyManagement.emergencyDrill.add',
       edit: 'emergencyManagement.emergencyDrill.edit',
       detail: 'emergencyManagement.emergencyDrill.detail',
+      delete: 'emergencyManagement.emergencyDrill.delete',
+    },
+    emergencyEstimate: {
+      listView: 'emergencyManagement.emergencyEstimate.listView',
+      add: 'emergencyManagement.emergencyEstimate.add',
+      edit: 'emergencyManagement.emergencyEstimate.edit',
+      detail: 'emergencyManagement.emergencyEstimate.detail',
+      delete: 'emergencyManagement.emergencyEstimate.delete',
     },
   },
 

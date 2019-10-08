@@ -1,6 +1,18 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Input, Pagination, Select, Button, Table, Spin, Divider } from 'antd';
+import {
+  Form,
+  Card,
+  Input,
+  Pagination,
+  Select,
+  Button,
+  Table,
+  Spin,
+  Divider,
+  Popconfirm,
+  message,
+} from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';
@@ -14,7 +26,7 @@ import styles from './index.less';
 
 const {
   emergencyManagement: {
-    emergencyEquipment: { detail: detailCode, edit: editCode, add: addCode },
+    emergencyEquipment: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode },
   },
 } = codes;
 const addUrl = '/emergency-management/emergency-equipment/add';
@@ -242,6 +254,24 @@ export default class EmergencyEquipmentList extends PureComponent {
     this.fetchList(pageNum, pageSize, { ...formData });
   };
 
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    const { formData } = this.state;
+    dispatch({
+      type: 'emergencyManagement/deleteEquipment',
+      payload: {
+        id,
+      },
+      success: () => {
+        message.success('删除成功！');
+        this.fetchList(this.pageNum, this.pageSize, { ...formData });
+      },
+      error: msg => {
+        message.error(msg);
+      },
+    });
+  };
+
   render() {
     const {
       loading = false,
@@ -355,7 +385,7 @@ export default class EmergencyEquipmentList extends PureComponent {
         key: 'operation',
         fixed: 'right',
         align: 'center',
-        width: 120,
+        width: 160,
         render: (data, record) => (
           <span>
             <AuthA code={detailCode} onClick={() => this.goDetail(record.id)}>
@@ -365,6 +395,13 @@ export default class EmergencyEquipmentList extends PureComponent {
             <AuthA code={editCode} onClick={() => this.goEdit(record.id)}>
               编辑
             </AuthA>
+            <Divider type="vertical" />
+            <Popconfirm
+              title="确认要删除该应急装备吗？"
+              onConfirm={() => this.handleDelete(record.id)}
+            >
+              <AuthA code={deleteCode}>删除</AuthA>
+            </Popconfirm>
           </span>
         ),
       },
