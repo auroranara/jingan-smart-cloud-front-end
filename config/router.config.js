@@ -2973,226 +2973,226 @@ module.exports = env => {
         },
 
         // 人员在岗在位管理系统
-        {
-          path: '/personnel-management',
-          code: 'personnelManagement',
-          icon: 'team',
-          name: 'personnelManagement',
-          routes: [
-            // 人员基本信息
-            {
-              path: '/personnel-management/personnel-info',
-              code: 'personnelManagement.personnelInfo',
-              name: 'personnelInfo',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/personnel-management/personnel-info',
-                  name: 'personnelInfo',
-                  redirect: '/personnel-management/personnel-info/company-list',
-                },
-                {
-                  path: '/personnel-management/personnel-info/company-list',
-                  code: 'personnelManagement.personnelInfo.listView',
-                  name: 'companyList',
-                  component: './PersonnelManagement/PersonnelInfo/CompanyList',
-                },
-                {
-                  path: '/personnel-management/personnel-info/personnel-list/:id',
-                  code: 'personnelManagement.personnelInfo.view',
-                  name: 'personnelList',
-                  component: './PersonnelManagement/PersonnelInfo/PersonnelList',
-                },
-                {
-                  path: '/personnel-management/personnel-info/personnel-add',
-                  code: 'personnelManagement.personnelInfo.add',
-                  name: 'personnelAdd',
-                  component: './PersonnelManagement/PersonnelInfo/PersonnelEdit',
-                },
-                {
-                  path: '/personnel-management/personnel-info/personnel-edit/:id',
-                  code: 'personnelManagement.personnelInfo.edit',
-                  name: 'personnelEdit',
-                  component: './PersonnelManagement/PersonnelInfo/PersonnelEdit',
-                },
-                {
-                  path: '/personnel-management/personnel-info/personnel-detail/:id',
-                  code: 'personnelManagement.personnelInfo.detail',
-                  name: 'personnelDetail',
-                  component: './PersonnelManagement/PersonnelInfo/PersonnelDetail',
-                },
-              ],
-            },
-            // 车辆基本信息
-            {
-              path: '/personnel-management/vehicle-info',
-              code: 'personnelManagement.vehicleInfo',
-              name: 'vehicleInfo',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/personnel-management/vehicle-info',
-                  name: 'vehicleInfo',
-                  redirect: '/personnel-management/vehicle-info/company-list',
-                },
-                {
-                  path: '/personnel-management/vehicle-info/company-list',
-                  code: 'personnelManagement.vehicleInfo.listView',
-                  name: 'companyList',
-                  component: './PersonnelManagement/VehicleInfo/CompanyList',
-                },
-                {
-                  path: '/personnel-management/vehicle-info/vehicle-list/:id',
-                  code: 'personnelManagement.vehicleInfo.view',
-                  name: 'vehicleList',
-                  component: './PersonnelManagement/VehicleInfo/VehicleList',
-                },
-                {
-                  path: '/personnel-management/vehicle-info/vehicle-add',
-                  code: 'personnelManagement.vehicleInfo.add',
-                  name: 'vehicleAdd',
-                  component: './PersonnelManagement/VehicleInfo/VehicleEdit',
-                },
-                {
-                  path: '/personnel-management/vehicle-info/vehicle-edit/:id',
-                  code: 'personnelManagement.vehicleInfo.edit',
-                  name: 'vehicleEdit',
-                  component: './PersonnelManagement/VehicleInfo/VehicleEdit',
-                },
-                {
-                  path: '/personnel-management/vehicle-info/vehicle-detail/:id',
-                  code: 'personnelManagement.vehicleInfo.detail',
-                  name: 'vehicleDetail',
-                  component: './PersonnelManagement/VehicleInfo/VehicleDetail',
-                },
-              ],
-            },
-            // 卡口信息
-            {
-              path: '/personnel-management/check-point',
-              code: 'personnelManagement.checkPoint',
-              name: 'checkPoint',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/personnel-management/check-point',
-                  name: 'checkPoint',
-                  redirect: '/personnel-management/check-point/company-list',
-                },
-                {
-                  path: '/personnel-management/check-point/company-list',
-                  code: 'personnelManagement.checkPoint.companyListView',
-                  name: 'companyList',
-                  component: './PersonnelManagement/CheckPoint/CompanyList',
-                },
-                {
-                  path: '/personnel-management/check-point/list/:companyId/:tabIndex',
-                  code: 'personnelManagement.checkPoint.listView',
-                  name: 'list',
-                  component: './PersonnelManagement/CheckPoint/CheckList',
-                },
-                {
-                  path: '/personnel-management/check-point/add/:companyId/:tabIndex',
-                  code: 'personnelManagement.checkPoint.add',
-                  name: 'add',
-                  component: './PersonnelManagement/CheckPoint/CheckEdit',
-                },
-                {
-                  path: '/personnel-management/check-point/detail/:companyId/:tabIndex/:id',
-                  code: 'personnelManagement.checkPoint.view',
-                  name: 'detail',
-                  component: './PersonnelManagement/CheckPoint/CheckEdit',
-                },
-                {
-                  path: '/personnel-management/check-point/edit/:companyId/:tabIndex/:id',
-                  code: 'personnelManagement.checkPoint.add',
-                  name: 'edit',
-                  component: './PersonnelManagement/CheckPoint/CheckEdit',
-                },
-              ],
-            },
-          ],
-        },
+        // {
+        //   path: '/personnel-management',
+        //   code: 'personnelManagement',
+        //   icon: 'team',
+        //   name: 'personnelManagement',
+        //   routes: [
+        //     // 人员基本信息
+        //     {
+        //       path: '/personnel-management/personnel-info',
+        //       code: 'personnelManagement.personnelInfo',
+        //       name: 'personnelInfo',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/personnel-management/personnel-info',
+        //           name: 'personnelInfo',
+        //           redirect: '/personnel-management/personnel-info/company-list',
+        //         },
+        //         {
+        //           path: '/personnel-management/personnel-info/company-list',
+        //           code: 'personnelManagement.personnelInfo.listView',
+        //           name: 'companyList',
+        //           component: './PersonnelManagement/PersonnelInfo/CompanyList',
+        //         },
+        //         {
+        //           path: '/personnel-management/personnel-info/personnel-list/:id',
+        //           code: 'personnelManagement.personnelInfo.view',
+        //           name: 'personnelList',
+        //           component: './PersonnelManagement/PersonnelInfo/PersonnelList',
+        //         },
+        //         {
+        //           path: '/personnel-management/personnel-info/personnel-add',
+        //           code: 'personnelManagement.personnelInfo.add',
+        //           name: 'personnelAdd',
+        //           component: './PersonnelManagement/PersonnelInfo/PersonnelEdit',
+        //         },
+        //         {
+        //           path: '/personnel-management/personnel-info/personnel-edit/:id',
+        //           code: 'personnelManagement.personnelInfo.edit',
+        //           name: 'personnelEdit',
+        //           component: './PersonnelManagement/PersonnelInfo/PersonnelEdit',
+        //         },
+        //         {
+        //           path: '/personnel-management/personnel-info/personnel-detail/:id',
+        //           code: 'personnelManagement.personnelInfo.detail',
+        //           name: 'personnelDetail',
+        //           component: './PersonnelManagement/PersonnelInfo/PersonnelDetail',
+        //         },
+        //       ],
+        //     },
+        //     // 车辆基本信息
+        //     {
+        //       path: '/personnel-management/vehicle-info',
+        //       code: 'personnelManagement.vehicleInfo',
+        //       name: 'vehicleInfo',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/personnel-management/vehicle-info',
+        //           name: 'vehicleInfo',
+        //           redirect: '/personnel-management/vehicle-info/company-list',
+        //         },
+        //         {
+        //           path: '/personnel-management/vehicle-info/company-list',
+        //           code: 'personnelManagement.vehicleInfo.listView',
+        //           name: 'companyList',
+        //           component: './PersonnelManagement/VehicleInfo/CompanyList',
+        //         },
+        //         {
+        //           path: '/personnel-management/vehicle-info/vehicle-list/:id',
+        //           code: 'personnelManagement.vehicleInfo.view',
+        //           name: 'vehicleList',
+        //           component: './PersonnelManagement/VehicleInfo/VehicleList',
+        //         },
+        //         {
+        //           path: '/personnel-management/vehicle-info/vehicle-add',
+        //           code: 'personnelManagement.vehicleInfo.add',
+        //           name: 'vehicleAdd',
+        //           component: './PersonnelManagement/VehicleInfo/VehicleEdit',
+        //         },
+        //         {
+        //           path: '/personnel-management/vehicle-info/vehicle-edit/:id',
+        //           code: 'personnelManagement.vehicleInfo.edit',
+        //           name: 'vehicleEdit',
+        //           component: './PersonnelManagement/VehicleInfo/VehicleEdit',
+        //         },
+        //         {
+        //           path: '/personnel-management/vehicle-info/vehicle-detail/:id',
+        //           code: 'personnelManagement.vehicleInfo.detail',
+        //           name: 'vehicleDetail',
+        //           component: './PersonnelManagement/VehicleInfo/VehicleDetail',
+        //         },
+        //       ],
+        //     },
+        //     // 卡口信息
+        //     {
+        //       path: '/personnel-management/check-point',
+        //       code: 'personnelManagement.checkPoint',
+        //       name: 'checkPoint',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/personnel-management/check-point',
+        //           name: 'checkPoint',
+        //           redirect: '/personnel-management/check-point/company-list',
+        //         },
+        //         {
+        //           path: '/personnel-management/check-point/company-list',
+        //           code: 'personnelManagement.checkPoint.companyListView',
+        //           name: 'companyList',
+        //           component: './PersonnelManagement/CheckPoint/CompanyList',
+        //         },
+        //         {
+        //           path: '/personnel-management/check-point/list/:companyId/:tabIndex',
+        //           code: 'personnelManagement.checkPoint.listView',
+        //           name: 'list',
+        //           component: './PersonnelManagement/CheckPoint/CheckList',
+        //         },
+        //         {
+        //           path: '/personnel-management/check-point/add/:companyId/:tabIndex',
+        //           code: 'personnelManagement.checkPoint.add',
+        //           name: 'add',
+        //           component: './PersonnelManagement/CheckPoint/CheckEdit',
+        //         },
+        //         {
+        //           path: '/personnel-management/check-point/detail/:companyId/:tabIndex/:id',
+        //           code: 'personnelManagement.checkPoint.view',
+        //           name: 'detail',
+        //           component: './PersonnelManagement/CheckPoint/CheckEdit',
+        //         },
+        //         {
+        //           path: '/personnel-management/check-point/edit/:companyId/:tabIndex/:id',
+        //           code: 'personnelManagement.checkPoint.add',
+        //           name: 'edit',
+        //           component: './PersonnelManagement/CheckPoint/CheckEdit',
+        //         },
+        //       ],
+        //     },
+        //   ],
+        // },
 
-        // 安全生产知识库
-        {
-          path: '/safety-knowledge-base',
-          code: 'safetyKnowledgeBase',
-          icon: 'book',
-          name: 'safetyKnowledgeBase',
-          routes: [
-            // 化学品安全说明书
-            {
-              path: '/safety-knowledge-base/msds',
-              code: 'safetyKnowledgeBase.msds',
-              name: 'msds',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/safety-knowledge-base/msds',
-                  name: 'msds',
-                  redirect: '/safety-knowledge-base/msds/list',
-                },
-                {
-                  path: '/safety-knowledge-base/msds/list',
-                  code: 'safetyKnowledgeBase.msds.listView',
-                  name: 'list',
-                  component: './SafetyKnowledgeBase/MSDS/MList',
-                },
-                {
-                  path: '/safety-knowledge-base/msds/add',
-                  code: 'safetyKnowledgeBase.msds.add',
-                  name: 'add',
-                  component: './SafetyKnowledgeBase/MSDS/MEdit',
-                },
-                {
-                  path: '/safety-knowledge-base/msds/detail/:id',
-                  code: 'safetyKnowledgeBase.msds.view',
-                  name: 'view',
-                  component: './SafetyKnowledgeBase/MSDS/MEdit',
-                },
-                {
-                  path: '/safety-knowledge-base/msds/edit/:id',
-                  code: 'safetyKnowledgeBase.msds.edit',
-                  name: 'edit',
-                  component: './SafetyKnowledgeBase/MSDS/MEdit',
-                },
-              ],
-            },
-            // 典型事故案例
-            {
-              path: '/safety-knowledge-base/typical-accident-case',
-              code: 'safetyKnowledgeBase.typicalAccidentCase',
-              name: 'typicalAccidentCase',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/safety-knowledge-base/typical-accident-case',
-                  name: 'typicalAccidentCase',
-                  redirect: '/safety-knowledge-base/typical-accident-case/list',
-                },
-                {
-                  path: '/safety-knowledge-base/typical-accident-case/list',
-                  code: 'safetyKnowledgeBase.typicalAccidentCase.listView',
-                  name: 'list',
-                  component: './SafetyKnowledgeBase/TypicalAccidentCase/TList',
-                },
-                {
-                  path: '/safety-knowledge-base/typical-accident-case/add',
-                  code: 'safetyKnowledgeBase.typicalAccidentCase.add',
-                  name: 'add',
-                  component: './SafetyKnowledgeBase/TypicalAccidentCase/TEdit',
-                },
-                {
-                  path: '/safety-knowledge-base/typical-accident-case/edit/:id',
-                  code: 'safetyKnowledgeBase.typicalAccidentCase.edit',
-                  name: 'edit',
-                  component: './SafetyKnowledgeBase/TypicalAccidentCase/TEdit',
-                },
-              ],
-            },
-          ],
-        },
+        // // 安全生产知识库
+        // {
+        //   path: '/safety-knowledge-base',
+        //   code: 'safetyKnowledgeBase',
+        //   icon: 'book',
+        //   name: 'safetyKnowledgeBase',
+        //   routes: [
+        //     // 化学品安全说明书
+        //     {
+        //       path: '/safety-knowledge-base/msds',
+        //       code: 'safetyKnowledgeBase.msds',
+        //       name: 'msds',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/safety-knowledge-base/msds',
+        //           name: 'msds',
+        //           redirect: '/safety-knowledge-base/msds/list',
+        //         },
+        //         {
+        //           path: '/safety-knowledge-base/msds/list',
+        //           code: 'safetyKnowledgeBase.msds.listView',
+        //           name: 'list',
+        //           component: './SafetyKnowledgeBase/MSDS/MList',
+        //         },
+        //         {
+        //           path: '/safety-knowledge-base/msds/add',
+        //           code: 'safetyKnowledgeBase.msds.add',
+        //           name: 'add',
+        //           component: './SafetyKnowledgeBase/MSDS/MEdit',
+        //         },
+        //         {
+        //           path: '/safety-knowledge-base/msds/detail/:id',
+        //           code: 'safetyKnowledgeBase.msds.view',
+        //           name: 'view',
+        //           component: './SafetyKnowledgeBase/MSDS/MEdit',
+        //         },
+        //         {
+        //           path: '/safety-knowledge-base/msds/edit/:id',
+        //           code: 'safetyKnowledgeBase.msds.edit',
+        //           name: 'edit',
+        //           component: './SafetyKnowledgeBase/MSDS/MEdit',
+        //         },
+        //       ],
+        //     },
+        //     // 典型事故案例
+        //     {
+        //       path: '/safety-knowledge-base/typical-accident-case',
+        //       code: 'safetyKnowledgeBase.typicalAccidentCase',
+        //       name: 'typicalAccidentCase',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/safety-knowledge-base/typical-accident-case',
+        //           name: 'typicalAccidentCase',
+        //           redirect: '/safety-knowledge-base/typical-accident-case/list',
+        //         },
+        //         {
+        //           path: '/safety-knowledge-base/typical-accident-case/list',
+        //           code: 'safetyKnowledgeBase.typicalAccidentCase.listView',
+        //           name: 'list',
+        //           component: './SafetyKnowledgeBase/TypicalAccidentCase/TList',
+        //         },
+        //         {
+        //           path: '/safety-knowledge-base/typical-accident-case/add',
+        //           code: 'safetyKnowledgeBase.typicalAccidentCase.add',
+        //           name: 'add',
+        //           component: './SafetyKnowledgeBase/TypicalAccidentCase/TEdit',
+        //         },
+        //         {
+        //           path: '/safety-knowledge-base/typical-accident-case/edit/:id',
+        //           code: 'safetyKnowledgeBase.typicalAccidentCase.edit',
+        //           name: 'edit',
+        //           component: './SafetyKnowledgeBase/TypicalAccidentCase/TEdit',
+        //         },
+        //       ],
+        //     },
+        //   ],
+        // },
 
         // 应急管理
         {
