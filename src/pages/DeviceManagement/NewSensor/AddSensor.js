@@ -115,9 +115,15 @@ export default class AddNewSensor extends Component {
         }) => {
           setFieldsValue({ companyId })
           // 获取设备信息
-          dataExecuteEquipmentId && dispatch({
+          dataExecuteEquipmentId ? dispatch({
             type: 'device/fetchEquipmentDetail',
             payload: { id: dataExecuteEquipmentId },
+            callback: () => {
+              setFieldsValue({ buildingId, floorId })
+            },
+          }) : dispatch({
+            type: 'device/save',
+            payload: { equipmentDetail: {} },
           })
           this.setState({
             pointFixInfoList,
@@ -130,10 +136,8 @@ export default class AddNewSensor extends Component {
               url: item.webUrl,
               name: item.fileName,
             })),
-          }, () => {
-            setFieldsValue({ buildingId, floorId })
           })
-          model && this.fetchParameterList(model)
+          model && this.fetchParameterList(model, id)
           this.fetchMonitoringTypes()
           companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
           buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } })
@@ -187,13 +191,13 @@ export default class AddNewSensor extends Component {
   /**
    * 获取监测参数列表（全部）
    */
-  fetchParameterList = (modelId) => {
+  fetchParameterList = (modelId, strategySensorId = '-1') => {
     const { dispatch } = this.props
     const { model } = this.state
     const sensorModel = modelId || model.id
     dispatch({
       type: 'device/fetchAllParameters',
-      payload: { sensorModel, strategyDefaultFlag: '0' },
+      payload: { sensorModel, strategyDefaultFlag: '0', strategySensorId },
     })
   }
 
@@ -311,7 +315,7 @@ export default class AddNewSensor extends Component {
       const tag = id ? '编辑' : '新增'
       const success = () => {
         message.success(`${tag}成功`)
-        router.push('/device-management/new-sensor/list')
+        router.goBack()
       }
       const error = (res) => { message.error(res ? res.msg : `${tag}失败`) }
       // 如果编辑
@@ -611,7 +615,7 @@ export default class AddNewSensor extends Component {
           </FormItem>
           <FormItem label="可用性" {...formItemLayout}>
             {getFieldDecorator('useStatus', {
-              initialValue: id ? detail.useStatus : undefined,
+              initialValue: id ? detail.useStatus : 1,
             })(
               <Radio.Group>
                 <Radio value={1}>启用</Radio>

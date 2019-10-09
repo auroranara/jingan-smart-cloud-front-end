@@ -6,6 +6,7 @@ import {
   Row,
   Col,
   Input,
+  Tag,
 } from 'antd';
 import { AuthPopConfirm } from '@/utils/customAuth';
 import codes from '@/utils/codes';
@@ -41,6 +42,13 @@ const defaultColumns = [
     title: '传感器Token',
     dataIndex: 'token',
     align: 'center',
+  },
+  {
+    title: '可用性',
+    dataIndex: 'useStatus',
+    width: 150,
+    align: 'center',
+    render: (val) => <Tag color={val === 1 ? 'blue' : 'red'}>{val === 1 ? '启用' : '禁用'}</Tag>,
   },
 ]
 

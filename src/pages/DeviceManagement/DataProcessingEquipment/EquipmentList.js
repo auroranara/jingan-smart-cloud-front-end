@@ -153,7 +153,6 @@ export default class EquipmentList extends PureComponent {
     this.handleQuery()
   }
 
-
   /**
    * 跳转到新增设备页面
    */
@@ -251,7 +250,10 @@ export default class EquipmentList extends PureComponent {
   renderFilter = () => {
     const {
       form: { getFieldDecorator },
+      match: { params: { type } },
     } = this.props
+    // 设备类型是否是
+    const isNVR = +type === 110
     return (
       <Card>
         <Form>
@@ -277,26 +279,30 @@ export default class EquipmentList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('connectGateway')(
-                  <Select placeholder="集成数据采集" allowClear>
-                    <Select.Option value={1}>是，独立式</Select.Option>
-                    <Select.Option value={0}>否，非独立式</Select.Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col {...colWrapper}>
-              <FormItem {...formItemStyle}>
-                {getFieldDecorator('inheritGather')(
-                  <Select placeholder="接入网关设备" allowClear>
-                    <Select.Option value={1}>已接入</Select.Option>
-                    <Select.Option value={0}>未接入</Select.Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
+            {!isNVR && (
+              <Fragment>
+                <Col {...colWrapper}>
+                  <FormItem {...formItemStyle}>
+                    {getFieldDecorator('connectGateway')(
+                      <Select placeholder="集成数据采集" allowClear>
+                        <Select.Option value={1}>是，独立式</Select.Option>
+                        <Select.Option value={0}>否，非独立式</Select.Option>
+                      </Select>
+                    )}
+                  </FormItem>
+                </Col>
+                <Col {...colWrapper}>
+                  <FormItem {...formItemStyle}>
+                    {getFieldDecorator('inheritGather')(
+                      <Select placeholder="接入网关设备" allowClear>
+                        <Select.Option value={1}>已接入</Select.Option>
+                        <Select.Option value={0}>未接入</Select.Option>
+                      </Select>
+                    )}
+                  </FormItem>
+                </Col>
+              </Fragment>
+            )}
             {/* <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('gatewayEquipment')(
@@ -331,10 +337,12 @@ export default class EquipmentList extends PureComponent {
         },
       },
     } = this.props
-    const title = dataProcessingType[type]
-    const columns = [
+    // 设备类型是否是NVR
+    const isNVR = +type === 110
+    // const title = dataProcessingType[type]
+    let columns = [
       {
-        title,
+        title: '基本信息',
         dataIndex: 'a',
         align: 'center',
         width: 200,
@@ -387,31 +395,49 @@ export default class EquipmentList extends PureComponent {
         width: 120,
         render: (val) => (val === 1 && '是，独立式') || (+val === 0 && '否，非独立式') || '暂无数据',
       },
-      {
-        title: '已绑定传感器',
+      isNVR ? {
+        title: '已绑定摄像头',
         dataIndex: 'sensorCount',
         align: 'center',
         width: 120,
         render: (val, row) => (
           <span
-            onClick={() => this.handleViewBindedSensorModal(row)}
+            onClick={() => { }}
             style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
           >
             {val}
           </span>
         ),
-      },
+      } : {
+          title: '已绑定传感器',
+          dataIndex: 'sensorCount',
+          align: 'center',
+          width: 120,
+          render: (val, row) => (
+            <span
+              onClick={() => this.handleViewBindedSensorModal(row)}
+              style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+            >
+              {val}
+            </span>
+          ),
+        },
       {
         title: '操作',
         key: '操作',
         align: 'center',
         fixed: 'right',
+        width: isNVR ? 200 : 'auto',
         render: (val, row) => (
           <Fragment>
-            <AuthLink code={bindSensorCode} to={`/device-management/new-sensor/add?deviceId=${row.id}`}>新增绑定传感器</AuthLink>
-            <Divider type />
-            <AuthA code={bindSensorCode} onClick={() => this.handleViewBind(row)}>绑定已有传感器</AuthA>
-            <Divider type />
+            {!isNVR && (
+              <Fragment>
+                <AuthLink code={bindSensorCode} to={`/device-management/new-sensor/add?deviceId=${row.id}`}>新增绑定传感器</AuthLink>
+                <Divider type />
+                <AuthA code={bindSensorCode} onClick={() => this.handleViewBind(row)}>绑定已有传感器</AuthA>
+                <Divider type />
+              </Fragment>
+            )}
             <AuthLink code={editCode} to={`/device-management/data-processing/${type}/edit/${row.id}?companyId=${row.companyId}`}>编辑</AuthLink>
             <Divider type />
             <AuthA code={deleteCode}>删除</AuthA>

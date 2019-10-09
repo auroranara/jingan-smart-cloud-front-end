@@ -283,7 +283,10 @@ export default class ModelList extends PureComponent {
   handleViewEdit = (detail) => {
     const type = detail.type
     this.setState({ detail, modalVisible: true, currentType: type })
-    type && this.fetchAllUnsetModelList({ payload: { type } })
+    // 如果设备类型为传感器
+    if (type === 4) {
+      this.fetchAllUnsetModelList({ payload: { type } })
+    } else this.fetchAllDeviceTypes({ payload: { type } })
   }
 
 

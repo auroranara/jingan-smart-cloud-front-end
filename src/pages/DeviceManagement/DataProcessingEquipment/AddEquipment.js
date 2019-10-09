@@ -381,7 +381,7 @@ export default class AddEquipment extends Component {
       dispatch,
       form,
       form: { getFieldDecorator, getFieldsValue },
-      match: { params: { id } },
+      match: { params: { id, type } },
       location: { query: { companyId } },
       device: {
         equipmentDetail: detail = {},
@@ -432,6 +432,8 @@ export default class AddEquipment extends Component {
       handleBuildingChange: this.handleBuildingChange,
       changeFlatPicBuildingNum: this.changeFlatPicBuildingNum,
     }
+    // 设备是否是NRV
+    const isNVR = +type === 110
     return (
       <Card>
         <Form>
@@ -504,9 +506,9 @@ export default class AddEquipment extends Component {
           {/* 设备关系 */}
           <FormItem label="集成数据采集" {...formItemLayout}>
             {getFieldDecorator('connectGateway', {
-              initialValue: id ? detail.connectGateway : 1,
+              initialValue: id ? detail.connectGateway : 0,
             })(
-              <Radio.Group>
+              <Radio.Group disabled={isNVR}>
                 <Radio value={1}>是，独立式传感器</Radio>
                 <Radio value={0}>否，非独立式，可接入多个传感器</Radio>
               </Radio.Group>
@@ -516,7 +518,7 @@ export default class AddEquipment extends Component {
             {getFieldDecorator('inheritGather', {
               initialValue: id ? detail.inheritGather : 1,
             })(
-              <Radio.Group>
+              <Radio.Group disabled={isNVR}>
                 <Radio value={1}>是</Radio>
                 <Radio value={0}>否</Radio>
               </Radio.Group>

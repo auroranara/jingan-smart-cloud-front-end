@@ -134,7 +134,7 @@ export default class NewSensorList extends Component {
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                <Button type="primary" onClick={() => router.push('/device-management/new-sensor/add')}>新增传感器</Button>
+                {/* <Button type="primary" onClick={() => router.push('/device-management/new-sensor/add')}>新增传感器</Button> */}
               </FormItem>
             </Col>
           </Row>
