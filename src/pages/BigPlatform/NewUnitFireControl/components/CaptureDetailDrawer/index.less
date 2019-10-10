@@ -1,0 +1,132 @@
+.container {
+  padding: 0 1em 1px;
+}
+.infoWrapper {
+  display: flex;
+  align-items: center;
+  padding: 1.125em;
+  background-color: rgba(169, 18, 11, 0.2);
+  border: 2px solid rgb(248, 51, 41);
+}
+.infoIcon {
+  flex: none;
+  margin-right: 0.875em;
+  width: 2.8125em;
+  height: 2.8125em;
+  background: no-repeat center;
+  background-size: 100% 100%;
+}
+.info {
+  flex: 1;
+}
+.locationWrapper {
+  display: flex;
+  padding: 1.25em 0;
+  align-items: center;
+}
+.locationIcon {
+  flex: none;
+  margin-right: 0.875em;
+  width: 0.9375em;
+  height: 1.5em;
+  background: no-repeat center;
+  background-size: 100% 1.125em;
+}
+.locationLabel {
+  flex: none;
+}
+.location {
+  flex: 1;
+}
+.imageWrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2em;
+}
+.leftImage {
+  flex: none;
+  width: 58%;
+  padding-top: 43.5%;
+  background: no-repeat center;
+  background-size: cover;
+  border: 1px solid #0ff;
+  box-sizing: content-box;
+
+  &.enableClick {
+    cursor: pointer;
+
+    &:hover {
+      border-color: #fff;
+    }
+  }
+}
+.centerImage {
+  flex: 1;
+  padding-top: 43.5%;
+  background: no-repeat center;
+  background-size: 38%;
+}
+.rightImage {
+  flex: none;
+  width: 32.625%;
+  padding-top: 43.5%;
+  background: no-repeat center;
+  background-size: cover;
+  border: 1px solid #0ff;
+  box-sizing: content-box;
+
+  &.enableClick {
+    cursor: pointer;
+
+    &:hover {
+      border-color: #fff;
+    }
+  }
+}
+.table {
+  border: 1px solid rgba(0, 255, 255, 0.302);
+}
+.row {
+  display: flex;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 255, 255, 0.102);
+  }
+
+
+  &.similarityRow {
+    .rowValue {
+      padding: 0.625em 1.5em;
+      font-size: 1.5em;
+      color: #f83329;
+    }
+  }
+}
+.rowLabel {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.625em 0;
+  width: 25%;
+  border-right: 1px solid rgba(0, 255, 255, 0.102);
+
+  span {
+    flex: none;
+    width: 4em;
+    color: rgba(255, 255, 255, 0.502);
+    white-space: nowrap;
+
+    &.space {
+      letter-spacing: 2em;
+    }
+
+    &.space2 {
+      letter-spacing: 0.5em;
+    }
+  }
+}
+.rowValue {
+  flex: 1;
+  padding: 0.625em 2.25em;
+}

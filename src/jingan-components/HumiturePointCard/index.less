@@ -1,0 +1,48 @@
+.title {
+  padding: 0.25em 9em 0.25em 0;
+}
+.row {
+  & > div:first-child {
+    width: 5em;
+    white-space: nowrap;
+  }
+}
+.range {
+  color: #9f9f9f;
+}
+.video {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  width: 2em;
+  height: 2em;
+  background: no-repeat center;
+  background-size: contain;
+  cursor: pointer;
+}
+.arrow {
+  position: absolute;
+  top: 50%;
+  right: 0.666667em;
+  transform: translateY(-50%);
+  font-size: 1.5em;
+  color: #0ff;
+
+  &:hover {
+    color: #fff;
+  }
+}
+.alarmIcon,.lossIcon {
+  position: absolute;
+  top: 1em;
+  right: 3em;
+  padding: 0.25em 2em;
+  background: no-repeat left;
+  background-size: 1.5em;
+}
+.alarmIcon {
+  color: #DE5454;
+}
+.lossIcon {
+  color: #9f9f9f;
+}

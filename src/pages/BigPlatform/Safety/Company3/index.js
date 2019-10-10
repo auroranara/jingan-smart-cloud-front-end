@@ -43,6 +43,10 @@ import {
   SetDrawer,
   // 设备统计
   DeviceCountDrawer,
+  // 温湿度监测点列表抽屉
+  HumiturePointListDrawer,
+  // 温湿度监测点详情抽屉
+  HumiturePointDetailDrawer,
 } from './components';
 // import IndexDrawer from '../Company2/sections/IndexDrawer';
 // 引入样式文件
@@ -85,6 +89,8 @@ export default class UnitSafety extends PureComponent {
       videoVisible: false,
       // 当前播放的视频id
       videoKeyId: null,
+      // 视频列表
+      videoList: [],
       // 当前显示的巡查块索引
       inspectionIndex: 0,
       // 当前选中的人员列表的月份
@@ -104,6 +110,12 @@ export default class UnitSafety extends PureComponent {
       deviceCountSelectedStatus: '0',
       // 设备统计当前选中的监测类型
       deviceCountSelectedMonitoringType: '0',
+      // 温湿度监测点列表抽屉是否显示
+      humiturePointListDrawerVisible: false,
+      // 温湿度监测点详情抽屉是否显示
+      humiturePointDetailDrawerVisible: false,
+      // 温湿度监测点详情抽屉值
+      humiturePointDetailDrawerValue: null,
     };
     // 添加变异函数
     mapMutations(this, {
@@ -371,8 +383,8 @@ export default class UnitSafety extends PureComponent {
   /**
    * 显示视频
    */
-  showVideo = videoKeyId => {
-    this.setState({ videoVisible: true, videoKeyId });
+  showVideo = (videoKeyId, videoList=this.props.unitSafety.videoTree) => {
+    this.setState({ videoVisible: true, videoKeyId, videoList: videoList.map(item => ({ ...item, id: item.id || item.key_id })) });
   };
 
   /**
@@ -565,6 +577,35 @@ export default class UnitSafety extends PureComponent {
     });
   };
 
+  // 温湿度监测点击事件
+  handleHumitureClick = () => {
+    this.setState({
+      humiturePointListDrawerVisible: true,
+    });
+  }
+
+  // 温湿度监测点列表抽屉关闭事件
+  handleHumiturePointListDrawerClose = () => {
+    this.setState({
+      humiturePointListDrawerVisible: false,
+    });
+  }
+
+  // 温湿度监测点点击事件
+  handleHumiturePointClick = (humiturePointDetailDrawerValue) => {
+    this.setState({
+      humiturePointDetailDrawerValue,
+      humiturePointDetailDrawerVisible: true,
+    });
+  }
+
+  // 温湿度监测点详情抽屉关闭事件
+  handleHumiturePointDetailDrawerClose = () => {
+    this.setState({
+      humiturePointDetailDrawerVisible: false,
+    });
+  }
+
   /**
    * 渲染
    */
@@ -589,6 +630,7 @@ export default class UnitSafety extends PureComponent {
       inspectionDetailDrawerVisible,
       videoVisible,
       videoKeyId,
+      videoList,
       inspectionIndex,
       selectedStaffListMonth,
       selectedStaffRecordsMonth,
@@ -601,8 +643,6 @@ export default class UnitSafety extends PureComponent {
       deviceCountSelectedMonitoringType,
     } = this.state;
     const {
-      videoList,
-      videoTree,
       hiddenDangerList,
       hiddenDangerCount,
       companyMessage,
@@ -694,6 +734,7 @@ export default class UnitSafety extends PureComponent {
                 onShow={this.showDeviceCountDrawer}
                 handleClickVideo={this.showVideo}
                 // handleClickGas={this.handleClickGas}
+                onHumitureClick={this.handleHumitureClick}
               />
             </div>
           </Col>
@@ -756,7 +797,7 @@ export default class UnitSafety extends PureComponent {
         /> */}
         <NewVideoPlay
           style={{ zIndex: 99999999 }}
-          videoList={videoTree}
+          videoList={videoList}
           visible={videoVisible}
           showList={true}
           keyId={videoKeyId}
@@ -781,6 +822,21 @@ export default class UnitSafety extends PureComponent {
           deviceCountSelectedMonitoringType={deviceCountSelectedMonitoringType}
           onStatusChange={this.handleDeviceCountStatusChange}
           onMonitoringTypeChange={this.handleDeviceCountMonitoringTypeChange}
+        />
+        {/* 温湿度监测点列表抽屉 */}
+        <HumiturePointListDrawer
+          visible={this.state.humiturePointListDrawerVisible}
+          onClose={this.handleHumiturePointListDrawerClose}
+          onClick={this.handleHumiturePointClick}
+          onVideoClick={this.showVideo}
+          companyId={companyId}
+        />
+        {/* 温湿度监测点详情抽屉 */}
+        <HumiturePointDetailDrawer
+          value={this.state.humiturePointDetailDrawerValue}
+          visible={this.state.humiturePointDetailDrawerVisible}
+          onClose={this.handleHumiturePointDetailDrawerClose}
+          onVideoClick={this.showVideo}
         />
       </BigPlatformLayout>
     );

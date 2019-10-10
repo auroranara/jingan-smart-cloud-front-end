@@ -11,7 +11,7 @@ import missingDevice from '@/assets/missing-device.png';
 import fireHost from '../imgs/fire-host.png';
 import smokeIcon from '../imgs/smokeIcon.png';
 import redDot from '../imgs/redDot.png';
-import SignalAnime from '../Components/SignalAnime';
+import SignalAnime from '../components/SignalAnime';
 import SmokeStatusLabel from '../components/SmokeStatusLabel';
 import Ellipsis from '@/components/Ellipsis';
 import moment from 'moment';
@@ -32,6 +32,7 @@ const alarmColumns = [
     dataIndex: 'typeName',
     align: 'center',
     width: 160,
+    render: (val) => (<span>{val === '储罐监测/水系统监测' ? '储罐监测' : val}</span>),
   },
   {
     title: '报警参数',
@@ -426,8 +427,8 @@ export default class TopCenter extends PureComponent {
         onClick={
           isHover
             ? () => {
-                this.handleViewModal(title);
-              }
+              this.handleViewModal(title);
+            }
             : null
         }
       >

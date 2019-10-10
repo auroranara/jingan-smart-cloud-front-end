@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Tooltip, Icon } from 'antd';
 
 import Section from '../Section';
-import SignalAnime from '../../Monitor/Components/SignalAnime';
+import SignalAnime from '../../Monitor/components/SignalAnime';
 import fireHost from '../imgs/fire-host.png';
 import line from '../imgs/line.png';
 import styles from './FireMonitoring.less';

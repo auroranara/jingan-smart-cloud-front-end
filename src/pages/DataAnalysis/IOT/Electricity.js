@@ -19,8 +19,8 @@ const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '数据分析', name: '数据分析' },
   {
-    title: 'IOT异常数据分析',
-    name: 'IOT异常数据分析',
+    title: 'IOT数据分析',
+    name: 'IOT数据分析',
     href: '/data-analysis/IOT-abnormal-data/list',
   },
   { title: TYPE_LABEL, name: TYPE_LABEL },
@@ -32,7 +32,6 @@ const breadcrumbList = [
 }))
 export default class Electricity extends PureComponent {
   state = {
-    // moments: null,
     formVals: null,
     currentPage: 1,
   };
@@ -125,21 +124,10 @@ export default class Electricity extends PureComponent {
   };
 
   onTableChange = (pagination, filters, sorter) => {
-    // console.log(pagination);
     const { current } = pagination;
     const { formVals } = this.state;
     this.fetchData(current, formVals, (code, msg) => this.setPage(code, current, msg));
   };
-
-  // onCalendarChange = (dates, dateStrings) => {
-  //   // console.log(dates);
-  //   this.setState({ moments: dates });
-  // };
-
-  // disabledDate = (current) => {
-  //   const { moments } = this.state;
-  //   return isDateDisabled(current, moments);
-  // };
 
   render() {
     const {
@@ -151,16 +139,11 @@ export default class Electricity extends PureComponent {
         companyInfo: { name: companyName },
         analysis: { list = [], pagination: { total } = { total: 0 } },
       },
-      // location: { num },
     } = this.props;
 
     const { currentPage } = this.state;
     const indexBase = (currentPage - 1) * PAGE_SIZE;
 
-    // const methods = {
-    //   disabledDate: this.disabledDate,
-    //   onCalendarChange: this.onCalendarChange,
-    // };
     const fields = getFields(TYPE, PARAMS);
 
     return (
@@ -178,13 +161,6 @@ export default class Electricity extends PureComponent {
         }
       >
         <Card className={styles.search}>
-          {/* <InlineForm
-            fields={fields}
-            action={this.renderExportButton()}
-            buttonSpan={{ xl: 6, md: 12, sm: 24 }}
-            onSearch={this.handleSearch}
-            onReset={this.handleReset}
-          /> */}
           <ToolBar
             fields={fields}
             action={this.renderExportButton()}

@@ -82,7 +82,8 @@ export default {
     // 导出
     *exportData({ payload, callback }, { call, put }) {
       const blob = yield call(exportData, payload);
-      fileDownload(blob, `企业自查报表_${moment().format('YYYYMMDD')}.xlsx`);
+      const { detail } = payload;
+      fileDownload(blob, `企业自查报表_${moment().format('YYYYMMDD')}.${detail ? 'zip' : 'xlsx'}`);
     },
   },
 

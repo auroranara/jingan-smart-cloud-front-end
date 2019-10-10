@@ -15,6 +15,23 @@ export default {
       list: '/base-info/company/department/list/',
     },
   },
+  baseInfo: {
+    specialoPerationPermit: {
+      list: '/base-info/specialo-peration-permit/list',
+      add: '/base-info/specialo-peration-permit/add',
+      edit: '/base-info/specialo-peration-permit/edit/',
+    },
+    specialEquipmentOperators: {
+      list: '/base-info/special-equipment-operators/list',
+      add: '/base-info/special-equipment-operators/add',
+      edit: '/base-info/special-equipment-operators/edit/',
+    },
+    dangerChemicalsPermit: {
+      list: '/base-info/danger-chemicals-permit/list',
+      add: '/base-info/danger-chemicals-permit/add',
+      edit: '/base-info/danger-chemicals-permit/edit/',
+    },
+  },
   familyFile: {
     list: '/base-info/family-file/list',
     add: '/base-info/family-file/add',

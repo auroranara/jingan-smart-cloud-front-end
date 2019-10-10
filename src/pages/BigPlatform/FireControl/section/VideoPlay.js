@@ -37,7 +37,7 @@ class VideoPlay extends Component {
   // VideoList的值发生改变或者keyId发生改变时，重新获取对应视频
   getSnapshotBeforeUpdate(prevProps, prevState) {
     return (
-      this.props.videoList.toString() !== prevProps.videoList.toString() ||
+      JSON.stringify(this.props.videoList) !== JSON.stringify(prevProps.videoList) ||
       this.props.keyId !== prevProps.keyId
     );
   }
@@ -51,7 +51,14 @@ class VideoPlay extends Component {
   }
 
   handleInit = () => {
-    const { dispatch, videoList, keyId, showList, deviceId: propsDeviceId } = this.props;
+    const {
+      dispatch,
+      videoList,
+      keyId,
+      showList,
+      deviceId: propsDeviceId,
+      videoCameraUrl,
+    } = this.props;
     let videoId = '';
     let deviceId = null;
     // 如果现实列表
@@ -82,6 +89,7 @@ class VideoPlay extends Component {
       payload: {
         key_id: videoId,
         device_id: deviceId,
+        videoCameraUrl: videoCameraUrl ? videoCameraUrl : undefined,
       },
       success: response => {
         // console.log('response', response);
@@ -142,7 +150,7 @@ class VideoPlay extends Component {
     );
   };
 
-  handleItemClick = (index, keyId, deviceId) => {
+  handleItemClick = (index, keyId, deviceId, videoCameraUrl) => {
     const { dispatch, actionType } = this.props;
     this.setState(
       {
@@ -155,6 +163,7 @@ class VideoPlay extends Component {
           payload: {
             key_id: keyId,
             device_id: deviceId,
+            videoCameraUrl: videoCameraUrl ? videoCameraUrl : undefined,
           },
           success: response => {
             this.setState({

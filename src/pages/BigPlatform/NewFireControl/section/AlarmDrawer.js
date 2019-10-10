@@ -85,7 +85,7 @@ export default class AlarmDrawer extends PureComponent {
     const list = trendList.map(({ dateTime, warnTrueCount }) => ({ name: dateTime, value: warnTrueCount }));
 
     const select = (
-      <OvSelect options={OPTIONS} value={leftType} handleChange={v => handleSelectChange('Left', v)} />
+      <OvSelect options={OPTIONS} style={{ top: 2 }} value={leftType} handleChange={v => handleSelectChange('Left', v)} />
     );
 
     const searchSelect = (

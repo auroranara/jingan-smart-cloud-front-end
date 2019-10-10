@@ -32,6 +32,10 @@ import GasMonitorDrawer from './GasMonitorDrawer';
 import SetDrawer from './SetDrawer';
 // 设备统计
 import DeviceCountDrawer from './DeviceCountDrawer';
+// 温湿度监测点列表抽屉
+import HumiturePointListDrawer from './HumiturePointListDrawer';
+// 温湿度监测点详情抽屉
+import HumiturePointDetailDrawer from './HumiturePointDetailDrawer';
 
 export {
   // 企业信息
@@ -68,4 +72,8 @@ export {
   SetDrawer,
   // 设备统计
   DeviceCountDrawer,
+  // 温湿度监测点列表抽屉
+  HumiturePointListDrawer,
+  // 温湿度监测点详情抽屉
+  HumiturePointDetailDrawer,
 };

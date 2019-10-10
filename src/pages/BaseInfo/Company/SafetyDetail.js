@@ -154,6 +154,8 @@ export default class SafetyDetail extends PureComponent {
     const {
       safety: { detail, menus },
     } = this.props;
+    console.log('menus', menus);
+
     // console.log(detail, menus);
     // 若detail中包含standardLevel且standardLevel不为未评级，则先把那两个item渲染出来
     // const items = detail.reachLevel !== undefined && detail.reachLevel !== menus.reachLevel[4].value ? [...moreItems, ...dspItems1] : dspItems1;

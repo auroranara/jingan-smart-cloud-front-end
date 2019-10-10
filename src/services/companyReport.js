@@ -28,5 +28,5 @@ export async function getGridList() {
  * 导出
  */
 export async function exportData(params) {
-  return request(`/acloud_new/v2/statistics/export?${stringify(params)}`);
+  return request(`/acloud_new/v2/statistics/exportNew?${stringify(params)}`);
 }

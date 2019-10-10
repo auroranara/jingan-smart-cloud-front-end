@@ -3,6 +3,8 @@ import { connect } from 'dva';
 import { notification, Tooltip } from 'antd';
 import moment from 'moment';
 import BigPlatformLayout from '@/layouts/BigPlatformLayout';
+import CustomNotification from '@/jingan-components/CustomNotification';
+import ImagePreview from '@/jingan-components/ImagePreview';
 import VideoSurveillance from './VideoSurveillance';
 // import VideoPlay from '../NewFireControl/section/VideoPlay';
 import NewVideoPlay from '@/pages/BigPlatform/NewFireControl/section/NewVideoPlay';
@@ -12,6 +14,11 @@ import Messages from './Messages';
 import MaintenanceCount from './MaintenanceCount';
 import FourColor from './FourColor';
 import { findFirstVideo } from '@/utils/utils';
+import FaceRecognition from './components/FaceRecognition';
+import MonitoringPointListDrawer from './components/MonitoringPointListDrawer';
+import CameraListDrawer from './components/CameraListDrawer';
+import CaptureListDrawer from './components/CaptureListDrawer';
+import CaptureDetailDrawer from './components/CaptureDetailDrawer';
 
 import styles from './index.less';
 
@@ -274,6 +281,14 @@ export default class NewUnitFireControl extends PureComponent {
     electricalFireMonitoringDetailDrawerActiveKey: '漏电电流', // 电气火灾监测详情抽屉选中参数
     waterItem: {},
     waterItemDrawerVisible: false, // 水系统具体项目弹框
+    faceRecognitionAlarmNotificationOption: null, // 人脸识别报警通知框配置
+    monitoringPointListDrawerVisible: false, // 监测点列表抽屉是否显示
+    cameraListDrawerVisible: false, // 摄像机列表抽屉是否显示
+    captureListDrawerVisible: false, // 今日抓拍报警列表抽屉是否显示
+    captureListDrawerValue: null, // 今日抓拍报警列表抽屉值
+    captureDetailDrawerVisible: false, // 抓拍报警详情抽屉是否显示
+    captureDetailDrawerValue: null, // 抓拍报警详情抽屉值
+    images: null, // 预览图片
   };
 
   componentDidMount() {
@@ -746,6 +761,16 @@ export default class NewUnitFireControl extends PureComponent {
       });
       if (checkResult === '无隐患') this.removeFourColorTip2(pointId);
     }
+
+    // 人脸识别报警
+    if (type === 58) {
+      this.faceRecognition && this.faceRecognition.refresh();
+      this.showFaceRecognitionAlarmNotification(result);
+    }
+  };
+
+  setFaceRecognitionReference = faceRecognition => {
+    this.faceRecognition = faceRecognition && faceRecognition.getWrappedInstance();
   };
 
   handleFetchRealTimeData = deviceId => {
@@ -1865,6 +1890,86 @@ export default class NewUnitFireControl extends PureComponent {
     });
   };
 
+  /* 显示人脸识别报警通知框 */
+  showFaceRecognitionAlarmNotification = ({ messageFlag, messageContent, title }) => {
+    this.setState({
+      faceRecognitionAlarmNotificationOption: {
+        key: messageFlag,
+        message: title,
+        description: `刚刚，${messageContent}`,
+        onClick: () => {
+          this.showCaptureDetailDrawer({ id: messageFlag });
+          CustomNotification.close(messageFlag);
+        },
+      },
+    });
+  };
+
+  /* 显示人脸识别报警详情抽屉 */
+  showCaptureDetailDrawer = data => {
+    this.setState({
+      captureDetailDrawerVisible: true,
+      captureDetailDrawerValue: data.id,
+    });
+  };
+
+  /* 隐藏人脸识别报警详情抽屉 */
+  hideCaptureDetailDrawer = () => {
+    this.setState({
+      captureDetailDrawerVisible: false,
+    });
+  };
+
+  /* 显示监测点列表抽屉 */
+  showMonitoringPointListDrawer = () => {
+    this.setState({
+      monitoringPointListDrawerVisible: true,
+    });
+  };
+
+  /* 隐藏监测点列表抽屉 */
+  hideMonitoringPointListDrawer = () => {
+    this.setState({
+      monitoringPointListDrawerVisible: false,
+    });
+  };
+
+  /* 显示摄像机列表抽屉 */
+  showCameraListDrawer = () => {
+    this.setState({
+      cameraListDrawerVisible: true,
+    });
+  };
+
+  /* 隐藏摄像机列表抽屉 */
+  hideCameraListDrawer = () => {
+    this.setState({
+      cameraListDrawerVisible: false,
+    });
+  };
+
+  /* 显示今日抓拍报警列表抽屉 */
+  showCaptureListDrawer = data => {
+    this.setState({
+      captureListDrawerVisible: true,
+      captureListDrawerValue: data,
+    });
+  };
+
+  /* 隐藏今日抓拍报警列表抽屉 */
+  hideCaptureListDrawer = () => {
+    this.setState({
+      captureListDrawerVisible: false,
+    });
+  };
+
+  /* 显示图片预览 */
+  showImagePreview = images => {
+    this.setState({
+      images,
+    });
+  };
+
   // 复位单个主机
   handleResetSingleHost = id => {
     const { dispatch } = this.props;
@@ -2282,6 +2387,17 @@ export default class NewUnitFireControl extends PureComponent {
     }
   };
 
+  /* 人脸识别点击事件 */
+  handleFaceRecognitionClick = index => {
+    if (index === 0) {
+      this.showMonitoringPointListDrawer();
+    } else if (index === 1) {
+      this.showCameraListDrawer();
+    } else if (index === 2) {
+      this.showCaptureListDrawer();
+    }
+  };
+
   render() {
     // 从props中获取数据
     const {
@@ -2486,6 +2602,12 @@ export default class NewUnitFireControl extends PureComponent {
               model={this.props.newUnitFireControl}
               phoneVisible={phoneVisible}
             />
+            {/* 人脸识别 */}
+            <FaceRecognition
+              onClick={this.handleFaceRecognitionClick}
+              companyId={companyId}
+              ref={this.setFaceRecognitionReference}
+            />
           </div>
         </div>
         {/* 实时消息 */}
@@ -2506,6 +2628,7 @@ export default class NewUnitFireControl extends PureComponent {
           handleClickSmoke={this.handleClickSmoke}
           handleClickWater={this.handleClickWater}
           cssType="1"
+          showCaptureDetailDrawer={this.showCaptureDetailDrawer}
         />
         <div className={styles.bottom}>
           <div className={styles.bottomInner}>
@@ -3048,6 +3171,40 @@ export default class NewUnitFireControl extends PureComponent {
           showCompany
           showUnit={false}
         />
+        {/* 通知框 */}
+        <CustomNotification option={this.state.faceRecognitionAlarmNotificationOption} />
+        {/* 人脸识别-监测点列表 */}
+        <MonitoringPointListDrawer
+          visible={this.state.monitoringPointListDrawerVisible}
+          onClose={this.hideMonitoringPointListDrawer}
+          companyId={companyId}
+        />
+        {/* 人脸识别-摄像机列表 */}
+        <CameraListDrawer
+          visible={this.state.cameraListDrawerVisible}
+          onClose={this.hideCameraListDrawer}
+          onClick={this.showCaptureListDrawer}
+          companyId={companyId}
+        />
+        {/* 人脸识别-今日抓拍报警列表 */}
+        <CaptureListDrawer
+          visible={this.state.captureListDrawerVisible}
+          value={this.state.captureListDrawerValue}
+          onClose={this.hideCaptureListDrawer}
+          onClick={this.showCaptureDetailDrawer}
+          onClickImage={this.showImagePreview}
+          companyId={companyId}
+        />
+        {/* 人脸识别-抓拍报警详情 */}
+        <CaptureDetailDrawer
+          visible={this.state.captureDetailDrawerVisible}
+          value={this.state.captureDetailDrawerValue}
+          onClose={this.hideCaptureDetailDrawer}
+          onClickImage={this.showImagePreview}
+          companyId={companyId}
+        />
+        {/* 图片预览 */}
+        <ImagePreview images={this.state.images} />
       </BigPlatformLayout>
     );
   }

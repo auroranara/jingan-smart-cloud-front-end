@@ -37,7 +37,7 @@ export default class RealTimeAlarm extends PureComponent {
                 backgroundPosition: 'center center',
                 backgroundSize: '65% 65%',
               }}></div>
-              <div className={styles.remarks}>{item.remarks}</div>
+              <div className={styles.remarks}>{item.remarks === '储罐监测/水系统监测 报警' ? '储罐监测 报警' : item.remarks}</div>
             </div>
             <span style={{ textAlign: 'right', color: '#516895' }}>{item.warningTime}</span>
           </div>

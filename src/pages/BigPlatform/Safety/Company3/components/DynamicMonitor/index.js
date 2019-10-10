@@ -18,6 +18,10 @@ import effluentIcon from '../../imgs/dynamic-monitor/effluent.png';
 import exhaustGasIcon from '../../imgs/dynamic-monitor/exhaust_gas.png';
 // 视频监控
 import videoMonitorIcon from '../../imgs/dynamic-monitor/video_monitor.png';
+// 水系统
+import waterSystemIcon from '../../imgs/dynamic-monitor/water_system.png';
+// 温湿度
+import humitureIcon from '../../imgs/dynamic-monitor/humiture.png';
 // 引入样式文件
 import styles from './index.less';
 
@@ -98,10 +102,13 @@ export default class DynamicMonitor extends PureComponent {
           effluent,
           exhaustGas,
           videoMonitor,
+          waterSystem,
+          humiture,
         }={},
       },
       handleClickVideo,
       // handleClickGas,
+      onHumitureClick,
     } = this.props;
 
     const list = [
@@ -178,6 +185,22 @@ export default class DynamicMonitor extends PureComponent {
           handleClickVideo();
         },
       },
+      {
+        key: '水系统',
+        value: getValue(waterSystem),
+        icon: waterSystemIcon,
+        originalValue: waterSystem,
+        onClick: () => {
+          onShow('8');
+        },
+      },
+      {
+        key: '温湿度监测',
+        value: getValue(humiture),
+        icon: humitureIcon,
+        originalValue: humiture,
+        onClick: onHumitureClick,
+      },
     ].filter(({ originalValue: { totalNum } = {} }) => totalNum);
     const newList = [];
     for (let index = 0; index < list.length / 4; index++) {
@@ -205,6 +228,7 @@ export default class DynamicMonitor extends PureComponent {
                     {lists.map(
                       ({ key, value, icon, onClick, originalValue: { totalNum, warningNum } }, i) => {
                         return (
+                          <div className={styles.itemWrapper} key={key}>
                             <div
                               className={styles.item}
                               style={{
@@ -229,6 +253,7 @@ export default class DynamicMonitor extends PureComponent {
                                 </Tooltip>
                               </div>
                             </div>
+                          </div>
                         );
                       }
                     )}

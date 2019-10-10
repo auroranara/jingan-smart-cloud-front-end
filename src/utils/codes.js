@@ -81,6 +81,14 @@ export default {
         bindSensor: 'deviceManagement.associateSensor.waterSystem.bindSensor',
         unbindSensor: 'deviceManagement.associateSensor.waterSystem.unbindSensor',
       },
+      temperatureAndHumidity: {
+        listView: 'deviceManagement.associateSensor.temperatureAndHumidity.listView',
+        add: 'deviceManagement.associateSensor.temperatureAndHumidity.add',
+        delete: 'deviceManagement.associateSensor.temperatureAndHumidity.delete',
+        edit: 'deviceManagement.associateSensor.temperatureAndHumidity.edit',
+        bindSensor: 'deviceManagement.associateSensor.temperatureAndHumidity.bindSensor',
+        unbindSensor: 'deviceManagement.associateSensor.temperatureAndHumidity.unbindSensor',
+      },
     },
     sensor: {
       listView: 'deviceManagement.sensor.listView',
@@ -235,8 +243,10 @@ export default {
       'waste-gas': 'dataAnalysis.IOTAbnormalData.wasteGas',
       'storage-tank': 'dataAnalysis.IOTAbnormalData.storageTank',
       'smoke-detector': 'dataAnalysis.IOTAbnormalData.smokeDetector',
+      humiture: 'dataAnalysis.IOTAbnormalData.humiture',
       fire: 'dataAnalysis.IOTAbnormalData.fireDetailView',
       history: 'dataAnalysis.IOTAbnormalData.fireHistoryRecordView',
+      water: 'dataAnalysis.IOTAbnormalData.water',
     },
     MaintenanceRecord: {
       view: 'dataAnalysis.maintenanceRecord.view',
@@ -374,6 +384,119 @@ export default {
       edit: 'riskControl.gridPointManage.edit',
       delete: 'riskControl.gridPointManage.delete',
       detailView: 'riskControl.gridPointManage.detailView',
+    },
+  },
+
+  /** 安防管理 */
+  securityManage: {
+    entranceAndExitMonitor: {
+      listView: 'securityManage.entranceAndExitMonitor.listView',
+      addCompany: 'securityManage.entranceAndExitMonitor.addCompany',
+      faceDatabaseView: 'securityManage.entranceAndExitMonitor.faceDatabaseView',
+      cameraView: 'securityManage.entranceAndExitMonitor.cameraView',
+      monitorPointView: 'securityManage.entranceAndExitMonitor.monitorPointView',
+      alarmRecordView: 'securityManage.entranceAndExitMonitor.alarmRecordView',
+    },
+  },
+
+  /** 人员在岗在位管理系统 */
+  personnelManagement: {
+    personnelInfo: {
+      listView: 'personnelManagement.personnelInfo.listView',
+      addCompany: 'personnelManagement.personnelInfo.addCompany',
+      view: 'personnelManagement.personnelInfo.view',
+      add: 'personnelManagement.personnelInfo.add',
+      edit: 'personnelManagement.personnelInfo.edit',
+      detail: 'personnelManagement.personnelInfo.detail',
+      delete: 'personnelManagement.personnelInfo.delete',
+    },
+    vehicleInfo: {
+      listView: 'personnelManagement.vehicleInfo.listView',
+      addCompany: 'personnelManagement.vehicleInfo.addCompany',
+      view: 'personnelManagement.vehicleInfo.view',
+      add: 'personnelManagement.vehicleInfo.add',
+      edit: 'personnelManagement.vehicleInfo.edit',
+      detail: 'personnelManagement.vehicleInfo.detail',
+      delete: 'personnelManagement.vehicleInfo.delete',
+    },
+  },
+
+  // 应急管理
+  emergencyManagement: {
+    emergencyEquipment: {
+      listView: 'emergencyManagement.emergencyEquipment.listView',
+      add: 'emergencyManagement.emergencyEquipment.add',
+      edit: 'emergencyManagement.emergencyEquipment.edit',
+      detail: 'emergencyManagement.emergencyEquipment.detail',
+    },
+    emergencySupplies: {
+      listView: 'emergencyManagement.emergencySupplies.listView',
+      add: 'emergencyManagement.emergencySupplies.add',
+      edit: 'emergencyManagement.emergencySupplies.edit',
+      detail: 'emergencyManagement.emergencySupplies.detail',
+    },
+    emergencyDrill: {
+      listView: 'emergencyManagement.emergencyDrill.listView',
+      add: 'emergencyManagement.emergencyDrill.add',
+      edit: 'emergencyManagement.emergencyDrill.edit',
+      detail: 'emergencyManagement.emergencyDrill.detail',
+    },
+  },
+
+  baseInfo: {
+    // 库房管理
+    storehouse: {
+      listView: 'baseInfo.storehouse.listView',
+      add: 'baseInfo.storehouse.add',
+      edit: 'baseInfo.storehouse.edit',
+      detail: 'baseInfo.storehouse.detail',
+      delete: 'baseInfo.storehouse.delete',
+    },
+    // 物料信息
+    materials: {
+      listView: 'baseInfo.materials.listView',
+      add: 'baseInfo.materials.add',
+      edit: 'baseInfo.materials.edit',
+      detail: 'baseInfo.materials.detail',
+      delete: 'baseInfo.materials.delete',
+    },
+    // 高危工艺流程
+    highRiskProcess: {
+      listView: 'baseInfo.highRiskProcess.listView',
+      add: 'baseInfo.highRiskProcess.add',
+      edit: 'baseInfo.highRiskProcess.edit',
+      detail: 'baseInfo.highRiskProcess.detail',
+    },
+    // 特种设备管理
+    specialEquipment: {
+      listView: 'baseInfo.specialEquipment.listView',
+      add: 'baseInfo.specialEquipment.add',
+      edit: 'baseInfo.specialEquipment.edit',
+      detail: 'baseInfo.specialEquipment.detail',
+    },
+
+    // 库区管理
+    reservoirRegionManagement: {
+      list: 'baseInfo.reservoirRegionManagement.listView',
+      add: 'baseInfo.reservoirRegionManagement.add',
+      edit: 'baseInfo.reservoirRegionManagement.edit',
+      delete: 'baseInfo.reservoirRegionManagement.delete',
+    },
+    // 重大危险源
+    majorHazard: {
+      list: 'baseInfo.majorHazard.listView',
+      add: 'baseInfo.majorHazard.add',
+      edit: 'baseInfo.majorHazard.edit',
+      delete: 'baseInfo.majorHazard.delete',
+    },
+  },
+  safetyKnowledgeBase: {
+    // 典型事故案例
+    typicalAccidentCase: {
+      listView: 'safetyKnowledgeBase.typicalAccidentCase.listView',
+      add: 'safetyKnowledgeBase.typicalAccidentCase.add',
+      edit: 'safetyKnowledgeBase.typicalAccidentCase.edit',
+      delete: 'safetyKnowledgeBase.typicalAccidentCase.delete',
     },
   },
 };

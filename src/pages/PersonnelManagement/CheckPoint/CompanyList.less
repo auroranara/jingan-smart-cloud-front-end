@@ -1,0 +1,68 @@
+.card, .card1 {
+  position: relative;
+
+  :global {
+    .ant-card-head-title {
+      display: block;
+      font-weight: bold;
+      white-space: normal;
+    }
+  }
+}
+
+.card1 {
+  :global {
+    .ant-card-body {
+      position: relative;
+      height: 120px;
+      padding-left: 100px;
+    }
+  }
+}
+
+.qualified {
+  position: absolute;
+  right: 25px;
+  bottom: 65px;
+}
+
+.total {
+  margin: 0;
+  font-size: 16px;
+}
+
+.p {
+  margin-bottom: 5px;
+}
+
+.pLast {
+  margin: 0;
+}
+
+.searchSelect {
+  :global {
+    .ant-input {
+      vertical-align: top;
+    }
+  }
+}
+
+.back {
+  margin-right: 20px;
+}
+
+.red {
+  color: #F00;
+}
+
+.photo {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  width: 80px;
+  height: calc(100% - 16px);
+  // background-color: grey;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+}

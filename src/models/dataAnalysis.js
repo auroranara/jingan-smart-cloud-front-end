@@ -10,6 +10,7 @@ import {
   fetchJobLevel,
   fetchDangerChemicals, // 获取危险化学品/供货方单位
 } from '@/services/dataAnalysis';
+import { fetchDeviceTypes } from '@/services/sensor';
 import fileDownload from 'js-file-download';
 import moment from 'moment';
 
@@ -37,7 +38,7 @@ export default {
       },
     },
     repairRecordDetail: { realStatus: '' },
-    // 作业审批报表-企业列表
+    // 危险作业管理-企业列表
     // workApprovalCompany: {
     //   list: [],
     //   pagination: {
@@ -47,7 +48,7 @@ export default {
     //   },
     //   isLast: true,
     // },
-    // 作业审批列表
+    // 危险作业列表
     workApproval: {
       list: [],
       pagination: {
@@ -56,11 +57,12 @@ export default {
         pageSize: 10,
       },
     },
-    workApprovalDetail: {}, // 作业审批报表详情
+    workApprovalDetail: {}, // 危险作业管理详情
     approvalStatus: [], // 审批状态
     jobLevel: [],       // 作业级别（类别）
     dangerChemicals: [], // 危险化学品
     supplierUnits: [],    // 供货方单位
+    deviceOptions: [],
   },
 
   effects: {
@@ -117,7 +119,7 @@ export default {
         })
       }
     },
-    // 获取作业审批报表列表
+    // 获取危险作业管理列表
     *fetchWorkApprovalList({ payload }, { call, put }) {
       const response = yield call(fetchWorkApprovalList, payload)
       if (response && response.code === 200) {
@@ -127,7 +129,7 @@ export default {
         })
       }
     },
-    // 获取作业审批报表详情
+    // 获取危险作业管理详情
     *fetchWorkApprovalDetail({ payload }, { call, put }) {
       const response = yield call(fetchWorkApprovalDetail, payload)
       if (response && response.code === 200) {
@@ -175,6 +177,14 @@ export default {
           type: 'save',
           payload: { supplierUnits: response.data.list || [] },
         })
+      }
+    },
+    *fetchDeviceOptions({ payload }, { call, put }) {
+      const response = yield call(fetchDeviceTypes, payload);
+      const { code, data } = response || {};
+      if (code === 200) {
+        const list = data && Array.isArray(data.deviceType) ? data.deviceType : [];
+        yield put({ type: 'saveDeviceOptions', payload: list });
       }
     },
   },
@@ -238,6 +248,9 @@ export default {
           pagination,
         },
       }
+    },
+    saveDeviceOptions(state, action) {
+      return { ...state, deviceOptions: action.payload };
     },
   },
 };

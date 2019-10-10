@@ -49,6 +49,7 @@ const DEFAULT_SHOW_TYPES = [
   55, // 可燃气体失联恢复
   56, // 机械臂故障
   57, // 机械臂故障恢复
+  58, // 人脸识别报警
 ];
 
 const WATER_LABELS = {
@@ -60,7 +61,7 @@ const WATER_LABELS = {
 const ICON_LIST = [
   { icon: inspectIcon, types: [13, 18] },
   { icon: dangerIcon, types: [14, 15, 16, 17] },
-  { icon: alarmIcon, types: [1, 2, 3, 4, 7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 54, 55, 56, 57] },
+  { icon: alarmIcon, types: [1, 2, 3, 4, 7, 9, 11, 32, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 54, 55, 56, 57, 58] },
 ];
 
 const WATER_TITLES = {
@@ -134,6 +135,7 @@ export default class Messages extends PureComponent {
       handleClickElecMsg,
       handleClickSmoke,
       handleClickWater,
+      showCaptureDetailDrawer,
     } = this.props;
     const {
       type,
@@ -391,6 +393,15 @@ export default class Messages extends PureComponent {
           handleClickSmoke(3);
         },
         items: [{ name: '所在区域', value: area }, { name: '所在位置', value: location }],
+      },
+      "58": {
+        onClick: () => {
+          showCaptureDetailDrawer({ id: messageFlag });
+        },
+        otherTitle: `【${title}】`,
+        items: [
+          { value: messageContent },
+        ],
       },
     };
     [7, 9].forEach(item => {

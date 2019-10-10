@@ -13,6 +13,7 @@ import TimelineCard from './TimelineCard';
 import TimelineItem from './TimelineItem';
 import TotalInfo from './TotalInfo';
 import WaterCards from './WaterCards';
+import FaceRecognition from './FaceRecognition';
 
 export {
   ChartGauge,
@@ -30,4 +31,5 @@ export {
   TimelineItem,
   TotalInfo,
   WaterCards,
+  FaceRecognition,
 }
