@@ -252,6 +252,8 @@ export default class GatewayOther extends Component {
     const showMoreNetworkingInfo = networkingList.filter(({ desc }) => ['2G/3G/4G/5G', 'GPRS', 'NB-IoT'].includes(desc)).map(({ value }) => `${value}`).includes(values.networkingType);
     const isBuildingFloorEntryForm = !values.locationType || values.locationType === '0';
     const realCompanyId = values.company && values.company.key !== values.company.label ? values.company.key : undefined;
+    // 设备类型 201 数据处理设备
+    const isDataProcessingType = values && values.equipmentType === '201'
 
     return [
       {
@@ -365,6 +367,7 @@ export default class GatewayOther extends Component {
                   whitespace: true,
                   message: '设备编号不能为空',
                 },
+                isDataProcessingType ? { pattern: /^\d*$/, message: '请输入数字' } : {},
               ] : undefined,
             },
           },

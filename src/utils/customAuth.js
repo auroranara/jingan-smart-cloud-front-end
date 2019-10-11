@@ -233,9 +233,9 @@ export const AuthPopConfirm = connect(({ user }) => ({ user }))(function (props)
     codes,
     user: { currentUser: { permissionCodes } },
     children,
+    authority, // 权限 { boolean } 最高优先级
   } = props
-  const perCodes = codes || permissionCodes;
-  const auth = hasAuthority(code, perCodes);
+  const auth = authority || hasAuthority(code, codes || permissionCodes);
   return auth ? (
     <Popconfirm
       title={title}
@@ -243,7 +243,7 @@ export const AuthPopConfirm = connect(({ user }) => ({ user }))(function (props)
       okText={okText}
       cancelText={cancelText}
     >
-      {children}
+      <a>{children}</a>
     </Popconfirm>
   ) : (
       <span style={{ color: 'rgba(0,0,0,0.25)', cursor: 'not-allowed' }}>{children}</span>

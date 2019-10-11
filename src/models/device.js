@@ -61,6 +61,7 @@ import {
   fetchGatewayEquipment,
   addEquipment,
   editEquipment,
+  deleteEquipment,
   fetchEquipmentsForPage,
   fetchEquipmentDetail,
   fetchBindedSensorStatistics,
@@ -636,6 +637,13 @@ export default {
     // 编辑数据处理设备
     *editEquipment({ payload, success, error }, { call }) {
       const response = yield call(editEquipment, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 删除数据处理设备
+    *deleteEquipment({ payload, success, error }, { call }) {
+      const response = yield call(deleteEquipment, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)

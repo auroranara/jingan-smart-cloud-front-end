@@ -3,7 +3,7 @@ import { Card, Form, Input, Button, Table, Row, Col, Divider, Popconfirm, Select
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { hasAuthority, AuthA, AuthLink } from '@/utils/customAuth';
+import { hasAuthority, AuthA, AuthLink, AuthPopConfirm } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 
 const FormItem = Form.Item;
@@ -91,6 +91,23 @@ export default class NewSensorList extends Component {
     this.handleQuery()
   }
 
+
+  /**
+   * 删除传感器
+   */
+  handleDelete = (id) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'device/deleteSensor',
+      payload: { id },
+      success: () => {
+        message.success('删除传感器成功')
+        this.handleQuery()
+      },
+      error: (res) => { message.error(res ? res.msg : '删除传感器失败') },
+    })
+  }
+
   /**
    * 渲染筛选栏
    */
@@ -146,7 +163,7 @@ export default class NewSensorList extends Component {
   /**
   * 渲染表格
   */
-  renderTable = ({ deleteAuth }) => {
+  renderTable = () => {
     const {
       tableLoading,
       device: {
@@ -203,11 +220,13 @@ export default class NewSensorList extends Component {
           <Fragment>
             <AuthA code={editSensorCode} onClick={() => router.push(`/device-management/new-sensor/edit/${row.id}`)}>编辑</AuthA>
             <Divider type="vertical" />
-            {deleteAuth ? (
-              <Popconfirm title="确认要删除该传感器吗？" onConfirm={() => this.handleDelete(row)}>
-                <a>删除</a>
-              </Popconfirm>
-            ) : (<span {...noAuthStyle}>删除</span>)}
+            <AuthPopConfirm
+              code={deleteSensorCode}
+              title="确认要删除该传感器吗？"
+              onConfirm={() => this.handleDelete(row.id)}
+            >
+              删除
+            </AuthPopConfirm>
             <Divider type />
             <AuthLink code={realTimeDataCode} to={`/device-management/new-sensor/real-time-data/${row.id}`}>查看实时数据</AuthLink>
           </Fragment>
@@ -247,14 +266,12 @@ export default class NewSensorList extends Component {
 
   render() {
     const {
-      user: { currentUser: { permissionCodes } },
       device: {
         sensor: {
           pagination: { total = 0 },
         },
       },
     } = this.props
-    const deleteAuth = hasAuthority(deleteSensorCode, permissionCodes)
     return (
       <PageHeaderLayout
         title={title}
@@ -262,7 +279,7 @@ export default class NewSensorList extends Component {
         content={<span>传感器总数：{total}</span>}
       >
         {this.renderFilter()}
-        {this.renderTable({ deleteAuth })}
+        {this.renderTable()}
       </PageHeaderLayout>
     )
   }

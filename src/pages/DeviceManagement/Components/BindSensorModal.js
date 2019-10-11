@@ -96,7 +96,7 @@ const TableModal = Form.create()(props => {
           title="确认要解绑该传感器吗？"
           onConfirm={() => handleUnbind(row.id)}
         >
-          <a>解绑</a>
+          解绑
         </AuthPopConfirm>
       ),
     },

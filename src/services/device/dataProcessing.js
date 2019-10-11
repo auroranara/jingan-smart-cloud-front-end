@@ -78,6 +78,13 @@ export async function editEquipment(body) {
   })
 }
 
+// 编辑数据处理设备
+export async function deleteEquipment(params) {
+  return request(`/acloud_new/v2/monitor/dataExecuteEquipment/${params.id}`, {
+    method: 'DELETE',
+  })
+}
+
 // 获取数据处理设备列表（分页）
 export async function fetchEquipmentsForPage(params) {
   return request(`/acloud_new/v2/monitor/dataExecuteEquipmentForPage?${stringify(params)}`)

@@ -13,6 +13,7 @@ import {
   Icon,
   Tooltip,
   InputNumber,
+  Checkbox,
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
@@ -328,7 +329,7 @@ export default class AddEquipment extends Component {
   handleSubmit = () => {
     const {
       dispatch,
-      match: { params: { id } },
+      match: { params: { id, type } },
       location: { query: { companyId } },
       form: { validateFields },
     } = this.props
@@ -336,6 +337,8 @@ export default class AddEquipment extends Component {
       editingIndex,
       pointFixInfoList, // 平面图标志
     } = this.state
+    // 设备类型是否是消防主机
+    const isFireHost = +type === 101
     if (!isNaN(editingIndex)) {
       message.warning('请先保存平面图信息')
       return
@@ -346,6 +349,7 @@ export default class AddEquipment extends Component {
         ...values,
         pointFixInfoList, // 平面图标注列表
         companyId,
+        reset: isFireHost ? +values.reset : undefined,
       }
       const tag = id ? '编辑' : '新增'
       const success = () => {
@@ -434,6 +438,8 @@ export default class AddEquipment extends Component {
     }
     // 设备是否是NRV
     const isNVR = +type === 110
+    // 设备类型是否是消防主机
+    const isFireHost = +type === 101
     return (
       <Card>
         <Form>
@@ -468,7 +474,10 @@ export default class AddEquipment extends Component {
           <FormItem label="设备编号" {...formItemLayout}>
             {getFieldDecorator('code', {
               initialValue: id ? detail.code : undefined,
-              rules: [{ required: true, message: '请输入设备编号' }],
+              rules: [
+                { required: true, message: '请输入设备编号' },
+                isFireHost ? { pattern: /^\d*$/, message: '请输入数字' } : {},
+              ],
             })(
               <Input placeholder="请输入" {...itemStyles} />
             )}
@@ -508,7 +517,7 @@ export default class AddEquipment extends Component {
             {getFieldDecorator('connectGateway', {
               initialValue: id ? detail.connectGateway : 0,
             })(
-              <Radio.Group disabled={isNVR}>
+              <Radio.Group disabled={isNVR || isFireHost}>
                 <Radio value={1}>是，独立式传感器</Radio>
                 <Radio value={0}>否，非独立式，可接入多个传感器</Radio>
               </Radio.Group>
@@ -518,7 +527,7 @@ export default class AddEquipment extends Component {
             {getFieldDecorator('inheritGather', {
               initialValue: id ? detail.inheritGather : 1,
             })(
-              <Radio.Group disabled={isNVR}>
+              <Radio.Group disabled={isNVR || isFireHost}>
                 <Radio value={1}>是</Radio>
                 <Radio value={0}>否</Radio>
               </Radio.Group>
@@ -703,6 +712,15 @@ export default class AddEquipment extends Component {
               </Button>
             <FlatPic {...FlatPicProps} />
           </FormItem>
+          {isFireHost && (
+            <FormItem wrapperCol={{ span: 18, offset: 6 }}>
+              {getFieldDecorator('reset', {
+                initialValue: id ? !!detail.reset : undefined,
+              })(
+                <Checkbox>接收不到复位信息</Checkbox>
+              )}
+            </FormItem>
+          )}
         </Form>
         <Row style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button onClick={() => { router.goBack() }}>取消</Button>

@@ -2,7 +2,7 @@ import { PureComponent, Fragment } from 'react';
 import { Card, Button, Form, Input, Row, Col, Select, Divider, Table, Tag, message } from 'antd';
 import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import { AuthButton, AuthA, AuthLink } from '@/utils/customAuth';
+import { AuthButton, AuthA, AuthLink, AuthPopConfirm, hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import { dataProcessingType } from '@/utils/dict'; // 数据处理设备类型枚举
 import router from 'umi/router';
@@ -36,8 +36,9 @@ const tagSetting = [
 ]
 
 @Form.create()
-@connect(({ device, loading }) => ({
+@connect(({ device, user, loading }) => ({
   device,
+  user,
   tableLoading: loading.effects['device/fetchEquipmentsForPage'],
   sensorLoading: loading.effects['device/fetchSensors'],
 }))
@@ -244,6 +245,24 @@ export default class EquipmentList extends PureComponent {
     })
   }
 
+
+  /**
+   * 删除设备
+   */
+  handleDelete = (id) => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'device/deleteEquipment',
+      payload: { id },
+      success: () => {
+        message.success('删除设备成功')
+        this.handleQuery()
+        this.fetchBindedSensorStatistics()
+      },
+      error: (res) => { message.error(res ? res.msg : '删除设备失败') },
+    })
+  }
+
   /**
    * 渲染筛选栏
    */
@@ -336,6 +355,7 @@ export default class EquipmentList extends PureComponent {
           pagination: { total, pageNum, pageSize },
         },
       },
+      user: { currentUser: { permissionCodes } },
     } = this.props
     // 设备类型是否是NVR
     const isNVR = +type === 110
@@ -455,7 +475,13 @@ export default class EquipmentList extends PureComponent {
             )}
             <AuthLink code={editCode} to={`/device-management/data-processing/${type}/edit/${row.id}?companyId=${row.companyId}`}>编辑</AuthLink>
             <Divider type />
-            <AuthA code={deleteCode}>删除</AuthA>
+            <AuthPopConfirm
+              authority={+row.sensorCount < 1 && hasAuthority(deleteCode, permissionCodes)}
+              title="确认要删除该设备吗？"
+              onConfirm={() => this.handleDelete(row.id)}
+            >
+              删除
+            </AuthPopConfirm>
           </Fragment>
         ),
       },
