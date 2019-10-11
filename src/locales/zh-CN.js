@@ -182,6 +182,7 @@ export default {
   'menu.deviceManagement.newSensor.list': '传感器管理（新）',
   'menu.deviceManagement.newSensor.add': '新增传感器',
   'menu.deviceManagement.newSensor.edit': '编辑传感器',
+  'menu.deviceManagement.newSensor.realTimeData': '实时数据',
   'menu.deviceManagement.dataProcessing': '单位数据处理设备',
   'menu.deviceManagement.dataProcessing.listView': '单位数据处理设备',
   'menu.deviceManagement.dataProcessing.addEquipmentType': '新增单位数据处理设备类型',

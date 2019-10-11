@@ -236,13 +236,13 @@ export default class GatewayOther extends Component {
           installDate,
           installPhotoList,
           marker,
-        }={},
-        typeList=[],
-        protocolList=[],
-        networkingList=[],
-        brandList=[],
-        modelList=[],
-        operatorList=[],
+        } = {},
+        typeList = [],
+        protocolList = [],
+        networkingList = [],
+        brandList = [],
+        modelList = [],
+        operatorList = [],
       },
     } = this.props;
     const isNotCompany = +unitType !== 4;
@@ -280,7 +280,7 @@ export default class GatewayOther extends Component {
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => isNotDetail ? (
-              <Select className={styles.item} placeholder="请选择设备类型" onChange={this.handleTypeChange} allowClear  disabled={isEdit}>
+              <Select className={styles.item} placeholder="请选择设备类型" onChange={this.handleTypeChange} allowClear disabled={isEdit}>
                 {typeList.map(({ id, name }) => <Option key={id}>{name}</Option>)}
               </Select>
             ) : <span>{equipmentTypeName}</span>,
@@ -559,39 +559,39 @@ export default class GatewayOther extends Component {
                 },
               },
             ] : [
-              {
-                id: 'area',
-                label: '所在区域',
-                span: SPAN,
-                labelCol: LABEL_COL,
-                render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入所在区域" maxLength={50} /> : <span>{area}</span>,
-                options: {
-                  initialValue: area,
-                  rules: isNotDetail ? [
-                    {
-                      required: true,
-                      message: '所在区域不能为空',
-                    },
-                  ] : undefined,
+                {
+                  id: 'area',
+                  label: '所在区域',
+                  span: SPAN,
+                  labelCol: LABEL_COL,
+                  render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入所在区域" maxLength={50} /> : <span>{area}</span>,
+                  options: {
+                    initialValue: area,
+                    rules: isNotDetail ? [
+                      {
+                        required: true,
+                        message: '所在区域不能为空',
+                      },
+                    ] : undefined,
+                  },
                 },
-              },
-              {
-                id: 'location',
-                label: '位置详情',
-                span: SPAN,
-                labelCol: LABEL_COL,
-                render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入位置详情" maxLength={50} /> : <span>{location}</span>,
-                options: {
-                  initialValue: location,
-                  rules: isNotDetail ? [
-                    {
-                      required: true,
-                      message: '位置详情不能为空',
-                    },
-                  ] : undefined,
+                {
+                  id: 'location',
+                  label: '位置详情',
+                  span: SPAN,
+                  labelCol: LABEL_COL,
+                  render: () => isNotDetail ? <Input className={styles.item} placeholder="请输入位置详情" maxLength={50} /> : <span>{location}</span>,
+                  options: {
+                    initialValue: location,
+                    rules: isNotDetail ? [
+                      {
+                        required: true,
+                        message: '位置详情不能为空',
+                      },
+                    ] : undefined,
+                  },
                 },
-              },
-            ]),
+              ]),
           ],
         },
         {
@@ -791,7 +791,7 @@ export default class GatewayOther extends Component {
       gateway: {
         detail: {
           id,
-        }={},
+        } = {},
       },
     } = this.props;
     const { validateFieldsAndScroll } = this.form;
@@ -810,9 +810,9 @@ export default class GatewayOther extends Component {
           companyId: +unitType !== 4 ? company.key : unitId,
           buildingId,
           floorId,
-          installDate: +installDate.startOf('day'),
-          cardExpireDate: +cardExpireDate.startOf('day'),
-          productDate: +productDate.startOf('day'),
+          installDate: installDate ? moment(installDate).startOf('day') : undefined,
+          cardExpireDate: cardExpireDate ? moment(cardExpireDate).startOf('day') : undefined,
+          productDate: productDate ? moment(productDate).startOf('day') : undefined,
           pointFixInfoList: marker.map(({ id: fixImgId, ichnographyType: imgType, xNum: xnum, yNum: ynum }) => ({ fixImgId, imgType, xnum, ynum })),
           ...rest,
         };
@@ -888,8 +888,8 @@ export default class GatewayOther extends Component {
                 {type !== 'detail' ? (
                   <Button type="primary" onClick={this.handleSubmitButtonClick}>提交</Button>
                 ) : (
-                  <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
-                )}
+                    <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
+                  )}
               </Fragment>
             }
           />

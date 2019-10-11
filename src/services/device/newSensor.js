@@ -49,3 +49,9 @@ export async function unbindSensor(body) {
     body,
   })
 }
+
+
+// 获取传感器实时数据
+export async function fetchRealTimeData(params) {
+  return request(`/acloud_new/v2/monitor/sensorDto/${params.id}`)
+}

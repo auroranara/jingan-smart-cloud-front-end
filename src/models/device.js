@@ -45,6 +45,7 @@ import {
   deleteSensor,
   bindSensor,
   unbindSensor,
+  fetchRealTimeData,
 } from '@/services/device/newSensor'
 import {
   fetchCompaniesForPage, // 获取数据处理设备企业列表
@@ -200,6 +201,8 @@ export default {
       pagination: defaultPagination,
     },
     bindedSensorCount: 0, // 已绑定传感器数量
+    // 传感器实时数据
+    realTimeData: {},
   },
   effects: {
     // 获取监测类型列表树
@@ -679,6 +682,16 @@ export default {
         yield put({
           type: 'save',
           payload: { bindedSensorCount: response.data || 0 },
+        })
+      }
+    },
+    // 获取传感器实时数据
+    *fetchRealTimeData({ payload }, { call, put }) {
+      const response = yield call(fetchRealTimeData, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { realTimeData: response.data || {} },
         })
       }
     },

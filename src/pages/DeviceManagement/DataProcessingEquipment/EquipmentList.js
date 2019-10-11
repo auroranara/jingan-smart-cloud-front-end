@@ -19,7 +19,7 @@ const {
         edit: editCode,
         delete: deleteCode,
         bindSensor: bindSensorCode,
-        // unbindSensor: unbindSensorCode,
+        unbindSensor: unbindSensorCode,
       },
     },
     newSensor: {
@@ -89,7 +89,7 @@ export default class EquipmentList extends PureComponent {
   }
 
   /**
-* 获取可绑定传感器列表
+* 获取已绑定传感器列表
 */
   queryBindedSensors = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
     const {
@@ -339,6 +339,8 @@ export default class EquipmentList extends PureComponent {
     } = this.props
     // 设备类型是否是NVR
     const isNVR = +type === 110
+    // 设备类型是否是消防主机
+    const isFireHost = +type === 101
     // const title = dataProcessingType[type]
     let columns = [
       {
@@ -408,29 +410,42 @@ export default class EquipmentList extends PureComponent {
             {val}
           </span>
         ),
+      } : isFireHost ? {
+        title: '已导入点位',
+        dataIndex: 'sensorCount',
+        align: 'center',
+        width: 120,
+        render: (val, row) => (
+          <span
+            onClick={() => { }}
+            style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+          >
+            {val}
+          </span>
+        ),
       } : {
-          title: '已绑定传感器',
-          dataIndex: 'sensorCount',
-          align: 'center',
-          width: 120,
-          render: (val, row) => (
-            <span
-              onClick={() => this.handleViewBindedSensorModal(row)}
-              style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
-            >
-              {val}
-            </span>
-          ),
-        },
+            title: '已绑定传感器',
+            dataIndex: 'sensorCount',
+            align: 'center',
+            width: 120,
+            render: (val, row) => (
+              <span
+                onClick={() => val > 0 ? this.handleViewBindedSensorModal(row) : null}
+                style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+              >
+                {val}
+              </span>
+            ),
+          },
       {
         title: '操作',
         key: '操作',
         align: 'center',
         fixed: 'right',
-        width: isNVR ? 200 : 'auto',
+        width: (isNVR || isFireHost) ? 200 : 'auto',
         render: (val, row) => (
           <Fragment>
-            {!isNVR && (
+            {!isNVR && !isFireHost && (
               <Fragment>
                 <AuthLink code={bindSensorCode} to={`/device-management/new-sensor/add?deviceId=${row.id}`}>新增绑定传感器</AuthLink>
                 <Divider type />
@@ -498,7 +513,6 @@ export default class EquipmentList extends PureComponent {
     ]
     const bindSensorProps = {
       tag: 'bind',
-      title: '绑定传感器',
       visible: bindSensorModalVisible,
       fetch: this.querySensors,
       onCancel: () => { this.setState({ bindSensorModalVisible: false }) },
@@ -510,10 +524,10 @@ export default class EquipmentList extends PureComponent {
         selectedSensorKeys,
         onChange: this.onSensorChange,
       },
+      unbindSensorCode,
     }
     const bindedSensorProps = {
       tag: 'unbind',
-      title: '已绑定传感器',
       visible: bindedSensorModalVisible,
       fetch: this.queryBindedSensors,
       onCancel: () => { this.setState({ bindedSensorModalVisible: false }) },
@@ -521,6 +535,7 @@ export default class EquipmentList extends PureComponent {
       loading: sensorLoading,
       handleUnbind: this.handleunBindSensor,
       footer: null,
+      unbindSensorCode,
     }
     return (
       <PageHeaderLayout

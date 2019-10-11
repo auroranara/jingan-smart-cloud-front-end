@@ -3,7 +3,7 @@ import { Card, Form, Input, Button, Table, Row, Col, Divider, Popconfirm, Select
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { hasAuthority, AuthA } from '@/utils/customAuth';
+import { hasAuthority, AuthA, AuthLink } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 
 const FormItem = Form.Item;
@@ -21,9 +21,9 @@ const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
 const {
   deviceManagement: {
     newSensor: {
-      add: addSensorCode,
       edit: editSensorCode,
       delete: deleteSensorCode,
+      realTimeData: realTimeDataCode,
     },
   },
 } = codes
@@ -198,7 +198,7 @@ export default class NewSensorList extends Component {
         key: '操作',
         align: 'center',
         fixed: 'right',
-        width: 150,
+        width: 230,
         render: (val, row) => (
           <Fragment>
             <AuthA code={editSensorCode} onClick={() => router.push(`/device-management/new-sensor/edit/${row.id}`)}>编辑</AuthA>
@@ -208,6 +208,8 @@ export default class NewSensorList extends Component {
                 <a>删除</a>
               </Popconfirm>
             ) : (<span {...noAuthStyle}>删除</span>)}
+            <Divider type />
+            <AuthLink code={realTimeDataCode} to={`/device-management/new-sensor/real-time-data/${row.id}`}>查看实时数据</AuthLink>
           </Fragment>
         ),
       },
@@ -246,13 +248,18 @@ export default class NewSensorList extends Component {
   render() {
     const {
       user: { currentUser: { permissionCodes } },
+      device: {
+        sensor: {
+          pagination: { total = 0 },
+        },
+      },
     } = this.props
     const deleteAuth = hasAuthority(deleteSensorCode, permissionCodes)
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={<span>传感器总数：</span>}
+        content={<span>传感器总数：{total}</span>}
       >
         {this.renderFilter()}
         {this.renderTable({ deleteAuth })}

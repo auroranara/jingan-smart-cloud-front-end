@@ -9,19 +9,9 @@ import {
   Tag,
 } from 'antd';
 import { AuthPopConfirm } from '@/utils/customAuth';
-import codes from '@/utils/codes';
 
 const FormItem = Form.Item;
 
-const {
-  deviceManagement: {
-    dataProcessing: {
-      device: {
-        unbindSensor: unbindSensorCode,
-      },
-    },
-  },
-} = codes
 const defaultPageSize = 10;
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
@@ -75,6 +65,7 @@ const TableModal = Form.create()(props => {
       },
     },
     handleUnbind, // 解绑传感器
+    unbindSensorCode, // 解绑传感器权限
     ...resProps
   } = props
   // 查询传感器列表
@@ -112,7 +103,7 @@ const TableModal = Form.create()(props => {
   ]
   return (
     <Modal
-      title={title}
+      title={title || (tag === 'bind' && '绑定传感器') || (tag === 'unbind' && '已绑定传感器')}
       width={900}
       visible={visible}
       destroyOnClose={true}

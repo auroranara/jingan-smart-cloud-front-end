@@ -96,7 +96,7 @@ export default class GatewayList extends Component {
 
   showBinding = (data) => {
     const { getBindingList } = this.props;
-    getBindingList({ gateway_equipment: data.id });
+    getBindingList({ gatewayEquipment: data.id });
     this.setState({
       visible: true,
       data,
@@ -177,7 +177,7 @@ export default class GatewayList extends Component {
         },
       },
       gateway: {
-        typeList=[],
+        typeList = [],
       },
       getList,
     } = this.props;
@@ -189,7 +189,7 @@ export default class GatewayList extends Component {
         label: '单位名称',
         transform: value => value.trim(),
         render: _this => <Input placeholder="请输入单位名称" onPressEnter={_this.handleSearch} maxLength={50} />,
-      }]: []),
+      }] : []),
       {
         id: 'equipmentType',
         label: '设备类型',
@@ -221,13 +221,13 @@ export default class GatewayList extends Component {
       gateway: {
         typeList,
         list: {
-          list=[],
+          list = [],
           pagination: {
-            pageSize=DEFAULT_PAGE_SIZE,
-            pageNum=DEFAULT_PAGE_NUM,
-            total=0,
-          }={},
-        }={},
+            pageSize = DEFAULT_PAGE_SIZE,
+            pageNum = DEFAULT_PAGE_NUM,
+            total = 0,
+          } = {},
+        } = {},
       },
       user: {
         currentUser: {
@@ -304,8 +304,8 @@ export default class GatewayList extends Component {
                 <span className={styles.operation}>删除</span>
               </Popconfirm>
             ) : (
-              <span className={classNames(styles.operation, styles.disabled)}>删除</span>
-            )}
+                <span className={classNames(styles.operation, styles.disabled)}>删除</span>
+              )}
           </Fragment>
         ),
         align: 'center',
@@ -347,12 +347,12 @@ export default class GatewayList extends Component {
     const {
       gateway: {
         bindingList: {
-          list=[],
+          list = [],
           pagination: {
-            total=0,
-            pageSize=DEFAULT_PAGE_SIZE,
-            pageNum=DEFAULT_PAGE_NUM,
-          }={},
+            total = 0,
+            pageSize = DEFAULT_PAGE_SIZE,
+            pageNum = DEFAULT_PAGE_NUM,
+          } = {},
         },
       },
       loadingBinding,
@@ -408,34 +408,33 @@ export default class GatewayList extends Component {
         visible={visible}
         onCancel={this.hideBinding}
         footer={null}
-        width={600}
+        width={800}
         className={styles.modal}
         zIndex={9999}
       >
-        <Spin spinning={!!loadingBinding}>
-          <Table
-            className={styles.table}
-            dataSource={list || []}
-            columns={columns}
-            rowKey="id"
-            scroll={{
-              x: true,
-            }}
-            pagination={{
-              current: pageNum,
-              pageSize,
-              total,
-              pageSizeOptions: ['5', '10', '15', '20'],
-              // showTotal: total => `共 ${total} 条`,
-              showQuickJumper: true,
-              showSizeChanger: true,
-              onChange: this.handleBindingChange,
-              onShowSizeChange: (num, size) => {
-                this.handleBindingChange(1, size);
-              },
-            }}
-          />
-        </Spin>
+        <Table
+          className={styles.table}
+          dataSource={list || []}
+          columns={columns}
+          loading={loadingBinding}
+          rowKey="id"
+          scroll={{
+            x: true,
+          }}
+          pagination={{
+            current: pageNum,
+            pageSize,
+            total,
+            pageSizeOptions: ['5', '10', '15', '20'],
+            // showTotal: total => `共 ${total} 条`,
+            showQuickJumper: true,
+            showSizeChanger: true,
+            onChange: this.handleBindingChange,
+            onShowSizeChange: (num, size) => {
+              this.handleBindingChange(1, size);
+            },
+          }}
+        />
       </Modal>
     );
   }
@@ -445,10 +444,10 @@ export default class GatewayList extends Component {
       gateway: {
         list: {
           pagination: {
-            total=0,
-          }={},
-        }={},
-      }={},
+            total = 0,
+          } = {},
+        } = {},
+      } = {},
       user: {
         currentUser: {
           unitType,

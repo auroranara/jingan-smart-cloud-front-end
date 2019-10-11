@@ -1978,6 +1978,13 @@ module.exports = env => {
                   code: 'deviceManagement.newSensor.edit',
                   component: './DeviceManagement/NewSensor/AddSensor',
                 },
+                // 实时数据
+                {
+                  path: '/device-management/new-sensor/real-time-data/:id',
+                  name: 'realTimeData',
+                  code: 'deviceManagement.newSensor.realTimeData',
+                  component: './DeviceManagement/NewSensor/RealTimeData',
+                },
               ],
             },
             // 单位数据处理设备

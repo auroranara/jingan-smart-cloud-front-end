@@ -144,6 +144,7 @@ export default {
       add: 'deviceManagement.newSensor.add',
       edit: 'deviceManagement.newSensor.edit',
       delete: 'deviceManagement.newSensor.delete',
+      realTimeData: 'deviceManagement.newSensor.realTimeData',
     },
     dataProcessing: {
       listView: 'deviceManagement.dataProcessing.companyList',
@@ -451,6 +452,8 @@ export default {
       edit: 'baseInfo.storehouse.edit',
       detail: 'baseInfo.storehouse.detail',
       delete: 'baseInfo.storehouse.delete',
+      bindSensor: 'baseInfo.storehouse.bindSensor',
+      unbindSensor: 'baseInfo.storehouse.unbindSensor',
     },
     // 物料信息
     materials: {
@@ -481,6 +484,8 @@ export default {
       add: 'baseInfo.reservoirRegionManagement.add',
       edit: 'baseInfo.reservoirRegionManagement.edit',
       delete: 'baseInfo.reservoirRegionManagement.delete',
+      bindSensor: 'baseInfo.reservoirRegionManagement.bindSensor',
+      unbindSensor: 'baseInfo.reservoirRegionManagement.unbindSensor',
     },
     // 重大危险源
     majorHazard: {
