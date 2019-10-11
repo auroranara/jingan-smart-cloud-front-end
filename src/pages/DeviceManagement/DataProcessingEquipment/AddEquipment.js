@@ -94,15 +94,15 @@ export default class AddEquipment extends Component {
           brand,
           gatewayEquipment,
           gatewayEquipmentCode,
+          reset,
         }) => {
           this.setState({
             pointFixInfoList,
             gatewayEquipment: { id: gatewayEquipment, code: gatewayEquipmentCode },
           }, () => {
-            setFieldsValue({ buildingId, floorId })
+            setFieldsValue({ buildingId, floorId });
           })
-          companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
-          buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } })
+          buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
           this.fetchModels({ payload: { equipmentType: type, brand } })
         },
       })
@@ -715,7 +715,8 @@ export default class AddEquipment extends Component {
           {isFireHost && (
             <FormItem wrapperCol={{ span: 18, offset: 6 }}>
               {getFieldDecorator('reset', {
-                initialValue: id ? !!detail.reset : undefined,
+                valuePropName: 'checked',
+                initialValue: id ? !!detail.reset : false,
               })(
                 <Checkbox>接收不到复位信息</Checkbox>
               )}

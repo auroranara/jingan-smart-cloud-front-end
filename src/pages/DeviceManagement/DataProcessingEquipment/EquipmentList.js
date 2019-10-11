@@ -419,7 +419,7 @@ export default class EquipmentList extends PureComponent {
       },
       isNVR ? {
         title: '已绑定摄像头',
-        dataIndex: 'sensorCount',
+        dataIndex: 'videoCount',
         align: 'center',
         width: 120,
         render: (val, row) => (
@@ -432,7 +432,7 @@ export default class EquipmentList extends PureComponent {
         ),
       } : isFireHost ? {
         title: '已导入点位',
-        dataIndex: 'sensorCount',
+        dataIndex: 'pointCount',
         align: 'center',
         width: 120,
         render: (val, row) => (
