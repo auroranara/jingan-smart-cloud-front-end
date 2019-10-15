@@ -417,7 +417,7 @@ export default class AddEquipment extends Component {
       gatewayEquipment,
     } = this.state
 
-    const { inheritGather, networkingType, locationType } = getFieldsValue()
+    const { inheritGather, networkingType, locationType, connectGateway } = getFieldsValue()
     const FlatPicProps = {
       visible: picModalVisible,
       onCancel: () => { this.setState({ picModalVisible: false }) },
@@ -461,14 +461,6 @@ export default class AddEquipment extends Component {
               <Select className={styles.item} placeholder="请选择型号" {...itemStyles}>
                 {modelList.map((data) => <Option key={data.id} data={data}>{data.name}</Option>)}
               </Select>
-            )}
-          </FormItem>
-          <FormItem label="设备名称" {...formItemLayout}>
-            {getFieldDecorator('name', {
-              initialValue: id ? detail.name : undefined,
-              rules: [{ required: true, message: '请输入设备名称' }],
-            })(
-              <Input placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="设备编号" {...formItemLayout}>
@@ -523,6 +515,16 @@ export default class AddEquipment extends Component {
               </Radio.Group>
             )}
           </FormItem>
+          {connectGateway === 1 && (
+            <FormItem label="监测点名称" {...formItemLayout}>
+              {getFieldDecorator('name', {
+                initialValue: id ? detail.name : undefined,
+                rules: [{ required: true, message: '请输入监测点名称' }],
+              })(
+                <Input placeholder="请输入" {...itemStyles} />
+              )}
+            </FormItem>
+          )}
           <FormItem label="是否接入网关设备" {...formItemLayout}>
             {getFieldDecorator('inheritGather', {
               initialValue: id ? detail.inheritGather : 1,

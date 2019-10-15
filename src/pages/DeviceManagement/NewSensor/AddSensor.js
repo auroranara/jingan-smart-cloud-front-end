@@ -671,6 +671,16 @@ export default class AddNewSensor extends Component {
                   </Button>
                 </Upload>
               </FormItem>
+              {+equipmentDetail.connectGateway === 0 && (
+                <FormItem label="监测点名称" {...formItemLayout}>
+                  {getFieldDecorator('name', {
+                    initialValue: id ? detail.name : undefined,
+                    rules: [{ required: true, message: '请输入监测点名称' }],
+                  })(
+                    <Input placeholder="请输入" {...itemStyles} />
+                  )}
+                </FormItem>
+              )}
               <FormItem label="区域位置录入方式" {...formItemLayout}>
                 {getFieldDecorator('locationType', {
                   initialValue: id ? detail.locationType : 0,

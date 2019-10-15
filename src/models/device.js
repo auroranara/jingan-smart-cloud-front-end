@@ -63,6 +63,7 @@ import {
   editEquipment,
   deleteEquipment,
   fetchEquipmentsForPage,
+  fetchEquipmentsForAll,
   fetchEquipmentDetail,
   fetchBindedSensorStatistics,
 } from '@/services/device/dataProcessing';
@@ -651,6 +652,16 @@ export default {
     // 获取数据处理设备--设备列表（分页）
     *fetchEquipmentsForPage({ payload }, { call, put }) {
       const response = yield call(fetchEquipmentsForPage, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveEquipments',
+          payload: response.data,
+        })
+      }
+    },
+    // 获取数据处理设备--设备列表（全部）
+    *fetchEquipmentsForAll({ payload }, { call, put }) {
+      const response = yield call(fetchEquipmentsForAll, payload)
       if (response && response.code === 200) {
         yield put({
           type: 'saveEquipments',

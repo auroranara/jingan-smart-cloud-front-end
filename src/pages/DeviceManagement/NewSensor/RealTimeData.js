@@ -65,6 +65,7 @@ export default class RealTimeData extends Component {
     })
   }
 
+  formatTime = (time, formatter = 'YYYY-MM-DD HH:mm:ss') => moment(time).format(formatter)
 
   /**
    * 实时数据表格
@@ -93,7 +94,7 @@ export default class RealTimeData extends Component {
         title: '实时值',
         dataIndex: 'code',
         align: 'center',
-        render: (val, { realValue, paramUnit }) => (<span>{realValue ? realValue + paramUnit : '——'}</span>),
+        render: (val, { realValue, paramUnit }) => (<span>{typeof realValue === 'number' ? realValue + paramUnit : '——'}</span>),
       },
       {
         title: '实时状态',
@@ -137,7 +138,7 @@ export default class RealTimeData extends Component {
         title: '发生时间',
         dataIndex: 'happenTime',
         align: 'center',
-        render: (val) => (<span>{val ? moment(val).format('YYYY-MM-DD hh:mm:ss') : ''}</span>),
+        render: (val) => (<span>{val ? this.formatTime(val) : ''}</span>),
       },
     ]
     return list.length ? (
@@ -156,6 +157,8 @@ export default class RealTimeData extends Component {
       device: {
         realTimeData: {
           linkStatus, // 连接状态 -1 失联 0正常 null未知
+          dataUpdateTime, // 更新时间
+          linkStatusUpdateTime, // 失联时间
         } = {},
       },
     } = this.props
@@ -175,6 +178,16 @@ export default class RealTimeData extends Component {
             <FormItem label="连接状态" {...formItemLayout}>
               {(linkStatus === -1 && '失联') || (linkStatus === 0 && '正常') || '未知'}
             </FormItem>
+            {linkStatus === 0 && (
+              <FormItem label="数据更新时间" {...formItemLayout}>
+                {dataUpdateTime ? this.formatTime(dataUpdateTime) : '暂无数据'}
+              </FormItem>
+            )}
+            {linkStatus === -1 && (
+              <FormItem label="失联时间" {...formItemLayout}>
+                {linkStatusUpdateTime ? this.formatTime(linkStatusUpdateTime) : '暂无数据'}
+              </FormItem>
+            )}
             <FormItem label="故障状态" {...formItemLayout}>
               {this.renderStatusTable()}
             </FormItem>

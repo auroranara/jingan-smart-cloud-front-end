@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import {
   Form,
   Modal,
@@ -7,11 +8,21 @@ import {
   Col,
   Input,
   Tag,
+  Divider,
 } from 'antd';
-import { AuthPopConfirm } from '@/utils/customAuth';
+import { AuthPopConfirm, AuthA } from '@/utils/customAuth';
+import codes from '@/utils/codes';
+import router from 'umi/router';
 
 const FormItem = Form.Item;
 
+const {
+  deviceManagement: {
+    newSensor: {
+      edit: editSensorCode,
+    },
+  },
+} = codes
 const defaultPageSize = 10;
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
@@ -66,6 +77,7 @@ const TableModal = Form.create()(props => {
     },
     handleUnbind, // 解绑传感器
     unbindSensorCode, // 解绑传感器权限
+    canEditSensor = false, // 操作中能否跳转到编辑传感器页面
     ...resProps
   } = props
   // 查询传感器列表
@@ -91,13 +103,25 @@ const TableModal = Form.create()(props => {
       align: 'center',
       width: 150,
       render: (val, row) => (
-        <AuthPopConfirm
-          code={unbindSensorCode}
-          title="确认要解绑该传感器吗？"
-          onConfirm={() => handleUnbind(row.id)}
-        >
-          解绑
+        <Fragment>
+          <AuthPopConfirm
+            code={unbindSensorCode}
+            title="确认要解绑该传感器吗？"
+            onConfirm={() => handleUnbind(row.id)}
+          >
+            解绑
         </AuthPopConfirm>
+          {canEditSensor && (
+            <Fragment>
+              <Divider type="vertical" />
+              <AuthA code={editSensorCode} onClick={() => {
+                const winHandler = window.open('', '_blank');
+                winHandler.location.href = `${window.publicPath}#/device-management/new-sensor/edit/${row.id}`;
+                winHandler.focus();
+              }}>编辑</AuthA>
+            </Fragment>
+          )}
+        </Fragment>
       ),
     },
   ]

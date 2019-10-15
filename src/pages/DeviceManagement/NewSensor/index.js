@@ -205,8 +205,8 @@ export default class NewSensorList extends Component {
         width: 150,
       },
       {
-        title: '位置详情',
-        dataIndex: 'location',
+        title: '监测点名称',
+        dataIndex: 'pointName',
         align: 'center',
         width: 200,
       },

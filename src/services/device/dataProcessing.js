@@ -90,6 +90,11 @@ export async function fetchEquipmentsForPage(params) {
   return request(`/acloud_new/v2/monitor/dataExecuteEquipmentForPage?${stringify(params)}`)
 }
 
+// 获取数据处理设备列表（全部）
+export async function fetchEquipmentsForAll(params) {
+  return request(`/acloud_new/v2/monitor/dataExecuteEquipment?${stringify(params)}`)
+}
+
 // 获取处理设备详情
 export async function fetchEquipmentDetail(params) {
   return request(`/acloud_new/v2/monitor/dataExecuteEquipment/${params.id}`)

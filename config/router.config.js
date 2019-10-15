@@ -2022,20 +2022,20 @@ module.exports = env => {
                   path: '/device-management/data-processing/list/:type',
                   name: 'deviceList',
                   code: 'deviceManagement.dataProcessing.device.list',
-                  component: '/DeviceManagement/DataProcessingEquipment/EquipmentList',
+                  component: './DeviceManagement/DataProcessingEquipment/EquipmentList',
                 },
                 // 新增设备
                 {
                   path: '/device-management/data-processing/:type/add',
                   name: 'addDevice',
                   code: 'deviceManagement.dataProcessing.device.add',
-                  component: '/DeviceManagement/DataProcessingEquipment/AddEquipment',
+                  component: './DeviceManagement/DataProcessingEquipment/AddEquipment',
                 },
                 {
                   path: '/device-management/data-processing/:type/edit/:id',
                   name: 'editDevice',
                   code: 'deviceManagement.dataProcessing.device.edit',
-                  component: '/DeviceManagement/DataProcessingEquipment/AddEquipment',
+                  component: './DeviceManagement/DataProcessingEquipment/AddEquipment',
                 },
               ],
             },

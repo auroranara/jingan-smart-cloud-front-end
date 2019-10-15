@@ -362,6 +362,7 @@ export default class EquipmentList extends PureComponent {
     // 设备类型是否是消防主机
     const isFireHost = +type === 101
     // const title = dataProcessingType[type]
+    const deviceType = isNVR ? '推流主机' : '网关设备'
     let columns = [
       {
         title: '基本信息',
@@ -394,29 +395,23 @@ export default class EquipmentList extends PureComponent {
       {
         title: '区域位置',
         key: '区域位置',
+        dataIndex: 'areaLocation',
         align: 'center',
         width: 200,
-        render: (val, { area, location }) => `${area || ''}${location || ''}`,
       },
       {
-        title: '网关设备',
+        title: deviceType,
         key: '网关设备',
         align: 'center',
         width: 250,
-        render: (val, { inheritGather, gatewayEquipment }) => inheritGather ? (
+        render: (val, { inheritGather, gatewayEquipmentCode }) => inheritGather ? (
           <div style={{ textAlign: 'left' }}>
             <div>已接入</div>
-            <div>网关设备编号：{gatewayEquipment}</div>
+            <div>{deviceType}编号：{gatewayEquipmentCode}</div>
           </div>
         ) : '--',
       },
-      {
-        title: '集成数据采集',
-        dataIndex: 'connectGateway',
-        align: 'center',
-        width: 120,
-        render: (val) => (val === 1 && '是，独立式') || (+val === 0 && '否，非独立式') || '暂无数据',
-      },
+
       isNVR ? {
         title: '已绑定摄像头',
         dataIndex: 'videoCount',
@@ -486,6 +481,16 @@ export default class EquipmentList extends PureComponent {
         ),
       },
     ]
+
+    if (!isNVR) {
+      columns.splice(4, 1, {
+        title: '集成数据采集',
+        dataIndex: 'connectGateway',
+        align: 'center',
+        width: 120,
+        render: (val) => (val === 1 && '是，独立式') || (+val === 0 && '否，非独立式') || '暂无数据',
+      })
+    }
 
     return (
       <Card style={{ marginTop: '24px' }}>
@@ -562,6 +567,7 @@ export default class EquipmentList extends PureComponent {
       handleUnbind: this.handleunBindSensor,
       footer: null,
       unbindSensorCode,
+      canEditSensor: true,
     }
     return (
       <PageHeaderLayout
