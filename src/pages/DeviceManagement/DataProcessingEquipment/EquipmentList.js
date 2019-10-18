@@ -7,7 +7,10 @@ import codes from '@/utils/codes';
 import { dataProcessingType } from '@/utils/dict'; // 数据处理设备类型枚举
 import router from 'umi/router';
 import moment from 'moment';
+// 绑定/解绑传感器弹窗
 import BindSensorModal from '@/pages/DeviceManagement/Components/BindSensorModal';
+// 摄像头弹窗
+import CameraModal from '@/pages/DeviceManagement/Components/CameraModal';
 
 const FormItem = Form.Item;
 
@@ -36,11 +39,13 @@ const tagSetting = [
 ]
 
 @Form.create()
-@connect(({ device, user, loading }) => ({
+@connect(({ device, user, videoMonitor, loading }) => ({
   device,
   user,
+  videoMonitor,
   tableLoading: loading.effects['device/fetchEquipmentsForPage'],
   sensorLoading: loading.effects['device/fetchSensors'],
+  cameraLoading: loading.effects['videoMonitor/fetchEquipmentList'],
 }))
 export default class EquipmentList extends PureComponent {
 
@@ -49,6 +54,7 @@ export default class EquipmentList extends PureComponent {
     bindedSensorModalVisible: false, // 已绑定传感器弹窗
     deviceInfo: {}, // 设备信息
     selectedSensorKeys: [], // 选择的传感器key数组
+    cameraModalVisible: false, // 已绑定摄像头弹窗
   }
 
   componentDidMount() {
@@ -139,6 +145,27 @@ export default class EquipmentList extends PureComponent {
     dispatch({
       type: 'device/fetchEquipmentsForPage',
       payload: { pageNum, pageSize, companyId, equipmentType: type, ...values },
+    })
+  }
+
+  /**
+   * 获取已绑定摄像头列表
+   */
+  fetchCameraList = (values) => {
+    const {
+      dispatch,
+      location: { query: { companyId } },
+    } = this.props
+    const { deviceInfo } = this.state
+    dispatch({
+      type: 'videoMonitor/fetchEquipmentList',
+      payload: {
+        // pageNum: 1,
+        // pageSize: defaultPageSize,
+        companyId,
+        nvr: deviceInfo.id,
+        ...values,
+      },
     })
   }
 
@@ -260,6 +287,17 @@ export default class EquipmentList extends PureComponent {
         this.fetchBindedSensorStatistics()
       },
       error: (res) => { message.error(res ? res.msg : '删除设备失败') },
+    })
+  }
+
+
+  /**
+   * 点击打开已绑定摄像头弹窗
+   */
+  handleViewCamera = (deviceInfo) => {
+    this.setState({ deviceInfo }, () => {
+      this.fetchCameraList()
+      this.setState({ cameraModalVisible: true })
     })
   }
 
@@ -419,7 +457,7 @@ export default class EquipmentList extends PureComponent {
         width: 120,
         render: (val, row) => (
           <span
-            onClick={() => { }}
+            onClick={() => this.handleViewCamera(row)}
             style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
           >
             {val}
@@ -526,6 +564,7 @@ export default class EquipmentList extends PureComponent {
   render() {
     const {
       sensorLoading,
+      cameraLoading,
       match: { params: { type } },
       location: { query: { companyName = '' } },
       device: {
@@ -533,8 +572,11 @@ export default class EquipmentList extends PureComponent {
         equipment: { pagination: { total = 0 } },
         bindedSensorCount = 0,
       },
+      videoMonitor: {
+        videoData, // 摄像头
+      },
     } = this.props
-    const { bindSensorModalVisible, bindedSensorModalVisible, selectedSensorKeys } = this.state
+    const { bindSensorModalVisible, bindedSensorModalVisible, selectedSensorKeys, cameraModalVisible, deviceInfo } = this.state
     const title = dataProcessingType[type]
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
@@ -569,6 +611,14 @@ export default class EquipmentList extends PureComponent {
       unbindSensorCode,
       canEditSensor: true,
     }
+    const cameraProps = {
+      visible: cameraModalVisible,
+      fetch: this.fetchCameraList,
+      onCancel: () => { this.setState({ cameraModalVisible: false }) },
+      model: videoData,
+      loading: cameraLoading,
+      deviceInfo,
+    }
     return (
       <PageHeaderLayout
         title={title}
@@ -586,13 +636,11 @@ export default class EquipmentList extends PureComponent {
         {this.renderFilter()}
         {this.renderTable()}
         {/* 绑定已有传感器弹窗 */}
-        <BindSensorModal
-          {...bindSensorProps}
-        />
+        <BindSensorModal {...bindSensorProps} />
         {/* 已绑定传感器弹窗 */}
-        <BindSensorModal
-          {...bindedSensorProps}
-        />
+        <BindSensorModal {...bindedSensorProps} />
+        {/* 已绑定摄像头弹窗 */}
+        <CameraModal {...cameraProps} />
       </PageHeaderLayout>
     )
   }
