@@ -112,7 +112,7 @@ export default function request(url, options = {}) {
       if (status >= 404 && status < 422) {
         router.push('/exception/404');
       }
-      router.push('/exception/500');
+      // router.push('/exception/500');
       console.log(33333333333);
     });
 }
