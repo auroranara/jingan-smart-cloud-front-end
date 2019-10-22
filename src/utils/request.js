@@ -88,6 +88,7 @@ export default function request(url, options = {}) {
     })
     .catch(e => {
       const status = e.name;
+      console.log('e', e);
       if (status === 401) {
         /* eslint-disable no-underscore-dangle */
         window.g_app._store.dispatch({
