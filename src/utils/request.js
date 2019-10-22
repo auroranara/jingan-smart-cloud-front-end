@@ -89,11 +89,7 @@ export default function request(url, options = {}) {
       return response.json();
     })
     .catch(e => {
-      console.log(1111111111111111);
-
       const status = e.name;
-      console.log(222222222222);
-      console.log('e', e);
       if (status === 401) {
         /* eslint-disable no-underscore-dangle */
         window.g_app._store.dispatch({
@@ -112,7 +108,5 @@ export default function request(url, options = {}) {
       if (status >= 404 && status < 422) {
         router.push('/exception/404');
       }
-      // router.push('/exception/500');
-      console.log(33333333333);
     });
 }
