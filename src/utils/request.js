@@ -76,6 +76,8 @@ export default function request(url, options = {}) {
   return fetch(url, newOptions)
     .then(checkStatus)
     .then(response => {
+      console.log('response', response);
+
       // 如果是下载返回 blob
       if (response.headers.get('content-disposition')) {
         return response.blob();
@@ -87,7 +89,11 @@ export default function request(url, options = {}) {
       return response.json();
     })
     .catch(e => {
+      console.log(1111111111111111);
+
       const status = e.name;
+      console.log(222222222222);
+      console.log('e', e);
       if (status === 401) {
         /* eslint-disable no-underscore-dangle */
         window.g_app._store.dispatch({
@@ -107,5 +113,6 @@ export default function request(url, options = {}) {
         router.push('/exception/404');
       }
       router.push('/exception/500');
+      console.log(33333333333);
     });
 }
