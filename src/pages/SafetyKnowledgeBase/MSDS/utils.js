@@ -1,8 +1,11 @@
 import { Fragment } from 'react';
-import { Form, Input, Select } from 'antd';
+import { Button, DatePicker, Form, Input, Radio, Select } from 'antd';
+
 const { Item: FormItem } = Form;
 const { TextArea } = Input;
 const { Option } = Select;
+const { Group: RadioGroup } = Radio;
+const { RangePicker } = DatePicker;
 
 export const LIST_URL = '/safety-knowledge-base/msds/list';
 // 只能在最后面加，顺序不可以变化，不然和后台对应的类型就全部乱了
@@ -38,66 +41,102 @@ export const FORMITEM_LAYOUT = {
   },
 };
 
-function getOptions(options) {
+function getOptions(options, props=['key', 'value']) {
   if (!Array.isArray(options) || !options.length)
     return []
   const type = typeof options[0];
   if (type !== 'object')
-    return options.map((v, i) => ({ key: i, value: v }));
+    return options.map((v, i) => ({ [props[0]]: i, [props[1]]: v }));
   return options;
 }
 
-// function getValueFromEvent(e) {
-//   return e.target.value.trim();
-// }
-
 function genFormItem(field, getFieldDecorator) {
-  const { type='input', name, label, required=true, options } = field;
-  const typ = options ? 'select' : type;
-  const opts = getOptions(options);
-  const formOptions = {};
-  let component = null;
-  let placeholder;
-  let rules = [{ whitespace: true, message: `${label}不能全为空字符串` }];
-  switch(typ) {
-    case 'text':
-      placeholder = `请输入${label}`;
-      component = <TextArea placeholder={placeholder} />;
-      break;
-    case 'select':
-      placeholder = `请选择${label}`;
-      rules = [];
-      component = <Select placeholder={placeholder}>{opts.map(({ key, value }) => <Option key={key}>{value}</Option>)}</Select>;
-      break;
-    default:
-      placeholder = `请输入${label}`;
-      component = <Input placeholder={placeholder} />;
-  }
+  const { type='input', name, label, required=true, options, component: compt } = field;
 
-  rules.unshift({ required, message: `${label}不能为空` });
-  formOptions.rules = rules;
+  let child = null;
+
+  if (type === 'component')
+    child = compt;
+  else {
+    const formOptions = {};
+    const opts = getOptions(options);
+    const whiteSpaceRule = { whitespace: true, message: `${label}不能全为空字符串` };
+
+    let component = null;
+    let placeholder;
+    const rules = [];
+    switch(type) {
+      case 'text':
+        placeholder = `请输入${label}`;
+        rules.push(whiteSpaceRule);
+        component = <TextArea placeholder={placeholder} />;
+        break;
+      case 'select':
+        placeholder = `请选择${label}`;
+        component = <Select placeholder={placeholder}>{opts.map(({ key, value }) => <Option key={key}>{value}</Option>)}</Select>;
+        break;
+      case 'radio':
+        component = <RadioGroup options={getOptions(options, ['value', 'label'])} />;
+        break;
+      case 'datepicker':
+        component = <DatePicker />;
+        break;
+      case 'rangepicker':
+        component = <RangePicker />;
+        break;
+      default:
+        placeholder = `请输入${label}`;
+        rules.push(whiteSpaceRule);
+        component = <Input placeholder={placeholder} />;
+    }
+
+    rules.unshift({ required, message: `${label}不能为空` });
+    formOptions.rules = rules;
+    child = getFieldDecorator(name, formOptions)(component);
+  }
 
   return (
     <FormItem label={label} key={name}>
-      {getFieldDecorator(name, formOptions)(component)}
+      {child}
     </FormItem>
   )
 }
 
-function renderSection(section, getFieldDecorator) {
+function renderSection(section, index, getFieldDecorator) {
   const { title, fields } = section;
   return (
-    <Fragment key={title}>
-      <FormItem><p style={{ margin: 0, textAlign: 'center' }}>{title}</p></FormItem>
+    <Fragment key={title || index}>
+      {title && <FormItem><p style={{ margin: 0, textAlign: 'center', fontSize: 16 }}>{title}</p></FormItem>}
       {fields.map(field => genFormItem(field, getFieldDecorator))}
     </Fragment>
   )
 }
 
-export function renderSections(sections, getFieldDecorator) {
+function getSections(sections) {
+  if (!Array.isArray(sections) || !sections.length)
+    return [];
+
+  const first = sections[0];
+  if (!first.fields)
+    return [{ fields: sections }];
+  return sections;
+};
+
+export function renderSections(sections, getFieldDecorator, handleSubmit) {
+  const secs = getSections(sections);
+  const props = { ...FORMITEM_LAYOUT };
+  const submitBtn = handleSubmit ? (
+    <FormItem wrapperCol={{ span: 24, offset: 10 }}>
+      <Button type="primary" htmlType="submit">提交</Button>
+    </FormItem>
+  ) : null;
+
+  if (handleSubmit)
+    props.onSubmit = handleSubmit;
   return (
-    <Form {...FORMITEM_LAYOUT}>
-      {sections.map(section => renderSection(section, getFieldDecorator))}
+    <Form {...props}>
+      {secs.map((section, index) => renderSection(section, index, getFieldDecorator))}
+      {submitBtn}
     </Form>
   );
 }
