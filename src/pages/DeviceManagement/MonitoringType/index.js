@@ -142,7 +142,7 @@ const RenderModal = Form.create()(props => {
 
 @connect(({ device, loading }) => ({
   device,
-  tableLoading: loading.effects['device/fetchMonitoringTypes'],
+  tableLoading: loading.effects['device/fetchMonitoringTypeTree'],
 }))
 @Form.create()
 export default class DepartmentList extends PureComponent {
@@ -182,7 +182,7 @@ export default class DepartmentList extends PureComponent {
   getMonitoringTypes = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'device/fetchMonitoringTypes',
+      type: 'device/fetchMonitoringTypeTree',
       callback: list => {
         if (list.length === 0) return;
         let total = 0;

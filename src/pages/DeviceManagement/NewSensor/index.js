@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { hasAuthority, AuthA, AuthLink, AuthPopConfirm } from '@/utils/customAuth';
+import { monitoringObjType } from '@/utils/dict';
 import codes from '@/utils/codes';
 
 const FormItem = Form.Item;
@@ -53,6 +54,7 @@ export default class NewSensorList extends Component {
 
   componentDidMount() {
     this.handleQuery()
+    this.fetchMonitoringTypeTree()
     this.fetchMonitoringTypes()
   }
 
@@ -73,8 +75,16 @@ export default class NewSensorList extends Component {
   }
 
   /**
-* 获取监测类型列表树
-*/
+  * 获取监测类型列表树
+  */
+  fetchMonitoringTypeTree = () => {
+    const { dispatch } = this.props
+    dispatch({ type: 'device/fetchMonitoringTypeTree' })
+  }
+
+  /**
+  * 获取监测类型列表
+  */
   fetchMonitoringTypes = () => {
     const { dispatch } = this.props
     dispatch({ type: 'device/fetchMonitoringTypes' })
@@ -171,6 +181,7 @@ export default class NewSensorList extends Component {
           list = [],
           pagination: { total, pageNum, pageSize },
         },
+        monitoringTypeList, // 监测类型列表
       },
     } = this.props
     const columns = [
@@ -181,34 +192,80 @@ export default class NewSensorList extends Component {
         width: 400,
       },
       {
-        title: '品牌',
-        dataIndex: 'brandName',
+        title: '传感器编号/Token',
+        key: '传感器编号',
         align: 'center',
-        width: 150,
+        width: 250,
+        render: (val, { code, token }) => (
+          <div style={{ textAlign: 'left' }}>
+            <div>编号：{code || '暂无数据'}</div>
+            <div>Token：{token || '暂无数据'}</div>
+          </div>
+        ),
       },
       {
         title: '型号',
         dataIndex: 'modelName',
         align: 'center',
-        width: 150,
+        width: 300,
+        render: (val, { brandName, modelName, monitorType }) => {
+          const monitorItem = monitoringTypeList.find(item => item.id === monitorType) || {}
+          return (
+            <div style={{ textAlign: 'left' }}>
+              <div>监测类型：{monitorItem.name}</div>
+              <div>品牌：{brandName}</div>
+              <div>型号：{modelName}</div>
+            </div>
+          )
+        },
       },
       {
-        title: '传感器Token',
-        dataIndex: 'token',
+        title: '联网状态',
+        dataIndex: 'linkStatus',
         align: 'center',
         width: 150,
+        render: (val) => (val === -1 && '失联') || (val === 0 && '在线') || '未知',
       },
       {
-        title: '所在区域',
-        dataIndex: 'area',
+        title: '运行状态',
+        dataIndex: 'faultStatus',
         align: 'center',
         width: 150,
+        render: (val) => (val === -1 && '故障') || (val === 0 && '正常') || '未知',
+      },
+      {
+        title: '数据处理设备编号',
+        key: '数据处理设备编号',
+        align: 'center',
+        width: 300,
+        render: (val, row) => (
+          <div style={{ textAlign: 'left' }}>
+            <div>{row.dataExecuteEquipmentTypeName}</div>
+            <div>设备编号：{row.dataExecuteEquipmentCode}</div>
+          </div>
+        ),
+      },
+      {
+        title: '监测对象',
+        dataIndex: '',
+        align: 'center',
+        width: 200,
+        render: (val, { beMonitorTargetType, beMonitorTargetCode }) => {
+          const label = monitoringObjType[beMonitorTargetType]
+          return label ? (
+            <div style={{ textAlign: 'left' }}>
+              {<div>{label}</div>}
+              {<div>编号：{beMonitorTargetCode || '暂无数据'}</div>}
+            </div>
+          ) : '——'
+        },
       },
       {
         title: '监测点名称',
         dataIndex: 'pointName',
         align: 'center',
         width: 200,
+        render: (val) => val || '——',
       },
       {
         title: '操作',

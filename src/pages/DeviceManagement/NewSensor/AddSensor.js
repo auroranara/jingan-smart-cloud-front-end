@@ -138,7 +138,7 @@ export default class AddNewSensor extends Component {
             })),
           })
           model && this.fetchParameterList(model, id)
-          this.fetchMonitoringTypes()
+          this.fetchMonitoringTypeTree()
           companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
           buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } })
         },
@@ -252,9 +252,9 @@ export default class AddNewSensor extends Component {
   /**
 * 获取监测类型列表树
 */
-  fetchMonitoringTypes = () => {
+  fetchMonitoringTypeTree = () => {
     const { dispatch } = this.props
-    dispatch({ type: 'device/fetchMonitoringTypes' })
+    dispatch({ type: 'device/fetchMonitoringTypeTree' })
   }
 
   /**

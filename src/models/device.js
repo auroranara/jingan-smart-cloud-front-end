@@ -1,8 +1,9 @@
 import {
-  fetchMonitoringTypes,
+  fetchMonitoringTypeTree,
   addMonitoringTypes,
   editMonitoringTypes,
   deleteMonitoringTypes,
+  fetchMonitoringTypes,
 } from '@/services/device/monitoringType'
 import {
   fetchDeviceTypes,
@@ -117,6 +118,8 @@ export default {
     ],
     // 监测类型树
     monitoringType: [],
+    // 监测类型列表
+    monitoringTypeList: [],
     // 设备类型列表
     deviceType: {
       list: [],
@@ -208,8 +211,8 @@ export default {
   },
   effects: {
     // 获取监测类型列表树
-    *fetchMonitoringTypes({ callback }, { call, put }) {
-      const response = yield call(fetchMonitoringTypes)
+    *fetchMonitoringTypeTree({ callback }, { call, put }) {
+      const response = yield call(fetchMonitoringTypeTree)
       if (response && response.code === 200) {
         const list = response.data.list || []
         yield put({
@@ -217,6 +220,16 @@ export default {
           payload: list,
         })
         callback && callback(list)
+      }
+    },
+    // 获取监测类型列表
+    *fetchMonitoringTypes(_, { call, put }) {
+      const response = yield call(fetchMonitoringTypes)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { monitoringTypeList: response.data.list || [] },
+        })
       }
     },
     // 新增监测类型

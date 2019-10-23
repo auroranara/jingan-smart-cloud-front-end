@@ -137,7 +137,7 @@ export default class DeviceType extends PureComponent {
     const { dispatch } = this.props
     this.handleQuery()
     // 获取监测类型树
-    dispatch({ type: 'device/fetchMonitoringTypes' })
+    dispatch({ type: 'device/fetchMonitoringTypeTree' })
     this.fetchAllTags()
   }
 

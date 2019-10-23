@@ -67,7 +67,7 @@ export default class BrandModelModal extends PureComponent {
     if (snapshot) {
       this.handleQueryBrands()
       this.setState({ modelVisible: false })
-      this.fetchMonitoringTypes()
+      this.fetchMonitoringTypeTree()
     }
   }
 
@@ -107,10 +107,10 @@ export default class BrandModelModal extends PureComponent {
   /**
   * 获取监测类型列表树
   */
-  fetchMonitoringTypes = () => {
+  fetchMonitoringTypeTree = () => {
     const { dispatch } = this.props
     dispatch({
-      type: 'device/fetchMonitoringTypes',
+      type: 'device/fetchMonitoringTypeTree',
       callback: (list) => {
         const expandedTree = expandTree(list)
         this.setState({ expandedTree })

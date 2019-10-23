@@ -2,7 +2,7 @@ import request from '@/utils/request';
 // import { stringify } from 'qs';
 
 // 获取监测类型列表
-export async function fetchMonitoringTypes() {
+export async function fetchMonitoringTypeTree() {
   return request('/acloud_new/v2/monitor/monitorTypeTree')
 }
 
@@ -27,4 +27,9 @@ export async function deleteMonitoringTypes(params) {
   return request(`/acloud_new/v2/monitor/monitorType/${params.id}`, {
     method: 'DELETE',
   })
+}
+
+// 获取监测类型列表
+export async function fetchMonitoringTypes() {
+  return request('/acloud_new/v2/monitor/monitorType')
 }

@@ -199,7 +199,7 @@ export default class ModelList extends PureComponent {
 
   componentDidMount() {
     this.handleQuery()
-    this.fetchMonitoringTypes()
+    this.fetchMonitoringTypeTree()
     this.fetchMonitoringTypeDict()
   }
 
@@ -207,10 +207,10 @@ export default class ModelList extends PureComponent {
   /**
    * 获取监测类型列表树
    */
-  fetchMonitoringTypes = () => {
+  fetchMonitoringTypeTree = () => {
     const { dispatch } = this.props
     dispatch({
-      type: 'device/fetchMonitoringTypes',
+      type: 'device/fetchMonitoringTypeTree',
       callback: (list) => {
         const expandedTree = expandTree(list)
         this.setState({ expandedTree })
