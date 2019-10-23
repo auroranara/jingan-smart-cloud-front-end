@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Spin, message, InputNumber } from 'antd';
+import { Button, Spin, message } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import CompanySelect from '@/jingan-components/CompanySelect';
@@ -7,9 +7,12 @@ import CustomUpload from '@/jingan-components/CustomUpload';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
+import TrainingObjectSelect from './TrainingObjectSelect';
 import { connect } from 'dva';
 import moment from 'moment';
 import router from 'umi/router';
+import debounce from 'lodash-decorators/debounce';
+import bind from 'lodash-decorators/bind';
 import {
   EDIT_CODE,
   ADD_CODE,
@@ -88,7 +91,7 @@ export default class TrainingProgramOther extends Component {
     if ((type === 'add' && hasAddAuthority) || (type === 'edit' && hasEditAuthority) || (type === 'detail' && hasDetailAuthority)) {
       setDetail();
       if (type !== 'add') { // 不考虑id不存在的情况，由request来跳转到500
-        // getDetail && getDetail({ id });
+        getDetail && getDetail({ id });
       }
     } else {
       router.replace('/404');
@@ -132,11 +135,11 @@ export default class TrainingProgramOther extends Component {
     this.form = form;
   }
 
-  // refresh = () => { // 这个页面似乎不需要联动？这里最好使用debounce
-  //   setTimeout(() => {
-  //     this.forceUpdate();
-  //   }, 0);
-  // }
+  @bind()
+  @debounce(300)
+  refresh = () => {
+    this.forceUpdate();
+  }
 
   // 返回按钮点击事件
   handleBackButtonClick = () => {
@@ -163,10 +166,13 @@ export default class TrainingProgramOther extends Component {
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const { company, ...rest } = values;
+        const { company, range: [startDate, endDate], trainingObject, ...rest } = values;
         const payload = {
           id,
           companyId: +unitType !== 4 ? company.key : unitId,
+          startDate: startDate && startDate.format(DEFAULT_FORMAT),
+          endDate: endDate && endDate.format(DEFAULT_FORMAT),
+          trainingObject: trainingObject && trainingObject.join(','),
           ...rest,
         };
         (id ? edit : add)(payload, (isSuccess) => {
@@ -220,6 +226,7 @@ export default class TrainingProgramOther extends Component {
       user: {
         currentUser: {
           unitType,
+          unitId,
           permissionCodes,
         },
       },
@@ -239,6 +246,7 @@ export default class TrainingProgramOther extends Component {
           location,
           content,
           fileList,
+          trainingObject,
           status,
           result,
         }={},
@@ -249,7 +257,7 @@ export default class TrainingProgramOther extends Component {
     const isNotDetail = type !== 'detail';
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
     const values = this.form && this.form.getFieldsValue() || {};
-    console.log(values);
+    const realCompanyId = isNotCompany ? (values.company && values.company.key !== values.company.label ? values.company.key : companyId) : unitId;
 
     const fields = [
       {
@@ -428,6 +436,7 @@ export default class TrainingProgramOther extends Component {
               rules: isNotDetail ? [
                 {
                   required: true,
+                  type: 'object',
                   transform: v => v && v[0] && v[1],
                   message: '培训时间不能为空',
                 },
@@ -466,6 +475,23 @@ export default class TrainingProgramOther extends Component {
                   message: '培训内容不能为空',
                 },
               ]: undefined,
+            },
+          },
+          {
+            id: 'trainingObject',
+            label: '培训对象',
+            span: SPAN,
+            labelCol: LABEL_COL,
+            render: () => <TrainingObjectSelect className={styles.item} companyId={realCompanyId} disabled={!isNotDetail} />,
+            options: {
+              initialValue: trainingObject || [],
+              rules: isNotDetail ? [
+                {
+                  required: true,
+                  message: '培训对象不能为空',
+                  type: 'array',
+                },
+              ] : undefined,
             },
           },
           {
