@@ -19,9 +19,9 @@ import {
   LEVEL_CODE_MAPPER,
 } from '../EmergencyPlanHandler/config';
 import {
+  EDIT_CODE,
   TYPE_CODES,
   SECRET_CODES,
-  EDIT_CODE,
 } from '../EmergencyPlanList/config';
 import styles from './index.less';
 

@@ -3,7 +3,7 @@ import { Upload, Button, Icon, message } from 'antd';
 import { getToken } from '@/utils/authority';
 
 export default class CustomUpload extends Component {
-  handleChange = ({ fileList, file }) => {
+  handleChange = ({ fileList }) => {
     const { onChange } = this.props;
     onChange && onChange(fileList.reduce((result, item) => {
       const { uid, url, status, response, name } = item;
@@ -29,7 +29,7 @@ export default class CustomUpload extends Component {
             message.error('上传失败！');
           }
         }
-      } else {
+      } else if (status === 'error') {
         message.error('上传失败！');
       }
       return result;

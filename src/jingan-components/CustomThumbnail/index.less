@@ -1,0 +1,56 @@
+/* 缩略图 */
+.container {
+  position: relative;
+  padding: 0 24px;
+}
+.leftArrow {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+}
+.rightArrow {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+}
+.enable {
+  color: #999;
+  cursor: pointer;
+
+  &:hover {
+    color: #40a9ff;
+  }
+  &:active {
+    color: #096dd9;
+  }
+}
+.disable {
+  color: #eee !important;
+  cursor: not-allowed;
+}
+.wrapper {
+  overflow: hidden;
+}
+.list {
+  position: relative;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: left 0.5s;
+}
+.itemWrapper {
+  float: left;
+  padding: 0 8px;
+}
+.item {
+  height: 0;
+  background: transparent no-repeat center center;
+  background-size: 100% 100%;
+  border: 1px solid #dfdfdf;
+  cursor: pointer;
+}

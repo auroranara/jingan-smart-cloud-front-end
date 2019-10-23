@@ -10,7 +10,8 @@ export const LEVEL_CODE_MAPPER = v => ({
   66000: '66000 企业级应急预案',
 })[v];
 export const SPAN = {
-  sm: 16,
+  lg: 16,
+  sm: 24,
   xs: 24,
 };
 export const LABEL_COL = { span: 6 }

@@ -110,6 +110,46 @@ export default {
         alarmStrategy: 'deviceManagement.sensorModel.model.alarmStrategy',
       },
     },
+    monitoringType: {
+      listView: 'deviceManagement.monitoringType.listView',
+      add: 'deviceManagement.monitoringType.add',
+      edit: 'deviceManagement.monitoringType.edit',
+      delete: 'deviceManagement.monitoringType.delete',
+    },
+    deviceType: {
+      listView: 'deviceManagement.deviceType.listView',
+      edit: 'deviceManagement.deviceType.edit',
+    },
+    brand: {
+      listView: 'deviceManagement.brand.listView',
+      add: 'deviceManagement.brand.add',
+      edit: 'deviceManagement.brand.edit',
+      delete: 'deviceManagement.brand.delete',
+      model: {
+        listView: 'deviceManagement.brand.model.listView',
+        add: 'deviceManagement.brand.model.add',
+        edit: 'deviceManagement.brand.model.edit',
+        delete: 'deviceManagement.brand.model.delete',
+        deployParameter: 'deviceManagement.brand.model.deployParameter',
+      },
+    },
+    tagLibrary: {
+      listView: 'deviceManagement.tagLibrary.listView',
+      add: 'deviceManagement.tagLibrary.add',
+      edit: 'deviceManagement.tagLibrary.edit',
+      delete: 'deviceManagement.tagLibrary.delete',
+    },
+    newSensor: {
+      listView: 'deviceManagement.newSensor.listView',
+      add: 'deviceManagement.newSensor.add',
+      edit: 'deviceManagement.newSensor.edit',
+      delete: 'deviceManagement.newSensor.delete',
+    },
+    dataProcessing: {
+      listView: 'deviceManagement.dataProcessing.companyList',
+      addEquipmentType: 'deviceManagement.dataProcessing.addEquipmentType',
+      editEquipmentType: 'deviceManagement.dataProcessing.editEquipmentType',
+    },
   },
   videoSurveillance: {
     hikVideoTree: {
