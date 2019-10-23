@@ -9,8 +9,8 @@ const FIELDS = [
   {
     id: 'department',
     label: '部门',
-    render({ onSearch }) {
-      return <Input placeholder="请输入部门" onPressEnter={onSearch} />;
+    render({ handleSearch }) {
+      return <Input placeholder="请输入部门" onPressEnter={handleSearch} />;
     },
     transform(value) {
       return value.trim();
@@ -19,8 +19,8 @@ const FIELDS = [
   {
     id: 'name',
     label: '人员姓名',
-    render({ onSearch }) {
-      return <Input placeholder="请输入人员姓名" onPressEnter={onSearch} />;
+    render({ handleSearch }) {
+      return <Input placeholder="请输入人员姓名" onPressEnter={handleSearch} />;
     },
     transform(value) {
       return value.trim();

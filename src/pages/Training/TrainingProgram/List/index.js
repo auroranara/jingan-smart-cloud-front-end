@@ -437,6 +437,7 @@ export default class TrainingProgramList extends Component {
     return (
       <Modal
         title="关联培训结果"
+        width={800}
         visible={visible}
         onCancel={this.handleModalCancel}
         onOk={this.handleModalConfirm}
