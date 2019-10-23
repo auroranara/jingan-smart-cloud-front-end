@@ -207,10 +207,10 @@ export default class VideoMonitorList extends PureComponent {
           grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
           dataSource={list}
           renderItem={item => {
-            const { id, practicalAddress, safetyName, safetyPhone, videoCount } = item;
+            const { id, practicalAddress, safetyName, name, safetyPhone, videoCount } = item;
             return (
               <List.Item key={id}>
-                <Card title={item.name} className={styles.card}>
+                <Card title={name} className={styles.card}>
                   <Row>
                     <Col span={16}>
                       <Ellipsis tooltip lines={1} className={styles.ellipsisText}>

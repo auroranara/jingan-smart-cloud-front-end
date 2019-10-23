@@ -420,18 +420,28 @@ export default {
       add: 'emergencyManagement.emergencyEquipment.add',
       edit: 'emergencyManagement.emergencyEquipment.edit',
       detail: 'emergencyManagement.emergencyEquipment.detail',
+      delete: 'emergencyManagement.emergencyEquipment.delete',
     },
     emergencySupplies: {
       listView: 'emergencyManagement.emergencySupplies.listView',
       add: 'emergencyManagement.emergencySupplies.add',
       edit: 'emergencyManagement.emergencySupplies.edit',
       detail: 'emergencyManagement.emergencySupplies.detail',
+      delete: 'emergencyManagement.emergencySupplies.delete',
     },
     emergencyDrill: {
       listView: 'emergencyManagement.emergencyDrill.listView',
       add: 'emergencyManagement.emergencyDrill.add',
       edit: 'emergencyManagement.emergencyDrill.edit',
       detail: 'emergencyManagement.emergencyDrill.detail',
+      delete: 'emergencyManagement.emergencyDrill.delete',
+    },
+    emergencyEstimate: {
+      listView: 'emergencyManagement.emergencyEstimate.listView',
+      add: 'emergencyManagement.emergencyEstimate.add',
+      edit: 'emergencyManagement.emergencyEstimate.edit',
+      detail: 'emergencyManagement.emergencyEstimate.detail',
+      delete: 'emergencyManagement.emergencyEstimate.delete',
     },
   },
 
@@ -480,6 +490,28 @@ export default {
       add: 'baseInfo.majorHazard.add',
       edit: 'baseInfo.majorHazard.edit',
       delete: 'baseInfo.majorHazard.delete',
+    },
+
+    // 工业产品生产许可证
+    industrialProductLicence: {
+      list: 'baseInfo.industrialProductLicence.listView',
+      add: 'baseInfo.industrialProductLicence.add',
+      edit: 'baseInfo.industrialProductLicence.edit',
+      delete: 'baseInfo.industrialProductLicence.delete',
+    },
+    // 注册安全工程师管理
+    registeredEngineerManagement: {
+      list: 'baseInfo.registeredEngineerManagement.listView',
+      add: 'baseInfo.registeredEngineerManagement.add',
+      edit: 'baseInfo.registeredEngineerManagement.edit',
+      delete: 'baseInfo.registeredEngineerManagement.delete',
+    },
+    // 危险化学品企业安全许可证
+    dangerChemicalsPermit: {
+      list: 'baseInfo.dangerChemicalsPermit.listView',
+      add: 'baseInfo.dangerChemicalsPermit.add',
+      edit: 'baseInfo.dangerChemicalsPermit.edit',
+      delete: 'baseInfo.dangerChemicalsPermit.delete',
     },
   },
   safetyKnowledgeBase: {

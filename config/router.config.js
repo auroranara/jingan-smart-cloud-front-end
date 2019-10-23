@@ -814,6 +814,108 @@ module.exports = env => {
                 },
               ],
             },
+            // 工业产品生产许可证
+            {
+              name: 'industrialProductLicence',
+              code: 'baseInfo.industrialProductLicence',
+              path: '/base-info/industrial-product-licence',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/industrial-product-licence',
+                  redirect: '/base-info/industrial-product-licence/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.industrialProductLicence.listView',
+                  path: '/base-info/industrial-product-licence/list',
+                  component: './BaseInfo/IndustrialProductLicence/index',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.industrialProductLicence.add',
+                  path: '/base-info/industrial-product-licence/add',
+                  component: './BaseInfo/IndustrialProductLicence/edit',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.industrialProductLicence.edit',
+                  path: '/base-info/industrial-product-licence/edit/:id',
+                  component: './BaseInfo/IndustrialProductLicence/edit',
+                },
+              ],
+            },
+            // 注册安全工程师管理
+            {
+              name: 'registeredEngineerManagement',
+              code: 'baseInfo.registeredEngineerManagement',
+              path: '/base-info/registered-engineer-management',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/registered-engineer-management',
+                  redirect: '/base-info/registered-engineer-management/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.registeredEngineerManagement.listView',
+                  path: '/base-info/registered-engineer-management/list',
+                  component: './BaseInfo/RegisteredEngineerManagement/index',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.registeredEngineerManagement.add',
+                  path: '/base-info/registered-engineer-management/add',
+                  component: './BaseInfo/RegisteredEngineerManagement/Handle',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.registeredEngineerManagement.edit',
+                  path: '/base-info/registered-engineer-management/edit/:id',
+                  component: './BaseInfo/RegisteredEngineerManagement/Handle',
+                },
+              ],
+            },
+            // 三同时审批记录
+            {
+              name: 'threeSimultaneity',
+              code: 'baseInfo.threeSimultaneity',
+              path: '/base-info/three-simultaneity',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/three-simultaneity',
+                  redirect: '/base-info/three-simultaneity/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.threeSimultaneity.listView',
+                  path: '/base-info/three-simultaneity/list',
+                  component: './BaseInfo/ThreeSimu/TableList',
+                },
+                {
+                  name: 'view',
+                  code: 'baseInfo.threeSimultaneity.view',
+                  path: '/base-info/three-simultaneity/detail/:id',
+                  component: './BaseInfo/ThreeSimu/Edit',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.threeSimultaneity.add',
+                  path: '/base-info/three-simultaneity/add',
+                  component: './BaseInfo/ThreeSimu/Edit',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.threeSimultaneity.edit',
+                  path: '/base-info/three-simultaneity/edit/:id',
+                  component: './BaseInfo/ThreeSimu/Edit',
+                },
+              ],
+            },
           ],
         },
 
@@ -3471,6 +3573,44 @@ module.exports = env => {
                   code: 'emergencyManagement.emergencyDrill.detail',
                   name: 'detail',
                   component: './EmergencyManagement/EmergencyDrill/Detail/index',
+                },
+              ],
+            },
+            // 应急演练评估
+            {
+              path: '/emergency-management/emergency-estimate',
+              code: 'emergencyManagement.emergencyEstimate',
+              name: 'emergencyEstimate',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/emergency-management/emergency-estimate',
+                  name: 'emergencyEstimate',
+                  redirect: '/emergency-management/emergency-estimate/list',
+                },
+                {
+                  path: '/emergency-management/emergency-estimate/list',
+                  code: 'emergencyManagement.emergencyEstimate.listView',
+                  name: 'list',
+                  component: './EmergencyManagement/EmergencyEstimate/List/index',
+                },
+                {
+                  path: '/emergency-management/emergency-estimate/add',
+                  code: 'emergencyManagement.emergencyEstimate.add',
+                  name: 'add',
+                  component: './EmergencyManagement/EmergencyEstimate/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-estimate/edit/:id',
+                  code: 'emergencyManagement.emergencyEstimate.edit',
+                  name: 'edit',
+                  component: './EmergencyManagement/EmergencyEstimate/Handler/index',
+                },
+                {
+                  path: '/emergency-management/emergency-estimate/detail/:id',
+                  code: 'emergencyManagement.emergencyEstimate.detail',
+                  name: 'detail',
+                  component: './EmergencyManagement/EmergencyEstimate/Detail/index',
                 },
               ],
             },

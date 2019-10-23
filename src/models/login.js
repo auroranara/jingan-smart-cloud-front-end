@@ -42,7 +42,6 @@ export default {
           yield call(accountLoginGsafe, payload);
           reloadAuthorized();
           router.replace('/');
-          // router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
         }
         success && success();
       } else error(response.msg);
@@ -60,7 +59,6 @@ export default {
         yield call(accountLoginGsafe, payload);
         reloadAuthorized();
         router.replace('/');
-        // router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
       }
     },
 
@@ -104,7 +102,6 @@ export default {
         yield setToken(response.data.webToken);
         yield put({ type: 'user/saveCurrentUser' });
         reloadAuthorized();
-        // router.replace(unitType === 1 ? FIRE_CONTROL_URL : '/');
         router.replace('/');
         if (success) success();
       } else if (error) error();

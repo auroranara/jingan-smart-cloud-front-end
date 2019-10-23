@@ -321,8 +321,8 @@ export default class EmergencyPlanList extends Component {
           fields={FIELDS}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
-          action={hasAddAuthority && (
-            <Button type="primary" onClick={this.handleAddClick}>新增</Button>
+          action={(
+            <Button type="primary" onClick={this.handleAddClick} disabled={!hasAddAuthority}>新增</Button>
           )}
           ref={this.setFormReference}
         />
@@ -447,22 +447,22 @@ export default class EmergencyPlanList extends Component {
         fixed: list && list.length > 0 ? 'right' : false,
         render: (_, { id, status }) => (
           <Fragment>
-            {<Button type="link" className={styles.operation} onClick={this.handleViewClick} data-id={id} disabled={!hasDetailAuthority}>查看</Button>}
+            {<span className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)} onClick={hasDetailAuthority ? this.handleViewClick : undefined} data-id={id}>查看</span>}
             {+status === 1 && (hasAuditAuthority ? (
               <Popconfirm title="是否通过这个应急预案?" onConfirm={() => this.handleAuditConfirm(id)} onCancel={() => this.handleAuditCancel(id)} okText="通过" cancelText="不通过">
-                <Button type="link" className={styles.operation} disabled={!hasAuditAuthority}>审核</Button>
+                <span className={styles.operation}>审核</span>
               </Popconfirm>
             ) : (
-              <Button type="link" className={styles.operation} disabled={!hasAuditAuthority}>审核</Button>
+              <span className={classNames(styles.operation, styles.disabled)}>审核</span>
             ))}
             {+status === 2 && (hasPublishAuthority ? (
               <Popconfirm title="你确定要发布这个应急预案吗?" onConfirm={() => this.handlePublishConfirm(id)}>
-                <Button type="link" className={styles.operation} disabled={!hasPublishAuthority}>发布</Button>
+                <span className={styles.operation} disabled={!hasPublishAuthority}>发布</span>
               </Popconfirm>
             ) : (
-              <Button type="link" className={styles.operation} disabled={!hasPublishAuthority}>发布</Button>
+              <span className={classNames(styles.operation, styles.disabled)}>发布</span>
             ))}
-            {(+status === 3 || +status === 4) && <Button type="link" className={styles.operation} onClick={this.handleEditClick} data-id={id} disabled={!hasEditAuthority}>编辑</Button>}
+            {(+status === 3 || +status === 4) && <span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={hasEditAuthority ? this.handleEditClick : undefined} data-id={id}>编辑</span>}
           </Fragment>
         ),
         align: 'center',
@@ -472,7 +472,7 @@ export default class EmergencyPlanList extends Component {
         dataIndex: 'versionCount',
         fixed: list && list.length > 0 ? 'right' : false,
         render: (versionCount, item) => (
-          <Button type="link" className={styles.operation} onClick={() => this.showHistory(item)}>{versionCount || 1}</Button>
+          <span className={styles.operation} onClick={() => this.showHistory(item)}>{versionCount || 1}</span>
         ),
         align: 'center',
       },
@@ -588,7 +588,7 @@ export default class EmergencyPlanList extends Component {
         title: '详情',
         dataIndex: 'operation',
         fixed: 'right',
-        render: (_, { id }) => <Button type="link" className={styles.operation} onClick={this.handleViewClick} data-id={id} disabled={!hasDetailAuthority}>查看</Button>,
+        render: (_, { id }) => <span className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)} onClick={hasDetailAuthority ? this.handleViewClick : undefined} data-id={id}>查看</span>,
         width: 80,
         align: 'center',
       },

@@ -26,3 +26,10 @@ export async function updateEquip(params) {
 export async function equipDetail({ id }) {
   return request(`/acloud_new/v2/emergency/emergencyEquip/${id}`);
 }
+
+export async function deleteEquip(params) {
+  return request(`/acloud_new/v2/emergency/emergencyEquip`, {
+    method: 'DELETE',
+    body: params,
+  });
+}

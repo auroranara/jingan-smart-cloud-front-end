@@ -76,6 +76,8 @@ export default function request(url, options = {}) {
   return fetch(url, newOptions)
     .then(checkStatus)
     .then(response => {
+      console.log('response', response);
+
       // 如果是下载返回 blob
       if (response.headers.get('content-disposition')) {
         return response.blob();
@@ -106,6 +108,5 @@ export default function request(url, options = {}) {
       if (status >= 404 && status < 422) {
         router.push('/exception/404');
       }
-      router.push('/exception/500');
     });
 }
