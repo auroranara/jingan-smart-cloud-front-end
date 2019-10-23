@@ -20,6 +20,10 @@ import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import moment from 'moment';
+import { generateEnum } from '@/utils/dict';
+import styles from './RealTimeData.less';
+
+import logoLocation from '@/assets/logo-location.svg';
 
 const title = '实时数据'
 const FormItem = Form.Item;
@@ -28,7 +32,24 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
-const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
+const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
+const statusStyle = [
+  {},
+  { filter: 'hue-rotate(190deg)' },
+  { filter: 'invert(1) hue-rotate(-20deg)' },
+  { filter: 'grayscale(1)' },
+];
+const numColor = ['rgb(48,179,233)', 'rgb(27,137,60)', 'rgb(227,66,63)', 'rgb(155,155,155)'];
+const logoItemWrapper = {
+  sm: 12,
+  md: 8,
+  lg: 6,
+}
+const descWrapper = {
+  sm: 24,
+  md: 12,
+  lg: 8,
+}
 
 @connect(({ device }) => ({
   device,
@@ -159,44 +180,105 @@ export default class RealTimeData extends Component {
           linkStatus, // 连接状态 -1 失联 0正常 null未知
           dataUpdateTime, // 更新时间
           linkStatusUpdateTime, // 失联时间
+          code,
+          companyName,
+          pointAreaLocation, // 地址
+          faultStatus, // 运行状态
+          faultStatusList = [], // 故障列表
+          sensorMonitorParamList = [],
         } = {},
       },
-    } = this.props
+    } = this.props;
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '设备管理', name: '设备管理' },
       { title: '传感器管理', name: '传感器管理', href: '/device-management/new-sensor/list' },
       { title, name: title },
-    ]
+    ];
+    // 联网状态、运行状态
+    const linkLabel = (linkStatus === -1 && `失联（${this.formatTime(linkStatusUpdateTime)}）`) || (linkStatus === 0 && '在线') || '未知';
+    const runningLabel = (faultStatus === -1 && '故障') || (faultStatus === 0 && '正常') || '未知';
+
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
       >
-        <Card>
-          <Form>
-            <FormItem label="连接状态" {...formItemLayout}>
-              {(linkStatus === -1 && '失联') || (linkStatus === 0 && '正常') || '未知'}
-            </FormItem>
-            {linkStatus === 0 && (
-              <FormItem label="数据更新时间" {...formItemLayout}>
-                {dataUpdateTime ? this.formatTime(dataUpdateTime) : '暂无数据'}
-              </FormItem>
-            )}
-            {linkStatus === -1 && (
-              <FormItem label="失联时间" {...formItemLayout}>
-                {linkStatusUpdateTime ? this.formatTime(linkStatusUpdateTime) : '暂无数据'}
-              </FormItem>
-            )}
-            <FormItem label="故障状态" {...formItemLayout}>
-              {this.renderStatusTable()}
-            </FormItem>
-            <FormItem label="实时数据" {...formItemLayout}>
-              {this.renderRealTimeDataTable()}
-            </FormItem>
-
-          </Form>
-        </Card>
+        <div className={styles.realTimeContainer}>
+          <Card>
+            <Form>
+              <h3>{code ? `${code}——` : ''}{companyName || ''}</h3>
+              <Row className={styles.line}>
+                <img alt="" src={logoLocation} width="14" height="14" />
+                <span>{pointAreaLocation || '暂无点位地址'}</span>
+              </Row>
+              <Row className={styles.line}>
+                <Col {...descWrapper}>
+                  <span> 联网状态：{linkLabel}</span>
+                </Col>
+                <Col {...descWrapper}>
+                  <span>运行状态：{runningLabel}</span>
+                </Col>
+              </Row>
+              {faultStatusList.length > 0 && (
+                <Fragment>
+                  <h4>当前故障</h4>
+                  {faultStatusList.map(({ faultTypeName, happenTime }, index) => (
+                    <Row key={index} className={styles.line}>
+                      <Col {...descWrapper}>
+                        <span> 故障描述：{faultTypeName}</span>
+                      </Col>
+                      <Col {...descWrapper}>
+                        <span>时间：{this.formatTime(happenTime)}</span>
+                      </Col>
+                    </Row>
+                  ))}
+                </Fragment>
+              )}
+            </Form>
+          </Card>
+          <Card style={{ marginTop: '24px' }}>
+            <h3>实时监测</h3>
+            <Row className={styles.line}>
+              <span> 数据更新时间：{dataUpdateTime ? this.formatTime(dataUpdateTime) : '暂无数据'}</span>
+            </Row>
+            {linkStatus === 0 ? (
+              <Row className={styles.line} gutter={10}>
+                {sensorMonitorParamList.map(({ fixType, logoWebUrl, paramDesc, paramUnit, realValue, status }, index) => (
+                  <Col key={index} {...logoItemWrapper} className={styles.logoItem}>
+                    <img alt="" src={logoWebUrl} style={statusStyle[/\d+/.test(status) ? status : 3]} />
+                    {+fixType === 5 ? (
+                      <div className={styles.num} style={{ color: numColor[/\d+/.test(status) ? status : 3] }}>
+                        {(realValue === 0 && '正常') || (realValue === 1 && '火警') || '—'}
+                      </div>
+                    ) : (
+                        <div>
+                          <div>{`${paramDesc}（${paramUnit}）`}</div>
+                          <div style={{ color: numColor[/\d+/.test(status) ? status : 3] }} className={styles.num}>{/\d+/.test(realValue) ? realValue : '—'}</div>
+                        </div>
+                      )}
+                  </Col>
+                ))}
+              </Row>
+            ) : (
+                <Row className={styles.line} gutter={10}>
+                  {sensorMonitorParamList.map(({ fixType, logoWebUrl, paramDesc, paramUnit }, index) => (
+                    <Col key={index}{...logoItemWrapper} className={styles.logoItem}>
+                      <img alt="" src={logoWebUrl} style={{ filter: 'grayscale(1)' }} />
+                      {+fixType === 5 ? (
+                        <div className={styles.num}>{'—'}</div>
+                      ) : (
+                          <div>
+                            <div>{`${paramDesc}（${paramUnit}）`}</div>
+                            <div className={styles.num}>{'—'}</div>
+                          </div>
+                        )}
+                    </Col>
+                  ))}
+                </Row>
+              )}
+          </Card>
+        </div>
       </PageHeaderLayout>
     )
   }

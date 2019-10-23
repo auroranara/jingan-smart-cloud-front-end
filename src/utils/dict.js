@@ -182,3 +182,14 @@ export const monitoringObjType = generateEnum({
   '312': '气柜',
   '313': '电源控制柜',
 })
+
+/*
+* 参数分组类型
+*/
+export const parameterGroupTypes = generateEnum({
+  1: '温度',
+  2: '电流',
+  3: '电压',
+  4: '漏电电流',
+  5: '火警',
+})

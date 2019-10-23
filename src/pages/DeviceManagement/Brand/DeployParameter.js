@@ -468,7 +468,7 @@ export default class DeployParameter extends PureComponent {
     const {
       tableLoading,
       device: {
-        parameters: { list = [] },
+        parameters: { list = [], pagination: { total, pageNum, pageSize } },
       },
     } = this.props
     const columns = [
@@ -480,7 +480,7 @@ export default class DeployParameter extends PureComponent {
         render: (val, row) => (
           <Fragment>
             <span style={{ paddingRight: '1em' }}>{val}</span>
-            {row.logoWebUrl && (<img src={row.logoWebUrl} width="30" height="30" alt="图标" />)}
+            {row.logoWebUrl && (<img src={row.logoWebUrl} width="30" height="30" alt="图标" style={{ objectFit: 'contain' }} />)}
           </Fragment>
         ),
       },
@@ -534,6 +534,18 @@ export default class DeployParameter extends PureComponent {
           columns={columns}
           dataSource={list}
           bordered
+          pagination={{
+            current: pageNum,
+            pageSize,
+            total,
+            showQuickJumper: true,
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '15', '20'],
+            onChange: this.handleQuery,
+            onShowSizeChange: (num, size) => {
+              this.handleQuery(1, size);
+            },
+          }}
         />
       </Card>
     )

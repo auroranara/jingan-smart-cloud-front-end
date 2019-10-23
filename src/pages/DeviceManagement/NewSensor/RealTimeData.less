@@ -1,0 +1,44 @@
+.realTimeContainer {
+  h3 {
+    margin-bottom: 12px;
+  }
+
+  .line {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+
+    &>img {
+      margin-right: 0.5em;
+    }
+  }
+
+  .logoItem {
+    display: flex;
+    justify-content: left;
+    margin-bottom: 20px;
+
+    &>img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      flex: none;
+    }
+
+    &>div {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1 1;
+      text-align: left;
+      padding: 0 15px;
+      white-space: nowrap;
+    }
+
+    .num {
+      font-size: 25px;
+      font-weight: 500;
+    }
+  }
+}

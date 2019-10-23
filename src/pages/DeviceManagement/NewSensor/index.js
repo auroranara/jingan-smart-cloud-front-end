@@ -28,6 +28,16 @@ const {
     },
   },
 } = codes
+// 联网状态选项
+const linkStatusOpt = [
+  { label: '失联', value: -1 },
+  { label: '在线', value: 0 },
+]
+// 云心状态选项
+const faultStatusOpt = [
+  { label: '故障', value: -1 },
+  { label: '正常', value: 0 },
+]
 /* 渲染树节点 */
 const renderTreeNodes = data => {
   return data.map(item => {
@@ -56,6 +66,7 @@ export default class NewSensorList extends Component {
     this.handleQuery()
     this.fetchMonitoringTypeTree()
     this.fetchMonitoringTypes()
+    this.fetchBrands()
   }
 
   /**
@@ -72,6 +83,14 @@ export default class NewSensorList extends Component {
       type: 'device/fetchSensors',
       payload: { pageNum, pageSize, ...values, dataExecuteEquipmentId },
     })
+  }
+
+  /**
+  * 获取品牌列表
+  */
+  fetchBrands = () => {
+    const { dispatch } = this.props
+    dispatch({ type: 'device/fetchBrands', payload: { type: 4 } })
   }
 
   /**
@@ -124,7 +143,10 @@ export default class NewSensorList extends Component {
   renderFilter = () => {
     const {
       form: { getFieldDecorator },
-      device: { monitoringType },
+      device: {
+        monitoringType,
+        brandList, // 品牌列表
+      },
     } = this.props
     return (
       <Card>
@@ -134,6 +156,52 @@ export default class NewSensorList extends Component {
               <FormItem {...formItemStyle}>
                 {getFieldDecorator('companyName')(
                   <Input placeholder="单位名称" />
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('linkStatus')(
+                  <Select placeholder="联网状态" allowClear>
+                    {linkStatusOpt.map(({ label, value }) => (
+                      <Select.Option key={value} value={value}>{label}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('faultStatus')(
+                  <Select placeholder="运行状态" allowClear>
+                    {faultStatusOpt.map(({ label, value }) => (
+                      <Select.Option key={value} value={value}>{label}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('code')(
+                  <Input placeholder="传感器编号" />
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('token')(
+                  <Input placeholder="传感器Token" />
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('useStatus')(
+                  <Select placeholder="可用性" allowClear>
+                    <Select.Option key={1} value={1}>{'启用'}</Select.Option>
+                    <Select.Option key={0} value={0}>{'禁用'}</Select.Option>
+                  </Select>
                 )}
               </FormItem>
             </Col>
@@ -152,8 +220,39 @@ export default class NewSensorList extends Component {
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('token')(
-                  <Input placeholder="传感器Token" />
+                {getFieldDecorator('brand')(
+                  <Select placeholder="品牌" allowClear>
+                    {brandList.map(({ id, name }) => (
+                      <Select.Option key={id} value={id}>{name}</Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('beMonitorTargetBindStatus')(
+                  <Select placeholder="是否绑定监测对象" allowClear>
+                    <Select.Option key={1} value={1}>{'已绑定'}</Select.Option>
+                    <Select.Option key={0} value={0}>{'未绑定'}</Select.Option>
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('dataExecuteEquipmentBindStatus')(
+                  <Select placeholder="是否绑定数据处理设备" allowClear>
+                    <Select.Option key={1} value={1}>{'已绑定'}</Select.Option>
+                    <Select.Option key={0} value={0}>{'未绑定'}</Select.Option>
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+            <Col {...colWrapper}>
+              <FormItem {...formItemStyle}>
+                {getFieldDecorator('dataExecuteEquipmentCode')(
+                  <Input placeholder="数据处理设备编号" />
                 )}
               </FormItem>
             </Col>
@@ -238,10 +337,10 @@ export default class NewSensorList extends Component {
         key: '数据处理设备编号',
         align: 'center',
         width: 300,
-        render: (val, row) => (
+        render: (val, { dataExecuteEquipmentTypeName: name, dataExecuteEquipmentCode: code }) => !name && !code ? '——' : (
           <div style={{ textAlign: 'left' }}>
-            <div>{row.dataExecuteEquipmentTypeName}</div>
-            <div>设备编号：{row.dataExecuteEquipmentCode}</div>
+            {name && (<div>{name}</div>)}
+            {code && (<div>设备编号：{code}</div>)}
           </div>
         ),
       },

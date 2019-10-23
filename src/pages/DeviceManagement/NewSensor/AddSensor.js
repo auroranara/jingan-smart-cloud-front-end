@@ -567,6 +567,14 @@ export default class AddNewSensor extends Component {
               </Fragment>
             )}
           </FormItem>
+          <FormItem label="传感器编号" {...formItemLayout}>
+            {getFieldDecorator('code', {
+              initialValue: id ? detail.code : undefined,
+              rules: [{ required: true, message: '请输入传感器编号' }],
+            })(
+              <Input placeholder="请输入" {...itemStyles} />
+            )}
+          </FormItem>
           <FormItem label="型号" {...formItemLayout}>
             {getFieldDecorator('model', {
               initialValue: id ? detail.model : undefined,
