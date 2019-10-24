@@ -11,6 +11,7 @@ import DeviceDetailCard from './DeviceDetailCard';
 import ModalForm from './ModalForm';
 import { AuthButton } from '@/utils/customAuth';
 import buttonCodes from '@/utils/codes';
+import router from 'umi/router';
 
 const { Description } = DescriptionList;
 // const { confirm } = Modal;
@@ -196,7 +197,12 @@ export default class UserTransmissionDeviceDetail extends Component {
    * 而deleteClick时却可以通过confirm执行delete操作，所以数据不用同步，传个参就可以
    */
   handleDeviceAddClick = () => {
-    this.setState({ deviceModalVisible: true, operation: 'add' });
+    const {
+      transmission: { companyDetail: { id, name } },
+    } = this.props
+    // this.setState({ deviceModalVisible: true, operation: 'add' });
+    // 跳转到新增网关设备页面（设备类型：用户传输装置）
+    router.push(`/device-management/gateway/add?equipmentType=201&companyId=${id}&companyName=${name}`)
   };
 
   handleDeviceAdd = fieldsValue => {
@@ -212,7 +218,9 @@ export default class UserTransmissionDeviceDetail extends Component {
   // 带入了一个参数record，是为了从card中对应的地方获取数据同步到其父组件的state中，进行变量提升，
   // 这样modal中的form才能从当前共同父组件中获取从card中传上来的数据
   handleDeviceUpdateClick = deviceData => {
-    this.setState({ deviceModalVisible: true, operation: 'update', deviceRecord: deviceData });
+    // this.setState({ deviceModalVisible: true, operation: 'update', deviceRecord: deviceData });
+    // 跳转到编辑网关页面
+    router.push(`/device-management/gateway/edit/${deviceData.id}`)
   };
 
   handleDeviceUpdate = fieldsValue => {
@@ -267,12 +275,17 @@ export default class UserTransmissionDeviceDetail extends Component {
 
   // 添加主机时，消防传输装置的deviceCode是固定的
   handleHostAddClick = (transmissionId, transmissionDeviceCode) => {
-    this.setState({
-      hostModalVisible: true,
-      operation: 'add',
-      hostRecord: { transmissionDeviceCode },
-      currentTransmissionId: transmissionId,
-    });
+    const {
+      match: { params: { companyId } },
+    } = this.props
+    // this.setState({
+    //   hostModalVisible: true,
+    //   operation: 'add',
+    //   hostRecord: { transmissionDeviceCode },
+    //   currentTransmissionId: transmissionId,
+    // });
+    // 跳转到新增处理设备页面（消防主机 type=101）
+    router.push(`/device-management/data-processing/101/add?companyId=${companyId}&gatewayCode=${transmissionDeviceCode}&gatewayId=${transmissionId}`)
   };
 
   handleHostAdd = fieldsValue => {
@@ -291,7 +304,12 @@ export default class UserTransmissionDeviceDetail extends Component {
   };
 
   handleHostUpdateClick = record => {
-    this.setState({ hostModalVisible: true, operation: 'update', hostRecord: record });
+    const {
+      match: { params: { companyId } },
+    } = this.props;
+    // this.setState({ hostModalVisible: true, operation: 'update', hostRecord: record });
+    // 跳转到编辑处理设备页面（消防主机 type=101）
+    router.push(`/device-management/data-processing/101/edit/${record.id}?companyId=${companyId}&gatewayCode=${record.transmissionDeviceCode}&gatewayId=${record.id}`)
   };
 
   handleHostUpdate = fieldsValue => {

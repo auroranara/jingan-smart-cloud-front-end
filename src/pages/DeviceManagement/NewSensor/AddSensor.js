@@ -582,7 +582,7 @@ export default class AddNewSensor extends Component {
             })(
               <Fragment>
                 <Input disabled value={model.name} placeholder="请选择" {...itemStyles} />
-                <Button type="primary" onClick={this.handleViewBrandModal}>选择品牌型号</Button>
+                <Button type="primary" disabled={!!id} onClick={this.handleViewBrandModal}>选择品牌型号</Button>
               </Fragment>
             )}
           </FormItem>

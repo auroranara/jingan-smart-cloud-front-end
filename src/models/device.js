@@ -95,7 +95,7 @@ export default {
       { key: '>= 1', condition: '>=', warnLevel: 1, label: '预警上限' },
       { key: '<= 1', condition: '<=', warnLevel: 1, label: '预警下限' },
       { key: '>= 2', condition: '>=', warnLevel: 2, label: '告警上限' },
-      { key: '<= 2', condition: '<=', warnLevel: 2, label: '告警上限' },
+      { key: '<= 2', condition: '<=', warnLevel: 2, label: '告警下限' },
     ],
     // 平面图标注
     flatGraphic: [

@@ -59,6 +59,7 @@ const defaultPagination = {
     personnelPosition,
     device,
     loading: loading.models.videoMonitor,
+    gatewayLoading: loading.effects['device/fetchGatewayEquipmentForPage'],
   }),
   dispatch => ({
     // 获取企业
@@ -574,11 +575,21 @@ export default class VideoMonitorEdit extends PureComponent {
    * 打开选择网关设备编号弹窗
    */
   handleViewGateWayModal = () => {
-    const { dispatch } = this.props
     this.setState({ gateWayModalVisible: true })
+    this.fetchGatewayForPage()
+  }
+
+  /**
+  * 获取网关设备（分页）
+  */
+  fetchGatewayForPage = (payload = { pageNum: 1, pageSize: 10 }) => {
+    const {
+      dispatch,
+      location: { query: { companyId } },
+    } = this.props
     dispatch({
       type: 'device/fetchGatewayEquipmentForPage',
-      payload: { pageNum: 1, pageSize: 10 },
+      payload: { companyId, ...payload },
     })
   }
 
@@ -1069,6 +1080,7 @@ export default class VideoMonitorEdit extends PureComponent {
   // 渲染页面所有信息
   render() {
     const {
+      gatewayLoading,
       match: {
         params: { id },
       },
@@ -1097,17 +1109,19 @@ export default class VideoMonitorEdit extends PureComponent {
         name: title,
       },
     ];
-
+    const gatewayModalProps = {
+      visible: gateWayModalVisible,
+      handleSelect: this.handleGateSelect,
+      onCancel: () => { this.setState({ gateWayModalVisible: false }) },
+      fetch: this.fetchGatewayForPage, // 获取列表
+      loading: gatewayLoading,
+    }
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderVideoInfo()}
         {this.renderFooterToolbar()}
         {this.renderCompanyModal()}
-        <GateWayModal
-          visible={gateWayModalVisible}
-          handleSelect={this.handleGateSelect}
-          onCancel={() => { this.setState({ gateWayModalVisible: false }) }}
-        />
+        <GateWayModal {...gatewayModalProps} />
       </PageHeaderLayout>
     );
   }

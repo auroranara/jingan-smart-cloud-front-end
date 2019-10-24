@@ -7,12 +7,9 @@ import {
   Button,
   Modal,
   Input,
-  message,
   Select,
-  Row,
   Col,
 } from 'antd';
-import moment from 'moment';
 import HistoryModal from '@/pages/DeviceManagement/Components/ParameterHistoryModal';
 
 const FormItem = Form.Item;
@@ -29,6 +26,7 @@ const RenderAlarmStrategyModal = Form.create()(props => {
     saveAlarmStrategy,
     handleViewHistory, // 查看历史
     alarmTypes,
+    sensorId, // 传感器id
   } = props
   // 添加报警项
   const handleAddItem = () => {
@@ -93,7 +91,13 @@ const RenderAlarmStrategyModal = Form.create()(props => {
       <Card title={(
         <Fragment>
           <span>自定义配置</span>
-          <span style={{ float: 'right', color: '#1890ff', cursor: 'pointer' }} onClick={() => handleViewHistory(id)}>配置历史 >></span>
+          {sensorId && (
+            <span
+              style={{ float: 'right', color: '#1890ff', cursor: 'pointer' }}
+              onClick={() => handleViewHistory(id)}
+            >配置历史 >>
+          </span>
+          )}
         </Fragment>
       )}
         style={{ marginTop: '15px' }}
@@ -291,7 +295,7 @@ export default class DeployParameterTable extends PureComponent {
         render: (val, row) => (
           <Fragment>
             <span style={{ paddingRight: '1em' }}>{val}</span>
-            {row.logoWebUrl && (<img src={row.logoWebUrl} width="30" height="30" alt="图标" />)}
+            {row.logoWebUrl && (<img src={row.logoWebUrl} width="30" height="30" style={{ objectFit: 'contain' }} alt="图标" />)}
           </Fragment>
         ),
       },
@@ -345,6 +349,7 @@ export default class DeployParameterTable extends PureComponent {
 
   render() {
     const {
+      sensorId,
       device: {
         alarmStrategy: defaultAlarmStrategy,
         alarmTypes,
@@ -361,6 +366,7 @@ export default class DeployParameterTable extends PureComponent {
       defaultAlarmStrategy,
       handleViewHistory: this.handleViewHistory,
       alarmTypes,
+      sensorId,
     }
     const historyProps = {
       visible: historyModalVisible,

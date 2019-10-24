@@ -28,6 +28,7 @@ const {
     newSensor: {
       add: addSensorCode,
     },
+    transmission: { point: { listView: pointViewCode } },
   },
 } = codes
 const defaultPageSize = 10;
@@ -311,6 +312,8 @@ export default class EquipmentList extends PureComponent {
     } = this.props
     // 设备类型是否是
     const isNVR = +type === 110
+    // 设备类型是否是消防主机
+    const isFireHost = +type === 101
     return (
       <Card>
         <Form>
@@ -336,7 +339,7 @@ export default class EquipmentList extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            {!isNVR && (
+            {!isNVR && !isFireHost && (
               <Fragment>
                 <Col {...colWrapper}>
                   <FormItem {...formItemStyle}>
@@ -387,6 +390,7 @@ export default class EquipmentList extends PureComponent {
     const {
       tableLoading,
       match: { params: { type } },
+      location: { query: { companyId } },
       device: {
         equipment: {
           list = [],
@@ -406,13 +410,12 @@ export default class EquipmentList extends PureComponent {
         title: '基本信息',
         dataIndex: 'a',
         align: 'center',
-        width: 200,
-        render: (val, { equipmentTypeName, brandName, name, code }) => (
+        width: 300,
+        render: (val, { brandName, code, modelName }) => (
           <div style={{ textAlign: 'left' }}>
-            <div>类型：{equipmentTypeName}</div>
             <div>品牌：{brandName}</div>
-            <div>设备名称：{name}</div>
             <div>设备编号：{code}</div>
+            <div>设备型号：{modelName}</div>
           </div>
         ),
       },
@@ -449,7 +452,6 @@ export default class EquipmentList extends PureComponent {
           </div>
         ) : '--',
       },
-
       isNVR ? {
         title: '已绑定摄像头',
         dataIndex: 'videoCount',
@@ -469,12 +471,12 @@ export default class EquipmentList extends PureComponent {
         align: 'center',
         width: 120,
         render: (val, row) => (
-          <span
-            onClick={() => { }}
-            style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+          <AuthA
+            code={pointViewCode}
+            onClick={() => { router.push(`/device-management/user-transmission-device/${companyId}/point-managament/${row.id}?deviceCode=${row.code}`) }}
           >
             {val}
-          </span>
+          </AuthA>
         ),
       } : {
             title: '已绑定传感器',
@@ -520,8 +522,8 @@ export default class EquipmentList extends PureComponent {
       },
     ]
 
-    if (!isNVR) {
-      columns.splice(4, 1, {
+    if (!isNVR && !isFireHost) {
+      columns.splice(4, 0, {
         title: '集成数据采集',
         dataIndex: 'inheritGather',
         align: 'center',
@@ -584,6 +586,10 @@ export default class EquipmentList extends PureComponent {
       { title: '单位数据处理设备', name: '单位数据处理设备', href: '/device-management/data-processing/list' },
       { title, name: title },
     ]
+    // 设备类型是否是NVR
+    const isNVR = +type === 110
+    // 设备类型是否是消防主机
+    const isFireHost = +type === 101
     const bindSensorProps = {
       tag: 'bind',
       visible: bindSensorModalVisible,
@@ -628,7 +634,7 @@ export default class EquipmentList extends PureComponent {
             <div>企业名称：{companyName}</div>
             <div>
               <span style={{ marginRight: '30px' }}>设备总数：{total}</span>
-              <span>已绑定传感器数：{bindedSensorCount}</span>
+              {!isNVR && !isFireHost && (<span>已绑定传感器数：{bindedSensorCount}</span>)}
             </div>
           </Fragment>
         )}

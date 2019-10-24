@@ -10,7 +10,6 @@ const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
 @Form.create()
 @connect(({ device, loading }) => ({
   device,
-  tableLoading: loading.effects['device/fetchGatewayEquipmentForPage'],
 }))
 export default class GateWayModal extends PureComponent {
 
@@ -19,14 +18,11 @@ export default class GateWayModal extends PureComponent {
    */
   handleQuery = (pageNum = 1, pageSize = 10) => {
     const {
-      dispatch,
       form: { getFieldsValue },
+      fetch,
     } = this.props
     const values = getFieldsValue()
-    dispatch({
-      type: 'device/fetchGatewayEquipmentForPage',
-      payload: { pageNum, pageSize, ...values },
-    })
+    fetch({ pageNum, pageSize, ...values })
   }
 
 
@@ -54,14 +50,14 @@ export default class GateWayModal extends PureComponent {
           <Row gutter={16}>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                {getFieldDecorator('网关设备编号')(
-                  <Input placeholder="code" />
+                {getFieldDecorator('code')(
+                  <Input placeholder="网关设备编号" />
                 )}
               </FormItem>
             </Col>
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
-                <Button type="primary" onClick={() => this.handleQuery()}>查询</Button>
+                <Button type="primary" onClick={() => this.handleQuery()} style={{ marginRight: '10px' }}>查询</Button>
                 <Button onClick={this.handleReset}>重置</Button>
               </FormItem>
             </Col>
@@ -73,7 +69,7 @@ export default class GateWayModal extends PureComponent {
 
   renderTable = () => {
     const {
-      tableLoading,
+      loading,
       device: {
         gatewayDevice: {
           list,
@@ -102,7 +98,7 @@ export default class GateWayModal extends PureComponent {
     ]
     return (
       <Table
-        loading={tableLoading}
+        loading={loading}
         rowKey="id"
         columns={columns}
         dataSource={list}

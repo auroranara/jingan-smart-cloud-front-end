@@ -46,6 +46,7 @@ const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } }
   riskPointManage,
   buildingsInfo,
   user,
+  gatewayLoading: loading.effects['device/fetchGatewayEquipmentForPage'],
 }))
 export default class AddEquipment extends Component {
 
@@ -68,7 +69,7 @@ export default class AddEquipment extends Component {
     const {
       dispatch,
       match: { params: { id, type } },
-      location: { query: { companyId } },
+      location: { query: { companyId, gatewayCode, gatewayId } },
       form: { setFieldsValue },
     } = this.props
     if (!companyId) {
@@ -106,6 +107,9 @@ export default class AddEquipment extends Component {
           this.fetchModels({ payload: { equipmentType: type, brand } })
         },
       })
+    } else {
+      // 如果新增 且从用户传输装置页面跳转过来
+      gatewayCode && this.setState({ gatewayEquipment: { id: gatewayId, code: gatewayCode } });
     }
   }
 
@@ -231,16 +235,16 @@ export default class AddEquipment extends Component {
   */
   handleRefreshBuilding = (weatherFetch = false) => {
     const {
-      form: { setFieldsValue, getFieldValue },
+      location: { query: { companyId } },
+      form: { setFieldsValue },
     } = this.props
-    const companyId = getFieldValue('companyId')
     // 清空选择建筑物和楼层
-    setFieldsValue({ buildingId: undefined, floorId: undefined })
+    setFieldsValue({ buildingId: undefined, floorId: undefined });
     // 获取建筑物下拉 清空楼层下拉
     weatherFetch && companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
-    this.resetFloors({ payload: [] })
+    this.resetFloors({ payload: [] });
     // 改变 平面图标注--楼层平面定位信息
-    this.changeFlatPicBuildingNum()
+    this.changeFlatPicBuildingNum();
   }
 
 
@@ -299,11 +303,21 @@ export default class AddEquipment extends Component {
    * 打开选择网关设备编号弹窗
    */
   handleViewGateWayModal = () => {
-    const { dispatch } = this.props
     this.setState({ gateWayModalVisible: true })
+    this.fetchGatewayForPage()
+  }
+
+  /**
+   * 获取网关设备（分页）
+   */
+  fetchGatewayForPage = (payload = { pageNum: 1, pageSize: 10 }) => {
+    const {
+      dispatch,
+      location: { query: { companyId } },
+    } = this.props
     dispatch({
       type: 'device/fetchGatewayEquipmentForPage',
-      payload: { pageNum: 1, pageSize: 10 },
+      payload: { companyId, ...payload },
     })
   }
 
@@ -386,7 +400,11 @@ export default class AddEquipment extends Component {
       form,
       form: { getFieldDecorator, getFieldsValue },
       match: { params: { id, type } },
-      location: { query: { companyId } },
+      location: { query: {
+        companyId,
+        gatewayCode, // 网关设备编号（用户传输装置页面过来）
+        gatewayId,
+      } },
       device: {
         equipmentDetail: detail = {},
         flatGraphic,
@@ -497,7 +515,7 @@ export default class AddEquipment extends Component {
               <DatePicker />
             )}
           </FormItem>
-          <FormItem label="使用期限" {...formItemLayout}>
+          <FormItem label="使用期限（月）" {...formItemLayout}>
             {getFieldDecorator('serviceLife', {
               initialValue: id ? detail.serviceLife : undefined,
             })(
@@ -540,11 +558,11 @@ export default class AddEquipment extends Component {
               <FormItem label="网关设备编号" {...formItemLayout}>
                 {getFieldDecorator('gatewayEquipment', {
                   rules: [{ required: true, message: '请选择网关设备编号' }],
-                  initialValue: id ? detail.gatewayEquipment : undefined,
+                  initialValue: id ? detail.gatewayEquipment : (gatewayId || undefined),
                 })(
                   <Fragment>
-                    <Input disabled value={gatewayEquipment.code} placeholder="请选择" {...itemStyles} />
-                    <Button type="primary" onClick={this.handleViewGateWayModal}>选择</Button>
+                    <Input disabled value={gatewayCode || gatewayEquipment.code} placeholder="请选择" {...itemStyles} />
+                    <Button disabled={!!gatewayId} type="primary" onClick={this.handleViewGateWayModal}>选择</Button>
                   </Fragment>
                 )}
               </FormItem>
@@ -618,12 +636,12 @@ export default class AddEquipment extends Component {
                       )}
                     </FormItem>
                     <FormItem label="卡是否可被插拔" {...formItemLayout}>
-                      {getFieldDecorator('locationType', {
-                        initialValue: id ? detail.locationType : undefined,
+                      {getFieldDecorator('cardSfp', {
+                        initialValue: id ? detail.cardSfp : undefined,
                       })(
                         <Radio.Group>
-                          <Radio value={1}>是</Radio>
-                          <Radio value={0}>否</Radio>
+                          <Radio value={'1'}>是</Radio>
+                          <Radio value={'0'}>否</Radio>
                         </Radio.Group>
                       )}
                     </FormItem>
@@ -735,6 +753,7 @@ export default class AddEquipment extends Component {
 
   render() {
     const {
+      gatewayLoading,
       match: { params: { type } },
       location: { query: { companyId } },
     } = this.props
@@ -747,17 +766,20 @@ export default class AddEquipment extends Component {
       { title: '设备列表', name: '设备列表', href: `/device-management/data-processing/list/${type}?companyId=${companyId}` },
       { title, name: title },
     ]
+    const gatewayModalProps = {
+      visible: gateWayModalVisible,
+      handleSelect: this.handleGateSelect,
+      onCancel: () => { this.setState({ gateWayModalVisible: false }) },
+      fetch: this.fetchGatewayForPage, // 获取列表
+      loading: gatewayLoading,
+    }
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
       >
         {this.renderForm()}
-        <GateWayModal
-          visible={gateWayModalVisible}
-          handleSelect={this.handleGateSelect}
-          onCancel={() => { this.setState({ gateWayModalVisible: false }) }}
-        />
+        <GateWayModal {...gatewayModalProps} />
       </PageHeaderLayout>
     )
   }

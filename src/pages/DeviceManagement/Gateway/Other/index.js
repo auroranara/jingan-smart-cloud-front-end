@@ -188,11 +188,9 @@ export default class GatewayOther extends Component {
 
   getFields = () => {
     const {
-      match: {
-        params: {
-          type,
-        },
-      },
+      match: { params: { type } },
+      // 如果url中传递参数设备类型 equipmentType，则此选项不可编辑
+      location: { query: { equipmentType: initialEquipmentType }, query },
       user: {
         currentUser: {
           unitType,
@@ -264,9 +262,9 @@ export default class GatewayOther extends Component {
             label: '单位名称',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <CompanySelect disabled={isEdit} className={styles.item} /> : <span>{companyName}</span>,
+            render: () => isNotDetail ? <CompanySelect disabled={isEdit || !!query.companyId} className={styles.item} /> : <span>{companyName}</span>,
             options: {
-              initialValue: companyId && { key: companyId, label: companyName },
+              initialValue: (companyId && { key: companyId, label: companyName }) || (query.companyId && { key: query.companyId, label: query.companyName }) || undefined,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -282,12 +280,12 @@ export default class GatewayOther extends Component {
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => isNotDetail ? (
-              <Select className={styles.item} placeholder="请选择设备类型" onChange={this.handleTypeChange} allowClear disabled={isEdit}>
+              <Select className={styles.item} placeholder="请选择设备类型" onChange={this.handleTypeChange} allowClear disabled={!!initialEquipmentType || isEdit}>
                 {typeList.map(({ id, name }) => <Option key={id}>{name}</Option>)}
               </Select>
             ) : <span>{equipmentTypeName}</span>,
             options: {
-              initialValue: equipmentType,
+              initialValue: initialEquipmentType || equipmentType,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -819,12 +817,13 @@ export default class GatewayOther extends Component {
           pointFixInfoList: marker.map(({ id: fixImgId, ichnographyType: imgType, xNum: xnum, yNum: ynum }) => ({ fixImgId, imgType, xnum, ynum })),
           ...rest,
         };
-        (id ? edit : add)(payload, (isSuccess) => {
+        (id ? edit : add)(payload, (isSuccess, res) => {
           if (isSuccess) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            router.push(LIST_PATH);
+            // router.push(LIST_PATH);
+            router.goBack()
           } else {
-            message.error(`${id ? '编辑' : '新增'}失败，请稍后重试！`);
+            message.error(res ? res.msg : `${id ? '编辑' : '新增'}失败，请稍后重试！`);
           }
         });
       }
