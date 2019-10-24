@@ -178,7 +178,7 @@ export default {
         const { installPhotoList, pointFixInfoList, buildingId, floorId } = data;
         const detail = {
           ...data,
-          installPhotoList: installPhotoList && installPhotoList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1-index, status: 'done' })),
+          installPhotoList: installPhotoList && installPhotoList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1 - index, status: 'done' })),
           marker: pointFixInfoList && pointFixInfoList.map(({ fixImgId, imgType, xnum, ynum }) => ({ key: Math.random(), id: fixImgId, ichnographyType: `${imgType}`, xNum: xnum, yNum: ynum, ...(+imgType === 2 && { buildingId, floorId }) })),
         };
         yield put({
@@ -193,12 +193,12 @@ export default {
     *add({ payload, callback }, { call }) {
       const response = yield call(add, payload);
       const { code } = response || {};
-      callback && callback(code === 200);
+      callback && callback(code === 200, response);
     },
     *edit({ payload, callback }, { call }) {
       const response = yield call(edit, payload);
       const { code } = response || {};
-      callback && callback(code === 200);
+      callback && callback(code === 200, response);
     },
     *remove({ payload, callback }, { call }) {
       const response = yield call(remove, payload);
