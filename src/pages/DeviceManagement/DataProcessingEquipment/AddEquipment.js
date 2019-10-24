@@ -417,7 +417,7 @@ export default class AddEquipment extends Component {
       gatewayEquipment,
     } = this.state
 
-    const { inheritGather, networkingType, locationType, connectGateway } = getFieldsValue()
+    const { connectGateway, networkingType, locationType, inheritGather } = getFieldsValue()
     const FlatPicProps = {
       visible: picModalVisible,
       onCancel: () => { this.setState({ picModalVisible: false }) },
@@ -506,8 +506,8 @@ export default class AddEquipment extends Component {
           </FormItem>
           {/* 设备关系 */}
           <FormItem label="集成数据采集" {...formItemLayout}>
-            {getFieldDecorator('connectGateway', {
-              initialValue: id ? detail.connectGateway : 0,
+            {getFieldDecorator('inheritGather', {
+              initialValue: id ? detail.inheritGather : 0,
             })(
               <Radio.Group disabled={isNVR || isFireHost}>
                 <Radio value={1}>是，独立式传感器</Radio>
@@ -515,7 +515,7 @@ export default class AddEquipment extends Component {
               </Radio.Group>
             )}
           </FormItem>
-          {connectGateway === 1 && (
+          {inheritGather === 1 && (
             <FormItem label="监测点名称" {...formItemLayout}>
               {getFieldDecorator('name', {
                 initialValue: id ? detail.name : undefined,
@@ -526,8 +526,8 @@ export default class AddEquipment extends Component {
             </FormItem>
           )}
           <FormItem label="是否接入网关设备" {...formItemLayout}>
-            {getFieldDecorator('inheritGather', {
-              initialValue: id ? detail.inheritGather : 1,
+            {getFieldDecorator('connectGateway', {
+              initialValue: id ? detail.connectGateway : 1,
             })(
               <Radio.Group disabled={isNVR || isFireHost}>
                 <Radio value={1}>是</Radio>
@@ -535,7 +535,7 @@ export default class AddEquipment extends Component {
               </Radio.Group>
             )}
           </FormItem>
-          {inheritGather ? (
+          {connectGateway ? (
             <Fragment>
               <FormItem label="网关设备编号" {...formItemLayout}>
                 {getFieldDecorator('gatewayEquipment', {

@@ -340,7 +340,7 @@ export default class EquipmentList extends PureComponent {
               <Fragment>
                 <Col {...colWrapper}>
                   <FormItem {...formItemStyle}>
-                    {getFieldDecorator('connectGateway')(
+                    {getFieldDecorator('inheritGather')(
                       <Select placeholder="集成数据采集" allowClear>
                         <Select.Option value={1}>是，独立式</Select.Option>
                         <Select.Option value={0}>否，非独立式</Select.Option>
@@ -350,7 +350,7 @@ export default class EquipmentList extends PureComponent {
                 </Col>
                 <Col {...colWrapper}>
                   <FormItem {...formItemStyle}>
-                    {getFieldDecorator('inheritGather')(
+                    {getFieldDecorator('connectGateway')(
                       <Select placeholder="接入网关设备" allowClear>
                         <Select.Option value={1}>已接入</Select.Option>
                         <Select.Option value={0}>未接入</Select.Option>
@@ -442,7 +442,7 @@ export default class EquipmentList extends PureComponent {
         key: '网关设备',
         align: 'center',
         width: 250,
-        render: (val, { inheritGather, gatewayEquipmentCode }) => inheritGather ? (
+        render: (val, { connectGateway, gatewayEquipmentCode }) => connectGateway ? (
           <div style={{ textAlign: 'left' }}>
             <div>已接入</div>
             <div>{deviceType}编号：{gatewayEquipmentCode}</div>
@@ -523,7 +523,7 @@ export default class EquipmentList extends PureComponent {
     if (!isNVR) {
       columns.splice(4, 1, {
         title: '集成数据采集',
-        dataIndex: 'connectGateway',
+        dataIndex: 'inheritGather',
         align: 'center',
         width: 120,
         render: (val) => (val === 1 && '是，独立式') || (+val === 0 && '否，非独立式') || '暂无数据',

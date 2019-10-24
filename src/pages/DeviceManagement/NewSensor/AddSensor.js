@@ -631,8 +631,8 @@ export default class AddNewSensor extends Component {
               </Radio.Group>
             )}
           </FormItem>
-          {/*  connectGateway 1-是 0 否 集成数据采集--是，则传感器中 入库日期开始不显示 */}
-          {companyId && +equipmentDetail.connectGateway === 0 && (
+          {/*  inheritGather 1-是 0 否 集成数据采集--是，则传感器中 入库日期开始不显示 */}
+          {companyId && +equipmentDetail.inheritGather === 0 && (
             <Fragment>
               <FormItem label="入库时间" {...formItemLayout}>
                 {getFieldDecorator('storageDate', {
@@ -679,7 +679,7 @@ export default class AddNewSensor extends Component {
                   </Button>
                 </Upload>
               </FormItem>
-              {+equipmentDetail.connectGateway === 0 && (
+              {+equipmentDetail.inheritGather === 0 && (
                 <FormItem label="监测点名称" {...formItemLayout}>
                   {getFieldDecorator('name', {
                     initialValue: id ? detail.name : undefined,

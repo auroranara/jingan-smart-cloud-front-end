@@ -180,7 +180,7 @@ export default class NVR extends PureComponent {
         key: '网关设备',
         align: 'center',
         width: 250,
-        render: (val, { inheritGather, gatewayEquipment }) => inheritGather ? (
+        render: (val, { connectGateway, gatewayEquipment }) => connectGateway ? (
           <div style={{ textAlign: 'left' }}>
             <div>已接入</div>
             <div>网关设备编号：{gatewayEquipment}</div>
