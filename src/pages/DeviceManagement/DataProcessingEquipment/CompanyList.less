@@ -1,0 +1,137 @@
+// @import '~antd/lib/style/themes/default.less';
+// @import '../../utils/utils.less';
+
+@bottom: 8px;
+
+.cardList {
+  margin-top: 20px;
+  margin-bottom: -24px;
+
+  .card {
+    :global {
+      .ant-card-meta-title {
+        margin-bottom: 12px;
+      }
+
+      .ant-card-actions {
+        background: #f7f9fa;
+      }
+
+      position: relative;
+
+      p {
+        margin-bottom: @bottom;
+      }
+
+      p:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .item {
+    height: 64px;
+  }
+
+  :global {
+    .ant-list .ant-list-item-content-single {
+      max-width: 100%;
+    }
+  }
+}
+
+.search {
+  :global {
+    .ant-card-body .ant-form-vertical .ant-form-item-label {
+      padding: 4px 0;
+    }
+  }
+}
+
+.icons {
+  display: flex;
+  // width: 50%;
+  height: 30px;
+  margin-top: 15px;
+  // justify-content: space-between;
+}
+
+.ellipsis {
+  height: 1.5em;
+  margin-bottom: @bottom;
+}
+
+.total {
+  font-size: 16px;
+}
+
+.container {
+  display: flex;
+
+  .typeContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    .typeItem {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      cursor: pointer;
+
+      .imgContainer {
+        min-width: 56px;
+
+        img {
+          width: 30px;
+          height: 30px;
+          object-fit: contain;
+          filter: grayscale(100%);
+        }
+
+        div {
+          max-width: 4em;
+        }
+      }
+
+      .num {
+        font-size: 26px;
+        font-weight: 600;
+        width: 50px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      &:hover {
+        color: #1890ff;
+
+        img {
+          filter: grayscale(0);
+        }
+      }
+    }
+  }
+
+  .iconContainer {
+    flex: none;
+    width: 60px;
+    color: #1890ff;
+    cursor: pointer;
+    text-align: left;
+    margin-top: 20px;
+
+    a {
+      margin-right: 3px;
+    }
+
+    .expandIcon {
+      transform: rotate(-180deg);
+      transition: all 0.5s;
+    }
+
+    .icon {
+      transition: all 0.5s;
+    }
+  }
+}

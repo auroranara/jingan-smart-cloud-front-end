@@ -19,6 +19,7 @@ export default {
     countCompanyNum: 0,
     regionModal: { list: [], pagination: defaultPagination },
     dangerSourceModal: { list: [], pagination: defaultPagination },
+    sensorCount: 0, // 传感器数量
   },
   effects: {
     // 查询库房列表
@@ -130,7 +131,8 @@ export default {
     countCompanyNum(state, { payload }) {
       return {
         ...state,
-        countCompanyNum: payload.companyNum,
+        countCompanyNum: payload.companyNum || 0,
+        sensorCount: payload.sensorNum || 0,
       };
     },
     // 库区弹出框

@@ -110,6 +110,55 @@ export default {
         alarmStrategy: 'deviceManagement.sensorModel.model.alarmStrategy',
       },
     },
+    monitoringType: {
+      listView: 'deviceManagement.monitoringType.listView',
+      add: 'deviceManagement.monitoringType.add',
+      edit: 'deviceManagement.monitoringType.edit',
+      delete: 'deviceManagement.monitoringType.delete',
+    },
+    deviceType: {
+      listView: 'deviceManagement.deviceType.listView',
+      edit: 'deviceManagement.deviceType.edit',
+    },
+    brand: {
+      listView: 'deviceManagement.brand.listView',
+      add: 'deviceManagement.brand.add',
+      edit: 'deviceManagement.brand.edit',
+      delete: 'deviceManagement.brand.delete',
+      model: {
+        listView: 'deviceManagement.brand.model.listView',
+        add: 'deviceManagement.brand.model.add',
+        edit: 'deviceManagement.brand.model.edit',
+        delete: 'deviceManagement.brand.model.delete',
+        deployParameter: 'deviceManagement.brand.model.deployParameter',
+      },
+    },
+    tagLibrary: {
+      listView: 'deviceManagement.tagLibrary.listView',
+      add: 'deviceManagement.tagLibrary.add',
+      edit: 'deviceManagement.tagLibrary.edit',
+      delete: 'deviceManagement.tagLibrary.delete',
+    },
+    newSensor: {
+      listView: 'deviceManagement.newSensor.listView',
+      add: 'deviceManagement.newSensor.add',
+      edit: 'deviceManagement.newSensor.edit',
+      delete: 'deviceManagement.newSensor.delete',
+      realTimeData: 'deviceManagement.newSensor.realTimeData',
+    },
+    dataProcessing: {
+      listView: 'deviceManagement.dataProcessing.companyList',
+      addEquipmentType: 'deviceManagement.dataProcessing.addEquipmentType',
+      editEquipmentType: 'deviceManagement.dataProcessing.editEquipmentType',
+      device: {
+        listView: 'deviceManagement.dataProcessing.device.list',
+        add: 'deviceManagement.dataProcessing.device.add',
+        edit: 'deviceManagement.dataProcessing.device.edit',
+        delete: 'deviceManagement.dataProcessing.device.delete',
+        bindSensor: 'deviceManagement.dataProcessing.device.bindSensor',
+        unbindSensor: 'deviceManagement.dataProcessing.device.unbindSensor',
+      },
+    },
   },
   videoSurveillance: {
     hikVideoTree: {
@@ -413,6 +462,8 @@ export default {
       edit: 'baseInfo.storehouse.edit',
       detail: 'baseInfo.storehouse.detail',
       delete: 'baseInfo.storehouse.delete',
+      bindSensor: 'baseInfo.storehouse.bindSensor',
+      unbindSensor: 'baseInfo.storehouse.unbindSensor',
     },
     // 物料信息
     materials: {
@@ -443,6 +494,8 @@ export default {
       add: 'baseInfo.reservoirRegionManagement.add',
       edit: 'baseInfo.reservoirRegionManagement.edit',
       delete: 'baseInfo.reservoirRegionManagement.delete',
+      bindSensor: 'baseInfo.reservoirRegionManagement.bindSensor',
+      unbindSensor: 'baseInfo.reservoirRegionManagement.unbindSensor',
     },
     // 重大危险源
     majorHazard: {

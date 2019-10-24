@@ -1,17 +1,18 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Input, Table, Select, Divider, Popconfirm, message } from 'antd';
+import { Card, Button, Input, Table, Select, Divider, Popconfirm, message } from 'antd';
 import ToolBar from '@/components/ToolBar';
 import { Link } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
-import { hasAuthority } from '@/utils/customAuth';
+import { hasAuthority, AuthA } from '@/utils/customAuth';
+import BindSensorModal from '@/pages/DeviceManagement/Components/BindSensorModal';
 
 const { Option } = Select;
 
 // 标题
 const title = '库区管理';
-
+const defaultPageSize = 10;
 const envirList = {
   1: '一类区',
   2: '二类区',
@@ -38,7 +39,13 @@ const breadcrumbList = [
 // 权限
 const {
   baseInfo: {
-    reservoirRegionManagement: { add: addAuth, edit: editAuth, delete: deleteAuth },
+    reservoirRegionManagement: {
+      add: addAuth,
+      edit: editAuth,
+      delete: deleteAuth,
+      bindSensor: bindSensorCode,
+      unbindSensor: unbindSensorCode,
+    },
   },
 } = codes;
 
@@ -47,10 +54,12 @@ const spanStyle = { md: 8, sm: 12, xs: 24 };
 /* session前缀 */
 const sessionPrefix = 'reservoir_region_list_';
 
-@connect(({ reservoirRegion, user, loading }) => ({
+@connect(({ reservoirRegion, user, device, loading }) => ({
   reservoirRegion,
   user,
+  device,
   loading: loading.models.reservoirRegion,
+  sensorLoading: loading.effects['device/fetchSensors'],
 }))
 // @Form.create()
 export default class ReservoirRegionList extends PureComponent {
@@ -82,9 +91,9 @@ export default class ReservoirRegionList extends PureComponent {
     dispatch({
       type: 'reservoirRegion/fetchAreaList',
       payload: {
-        ...params,
         pageNum: 1,
         pageSize: 10,
+        ...params,
       },
     });
   };
@@ -105,14 +114,14 @@ export default class ReservoirRegionList extends PureComponent {
   };
 
   // 查询
-  handleSearch = () => {
+  handleSearch = (pageNum = 1, pageSize = defaultPageSize) => {
     const {
       user: {
         currentUser: { id },
       },
     } = this.props;
     const { name, number, position, ...rest } = this.form.getFieldsValue();
-    const payload = { name, number, position, ...rest };
+    const payload = { name, number, position, pageNum, pageSize, ...rest };
     this.fetchList(payload);
     this.fetchCountNum(payload);
     sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
@@ -132,7 +141,7 @@ export default class ReservoirRegionList extends PureComponent {
       type: 'reservoirRegion/fetchAreaDelete',
       payload: { ids: id },
       success: () => {
-        this.fetchList();
+        this.handleSearch();
         this.fetchCountNum();
         message.success('删除成功！');
       },
@@ -153,6 +162,122 @@ export default class ReservoirRegionList extends PureComponent {
       },
     });
   };
+
+  /**
+  * 获取可绑定传感器列表
+  */
+  querySensors = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
+    const {
+      dispatch,
+    } = this.props
+    const { detail } = this.state
+    dispatch({
+      type: 'device/fetchSensors',
+      ...res,
+      payload: {
+        ...payload,
+        companyId: detail.companyId,
+        beMonitorTargetBindStatus: 0,
+        bindBeMonitorTargetId: detail.id,
+      },
+    })
+  }
+
+  /**
+  * 获取已绑定传感器列表
+  */
+  queryBindedSensors = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
+    const {
+      dispatch,
+    } = this.props
+    const { detail } = this.state
+    dispatch({
+      type: 'device/fetchSensors',
+      ...res,
+      payload: {
+        ...payload,
+        companyId: detail.companyId,
+        beMonitorTargetId: detail.id,
+      },
+    })
+  }
+
+  /**
+    * 绑定时选择传感器
+    */
+  onSensorChange = selectedSensorKeys => {
+    this.setState({ selectedSensorKeys })
+  }
+
+  /**
+     * 点击打开可绑定传感器弹窗
+     */
+  handleViewBind = (detail) => {
+    this.setState({ detail, selectedSensorKeys: [] }, () => {
+      this.querySensors()
+      this.setState({ bindSensorModalVisible: true })
+    })
+  }
+
+  /**
+  * 绑定传感器
+  */
+  handleBindSensor = () => {
+    const { dispatch } = this.props
+    const { selectedSensorKeys, detail } = this.state
+    if (!selectedSensorKeys || selectedSensorKeys.length === 0) {
+      message.warning('请勾选传感器！')
+      return
+    }
+    dispatch({
+      type: 'device/bindSensor',
+      payload: {
+        bindBeMonitorTargetId: detail.id,
+        bindSensorIdList: selectedSensorKeys,
+      },
+      success: () => {
+        message.success('绑定传感器成功')
+        this.setState({ bindSensorModalVisible: false, detail: {} })
+        this.handleSearch();
+        this.fetchCountNum();
+      },
+      error: (res) => { message.error(res ? res.msg : '绑定传感器失败') },
+    })
+  }
+
+  /**
+ * 打开已绑定传感器弹窗
+ */
+  handleViewBindedSensorModal = (detail) => {
+    this.setState({ detail }, () => {
+      this.queryBindedSensors()
+      this.setState({ bindedSensorModalVisible: true })
+    })
+  }
+
+  /**
+ * 解绑传感器
+ */
+  handleunBindSensor = (unbindSensorId) => {
+    const {
+      dispatch,
+    } = this.props
+    const { detail } = this.state
+    dispatch({
+      type: 'device/unbindSensor',
+      payload: {
+        bindBeMonitorTargetId: detail.id, // 设备id
+        unbindSensorId, // 传感器id
+      },
+      success: () => {
+        message.success('解绑传感器成功')
+        this.queryBindedSensors()
+        this.handleSearch();
+        this.fetchCountNum();
+      },
+      error: (res) => { message.error(res ? res.msg : '解绑传感器失败') },
+    })
+  }
 
   // 渲染表格
   renderTable = () => {
@@ -226,33 +351,45 @@ export default class ReservoirRegionList extends PureComponent {
         width: 180,
       },
       {
-        title: '已绑传感器',
-        dataIndex: 'bind',
+        title: '已绑定传感器',
+        dataIndex: 'sensorCount',
+        key: 'sensorCount',
         align: 'center',
         width: 120,
+        render: (val, row) => (
+          <span
+            onClick={() => val > 0 ? this.handleViewBindedSensorModal(row) : null}
+            style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+          >
+            {val}
+          </span>
+        ),
       },
       {
         title: '操作',
         key: '操作',
         align: 'center',
         width: 200,
+        fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <Link to="/base-info/reservoir-region-management/list">绑定传感器</Link>
+            <AuthA code={bindSensorCode} onClick={() => this.handleViewBind(row)}>
+              绑定传感器
+            </AuthA>
             <Divider type="vertical" />
             {editCode ? (
               <Link to={`/base-info/reservoir-region-management/edit/${row.id}`}>编辑</Link>
             ) : (
-              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
-            )}
+                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
+              )}
             <Divider type="vertical" />
             {deleteCode ? (
               <Popconfirm title="确认要删除数据吗？" onConfirm={() => this.handleDelete(row.id)}>
                 <a>删除</a>
               </Popconfirm>
             ) : (
-              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
-            )}
+                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
+              )}
           </Fragment>
         ),
       },
@@ -265,7 +402,7 @@ export default class ReservoirRegionList extends PureComponent {
           columns={columns}
           dataSource={list}
           bordered
-          scroll={{ x: 1400 }}
+          scroll={{ x: 'max-content' }}
           pagination={{
             current: pageNum,
             pageSize,
@@ -281,23 +418,26 @@ export default class ReservoirRegionList extends PureComponent {
         />
       </Card>
     ) : (
-      <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
-    );
+        <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
+      );
   };
 
   render() {
     const {
+      sensorLoading,
       reservoirRegion: {
         areaData: {
           pagination: { total },
         },
         envirTypeList,
-        areaCount: { companyNum },
+        areaCount: { companyNum = 0, sensorNum = 0 },
       },
       user: {
         currentUser: { permissionCodes },
       },
+      device: { sensor },
     } = this.props;
+    const { bindSensorModalVisible, bindedSensorModalVisible, selectedSensorKeys } = this.state
     const addCode = hasAuthority(addAuth, permissionCodes);
 
     const fields = [
@@ -345,7 +485,32 @@ export default class ReservoirRegionList extends PureComponent {
         transform: v => v.trim(),
       },
     ];
-
+    const bindSensorProps = {
+      tag: 'bind',
+      visible: bindSensorModalVisible,
+      fetch: this.querySensors,
+      onCancel: () => { this.setState({ bindSensorModalVisible: false }) },
+      selectedSensorKeys,
+      onOk: this.handleBindSensor,
+      model: sensor,
+      loading: sensorLoading,
+      rowSelection: {
+        selectedSensorKeys,
+        onChange: this.onSensorChange,
+      },
+      unbindSensorCode,
+    }
+    const bindedSensorProps = {
+      tag: 'unbind',
+      visible: bindedSensorModalVisible,
+      fetch: this.queryBindedSensors,
+      onCancel: () => { this.setState({ bindedSensorModalVisible: false }) },
+      model: sensor,
+      loading: sensorLoading,
+      handleUnbind: this.handleunBindSensor,
+      footer: null,
+      unbindSensorCode,
+    }
     return (
       <PageHeaderLayout
         title={title}
@@ -362,7 +527,7 @@ export default class ReservoirRegionList extends PureComponent {
             </span>
             <span style={{ paddingLeft: 20 }}>
               已绑传感器数：
-              {0}
+              {sensorNum}
             </span>
           </div>
         }
@@ -386,6 +551,14 @@ export default class ReservoirRegionList extends PureComponent {
         </Card>
 
         {this.renderTable()}
+        {/* 绑定已有传感器弹窗 */}
+        <BindSensorModal
+          {...bindSensorProps}
+        />
+        {/* 已绑定传感器弹窗 */}
+        <BindSensorModal
+          {...bindedSensorProps}
+        />
       </PageHeaderLayout>
     );
   }

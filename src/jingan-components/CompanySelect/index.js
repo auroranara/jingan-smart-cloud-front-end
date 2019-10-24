@@ -60,13 +60,18 @@ export default class CompanySelect extends Component {
           list=[],
         },
       },
+      className,
+      style,
       loading,
       value,
       onChange,
+      disabled,
     } = this.props;
 
     return (
       <AutoComplete
+        className={className}
+        style={style}
         mode="combobox"
         labelInValue
         value={value}
@@ -78,6 +83,7 @@ export default class CompanySelect extends Component {
         onSearch={this.debouncedHandleSearch}
         onBlur={this.handleBlur}
         notFoundContent={loading ? <Spin size="small" /> : '未找到数据'}
+        disabled={disabled}
       >
         {list.map(({ id, name }) => (
           <Option key={id}>{name}</Option>
