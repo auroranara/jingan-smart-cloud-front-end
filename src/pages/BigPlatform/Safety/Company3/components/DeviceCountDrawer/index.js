@@ -50,7 +50,7 @@ export default class DeviceCountDrawer extends PureComponent {
   }
 
   refScroll = (scroll) => {
-    this.scroll = scroll && scroll.dom;
+    this.scroll = scroll && scroll.dom || scroll;
   }
 
   /**
