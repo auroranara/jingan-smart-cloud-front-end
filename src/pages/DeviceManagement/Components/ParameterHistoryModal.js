@@ -27,7 +27,7 @@ const HistoryModal = (props) => {
       title: '操作时间',
       dataIndex: 'doTime',
       align: 'center',
-      render: (val) => moment(val).format('YYYY-MM-DD'),
+      render: (val) => moment(val).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '操作类型',

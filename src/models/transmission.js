@@ -184,7 +184,7 @@ export default {
       }
     },
     // 获取点位列表
-    *fetchPoints({ payload }, { call, put }) {
+    *fetchPoints({ payload, callback }, { call, put }) {
       const res = yield call(fetchPoints, payload)
       if (res && res.code === 200) {
         const { list = [], pageNum = 1, pageSize = 10, total = 0 } = res.data || {}
@@ -197,6 +197,7 @@ export default {
             },
           },
         })
+        if (callback) callback(res.data)
       }
     },
     // 编辑点位

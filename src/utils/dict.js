@@ -193,3 +193,15 @@ export const parameterGroupTypes = generateEnum({
   4: '漏电电流',
   5: '火警',
 })
+
+/*
+* 机械臂状态
+*/
+export const armStatusEnum = generateEnum({
+  '-20': '关闭',
+  '-21': '打开',
+  '-22': '未连接',
+  '-23': '正在打开',
+  '-24': '正在关闭',
+  '-25': '故障',
+})

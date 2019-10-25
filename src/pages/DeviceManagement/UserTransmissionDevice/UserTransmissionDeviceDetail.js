@@ -150,8 +150,10 @@ function convertMsToString(ms) {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
 
-@connect(({ transmission, loading }) => ({
+@connect(({ transmission, gateway, device, loading }) => ({
   transmission,
+  gateway,
+  device,
   loading: loading.effects['transmission/fetchDetail'],
 }))
 export default class UserTransmissionDeviceDetail extends Component {
@@ -173,8 +175,20 @@ export default class UserTransmissionDeviceDetail extends Component {
       },
     } = this.props;
     // console.log(id);
-    dispatch({ type: 'transmission/fetchDetail', payload: companyId });
+    // 获取传输装置列表
+    this.fetchUserTransmissionList()
     dispatch({ type: 'transmission/fetchCompanyDetail', payload: companyId });
+  }
+
+  /**
+  * 获取传输装置列表
+  **/
+  fetchUserTransmissionList = () => {
+    const {
+      dispatch,
+      match: { params: { companyId } },
+    } = this.props;
+    dispatch({ type: 'transmission/fetchDetail', payload: companyId });
   }
 
   downloadPointPositionTemplate = () => {
@@ -241,8 +255,26 @@ export default class UserTransmissionDeviceDetail extends Component {
     });
   };
 
-  handleDeviceDeleteClick = () => {
-    message.warn('删除功能暂未开放');
+  handleDeviceDeleteClick = ({ fireCount, id }) => {
+    const { dispatch } = this.props
+    if (fireCount > 0) {
+      message.warn('该传输装置有关联消防主机，无法删除！');
+    } else {
+      dispatch({
+        type: 'gateway/remove',
+        payload: { id },
+        callback: (isSuccess, msg) => {
+          if (isSuccess) {
+            message.success('删除成功');
+            // 重新获取传输装置列表
+            this.fetchUserTransmissionList()
+          } else {
+            message.error(msg || '删除失败，请稍后重试！');
+          }
+        },
+      });
+    }
+
   };
 
   // handleDeviceDeleteClick = deviceId => {
@@ -330,8 +362,36 @@ export default class UserTransmissionDeviceDetail extends Component {
     });
   };
 
-  handleHostDeleteClick = () => {
-    message.warn('删除功能暂未开放');
+  handleHostDeleteClick = (userTransmissionId, hostId) => {
+    const {
+      dispatch,
+    } = this.props
+    // 获取点位列表
+    dispatch({
+      type: 'transmission/fetchPoints',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        hostId, // 主机Id
+      },
+      callback: (data) => {
+        if (data && data.total === 0) {
+          // 如果主机没有导入点位，可删除
+          dispatch({
+            type: 'device/deleteEquipment',
+            payload: { id: hostId },
+            success: () => {
+              message.success('删除设备成功')
+              // 获取传输装置列表
+              this.fetchUserTransmissionList()
+            },
+            error: (res) => { message.error(res ? res.msg : '删除关联消防主机失败！') },
+          })
+        } else {
+          message.warn('该主机已导入点位，无法删除！');
+        }
+      },
+    })
   }
 
   // handleHostDeleteClick = (transmissionId, hostId) => {

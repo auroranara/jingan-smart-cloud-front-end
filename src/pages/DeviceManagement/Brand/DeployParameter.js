@@ -21,7 +21,7 @@ const FormItem = Form.Item;
 
 const title = "配置参数"
 
-const numberReg = /^(0|[1-9][0-9]*)(\.[0-9]{1,3})?$/;
+const numberReg = /^-?(0|[1-9][0-9]*)(\.[0-9]{1,3})?$/;
 const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 15 },

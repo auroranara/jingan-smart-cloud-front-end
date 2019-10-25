@@ -13,6 +13,8 @@ import {
 import HistoryModal from '@/pages/DeviceManagement/Components/ParameterHistoryModal';
 
 const FormItem = Form.Item;
+// 数字正则（负数、小数）
+const numberReg = /^-?\d*\.?\d*$/;
 
 // 渲染配置报警策略弹窗
 const RenderAlarmStrategyModal = Form.create()(props => {
@@ -140,7 +142,7 @@ const RenderAlarmStrategyModal = Form.create()(props => {
                     placeholder="请输入"
                     addonAfter={paramUnit || null}
                     value={row.limitValue}
-                    onChange={(e) => onInputChange(isNaN(e.target.value) ? row.limitValue : +e.target.value, row, i)}
+                    onChange={(e) => onInputChange(numberReg.test(e.target.value) ? e.target.value : row.limitValue, row, i)}
                   />
                 </FormItem>
               </Col>
@@ -238,7 +240,7 @@ export default class DeployParameterTable extends PureComponent {
     // 筛选掉报警策略中 类型和值只有一项的以及都没有的
     const paramWarnStrategyList = alarmStrategy.reduce((arr, { condition, warnLevel, limitValue, ...res }) => {
       if (condition && !isNaN(limitValue)) {
-        return [...arr, { ...res, condition, warnLevel, limitValue }]
+        return [...arr, { ...res, condition, warnLevel, limitValue: +limitValue }]
       } else return arr
     }, [])
     this.setState({ alarmModalVisible: false })

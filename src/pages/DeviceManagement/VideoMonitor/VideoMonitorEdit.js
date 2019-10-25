@@ -151,11 +151,13 @@ export default class VideoMonitorEdit extends PureComponent {
   fetchEquipmentsForAll = () => {
     const {
       dispatch,
-      location: { query: { companyId } },
+      location: { query },
     } = this.props
+    const { companyId } = this.state
+    // 企业内新增、编辑视频，企业都无法改变
     dispatch({
       type: 'device/fetchEquipmentsForAll',
-      payload: { companyId, equipmentType: 110 },
+      payload: { companyId: companyId || query.companyId, equipmentType: 110 },
     })
   }
 
@@ -358,15 +360,20 @@ export default class VideoMonitorEdit extends PureComponent {
   /* 企业选择按钮点击事件 */
   handleSelectCompany = value => {
     const {
-      form: { setFieldsValue },
+      form: { setFieldsValue, getFieldValue },
       dispatch,
     } = this.props;
+    // 是否集成NVR 0 否 则显示NVR编号选择
+    const inheritNvr = getFieldValue('inheritNvr')
     setFieldsValue({
       companyId: value.name,
     });
     this.setState({
       companyId: value.id,
       company: value,
+    }, () => {
+      this.fetchEquipmentsForAll();
+      if (+inheritNvr === 0) setFieldsValue({ nvr: undefined });
     });
     dispatch({
       type: 'safety/fetch',

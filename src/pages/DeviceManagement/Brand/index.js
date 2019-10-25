@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Form, Table, Divider, Popconfirm, Button, Modal, Input, message, Row, Col } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-import { AuthA } from '@/utils/customAuth';
+import { AuthA, AuthButton } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import router from 'umi/router';
 
@@ -23,6 +23,18 @@ const formItemCol = {
     span: 15,
   },
 };
+const {
+  deviceManagement: {
+    brand: {
+      add: addCode,
+      edit: editCode,
+      delete: deleteCode,
+      model: {
+        listView: modelViewCode,
+      },
+    },
+  },
+} = codes
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
 
@@ -197,14 +209,14 @@ export default class Brand extends PureComponent {
         align: 'center',
         render: (val, row) => (
           <Fragment>
-            <AuthA code={codes.deviceManagement.brand.edit} onClick={() => this.handleViewEdit(row)}>编辑</AuthA>
+            <AuthA code={editCode} onClick={() => this.handleViewEdit(row)}>编辑</AuthA>
             <Divider type="vertical" />
             <Popconfirm title="确认要删除该品牌吗？" onConfirm={() => this.handleDelete(row.id)}>
-              <AuthA code={codes.deviceManagement.brand.delete}>删除</AuthA>
+              <AuthA code={deleteCode}>删除</AuthA>
             </Popconfirm>
             <Divider type="vertical" />
             <AuthA
-              code={codes.deviceManagement.brand.model.listView}
+              code={modelViewCode}
               onClick={() => this.jumpToModel(row.id)}>
               型号管理
                </AuthA>
@@ -263,7 +275,7 @@ export default class Brand extends PureComponent {
               <FormItem {...formItemStyle}>
                 <Button onClick={() => this.handleQuery()} style={{ marginRight: '10px' }} type="primary">查询</Button>
                 <Button onClick={this.handleReset} style={{ marginRight: '10px' }}>重置</Button>
-                <Button type="primary" onClick={this.handleViewAdd}>新增</Button>
+                <AuthButton code={addCode} type="primary" onClick={this.handleViewAdd}>新增</AuthButton>
               </FormItem>
             </Col>
           </Row>
@@ -292,9 +304,6 @@ export default class Brand extends PureComponent {
         title={title}
         breadcrumbList={breadcrumbList}
         content={`品牌总数：${total}`}
-        extraContent={
-          (<Button type="primary" onClick={this.handleViewAdd}>新增</Button>)
-        }
       >
         {this.renderFilter()}
         {this.renderBrandTable()}

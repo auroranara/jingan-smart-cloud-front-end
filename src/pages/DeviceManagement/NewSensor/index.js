@@ -124,8 +124,12 @@ export default class NewSensorList extends Component {
   /**
    * 删除传感器
    */
-  handleDelete = (id) => {
+  handleDelete = ({ id, dataExecuteEquipmentId, beMonitorTargetId }) => {
     const { dispatch } = this.props
+    if (!dataExecuteEquipmentId || !beMonitorTargetId) {
+      message.warning('该传感器已绑定数据处理设备或监测对象，不可直接删除，请先解绑')
+      return
+    }
     dispatch({
       type: 'device/deleteSensor',
       payload: { id },
@@ -295,8 +299,9 @@ export default class NewSensorList extends Component {
         key: '传感器编号',
         align: 'center',
         width: 250,
-        render: (val, { code, token }) => (
+        render: (val, { code, token, useStatus }) => (
           <div style={{ textAlign: 'left' }}>
+            {useStatus === 2 && (<div style={{ color: 'red' }}>已禁用</div>)}
             <div>编号：{code || '暂无数据'}</div>
             <div>Token：{token || '暂无数据'}</div>
           </div>
@@ -323,14 +328,14 @@ export default class NewSensorList extends Component {
         dataIndex: 'linkStatus',
         align: 'center',
         width: 150,
-        render: (val) => (val === -1 && '失联') || (val === 0 && '在线') || '未知',
+        render: (val) => (<span style={{ color: val === -1 ? 'red' : 'inherit' }}>{(val === -1 && '失联') || (val === 0 && '在线') || '未知'}</span>),
       },
       {
         title: '运行状态',
         dataIndex: 'faultStatus',
         align: 'center',
         width: 150,
-        render: (val) => (val === -1 && '故障') || (val === 0 && '正常') || '未知',
+        render: (val) => (<span style={{ color: val === -1 ? 'red' : 'inherit' }}>{(val === -1 && '故障') || (val === 0 && '正常') || '未知'}</span>),
       },
       {
         title: '数据处理设备编号',
@@ -379,7 +384,7 @@ export default class NewSensorList extends Component {
             <AuthPopConfirm
               code={deleteSensorCode}
               title="确认要删除该传感器吗？"
-              onConfirm={() => this.handleDelete(row.id)}
+              onConfirm={() => this.handleDelete(row)}
             >
               删除
             </AuthPopConfirm>

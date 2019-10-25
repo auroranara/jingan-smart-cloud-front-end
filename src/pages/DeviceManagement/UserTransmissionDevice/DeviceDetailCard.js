@@ -4,7 +4,7 @@ import { Button, Card, Dropdown, Menu, Icon, Table } from 'antd';
 import DescriptionList from 'components/DescriptionList';
 
 import styles from './DeviceDetailCard.less';
-import { getDisabled, hasAuthority, AuthA, AuthLink, AuthButton } from '@/utils/customAuth';
+import { getDisabled, hasAuthority, AuthA, AuthLink, AuthButton, AuthPopConfirm } from '@/utils/customAuth';
 import buttonCodes from '@/utils/codes';
 import router from 'umi/router';
 
@@ -45,7 +45,7 @@ export default class DeviceDetailCard extends Component {
         </AuthButton>
         <AuthButton
           code={buttonCodes.deviceManagement.transmission.delete}
-          onClick={() => handleDeviceDeleteClick(deviceData.id)}
+          onClick={() => handleDeviceDeleteClick(deviceData)}
         >
           删除
         </AuthButton>
@@ -151,19 +151,19 @@ export default class DeviceDetailCard extends Component {
           const menu = (
             <Menu>
               <MenuItem>
-                {/* <a
-                  onClick={getOnClick(HOST_DELETE_CODE, codes, () => handleHostDeleteClick(id, record.id))}
-                  // className={styles.itemNotAllowed}
-                  className={getDisabled(HOST_DELETE_CODE, codes) ? styles.notAllowed : null}
-                >
-                  删除
-                </a> */}
-                <AuthA
+                {/* <AuthA
                   code={buttonCodes.deviceManagement.transmission.host.delete}
                   onClick={() => handleHostDeleteClick(id, record.id)}
                 >
                   删除
-                </AuthA>
+                </AuthA> */}
+                <AuthPopConfirm
+                  title="确认要删除该设备吗？"
+                  code={buttonCodes.deviceManagement.transmission.host.delete}
+                  onConfirm={() => handleHostDeleteClick(id, record.id)}
+                >
+                  删除
+                </AuthPopConfirm>
               </MenuItem>
               <MenuItem>
                 {/* <Link

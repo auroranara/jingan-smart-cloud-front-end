@@ -20,7 +20,7 @@ import { connect } from 'dva';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import router from 'umi/router';
 import moment from 'moment';
-import { generateEnum } from '@/utils/dict';
+import { armStatusEnum } from '@/utils/dict';
 import styles from './RealTimeData.less';
 
 import logoLocation from '@/assets/logo-location.svg';
@@ -33,13 +33,15 @@ const formItemLayout = {
   wrapperCol: { span: 18 },
 };
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
+// 图标样式
 const statusStyle = [
-  {},
-  { filter: 'hue-rotate(190deg)' },
-  { filter: 'invert(1) hue-rotate(-20deg)' },
-  { filter: 'grayscale(1)' },
+  {},  // 蓝色
+  { filter: 'hue-rotate(190deg)' }, // 橙色
+  { filter: 'invert(1) hue-rotate(-20deg)' }, // 红色
+  { filter: 'grayscale(1)' }, // 灰色
 ];
-const numColor = ['rgb(48,179,233)', 'rgb(27,137,60)', 'rgb(227,66,63)', 'rgb(155,155,155)'];
+// 数字颜色（与图标颜色相对应）
+const numColor = ['rgb(48,179,233)', 'rgb(247,137,67)', 'rgb(227,66,63)', 'rgb(155,155,155)'];
 const logoItemWrapper = {
   sm: 12,
   md: 8,
@@ -186,6 +188,7 @@ export default class RealTimeData extends Component {
           faultStatus, // 运行状态
           faultStatusList = [], // 故障列表
           sensorMonitorParamList = [],
+          armStatus, // {String} 机械臂状态
         } = {},
       },
     } = this.props;
@@ -217,9 +220,15 @@ export default class RealTimeData extends Component {
                   <span> 联网状态：{linkLabel}</span>
                 </Col>
                 <Col {...descWrapper}>
-                  <span>运行状态：{runningLabel}</span>
+                  <span>运行状态：</span>
+                  <span className={faultStatus === -1 ? styles.red : null}>{runningLabel}</span>
                 </Col>
               </Row>
+              {armStatus && (
+                <Row className={styles.line}>
+                  <span>机械臂状态：{armStatusEnum[armStatus]}</span>
+                </Row>
+              )}
               {faultStatusList.length > 0 && (
                 <Fragment>
                   <h4>当前故障</h4>
@@ -237,6 +246,7 @@ export default class RealTimeData extends Component {
               )}
             </Form>
           </Card>
+
           <Card style={{ marginTop: '24px' }}>
             <h3>实时监测</h3>
             <Row className={styles.line}>
@@ -269,7 +279,7 @@ export default class RealTimeData extends Component {
                         <div className={styles.num}>{'—'}</div>
                       ) : (
                           <div>
-                            <div>{`${paramDesc}（${paramUnit}）`}</div>
+                            <div>{`${paramDesc}${paramUnit ? `（${paramUnit}）` : ''}`}</div>
                             <div className={styles.num}>{'—'}</div>
                           </div>
                         )}
