@@ -1,11 +1,21 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Modal, Table, Button, Input, TreeSelect, Form, Card, Row, Col } from 'antd';
+import { Modal, Table, Button, Input, Form, Card, Row, Col } from 'antd';
+import { AuthButton } from '@/utils/customAuth';
+import codes from '@/utils/codes';
 
 const FormItem = Form.Item;
 
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
+
+const {
+  deviceManagement: {
+    gateway: {
+      add: gatewayAddCode,
+    },
+  },
+} = codes
 
 @Form.create()
 @connect(({ device, loading }) => ({
@@ -38,6 +48,14 @@ export default class GateWayModal extends PureComponent {
   }
 
   /**
+   * 点击重置
+   */
+  handleToAddGateway = () => {
+    const win = window.open(`${window.publicPath}#/device-management/gateway/add`, '_blank');
+    win.focus();
+  }
+
+  /**
    * 渲染筛选栏
    */
   renderFilter = () => {
@@ -58,7 +76,8 @@ export default class GateWayModal extends PureComponent {
             <Col {...colWrapper}>
               <FormItem {...formItemStyle}>
                 <Button type="primary" onClick={() => this.handleQuery()} style={{ marginRight: '10px' }}>查询</Button>
-                <Button onClick={this.handleReset}>重置</Button>
+                <Button onClick={this.handleReset} style={{ marginRight: '10px' }}>重置</Button>
+                <AuthButton code={gatewayAddCode} onClick={this.handleToAddGateway} type="primary" >新增</AuthButton>
               </FormItem>
             </Col>
           </Row>
@@ -126,7 +145,7 @@ export default class GateWayModal extends PureComponent {
     } = this.props
     return (
       <Modal
-        title="选择品牌"
+        title="选择网关设备"
         visible={visible}
         onCancel={onCancel}
         width={800}

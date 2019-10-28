@@ -114,14 +114,14 @@ export default class ReservoirRegionList extends PureComponent {
   };
 
   // 查询
-  handleSearch = (pageNum = 1, pageSize = defaultPageSize) => {
+  handleSearch = () => {
     const {
       user: {
         currentUser: { id },
       },
     } = this.props;
-    const { name, number, position, ...rest } = this.form.getFieldsValue();
-    const payload = { name, number, position, pageNum, pageSize, ...rest };
+    const values = this.form.getFieldsValue();
+    const payload = { pageNum: 1, pageSize: defaultPageSize, ...values };
     this.fetchList(payload);
     this.fetchCountNum(payload);
     sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
@@ -384,7 +384,7 @@ export default class ReservoirRegionList extends PureComponent {
               )}
             <Divider type="vertical" />
             {deleteCode ? (
-              <Popconfirm title="确认要删除数据吗？" onConfirm={() => this.handleDelete(row.id)}>
+              <Popconfirm title="确认要删除数据吗？如继续删除，已绑定传感器将会自动解绑！" onConfirm={() => this.handleDelete(row.id)}>
                 <a>删除</a>
               </Popconfirm>
             ) : (

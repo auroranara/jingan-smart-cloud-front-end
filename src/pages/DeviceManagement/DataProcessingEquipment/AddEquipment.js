@@ -231,7 +231,7 @@ export default class AddEquipment extends Component {
 
   /**
   * 刷新建筑物楼层图下拉
-  * @param {Boolean} 是否刷新建筑物下拉
+  * @param {Boolean} weatherFetch 是否重新获取建筑物选项下拉
   */
   handleRefreshBuilding = (weatherFetch = false) => {
     const {
@@ -331,6 +331,16 @@ export default class AddEquipment extends Component {
     this.setState({ gatewayEquipment: row, gateWayModalVisible: false })
   }
 
+  /**
+   * 验证建筑物或者楼层是否已选择
+   */
+  validateBuildingFloor = (rule, value, callback) => {
+    const { form: { getFieldsValue } } = this.props
+    const { buildingId, floorId } = getFieldsValue()
+    if (buildingId && floorId) {
+      callback()
+    } else callback('请选择所属建筑物楼层')
+  }
 
   /**
    * 品牌改变
@@ -663,36 +673,43 @@ export default class AddEquipment extends Component {
           {(!locationType || locationType === 0) && (
             <Fragment>
               <FormItem label="所属建筑物楼层" {...formItemLayout}>
-                <Col span={5} style={{ marginRight: '10px' }}>
-                  {getFieldDecorator('buildingId')(
-                    <Select placeholder="建筑物" style={{ width: '100%' }} onChange={this.handleSelectBuilding} allowClear>
-                      {buildings.map((item, i) => (
-                        <Select.Option key={i} value={item.id}>{item.buildingName}</Select.Option>
-                      ))}
-                    </Select>
-                  )}
-                </Col>
-                <Col span={5} style={{ marginRight: '10px' }}>
-                  {getFieldDecorator('floorId')(
-                    <Select placeholder="楼层" style={{ width: '100%' }} onChange={() => this.changeFlatPicBuildingNum()} allowClear>
-                      {floors.map((item, i) => (
-                        <Select.Option key={i} value={item.id}>{item.floorName}</Select.Option>
-                      ))}
-                    </Select>
-                  )}
-                </Col>
-                <Tooltip title="刷新建筑物楼层" className={styles.mr10}>
-                  <Button onClick={() => this.handleRefreshBuilding(true)}>
-                    <Icon type="reload" />
-                  </Button>
-                </Tooltip>
-                <AuthButton
-                  onClick={this.jumpToBuildingManagement}
-                  code={codesMap.company.buildingsInfo.add}
-                  type="primary"
-                >
-                  新增建筑物楼层
-                    </AuthButton>
+                {getFieldDecorator('buildingFloor', {
+                  validateTrigger: 'onBlur',
+                  rules: [{ required: true, validator: this.validateBuildingFloor }],
+                })(
+                  <Fragment>
+                    <Col span={5} style={{ marginRight: '10px' }}>
+                      {getFieldDecorator('buildingId')(
+                        <Select placeholder="建筑物" style={{ width: '100%' }} onChange={this.handleSelectBuilding} allowClear>
+                          {buildings.map((item, i) => (
+                            <Select.Option key={i} value={item.id}>{item.buildingName}</Select.Option>
+                          ))}
+                        </Select>
+                      )}
+                    </Col>
+                    <Col span={5} style={{ marginRight: '10px' }}>
+                      {getFieldDecorator('floorId')(
+                        <Select placeholder="楼层" style={{ width: '100%' }} onChange={() => this.changeFlatPicBuildingNum()} allowClear>
+                          {floors.map((item, i) => (
+                            <Select.Option key={i} value={item.id}>{item.floorName}</Select.Option>
+                          ))}
+                        </Select>
+                      )}
+                    </Col>
+                    <Tooltip title="刷新建筑物楼层" className={styles.mr10}>
+                      <Button onClick={() => this.handleRefreshBuilding(true)}>
+                        <Icon type="reload" />
+                      </Button>
+                    </Tooltip>
+                    <AuthButton
+                      onClick={this.jumpToBuildingManagement}
+                      code={codesMap.company.buildingsInfo.add}
+                      type="primary"
+                    >
+                      新增建筑物楼层
+                </AuthButton>
+                  </Fragment>
+                )}
               </FormItem>
               <FormItem label="详细位置" {...formItemLayout}>
                 {getFieldDecorator('location', {

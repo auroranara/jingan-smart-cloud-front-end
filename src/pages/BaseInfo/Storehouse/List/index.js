@@ -493,7 +493,7 @@ export default class StorehouseList extends PureComponent {
               编辑
             </AuthA>
             <Divider type="vertical" />
-            <Popconfirm title="确认要删除该库房吗？" onConfirm={() => this.handleDelete(record.id)}>
+            <Popconfirm title="确认要删除该库房吗？如继续删除，已绑定传感器将会自动解绑！" onConfirm={() => this.handleDelete(record.id)}>
               <AuthA code={deleteCode}>删除</AuthA>
             </Popconfirm>
           </span>

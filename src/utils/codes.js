@@ -146,6 +146,7 @@ export default {
       delete: 'deviceManagement.newSensor.delete',
       realTimeData: 'deviceManagement.newSensor.realTimeData',
     },
+    // 数据处理设备
     dataProcessing: {
       listView: 'deviceManagement.dataProcessing.companyList',
       addEquipmentType: 'deviceManagement.dataProcessing.addEquipmentType',
@@ -158,6 +159,14 @@ export default {
         bindSensor: 'deviceManagement.dataProcessing.device.bindSensor',
         unbindSensor: 'deviceManagement.dataProcessing.device.unbindSensor',
       },
+    },
+    // 网关
+    gateway: {
+      listView: 'deviceManagement.gateway.list',
+      add: 'deviceManagement.gateway.add',
+      edit: 'deviceManagement.gateway.edit',
+      delete: 'deviceManagement.gateway.delete',
+      detail: 'deviceManagement.gateway.detail',
     },
   },
   videoSurveillance: {

@@ -22,12 +22,12 @@ const FlatInfo = (props) => {
     buildings = [], // 建筑物列表
     pointFixInfoList = [],
     editingIndex, // 当前编辑的下标
-    visible,
+    visible, // 定位弹窗可见
     isImgSelect,
-    imgIdCurrent,
-    onCancel,
-    imgList,
-    flatGraphic,
+    imgIdCurrent, // 定位弹窗当前选择图片下标
+    onCancel,  // 关闭定位弹窗
+    imgList, // 定位弹窗图标选择列表
+    flatGraphic, // 平面图类型选项
     setState,
     dispatch,
     companyId,

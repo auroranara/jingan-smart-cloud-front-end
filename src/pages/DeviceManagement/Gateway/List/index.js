@@ -6,6 +6,8 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import classNames from 'classnames';
+import codes from '@/utils/codes';
+import { AuthButton } from '@/utils/customAuth';
 import styles from './index.less';
 
 const { Option } = Select;
@@ -32,6 +34,7 @@ const DETAIL_CODE = 'deviceManagement.gateway.detail';
 const ADD_CODE = 'deviceManagement.gateway.add';
 const EDIT_CODE = 'deviceManagement.gateway.edit';
 const DELETE_CODE = 'deviceManagement.gateway.delete';
+const { deviceManagement: { gateway: { add: addCode } } } = codes
 
 @connect(({
   gateway,
@@ -212,7 +215,7 @@ export default class GatewayList extends Component {
           onSearch={getList}
           onReset={getList}
           action={hasAddAuthority && (
-            <Button type="primary" onClick={this.handleAddClick}>新增</Button>
+            <AuthButton code={addCode} type="primary" onClick={this.handleAddClick}>新增</AuthButton>
           )}
           ref={this.setFormReference}
         />
