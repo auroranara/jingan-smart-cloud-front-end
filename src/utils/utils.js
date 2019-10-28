@@ -372,3 +372,17 @@ export function getMappedFields(values, fieldNames) {
     return result;
   }, {});
 }
+
+/**
+ * 获取分页数量
+ */
+export function getPageSize() {
+  return JSON.parse(localStorage.getItem('PAGE_SIZE') || '10');
+}
+
+/**
+ * 设置分页数量
+ */
+export function setPageSize(pageSize) {
+  localStorage.setItem('PAGE_SIZE', JSON.stringify(pageSize));
+}

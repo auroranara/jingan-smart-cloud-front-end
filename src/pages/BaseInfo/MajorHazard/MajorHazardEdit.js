@@ -247,9 +247,11 @@ export default class MajorHazardEdit extends PureComponent {
 
   fetchChemicalsList = ({ payload }) => {
     const { dispatch } = this.props;
+    const { detailList } = this.state;
+    const { companyId } = detailList;
     dispatch({
       type: 'reservoirRegion/fetchMaterialInfoList',
-      payload: { ...payload },
+      payload: { ...payload, companyId: this.companyId || companyId },
     });
   };
 
@@ -631,7 +633,8 @@ export default class MajorHazardEdit extends PureComponent {
             {getFieldDecorator('unitChemicla', {
               initialValue: chemicalList
                 .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
-                .join(','),
+                .join(',')
+                .replace(/null+/g, ''),
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
