@@ -44,7 +44,7 @@ export default class CurrentHiddenDanger extends PureComponent {
   }
 
   refScroll = (scroll) => {
-    this.scroll = scroll;
+    this.scroll = scroll && scroll.dom || scroll;
   }
 
   /**
@@ -59,7 +59,7 @@ export default class CurrentHiddenDanger extends PureComponent {
       selectedStatus,
     });
     // 移到最顶部
-    this.scroll.dom.scrollTop();
+    this.scroll && this.scroll.scrollTop();
   }
 
   /**

@@ -59,7 +59,7 @@ export default class ElectricalFireMonitoringDrawer extends PureComponent {
   }
 
   setScrollReference = (scroll) => {
-    this.scroll = scroll && scroll.dom;
+    this.scroll = scroll && scroll.dom || scroll;
   }
 
   handleTabClick = (activeKey) => {
