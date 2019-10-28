@@ -190,7 +190,7 @@ export default class HumiturePointDetailDrawer extends Component {
   }
 
   setScrollReference = scroll => {
-    this.scroll = scroll && scroll.dom;
+    this.scroll = scroll && scroll.dom || scroll;
   }
 
   setTimer = () => {

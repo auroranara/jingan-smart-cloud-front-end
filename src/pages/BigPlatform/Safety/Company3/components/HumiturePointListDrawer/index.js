@@ -84,7 +84,7 @@ export default class HumiturePointListDrawer extends Component {
   }
 
   setScrollReference = scroll => {
-    this.scroll = scroll && scroll.dom;
+    this.scroll = scroll && scroll.dom || scroll;
   }
 
   handleTabClick = (activeKey) => {

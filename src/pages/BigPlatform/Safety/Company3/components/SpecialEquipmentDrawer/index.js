@@ -20,13 +20,13 @@ export default class SpecialEquipmentDrawer extends PureComponent {
   componentDidUpdate({ visible: prevVisible }) {
     const { visible } = this.props;
     if (!prevVisible && visible) {
-      this.scroll.dom.scrollTop();
+      this.scroll && this.scroll.scrollTop();
       this.handleStatusChange('2'); // 默认选中全部
     }
   }
 
   refScroll = scroll => {
-    this.scroll = scroll;
+    this.scroll = scroll && scroll.dom || scroll;
   };
 
   /**

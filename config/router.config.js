@@ -953,6 +953,44 @@ module.exports = env => {
                 },
               ],
             },
+            // 安全设施
+            {
+              name: 'safetyFacilities',
+              code: 'baseInfo.safetyFacilities',
+              path: '/base-info/safety-facilities',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/base-info/safety-facilities',
+                  redirect: '/base-info/safety-facilities/list',
+                },
+                {
+                  name: 'list',
+                  code: 'baseInfo.safetyFacilities.list',
+                  path: '/base-info/safety-facilities/list',
+                  component: './BaseInfo/SafetyFacilities/TableList',
+                },
+                {
+                  name: 'view',
+                  code: 'baseInfo.safetyFacilities.view',
+                  path: '/base-info/safety-facilities/view/:id',
+                  component: './BaseInfo/SafetyFacilities/Edit',
+                },
+                {
+                  name: 'add',
+                  code: 'baseInfo.safetyFacilities.add',
+                  path: '/base-info/safety-facilities/add',
+                  component: './BaseInfo/SafetyFacilities/Edit',
+                },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.safetyFacilities.edit',
+                  path: '/base-info/safety-facilities/edit/:id',
+                  component: './BaseInfo/SafetyFacilities/Edit',
+                },
+              ],
+            },
           ],
         },
 
@@ -1078,6 +1116,91 @@ module.exports = env => {
           ],
         },
 
+        // 两单信息管理
+        {
+          path: '/two-information-management',
+          code: 'twoInformationManagement',
+          icon: 'unordered-list',
+          name: 'twoInformationManagement',
+          routes: [
+            // 危险（有害）因素排查辨识清单
+            {
+              name: 'dangerFactorsList',
+              code: 'twoInformationManagement.dangerFactorsList',
+              path: '/two-information-management/danger-factors-list',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/two-information-management/danger-factors-list',
+                  redirect: '/two-information-management/danger-factors-list/list',
+                },
+                {
+                  name: 'list',
+                  code: 'twoInformationManagement.dangerFactorsList.list',
+                  path: '/two-information-management/danger-factors-list/list',
+                  component: './TwoInformationManagement/DangerFactorsList/TableList',
+                },
+                {
+                  name: 'view',
+                  code: 'twoInformationManagement.dangerFactorsList.view',
+                  path: '/two-information-management/danger-factors-list/view/:id',
+                  component: './TwoInformationManagement/DangerFactorsList/Edit',
+                },
+                {
+                  name: 'add',
+                  code: 'twoInformationManagement.dangerFactorsList.add',
+                  path: '/two-information-management/danger-factors-list/add',
+                  component: './TwoInformationManagement/DangerFactorsList/Edit',
+                },
+                {
+                  name: 'edit',
+                  code: 'twoInformationManagement.dangerFactorsList.edit',
+                  path: '/two-information-management/danger-factors-list/edit/:id',
+                  component: './TwoInformationManagement/DangerFactorsList/Edit',
+                },
+              ],
+            },
+            // 安全风险分级管控清单
+            {
+              name: 'safetyRiskList',
+              code: 'twoInformationManagement.safetyRiskList',
+              path: '/two-information-management/safety-risk-list',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/two-information-management/safety-risk-list',
+                  redirect: '/two-information-management/safety-risk-list/list',
+                },
+                {
+                  name: 'list',
+                  code: 'twoInformationManagement.safetyRiskList.list',
+                  path: '/two-information-management/safety-risk-list/list',
+                  component: './TwoInformationManagement/SafetyRiskList/TableList',
+                },
+                {
+                  name: 'view',
+                  code: 'twoInformationManagement.safetyRiskList.view',
+                  path: '/two-information-management/safety-risk-list/view/:id',
+                  component: './TwoInformationManagement/SafetyRiskList/Edit',
+                },
+                {
+                  name: 'add',
+                  code: 'twoInformationManagement.safetyRiskList.add',
+                  path: '/two-information-management/safety-risk-list/add',
+                  component: './TwoInformationManagement/SafetyRiskList/Edit',
+                },
+                {
+                  name: 'edit',
+                  code: 'twoInformationManagement.safetyRiskList.edit',
+                  path: '/two-information-management/safety-risk-list/edit/:id',
+                  component: './TwoInformationManagement/SafetyRiskList/Edit',
+                },
+              ],
+            },
+          ],
+        },
         // fire control
         {
           path: '/fire-control',
