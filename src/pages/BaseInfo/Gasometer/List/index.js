@@ -300,7 +300,8 @@ export default class GasometerList extends Component {
       {
         title: '操作',
         dataIndex: 'id',
-        fixed: list && list.length > 0 ? 'right' : false,
+        width: 250,
+        fixed: 'right',
         render: id => (
           <Fragment>
             {<span className={classNames(styles.operation, !hasBindAuthority && styles.disabled)} onClick={this.handleBindButtonClick} data-id={id}>绑定传感器</span>}

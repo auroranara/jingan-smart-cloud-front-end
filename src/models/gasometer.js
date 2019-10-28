@@ -64,6 +64,8 @@ export default {
         code: 200,
         data: {
           id: 1,
+          isMajorHazard: '1',
+          hasCofferdam: '1',
         },
       };
       const { code, data } = response || {};

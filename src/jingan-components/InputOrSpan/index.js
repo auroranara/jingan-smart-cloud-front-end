@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Input, InputNumber } from 'antd';
 
-const { TextArea } = Input;
+const { TextArea, Search } = Input;
 
 // span和Input互相转换
 export default class InputOrSpan extends Component {
@@ -13,7 +13,7 @@ export default class InputOrSpan extends Component {
     } = this.props;
 
     if (type !== 'span') {
-      const Item = ({ InputNumber, TextArea })[type] || Input;
+      const Item = ({ InputNumber, TextArea, Search })[type] || Input;
       return <Item {...restProps} value={value} />
     } else {
       return <span {...restProps}>{value}</span>
