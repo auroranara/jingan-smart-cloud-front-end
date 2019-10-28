@@ -62,7 +62,7 @@ class VideoPlay extends Component {
   // }
   componentDidUpdate(prevProps, prevState, snapshot) {
     // console.log(snapshot);
-    const { isTree=false } = this.props
+    const { isTree = false } = this.props
     if (snapshot) {
       isTree ? this.handleTreeInit() : this.handleInit();
     }
@@ -136,7 +136,7 @@ class VideoPlay extends Component {
         device_id: deviceId,
       },
       success: response => {
-        console.log('response', response);
+        // console.log('response', response);
         if (videoId) {
           let index = videoList.findIndex(item => {
             return item.key_id === videoId;

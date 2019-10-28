@@ -365,10 +365,10 @@ export default class AddEquipment extends Component {
         companyId,
         reset: isFireHost ? +values.reset : undefined,
       }
-      const tag = id ? '编辑' : '新增'
+      const tag = id ? '编辑' : '新增';
       const success = () => {
-        message.success(`${tag}成功`)
-        router.goBack()
+        message.success(`${tag}成功`);
+        router.goBack();
       }
       const error = (res) => { message.error(res ? res.msg : `${tag}失败`) }
       if (id) {
@@ -754,16 +754,16 @@ export default class AddEquipment extends Component {
   render() {
     const {
       gatewayLoading,
-      match: { params: { type } },
-      location: { query: { companyId } },
+      match: { params: { id, type } },
+      location: { query: { companyId, companyName, gatewayId } },
     } = this.props
     const { gateWayModalVisible } = this.state
-    const title = `新增${dataProcessingType[type]}`
+    const title = `${id ? '编辑' : '新增'}${dataProcessingType[type]}`
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '设备管理', name: '设备管理' },
       { title: '单位数据处理设备', name: '单位数据处理设备', href: '/device-management/data-processing/list' },
-      { title: '设备列表', name: '设备列表', href: `/device-management/data-processing/list/${type}?companyId=${companyId}` },
+      { title: '设备列表', name: '设备列表', href: `/device-management/data-processing/list/${type}?companyId=${companyId}${gatewayId ? '' : `&companyName=${companyName}`}` },
       { title, name: title },
     ]
     const gatewayModalProps = {

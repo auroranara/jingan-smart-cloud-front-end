@@ -139,8 +139,12 @@ export default class GatewayList extends Component {
   }
 
   // 删除按钮点击事件
-  handleDeleteClick = (id) => {
+  handleDeleteClick = ({ id, dataExecuteEquipmentCount }) => {
     const { remove } = this.props;
+    if (+dataExecuteEquipmentCount > 0) {
+      message.warning('该网关设备已绑定数据处理设备，无法删除，请先解绑');
+      return;
+    }
     remove({ id }, (isSuccess, msg) => {
       if (isSuccess) {
         const { gateway: { list: { pagination: { pageNum, pageSize } } } } = this.props;
@@ -155,9 +159,9 @@ export default class GatewayList extends Component {
   // 绑定列表跳转
   handleBindingChange = (pageNum, pageSize) => {
     const { getBindingList } = this.props;
-    const { data } = this.props;
+    const { data } = this.state;
     getBindingList({
-      id: data.id,
+      gatewayEquipment: data.id,
       pageNum,
       pageSize,
     });
@@ -295,12 +299,12 @@ export default class GatewayList extends Component {
       {
         title: '操作',
         dataIndex: 'operation',
-        render: (_, { id }) => (
+        render: (_, row) => (
           <Fragment>
-            {<span className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)} onClick={hasDetailAuthority ? this.handleViewClick : undefined} data-id={id}>查看</span>}
-            {<span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={hasEditAuthority ? this.handleEditClick : undefined} data-id={id}>编辑</span>}
+            {<span className={classNames(styles.operation, !hasDetailAuthority && styles.disabled)} onClick={hasDetailAuthority ? this.handleViewClick : undefined} data-id={row.id}>查看</span>}
+            {<span className={classNames(styles.operation, !hasEditAuthority && styles.disabled)} onClick={hasEditAuthority ? this.handleEditClick : undefined} data-id={row.id}>编辑</span>}
             {hasDeleteAuthority ? (
-              <Popconfirm title="你确定要删除吗?" onConfirm={() => this.handleDeleteClick(id)}>
+              <Popconfirm title="你确定要删除吗?" onConfirm={() => this.handleDeleteClick(row)}>
                 <span className={styles.operation}>删除</span>
               </Popconfirm>
             ) : (
@@ -394,12 +398,12 @@ export default class GatewayList extends Component {
         render: (_, { locationType, buildingName, floorName, area, location }) => (({ 0: [buildingName, floorName, location], 1: [area, location] })[locationType] || []).filter(v => v).join(''),
         align: 'center',
       },
-      {
-        title: '已绑定传感器',
-        dataIndex: 'sensorCount',
-        render: (sensorCount, { id }) => <span className={classNames(styles.operation, +sensorCount === 0 && styles.disabled)} onClick={sensorCount > 0 ? this.handleSensorCountClick : undefined} data-id={id}>{sensorCount || 0}</span>,
-        align: 'center',
-      },
+      // {
+      //   title: '已绑定传感器',
+      //   dataIndex: 'sensorCount',
+      //   render: (sensorCount, { id }) => <span className={classNames(styles.operation, +sensorCount === 0 && styles.disabled)} onClick={sensorCount > 0 ? this.handleSensorCountClick : undefined} data-id={id}>{sensorCount || 0}</span>,
+      //   align: 'center',
+      // },
     ];
 
     return (

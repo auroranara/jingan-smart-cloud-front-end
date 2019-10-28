@@ -188,9 +188,11 @@ export default class EquipmentList extends PureComponent {
   jumpToAddPage = () => {
     const {
       match: { params: { type } },
-      location: { query: { companyId } },
+      location: { query: { companyId, companyName = '' } },
     } = this.props
-    router.push(`/device-management/data-processing/${type}/add?companyId=${companyId}`)
+    let url = `/device-management/data-processing/${type}/add?companyId=${companyId}&companyName=${companyName}`;
+    if (companyName) url += `&companyName=${companyName}`
+    router.push(url)
   }
 
 
@@ -390,7 +392,7 @@ export default class EquipmentList extends PureComponent {
     const {
       tableLoading,
       match: { params: { type } },
-      location: { query: { companyId } },
+      location: { query: { companyId, companyName = '' } },
       device: {
         equipment: {
           list = [],
@@ -508,7 +510,7 @@ export default class EquipmentList extends PureComponent {
                 <Divider type />
               </Fragment>
             )}
-            <AuthLink code={editCode} to={`/device-management/data-processing/${type}/edit/${row.id}?companyId=${row.companyId}`}>编辑</AuthLink>
+            <AuthLink code={editCode} to={`/device-management/data-processing/${type}/edit/${row.id}?companyId=${row.companyId}&companyName=${companyName}`}>编辑</AuthLink>
             <Divider type />
             <AuthPopConfirm
               authority={+row.sensorCount < 1 && hasAuthority(deleteCode, permissionCodes)}

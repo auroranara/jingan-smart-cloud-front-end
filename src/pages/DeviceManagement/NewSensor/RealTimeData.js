@@ -263,7 +263,7 @@ export default class RealTimeData extends Component {
                       </div>
                     ) : (
                         <div>
-                          <div>{`${paramDesc}（${paramUnit}）`}</div>
+                          <div>{`${paramDesc}${paramUnit ? `（${paramUnit}）` : ''}`}</div>
                           <div style={{ color: numColor[/\d+/.test(status) ? status : 3] }} className={styles.num}>{/\d+/.test(realValue) ? realValue : '—'}</div>
                         </div>
                       )}

@@ -76,7 +76,7 @@ export default function request(url, options = {}) {
   return fetch(url, newOptions)
     .then(checkStatus)
     .then(response => {
-      console.log('response', response);
+      // console.log('response', response);
 
       // 如果是下载返回 blob
       if (response.headers.get('content-disposition')) {

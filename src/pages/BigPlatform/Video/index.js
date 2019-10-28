@@ -54,7 +54,7 @@ class VideoPlay extends Component {
         key_id: keyId,
       },
       success: response => {
-        console.log('response', response);
+        // console.log('response', response);
         this.setState({
           videoSrc: response.data.url,
         });
@@ -88,10 +88,10 @@ class VideoPlay extends Component {
         {loading ? (
           LOADING_COMPONENT
         ) : (
-          <Player>
-            <HLSSource isVideoChild src={videoSrc} ref="source" />
-          </Player>
-        )}
+            <Player>
+              <HLSSource isVideoChild src={videoSrc} ref="source" />
+            </Player>
+          )}
       </div>
     );
   }

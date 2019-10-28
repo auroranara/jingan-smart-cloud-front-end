@@ -315,7 +315,7 @@ export default class AddNewSensor extends Component {
       const tag = id ? '编辑' : '新增'
       const success = () => {
         message.success(`${tag}成功`)
-        router.goBack()
+        router.push('/device-management/new-sensor/list')
       }
       const error = (res) => { message.error(res ? res.msg : `${tag}失败`) }
       // 如果编辑

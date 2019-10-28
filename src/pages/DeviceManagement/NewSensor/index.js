@@ -204,7 +204,7 @@ export default class NewSensorList extends Component {
                 {getFieldDecorator('useStatus')(
                   <Select placeholder="可用性" allowClear>
                     <Select.Option key={1} value={1}>{'启用'}</Select.Option>
-                    <Select.Option key={0} value={0}>{'禁用'}</Select.Option>
+                    <Select.Option key={2} value={2}>{'禁用'}</Select.Option>
                   </Select>
                 )}
               </FormItem>

@@ -122,6 +122,7 @@ const RenderAlarmStrategyModal = Form.create()(props => {
                     value={row.warnLevel && row.condition ? `${row.condition} ${row.warnLevel}` : undefined}
                     onChange={(value) => onSelectChange(value, row, i)}
                     allowClear
+                    getPopupContainer={() => document.querySelector('.ant-modal-content')}
                   >
                     {alarmTypes.map(({ label, key, condition, warnLevel }) => (
                       <Select.Option
