@@ -66,9 +66,10 @@ export default class CompanySelect extends Component {
       value,
       onChange,
       disabled,
+      type,
     } = this.props;
 
-    return (
+    return type !== 'span' ? (
       <AutoComplete
         className={className}
         style={style}
@@ -89,6 +90,6 @@ export default class CompanySelect extends Component {
           <Option key={id}>{name}</Option>
         ))}
       </AutoComplete>
-    );
+    ) : <span>{value && value.label}</span>;
   }
 }

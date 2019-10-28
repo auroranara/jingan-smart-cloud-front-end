@@ -916,6 +916,43 @@ module.exports = env => {
                 },
               ],
             },
+            // 气柜管理
+            {
+              path: '/base-info/gasometer',
+              code: 'baseInfo.gasometer',
+              name: 'gasometer',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/base-info/gasometer',
+                  redirect: '/base-info/gasometer/list',
+                },
+                {
+                  path: '/base-info/gasometer/list',
+                  name: 'list',
+                  code: 'baseInfo.gasometer.list',
+                  component: './BaseInfo/Gasometer/List',
+                },
+                {
+                  path: '/base-info/gasometer/add',
+                  name: 'add',
+                  code: 'baseInfo.gasometer.add',
+                  component: './BaseInfo/Gasometer/Other',
+                },
+                {
+                  path: '/base-info/gasometer/edit/:id',
+                  name: 'edit',
+                  code: 'baseInfo.gasometer.edit',
+                  component: './BaseInfo/Gasometer/Other',
+                },
+                {
+                  path: '/base-info/gasometer/detail/:id',
+                  name: 'detail',
+                  code: 'baseInfo.gasometer.detail',
+                  component: './BaseInfo/Gasometer/Other',
+                },
+              ],
+            },
           ],
         },
 
