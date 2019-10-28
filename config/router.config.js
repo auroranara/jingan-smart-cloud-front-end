@@ -3438,6 +3438,50 @@ module.exports = env => {
                 },
               ],
             },
+            // 安全制度管理
+            {
+              "name": "safetySystem",
+              "code": "safetyKnowledgeBase.safetySystem",
+              "path": "/safety-knowledge-base/safety-system",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/safety-knowledge-base/safety-system",
+                  "redirect": "/safety-knowledge-base/safety-system/list",
+                },
+                {
+                  "name": "list",
+                  "code": "safetyKnowledgeBase.safetySystem.list",
+                  "path": "/safety-knowledge-base/safety-system/list",
+                  "component": "./SafetyKnowledgeBase/SafetySystem/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "safetyKnowledgeBase.safetySystem.view",
+                  "path": "/safety-knowledge-base/safety-system/view/:id",
+                  "component": "./SafetyKnowledgeBase/SafetySystem/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "safetyKnowledgeBase.safetySystem.add",
+                  "path": "/safety-knowledge-base/safety-system/add",
+                  "component": "./SafetyKnowledgeBase/SafetySystem/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "safetyKnowledgeBase.safetySystem.edit",
+                  "path": "/safety-knowledge-base/safety-system/edit/:id",
+                  "component": "./SafetyKnowledgeBase/SafetySystem/Edit",
+                },
+                // {
+                //   "name": "history",
+                //   "code": "safetyKnowledgeBase.safetySystem.view",
+                //   "path": "/safety-knowledge-base/safety-system/history",
+                //   "component": "./SafetyKnowledgeBase/SafetySystem/History",
+                // },
+              ],
+            },
           ],
         },
 
