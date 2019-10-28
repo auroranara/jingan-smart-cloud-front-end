@@ -84,7 +84,6 @@ export const TABLE_COLUMNS = [
     key: 'operation',
     align: 'center',
     render: (val, text) => {
-      console.log('text', text);
       return (
         <Fragment>
           <Link to={`${ROUTER}/danger-factors-list/view/${text.id}`}>查看</Link>

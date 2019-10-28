@@ -151,10 +151,10 @@ export const TABLE_COLUMNS = [
     dataIndex: 'operation',
     key: 'operation',
     align: 'center',
-    render(id) {
+    render: (val, text) => {
       return (
         <Fragment>
-          <Link to={`${ROUTER}/safety-risk-list/view/${id}`}>查看</Link>
+          <Link to={`${ROUTER}/safety-risk-list/view/${text.id}`}>查看</Link>
           <Popconfirm
             title="确定删除当前项目？"
             onConfirm={e => message.success('删除成功')}

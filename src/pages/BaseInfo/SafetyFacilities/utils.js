@@ -47,7 +47,7 @@ export const SEARCH_FIELDS = [
   },
   {
     id: 'id3',
-    label: '设备名称：',
+    label: '设备状态：',
     render: () => (
       <Select placeholder="请选择" allowClear>
         {['一', '二'].map((r, i) => (
@@ -126,10 +126,12 @@ export const TABLE_COLUMNS = [
     dataIndex: 'operation',
     key: 'operation',
     align: 'center',
-    render(id) {
+    render: (val, text) => {
       return (
         <Fragment>
-          <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
+          <Link to={`${ROUTER}/view/${text.id}`}>查看</Link>
+          <Divider type="vertical" />
+          <Link to={`${ROUTER}/edit/${text.id}`}>编辑</Link>
           <Divider type="vertical" />
           <Popconfirm
             title="确定删除当前项目？"

@@ -44,7 +44,7 @@ export default class Edit extends PureComponent {
     const {
       match: { url },
     } = this.props;
-    return url && url.includes('detail');
+    return url && url.includes('view');
   };
 
   renderErrorInfo() {
