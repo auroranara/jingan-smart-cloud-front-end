@@ -3687,6 +3687,53 @@ module.exports = env => {
             },
           ],
         },
+
+        // 公告管理
+        {
+          path: '/announcement-management',
+          code: 'announcementManagement',
+          icon: 'solution',
+          name: 'announcementManagement',
+          routes: [
+            {
+              "name": "promise", // 安全承诺公告
+              "code": "announcementManagement.promise",
+              "path": "/announcement-management/promise",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/announcement-management/promise",
+                  "redirect": "/announcement-management/promise/list",
+                },
+                {
+                  "name": "list",
+                  "code": "announcementManagement.promise.list",
+                  "path": "/announcement-management/promise/list",
+                  "component": "./AnnouncementManagement/Promise/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "announcementManagement.promise.view",
+                  "path": "/announcement-management/promise/view/:id",
+                  "component": "./AnnouncementManagement/Promise/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "announcementManagement.promise.add",
+                  "path": "/announcement-management/promise/add",
+                  "component": "./AnnouncementManagement/Promise/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "announcementManagement.promise.edit",
+                  "path": "/announcement-management/promise/edit/:id",
+                  "component": "./AnnouncementManagement/Promise/Edit",
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ];
