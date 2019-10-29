@@ -354,7 +354,7 @@ export default class AddEquipment extends Component {
     const {
       dispatch,
       match: { params: { id, type } },
-      location: { query: { companyId } },
+      location: { query: { companyId, companyName, gatewayId } },
       form: { validateFields },
     } = this.props
     const {
@@ -378,7 +378,9 @@ export default class AddEquipment extends Component {
       const tag = id ? '编辑' : '新增';
       const success = () => {
         message.success(`${tag}成功`);
-        router.goBack();
+        if (window.history.length > 1) {
+          router.goBack();
+        } else router.push(`/device-management/data-processing/list/${type}?companyId=${companyId}${gatewayId ? '' : `&companyName=${companyName}`}`)
       }
       const error = (res) => { message.error(res ? res.msg : `${tag}失败`) }
       if (id) {
@@ -674,7 +676,6 @@ export default class AddEquipment extends Component {
             <Fragment>
               <FormItem label="所属建筑物楼层" {...formItemLayout}>
                 {getFieldDecorator('buildingFloor', {
-                  validateTrigger: 'onBlur',
                   rules: [{ required: true, validator: this.validateBuildingFloor }],
                 })(
                   <Fragment>

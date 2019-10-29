@@ -279,8 +279,25 @@ export default class EquipmentList extends PureComponent {
   /**
    * 删除设备
    */
-  handleDelete = (id) => {
-    const { dispatch } = this.props
+  handleDelete = ({ id, videoCount, pointCount, sensorCount }) => {
+    const {
+      dispatch,
+      match: { params: { type } },
+    } = this.props
+    // 设备类型是否是NVR
+    const isNVR = +type === 110
+    // 设备类型是否是消防主机
+    const isFireHost = +type === 101
+    if (isNVR && +videoCount > 0) {
+      message.warning('该设备已绑定摄像头，无法删除，请先解绑');
+      return;
+    } else if (isFireHost && +pointCount > 0) {
+      message.warning('该设备已导入点位，无法删除，请先解绑');
+      return;
+    } else if (+sensorCount > 0) {
+      message.warning('该设备已绑定传感器，无法删除，请先解绑');
+      return;
+    }
     dispatch({
       type: 'device/deleteEquipment',
       payload: { id },
@@ -513,9 +530,9 @@ export default class EquipmentList extends PureComponent {
             <AuthLink code={editCode} to={`/device-management/data-processing/${type}/edit/${row.id}?companyId=${row.companyId}&companyName=${companyName}`}>编辑</AuthLink>
             <Divider type />
             <AuthPopConfirm
-              authority={+row.sensorCount < 1 && hasAuthority(deleteCode, permissionCodes)}
+              authority={hasAuthority(deleteCode, permissionCodes)}
               title="确认要删除该设备吗？"
-              onConfirm={() => this.handleDelete(row.id)}
+              onConfirm={() => this.handleDelete(row)}
             >
               删除
             </AuthPopConfirm>
