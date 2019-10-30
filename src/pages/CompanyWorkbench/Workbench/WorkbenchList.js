@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-// import { Card} from 'antd';
+import { Tabs, DatePicker } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 // import Ellipsis from '@/components/Ellipsis';
 
@@ -8,10 +8,26 @@ import CurrentDanger from './image/currentDanger.png';
 import Materical from './image/materical.png';
 import Technonlogy from './image/technonlogy.png';
 import MajorDanger from './image/majorDanger.png';
-import SpecialEquipment from './image/specialEquipment.png';
 
+import AlarmIcon from './image/alarmIcon.png';
+import NormalIcon from './image/normalIcon.png';
+
+import {
+  TabList1,
+  TabList2,
+  TabList3,
+  TabList4,
+  TabList5,
+  TabList6,
+  TabList7,
+  SpecialEquipmentList,
+} from './utils';
 import Pie from './pie';
 import styles from './WorkbenchList.less';
+
+const { TabPane } = Tabs;
+const { RangePicker } = DatePicker;
+
 // 标题
 const title = '工作台';
 
@@ -28,15 +44,56 @@ const breadcrumbList = [
   },
 ];
 
+function TabCard(props) {
+  const { list } = props;
+  const { icon1, icon2, icon3, name1, name2, name3 } = list;
+  return (
+    <div className={styles.tabContentMonitor}>
+      <div className={styles.tabTop}>
+        <div className={styles.iconOne} style={{ backgroundImage: `url(${icon1})` }} />
+        <div className={styles.iconTwo} style={{ backgroundImage: `url(${icon2})` }} />
+      </div>
+      <div className={styles.tabBottom}>
+        <div className={styles.bottomItemOne}>
+          <div className={styles.left} style={{ backgroundImage: `url(${icon3})` }} />
+          <div className={styles.right}>
+            <div className={styles.name}>{name1}</div>
+            <div className={styles.value}>5</div>
+          </div>
+        </div>
+        <div className={styles.bottomItemTwo}>
+          <div className={styles.itemTwoContent}>
+            <div className={styles.left} style={{ backgroundImage: `url(${AlarmIcon})` }} />
+            <div className={styles.right}>
+              <div className={styles.name}>{name2}</div>
+              <div className={styles.value}>1</div>
+            </div>
+          </div>
+          <div className={styles.itemTwoContent}>
+            <div className={styles.left} style={{ backgroundImage: `url(${NormalIcon})` }} />
+            <div className={styles.right}>
+              <div className={styles.name}>{name3}</div>
+              <div className={styles.value}>4</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 // @connect(({ loading }) => ({}))
 export default class WorkbenchList extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { tabValue: '1' };
   }
 
   // 挂载后
   componentDidMount() {}
+
+  handleTabChange = type => {
+    this.setState({ tabValue: type });
+  };
 
   renderContentFirst() {
     return (
@@ -68,11 +125,11 @@ export default class WorkbenchList extends PureComponent {
             value: 12,
           },
         ].map(({ icon, name, value }) => (
-          <div className={styles.item} key={name}>
-            <div className={styles.left} style={{ backgroundImage: `url(${icon})` }} />
-            <div className={styles.right}>
-              <div className={styles.name}>{name}</div>
-              <div className={styles.value}>{value}</div>
+          <div className={styles.firstItem} key={name}>
+            <div className={styles.firstLeft} style={{ backgroundImage: `url(${icon})` }} />
+            <div className={styles.firstRight}>
+              <div className={styles.firstName}>{name}</div>
+              <div className={styles.firstValue}>{value}</div>
             </div>
           </div>
         ))}
@@ -81,7 +138,7 @@ export default class WorkbenchList extends PureComponent {
   }
 
   renderContentSecond() {
-    const list = [...Array(10).keys()].map(i => ({
+    const remindList = [...Array(30).keys()].map(i => ({
       id: i,
       status: '报警',
       name: '可燃气体浓度',
@@ -89,12 +146,13 @@ export default class WorkbenchList extends PureComponent {
       date: '2019.10.10  12:10:10',
       content: '当前可燃气体浓度为111%LEL，达到报警级别，超过报警阈值30%（报警阈值为80）',
     }));
+
     return (
       <div className={styles.secondContent}>
-        <div className={styles.leftItem}>
+        <div className={styles.secondLeft}>
           <div className={styles.titleLeft}>工作提醒</div>
           <div className={styles.contentLeft}>
-            {list.map(({ id, status, name, area, date, content }) => (
+            {remindList.map(({ id, status, name, area, date, content }) => (
               <div key={id} className={styles.listStyle}>
                 <div style={{ fontSize: '14px', paddingBottom: 10 }}>
                   <span>【{status}】</span>
@@ -114,37 +172,69 @@ export default class WorkbenchList extends PureComponent {
             ))}
           </div>
         </div>
-        <div className={styles.rightItem}>
+
+        <div className={styles.secondRight}>
           <div className={styles.titleRight}>到期统计</div>
           <div className={styles.contentRight}>
-            <div className={styles.navLayout}>
-              <div className={styles.itemNav}>
-                <div className={styles.icon}>
-                  <div
-                    className={styles.left}
-                    style={{ backgroundImage: `url(${SpecialEquipment})` }}
-                  />
-                  <div className={styles.right}>
-                    <div className={styles.name}>特种设备</div>
-                    <div className={styles.value}>
-                      数量总计：
-                      {100}个
+            {SpecialEquipmentList.map(
+              ({
+                id,
+                icon,
+                name,
+                total,
+                percentNumOne,
+                percentNumTwo,
+                percentNumThree,
+                dataOne,
+                dataTwo,
+                dataThree,
+                color,
+                colorOne,
+              }) => (
+                <div className={styles.itemRight} key={id}>
+                  <div className={styles.itemOne}>
+                    <div
+                      className={styles.itemOneLeft}
+                      style={{ backgroundImage: `url(${icon})` }}
+                    />
+                    <div className={styles.itemOneRight}>
+                      <div className={styles.itemOneName}>{name}</div>
+                      <div className={styles.itemOneValue}>
+                        数量总计：
+                        {total}个
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.itemTwo}>
+                    <div className={styles.itemTwoLeft}>
+                      <div className={styles.itemTwoName}>已过期</div>
+                      <div className={styles.itemTwoValue}>{percentNumOne}</div>
+                    </div>
+                    <div className={styles.itemTwoRight}>
+                      <Pie data={dataOne} color={colorOne} />
+                    </div>
+                  </div>
+                  <div className={styles.itemThree}>
+                    <div className={styles.itemThreeLeft}>
+                      <div className={styles.itemThreeName}>即将到期</div>
+                      <div className={styles.itemThreeValue}>{percentNumTwo}</div>
+                    </div>
+                    <div className={styles.itemThreeRight}>
+                      <Pie data={dataTwo} color={color} />
+                    </div>
+                  </div>
+                  <div className={styles.itemFour}>
+                    <div className={styles.itemFourLeft}>
+                      <div className={styles.itemFourName}>正常</div>
+                      <div className={styles.itemFourValue}>{percentNumThree}</div>
+                    </div>
+                    <div className={styles.itemFourRight}>
+                      <Pie data={dataThree} color={color} />
                     </div>
                   </div>
                 </div>
-                <div className={styles.pieOne}>
-                  <div className={styles.pieLeft}>
-                    <div className={styles.name}>已过期</div>
-                    <div className={styles.value}>10%</div>
-                  </div>
-                  <div className={styles.pieRight}>
-                    <Pie />
-                  </div>
-                </div>
-                <div className={styles.pieTwo} />
-                <div className={styles.pieThree} />
-              </div>
-            </div>
+              )
+            )}
           </div>
         </div>
       </div>
@@ -152,15 +242,56 @@ export default class WorkbenchList extends PureComponent {
   }
 
   renderContainerThird() {
+    const { tabValue } = this.state;
+    const operations = <RangePicker />;
     return (
       <div className={styles.thirdContent}>
         <div className={styles.leftItem}>
           <div className={styles.titleLeft}>重大危险源实时监测</div>
-          <div className={styles.contentLeft} />
+          <div className={styles.contentLeft}>
+            <Tabs activeKey={tabValue} onChange={this.handleTabChange}>
+              <TabPane tab="储罐区" key="1">
+                <TabCard list={TabList1} />
+              </TabPane>
+              <TabPane tab="储罐" key="2">
+                <TabCard list={TabList2} />
+              </TabPane>
+              <TabPane tab="库区" key="3">
+                <TabCard list={TabList3} />
+              </TabPane>
+              <TabPane tab="库房" key="4">
+                <TabCard list={TabList4} />
+              </TabPane>
+              <TabPane tab="高危工艺" key="5">
+                <TabCard list={TabList7} />
+              </TabPane>
+              <TabPane tab="生产装置" key="6">
+                <TabCard list={TabList5} />
+              </TabPane>
+              <TabPane tab="气柜" key="7">
+                <TabCard list={TabList6} />
+              </TabPane>
+              {/* <TabPane tab="视频监测" key="8">
+                <TabCard />
+              </TabPane> */}
+            </Tabs>
+          </div>
         </div>
         <div className={styles.rightItem}>
           <div className={styles.titleRight}>重大危险源历史统计</div>
-          <div className={styles.contentRight} />
+          <div className={styles.contentRight}>
+            <Tabs tabBarExtraContent={operations}>
+              <TabPane tab="本周" key="1">
+                1
+              </TabPane>
+              <TabPane tab="本月" key="2">
+                2
+              </TabPane>
+              <TabPane tab="今年" key="3">
+                3
+              </TabPane>
+            </Tabs>
+          </div>
         </div>
       </div>
     );

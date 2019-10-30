@@ -7,12 +7,10 @@
   color: red;
 }
 
-// .container {
-// }
-
+/** 第一版块 */
 .containerFirst {
   height: 110px;
-  background-color: #fff;
+  background-color: rgb(255, 255, 255);
   padding: 25px 35px 25px 0px;
   margin-bottom: 30px;
 }
@@ -20,35 +18,37 @@
 .firstContent {
   display: flex;
 
-  .item {
+  .firstItem {
     flex: 1;
     display: flex;
     justify-content: center;
 
-    .left {
+    .firstLeft {
       width: 60px;
       height: 60px;
       background: no-repeat center;
       background-size: 55px 55px;
     }
 
-    .right {
+    .firstRight {
       padding-left: 12px;
       padding-top: 5px;
       line-height: 1.3;
       font-size: 14px;
 
-      .name {
+      .firstName {
         font-size: 14px;
       }
 
-      .value {
+      .firstValue {
         font-size: 28px;
       }
     }
   }
 }
 
+
+/** 第二版块 */
 .containerSecond {
   height: 430px;
   overflow: hidden;
@@ -58,90 +58,155 @@
 .secondContent {
   display: flex;
 
-  .leftItem {
+  .secondLeft {
     width: 43%;
     margin-right: 2%;
-  }
 
-  .titleLeft {
-    font-size: 16px;
-  }
+    .titleLeft {
+      font-size: 16px;
+    }
 
-  .contentLeft {
-    height: 400px;
-    margin-top: 10px;
-    background-color: #fff;
-    overflow-y: auto;
-    padding: 10px 34px 20px 25px;
+    .contentLeft {
+      height: 400px;
+      margin-top: 10px;
+      background-color: rgb(255, 255, 255);
+      overflow-y: auto;
+      padding: 10px 34px 20px 25px;
 
-    .listStyle {
-      padding-top: 15px;
-      border-bottom: 1px solid #ccc;
+      .listStyle {
+        padding-top: 15px;
+        border-bottom: 1px solid #ccc;
+      }
     }
   }
 
-  .rightItem {
+  .secondRight {
     width: 55%;
-  }
 
-  .titleRight {
-    font-size: 16px;
-  }
-
-  .contentRight {
-    height: 400px;
-    margin-top: 10px;
-    background-color: #fff;
-
-    .navLayout {
-      height: 396px;
-      display: flex;
-      padding: 46px 20px;
+    .titleRight {
+      font-size: 16px;
     }
 
-    .itemNav {
-      height: 46px;
+    .contentRight {
+      height: 400px;
+      margin-top: 10px;
+      background-color: rgb(255, 255, 255);
+      padding: 45px 20px 30px 20px;
+    }
+
+    .itemRight {
+      height: 30%;
       width: 100%;
+      margin-bottom: 15px;
       display: flex;
     }
 
-    .icon {
-      flex: 1;
-      width: 30%;
+    .itemOne {
+      width: 40%;
       display: flex;
-      justify-content: center;
+      padding: 20px 0;
 
-      .left {
-        width: 45px;
-        height: 45px;
+      .itemOneLeft {
+        width: 40px;
+        height: 40px;
+        margin-top: 4px;
         background: no-repeat center;
         background-size: 55px 55px;
         border-radius: 10%;
       }
 
-      .right {
-        padding-left: 12px;
-        padding-top: 5px;
-        line-height: 1.3;
+      .itemOneRight {
+        padding-left: 10px;
         font-size: 14px;
 
-        .name {
-          font-size: 15px;
+        .itemOneName {
+          font-size: 14px;
         }
 
-        .value {
+        .itemOneValue {
+          padding-top: 4px;
           font-size: 14px;
+          color: #949494;
         }
       }
     }
 
-    .pieOne {
-      width: 70%;
-      padding-left: 55px;
+    .itemTwo {
+      width: 30%;
+      display: flex;
+      padding: 20px 0;
+      justify-content: flex-end;
+
+      .itemTwoLeft {
+
+        .itemTwoName {
+          color: #949494;
+        }
+
+        .itemTwoValue {
+          padding-top: 4px;
+          font-weight: bold;
+        }
+      }
+
+      .itemTwoRight {
+        width: 50%;
+        margin-top: -4px
+      }
+    }
+
+    .itemThree {
+      width: 33%;
+      display: flex;
+      padding: 20px 0;
+      justify-content: flex-end;
+
+      .itemThreeLeft {
+
+        .itemThreeName {
+          color: #949494;
+        }
+
+        .itemThreeValue {
+          padding-top: 4px;
+          font-weight: bold;
+        }
+      }
+
+      .itemThreeRight {
+        width: 50%;
+        margin-top: -4px
+      }
+    }
+
+    .itemFour {
+      width: 24%;
+      display: flex;
+      padding: 20px 0;
+      justify-content: flex-end;
+
+      .itemFourLeft {
+
+        .itemFourName {
+          color: #949494;
+        }
+
+        .itemFourValue {
+          padding-top: 4px;
+          font-weight: bold;
+        }
+      }
+
+      .itemFourRight {
+        width: 50%;
+        margin-top: -4px
+      }
     }
   }
 }
 
+
+/** 第三版块*/
 .containerThird {
   height: 410px;
   margin-bottom: 30px;
@@ -166,6 +231,98 @@
     padding: 10px 34px 20px 25px;
   }
 
+  .tabContentMonitor {
+    width: 100%;
+    height: 320px;
+
+    .tabTop {
+      height: 12%;
+      display: flex;
+      justify-content: flex-end;
+
+      .iconOne {
+        width: 40px;
+        height: 40px;
+        background: no-repeat center;
+        background-size: 30px 30px;
+      }
+
+      .iconTwo {
+        width: 40px;
+        height: 40px;
+        background: no-repeat center;
+        background-size: 30px 30px;
+        margin-left: 10px;
+      }
+    }
+
+    .tabBottom {
+      height: 80%;
+      padding-top: 35px;
+      padding-left: 16px;
+
+      .bottomItemOne {
+        display: flex;
+        justify-content: flex-start;
+        padding-bottom: 15px;
+
+        .left {
+          width: 60px;
+          height: 60px;
+          background: no-repeat center;
+          background-size: 55px 55px;
+        }
+
+        .right {
+          padding-left: 12px;
+          padding-top: 5px;
+          line-height: 1.3;
+          font-size: 14px;
+        }
+
+        .name {
+          color: #949494;
+        }
+
+        .value {
+          font-size: 30px;
+        }
+      }
+
+      .bottomItemTwo {
+        display: flex;
+        padding-top: 50px;
+
+        .itemTwoContent {
+          display: flex;
+          flex: 1
+        }
+
+        .left {
+          width: 60px;
+          height: 60px;
+          background: no-repeat center;
+          background-size: 55px 55px;
+        }
+
+        .right {
+          padding-left: 12px;
+          padding-top: 5px;
+          line-height: 1.3;
+          font-size: 14px;
+        }
+
+        .name {
+          color: #949494;
+        }
+
+        .value {
+          font-size: 30px;
+        }
+      }
+    }
+  }
+
   .rightItem {
     width: 49%;
   }
@@ -178,5 +335,12 @@
     height: 380px;
     margin-top: 10px;
     background-color: #fff;
+    padding: 10px 34px 20px 25px;
+
+    :global {
+      .ant-calendar-picker {
+        width: 200px;
+      }
+    }
   }
 }
