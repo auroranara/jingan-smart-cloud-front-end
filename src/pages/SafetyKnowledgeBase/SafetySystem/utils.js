@@ -111,7 +111,7 @@ export const TABLE_COLUMNS = [ // modify
     dataIndex: 'appendix',
     key: 'appendix',
     render() {
-      return <a onClick={e => e.stopPropagation()}>规章制度.docx</a>
+      return <a onClick={e => e.preventDefault()}>规章制度.docx</a>
     },
   },
   {

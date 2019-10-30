@@ -47,9 +47,11 @@ export default class Edit extends PureComponent {
       form: { getFieldDecorator },
     } = this.props;
 
-    const title = this.isDetail() ? '详情' : id ? '编辑' : '新增';
+    const isDet = this.isDetail();
+    const title = isDet ? '详情' : id ? '编辑' : '新增';
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
+    const handleSubmit = isDet ? null : this.handleSubmit;
 
     return (
       <PageHeaderLayout
@@ -57,7 +59,7 @@ export default class Edit extends PureComponent {
         breadcrumbList={breadcrumbList}
       >
         <Card style={{ marginBottom: 15 }}>
-          {renderSections(EDIT_FORMITEMS, getFieldDecorator, this.handleSubmit)}
+          {renderSections(EDIT_FORMITEMS, getFieldDecorator, handleSubmit, LIST_URL)}
         </Card>
       </PageHeaderLayout>
     );

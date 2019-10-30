@@ -42,7 +42,7 @@ export const SEARCH_FIELDS = [ // modify
   {
     id: 'name',
     label: '单位名称',
-    render: () => <DatePicker placeholder="请输入" allowClear />,
+    render: () => <Input placeholder="请输入" allowClear />,
   },
   {
     id: 'date',

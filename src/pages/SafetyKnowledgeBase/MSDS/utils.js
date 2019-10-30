@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import router from 'umi/router';
 import { Button, DatePicker, Form, Input, Radio, Select } from 'antd';
 
 const { Item: FormItem } = Form;
@@ -122,11 +123,12 @@ function getSections(sections) {
   return sections;
 };
 
-export function renderSections(sections, getFieldDecorator, handleSubmit) {
+export function renderSections(sections, getFieldDecorator, handleSubmit, listUrl) {
   const secs = getSections(sections);
   const props = { ...FORMITEM_LAYOUT };
   const submitBtn = handleSubmit ? (
     <FormItem wrapperCol={{ span: 24, offset: 10 }}>
+      <Button onClick={e => router.push(listUrl)} style={{ marginRight: 20  }}>取消</Button>
       <Button type="primary" htmlType="submit">提交</Button>
     </FormItem>
   ) : null;

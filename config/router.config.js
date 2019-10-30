@@ -3732,6 +3732,43 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              "name": "announcement", // 信息发布
+              "code": "announcementManagement.announcement",
+              "path": "/announcement-management/announcement",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/announcement-management/announcement",
+                  "redirect": "/announcement-management/announcement/list",
+                },
+                {
+                  "name": "list",
+                  "code": "announcementManagement.announcement.list",
+                  "path": "/announcement-management/announcement/list",
+                  "component": "./AnnouncementManagement/Announcement/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "announcementManagement.announcement.view",
+                  "path": "/announcement-management/announcement/view/:id",
+                  "component": "./AnnouncementManagement/Announcement/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "announcementManagement.announcement.add",
+                  "path": "/announcement-management/announcement/add",
+                  "component": "./AnnouncementManagement/Announcement/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "announcementManagement.announcement.edit",
+                  "path": "/announcement-management/announcement/edit/:id",
+                  "component": "./AnnouncementManagement/Announcement/Edit",
+                },
+              ],
+            },
           ],
         },
       ],
