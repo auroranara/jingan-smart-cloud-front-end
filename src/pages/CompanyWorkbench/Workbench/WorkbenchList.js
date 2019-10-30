@@ -1,7 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-// import { connect } from 'dva';
-import { Card, Button, Input, Select, Table, message } from 'antd';
-// import { Link } from 'dva/router';
+// import { Card} from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 // import Ellipsis from '@/components/Ellipsis';
 
@@ -10,7 +8,9 @@ import CurrentDanger from './image/currentDanger.png';
 import Materical from './image/materical.png';
 import Technonlogy from './image/technonlogy.png';
 import MajorDanger from './image/majorDanger.png';
+import SpecialEquipment from './image/specialEquipment.png';
 
+import Pie from './pie';
 import styles from './WorkbenchList.less';
 // 标题
 const title = '工作台';
@@ -118,18 +118,29 @@ export default class WorkbenchList extends PureComponent {
           <div className={styles.titleRight}>到期统计</div>
           <div className={styles.contentRight}>
             <div className={styles.navLayout}>
-              <div className={styles.oneNav}>
+              <div className={styles.itemNav}>
                 <div className={styles.icon}>
-                  <div className={styles.left} />
+                  <div
+                    className={styles.left}
+                    style={{ backgroundImage: `url(${SpecialEquipment})` }}
+                  />
                   <div className={styles.right}>
-                    <div className={styles.name}>{name}</div>
+                    <div className={styles.name}>特种设备</div>
                     <div className={styles.value}>
                       数量总计：
                       {100}个
                     </div>
                   </div>
                 </div>
-                <div className={styles.pieOne} />
+                <div className={styles.pieOne}>
+                  <div className={styles.pieLeft}>
+                    <div className={styles.name}>已过期</div>
+                    <div className={styles.value}>10%</div>
+                  </div>
+                  <div className={styles.pieRight}>
+                    <Pie />
+                  </div>
+                </div>
                 <div className={styles.pieTwo} />
                 <div className={styles.pieThree} />
               </div>
