@@ -510,7 +510,7 @@ export default class StorehouseList extends PureComponent {
       model: sensor,
       loading: sensorLoading,
       rowSelection: {
-        selectedSensorKeys,
+        selectedRowKeys: selectedSensorKeys,
         onChange: this.onSensorChange,
       },
       unbindSensorCode,

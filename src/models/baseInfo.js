@@ -1,4 +1,15 @@
-const defaultPagination = { total: 0, pageNum: 1, pageSize: 10 }
+import {
+  fetchStorageTankForPage,
+  addStorageTank,
+  editStorageTank,
+  deleteStorageTank,
+} from '@/services/baseInfo/storageTank';
+import {
+  fetchStorageTankAreaForPage,
+} from '@/services/baseInfo/storageTankArea';
+
+const defaultPagination = { total: 0, pageNum: 1, pageSize: 10 };
+
 export default {
   namespace: 'baseInfo',
   state: {
@@ -59,7 +70,77 @@ export default {
       ],
       pagination: defaultPagination,
     },
+    // 储罐
+    storageTank: {
+      // 单位数量
+      a: 0,
+      list: [],
+      pagination: defaultPagination,
+    },
+    // 储罐详情
+    storageTankDetail: {},
+    // 储罐区
+    storageTankArea: {
+      list: [],
+      pagination: defaultPagination,
+    },
   },
-  effects: {},
-  reducers: {},
+  effects: {
+    // 获取储罐列表（分页）
+    *fetchStorageTankForPage({ payload }, { call, put }) {
+      const response = yield call(fetchStorageTankForPage, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveStorageTank',
+          payload: response.data,
+        })
+      }
+    },
+    // 新增储罐
+    *addStorageTank({ payload, success, error }, { call }) {
+      const response = yield call(addStorageTank, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response)
+    },
+    // 编辑储罐
+    *editStorageTank({ payload, success, error }, { call }) {
+      const response = yield call(editStorageTank, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response)
+    },
+    // 删除储罐
+    *deleteStorageTank({ payload, success, error }, { call }) {
+      const response = yield call(deleteStorageTank, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response)
+    },
+    // 获取储罐区列表
+    *fetchStorageTankAreaForPage({ payload }, { call, put }) {
+      const response = yield call(fetchStorageTankAreaForPage, payload)
+      if (response && response.code === 200) {
+        yield put({
+          type: 'saveStorageTankArea',
+          payload: response.data,
+        })
+      }
+    },
+  },
+  reducers: {
+    // 保存储罐列表及分页统计数据
+    saveStorageTank(state, { payload = { a: 0, list: [], pagination: defaultPagination } }) {
+      return {
+        ...state,
+        storageTank: { ...payload },
+      }
+    },
+    saveStorageTankArea(state, { payload = { list: [], pagination: defaultPagination } }) {
+      return {
+        ...state,
+        storageTankArea: { ...payload },
+      }
+    },
+  },
 }
