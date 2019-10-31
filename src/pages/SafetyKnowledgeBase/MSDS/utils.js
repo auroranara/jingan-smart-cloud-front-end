@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import router from 'umi/router';
-import { Button, DatePicker, Form, Input, Radio, Select } from 'antd';
+import { Button, Cascader, DatePicker, Form, Input, Radio, Select } from 'antd';
 
 const { Item: FormItem } = Form;
 const { TextArea } = Input;
@@ -52,7 +52,7 @@ function getOptions(options, props=['key', 'value']) {
 }
 
 function genFormItem(field, getFieldDecorator) {
-  const { type='input', name, label, required=true, options, component: compt } = field;
+  let { type='input', name, label, placeholder, required=true, options, component: compt } = field;
 
   let child = null;
 
@@ -64,31 +64,34 @@ function genFormItem(field, getFieldDecorator) {
     const whiteSpaceRule = { whitespace: true, message: `${label}不能全为空字符串` };
 
     let component = null;
-    let placeholder;
     const rules = [];
     switch(type) {
       case 'text':
-        placeholder = `请输入${label}`;
+        placeholder = placeholder || `请输入${label}`;
         rules.push(whiteSpaceRule);
         component = <TextArea placeholder={placeholder} />;
         break;
       case 'select':
-        placeholder = `请选择${label}`;
-        component = <Select placeholder={placeholder}>{opts.map(({ key, value }) => <Option key={key}>{value}</Option>)}</Select>;
+        placeholder = placeholder || `请选择${label}`;
+        component = <Select placeholder={placeholder} allowClear>{opts.map(({ key, value }) => <Option key={key}>{value}</Option>)}</Select>;
         break;
       case 'radio':
         component = <RadioGroup options={getOptions(options, ['value', 'label'])} />;
         break;
       case 'datepicker':
-        component = <DatePicker />;
+        component = <DatePicker allowClear />;
         break;
       case 'rangepicker':
-        component = <RangePicker />;
+        component = <RangePicker allowClear />;
+        break;
+      case 'cascader':
+        placeholder = placeholder || `请选择${label}`;
+        component = <Cascader placeholder={placeholder} options={options} allowClear />;
         break;
       default:
-        placeholder = `请输入${label}`;
+        placeholder = placeholder || `请输入${label}`;
         rules.push(whiteSpaceRule);
-        component = <Input placeholder={placeholder} />;
+        component = <Input placeholder={placeholder} allowClear />;
     }
 
     rules.unshift({ required, message: `${label}不能为空` });

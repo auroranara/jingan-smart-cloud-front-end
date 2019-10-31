@@ -3771,6 +3771,88 @@ module.exports = env => {
             },
           ],
         },
+        {
+          path: '/accident-management',
+          code: 'accidentManagement',
+          icon: 'fire',
+          name: 'accidentManagement',
+          routes: [
+            {
+              "name": "quickReport",
+              "code": "accidentManagement.quickReport",
+              "path": "/accident-management/quick-report",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/accident-management/quick-report",
+                  "redirect": "/accident-management/quick-report/list",
+                },
+                {
+                  "name": "list",
+                  "code": "accidentManagement.quickReport.list",
+                  "path": "/accident-management/quick-report/list",
+                  "component": "./AccidentManagement/QuickReport/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "accidentManagement.quickReport.view",
+                  "path": "/accident-management/quick-report/view/:id",
+                  "component": "./AccidentManagement/QuickReport/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "accidentManagement.quickReport.add",
+                  "path": "/accident-management/quick-report/add",
+                  "component": "./AccidentManagement/QuickReport/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "accidentManagement.quickReport.edit",
+                  "path": "/accident-management/quick-report/edit/:id",
+                  "component": "./AccidentManagement/QuickReport/Edit",
+                },
+              ],
+            },
+            // {
+            //   "name": "accidentReport",
+            //   "code": "accidentManagement.accidentReport",
+            //   "path": "/accident-management/accident-report",
+            //   "hideChildrenInMenu": true,
+            //   "routes": [
+            //     {
+            //       "name": "list",
+            //       "path": "/accident-management/accident-report",
+            //       "redirect": "/accident-management/accident-report/list",
+            //     },
+            //     {
+            //       "name": "list",
+            //       "code": "accidentManagement.accidentReport.list",
+            //       "path": "/accident-management/accident-report/list",
+            //       "component": "./AccidentManagement/AccidentReport/TableList",
+            //     },
+            //     {
+            //       "name": "view",
+            //       "code": "accidentManagement.accidentReport.view",
+            //       "path": "/accident-management/accident-report/view/:id",
+            //       "component": "./AccidentManagement/AccidentReport/Edit",
+            //     },
+            //     {
+            //       "name": "add",
+            //       "code": "accidentManagement.accidentReport.add",
+            //       "path": "/accident-management/accident-report/add",
+            //       "component": "./AccidentManagement/AccidentReport/Edit",
+            //     },
+            //     {
+            //       "name": "edit",
+            //       "code": "accidentManagement.accidentReport.edit",
+            //       "path": "/accident-management/accident-report/edit/:id",
+            //       "component": "./AccidentManagement/AccidentReport/Edit",
+            //     },
+            //   ],
+            // },
+          ],
+        },
       ],
     },
   ];
