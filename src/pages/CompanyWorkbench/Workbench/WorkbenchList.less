@@ -47,7 +47,6 @@
   }
 }
 
-
 /** 第二版块 */
 .containerSecond {
   height: 430px;
@@ -138,7 +137,6 @@
       justify-content: flex-end;
 
       .itemTwoLeft {
-
         .itemTwoName {
           color: #949494;
         }
@@ -151,7 +149,7 @@
 
       .itemTwoRight {
         width: 50%;
-        margin-top: -4px
+        margin-top: -4px;
       }
     }
 
@@ -162,7 +160,6 @@
       justify-content: flex-end;
 
       .itemThreeLeft {
-
         .itemThreeName {
           color: #949494;
         }
@@ -175,7 +172,7 @@
 
       .itemThreeRight {
         width: 50%;
-        margin-top: -4px
+        margin-top: -4px;
       }
     }
 
@@ -186,7 +183,6 @@
       justify-content: flex-end;
 
       .itemFourLeft {
-
         .itemFourName {
           color: #949494;
         }
@@ -199,12 +195,11 @@
 
       .itemFourRight {
         width: 50%;
-        margin-top: -4px
+        margin-top: -4px;
       }
     }
   }
 }
-
 
 /** 第三版块*/
 .containerThird {
@@ -295,7 +290,7 @@
 
         .itemTwoContent {
           display: flex;
-          flex: 1
+          flex: 1;
         }
 
         .left {
@@ -340,6 +335,304 @@
     :global {
       .ant-calendar-picker {
         width: 200px;
+      }
+    }
+  }
+}
+
+/** 第四版块*/
+
+.containerFourth {
+  width: 100%;
+  height: 380px;
+  margin-bottom: 30px;
+}
+
+.fourthContent {
+  display: flex;
+
+  .left {
+    width: 25%;
+    height: 380px;
+    margin-right: 2%;
+    background-color: rgb(255, 255, 255);
+    padding: 25px 12px 15px 12px;
+
+    .top {
+      height: 8%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .bottom {
+      margin-top: 2%;
+      height: 90%;
+    }
+
+    .echarts {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .middle {
+    width: 25%;
+    height: 380px;
+    margin-right: 2%;
+    background-color: rgb(255, 255, 255);
+    padding: 25px 12px 15px 12px;
+
+    .top {
+      height: 8%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .bottom {
+      width: 100%;
+      height: 90%;
+      margin-top: 2%;
+    }
+
+    .echarts {
+      height: 82%;
+    }
+
+    .label {
+      height: 18%;
+      display: flex;
+
+      .labelFirst {
+        width: 32%;
+        text-align: center;
+        line-height: 27px;
+        border-right: 1px solid #d3d3d3;
+      }
+
+      .number {
+        font-size: 24px;
+      }
+
+      .title {
+        color: #949494;
+        font-size: 12px;
+      }
+
+      .labelSecond {
+        width: 35%;
+        text-align: center;
+        line-height: 27px;
+        border-right: 1px solid #d3d3d3;
+      }
+
+      .labelThird {
+        width: 32%;
+        text-align: center;
+        line-height: 27px;
+      }
+    }
+  }
+
+  .right {
+    width: 46%;
+    height: 380px;
+    background-color: rgb(255, 255, 255);
+    padding: 25px 12px 15px 12px;
+
+    .top {
+      height: 8%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .bottom {
+      margin-top: 2%;
+      width: 100%;
+      height: 90%;
+    }
+
+    .label {
+      height: 10%;
+      display: flex;
+
+      :global {
+        .ant-calendar-picker {
+          width: 200px;
+        }
+      }
+
+      .num {
+        width: 40%;
+        line-height: 40px;
+        display: flex;
+        justify-content: flex-start;
+      }
+
+      .date {
+        width: 60%;
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+
+    .echarts {
+      height: 95%;
+      margin-top: -4%;
+    }
+  }
+}
+
+/**第五版块*/
+.containerFifth {
+  width: 100%;
+  height: 380px;
+  margin-bottom: 30px;
+}
+
+.fifthContent {
+  display: flex;
+
+  .left {
+    width: 42%;
+    height: 380px;
+    margin-right: 2%;
+    background-color: rgb(255, 255, 255);
+    padding: 25px 12px 15px 12px;
+
+    .top {
+      height: 8%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .bottom {
+      width: 100%;
+      height: 90%;
+
+      :global {
+        .ant-calendar-picker {
+          width: 200px;
+        }
+      }
+
+      .echarts {
+        width: 100%;
+        height: 282px;
+        margin-top: -5%;
+        position: relative;
+      }
+    }
+  }
+
+  .middle {
+    width: 28%;
+    height: 380px;
+    margin-right: 2%;
+    background-color: rgb(255, 255, 255);
+    padding: 25px 12px 15px 12px;
+
+    .top {
+      height: 8%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .bottom {
+      width: 100%;
+      height: 90%;
+
+      .echarts {
+        width: 100%;
+        height: 275px;
+        margin-top: -5%;
+        position: relative;
+      }
+    }
+  }
+
+  .right {
+    width: 28%;
+    height: 380px;
+    background-color: rgb(255, 255, 255);
+    padding: 25px 12px 15px 12px;
+
+    .top {
+      height: 8%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .bottom {
+      width: 100%;
+      height: 90%;
+      padding-top: 12px;
+      overflow-y: auto;
+    }
+
+    .label {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #d3d3d3;
+      border-top: 1px solid #d3d3d3;
+    }
+
+    .labelTitle {
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .labelA {
+      width: 100%;
+      height: 10%;
+      display: flex
+    }
+
+    .itemIcon {
+      width: 30px;
+      height: 30px;
+      background: no-repeat center;
+      background-size: 18px 18px;
+    }
+
+    .itemTitle {
+      line-height: 30px;
+      padding-left: 6px;
+      font-size: 14px;
+    }
+
+    .labelB {
+      width: 100%;
+      height: 10%;
+      display: flex;
+
+      .bLeft {
+        width: 60%;
+        display: flex;
+        justify-content: flex-start;
+      }
+
+      .bRight {
+        width: 40%;
+        display: flex;
+        justify-content: flex-start;
+      }
+    }
+
+    .labelC {
+      width: 100%;
+      height: 10%;
+      display: flex;
+
+      .cLeft {
+        width: 60%;
+        display: flex;
+        justify-content: flex-start;
+      }
+
+      .cRight {
+        width: 40%;
+        display: flex;
+        justify-content: flex-start;
       }
     }
   }

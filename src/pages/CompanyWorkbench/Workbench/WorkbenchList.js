@@ -8,9 +8,22 @@ import CurrentDanger from './image/currentDanger.png';
 import Materical from './image/materical.png';
 import Technonlogy from './image/technonlogy.png';
 import MajorDanger from './image/majorDanger.png';
-
 import AlarmIcon from './image/alarmIcon.png';
 import NormalIcon from './image/normalIcon.png';
+import Manoeuvre from './image/manoeuvre.png';
+import DateIcon from './image/date.png';
+import Location from './image/location.png';
+import Execute from './image/execute.png';
+import Money from './image/money.png';
+
+import {
+  Pie,
+  RiskPointPie,
+  DangerPie,
+  DangerWorkLine,
+  LearningLine,
+  ExamPassPie,
+} from './components/Components';
 
 import {
   TabList1,
@@ -21,8 +34,8 @@ import {
   TabList6,
   TabList7,
   SpecialEquipmentList,
+  executeList,
 } from './utils';
-import Pie from './pie';
 import styles from './WorkbenchList.less';
 
 const { TabPane } = Tabs;
@@ -297,6 +310,158 @@ export default class WorkbenchList extends PureComponent {
     );
   }
 
+  renderContainerFourth() {
+    return (
+      <div className={styles.fourthContent}>
+        <div className={styles.left}>
+          <div className={styles.top}>风险点检查情况</div>
+          <div className={styles.bottom}>
+            <div className={styles.echarts}>
+              <RiskPointPie data={[60, 20, 20]} num={[27, 9, 9]} />
+            </div>
+          </div>
+        </div>
+        <div className={styles.middle}>
+          <div className={styles.top}>当前隐患情况</div>
+          <div className={styles.bottom}>
+            <div className={styles.echarts}>
+              <DangerPie data={[50, 120]} />
+            </div>
+            <div className={styles.label}>
+              <div className={styles.labelFirst}>
+                <div className={styles.number}>2</div>
+                <div className={styles.title}>整改超时</div>
+              </div>
+              <div className={styles.labelSecond}>
+                <div className={styles.number}>1</div>
+                <div className={styles.title}>已整改待复查</div>
+              </div>
+              <div className={styles.labelThird}>
+                <div className={styles.number}>30</div>
+                <div className={styles.title}>已关闭</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className={styles.right}>
+          <div className={styles.top}>危险作业情况</div>
+          <div className={styles.bottom}>
+            <div className={styles.label}>
+              <div className={styles.num}>
+                <span style={{ fontSize: '26px', paddingRight: '20px' }}>210</span>{' '}
+                <span>总计</span>
+              </div>
+              <div className={styles.date}>
+                <RangePicker />
+              </div>
+            </div>
+            <div className={styles.echarts}>
+              <DangerWorkLine
+                data={[16, 35, 10, 20, 40, 38, 12]}
+                xData={['12-01', '12-02', '12-03', '12-04', '12-05', '12-06', '12-07']}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  renderContainerFifth() {
+    const operations = <RangePicker />;
+    return (
+      <div className={styles.fifthContent}>
+        <div className={styles.left}>
+          <div className={styles.top}>学习情况</div>
+          <div className={styles.bottom}>
+            <Tabs tabBarExtraContent={operations}>
+              <TabPane tab="学习总人数" key="1">
+                <div className={styles.echarts}>
+                  <LearningLine data={[5, 20, 35, 48, 62, 68, 72]} />
+                </div>
+              </TabPane>
+              <TabPane tab="人均学习时长" key="2">
+                <div className={styles.echarts}>
+                  <LearningLine data={[5, 8, 10, 14, 16, 17, 18]} />
+                </div>
+              </TabPane>
+            </Tabs>
+          </div>
+        </div>
+        <div className={styles.middle}>
+          <div className={styles.top}>考试情况</div>
+          <div className={styles.bottom}>
+            <Tabs defaultActiveKey={1}>
+              <TabPane tab="考试人次" key="1">
+                <div className={styles.echarts}>
+                  <DangerWorkLine
+                    data={[150, 130, 150, 160, 180]}
+                    xData={['试卷A', '试卷B', '试卷C', '试卷D', '试卷E']}
+                    otherType
+                  />
+                </div>
+              </TabPane>
+              <TabPane tab="考试通过情况" key="2">
+                <div className={styles.echarts}>
+                  <ExamPassPie data={[80, 20]} />
+                </div>
+              </TabPane>
+            </Tabs>
+          </div>
+        </div>
+        <div className={styles.right}>
+          <div className={styles.top}>应急演练</div>
+          <div className={styles.bottom}>
+            {executeList.map(({ id, executeName, content, status, date, money, area }) => (
+              <div className={styles.label} key={id}>
+                <div className={styles.labelTitle}>{executeName}</div>
+                <div className={styles.labelA}>
+                  <span
+                    className={styles.itemIcon}
+                    style={{ backgroundImage: `url(${Manoeuvre})` }}
+                  />
+                  <span className={styles.itemTitle}>{content}</span>
+                </div>
+                <div className={styles.labelB}>
+                  <div className={styles.bLeft}>
+                    <span
+                      className={styles.itemIcon}
+                      style={{ backgroundImage: `url(${Execute})` }}
+                    />
+                    <span className={styles.itemTitle}>{status}</span>
+                  </div>
+                  <div className={styles.bRight}>
+                    <span
+                      className={styles.itemIcon}
+                      style={{ backgroundImage: `url(${DateIcon})` }}
+                    />
+                    <span className={styles.itemTitle}>{date}</span>
+                  </div>
+                </div>
+                <div className={styles.labelC}>
+                  <div className={styles.cLeft}>
+                    <span
+                      className={styles.itemIcon}
+                      style={{ backgroundImage: `url(${Money})` }}
+                    />
+                    <span className={styles.itemTitle}>{money}</span>
+                  </div>
+                  <div className={styles.cRight}>
+                    <span
+                      className={styles.itemIcon}
+                      style={{ backgroundImage: `url(${Location})` }}
+                    />
+                    <span className={styles.itemTitle}>{area}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     return (
       <PageHeaderLayout
@@ -324,8 +489,8 @@ export default class WorkbenchList extends PureComponent {
           <div className={styles.containerFirst}>{this.renderContentFirst()}</div>
           <div className={styles.containerSecond}>{this.renderContentSecond()}</div>
           <div className={styles.containerThird}>{this.renderContainerThird()}</div>
-          <div className={styles.containerFourth}>4</div>
-          <div className={styles.containerFifth}>5</div>
+          <div className={styles.containerFourth}>{this.renderContainerFourth()}</div>
+          <div className={styles.containerFifth}>{this.renderContainerFifth()}</div>
         </div>
       </PageHeaderLayout>
     );

@@ -125,3 +125,24 @@ export const SpecialEquipmentList = [
     color: '#99d5fe',
   },
 ];
+
+export const executeList = [
+  {
+    id: 1,
+    executeName: '********（演练名称)',
+    content: '特别重大煤矿事故综合现场演练',
+    status: '待执行',
+    date: '2019.10.01',
+    money: '10.000元',
+    area: '东厂区停车场',
+  },
+  {
+    id: 2,
+    executeName: '********（演练名称)',
+    content: '特别重大煤矿事故综合现场演练',
+    status: '待执行',
+    date: '2019.10.01',
+    money: '10.000元',
+    area: '东厂区停车场',
+  },
+];

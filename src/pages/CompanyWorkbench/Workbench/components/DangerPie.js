@@ -1,18 +1,32 @@
 import React, { PureComponent } from 'react';
 import ReactEcharts from 'echarts-for-react';
 
-export default class BussinessChartBar extends PureComponent {
+export default class DangerPie extends PureComponent {
   render() {
-    const { data = [], color } = this.props;
+    const { data = [] } = this.props;
+
     const option = {
-      textStyle: {
-        color: '#fff',
+      title: {
+        text: 8,
+        left: 'center',
+        top: '36%',
+        textStyle: {
+          color: '#5b5b5b',
+          fontSize: 28,
+          fontWeight: 400,
+        },
+        subtext: '(10%)',
+        subtextStyle: {
+          color: '#949494',
+          fontSize: 12,
+        },
       },
-      color: [color, '#e9e9e9'],
+      color: ['#2db7f5', '#f4f4f4'],
       series: [
         {
           type: 'pie',
-          radius: ['50%', '70%'],
+          radius: ['53%', '65%'],
+          center: ['50%', '50%'],
           hoverOffset: 5,
           avoidLabelOverlap: false,
           legendHoverLink: false,
@@ -22,7 +36,7 @@ export default class BussinessChartBar extends PureComponent {
               position: 'center',
             },
           },
-          data: [{ value: data[0] }, { value: data[1] }],
+          data: [{ value: data[0], name: '' }, { value: data[1], name: '' }],
         },
       ],
     };
