@@ -1,7 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Tabs, DatePicker } from 'antd';
+import { Tabs, DatePicker, Icon, Progress } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
-// import Ellipsis from '@/components/Ellipsis';
+import Ellipsis from '@/components/Ellipsis';
 
 import RiskPoint from './image/riskPoint.png';
 import CurrentDanger from './image/currentDanger.png';
@@ -15,6 +15,9 @@ import DateIcon from './image/date.png';
 import Location from './image/location.png';
 import Execute from './image/execute.png';
 import Money from './image/money.png';
+import AlarmTime from './image/alarmTime.png';
+import FininshRate from './image/fininshRate.png';
+import ProductWork from './image/productWork.png';
 
 import {
   Pie,
@@ -23,6 +26,7 @@ import {
   DangerWorkLine,
   LearningLine,
   ExamPassPie,
+  AlarmRateLine,
 } from './components/Components';
 
 import {
@@ -57,7 +61,7 @@ const breadcrumbList = [
   },
 ];
 
-function TabCard(props) {
+function TabCardMonitor(props) {
   const { list } = props;
   const { icon1, icon2, icon3, name1, name2, name3 } = list;
   return (
@@ -94,6 +98,77 @@ function TabCard(props) {
     </div>
   );
 }
+
+function TabCardTotal(params) {
+  return (
+    <div className={styles.tabContentTotal}>
+      <div className={styles.top}>
+        <div className={styles.left}>
+          <div className={styles.label}>
+            <span className={styles.title}>报警率</span>
+            <span className={styles.rate}>
+              <Icon type="caret-down" style={{ lineHeight: '40px' }} /> 10% 同比上周
+            </span>
+          </div>
+          <div className={styles.labelNum}>
+            <span className={styles.number}>10%</span>
+          </div>
+          <div className={styles.labelLine}>
+            <AlarmRateLine />
+          </div>
+        </div>
+        <div className={styles.right}>
+          <div className={styles.label}>
+            <span className={styles.title}>报警次数</span>
+            <span className={styles.rate}>
+              <Icon type="caret-down" style={{ lineHeight: '40px' }} /> 10% 同比上周
+            </span>
+          </div>
+          <div className={styles.labelNum}>
+            <span className={styles.img} style={{ backgroundImage: `url(${AlarmTime})` }} />
+            <span className={styles.number}>10</span>
+          </div>
+          <div className={styles.labelProgress}>
+            <Progress percent={80} showInfo={false} />
+          </div>
+        </div>
+      </div>
+      <div className={styles.bottom}>
+        <div className={styles.left}>
+          <div className={styles.label}>
+            <span className={styles.title}>产生工单</span>
+            <span className={styles.rate}>
+              <Icon type="caret-down" style={{ lineHeight: '40px' }} /> 10% 同比上周
+            </span>
+          </div>
+          <div className={styles.labelNum}>
+            <span className={styles.img} style={{ backgroundImage: `url(${ProductWork})` }} />
+            <span className={styles.number}>5</span>
+          </div>
+          <div className={styles.labelProgress}>
+            <Progress percent={20} showInfo={false} strokeColor="#808bc6" />
+          </div>
+        </div>
+        <div className={styles.right}>
+          <div className={styles.label}>
+            <span className={styles.title}>工单完成率</span>
+            <span className={styles.rate}>
+              <Icon type="caret-down" style={{ lineHeight: '40px' }} /> 0.8% 同比上周
+            </span>
+          </div>
+          <div className={styles.labelNum}>
+            <span className={styles.img} style={{ backgroundImage: `url(${FininshRate})` }} />
+            <span className={styles.number}>66%</span>
+          </div>
+          <div className={styles.labelProgress}>
+            <Progress percent={66} strokeColor="#7dc856" showInfo={false} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // @connect(({ loading }) => ({}))
 export default class WorkbenchList extends PureComponent {
   constructor(props) {
@@ -256,7 +331,6 @@ export default class WorkbenchList extends PureComponent {
 
   renderContainerThird() {
     const { tabValue } = this.state;
-    const operations = <RangePicker />;
     return (
       <div className={styles.thirdContent}>
         <div className={styles.leftItem}>
@@ -264,28 +338,28 @@ export default class WorkbenchList extends PureComponent {
           <div className={styles.contentLeft}>
             <Tabs activeKey={tabValue} onChange={this.handleTabChange}>
               <TabPane tab="储罐区" key="1">
-                <TabCard list={TabList1} />
+                <TabCardMonitor list={TabList1} />
               </TabPane>
               <TabPane tab="储罐" key="2">
-                <TabCard list={TabList2} />
+                <TabCardMonitor list={TabList2} />
               </TabPane>
               <TabPane tab="库区" key="3">
-                <TabCard list={TabList3} />
+                <TabCardMonitor list={TabList3} />
               </TabPane>
               <TabPane tab="库房" key="4">
-                <TabCard list={TabList4} />
+                <TabCardMonitor list={TabList4} />
               </TabPane>
               <TabPane tab="高危工艺" key="5">
-                <TabCard list={TabList7} />
+                <TabCardMonitor list={TabList7} />
               </TabPane>
               <TabPane tab="生产装置" key="6">
-                <TabCard list={TabList5} />
+                <TabCardMonitor list={TabList5} />
               </TabPane>
               <TabPane tab="气柜" key="7">
-                <TabCard list={TabList6} />
+                <TabCardMonitor list={TabList6} />
               </TabPane>
               {/* <TabPane tab="视频监测" key="8">
-                <TabCard />
+                <TabCardMonitor />
               </TabPane> */}
             </Tabs>
           </div>
@@ -293,17 +367,18 @@ export default class WorkbenchList extends PureComponent {
         <div className={styles.rightItem}>
           <div className={styles.titleRight}>重大危险源历史统计</div>
           <div className={styles.contentRight}>
-            <Tabs tabBarExtraContent={operations}>
-              <TabPane tab="本周" key="1">
-                1
-              </TabPane>
-              <TabPane tab="本月" key="2">
-                2
-              </TabPane>
-              <TabPane tab="今年" key="3">
-                3
-              </TabPane>
-            </Tabs>
+            <div className={styles.topNav}>
+              <div className={styles.label}>本周</div>
+              <div className={styles.label}>本月</div>
+              <div className={styles.label}>本季度</div>
+              <div className={styles.label}>今年</div>
+              <div className={styles.date}>
+                <RangePicker />
+              </div>
+            </div>
+            <div className={styles.bottom}>
+              <TabCardTotal />
+            </div>
           </div>
         </div>
       </div>
@@ -412,6 +487,7 @@ export default class WorkbenchList extends PureComponent {
         <div className={styles.right}>
           <div className={styles.top}>应急演练</div>
           <div className={styles.bottom}>
+            <div className={styles.divier} />
             {executeList.map(({ id, executeName, content, status, date, money, area }) => (
               <div className={styles.label} key={id}>
                 <div className={styles.labelTitle}>{executeName}</div>
@@ -451,7 +527,9 @@ export default class WorkbenchList extends PureComponent {
                       className={styles.itemIcon}
                       style={{ backgroundImage: `url(${Location})` }}
                     />
-                    <span className={styles.itemTitle}>{area}</span>
+                    <Ellipsis lines={1} tooltip>
+                      <span className={styles.itemTitle}>{area}</span>
+                    </Ellipsis>
                   </div>
                 </div>
               </div>
@@ -481,7 +559,7 @@ export default class WorkbenchList extends PureComponent {
             <span className={styles.writeRed}> 否 </span>, 罐区、仓库等重大危险源是否处于安全状态{' '}
             <span className={styles.writeRed}> 是</span>。
             今天我公司已进行安全风险研判，各项安全风险防控措施已落实到位，我承诺所有生产装置处于安全运行状态，罐区、仓库等重大危险源安全风险得到有效管控。
-            主要负责人：刘军 2019年09月26日
+            主要负责人：刘军 。 2019年09月26日
           </div>
         }
       >
