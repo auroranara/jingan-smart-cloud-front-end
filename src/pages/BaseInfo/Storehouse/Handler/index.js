@@ -385,6 +385,8 @@ export default class StorehouseHandler extends PureComponent {
   };
 
   handleSelectMaterials = selectedMaterials => {
+    console.log('selectedMaterials', selectedMaterials);
+
     const {
       form: { setFieldsValue },
     } = this.props;
@@ -445,7 +447,7 @@ export default class StorehouseHandler extends PureComponent {
   };
 
   handleChangeDangerSource = e => {
-    this.setState({ dangerSourceUnitVisible: e.target.value === '1' });
+    this.setState({ dangerSourceUnitVisible: e.target.value === '1', selectedDangerSource: {} });
   };
 
   /**

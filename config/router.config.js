@@ -148,6 +148,11 @@ module.exports = env => {
           code: 'dashboard.gasStation',
           component: './BigPlatform/GasStation',
         },
+        // {
+        //   path: '/big-platform/chemical/:unitId',
+        //   code: 'dashboard.chemical',
+        //   component: './BigPlatform/Chemical',
+        // },
       ],
     },
 
@@ -3552,6 +3557,94 @@ module.exports = env => {
                   code: 'emergencyManagement.emergencyEstimate.detail',
                   name: 'detail',
                   component: './EmergencyManagement/EmergencyEstimate/Detail/index',
+                },
+              ],
+            },
+            // 应急演练过程
+            {
+              name: 'emergencyProcess',
+              code: 'emergencyManagement.emergencyProcess',
+              path: '/emergency-management/emergency-process',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/emergency-management/emergency-process',
+                  redirect: '/emergency-management/emergency-process/list',
+                },
+                {
+                  name: 'list',
+                  code: 'emergencyManagement.emergencyProcess.list',
+                  path: '/emergency-management/emergency-process/list',
+                  component: './EmergencyManagement/EmergencyProcess/TableList',
+                },
+                {
+                  name: 'view',
+                  code: 'emergencyManagement.emergencyProcess.view',
+                  path: '/emergency-management/emergency-process/view/:id',
+                  component: './EmergencyManagement/EmergencyProcess/Edit',
+                },
+                {
+                  name: 'add',
+                  code: 'emergencyManagement.emergencyProcess.add',
+                  path: '/emergency-management/emergency-process/add',
+                  component: './EmergencyManagement/EmergencyProcess/Edit',
+                },
+                {
+                  name: 'edit',
+                  code: 'emergencyManagement.emergencyProcess.edit',
+                  path: '/emergency-management/emergency-process/edit/:id',
+                  component: './EmergencyManagement/EmergencyProcess/Edit',
+                },
+              ],
+            },
+          ],
+        },
+        // 应急管理
+        {
+          path: '/cards-info',
+          code: 'cardsInfo',
+          icon: 'alert',
+          name: 'cardsInfo',
+          routes: [
+            {
+              path: '/cards-info',
+              redirect: '/cards-info/commitment-card/list',
+            },
+            {
+              name: 'commitmentCard',
+              code: 'cardsInfo.commitmentCard',
+              path: '/cards-info/commitment-card',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/cards-info/commitment-card',
+                  redirect: '/cards-info/commitment-card/list',
+                },
+                {
+                  name: 'list',
+                  code: 'cardsInfo.commitmentCard.list',
+                  path: '/cards-info/commitment-card/list',
+                  component: './CardsInfo/CommitmentCard/TableList',
+                },
+                {
+                  name: 'view',
+                  code: 'cardsInfo.commitmentCard.view',
+                  path: '/cards-info/commitment-card/view/:id',
+                  component: './CardsInfo/CommitmentCard/Edit',
+                },
+                {
+                  name: 'add',
+                  code: 'cardsInfo.commitmentCard.add',
+                  path: '/cards-info/commitment-card/add',
+                  component: './CardsInfo/CommitmentCard/Edit',
+                },
+                {
+                  name: 'edit',
+                  code: 'cardsInfo.commitmentCard.edit',
+                  path: '/cards-info/commitment-card/edit/:id',
+                  component: './CardsInfo/CommitmentCard/Edit',
                 },
               ],
             },
