@@ -32,8 +32,8 @@ export const BREADCRUMBLIST = [ // modify
   { title: '事故快报', name: '事故快报', href: LIST_URL },
 ];
 
-const CODES = [{ key: '12A01', value: '煤矿瓦斯事故' }, { key: '12A02', value: '煤矿顶板事故' }];
-const LEVELS = ['特别重大', '重大', '较大', '一般'];
+export const CODES = [{ key: '12A01', value: '煤矿瓦斯事故' }, { key: '12A02', value: '煤矿顶板事故' }];
+export const LEVELS = ['特别重大', '重大', '较大', '一般'];
 
 export const SEARCH_FIELDS = [ // modify
   {
@@ -125,7 +125,7 @@ export const TABLE_COLUMNS = [ // modify
   },
 ];
 
-const AREAS = [
+export const AREAS = [
   {
     value: 'zhejiang',
     label: '浙江',
