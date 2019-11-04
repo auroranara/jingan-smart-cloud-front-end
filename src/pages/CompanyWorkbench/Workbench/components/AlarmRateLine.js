@@ -5,10 +5,10 @@ export default class AlarmRateLine extends PureComponent {
   render() {
     const option = {
       grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true,
+        left: '2px',
+        top: '-5px',
+        right: '1px',
+        bottom: '0px',
       },
       xAxis: [
         {

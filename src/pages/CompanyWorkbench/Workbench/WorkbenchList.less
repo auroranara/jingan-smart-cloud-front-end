@@ -58,6 +58,7 @@
 .secondContent {
   display: flex;
 
+  // 工作提醒
   .secondLeft {
     width: 43%;
     margin-right: 2%;
@@ -80,6 +81,7 @@
     }
   }
 
+  // 到期统计
   .secondRight {
     width: 55%;
 
@@ -211,20 +213,21 @@
 .thirdContent {
   display: flex;
 
+  // 重大危险源实时监测
   .leftItem {
     width: 49%;
     margin-right: 2%;
-  }
 
-  .titleLeft {
-    font-size: 16px;
-  }
+    .titleLeft {
+      font-size: 16px;
+    }
 
-  .contentLeft {
-    height: 380px;
-    margin-top: 10px;
-    background-color: #fff;
-    padding: 10px 34px 20px 25px;
+    .contentLeft {
+      height: 380px;
+      margin-top: 10px;
+      background-color: #fff;
+      padding: 10px 34px 20px 25px;
+    }
   }
 
   .tabContentMonitor {
@@ -319,49 +322,51 @@
     }
   }
 
+  // 重大危险源历史统计
   .rightItem {
     width: 49%;
-  }
 
-  .titleRight {
-    font-size: 16px;
-  }
+    .titleRight {
+      font-size: 16px;
+    }
 
-  .contentRight {
-    height: 380px;
-    margin-top: 10px;
-    background-color: #fff;
-    padding: 10px 34px 15px 25px;
+    .contentRight {
+      height: 380px;
+      margin-top: 10px;
+      background-color: #fff;
+      padding: 10px 34px 15px 25px;
 
-    :global {
-      .ant-calendar-picker {
-        width: 200px;
+      :global {
+        .ant-calendar-picker {
+          width: 200px;
+        }
+      }
+
+      .topNav {
+        display: flex;
+        justify-content: flex-end;
+        border-bottom: 1px solid #ccc;
+      }
+
+      .label {
+        font-size: 14px;
+        padding-right: 12px;
+        line-height: 36px;
+        padding-bottom: 8px;
+      }
+
+      .label:hover {
+        color: #1890ff;
+        cursor: pointer;
+      }
+
+      .label:active {
+        color: #1890ff;
+        cursor: pointer;
       }
     }
-
-    .topNav {
-      display: flex;
-      justify-content: flex-end;
-      border-bottom: 1px solid #ccc;
-    }
-
-    .label {
-      font-size: 14px;
-      padding-right: 12px;
-      line-height: 36px;
-      padding-bottom: 8px;
-    }
-
-    .label:hover {
-      color: #1890ff;
-      cursor: pointer;
-    }
-
-    .label:focus {
-      color: #1890ff;
-      cursor: pointer;
-    }
   }
+
   .bottom {
     height: 90%;
   }
@@ -412,9 +417,7 @@
 
         .labelLine {
           width: 100%;
-          height: 100%;
-          margin-top: -75px;
-          margin-left: -16px;
+          height: 45%;
         }
       }
 
@@ -483,13 +486,13 @@
         }
 
         .title {
-          width: 55%;
+          width: 50%;
           display: flex;
           justify-content: flex-start;
         }
 
         .rate {
-          width: 45%;
+          width: 50%;
           display: flex;
           justify-content: flex-end;
         }
@@ -580,6 +583,7 @@
 .fourthContent {
   display: flex;
 
+  // 风险点检查情况
   .left {
     width: 25%;
     height: 380px;
@@ -604,6 +608,7 @@
     }
   }
 
+  // 当前隐患情况
   .middle {
     width: 25%;
     height: 380px;
@@ -662,6 +667,7 @@
     }
   }
 
+  // 危险作业情况
   .right {
     width: 46%;
     height: 380px;
@@ -721,6 +727,7 @@
 .fifthContent {
   display: flex;
 
+  // 学习情况
   .left {
     width: 42%;
     height: 380px;
@@ -753,6 +760,7 @@
     }
   }
 
+  // 考试情况
   .middle {
     width: 28%;
     height: 380px;
@@ -779,6 +787,7 @@
     }
   }
 
+  // 应急演练
   .right {
     width: 28%;
     height: 380px;

@@ -1,23 +1,8 @@
-import React, { PureComponent, Fragment } from 'react';
-import { Tabs, DatePicker, Icon, Progress } from 'antd';
+import React, { PureComponent } from 'react';
+import { Tabs, DatePicker, Icon, Progress, Form } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Ellipsis from '@/components/Ellipsis';
-
-import RiskPoint from './image/riskPoint.png';
-import CurrentDanger from './image/currentDanger.png';
-import Materical from './image/materical.png';
-import Technonlogy from './image/technonlogy.png';
-import MajorDanger from './image/majorDanger.png';
-import AlarmIcon from './image/alarmIcon.png';
-import NormalIcon from './image/normalIcon.png';
-import Manoeuvre from './image/manoeuvre.png';
-import DateIcon from './image/date.png';
-import Location from './image/location.png';
-import Execute from './image/execute.png';
-import Money from './image/money.png';
-import AlarmTime from './image/alarmTime.png';
-import FininshRate from './image/fininshRate.png';
-import ProductWork from './image/productWork.png';
+import moment from 'moment';
 
 import {
   Pie,
@@ -39,6 +24,21 @@ import {
   TabList7,
   SpecialEquipmentList,
   executeList,
+  ProductWork,
+  RiskPoint,
+  CurrentDanger,
+  Materical,
+  Technonlogy,
+  MajorDanger,
+  AlarmIcon,
+  NormalIcon,
+  Manoeuvre,
+  DateIcon,
+  Location,
+  Execute,
+  Money,
+  AlarmTime,
+  FininshRate,
 } from './utils';
 import styles from './WorkbenchList.less';
 
@@ -99,7 +99,7 @@ function TabCardMonitor(props) {
   );
 }
 
-function TabCardTotal(params) {
+function TabCardTotal(props) {
   return (
     <div className={styles.tabContentTotal}>
       <div className={styles.top}>
@@ -169,11 +169,27 @@ function TabCardTotal(params) {
   );
 }
 
+function getValueDate(i) {
+  switch (i) {
+    case 1:
+      return [moment('2019-11-04'), moment('2019-11-10')];
+    case 2:
+      return [moment('2019-11-01'), moment('2019-11-30')];
+    case 3:
+      return [moment('2019-10-01'), moment('2019-12-31')];
+    case 4:
+      return [moment('2019-01-01'), moment('2019-12-31')];
+    default:
+      return;
+  }
+}
+
 // @connect(({ loading }) => ({}))
+@Form.create()
 export default class WorkbenchList extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = { tabValue: '1' };
+    this.state = { tabValue: '1', tabValueOther: '1' };
   }
 
   // 挂载后
@@ -181,6 +197,19 @@ export default class WorkbenchList extends PureComponent {
 
   handleTabChange = type => {
     this.setState({ tabValue: type });
+  };
+
+  handleTabChangeOther = type => {
+    this.setState({ tabValueOther: type });
+  };
+
+  handleDateChange = status => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    setFieldsValue({
+      dateRange: getValueDate(status),
+    });
   };
 
   renderContentFirst() {
@@ -330,6 +359,9 @@ export default class WorkbenchList extends PureComponent {
   }
 
   renderContainerThird() {
+    const {
+      form: { getFieldDecorator },
+    } = this.props;
     const { tabValue } = this.state;
     return (
       <div className={styles.thirdContent}>
@@ -368,12 +400,20 @@ export default class WorkbenchList extends PureComponent {
           <div className={styles.titleRight}>重大危险源历史统计</div>
           <div className={styles.contentRight}>
             <div className={styles.topNav}>
-              <div className={styles.label}>本周</div>
-              <div className={styles.label}>本月</div>
-              <div className={styles.label}>本季度</div>
-              <div className={styles.label}>今年</div>
+              <div className={styles.label} onClick={() => this.handleDateChange(1)}>
+                本周
+              </div>
+              <div className={styles.label} onClick={() => this.handleDateChange(2)}>
+                本月
+              </div>
+              <div className={styles.label} onClick={() => this.handleDateChange(3)}>
+                本季度
+              </div>
+              <div className={styles.label} onClick={() => this.handleDateChange(4)}>
+                今年
+              </div>
               <div className={styles.date}>
-                <RangePicker />
+                {getFieldDecorator('dateRange')(<RangePicker format="YYYY-MM-DD " />)}
               </div>
             </div>
             <div className={styles.bottom}>
@@ -443,6 +483,7 @@ export default class WorkbenchList extends PureComponent {
   }
 
   renderContainerFifth() {
+    const { tabValueOther } = this.state;
     const operations = <RangePicker />;
     return (
       <div className={styles.fifthContent}>
@@ -466,7 +507,7 @@ export default class WorkbenchList extends PureComponent {
         <div className={styles.middle}>
           <div className={styles.top}>考试情况</div>
           <div className={styles.bottom}>
-            <Tabs defaultActiveKey={1}>
+            <Tabs activeKey={tabValueOther} onChange={this.handleTabChangeOther}>
               <TabPane tab="考试人次" key="1">
                 <div className={styles.echarts}>
                   <DangerWorkLine
