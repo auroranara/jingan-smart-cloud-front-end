@@ -3803,6 +3803,34 @@ module.exports = env => {
             },
           ],
         },
+        // 物联网监测
+        {
+          path: '/iot',
+          code: 'iot',
+          name: 'iot',
+          icon: 'wifi',
+          routes: [
+            // 重大危险源监测
+            {
+              path: '/iot/major-hazard',
+              code: 'iot.majorHazard',
+              name: 'majorHazard',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/iot/major-hazard',
+                  redirect: '/iot/major-hazard/index',
+                },
+                {
+                  path: '/iot/major-hazard/index',
+                  code: 'iot.majorHazard.index',
+                  name: 'index',
+                  component: './IoT/MajorHazard',
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ];
