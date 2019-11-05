@@ -3771,6 +3771,8 @@ module.exports = env => {
             },
           ],
         },
+
+        // 事故管理
         {
           path: '/accident-management',
           code: 'accidentManagement',
@@ -3848,6 +3850,127 @@ module.exports = env => {
                   "code": "accidentManagement.accidentReport.edit",
                   "path": "/accident-management/accident-report/edit/:id",
                   "component": "./AccidentManagement/AccidentReport/Edit",
+                },
+              ],
+            },
+          ],
+        },
+
+        // 三卡信息管理
+        {
+          path: '/cards-info',
+          code: 'cardsInfo',
+          icon: 'fire',
+          name: 'cardsInfo',
+          routes: [
+            {
+              "name": "commitmentCard",
+              "code": "cardsInfo.commitmentCard",
+              "path": "/cards-info/commitment-card",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/cards-info/commitment-card",
+                  "redirect": "/cards-info/commitment-card/list",
+                },
+                {
+                  "name": "list",
+                  "code": "cardsInfo.commitmentCard.list",
+                  "path": "/cards-info/commitment-card/list",
+                  "component": "./CardsInfo/CommitmentCard/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "cardsInfo.commitmentCard.view",
+                  "path": "/cards-info/commitment-card/view/:id",
+                  "component": "./CardsInfo/CommitmentCard/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "cardsInfo.commitmentCard.add",
+                  "path": "/cards-info/commitment-card/add",
+                  "component": "./CardsInfo/CommitmentCard/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "cardsInfo.commitmentCard.edit",
+                  "path": "/cards-info/commitment-card/edit/:id",
+                  "component": "./CardsInfo/CommitmentCard/Edit",
+                },
+              ],
+            },
+            {
+              "name": "knowCard",
+              "code": "cardsInfo.knowCard",
+              "path": "/cards-info/know-card",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/cards-info/know-card",
+                  "redirect": "/cards-info/know-card/list",
+                },
+                {
+                  "name": "list",
+                  "code": "cardsInfo.knowCard.list",
+                  "path": "/cards-info/know-card/list",
+                  "component": "./CardsInfo/KnowCard/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "cardsInfo.knowCard.view",
+                  "path": "/cards-info/know-card/view/:id",
+                  "component": "./CardsInfo/KnowCard/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "cardsInfo.knowCard.add",
+                  "path": "/cards-info/know-card/add",
+                  "component": "./CardsInfo/KnowCard/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "cardsInfo.knowCard.edit",
+                  "path": "/cards-info/know-card/edit/:id",
+                  "component": "./CardsInfo/KnowCard/Edit",
+                },
+              ],
+            },
+            {
+              "name": "emergencyCard",
+              "code": "cardsInfo.emergencyCard",
+              "path": "/cards-info/emergency-card",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/cards-info/emergency-card",
+                  "redirect": "/cards-info/emergency-card/list",
+                },
+                {
+                  "name": "list",
+                  "code": "cardsInfo.emergencyCard.list",
+                  "path": "/cards-info/emergency-card/list",
+                  "component": "./CardsInfo/EmergencyCard/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "cardsInfo.emergencyCard.view",
+                  "path": "/cards-info/emergency-card/view/:id",
+                  "component": "./CardsInfo/EmergencyCard/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "cardsInfo.emergencyCard.add",
+                  "path": "/cards-info/emergency-card/add",
+                  "component": "./CardsInfo/EmergencyCard/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "cardsInfo.emergencyCard.edit",
+                  "path": "/cards-info/emergency-card/edit/:id",
+                  "component": "./CardsInfo/EmergencyCard/Edit",
                 },
               ],
             },
