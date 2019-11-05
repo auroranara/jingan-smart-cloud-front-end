@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from 'react';
-import { message, Spin, Row, Col, Card, DatePicker } from 'antd';
+import { message, Spin, Row, Col, Card, DatePicker, Radio, Table, Badge } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import Ellipsis from '@/components/Ellipsis';
+import ReactEcharts from 'echarts-for-react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
@@ -61,8 +63,27 @@ export const TABS = [
     tab: '历史统计',
   },
 ];
+export const DURATION_LABELS = [
+  '安全时长',
+  '预警时长',
+  '报警时长',
+];
+export const NUMBER_TYPES = [
+  {
+    key: '0',
+    value: '绝对值',
+  },
+  {
+    key: '1',
+    value: '百分比',
+  },
+];
+export const TITLE = '重大危险源监测';
+export const URL = '/iot/major-hazard/index';
+export const TANK_AREA_REAL_TIME_URL = '/iot/major-hazard/tank-area/real-time/index';
+export const TANK_AREA_HISTORY_URL = '/iot/major-hazard/tank-area/history/index';
 const LIST = [
-  { title: '储罐区监测', icon: iconTankArea, label: '储罐区（个）', normalLabel: '正常罐区（个）', alarmLabel: '报警罐区（个）', realTimeUrl: '/iot/major-hazard/tank-area/real-time/index', historyUrl: '/iot/major-hazard/tank-area/history' },
+  { title: '储罐区监测', icon: iconTankArea, label: '储罐区（个）', normalLabel: '正常罐区（个）', alarmLabel: '报警罐区（个）', realTimeUrl: TANK_AREA_REAL_TIME_URL, historyUrl: TANK_AREA_HISTORY_URL },
   { title: '储罐监测', icon: iconTank, label: '储罐（个）', normalLabel: '正常储罐（个）', alarmLabel: '报警储罐（个）', realTimeUrl: '/iot/major-hazard/tank/real-time/index', historyUrl: '/iot/major-hazard/tank/history' },
   { title: '库区监测', icon: iconStorageHouse, label: '库区（个）', normalLabel: '正常库区（个）', alarmLabel: '报警库区（个）', realTimeUrl: '/iot/major-hazard/storage-area/real-time/index', historyUrl: '/iot/major-hazard/storage-area/history' },
   { title: '库房监测 ', icon: iconStorageArea, label: '库房（间）', normalLabel: '正常库房（间）', alarmLabel: '报警库房（间）', realTimeUrl: '/iot/major-hazard/storage-house/real-time/index', historyUrl: '/iot/major-hazard/storage-house/history' },
@@ -72,7 +93,6 @@ const LIST = [
 ];
 const GET_REAL_TIME = 'majorHazardMonitor/getRealTime';
 const GET_HISTORY = 'majorHazardMonitor/getHistory';
-const TITLE = '重大危险源监测';
 const BREADCRUMB_LIST = [
   {
     title: '首页',
@@ -94,6 +114,33 @@ const SPAN = {
   sm: 24,
   xs: 24,
 };
+const COLUMNS = [
+  {
+    title: '',
+    dataIndex: 'index',
+    render: (value, data, index) => <Badge count={index+1} style={{ backgroundColor: index < 3 ? '#faad14' : '#d9d9d9' }} />,
+  },
+  {
+    title: '监测对象名称',
+    dataIndex: 'name',
+    render: (value) => value && <Ellipsis length={6} tooltip>{value}</Ellipsis>,
+  },
+  {
+    title: '监测点位置',
+    dataIndex: 'address',
+    render: (value) => value && <Ellipsis length={5} tooltip>{value}</Ellipsis>,
+  },
+  {
+    title: '预警次数',
+    dataIndex: 'warningCount',
+    render: (value) => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
+  },
+  {
+    title: '报警次数',
+    dataIndex: 'alarmCount',
+    render: (value) => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
+  },
+];
 
 @connect(({
   user,
@@ -127,13 +174,17 @@ export default class MajorHazard extends Component {
     range: undefined,
     tabActiveKey: undefined,
     loading: false,
+    numberType: undefined,
   }
 
   realTimer = null;
 
   componentDidMount() {
-    this.onTabChange(TABS[1].key);
-    this.setRealTimer();
+    this.onTabChange(TABS[0].key);
+  }
+
+  componentWillUnmount() {
+    this.clearRealTimer();
   }
 
   getRealTime = () => {
@@ -160,11 +211,34 @@ export default class MajorHazard extends Component {
     });
   }
 
+  getPieToolTipFormatter = (index) => {
+    const {
+      history: {
+        safeDuration,
+        warningDuration,
+        alarmDuration,
+      }={},
+    } = this.props;
+    const total = safeDuration + alarmDuration + warningDuration;
+    const value = [safeDuration, warningDuration, alarmDuration][index];
+    const label = DURATION_LABELS[index];
+    return `{a|${label}}{b|${value ? Math.round(value / total * 100) : 0}%}{c|${value}h}`;
+  }
+
+  getLineToolTipFormatter = (params) => {
+    const [{ name }] = params;
+    return `${name}<br/>${params.map(({ marker, seriesName, value }) => `${marker}${seriesName}：${value}%`).join('<br />')}`
+  }
+
   setRealTimer = () => {
     setTimeout(() => {
       this.getRealTime();
       this.setRealTimer();
     }, 1 * 60 * 1000);
+  }
+
+  clearRealTimer = () => {
+    clearTimeout(this.realTimer);
   }
 
   hideLoading = () => {
@@ -184,11 +258,14 @@ export default class MajorHazard extends Component {
     });
     if (tabActiveKey === '0') {
       this.getRealTime();
+      this.setRealTimer();
     } else {
       this.setState({
         period: PERIODS[0].key,
         range: getRange(PERIODS[0].key),
+        numberType: NUMBER_TYPES[0].key,
       }, this.getHistory);
+      this.clearRealTimer();
     }
   }
 
@@ -204,6 +281,12 @@ export default class MajorHazard extends Component {
       period: undefined,
       range,
     }, this.getHistory);
+  }
+
+  onNumberTypeChange = ({ target: { value: numberType } }) => {
+    this.setState({
+      numberType,
+    });
   }
 
   renderRealTime = () => {
@@ -251,9 +334,10 @@ export default class MajorHazard extends Component {
         alerts,
         alarmTime,
         completeRate,
+        rankList,
       }={},
     } = this.props;
-    const { period, range } = this.state;
+    const { period, range, numberType } = this.state;
 
     return (
       <Fragment>
@@ -303,15 +387,307 @@ export default class MajorHazard extends Component {
           <Col span={8}>
             <Card className={styles.card} bordered={false}>
               <div>安全状况时长占比</div>
+              {this.renderPie()}
             </Card>
           </Col>
           <Col span={16}>
             <Card className={styles.card} bordered={false}>
-              <div>报警工单</div>
+              <div className={styles.lineChartTitle}>
+                报警工单
+                <div className={styles.lineChartSwitch}>
+                  <Radio.Group value={numberType} size="small" onChange={this.onNumberTypeChange}>
+                    {NUMBER_TYPES.map(({ key, value }) => <Radio.Button value={key} key={key}>{value}</Radio.Button>)}
+                  </Radio.Group>
+                </div>
+              </div>
+              {this.renderLine()}
+            </Card>
+          </Col>
+        </Row>
+        <Row gutter={24}>
+          <Col span={16}>
+            <Card className={styles.card} bordered={false}>
+              <div>预警/报警次数趋势</div>
+              {this.renderLine2()}
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card className={styles.card} bordered={false}>
+              <div>监测点报警/预警排名</div>
+              <div className={styles.tableWrapper}>
+                <Table
+                  className={styles.table}
+                  columns={COLUMNS}
+                  dataSource={rankList}
+                  rowKey="id"
+                  pagination={false}
+                  bordered={false}
+                />
+              </div>
             </Card>
           </Col>
         </Row>
       </Fragment>
+    );
+  }
+
+  renderPie() {
+    const {
+      history: {
+        safeDuration,
+        warningDuration,
+        alarmDuration,
+      }={},
+    } = this.props;
+
+    const option = {
+      tooltip: {
+        show: false,
+      },
+      legend: {
+        orient: 'vertical',
+        right: 0,
+        top: 'center',
+        icon: 'circle',
+        itemWidth: 8,
+        itemHeight: 8,
+        textStyle: {
+          color: 'rgba(0, 0, 0, 0.45)',
+          rich: {
+            a: {
+              width: 48,
+            },
+            b: {
+              width: 30,
+              align: 'right',
+            },
+            c: {
+              width: 36,
+              align: 'right',
+            },
+          },
+        },
+        formatter: this.getPieToolTipFormatter,
+      },
+      color: ['#52c41a', '#faad14', '#f5222d'],
+      series : [
+        {
+          name: '安全状况时长占比',
+          type: 'pie',
+          center: ['25%', '50%'],
+          radius : ['40%', '55%'],
+          data: [
+            safeDuration,
+            warningDuration,
+            alarmDuration,
+          ].map((value, index) => ({
+            name: `${index}`,
+            value,
+            label: index === 0 ? {
+              normal: {
+                position: 'center',
+                formatter: `{a|${safeDuration+warningDuration+alarmDuration}}\n{b|h}`,
+                rich: {
+                  a: {
+                    fontSize: 16,
+                    lineHeight: 24,
+                    color: 'rgba(0, 0, 0, 0.65)',
+                  },
+                  b: {
+                    fontSize: 12,
+                    lineHeight: 18,
+                    color: 'rgba(0, 0, 0, 0.45)',
+                  },
+                },
+              },
+            } : {
+              normal: {
+                show: false,
+              },
+            },
+          })),
+          labelLine: {
+            show: false,
+          },
+        },
+      ],
+    };
+
+    return (
+      <ReactEcharts
+        style={{ height: 200 }}
+        option={option}
+      />
+    );
+  }
+
+  renderLine() {
+    const {
+      history: {
+        dateList,
+        pendingList=[],
+        processingList=[],
+        processedList=[],
+        pendingPercentList=[],
+        processingPercentList=[],
+        processedPercentList=[],
+      }={},
+    } = this.props;
+    const { numberType } = this.state;
+
+    const option = {
+      color: ['#faad14', '#f5222d', '#52c41a'],
+      tooltip : {
+        trigger: 'axis',
+        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+        formatter: numberType === '1' ? this.getLineToolTipFormatter : undefined,
+      },
+      legend: {
+        itemWidth: 8,
+        itemHeight: 8,
+        bottom: 0,
+        left: 'center',
+        icon: 'circle',
+        textStyle: {
+          color: 'rgba(0, 0, 0, 0.45)',
+        },
+      },
+      grid: {
+        top: 10,
+        left: 10,
+        right: 20,
+        bottom: 30,
+        containLabel: true,
+      },
+      xAxis: {
+        type: 'category',
+        data: dateList,
+        boundaryGap: false,
+        splitLine: {
+          show: false,
+        },
+        axisLabel: {
+          color: 'rgba(0, 0, 0, 0.65)',
+        },
+      },
+      yAxis: {
+        type: 'value',
+        splitLine: {
+          show: false,
+        },
+        axisLabel: {
+          color: 'rgba(0, 0, 0, 0.65)',
+          formatter: numberType === '1' ? '{value}%' : undefined,
+        },
+      },
+      series: [
+        {
+          name: '待处理工单',
+          type: 'line',
+          areaStyle: {
+            opacity: 1,
+          },
+          data: numberType === '0' ? pendingList : pendingPercentList,
+        },
+        {
+          name: '处理中工单',
+          type: 'line',
+          areaStyle: {
+            opacity: 1,
+          },
+          data: numberType === '0' ? processingList : processingPercentList,
+        },
+        {
+          name: '已处理工单',
+          type: 'line',
+          areaStyle: {
+            opacity: 1,
+          },
+          data: numberType === '0' ? processedList: processedPercentList,
+        },
+      ],
+  };
+
+    return (
+      <ReactEcharts
+        key={numberType}
+        style={{ height: 200 }}
+        option={option}
+      />
+    );
+  }
+
+  renderLine2() {
+    const {
+      history: {
+        dateList,
+        warningList=[],
+        alarmList=[],
+      }={},
+    } = this.props;
+
+    const option = {
+      color: ['#faad14', '#f5222d'],
+      tooltip : {
+        trigger: 'axis',
+        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+      },
+      legend: {
+        itemWidth: 8,
+        itemHeight: 8,
+        bottom: 0,
+        left: 'center',
+        icon: 'circle',
+        textStyle: {
+          color: 'rgba(0, 0, 0, 0.45)',
+        },
+      },
+      grid: {
+        top: 10,
+        left: 10,
+        right: 20,
+        bottom: 30,
+        containLabel: true,
+      },
+      xAxis: {
+        type: 'category',
+        data: dateList,
+        boundaryGap: false,
+        splitLine: {
+          show: false,
+        },
+        axisLabel: {
+          color: 'rgba(0, 0, 0, 0.65)',
+        },
+      },
+      yAxis: {
+        type: 'value',
+        splitLine: {
+          show: false,
+        },
+        axisLabel: {
+          color: 'rgba(0, 0, 0, 0.65)',
+        },
+      },
+      series: [
+        {
+          name: '预警次数',
+          type: 'line',
+          data: warningList,
+        },
+        {
+          name: '报警次数',
+          type: 'line',
+          data: alarmList,
+        },
+      ],
+  };
+
+    return (
+      <ReactEcharts
+        style={{ height: 200 }}
+        option={option}
+      />
     );
   }
 

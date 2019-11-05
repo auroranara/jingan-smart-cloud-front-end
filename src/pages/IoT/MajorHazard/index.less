@@ -81,15 +81,13 @@
   }
 }
 .card{
+  margin-bottom: 24px;
+
   :global {
     .ant-card-body {
       padding-left: 24px !important;
       padding-right: 24px !important;
     }
-  }
-
-  &:not(:last-child) {
-    margin-bottom: 24px;
   }
 }
 .countContainer {
@@ -124,6 +122,35 @@
     }
     .countValue {
       font-size: 24px;
+    }
+  }
+}
+
+.lineChartTitle {
+  position: relative;
+
+  .lineChartSwitch {
+    position: absolute;
+    top: -2px;
+    right: 0;
+  }
+}
+.tableWrapper {
+  height: 200px;
+
+  :global {
+    th, td {
+      padding: 3px !important;
+      white-space: nowrap;
+    }
+    th {
+      color: rgba(0, 0, 0, 0.45) !important;
+      background-color: transparent !important;
+    }
+    td {
+      span {
+        display: block !important;
+      }
     }
   }
 }

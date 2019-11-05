@@ -3827,6 +3827,34 @@ module.exports = env => {
                   name: 'index',
                   component: './IoT/MajorHazard',
                 },
+                {
+                  path: '/iot/major-hazard/tank-area',
+                  code: 'iot.majorHazard.tankArea',
+                  name: 'tankArea',
+                  routes: [
+                    {
+                      path: '/iot/major-hazard/tank-area',
+                      redirect: '/iot/major-hazard/tank-area/real-time',
+                    },
+                    {
+                      path: '/iot/major-hazard/tank-area/real-time',
+                      code: 'iot.majorHazard.tankArea.realTime',
+                      name: 'realTime',
+                      routes: [
+                        {
+                          path: '/iot/major-hazard/tank-area/real-time',
+                          redirect: '/iot/major-hazard/tank-area/real-time/index',
+                        },
+                        {
+                          path: '/iot/major-hazard/tank-area/real-time/index',
+                          code: 'iot.majorHazard.tankArea.realTime.index',
+                          name: 'index',
+                          component: './IoT/MajorHazard/TankArea/RealTime',
+                        },
+                      ],
+                    },
+                  ],
+                },
               ],
             },
           ],
