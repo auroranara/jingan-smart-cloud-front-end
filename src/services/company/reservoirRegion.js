@@ -92,7 +92,7 @@ export async function queryCertificateEdit(params) {
 
 // 删除危险化学品企业证书
 export async function queryCertificateDelete({ id }) {
-  return request(`/acloud_new/v2/hazardChemicalCertificate/hazardChemicalCertificate/${id}`, {
+  return request(`/acloud_new/v2/hazardChemicalCertificate/hazardchemicalCertificate/${id}`, {
     method: 'DELETE',
   });
 }
