@@ -1,0 +1,93 @@
+.card:not(:last-child) {
+  margin-bottom: 24px;
+}
+.operation {
+  display: inline-block;
+  padding: 0 8px;
+  cursor: pointer;
+
+  &:hover {
+    color: #1890ff;
+  }
+  &:active {
+    color: #096dd9;
+  }
+
+  &.disabled {
+    color: rgba(0, 0, 0, 0.25);
+    cursor: not-allowed;
+  }
+}
+.list {
+  :global {
+    .ant-row {
+      display: flex !important;
+      flex-wrap: wrap !important;
+
+      & > div {
+        display: flex !important;
+      }
+
+      .ant-list-item {
+        flex: 1 !important;
+        align-items: stretch;
+      }
+
+      .ant-list-item-content {
+        display: flex !important;
+        // height: 100% !important;
+      }
+    }
+  }
+}
+.item {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  cursor: auto !important;
+  overflow: hidden;
+
+  :global {
+    .ant-card-head {
+      flex: none !important;
+    }
+    .ant-card-head-title {
+      white-space: normal !important;
+    }
+    .ant-card-body {
+      flex: 1 !important;
+    }
+    .ant-card-actions {
+      flex: none !important;
+    }
+  }
+}
+.emptyData {
+  color: rgba(0, 0, 0, 0.25);
+}
+.mark() {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  text-align: center;
+  transform: translate(50%, 0) translate(-20px, 20px) rotate(45deg);
+  transform-origin: 50% 0;
+  color: #fff;
+}
+
+.mark0 {
+  .mark;
+  background-color: #1890ff;
+}
+
+.mark1 {
+  .mark;
+  background-color: #f5222d;
+}
+
+.mark2 {
+  .mark;
+  background-color: #bbb;
+}
+
