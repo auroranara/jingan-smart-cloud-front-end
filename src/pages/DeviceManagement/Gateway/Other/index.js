@@ -820,8 +820,9 @@ export default class GatewayOther extends Component {
         (id ? edit : add)(payload, (isSuccess, res) => {
           if (isSuccess) {
             message.success(`${id ? '编辑' : '新增'}成功！`);
-            // router.push(LIST_PATH);
-            router.goBack()
+            if (window.history.length > 1) {
+              router.goBack();
+            } else router.push(LIST_PATH);
           } else {
             message.error(res ? res.msg : `${id ? '编辑' : '新增'}失败，请稍后重试！`);
           }
