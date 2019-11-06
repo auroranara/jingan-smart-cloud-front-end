@@ -48,7 +48,22 @@ export const SEARCH_FIELDS = [
     label: '风险分类：',
     render: () => (
       <Select placeholder="请选择" allowClear>
-        {['一', '二'].map((r, i) => (
+        {[
+          '危险化学品',
+          '爆炸性粉尘',
+          '重大危险源',
+          '受限空间',
+          '涉氨场所',
+          '生产系统',
+          '设备设施',
+          '输送管线',
+          '操作行为',
+          '职业健康',
+          '环境条件',
+          '施工场所',
+          '安全管理',
+          '其他',
+        ].map((r, i) => (
           <Option key={i}>{r}</Option>
         ))}
       </Select>
