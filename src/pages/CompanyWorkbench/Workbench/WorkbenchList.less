@@ -1,0 +1,881 @@
+.topWrite {
+  line-height: 30px;
+  font-size: 14px;
+  color: rgb(148, 148, 148);
+}
+
+.writeRed {
+  color: red;
+}
+
+/** 第一版块 */
+.containerFirst {
+  height: 110px;
+  background-color: rgb(255, 255, 255);
+  padding: 25px 35px 25px 0px;
+  margin-bottom: 30px;
+}
+
+.firstContent {
+  display: flex;
+
+  .firstItem {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+
+    .firstLeft {
+      width: 60px;
+      height: 60px;
+      background: no-repeat center;
+      background-size: 55px 55px;
+    }
+
+    .firstRight {
+      padding-left: 12px;
+      padding-top: 5px;
+      line-height: 1.3;
+      font-size: 14px;
+
+      .firstName {
+        font-size: 14px;
+      }
+
+      .firstValue {
+        font-size: 28px;
+      }
+    }
+  }
+}
+
+/** 第二版块 */
+.containerSecond {
+  height: 430px;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.secondContent {
+  display: flex;
+
+  // 工作提醒
+  .secondLeft {
+    width: 43%;
+    margin-right: 2%;
+
+    .titleLeft {
+      font-size: 16px;
+    }
+
+    .contentLeft {
+      height: 400px;
+      margin-top: 10px;
+      background-color: rgb(255, 255, 255);
+      overflow-y: auto;
+      padding: 10px 34px 20px 25px;
+
+      .listStyle {
+        padding-top: 15px;
+        border-bottom: 1px solid #ccc;
+      }
+    }
+  }
+
+  // 到期统计
+  .secondRight {
+    width: 55%;
+
+    .titleRight {
+      font-size: 16px;
+    }
+
+    .contentRight {
+      height: 400px;
+      margin-top: 10px;
+      background-color: rgb(255, 255, 255);
+      padding: 45px 20px 30px 20px;
+    }
+
+    .itemRight {
+      height: 30%;
+      width: 100%;
+      margin-bottom: 15px;
+      display: flex;
+    }
+
+    .itemOne {
+      width: 40%;
+      display: flex;
+      padding: 20px 0;
+
+      .itemOneLeft {
+        width: 40px;
+        height: 40px;
+        margin-top: 4px;
+        background: no-repeat center;
+        background-size: 55px 55px;
+        border-radius: 10%;
+      }
+
+      .itemOneRight {
+        padding-left: 10px;
+        font-size: 14px;
+
+        .itemOneName {
+          font-size: 14px;
+        }
+
+        .itemOneValue {
+          padding-top: 4px;
+          font-size: 14px;
+          color: #949494;
+        }
+      }
+    }
+
+    .itemTwo {
+      width: 30%;
+      display: flex;
+      padding: 20px 0;
+      justify-content: flex-end;
+
+      .itemTwoLeft {
+        .itemTwoName {
+          color: #949494;
+        }
+
+        .itemTwoValue {
+          padding-top: 4px;
+          font-weight: bold;
+        }
+      }
+
+      .itemTwoRight {
+        width: 50%;
+        margin-top: -4px;
+      }
+    }
+
+    .itemThree {
+      width: 33%;
+      display: flex;
+      padding: 20px 0;
+      justify-content: flex-end;
+
+      .itemThreeLeft {
+        .itemThreeName {
+          color: #949494;
+        }
+
+        .itemThreeValue {
+          padding-top: 4px;
+          font-weight: bold;
+        }
+      }
+
+      .itemThreeRight {
+        width: 50%;
+        margin-top: -4px;
+      }
+    }
+
+    .itemFour {
+      width: 24%;
+      display: flex;
+      padding: 20px 0;
+      justify-content: flex-end;
+
+      .itemFourLeft {
+        .itemFourName {
+          color: #949494;
+        }
+
+        .itemFourValue {
+          padding-top: 4px;
+          font-weight: bold;
+        }
+      }
+
+      .itemFourRight {
+        width: 50%;
+        margin-top: -4px;
+      }
+    }
+  }
+}
+
+/** 第三版块*/
+.containerThird {
+  height: 410px;
+  margin-bottom: 30px;
+}
+
+.thirdContent {
+  display: flex;
+
+  // 重大危险源实时监测
+  .leftItem {
+    width: 49%;
+    margin-right: 2%;
+
+    .titleLeft {
+      font-size: 16px;
+    }
+
+    .contentLeft {
+      height: 380px;
+      margin-top: 10px;
+      background-color: #fff;
+      padding: 10px 34px 20px 25px;
+    }
+  }
+
+  .tabContentMonitor {
+    width: 100%;
+    height: 320px;
+
+    .tabTop {
+      height: 12%;
+      display: flex;
+      justify-content: flex-end;
+
+      .iconOne {
+        width: 40px;
+        height: 40px;
+        background: no-repeat center;
+        background-size: 30px 30px;
+      }
+
+      .iconTwo {
+        width: 40px;
+        height: 40px;
+        background: no-repeat center;
+        background-size: 30px 30px;
+        margin-left: 10px;
+      }
+    }
+
+    .tabBottom {
+      height: 80%;
+      padding-top: 20px;
+      padding-left: 16px;
+
+      .bottomItemOne {
+        display: flex;
+        justify-content: flex-start;
+        padding-bottom: 15px;
+
+        .left {
+          width: 60px;
+          height: 60px;
+          background: no-repeat center;
+          background-size: 55px 55px;
+        }
+
+        .right {
+          padding-left: 12px;
+          padding-top: 5px;
+          line-height: 1.3;
+          font-size: 14px;
+        }
+
+        .name {
+          color: #949494;
+        }
+
+        .value {
+          font-size: 30px;
+        }
+      }
+
+      .bottomItemTwo {
+        display: flex;
+        padding-top: 50px;
+
+        .itemTwoContent {
+          display: flex;
+          flex: 1;
+        }
+
+        .left {
+          width: 60px;
+          height: 60px;
+          background: no-repeat center;
+          background-size: 55px 55px;
+        }
+
+        .right {
+          padding-left: 12px;
+          padding-top: 5px;
+          line-height: 1.3;
+          font-size: 14px;
+        }
+
+        .name {
+          color: #949494;
+        }
+
+        .value {
+          font-size: 30px;
+        }
+      }
+    }
+  }
+
+  // 重大危险源历史统计
+  .rightItem {
+    width: 49%;
+
+    .titleRight {
+      font-size: 16px;
+    }
+
+    .contentRight {
+      height: 380px;
+      margin-top: 10px;
+      background-color: #fff;
+      padding: 10px 34px 15px 25px;
+
+      :global {
+        .ant-calendar-picker {
+          width: 200px;
+        }
+      }
+
+      .topNav {
+        display: flex;
+        justify-content: flex-end;
+        border-bottom: 1px solid #ccc;
+      }
+
+      .label {
+        font-size: 14px;
+        padding-right: 12px;
+        line-height: 36px;
+        padding-bottom: 8px;
+      }
+
+      .label:hover {
+        color: #1890ff;
+        cursor: pointer;
+      }
+
+      .label:active {
+        color: #1890ff;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .bottom {
+    height: 90%;
+  }
+
+  .tabContentTotal {
+    width: 100%;
+    height: 300px;
+
+    .top {
+      height: 45%;
+      display: flex;
+      margin-top: 2%;
+
+      .left {
+        width: 45%;
+        margin-right: 10%;
+
+        .label {
+          display: flex;
+          color: #949494;
+          height: 25%;
+          margin-top: 5%;
+        }
+
+        .title {
+          width: 50%;
+          display: flex;
+          justify-content: flex-start;
+        }
+
+        .rate {
+          width: 50%;
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        .labelNum {
+          display: flex;
+          color: #949494;
+          height: 25%;
+        }
+
+        .number {
+          font-size: 30px;
+          line-height: 30px;
+          color: rgba(0, 0, 0, 0.7);
+        }
+
+        .labelLine {
+          width: 100%;
+          height: 45%;
+        }
+      }
+
+      .right {
+        width: 45%;
+
+        .label {
+          display: flex;
+          color: #949494;
+          height: 30%;
+          margin-top: 5%;
+        }
+
+        .title {
+          width: 50%;
+          display: flex;
+          justify-content: flex-start;
+        }
+
+        .rate {
+          width: 50%;
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        .labelNum {
+          display: flex;
+          color: #949494;
+          height: 25%;
+        }
+
+        .img {
+          width: 30px;
+          height: 30px;
+          background: no-repeat center;
+          background-size: 20px 20px;
+        }
+
+        .number {
+          font-size: 30px;
+          line-height: 30px;
+          color: rgba(0, 0, 0, 0.7);
+        }
+
+        .labelProgress {
+          height: 40%;
+          line-height: 45px;
+        }
+      }
+    }
+
+    .bottom {
+      height: 50%;
+      display: flex;
+      margin-top: 3%;
+
+      .left {
+        width: 45%;
+        margin-right: 10%;
+
+        .label {
+          display: flex;
+          color: #949494;
+          height: 30%;
+          margin-top: 5%;
+        }
+
+        .title {
+          width: 50%;
+          display: flex;
+          justify-content: flex-start;
+        }
+
+        .rate {
+          width: 50%;
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        .labelNum {
+          display: flex;
+          color: #949494;
+          height: 25%;
+        }
+
+        .img {
+          width: 30px;
+          height: 30px;
+          background: no-repeat center;
+          background-size: 20px 20px;
+        }
+
+        .number {
+          font-size: 30px;
+          line-height: 30px;
+          color: rgba(0, 0, 0, 0.7);
+        }
+
+        .labelProgress {
+          height: 40%;
+          line-height: 45px;
+        }
+      }
+
+      .right {
+        width: 45%;
+
+        .label {
+          display: flex;
+          color: #949494;
+          height: 30%;
+          margin-top: 5%;
+        }
+
+        .title {
+          width: 50%;
+          display: flex;
+          justify-content: flex-start;
+        }
+
+        .rate {
+          width: 50%;
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        .labelNum {
+          display: flex;
+          color: #949494;
+          height: 25%;
+        }
+
+        .img {
+          width: 30px;
+          height: 30px;
+          background: no-repeat center;
+          background-size: 20px 20px;
+        }
+
+        .number {
+          font-size: 30px;
+          line-height: 30px;
+          color: rgba(0, 0, 0, 0.7);
+        }
+
+        .labelProgress {
+          height: 40%;
+          line-height: 45px;
+        }
+      }
+    }
+  }
+}
+
+/** 第四版块*/
+
+.containerFourth {
+  width: 100%;
+  height: 380px;
+  margin-bottom: 30px;
+}
+
+.fourthContent {
+  display: flex;
+
+  // 风险点检查情况
+  .left {
+    width: 25%;
+    height: 380px;
+    margin-right: 2%;
+    background-color: rgb(255, 255, 255);
+    padding: 25px 12px 15px 12px;
+
+    .top {
+      height: 8%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .bottom {
+      margin-top: 2%;
+      height: 90%;
+    }
+
+    .echarts {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  // 当前隐患情况
+  .middle {
+    width: 25%;
+    height: 380px;
+    margin-right: 2%;
+    background-color: rgb(255, 255, 255);
+    padding: 25px 12px 15px 12px;
+
+    .top {
+      height: 8%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .bottom {
+      width: 100%;
+      height: 90%;
+      margin-top: 2%;
+    }
+
+    .echarts {
+      height: 82%;
+    }
+
+    .label {
+      height: 18%;
+      display: flex;
+
+      .labelFirst {
+        width: 32%;
+        text-align: center;
+        line-height: 27px;
+        border-right: 1px solid #d3d3d3;
+      }
+
+      .number {
+        font-size: 24px;
+      }
+
+      .title {
+        color: #949494;
+        font-size: 12px;
+      }
+
+      .labelSecond {
+        width: 35%;
+        text-align: center;
+        line-height: 27px;
+        border-right: 1px solid #d3d3d3;
+      }
+
+      .labelThird {
+        width: 32%;
+        text-align: center;
+        line-height: 27px;
+      }
+    }
+  }
+
+  // 危险作业情况
+  .right {
+    width: 46%;
+    height: 380px;
+    background-color: rgb(255, 255, 255);
+    padding: 25px 12px 15px 12px;
+
+    .top {
+      height: 8%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .bottom {
+      margin-top: 2%;
+      width: 100%;
+      height: 90%;
+    }
+
+    .label {
+      height: 10%;
+      display: flex;
+
+      :global {
+        .ant-calendar-picker {
+          width: 200px;
+        }
+      }
+
+      .num {
+        width: 40%;
+        line-height: 40px;
+        display: flex;
+        justify-content: flex-start;
+      }
+
+      .date {
+        width: 60%;
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+
+    .echarts {
+      height: 95%;
+      margin-top: -4%;
+    }
+  }
+}
+
+/**第五版块*/
+.containerFifth {
+  width: 100%;
+  height: 380px;
+  margin-bottom: 30px;
+}
+
+.fifthContent {
+  display: flex;
+
+  // 学习情况
+  .left {
+    width: 42%;
+    height: 380px;
+    margin-right: 2%;
+    background-color: rgb(255, 255, 255);
+    padding: 25px 12px 15px 12px;
+
+    .top {
+      height: 8%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .bottom {
+      width: 100%;
+      height: 90%;
+
+      :global {
+        .ant-calendar-picker {
+          width: 200px;
+        }
+      }
+
+      .echarts {
+        width: 100%;
+        height: 282px;
+        margin-top: -5%;
+        position: relative;
+      }
+    }
+  }
+
+  // 考试情况
+  .middle {
+    width: 28%;
+    height: 380px;
+    margin-right: 2%;
+    background-color: rgb(255, 255, 255);
+    padding: 25px 12px 15px 12px;
+
+    .top {
+      height: 8%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .bottom {
+      width: 100%;
+      height: 90%;
+
+      .echarts {
+        width: 100%;
+        height: 275px;
+        margin-top: -5%;
+        position: relative;
+      }
+    }
+  }
+
+  // 应急演练
+  .right {
+    width: 28%;
+    height: 380px;
+    background-color: rgb(255, 255, 255);
+    padding: 25px 12px 15px 12px;
+
+    .top {
+      height: 8%;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .bottom {
+      width: 100%;
+      height: 90%;
+      padding-top: 12px;
+      overflow-y: auto;
+    }
+
+    .divier {
+      width: 100%;
+      border-bottom: 1px solid #d3d3d3;
+    }
+
+    .label {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #d3d3d3;
+    }
+
+    .labelTitle {
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .labelA {
+      width: 100%;
+      height: 10%;
+      display: flex;
+    }
+
+    .itemIcon {
+      width: 30px;
+      height: 30px;
+      background: no-repeat center;
+      background-size: 18px 18px;
+    }
+
+    .itemTitle {
+      line-height: 30px;
+      padding-left: 6px;
+      font-size: 14px;
+    }
+
+    .labelB {
+      width: 100%;
+      height: 10%;
+      display: flex;
+
+      .bLeft {
+        width: 59%;
+        display: flex;
+        justify-content: flex-start;
+      }
+
+      .bRight {
+        width: 40%;
+        display: flex;
+        justify-content: flex-start;
+      }
+    }
+
+    .labelC {
+      width: 100%;
+      height: 10%;
+      display: flex;
+
+      .cLeft {
+        width: 60%;
+        display: flex;
+        justify-content: flex-start;
+      }
+
+      .cRight {
+        width: 40%;
+        display: flex;
+        justify-content: flex-start;
+      }
+    }
+  }
+}
