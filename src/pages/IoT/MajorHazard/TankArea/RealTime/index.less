@@ -13,3 +13,120 @@
   background-size: contain;
   cursor: pointer;
 }
+.spinContainer {
+  display: none;
+}
+.spinWrapper {
+  text-align: center;
+}
+.top {
+  padding-left: 50px;
+  padding-bottom: 1em;
+  background: no-repeat left 0.25em;
+  background-size: 36px;
+  border-bottom: 1px solid #ddd;
+  .nameWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .name {
+      flex: none;
+      font-size: 20px;
+    }
+
+    .alarmMarker {
+      flex: none;
+      display: inline-block;
+      margin-left: 1em;
+      padding: 0 0.25em;
+      font-size: 14px;
+      color: #fff;
+      background-color: red;
+      border-radius: 2em;
+      vertical-align: middle;
+    }
+    .majorHazard {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      padding-left: 24px;
+      font-size: 14px;
+      color: red;
+      background: no-repeat left;
+      background-size: 20px;
+      transform: translateY(-50%);
+    }
+  }
+  .address {
+    padding-left: 24px;
+    background: no-repeat left;
+    background-size: 16px;
+  }
+}
+.bottom {
+  padding-top: 1em;
+
+  .updateTime {
+    margin-bottom: 1em;
+  }
+
+  .params {
+    display: flex;
+    flex-wrap: wrap;;
+
+    .param {
+      flex: none;
+      width: 20%;
+
+      .paramName {
+
+      }
+      .paramValueWrapper {
+        display: flex;
+        align-items: center;
+
+        .paramValue {
+          flex: none;
+          margin-right: 1em;
+          font-size: 24px;
+        }
+        .paramTrendWrapper {
+          flex: none;
+          display: flex;
+          align-items: center;
+          font-size: 12px;
+
+          .paramTrendIcon {
+            flex: none;
+            margin-right: 0.5em;
+          }
+          .paramTrendValue {
+            flex: none;
+            margin-right: 0.5em;
+          }
+          .paramTrendDescription {
+            flex: none;
+            color: rgba(0, 0, 0, 0.45);
+          }
+        }
+      }
+      .paramAddress {
+        padding-left: 24px;
+        color: rgba(0, 0, 0, 0.45);
+        background: no-repeat left;
+        background-size: 16px;
+      }
+    }
+  }
+}
+.label {
+  color: rgba(0, 0, 0, 0.45);
+}
+.nameWrapper,
+.address,
+.storage,
+.updateTime {
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+}

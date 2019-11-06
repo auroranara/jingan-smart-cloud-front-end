@@ -64,9 +64,9 @@ export const TABS = [
   },
 ];
 export const DURATION_LABELS = [
-  '安全时长',
-  '预警时长',
-  '报警时长',
+  '安全',
+  '预警',
+  '报警',
 ];
 export const NUMBER_TYPES = [
   {
@@ -81,7 +81,7 @@ export const NUMBER_TYPES = [
 export const TITLE = '重大危险源监测';
 export const URL = '/iot/major-hazard/index';
 export const TANK_AREA_REAL_TIME_URL = '/iot/major-hazard/tank-area/real-time/index';
-export const TANK_AREA_HISTORY_URL = '/iot/major-hazard/tank-area/history/index';
+export const TANK_AREA_HISTORY_URL = '/iot/major-hazard/tank-area/history';
 const LIST = [
   { title: '储罐区监测', icon: iconTankArea, label: '储罐区（个）', normalLabel: '正常罐区（个）', alarmLabel: '报警罐区（个）', realTimeUrl: TANK_AREA_REAL_TIME_URL, historyUrl: TANK_AREA_HISTORY_URL },
   { title: '储罐监测', icon: iconTank, label: '储罐（个）', normalLabel: '正常储罐（个）', alarmLabel: '报警储罐（个）', realTimeUrl: '/iot/major-hazard/tank/real-time/index', historyUrl: '/iot/major-hazard/tank/history' },
@@ -114,7 +114,7 @@ const SPAN = {
   sm: 24,
   xs: 24,
 };
-const COLUMNS = [
+export const COLUMNS = [
   {
     title: '',
     dataIndex: 'index',
@@ -134,11 +134,15 @@ const COLUMNS = [
     title: '预警次数',
     dataIndex: 'warningCount',
     render: (value) => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
+    sorter: (a, b) => a.warningCount - b.warningCount,
+    sortDirections: ['descend'],
   },
   {
     title: '报警次数',
     dataIndex: 'alarmCount',
     render: (value) => value >= 0 && <Ellipsis length={8} tooltip>{`${value}`}</Ellipsis>,
+    sorter: (a, b) => a.alarmCount - b.alarmCount,
+    sortDirections: ['descend'],
   },
 ];
 
@@ -247,10 +251,6 @@ export default class MajorHazard extends Component {
     });
   }
 
-  jumpTo = ({ target: { dataset: { url } } }) => {
-    router.push(url);
-  }
-
   onTabChange = (tabActiveKey) => {
     this.setState({
       tabActiveKey,
@@ -301,8 +301,8 @@ export default class MajorHazard extends Component {
             <div className={styles.monitorItem}>
               <div className={styles.monitorItemTitleWrapper}>
                 <div className={styles.monitorItemTitle}>{LIST[index].title}</div>
-                {LIST[index].realTimeUrl && <div className={styles.realTimeJumper} style={{ backgroundImage: `url(${iconRealTime})` }} data-url={LIST[index].realTimeUrl} onClick={this.jumpTo} title={`${LIST[index].title.slice(0, -2)}实时监测`} />}
-                {LIST[index].historyUrl && <div className={styles.historyJumper} style={{ backgroundImage: `url(${iconHistory})` }} data-url={LIST[index].historyUrl} onClick={this.jumpTo} title={`${LIST[index].title.slice(0, -2)}历史统计`} />}
+                {LIST[index].realTimeUrl && <div className={styles.realTimeJumper} style={{ backgroundImage: `url(${iconRealTime})` }} onClick={() => index === 0 && router.push(LIST[index].realTimeUrl)} title={`${LIST[index].title.slice(0, -2)}实时监测`} />}
+                {LIST[index].historyUrl && <div className={styles.historyJumper} style={{ backgroundImage: `url(${iconHistory})` }} onClick={() => index === 0 && router.push(LIST[index].historyUrl)} title={`${LIST[index].title.slice(0, -2)}历史统计`} />}
               </div>
               <div className={styles.monitorItemContent}>
                 <div className={styles.monitorItemCountWrapper} style={{ backgroundImage: `url(${LIST[index].icon})` }}>
@@ -341,7 +341,7 @@ export default class MajorHazard extends Component {
 
     return (
       <Fragment>
-        <Card className={styles.card} bordered={false}>
+        <Card className={styles.card}>
           <div className={styles.radioList} onClick={this.onPeriodChange}>
             {PERIODS.map(({ key, value }) => <div className={classNames(styles.radioItem, period === key && styles.active)} key={key} data-period={key}>{value}</div>)}
           </div>
@@ -351,7 +351,7 @@ export default class MajorHazard extends Component {
             allowClear={false}
           />
         </Card>
-        <Card className={styles.card} bordered={false}>
+        <Card className={styles.card}>
           <div className={styles.countContainer}>
             <div>
               <div className={styles.countItem} style={{ backgroundImage: `url(${iconMajorHazard})` }}>
@@ -378,20 +378,20 @@ export default class MajorHazard extends Component {
               </div>
               <div className={styles.countItem}>
                 <div className={styles.countLabel}>工单完成率</div>
-                <div className={styles.countValue}>{`${Number.parseFloat(((completeRate || 0) * 100).toFixed(2))}%`}</div>
+                <div className={styles.countValue}>{`${Number.parseFloat(((completeRate || 1) * 100).toFixed(2))}%`}</div>
               </div>
             </div>
           </div>
         </Card>
         <Row gutter={24}>
           <Col span={8}>
-            <Card className={styles.card} bordered={false}>
+            <Card className={styles.card}>
               <div>安全状况时长占比</div>
               {this.renderPie()}
             </Card>
           </Col>
           <Col span={16}>
-            <Card className={styles.card} bordered={false}>
+            <Card className={styles.card}>
               <div className={styles.lineChartTitle}>
                 报警工单
                 <div className={styles.lineChartSwitch}>
@@ -405,14 +405,14 @@ export default class MajorHazard extends Component {
           </Col>
         </Row>
         <Row gutter={24}>
-          <Col span={16}>
-            <Card className={styles.card} bordered={false}>
+          <Col span={15}>
+            <Card className={styles.card}>
               <div>预警/报警次数趋势</div>
               {this.renderLine2()}
             </Card>
           </Col>
-          <Col span={8}>
-            <Card className={styles.card} bordered={false}>
+          <Col span={9}>
+            <Card className={styles.card}>
               <div>监测点报警/预警排名</div>
               <div className={styles.tableWrapper}>
                 <Table
@@ -421,7 +421,6 @@ export default class MajorHazard extends Component {
                   dataSource={rankList}
                   rowKey="id"
                   pagination={false}
-                  bordered={false}
                 />
               </div>
             </Card>
@@ -455,10 +454,10 @@ export default class MajorHazard extends Component {
           color: 'rgba(0, 0, 0, 0.45)',
           rich: {
             a: {
-              width: 48,
+              width: 24,
             },
             b: {
-              width: 30,
+              width: 36,
               align: 'right',
             },
             c: {

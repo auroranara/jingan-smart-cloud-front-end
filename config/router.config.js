@@ -3853,6 +3853,12 @@ module.exports = env => {
                         },
                       ],
                     },
+                    {
+                      path: '/iot/major-hazard/tank-area/history',
+                      code: 'iot.majorHazard.tankArea.history',
+                      name: 'history',
+                      component: './IoT/MajorHazard/TankArea/History',
+                    },
                   ],
                 },
               ],

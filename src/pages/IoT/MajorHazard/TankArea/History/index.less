@@ -5,6 +5,24 @@
     }
   }
 }
+.card{
+  margin-bottom: 24px;
+
+  :global {
+    .ant-card-body {
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+    }
+  }
+}
+.jumper {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: no-repeat center;
+  background-size: contain;
+  cursor: pointer;
+}
 .radioList {
   display: inline-block;
   margin-right: 24px;
@@ -22,71 +40,6 @@
     &:hover,
     &.active {
       color: #1890ff;
-    }
-  }
-}
-.monitorItem {
-  margin-bottom: 16px;
-  padding: 16px;
-  background-color: #fff;
-
-  .monitorItemTitleWrapper {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
-
-    .monitorItemTitle {
-      flex: 1;
-    }
-
-    .realTimeJumper,
-    .historyJumper {
-      flex: none;
-      margin-left: 16px;
-      width: 24px;
-      height: 24px;
-      background: no-repeat center;
-      background-size: contain;
-      cursor: pointer;
-    }
-  }
-
-  .monitorItemContent {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: -12px;
-
-    .monitorItemCountWrapper {
-      flex: none;
-      margin-bottom: 12px;
-      padding-left: 50px;
-      width: 50%;
-      background: no-repeat left;
-      background-size: 36px;
-
-      &:first-child {
-        width: 100%;
-      }
-
-      .monitorItemCountLabel {
-        color: rgba(0, 0, 0, 0.45);
-      }
-
-      .monitorItemCountValue {
-        font-size: 24px;
-      }
-    }
-  }
-}
-.card{
-  margin-bottom: 24px;
-
-  :global {
-    .ant-card-body {
-      padding-left: 24px !important;
-      padding-right: 24px !important;
     }
   }
 }
@@ -157,6 +110,25 @@
     }
     .ant-table-thead > tr > th .ant-table-column-sorter {
       right: 0 !important;
+    }
+  }
+}
+.table2 {
+  :global {
+    .ant-table {
+
+      td,
+      th {
+        white-space: nowrap;
+      }
+    }
+
+    .ant-table-body {
+      overflow-x: auto !important;
+    }
+
+    .ant-spin-nested-loading {
+      z-index: 2;
     }
   }
 }
