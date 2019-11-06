@@ -1,8 +1,20 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, Button, Input, Select, Table, Divider, Popconfirm, message } from 'antd';
+import {
+  Card,
+  Button,
+  Input,
+  Select,
+  Table,
+  Divider,
+  Popconfirm,
+  message,
+  AutoComplete,
+  Spin,
+} from 'antd';
 import { Link } from 'dva/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import debounce from 'lodash/debounce';
 import ToolBar from '@/components/ToolBar';
 import moment from 'moment';
 import { hasAuthority } from '@/utils/customAuth';
@@ -51,14 +63,16 @@ const categoryList = {
   5: '道路运输安全',
   6: '其他安全（不包括消防安全）',
 };
-@connect(({ reservoirRegion, user, loading }) => ({
+@connect(({ reservoirRegion, hiddenDangerReport, user, loading }) => ({
   reservoirRegion,
+  hiddenDangerReport,
   user,
   loading: loading.models.reservoirRegion,
 }))
 export default class RegSafetyEngList extends PureComponent {
   constructor(props) {
     super(props);
+    this.handleUnitIdChange = debounce(this.handleUnitIdChange, 800);
     this.state = {
       visible: false,
       imgUrl: [], // 附件图片列表
@@ -83,7 +97,20 @@ export default class RegSafetyEngList extends PureComponent {
     if (sessionData) {
       this.form.setFieldsValue({ ...payload });
     }
+    // 获取模糊搜索单位列表
+    this.fetchUnitList();
   }
+
+  fetchUnitList = payload => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
+      payload: {
+        pageNum: payload || 1,
+        pageSize: 18,
+      },
+    });
+  };
 
   // 获取列表
   fetchList = params => {
@@ -94,6 +121,21 @@ export default class RegSafetyEngList extends PureComponent {
         ...params,
         pageNum: 1,
         pageSize: 10,
+      },
+    });
+  };
+
+  // 单位下拉框输入
+  handleUnitIdChange = value => {
+    const { dispatch } = this.props;
+
+    // 根据输入值获取列表
+    dispatch({
+      type: 'hiddenDangerReport/fetchUnitListFuzzy',
+      payload: {
+        unitName: value && value.trim(),
+        pageNum: 1,
+        pageSize: 18,
       },
     });
   };
@@ -388,6 +430,7 @@ export default class RegSafetyEngList extends PureComponent {
 
   render() {
     const {
+      loading,
       reservoirRegion: {
         safetyEngData: {
           pagination: { total },
@@ -395,6 +438,7 @@ export default class RegSafetyEngList extends PureComponent {
         expirationStatusList,
         engineerLevelList,
       },
+      hiddenDangerReport: { unitIdes },
       user: {
         currentUser: { permissionCodes },
       },
@@ -454,10 +498,27 @@ export default class RegSafetyEngList extends PureComponent {
         transform: v => v.trim(),
       },
       {
-        id: 'companyName',
+        id: 'companyId',
         label: '单位名称',
         span: spanStyle,
-        render: () => <Input placeholder="请输入单位名称" />,
+        render: () => (
+          <AutoComplete
+            allowClear
+            mode="combobox"
+            optionLabelProp="children"
+            placeholder="请选择单位"
+            notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
+            onSearch={this.handleUnitIdChange}
+            filterOption={false}
+            style={{ width: '300px' }}
+          >
+            {unitIdes.map(({ id, name }) => (
+              <Option value={id} key={id}>
+                {name}
+              </Option>
+            ))}
+          </AutoComplete>
+        ),
         transform: v => v.trim(),
       },
     ];

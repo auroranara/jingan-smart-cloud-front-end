@@ -50,7 +50,7 @@ export const SEARCH_FIELDS = [
     label: '设备状态：',
     render: () => (
       <Select placeholder="请选择" allowClear>
-        {['一', '二'].map((r, i) => (
+        {['正常', '维检', '报废', '使用中'].map((r, i) => (
           <Option key={i}>{r}</Option>
         ))}
       </Select>
@@ -61,7 +61,7 @@ export const SEARCH_FIELDS = [
     label: '到期状态：',
     render: () => (
       <Select placeholder="请选择" allowClear>
-        {['一', '二'].map((r, i) => (
+        {['未到期', '即将到期', '已过期'].map((r, i) => (
           <Option key={i}>{r}</Option>
         ))}
       </Select>

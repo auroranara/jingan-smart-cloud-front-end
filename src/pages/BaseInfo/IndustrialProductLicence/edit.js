@@ -68,7 +68,7 @@ export default class IndustriallicenceEdit extends PureComponent {
               uid: index,
               status: 'done',
               name: `附件${index + 1}`,
-              webUrl,
+              url: webUrl,
               dbUrl,
             })),
           });

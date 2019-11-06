@@ -65,14 +65,14 @@ export default class RegSafetyEngEdit extends PureComponent {
               uid: index,
               status: 'done',
               name: `附件${index + 1}`,
-              webUrl,
+              url: webUrl,
               dbUrl,
             })),
             regFilesList: regFilesList.map(({ dbUrl, webUrl }, index) => ({
               uid: index,
               status: 'done',
               name: `附件${index + 1}`,
-              webUrl,
+              url: webUrl,
               dbUrl,
             })),
           });

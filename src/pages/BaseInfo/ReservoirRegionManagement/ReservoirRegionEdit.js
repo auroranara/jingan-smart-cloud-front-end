@@ -323,7 +323,8 @@ export default class ReservoirRegionEdit extends PureComponent {
         render: val => {
           return val
             .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
-            .join(',');
+            .join(',')
+            .replace(/null+/g, '');
         },
       },
     ];
