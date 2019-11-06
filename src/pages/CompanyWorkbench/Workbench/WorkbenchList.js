@@ -1,8 +1,10 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'dva';
 import { Tabs, DatePicker, Icon, Progress, Form } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Ellipsis from '@/components/Ellipsis';
-import moment from 'moment';
+import { routerRedux } from 'dva/router';
+import styles from './WorkbenchList.less';
 
 import {
   Pie,
@@ -15,13 +17,7 @@ import {
 } from './components/Components';
 
 import {
-  TabList1,
-  TabList2,
-  TabList3,
-  TabList4,
-  TabList5,
-  TabList6,
-  TabList7,
+  TabList,
   SpecialEquipmentList,
   executeList,
   ProductWork,
@@ -39,8 +35,10 @@ import {
   Money,
   AlarmTime,
   FininshRate,
+  getHistoryUrl,
+  getRealUrl,
+  getValueDate,
 } from './utils';
-import styles from './WorkbenchList.less';
 
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
@@ -61,14 +59,23 @@ const breadcrumbList = [
   },
 ];
 
+// 重大危险源实时监测tab
 function TabCardMonitor(props) {
-  const { list } = props;
-  const { icon1, icon2, icon3, name1, name2, name3 } = list;
+  const { list, handlePageChange, handleOtherPageChange } = props;
+  const { id, icon1, icon2, icon3, name1, name2, name3 } = list;
   return (
     <div className={styles.tabContentMonitor}>
       <div className={styles.tabTop}>
-        <div className={styles.iconOne} style={{ backgroundImage: `url(${icon1})` }} />
-        <div className={styles.iconTwo} style={{ backgroundImage: `url(${icon2})` }} />
+        <div
+          className={styles.iconOne}
+          style={{ backgroundImage: `url(${icon1})` }}
+          onClick={() => handlePageChange(id)}
+        />
+        <div
+          className={styles.iconTwo}
+          style={{ backgroundImage: `url(${icon2})` }}
+          onClick={() => handleOtherPageChange(id)}
+        />
       </div>
       <div className={styles.tabBottom}>
         <div className={styles.bottomItemOne}>
@@ -99,6 +106,7 @@ function TabCardMonitor(props) {
   );
 }
 
+// 重大危险源历史统计tab
 function TabCardTotal(props) {
   return (
     <div className={styles.tabContentTotal}>
@@ -169,22 +177,7 @@ function TabCardTotal(props) {
   );
 }
 
-function getValueDate(i) {
-  switch (i) {
-    case 1:
-      return [moment('2019-11-04'), moment('2019-11-10')];
-    case 2:
-      return [moment('2019-11-01'), moment('2019-11-30')];
-    case 3:
-      return [moment('2019-10-01'), moment('2019-12-31')];
-    case 4:
-      return [moment('2019-01-01'), moment('2019-12-31')];
-    default:
-      return;
-  }
-}
-
-// @connect(({ loading }) => ({}))
+@connect(({ loading }) => ({}))
 @Form.create()
 export default class WorkbenchList extends PureComponent {
   constructor(props) {
@@ -197,6 +190,16 @@ export default class WorkbenchList extends PureComponent {
 
   handleTabChange = type => {
     this.setState({ tabValue: type });
+  };
+
+  handlePageChange = id => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(getRealUrl(id)));
+  };
+
+  handleOtherPageChange = id => {
+    const { dispatch } = this.props;
+    dispatch(routerRedux.push(getHistoryUrl(id)));
   };
 
   handleTabChangeOther = type => {
@@ -370,25 +373,53 @@ export default class WorkbenchList extends PureComponent {
           <div className={styles.contentLeft}>
             <Tabs activeKey={tabValue} onChange={this.handleTabChange}>
               <TabPane tab="储罐区" key="1">
-                <TabCardMonitor list={TabList1} />
+                <TabCardMonitor
+                  list={TabList[0]}
+                  handlePageChange={this.handlePageChange}
+                  handleOtherPageChange={this.handleOtherPageChange}
+                />
               </TabPane>
               <TabPane tab="储罐" key="2">
-                <TabCardMonitor list={TabList2} />
+                <TabCardMonitor
+                  list={TabList[1]}
+                  handlePageChange={this.handlePageChange}
+                  handleOtherPageChange={this.handleOtherPageChange}
+                />
               </TabPane>
               <TabPane tab="库区" key="3">
-                <TabCardMonitor list={TabList3} />
+                <TabCardMonitor
+                  list={TabList[2]}
+                  handlePageChange={this.handlePageChange}
+                  handleOtherPageChange={this.handleOtherPageChange}
+                />
               </TabPane>
               <TabPane tab="库房" key="4">
-                <TabCardMonitor list={TabList4} />
+                <TabCardMonitor
+                  list={TabList[3]}
+                  handlePageChange={this.handlePageChange}
+                  handleOtherPageChange={this.handleOtherPageChange}
+                />
               </TabPane>
               <TabPane tab="高危工艺" key="5">
-                <TabCardMonitor list={TabList7} />
+                <TabCardMonitor
+                  list={TabList[4]}
+                  handlePageChange={this.handlePageChange}
+                  handleOtherPageChange={this.handleOtherPageChange}
+                />
               </TabPane>
               <TabPane tab="生产装置" key="6">
-                <TabCardMonitor list={TabList5} />
+                <TabCardMonitor
+                  list={TabList[5]}
+                  handlePageChange={this.handlePageChange}
+                  handleOtherPageChange={this.handleOtherPageChange}
+                />
               </TabPane>
               <TabPane tab="气柜" key="7">
-                <TabCardMonitor list={TabList6} />
+                <TabCardMonitor
+                  list={TabList[6]}
+                  handlePageChange={this.handlePageChange}
+                  handleOtherPageChange={this.handleOtherPageChange}
+                />
               </TabPane>
               {/* <TabPane tab="视频监测" key="8">
                 <TabCardMonitor />

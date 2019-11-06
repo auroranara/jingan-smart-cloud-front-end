@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import RealTimeMonitoring from './image/realTimeMonitoring.png';
 import HistoryMonitoring from './image/historyMonitoring.png';
 import StorageTankArea from './image/storageTankArea.png';
@@ -44,75 +46,107 @@ export {
   FininshRate,
 };
 
-export const TabList1 = {
-  id: 1,
-  icon1: RealTimeMonitoring,
-  icon2: HistoryMonitoring,
-  icon3: StorageTankArea,
-  name1: '储罐区（个）',
-  name2: '报警罐区（个)',
-  name3: '正常罐区（个)',
-};
+const TANK_AREA_REAL_TIME_URL = '/iot/major-hazard/tank-area/real-time/index';
+const TANK_AREA_HISTORY_URL = '/iot/major-hazard/tank-area/history/index';
 
-export const TabList2 = {
-  id: 1,
-  icon1: RealTimeMonitoring,
-  icon2: HistoryMonitoring,
-  icon3: StorageTank,
-  name1: '储罐（个）',
-  name2: '报警储罐（个)',
-  name3: '正常储罐（个)',
-};
+export function getRealUrl(i) {
+  switch (i) {
+    case 1:
+      return TANK_AREA_REAL_TIME_URL;
+    default:
+      return;
+  }
+}
 
-export const TabList3 = {
-  id: 1,
-  icon1: RealTimeMonitoring,
-  icon2: HistoryMonitoring,
-  icon3: ReservoirArea,
-  name1: '库区（个）',
-  name2: '报警库区（个)',
-  name3: '正常库区（个)',
-};
+export function getHistoryUrl(i) {
+  switch (i) {
+    case 1:
+      return TANK_AREA_HISTORY_URL;
+    default:
+      return;
+  }
+}
 
-export const TabList4 = {
-  id: 1,
-  icon1: RealTimeMonitoring,
-  icon2: HistoryMonitoring,
-  icon3: Warehouse,
-  name1: '库房（个）',
-  name2: '报警库房（个)',
-  name3: '正常库房（个)',
-};
+export function getValueDate(i) {
+  switch (i) {
+    case 1:
+      return [moment('2019-11-04'), moment('2019-11-10')];
+    case 2:
+      return [moment('2019-11-01'), moment('2019-11-30')];
+    case 3:
+      return [moment('2019-10-01'), moment('2019-12-31')];
+    case 4:
+      return [moment('2019-01-01'), moment('2019-12-31')];
+    default:
+      return;
+  }
+}
 
-export const TabList5 = {
-  id: 1,
-  icon1: RealTimeMonitoring,
-  icon2: HistoryMonitoring,
-  icon3: ProcessUnits,
-  name1: '生产装置（套）',
-  name2: '报警装置（套)',
-  name3: '正常装置（套)',
-};
-
-export const TabList6 = {
-  id: 1,
-  icon1: RealTimeMonitoring,
-  icon2: HistoryMonitoring,
-  icon3: Gasometer,
-  name1: '气柜（套）',
-  name2: '报警气柜（套)',
-  name3: '正常气柜（套)',
-};
-
-export const TabList7 = {
-  id: 1,
-  icon1: RealTimeMonitoring,
-  icon2: HistoryMonitoring,
-  icon3: HighRiskProcess,
-  name1: '高危工艺（套）',
-  name2: '报警工艺（套)',
-  name3: '正常工艺（套)',
-};
+export const TabList = [
+  {
+    id: 1,
+    icon1: RealTimeMonitoring,
+    icon2: HistoryMonitoring,
+    icon3: StorageTankArea,
+    name1: '储罐区（个）',
+    name2: '报警罐区（个)',
+    name3: '正常罐区（个)',
+  },
+  {
+    id: 2,
+    icon1: RealTimeMonitoring,
+    icon2: HistoryMonitoring,
+    icon3: StorageTank,
+    name1: '储罐（个）',
+    name2: '报警储罐（个)',
+    name3: '正常储罐（个)',
+  },
+  {
+    id: 3,
+    icon1: RealTimeMonitoring,
+    icon2: HistoryMonitoring,
+    icon3: ReservoirArea,
+    name1: '库区（个）',
+    name2: '报警库区（个)',
+    name3: '正常库区（个)',
+  },
+  {
+    id: 4,
+    icon1: RealTimeMonitoring,
+    icon2: HistoryMonitoring,
+    icon3: Warehouse,
+    name1: '库房（个）',
+    name2: '报警库房（个)',
+    name3: '正常库房（个)',
+  },
+  {
+    id: 5,
+    icon1: RealTimeMonitoring,
+    icon2: HistoryMonitoring,
+    icon3: HighRiskProcess,
+    name1: '高危工艺（套）',
+    name2: '报警工艺（套)',
+    name3: '正常工艺（套)',
+  },
+  {
+    id: 6,
+    icon1: RealTimeMonitoring,
+    icon2: HistoryMonitoring,
+    icon3: ProcessUnits,
+    name1: '生产装置（套）',
+    name2: '报警装置（套)',
+    name3: '正常装置（套)',
+  },
+  {
+    id: 7,
+    icon1: RealTimeMonitoring,
+    icon2: HistoryMonitoring,
+    icon3: Gasometer,
+    name1: '气柜（套）',
+    name2: '报警气柜（套)',
+    name3: '正常气柜（套)',
+  },
+];
 
 export const SpecialEquipmentList = [
   {
