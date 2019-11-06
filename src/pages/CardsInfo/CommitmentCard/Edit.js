@@ -23,15 +23,18 @@ export default class Edit extends PureComponent {
     setTimeout(() => setFieldsValue(LIST[0]), 0.3);
   };
 
-  handleSubmit = () => {
+  handleSubmit = e => {
     const {
       form: { validateFields },
     } = this.props;
 
+    e.preventDefault();
     validateFields((errors, values) => {
       if (!errors) {
         message.success('操作成功');
         router.push(LIST_URL);
+      } else {
+        message.error('操作失败');
       }
     });
   };
