@@ -4048,7 +4048,7 @@ module.exports = env => {
         {
           path: '/cards-info',
           code: 'cardsInfo',
-          icon: 'fire',
+          icon: 'profile',
           name: 'cardsInfo',
           routes: [
             {
