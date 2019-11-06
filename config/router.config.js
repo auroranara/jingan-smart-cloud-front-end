@@ -3876,52 +3876,52 @@ module.exports = env => {
           ],
         },
         // 任务管理
-        {
-          name: 'taskManagement',
-          path: '/task-management',
-          icon: 'tablet',
-          code: 'taskManagement',
-          hideInMenu: false,
-          routes: [
-            // 专项检查
-            {
-              name: 'specialExamination',
-              path: '/task-management/special-examination',
-              code: 'taskManagement.specialExamination',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/task-management/special-examination',
-                  redirect: '/task-management/special-examination/list',
-                },
-                {
-                  name: 'list',
-                  code: 'taskManagement.specialExamination.list',
-                  path: '/task-management/special-examination/list',
-                  component: './TaskManagement/SpecialExamination/List',
-                },
-                // {
-                //   name: 'detail',
-                //   code: 'taskManagement.specialExamination.detail',
-                //   path: '/task-management/special-examination/detail/:id',
-                //   component: './TaskManagement/SpecialExamination/Other',
-                // },
-                // {
-                //   name: 'add',
-                //   code: 'taskManagement.specialExamination.add',
-                //   path: '/task-management/special-examination/add',
-                //   component: './TaskManagement/SpecialExamination/Other',
-                // },
-                // {
-                //   name: 'edit',
-                //   code: 'taskManagement.specialExamination.edit',
-                //   path: '/task-management/special-examination/edit:id',
-                //   component: './TaskManagement/SpecialExamination/Other',
-                // },
-              ],
-            },
-          ],
-        },
+        // {
+        //   name: 'taskManagement',
+        //   path: '/task-management',
+        //   icon: 'tablet',
+        //   code: 'taskManagement',
+        //   hideInMenu: false,
+        //   routes: [
+        //     // 专项检查
+        //     {
+        //       name: 'specialExamination',
+        //       path: '/task-management/special-examination',
+        //       code: 'taskManagement.specialExamination',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/task-management/special-examination',
+        //           redirect: '/task-management/special-examination/list',
+        //         },
+        //         {
+        //           name: 'list',
+        //           code: 'taskManagement.specialExamination.list',
+        //           path: '/task-management/special-examination/list',
+        //           component: './TaskManagement/SpecialExamination/List',
+        //         },
+        //         // {
+        //         //   name: 'detail',
+        //         //   code: 'taskManagement.specialExamination.detail',
+        //         //   path: '/task-management/special-examination/detail/:id',
+        //         //   component: './TaskManagement/SpecialExamination/Other',
+        //         // },
+        //         // {
+        //         //   name: 'add',
+        //         //   code: 'taskManagement.specialExamination.add',
+        //         //   path: '/task-management/special-examination/add',
+        //         //   component: './TaskManagement/SpecialExamination/Other',
+        //         // },
+        //         // {
+        //         //   name: 'edit',
+        //         //   code: 'taskManagement.specialExamination.edit',
+        //         //   path: '/task-management/special-examination/edit:id',
+        //         //   component: './TaskManagement/SpecialExamination/Other',
+        //         // },
+        //       ],
+        //     },
+        //   ],
+        // },
 
         // 公告管理
         {
