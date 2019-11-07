@@ -47,7 +47,7 @@ export {
 };
 
 const TANK_AREA_REAL_TIME_URL = '/iot/major-hazard/tank-area/real-time/index';
-const TANK_AREA_HISTORY_URL = '/iot/major-hazard/tank-area/history/index';
+const TANK_AREA_HISTORY_URL = '/iot/major-hazard/tank-area/history';
 
 export function getRealUrl(i) {
   switch (i) {

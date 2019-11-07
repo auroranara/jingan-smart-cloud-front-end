@@ -4,6 +4,7 @@ import moment from 'moment';
 import { Section2 as CustomSection } from '@/jingan-components/CustomSection';
 // 引入样式文件
 import styles from './Notice.less';
+import moreImg from '../imgs/more-icon.png';
 
 const data = [
   { title: '安全承诺制度公告', time: 1572931992000, status: 1 },
@@ -14,9 +15,20 @@ const data = [
 export default class Notice extends PureComponent {
   state = {};
 
+  handleClickExtra = () => {
+    return null;
+  };
+
   render() {
+    const extra = (
+      <div
+        className={styles.extra}
+        style={{ background: `url(${moreImg}) center center / 100% 100% no-repeat` }}
+        onClick={this.handleClickExtra}
+      />
+    );
     return (
-      <CustomSection className={styles.container} title="最新公告">
+      <CustomSection className={styles.container} title="最新公告" action={extra}>
         <div className={styles.content}>
           {data.map((item, index) => {
             const { title, time, status } = item;
