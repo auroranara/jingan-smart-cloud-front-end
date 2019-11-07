@@ -3,10 +3,23 @@
   height: 100vh;
   font-size: 14px;
   overflow: hidden;
-  color: #fff;
+  color: white;
   background: url('http://data.jingan-china.cn/v2/menu/reveal-bg.png') no-repeat center center;
   background-size: 100% 100%;
   padding-top: 64px;
+
+  :global {
+
+    .ant-dropdown-menu-item,
+    .ant-dropdown-menu {
+      background-color: #072459f2;
+      color: white;
+    }
+
+    .ant-dropdown-menu-item-active {
+      background-color: #0d458b;
+    }
+  }
 
   .header {
     position: fixed;
@@ -24,7 +37,7 @@
       vertical-align: middle;
     }
 
-    & h1 {
+    h1 {
       color: white;
       display: inline-block;
       font-weight: 600;

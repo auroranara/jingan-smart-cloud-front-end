@@ -10,7 +10,7 @@ import codes from '@/utils/codes';
 const FormItem = Form.Item;
 const { TreeNode } = TreeSelect;
 
-const title = '传感器管理（新）'
+const title = '传感器运行状态'
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
   { title: '设备管理', name: '设备管理' },
