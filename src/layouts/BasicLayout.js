@@ -11,8 +11,7 @@ import { enquireScreen, unenquireScreen } from 'enquire-js';
 import { formatMessage } from 'umi/locale';
 import SiderMenu from '@/components/SiderMenu';
 import Authorized from '@/utils/Authorized';
-// import SettingDrawer from '@/components/SettingDrawer';
-// import logo from '../assets/logo.svg';
+import router from 'umi/router';
 
 import Footer from './Footer';
 import Header from './Header';
@@ -28,6 +27,9 @@ import styles from '../index.less';
 const { Content } = Layout;
 const { check } = Authorized;
 const { projectShortName, logo } = global.PROJECT_CONFIG;
+
+const PATH = '/big-platform/chemical';
+
 // Conversion router to menu.
 function formatter(data, parentPath = '', parentAuthority, parentName) {
   return data.map(item => {
@@ -96,6 +98,15 @@ class BasicLayout extends React.PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'user/fetchCurrent',
+      callback: (data, login) => {
+        const { unitId } = data;
+        const { logined } = login;
+        const path = `${PATH}/${unitId || 'index'}`;
+        if (logined && path) {
+          router.push(path);
+          dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
+        }
+      },
     });
     dispatch({
       type: 'setting/getSetting',

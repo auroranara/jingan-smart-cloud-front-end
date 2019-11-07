@@ -8,7 +8,7 @@ import { reloadAuthorized } from '../utils/Authorized';
 
 import { accountLogin, accountLoginGsafe, fetchFooterInfo, changerUser } from '../services/account';
 
-const FIRE_CONTROL_URL = '/fire-control/maintenance-company/list';
+// const FIRE_CONTROL_URL = '/fire-control/maintenance-company/list';
 
 export default {
   namespace: 'login',
@@ -18,6 +18,7 @@ export default {
     username: null,
     password: null,
     users: [],
+    logined: false, // 判断是否从登录页面进来的，登录页面进来会进当前model，刷新当前不会进当前model，一直保持初始值
   },
 
   effects: {
@@ -44,6 +45,7 @@ export default {
           router.replace('/');
         }
         success && success();
+        yield put({ type: 'saveLogined', payload: true });
       } else error(response.msg);
     },
 
@@ -127,6 +129,9 @@ export default {
         ...state,
         users: payload,
       };
+    },
+    saveLogined(state, action) {
+      return { ...state, logined: action.payload };
     },
   },
 };
