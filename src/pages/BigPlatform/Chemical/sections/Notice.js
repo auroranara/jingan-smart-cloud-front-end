@@ -28,7 +28,8 @@ export default class Notice extends PureComponent {
       />
     );
     return (
-      <CustomSection className={styles.container} title="最新公告" action={extra}>
+      // <CustomSection className={styles.container} title="最新公告" action={extra}>
+      <CustomSection className={styles.container} title="最新公告">
         <div className={styles.content}>
           {data.map((item, index) => {
             const { title, time, status } = item;
