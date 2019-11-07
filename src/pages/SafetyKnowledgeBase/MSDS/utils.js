@@ -42,10 +42,10 @@ export const FORMITEM_LAYOUT = {
   },
 };
 
-export const FORMITEM_LAYOUT1 = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 18 },
-};
+// export const FORMITEM_LAYOUT1 = {
+//   labelCol: { span: 4 },
+//   wrapperCol: { span: 18 },
+// };
 
 function getOptions(options, props = ['key', 'value']) {
   if (!Array.isArray(options) || !options.length) return [];
@@ -116,7 +116,7 @@ function genFormItem(field, getFieldDecorator) {
   }
 
   return (
-    <FormItem label={label} key={name}>
+    <FormItem label={label} key={name} {...FORMITEM_LAYOUT}>
       {child}
     </FormItem>
   );
@@ -146,7 +146,8 @@ function getSections(sections) {
 
 export function renderSections(sections, getFieldDecorator, handleSubmit, listUrl) {
   const secs = getSections(sections);
-  const props = { ...FORMITEM_LAYOUT1 };
+  const props = {};
+  // const props = { ...FORMITEM_LAYOUT };
   const submitBtn = handleSubmit ? (
     <FormItem wrapperCol={{ span: 24, offset: 10 }}>
       <Button onClick={e => router.push(listUrl)} style={{ marginRight: 20 }}>
