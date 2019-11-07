@@ -132,10 +132,10 @@ export const EDIT_FORMITEMS = [ // modify
     { name: 'risk', label: '风险提示', type: 'text' },
     { name: 'method', label: '应急处置方法', type: 'text' },
     { name: 'notes', label: '注意事项', type: 'text' },
-    { name: 'emergency', label: '应急联系方式', type: 'component', component: '内部' },
+    { name: 'emergency', label: '应急联系方式-内部', type: 'component', component: '' },
     { name: 'man', label: '安全负责人' },
     { name: 'phone', label: '联系方式' },
-    { name: 'emergency', label: '应急联系方式', type: 'component', component: '外部' },
+    { name: 'emergency', label: '应急联系方式-外部', type: 'component', component: '' },
     { name: 'fire', label: '火警', type: 'component', component: '119' },
     { name: 'rescue', label: '医疗救护', type: 'component', component: '120' },
 ];
