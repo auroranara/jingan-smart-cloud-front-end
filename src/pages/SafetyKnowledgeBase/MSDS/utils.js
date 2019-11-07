@@ -42,22 +42,32 @@ export const FORMITEM_LAYOUT = {
   },
 };
 
-function getOptions(options, props=['key', 'value']) {
-  if (!Array.isArray(options) || !options.length)
-    return []
+export const FORMITEM_LAYOUT1 = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 18 },
+};
+
+function getOptions(options, props = ['key', 'value']) {
+  if (!Array.isArray(options) || !options.length) return [];
   const type = typeof options[0];
-  if (type !== 'object')
-    return options.map((v, i) => ({ [props[0]]: i, [props[1]]: v }));
+  if (type !== 'object') return options.map((v, i) => ({ [props[0]]: i, [props[1]]: v }));
   return options;
 }
 
 function genFormItem(field, getFieldDecorator) {
-  let { type='input', name, label, placeholder, required=true, options, component: compt } = field;
+  let {
+    type = 'input',
+    name,
+    label,
+    placeholder,
+    required = true,
+    options,
+    component: compt,
+  } = field;
 
   let child = null;
 
-  if (type === 'component')
-    child = compt;
+  if (type === 'component') child = compt;
   else {
     const formOptions = {};
     const opts = getOptions(options);
@@ -65,7 +75,7 @@ function genFormItem(field, getFieldDecorator) {
 
     let component = null;
     const rules = [];
-    switch(type) {
+    switch (type) {
       case 'text':
         placeholder = placeholder || `请输入${label}`;
         rules.push(whiteSpaceRule);
@@ -73,7 +83,13 @@ function genFormItem(field, getFieldDecorator) {
         break;
       case 'select':
         placeholder = placeholder || `请选择${label}`;
-        component = <Select placeholder={placeholder} allowClear>{opts.map(({ key, value }) => <Option key={key}>{value}</Option>)}</Select>;
+        component = (
+          <Select placeholder={placeholder} allowClear>
+            {opts.map(({ key, value }) => (
+              <Option key={key}>{value}</Option>
+            ))}
+          </Select>
+        );
         break;
       case 'radio':
         component = <RadioGroup options={getOptions(options, ['value', 'label'])} />;
@@ -103,41 +119,46 @@ function genFormItem(field, getFieldDecorator) {
     <FormItem label={label} key={name}>
       {child}
     </FormItem>
-  )
+  );
 }
 
 function renderSection(section, index, getFieldDecorator) {
   const { title, fields } = section;
   return (
     <Fragment key={title || index}>
-      {title && <FormItem><p style={{ margin: 0, textAlign: 'center', fontSize: 16 }}>{title}</p></FormItem>}
+      {title && (
+        <FormItem>
+          <p style={{ margin: 0, textAlign: 'center', fontSize: 16 }}>{title}</p>
+        </FormItem>
+      )}
       {fields.map(field => genFormItem(field, getFieldDecorator))}
     </Fragment>
-  )
+  );
 }
 
 function getSections(sections) {
-  if (!Array.isArray(sections) || !sections.length)
-    return [];
+  if (!Array.isArray(sections) || !sections.length) return [];
 
   const first = sections[0];
-  if (!first.fields)
-    return [{ fields: sections }];
+  if (!first.fields) return [{ fields: sections }];
   return sections;
-};
+}
 
 export function renderSections(sections, getFieldDecorator, handleSubmit, listUrl) {
   const secs = getSections(sections);
-  const props = { ...FORMITEM_LAYOUT };
+  const props = { ...FORMITEM_LAYOUT1 };
   const submitBtn = handleSubmit ? (
     <FormItem wrapperCol={{ span: 24, offset: 10 }}>
-      <Button onClick={e => router.push(listUrl)} style={{ marginRight: 20  }}>取消</Button>
-      <Button type="primary" htmlType="submit">提交</Button>
+      <Button onClick={e => router.push(listUrl)} style={{ marginRight: 20 }}>
+        取消
+      </Button>
+      <Button type="primary" htmlType="submit">
+        提交
+      </Button>
     </FormItem>
   ) : null;
 
-  if (handleSubmit)
-    props.onSubmit = handleSubmit;
+  if (handleSubmit) props.onSubmit = handleSubmit;
   return (
     <Form {...props}>
       {secs.map((section, index) => renderSection(section, index, getFieldDecorator))}
@@ -148,7 +169,7 @@ export function renderSections(sections, getFieldDecorator, handleSubmit, listUr
 
 export function getFieldLabels(sections) {
   return sections.reduce((prev, next) => {
-    next.fields.forEach(({ name, label }) => prev[name] = label);
+    next.fields.forEach(({ name, label }) => (prev[name] = label));
     return prev;
   }, {});
 }
@@ -173,8 +194,7 @@ export function handleTableData(list = [], indexBase) {
 
 export function deleteEmptyProps(obj) {
   Object.entries(obj).forEach(([k, v]) => {
-    if (v === '')
-      obj[k] = undefined;
+    if (v === '') obj[k] = undefined;
   });
   return obj;
 }
