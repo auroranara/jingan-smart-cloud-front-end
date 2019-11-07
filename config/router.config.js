@@ -70,11 +70,13 @@ module.exports = env => {
         {
           path: '/big-platform/safety/government/:gridId',
           code: 'dashboard.safetyView',
+          name: 'governmentSafety',
           component: './BigPlatform/Safety/Government',
         },
         {
           path: '/big-platform/safety/company/:companyId',
           code: 'dashboard.safetyView',
+          name: 'companySafety',
           component: './BigPlatform/Safety/Company3',
         },
         // {
@@ -84,6 +86,7 @@ module.exports = env => {
         {
           path: '/big-platform/new-fire-control/government/:gridId',
           code: 'dashboard.fireControlView',
+          name: 'newFireControl',
           component: './BigPlatform/NewFireControl/Government',
         },
         // {
@@ -93,16 +96,19 @@ module.exports = env => {
         {
           path: '/big-platform/fire-control/company/:unitId',
           code: 'dashboard.fireControlView',
+          name: 'fireControl',
           component: './BigPlatform/UnitFire/UnitFireControl',
         },
         {
           path: '/big-platform/fire-control/new-company/:unitId',
           code: 'dashboard.fireMaintenanceView',
+          name: 'fireMaintenance',
           component: './BigPlatform/NewUnitFireControl',
         },
         {
           path: '/big-platform/monitor/company/:companyId',
           code: 'dashboard.dynamicMonitorView',
+          name: 'dynamicMonitor',
           component: './BigPlatform/Monitor/Company',
         },
         // {
@@ -112,6 +118,7 @@ module.exports = env => {
         {
           path: '/big-platform/position/:companyId',
           code: 'dashboard.personnelPositioningView',
+          name: 'personnelPositioning',
           component: './BigPlatform/Position/index',
         },
         // {
@@ -121,36 +128,41 @@ module.exports = env => {
         {
           path: '/big-platform/electricity-monitor/:gridId',
           code: 'dashboard.electricityMonitorView',
+          name: 'electricityMonitor',
           component: './BigPlatform/ElectricityMonitor',
         },
         {
           path: '/big-platform/gas/:gridId',
           code: 'dashboard.gasView',
+          name: 'gas',
           component: './BigPlatform/Gas',
         },
         {
           path: '/big-platform/smoke/:gridId',
           code: 'dashboard.smokeView',
+          name: 'smoke',
           component: './BigPlatform/Smoke',
         },
         {
           path: '/big-platform/operation',
           code: 'dashboard.operationView',
+          name: 'operation',
           component: './BigPlatform/Operation',
         },
         {
           path: '/big-platform/3d-gis',
           code: 'dashboard.threedgis',
+          name: 'threedgis',
           component: './BigPlatform/Threedgis',
         },
         {
           path: '/big-platform/gas-station/:unitId',
           code: 'dashboard.gasStation',
+          name: 'gasStation',
           component: './BigPlatform/GasStation',
         },
       ],
     },
-
     // {
     //   path: '/demo',
     //   component: './Demo',
@@ -195,7 +207,12 @@ module.exports = env => {
       name: 'riskCardPinter',
       component: './RiskControl/RiskPointManage/PrinterContent',
     },
-
+    // 菜单展示
+    {
+      path: '/menu-reveal',
+      code: 'dashboard.menuReveal',
+      component: './BigPlatform/MenuReveal',
+    },
     //404
     {
       path: '/404',

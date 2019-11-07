@@ -4,7 +4,7 @@ import SiderMenu from './SliderMenu';
 
 /**
  * Recursively flatten the data
- * [{path:string},{path:string}] => {path,path2}
+ * [{path:string},{path:string}] => [path,path2]
  * @param  menus
  */
 const getFlatMenuKeys = menuData => {
@@ -40,8 +40,8 @@ const SiderMenuWrapper = props => {
       />
     </Drawer>
   ) : (
-    <SiderMenu {...props} flatMenuKeys={getFlatMenuKeys(menuData)} />
-  );
+      <SiderMenu {...props} flatMenuKeys={getFlatMenuKeys(menuData)} />
+    );
 };
 
 export default SiderMenuWrapper;
