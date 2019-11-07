@@ -51,7 +51,7 @@ export const SEARCH_FIELDS = [ // modify
   {
     id: 'code',
     label: '事故类型代码',
-    render: () => <Select placeholder="请选择" allowClear>{CODES.map((r, i) => <Option key={i}>{r}</Option>)}</Select>,
+    render: () => <Select placeholder="请选择" allowClear>{CODES.map(({ key, value }) => <Option key={key}>{value}</Option>)}</Select>,
   },
   {
     id: 'level',

@@ -266,7 +266,7 @@ export default class EmergencyEstimateList extends PureComponent {
         width: 200,
         render: (data, record) => {
           const { drillReportList, assessUnit, assessDate } = record;
-          const fileNames = drillReportList[0].fileName.split('.');
+          const fileNames = drillReportList.length ? drillReportList[0].fileName.split('.') : [];
           const name = fileNames.slice(0, fileNames.length - 1).join('.');
           return (
             <div className={styles.multi}>
