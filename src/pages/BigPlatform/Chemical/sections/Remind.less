@@ -1,0 +1,29 @@
+@Height: 35px;
+
+.container {
+  height: calc(~'36.14% - 15px');
+  position: relative;
+  margin-top: 15px;
+
+  .item {
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 14px;
+
+    .number {
+      border: 1px solid #0ff;
+      color: #fff;
+      border-radius: 5px;
+      width: @Height;
+      height: @Height;
+      line-height: @Height;
+      text-align: center;
+      margin-bottom: 3px;
+      font-size: 20px;
+    }
+  }
+}

@@ -1,0 +1,58 @@
+.container {
+  position: relative;
+  height: 63.86%;
+
+  .content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+    padding: 0 15px;
+    font-size: 14px;
+    line-height: 26px;
+
+    .img {
+      flex: 1;
+      border: 1px solid #0ff;
+    }
+
+    .companyName {
+      font-size: 16px;
+      margin-top: 8px;
+    }
+
+    .icon {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      margin-right: 5px;
+      position: relative;
+      top: 5px;
+    }
+
+    .wrapper {
+      border: 1px solid #0ff;
+      box-shadow: 0 0 10px 10px rgba(0, 255, 255, 0.05) inset;
+      border-radius: 15px;
+      text-align: center;
+      width: 140px;
+      margin: 0 auto;
+
+      .numbers {
+        .number {
+          display: inline-block;
+          border-radius: 4px;
+          overflow: hidden;
+          font-size: 18px;
+          background: linear-gradient(#053e94, #091a31);
+          width: 16px;
+          font-weight: 600;
+
+          &+.number {
+            margin-left: 2px;
+          }
+        }
+      }
+    }
+  }
+}

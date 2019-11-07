@@ -148,6 +148,11 @@ module.exports = env => {
           code: 'dashboard.gasStation',
           component: './BigPlatform/GasStation',
         },
+        {
+          path: '/big-platform/chemical/:unitId',
+          code: 'dashboard.chemical',
+          component: './BigPlatform/Chemical',
+        },
       ],
     },
 
@@ -3870,6 +3875,44 @@ module.exports = env => {
                   code: 'emergencyManagement.emergencyEstimate.detail',
                   name: 'detail',
                   component: './EmergencyManagement/EmergencyEstimate/Detail/index',
+                },
+              ],
+            },
+            // 应急演练过程
+            {
+              name: 'emergencyProcess',
+              code: 'emergencyManagement.emergencyProcess',
+              path: '/emergency-management/emergency-process',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/emergency-management/emergency-process',
+                  redirect: '/emergency-management/emergency-process/list',
+                },
+                {
+                  name: 'list',
+                  code: 'emergencyManagement.emergencyProcess.list',
+                  path: '/emergency-management/emergency-process/list',
+                  component: './EmergencyManagement/EmergencyProcess/TableList',
+                },
+                {
+                  name: 'view',
+                  code: 'emergencyManagement.emergencyProcess.view',
+                  path: '/emergency-management/emergency-process/view/:id',
+                  component: './EmergencyManagement/EmergencyProcess/Edit',
+                },
+                {
+                  name: 'add',
+                  code: 'emergencyManagement.emergencyProcess.add',
+                  path: '/emergency-management/emergency-process/add',
+                  component: './EmergencyManagement/EmergencyProcess/Edit',
+                },
+                {
+                  name: 'edit',
+                  code: 'emergencyManagement.emergencyProcess.edit',
+                  path: '/emergency-management/emergency-process/edit/:id',
+                  component: './EmergencyManagement/EmergencyProcess/Edit',
                 },
               ],
             },

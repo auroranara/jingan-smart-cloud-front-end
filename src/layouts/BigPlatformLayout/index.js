@@ -59,6 +59,8 @@ export default class BigPlatformLayout extends PureComponent {
       timeStyle,
       // extra样式
       extraStyle,
+      // 其他
+      other = null,
     } = this.props;
     const { currentTime } = this.state;
     // 合并以后的容器类名
@@ -71,6 +73,7 @@ export default class BigPlatformLayout extends PureComponent {
           <div className={styles.headerTime}><div className={styles.headerTimeContent} style={timeStyle}>{currentTime}</div></div>
           <div className={styles.headerExtra}>{extra && <div className={styles.headerExtraContent} style={extraStyle}>{extra}</div>}</div>
           {settable && <Icon style={setStyle} className={styles.setButton} type="setting" onClick={onSet} />}
+          {other}
         </div>
         <div className={styles.content} style={contentStyle}>
           {children}
