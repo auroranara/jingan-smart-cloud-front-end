@@ -15,7 +15,6 @@ import styles from './index.less';
 
 // 每个模块标题左侧图
 import dividerPic from '@/assets/divider.png';
-const { SubMenu } = Menu;
 
 // 项目名称、logo
 const { projectShortName, logo } = global.PROJECT_CONFIG;
@@ -55,9 +54,6 @@ export default class MenuReveal extends Component {
         const configSys = menuAll.find(item => item.path === '/')
         const menuSys = this.filterSysMenu(configSys.routes, 2)
         const menuBigPlatform = this.filterBigPlatform(configBigPlatform.routes)
-        console.log('menuBigPlatform', menuBigPlatform);
-
-
         this.setState({ menuSys, menuBigPlatform })
       },
     });
@@ -82,7 +78,8 @@ export default class MenuReveal extends Component {
       } else if (parentLocale) {
         locale = parentLocale;
       }
-      if (item.redirect || item.hideInMenu || /\/dashboard/.test(item.path) || !permissionCodes.includes(item.code)) {
+      // 筛选掉重定向、隐藏菜单、首页或工作台、无权限
+      if (item.redirect || item.hideInMenu || ['/dashboard', '/company-workbench'].includes(item.path) || !permissionCodes.includes(item.code)) {
         return arr
       } else if (item.routes && item.routes.length && +depth > 1) {
         return [...arr, { ...item, locale, title: formatMessage({ id: locale }), routes: this.filterSysMenu(item.routes, depth - 1, locale) }]
@@ -185,7 +182,8 @@ export default class MenuReveal extends Component {
 
   // 点击菜单 打开相应新页面
   handleOpenMenu = (url) => {
-    window.open(`${window.publicPath}#${url}`, '_blank')
+    // window.open(`${window.publicPath}#${url}`, '_blank')
+    router.push(url)
   }
 
   // 去除url中尾部参数
