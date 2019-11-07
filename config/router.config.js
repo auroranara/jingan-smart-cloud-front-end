@@ -4271,6 +4271,68 @@ module.exports = env => {
             },
           ],
         },
+        // 物联网监测
+        {
+          path: '/iot',
+          code: 'iot',
+          name: 'iot',
+          icon: 'wifi',
+          routes: [
+            // 重大危险源监测
+            {
+              path: '/iot/major-hazard',
+              code: 'iot.majorHazard',
+              name: 'majorHazard',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/iot/major-hazard',
+                  redirect: '/iot/major-hazard/index',
+                },
+                {
+                  path: '/iot/major-hazard/index',
+                  code: 'iot.majorHazard.index',
+                  name: 'index',
+                  component: './IoT/MajorHazard',
+                },
+                {
+                  path: '/iot/major-hazard/tank-area',
+                  code: 'iot.majorHazard.tankArea',
+                  name: 'tankArea',
+                  routes: [
+                    {
+                      path: '/iot/major-hazard/tank-area',
+                      redirect: '/iot/major-hazard/tank-area/real-time',
+                    },
+                    {
+                      path: '/iot/major-hazard/tank-area/real-time',
+                      code: 'iot.majorHazard.tankArea.realTime',
+                      name: 'realTime',
+                      routes: [
+                        {
+                          path: '/iot/major-hazard/tank-area/real-time',
+                          redirect: '/iot/major-hazard/tank-area/real-time/index',
+                        },
+                        {
+                          path: '/iot/major-hazard/tank-area/real-time/index',
+                          code: 'iot.majorHazard.tankArea.realTime.index',
+                          name: 'index',
+                          component: './IoT/MajorHazard/TankArea/RealTime',
+                        },
+                      ],
+                    },
+                    {
+                      path: '/iot/major-hazard/tank-area/history',
+                      code: 'iot.majorHazard.tankArea.history',
+                      name: 'history',
+                      component: './IoT/MajorHazard/TankArea/History',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ];

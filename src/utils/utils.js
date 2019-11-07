@@ -386,3 +386,11 @@ export function getPageSize() {
 export function setPageSize(pageSize) {
   localStorage.setItem('PAGE_SIZE', JSON.stringify(pageSize));
 }
+
+
+/**
+ * 判断是否为数值类型
+ */
+export function isNumber(value) {
+  return !Number.isNaN(Number.parseFloat(value));
+}
