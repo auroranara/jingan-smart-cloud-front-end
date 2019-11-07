@@ -15,6 +15,7 @@ import styles from './index.less';
 
 // 每个模块标题左侧图
 import dividerPic from '@/assets/divider.png';
+const { SubMenu } = Menu;
 
 // 项目名称、logo
 const { projectShortName, logo } = global.PROJECT_CONFIG;
@@ -32,9 +33,13 @@ const itemColWrapper = {
   user,
 })))
 export default class MenuReveal extends Component {
-
-  state = {
-    menuSys: [], // 系统菜单列表
+  constructor(props) {
+    super(props)
+    this.state = {
+      menuSys: [], // 系统菜单列表
+      menuBigPlatform: [], // 驾驶舱列表
+    }
+    this.menuBigPlatform = null;
   }
 
   componentDidMount() {
@@ -49,10 +54,11 @@ export default class MenuReveal extends Component {
         const configBigPlatform = menuAll.find(item => item.path === '/big-platform')
         const configSys = menuAll.find(item => item.path === '/')
         const menuSys = this.filterSysMenu(configSys.routes, 2)
-        // const menuBigPlatform = this.filterBigPlatform(configBigPlatform.routes)
-        // console.log('menuBigPlatform', menuBigPlatform);
+        const menuBigPlatform = this.filterBigPlatform(configBigPlatform.routes)
+        console.log('menuBigPlatform', menuBigPlatform);
 
-        this.setState({ menuSys })
+
+        this.setState({ menuSys, menuBigPlatform })
       },
     });
   }
@@ -61,20 +67,20 @@ export default class MenuReveal extends Component {
    * 筛选系统路由
    * @param {Array} array 待处理数组
    * @param {Number} depth depth=2 两层含有routes子节点数组
-   * @param {String} parentName 上级节点的locale，locale用于生成对应的文字描述（与zh-CN.js文件对应）
+   * @param {String} parentLocale 上级节点的locale，locale用于生成对应的文字描述（与zh-CN.js文件对应）
    **/
-  filterSysMenu = (array, depth = 0, parentName) => {
+  filterSysMenu = (array, depth = 0, parentLocale) => {
     const {
       user: { currentUser: { permissionCodes } },
     } = this.props
     return array.reduce((arr, item) => {
       let locale = 'menu'
-      if (parentName && item.name) {
-        locale = `${parentName}.${item.name}`;
+      if (parentLocale && item.name) {
+        locale = `${parentLocale}.${item.name}`;
       } else if (item.name) {
         locale = `menu.${item.name}`;
-      } else if (parentName) {
-        locale = parentName;
+      } else if (parentLocale) {
+        locale = parentLocale;
       }
       if (item.redirect || item.hideInMenu || /\/dashboard/.test(item.path) || !permissionCodes.includes(item.code)) {
         return arr
@@ -117,9 +123,15 @@ export default class MenuReveal extends Component {
     const [clfcSafetyAuth, clfcFireControlAuth /* clfcEnviromentAuth */] = [1, 2, 3].map(k =>
       classification.includes(k)
     );
-
     return array.reduce((arr, item) => {
-      const path = `${window.publicPath}#${this.generateUrl(item.path)}`;
+      const { name, code } = item
+      // 筛选掉重定向和无权限
+      if (item.redirect || !permissionCodes.includes(code)) {
+        return arr;
+      }
+      // 添加locale（用于从zh-CN文件生成对应描述）
+      item.locale = `menu.bigPlatform.${name}`;
+      const path = `${window.publicPath}#${this.clearParam(item.path)}`;
       /*
       'menu.bigPlatform.governmentSafety': '政府安全驾驶舱',      /index
       'menu.bigPlatform.companySafety': '企业安全驾驶舱',         /companyId
@@ -135,34 +147,39 @@ export default class MenuReveal extends Component {
       'menu.bigPlatform.threedgis': '3D-GIS驾驶舱',
       'menu.bigPlatform.gasStation': '加油站驾驶舱',              /companyId
       */
-      // 筛选掉重定向和无权限
-      if (item.redirect || !permissionCodes.includes(item.code)) {
-        return arr;
-      }
       // 处理路径path
-      if (['electricityMonitor', 'gas', 'smoke'].includes(item.name)) {
+      if (['electricityMonitor', 'gas', 'smoke'].includes(name)) {
         item.path = `${path}${grids.length ? grids[0].value : 'index'}`
-      } else if (['companySafety', 'fireControl'].includes(name) && [1, 4].includes(unitType) || ['fireMaintenance', 'dynamicMonitor', 'personnelPositioning', 'gasStation'].includes(name)) {
+      } else if (['companySafety', 'fireControl', 'fireMaintenance', 'dynamicMonitor', 'personnelPositioning', 'gasStation'].includes(name)) {
         item.path = path + companyId;
       } else if (['governmentSafety', 'newFireControl'].includes(name)) {
         item.path = path + 'index';
-      }
+      } else item.path = path;
 
       if (unitType === 1) {
         // 维保企业
-        // 这个迭代维保企业不能看消防
-        if (['governmentSafety', 'newFireControl', 'fireControl', 'newFireControl', 'fireMaintenance'].includes(item.name)) return arr;
+        if (name === 'companySafety' && safetyProduction) return [...arr, item];
+        if (name === 'dynamicMonitor' && monitorService) return [...arr, item];
+        if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item];
+        if (name === 'operation') return [...arr, item];
       } else if (unitType === 2) {
         // 政府
-
+        if (name === 'governmentSafety' && safetyProduction && clfcSafetyAuth) return [...arr, item];
+        if (name === 'newFireControl' && fireService && clfcFireControlAuth) return [...arr, item];
+        if (['electricityMonitor', 'gas', 'smoke'].includes(name)) return [...arr, item]
       } else if (unitType === 3) {
         // 运营
-
+        if (['governmentSafety', 'newFireControl', 'electricityMonitor', 'gas', 'smoke', 'operation'].includes(name)) return [...arr, item]
       } else if (unitType === 4) {
         // 企事业
-        if (['governmentSafety', 'newFireControl'].includes(item.name)) return arr;
+        if (name === 'companySafety' && safetyProduction && clfcSafetyAuth) return [...arr, item]
+        if (name === 'fireControl' && fireService && clfcFireControlAuth) return [...arr, item]
+        if (name === 'fireMaintenance' && fireService && clfcFireControlAuth) return [...arr, item]
+        if (name === 'dynamicMonitor' && monitorService && clfcSafetyAuth) return [...arr, item]
+        if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item]
+        if (name === 'gasStation') return [...arr, item]
       }
-      return [...arr, { ...item, locale: `menu.bigPlatform.${item.name}` }]
+      return arr;
     }, [])
   }
 
@@ -171,16 +188,32 @@ export default class MenuReveal extends Component {
     window.open(`${window.publicPath}#${url}`, '_blank')
   }
 
-  generateUrl = url => url.test(':') ? url.split(':').shift() : url
+  // 去除url中尾部参数
+  clearParam = url => /\:/.test(url) ? url.split(':').shift() : url
 
+  // 生成系统菜单图标url http://data.jingan-china.cn/v2/menu/+模块名称+菜单名称
   generateSysUrl = ({ locale, title }) => {
     const parentLocale = locale.split('.').slice(0, 2).join('.')
     const parentTitle = formatMessage({ id: parentLocale })
     return `http://data.jingan-china.cn/v2/menu/${encodeURIComponent(parentTitle)}/${encodeURIComponent(title)}.png`
   }
 
+  // 点击驾驶舱菜单
+  handleMenuCLick = ({ key }) => {
+    const { menuBigPlatform } = this.state
+    const target = menuBigPlatform.find(item => item.name === key)
+    window.open(target.path || `${window.publicPath}#/`, '_blank')
+  }
+
   render() {
-    const { menuSys } = this.state
+    const { menuSys, menuBigPlatform } = this.state
+    const menu = (
+      <Menu selectedKeys={[]} onClick={this.handleMenuCLick}>
+        {menuBigPlatform.length ? menuBigPlatform.map(item => (
+          <Menu.Item key={item.name}>{formatMessage({ id: item.locale })}</Menu.Item>
+        )) : null}
+      </Menu>
+    )
     return (
       <div className={styles.menuRevealContainer}>
         {/* 头部 */}
@@ -192,7 +225,11 @@ export default class MenuReveal extends Component {
           <div className={styles.menu}>
             <div className={styles.menuItem} onClick={() => router.push('/company-workbench/workbench/list')}><span>工作台</span></div>
             <div className={styles.menuItem}><span style={{ color: 'white' }}>系统</span></div>
-            <div className={styles.menuItem}><span>驾驶舱</span></div>
+            <div className={styles.menuItem} ref={ref => { this.menuBigPlatform = ref }}>
+              <Dropdown overlay={menu} getPopupContainer={() => this.menuBigPlatform}>
+                <span>驾驶舱</span>
+              </Dropdown>
+            </div>
           </div>
         </div>
         {/* 内容 */}
