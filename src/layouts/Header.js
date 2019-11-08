@@ -83,6 +83,15 @@ class HeaderView extends PureComponent {
     }
   };
 
+  // 点击驾驶舱菜单
+  clickBigPlatformMenu = ({ key }) => {
+    const { menuBigPlatform } = this.props
+    const target = menuBigPlatform.find(item => item.name === key)
+    const win = window.open(target.path, '_blank')
+    win.focus()
+    // router.push(target.path)
+  }
+
   handleNoticeVisibleChange = visible => {
     if (visible) {
       const { dispatch } = this.props;
@@ -145,14 +154,15 @@ class HeaderView extends PureComponent {
             {...this.props}
           />
         ) : (
-          <GlobalHeader
-            onCollapse={handleMenuCollapse}
-            onNoticeClear={this.handleNoticeClear}
-            onMenuClick={this.handleMenuClick}
-            onNoticeVisibleChange={this.handleNoticeVisibleChange}
-            {...this.props}
-          />
-        )}
+            <GlobalHeader
+              onCollapse={handleMenuCollapse}
+              onNoticeClear={this.handleNoticeClear}
+              onMenuClick={this.handleMenuClick}
+              onNoticeVisibleChange={this.handleNoticeVisibleChange}
+              clickBigPlatformMenu={this.clickBigPlatformMenu}
+              {...this.props}
+            />
+          )}
       </Header>
     ) : null;
     return (

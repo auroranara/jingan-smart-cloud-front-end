@@ -245,14 +245,6 @@ class BasicLayout extends React.PureComponent {
     });
   };
 
-  // 点击驾驶舱菜单
-  clickBigPlatformMenu = ({ key }) => {
-    const { menuBigPlatform } = this.state
-    const target = menuBigPlatform.find(item => item.name === key)
-    const win = window.open(target.path, '_blank')
-    win.focus()
-  }
-
   render() {
     const {
       layout: PropsLayout,
@@ -302,7 +294,6 @@ class BasicLayout extends React.PureComponent {
             logo={logo}
             isMobile={isMobile}
             menuBigPlatform={menuBigPlatform}
-            clickBigPlatformMenu={this.clickBigPlatformMenu}
             {...this.props}
           />
           {/* <Content style={this.getContentStyle()}>{children}</Content> */}
