@@ -1,11 +1,22 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import {
+  Icon,
+  Dropdown,
+  Menu,
+} from 'antd';
 import Link from 'umi/link';
 import Debounce from 'lodash-decorators/debounce';
 import styles from './index.less';
 import RightContent from './RightContent';
+import router from 'umi/router';
+// 在zh-CN.js文件中找到对应文案
+import { formatMessage } from 'umi/locale';
 
 export default class GlobalHeader extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.menuBigPlatformDom = null; // 驾驶舱下拉容器dom
+  }
   componentWillUnmount() {
     this.triggerResizeEvent.cancel();
   }
@@ -23,7 +34,14 @@ export default class GlobalHeader extends PureComponent {
     this.triggerResizeEvent();
   };
   render() {
-    const { collapsed, isMobile, logo } = this.props;
+    const { collapsed, isMobile, logo, menuBigPlatform, clickBigPlatformMenu } = this.props;
+    const menu = (
+      <Menu selectedKeys={[]} onClick={clickBigPlatformMenu}>
+        {menuBigPlatform && menuBigPlatform.length ? menuBigPlatform.map(item => (
+          <Menu.Item key={item.name}>{formatMessage({ id: item.locale })}</Menu.Item>
+        )) : null}
+      </Menu>
+    )
     return (
       <div className={styles.header}>
         {isMobile && (
@@ -36,7 +54,13 @@ export default class GlobalHeader extends PureComponent {
           type={collapsed ? 'menu-unfold' : 'menu-fold'}
           onClick={this.toggle}
         />
-
+        <div className={styles.menuItem}><span onClick={() => router.push('/company-workbench/workbench/list')}>工作台</span></div>
+        <div className={styles.menuItem}><span onClick={() => router.push('/menu-reveal')}>系统</span></div>
+        <div className={styles.menuItem} ref={ref => { this.menuBigPlatformDom = ref }}>
+          <Dropdown overlay={menu} getPopupContainer={() => this.menuBigPlatformDom}>
+            <span>驾驶舱</span>
+          </Dropdown>
+        </div>
         <RightContent {...this.props} />
       </div>
     );

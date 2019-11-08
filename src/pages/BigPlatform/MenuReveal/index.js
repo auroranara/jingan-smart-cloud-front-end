@@ -11,6 +11,7 @@ import router from 'umi/router';
 import config from './../../../../config/config';
 // 在zh-CN.js文件中找到对应文案
 import { formatMessage } from 'umi/locale';
+import { filterBigPlatform } from '@/utils/customAuth';
 import styles from './index.less';
 
 // 每个模块标题左侧图
@@ -38,22 +39,24 @@ export default class MenuReveal extends Component {
       menuSys: [], // 系统菜单列表
       menuBigPlatform: [], // 驾驶舱列表
     }
-    this.menuBigPlatform = null;
+    this.menuBigPlatformDom = null; // // 驾驶舱下拉容器dom
   }
 
   componentDidMount() {
     const { dispatch } = this.props;
-    const menuAll = config['routes'];
+    // 深拷贝，防止污染配置文件
+    const menuAll = JSON.parse(JSON.stringify(config['routes']));
     dispatch({ type: 'user/fetchGrids' });
     // 获取用户信息 包含permissionCodes，
     dispatch({
       type: 'user/fetchCurrent',
       callback: () => {
+        const { user } = this.props
         // 驾驶舱路由、系统路由
         const configBigPlatform = menuAll.find(item => item.path === '/big-platform')
         const configSys = menuAll.find(item => item.path === '/')
         const menuSys = this.filterSysMenu(configSys.routes, 2)
-        const menuBigPlatform = this.filterBigPlatform(configBigPlatform.routes)
+        const menuBigPlatform = filterBigPlatform(configBigPlatform.routes, user)
         this.setState({ menuSys, menuBigPlatform })
       },
     });
@@ -85,7 +88,7 @@ export default class MenuReveal extends Component {
         return [...arr, { ...item, locale, title: formatMessage({ id: locale }), routes: this.filterSysMenu(item.routes, depth - 1, locale) }]
       } else {
         const { routes, ...res } = item
-        return [...arr, { ...res, locale, title: formatMessage({ id: locale }) }]
+        return [...arr, { ...res, title: formatMessage({ id: locale }), locale }]
       }
     }, [])
   }
@@ -93,92 +96,92 @@ export default class MenuReveal extends Component {
   /**
    * 筛选驾驶舱路由
    **/
-  filterBigPlatform = (array) => {
-    const {
-      user: {
-        currentUser: {
-          permissionCodes,
-          companyBasicInfo: {
-            fireService,
-            safetyProduction,
-            monitorService,
-            personnelPositioning,
-          } = {},
-          unitType,
-          companyId,
-          regulatoryClassification,
-        },
-        grids,
-      },
-    } = this.props
-    // const regulatoryClassification = ['1', '2'];
-    const classification =
-      (Array.isArray(regulatoryClassification) &&
-        regulatoryClassification.map(n => Number.parseInt(n, 10))) ||
-      [];
-    // 1=>安全生产(安全大屏和动态监测大屏) 2=>消防(消防大屏) 3=>环保(暂时没有大屏对应) 4=>卫生(暂时没有大屏对应)
-    const [clfcSafetyAuth, clfcFireControlAuth /* clfcEnviromentAuth */] = [1, 2, 3].map(k =>
-      classification.includes(k)
-    );
-    return array.reduce((arr, item) => {
-      const { name, code } = item
-      // 筛选掉重定向和无权限
-      if (item.redirect || !permissionCodes.includes(code)) {
-        return arr;
-      }
-      // 添加locale（用于从zh-CN文件生成对应描述）
-      item.locale = `menu.bigPlatform.${name}`;
-      const path = `${window.publicPath}#${this.clearParam(item.path)}`;
-      /*
-      'menu.bigPlatform.governmentSafety': '政府安全驾驶舱',      /index
-      'menu.bigPlatform.companySafety': '企业安全驾驶舱',         /companyId
-      'menu.bigPlatform.newFireControl': '消防主机联网驾驶舱',    /index
-      'menu.bigPlatform.fireControl': '消防驾驶舱',              /companyId
-      'menu.bigPlatform.fireMaintenance': '企业消防运营驾驶舱',   /companyId
-      'menu.bigPlatform.dynamicMonitor': '动态监测驾驶舱',        /companyId
-      'menu.bigPlatform.personnelPositioning': '人员定位驾驶舱',  /companyId
-      'menu.bigPlatform.electricityMonitor': '智慧用电驾驶舱',    /grids
-      'menu.bigPlatform.gas': '智慧燃气驾驶舱',                   /grids
-      'menu.bigPlatform.smoke': '烟感驾驶舱',                     /grids
-      'menu.bigPlatform.operation': '智慧消防运营驾驶舱',
-      'menu.bigPlatform.threedgis': '3D-GIS驾驶舱',
-      'menu.bigPlatform.gasStation': '加油站驾驶舱',              /companyId
-      */
-      // 处理路径path
-      if (['electricityMonitor', 'gas', 'smoke'].includes(name)) {
-        item.path = `${path}${grids.length ? grids[0].value : 'index'}`
-      } else if (['companySafety', 'fireControl', 'fireMaintenance', 'dynamicMonitor', 'personnelPositioning', 'gasStation'].includes(name)) {
-        item.path = path + companyId;
-      } else if (['governmentSafety', 'newFireControl'].includes(name)) {
-        item.path = path + 'index';
-      } else item.path = path;
+  // filterBigPlatform = (array) => {
+  //   const {
+  //     user: {
+  //       currentUser: {
+  //         permissionCodes,
+  //         companyBasicInfo: {
+  //           fireService,
+  //           safetyProduction,
+  //           monitorService,
+  //           personnelPositioning,
+  //         } = {},
+  //         unitType,
+  //         companyId,
+  //         regulatoryClassification,
+  //       },
+  //       grids,
+  //     },
+  //   } = this.props
+  //   // const regulatoryClassification = ['1', '2'];
+  //   const classification =
+  //     (Array.isArray(regulatoryClassification) &&
+  //       regulatoryClassification.map(n => Number.parseInt(n, 10))) ||
+  //     [];
+  //   // 1=>安全生产(安全大屏和动态监测大屏) 2=>消防(消防大屏) 3=>环保(暂时没有大屏对应) 4=>卫生(暂时没有大屏对应)
+  //   const [clfcSafetyAuth, clfcFireControlAuth /* clfcEnviromentAuth */] = [1, 2, 3].map(k =>
+  //     classification.includes(k)
+  //   );
+  //   return array.reduce((arr, item) => {
+  //     const { name, code } = item
+  //     // 筛选掉重定向和无权限
+  //     if (item.redirect || !permissionCodes.includes(code)) {
+  //       return arr;
+  //     }
+  //     // 添加locale（用于从zh-CN文件生成对应描述）
+  //     item.locale = `menu.bigPlatform.${name}`;
+  //     const path = `${window.publicPath}#${this.clearParam(item.path)}`;
+  //     /*
+  //     'menu.bigPlatform.governmentSafety': '政府安全驾驶舱',      /index
+  //     'menu.bigPlatform.companySafety': '企业安全驾驶舱',         /companyId
+  //     'menu.bigPlatform.newFireControl': '消防主机联网驾驶舱',    /index
+  //     'menu.bigPlatform.fireControl': '消防驾驶舱',              /companyId
+  //     'menu.bigPlatform.fireMaintenance': '企业消防运营驾驶舱',   /companyId
+  //     'menu.bigPlatform.dynamicMonitor': '动态监测驾驶舱',        /companyId
+  //     'menu.bigPlatform.personnelPositioning': '人员定位驾驶舱',  /companyId
+  //     'menu.bigPlatform.electricityMonitor': '智慧用电驾驶舱',    /grids
+  //     'menu.bigPlatform.gas': '智慧燃气驾驶舱',                   /grids
+  //     'menu.bigPlatform.smoke': '烟感驾驶舱',                     /grids
+  //     'menu.bigPlatform.operation': '智慧消防运营驾驶舱',
+  //     'menu.bigPlatform.threedgis': '3D-GIS驾驶舱',
+  //     'menu.bigPlatform.gasStation': '加油站驾驶舱',              /companyId
+  //     */
+  //     // 处理路径path
+  //     if (['electricityMonitor', 'gas', 'smoke'].includes(name)) {
+  //       item.path = `${path}${grids.length ? grids[0].value : 'index'}`
+  //     } else if (['companySafety', 'fireControl', 'fireMaintenance', 'dynamicMonitor', 'personnelPositioning', 'gasStation'].includes(name)) {
+  //       item.path = path + companyId;
+  //     } else if (['governmentSafety', 'newFireControl'].includes(name)) {
+  //       item.path = path + 'index';
+  //     } else item.path = path;
 
-      if (unitType === 1) {
-        // 维保企业
-        if (name === 'companySafety' && safetyProduction) return [...arr, item];
-        if (name === 'dynamicMonitor' && monitorService) return [...arr, item];
-        if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item];
-        if (name === 'operation') return [...arr, item];
-      } else if (unitType === 2) {
-        // 政府
-        if (name === 'governmentSafety' && safetyProduction && clfcSafetyAuth) return [...arr, item];
-        if (name === 'newFireControl' && fireService && clfcFireControlAuth) return [...arr, item];
-        if (['electricityMonitor', 'gas', 'smoke'].includes(name)) return [...arr, item]
-      } else if (unitType === 3) {
-        // 运营
-        if (['governmentSafety', 'newFireControl', 'electricityMonitor', 'gas', 'smoke', 'operation'].includes(name)) return [...arr, item]
-      } else if (unitType === 4) {
-        // 企事业
-        if (name === 'companySafety' && safetyProduction && clfcSafetyAuth) return [...arr, item]
-        if (name === 'fireControl' && fireService && clfcFireControlAuth) return [...arr, item]
-        if (name === 'fireMaintenance' && fireService && clfcFireControlAuth) return [...arr, item]
-        if (name === 'dynamicMonitor' && monitorService && clfcSafetyAuth) return [...arr, item]
-        if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item]
-        if (name === 'gasStation') return [...arr, item]
-      }
-      return arr;
-    }, [])
-  }
+  //     if (unitType === 1) {
+  //       // 维保企业
+  //       if (name === 'companySafety' && safetyProduction) return [...arr, item];
+  //       if (name === 'dynamicMonitor' && monitorService) return [...arr, item];
+  //       if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item];
+  //       if (name === 'operation') return [...arr, item];
+  //     } else if (unitType === 2) {
+  //       // 政府
+  //       if (name === 'governmentSafety' && safetyProduction && clfcSafetyAuth) return [...arr, item];
+  //       if (name === 'newFireControl' && fireService && clfcFireControlAuth) return [...arr, item];
+  //       if (['electricityMonitor', 'gas', 'smoke'].includes(name)) return [...arr, item]
+  //     } else if (unitType === 3) {
+  //       // 运营
+  //       if (['governmentSafety', 'newFireControl', 'electricityMonitor', 'gas', 'smoke', 'operation'].includes(name)) return [...arr, item]
+  //     } else if (unitType === 4) {
+  //       // 企事业
+  //       if (name === 'companySafety' && safetyProduction && clfcSafetyAuth) return [...arr, item]
+  //       if (name === 'fireControl' && fireService && clfcFireControlAuth) return [...arr, item]
+  //       if (name === 'fireMaintenance' && fireService && clfcFireControlAuth) return [...arr, item]
+  //       if (name === 'dynamicMonitor' && monitorService && clfcSafetyAuth) return [...arr, item]
+  //       if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item]
+  //       if (name === 'gasStation') return [...arr, item]
+  //     }
+  //     return arr;
+  //   }, [])
+  // }
 
   // 点击菜单 打开相应新页面
   handleOpenMenu = (url) => {
@@ -197,7 +200,7 @@ export default class MenuReveal extends Component {
   }
 
   // 点击驾驶舱菜单
-  handleMenuCLick = ({ key }) => {
+  clickBigPlatformMenu = ({ key }) => {
     const { menuBigPlatform } = this.state
     const target = menuBigPlatform.find(item => item.name === key)
     window.open(target.path || `${window.publicPath}#/`, '_blank')
@@ -206,8 +209,8 @@ export default class MenuReveal extends Component {
   render() {
     const { menuSys, menuBigPlatform } = this.state
     const menu = (
-      <Menu selectedKeys={[]} onClick={this.handleMenuCLick}>
-        {menuBigPlatform.length ? menuBigPlatform.map(item => (
+      <Menu selectedKeys={[]} onClick={this.clickBigPlatformMenu}>
+        {menuBigPlatform && menuBigPlatform.length ? menuBigPlatform.map(item => (
           <Menu.Item key={item.name}>{formatMessage({ id: item.locale })}</Menu.Item>
         )) : null}
       </Menu>
@@ -223,8 +226,8 @@ export default class MenuReveal extends Component {
           <div className={styles.menu}>
             <div className={styles.menuItem} onClick={() => router.push('/company-workbench/workbench/list')}><span>工作台</span></div>
             <div className={styles.menuItem}><span style={{ color: 'white' }}>系统</span></div>
-            <div className={styles.menuItem} ref={ref => { this.menuBigPlatform = ref }}>
-              <Dropdown overlay={menu} getPopupContainer={() => this.menuBigPlatform}>
+            <div className={styles.menuItem} ref={ref => { this.menuBigPlatformDom = ref }}>
+              <Dropdown overlay={menu} getPopupContainer={() => this.menuBigPlatformDom}>
                 <span>驾驶舱</span>
               </Dropdown>
             </div>

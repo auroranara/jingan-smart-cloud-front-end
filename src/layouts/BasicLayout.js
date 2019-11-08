@@ -11,6 +11,8 @@ import { enquireScreen, unenquireScreen } from 'enquire-js';
 import { formatMessage } from 'umi/locale';
 import SiderMenu from '@/components/SiderMenu';
 import Authorized from '@/utils/Authorized';
+import { filterBigPlatform } from '@/utils/customAuth';
+import config from './../../config/config';
 import router from 'umi/router';
 
 import Footer from './Footer';
@@ -92,10 +94,13 @@ class BasicLayout extends React.PureComponent {
   state = {
     rendering: true,
     isMobile: false,
+    menuBigPlatform: [],// 驾驶舱列表
   };
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const menuAll = JSON.parse(JSON.stringify(config['routes']));
+    dispatch({ type: 'user/fetchGrids' });
     dispatch({
       type: 'user/fetchCurrent',
       callback: (data, login) => {
@@ -106,6 +111,11 @@ class BasicLayout extends React.PureComponent {
           router.push(path);
           dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
         }
+        const { user } = this.props
+        // 驾驶舱路由、系统路由
+        const configBigPlatform = menuAll.find(item => item.path === '/big-platform')
+        const menuBigPlatform = filterBigPlatform(configBigPlatform.routes, user)
+        this.setState({ menuBigPlatform })
       },
     });
     dispatch({
@@ -148,6 +158,13 @@ class BasicLayout extends React.PureComponent {
       route: { routes },
     } = this.props;
     return formatter(routes);
+  }
+
+  // 点击驾驶舱菜单
+  clickBigPlatformMenu = ({ key }) => {
+    const { menuBigPlatform } = this.state
+    const target = menuBigPlatform.find(item => item.name === key)
+    window.open(target.path || `${window.publicPath}#/`, '_blank')
   }
 
   /**
@@ -243,7 +260,7 @@ class BasicLayout extends React.PureComponent {
       authorityFn,
       currentUserLoaded,
     } = this.props;
-    const { /*rendering,*/ isMobile } = this.state;
+    const { /*rendering,*/ isMobile, menuBigPlatform } = this.state;
     const isTop = PropsLayout === 'topmenu';
     const menuData = this.getMenuData();
 
@@ -283,6 +300,8 @@ class BasicLayout extends React.PureComponent {
             handleMenuCollapse={this.handleMenuCollapse}
             logo={logo}
             isMobile={isMobile}
+            menuBigPlatform={menuBigPlatform}
+            clickBigPlatformMenu={this.clickBigPlatformMenu}
             {...this.props}
           />
           {/* <Content style={this.getContentStyle()}>{children}</Content> */}
@@ -292,8 +311,8 @@ class BasicLayout extends React.PureComponent {
                 {children}
               </Authorized>
             ) : (
-              <Spin size="large" className={styles.globalSpin} />
-            )}
+                <Spin size="large" className={styles.globalSpin} />
+              )}
             <BackTop />
           </Content>
           <Footer />

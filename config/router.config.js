@@ -237,11 +237,13 @@ module.exports = env => {
           path: '/',
           redirect: env === 'nanxiao' ? '/fire-control/maintenance-company' : '/dashboard/view',
         }, // '/dashboard/view'
+        // 首页
         {
           path: '/dashboard',
           icon: 'home',
           code: 'dashboard',
           name: 'dashboard',
+          hideInMenu: true,
           hideChildrenInMenuInMenu: true,
           routes: [
             {
@@ -302,6 +304,7 @@ module.exports = env => {
           code: 'companyWorkbench',
           name: 'companyWorkbench',
           icon: 'bar-chart',
+          hideInMenu: true,
           routes: [
             {
               path: '/company-workbench/workbench',

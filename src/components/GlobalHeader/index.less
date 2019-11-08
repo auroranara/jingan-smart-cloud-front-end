@@ -48,6 +48,22 @@ i.trigger {
   }
 }
 
+.menuItem {
+  display: inline-block;
+  padding: 0 12px;
+  line-height: 64px;
+  height: 64px;
+  vertical-align: 4px;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.025);
+  }
+
+  &>span {
+    cursor: pointer;
+  }
+}
+
 .right {
   float: right;
   height: 100%;
@@ -125,6 +141,7 @@ i.trigger {
 
     i.trigger {
       padding: 22px 12px;
+
       :global {
         svg {
           vertical-align: top;
