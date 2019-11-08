@@ -19,6 +19,7 @@ import {
   CompanyInfo,
   Notice,
   HiddenDanger,
+  Map,
 } from './sections/Components';
 
 const HEADER_STYLE = {
@@ -93,6 +94,7 @@ export default class Chemical extends PureComponent {
               </Col>
               <Col span={14} className={styles.height100}>
                 {/* map */}
+                <Map />
               </Col>
               <Col span={5} className={styles.height100}>
                 {/* 隐患统计 */}

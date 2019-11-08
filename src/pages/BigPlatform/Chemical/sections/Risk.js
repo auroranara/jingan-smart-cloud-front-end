@@ -7,9 +7,36 @@ import styles from './Risk.less';
 
 const LABELS = ['风险分级', '风险分类'];
 const TITLE_STYLE = { marginLeft: 10 };
-
+const COLORS = [
+  '#00BAFF',
+  '#DF8B6F',
+  '#02BECD',
+  '#E86767',
+  '#847BE6',
+  '#F6B54E',
+  '#BCBCBD',
+  '#E589E6',
+  '#729CDB',
+  '#8AA57D',
+  '#584CDF',
+  '#278DFF',
+  '#9E9D74',
+];
+const classifyData = [
+  { name: '危险化学品', value: 11 },
+  { name: '爆炸性粉尘', value: 14 },
+  { name: '重大危险源', value: 6 },
+  { name: '受限空间', value: 10 },
+  { name: '涉氨场所', value: 11 },
+  { name: '生产系统', value: 15 },
+  // { name: '危险化学品', value: 18 },
+  // { name: '危险化学品', value: 7 },
+  // { name: '危险化学品', value: 4 },
+  // { name: '危险化学品', value: 11 },
+];
 export default class Risk extends PureComponent {
   state = { active: 0 };
+
   gradeOption = () => {
     const option = {
       textStyle: {
@@ -118,6 +145,86 @@ export default class Risk extends PureComponent {
     return option;
   };
 
+  classifyOption = () => {
+    const option = {
+      textStyle: {
+        fontSize: 14,
+        color: '#fff',
+      },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow',
+        },
+      },
+      grid: {
+        left: '3%',
+        right: '8%',
+        top: '10%',
+        bottom: '5%',
+        containLabel: true,
+      },
+      yAxis: {
+        type: 'value',
+        boundaryGap: [0, 0.01],
+        axisLabel: {
+          textStyle: {
+            color: '#405e83',
+          },
+        },
+        axisTick: {
+          show: true,
+        },
+        splitLine: {
+          show: false,
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#405e83',
+            width: 2,
+          },
+        },
+      },
+      xAxis: {
+        type: 'category',
+        data: classifyData.map(item => item.name),
+        axisLabel: {
+          interval: 0,
+          rotate: 20,
+        },
+        axisTick: {
+          show: false,
+        },
+        splitLine: {
+          show: false,
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#405e83',
+            width: 2,
+          },
+        },
+      },
+      series: [
+        {
+          type: 'bar',
+          barWidth: 12,
+          data: classifyData.map((item, index) => ({
+            name: item.name,
+            value: item.value,
+            itemStyle: {
+              color: COLORS[index % COLORS.length],
+              barBorderRadius: 10,
+            },
+          })),
+        },
+      ],
+    };
+    return option;
+  };
+
   handleClickTab = i => {
     this.setState({ active: i });
   };
@@ -134,8 +241,9 @@ export default class Risk extends PureComponent {
           style={TITLE_STYLE}
         />
         <ReactEcharts
-          option={this.gradeOption()}
+          option={active === 0 ? this.gradeOption() : this.classifyOption()}
           style={{ height: 'calc(100% - 30px)', width: '100%' }}
+          notMerge={true}
         />
       </CustomSection>
     );

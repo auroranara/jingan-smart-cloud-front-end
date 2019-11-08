@@ -9,7 +9,7 @@ import styles from './HiddenDanger.less';
 import hdYellow from '../imgs/hd-yellow.png';
 import hdRed from '../imgs/hd-red.png';
 
-const percent = 70;
+const percent = 93;
 const checkData = [
   { label: '待检查', color: '#0f98d8', value: 20 },
   { label: '待整改', color: '#e38450', value: 4 },
