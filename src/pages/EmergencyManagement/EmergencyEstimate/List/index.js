@@ -68,13 +68,15 @@ export default class EmergencyEstimateList extends PureComponent {
     currentPage: 1,
   };
 
+  pageNum = 1;
+
   pageSize = 10;
 
   componentDidMount() {
     this.fetchList(1);
   }
 
-  fetchList = (pageNum, pageSize = 10, filters = {}) => {
+  fetchList = (pageNum = 1, pageSize = 10, filters = {}) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'emergencyManagement/fetchEstimateList',

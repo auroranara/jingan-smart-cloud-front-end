@@ -51,7 +51,7 @@ export const SEARCH_FIELDS = [
   // modify
   {
     id: 'id1',
-    label: '计划名称：',
+    label: '方案名称：',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
@@ -68,32 +68,26 @@ export const SEARCH_FIELDS = [
   },
   {
     id: 'code',
-    label: '应急演练编码：',
+    label: '事故名称：',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'code',
+    id: 'companyName',
     label: '单位名称：',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
   {
-    id: 'id2',
-    label: '计划状态：',
+    id: 'id3',
+    label: '模拟事故类型：',
     render: () => (
       <Select placeholder="请选择" allowClear>
-        {['已执行', '未执行'].map((r, i) => (
+        {[].map((r, i) => (
           <Option key={i}>{r}</Option>
         ))}
       </Select>
     ),
-  },
-  {
-    id: 'code',
-    label: '演练名称：',
-    render: () => <Input placeholder="请输入" allowClear />,
-    transform: v => v.trim(),
   },
 ];
 

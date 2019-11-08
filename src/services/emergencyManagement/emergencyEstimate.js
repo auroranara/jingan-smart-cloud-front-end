@@ -29,8 +29,8 @@ export async function estimateDetail({ id }) {
 
 /* 删除应急演练评估 */
 export async function deleteEstimate(params) {
-  return request(`/acloud_new/v2/emergencyDrill/emergencyDrill`, {
+  return request(`/acloud_new/v2/emergencyDrill/emergencyDrill/${params.id}`, {
     method: 'DELETE',
-    body: params,
+    // body: params,
   });
 }

@@ -50,8 +50,12 @@ export default class TableList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：
-            {PAGE_SIZE}
+            单位数量：
+            {1}
+            <span style={{ marginLeft: 15 }}>
+              演练过程：
+              {1}
+            </span>
           </p>
         }
       >
