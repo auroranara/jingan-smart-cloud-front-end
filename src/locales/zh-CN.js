@@ -532,6 +532,7 @@ export default {
   'menu.bigPlatform.operation': '智慧消防运营驾驶舱',
   'menu.bigPlatform.threedgis': '3D-GIS驾驶舱',
   'menu.bigPlatform.gasStation': '加油站驾驶舱',
+  'menu.bigPlatform.chemical': '化工安全生产驾驶舱',
   'menu.emergencyManagement.emergencyProcess': '应急演练过程',
   'menu.emergencyManagement.emergencyProcess.list': '应急演练过程列表',
   'menu.emergencyManagement.emergencyProcess.view': '应急演练过程查看',

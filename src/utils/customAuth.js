@@ -109,7 +109,7 @@ export const filterBigPlatform = (array, model) => {
       item.path = `${path}${grids.length ? grids[0].value : 'index'}`
     } else if (['companySafety', 'fireControl', 'fireMaintenance', 'dynamicMonitor', 'personnelPositioning', 'gasStation'].includes(name)) {
       item.path = path + companyId;
-    } else if (['governmentSafety', 'newFireControl'].includes(name)) {
+    } else if (['governmentSafety', 'newFireControl', 'chemical'].includes(name)) {
       item.path = path + 'index';
     } else item.path = path;
 
@@ -136,6 +136,7 @@ export const filterBigPlatform = (array, model) => {
       if (name === 'personnelPositioning' && personnelPositioning) return [...arr, item]
       if (name === 'gasStation') return [...arr, item]
     }
+    if (name === 'chemical') return [...arr, item]
     return arr;
   }, [])
 }

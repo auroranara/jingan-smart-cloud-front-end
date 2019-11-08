@@ -68,6 +68,12 @@ module.exports = env => {
       routes: [
         { path: '/big-platform', redirect: '/big-platform/safety/government/index' },
         {
+          path: '/big-platform/chemical/:unitId',
+          code: 'dashboard.chemical',
+          name: 'chemical',
+          component: './BigPlatform/Chemical',
+        },
+        {
           path: '/big-platform/safety/government/:gridId',
           code: 'dashboard.safetyView',
           name: 'governmentSafety',
@@ -160,11 +166,6 @@ module.exports = env => {
           code: 'dashboard.gasStation',
           name: 'gasStation',
           component: './BigPlatform/GasStation',
-        },
-        {
-          path: '/big-platform/chemical/:unitId',
-          code: 'dashboard.chemical',
-          component: './BigPlatform/Chemical',
         },
       ],
     },
