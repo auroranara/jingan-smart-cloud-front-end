@@ -160,13 +160,6 @@ class BasicLayout extends React.PureComponent {
     return formatter(routes);
   }
 
-  // 点击驾驶舱菜单
-  clickBigPlatformMenu = ({ key }) => {
-    const { menuBigPlatform } = this.state
-    const target = menuBigPlatform.find(item => item.name === key)
-    window.open(target.path || `${window.publicPath}#/`, '_blank')
-  }
-
   /**
    * 获取面包屑映射
    * @param {Object} menuData 菜单配置
@@ -251,6 +244,14 @@ class BasicLayout extends React.PureComponent {
       payload: collapsed,
     });
   };
+
+  // 点击驾驶舱菜单
+  clickBigPlatformMenu = ({ key }) => {
+    const { menuBigPlatform } = this.state
+    const target = menuBigPlatform.find(item => item.name === key)
+    const win = window.open(target.path, '_blank')
+    win.focus()
+  }
 
   render() {
     const {
