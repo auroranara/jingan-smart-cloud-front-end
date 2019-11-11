@@ -1,4 +1,5 @@
 .menuRevealContainer {
+  @classificationWidth: 400px;
   width: 100%;
   height: 100vh;
   font-size: 14px;
@@ -75,7 +76,6 @@
 
   .content {
     height: 100%;
-    padding: 30px 0;
     overflow-y: auto;
 
     &::-webkit-scrollbar-track {
@@ -93,58 +93,103 @@
       background-color: #06428a;
     }
 
-    .blockTitle {
+    .classificationContainer {
       display: flex;
+      justify-content: center;
       align-items: center;
-      line-height: 25px;
-      padding: 0.6em;
+      height: 100%;
+      background: #0a264173;
+      position: fixed;
+      width: @classificationWidth;
+      z-index: 9999;
+
+      .classification {
+        width: 100%;
+        height: 300px;
+        background: url('http://data.jingan-china.cn/v2/menu/classification-bg.png') no-repeat;
+        background-position: 10px center;
+        background-size: 135px 150px;
+        position: relative;
+
+        .classificationItem {
+          position: absolute;
+          transform: translate(-50%, -50%);
+          font-size: 15px;
+          border: 1px solid transparent;
+          border-radius: 10px;
+          transition: all 0.3s;
+          white-space: nowrap;
+
+          & span {
+            cursor: pointer;
+          }
+        }
+
+        .selected {
+          border: 1px solid #236cc5;
+          box-shadow: 0 0 5px inset #236cc5;
+        }
+      }
     }
 
-    .blockContent {
-      .itemOuter {
-        height: 160px;
+    .blockContainer {
+      padding: 30px 10px;
+      margin-left: @classificationWidth;
+      width: calc(96% - @classificationWidth);
+
+      .blockTitle {
+        display: flex;
+        align-items: center;
+        line-height: 25px;
         padding: 0.6em;
       }
 
-      .item {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        cursor: pointer;
-        transition: all 0.3s;
-        background: url('http://data.jingan-china.cn/v2/menu/item-bg.png') no-repeat center center;
-        background-size: 100% 100%;
+      .blockContent {
+        .itemOuter {
+          height: 160px;
+          padding: 0.6em;
+        }
 
-        &:hover {
-          background: url(http://data.jingan-china.cn/v2/menu/item-bg-light.png) no-repeat center center;
+        .item {
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          cursor: pointer;
+          transition: all 0.3s;
+          background: url('http://data.jingan-china.cn/v2/menu/item-bg.png') no-repeat center center;
           background-size: 100% 100%;
 
-          .itemInner {
-            filter: brightness(2);
+          &:hover {
+            background: url(http://data.jingan-china.cn/v2/menu/item-bg-light.png) no-repeat center center;
+            background-size: 100% 100%;
+
+            .itemInner {
+              filter: brightness(2);
+            }
           }
         }
-      }
 
-      .itemInner {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: #A9ACB1;
-        font-size: 17px;
-        font-weight: 600;
-        transition: all 0.3s;
+        .itemInner {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          color: #A9ACB1;
+          font-size: 17px;
+          font-weight: 600;
+          transition: all 0.3s;
 
-        &>img {
-          width: 50px;
-          height: 50px;
-          object-fit: contain;
-        }
+          &>img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+          }
 
-        &>div {
-          padding: 0.5em 0.5em 0 0.5em;
+          &>div {
+            padding: 0.5em 0.5em 0 0.5em;
+          }
         }
       }
     }
