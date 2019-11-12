@@ -101,7 +101,7 @@ export default class AddEquipment extends Component {
             pointFixInfoList,
             gatewayEquipment: { id: gatewayEquipment, code: gatewayEquipmentCode },
           }, () => {
-            setFieldsValue({ buildingId, floorId });
+            setFieldsValue({ buildingId, floorId, buildingFloor: { buildingId, floorId } });
           })
           buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
           this.fetchModels({ payload: { equipmentType: type, brand } })
@@ -239,7 +239,7 @@ export default class AddEquipment extends Component {
       form: { setFieldsValue },
     } = this.props
     // 清空选择建筑物和楼层
-    setFieldsValue({ buildingId: undefined, floorId: undefined });
+    setFieldsValue({ buildingId: undefined, floorId: undefined, buildingFloor: undefined });
     // 获取建筑物下拉 清空楼层下拉
     weatherFetch && companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
     this.resetFloors({ payload: [] });
@@ -255,40 +255,42 @@ export default class AddEquipment extends Component {
     const { pointFixInfoList, editingIndex } = this.state
     // 从保存的平面图标注列表中找类型为 楼层平面图的，如果找到 清空定位信息,并且该条平面图标注需要重新编辑
     const i = pointFixInfoList.findIndex(item => +item.imgType === 2)
-    // 如果未找到，或者当前正在编辑平面图标注为楼层平面图类型
-    if (i < 0 || +editingIndex === i) return
-    message.warning('请重新编辑平面图标注中楼层平面图')
+    // 如果未找到
+    if (i < 0) return
+    // 当前正在编辑平面图标注不是楼层平面图类型
+    if (+editingIndex !== i) {
+      message.warning('请重新编辑平面图标注中楼层平面图')
+      this.setState({ editingIndex: i })
+    }
     const item = pointFixInfoList[i]
     this.handleChangeCoordinate(item, xnum, i, 'xnum')
     this.handleChangeCoordinate(item, ynum, i, 'ynum')
-    this.setState({ editingIndex: i })
   }
 
   // 所属建筑物改变
-  handleBuildingChange = (value) => {
+  handleBuildingChange = (buildingId) => {
     const {
       form: { setFieldsValue },
     } = this.props
-    setFieldsValue({ floorId: undefined })
-    this.handleRefreshBuilding()
-    if (!value) {
+    setFieldsValue({ floorId: undefined, buildingFloor: { buildingId, floorId: undefined } })
+    // 改变 平面图标注--楼层平面定位信息
+    this.changeFlatPicBuildingNum();
+    if (!buildingId) {
       // 清空楼层下拉
       this.resetFloors({ payload: [] })
       return
     }
     // 获取楼层
-    this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: value } })
+    this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } })
   }
 
-
-  // 选择所属建筑物
-  handleSelectBuilding = (value) => {
-    const {
-      form: { setFieldsValue },
-    } = this.props
-    // 获取楼层
-    this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: value } })
-    setFieldsValue({ floorId: undefined })
+  // 所属楼层改变
+  handleFloorIdChange = (floorId) => {
+    const { form: { getFieldValue, setFieldsValue } } = this.props
+    const buildingFloor = getFieldValue('buildingFloor')
+    setFieldsValue({ buildingFloor: { ...buildingFloor, floorId } })
+    // 改变 平面图标注--楼层平面定位信息
+    this.changeFlatPicBuildingNum();
   }
 
   /**
@@ -335,11 +337,9 @@ export default class AddEquipment extends Component {
    * 验证建筑物或者楼层是否已选择
    */
   validateBuildingFloor = (rule, value, callback) => {
-    const { form: { getFieldsValue } } = this.props
-    const { buildingId, floorId } = getFieldsValue()
-    if (buildingId && floorId) {
+    if (value && value.buildingId && value.floorId) {
       callback()
-    } else callback('请选择所属建筑物楼层')
+    } else callback('请选择所属建筑物或楼层')
   }
 
   /**
@@ -464,7 +464,7 @@ export default class AddEquipment extends Component {
       dispatch,
       companyId,
       handleBuildingChange: this.handleBuildingChange,
-      changeFlatPicBuildingNum: this.changeFlatPicBuildingNum,
+      handleFloorIdChange: this.handleFloorIdChange,
     }
     // 设备是否是NRV
     const isNVR = +type === 110
@@ -676,12 +676,13 @@ export default class AddEquipment extends Component {
             <Fragment>
               <FormItem label="所属建筑物楼层" {...formItemLayout}>
                 {getFieldDecorator('buildingFloor', {
+                  validateTrigger: 'onBlur',
                   rules: [{ required: true, validator: this.validateBuildingFloor }],
                 })(
                   <Fragment>
                     <Col span={5} style={{ marginRight: '10px' }}>
                       {getFieldDecorator('buildingId')(
-                        <Select placeholder="建筑物" style={{ width: '100%' }} onChange={this.handleSelectBuilding} allowClear>
+                        <Select placeholder="建筑物" style={{ width: '100%' }} onChange={this.handleBuildingChange} allowClear>
                           {buildings.map((item, i) => (
                             <Select.Option key={i} value={item.id}>{item.buildingName}</Select.Option>
                           ))}
@@ -690,7 +691,7 @@ export default class AddEquipment extends Component {
                     </Col>
                     <Col span={5} style={{ marginRight: '10px' }}>
                       {getFieldDecorator('floorId')(
-                        <Select placeholder="楼层" style={{ width: '100%' }} onChange={() => this.changeFlatPicBuildingNum()} allowClear>
+                        <Select placeholder="楼层" style={{ width: '100%' }} onChange={this.handleFloorIdChange} allowClear>
                           {floors.map((item, i) => (
                             <Select.Option key={i} value={item.id}>{item.floorName}</Select.Option>
                           ))}

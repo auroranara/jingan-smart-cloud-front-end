@@ -95,17 +95,17 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
           </FormItem>
           <FormItem label="姓名" {...formItemLayout}>
             {getFieldDecorator('name', {
-              rules: [{ required: true, message: '请输入计划名称' }],
+              rules: [{ required: true, message: '请输入' }],
             })(
               <Input placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="性别" {...formItemLayout}>
             {getFieldDecorator('gender', {
-              rules: [{ required: true, message: '请输入性别' }],
+              rules: [{ required: true, message: '请选择性别' }],
             })(
               <Select placeholder="请选择" {...itemStyles}>
-                {[{ key: '1', label: '男' }, { key: '2', label: '女' }].map((key, label) => (
+                {[{ key: '1', label: '男' }, { key: '2', label: '女' }].map(({ key, label }) => (
                   <Select.Option key={key} label={label}>{label}</Select.Option>
                 ))}
               </Select>

@@ -220,7 +220,7 @@ export default class UserTransmissionDevice extends PureComponent {
             <AuthButton
               code={buttonCodes.deviceManagement.transmission.add}
               type="primary"
-              onClick={e => router.push('/device-management/user-transmission-device/add')}
+              onClick={e => router.push(`/device-management/gateway/add?equipmentType=201`)}
             >
               新增传输装置
             </AuthButton>
