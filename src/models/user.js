@@ -46,7 +46,7 @@ export default {
           payload: response.data,
         });
         const login = yield select(state => state.login);
-        if (callback) callback(response.data, login);
+        callback && callback(response.data, login);
       }
     },
     *activationSendCode({ payload, callback }, { call }) {

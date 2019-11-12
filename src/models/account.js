@@ -16,6 +16,8 @@ import {
   editAssociatedUnit,
   chnageAccountStatus,
   queryMaintenanceTree,
+  getDashboard,
+  putDashboard,
 } from '../services/accountManagement.js';
 
 import { checkOldPass, changePass } from '../services/account.js';
@@ -323,6 +325,17 @@ export default {
         if (!Array.isArray(list)) list = JSON.parse(list);
         yield put({ type: 'saveGrids', payload: list });
       }
+    },
+    *fetchDashboard({ payload, callback }, { call }) {
+      const response = yield call(getDashboard, payload);
+      const { code, data } = response || {};
+      if (code === 200)
+        callback && callback(data && Array.isArray(data.list) ? data.list : []);
+    },
+    *setDashboard({ payload, callback }, { call }) {
+      const response = yield call(putDashboard, payload);
+      const { code, msg } = response || {};
+      callback && callback(code, msg);
     },
   },
 

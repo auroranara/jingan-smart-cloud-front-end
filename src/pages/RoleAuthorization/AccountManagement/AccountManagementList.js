@@ -30,14 +30,15 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import styles from './AccountManagementList.less';
 import { AuthLink, AuthButton, AuthSpan } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
-import { getListByUnitId } from './utils';
+import { getListByUnitId, getScreenList, getUserPath } from './utils';
 import { MAI, GOV, OPE, COM } from '@/pages/RoleAuthorization/Role/utils';
 
+
 const { TreeNode } = TreeSelect;
-// 标题
-const title = '账号管理';
-// 面包屑
-const breadcrumbList = [
+const { Option } = Select;
+
+const title = '账号管理'; // 标题
+const breadcrumbList = [ // 面包屑
   {
     title: '首页',
     name: '首页',
@@ -88,6 +89,7 @@ const getEmptyData = () => {
     user,
     hiddenDangerReport,
     loading: loading.models.account,
+    screenListLoading: loading.effects['account/fetchAssociatedUnitDetail'] || loading.effects['account/fetchRoles'] || loading.effects['role/fetchRolePermissions'],
   }),
   dispatch => ({
     fetch(action) {
@@ -168,6 +170,7 @@ const getEmptyData = () => {
     fetchAllGridList(action) {
       dispatch({ type: 'hiddenDangerReport/fetchAllGridList', ...action });
     },
+    dispatch,
   })
 )
 @Form.create()
@@ -179,6 +182,10 @@ export default class accountManagementList extends React.Component {
       associatedUnits: [],
       currentLoginId: null,
       unitTypeChecked: undefined,
+      screenList: [],
+      screenVisible: false,
+      user: {}, // 选择登录大屏时选中的用户id
+      screenCode: undefined, // 选择的登录大屏code
     };
   }
 
@@ -559,7 +566,6 @@ export default class accountManagementList extends React.Component {
 
     const isUnitUser = this.isUnitUser(); // 单位用户且不为运营
     const { unitTypeChecked } = this.state;
-    const { Option } = Select;
 
     return (
       <Card>
@@ -823,6 +829,9 @@ export default class accountManagementList extends React.Component {
                             </Popconfirm>
                           </Col>
                         )}
+                        <Col span={2}>
+                          <Icon type="login" onClick={this.genHandleScreenModalOpen(users[0])} />
+                        </Col>
                       </Row>
                     ) : (
                       <p>{getEmptyData()}</p>
@@ -860,7 +869,7 @@ export default class accountManagementList extends React.Component {
         key: 'unitName',
         dataIndex: 'unitName',
         align: 'center',
-        width: '80%',
+        width: '75%',
         render: (val, row) => {
           return val ? (
             <Fragment>
@@ -915,6 +924,8 @@ export default class accountManagementList extends React.Component {
                   </Popconfirm>
                 </Fragment>
               )}
+              <Divider type="vertical" />
+              <Icon type="login" onClick={this.genHandleScreenModalOpen(row)} />
             </Fragment>
           );
         },
@@ -940,6 +951,96 @@ export default class accountManagementList extends React.Component {
           dataSource={associatedUnits}
           pagination={false}
         />
+      </Modal>
+    );
+  };
+
+  genHandleScreenModalOpen = user => e => {
+    const { id } = user;
+    this.setScreenList(id);
+    this.setState({ screenVisible: true, user });
+    this.getDashboard(id);
+  };
+
+  getDashboard(id) {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'account/fetchDashboard',
+      payload: { key: id },
+      callback: list => {
+        if (list.length)
+          this.setState({ screenCode: list[0].code });
+      },
+    });
+  }
+
+  setScreenList(id) {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'account/fetchAssociatedUnitDetail', // 获取账号详情(单位类型，单位id，对应角色id，额外权限id列表)
+      payload: { userId: id },
+      success: ({ unitType, unitId, roleId, permissions: extraPermissions }) => {
+        dispatch({
+          type: 'account/fetchRoles', // 获取当前单位对应的角色列表及完整的权限树
+          payload: { unitType, companyId: unitId },
+          success: (list, trees) => {
+            const webPermissions = trees.webPermissions || [];
+            dispatch({
+              type: 'role/fetchRolePermissions', // 获取所选角色对应的权限id列表
+              payload: { id: roleId },
+              success: permissions => {
+                this.setState({ screenList: getScreenList(webPermissions, permissions, extraPermissions) });
+              },
+            });
+          },
+        });
+      },
+    });
+  }
+
+  handleScreenModalClose = () => {
+    this.setState({ screenVisible: false, user: {}, screenCode: undefined });
+  };
+
+  handleScreenModalOk = () => {
+    const { dispatch } = this.props;
+    const { user, screenCode } = this.state;
+    const { id } = user
+    this.handleScreenModalClose();
+    const path = getUserPath(screenCode, user);
+    dispatch({
+      type: 'account/setDashboard',
+      payload: { id, code: screenCode, path: path },
+    });
+  };
+
+  handleScreenSelectChange = v => {
+    this.setState({ screenCode: v });
+  };
+
+  renderScreenModal = () => {
+    const { screenListLoading } = this.props;
+    const { screenCode, screenList, screenVisible } = this.state;
+
+    return (
+      <Modal
+        title="登录首页面设置"
+        zIndex={1001}
+        visible={screenVisible}
+        onOk={this.handleScreenModalOk}
+        onCancel={this.handleScreenModalClose}
+      >
+        <Select
+          allowClear
+          value={screenCode}
+          loading={screenListLoading}
+          disabled={screenListLoading}
+          placeholder="请选择登陆首页面"
+          className={styles.screenModal}
+          onChange={this.handleScreenSelectChange}
+        >
+          {screenList.map(({ id, code, showZname }) => <Option value={code} key={id}>{showZname.slice(2)}</Option>)}
+        </Select>
       </Modal>
     );
   };
@@ -991,6 +1092,7 @@ export default class accountManagementList extends React.Component {
           {this.renderList()}
         </InfiniteScroll>
         {this.renderModal()}
+        {this.renderScreenModal()}
       </PageHeaderLayout>
     );
   }

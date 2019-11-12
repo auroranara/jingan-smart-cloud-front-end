@@ -104,18 +104,20 @@ class BasicLayout extends React.PureComponent {
     dispatch({
       type: 'user/fetchCurrent',
       callback: (data, login) => {
-        const { unitId } = data;
+        const { user } = this.props;
+
+        const { userMessage } = data;
         const { logined } = login;
-        const path = `${PATH}/${unitId || 'index'}`;
+        const path = userMessage && userMessage[0] ? userMessage[0].path : '';
         if (logined && path) {
           router.push(path);
           dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
         }
-        const { user } = this.props
+
         // 驾驶舱路由、系统路由
-        const configBigPlatform = menuAll.find(item => item.path === '/big-platform')
-        const menuBigPlatform = filterBigPlatform(configBigPlatform.routes, user)
-        this.setState({ menuBigPlatform })
+        const configBigPlatform = menuAll.find(item => item.path === '/big-platform');
+        const menuBigPlatform = filterBigPlatform(configBigPlatform.routes, user);
+        this.setState({ menuBigPlatform });
       },
     });
     dispatch({

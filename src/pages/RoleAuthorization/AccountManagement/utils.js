@@ -388,3 +388,31 @@ export function generateUnitsTree(data) {
     return <TreeSelectNode title={item.name} key={item.id} value={item.id} />;
   });
 };
+
+export function getScreenList(treeList, permissions, extraPermissions) {
+  const extra = extraPermissions ? extraPermissions.split(',').filter(s => s) : [];
+  const target = treeList.find(t => t.sort === 0);
+  const { childMenus: list } = target || {};
+  if (!list || !list.length)
+    return [];
+
+  list.sort((a1, a2) => a1.sort - a2.sort);
+  return list.filter(({ id }) => [permissions, extra].some(ids => ids.includes(id)));
+}
+
+const ROUTE_MAP = {
+  'dashboard.communitySafety': '/big-platform/community-safety',
+  'dashboard.education': '/big-platform/education',
+  'dashboard.rescue': '/big-platform/rescue',
+  'dashboard.view': '/',
+};
+const SAFE_CODE = 'dashboard.safetyView';
+export function getUserPath(code, user) {
+  const { unitType, unitId } = user;
+  if (code === SAFE_CODE) {
+    if ([GOV, OPE].includes(unitType))
+      return '/big-platform/safety/government/index';
+    return `/big-platform/safety/company/${unitId}`;
+  }
+  return ROUTE_MAP[code];
+}
