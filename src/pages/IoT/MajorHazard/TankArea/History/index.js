@@ -115,7 +115,7 @@ const STATUSES = [
     });
   },
 }))
-export default class TankAreaRealTime extends Component {
+export default class TankAreaHistory extends Component {
   state = {
     tabActiveKey: TABS[0].key, // ['图表', '列表']
     period: PERIODS[0].key, // 周期，['最近一周', '最近一个月', '最近三个月', '最近一年']
@@ -786,7 +786,7 @@ export default class TankAreaRealTime extends Component {
         tabActiveKey={tabActiveKey}
         onTabChange={this.onTabChange}
       >
-        <Spin spinning={loading}>
+        <Spin spinning={!!loading}>
           {this.renderDate()}
           {this[`render${tabActiveKey}`] && this[`render${tabActiveKey}`]()}
         </Spin>

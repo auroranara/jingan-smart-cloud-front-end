@@ -118,6 +118,7 @@ export const COLUMNS = [
   {
     title: '',
     dataIndex: 'index',
+    width: 26,
     render: (value, data, index) => <Badge count={index+1} style={{ backgroundColor: index < 3 ? '#faad14' : '#d9d9d9' }} />,
   },
   {

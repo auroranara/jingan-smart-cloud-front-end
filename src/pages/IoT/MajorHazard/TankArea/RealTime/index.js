@@ -15,7 +15,8 @@ import iconAddress from '../../imgs/icon-address.png';
 import iconIsMajorHazard from '../../imgs/icon-is-major-hazard.png';
 import styles from './index.less';
 
-const TITLE = '储罐区实时监测';
+export const TANK_AREA_DETAIL_URL = '/iot/major-hazard/tank-area/real-time/detail';
+export const TITLE = '储罐区实时监测';
 const BREADCRUMB_LIST = [
   {
     title: '首页',
@@ -50,7 +51,7 @@ const TABS = [
     tab: '正常储罐区',
   },
 ];
-const STATUS_MAPPER = [undefined, 0, 1];
+const STATUS_MAPPER = [undefined, 1, 0];
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 @connect(({
@@ -89,8 +90,8 @@ export default class TankAreaRealTime extends Component {
     const { tabActiveKey } = this.state;
     getTankAreaRealTime({
       status: STATUS_MAPPER[tabActiveKey],
-    }, (successful) => {
-      if (!successful) {
+    }, (success) => {
+      if (!success) {
         message.error('获取储罐区实时监测数据失败，请稍后重试或联系管理人员！');
       }
       this.setState({
@@ -177,7 +178,7 @@ export default class TankAreaRealTime extends Component {
             params=[],
           }) => (
             <List.Item>
-              <Card hoverable /* onClick={() => router.push(`/iot/major-hazard/tank-area/real-time/detail/${id}`)} */>
+              <Card hoverable onClick={() => router.push(`${TANK_AREA_DETAIL_URL}/${id}`)}>
                 <div className={styles.top} style={{ backgroundImage: `url(${iconTankArea})` }}>
                   <div className={styles.nameWrapper}>
                     <div className={styles.name}>{name}</div>
