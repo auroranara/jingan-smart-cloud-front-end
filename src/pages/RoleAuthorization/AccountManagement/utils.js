@@ -398,10 +398,11 @@ export function getScreenList(treeList, permissions, extraPermissions) {
   const [dashboard, workbench] = TARGET_CODES.map(c => treeList.find(t => t.code === c));
   const [dashboardList, workbenchList] = [dashboard, workbench].map(item => item && Array.isArray(item.childMenus) ? item.childMenus : []);
   dashboardList.sort((a1, a2) => a1.sort - a2.sort);
-  const list = [workbenchList[0], ...dashboardList];
+  const list = [workbenchList[0], ...dashboardList].filter(o => o);
   if (!list || !list.length)
     return [];
 
+  console.log(list);
   return list.filter(({ id }) => [permissions, extra].some(ids => ids.includes(id))).filter(({ showZname }) => !showZname.includes('首页'));
 }
 
@@ -422,7 +423,15 @@ export function getUserPath(code, user) {
   return ROUTE_MAP[code];
 }
 
+const WORKBENCH_CODE = 'companyWorkbench.view';
+const WORKBENCH_PATH = '/company-workbench/view';
+const SYSTEM_MENU_CODE = 'dashboard.menuReveal';
+const SYSTEM_MENU_PATH = '/menu-reveal';
 export function getPathByCode(code, unitType) {
+  if (code === WORKBENCH_CODE)
+    return WORKBENCH_PATH;
+  if (code === SYSTEM_MENU_CODE)
+    return SYSTEM_MENU_PATH;
   const targets = routes[1].routes.filter(r => r.code === code);
   let target = targets[0];
   if (targets.length > 1)
@@ -432,13 +441,14 @@ export function getPathByCode(code, unitType) {
 }
 
 export function getRedirectPath(code, unitType, unitId, gridId) {
-  const path = getPathByCode(code, unitType);
+  let path = getPathByCode(code, unitType);
   const hasUnitId = ['unitId', 'companyId'].some(p => path.includes(p));
   const hasGridId = path.includes('gridId');
-  const isUnit = [MAI, COM].some(n => unitType === +n);
+  const isUnit = [MAI, COM].includes(unitType);
   if (hasUnitId)
-    return path.replace(/:(unit|company)Id/, isUnit ? unitId : 'index');
+    path = path.replace(/:(unit|company)Id/, isUnit ? unitId : 'index');
   if (hasGridId)
-    return path.replace(/:gridId/, gridId);
+    path = path.replace(/:gridId/, gridId);
+  console.log(isUnit, [MAI, COM], unitType);
   return path;
 }

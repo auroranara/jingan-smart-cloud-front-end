@@ -105,13 +105,13 @@ class BasicLayout extends React.PureComponent {
     dispatch({
       type: 'user/fetchCurrent',
       callback: (data, login) => {
-        const { user, unitType, unitId } = this.props;
+        const { user } = this.props;
 
-        const { userMessage, gridList } = data;
+        const { userMessage, gridList, unitType, unitId } = data;
         const { logined } = login;
-        const code = userMessage && userMessage[0] ? userMessage[0].code : INIT_ROUTE;
+        const code = userMessage && userMessage[0] ? userMessage[0].code : undefined;
         const grid = gridList && gridList[0] ? gridList[0].value : 'index';
-        const path = getRedirectPath(code, +unitType, unitId, grid);
+        const path = code ? getRedirectPath(code, unitType, unitId, grid) : INIT_ROUTE;
         if (logined && path) {
           router.push(path);
           dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转

@@ -38,8 +38,8 @@ export default {
         // 是否是运营来判断
         yield put({
           type: 'setting/changeSetting',
-          payload:
-            unitType === 3 || isAdmin ? { contentWidth: 'Fluid', layout: 'sidemenu' } : setting,
+          payload: { contentWidth: 'Fluid', layout: 'sidemenu' },
+          // payload: unitType === 3 || isAdmin ? { contentWidth: 'Fluid', layout: 'sidemenu' } : setting,
         });
         yield put({
           type: 'saveCurrentUser',

@@ -236,7 +236,8 @@ module.exports = env => {
       routes: [
         {
           path: '/',
-          redirect: env === 'nanxiao' ? '/fire-control/maintenance-company' : '/dashboard/view',
+          // redirect: env === 'nanxiao' ? '/fire-control/maintenance-company' : '/dashboard/view',
+          redirect: env === 'nanxiao' ? '/fire-control/maintenance-company' : '/company-workbench/view',
         }, // '/dashboard/view'
         // 首页
         {
