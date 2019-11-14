@@ -195,17 +195,25 @@ export default class EmergencyEstimateHandler extends PureComponent {
   handleSubmit = () => {
     const {
       dispatch,
-      form: { validateFields },
+      form: { validateFields, setFields },
       match: {
         params: { id },
       },
     } = this.props;
-    const { fileList } = this.state;
+    const { fileList, selectedDrill } = this.state;
 
     validateFields((error, formData) => {
+      console.log('formData', formData);
       if (!error) {
+        if (!fileList.length) {
+          setFields({
+            drillReport: { value: undefined, errors: [new Error('请上传演练评估报告')] },
+          });
+          return;
+        }
         const payload = {
           ...formData,
+          assessName: selectedDrill.projectName,
           drillReport: JSON.stringify(
             fileList.map(({ name, url, dbUrl }) => ({
               fileName: name,
@@ -287,6 +295,7 @@ export default class EmergencyEstimateHandler extends PureComponent {
     if (file.status === 'done') {
       let fList = [...fileList];
       if (file.response.code === 200) {
+        if (fList.length > 1) fList.splice(0, 1);
         message.success('上传成功');
       } else {
         message.error('上传失败');
@@ -394,7 +403,7 @@ export default class EmergencyEstimateHandler extends PureComponent {
 
           <FormItem label="演练评估报告" {...formItemLayout}>
             {getFieldDecorator('drillReport', {
-              // rules: [{ required: true, message: '请上传演练评估报告' }],
+              rules: [{ required: true, message: '请上传演练评估报告' }],
             })(
               <Upload
                 {...defaultUploadProps}
@@ -452,7 +461,7 @@ export default class EmergencyEstimateHandler extends PureComponent {
         />
         {/* 选择演练计划弹窗 */}
         <CompanyModal
-          title="选择库区"
+          title="选择演练计划"
           columns={drillColumns}
           field={drillFields}
           butonStyles={{ width: 'auto' }}

@@ -68,13 +68,15 @@ export default class EmergencyEstimateList extends PureComponent {
     currentPage: 1,
   };
 
+  pageNum = 1;
+
   pageSize = 10;
 
   componentDidMount() {
     this.fetchList(1);
   }
 
-  fetchList = (pageNum, pageSize = 10, filters = {}) => {
+  fetchList = (pageNum = 1, pageSize = 10, filters = {}) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'emergencyManagement/fetchEstimateList',
@@ -94,21 +96,21 @@ export default class EmergencyEstimateList extends PureComponent {
     } = this.props;
     const fields = [
       {
-        id: 'equipName',
+        id: 'planName',
         render() {
           return <Input placeholder="请输入计划名称" />;
         },
         transform,
       },
       {
-        id: 'equipCode',
+        id: 'assessName',
         render() {
           return <Input placeholder="请输入演练名称" />;
         },
         transform,
       },
       {
-        id: 'companyName',
+        id: 'planCode',
         render() {
           return <Input placeholder="请输入应急演练编码" />;
         },
@@ -195,7 +197,7 @@ export default class EmergencyEstimateList extends PureComponent {
     const {
       loading = false,
       emergencyManagement: {
-        estimate: { list, pagination: { pageNum = 1, pageSize = 10, total = 0 } = {} },
+        estimate: { list, pagination: { pageNum = 1, pageSize = 10, total = 0 } = {}, a },
       },
     } = this.props;
     const { currentPage, scrollX } = this.state;
@@ -215,16 +217,16 @@ export default class EmergencyEstimateList extends PureComponent {
         align: 'center',
         width: 250,
         render: (data, record) => {
-          const { equipName, equipType } = record;
+          const { projectCode, planName } = record;
           return (
             <div className={styles.multi}>
               <div>
                 计划名称：
-                {equipName}
+                {planName}
               </div>
               <div>
                 版本号：
-                {equipType}
+                {projectCode}
               </div>
             </div>
           );
@@ -237,16 +239,16 @@ export default class EmergencyEstimateList extends PureComponent {
         align: 'center',
         width: 200,
         render: (data, record) => {
-          const { equipName, equipType } = record;
+          const { assessName, planCode } = record;
           return (
             <div className={styles.multi}>
               <div>
                 演练名称：
-                {equipName}
+                {assessName}
               </div>
               <div>
                 演练编号：
-                {equipType}
+                {planCode}
               </div>
             </div>
           );
@@ -260,17 +262,19 @@ export default class EmergencyEstimateList extends PureComponent {
       },
       {
         title: '评估信息',
-        dataIndex: 'expiryDate',
-        key: 'expiryDate',
+        dataIndex: 'assessInfo',
+        key: 'assessInfo',
         align: 'center',
         width: 200,
         render: (data, record) => {
-          const { assessName, assessUnit, assessDate } = record;
+          const { drillReportList, assessUnit, assessDate } = record;
+          const fileNames = drillReportList.length ? drillReportList[0].fileName.split('.') : [];
+          const name = fileNames.slice(0, fileNames.length - 1).join('.');
           return (
             <div className={styles.multi}>
               <div>
                 评估报告标题：
-                {assessName}
+                {name}
               </div>
               <div>
                 评估单位：
@@ -278,7 +282,7 @@ export default class EmergencyEstimateList extends PureComponent {
               </div>
               <div>
                 评估日期：
-                {moment(assessDate).format('YYYY.MM.DD')}
+                {moment(assessDate).format('YYYY-MM-DD')}
               </div>
             </div>
           );
@@ -317,8 +321,12 @@ export default class EmergencyEstimateList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            评估信息：
-            {total}
+            单位数量：
+            {a}
+            <span style={{ marginLeft: 15 }}>
+              评估信息：
+              {total}
+            </span>
           </div>
         }
       >

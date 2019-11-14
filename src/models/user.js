@@ -1,3 +1,4 @@
+import router from 'umi/router';
 import {
   query as queryUsers,
   queryCurrent,
@@ -25,7 +26,7 @@ export default {
         payload: response,
       });
     },
-    *fetchCurrent(_, { call, put }) {
+    *fetchCurrent({ callback }, { select, call, put }) {
       const setting = { contentWidth: 'Fixed', layout: 'topmenu' };
       const response = yield call(queryCurrent);
       if (response && response.data) {
@@ -44,6 +45,8 @@ export default {
           type: 'saveCurrentUser',
           payload: response.data,
         });
+        const login = yield select(state => state.login);
+        if (callback) callback(response.data, login);
       }
     },
     *activationSendCode({ payload, callback }, { call }) {

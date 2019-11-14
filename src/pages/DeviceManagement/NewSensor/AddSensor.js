@@ -375,7 +375,8 @@ export default class AddNewSensor extends Component {
       form: { setFieldsValue },
     } = this.props
     setFieldsValue({ floorId: undefined })
-    this.handleRefreshBuilding()
+    // 改变 平面图标注--楼层平面定位信息
+    this.changeFlatPicBuildingNum();
     if (!value) {
       // 清空楼层下拉
       this.resetFloors({ payload: [] })
@@ -383,6 +384,12 @@ export default class AddNewSensor extends Component {
     }
     // 获取楼层
     this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: value } })
+  }
+
+  // 所属楼层改变
+  handleFloorIdChange = (floorId) => {
+    // 改变 平面图标注--楼层平面定位信息
+    this.changeFlatPicBuildingNum();
   }
 
   /**
@@ -489,13 +496,16 @@ export default class AddNewSensor extends Component {
     const { pointFixInfoList, editingIndex } = this.state
     // 从保存的平面图标注列表中找类型为 楼层平面图的，如果找到 清空定位信息,并且该条平面图标注需要重新编辑
     const i = pointFixInfoList.findIndex(item => +item.imgType === 2)
-    // 如果未找到，或者当前正在编辑平面图标注为楼层平面图类型
-    if (i < 0 || +editingIndex === i) return
-    message.warning('请重新编辑平面图标注中楼层平面图')
+    // 如果未找到
+    if (i < 0) return
+    // 当前正在编辑平面图标注不是楼层平面图类型
+    if (+editingIndex !== i) {
+      message.warning('请重新编辑平面图标注中楼层平面图')
+      this.setState({ editingIndex: i })
+    }
     const item = pointFixInfoList[i]
     this.handleChangeCoordinate(item, xnum, i, 'xnum')
     this.handleChangeCoordinate(item, ynum, i, 'ynum')
-    this.setState({ editingIndex: i })
   }
 
   /**
@@ -555,7 +565,7 @@ export default class AddNewSensor extends Component {
       dispatch,
       companyId,
       handleBuildingChange: this.handleBuildingChange,
-      changeFlatPicBuildingNum: this.changeFlatPicBuildingNum,
+      handleFloorIdChange: this.handleFloorIdChange,
     }
     return (
       <Card>
@@ -715,7 +725,7 @@ export default class AddNewSensor extends Component {
                     <Col span={5} style={{ marginRight: '10px' }}>
                       {getFieldDecorator('floorId', {
                       })(
-                        <Select placeholder="楼层" style={{ width: '100%' }} onChange={() => this.changeFlatPicBuildingNum()} allowClear>
+                        <Select placeholder="楼层" style={{ width: '100%' }} onChange={this.handleFloorIdChange} allowClear>
                           {floors.map((item, i) => (
                             <Select.Option key={i} value={item.id}>{item.floorName}</Select.Option>
                           ))}

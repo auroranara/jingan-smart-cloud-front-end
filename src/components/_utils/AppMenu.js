@@ -50,7 +50,7 @@ export default function AppMenu(WrappedComponent) {
         user: {
           currentUser: { permissionCodes: codes },
         },
-        ...rest
+        // ...rest
       } = this.props;
       // console.log(this.props);
 
@@ -74,7 +74,7 @@ export default function AppMenu(WrappedComponent) {
 
       return (
         <WrappedComponent
-          {...rest}
+          {...this.props}
           menuData={menuData} // 也可放在basic layout中处理
           authorityFn={generateAuthFn(codes, codeMap, pathArray)}
           currentUserLoaded={currentUserLoaded}

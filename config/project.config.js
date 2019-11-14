@@ -39,7 +39,7 @@ const defaultConfig = {
   ],
   // projectKey: 'dev',
   projectKey: 'v2_test',
-  projectShortName: '晶安智慧云',
+  projectShortName: '晶安智慧云化工',
   servicePhone: '400-928-5656',
   serviceSupport: '无锡晶安智慧科技有限公司',
   webscoketHost: '47.99.76.214:10036',
@@ -154,7 +154,6 @@ const configs = {
     android:
       'http://58.215.178.100:12080/acloud_new/v2/mobileVersion/version/getLatest?type=1&ran=',
   },
-  eye: {},
   fire: {
     projectKey: 'zx_pro',
     projectShortName: '智慧消防云',
@@ -271,18 +270,18 @@ export default class Config {
   constructor(env) {
     this.config = { ...defaultConfig, ...configs[env] };
     this.config.projectName = `${this.config.projectShortName}平台`;
-    switch (env) {
-      case 'default':
-        this.config.projectName += '（测试）';
-        this.config.projectShortName += '测试';
-        break;
-      case 'show':
-        this.config.projectName += '（演示）';
-        this.config.projectShortName += '演示';
-        break;
-      default:
-        break;
-    }
+    // switch (env) {
+    //   case 'default':
+    //     this.config.projectName += '（测试）';
+    //     this.config.projectShortName += '测试';
+    //     break;
+    //   case 'show':
+    //     this.config.projectName += '（演示）';
+    //     this.config.projectShortName += '演示';
+    //     break;
+    //   default:
+    //     break;
+    // }
   }
   toValue() {
     return this.config;

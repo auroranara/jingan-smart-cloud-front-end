@@ -68,13 +68,21 @@ module.exports = env => {
       routes: [
         { path: '/big-platform', redirect: '/big-platform/safety/government/index' },
         {
+          path: '/big-platform/chemical/:unitId',
+          code: 'dashboard.chemical',
+          name: 'chemical',
+          component: './BigPlatform/Chemical',
+        },
+        {
           path: '/big-platform/safety/government/:gridId',
           code: 'dashboard.safetyView',
+          name: 'governmentSafety',
           component: './BigPlatform/Safety/Government',
         },
         {
           path: '/big-platform/safety/company/:companyId',
           code: 'dashboard.safetyView',
+          name: 'companySafety',
           component: './BigPlatform/Safety/Company3',
         },
         // {
@@ -84,6 +92,7 @@ module.exports = env => {
         {
           path: '/big-platform/new-fire-control/government/:gridId',
           code: 'dashboard.fireControlView',
+          name: 'newFireControl',
           component: './BigPlatform/NewFireControl/Government',
         },
         // {
@@ -93,16 +102,19 @@ module.exports = env => {
         {
           path: '/big-platform/fire-control/company/:unitId',
           code: 'dashboard.fireControlView',
+          name: 'fireControl',
           component: './BigPlatform/UnitFire/UnitFireControl',
         },
         {
           path: '/big-platform/fire-control/new-company/:unitId',
           code: 'dashboard.fireMaintenanceView',
+          name: 'fireMaintenance',
           component: './BigPlatform/NewUnitFireControl',
         },
         {
           path: '/big-platform/monitor/company/:companyId',
           code: 'dashboard.dynamicMonitorView',
+          name: 'dynamicMonitor',
           component: './BigPlatform/Monitor/Company',
         },
         // {
@@ -112,6 +124,7 @@ module.exports = env => {
         {
           path: '/big-platform/position/:companyId',
           code: 'dashboard.personnelPositioningView',
+          name: 'personnelPositioning',
           component: './BigPlatform/Position/index',
         },
         // {
@@ -121,36 +134,41 @@ module.exports = env => {
         {
           path: '/big-platform/electricity-monitor/:gridId',
           code: 'dashboard.electricityMonitorView',
+          name: 'electricityMonitor',
           component: './BigPlatform/ElectricityMonitor',
         },
         {
           path: '/big-platform/gas/:gridId',
           code: 'dashboard.gasView',
+          name: 'gas',
           component: './BigPlatform/Gas',
         },
         {
           path: '/big-platform/smoke/:gridId',
           code: 'dashboard.smokeView',
+          name: 'smoke',
           component: './BigPlatform/Smoke',
         },
         {
           path: '/big-platform/operation',
           code: 'dashboard.operationView',
+          name: 'operation',
           component: './BigPlatform/Operation',
         },
         {
           path: '/big-platform/3d-gis',
           code: 'dashboard.threedgis',
+          name: 'threedgis',
           component: './BigPlatform/Threedgis',
         },
         {
           path: '/big-platform/gas-station/:unitId',
           code: 'dashboard.gasStation',
+          name: 'gasStation',
           component: './BigPlatform/GasStation',
         },
       ],
     },
-
     // {
     //   path: '/demo',
     //   component: './Demo',
@@ -195,7 +213,12 @@ module.exports = env => {
       name: 'riskCardPinter',
       component: './RiskControl/RiskPointManage/PrinterContent',
     },
-
+    // 菜单展示
+    {
+      path: '/menu-reveal',
+      code: 'dashboard.menuReveal',
+      component: './BigPlatform/MenuReveal',
+    },
     //404
     {
       path: '/404',
@@ -215,11 +238,13 @@ module.exports = env => {
           path: '/',
           redirect: env === 'nanxiao' ? '/fire-control/maintenance-company' : '/dashboard/view',
         }, // '/dashboard/view'
+        // 首页
         {
           path: '/dashboard',
           icon: 'home',
           code: 'dashboard',
           name: 'dashboard',
+          hideInMenu: true,
           hideChildrenInMenuInMenu: true,
           routes: [
             {
@@ -280,6 +305,7 @@ module.exports = env => {
           code: 'companyWorkbench',
           name: 'companyWorkbench',
           icon: 'bar-chart',
+          hideInMenu: true,
           routes: [
             {
               path: '/company-workbench/workbench',
@@ -3626,6 +3652,50 @@ module.exports = env => {
                 },
               ],
             },
+            // 安全制度管理
+            {
+              "name": "safetySystem",
+              "code": "safetyKnowledgeBase.safetySystem",
+              "path": "/safety-knowledge-base/safety-system",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/safety-knowledge-base/safety-system",
+                  "redirect": "/safety-knowledge-base/safety-system/list",
+                },
+                {
+                  "name": "list",
+                  "code": "safetyKnowledgeBase.safetySystem.list",
+                  "path": "/safety-knowledge-base/safety-system/list",
+                  "component": "./SafetyKnowledgeBase/SafetySystem/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "safetyKnowledgeBase.safetySystem.view",
+                  "path": "/safety-knowledge-base/safety-system/view/:id",
+                  "component": "./SafetyKnowledgeBase/SafetySystem/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "safetyKnowledgeBase.safetySystem.add",
+                  "path": "/safety-knowledge-base/safety-system/add",
+                  "component": "./SafetyKnowledgeBase/SafetySystem/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "safetyKnowledgeBase.safetySystem.edit",
+                  "path": "/safety-knowledge-base/safety-system/edit/:id",
+                  "component": "./SafetyKnowledgeBase/SafetySystem/Edit",
+                },
+                // {
+                //   "name": "history",
+                //   "code": "safetyKnowledgeBase.safetySystem.view",
+                //   "path": "/safety-knowledge-base/safety-system/history",
+                //   "component": "./SafetyKnowledgeBase/SafetySystem/History",
+                // },
+              ],
+            },
           ],
         },
 
@@ -3826,6 +3896,442 @@ module.exports = env => {
                   code: 'emergencyManagement.emergencyEstimate.detail',
                   name: 'detail',
                   component: './EmergencyManagement/EmergencyEstimate/Detail/index',
+                },
+              ],
+            },
+            // 应急演练过程
+            {
+              name: 'emergencyProcess',
+              code: 'emergencyManagement.emergencyProcess',
+              path: '/emergency-management/emergency-process',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  name: 'list',
+                  path: '/emergency-management/emergency-process',
+                  redirect: '/emergency-management/emergency-process/list',
+                },
+                {
+                  name: 'list',
+                  code: 'emergencyManagement.emergencyProcess.list',
+                  path: '/emergency-management/emergency-process/list',
+                  component: './EmergencyManagement/EmergencyProcess/TableList',
+                },
+                {
+                  name: 'view',
+                  code: 'emergencyManagement.emergencyProcess.view',
+                  path: '/emergency-management/emergency-process/view/:id',
+                  component: './EmergencyManagement/EmergencyProcess/Edit',
+                },
+                {
+                  name: 'add',
+                  code: 'emergencyManagement.emergencyProcess.add',
+                  path: '/emergency-management/emergency-process/add',
+                  component: './EmergencyManagement/EmergencyProcess/Edit',
+                },
+                {
+                  name: 'edit',
+                  code: 'emergencyManagement.emergencyProcess.edit',
+                  path: '/emergency-management/emergency-process/edit/:id',
+                  component: './EmergencyManagement/EmergencyProcess/Edit',
+                },
+              ],
+            },
+          ],
+        },
+        // 任务管理
+        // {
+        //   name: 'taskManagement',
+        //   path: '/task-management',
+        //   icon: 'tablet',
+        //   code: 'taskManagement',
+        //   hideInMenu: false,
+        //   routes: [
+        //     // 专项检查
+        //     {
+        //       name: 'specialExamination',
+        //       path: '/task-management/special-examination',
+        //       code: 'taskManagement.specialExamination',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/task-management/special-examination',
+        //           redirect: '/task-management/special-examination/list',
+        //         },
+        //         {
+        //           name: 'list',
+        //           code: 'taskManagement.specialExamination.list',
+        //           path: '/task-management/special-examination/list',
+        //           component: './TaskManagement/SpecialExamination/List',
+        //         },
+        //         // {
+        //         //   name: 'detail',
+        //         //   code: 'taskManagement.specialExamination.detail',
+        //         //   path: '/task-management/special-examination/detail/:id',
+        //         //   component: './TaskManagement/SpecialExamination/Other',
+        //         // },
+        //         // {
+        //         //   name: 'add',
+        //         //   code: 'taskManagement.specialExamination.add',
+        //         //   path: '/task-management/special-examination/add',
+        //         //   component: './TaskManagement/SpecialExamination/Other',
+        //         // },
+        //         // {
+        //         //   name: 'edit',
+        //         //   code: 'taskManagement.specialExamination.edit',
+        //         //   path: '/task-management/special-examination/edit:id',
+        //         //   component: './TaskManagement/SpecialExamination/Other',
+        //         // },
+        //       ],
+        //     },
+        //   ],
+        // },
+
+        // 公告管理
+        {
+          path: '/announcement-management',
+          code: 'announcementManagement',
+          icon: 'solution',
+          name: 'announcementManagement',
+          routes: [
+            {
+              "name": "promise", // 安全承诺公告
+              "code": "announcementManagement.promise",
+              "path": "/announcement-management/promise",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/announcement-management/promise",
+                  "redirect": "/announcement-management/promise/list",
+                },
+                {
+                  "name": "list",
+                  "code": "announcementManagement.promise.list",
+                  "path": "/announcement-management/promise/list",
+                  "component": "./AnnouncementManagement/Promise/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "announcementManagement.promise.view",
+                  "path": "/announcement-management/promise/view/:id",
+                  "component": "./AnnouncementManagement/Promise/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "announcementManagement.promise.add",
+                  "path": "/announcement-management/promise/add",
+                  "component": "./AnnouncementManagement/Promise/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "announcementManagement.promise.edit",
+                  "path": "/announcement-management/promise/edit/:id",
+                  "component": "./AnnouncementManagement/Promise/Edit",
+                },
+              ],
+            },
+            {
+              "name": "announcement", // 信息发布
+              "code": "announcementManagement.announcement",
+              "path": "/announcement-management/announcement",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/announcement-management/announcement",
+                  "redirect": "/announcement-management/announcement/list",
+                },
+                {
+                  "name": "list",
+                  "code": "announcementManagement.announcement.list",
+                  "path": "/announcement-management/announcement/list",
+                  "component": "./AnnouncementManagement/Announcement/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "announcementManagement.announcement.view",
+                  "path": "/announcement-management/announcement/view/:id",
+                  "component": "./AnnouncementManagement/Announcement/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "announcementManagement.announcement.add",
+                  "path": "/announcement-management/announcement/add",
+                  "component": "./AnnouncementManagement/Announcement/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "announcementManagement.announcement.edit",
+                  "path": "/announcement-management/announcement/edit/:id",
+                  "component": "./AnnouncementManagement/Announcement/Edit",
+                },
+              ],
+            },
+          ],
+        },
+
+        // 事故管理
+        {
+          path: '/accident-management',
+          code: 'accidentManagement',
+          icon: 'fire',
+          name: 'accidentManagement',
+          routes: [
+            {
+              "name": "quickReport",
+              "code": "accidentManagement.quickReport",
+              "path": "/accident-management/quick-report",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/accident-management/quick-report",
+                  "redirect": "/accident-management/quick-report/list",
+                },
+                {
+                  "name": "list",
+                  "code": "accidentManagement.quickReport.list",
+                  "path": "/accident-management/quick-report/list",
+                  "component": "./AccidentManagement/QuickReport/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "accidentManagement.quickReport.view",
+                  "path": "/accident-management/quick-report/view/:id",
+                  "component": "./AccidentManagement/QuickReport/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "accidentManagement.quickReport.add",
+                  "path": "/accident-management/quick-report/add",
+                  "component": "./AccidentManagement/QuickReport/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "accidentManagement.quickReport.edit",
+                  "path": "/accident-management/quick-report/edit/:id",
+                  "component": "./AccidentManagement/QuickReport/Edit",
+                },
+              ],
+            },
+            {
+              "name": "accidentReport",
+              "code": "accidentManagement.accidentReport",
+              "path": "/accident-management/accident-report",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/accident-management/accident-report",
+                  "redirect": "/accident-management/accident-report/list",
+                },
+                {
+                  "name": "list",
+                  "code": "accidentManagement.accidentReport.list",
+                  "path": "/accident-management/accident-report/list",
+                  "component": "./AccidentManagement/AccidentReport/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "accidentManagement.accidentReport.view",
+                  "path": "/accident-management/accident-report/view/:id",
+                  "component": "./AccidentManagement/AccidentReport/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "accidentManagement.accidentReport.add",
+                  "path": "/accident-management/accident-report/add",
+                  "component": "./AccidentManagement/AccidentReport/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "accidentManagement.accidentReport.edit",
+                  "path": "/accident-management/accident-report/edit/:id",
+                  "component": "./AccidentManagement/AccidentReport/Edit",
+                },
+              ],
+            },
+          ],
+        },
+
+        // 三卡信息管理
+        {
+          path: '/cards-info',
+          code: 'cardsInfo',
+          icon: 'profile',
+          name: 'cardsInfo',
+          routes: [
+            {
+              "name": "commitmentCard",
+              "code": "cardsInfo.commitmentCard",
+              "path": "/cards-info/commitment-card",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/cards-info/commitment-card",
+                  "redirect": "/cards-info/commitment-card/list",
+                },
+                {
+                  "name": "list",
+                  "code": "cardsInfo.commitmentCard.list",
+                  "path": "/cards-info/commitment-card/list",
+                  "component": "./CardsInfo/CommitmentCard/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "cardsInfo.commitmentCard.view",
+                  "path": "/cards-info/commitment-card/view/:id",
+                  "component": "./CardsInfo/CommitmentCard/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "cardsInfo.commitmentCard.add",
+                  "path": "/cards-info/commitment-card/add",
+                  "component": "./CardsInfo/CommitmentCard/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "cardsInfo.commitmentCard.edit",
+                  "path": "/cards-info/commitment-card/edit/:id",
+                  "component": "./CardsInfo/CommitmentCard/Edit",
+                },
+              ],
+            },
+            {
+              "name": "knowCard",
+              "code": "cardsInfo.knowCard",
+              "path": "/cards-info/know-card",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/cards-info/know-card",
+                  "redirect": "/cards-info/know-card/list",
+                },
+                {
+                  "name": "list",
+                  "code": "cardsInfo.knowCard.list",
+                  "path": "/cards-info/know-card/list",
+                  "component": "./CardsInfo/KnowCard/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "cardsInfo.knowCard.view",
+                  "path": "/cards-info/know-card/view/:id",
+                  "component": "./CardsInfo/KnowCard/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "cardsInfo.knowCard.add",
+                  "path": "/cards-info/know-card/add",
+                  "component": "./CardsInfo/KnowCard/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "cardsInfo.knowCard.edit",
+                  "path": "/cards-info/know-card/edit/:id",
+                  "component": "./CardsInfo/KnowCard/Edit",
+                },
+              ],
+            },
+            {
+              "name": "emergencyCard",
+              "code": "cardsInfo.emergencyCard",
+              "path": "/cards-info/emergency-card",
+              "hideChildrenInMenu": true,
+              "routes": [
+                {
+                  "name": "list",
+                  "path": "/cards-info/emergency-card",
+                  "redirect": "/cards-info/emergency-card/list",
+                },
+                {
+                  "name": "list",
+                  "code": "cardsInfo.emergencyCard.list",
+                  "path": "/cards-info/emergency-card/list",
+                  "component": "./CardsInfo/EmergencyCard/TableList",
+                },
+                {
+                  "name": "view",
+                  "code": "cardsInfo.emergencyCard.view",
+                  "path": "/cards-info/emergency-card/view/:id",
+                  "component": "./CardsInfo/EmergencyCard/Edit",
+                },
+                {
+                  "name": "add",
+                  "code": "cardsInfo.emergencyCard.add",
+                  "path": "/cards-info/emergency-card/add",
+                  "component": "./CardsInfo/EmergencyCard/Edit",
+                },
+                {
+                  "name": "edit",
+                  "code": "cardsInfo.emergencyCard.edit",
+                  "path": "/cards-info/emergency-card/edit/:id",
+                  "component": "./CardsInfo/EmergencyCard/Edit",
+                },
+              ],
+            },
+          ],
+        },
+        // 物联网监测
+        {
+          path: '/iot',
+          code: 'iot',
+          name: 'iot',
+          icon: 'wifi',
+          routes: [
+            // 重大危险源监测
+            {
+              path: '/iot/major-hazard',
+              code: 'iot.majorHazard',
+              name: 'majorHazard',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/iot/major-hazard',
+                  redirect: '/iot/major-hazard/index',
+                },
+                {
+                  path: '/iot/major-hazard/index',
+                  code: 'iot.majorHazard.index',
+                  name: 'index',
+                  component: './IoT/MajorHazard',
+                },
+                {
+                  path: '/iot/major-hazard/tank-area',
+                  code: 'iot.majorHazard.tankArea',
+                  name: 'tankArea',
+                  routes: [
+                    {
+                      path: '/iot/major-hazard/tank-area',
+                      redirect: '/iot/major-hazard/tank-area/real-time',
+                    },
+                    {
+                      path: '/iot/major-hazard/tank-area/real-time',
+                      code: 'iot.majorHazard.tankArea.realTime',
+                      name: 'realTime',
+                      routes: [
+                        {
+                          path: '/iot/major-hazard/tank-area/real-time',
+                          redirect: '/iot/major-hazard/tank-area/real-time/index',
+                        },
+                        {
+                          path: '/iot/major-hazard/tank-area/real-time/index',
+                          code: 'iot.majorHazard.tankArea.realTime.index',
+                          name: 'index',
+                          component: './IoT/MajorHazard/TankArea/RealTime',
+                        },
+                      ],
+                    },
+                    {
+                      path: '/iot/major-hazard/tank-area/history',
+                      code: 'iot.majorHazard.tankArea.history',
+                      name: 'history',
+                      component: './IoT/MajorHazard/TankArea/History',
+                    },
+                  ],
                 },
               ],
             },

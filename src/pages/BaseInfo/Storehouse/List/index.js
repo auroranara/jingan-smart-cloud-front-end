@@ -162,7 +162,7 @@ export default class StorehouseList extends PureComponent {
         },
       },
       {
-        id: 'aname',
+        id: 'aName',
         render() {
           return <Input placeholder="请输入库区名称" />;
         },

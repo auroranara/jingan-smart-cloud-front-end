@@ -321,7 +321,7 @@ export default class DeployParameterTable extends PureComponent {
         render: (val, { rangeMin, rangeMax }) => (<span>{rangeMin && rangeMax ? `${rangeMin}~${rangeMax}` : '——'}</span>),
       },
       {
-        title: '报警策略数量',
+        title: '自定义报警策略数量',
         dataIndex: 'customStrategyCount',
         align: 'center',
         width: 100,

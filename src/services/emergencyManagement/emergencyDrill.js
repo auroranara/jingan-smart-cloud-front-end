@@ -28,8 +28,8 @@ export async function drillDetail({ id }) {
 }
 
 export async function deleteDrill(params) {
-  return request(`/acloud_new/v2/emergency/emergencyProject`, {
+  return request(`/acloud_new/v2/emergency/emergencyProject/${params.id}`, {
     method: 'DELETE',
-    body: params,
+    // body: params,
   });
 }

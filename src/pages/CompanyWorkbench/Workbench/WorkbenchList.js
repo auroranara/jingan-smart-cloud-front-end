@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Tabs, DatePicker, Icon, Progress, Form } from 'antd';
+import { Tabs, DatePicker, Icon, Progress } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import Ellipsis from '@/components/Ellipsis';
 import { routerRedux } from 'dva/router';
 import styles from './WorkbenchList.less';
+import classNames from 'classnames';
 
 import {
   Pie,
@@ -17,7 +18,9 @@ import {
 } from './components/Components';
 
 import {
+  TopNavList,
   TabList,
+  RANGEDATE,
   SpecialEquipmentList,
   executeList,
   ProductWork,
@@ -178,11 +181,15 @@ function TabCardTotal(props) {
 }
 
 @connect(({ loading }) => ({}))
-@Form.create()
 export default class WorkbenchList extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = { tabValue: '1', tabValueOther: '1' };
+    this.state = {
+      tabValue: '1',
+      tabValueOther: '1',
+      period: RANGEDATE[0].key,
+      range: getValueDate(RANGEDATE[0].key),
+    };
   }
 
   // 挂载后
@@ -206,45 +213,18 @@ export default class WorkbenchList extends PureComponent {
     this.setState({ tabValueOther: type });
   };
 
-  handleDateChange = status => {
-    const {
-      form: { setFieldsValue },
-    } = this.props;
-    setFieldsValue({
-      dateRange: getValueDate(status),
-    });
+  handleDateChange = key => {
+    this.setState({ period: key, range: getValueDate(key) });
+  };
+
+  onRangeChange = range => {
+    this.setState({ period: undefined, range });
   };
 
   renderContentFirst() {
     return (
       <div className={styles.firstContent}>
-        {[
-          {
-            icon: RiskPoint,
-            name: '风险点(个)',
-            value: 45,
-          },
-          {
-            icon: CurrentDanger,
-            name: '当前隐患(个)',
-            value: 5,
-          },
-          {
-            icon: Materical,
-            name: '物料(种)',
-            value: 23,
-          },
-          {
-            icon: Technonlogy,
-            name: '高危工艺(套)',
-            value: 8,
-          },
-          {
-            icon: MajorDanger,
-            name: '重大危险源(个)',
-            value: 12,
-          },
-        ].map(({ icon, name, value }) => (
+        {TopNavList.map(({ icon, name, value }) => (
           <div className={styles.firstItem} key={name}>
             <div className={styles.firstLeft} style={{ backgroundImage: `url(${icon})` }} />
             <div className={styles.firstRight}>
@@ -283,7 +263,10 @@ export default class WorkbenchList extends PureComponent {
                     区域位置：
                     {area}
                   </span>
-                  <span>{date}</span>
+                  <span style={{ paddingLeft: 30 }}>
+                    时间：
+                    {date}
+                  </span>
                 </div>
                 <div style={{ fontSize: '13px', paddingBottom: 12, color: '#949494' }}>
                   {content}
@@ -362,10 +345,7 @@ export default class WorkbenchList extends PureComponent {
   }
 
   renderContainerThird() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
-    const { tabValue } = this.state;
+    const { tabValue, period, range } = this.state;
     return (
       <div className={styles.thirdContent}>
         <div className={styles.leftItem}>
@@ -431,20 +411,22 @@ export default class WorkbenchList extends PureComponent {
           <div className={styles.titleRight}>重大危险源历史统计</div>
           <div className={styles.contentRight}>
             <div className={styles.topNav}>
-              <div className={styles.label} onClick={() => this.handleDateChange(1)}>
-                本周
-              </div>
-              <div className={styles.label} onClick={() => this.handleDateChange(2)}>
-                本月
-              </div>
-              <div className={styles.label} onClick={() => this.handleDateChange(3)}>
-                本季度
-              </div>
-              <div className={styles.label} onClick={() => this.handleDateChange(4)}>
-                今年
-              </div>
+              {RANGEDATE.map(({ key, value }) => (
+                <div
+                  className={classNames(styles.label, period === key && styles.active)}
+                  key={key}
+                  onClick={() => this.handleDateChange(key)}
+                >
+                  {value}
+                </div>
+              ))}
               <div className={styles.date}>
-                {getFieldDecorator('dateRange')(<RangePicker format="YYYY-MM-DD " />)}
+                <RangePicker
+                  format="YYYY-MM-DD "
+                  value={range}
+                  onChange={this.onRangeChange}
+                  allowClear={false}
+                />
               </div>
             </div>
             <div className={styles.bottom}>
@@ -618,20 +600,24 @@ export default class WorkbenchList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div className={styles.topWrite}>
-            安全承诺公告：生产装置
-            <span className={styles.writeRed}> 4</span> 套，其中运行{' '}
-            <span className={styles.writeRed}> 4 </span>
-            套，停产 <span className={styles.writeRed}> 0 </span>
-            套，检修 <span className={styles.writeRed}> 0</span> 套, 特殊、一级、二级动火作业各{' '}
-            <span className={styles.writeRed}> 0</span>、{' '}
-            <span className={styles.writeRed}> 0</span>、{' '}
-            <span className={styles.writeRed}> 0</span>
-            处, 进入受限空间作业 <span className={styles.writeRed}> 0</span> 处, 是否处于试生产{' '}
-            <span className={styles.writeRed}> 否</span>, 是否处于开停车状态{' '}
-            <span className={styles.writeRed}> 否 </span>, 罐区、仓库等重大危险源是否处于安全状态{' '}
-            <span className={styles.writeRed}> 是</span>。
-            今天我公司已进行安全风险研判，各项安全风险防控措施已落实到位，我承诺所有生产装置处于安全运行状态，罐区、仓库等重大危险源安全风险得到有效管控。
-            主要负责人：刘军 。 2019年09月26日
+            <p style={{ marginBottom: 0 }}>
+              安全承诺公告：生产装置
+              <span className={styles.writeRed}> 4</span> 套，其中运行
+              <span className={styles.writeRed}> 4 </span>
+              套，停产 <span className={styles.writeRed}> 0 </span>
+              套，检修 <span className={styles.writeRed}> 0</span> 套, 特殊、一级、二级动火作业各
+              <span className={styles.writeRed}> 0</span>、
+              <span className={styles.writeRed}> 0</span>、
+              <span className={styles.writeRed}> 0</span>
+              处, 进入受限空间作业 <span className={styles.writeRed}> 0</span> 处, 是否处于试生产
+              <span className={styles.writeRed}> 否</span>, 是否处于开停车状态
+              <span className={styles.writeRed}> 否 </span>, 罐区、仓库等重大危险源是否处于安全状态
+              <span className={styles.writeRed}> 是</span>
+            </p>
+            <p>
+              今天我公司已进行安全风险研判，各项安全风险防控措施已落实到位，我承诺所有生产装置处于安全运行状态，罐区、仓库等重大危险源安全风险得到有效管控。
+              主要负责人：刘军 <span className={styles.writeDate}> 2019年09月26日</span>
+            </p>
           </div>
         }
       >

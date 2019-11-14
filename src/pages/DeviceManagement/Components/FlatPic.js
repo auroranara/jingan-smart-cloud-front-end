@@ -32,7 +32,7 @@ const FlatInfo = (props) => {
     dispatch,
     companyId,
     handleBuildingChange,
-    changeFlatPicBuildingNum,
+    handleFloorIdChange,
   } = props
   // 地址录入方式 0 选择 1 手填
   const { locationType, buildingId, floorId } = getFieldsValue()
@@ -244,7 +244,7 @@ const FlatInfo = (props) => {
                       </Select>
                     ) : (
                         getFieldDecorator('floorId')(
-                          <Select placeholder="所属楼层" style={{ width: '100%' }} onChange={() => changeFlatPicBuildingNum()} allowClear>
+                          <Select placeholder="所属楼层" style={{ width: '100%' }} onChange={handleFloorIdChange} allowClear>
                             {floors.map((item, i) => (
                               <Select.Option key={i} value={item.id}>{item.floorName}</Select.Option>
                             ))}

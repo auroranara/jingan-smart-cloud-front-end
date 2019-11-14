@@ -1,15 +1,6 @@
 import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Card,
-  Button,
-  Form,
-  Input,
-  Select,
-  Upload,
-  DatePicker,
-  Icon,
-} from 'antd';
+import { Card, Button, Form, Input, Select, Upload, DatePicker, Icon } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import urls from '@/utils/urls';
 import titles from '@/utils/titles';
@@ -42,24 +33,23 @@ const getRootChild = () => document.querySelector('#root>div');
   baseInfo,
 }))
 export default class SpecialoPerationPermitHandle extends PureComponent {
-
   state = {
     frontPhoto: '', // 操作证正面
     backPhoto: '', // 操作证反面
     forntLoading: false,
     backLoading: false,
-  }
+  };
 
   /**
    * 提交表单
    */
   handleSubmit = () => {
-    router.push(listUrl)
-  }
+    router.push(listUrl);
+  };
 
-  handleFrontChange = () => { }
+  handleFrontChange = () => {};
 
-  handleBackChange = () => { }
+  handleBackChange = () => {};
 
   /**
    * 渲染表单
@@ -67,9 +57,9 @@ export default class SpecialoPerationPermitHandle extends PureComponent {
   renderForm = () => {
     const {
       form: { getFieldDecorator },
-    } = this.props
-    const { frontPhoto, backPhoto } = this.state
-    const uploadButton = (key) => (
+    } = this.props;
+    const { frontPhoto, backPhoto } = this.state;
+    const uploadButton = key => (
       <div>
         <Icon type={this.state[key] ? 'loading' : 'plus'} />
       </div>
@@ -82,31 +72,25 @@ export default class SpecialoPerationPermitHandle extends PureComponent {
               rules: [{ required: true, message: '请选择单位名称' }],
             })(
               <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  placeholder="请选择单位名称"
-                />
-                <Button type="primary">
-                  选择单位
-              </Button>
+                <Input {...itemStyles} disabled placeholder="请选择单位名称" />
+                <Button type="primary">选择单位</Button>
               </Fragment>
             )}
           </FormItem>
           <FormItem label="姓名" {...formItemLayout}>
             {getFieldDecorator('name', {
-              rules: [{ required: true, message: '请输入计划名称' }],
-            })(
-              <Input placeholder="请输入计划名称" {...itemStyles} />
-            )}
+              rules: [{ required: true, message: '请输入' }],
+            })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="性别" {...formItemLayout}>
             {getFieldDecorator('gender', {
               rules: [{ required: true, message: '请输入性别' }],
             })(
               <Select placeholder="请选择" {...itemStyles}>
-                {[{ key: '1', label: '男' }, { key: '2', label: '女' }].map((key, label) => (
-                  <Select.Option key={key} label={label}>{label}</Select.Option>
+                {[{ key: '1', label: '男' }, { key: '2', label: '女' }].map(({ key, label }) => (
+                  <Select.Option key={key} label={label}>
+                    {label}
+                  </Select.Option>
                 ))}
               </Select>
             )}
@@ -125,9 +109,7 @@ export default class SpecialoPerationPermitHandle extends PureComponent {
           <FormItem label="联系电话" {...formItemLayout}>
             {getFieldDecorator('phone', {
               rules: [{ required: true, message: '请输入联系电话' }],
-            })(
-              <Input placeholder="请输入" {...itemStyles} />
-            )}
+            })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="作业类别" {...formItemLayout}>
             {getFieldDecorator('type', {
@@ -135,29 +117,25 @@ export default class SpecialoPerationPermitHandle extends PureComponent {
             })(
               <Select placeholder="请选择" {...itemStyles}>
                 {[].map((key, label) => (
-                  <Select.Option key={key} label={label}>{label}</Select.Option>
+                  <Select.Option key={key} label={label}>
+                    {label}
+                  </Select.Option>
                 ))}
               </Select>
             )}
           </FormItem>
           <FormItem label="连续从事本工作时间" {...formItemLayout}>
-            {getFieldDecorator('workTime')(
-              <Input placeholder="请输入" {...itemStyles} />
-            )}
+            {getFieldDecorator('workTime')(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="准操项目" {...formItemLayout}>
             {getFieldDecorator('aa', {
               rules: [{ required: true, message: '请选输入准操项目' }],
-            })(
-              <TextArea rows={5} placeholder="请输入" {...itemStyles} />
-            )}
+            })(<TextArea rows={5} placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="操作证证号" {...formItemLayout}>
             {getFieldDecorator('num', {
               rules: [{ required: true, message: '请输入操作证证号' }],
-            })(
-              <Input placeholder="请输入" {...itemStyles} />
-            )}
+            })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="初领日期" {...formItemLayout}>
             {getFieldDecorator('initialDate')(
@@ -198,7 +176,11 @@ export default class SpecialoPerationPermitHandle extends PureComponent {
                   action=""
                   onChange={this.handleFrontChange}
                 >
-                  {frontPhoto ? <img src={frontPhoto} alt="avatar" style={{ width: '100%' }} /> : uploadButton('forntLoading')}
+                  {frontPhoto ? (
+                    <img src={frontPhoto} alt="avatar" style={{ width: '100%' }} />
+                  ) : (
+                    uploadButton('forntLoading')
+                  )}
                 </Upload>
               </Fragment>
             )}
@@ -213,21 +195,27 @@ export default class SpecialoPerationPermitHandle extends PureComponent {
                   action=""
                   onChange={this.handleFrontChange}
                 >
-                  {backPhoto ? <img src={backPhoto} alt="avatar" style={{ width: '100%' }} /> : uploadButton('backLoading')}
+                  {backPhoto ? (
+                    <img src={backPhoto} alt="avatar" style={{ width: '100%' }} />
+                  ) : (
+                    uploadButton('backLoading')
+                  )}
                 </Upload>
               </Fragment>
             )}
           </FormItem>
         </Form>
       </Card>
-    )
-  }
+    );
+  };
 
   render() {
     const {
-      match: { params: { id } },
-    } = this.props
-    const title = id ? "编辑操作证人员" : "新增操作证人员"
+      match: {
+        params: { id },
+      },
+    } = this.props;
+    const title = id ? '编辑操作证人员' : '新增操作证人员';
     const breadcrumbList = [
       {
         title: homeTitle,
@@ -249,13 +237,16 @@ export default class SpecialoPerationPermitHandle extends PureComponent {
       },
     ];
     return (
-      <PageHeaderLayout
-        title={title}
-        breadcrumbList={breadcrumbList}
-      >
+      <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
-        <Button style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }} type="primary" onClick={this.handleSubmit}>提交</Button>
+        <Button
+          style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+          type="primary"
+          onClick={this.handleSubmit}
+        >
+          提交
+        </Button>
       </PageHeaderLayout>
-    )
+    );
   }
 }

@@ -46,8 +46,36 @@ export {
   FininshRate,
 };
 
+export const TopNavList = [
+  {
+    icon: RiskPoint,
+    name: '风险点(个)',
+    value: 45,
+  },
+  {
+    icon: CurrentDanger,
+    name: '当前隐患(个)',
+    value: 5,
+  },
+  {
+    icon: Materical,
+    name: '物料(种)',
+    value: 23,
+  },
+  {
+    icon: Technonlogy,
+    name: '高危工艺(套)',
+    value: 8,
+  },
+  {
+    icon: MajorDanger,
+    name: '重大危险源(个)',
+    value: 12,
+  },
+];
+
 const TANK_AREA_REAL_TIME_URL = '/iot/major-hazard/tank-area/real-time/index';
-const TANK_AREA_HISTORY_URL = '/iot/major-hazard/tank-area/history/index';
+const TANK_AREA_HISTORY_URL = '/iot/major-hazard/tank-area/history';
 
 export function getRealUrl(i) {
   switch (i) {
@@ -67,15 +95,34 @@ export function getHistoryUrl(i) {
   }
 }
 
+export const RANGEDATE = [
+  {
+    key: '0',
+    value: '本周',
+  },
+  {
+    key: '1',
+    value: '本月',
+  },
+  {
+    key: '2',
+    value: '本季度',
+  },
+  {
+    key: '3',
+    value: '今年',
+  },
+];
+
 export function getValueDate(i) {
-  switch (i) {
-    case 1:
+  switch (+i) {
+    case 0:
       return [moment('2019-11-04'), moment('2019-11-10')];
-    case 2:
+    case 1:
       return [moment('2019-11-01'), moment('2019-11-30')];
-    case 3:
+    case 2:
       return [moment('2019-10-01'), moment('2019-12-31')];
-    case 4:
+    case 3:
       return [moment('2019-01-01'), moment('2019-12-31')];
     default:
       return;
@@ -196,20 +243,11 @@ export const SpecialEquipmentList = [
 export const executeList = [
   {
     id: 1,
-    executeName: '********（演练名称)',
+    executeName: '火灾应急演练',
     content: '特别重大煤矿事故综合现场演练',
     status: '待执行',
     date: '2019.10.01',
     money: '10.000元',
     area: '东厂区停车场',
-  },
-  {
-    id: 2,
-    executeName: '********（演练名称)',
-    content: '特别重大煤矿事故综合现场演练',
-    status: '待执行',
-    date: '2019.10.01',
-    money: '10.000元',
-    area: '东厂区dsadadsd停车场',
   },
 ];

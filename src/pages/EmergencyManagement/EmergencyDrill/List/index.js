@@ -51,13 +51,14 @@ const NO_DATA = '暂无数据';
 }))
 export default class EmergencyDrillList extends Component {
   state = {};
+  pageNum = 1;
   pageSize = 10;
 
   componentDidMount() {
     this.fetchList(1);
   }
 
-  fetchList = (pageNum, pageSize = 10, filters = {}) => {
+  fetchList = (pageNum = 1, pageSize = 10, filters = {}) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'emergencyManagement/fetchDrillList',

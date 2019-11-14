@@ -11,8 +11,9 @@ import { enquireScreen, unenquireScreen } from 'enquire-js';
 import { formatMessage } from 'umi/locale';
 import SiderMenu from '@/components/SiderMenu';
 import Authorized from '@/utils/Authorized';
-// import SettingDrawer from '@/components/SettingDrawer';
-// import logo from '../assets/logo.svg';
+import { filterBigPlatform } from '@/utils/customAuth';
+import config from './../../config/config';
+import router from 'umi/router';
 
 import Footer from './Footer';
 import Header from './Header';
@@ -28,6 +29,9 @@ import styles from '../index.less';
 const { Content } = Layout;
 const { check } = Authorized;
 const { projectShortName, logo } = global.PROJECT_CONFIG;
+
+const PATH = '/big-platform/chemical';
+
 // Conversion router to menu.
 function formatter(data, parentPath = '', parentAuthority, parentName) {
   return data.map(item => {
@@ -90,12 +94,29 @@ class BasicLayout extends React.PureComponent {
   state = {
     rendering: true,
     isMobile: false,
+    menuBigPlatform: [],// 驾驶舱列表
   };
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const menuAll = JSON.parse(JSON.stringify(config['routes']));
+    dispatch({ type: 'user/fetchGrids' });
     dispatch({
       type: 'user/fetchCurrent',
+      callback: (data, login) => {
+        const { unitId } = data;
+        const { logined } = login;
+        const path = `${PATH}/${unitId || 'index'}`;
+        if (logined && path) {
+          router.push(path);
+          dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
+        }
+        const { user } = this.props
+        // 驾驶舱路由、系统路由
+        const configBigPlatform = menuAll.find(item => item.path === '/big-platform')
+        const menuBigPlatform = filterBigPlatform(configBigPlatform.routes, user)
+        this.setState({ menuBigPlatform })
+      },
     });
     dispatch({
       type: 'setting/getSetting',
@@ -232,7 +253,7 @@ class BasicLayout extends React.PureComponent {
       authorityFn,
       currentUserLoaded,
     } = this.props;
-    const { /*rendering,*/ isMobile } = this.state;
+    const { /*rendering,*/ isMobile, menuBigPlatform } = this.state;
     const isTop = PropsLayout === 'topmenu';
     const menuData = this.getMenuData();
 
@@ -272,6 +293,7 @@ class BasicLayout extends React.PureComponent {
             handleMenuCollapse={this.handleMenuCollapse}
             logo={logo}
             isMobile={isMobile}
+            menuBigPlatform={menuBigPlatform}
             {...this.props}
           />
           {/* <Content style={this.getContentStyle()}>{children}</Content> */}
@@ -281,8 +303,8 @@ class BasicLayout extends React.PureComponent {
                 {children}
               </Authorized>
             ) : (
-              <Spin size="large" className={styles.globalSpin} />
-            )}
+                <Spin size="large" className={styles.globalSpin} />
+              )}
             <BackTop />
           </Content>
           <Footer />

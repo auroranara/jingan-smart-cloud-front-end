@@ -1,0 +1,207 @@
+.menuRevealContainer {
+  @classificationWidth: 400px;
+  width: 100%;
+  height: 100vh;
+  font-size: 14px;
+  overflow: hidden;
+  color: white;
+  background: url('http://data.jingan-china.cn/v2/menu/reveal-bg.png') no-repeat center center;
+  background-size: 100% 100%;
+  padding-top: 64px;
+
+  :global {
+
+    .ant-dropdown-menu-item,
+    .ant-dropdown-menu {
+      background-color: #072459f2;
+      color: white;
+    }
+
+    .ant-dropdown-menu-item-active {
+      background-color: #0d458b;
+    }
+  }
+
+  .header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 64px;
+    line-height: 64px;
+    padding-left: 24px;
+    background: #002140;
+    z-index: 9999;
+
+    & img {
+      height: 32px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    h1 {
+      color: white;
+      display: inline-block;
+      font-weight: 600;
+      vertical-align: middle;
+      margin: 0 0 0 15px;
+      font-size: 22px;
+      font-family: 'Myriad Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      letter-spacing: 6px;
+    }
+
+    .menu {
+      display: inline-block;
+      height: 100%;
+      margin-left: 7em;
+
+      .menuItem {
+        display: inline-block;
+        padding: 0 2em;
+        color: #8A949F;
+        font-size: 15px;
+        font-weight: 600;
+        font-family: 'Myriad Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        vertical-align: middle;
+
+        &>span {
+          cursor: pointer;
+
+          &:hover {
+            color: white;
+          }
+        }
+      }
+    }
+  }
+
+  .content {
+    height: 100%;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 7px rgba(0, 0, 0, 0.3);
+      background-color: #021c40;
+    }
+
+    &::-webkit-scrollbar {
+      width: 7px;
+      background-color: #021c40;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: #06428a;
+    }
+
+    .classificationContainer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      background: #0a264173;
+      position: fixed;
+      width: @classificationWidth;
+      z-index: 9999;
+
+      .classification {
+        width: 100%;
+        height: 300px;
+        background: url('http://data.jingan-china.cn/v2/menu/classification-bg.png') no-repeat;
+        background-position: 10px center;
+        background-size: 135px 150px;
+        position: relative;
+
+        .classificationItem {
+          position: absolute;
+          transform: translate(-50%, -50%);
+          font-size: 15px;
+          border: 1px solid transparent;
+          border-radius: 10px;
+          transition: all 0.3s;
+          white-space: nowrap;
+
+          & span {
+            cursor: pointer;
+          }
+        }
+
+        .selected {
+          border: 1px solid #236cc5;
+          box-shadow: 0 0 5px inset #236cc5;
+        }
+      }
+    }
+
+    .blockContainer {
+      padding: 30px 10px;
+      margin-left: @classificationWidth;
+      width: calc(96% - @classificationWidth);
+
+      .blockTitle {
+        display: flex;
+        align-items: center;
+        line-height: 25px;
+        padding: 0.6em;
+      }
+
+      .blockContent {
+        .itemOuter {
+          height: 160px;
+          padding: 0.6em;
+        }
+
+        .item {
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          cursor: pointer;
+          transition: all 0.3s;
+          background: url('http://data.jingan-china.cn/v2/menu/item-bg.png') no-repeat center center;
+          background-size: 100% 100%;
+
+          &:hover {
+            background: url(http://data.jingan-china.cn/v2/menu/item-bg-light.png) no-repeat center center;
+            background-size: 100% 100%;
+
+            .itemInner {
+              filter: brightness(2);
+            }
+          }
+        }
+
+        .itemInner {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          color: #A9ACB1;
+          font-size: 17px;
+          font-weight: 600;
+          transition: all 0.3s;
+
+          &>img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+          }
+
+          &>div {
+            padding: 0.5em 0.5em 0 0.5em;
+          }
+        }
+      }
+    }
+  }
+}
+
+.divider {
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 100% 100%;
+  width: 2px;
+  height: 17px;
+  margin-right: 1em;
+  box-shadow: 0 0 3px 0 #2baed591;
+}
