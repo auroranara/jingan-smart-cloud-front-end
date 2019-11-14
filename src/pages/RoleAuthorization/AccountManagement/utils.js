@@ -3,6 +3,9 @@ import { Tree, TreeSelect } from 'antd';
 
 import { MAI, GOV, OPE, COM } from '@/pages/RoleAuthorization/Role/utils';
 
+const initRouters = require('../../../../config/router.config');
+const routes = initRouters(process.env.PROJECT_ENV);
+
 const { TreeNode } = Tree;
 const { TreeNode: TreeSelectNode } = TreeSelect;
 
@@ -388,3 +391,64 @@ export function generateUnitsTree(data) {
     return <TreeSelectNode title={item.name} key={item.id} value={item.id} />;
   });
 };
+
+const TARGET_CODES = ['dashboard', 'companyWorkbench'];
+export function getScreenList(treeList, permissions, extraPermissions) {
+  const extra = extraPermissions ? extraPermissions.split(',').filter(s => s) : [];
+  const [dashboard, workbench] = TARGET_CODES.map(c => treeList.find(t => t.code === c));
+  const [dashboardList, workbenchList] = [dashboard, workbench].map(item => item && Array.isArray(item.childMenus) ? item.childMenus : []);
+  dashboardList.sort((a1, a2) => a1.sort - a2.sort);
+  const list = [workbenchList[0], ...dashboardList].filter(o => o);
+  if (!list || !list.length)
+    return [];
+
+  console.log(list);
+  return list.filter(({ id }) => [permissions, extra].some(ids => ids.includes(id))).filter(({ showZname }) => !showZname.includes('首页'));
+}
+
+const ROUTE_MAP = {
+  'dashboard.communitySafety': '/big-platform/community-safety',
+  'dashboard.education': '/big-platform/education',
+  'dashboard.rescue': '/big-platform/rescue',
+  'dashboard.view': '/',
+};
+const SAFE_CODE = 'dashboard.safetyView';
+export function getUserPath(code, user) {
+  const { unitType, unitId } = user;
+  if (code === SAFE_CODE) {
+    if ([GOV, OPE].includes(unitType))
+      return '/big-platform/safety/government/index';
+    return `/big-platform/safety/company/${unitId}`;
+  }
+  return ROUTE_MAP[code];
+}
+
+const WORKBENCH_CODE = 'companyWorkbench.view';
+const WORKBENCH_PATH = '/company-workbench/view';
+const SYSTEM_MENU_CODE = 'dashboard.menuReveal';
+const SYSTEM_MENU_PATH = '/menu-reveal';
+export function getPathByCode(code, unitType) {
+  if (code === WORKBENCH_CODE)
+    return WORKBENCH_PATH;
+  if (code === SYSTEM_MENU_CODE)
+    return SYSTEM_MENU_PATH;
+  const targets = routes[1].routes.filter(r => r.code === code);
+  let target = targets[0];
+  if (targets.length > 1)
+    target = targets.find(t => t.path.includes([GOV, OPE].includes(unitType) ? 'government' : 'company'));
+
+  return target ? target.path : '';
+}
+
+export function getRedirectPath(code, unitType, unitId, gridId) {
+  let path = getPathByCode(code, unitType);
+  const hasUnitId = ['unitId', 'companyId'].some(p => path.includes(p));
+  const hasGridId = path.includes('gridId');
+  const isUnit = [MAI, COM].includes(unitType);
+  if (hasUnitId)
+    path = path.replace(/:(unit|company)Id/, isUnit ? unitId : 'index');
+  if (hasGridId)
+    path = path.replace(/:gridId/, gridId);
+  console.log(isUnit, [MAI, COM], unitType);
+  return path;
+}

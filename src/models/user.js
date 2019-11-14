@@ -38,15 +38,15 @@ export default {
         // 是否是运营来判断
         yield put({
           type: 'setting/changeSetting',
-          payload:
-            unitType === 3 || isAdmin ? { contentWidth: 'Fluid', layout: 'sidemenu' } : setting,
+          payload: { contentWidth: 'Fluid', layout: 'sidemenu' },
+          // payload: unitType === 3 || isAdmin ? { contentWidth: 'Fluid', layout: 'sidemenu' } : setting,
         });
         yield put({
           type: 'saveCurrentUser',
           payload: response.data,
         });
         const login = yield select(state => state.login);
-        if (callback) callback(response.data, login);
+        callback && callback(response.data, login);
       }
     },
     *activationSendCode({ payload, callback }, { call }) {
