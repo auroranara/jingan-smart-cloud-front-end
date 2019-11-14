@@ -245,7 +245,7 @@ module.exports = env => {
           code: 'dashboard',
           name: 'dashboard',
           hideInMenu: true,
-          hideChildrenInMenuInMenu: true,
+          hideChildrenInMenu: true,
           routes: [
             {
               path: '/dashboard',
@@ -300,6 +300,32 @@ module.exports = env => {
         },
 
         // 工作台（企业）
+        // {
+        //   path: '/company-workbench',
+        //   code: 'companyWorkbench',
+        //   name: 'companyWorkbench',
+        //   icon: 'bar-chart',
+        //   hideInMenu: true,
+        //   routes: [
+        //     {
+        //       path: '/company-workbench/workbench',
+        //       code: 'companyWorkbench.workbench',
+        //       name: 'workbench',
+        //       hideChildrenInMenu: true,
+        //       routes: [
+        //         {
+        //           path: '/company-workbench/workbench',
+        //           name: 'list',
+        //           redirect: '/company-workbench/workbench/list',
+        //         },
+        //         {
+        //           path: '/company-workbench/workbench/list',
+        //           code: 'companyWorkbench.workbench.listView',
+        //           name: 'list',
+        //           component: './CompanyWorkbench/Workbench/WorkbenchList',
+        //         },
+        //       ],
+        //     },
         {
           path: '/company-workbench',
           code: 'companyWorkbench',
@@ -308,23 +334,14 @@ module.exports = env => {
           hideInMenu: true,
           routes: [
             {
-              path: '/company-workbench/workbench',
-              code: 'companyWorkbench.workbench',
-              name: 'workbench',
-              hideChildrenInMenu: true,
-              routes: [
-                {
-                  path: '/company-workbench/workbench',
-                  name: 'list',
-                  redirect: '/company-workbench/workbench/list',
-                },
-                {
-                  path: '/company-workbench/workbench/list',
-                  code: 'companyWorkbench.workbench.listView',
-                  name: 'list',
-                  component: './CompanyWorkbench/Workbench/WorkbenchList',
-                },
-              ],
+              path: '/company-workbench',
+              redirect: '/company-workbench/view',
+            },
+            {
+              path: '/company-workbench/view',
+              code: 'companyWorkbench.view',
+              name: 'view',
+              component: './CompanyWorkbench/Workbench/WorkbenchList',
             },
           ],
         },

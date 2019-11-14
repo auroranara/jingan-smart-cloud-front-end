@@ -107,12 +107,12 @@ export async function queryMaintenanceTree(params) {
 
 // 获取登录首页
 export async function getDashboard(params) {
-  return request(`/acloud_new/v2/guanLin/getData?${stringify(params)}`);
+  return request(`/acloud_new/v2/login/getData?${stringify(params)}`);
 }
 
 // 设置登录首页
 export async function putDashboard(params) {
-  return request(`/acloud_new/v2/guanLin/setCurrentUser?${stringify(params)}`, {
+  return request(`/acloud_new/v2/login/setCurrentUser?${stringify(params)}`, {
     method: 'PUT',
   });
 }

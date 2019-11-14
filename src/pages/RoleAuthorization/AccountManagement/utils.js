@@ -3,6 +3,9 @@ import { Tree, TreeSelect } from 'antd';
 
 import { MAI, GOV, OPE, COM } from '@/pages/RoleAuthorization/Role/utils';
 
+const initRouters = require('../../../../config/router.config');
+const routes = initRouters(process.env.PROJECT_ENV);
+
 const { TreeNode } = Tree;
 const { TreeNode: TreeSelectNode } = TreeSelect;
 
@@ -389,15 +392,17 @@ export function generateUnitsTree(data) {
   });
 };
 
+const TARGET_CODES = ['dashboard', 'companyWorkbench'];
 export function getScreenList(treeList, permissions, extraPermissions) {
   const extra = extraPermissions ? extraPermissions.split(',').filter(s => s) : [];
-  const target = treeList.find(t => t.sort === 0);
-  const { childMenus: list } = target || {};
+  const [dashboard, workbench] = TARGET_CODES.map(c => treeList.find(t => t.code === c));
+  const [dashboardList, workbenchList] = [dashboard, workbench].map(item => item && Array.isArray(item.childMenus) ? item.childMenus : []);
+  dashboardList.sort((a1, a2) => a1.sort - a2.sort);
+  const list = [workbenchList[0], ...dashboardList];
   if (!list || !list.length)
     return [];
 
-  list.sort((a1, a2) => a1.sort - a2.sort);
-  return list.filter(({ id }) => [permissions, extra].some(ids => ids.includes(id)));
+  return list.filter(({ id }) => [permissions, extra].some(ids => ids.includes(id))).filter(({ showZname }) => !showZname.includes('首页'));
 }
 
 const ROUTE_MAP = {
@@ -415,4 +420,25 @@ export function getUserPath(code, user) {
     return `/big-platform/safety/company/${unitId}`;
   }
   return ROUTE_MAP[code];
+}
+
+export function getPathByCode(code, unitType) {
+  const targets = routes[1].routes.filter(r => r.code === code);
+  let target = targets[0];
+  if (targets.length > 1)
+    target = targets.find(t => t.path.includes([GOV, OPE].includes(unitType) ? 'government' : 'company'));
+
+  return target ? target.path : '';
+}
+
+export function getRedirectPath(code, unitType, unitId, gridId) {
+  const path = getPathByCode(code, unitType);
+  const hasUnitId = ['unitId', 'companyId'].some(p => path.includes(p));
+  const hasGridId = path.includes('gridId');
+  const isUnit = [MAI, COM].some(n => unitType === +n);
+  if (hasUnitId)
+    return path.replace(/:(unit|company)Id/, isUnit ? unitId : 'index');
+  if (hasGridId)
+    return path.replace(/:gridId/, gridId);
+  return path;
 }

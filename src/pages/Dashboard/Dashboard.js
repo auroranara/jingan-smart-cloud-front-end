@@ -272,6 +272,7 @@ export default class Dashboard extends PureComponent {
     const {
       user: { grids },
     } = this.props;
+
     electricItem.url = `${window.publicPath}#/big-platform/electricity-monitor/${
       grids.length ? grids[0].value : 'index'
     }`;

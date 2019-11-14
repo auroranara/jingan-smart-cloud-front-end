@@ -1007,10 +1007,14 @@ export default class accountManagementList extends React.Component {
     const { user, screenCode } = this.state;
     const { id } = user
     this.handleScreenModalClose();
-    const path = getUserPath(screenCode, user);
+    // const path = getUserPath(screenCode, user);
     dispatch({
       type: 'account/setDashboard',
-      payload: { id, code: screenCode, path: path },
+      payload: {
+        id,
+        code: screenCode,
+        // path: path,
+      },
     });
   };
 

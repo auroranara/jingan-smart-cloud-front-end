@@ -25,12 +25,13 @@ import { Spin, BackTop } from 'antd';
 
 import AppMenu from 'components/_utils/AppMenu';
 import styles from '../index.less';
+import { getRedirectPath } from '@/pages/RoleAuthorization/AccountManagement/utils';
 
 const { Content } = Layout;
 const { check } = Authorized;
 const { projectShortName, logo } = global.PROJECT_CONFIG;
 
-const PATH = '/big-platform/chemical';
+const INIT_ROUTE = '/company-workbench/view';
 
 // Conversion router to menu.
 function formatter(data, parentPath = '', parentAuthority, parentName) {
@@ -104,11 +105,13 @@ class BasicLayout extends React.PureComponent {
     dispatch({
       type: 'user/fetchCurrent',
       callback: (data, login) => {
-        const { user } = this.props;
+        const { user, unitType, unitId } = this.props;
 
-        const { userMessage } = data;
+        const { userMessage, gridList } = data;
         const { logined } = login;
-        const path = userMessage && userMessage[0] ? userMessage[0].path : '';
+        const code = userMessage && userMessage[0] ? userMessage[0].code : INIT_ROUTE;
+        const grid = gridList && gridList[0] ? gridList[0].value : 'index';
+        const path = getRedirectPath(code, +unitType, unitId, grid);
         if (logined && path) {
           router.push(path);
           dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
