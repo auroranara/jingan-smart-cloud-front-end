@@ -31,7 +31,7 @@ const { Content } = Layout;
 const { check } = Authorized;
 const { projectShortName, logo } = global.PROJECT_CONFIG;
 
-const INIT_ROUTE = '/company-workbench/view';
+const INIT_ROUTE = '/menu-reveal';
 
 // Conversion router to menu.
 function formatter(data, parentPath = '', parentAuthority, parentName) {
