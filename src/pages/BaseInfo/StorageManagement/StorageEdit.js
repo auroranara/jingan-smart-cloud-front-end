@@ -27,6 +27,8 @@ import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 import StorageTankAreaModal from './Components/StorageTankAreaModal';
 // 选择存储介质弹窗
 import StorageMediumModal from './Components/StorageMediumModal';
+// 选择重大危险源弹窗
+import MajorHazardListModal from './Components/MajorHazardListModal';
 import codesMap from '@/utils/codes';
 
 import styles from './StorageEdit.less';
@@ -92,13 +94,14 @@ const fieldLabels = {};
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 
-@connect(({ loading, baseInfo, personnelPosition, riskPointManage, device, sensor, materials }) => ({
+@connect(({ loading, baseInfo, personnelPosition, riskPointManage, device, sensor, materials, reservoirRegion }) => ({
   baseInfo,
   personnelPosition,
   riskPointManage,
   device,
   sensor,
   materials,
+  reservoirRegion,
   companyLoading: loading.effects['sensor/fetchModelList'], // 单位列表加载状态
 }))
 @Form.create()
@@ -112,13 +115,18 @@ export default class StorageEdit extends PureComponent {
     imgIdCurrent: '',
     isImgSelect: true,
     selectedAreaKeys: [], // 勾选的储罐区key
+    selectedArea: [],    // 勾选的储罐区对象数组
     storageTankAreaModalVisible: false, // 选择储罐区弹窗是否可见
-    selectedMediumKeys: [], // 勾选的存储介质key
+    selectedMedium: [],
     storageMediumModalVisible: false, // 选择存储介质弹窗是否可见
+    selectedMajorHazard: [],
+    majorHazardModalVisible: false, // 选择重大危险源弹窗可见
+    selectedTemp: [], // 弹窗选择对象暂存,取消后清空
+    selectedTempKeys: [],
   };
 
   // 挂载后
-  componentDidMount() { }
+  componentDidMount () { }
 
   /**
   * 获取楼层
@@ -153,10 +161,24 @@ export default class StorageEdit extends PureComponent {
     })
   }
 
+  /**
+  * 获取储罐区列表
+  */
   fetchStorageMedium = (actions) => {
     const { dispatch } = this.props
     dispatch({
       type: 'materials/fetchMaterialsList',
+      ...actions,
+    })
+  }
+
+  /**
+  * 获取重大危险源列表
+  */
+  fetchMajorHazard = actions => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'reservoirRegion/fetchSourceList',
       ...actions,
     })
   }
@@ -189,21 +211,17 @@ export default class StorageEdit extends PureComponent {
   };
 
   /**
-   * 选择储罐区时监听勾选
-   */
-  onAreaChange = (keys, row) => {
-    this.setState({ selectedAreaKeys: [row.id] })
-  }
-
-  /**
    * 选择储罐区
    */
   handleSelectArea = () => {
     const { form: { setFieldsValue } } = this.props
-    const { selectedAreaKeys } = this.state
-    if (selectedAreaKeys && selectedAreaKeys.length) {
-      setFieldsValue({ tankArea: selectedAreaKeys[0].id })
-      this.setState({ storageTankAreaModalVisible: false })
+    const { selectedTempKeys, selectedTemp } = this.state
+    if (selectedTempKeys && selectedTempKeys.length) {
+      setFieldsValue({ tankArea: selectedTempKeys.join(',') })
+      this.setState({
+        storageTankAreaModalVisible: false,
+        selectedArea: selectedTemp,
+      })
     } else message.warning('请选择储罐区')
   }
 
@@ -212,11 +230,29 @@ export default class StorageEdit extends PureComponent {
    */
   handleSelectMedium = () => {
     const { form: { setFieldsValue } } = this.props
-    const { selectedMediumKeys } = this.state
-    if (selectedMediumKeys && selectedMediumKeys.length) {
-      setFieldsValue({ tankArea: selectedMediumKeys[0].id })
-      this.setState({ storageMediumModalVisible: false })
+    const { selectedTempKeys, selectedTemp } = this.state
+    if (selectedTempKeys && selectedTempKeys.length) {
+      setFieldsValue({ storageMedium: selectedTempKeys.join(',') })
+      this.setState({
+        storageMediumModalVisible: false,
+        selectedMedium: selectedTemp,
+      })
     } else message.warning('请选择存储介质')
+  }
+
+  /**
+  * 选择重大危险源
+  */
+  handleSelectMajorHazard = () => {
+    const { form: { setFieldsValue } } = this.props
+    const { selectedTempKeys, selectedTemp } = this.state
+    if (selectedTempKeys && selectedTempKeys.length) {
+      setFieldsValue({ chemicalsMajorHazard: selectedTempKeys.join(',') })
+      this.setState({
+        majorHazardModalVisible: false,
+        selectedMajorHazard: selectedTemp,
+      })
+    } else message.warning('请选择重大危险源')
   }
 
   /**
@@ -375,7 +411,40 @@ export default class StorageEdit extends PureComponent {
     }))
   }
 
-  renderInfo() {
+  // 点击打开选择储罐区弹窗
+  handleToSelectStorageArea = () => {
+    const { form: { getFieldValue } } = this.props
+    const storageTank = getFieldValue('storageTank')
+    this.fetchStorageTankAreaForPage({ payload: { pageNum: 1, pageSize: 10 } })
+    this.setState({
+      storageTankAreaModalVisible: true,
+      selectedTempKeys: storageTank ? storageTank.split(',') : [],
+    })
+  }
+
+  // 点击打开选择存储介质弹窗
+  handleToSelectStorageMedium = () => {
+    const { form: { getFieldValue } } = this.props
+    const storageMedium = getFieldValue('storageMedium')
+    this.fetchStorageMedium({ payload: { pageNum: 1, pageSize: 10 } })
+    this.setState({
+      storageMediumModalVisible: true,
+      selectedTempKeys: storageMedium ? storageMedium.split(',') : [],
+    })
+  }
+
+  // 点击打开选择重大危险源弹窗
+  handleToSelectMajorHazard = () => {
+    const { form: { getFieldValue } } = this.props
+    const chemicalsMajorHazard = getFieldValue('chemicalsMajorHazard')
+    this.fetchMajorHazard({ payload: { pageNum: 1, pageSize: 10 } })
+    this.setState({
+      majorHazardModalVisible: true,
+      selectedTempKeys: chemicalsMajorHazard ? chemicalsMajorHazard.split(',') : [],
+    })
+  }
+
+  renderInfo () {
     const {
       dispatch,
       form,
@@ -406,6 +475,9 @@ export default class StorageEdit extends PureComponent {
       picModalVisible,
       isImgSelect,
       imgIdCurrent,
+      selectedArea,
+      selectedMedium,
+      selectedMajorHazard,
     } = this.state
 
     const { locationType, companyId } = getFieldsValue();
@@ -493,8 +565,12 @@ export default class StorageEdit extends PureComponent {
           <FormItem {...formItemLayout} label="所属储罐区">
             {getFieldDecorator('tankArea', {
               getValueFromEvent: this.handleTrim,
-            })(<Input {...itemStyles} placeholder="请输入" />)}
-            <Button type="primary"> 选择</Button>
+            })(
+              <Fragment>
+                <Input value={selectedArea.length ? selectedArea[0].chineName : ''} disabled {...itemStyles} placeholder="请输入" />
+              </Fragment>
+            )}
+            <Button type="primary" onClick={this.handleToSelectStorageArea}> 选择</Button>
           </FormItem>
           <FormItem {...formItemLayout} label="位号">
             {getFieldDecorator('number', {
@@ -652,7 +728,12 @@ export default class StorageEdit extends PureComponent {
                   message: '请输入存储介质',
                 },
               ],
-            })(<Input {...itemStyles} placeholder="请输入" />)}
+            })(
+              <Fragment>
+                <Input disabled value={selectedMedium.length ? selectedMedium[0].chineName : ''} {...itemStyles} placeholder="请输入" />
+              </Fragment>
+            )}
+            <Button type="primary" onClick={this.handleToSelectStorageMedium}> 选择</Button>
           </FormItem>
           <FormItem {...formItemLayout} label="是否构成重大危险源">
             {getFieldDecorator('majorHazard', {
@@ -675,8 +756,12 @@ export default class StorageEdit extends PureComponent {
           <FormItem {...formItemLayout} label="所属危险化学品重大危险源单元">
             {getFieldDecorator('chemicalsMajorHazard', {
               getValueFromEvent: this.handleTrim,
-            })(<Input {...itemStyles} placeholder="请输入" />)}
-            <Button type="primary"> 选择</Button>
+            })(
+              <Fragment>
+                <Input disabled value={selectedMajorHazard.length ? selectedMajorHazard[0] : ''} {...itemStyles} placeholder="请输入" />
+              </Fragment>
+            )}
+            <Button onClick={this.handleToSelectMajorHazard} type="primary"> 选择</Button>
           </FormItem>
           <FormItem {...formItemLayout} label="是否高危储罐">
             {getFieldDecorator('highRiskTank', {
@@ -877,7 +962,7 @@ export default class StorageEdit extends PureComponent {
               </Radio.Group>
             )}
           </FormItem>
-          {(!locationType || locationType === 0) && (
+          {(!locationType || locationType === 0) && companyId && (
             <Fragment>
               <FormItem label="所属建筑物楼层" {...formItemLayout}>
                 {getFieldDecorator('buildingFloor', {
@@ -926,7 +1011,7 @@ export default class StorageEdit extends PureComponent {
               </FormItem>
             </Fragment>
           )}
-          {locationType === 1 && (
+          {locationType === 1 && companyId && (
             <Fragment>
               <FormItem label="所在区域" {...formItemLayout}>
                 {getFieldDecorator('area', {
@@ -944,24 +1029,26 @@ export default class StorageEdit extends PureComponent {
               </FormItem>
             </Fragment>
           )}
-          <FormItem label="平面图标注" {...formItemLayout}>
-            <Button
-              type="primary"
-              style={{ padding: '0 12px' }}
-              onClick={this.handleAddFlatGraphic}
-              disabled={!isNaN(editingIndex) || pointFixInfoList.length >= 4}
-            >
-              新增
+          {companyId && (
+            <FormItem label="平面图标注" {...formItemLayout}>
+              <Button
+                type="primary"
+                style={{ padding: '0 12px' }}
+                onClick={this.handleAddFlatGraphic}
+                disabled={!isNaN(editingIndex) || pointFixInfoList.length >= 4}
+              >
+                新增
               </Button>
-            <FlatPic {...FlatPicProps} />
-          </FormItem>
+              <FlatPic {...FlatPicProps} />
+            </FormItem>
+          )}
         </Form>
       </Card>
     );
   }
 
   /* 渲染错误信息 */
-  renderErrorInfo() {
+  renderErrorInfo () {
     const {
       form: { getFieldsError },
     } = this.props;
@@ -1007,7 +1094,7 @@ export default class StorageEdit extends PureComponent {
   /**
   * 渲染底部工具栏
   **/
-  renderFooterToolbar() {
+  renderFooterToolbar () {
     return (
       <FooterToolbar>
         {this.renderErrorInfo()}
@@ -1022,7 +1109,7 @@ export default class StorageEdit extends PureComponent {
   }
 
   // 渲染页面所有信息
-  render() {
+  render () {
     const {
       companyLoading,
       match: { params: { id } },
@@ -1030,17 +1117,17 @@ export default class StorageEdit extends PureComponent {
       baseInfo: {
         storageTankArea, // 储罐区
       },
-      materials: {
-        list: materialsList,
-        pagination: materialsPagination,
+      materials,
+      reservoirRegion: {
+        sourceData, // 重大危险源
       },
     } = this.props;
     const {
       companyModalVisible,
       storageTankAreaModalVisible,
-      selectedAreaKeys,
-      selectedMediumKeys,
       storageMediumModalVisible,
+      majorHazardModalVisible,
+      selectedTempKeys,
     } = this.state
 
     const title = id ? editTitle : addTitle;
@@ -1057,22 +1144,36 @@ export default class StorageEdit extends PureComponent {
       model: storageTankArea,
       onCancel: () => { this.setState({ storageTankAreaModalVisible: false }) },
       rowSelection: {
-        selectedRowKeys: selectedAreaKeys,
-        onChange: this.onAreaChange,
+        selectedRowKeys: selectedTempKeys,
+        onChange: (keys, rows) => { this.setState({ selectedTempKeys: keys, selectedTemp: rows }) },
+        type: 'radio',
       },
       handleSelect: this.handleSelectArea,
     };
     const mediumProps = {
       visible: storageMediumModalVisible,
       fetch: this.fetchStorageMedium,
-      model: { list: materialList, pagination: materialsPagination },
+      model: materials,
       onCancel: () => { this.setState({ storageMediumModalVisible: false }) },
       rowSelection: {
-        selectedRowKeys: selectedMediumKeys,
-        onChange: (selectedMediumKeys) => { this.setState({ selectedMediumKeys }) },
+        selectedRowKeys: selectedTempKeys,
+        onChange: (keys, rows) => { this.setState({ selectedTempKeys: keys, selectedTemp: rows }) },
+        type: 'radio',
       },
       handleSelect: this.handleSelectMedium,
     };
+    const majorHazardProps = {
+      visible: majorHazardModalVisible,
+      fetch: this.fetchMajorHazard,
+      model: sourceData,
+      onCancel: () => { this.setState({ majorHazardModalVisible: false }) },
+      rowSelection: {
+        selectedRowKeys: selectedTempKeys,
+        onChange: (keys, rows) => { this.setState({ selectedTempKeys: keys, selectedTemp: rows }) },
+        type: 'radio',
+      },
+      handleSelect: this.handleSelectMajorHazard,
+    }
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderInfo()}
@@ -1093,6 +1194,8 @@ export default class StorageEdit extends PureComponent {
         <StorageTankAreaModal {...areaProps} />
         {/* 选择存储介质弹窗--单选 */}
         <StorageMediumModal {...mediumProps} />
+        {/* 选择重大危险源弹窗 */}
+        <MajorHazardListModal {...majorHazardProps} />
       </PageHeaderLayout>
     );
   }

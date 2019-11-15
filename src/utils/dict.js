@@ -205,3 +205,13 @@ export const armStatusEnum = generateEnum({
   '-24': '正在关闭',
   '-25': '故障',
 })
+
+/*
+* 重大危险源等级
+*/
+export const majorHazardDangerEnum = generateEnum({
+  1: '一级',
+  2: '二级',
+  3: '三级',
+  4: '四级',
+})

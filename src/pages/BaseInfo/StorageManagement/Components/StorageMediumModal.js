@@ -35,7 +35,7 @@ const StorageMediumModal = Form.create()(props => {
       },
     },
   } = props;
-
+  // 点击查询
   const handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
     const values = getFieldsValue()
     fetch({
@@ -46,6 +46,7 @@ const StorageMediumModal = Form.create()(props => {
       },
     })
   }
+  // 点击重置
   const handleReset = () => {
     resetFields()
     handleQuery()
@@ -91,6 +92,7 @@ const StorageMediumModal = Form.create()(props => {
       onCancel={onCancel}
       onOk={onOk}
       footer={null}
+      width={800}
     >
       <Form>
         <Row gutter={16}>
@@ -111,7 +113,7 @@ const StorageMediumModal = Form.create()(props => {
           <Col {...colWrapper}>
             <FormItem {...formItemStyle}>
               <Button style={{ marginRight: '10px' }} type="primary" onClick={() => handleQuery()}>查询</Button>
-              <Button onClick={handleReset}>重置</Button>
+              <Button style={{ marginRight: '10px' }} onClick={handleReset}>重置</Button>
               <Button type="primary" onClick={handleSelect} disabled={rowSelection.selectedRowKeys.length === 0}>选择</Button>
             </FormItem>
           </Col>

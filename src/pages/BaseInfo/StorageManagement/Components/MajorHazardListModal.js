@@ -7,6 +7,8 @@ import {
   Input,
   Table,
 } from 'antd';
+// 重大危险源等级枚举
+import { majorHazardDangerEnum } from '@/utils/dict';
 
 const FormItem = Form.Item;
 
@@ -14,17 +16,17 @@ const defaultPageSize = 10;
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 };
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
 
-// 选择储罐区弹窗
-const StorageTankAreaModal = Form.create()(props => {
+// 选择重大危险品源弹窗
+const MajorHazardListModal = Form.create()(props => {
   const {
     form: { getFieldDecorator, getFieldsValue, resetFields },
     visible,
     onOk,
     onCancel,
     fetch,
+    handleSelect,
     rowSelection,
     loading = false,
-    handleSelect,
     model: {
       list = [],
       pagination: {
@@ -33,8 +35,7 @@ const StorageTankAreaModal = Form.create()(props => {
         total = 0,
       },
     },
-  } = props;
-
+  } = props
   const handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
     const values = getFieldsValue()
     fetch({
@@ -51,40 +52,64 @@ const StorageTankAreaModal = Form.create()(props => {
   }
   const columns = [
     {
-      title: '储罐区名称',
-      dataIndex: 'areaName',
-      align: 'center',
-      width: 200,
-    },
-    {
       title: '统一编码',
       dataIndex: 'code',
       align: 'center',
       width: 200,
     },
+    {
+      title: '危险源名称',
+      dataIndex: 'name',
+      align: 'center',
+      width: 200,
+    },
+    {
+      title: '重大危险源等级',
+      dataIndex: 'dangerLevel',
+      align: 'center',
+      width: 200,
+      render: (val, row) => majorHazardDangerEnum[val],
+    },
+    {
+      title: '单元内涉及的危险化学品',
+      dataIndex: 'unitChemiclaNumDetail',
+      align: 'center',
+      width: 200,
+      render: val => {
+        return val
+          .map(item => {
+            const name = item.chineName ? item.chineName : '';
+            const num = item.unitChemiclaNum ? item.unitChemiclaNum : '';
+            const unit = item.unitChemiclaNumUnit ? item.unitChemiclaNumUnit : '';
+            return name + ' ' + num + unit;
+          })
+          .join(',');
+      },
+    },
   ]
   return (
     <Modal
-      title="选择储罐区"
+      title="选择重大危险源"
       visible={visible}
       destroyOnClose
       onCancel={onCancel}
       onOk={onOk}
       footer={null}
+      width={800}
     >
       <Form>
         <Row gutter={16}>
           <Col {...colWrapper}>
             <FormItem {...formItemStyle}>
-              {getFieldDecorator('areaName')(
-                <Input placeholder="储罐区名称" />
+              {getFieldDecorator('casNo')(
+                <Input placeholder="CAS号" />
               )}
             </FormItem>
           </Col>
           <Col {...colWrapper}>
             <FormItem {...formItemStyle}>
-              {getFieldDecorator('code')(
-                <Input placeholder="统一编码" />
+              {getFieldDecorator('chineName')(
+                <Input placeholder="品名" />
               )}
             </FormItem>
           </Col>
@@ -125,5 +150,4 @@ const StorageTankAreaModal = Form.create()(props => {
     </Modal>
   )
 })
-
-export default StorageTankAreaModal;
+export default MajorHazardListModal
