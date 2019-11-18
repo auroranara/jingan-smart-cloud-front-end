@@ -14,6 +14,7 @@ import styles from './NewMenu.less';
 import dividerPic from '@/assets/divider.png';
 
 const userLogoUrl = 'http://data.jingan-china.cn/v2/menu/icon-user.png';
+const logoutLogoUrl = 'http://data.jingan-china.cn/v2/menu/icon-logout.png';
 
 // 项目名称、logo
 const { projectShortName, logo } = global.PROJECT_CONFIG;
@@ -32,7 +33,7 @@ const itemColWrapper = {
   xs: 24,
   sm: 12,
   md: 8,
-  lg: 4,
+  lg: 8,
   xl: 4,
 };
 
@@ -75,8 +76,9 @@ const blockClassification = [
   },
 ];
 
-@connect(({ user }) => ({
+@connect(({ user, login }) => ({
   user,
+  login,
 }))
 export default class NewMenuReveal extends Component {
   constructor(props) {
@@ -191,6 +193,13 @@ export default class NewMenuReveal extends Component {
     })
   }
 
+  handleLogout = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'login/logout',
+    });
+  }
+
   renderBlocks = () => {
     return (
       <div className={styles.blocks}>
@@ -259,6 +268,7 @@ export default class NewMenuReveal extends Component {
           <div className={styles.userInfo}>
             <img src={userLogoUrl} alt="user" />
             <span>{userName}</span>
+            <img onClick={this.handleLogout} src={logoutLogoUrl} alt="logout" />
           </div>
           {this.generateType(currentBlockClassification) === 'number' ? (
             <div className={styles.menuContainer}>
