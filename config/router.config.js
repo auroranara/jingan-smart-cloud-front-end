@@ -217,7 +217,7 @@ module.exports = env => {
     {
       path: '/menu-reveal',
       code: 'dashboard.menuReveal',
-      component: './BigPlatform/MenuReveal',
+      component: './BigPlatform/MenuReveal/NewMenu',
     },
     //404
     {
