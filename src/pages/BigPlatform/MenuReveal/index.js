@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { Row, Col, Dropdown, Menu, Spin } from 'antd';
+import { Row, Col, Dropdown, Menu } from 'antd';
 // import _ from 'lodash';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -66,7 +66,7 @@ const blockClassification = [
   },
   {
     name: '人员在岗在位管理系统',
-    blocks: ['riskControl', 'twoInformationManagement', 'cardsInfo'],
+    blocks: ['training', 'personnelPosition', 'securityManage', 'personnelManagement'],
     style: { top: '246px', left: '188px', padding: '3px 30px' },
   },
 ];
@@ -85,7 +85,7 @@ export default class MenuReveal extends Component {
     this.menuBigPlatformDom = null; // // 驾驶舱下拉容器dom
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { dispatch } = this.props;
     // 深拷贝，防止污染配置文件
     const menuAll = JSON.parse(JSON.stringify(config['routes']));
@@ -190,7 +190,7 @@ export default class MenuReveal extends Component {
     });
   };
 
-  // 点击左侧模块分类
+  // 点击模块分类
   handleSelectBlockClassification = index => {
     const { menuSysAll } = this.state;
     const blocks = blockClassification[index].blocks;
@@ -198,14 +198,14 @@ export default class MenuReveal extends Component {
     this.setState({ currentBlockClassification: index, menuSys });
   };
 
-  render() {
+  render () {
     const { menuSys, menuBigPlatform } = this.state;
     const menu = (
       <Menu selectedKeys={[]} onClick={this.clickBigPlatformMenu}>
         {menuBigPlatform && menuBigPlatform.length
           ? menuBigPlatform.map(item => (
-              <Menu.Item key={item.name}>{formatMessage({ id: item.locale })}</Menu.Item>
-            ))
+            <Menu.Item key={item.name}>{formatMessage({ id: item.locale })}</Menu.Item>
+          ))
           : null}
       </Menu>
     );
@@ -260,29 +260,29 @@ export default class MenuReveal extends Component {
           <div className={styles.blockContainer}>
             {menuSys.length
               ? menuSys.map(block => (
-                  <Row key={block.name}>
-                    <div className={styles.blockTitle}>
-                      <Divider /> {block.title}
-                    </div>
-                    <Row className={styles.blockContent}>
-                      {block.routes && block.routes.length
-                        ? block.routes.map(item => (
-                            <Col key={item.name} {...itemColWrapper} className={styles.itemOuter}>
-                              <div className={styles.item}>
-                                <div
-                                  className={styles.itemInner}
-                                  onClick={() => this.handleOpenMenu(item.path)}
-                                >
-                                  <img src={this.generateSysUrl(item)} alt="logo" />
-                                  <div>{item.title}</div>
-                                </div>
-                              </div>
-                            </Col>
-                          ))
-                        : null}
-                    </Row>
+                <Row key={block.name}>
+                  <div className={styles.blockTitle}>
+                    <Divider /> {block.title}
+                  </div>
+                  <Row className={styles.blockContent}>
+                    {block.routes && block.routes.length
+                      ? block.routes.map(item => (
+                        <Col key={item.name} {...itemColWrapper} className={styles.itemOuter}>
+                          <div className={styles.item}>
+                            <div
+                              className={styles.itemInner}
+                              onClick={() => this.handleOpenMenu(item.path)}
+                            >
+                              <img src={this.generateSysUrl(item)} alt="logo" />
+                              <div>{item.title}</div>
+                            </div>
+                          </div>
+                        </Col>
+                      ))
+                      : null}
                   </Row>
-                ))
+                </Row>
+              ))
               : null}
           </div>
         </Row>
