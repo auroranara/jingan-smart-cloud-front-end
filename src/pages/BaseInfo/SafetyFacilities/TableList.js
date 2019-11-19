@@ -1,81 +1,410 @@
-import React, { PureComponent } from 'react';
-// import { connect } from 'dva';
-import router from 'umi/router';
-import { Button, Card, Table } from 'antd';
-
+import React, { PureComponent, Fragment } from 'react';
+import { connect } from 'dva';
+import { Card, Button, Input, Select, Table, Cascader, Divider, Popconfirm, message } from 'antd';
+import { Link } from 'dva/router';
+import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import moment from 'moment';
 import ToolBar from '@/components/ToolBar';
-import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import {
-  BREADCRUMBLIST,
-  LIST,
-  PAGE_SIZE,
-  ROUTER,
-  SEARCH_FIELDS as FIELDS,
-  TABLE_COLUMNS as COLUMNS,
-} from './utils';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
+const { Option } = Select;
+// 标题
+const title = '安全设施';
 
+export const ROUTER = '/base-info/safety-facilities'; // modify
+export const LIST_URL = `${ROUTER}/list`;
+
+//面包屑
+const breadcrumbList = [
+  {
+    title: '首页',
+    name: '首页',
+    href: '/',
+  },
+  {
+    title: '一企一档',
+    name: '一企一档',
+  },
+  {
+    title,
+    name: '安全设施',
+  },
+];
+
+// 权限
+const {
+  baseInfo: {
+    safetyFacilities: { view: viewAuth, add: addAuth, edit: editAuth, delete: deleteAuth },
+  },
+} = codes;
+
+const paststatusVal = {
+  0: '未到期 ',
+  1: '即将到期',
+  2: '已过期',
+};
+
+const statusVal = {
+  1: '正常',
+  2: '维检',
+  3: '报废',
+  4: '使用中',
+};
+
+// 获取根节点
+const getRootChild = () => document.querySelector('#root>div');
+
+/* session前缀 */
+const sessionPrefix = 'safety_fac';
+
+@connect(({ safeFacilities, user, loading }) => ({
+  safeFacilities,
+  user,
+  loading: loading.models.safeFacilities,
+}))
 export default class TableList extends PureComponent {
-  handleSearch = values => {
-    return;
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  // 挂载后
+  componentDidMount() {
+    const {
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+    // 从sessionStorage中获取存储的控件值
+    const sessionData = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`));
+    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
+      pageNum: 1,
+      pageSize: 10,
+    };
+    this.fetchList({ ...payload });
+    if (sessionData) {
+      this.form.setFieldsValue({ ...payload });
+    }
+  }
+
+  // 获取列表
+  fetchList = params => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'safeFacilities/fetchSafeFacList',
+      payload: {
+        ...params,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    });
   };
 
+  setFormReference = toobar => {
+    this.form = toobar && toobar.props && toobar.props.form;
+  };
+
+  // 查询
+  handleSearch = () => {
+    const {
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+    const { category, ...rest } = this.form.getFieldsValue();
+    const payload = { category: category.join(','), ...rest };
+    this.fetchList(payload);
+    sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
+  };
+
+  // 重置
   handleReset = () => {
-    return;
+    this.fetchList();
+    sessionStorage.clear();
   };
 
-  handleAdd = () => {
-    router.push(`${ROUTER}/add`);
+  // 删除
+  handleDelete = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'safeFacilities/fetchSafeFacDelete',
+      payload: { id: id },
+      success: () => {
+        this.fetchList();
+        message.success('删除成功！');
+      },
+      error: () => {
+        message.error('删除失败!');
+      },
+    });
   };
 
-  onTableChange = (pagination, filters, sorter) => {
-    return;
+  getColorVal = status => {
+    switch (+status) {
+      case 0:
+        return '#1890ff';
+      case 1:
+        return '#faad14';
+      case 2:
+        return '#f5222d';
+      default:
+        return;
+    }
+  };
+
+  // 分页变动
+  handlePageChange = (pageNum, pageSize) => {
+    const {
+      dispatch,
+      user: {
+        currentUser: { id },
+      },
+    } = this.props;
+
+    const payload = JSON.parse(sessionStorage.getItem(`${sessionPrefix}${id}`)) || {
+      pageNum: 1,
+      pageSize: 10,
+    };
+    dispatch({
+      type: 'safeFacilities/fetchSafeFacList',
+      payload: {
+        ...payload,
+        pageSize,
+        pageNum,
+      },
+    });
+  };
+
+  // 渲染表格
+  renderTable = () => {
+    const {
+      loading,
+      safeFacilities: {
+        safeFacData: {
+          list = [],
+          pagination: { pageNum, pageSize, total },
+        },
+      },
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
+
+    // 权限
+    const viewCode = hasAuthority(viewAuth, permissionCodes);
+    const editCode = hasAuthority(editAuth, permissionCodes);
+    const deleteCode = hasAuthority(deleteAuth, permissionCodes);
+
+    const columns = [
+      {
+        title: '单位名称',
+        dataIndex: 'companyName',
+        align: 'center',
+        width: 300,
+      },
+      {
+        title: '分类',
+        dataIndex: 'category',
+        align: 'center',
+        width: 200,
+        render: (val, record) => {
+          return val ? (
+            (val.split(',').length === 2 && <span> 预防事故设施/监测、报警设施</span>) ||
+              (val.split(',').length === 1 && <span> 预防事故设施</span>)
+          ) : (
+            <span>---</span>
+          );
+        },
+      },
+      {
+        title: '安全设施名称',
+        dataIndex: 'safeFacilitiesName',
+        align: 'center',
+        width: 200,
+      },
+      {
+        title: '状态',
+        dataIndex: 'equipStatus',
+        align: 'center',
+        width: 200,
+        render: val => {
+          return <div>{statusVal[val]}</div>;
+        },
+      },
+      {
+        title: '数量',
+        dataIndex: 'equipNumber',
+        align: 'center',
+        width: 200,
+      },
+      {
+        title: '有效期至',
+        dataIndex: 'useYear',
+        align: 'center',
+        width: 200,
+        render: (val, record) => {
+          const { endDate, paststatus } = record;
+          return (
+            <div>
+              <span>{moment(endDate).format('YYYY-MM-DD')}</span>
+              <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
+                {paststatusVal[paststatus]}
+              </span>
+            </div>
+          );
+        },
+      },
+      {
+        title: '操作',
+        key: '操作',
+        align: 'center',
+        width: 200,
+        render: (val, row) => (
+          <Fragment>
+            {viewCode ? (
+              <Link to={`${ROUTER}/view/${row.id}`}>查看</Link>
+            ) : (
+              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
+            )}
+            <Divider type="vertical" />
+            {editCode ? (
+              <Link to={`${ROUTER}/edit/${row.id}`}>编辑</Link>
+            ) : (
+              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
+            )}
+            <Divider type="vertical" />
+            {deleteCode ? (
+              <Popconfirm title="确认要删除数据吗？" onConfirm={() => this.handleDelete(row.id)}>
+                <a>删除</a>
+              </Popconfirm>
+            ) : (
+              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
+            )}
+          </Fragment>
+        ),
+      },
+    ];
+    return list && list.length ? (
+      <Card style={{ marginTop: '24px' }}>
+        <Table
+          rowKey="id"
+          loading={loading}
+          columns={columns}
+          dataSource={list}
+          bordered
+          scroll={{ x: 1400 }}
+          pagination={{
+            current: pageNum,
+            pageSize,
+            total,
+            showQuickJumper: true,
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '15', '20'],
+            onChange: this.handlePageChange,
+            onShowSizeChange: (num, size) => {
+              this.handlePageChange(1, size);
+            },
+          }}
+        />
+      </Card>
+    ) : (
+      <div style={{ textAlign: 'center', padding: '70px' }}> 暂无数据</div>
+    );
   };
 
   render() {
-    const { loading = false } = this.props;
+    const {
+      safeFacilities: {
+        safeFacData: {
+          pagination: { total },
+        },
+        categoryList = [],
+      },
+      user: {
+        currentUser: { permissionCodes },
+      },
+    } = this.props;
 
-    const list = LIST;
-    const breadcrumbList = Array.from(BREADCRUMBLIST);
-    breadcrumbList.push({ title: '列表', name: '列表' });
-    const toolBarAction = (
-      <Button type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
-        新增
-      </Button>
-    );
+    const addCode = hasAuthority(addAuth, permissionCodes);
+
+    const fields = [
+      {
+        id: 'safeFacilitiesName',
+        label: '装备名称：',
+        render: () => <Input placeholder="请输入" allowClear />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'category',
+        label: '分类：',
+        render: () => (
+          <Cascader
+            placeholder="请选择"
+            options={categoryList}
+            allowClear
+            changeOnSelect
+            notFoundContent
+            getPopupContainer={getRootChild}
+          />
+        ),
+      },
+      {
+        id: 'equipStatus',
+        label: '设备状态：',
+        render: () => (
+          <Select placeholder="请选择" allowClear>
+            {['正常', '维检', '报废', '使用中'].map((r, i) => (
+              <Option key={i + 1}>{r}</Option>
+            ))}
+          </Select>
+        ),
+      },
+      {
+        id: 'paststatus',
+        label: '到期状态：',
+        render: () => (
+          <Select placeholder="请选择" allowClear>
+            {['未到期', '即将到期', '已过期'].map((r, i) => (
+              <Option key={i}>{r}</Option>
+            ))}
+          </Select>
+        ),
+      },
+      {
+        id: 'companyName',
+        label: '单位名称：',
+        render: () => <Input placeholder="请输入" allowClear />,
+        transform: v => v.trim(),
+      },
+    ];
 
     return (
       <PageHeaderLayout
-        title={BREADCRUMBLIST[BREADCRUMBLIST.length - 1].title}
+        title={title}
         breadcrumbList={breadcrumbList}
         content={
-          <p className={styles1.total}>
-            共计：
-            {PAGE_SIZE}
-          </p>
+          <div>
+            <span>
+              单位数量：
+              {total}
+            </span>
+          </div>
         }
       >
-        <Card style={{ marginBottom: 15 }}>
+        <Card>
           <ToolBar
-            fields={FIELDS}
-            action={toolBarAction}
+            fields={fields}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
-            buttonStyle={{ textAlign: 'right' }}
-            buttonSpan={{ xl: 8, sm: 12, xs: 24 }}
+            action={
+              <Button type="primary" disabled={!addCode} href={`#${ROUTER}/add`}>
+                新增
+              </Button>
+            }
+            wrappedComponentRef={this.setFormReference}
           />
         </Card>
-        <div className={styles1.container}>
-          <Table
-            rowKey="id"
-            loading={loading}
-            columns={COLUMNS}
-            dataSource={list}
-            onChange={this.onTableChange}
-            scroll={{ x: 1500 }} // 项目不多时注掉
-            pagination={{ pageSize: PAGE_SIZE, total: PAGE_SIZE, current: 1 }}
-          />
-        </div>
+        {this.renderTable()}
       </PageHeaderLayout>
     );
   }

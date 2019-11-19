@@ -1,7 +1,8 @@
 import { stringify } from 'qs';
 import request from '../../utils/request';
 
-// 获取库区列表
+/** 库区 */
+// 列表
 export async function queryAreaList(params) {
   return request(`/acloud_new/v2/warehouseArea/list?${stringify(params)}`);
 }
@@ -11,7 +12,7 @@ export async function queryCompanyNum(params) {
   return request(`/acloud_new/v2/warehouseArea/countCompanyNum?${stringify(params)}`);
 }
 
-// 新增库区
+// 新增
 export async function queryAreaAdd(params) {
   return request(`/acloud_new/v2/warehouseArea/add`, {
     method: 'POST',
@@ -19,7 +20,7 @@ export async function queryAreaAdd(params) {
   });
 }
 
-// 编辑库区
+// 编辑
 export async function queryAreaEdit(params) {
   return request(`/acloud_new/v2/warehouseArea/edit`, {
     method: 'PUT',
@@ -27,19 +28,20 @@ export async function queryAreaEdit(params) {
   });
 }
 
-// 删除库区
+// 删除
 export async function queryAreaDelete({ ids }) {
   return request(`/acloud_new/v2/warehouseArea/delete/${ids}`, {
     method: 'DELETE',
   });
 }
 
-// 获取危险源列表
+/** 重大危险源 */
+// 列表
 export async function queryDangerSourceList(params) {
   return request(`/acloud_new/v2/dangerSource/list?${stringify(params)}`);
 }
 
-// 新增危险源
+// 新增
 export async function queryDangerSourceaAdd(params) {
   return request(`/acloud_new/v2/dangerSource/add`, {
     method: 'POST',
@@ -47,7 +49,7 @@ export async function queryDangerSourceaAdd(params) {
   });
 }
 
-// 编辑危险源
+// 编辑
 export async function queryDangerSourceEdit(params) {
   return request(`/acloud_new/v2/dangerSource/edit`, {
     method: 'PUT',
@@ -55,7 +57,7 @@ export async function queryDangerSourceEdit(params) {
   });
 }
 
-// 删除危险源
+// 删除
 export async function queryDangerSourceDelete({ ids }) {
   return request(`/acloud_new/v2/dangerSource/delete/${ids}`, {
     method: 'DELETE',
@@ -67,7 +69,8 @@ export async function queryMaterialInfoList(params) {
   return request(`/acloud_new/v2/materialInfo/list?${stringify(params)}`);
 }
 
-// 获取危险化学品企业证书列表
+/** 危险化学品企业证书 */
+// 列表
 export async function queryCertificateList(params) {
   return request(
     `/acloud_new/v2/ci/hazardChemicalCertificate/hazardchemicalCertificate/page?${stringify(
@@ -76,7 +79,7 @@ export async function queryCertificateList(params) {
   );
 }
 
-// 新增危险化学品企业证书
+// 新增
 export async function queryCertificateaAdd(params) {
   return request(`/acloud_new/v2/ci/hazardChemicalCertificate/hazardchemicalCertificate`, {
     method: 'POST',
@@ -84,7 +87,7 @@ export async function queryCertificateaAdd(params) {
   });
 }
 
-// 编辑危险化学品企业证书
+// 编辑
 export async function queryCertificateEdit(params) {
   return request(`/acloud_new/v2/ci/hazardChemicalCertificate/hazardchemicalCertificate`, {
     method: 'PUT',
@@ -92,19 +95,20 @@ export async function queryCertificateEdit(params) {
   });
 }
 
-// 删除危险化学品企业证书
+// 删除
 export async function queryCertificateDelete({ id }) {
   return request(`/acloud_new/v2/ci/hazardChemicalCertificate/hazardchemicalCertificate/${id}`, {
     method: 'DELETE',
   });
 }
 
-// 获取注册工程师列表
+/** 注册安全工程师 */
+// 列表
 export async function querySafetyEngList(params) {
   return request(`/acloud_new/v2/companyFiles/safetyEngForPage?${stringify(params)}`);
 }
 
-// 新增注册工程师
+// 新增
 export async function querySafetyEngAdd(params) {
   return request(`/acloud_new/v2/companyFiles/safetyEng`, {
     method: 'POST',
@@ -112,7 +116,7 @@ export async function querySafetyEngAdd(params) {
   });
 }
 
-// 编辑注册工程师
+// 编辑
 export async function querySafetyEngEdit(params) {
   return request(`/acloud_new/v2/companyFiles/safetyEng`, {
     method: 'PUT',
@@ -120,19 +124,20 @@ export async function querySafetyEngEdit(params) {
   });
 }
 
-// 删除注册工程师
+// 删除
 export async function querySafetyEngDelete({ ids }) {
   return request(`/acloud_new/v2/companyFiles/safetyEng/${ids}`, {
     method: 'DELETE',
   });
 }
 
-// 获取生产许可证列表
+/** 生产许可证 */
+// 列表
 export async function queryProductLicenceList(params) {
   return request(`/acloud_new/v2/productLicence/list?${stringify(params)}`);
 }
 
-// 新增生产许可证
+// 新增
 export async function queryProductLicenceAdd(params) {
   return request(`/acloud_new/v2/productLicence/add`, {
     method: 'POST',
@@ -140,7 +145,7 @@ export async function queryProductLicenceAdd(params) {
   });
 }
 
-// 编辑生产许可证
+// 编辑
 export async function queryProductLicenceEdit(params) {
   return request(`/acloud_new/v2/productLicence/edit`, {
     method: 'PUT',
@@ -148,9 +153,38 @@ export async function queryProductLicenceEdit(params) {
   });
 }
 
-// 删除生产许可证
+// 删除
 export async function queryProductLicenceDelete({ ids }) {
   return request(`/acloud_new/v2/productLicence/delete/${ids}`, {
+    method: 'DELETE',
+  });
+}
+
+/** 安全设施 */
+// 列表
+export async function querySafeFacilitiesList(params) {
+  return request(`/acloud_new/v2/ci/safeFacilities/safeFacilities/page?${stringify(params)}`);
+}
+
+// 新增
+export async function querySafeFacilitiesAdd(params) {
+  return request(`/acloud_new/v2/ci/safeFacilities/safeFacilities`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+// 编辑
+export async function querySafeFacilitiesEdit(params) {
+  return request(`/acloud_new/v2/ci/safeFacilities/safeFacilities`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+// 删除
+export async function querySafeFacilitiesDelete({ id }) {
+  return request(`/acloud_new/v2/ci/safeFacilities/safeFacilities/${id}`, {
     method: 'DELETE',
   });
 }

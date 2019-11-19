@@ -535,6 +535,15 @@ export default {
       edit: 'baseInfo.dangerChemicalsPermit.edit',
       delete: 'baseInfo.dangerChemicalsPermit.delete',
     },
+
+    // 安全设施
+    safetyFacilities: {
+      list: 'baseInfo.safetyFacilities.list',
+      view: 'baseInfo.safetyFacilities.view',
+      add: 'baseInfo.safetyFacilities.add',
+      edit: 'baseInfo.safetyFacilities.edit',
+      delete: 'baseInfo.safetyFacilities.delete',
+    },
   },
   safetyKnowledgeBase: {
     // 典型事故案例
