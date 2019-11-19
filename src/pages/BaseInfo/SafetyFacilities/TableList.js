@@ -112,7 +112,7 @@ export default class TableList extends PureComponent {
       },
     } = this.props;
     const { category, ...rest } = this.form.getFieldsValue();
-    const payload = { category: category.join(','), ...rest };
+    const payload = { category: category ? category.join(',') : undefined, ...rest };
     this.fetchList(payload);
     sessionStorage.setItem(`${sessionPrefix}${id}`, JSON.stringify(payload));
   };
