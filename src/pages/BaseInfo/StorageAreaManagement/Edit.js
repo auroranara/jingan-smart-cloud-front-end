@@ -225,9 +225,9 @@ export default class Edit extends PureComponent {
           selectedMaterials: storeMaterial
             .split(',')
             .map((item, index) => ({ id: item, chineName: chineNameList[index] })),
-          selectedDangerSource: dangerUnit
-            .split(',')
-            .map((item, index) => ({ id: item, name: chineNameList[index] })),
+          // selectedDangerSource: dangerUnit
+          //   .split(',')
+          //   .map((item, index) => ({ id: item, name: chineNameList[index] })),
           cofferAreaVisible: +hasCoffer === 1,
           // dangerUnitVisible: +isDanger === 1,
         },
@@ -299,7 +299,11 @@ export default class Edit extends PureComponent {
 
   fetchMaterials = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'materials/fetchMaterialsList', payload });
+    const { selectedCompany } = this.state;
+    dispatch({
+      type: 'materials/fetchMaterialsList',
+      payload: { ...payload, companyId: selectedCompany.id },
+    });
   };
 
   handleSelectMaterials = selectedMaterials => {

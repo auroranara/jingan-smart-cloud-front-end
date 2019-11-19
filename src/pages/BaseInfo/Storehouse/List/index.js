@@ -98,7 +98,6 @@ export default class StorehouseList extends PureComponent {
     });
   };
 
-
   /**
    * 获取传感器数量和单位数量统计
    */
@@ -112,7 +111,7 @@ export default class StorehouseList extends PureComponent {
   renderForm = () => {
     const {
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
     const fields = [
@@ -183,7 +182,7 @@ export default class StorehouseList extends PureComponent {
     return (
       <Card>
         <InlineForm
-          fields={fields}
+          fields={unitType === 4 ? fields.slice(0, fields.length - 1) : fields}
           gutter={{ lg: 48, md: 24 }}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
@@ -243,20 +242,18 @@ export default class StorehouseList extends PureComponent {
   };
 
   /**
-  * 绑定时选择传感器
-  */
+   * 绑定时选择传感器
+   */
   onSensorChange = selectedSensorKeys => {
-    this.setState({ selectedSensorKeys })
-  }
+    this.setState({ selectedSensorKeys });
+  };
 
   /**
-  * 获取可绑定传感器列表
-  */
+   * 获取可绑定传感器列表
+   */
   querySensors = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
-    const {
-      dispatch,
-    } = this.props
-    const { detail } = this.state
+    const { dispatch } = this.props;
+    const { detail } = this.state;
     dispatch({
       type: 'device/fetchSensors',
       ...res,
@@ -266,17 +263,15 @@ export default class StorehouseList extends PureComponent {
         beMonitorTargetBindStatus: 0,
         bindBeMonitorTargetId: detail.id,
       },
-    })
-  }
+    });
+  };
 
   /**
-  * 获取已绑定传感器列表
-  */
+   * 获取已绑定传感器列表
+   */
   queryBindedSensors = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
-    const {
-      dispatch,
-    } = this.props
-    const { detail } = this.state
+    const { dispatch } = this.props;
+    const { detail } = this.state;
     dispatch({
       type: 'device/fetchSensors',
       ...res,
@@ -285,29 +280,28 @@ export default class StorehouseList extends PureComponent {
         companyId: detail.companyId,
         beMonitorTargetId: detail.id,
       },
-    })
-  }
-
+    });
+  };
 
   /**
    * 点击打开可绑定传感器弹窗
    */
-  handleViewBind = (detail) => {
+  handleViewBind = detail => {
     this.setState({ detail, selectedSensorKeys: [] }, () => {
-      this.querySensors()
-      this.setState({ bindSensorModalVisible: true })
-    })
-  }
+      this.querySensors();
+      this.setState({ bindSensorModalVisible: true });
+    });
+  };
 
   /**
-  * 绑定传感器
-  */
+   * 绑定传感器
+   */
   handleBindSensor = () => {
-    const { dispatch } = this.props
-    const { selectedSensorKeys, detail } = this.state
+    const { dispatch } = this.props;
+    const { selectedSensorKeys, detail } = this.state;
     if (!selectedSensorKeys || selectedSensorKeys.length === 0) {
-      message.warning('请勾选传感器！')
-      return
+      message.warning('请勾选传感器！');
+      return;
     }
     dispatch({
       type: 'device/bindSensor',
@@ -316,33 +310,33 @@ export default class StorehouseList extends PureComponent {
         bindSensorIdList: selectedSensorKeys,
       },
       success: () => {
-        message.success('绑定传感器成功')
-        this.setState({ bindSensorModalVisible: false, detail: {} })
+        message.success('绑定传感器成功');
+        this.setState({ bindSensorModalVisible: false, detail: {} });
         this.fetchList(1);
         this.fetchCompanyNum();
       },
-      error: (res) => { message.error(res ? res.msg : '绑定传感器失败') },
-    })
-  }
+      error: res => {
+        message.error(res ? res.msg : '绑定传感器失败');
+      },
+    });
+  };
 
   /**
- * 打开已绑定传感器弹窗
- */
-  handleViewBindedSensorModal = (detail) => {
+   * 打开已绑定传感器弹窗
+   */
+  handleViewBindedSensorModal = detail => {
     this.setState({ detail }, () => {
-      this.queryBindedSensors()
-      this.setState({ bindedSensorModalVisible: true })
-    })
-  }
+      this.queryBindedSensors();
+      this.setState({ bindedSensorModalVisible: true });
+    });
+  };
 
   /**
- * 解绑传感器
- */
-  handleunBindSensor = (unbindSensorId) => {
-    const {
-      dispatch,
-    } = this.props
-    const { detail } = this.state
+   * 解绑传感器
+   */
+  handleunBindSensor = unbindSensorId => {
+    const { dispatch } = this.props;
+    const { detail } = this.state;
     dispatch({
       type: 'device/unbindSensor',
       payload: {
@@ -350,14 +344,16 @@ export default class StorehouseList extends PureComponent {
         unbindSensorId, // 传感器id
       },
       success: () => {
-        message.success('解绑传感器成功')
-        this.queryBindedSensors()
+        message.success('解绑传感器成功');
+        this.queryBindedSensors();
         this.fetchList(1);
         this.fetchCompanyNum();
       },
-      error: (res) => { message.error(res ? res.msg : '解绑传感器失败') },
-    })
-  }
+      error: res => {
+        message.error(res ? res.msg : '解绑传感器失败');
+      },
+    });
+  };
 
   render() {
     const {
@@ -447,12 +443,14 @@ export default class StorehouseList extends PureComponent {
           data ? (
             <div className={styles.multi}>
               {JSON.parse(data).map(item => (
-                <div key={item.materialId}>{item.chineName + item.unitChemiclaNum + '吨'}</div>
+                <div key={item.materialId}>
+                  {item.chineName + (item.unitChemiclaNum ? item.unitChemiclaNum + '吨' : '')}
+                </div>
               ))}
             </div>
           ) : (
-              ''
-            ),
+            ''
+          ),
       },
       {
         title: '区域位置',
@@ -466,10 +464,10 @@ export default class StorehouseList extends PureComponent {
         dataIndex: 'sensorCount',
         key: 'sensorCount',
         align: 'center',
-        width: 100,
+        width: 120,
         render: (val, row) => (
           <span
-            onClick={() => val > 0 ? this.handleViewBindedSensorModal(row) : null}
+            onClick={() => (val > 0 ? this.handleViewBindedSensorModal(row) : null)}
             style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
           >
             {val}
@@ -485,15 +483,18 @@ export default class StorehouseList extends PureComponent {
         width: 200,
         render: (data, record) => (
           <span>
-            <AuthA code={bindSensorCode} onClick={() => this.handleViewBind(record)}>
+            {/* <AuthA code={bindSensorCode} onClick={() => this.handleViewBind(record)}>
               绑定传感器
             </AuthA>
-            <Divider type="vertical" />
+            <Divider type="vertical" /> */}
             <AuthA code={editCode} onClick={() => this.goEdit(record.id)}>
               编辑
             </AuthA>
             <Divider type="vertical" />
-            <Popconfirm title="确认要删除该库房吗？如继续删除，已绑定传感器将会自动解绑！" onConfirm={() => this.handleDelete(record.id)}>
+            <Popconfirm
+              title="确认要删除该库房吗？如继续删除，已绑定传感器将会自动解绑！"
+              onConfirm={() => this.handleDelete(record.id)}
+            >
               <AuthA code={deleteCode}>删除</AuthA>
             </Popconfirm>
           </span>
@@ -504,7 +505,9 @@ export default class StorehouseList extends PureComponent {
       tag: 'bind',
       visible: bindSensorModalVisible,
       fetch: this.querySensors,
-      onCancel: () => { this.setState({ bindSensorModalVisible: false }) },
+      onCancel: () => {
+        this.setState({ bindSensorModalVisible: false });
+      },
       selectedSensorKeys,
       onOk: this.handleBindSensor,
       model: sensor,
@@ -514,18 +517,20 @@ export default class StorehouseList extends PureComponent {
         onChange: this.onSensorChange,
       },
       unbindSensorCode,
-    }
+    };
     const bindedSensorProps = {
       tag: 'unbind',
       visible: bindedSensorModalVisible,
       fetch: this.queryBindedSensors,
-      onCancel: () => { this.setState({ bindedSensorModalVisible: false }) },
+      onCancel: () => {
+        this.setState({ bindedSensorModalVisible: false });
+      },
       model: sensor,
       loading: sensorLoading,
       handleUnbind: this.handleunBindSensor,
       footer: null,
       unbindSensorCode,
-    }
+    };
     return (
       <PageHeaderLayout
         title={title}
@@ -538,7 +543,10 @@ export default class StorehouseList extends PureComponent {
               库房数量：
               {total}
             </span>
-            <span style={{ marginLeft: 15 }}>已绑传感器数：{sensorCount}</span>
+            <span style={{ marginLeft: 15 }}>
+              已绑传感器数：
+              {sensorCount}
+            </span>
           </div>
         }
       >
@@ -564,24 +572,20 @@ export default class StorehouseList extends PureComponent {
               total={total}
               onChange={this.handleTableChange}
               onShowSizeChange={this.handleTableChange}
-            // showTotal={total => `共 ${total} 条`}
+              // showTotal={total => `共 ${total} 条`}
             />
           </Card>
         ) : (
-            <Spin spinning={loading}>
-              <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-                <span>暂无数据</span>
-              </Card>
-            </Spin>
-          )}
+          <Spin spinning={loading}>
+            <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+              <span>暂无数据</span>
+            </Card>
+          </Spin>
+        )}
         {/* 绑定已有传感器弹窗 */}
-        <BindSensorModal
-          {...bindSensorProps}
-        />
+        <BindSensorModal {...bindSensorProps} />
         {/* 已绑定传感器弹窗 */}
-        <BindSensorModal
-          {...bindedSensorProps}
-        />
+        <BindSensorModal {...bindedSensorProps} />
       </PageHeaderLayout>
     );
   }
