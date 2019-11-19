@@ -25,7 +25,7 @@ import codes from '@/utils/codes';
 
 const FormItem = Form.Item;
 
-const title = '危险化学品企业安全许可证';
+const title = '危化品企业安全许可证';
 
 const {
   home: homeUrl,

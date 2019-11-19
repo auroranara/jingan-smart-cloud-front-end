@@ -37,7 +37,7 @@ export default {
       ],
       pagination: defaultPagination,
     },
-    // 危险化学品企业安全许可证
+    // 危化品企业安全许可证
     dangerChemicalsPermit: {
       list: [
         {

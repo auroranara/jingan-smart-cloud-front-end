@@ -16,6 +16,7 @@ export default {
     list: [],
     currentUser: {},
     grids: [],
+    systemType: 0,
   },
 
   effects: {
@@ -98,6 +99,9 @@ export default {
     },
     saveGrids(state, action) {
       return { ...state, grids: action.payload };
+    },
+    saveSystemType(state, action) {
+      return { ...state, systemType: action.payload };
     },
   },
 };

@@ -101,6 +101,7 @@ class BasicLayout extends React.PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     const menuAll = JSON.parse(JSON.stringify(config['routes']));
+    // console.log(this.props);
     dispatch({ type: 'user/fetchGrids' });
     dispatch({
       type: 'user/fetchCurrent',

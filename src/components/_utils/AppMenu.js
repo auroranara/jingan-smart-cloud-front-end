@@ -49,6 +49,7 @@ export default function AppMenu(WrappedComponent) {
       const {
         user: {
           currentUser: { permissionCodes: codes },
+          systemType,
         },
         // ...rest
       } = this.props;
@@ -60,7 +61,8 @@ export default function AppMenu(WrappedComponent) {
       // menuHandled防止重复处理menuData，当未handle时且codes已经获取时处理一次
       if (!this.menuHandled && currentUserLoaded) {
         this.menuHandled = true;
-        this.menuData = filterMenus(MenuData, codes, codeMap);
+        this.menuData = filterMenus(MenuData, codes, codeMap, systemType);
+        // this.menuData = filterMenus(MenuData, codes, codeMap, systemType).filter(({ path, children }) => path === '/' || children.length); // 筛选掉children为0的节点
       }
 
       const menuData = this.menuData;
@@ -72,11 +74,12 @@ export default function AppMenu(WrappedComponent) {
       //   return <WrappedComponent {...rest} menuData={menuData} authorityFn={generateAuthFn(codes, codeMap, pathArray)} />;
       // }
 
+      // console.log(menuData);
       return (
         <WrappedComponent
           {...this.props}
           menuData={menuData} // 也可放在basic layout中处理
-          authorityFn={generateAuthFn(codes, codeMap, pathArray)}
+          authorityFn={generateAuthFn(codes, codeMap, pathArray, ['company-workbench'])}
           currentUserLoaded={currentUserLoaded}
         />
       );
