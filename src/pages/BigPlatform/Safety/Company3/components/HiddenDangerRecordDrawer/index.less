@@ -1,0 +1,30 @@
+.list {
+  position: relative;
+  padding: 0 1em 4em;
+  min-height: 100%;
+}
+.item {
+  margin-bottom: 1em;
+}
+.bottom {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 0.25em 0;
+  width: 100%;
+  text-align: center;
+
+  &>div:first-child {
+    margin-bottom: 0.5em;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  &>div:last-child {
+    color: #0ff;
+    cursor: pointer;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+}
+
