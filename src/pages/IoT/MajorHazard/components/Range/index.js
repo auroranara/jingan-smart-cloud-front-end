@@ -7,37 +7,37 @@ import styles from './index.less';
 export const PERIODS = [
   {
     key: '0',
-    value: '本周',
+    value: '最近一周',
   },
   {
     key: '1',
-    value: '本月',
+    value: '最近一个月',
   },
   {
     key: '2',
-    value: '本季度',
+    value: '最近三个月',
   },
   {
     key: '3',
-    value: '今年',
+    value: '最近一年',
   },
 ];
 export const getRange = (key) => {
   switch(key) {
     case PERIODS[0].key:
-      return [moment().locale('zh-cn').startOf('week'), moment().locale('zh-cn').endOf('week')];
+      return [moment().startOf('day').subtract(1, 'weeks').add(1, 'days'), moment().endOf('day')];
     case PERIODS[1].key:
-      return [moment().locale('zh-cn').startOf('month'), moment().locale('zh-cn').endOf('month')];
+      return [moment().startOf('day').subtract(1, 'months').add(1, 'days'), moment().endOf('day')];
     case PERIODS[2].key:
-      return [moment().locale('zh-cn').startOf('quarter'), moment().locale('zh-cn').endOf('quarter')];
+      return [moment().startOf('day').subtract(1, 'quarters').add(1, 'days'), moment().endOf('day')];
     case PERIODS[3].key:
-      return [moment().locale('zh-cn').startOf('year'), moment().locale('zh-cn').endOf('year')];
+      return [moment().startOf('day').subtract(1, 'years').add(1, 'days'), moment().endOf('day')];
     default:
       return;
   }
 };
 
-export default class Period extends Component {
+export default class Range extends Component {
   state = {
     period: undefined,
   }
@@ -66,12 +66,13 @@ export default class Period extends Component {
   render() {
     const {
       className,
+      style,
       value,
     } = this.props;
     const { period } = this.state;
 
     return (
-      <div className={classNames(styles.container, className)}>
+      <div className={classNames(styles.container, className)} style={style}>
         <div className={styles.radioList}>
           {PERIODS.map(({ key, value }) => (
             <div

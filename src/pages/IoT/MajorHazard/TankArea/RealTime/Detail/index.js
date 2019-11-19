@@ -5,7 +5,7 @@ import Ellipsis from '@/components/Ellipsis';
 import { MiniArea } from '@/components/Charts';
 import CustomEmpty from '@/jingan-components/CustomEmpty';
 import ReactEcharts from 'echarts-for-react';
-import Period from '../../../components/Period';
+import Range from '../../../components/Range';
 import MonitorDataTrend from './MonitorDataTrend';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -314,7 +314,7 @@ export default class TankAreaDetail extends Component { // 储罐区详情
     return (
       <Spin spinning={!!loadingDataStatistics}>
         <Card className={styles.card} title="数据统计" extra={(
-          <Period value={range} onChange={this.handleRangeChange} onClick={this.handlePeriodChange} />
+          <Range value={range} onChange={this.handleRangeChange} onClick={this.handlePeriodChange} />
         )}>
           {/* 统计卡片 */}
           <Row gutter={24}>
