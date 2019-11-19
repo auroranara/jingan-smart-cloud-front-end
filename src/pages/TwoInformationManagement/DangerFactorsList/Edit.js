@@ -98,9 +98,12 @@ export default class Edit extends PureComponent {
         {this.renderErrorInfo()}
         <Button onClick={e => router.push(LIST_URL)}>返回</Button>
         {!this.isDetail() && (
-          <Button type="primary" size="large" onClick={this.handleClickValidate} loading={loading}>
-            提交
-          </Button>
+          <Button
+            type="primary"
+            size="large"
+            onClick={this.handleClickValidate}
+            loading={loading}
+          />
         )}
       </FooterToolbar>
     );
