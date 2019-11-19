@@ -299,18 +299,27 @@ export default class MajorHazardEdit extends PureComponent {
     const { ChemicalsVisible } = this.state;
     const FIELD = [
       {
-        id: 'casNo',
+        id: 'type',
         render() {
-          return <Input placeholder="请输CAS号" />;
+          return <Input placeholder="请选择类别" />;
         },
         transform(value) {
           return value.trim();
         },
       },
       {
-        id: 'chineName',
+        id: 'code',
         render() {
-          return <Input placeholder="请输品名" />;
+          return <Input placeholder="请输入编码" />;
+        },
+        transform(value) {
+          return value.trim();
+        },
+      },
+      {
+        id: 'name',
+        render() {
+          return <Input placeholder="请输入名称" />;
         },
         transform(value) {
           return value.trim();
@@ -320,51 +329,25 @@ export default class MajorHazardEdit extends PureComponent {
 
     const COLUMNS = [
       {
-        title: '统一编码',
+        title: '类别',
         dataIndex: 'unifiedCode',
         key: 'unifiedCode',
         align: 'center',
         width: 120,
       },
       {
-        title: '品名',
+        title: '统一编码',
         dataIndex: 'chineName',
         key: 'chineName',
         align: 'center',
         width: 90,
       },
       {
-        title: 'CAS号',
+        title: '名称',
         dataIndex: 'casNo',
         key: 'casNo',
         align: 'center',
         width: 150,
-      },
-      {
-        title: '危险性类别',
-        dataIndex: 'riskCateg',
-        key: 'riskCateg',
-        align: 'center',
-        width: 200,
-      },
-      {
-        title: '危险化学品存量',
-        dataIndex: 'a',
-        key: 'a',
-        align: 'center',
-        width: 200,
-        render: (val, text) => {
-          return (
-            <Fragment>
-              {getFieldDecorator(`unitChemiclaNum${text.id}`)(
-                <Input style={{ width: 80, marginRight: 10 }} placeholder="数量" />
-              )}
-              {getFieldDecorator(`unitChemiclaNumUnit${text.id}`)(
-                <Input style={{ width: 80 }} placeholder="单位" />
-              )}
-            </Fragment>
-          );
-        },
       },
     ];
 
@@ -629,7 +612,7 @@ export default class MajorHazardEdit extends PureComponent {
               </Select>
             )}
           </FormItem>
-          <FormItem {...formItemLayout} label="单元内涉及的危险化学品">
+          <FormItem {...formItemLayout} label="选择重大危险源">
             {getFieldDecorator('unitChemicla', {
               initialValue: chemicalList
                 .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
@@ -639,13 +622,13 @@ export default class MajorHazardEdit extends PureComponent {
               rules: [
                 {
                   required: true,
-                  message: '请选择单元内涉及的危险化学品',
+                  message: '请选择重大危险源',
                 },
               ],
             })(
               <TextArea
                 {...itemStyles}
-                placeholder="请选择单元内涉及的危险化学品"
+                placeholder="请选择重大危险源"
                 rows={4}
                 disabled
                 maxLength="2000"
