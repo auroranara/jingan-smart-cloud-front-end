@@ -79,7 +79,7 @@ export default class DangerChemicalsHandle extends PureComponent {
               uid: index,
               status: 'done',
               name: `附件${index + 1}`,
-              webUrl,
+              url: webUrl,
               dbUrl,
             })),
           });

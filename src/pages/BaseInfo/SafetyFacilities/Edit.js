@@ -310,7 +310,7 @@ export default class Edit extends PureComponent {
       leaveFactoryDate,
       useYear,
       notes,
-      photo,
+      // photo,
     } = detailList;
     return (
       <Card>
@@ -410,13 +410,11 @@ export default class Edit extends PureComponent {
             {getFieldDecorator('productFactory', {
               initialValue: productFactory,
               getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入生产厂家' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="出厂日期" {...formItemLayout}>
             {getFieldDecorator('leaveFactoryDate', {
               initialValue: leaveFactoryDate ? moment(+leaveFactoryDate) : undefined,
-              rules: [{ required: true, message: '请选择出厂日期' }],
             })(<DatePicker placeholder="请选择" format="YYYY-MM-DD" {...itemStyles} />)}
           </FormItem>
           <FormItem label="使用年限" {...formItemLayout}>
@@ -425,7 +423,6 @@ export default class Edit extends PureComponent {
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
-                  required: true,
                   message: '请输入使用年限，只能输入正整数',
                   pattern: new RegExp(/^[1-9]\d*$/, 'g'),
                 },
@@ -440,8 +437,7 @@ export default class Edit extends PureComponent {
           </FormItem>
           <FormItem label="图片" {...formItemLayout}>
             {getFieldDecorator('photo', {
-              initialValue: photo,
-              rules: [{ required: true, message: '请上传图片' }],
+              initialValue: photoUrl,
             })(
               <Upload
                 name="files"
