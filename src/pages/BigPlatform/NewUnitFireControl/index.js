@@ -2117,6 +2117,8 @@ export default class NewUnitFireControl extends PureComponent {
       },
     } = this.props;
     const reportTypes = [1, 4, 3, 2];
+    console.log('occurData',occurData);
+    
     if (occurData) {
       dispatch({
         type: 'newUnitFireControl/fetchCountNumAndTimeById',

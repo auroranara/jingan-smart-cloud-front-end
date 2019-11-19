@@ -170,6 +170,7 @@ export default class EmergencyEstimateList extends PureComponent {
   // 表格改变触发，包含分页变动
   handleTableChange = (pageNum, pageSize) => {
     const { formData } = this.state;
+    this.pageNum = pageNum;
     this.pageSize = pageSize;
     this.fetchList(pageNum, pageSize, { ...formData });
   };

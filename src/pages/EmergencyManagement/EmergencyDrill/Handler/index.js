@@ -196,6 +196,9 @@ export default class EmergencyDrillHandler extends PureComponent {
     });
   };
 
+  /* 去除左右两边空白 */
+  handleTrim = e => e.target.value.trim();
+
   /**
    * 渲染表单
    */
@@ -227,11 +230,14 @@ export default class EmergencyDrillHandler extends PureComponent {
           </FormItem>
           <FormItem label="计划名称" {...formItemLayout}>
             {getFieldDecorator('projectName', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入计划名称' }],
             })(<Input placeholder="请输入计划名称" {...itemStyles} />)}
           </FormItem>
           <FormItem label="版本号" {...formItemLayout}>
-            {getFieldDecorator('projectCode')(<Input placeholder="请输入版本号" {...itemStyles} />)}
+            {getFieldDecorator('projectCode', { getValueFromEvent: this.handleTrim })(
+              <Input placeholder="请输入版本号" {...itemStyles} />
+            )}
           </FormItem>
           <FormItem label="计划状态" {...formItemLayout}>
             {getFieldDecorator('projectStatus', {
@@ -245,6 +251,7 @@ export default class EmergencyDrillHandler extends PureComponent {
           </FormItem>
           <FormItem label="制定人" {...formItemLayout}>
             {getFieldDecorator('draftBy', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入制定人' }],
             })(<Input placeholder="请输入制定人" {...itemStyles} />)}
           </FormItem>
@@ -259,11 +266,13 @@ export default class EmergencyDrillHandler extends PureComponent {
           </FormItem>
           <FormItem label="上报人" {...formItemLayout}>
             {getFieldDecorator('reportBy', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入上报人' }],
             })(<Input placeholder="请输入上报人" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练名称" {...formItemLayout}>
             {getFieldDecorator('planName', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入演练名称' }],
             })(<Input placeholder="请输入演练名称" {...itemStyles} />)}
           </FormItem>
@@ -294,35 +303,44 @@ export default class EmergencyDrillHandler extends PureComponent {
             {getFieldDecorator('typeCode')(<span>{}</span>)}
           </FormItem>
           <FormItem label="演练背景" {...formItemLayout}>
-            {getFieldDecorator('planBack')(<Input placeholder="请输入演练背景" {...itemStyles} />)}
+            {getFieldDecorator('planBack', { getValueFromEvent: this.handleTrim })(
+              <Input placeholder="请输入演练背景" {...itemStyles} />
+            )}
           </FormItem>
           <FormItem label="演练编号" {...formItemLayout}>
             {getFieldDecorator('planCode', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入演练编号' }],
             })(<Input placeholder="请输入演练编号" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练地点" {...formItemLayout}>
             {getFieldDecorator('planLocation', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入演练地点' }],
             })(<Input placeholder="请输入演练地点" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练目的" {...formItemLayout}>
             {getFieldDecorator('planGoal', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入演练目的' }],
             })(<TextArea rows={4} placeholder="请输入演练目的" maxLength="500" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练要求" {...formItemLayout}>
             {getFieldDecorator('planClaim', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入演练要求' }],
             })(<TextArea rows={4} placeholder="请输入演练要求" maxLength="500" {...itemStyles} />)}
           </FormItem>
           <FormItem label="演练内容" {...formItemLayout}>
             {getFieldDecorator('planContent', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入演练内容' }],
             })(<TextArea rows={4} placeholder="请输入演练内容" maxLength="500" {...itemStyles} />)}
           </FormItem>
           <FormItem label="关键字" {...formItemLayout}>
-            {getFieldDecorator('keyword')(<Input placeholder="请输入关键字" {...itemStyles} />)}
+            {getFieldDecorator('keyword', { getValueFromEvent: this.handleTrim })(
+              <Input placeholder="请输入关键字" {...itemStyles} />
+            )}
           </FormItem>
           <FormItem label="经费预算（元）" {...formItemLayout}>
             {getFieldDecorator('budget')(

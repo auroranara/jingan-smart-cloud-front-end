@@ -204,6 +204,7 @@ export default class EmergencyDrillList extends Component {
     const {
       form: { getFieldsValue },
     } = this.props;
+    this.pageNum = pageNum;
     this.pageSize = pageSize;
     this.fetchList(pageNum, pageSize, { ...getFieldsValue() });
   };

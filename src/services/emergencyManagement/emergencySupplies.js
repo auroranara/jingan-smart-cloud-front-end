@@ -28,8 +28,7 @@ export async function suppliesDetail({ id }) {
 }
 
 export async function deleteSupplies(params) {
-  return request(`/acloud_new/v2/emergency/emergencyMaterial`, {
+  return request(`/acloud_new/v2/emergency/emergencyMaterial/${params.id}`, {
     method: 'DELETE',
-    body: params,
   });
 }
