@@ -206,5 +206,5 @@ export async function getHumiturePointTrend(params) {
 
 // 获取隐患记录
 export async function getHiddenDangerRecordList(params) {
-  return request(`/acloud_new/v2/deviceInfo/getDeviceDataHistory?${stringify(params)}`);
+  return request(`/acloud_new/v2/sfc/hiddenDangerListForAllPage.json?${stringify(params)}`);
 }

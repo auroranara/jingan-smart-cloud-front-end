@@ -524,7 +524,7 @@ export default class UnitSafety extends PureComponent {
       hiddenDangerRecordDrawerVisible: true,
     });
     this.fetchHiddenDangerRecordList({
-      companyId,
+      company_id: companyId,
       pageNum: 1,
       pageSize: 20,
     });
@@ -596,7 +596,7 @@ export default class UnitSafety extends PureComponent {
     this.setState({ deviceCountAddress });
     this.debouncedFetchDeviceCountList({
       companyId,
-      address: deviceCountAddress,
+      areaLocation: deviceCountAddress,
       status: deviceCountSelectedStatus === '0' ? undefined : deviceCountSelectedStatus,
       type: deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
     });
@@ -615,7 +615,7 @@ export default class UnitSafety extends PureComponent {
     this.setState({ deviceCountSelectedStatus });
     this.fetchDeviceCountList({
       companyId,
-      address: deviceCountAddress,
+      areaLocation: deviceCountAddress,
       status: deviceCountSelectedStatus === '0' ? undefined : deviceCountSelectedStatus,
       type: deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
     });
@@ -634,7 +634,7 @@ export default class UnitSafety extends PureComponent {
     this.setState({ deviceCountSelectedMonitoringType });
     this.fetchDeviceCountList({
       companyId,
-      address: deviceCountAddress,
+      areaLocation: deviceCountAddress,
       status: deviceCountSelectedStatus === '0' ? undefined : deviceCountSelectedStatus,
       type: deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
     });
@@ -882,6 +882,7 @@ export default class UnitSafety extends PureComponent {
           onClose={() => {
             this.setDrawerVisible('deviceCount');
           }}
+          address={this.state.deviceCountAddress}
           deviceCountSelectedStatus={deviceCountSelectedStatus}
           deviceCountSelectedMonitoringType={deviceCountSelectedMonitoringType}
           onAddressChange={this.handleDeviceCountAddressChange}
@@ -908,8 +909,7 @@ export default class UnitSafety extends PureComponent {
           visible={this.state.hiddenDangerRecordDrawerVisible}
           onClose={this.hideHiddenDangerRecordDrawer}
           loading={this.props.loadingHiddenDangerRecordList}
-          // list={this.props.unitSafety.hiddenDangerRecordList}
-          list={hiddenDangerList.list}
+          list={this.props.unitSafety.hiddenDangerRecordList}
         />
       </BigPlatformLayout>
     );
