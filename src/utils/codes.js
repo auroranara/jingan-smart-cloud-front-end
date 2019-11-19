@@ -535,6 +535,15 @@ export default {
       edit: 'baseInfo.dangerChemicalsPermit.edit',
       delete: 'baseInfo.dangerChemicalsPermit.delete',
     },
+    // 库房管理
+    storageAreaManagement: {
+      listView: 'baseInfo.storageAreaManagement.listView',
+      add: 'baseInfo.storageAreaManagement.add',
+      edit: 'baseInfo.storageAreaManagement.edit',
+      detail: 'baseInfo.storageAreaManagement.detail',
+      delete: 'baseInfo.storageAreaManagement.delete',
+      bindSensor: 'baseInfo.storageAreaManagement.bindSensor',
+    },
 
     // 安全设施
     safetyFacilities: {

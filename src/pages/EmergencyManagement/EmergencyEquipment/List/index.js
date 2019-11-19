@@ -72,13 +72,14 @@ export default class EmergencyEquipmentList extends PureComponent {
     currentPage: 1,
   };
 
+  pageNum = 1;
   pageSize = 10;
 
   componentDidMount() {
     this.fetchList(1);
   }
 
-  fetchList = (pageNum, pageSize = 10, filters = {}) => {
+  fetchList = (pageNum = 1, pageSize = 10, filters = {}) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'emergencyManagement/fetchEquipList',
@@ -250,6 +251,7 @@ export default class EmergencyEquipmentList extends PureComponent {
   // 表格改变触发，包含分页变动
   handleTableChange = (pageNum, pageSize) => {
     const { formData } = this.state;
+    this.pageNum = pageNum;
     this.pageSize = pageSize;
     this.fetchList(pageNum, pageSize, { ...formData });
   };
