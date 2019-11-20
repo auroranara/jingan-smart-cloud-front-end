@@ -333,6 +333,7 @@ module.exports = env => {
           code: 'companyWorkbench',
           name: 'companyWorkbench',
           icon: 'bar-chart',
+          systemType: [0],
           hideInMenu: true,
           routes: [
             {

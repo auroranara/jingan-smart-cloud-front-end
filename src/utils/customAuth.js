@@ -348,4 +348,14 @@ export const AuthPopConfirm = connect(({ user }) => ({ user }))(function (props)
   ) : (
       <span style={{ color: 'rgba(0,0,0,0.25)', cursor: 'not-allowed' }}>{children}</span>
     )
-})
+});
+
+export function getSystemType(pathname, route) {
+  if (pathname.includes('/company-workbench'))
+    return 0;
+
+  const name = pathname.match(/^\/[^/]*/)[0];
+  const { routes } = route;
+  const target = routes.find(({ path }) => path === name);
+  return target ? target.systemType[0] : 0;
+}
