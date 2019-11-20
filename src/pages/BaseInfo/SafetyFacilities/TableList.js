@@ -322,9 +322,7 @@ export default class TableList extends PureComponent {
   render() {
     const {
       safeFacilities: {
-        safeFacData: {
-          pagination: { total },
-        },
+        safeFacData: { a },
         categoryList = [],
         facNameList = [],
       },
@@ -404,7 +402,7 @@ export default class TableList extends PureComponent {
           <div>
             <span>
               单位数量：
-              {total}
+              {a}
             </span>
           </div>
         }
