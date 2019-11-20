@@ -59,6 +59,7 @@ export default {
   'menu.baseInfo.storageAreaManagement.list': '储罐区管理列表',
   'menu.baseInfo.storageAreaManagement.add': '新增储罐区',
   'menu.baseInfo.storageAreaManagement.edit': '编辑储罐区',
+  'menu.baseInfo.storageAreaManagement.detail': '查看储罐区',
   'menu.baseInfo.storageManagement': '储罐管理',
   'menu.baseInfo.storageManagement.list': '储罐管理列表',
   'menu.baseInfo.storageManagement.add': '新增储罐',
