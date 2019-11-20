@@ -153,12 +153,12 @@ export default class Edit extends PureComponent {
           equipNumber,
           equipStatus,
           productFactory,
-          leaveFactoryDate: leaveFactoryDate.format('YYYY-MM-DD'),
+          leaveFactoryDate: leaveFactoryDate ? leaveFactoryDate.format('YYYY-MM-DD') : undefined,
           useYear,
           notes,
-          photo: JSON.stringify(
-            photoUrl.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl }))
-          ),
+          photo: photoUrl.length>0
+            ? JSON.stringify(photoUrl.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl })))
+            : undefined,
         };
 
         const success = () => {

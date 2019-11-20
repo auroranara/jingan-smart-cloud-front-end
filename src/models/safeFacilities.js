@@ -105,7 +105,6 @@ export default {
   reducers: {
     saveSafeFacList(state, { payload }) {
       const { data } = payload;
-      console.log('dara', payload);
       return {
         ...state,
         safeFacData: data,

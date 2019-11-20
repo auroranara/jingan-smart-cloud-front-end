@@ -252,7 +252,7 @@ export default class TableList extends PureComponent {
           const { endDate, paststatus } = record;
           return (
             <div>
-              <span>{moment(endDate).format('YYYY-MM-DD')}</span>
+              {endDate ? <span>{moment(endDate).format('YYYY-MM-DD')}</span> : ''}
               <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
                 {paststatusVal[paststatus]}
               </span>
@@ -322,9 +322,7 @@ export default class TableList extends PureComponent {
   render() {
     const {
       safeFacilities: {
-        safeFacData: {
-          pagination: { total },
-        },
+        safeFacData: { a },
         categoryList = [],
         facNameList = [],
       },
@@ -404,7 +402,7 @@ export default class TableList extends PureComponent {
           <div>
             <span>
               单位数量：
-              {total}
+              {a}
             </span>
           </div>
         }
@@ -415,7 +413,7 @@ export default class TableList extends PureComponent {
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             action={
-              <Button type="primary" disabled={!addCode} href={`#${ROUTER}/add`}>
+              <Button type="primary" disabled={!addCode}>
                 新增
               </Button>
             }
