@@ -528,7 +528,7 @@ export default {
       edit: 'baseInfo.registeredEngineerManagement.edit',
       delete: 'baseInfo.registeredEngineerManagement.delete',
     },
-    // 危险化学品企业安全许可证
+    // 危化品企业安全许可证
     dangerChemicalsPermit: {
       list: 'baseInfo.dangerChemicalsPermit.listView',
       add: 'baseInfo.dangerChemicalsPermit.add',

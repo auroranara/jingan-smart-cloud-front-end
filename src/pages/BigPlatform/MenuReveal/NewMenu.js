@@ -177,10 +177,12 @@ export default class NewMenuReveal extends Component {
 
   // 点击模块分类
   handleSelectBlockClassification = index => {
+    // const { dispatch } = this.props;
     const { menuSysAll } = this.state;
     const blocks = blockClassification[index].blocks;
     const menuSys = menuSysAll.filter(item => blocks.includes(item.name));
     this.setState({ currentBlockClassification: index, menuSys });
+    // dispatch({ type: 'user/saveSystemType', payload: index });
   };
 
   // 输出数据类型

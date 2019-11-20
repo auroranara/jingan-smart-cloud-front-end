@@ -11,7 +11,7 @@ import { enquireScreen, unenquireScreen } from 'enquire-js';
 import { formatMessage } from 'umi/locale';
 import SiderMenu from '@/components/SiderMenu';
 import Authorized from '@/utils/Authorized';
-import { filterBigPlatform } from '@/utils/customAuth';
+import { filterBigPlatform, getSystemType } from '@/utils/customAuth';
 import config from './../../config/config';
 import router from 'umi/router';
 
@@ -99,19 +99,23 @@ class BasicLayout extends React.PureComponent {
   };
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, location: { pathname }, route } = this.props;
     const menuAll = JSON.parse(JSON.stringify(config['routes']));
+    // console.log(this.props, getSystemType(pathname, route));
+
+    this.setMenuSystemType();
     dispatch({ type: 'user/fetchGrids' });
     dispatch({
       type: 'user/fetchCurrent',
       callback: (data, login) => {
         const { user } = this.props;
 
-        const { userMessage, gridList, unitType, unitId } = data;
+        // const { userMessage, gridList, unitType, unitId } = data;
         const { logined } = login;
-        const code = userMessage && userMessage[0] ? userMessage[0].code : undefined;
-        const grid = gridList && gridList[0] ? gridList[0].value : 'index';
-        const path = code ? getRedirectPath(code, unitType, unitId, grid) : INIT_ROUTE;
+        // const code = userMessage && userMessage[0] ? userMessage[0].code : undefined;
+        // const grid = gridList && gridList[0] ? gridList[0].value : 'index';
+        // const path = code ? getRedirectPath(code, unitType, unitId, grid) : INIT_ROUTE;
+        const path = INIT_ROUTE;
         if (logined && path) {
           router.push(path);
           dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
@@ -141,7 +145,12 @@ class BasicLayout extends React.PureComponent {
     });
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
+    const { location: { pathname: prevPathname } } = prevProps;
+    const { location: { pathname } } = this.props;
+
+    if (prevPathname !== pathname)
+      this.setMenuSystemType();
     this.breadcrumbNameMap = this.getBreadcrumbNameMap();
   }
 
@@ -149,6 +158,11 @@ class BasicLayout extends React.PureComponent {
     cancelAnimationFrame(this.renderRef);
     unenquireScreen(this.enquireHandler);
   }
+
+ setMenuSystemType() {
+    const { dispatch, location: { pathname }, route } = this.props;
+    dispatch({ type: 'user/saveSystemType', payload: getSystemType(pathname, route) });
+ }
 
   getContext() {
     const { location } = this.props;

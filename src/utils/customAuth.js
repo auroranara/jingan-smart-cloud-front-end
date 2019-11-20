@@ -142,17 +142,20 @@ export const filterBigPlatform = (array, model) => {
 }
 
 // 将menus数组中不存在的路径过滤掉，使其再菜单中不显示，codes=[]也是为了防止从store.user.currentUser.permissionCodes获取的是undefined
-export function filterMenus(MenuData, codes = [], codeMap) {
+export function filterMenus(MenuData, codes = [], codeMap, sysType) {
   const menuData = [];
   for (let m of MenuData) {
-    const { path, children } = m;
+    const { path, children, systemType } = m;
     // console.log('m', m, 'code', codeMap[path], menus.includes(codeMap[path]));
     const menu = { ...m };
-    if (path !== '/' && !codes.includes(codeMap[path])) continue;
+    // if (path !== '/' && !codes.includes(codeMap[path])) continue;
+    // if (children) menu.children = filterMenus(children, codes, codeMap);
+    // menuData.push(menu);
 
-    if (children) menu.children = filterMenus(children, codes, codeMap);
-
-    menuData.push(menu);
+    if (path === '/' || path !== '/' && codes.includes(codeMap[path]) && (!Array.isArray(systemType) || Array.isArray(systemType) && systemType.includes(sysType))) {
+      if (children) menu.children = filterMenus(children, codes, codeMap, sysType);
+      menuData.push(menu);
+    }
   }
 
   return menuData;
@@ -184,13 +187,16 @@ export function getCodeMap(menuData, codeMap, pathArray) {
 }
 
 // 高阶函数，最后的返回值是个函数，来判断当前路径是否在menus中，即当前用户是否有访问权限，因为Authorized组件的authority属性要求传入的值是个函数
-export function generateAuthFn(codes, codeMap, pathArray) {
+export function generateAuthFn(codes, codeMap, pathArray, rootPaths=[]) {
   // console.log('codes', codes);
   // console.log('codeMap', codeMap);
   // console.log('pathArray', pathArray);
+  rootPaths.unshift('exception');
   return pathname => () => {
     // exception页面无需拦截
-    if (pathname.toLowerCase().includes('exception')) return true;
+    // if (pathname.toLowerCase().includes('exception')) return true;
+    if (rootPaths.some(p => pathname.toLowerCase().includes(p)))
+      return true;
 
     // 为了防止出现 codeMap[undefined]的情况，所以要判断下path是否存在，不存在则是pathname对应页面不存在，直接返回true，umi会自己判断页面是否存在，并渲染对应的404页面
     const path = getPath(pathname, pathArray);
@@ -342,4 +348,14 @@ export const AuthPopConfirm = connect(({ user }) => ({ user }))(function (props)
   ) : (
       <span style={{ color: 'rgba(0,0,0,0.25)', cursor: 'not-allowed' }}>{children}</span>
     )
-})
+});
+
+export function getSystemType(pathname, route) {
+  if (pathname.includes('/company-workbench'))
+    return 0;
+
+  const name = pathname.match(/^\/[^/]*/)[0];
+  const { routes } = route;
+  const target = routes.find(({ path }) => path === name);
+  return target ? target.systemType[0] : 0;
+}

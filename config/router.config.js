@@ -333,6 +333,7 @@ module.exports = env => {
           code: 'companyWorkbench',
           name: 'companyWorkbench',
           icon: 'bar-chart',
+          systemType: [0],
           hideInMenu: true,
           routes: [
             {
@@ -353,6 +354,7 @@ module.exports = env => {
           code: 'baseInfo',
           name: 'baseInfo',
           icon: 'file-text',
+          systemType: [0],
           routes: [
             {
               path: '/base-info/company',
@@ -739,7 +741,7 @@ module.exports = env => {
                 },
               ],
             },
-            // 危险化学品企业安全许可证
+            // 危化品企业安全许可证
             {
               name: 'dangerChemicalsPermit',
               code: 'baseInfo.dangerChemicalsPermit',
@@ -1079,6 +1081,7 @@ module.exports = env => {
           code: 'riskControl',
           icon: 'audit',
           name: 'riskControl',
+          systemType: [1],
           routes: [
             /** 风险点管理*/
             {
@@ -1201,6 +1204,7 @@ module.exports = env => {
           code: 'twoInformationManagement',
           icon: 'unordered-list',
           name: 'twoInformationManagement',
+          systemType: [1],
           routes: [
             // 危险（有害）因素排查辨识清单
             {
@@ -1280,12 +1284,13 @@ module.exports = env => {
             },
           ],
         },
-        // fire control
+        // fire control 消防维保
         {
           path: '/fire-control',
           code: 'fireControl',
           icon: 'tool',
           name: 'fireControl',
+          systemType: [0],
           routes: [
             {
               path: '/fire-control/contract',
@@ -1400,12 +1405,13 @@ module.exports = env => {
           ],
         },
 
-        // role authorization
+        // role authorization 角色权限
         {
           path: '/role-authorization',
           code: 'roleAuthorization',
           name: 'roleAuthorization',
           icon: 'user',
+          systemType: [0],
           routes: [
             {
               path: '/role-authorization/account-management',
@@ -1626,12 +1632,13 @@ module.exports = env => {
         //   ],
         // },
 
-        // data analysis
+        // data analysis 数据分析
         {
           path: '/data-analysis',
           code: 'dataAnalysis',
           name: 'dataAnalysis',
           icon: 'experiment',
+          systemType: [0],
           // component: './DataAnalysis/DataAnalysisLayout',
           routes: [
             {
@@ -1970,12 +1977,13 @@ module.exports = env => {
           ],
         },
 
-        // device management
+        // device management 设备管理
         {
           path: '/device-management',
           code: 'deviceManagement',
           icon: 'laptop',
           name: 'deviceManagement',
+          systemType: [2],
           routes: [
             {
               path: '/device-management/user-transmission-device',
@@ -2023,7 +2031,7 @@ module.exports = env => {
                 },
               ],
             },
-            // 视频监控
+            // 视频
             {
               path: '/device-management/video-monitor',
               code: 'deviceManagement.videoMonitor',
@@ -2383,12 +2391,13 @@ module.exports = env => {
           ],
         },
 
-        // video surveillance
+        // video surveillance 视频监控
         {
           path: '/video-surveillance',
           code: 'videoSurveillance',
           icon: 'video-camera',
           name: 'videoSurveillance',
+          systemType: [2],
           // hideInMenu: true,
           routes: [
             {
@@ -2502,11 +2511,14 @@ module.exports = env => {
             },
           ],
         },
+
+        // 系统管理
         {
           path: '/system-management',
           code: 'systemManagement',
           name: 'systemManagement',
           icon: 'setting',
+          systemType: [0],
           hideInMenu: false,
           routes: [
             {
@@ -2622,11 +2634,14 @@ module.exports = env => {
         //     },
         //   ],
         // },
+
+        // 执法检查
         {
           path: '/law-enforcement',
           code: 'lawEnforcement',
           icon: 'project',
           name: 'lawEnforcement',
+          systemType: [0],
           routes: [
             // laws
             {
@@ -2724,11 +2739,14 @@ module.exports = env => {
             },
           ],
         },
+
+        // 教育培训
         {
           name: 'training',
           icon: 'read',
           code: 'training',
           path: '/training',
+          systemType: [3],
           hideInMenu: false,
           routes: [
             {
@@ -3060,6 +3078,7 @@ module.exports = env => {
           path: '/personnel-position',
           icon: 'environment',
           code: 'personnelPosition',
+          systemType: [3],
           hideInMenu: false,
           routes: [
             /* 系统配置 */
@@ -3367,6 +3386,7 @@ module.exports = env => {
           code: 'securityManage',
           icon: 'file-protect',
           name: 'securityManage',
+          systemType: [3],
           routes: [
             {
               path: '/security-manage/entrance-and-exit-monitor',
@@ -3464,6 +3484,7 @@ module.exports = env => {
           code: 'personnelManagement',
           icon: 'team',
           name: 'personnelManagement',
+          systemType: [3],
           routes: [
             // 人员基本信息
             {
@@ -3606,6 +3627,7 @@ module.exports = env => {
           code: 'safetyKnowledgeBase',
           icon: 'book',
           name: 'safetyKnowledgeBase',
+          systemType: [0],
           routes: [
             // 化学品安全说明书
             {
@@ -3730,6 +3752,7 @@ module.exports = env => {
           code: 'emergencyManagement',
           icon: 'alert',
           name: 'emergencyManagement',
+          systemType: [2],
           routes: [
             {
               path: '/emergency-management',
@@ -4018,6 +4041,7 @@ module.exports = env => {
           code: 'announcementManagement',
           icon: 'solution',
           name: 'announcementManagement',
+          systemType: [0],
           routes: [
             {
               name: 'promise', // 安全承诺公告
@@ -4102,6 +4126,7 @@ module.exports = env => {
           code: 'accidentManagement',
           icon: 'fire',
           name: 'accidentManagement',
+          systemType: [2],
           routes: [
             {
               name: 'quickReport',
@@ -4186,6 +4211,7 @@ module.exports = env => {
           code: 'cardsInfo',
           icon: 'profile',
           name: 'cardsInfo',
+          systemType: [1],
           routes: [
             {
               name: 'commitmentCard',
@@ -4306,6 +4332,7 @@ module.exports = env => {
           code: 'iot',
           name: 'iot',
           icon: 'wifi',
+          systemType: [2],
           routes: [
             // 重大危险源监测
             {
