@@ -175,10 +175,11 @@ const dangerSourceFields = [
 // ];
 
 @Form.create()
-@connect(({ company, storehouse, materials, loading }) => ({
+@connect(({ company, storehouse, materials, loading, user }) => ({
   company,
   storehouse,
   materials,
+  user,
   companyLoading: loading.effects['company/fetchModelList'],
   regionLoading: loading.effects['storehouse/fetchRegionModel'],
   dangerSourceLoading: loading.effects['storehouse/fetchDangerSourceModel'],
@@ -236,7 +237,7 @@ export default class StorehouseHandler extends PureComponent {
               unitCode, //所属重大危险源单元编号
               anumber, //库区编号
               aname, //库区名
-              dangerSourceMessage,
+              // dangerSourceMessage,
             },
           ],
         } = res.data;
@@ -258,17 +259,17 @@ export default class StorehouseHandler extends PureComponent {
           produceDate: moment(produceDate), //* 投产日期
           spary, //是否设置自动喷淋
           lowTemperature, //是否低温仓储仓库
-          dangerSource, //是否构成重大危险源
-          dangerSourceUnit, //所属危险化学品重大危险源单元
-          unitCode, //所属重大危险源单元编号
+          // dangerSource, //是否构成重大危险源
+          // dangerSourceUnit, //所属危险化学品重大危险源单元
+          // unitCode, //所属重大危险源单元编号
           // anumber, //库区编号
           // aname, //库区名
         });
         this.setState({
           selectedCompany: { id: companyId, name: companyName },
           selectedRegion: { id: areaId, name: aname, number: anumber },
-          dangerSourceUnitVisible: dangerSource === '1',
-          selectedDangerSource: { ...dangerSourceMessage },
+          // dangerSourceUnitVisible: dangerSource === '1',
+          // selectedDangerSource: { ...dangerSourceMessage },
           selectedMaterials: JSON.parse(materialsName).map(item => ({
             ...item,
             id: item.materialId,
@@ -322,6 +323,9 @@ export default class StorehouseHandler extends PureComponent {
   handleSubmit = () => {
     const {
       dispatch,
+      user: {
+        currentUser: { unitType, companyId },
+      },
       form: { validateFields },
       match: {
         params: { id },
@@ -330,7 +334,7 @@ export default class StorehouseHandler extends PureComponent {
 
     validateFields((error, formData) => {
       if (!error) {
-        const payload = { ...formData };
+        const payload = { ...formData, companyId: unitType === 4 ? companyId : formData.companyId };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
           router.push(listUrl);
@@ -450,11 +454,17 @@ export default class StorehouseHandler extends PureComponent {
     this.setState({ dangerSourceUnitVisible: e.target.value === '1', selectedDangerSource: {} });
   };
 
+  /* 去除左右两边空白 */
+  handleTrim = e => e.target.value.trim();
+
   /**
    * 渲染表单
    */
   renderForm = () => {
     const {
+      user: {
+        currentUser: { unitType },
+      },
       form: { getFieldDecorator },
     } = this.props;
     const {
@@ -469,35 +479,40 @@ export default class StorehouseHandler extends PureComponent {
     return (
       <Card>
         <Form>
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位名称' }],
-            })(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedCompany.name}
-                  placeholder="请选择单位名称"
-                />
-                <Button type="primary" onClick={this.handleViewCompanyModal}>
-                  选择单位
-                </Button>
-              </Fragment>
-            )}
-          </FormItem>
+          {unitType !== 4 && (
+            <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位名称' }],
+              })(
+                <Fragment>
+                  <Input
+                    {...itemStyles}
+                    disabled
+                    value={selectedCompany.name}
+                    placeholder="请选择单位名称"
+                  />
+                  <Button type="primary" onClick={this.handleViewCompanyModal}>
+                    选择单位
+                  </Button>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem label="库房编码" {...formItemLayout}>
             {getFieldDecorator('code', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入库房编码' }],
             })(<Input placeholder="请输入库房编码" {...itemStyles} />)}
           </FormItem>
           <FormItem label="库房序号" {...formItemLayout}>
             {getFieldDecorator('number', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入库房序号' }],
             })(<Input placeholder="请输入库房序号" {...itemStyles} />)}
           </FormItem>
           <FormItem label="库房名称" {...formItemLayout}>
             {getFieldDecorator('name', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入库房名称' }],
             })(<Input placeholder="请输入库房名称" {...itemStyles} />)}
           </FormItem>
@@ -523,11 +538,13 @@ export default class StorehouseHandler extends PureComponent {
           </FormItem>
           <FormItem label="区域位置" {...formItemLayout}>
             {getFieldDecorator('position', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入区域位置' }],
             })(<Input placeholder="请输入区域位置" {...itemStyles} />)}
           </FormItem>
           <FormItem label="库房面积（㎡）" {...formItemLayout}>
             {getFieldDecorator('area', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入库房面积' }],
             })(
               <InputNumber
@@ -575,6 +592,7 @@ export default class StorehouseHandler extends PureComponent {
           </FormItem>
           <FormItem label="贮存物质名称" {...formItemLayout}>
             {getFieldDecorator('materialsName', {
+              getValueFromEvent: this.handleTrim,
               // rules: [{ required: true, message: '请选择贮存物质名称' }],
             })(
               <Fragment>
@@ -584,7 +602,10 @@ export default class StorehouseHandler extends PureComponent {
                   rows={4}
                   placeholder="请选择贮存物质名称"
                   value={selectedMaterials
-                    .map(item => item.chineName + materialsNum[item.id] + '吨')
+                    .map(
+                      item =>
+                        item.chineName + (materialsNum[item.id] ? materialsNum[item.id] + '吨' : '')
+                    )
                     .join('，')}
                 />
                 <Button type="primary" onClick={this.handleMaterialsModal}>
@@ -644,7 +665,7 @@ export default class StorehouseHandler extends PureComponent {
               </RadioGroup>
             )}
           </FormItem>
-          <FormItem label="是否构成重大危险源" {...formItemLayout}>
+          {/* <FormItem label="是否构成重大危险源" {...formItemLayout}>
             {getFieldDecorator('dangerSource', {
               rules: [{ required: true, message: '请选择是否构成重大危险源' }],
             })(
@@ -675,7 +696,7 @@ export default class StorehouseHandler extends PureComponent {
                 {getFieldDecorator('dangerSourceCode')(<span>{selectedDangerSource.code}</span>)}
               </FormItem>
             </Fragment>
-          )}
+          )} */}
         </Form>
         <Row style={{ textAlign: 'center', marginTop: '24px' }}>
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={this.handleSubmit}>

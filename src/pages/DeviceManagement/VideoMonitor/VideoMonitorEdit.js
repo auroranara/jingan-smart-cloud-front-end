@@ -17,6 +17,7 @@ import styles from './VideoMonitorEdit.less';
 
 const FormItem = Form.Item;
 
+const chineseRe = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
 // 编辑页面标题
 const editTitle = '编辑视频设备信息';
 // 添加页面标题
@@ -495,30 +496,41 @@ export default class VideoMonitorEdit extends PureComponent {
   };
 
   // 验证设备Id和摄像头Id
+  // validatorID = (rule, value, callback) => {
+  //   if (value) {
+  //     let charCode;
+  //     let charMode = false;
+  //     for (let i = 0; i < value.length; i++) {
+  //       charCode = value.charCodeAt(i);
+  //       if (charCode >= 65 && charCode <= 90) {
+  //         callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾，不能含有大写字母');
+  //         return;
+  //       }
+  //       if (charCode >= 97 && charCode <= 122) {
+  //         charMode = true;
+  //         continue;
+  //       }
+  //     }
+  //     if (
+  //       value.length >= 6 &&
+  //       value.indexOf('_') > 0 &&
+  //       value.substr(value.length - 1, 1) !== '_' &&
+  //       charMode
+  //     )
+  //       callback();
+  //     else callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾，不能含有大写字母');
+  //   } else callback();
+  // };
+
+  // 验证Id 至少6位 不能含有空格 不能有中文
   validatorID = (rule, value, callback) => {
     if (value) {
-      let charCode;
-      let charMode = false;
-      for (let i = 0; i < value.length; i++) {
-        charCode = value.charCodeAt(i);
-        if (charCode >= 65 && charCode <= 90) {
-          callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾，不能含有大写字母');
-          return;
-        }
-        if (charCode >= 97 && charCode <= 122) {
-          charMode = true;
-          continue;
-        }
-      }
-      if (
-        value.length >= 6 &&
-        value.indexOf('_') > 0 &&
-        value.substr(value.length - 1, 1) !== '_' &&
-        charMode
-      )
+      if (value.length >= 6 && !chineseRe.test(value) && value.indexOf(' ') < 0) {
         callback();
-      else callback('至少6位，必须含有小写字母与下划线，不能下划线开头和结尾，不能含有大写字母');
-    } else callback();
+        return;
+      }
+    }
+    callback('至少6位,不能含有空格和中文');
   };
 
   // 验证所属建筑楼层
@@ -783,7 +795,7 @@ export default class VideoMonitorEdit extends PureComponent {
                   message: '请输入设备ID',
                 },
                 {
-                  // validator: this.validatorID,
+                  validator: this.validatorID,
                 },
               ],
             })(<Input {...itemStyles} placeholder="请输入设备ID" />)}
@@ -799,7 +811,7 @@ export default class VideoMonitorEdit extends PureComponent {
                   message: '请输入摄像头ID',
                 },
                 {
-                  // validator: this.validatorID,
+                  validator: this.validatorID,
                 },
               ],
             })(<Input {...itemStyles} placeholder="请输入摄像头ID" />)}

@@ -18,6 +18,8 @@ import router from 'umi/router';
 import moment from 'moment';
 import { getToken } from 'utils/authority';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -36,6 +38,13 @@ const getRootChild = () => document.querySelector('#root>div');
 const folder = 'dangerChemicalsInfo';
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
+
+// 权限
+const {
+  baseInfo: {
+    safetyFacilities: { edit: editAuth },
+  },
+} = codes;
 
 @Form.create()
 @connect(({ safeFacilities, user, videoMonitor, loading }) => ({
@@ -310,7 +319,7 @@ export default class Edit extends PureComponent {
       leaveFactoryDate,
       useYear,
       notes,
-      photo,
+      // photo,
     } = detailList;
     return (
       <Card>
@@ -410,13 +419,11 @@ export default class Edit extends PureComponent {
             {getFieldDecorator('productFactory', {
               initialValue: productFactory,
               getValueFromEvent: this.handleTrim,
-              rules: [{ required: true, message: '请输入生产厂家' }],
             })(<Input placeholder="请输入" {...itemStyles} />)}
           </FormItem>
           <FormItem label="出厂日期" {...formItemLayout}>
             {getFieldDecorator('leaveFactoryDate', {
               initialValue: leaveFactoryDate ? moment(+leaveFactoryDate) : undefined,
-              rules: [{ required: true, message: '请选择出厂日期' }],
             })(<DatePicker placeholder="请选择" format="YYYY-MM-DD" {...itemStyles} />)}
           </FormItem>
           <FormItem label="使用年限" {...formItemLayout}>
@@ -425,7 +432,6 @@ export default class Edit extends PureComponent {
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
-                  required: true,
                   message: '请输入使用年限，只能输入正整数',
                   pattern: new RegExp(/^[1-9]\d*$/, 'g'),
                 },
@@ -440,8 +446,7 @@ export default class Edit extends PureComponent {
           </FormItem>
           <FormItem label="图片" {...formItemLayout}>
             {getFieldDecorator('photo', {
-              initialValue: photo,
-              rules: [{ required: true, message: '请上传图片' }],
+              initialValue: photoUrl,
             })(
               <Upload
                 name="files"
@@ -473,9 +478,14 @@ export default class Edit extends PureComponent {
       match: {
         params: { id },
       },
+      user: {
+        currentUser: { permissionCodes },
+      },
     } = this.props;
     const { uploading } = this.state;
     const title = this.isDetail() ? '详情' : id ? '编辑' : '新增';
+    const editCode = hasAuthority(editAuth, permissionCodes);
+
     const breadcrumbList = [
       {
         title: '首页',
@@ -531,6 +541,7 @@ export default class Edit extends PureComponent {
                 style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
                 type="primary"
                 size="large"
+                disabled={!editCode}
                 href={`#/base-info/safety-facilities/edit/${id}`}
               >
                 编辑

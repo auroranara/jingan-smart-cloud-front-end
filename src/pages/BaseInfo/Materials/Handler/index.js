@@ -123,9 +123,10 @@ const msdsFields = [
 ];
 
 @Form.create()
-@connect(({ company, materials, loading }) => ({
+@connect(({ company, materials, loading, user }) => ({
   materials,
   company,
+  user,
   companyLoading: loading.effects['company/fetchModelList'],
   dangerSourceLoadinng: loading.effects['materials/fetchDangerSourceModel'],
   msdsLoading: loading.effects['materials/fetchMsdsModel'],
@@ -282,6 +283,9 @@ export default class MaterialsHandler extends PureComponent {
   handleSubmit = () => {
     const {
       dispatch,
+      user: {
+        currentUser: { unitType, companyId },
+      },
       form: { validateFields },
       match: {
         params: { id },
@@ -290,7 +294,7 @@ export default class MaterialsHandler extends PureComponent {
 
     validateFields((error, formData) => {
       if (!error) {
-        const payload = { ...formData };
+        const payload = { ...formData, companyId: unitType === 4 ? companyId : formData.companyId };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
           router.push(listUrl);
@@ -390,11 +394,17 @@ export default class MaterialsHandler extends PureComponent {
     this.setState({ keySupervisionVisible: e.target.value === '1' });
   };
 
+  /* 去除左右两边空白 */
+  handleTrim = e => e.target.value.trim();
+
   /**
    * 渲染表单
    */
   renderForm = () => {
     const {
+      user: {
+        currentUser: { unitType },
+      },
       form: { getFieldDecorator, getFieldValue },
       match: {
         params: { id },
@@ -414,25 +424,28 @@ export default class MaterialsHandler extends PureComponent {
     return (
       <Card>
         <Form>
-          <FormItem label="单位名称" {...formItemLayout}>
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请选择单位名称' }],
-            })(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedCompany.name}
-                  placeholder="请选择单位名称"
-                />
-                <Button type="primary" onClick={this.handleViewCompanyModal}>
-                  选择单位
-                </Button>
-              </Fragment>
-            )}
-          </FormItem>
+          {unitType !== 4 && (
+            <FormItem label="单位名称" {...formItemLayout}>
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请选择单位名称' }],
+              })(
+                <Fragment>
+                  <Input
+                    {...itemStyles}
+                    disabled
+                    value={selectedCompany.name}
+                    placeholder="请选择单位名称"
+                  />
+                  <Button type="primary" onClick={this.handleViewCompanyModal}>
+                    选择单位
+                  </Button>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem label="统一编码" {...formItemLayout}>
             {getFieldDecorator('unifiedCode', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入统一编码' }],
             })(<Input placeholder="请输入统一编码" {...itemStyles} />)}
           </FormItem>
@@ -470,7 +483,7 @@ export default class MaterialsHandler extends PureComponent {
             })(<Input placeholder="请输入统一编码" {...itemStyles} />)}
           </FormItem> */}
           <FormItem label="危险化学品目录序号" {...formItemLayout}>
-            {getFieldDecorator('dangerChemcataSn')(
+            {getFieldDecorator('dangerChemcataSn', { getValueFromEvent: this.handleTrim })(
               <Input placeholder="请输入危险化学品目录序号" {...itemStyles} />
             )}
           </FormItem>
@@ -498,7 +511,7 @@ export default class MaterialsHandler extends PureComponent {
           </FormItem>
           <FormItem label="品名" {...formItemLayout}>
             {getFieldDecorator('msds', {
-              // rules: [{ required: true, message: '请选择品名' }],
+              rules: [{ required: true, message: '请选择品名' }],
             })(
               <Fragment>
                 <Input
@@ -530,11 +543,13 @@ export default class MaterialsHandler extends PureComponent {
                   </FormItem> */}
                   <FormItem label="年生产能力" {...formItemLayout}>
                     {getFieldDecorator('annualThroughput', {
+                      getValueFromEvent: this.handleTrim,
                       rules: [{ required: true, message: '请输入年生产能力' }],
                     })(<InputNumber {...itemStyles} min={0} placeholder="请输入年生产能力" />)}
                   </FormItem>
                   <FormItem {...unitLayout}>
                     {getFieldDecorator('annualThroughputUnit', {
+                      getValueFromEvent: this.handleTrim,
                       rules: [{ required: true, message: '请输入单位' }],
                     })(<Input placeholder="单位" />)}
                   </FormItem>
@@ -549,11 +564,13 @@ export default class MaterialsHandler extends PureComponent {
                     </FormItem> */}
                     <FormItem label="年消耗量" {...formItemLayout}>
                       {getFieldDecorator('annualConsumption', {
+                        getValueFromEvent: this.handleTrim,
                         rules: [{ required: true, message: '请输年消耗量' }],
                       })(<InputNumber {...itemStyles} min={0} placeholder="请输年消耗量" />)}
                     </FormItem>
                     <FormItem {...unitLayout}>
                       {getFieldDecorator('annualConsumptionUnit', {
+                        getValueFromEvent: this.handleTrim,
                         rules: [{ required: true, message: '请输入单位' }],
                       })(<Input placeholder="单位" />)}
                     </FormItem>
@@ -566,11 +583,13 @@ export default class MaterialsHandler extends PureComponent {
                     </FormItem> */}
                     <FormItem label="最大存储量" {...formItemLayout}>
                       {getFieldDecorator('maxStoreDay', {
+                        getValueFromEvent: this.handleTrim,
                         rules: [{ required: true, message: '请输入最大存储量' }],
                       })(<InputNumber {...itemStyles} min={0} placeholder="请输入最大存储量" />)}
                     </FormItem>
                     <FormItem {...unitLayout}>
                       {getFieldDecorator('maxStoreDayUnit', {
+                        getValueFromEvent: this.handleTrim,
                         rules: [{ required: true, message: '请输入单位' }],
                       })(<Input placeholder="单位" />)}
                     </FormItem>
@@ -582,17 +601,20 @@ export default class MaterialsHandler extends PureComponent {
           <div className={styles.unitWrapper}>
             <FormItem label="实际存储量" {...formItemLayout}>
               {getFieldDecorator('actualReserves', {
+                getValueFromEvent: this.handleTrim,
                 rules: [{ required: true, message: '请输入实际存储量' }],
               })(<InputNumber {...itemStyles} min={0} placeholder="请输入实际存储量" />)}
             </FormItem>
             <FormItem {...unitLayout}>
               {getFieldDecorator('actualReservesUnit', {
+                getValueFromEvent: this.handleTrim,
                 rules: [{ required: true, message: '请输入单位' }],
               })(<Input placeholder="单位" />)}
             </FormItem>
           </div>
           <FormItem label="存储场所" {...formItemLayout}>
             {getFieldDecorator('reservesLocation', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入存储场所' }],
             })(<Input placeholder="请输入存储场所" {...itemStyles} />)}
           </FormItem>
@@ -638,14 +660,14 @@ export default class MaterialsHandler extends PureComponent {
               </FormItem>
             </Fragment>
           )} */}
-          <FormItem label="所在工艺流程" {...formItemLayout}>
+          {/* <FormItem label="所在工艺流程" {...formItemLayout}>
             {getFieldDecorator('technologyId')(
               <Fragment>
                 <Input {...itemStyles} disabled value={''} placeholder="请选择所在工艺流程" />
                 <Button type="primary">选择</Button>
               </Fragment>
             )}
-          </FormItem>
+          </FormItem> */}
           <FormItem label="是否属于重点监管危险化工工艺" {...formItemLayout}>
             {getFieldDecorator('keySupervisionProcess', {
               rules: [{ required: true, message: '所在工艺流程是否属于重点监管危险化工工艺' }],
@@ -694,11 +716,13 @@ export default class MaterialsHandler extends PureComponent {
           </FormItem>
           <FormItem label="安全措施" {...formItemLayout}>
             {getFieldDecorator('safetyMeasures', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入安全措施' }],
             })(<TextArea rows={4} placeholder="请输入安全措施" maxLength="500" {...itemStyles} />)}
           </FormItem>
           <FormItem label="应急处置措施" {...formItemLayout}>
             {getFieldDecorator('emergencyMeasure', {
+              getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入应急处置措施' }],
             })(
               <TextArea rows={4} placeholder="请输入应急处置措施" maxLength="500" {...itemStyles} />

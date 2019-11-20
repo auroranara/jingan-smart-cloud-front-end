@@ -88,7 +88,7 @@ export default class MaterialsList extends PureComponent {
   renderForm = () => {
     const {
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
     const fields = [
@@ -158,13 +158,6 @@ export default class MaterialsList extends PureComponent {
         id: 'casNo',
         render() {
           return <Input placeholder="请输入CAS号" />;
-        },
-        transform,
-      },
-      {
-        id: 'companyName',
-        render() {
-          return <Input placeholder="请输入单位名称" />;
         },
         transform,
       },
@@ -268,6 +261,13 @@ export default class MaterialsList extends PureComponent {
           );
         },
       },
+      {
+        id: 'companyName',
+        render() {
+          return <Input placeholder="请输入单位名称" />;
+        },
+        transform,
+      },
     ];
 
     // 是否有新增权限
@@ -276,7 +276,7 @@ export default class MaterialsList extends PureComponent {
     return (
       <Card>
         <InlineForm
-          fields={fields}
+          fields={unitType === 4 ? fields.slice(0, fields.length - 1) : fields}
           gutter={{ lg: 48, md: 24 }}
           onSearch={this.handleSearch}
           onReset={this.handleReset}
