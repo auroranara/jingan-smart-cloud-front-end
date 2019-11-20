@@ -186,7 +186,7 @@ export default class TableList extends PureComponent {
         },
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
@@ -195,13 +195,16 @@ export default class TableList extends PureComponent {
     const editCode = hasAuthority(editAuth, permissionCodes);
     const deleteCode = hasAuthority(deleteAuth, permissionCodes);
 
-    const columns = [
+    const newColumns = [
       {
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
         width: 300,
       },
+    ];
+
+    const columns = [
       {
         title: '分类',
         dataIndex: 'category',
@@ -221,6 +224,9 @@ export default class TableList extends PureComponent {
         dataIndex: 'safeFacilitiesName',
         align: 'center',
         width: 200,
+        render: val => {
+          return +val === 1 ? '压力表' : +val === 2 ? '温度计' : '液位仪';
+        },
       },
       {
         title: '状态',
@@ -264,7 +270,7 @@ export default class TableList extends PureComponent {
             {viewCode ? (
               <Link to={`${ROUTER}/view/${row.id}`}>查看</Link>
             ) : (
-              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
+              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>
             )}
             <Divider type="vertical" />
             {editCode ? (
@@ -284,12 +290,13 @@ export default class TableList extends PureComponent {
         ),
       },
     ];
+
     return list && list.length ? (
       <Card style={{ marginTop: '24px' }}>
         <Table
           rowKey="id"
           loading={loading}
-          columns={columns}
+          columns={unitType === 4 ? columns : [...newColumns, ...columns]}
           dataSource={list}
           bordered
           scroll={{ x: 1400 }}
@@ -319,9 +326,10 @@ export default class TableList extends PureComponent {
           pagination: { total },
         },
         categoryList = [],
+        facNameList = [],
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
@@ -331,8 +339,15 @@ export default class TableList extends PureComponent {
       {
         id: 'safeFacilitiesName',
         label: '装备名称：',
-        render: () => <Input placeholder="请输入" allowClear />,
-        transform: v => v.trim(),
+        render: () => (
+          <Select allowClear placeholder="请选择">
+            {facNameList.map(({ key, label }) => (
+              <Select.Option key={key} value={key}>
+                {label}
+              </Select.Option>
+            ))}
+          </Select>
+        ),
       },
       {
         id: 'category',
@@ -370,6 +385,9 @@ export default class TableList extends PureComponent {
           </Select>
         ),
       },
+    ];
+
+    const newFields = [
       {
         id: 'companyName',
         label: '单位名称：',
@@ -393,7 +411,7 @@ export default class TableList extends PureComponent {
       >
         <Card>
           <ToolBar
-            fields={fields}
+            fields={unitType === 4 ? fields : [...fields, ...newFields]}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             action={

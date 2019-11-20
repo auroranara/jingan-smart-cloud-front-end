@@ -18,6 +18,8 @@ import router from 'umi/router';
 import moment from 'moment';
 import { getToken } from 'utils/authority';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -36,6 +38,13 @@ const getRootChild = () => document.querySelector('#root>div');
 const folder = 'dangerChemicalsInfo';
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
+
+// 权限
+const {
+  baseInfo: {
+    safetyFacilities: { edit: editAuth },
+  },
+} = codes;
 
 @Form.create()
 @connect(({ safeFacilities, user, videoMonitor, loading }) => ({
@@ -469,9 +478,14 @@ export default class Edit extends PureComponent {
       match: {
         params: { id },
       },
+      user: {
+        currentUser: { permissionCodes },
+      },
     } = this.props;
     const { uploading } = this.state;
     const title = this.isDetail() ? '详情' : id ? '编辑' : '新增';
+    const editCode = hasAuthority(editAuth, permissionCodes);
+
     const breadcrumbList = [
       {
         title: '首页',
@@ -527,6 +541,7 @@ export default class Edit extends PureComponent {
                 style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
                 type="primary"
                 size="large"
+                disabled={!editCode}
                 href={`#/base-info/safety-facilities/edit/${id}`}
               >
                 编辑
