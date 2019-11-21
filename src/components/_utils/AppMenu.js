@@ -22,10 +22,13 @@ getCodeMap(MenuData, codeMap, pathArray);
 export default function AppMenu(WrappedComponent) {
   @connect(({ user }) => ({ user }))
   class AppMenuInner extends React.Component {
-    state = { menuData: [] };
+    // componentDidMount() {
+    //   console.log('did mount');
+    // }
 
     componentDidUpdate(prevProps, prevState) {
       const {
+        dispatch,
         user: {
           currentUser: { permissionCodes: prevCodes },
           systemType: prevSystemType,
@@ -40,7 +43,7 @@ export default function AppMenu(WrappedComponent) {
       if (prevCodes !== codes || prevSystemType !== systemType) {
         const menuData = filterMenus(MenuData, codes, codeMap, systemType);
         // const menuData = filterMenus(MenuData, codes, codeMap, systemType).filter(({ path, children }) => path === '/' || children.length); // 筛选掉children为0的节点
-        this.setState({ menuData });
+        dispatch({ type: 'user/saveMenuData', payload: menuData });
       }
     }
 
@@ -48,10 +51,10 @@ export default function AppMenu(WrappedComponent) {
       // store.user.currentUser初始值是空对象，所以当没有请求到currentUser时，permissionCodes(codes)是undefined
       // 请求返回的permissionCodes(codes)是个数组，可能是空数组
       const {
-        user: { currentUser: { permissionCodes: codes } },
+        user: { currentUser: { permissionCodes: codes }, menuData },
       } = this.props;
-      const { menuData } = this.state;
 
+      // console.log(menuData);
       // 判断currentUser是否已加载，因为currentUser得渲染BasicLayout才会发起请求，所以需要往下传到BasicLayout中处理
       const currentUserLoaded = !!codes;
 

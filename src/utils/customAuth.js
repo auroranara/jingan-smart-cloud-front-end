@@ -357,5 +357,5 @@ export function getSystemType(pathname, route) {
   const name = pathname.match(/^\/[^/]*/)[0];
   const { routes } = route;
   const target = routes.find(({ path }) => path === name);
-  return target ? target.systemType[0] : 0;
+  return target && target.systemType && target.systemType[0] ? target.systemType[0] : 0;
 }

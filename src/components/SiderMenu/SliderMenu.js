@@ -9,7 +9,7 @@ import { urlToList } from '../_utils/pathTools';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 const { Sider } = Layout;
-const { projectShortName } = global.PROJECT_CONFIG;
+// const { projectShortName } = global.PROJECT_CONFIG;
 /**
  * 获得菜单子节点
  * @memberof SiderMenu
@@ -104,7 +104,7 @@ export default class SiderMenu extends PureComponent {
   }
 
   render() {
-    const { logo, collapsed, onCollapse, fixSiderbar, theme, isMobile } = this.props;
+    const { logo, collapsed, onCollapse, fixSiderbar, theme, isMobile, projectShortName } = this.props;
     const { openKeys } = this.state;
     // const defaultProps = collapsed ? {} : { openKeys };
     // 若openKeys为空数组，则更新一下它的值(当然第一次render返回还是空数组，当menuData不为空数组时，更新后为新的值)，若不是空数组即用原来的值
@@ -135,7 +135,7 @@ export default class SiderMenu extends PureComponent {
       >
         <div className={styles.logo} id="logo">
           <Link to="/">
-            <img src={logo} alt="logo" />
+            {/* <img src={logo} alt="logo" /> */}
             <h1>{projectShortName}</h1>
           </Link>
         </div>
