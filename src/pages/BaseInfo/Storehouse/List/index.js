@@ -358,6 +358,9 @@ export default class StorehouseList extends PureComponent {
   render() {
     const {
       sensorLoading,
+      user: {
+        currentUser: { unitType },
+      },
       loading = false,
       storehouse: {
         list,
@@ -556,7 +559,7 @@ export default class StorehouseList extends PureComponent {
             <Table
               rowKey="id"
               loading={loading}
-              columns={columns}
+              columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
               dataSource={list}
               pagination={false}
               scroll={{ x: 'max-content' }}
