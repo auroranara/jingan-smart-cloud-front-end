@@ -544,7 +544,6 @@ export default {
       delete: 'baseInfo.storageAreaManagement.delete',
       bindSensor: 'baseInfo.storageAreaManagement.bindSensor',
     },
-
     // 安全设施
     safetyFacilities: {
       list: 'baseInfo.safetyFacilities.list',
@@ -552,6 +551,13 @@ export default {
       add: 'baseInfo.safetyFacilities.add',
       edit: 'baseInfo.safetyFacilities.edit',
       delete: 'baseInfo.safetyFacilities.delete',
+    },
+    // 储罐管理
+    storageManagement: {
+      list: 'baseInfo.storageManagement.listView',
+      add: 'baseInfo.storageManagement.add',
+      edit: 'baseInfo.storageManagement.edit',
+      delete: 'baseInfo.storageManagement.delete',
     },
   },
   safetyKnowledgeBase: {

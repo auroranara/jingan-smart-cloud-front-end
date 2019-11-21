@@ -22,7 +22,7 @@ import { AuthButton } from '@/utils/customAuth';
 import codesMap from '@/utils/codes';
 import moment from 'moment';
 import { phoneReg } from '@/utils/validate';
-// 片面图标注
+// 平面图标注
 import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
 // 选择网关设备弹窗
 import GateWayModal from '@/pages/DeviceManagement/Components/GateWayModal';
@@ -55,7 +55,6 @@ export default class AddEquipment extends Component {
     this.state = {
       pointFixInfoList: [],  // 平面图标志
       editingIndex: undefined, // 当前编辑的平面图标志下标
-      monitorType: undefined,
       uploading: false,
       picModalVisible: false, // 定位弹窗可见
       imgIdCurrent: '',
@@ -378,6 +377,7 @@ export default class AddEquipment extends Component {
       const tag = id ? '编辑' : '新增';
       const success = () => {
         message.success(`${tag}成功`);
+        // 判断是否是新打开的页面，如果是则返回上级页面，如果不是则返回历史页面
         if (window.history.length > 1) {
           router.goBack();
         } else router.push(`/device-management/data-processing/list/${type}?companyId=${companyId}${gatewayId ? '' : `&companyName=${companyName}`}`)
@@ -419,7 +419,7 @@ export default class AddEquipment extends Component {
       } },
       device: {
         equipmentDetail: detail = {},
-        flatGraphic,
+        flatGraphic,  // 平面图类型选项
         agreementNameDict, // 协议名称字典
         networkTypeDict, // 联网方式字典
         operatorDict, // 运营商字典
