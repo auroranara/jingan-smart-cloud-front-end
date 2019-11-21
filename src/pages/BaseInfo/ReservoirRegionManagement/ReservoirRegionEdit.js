@@ -228,9 +228,11 @@ export default class ReservoirRegionEdit extends PureComponent {
   // 获取危险源列表
   fetchDangerSourseList = ({ payload }) => {
     const { dispatch } = this.props;
+    const { detailList } = this.state;
+    const { companyId } = detailList;
     dispatch({
       type: 'reservoirRegion/fetchSourceList',
-      payload: { ...payload },
+      payload: { ...payload, companyId: this.companyId || companyId },
     });
   };
 
