@@ -58,6 +58,7 @@ export default {
   'menu.baseInfo.storageManagement': '储罐管理',
   'menu.baseInfo.storageManagement.list': '储罐管理列表',
   'menu.baseInfo.storageManagement.add': '新增储罐',
+  'menu.baseInfo.storageManagement.edit': '编辑储罐',
   'menu.baseInfo.reservoirRegionManagement': '库区管理',
   'menu.baseInfo.reservoirRegionManagement.list': '库区管理列表',
   'menu.baseInfo.reservoirRegionManagement.add': '新增库区',

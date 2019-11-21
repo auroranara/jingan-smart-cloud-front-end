@@ -215,3 +215,13 @@ export const majorHazardDangerEnum = generateEnum({
   3: '三级',
   4: '四级',
 })
+
+/*
+* 存储介质状态
+*/
+export const storageMediumStatusEnum = generateEnum({
+  '1': '固态',
+  '2': '液态',
+  '3': '气态',
+  '4': '等离子态',
+})

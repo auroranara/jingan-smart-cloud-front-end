@@ -1,8 +1,26 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Form, Card, Button, Input, Table, Divider } from 'antd';
+import { Form, Card, Button, Input, Table, Divider, message } from 'antd';
 import ToolBar from '@/components/ToolBar';
+import { AuthA, AuthPopConfirm, AuthButton } from '@/utils/customAuth';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
+import codes from '@/utils/codes';
+import router from 'umi/router';
+// 存储介质状态Enum
+import { storageMediumStatusEnum } from '@/utils/dict';
+// 介质类别
+import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+
+const {
+  baseInfo: {
+    storageManagement: {
+      add: addCode,
+      edit: editCode,
+      delete: deleteCode,
+    },
+  },
+} = codes
+
 // import { DEFAULT_PAGE_SIZE } from 'src/pages/RoleAuthorization/AccountManagement/utils';
 const DEFAULT_PAGE_SIZE = 10;
 // 标题
@@ -69,6 +87,7 @@ const fields = [
     transform: v => v.trim(),
   },
 ];
+const trueOrFalseLabel = ['是', '否']
 
 @connect(({ loading, baseInfo }) => ({
   baseInfo,
@@ -79,14 +98,14 @@ export default class StorageList extends PureComponent {
     super(props);
     this.state = {};
     this.exportButton = (
-      <Button type="primary" href={`#/base-info/storage-management/add`}>
+      <AuthButton code={addCode} type="primary" href={`#/base-info/storage-management/add`}>
         新增储罐
-      </Button>
+      </AuthButton>
     );
   }
 
   // 挂载后
-  componentDidMount() {
+  componentDidMount () {
     this.handleQuery()
   }
 
@@ -106,6 +125,20 @@ export default class StorageList extends PureComponent {
     this.handleQuery()
   };
 
+  // 删除储罐
+  handleDelete = id => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'baseInfo/deleteStorageTank',
+      payload: { id },
+      success: () => {
+        message.success('删除成功')
+        this.handleQuery()
+      },
+      error: (res) => { message.error(res ? res.msg : '储罐删除失败') },
+    })
+  }
+
   // 渲染表格
   renderTable = () => {
     const {
@@ -121,7 +154,7 @@ export default class StorageList extends PureComponent {
         title: '单位名称',
         dataIndex: 'companyName',
         align: 'center',
-        width: 200,
+        width: 300,
       },
       {
         title: '基本信息',
@@ -141,38 +174,54 @@ export default class StorageList extends PureComponent {
         title: '存储介质',
         dataIndex: 'storageMedium',
         align: 'center',
-        width: 200,
+        width: 300,
+        render: (val, { chineName, casNo, dangerChemcataSn, materialForm, riskCateg }) => (
+          <div style={{ textAlign: 'left' }}>
+            <div>存储介质：{chineName || '暂无数据'}</div>
+            <div>CAS号：{casNo || '暂无数据'}</div>
+            <div>危险化学品目录序号：{dangerChemcataSn || '暂无数据'}</div>
+            <div>介质状态：{storageMediumStatusEnum[materialForm] || '暂无数据'}</div>
+            <div>介质类别：{RISK_CATEGORIES[riskCateg] || '暂无数据'}</div>
+          </div>
+        ),
       },
       {
         title: '重大危险源 / 高危储罐',
         dataIndex: 'chemicals',
         align: 'center',
         width: 200,
-        render: (val, { majorHazard, highRiskTank }) => (<span>{majorHazard}/{highRiskTank}</span>),
+        render: (val, { majorHazard, highRiskTank }) => (<span>{trueOrFalseLabel[+majorHazard]}/{trueOrFalseLabel[+highRiskTank]}</span>),
       },
       {
         title: '区域位置',
         dataIndex: 'area',
         align: 'center',
-        width: 200,
-        render: (val, { area, location }) => `${area}${location}`,
-      },
-      {
-        title: '已绑传感器',
-        dataIndex: 'bind',
-        align: 'center',
         width: 150,
+        render: (val, { area, location }) => `${area || ''}${location || ''}`,
       },
+      // {
+      //   title: '已绑传感器',
+      //   dataIndex: 'bind',
+      //   align: 'center',
+      //   width: 300,
+      // },
       {
         title: '操作',
         key: '操作',
         align: 'center',
         width: 150,
+        fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <a>编辑</a>
+            <AuthA code={editCode} onClick={() => router.push(`/base-info/storage-management/edit/${row.id}`)}>编辑</AuthA>
             <Divider type="vertical" />
-            <a>删除</a>
+            <AuthPopConfirm
+              code={deleteCode}
+              title="确认要删除该储罐吗？"
+              onConfirm={() => this.handleDelete(row.id)}
+            >
+              删除
+            </AuthPopConfirm>
           </Fragment>
         ),
       },
@@ -186,7 +235,7 @@ export default class StorageList extends PureComponent {
           columns={columns}
           dataSource={list}
           bordered
-          scroll={{ x: 1400 }}
+          scroll={{ x: 'max-content' }}
           pagination={{
             current: pageNum,
             pageSize,
@@ -208,7 +257,7 @@ export default class StorageList extends PureComponent {
       );
   };
 
-  render() {
+  render () {
     const {
       baseInfo: {
         storageTank: {
@@ -225,7 +274,6 @@ export default class StorageList extends PureComponent {
           <div>
             <span>单位数量：{a}</span>
             <span style={{ paddingLeft: 20 }}>储罐总数：{total}</span>
-            <span style={{ paddingLeft: 20 }}>已绑传感器数：{'TODO'}</span>
           </div>
         }
       >

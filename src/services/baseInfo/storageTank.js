@@ -28,3 +28,8 @@ export async function deleteStorageTank (params) {
     method: 'DELETE',
   })
 }
+
+// 获取储罐详情
+export async function fetchStorageTankDetail (params) {
+  return request(`/acloud_new/v2/ci/tank/tank/${params.id}`)
+}

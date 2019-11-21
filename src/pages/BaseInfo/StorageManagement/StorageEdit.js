@@ -1,6 +1,6 @@
 import { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { routerRedux } from 'dva/router';
+import router from 'umi/router';
 import {
   Form,
   Input,
@@ -30,6 +30,7 @@ import StorageMediumModal from './Components/StorageMediumModal';
 // 选择重大危险源弹窗
 import MajorHazardListModal from './Components/MajorHazardListModal';
 import codesMap from '@/utils/codes';
+import moment from 'moment';
 
 import styles from './StorageEdit.less';
 
@@ -114,19 +115,77 @@ export default class StorageEdit extends PureComponent {
     picModalVisible: false, // 定位弹窗可见
     imgIdCurrent: '',
     isImgSelect: true,
-    selectedAreaKeys: [], // 勾选的储罐区key
     selectedArea: [],    // 勾选的储罐区对象数组
     storageTankAreaModalVisible: false, // 选择储罐区弹窗是否可见
-    selectedMedium: [],
+    selectedMedium: [], // 存储介质
     storageMediumModalVisible: false, // 选择存储介质弹窗是否可见
-    selectedMajorHazard: [],
+    selectedMajorHazard: [], // 所属危险化学品重大危险源单元
     majorHazardModalVisible: false, // 选择重大危险源弹窗可见
     selectedTemp: [], // 弹窗选择对象暂存,取消后清空
     selectedTempKeys: [],
+    uploadPics: [], // 上传照片列表
+    uploadFiles: [], // 上传文件列表
+    picUploading: false,
+    fileUploading: false,
   };
 
   // 挂载后
-  componentDidMount () { }
+  componentDidMount () {
+    const {
+      dispatch,
+      match: { params: { id } },
+      form: { setFieldsValue },
+    } = this.props
+    if (id) {
+      // 如果编辑
+      dispatch({
+        type: 'baseInfo/fetchStorageTankDetail',
+        payload: { id, pageNum: 1, pageSize: 10 },
+        callback: ({
+          companyId,
+          companyName,
+          buildingId,
+          floorId,
+          pointFixInfoList,
+          tankArea,
+          chineName,
+          storageMedium,
+          chemicalsMajorHazard,
+          areaName,
+          chemicalName,
+          locationType,
+          scenePhotoList,
+          otherFileList,
+        }) => {
+          setFieldsValue({ companyId, locationType })
+          this.setState({
+            selectedCompany: { id: companyId, name: companyName }, // 所属单位
+            selectedArea: [{ id: tankArea, areaName }], // 所属储罐区
+            selectedMedium: [{ id: storageMedium, chineName }], // 存储介质
+            selectedMajorHazard: [{ id: chemicalsMajorHazard, name: chemicalName }],
+            pointFixInfoList: pointFixInfoList || [],
+            uploadPics: scenePhotoList ? scenePhotoList.map(item => ({
+              ...item,
+              uid: item.id,
+              url: item.webUrl,
+              name: item.fileName,
+            })) : [],
+            uploadFiles: otherFileList ? otherFileList.map(item => ({
+              ...item,
+              uid: item.id,
+              url: item.webUrl,
+              name: item.fileName,
+            })) : [],
+          })
+          setFieldsValue({ buildingId, floorId })
+          companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+          buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } })
+        },
+      })
+    } else {
+      setFieldsValue({ locationType: 0 })
+    }
+  }
 
   /**
   * 获取楼层
@@ -206,8 +265,7 @@ export default class StorageEdit extends PureComponent {
   handleTrim = e => e.target.value.trim();
 
   goBack = () => {
-    const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/base-info/storage-management/list`));
+    router.goBack();
   };
 
   /**
@@ -264,18 +322,48 @@ export default class StorageEdit extends PureComponent {
       match: { params: { id } },
       form: { validateFields },
     } = this.props;
-    const { editingIndex, pointFixInfoList } = this.state;
+    const {
+      editingIndex,
+      pointFixInfoList,
+      uploadPics,
+      uploadFiles,
+    } = this.state;
     if (!isNaN(editingIndex)) {
       message.warning('请先保存平面图信息')
       return
     }
     validateFields((err, values) => {
+      console.log('uploadPics', uploadPics)
       if (err) return
       const payload = {
         ...values,
         pointFixInfoList, // 平面图标注列表
+        scenePhoto: uploadPics && uploadPics.length ? JSON.stringify(uploadPics) : null,
+        otherFile: uploadFiles && uploadFiles.length ? JSON.stringify(uploadFiles) : null,
       }
-      console.log('submit', payload)
+      const tag = id ? '编辑' : '新增';
+      const success = () => {
+        message.success(`${tag}成功`)
+        router.push('/base-info/storage-management/list')
+      }
+      const error = (res) => { message.error(res ? res.msg : `${tag}失败`) }
+      if (id) {
+        // 如果编辑
+        dispatch({
+          type: 'baseInfo/editStorageTank',
+          payload: { ...payload, id },
+          success,
+          error,
+        })
+      } else {
+        // 如果新增
+        dispatch({
+          type: 'baseInfo/addStorageTank',
+          payload,
+          success,
+          error,
+        })
+      }
     })
   };
 
@@ -414,11 +502,11 @@ export default class StorageEdit extends PureComponent {
   // 点击打开选择储罐区弹窗
   handleToSelectStorageArea = () => {
     const { form: { getFieldValue } } = this.props
-    const storageTank = getFieldValue('storageTank')
+    const tankArea = getFieldValue('tankArea')
     this.fetchStorageTankAreaForPage({ payload: { pageNum: 1, pageSize: 10 } })
     this.setState({
       storageTankAreaModalVisible: true,
-      selectedTempKeys: storageTank ? storageTank.split(',') : [],
+      selectedTempKeys: tankArea ? tankArea.split(',') : [],
     })
   }
 
@@ -442,6 +530,98 @@ export default class StorageEdit extends PureComponent {
       majorHazardModalVisible: true,
       selectedTempKeys: chemicalsMajorHazard ? chemicalsMajorHazard.split(',') : [],
     })
+  }
+
+  // 监听上传照片改变
+  handleUploadPicChange = ({ file, fileList }) => {
+    if (file.status === 'uploading') {
+      this.setState({ picUploading: true, uploadPics: fileList })
+    } else if (file.status === 'done') {
+      if (file.response && file.response.code === 200) {
+        const result = file.response.data.list[0]
+        const list = fileList.map((item, index) => {
+          if (index === fileList.length - 1) {
+            return {
+              ...result,
+              uid: item.uid,
+              url: result.webUrl,
+              name: result.fileName,
+            }
+          } else return item
+        })
+        this.setState({
+          picUploading: false,
+          uploadPics: list,
+        })
+      } else {
+        message.error('上传失败！');
+        this.setState({
+          uploadPics: fileList.filter(item => {
+            return !item.response || item.response.code !== 200;
+          }),
+        });
+      }
+      this.setState({
+        picUploading: false,
+      });
+    } else if (file.status === 'removed') {
+      // 删除
+      this.setState({
+        uploadPics: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+        picUploading: false,
+      });
+    } else {
+      message.error('上传失败')
+      this.setState({ picUploading: false })
+    }
+  }
+
+  // 监听上传文件改变
+  handleUploadFileChange = ({ file, fileList }) => {
+    if (file.status === 'uploading') {
+      this.setState({ fileUploading: true, uploadFiles: fileList })
+    } else if (file.status === 'done') {
+      if (file.response && file.response.code === 200) {
+        const result = file.response.data.list[0]
+        const list = fileList.map((item, index) => {
+          if (index === fileList.length - 1) {
+            return {
+              ...result,
+              uid: item.uid,
+              url: result.webUrl,
+              name: result.fileName,
+            }
+          } else return item
+        })
+        this.setState({
+          fileUploading: false,
+          uploadFiles: list,
+        })
+      } else {
+        message.error('上传失败！');
+        this.setState({
+          uploadFiles: fileList.filter(item => {
+            return !item.response || item.response.code !== 200;
+          }),
+        });
+      }
+      this.setState({
+        fileUploading: false,
+      });
+    } else if (file.status === 'removed') {
+      // 删除
+      this.setState({
+        uploadFiles: fileList.filter(item => {
+          return item.status !== 'removed';
+        }),
+        fileUploading: false,
+      });
+    } else {
+      message.error('上传失败')
+      this.setState({ fileUploading: false })
+    }
   }
 
   renderInfo () {
@@ -478,6 +658,10 @@ export default class StorageEdit extends PureComponent {
       selectedArea,
       selectedMedium,
       selectedMajorHazard,
+      uploadPics,
+      uploadFiles,
+      picUploading,
+      fileUploading,
     } = this.state
 
     const { locationType, companyId } = getFieldsValue();
@@ -521,18 +705,21 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="统一编码">
             {getFieldDecorator('unifiedCode', {
+              initialValue: id ? detail.unifiedCode : undefined,
               getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入统一编码' }],
             })(<Input {...itemStyles} placeholder="请输入" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="所属罐组编号">
             {getFieldDecorator('tankGroupNumber', {
+              initialValue: id ? detail.tankGroupNumber : undefined,
               getValueFromEvent: this.handleTrim,
               rules: [{ required: true, message: '请输入所属罐组编号' }],
             })(<Input {...itemStyles} placeholder="请输入" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="储罐编号">
             {getFieldDecorator('tankNumber', {
+              initialValue: id ? detail.tankNumber : undefined,
               getValueFromEvent: this.handleTrim,
               rules: [
                 { required: true, message: '请输入储罐编号' },
@@ -541,6 +728,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="储罐名称">
             {getFieldDecorator('tankName', {
+              initialValue: id ? detail.tankName : undefined,
               getValueFromEvent: this.handleTrim,
               rules: [
                 { required: true, message: '请输入储罐名称' },
@@ -549,13 +737,14 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="储罐位置分类">
             {getFieldDecorator('tankLocationCate', {
+              initialValue: id ? detail.tankLocationCate : undefined,
               rules: [
                 { required: true, message: '请选择储罐位置分类' },
               ],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {storageAreaList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -564,16 +753,18 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="所属储罐区">
             {getFieldDecorator('tankArea', {
+              initialValue: id ? detail.tankArea : undefined,
               getValueFromEvent: this.handleTrim,
             })(
               <Fragment>
-                <Input value={selectedArea.length ? selectedArea[0].chineName : ''} disabled {...itemStyles} placeholder="请输入" />
+                <Input value={selectedArea.length ? selectedArea[0].areaName : ''} disabled {...itemStyles} placeholder="请输入" />
               </Fragment>
             )}
             <Button type="primary" onClick={this.handleToSelectStorageArea}> 选择</Button>
           </FormItem>
           <FormItem {...formItemLayout} label="位号">
             {getFieldDecorator('number', {
+              initialValue: id ? detail.number : undefined,
               getValueFromEvent: this.handleTrim,
               rules: [
                 { required: true, message: '请输入位号' },
@@ -582,6 +773,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="储罐容积（m³）">
             {getFieldDecorator('tankVolume', {
+              initialValue: id ? detail.tankVolume : undefined,
               getValueFromEvent: this.handleTrim,
               rules: [
                 { required: true, message: '请输入储罐容积（m³）' },
@@ -590,13 +782,14 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="储罐形式">
             {getFieldDecorator('tankType', {
+              initialValue: id ? detail.tankType : undefined,
               rules: [
                 { required: true, message: '请选择储罐形式' },
               ],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {storagTypeList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -605,13 +798,14 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="储罐结构">
             {getFieldDecorator('tankStructure', {
+              initialValue: id ? detail.tankStructure : undefined,
               rules: [
                 { required: true, message: '请选择储罐结构' },
               ],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {constructList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -620,13 +814,14 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="储罐材质">
             {getFieldDecorator('tankMaterial', {
+              initialValue: id ? detail.tankMaterial : undefined,
               rules: [
                 { required: true, message: '请选择储罐材质' },
               ],
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {materialList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -635,6 +830,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="是否压力容器">
             {getFieldDecorator('pressureVessel', {
+              initialValue: id ? detail.pressureVessel : undefined,
               rules: [
                 {
                   required: true,
@@ -644,7 +840,7 @@ export default class StorageEdit extends PureComponent {
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -653,6 +849,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="压力等级">
             {getFieldDecorator('pressureRate', {
+              initialValue: id ? detail.pressureRate : undefined,
               rules: [
                 {
                   required: true,
@@ -662,7 +859,7 @@ export default class StorageEdit extends PureComponent {
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {pressureList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -671,6 +868,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="设计压力（KPa）">
             {getFieldDecorator('designPressure', {
+              initialValue: id ? detail.designPressure : undefined,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -682,6 +880,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="设计储量">
             {getFieldDecorator('designReserves', {
+              initialValue: id ? detail.designReserves : undefined,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -693,6 +892,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="进出料方式">
             {getFieldDecorator('feedDischargMode', {
+              initialValue: id ? detail.feedDischargMode : undefined,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -704,6 +904,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="投产日期">
             {getFieldDecorator('productDate', {
+              initialValue: id && detail.productDate ? moment(detail.productDate) : undefined,
               rules: [
                 {
                   required: true,
@@ -721,6 +922,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="存储介质">
             {getFieldDecorator('storageMedium', {
+              initialValue: id ? detail.storageMedium : undefined,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -737,6 +939,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="是否构成重大危险源">
             {getFieldDecorator('majorHazard', {
+              initialValue: id ? detail.majorHazard : undefined,
               rules: [
                 {
                   required: true,
@@ -746,7 +949,7 @@ export default class StorageEdit extends PureComponent {
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -755,16 +958,18 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="所属危险化学品重大危险源单元">
             {getFieldDecorator('chemicalsMajorHazard', {
+              initialValue: id ? detail.chemicalsMajorHazard : undefined,
               getValueFromEvent: this.handleTrim,
             })(
               <Fragment>
-                <Input disabled value={selectedMajorHazard.length ? selectedMajorHazard[0] : ''} {...itemStyles} placeholder="请输入" />
+                <Input disabled value={selectedMajorHazard.length ? selectedMajorHazard[0].name : ''} {...itemStyles} placeholder="请输入" />
               </Fragment>
             )}
             <Button onClick={this.handleToSelectMajorHazard} type="primary"> 选择</Button>
           </FormItem>
           <FormItem {...formItemLayout} label="是否高危储罐">
             {getFieldDecorator('highRiskTank', {
+              initialValue: id ? detail.highRiskTank : undefined,
               rules: [
                 {
                   required: true,
@@ -774,7 +979,7 @@ export default class StorageEdit extends PureComponent {
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -783,11 +988,13 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="高危储罐自控系">
             {getFieldDecorator('highRiskTankSystem', {
+              initialValue: id ? detail.highRiskTankSystem : undefined,
               getValueFromEvent: this.handleTrim,
             })(<Input {...itemStyles} placeholder="请输入" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="安全设备">
             {getFieldDecorator('safeEquip', {
+              initialValue: id ? detail.safeEquip : undefined,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -799,6 +1006,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="有无围堰">
             {getFieldDecorator('cofferdam', {
+              initialValue: id ? detail.cofferdam : undefined,
               rules: [
                 {
                   required: true,
@@ -814,6 +1022,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="围堰所围面积">
             {getFieldDecorator('cofferdamArea', {
+              initialValue: id ? detail.cofferdamArea : undefined,
               getValueFromEvent: this.handleTrim,
               rules: [
                 {
@@ -825,6 +1034,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="火灾危险性等级">
             {getFieldDecorator('fireHazardRate', {
+              initialValue: id ? detail.fireHazardRate : undefined,
               rules: [
                 {
                   required: true,
@@ -834,7 +1044,7 @@ export default class StorageEdit extends PureComponent {
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {dangerLevelList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -843,6 +1053,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="是否配套火柜">
             {getFieldDecorator('setFire', {
+              initialValue: id ? detail.setFire : undefined,
               rules: [
                 {
                   required: true,
@@ -852,7 +1063,7 @@ export default class StorageEdit extends PureComponent {
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -861,6 +1072,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="是否设置保温/保冷">
             {getFieldDecorator('warmCool', {
+              initialValue: id ? detail.warmCool : undefined,
               rules: [
                 {
                   required: true,
@@ -870,7 +1082,7 @@ export default class StorageEdit extends PureComponent {
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -879,6 +1091,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="是否设置自动喷淋">
             {getFieldDecorator('autoSpray', {
+              initialValue: id ? detail.autoSpray : undefined,
               rules: [
                 {
                   required: true,
@@ -888,7 +1101,7 @@ export default class StorageEdit extends PureComponent {
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -897,6 +1110,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="是否设置消防水炮/泡沫炮">
             {getFieldDecorator('fireWaterFoam', {
+              initialValue: id ? detail.fireWaterFoam : undefined,
               rules: [
                 {
                   required: true,
@@ -906,7 +1120,7 @@ export default class StorageEdit extends PureComponent {
             })(
               <Select {...itemStyles} allowClear placeholder="请选择">
                 {selectTypeList.map(({ key, value }) => (
-                  <Option key={key} value={value}>
+                  <Option key={key} value={key}>
                     {value}
                   </Option>
                 ))}
@@ -915,38 +1129,40 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="备注">
             {getFieldDecorator('remarks', {
+              initialValue: id ? detail.remarks : undefined,
               getValueFromEvent: this.handleTrim,
             })(<TextArea {...itemStyles} placeholder="请输入" rows={4} maxLength="2000" />)}
           </FormItem>
           <FormItem {...formItemLayout} label="现场照片">
-            {getFieldDecorator('scenePhoto', {})(
+            {getFieldDecorator('scenePhoto')(
               <Upload
                 name="files"
                 headers={{ 'JA-Token': getToken() }}
-                accept=".jpg" // 接收的文件格式
+                accept="image/*" // 接收的文件格式
                 data={{ folder: 'securityManageInfo' }} // 附带的参数
-                showUploadList={false}
                 action={uploadAction} // 上传地址
+                onChange={this.handleUploadPicChange}
+                fileList={uploadPics}
               >
                 <Button>
-                  <Icon type="upload" />
+                  <Icon type={picUploading ? 'loading' : "upload"} />
                   点击上传
                 </Button>
               </Upload>
             )}
           </FormItem>
           <FormItem {...formItemLayout} label="附件">
-            {getFieldDecorator('otherFile', {})(
+            {getFieldDecorator('otherFile')(
               <Upload
                 name="files"
                 headers={{ 'JA-Token': getToken() }}
-                accept=".jpg" // 接收的文件格式
                 data={{ folder: 'securityManageInfo' }} // 附带的参数
-                showUploadList={false}
                 action={uploadAction} // 上传地址
+                fileList={uploadFiles}
+                onChange={this.handleUploadFileChange}
               >
                 <Button>
-                  <Icon type="upload" />
+                  <Icon type={fileUploading ? 'loading' : "upload"} />
                   点击上传
                 </Button>
               </Upload>
@@ -954,7 +1170,7 @@ export default class StorageEdit extends PureComponent {
           </FormItem>
           <FormItem label="区域位置录入方式" {...formItemLayout}>
             {getFieldDecorator('locationType', {
-              initialValue: id ? detail.locationType : 0,
+              // initialValue: id ? detail.locationType : 0,
             })(
               <Radio.Group onChange={(e) => this.handleRefreshBuilding()}>
                 <Radio value={0}>选择建筑物-楼层</Radio>
@@ -1035,7 +1251,7 @@ export default class StorageEdit extends PureComponent {
                 type="primary"
                 style={{ padding: '0 12px' }}
                 onClick={this.handleAddFlatGraphic}
-                disabled={!isNaN(editingIndex) || pointFixInfoList.length >= 4}
+                disabled={!isNaN(editingIndex) || pointFixInfoList && pointFixInfoList.length >= 4}
               >
                 新增
               </Button>
@@ -1084,7 +1300,7 @@ export default class StorageEdit extends PureComponent {
           trigger="click"
           getPopupContainer={trigger => trigger.parentNode}
         >
-          <Icon type="exclamation-circle" />
+          <Icon type="exclamation-circle" style={{ marginRight: '5px' }} />
           {errorCount}
         </Popover>
       </span>

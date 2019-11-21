@@ -71,6 +71,7 @@ const StorageTankAreaModal = Form.create()(props => {
       onCancel={onCancel}
       onOk={onOk}
       footer={null}
+      width={800}
     >
       <Form>
         <Row gutter={16}>

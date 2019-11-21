@@ -535,6 +535,13 @@ export default {
       edit: 'baseInfo.dangerChemicalsPermit.edit',
       delete: 'baseInfo.dangerChemicalsPermit.delete',
     },
+    // 储罐管理
+    storageManagement: {
+      list: 'baseInfo.storageManagement.listView',
+      add: 'baseInfo.storageManagement.add',
+      edit: 'baseInfo.storageManagement.edit',
+      delete: 'baseInfo.storageManagement.delete',
+    },
   },
   safetyKnowledgeBase: {
     // 典型事故案例
