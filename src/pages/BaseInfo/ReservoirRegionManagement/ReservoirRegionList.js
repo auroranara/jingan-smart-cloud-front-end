@@ -507,7 +507,7 @@ export default class ReservoirRegionList extends PureComponent {
       model: sensor,
       loading: sensorLoading,
       rowSelection: {
-        selectedSensorKeys,
+        selectedRowKeys: selectedSensorKeys,
         onChange: this.onSensorChange,
       },
       unbindSensorCode,

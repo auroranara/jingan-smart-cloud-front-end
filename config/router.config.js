@@ -867,6 +867,12 @@ module.exports = env => {
                   path: '/base-info/storage-management/add',
                   component: './BaseInfo/StorageManagement/StorageEdit',
                 },
+                {
+                  name: 'edit',
+                  code: 'baseInfo.storageAreaManagement.edit',
+                  path: '/base-info/storage-management/edit/:id',
+                  component: './BaseInfo/StorageManagement/StorageEdit',
+                },
               ],
             },
             // 库区管理

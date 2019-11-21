@@ -86,7 +86,7 @@ export default class AddNewSensor extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: { params: { id } },
@@ -431,7 +431,16 @@ export default class AddNewSensor extends Component {
     } else if (file.status === 'done') {
       if (file.response && file.response.code === 200) {
         const result = file.response.data.list[0]
-        const list = fileList.map((item) => ({ ...item, url: result.webUrl, ...result }))
+        const list = fileList.map((item, index) => {
+          if (index === fileList.length - 1) {
+            return {
+              ...result,
+              uid: item.uid,
+              url: result.webUrl,
+              name: result.fileName,
+            }
+          } else return item
+        })
         this.setState({
           uploading: false,
           fileList: list,
@@ -794,7 +803,7 @@ export default class AddNewSensor extends Component {
     )
   }
 
-  render() {
+  render () {
     const {
       match: { params: { id = null } = {} },
       location: { query: { deviceId } }, // 新增绑定传感器时传递的设备id
