@@ -327,21 +327,22 @@ export default class ReservoirRegionList extends PureComponent {
           );
         },
       },
-      // {
-      //   title: '库房个数',
-      //   dataIndex: 'count',
-      //   align: 'center',
-      //   width: 200,
-      // },
-      // {
-      //   title: '重大危险源',
-      //   dataIndex: 'dangerSource',
-      //   align: 'center',
-      //   width: 200,
-      //   render: val => {
-      //     return +val === 2 ? '否' : '是';
-      //   },
-      // },
+      {
+        title: '库房个数',
+        dataIndex: 'warehouseNum',
+        align: 'center',
+        width: 200,
+      },
+      {
+        title: '重大危险源',
+        dataIndex: 'dangerSource',
+        align: 'center',
+        width: 200,
+        render: val => {
+          // return +val === 2 ? '否' : '是';
+          return <span>---</span>;
+        },
+      },
       {
         title: '所处环境功能区',
         dataIndex: 'environment',

@@ -15,6 +15,7 @@ export default {
     dangerData: {
       list: [],
       pagination: {},
+      msg: '',
     },
     safetyData: {
       list: [],
@@ -25,11 +26,10 @@ export default {
   effects: {
     *fetchDagerList({ payload, callback }, { call, put }) {
       const response = yield call(queryDangerElementList, payload);
-      const { code, data } = response;
-      if (code === 200) {
+      if (response.code === 200) {
         yield put({
           type: 'saveDangerList',
-          payload: data,
+          payload: response,
         });
         if (callback) callback(response.data);
       }
@@ -56,11 +56,10 @@ export default {
 
     *fetchSafetyList({ payload, callback }, { call, put }) {
       const response = yield call(querySafeRiskList, payload);
-      const { code, data } = response;
-      if (code === 200) {
+      if (response.code === 200) {
         yield put({
           type: 'saveSafetyList',
-          payload: data,
+          payload: response,
         });
       }
       if (callback) callback(response.data);
@@ -88,9 +87,11 @@ export default {
 
   reducers: {
     saveDangerList(state, { payload }) {
+      const { data, msg } = payload;
       return {
         ...state,
-        dangerData: payload,
+        msgDanger: msg,
+        dangerData: data,
       };
     },
 
@@ -105,9 +106,11 @@ export default {
     },
 
     saveSafetyList(state, { payload }) {
+      const { data, msg } = payload;
       return {
         ...state,
-        safetyData: payload,
+        msgSafety: msg,
+        safetyData: data,
       };
     },
 

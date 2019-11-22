@@ -163,7 +163,12 @@ export const TABLE_COLUMNS = [
     dataIndex: 'companyName',
     key: 'companyName',
     align: 'center',
-    width: 240,
+    width: 260,
+    render: val => (
+      <Ellipsis tooltip length={15} style={{ overflow: 'visible' }}>
+        {val}
+      </Ellipsis>
+    ),
   },
   {
     title: '作业/设备名称',
@@ -184,9 +189,9 @@ export const TABLE_COLUMNS = [
     dataIndex: 'dangerFactor',
     key: 'dangerFactor',
     align: 'center',
-    width: 180,
+    width: 300,
     render: val => (
-      <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
+      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
         {val}
       </Ellipsis>
     ),
@@ -208,7 +213,6 @@ export const TABLE_COLUMNS = [
     dataIndex: 'result',
     key: 'result',
     align: 'center',
-    width: 180,
     children: [
       {
         title: 'L',
@@ -252,9 +256,9 @@ export const TABLE_COLUMNS = [
     dataIndex: 'dangerMeasure',
     key: 'dangerMeasure',
     align: 'center',
-    width: 180,
+    width: 300,
     render: val => (
-      <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
+      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
         {val}
       </Ellipsis>
     ),
@@ -264,9 +268,9 @@ export const TABLE_COLUMNS = [
     dataIndex: 'consequenceMeasure',
     key: 'consequenceMeasure',
     align: 'center',
-    width: 180,
+    width: 300,
     render: val => (
-      <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
+      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
         {val}
       </Ellipsis>
     ),

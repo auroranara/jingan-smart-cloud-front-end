@@ -105,9 +105,10 @@ export default class TableList extends PureComponent {
           list = [],
           pagination: { pageNum, pageSize, total },
         },
+        msgDanger,
       },
     } = this.props;
-
+    console.log('112121', this.props);
     const extraColumns = [
       {
         title: '操作',
@@ -149,8 +150,8 @@ export default class TableList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：
-            {total}
+            单位数量：
+            {msgDanger}
           </p>
         }
       >
