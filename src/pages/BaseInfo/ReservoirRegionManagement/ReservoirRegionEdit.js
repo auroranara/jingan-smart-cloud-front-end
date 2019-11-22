@@ -11,7 +11,7 @@ import styles from './ReservoirRegion.less';
 const { Option } = Select;
 const FormItem = Form.Item;
 
-const selectTypeList = [{ key: '1', value: '是' }, { key: '2', value: '否' }];
+// const selectTypeList = [{ key: '1', value: '是' }, { key: '2', value: '否' }];
 
 // 编辑页面标题
 const editTitle = '编辑库区';
@@ -57,11 +57,11 @@ export default class ReservoirRegionEdit extends PureComponent {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { dangerSource, dangerSourceMessage } = currentList;
+          // const { dangerSource, dangerSourceMessage } = currentList;
           this.setState({
             detailList: currentList,
-            hasDangerSourse: dangerSource,
-            dangerSourceUnitId: dangerSourceMessage,
+            // hasDangerSourse: dangerSource,
+            // dangerSourceUnitId: dangerSourceMessage,
           });
         },
       });
@@ -91,7 +91,7 @@ export default class ReservoirRegionEdit extends PureComponent {
           submitting: true,
         });
 
-        const { dangerSourceUnitId } = this.state;
+        // const { dangerSourceUnitId } = this.state;
 
         const {
           number,
@@ -101,11 +101,11 @@ export default class ReservoirRegionEdit extends PureComponent {
           safetyDistance,
           deviceDistance,
           area,
-          count,
+          // count,
           spaceBetween,
-          dangerSource,
+          // dangerSource,
           // dangerSourceUnit,
-          unitCode,
+          // unitCode,
         } = values;
 
         const payload = {
@@ -117,14 +117,14 @@ export default class ReservoirRegionEdit extends PureComponent {
           safetyDistance,
           deviceDistance,
           area,
-          count,
+          // count,
           spaceBetween,
-          dangerSource,
-          dangerSourceUnit:
-            dangerSourceUnitId && dangerSourceUnitId.length > 0
-              ? dangerSourceUnitId.map(item => item.id).join(',')
-              : undefined,
-          unitCode: +dangerSource === 1 ? unitCode : '',
+          // dangerSource,
+          // dangerSourceUnit:
+          //   dangerSourceUnitId && dangerSourceUnitId.length > 0
+          //     ? dangerSourceUnitId.map(item => item.id).join(',')
+          //     : undefined,
+          // unitCode: +dangerSource === 1 ? unitCode : '',
         };
 
         const success = () => {
@@ -215,138 +215,138 @@ export default class ReservoirRegionEdit extends PureComponent {
   }
 
   // 显示重大危险源弹框
-  handleShowDangerSource = () => {
-    const { detailList } = this.state;
-    const { companyId } = detailList;
-    this.setState({ dangerVisible: true });
-    if (this.companyId || companyId) {
-      const payload = { pageSize: 10, pageNum: 1, companyId: this.companyId || companyId };
-      this.fetchDangerSourseList({ payload });
-    }
-  };
+  // handleShowDangerSource = () => {
+  //   const { detailList } = this.state;
+  //   const { companyId } = detailList;
+  //   this.setState({ dangerVisible: true });
+  //   if (this.companyId || companyId) {
+  //     const payload = { pageSize: 10, pageNum: 1, companyId: this.companyId || companyId };
+  //     this.fetchDangerSourseList({ payload });
+  //   }
+  // };
 
   // 获取危险源列表
-  fetchDangerSourseList = ({ payload }) => {
-    const { dispatch } = this.props;
-    const { detailList } = this.state;
-    const { companyId } = detailList;
-    dispatch({
-      type: 'reservoirRegion/fetchSourceList',
-      payload: { ...payload, companyId: this.companyId || companyId },
-    });
-  };
+  // fetchDangerSourseList = ({ payload }) => {
+  //   const { dispatch } = this.props;
+  //   const { detailList } = this.state;
+  //   const { companyId } = detailList;
+  //   dispatch({
+  //     type: 'reservoirRegion/fetchSourceList',
+  //     payload: { ...payload, companyId: this.companyId || companyId },
+  //   });
+  // };
 
-  handleSelectDSList = item => {
-    const {
-      form: { setFieldsValue },
-    } = this.props;
-    setFieldsValue({
-      dangerSourceUnit: item.map(item => item.name).join(','),
-      unitCode: item.map(item => item.code).join(','),
-    });
-    this.setState({ dangerSourceUnitId: item });
-    this.handleDSListClose();
-  };
+  // handleSelectDSList = item => {
+  //   const {
+  //     form: { setFieldsValue },
+  //   } = this.props;
+  //   setFieldsValue({
+  //     dangerSourceUnit: item.map(item => item.name).join(','),
+  //     unitCode: item.map(item => item.code).join(','),
+  //   });
+  //   this.setState({ dangerSourceUnitId: item });
+  //   this.handleDSListClose();
+  // };
 
   // 选择变化
-  onChangeDanger = i => {
-    const {
-      form: { setFieldsValue },
-    } = this.props;
-    this.setState({ hasDangerSourse: +i === 1 ? 1 : 2, dangerSourceUnitId: [] });
-    setFieldsValue({
-      unitCode: undefined,
-    });
-  };
+  // onChangeDanger = i => {
+  //   const {
+  //     form: { setFieldsValue },
+  //   } = this.props;
+  //   this.setState({ hasDangerSourse: +i === 1 ? 1 : 2, dangerSourceUnitId: [] });
+  //   setFieldsValue({
+  //     unitCode: undefined,
+  //   });
+  // };
 
-  handleDSListClose = () => {
-    this.setState({ dangerVisible: false });
-  };
+  // handleDSListClose = () => {
+  //   this.setState({ dangerVisible: false });
+  // };
 
   // 渲染危险源模态框
-  renderDangerModal() {
-    const {
-      reservoirRegion: { sourceData },
-      loading,
-    } = this.props;
+  // renderDangerModal() {
+  //   const {
+  //     reservoirRegion: { sourceData },
+  //     loading,
+  //   } = this.props;
 
-    const { dangerVisible } = this.state;
-    const spanStyle = { md: 8, sm: 12, xs: 24 };
-    const FIELD = [
-      {
-        id: 'code',
-        span: spanStyle,
-        render() {
-          return <Input placeholder="请输统一编码" />;
-        },
-        transform(value) {
-          return value.trim();
-        },
-      },
-      {
-        id: 'name',
-        render() {
-          return <Input placeholder="请输危险源名称" />;
-        },
-        transform(value) {
-          return value.trim();
-        },
-      },
-    ];
+  //   const { dangerVisible } = this.state;
+  //   const spanStyle = { md: 8, sm: 12, xs: 24 };
+  //   const FIELD = [
+  //     {
+  //       id: 'code',
+  //       span: spanStyle,
+  //       render() {
+  //         return <Input placeholder="请输统一编码" />;
+  //       },
+  //       transform(value) {
+  //         return value.trim();
+  //       },
+  //     },
+  //     {
+  //       id: 'name',
+  //       render() {
+  //         return <Input placeholder="请输危险源名称" />;
+  //       },
+  //       transform(value) {
+  //         return value.trim();
+  //       },
+  //     },
+  //   ];
 
-    const COLUMNS = [
-      {
-        title: '统一编码',
-        dataIndex: 'code',
-        key: 'code',
-        align: 'center',
-        width: 120,
-      },
-      {
-        title: '危险源名称',
-        dataIndex: 'name',
-        key: 'name',
-        align: 'center',
-        width: 90,
-      },
-      {
-        title: '重大危险源等级',
-        dataIndex: 'dangerLevel',
-        key: 'dangerLevel',
-        align: 'center',
-        width: 150,
-      },
-      {
-        title: '单元内涉及的危险化学品',
-        dataIndex: 'unitChemiclaNumDetail',
-        key: 'unitChemiclaNumDetail',
-        align: 'center',
-        width: 200,
-        render: val => {
-          return val
-            .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
-            .join(',')
-            .replace(/null+/g, '');
-        },
-      },
-    ];
+  //   const COLUMNS = [
+  //     {
+  //       title: '统一编码',
+  //       dataIndex: 'code',
+  //       key: 'code',
+  //       align: 'center',
+  //       width: 120,
+  //     },
+  //     {
+  //       title: '危险源名称',
+  //       dataIndex: 'name',
+  //       key: 'name',
+  //       align: 'center',
+  //       width: 90,
+  //     },
+  //     {
+  //       title: '重大危险源等级',
+  //       dataIndex: 'dangerLevel',
+  //       key: 'dangerLevel',
+  //       align: 'center',
+  //       width: 150,
+  //     },
+  //     {
+  //       title: '单元内涉及的危险化学品',
+  //       dataIndex: 'unitChemiclaNumDetail',
+  //       key: 'unitChemiclaNumDetail',
+  //       align: 'center',
+  //       width: 200,
+  //       render: val => {
+  //         return val
+  //           .map(item => item.chineName + ' ' + item.unitChemiclaNum + item.unitChemiclaNumUnit)
+  //           .join(',')
+  //           .replace(/null+/g, '');
+  //       },
+  //     },
+  //   ];
 
-    return (
-      <CompanyModal
-        title="选择重大危险源"
-        loading={loading}
-        visible={dangerVisible}
-        columns={COLUMNS}
-        field={FIELD}
-        modal={sourceData}
-        fetch={this.fetchDangerSourseList}
-        onSelect={this.handleSelectDSList}
-        onClose={this.handleDSListClose}
-        rowSelection={{ type: 'checkbox ' }}
-        multiSelect={true}
-      />
-    );
-  }
+  //   return (
+  //     <CompanyModal
+  //       title="选择重大危险源"
+  //       loading={loading}
+  //       visible={dangerVisible}
+  //       columns={COLUMNS}
+  //       field={FIELD}
+  //       modal={sourceData}
+  //       fetch={this.fetchDangerSourseList}
+  //       onSelect={this.handleSelectDSList}
+  //       onClose={this.handleDSListClose}
+  //       rowSelection={{ type: 'checkbox ' }}
+  //       multiSelect={true}
+  //     />
+  //   );
+  // }
 
   renderInfo() {
     const {
@@ -354,7 +354,7 @@ export default class ReservoirRegionEdit extends PureComponent {
       reservoirRegion: { envirTypeList },
     } = this.props;
 
-    const { hasDangerSourse, detailList, dangerSourceUnitId } = this.state;
+    const { detailList } = this.state;
 
     const {
       companyName,
@@ -365,9 +365,7 @@ export default class ReservoirRegionEdit extends PureComponent {
       safetyDistance,
       deviceDistance,
       area,
-      count,
       spaceBetween,
-      dangerSource,
       // dangerSourceUnit,
       unitCode,
     } = detailList;
@@ -494,7 +492,7 @@ export default class ReservoirRegionEdit extends PureComponent {
               ],
             })(<Input {...itemStyles} placeholder="请输入库区面积（㎡）" maxLength={10} />)}
           </FormItem>
-          <FormItem {...formItemLayout} label="库房个数">
+          {/* <FormItem {...formItemLayout} label="库房个数">
             {getFieldDecorator('count', {
               initialValue: count,
               rules: [
@@ -504,7 +502,7 @@ export default class ReservoirRegionEdit extends PureComponent {
                 },
               ],
             })(<Input {...itemStyles} placeholder="请输入库房个数" maxLength={10} />)}
-          </FormItem>
+          </FormItem> */}
           <FormItem {...formItemLayout} label="相邻库房最小间距（m）">
             {getFieldDecorator('spaceBetween', {
               initialValue: spaceBetween,
@@ -517,7 +515,7 @@ export default class ReservoirRegionEdit extends PureComponent {
               ],
             })(<Input {...itemStyles} placeholder="请输入相邻库房最小间距（m）" maxLength={10} />)}
           </FormItem>
-          <FormItem {...formItemLayout} label="是否构成重大危险源">
+          {/* <FormItem {...formItemLayout} label="是否构成重大危险源">
             {getFieldDecorator('dangerSource', {
               initialValue: dangerSource,
               rules: [
@@ -540,8 +538,8 @@ export default class ReservoirRegionEdit extends PureComponent {
                 ))}
               </Select>
             )}
-          </FormItem>
-          {+hasDangerSourse === 1 && (
+          </FormItem> */}
+          {/* {+hasDangerSourse === 1 && (
             <FormItem {...formItemLayout} label="所属危险化学品重大危险源单元">
               {getFieldDecorator('dangerSourceUnit', {
                 initialValue:
@@ -561,15 +559,14 @@ export default class ReservoirRegionEdit extends PureComponent {
                 {' '}
                 选择
               </Button>
-            </FormItem>
-          )}
-
+            </FormItem> */}
+          {/* )}
           <FormItem {...formItemLayout} label="所属重大危险源单元编号">
             {getFieldDecorator('unitCode', {
               initialValue: unitCode,
               getValueFromEvent: this.handleTrim,
             })(<Input {...itemStyles} disabled />)}
-          </FormItem>
+          </FormItem> */}
         </Form>
       </Card>
     );
@@ -671,7 +668,7 @@ export default class ReservoirRegionEdit extends PureComponent {
         {this.renderInfo()}
         {this.renderFooterToolbar()}
         {this.renderModal()}
-        {this.renderDangerModal()}
+        {/* {this.renderDangerModal()} */}
       </PageHeaderLayout>
     );
   }
