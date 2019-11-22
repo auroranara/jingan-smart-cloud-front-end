@@ -31,6 +31,7 @@ export default {
           type: 'saveDangerList',
           payload: data,
         });
+        if (callback) callback(response.data);
       }
     },
 
@@ -62,6 +63,7 @@ export default {
           payload: data,
         });
       }
+      if (callback) callback(response.data);
     },
 
     *fetchSafetySync({ success, error }, { call }) {
@@ -86,10 +88,9 @@ export default {
 
   reducers: {
     saveDangerList(state, { payload }) {
-      const { data } = payload;
       return {
         ...state,
-        dangerData: data,
+        dangerData: payload,
       };
     },
 
@@ -104,10 +105,9 @@ export default {
     },
 
     saveSafetyList(state, { payload }) {
-      const { data } = payload;
       return {
         ...state,
-        safetyData: data,
+        safetyData: payload,
       };
     },
 
