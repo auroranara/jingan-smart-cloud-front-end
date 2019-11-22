@@ -168,6 +168,15 @@ export default {
       delete: 'deviceManagement.gateway.delete',
       detail: 'deviceManagement.gateway.detail',
     },
+    // 监测设备
+    monitoringDevice: {
+      listView: 'deviceManagement.monitoringDevice.listView',
+      add: 'deviceManagement.monitoringDevice.add',
+      edit: 'deviceManagement.monitoringDevice.edit',
+      delete: 'deviceManagement.monitoringDevice.delete',
+      bindSensor: 'deviceManagement.monitoringDevice.bindSensor',
+      unbindSensor: 'deviceManagement.monitoringDevice.unbindSensor',
+    },
   },
   videoSurveillance: {
     hikVideoTree: {

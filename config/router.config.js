@@ -2400,6 +2400,38 @@ module.exports = env => {
                 },
               ],
             },
+            // 监测设备
+            {
+              path: '/device-management/monitoring-device',
+              name: 'monitoringDevice',
+              code: 'deviceManagement.monitoringDevice',
+              hideChildrenInMenu: true,
+              routes: [
+                {
+                  path: '/device-management/monitoring-device',
+                  name: 'monitoringDevice',
+                  redirect: '/device-management/monitoring-device/list',
+                },
+                {
+                  path: '/device-management/monitoring-device/list',
+                  name: 'list',
+                  code: 'deviceManagement.monitoringDevice.listView',
+                  component: './DeviceManagement/MonitoringDevice/index',
+                },
+                {
+                  path: '/device-management/monitoring-device/add',
+                  name: 'add',
+                  code: 'deviceManagement.monitoringDevice.add',
+                  component: './DeviceManagement/MonitoringDevice/AddMonitoringDevice',
+                },
+                {
+                  path: '/device-management/monitoring-device/edit/:id',
+                  name: 'edit',
+                  code: 'deviceManagement.monitoringDevice.edit',
+                  component: './DeviceManagement/MonitoringDevice/AddMonitoringDevice',
+                },
+              ],
+            },
           ],
         },
 

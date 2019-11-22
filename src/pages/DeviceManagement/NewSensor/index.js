@@ -3,7 +3,7 @@ import { Card, Form, Input, Button, Table, Row, Col, Divider, Popconfirm, Select
 import { connect } from 'dva';
 import router from 'umi/router';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
-import { hasAuthority, AuthA, AuthLink, AuthPopConfirm } from '@/utils/customAuth';
+import { AuthButton, AuthA, AuthLink, AuthPopConfirm } from '@/utils/customAuth';
 import { monitoringObjType } from '@/utils/dict';
 import codes from '@/utils/codes';
 
@@ -25,6 +25,7 @@ const {
       edit: editSensorCode,
       delete: deleteSensorCode,
       realTimeData: realTimeDataCode,
+      add: addSensorCode,
     },
   },
 } = codes
@@ -62,7 +63,7 @@ const renderTreeNodes = data => {
 }))
 export default class NewSensorList extends Component {
 
-  componentDidMount() {
+  componentDidMount () {
     this.handleQuery()
     this.fetchMonitoringTypeTree()
     this.fetchMonitoringTypes()
@@ -264,7 +265,7 @@ export default class NewSensorList extends Component {
               <FormItem {...formItemStyle}>
                 <Button style={{ marginRight: '10px' }} type="primary" onClick={() => this.handleQuery()}>查询</Button>
                 <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>重置</Button>
-                {/* <Button type="primary" onClick={() => router.push('/device-management/new-sensor/add')}>新增传感器</Button> */}
+                <AuthButton code={addSensorCode} type="primary" onClick={() => router.push('/device-management/new-sensor/add')}>新增传感器</AuthButton>
               </FormItem>
             </Col>
           </Row>
@@ -293,6 +294,13 @@ export default class NewSensorList extends Component {
         dataIndex: 'companyName',
         align: 'center',
         width: 400,
+      },
+      {
+        title: '传感器名称',
+        dataIndex: 'name',
+        align: 'center',
+        width: 200,
+        render: (val) => val || '——',
       },
       {
         title: '传感器编号/Token',
@@ -365,13 +373,6 @@ export default class NewSensorList extends Component {
         },
       },
       {
-        title: '监测点名称',
-        dataIndex: 'pointName',
-        align: 'center',
-        width: 200,
-        render: (val) => val || '——',
-      },
-      {
         title: '操作',
         key: '操作',
         align: 'center',
@@ -425,7 +426,7 @@ export default class NewSensorList extends Component {
     )
   }
 
-  render() {
+  render () {
     const {
       device: {
         sensor: {

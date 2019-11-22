@@ -68,6 +68,13 @@ import {
   fetchEquipmentDetail,
   fetchBindedSensorStatistics,
 } from '@/services/device/dataProcessing';
+import {
+  fetchMonitoringDevice,
+  addMonitoringDevice,
+  editMonitoringDevice,
+  deleteMonitoringDevice,
+  fetchMonitoringDeviceDetail,
+} from '@/services/device/monitoringDevice';
 
 const defaultPagination = {
   total: 0,
@@ -208,10 +215,19 @@ export default {
     bindedSensorCount: 0, // 已绑定传感器数量
     // 传感器实时数据
     realTimeData: {},
+    // 设备类型-监测设备类型
+    monitoringDeviceTypes: [],
+    // 监测设备
+    monitoringDevice: {
+      list: [],
+      pagination: defaultPagination,
+    },
+    // 监测设备详情
+    monitoringDeviceDetail: {},
   },
   effects: {
     // 获取监测类型列表树
-    *fetchMonitoringTypeTree({ callback }, { call, put }) {
+    *fetchMonitoringTypeTree ({ callback }, { call, put }) {
       const response = yield call(fetchMonitoringTypeTree)
       if (response && response.code === 200) {
         const list = response.data.list || []
@@ -223,7 +239,7 @@ export default {
       }
     },
     // 获取监测类型列表
-    *fetchMonitoringTypes(_, { call, put }) {
+    *fetchMonitoringTypes (_, { call, put }) {
       const response = yield call(fetchMonitoringTypes)
       if (response && response.code === 200) {
         yield put({
@@ -233,28 +249,28 @@ export default {
       }
     },
     // 新增监测类型
-    *addMonitoringTypes({ payload, success, error }, { call }) {
+    *addMonitoringTypes ({ payload, success, error }, { call }) {
       const response = yield call(addMonitoringTypes, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 编辑监测类型
-    *editMonitoringTypes({ payload, success, error }, { call }) {
+    *editMonitoringTypes ({ payload, success, error }, { call }) {
       const response = yield call(editMonitoringTypes, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 删除监测类型
-    *deleteMonitoringTypes({ payload, success, error }, { call }) {
+    *deleteMonitoringTypes ({ payload, success, error }, { call }) {
       const response = yield call(deleteMonitoringTypes, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 获取设备类型列表（分页）
-    *fetchDeviceTypes({ payload }, { call, put }) {
+    *fetchDeviceTypes ({ payload }, { call, put }) {
       const response = yield call(fetchDeviceTypes, payload)
       if (response && response.code === 200) {
         yield put({
@@ -264,7 +280,7 @@ export default {
       }
     },
     // 获取全部设备类型列表
-    *fetchAllDeviceTypes({ payload }, { call, put }) {
+    *fetchAllDeviceTypes ({ payload }, { call, put }) {
       const response = yield call(fetchAllDeviceTypes, payload)
       if (response && response.code === 200) {
         yield put({
@@ -274,14 +290,14 @@ export default {
       }
     },
     // 设备类型-配置监测类型
-    *deployMonitoringType({ payload, success, error }, { call }) {
+    *deployMonitoringType ({ payload, success, error }, { call }) {
       const response = yield call(deployMonitoringType, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 获取品牌列表（分页）
-    *fetchBrandsForPage({ payload }, { call, put }) {
+    *fetchBrandsForPage ({ payload }, { call, put }) {
       const response = yield call(fetchBrandsForPage, payload)
       if (response && response.code === 200) {
         yield put({
@@ -291,7 +307,7 @@ export default {
       }
     },
     // 获取品牌列表（全部）
-    *fetchBrands({ payload }, { call, put }) {
+    *fetchBrands ({ payload }, { call, put }) {
       const response = yield call(fetchBrands, payload)
       if (response && response.code === 200) {
         yield put({
@@ -301,28 +317,28 @@ export default {
       }
     },
     // 新增品牌
-    *addBrand({ payload, success, error }, { call }) {
+    *addBrand ({ payload, success, error }, { call }) {
       const response = yield call(addBrand, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 编辑品牌
-    *editBrand({ payload, success, error }, { call }) {
+    *editBrand ({ payload, success, error }, { call }) {
       const response = yield call(editBrand, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 删除品牌
-    *deleteBrand({ payload, success, error }, { call }) {
+    *deleteBrand ({ payload, success, error }, { call }) {
       const response = yield call(deleteBrand, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 获取图标库列表（分页）
-    *fetchTagsForPage({ payload }, { call, put }) {
+    *fetchTagsForPage ({ payload }, { call, put }) {
       const response = yield call(fetchTagsForPage, payload)
       if (response && response.code === 200) {
         yield put({
@@ -332,28 +348,28 @@ export default {
       }
     },
     // 编辑图标库
-    *editTag({ payload, success, error }, { call }) {
+    *editTag ({ payload, success, error }, { call }) {
       const response = yield call(editTag, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 新增图标库
-    *addTag({ payload, success, error }, { call }) {
+    *addTag ({ payload, success, error }, { call }) {
       const response = yield call(addTag, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 删除图标库
-    *deleteTag({ payload, success, error }, { call }) {
+    *deleteTag ({ payload, success, error }, { call }) {
       const response = yield call(deleteTag, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 获取全部图标
-    *fetchAllTags({ payload }, { call, put }) {
+    *fetchAllTags ({ payload }, { call, put }) {
       const response = yield call(fetchAllTags, payload)
       if (response && response.code === 200) {
         yield put({
@@ -363,7 +379,7 @@ export default {
       }
     },
     // 获取型号列表（分页）
-    *fetchModelsForPage({ payload }, { call, put }) {
+    *fetchModelsForPage ({ payload }, { call, put }) {
       const response = yield call(fetchModelsForPage, payload)
       if (response && response.code === 200) {
         yield put({
@@ -373,7 +389,7 @@ export default {
       }
     },
     // 获取型号列表（全部）
-    *fetchModels({ payload }, { call, put }) {
+    *fetchModels ({ payload }, { call, put }) {
       const response = yield call(fetchModels, payload)
       if (response && response.code === 200) {
         yield put({
@@ -383,28 +399,28 @@ export default {
       }
     },
     // 新增型号
-    *addModel({ payload, success, error }, { call }) {
+    *addModel ({ payload, success, error }, { call }) {
       const response = yield call(addModel, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 编辑型号
-    *editModel({ payload, success, error }, { call }) {
+    *editModel ({ payload, success, error }, { call }) {
       const response = yield call(editModel, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 删除型号
-    *deleteModel({ payload, success, error }, { call }) {
+    *deleteModel ({ payload, success, error }, { call }) {
       const response = yield call(deleteModel, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 获取参数列表（分页）
-    *fetchParameterForPage({ payload }, { call, put }) {
+    *fetchParameterForPage ({ payload }, { call, put }) {
       const response = yield call(fetchParameterForPage, payload)
       if (response && response.code === 200) {
         yield put({
@@ -414,7 +430,7 @@ export default {
       }
     },
     // 获取参数列表（全部）
-    *fetchAllParameters({ payload }, { call, put }) {
+    *fetchAllParameters ({ payload }, { call, put }) {
       const response = yield call(fetchAllParameters, payload)
       if (response && response.code === 200) {
         yield put({
@@ -424,21 +440,21 @@ export default {
       }
     },
     // 新增参数
-    *addParameter({ payload, success, error }, { call }) {
+    *addParameter ({ payload, success, error }, { call }) {
       const response = yield call(addParameter, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 编辑参数
-    *editParameter({ payload, success, error }, { call }) {
+    *editParameter ({ payload, success, error }, { call }) {
       const response = yield call(editParameter, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 获取报警策略
-    *fetchAlarmStrategy({ payload, callback }, { call, put }) {
+    *fetchAlarmStrategy ({ payload, callback }, { call, put }) {
       const response = yield call(fetchAlarmStrategy, payload)
       if (response && response.code === 200) {
         yield put({
@@ -449,7 +465,7 @@ export default {
       }
     },
     // 获取报警策略（自定义）
-    *fetchCusAlarmStrategy({ payload, callback }, { call, put }) {
+    *fetchCusAlarmStrategy ({ payload, callback }, { call, put }) {
       const response = yield call(fetchAlarmStrategy, payload)
       if (response && response.code === 200) {
         yield put({
@@ -460,21 +476,21 @@ export default {
       }
     },
     // 保存报警策略
-    *submitAlarmStrategy({ payload, success, error }, { call }) {
+    *submitAlarmStrategy ({ payload, success, error }, { call }) {
       const response = yield call(submitAlarmStrategy, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 删除参数
-    *deleteParameter({ payload, success, error }, { call }) {
+    *deleteParameter ({ payload, success, error }, { call }) {
       const response = yield call(deleteParameter, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 获取参数分组类型数组
-    *fetchParameterGroupTypes({ payload }, { call, put }) {
+    *fetchParameterGroupTypes ({ payload }, { call, put }) {
       const response = yield call(fetchParameterGroupTypes, payload)
       if (response && response.code === 200) {
         yield put({
@@ -484,7 +500,7 @@ export default {
       }
     },
     // 获取传感器列表（新）
-    *fetchSensors({ payload, callback }, { call, put }) {
+    *fetchSensors ({ payload, callback }, { call, put }) {
       const response = yield call(fetchSensors, payload)
       if (response && response.code === 200) {
         yield put({
@@ -495,7 +511,7 @@ export default {
       }
     },
     // 获取传感器详情
-    *fetchSensorDetail({ payload, callback }, { call, put }) {
+    *fetchSensorDetail ({ payload, callback }, { call, put }) {
       const response = yield call(fetchSensorDetail, payload)
       if (response && response.code === 200) {
         yield put({
@@ -506,28 +522,28 @@ export default {
       }
     },
     // 新增传感器（新）
-    *addSensor({ payload, success, error }, { call }) {
+    *addSensor ({ payload, success, error }, { call }) {
       const response = yield call(addSensor, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 编辑传感器（新）
-    *editSensor({ payload, success, error }, { call }) {
+    *editSensor ({ payload, success, error }, { call }) {
       const response = yield call(editSensor, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 删除传感器（新）
-    *deleteSensor({ payload, success, error }, { call }) {
+    *deleteSensor ({ payload, success, error }, { call }) {
       const response = yield call(deleteSensor, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 获取配置参数历史纪录
-    *fetchParameterStrategyHistory({ payload }, { call, put }) {
+    *fetchParameterStrategyHistory ({ payload }, { call, put }) {
       const response = yield call(fetchParameterStrategyHistory, payload)
       if (response && response.code === 200) {
         yield put({
@@ -537,7 +553,7 @@ export default {
       }
     },
     // 数据处理设备--企业列表（分页）
-    *fetchCompaniesForPage({ payload }, { call, put }) {
+    *fetchCompaniesForPage ({ payload }, { call, put }) {
       const response = yield call(fetchCompaniesForPage, payload)
       if (response && response.code === 200) {
         yield put({
@@ -547,7 +563,7 @@ export default {
       }
     },
     // 获取数据处理设备--企业详情
-    *fetchCompanyDetail({ payload, callback }, { call, put }) {
+    *fetchCompanyDetail ({ payload, callback }, { call, put }) {
       const response = yield call(fetchCompanyDetail, payload)
       if (response && response.code === 200) {
         yield put({
@@ -558,21 +574,21 @@ export default {
       }
     },
     // 新增数据处理设备类型
-    *addDeviceType({ payload, success, error }, { call }) {
+    *addDeviceType ({ payload, success, error }, { call }) {
       const response = yield call(addDeviceType, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 编辑数据处理设备类型
-    *editDeviceType({ payload, success, error }, { call }) {
+    *editDeviceType ({ payload, success, error }, { call }) {
       const response = yield call(editDeviceType, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 新增数据处理设备企业列表
-    *fetchCompanyiesForAdd({ payload }, { call, put }) {
+    *fetchCompanyiesForAdd ({ payload }, { call, put }) {
       const response = yield call(fetchCompanyiesForAdd, payload)
       if (response && response.code === 200) {
         yield put({
@@ -582,7 +598,7 @@ export default {
       }
     },
     // 获取--协议名称字典
-    *fetchAgreementNameDict({ payload }, { call, put }) {
+    *fetchAgreementNameDict ({ payload }, { call, put }) {
       const response = yield call(fetchAgreementNameDict, payload)
       if (response && response.code === 200) {
         yield put({
@@ -592,7 +608,7 @@ export default {
       }
     },
     // 获取--联网方式字典
-    *fetchNetworkTypeDict({ payload }, { call, put }) {
+    *fetchNetworkTypeDict ({ payload }, { call, put }) {
       const response = yield call(fetchNetworkTypeDict, payload)
       if (response && response.code === 200) {
         yield put({
@@ -602,7 +618,7 @@ export default {
       }
     },
     // 获取--运营商字典
-    *fetchOperatorDict({ payload }, { call, put }) {
+    *fetchOperatorDict ({ payload }, { call, put }) {
       const response = yield call(fetchOperatorDict, payload)
       if (response && response.code === 200) {
         yield put({
@@ -612,7 +628,7 @@ export default {
       }
     },
     // 获取--连接方式字典
-    *fetchConnectTypeDict({ payload }, { call, put }) {
+    *fetchConnectTypeDict ({ payload }, { call, put }) {
       const response = yield call(fetchConnectTypeDict, payload)
       if (response && response.code === 200) {
         yield put({
@@ -622,7 +638,7 @@ export default {
       }
     },
     // 获取网关设备列表（分页）
-    *fetchGatewayEquipmentForPage({ payload }, { call, put }) {
+    *fetchGatewayEquipmentForPage ({ payload }, { call, put }) {
       const response = yield call(fetchGatewayEquipmentForPage, payload)
       if (response && response.code === 200) {
         yield put({
@@ -632,7 +648,7 @@ export default {
       }
     },
     // 获取网关设备列表（全部）
-    *fetchGatewayEquipment({ payload }, { call, put }) {
+    *fetchGatewayEquipment ({ payload }, { call, put }) {
       const response = yield call(fetchGatewayEquipment, payload)
       if (response && response.code === 200) {
         yield put({
@@ -642,28 +658,28 @@ export default {
       }
     },
     // 新增数据处理设备
-    *addEquipment({ payload, success, error }, { call }) {
+    *addEquipment ({ payload, success, error }, { call }) {
       const response = yield call(addEquipment, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 编辑数据处理设备
-    *editEquipment({ payload, success, error }, { call }) {
+    *editEquipment ({ payload, success, error }, { call }) {
       const response = yield call(editEquipment, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 删除数据处理设备
-    *deleteEquipment({ payload, success, error }, { call }) {
+    *deleteEquipment ({ payload, success, error }, { call }) {
       const response = yield call(deleteEquipment, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 获取数据处理设备--设备列表（分页）
-    *fetchEquipmentsForPage({ payload }, { call, put }) {
+    *fetchEquipmentsForPage ({ payload }, { call, put }) {
       const response = yield call(fetchEquipmentsForPage, payload)
       if (response && response.code === 200) {
         yield put({
@@ -673,7 +689,7 @@ export default {
       }
     },
     // 获取数据处理设备--设备列表（全部）
-    *fetchEquipmentsForAll({ payload }, { call, put }) {
+    *fetchEquipmentsForAll ({ payload }, { call, put }) {
       const response = yield call(fetchEquipmentsForAll, payload)
       if (response && response.code === 200) {
         yield put({
@@ -683,7 +699,7 @@ export default {
       }
     },
     // 获取数据处理设备详情
-    *fetchEquipmentDetail({ payload, callback }, { call, put }) {
+    *fetchEquipmentDetail ({ payload, callback }, { call, put }) {
       const response = yield call(fetchEquipmentDetail, payload)
       if (response && response.code === 200) {
         yield put({
@@ -694,21 +710,21 @@ export default {
       }
     },
     // 绑定传感器
-    *bindSensor({ payload, success, error }, { call }) {
+    *bindSensor ({ payload, success, error }, { call }) {
       const response = yield call(bindSensor, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 解绑传感器
-    *unbindSensor({ payload, success, error }, { call }) {
+    *unbindSensor ({ payload, success, error }, { call }) {
       const response = yield call(unbindSensor, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)
     },
     // 获取已绑定传感器数量
-    *fetchBindedSensorStatistics({ payload }, { call, put }) {
+    *fetchBindedSensorStatistics ({ payload }, { call, put }) {
       const response = yield call(fetchBindedSensorStatistics, payload)
       if (response && response.code === 200) {
         yield put({
@@ -718,7 +734,7 @@ export default {
       }
     },
     // 获取传感器实时数据
-    *fetchRealTimeData({ payload }, { call, put }) {
+    *fetchRealTimeData ({ payload }, { call, put }) {
       const response = yield call(fetchRealTimeData, payload)
       if (response && response.code === 200) {
         yield put({
@@ -727,21 +743,74 @@ export default {
         })
       }
     },
+    // 获取设备类型--监测设备列表
+    *fetchMonitoringDeviceTypes (_, { call, put }) {
+      const res = yield call(fetchAllDeviceTypes, { type: 4 })
+      if (res && res.code === 200) {
+        yield put({
+          type: 'save',
+          payload: { monitoringDeviceTypes: res.data.list },
+        })
+      }
+    },
+    // 获取监测设备列表（分页）
+    *fetchMonitoringDevice ({ payload }, { call, put }) {
+      const res = yield call(fetchMonitoringDevice, payload)
+      if (res && res.code === 200) {
+        yield put({
+          type: 'saveMonitoringDevice',
+          payload: res.data,
+        })
+      }
+    },
+    // 新增监测设备
+    *addMonitoringDevice ({ payload, success, error }, { call }) {
+      const response = yield call(addMonitoringDevice, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 编辑监测设备
+    *editMonitoringDevice ({ payload, success, error }, { call }) {
+      const response = yield call(editMonitoringDevice, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 删除监测设备
+    *deleteMonitoringDevice ({ payload, success, error }, { call }) {
+      const response = yield call(deleteMonitoringDevice, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 获取监测设备详情
+    *fetchMonitoringDeviceDetail ({ payload, callback }, { call, put }) {
+      const res = yield call(fetchMonitoringDeviceDetail, payload)
+      if (res && res.code === 200) {
+        const detail = res.data || {}
+        yield put({
+          type: 'save',
+          payload: { monitoringDeviceDetail: detail },
+        })
+        if (callback) callback(detail)
+      }
+    },
   },
   reducers: {
-    save(state, action) {
+    save (state, action) {
       return {
         ...state,
         ...action.payload,
       }
     },
-    saveMonitoringTypes(state, { payload = [] }) {
+    saveMonitoringTypes (state, { payload = [] }) {
       return {
         ...state,
         monitoringType: payload,
       }
     },
-    saveDeviceTypes(state, {
+    saveDeviceTypes (state, {
       payload: {
         list = [],
         pagination = defaultPagination,
@@ -755,7 +824,7 @@ export default {
         },
       }
     },
-    saveBrands(state, {
+    saveBrands (state, {
       payload: {
         list = [],
         pagination = defaultPagination,
@@ -769,7 +838,7 @@ export default {
         },
       }
     },
-    saveTags(state, {
+    saveTags (state, {
       payload: {
         list = [],
         pagination = defaultPagination,
@@ -783,7 +852,7 @@ export default {
         },
       }
     },
-    saveModels(state, {
+    saveModels (state, {
       payload: {
         list = [],
         pagination = defaultPagination,
@@ -797,7 +866,7 @@ export default {
         },
       }
     },
-    saveParameters(state, {
+    saveParameters (state, {
       payload: {
         list = [],
         pagination = defaultPagination,
@@ -812,14 +881,14 @@ export default {
       }
     },
     // 保存报警策略
-    saveAlarmStrategy(state, { payload = [] }) {
+    saveAlarmStrategy (state, { payload = [] }) {
       return {
         ...state,
         alarmStrategy: payload,
       }
     },
     // 保存传感器列表
-    saveSensor(state, {
+    saveSensor (state, {
       payload: {
         list = [],
         pagination = defaultPagination,
@@ -834,7 +903,7 @@ export default {
       }
     },
     // 数据处理设备企业列表（分页）
-    saveCompanies(state, {
+    saveCompanies (state, {
       payload: {
         list = [],
         pagination = defaultPagination,
@@ -848,7 +917,7 @@ export default {
         },
       }
     },
-    saveCompaniesForAdd(state, {
+    saveCompaniesForAdd (state, {
       payload: {
         list = [],
         pagination = defaultPagination,
@@ -862,7 +931,7 @@ export default {
         },
       }
     },
-    saveGatewayDevice(state, {
+    saveGatewayDevice (state, {
       payload: {
         list = [],
         pagination = defaultPagination,
@@ -876,7 +945,7 @@ export default {
         },
       }
     },
-    saveEquipments(state, {
+    saveEquipments (state, {
       payload: {
         list = [],
         pagination = defaultPagination,
@@ -885,6 +954,20 @@ export default {
       return {
         ...state,
         equipment: {
+          list,
+          pagination,
+        },
+      }
+    },
+    saveMonitoringDevice (state, {
+      payload: {
+        list = [],
+        pagination = defaultPagination,
+      } = {},
+    }) {
+      return {
+        ...state,
+        monitoringDevice: {
           list,
           pagination,
         },
