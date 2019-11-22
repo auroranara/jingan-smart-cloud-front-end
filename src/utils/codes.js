@@ -569,4 +569,20 @@ export default {
       delete: 'safetyKnowledgeBase.typicalAccidentCase.delete',
     },
   },
+
+  // 两单信息管理
+  twoInformManagement: {
+    dangerFactorsList: {
+      list: 'twoInformationManagement.dangerFactorsList.list',
+      view: 'twoInformationManagement.dangerFactorsList.view',
+      delete: 'twoInformationManagement.dangerFactorsList.delete',
+      sync: 'twoInformationManagement.dangerFactorsList.sync',
+    },
+    safetyRiskList: {
+      list: 'twoInformationManagement.safetyRiskList.list',
+      view: 'twoInformationManagement.safetyRiskList.view',
+      delete: 'twoInformationManagement.safetyRiskList.delete',
+      sync: 'twoInformationManagement.safetyRiskList.sync',
+    },
+  },
 };
