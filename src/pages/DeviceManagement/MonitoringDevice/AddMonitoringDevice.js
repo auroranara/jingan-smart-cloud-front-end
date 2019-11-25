@@ -113,8 +113,6 @@ export default class AddMonitoringDevice extends Component {
           buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
         },
       })
-    } else {
-      setFieldsValue({ locationType: 0 })
     }
   }
 
@@ -177,6 +175,9 @@ export default class AddMonitoringDevice extends Component {
     this.setState({ selectedCompany, companyModalVisible: false });
     setFieldsValue({ companyId });
     this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+    setTimeout(() => {
+      setFieldsValue({ locationType: 0 });
+    }, 0);
   }
 
   /**

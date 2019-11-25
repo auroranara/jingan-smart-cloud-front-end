@@ -33,3 +33,11 @@ export async function deleteMonitoringDevice (params) {
 export async function fetchMonitoringDeviceDetail (params) {
   return request(`/acloud_new/v2/monitor/monitorEquipment/${params.id}`)
 }
+
+// 绑定监测设备到监测对象
+export async function bindMonitoringDevice (body) {
+  return request('/acloud_new/v2/monitor/monitorEquipment/bind', {
+    method: 'POST',
+    body,
+  })
+}

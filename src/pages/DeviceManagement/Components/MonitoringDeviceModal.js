@@ -11,55 +11,39 @@ import {
   Divider,
 } from 'antd';
 import { AuthPopConfirm, AuthA } from '@/utils/customAuth';
-import codes from '@/utils/codes';
 
 const FormItem = Form.Item;
 
-const {
-  deviceManagement: {
-    newSensor: {
-      edit: editSensorCode,
-    },
-  },
-} = codes
 const defaultPageSize = 10;
 const colWrapper = { lg: 8, md: 12, sm: 24, xs: 24 }
 const formItemStyle = { style: { margin: '0', padding: '4px 0' } }
+
 const defaultColumns = [
   {
-    title: '品牌',
-    dataIndex: 'brandName',
+    title: '设备名称',
+    dataIndex: 'name',
     align: 'center',
     width: 200,
   },
   {
-    title: '型号',
-    dataIndex: 'modelName',
+    title: '编号',
+    dataIndex: 'code',
     align: 'center',
     width: 200,
   },
   {
-    title: '传感器Token',
-    dataIndex: 'token',
+    title: '设备类型',
+    dataIndex: 'equipmentTypeName',
     align: 'center',
-  },
-  {
-    title: '可用性',
-    dataIndex: 'useStatus',
-    width: 150,
-    align: 'center',
-    render: (val) => <Tag color={val === 1 ? 'blue' : 'red'}>{val === 1 ? '启用' : '禁用'}</Tag>,
+    width: 200,
   },
 ]
 
-/*
-  绑定/解绑传感器弹窗
-*/
+/* 绑定/解绑监测设备 */
 const TableModal = Form.create()(props => {
   const {
-    title,
-    tag = 'bind', // 'bind' / 'unbind'
-    loading,
+    type = 'bind', // bind 绑定/unbind解绑
+    loading, // 列表加载状态
     form: { getFieldDecorator, resetFields, getFieldsValue },
     visible,
     onCancel,
@@ -74,12 +58,11 @@ const TableModal = Form.create()(props => {
         total = 0,
       },
     },
-    handleUnbind, // 解绑传感器
-    unbindSensorCode, // 解绑传感器权限
-    canEditSensor = false, // 操作中能否跳转到编辑传感器页面
+    handleUnbind, // 解绑
+    unbindAuthority, // 解绑权限
     ...resProps
   } = props
-  // 查询传感器列表
+  // 查询列表
   const handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
     const values = getFieldsValue()
     fetch({
@@ -94,7 +77,7 @@ const TableModal = Form.create()(props => {
     resetFields()
     handleQuery()
   }
-  const columns = tag === 'bind' ? defaultColumns : [
+  const columns = type === 'bind' ? defaultColumns : [
     ...defaultColumns,
     {
       title: '操作',
@@ -104,13 +87,13 @@ const TableModal = Form.create()(props => {
       render: (val, row) => (
         <Fragment>
           <AuthPopConfirm
-            code={unbindSensorCode}
-            title="确认要解绑该传感器吗？"
+            authority={unbindAuthority}
+            title="确认要解绑吗？"
             onConfirm={() => handleUnbind(row.id)}
           >
             解绑
         </AuthPopConfirm>
-          {canEditSensor && (
+          {/* {canEditSensor && (
             <Fragment>
               <Divider type="vertical" />
               <AuthA code={editSensorCode} onClick={() => {
@@ -119,17 +102,17 @@ const TableModal = Form.create()(props => {
                 winHandler.focus();
               }}>编辑</AuthA>
             </Fragment>
-          )}
+          )} */}
         </Fragment>
       ),
     },
   ]
   return (
     <Modal
-      title={title || (tag === 'bind' && '绑定传感器') || (tag === 'unbind' && '已绑定传感器')}
+      title={(type === 'bind' && '绑定监测设备') || (type === 'unbind' && '已绑定监测设备')}
       width={900}
       visible={visible}
-      destroyOnClose={true}
+      destroyOnClose
       onCancel={onCancel}
       onOk={onOk}
       {...resProps}
@@ -138,8 +121,15 @@ const TableModal = Form.create()(props => {
         <Row gutter={16}>
           <Col {...colWrapper}>
             <FormItem {...formItemStyle}>
-              {getFieldDecorator('token')(
-                <Input placeholder="传感器Token" />
+              {getFieldDecorator('name')(
+                <Input placeholder="名称" />
+              )}
+            </FormItem>
+          </Col>
+          <Col {...colWrapper}>
+            <FormItem {...formItemStyle}>
+              {getFieldDecorator('code')(
+                <Input placeholder="编号" />
               )}
             </FormItem>
           </Col>
@@ -179,5 +169,4 @@ const TableModal = Form.create()(props => {
     </Modal>
   )
 })
-
 export default TableModal;

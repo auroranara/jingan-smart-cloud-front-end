@@ -2,7 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { Form, Card, Button, Input, Table, Divider, message } from 'antd';
 import ToolBar from '@/components/ToolBar';
-import { AuthA, AuthPopConfirm, AuthButton } from '@/utils/customAuth';
+import { AuthA, AuthPopConfirm, AuthButton, hasAuthority } from '@/utils/customAuth';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
 import router from 'umi/router';
@@ -10,6 +10,8 @@ import router from 'umi/router';
 import { storageMediumStatusEnum } from '@/utils/dict';
 // 介质类别
 import { RISK_CATEGORIES } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
+// 选择监测设备弹窗
+import MonitoringDeviceModal from '@/pages/DeviceManagement/Components/MonitoringDeviceModal';
 
 const {
   baseInfo: {
@@ -17,6 +19,8 @@ const {
       add: addCode,
       edit: editCode,
       delete: deleteCode,
+      bind: bindCode,
+      unbind: unbindCode,
     },
   },
 } = codes
@@ -89,8 +93,11 @@ const fields = [
 ];
 const trueOrFalseLabel = ['是', '否']
 
-@connect(({ loading, baseInfo }) => ({
+@connect(({ loading, device, user, baseInfo }) => ({
   baseInfo,
+  device,
+  user,
+  modalLoading: loading.effects['device/fetchMonitoringDevice'],
 }))
 @Form.create()
 export default class StorageList extends PureComponent {
@@ -110,7 +117,7 @@ export default class StorageList extends PureComponent {
   }
 
   // 查询
-  handleQuery = (_, pageNum = 1, pageSize = DEFAULT_PAGE_SIZE) => {
+  handleQuery = (pageNum = 1, pageSize = DEFAULT_PAGE_SIZE) => {
     const { dispatch } = this.props
     const fields = this.form.props.form.getFieldsValue()
     dispatch({
@@ -138,6 +145,120 @@ export default class StorageList extends PureComponent {
       error: (res) => { message.error(res ? res.msg : '储罐删除失败') },
     })
   }
+
+  /**
+   * 获取可绑定监测设备列表
+   */
+  fetchMonitoringDevice = ({ payload = { pageNum: 1, pageSize: DEFAULT_PAGE_SIZE }, ...res } = {}) => {
+    const { dispatch } = this.props;
+    const { detail } = this.state;
+    dispatch({
+      type: 'device/fetchMonitoringDevice',
+      ...res,
+      payload: {
+        ...payload,
+        companyId: detail.companyId,
+        bindTargetStatus: 0, // 绑定状态 0 未绑定
+        bindTargetId: detail.id,
+      },
+    });
+  };
+
+  /**
+   * 获取已绑定监测设备列表
+   */
+  fetchBindedMonitoringDevice = ({ payload = { pageNum: 1, pageSize: DEFAULT_PAGE_SIZE }, ...res } = {}) => {
+    const { dispatch } = this.props;
+    const { detail } = this.state;
+    dispatch({
+      type: 'device/fetchMonitoringDevice',
+      ...res,
+      payload: {
+        ...payload,
+        companyId: detail.companyId,
+        targetId: detail.id,
+      },
+    });
+  };
+
+  /**
+   * 绑定时选择传感器
+   */
+  onModalSelectedChange = selectedKeys => {
+    this.setState({ selectedKeys });
+  };
+
+  /**
+   * 解绑监测设备
+   */
+  handleunBind = id => {
+    const { dispatch } = this.props;
+    const { detail } = this.state;
+    dispatch({
+      type: 'device/bindMonitoringDevice',
+      payload: {
+        targetId: detail.id, // 监测对象id（库房id）
+        bindStatus: 0,// 0 解绑
+        equipmentIdList: [id],
+      },
+      success: () => {
+        message.success('解绑成功');
+        this.fetchBindedMonitoringDevice();
+        this.handleQuery();
+      },
+      error: res => {
+        message.error(res ? res.msg : '解绑失败');
+      },
+    });
+  };
+
+  /**
+   * 绑定传感器
+   */
+  handleBind = () => {
+    const { dispatch } = this.props;
+    const { selectedKeys, detail } = this.state;
+    if (!selectedKeys || selectedKeys.length === 0) {
+      message.warning('请勾选监测设备！');
+      return;
+    }
+    dispatch({
+      type: 'device/bindMonitoringDevice',
+      payload: {
+        bindStatus: 1, // 1 绑定
+        targetId: detail.id,
+        equipmentIdList: selectedKeys,
+      },
+      success: () => {
+        message.success('绑定成功');
+        this.setState({ bindModalVisible: false, detail: {} });
+        this.handleQuery();
+      },
+      error: res => {
+        message.error(res ? res.msg : '绑定失败');
+      },
+    });
+  };
+
+  /**
+   * 打开已绑定传感器弹窗
+   */
+  handleViewBindedModal = detail => {
+    this.setState({ detail }, () => {
+      this.fetchBindedMonitoringDevice();
+      this.setState({ bindedModalVisible: true });
+    });
+  };
+
+  /**
+   * 点击打开可绑定传感器弹窗
+   */
+  handleViewBind = detail => {
+    this.setState({ detail, selectedKeys: [] }, () => {
+      this.fetchMonitoringDevice();
+      this.setState({ bindModalVisible: true });
+    });
+  };
 
   // 渲染表格
   renderTable = () => {
@@ -199,20 +320,32 @@ export default class StorageList extends PureComponent {
         width: 150,
         render: (val, { area, location }) => `${area || ''}${location || ''}`,
       },
-      // {
-      //   title: '已绑传感器',
-      //   dataIndex: 'bind',
-      //   align: 'center',
-      //   width: 300,
-      // },
+      {
+        title: '已绑监测设备',
+        dataIndex: 'monitorEquipmentCount',
+        align: 'center',
+        width: 120,
+        render: (val, row) => (
+          <span
+            onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
+            style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+          >
+            {val}
+          </span>
+        ),
+      },
       {
         title: '操作',
         key: '操作',
         align: 'center',
-        width: 150,
+        width: 200,
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
+            <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
+              绑定监测设备
+            </AuthA>
+            <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => router.push(`/base-info/storage-management/edit/${row.id}`)}>编辑</AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
@@ -244,10 +377,10 @@ export default class StorageList extends PureComponent {
             showSizeChanger: true,
             pageSizeOptions: ['5', '10', '15', '20'],
             onChange: (pageNum, pageSize) => {
-              this.handleQuery({}, pageNum, pageSize);
+              this.handleQuery(pageNum, pageSize);
             },
             onShowSizeChange: (pageNum, pageSize) => {
-              this.handleQuery({}, 1, pageSize);
+              this.handleQuery(1, pageSize);
             },
           }}
         />
@@ -259,13 +392,48 @@ export default class StorageList extends PureComponent {
 
   render () {
     const {
+      modalLoading,
       baseInfo: {
         storageTank: {
           a = 0, // 单位数量
           pagination: { total = 0 },
         },
       },
-    } = this.props
+      device: { monitoringDevice },
+      user: { currentUser: { permissionCodes } },
+    } = this.props;
+    const { bindModalVisible, bindedModalVisible, selectedKeys } = this.state;
+    // 解绑权限
+    const unbindAuthority = hasAuthority(unbindCode, permissionCodes)
+    const bindModalProps = {
+      type: 'bind',
+      visible: bindModalVisible,
+      fetch: this.fetchMonitoringDevice,
+      onCancel: () => {
+        this.setState({ bindModalVisible: false });
+      },
+      onOk: this.handleBind,
+      model: monitoringDevice,
+      loading: modalLoading,
+      rowSelection: {
+        selectedRowKeys: selectedKeys,
+        onChange: this.onModalSelectedChange,
+      },
+      unbindAuthority,
+    };
+    const bindedModalProps = {
+      type: 'unbind',
+      visible: bindedModalVisible,
+      fetch: this.fetchBindedMonitoringDevice,
+      onCancel: () => {
+        this.setState({ bindedModalVisible: false });
+      },
+      model: monitoringDevice,
+      loading: modalLoading,
+      handleUnbind: this.handleunBind,
+      footer: null,
+      unbindAuthority,
+    };
     return (
       <PageHeaderLayout
         title={title}
@@ -280,7 +448,7 @@ export default class StorageList extends PureComponent {
         <Card>
           <ToolBar
             fields={fields}
-            onSearch={this.handleQuery}
+            onSearch={(payload, ...res) => { this.handleQuery(...res) }}
             onReset={this.handleReset}
             action={this.exportButton}
             wrappedComponentRef={form => { this.form = form }}
@@ -288,6 +456,10 @@ export default class StorageList extends PureComponent {
         </Card>
 
         {this.renderTable()}
+        {/* 绑定监测设备弹窗 */}
+        <MonitoringDeviceModal {...bindModalProps} />
+        {/* 已绑定监测设备弹窗 */}
+        <MonitoringDeviceModal {...bindedModalProps} />
       </PageHeaderLayout>
     );
   }

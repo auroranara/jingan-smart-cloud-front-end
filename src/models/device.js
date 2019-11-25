@@ -74,6 +74,7 @@ import {
   editMonitoringDevice,
   deleteMonitoringDevice,
   fetchMonitoringDeviceDetail,
+  bindMonitoringDevice,
 } from '@/services/device/monitoringDevice';
 
 const defaultPagination = {
@@ -795,6 +796,13 @@ export default {
         })
         if (callback) callback(detail)
       }
+    },
+    // 绑定监测设备到监测对象
+    *bindMonitoringDevice ({ payload, success, error }, { call }) {
+      const response = yield call(bindMonitoringDevice, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
     },
   },
   reducers: {
