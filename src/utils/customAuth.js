@@ -152,7 +152,7 @@ export function filterMenus(MenuData, codes = [], codeMap, sysType) {
     // if (children) menu.children = filterMenus(children, codes, codeMap);
     // menuData.push(menu);
 
-    if (path === '/' || path !== '/' && codes.includes(codeMap[path]) && (!Array.isArray(systemType) || Array.isArray(systemType) && systemType.includes(sysType))) {
+    if (path === '/' || path !== '/' && codes.includes(codeMap[path]) && (systemType === undefined || systemType !== undefined && systemType === sysType)) {
       if (children) menu.children = filterMenus(children, codes, codeMap, sysType);
       menuData.push(menu);
     }
@@ -357,5 +357,5 @@ export function getSystemType(pathname, route) {
   const name = pathname.match(/^\/[^/]*/)[0];
   const { routes } = route;
   const target = routes.find(({ path }) => path === name);
-  return target && target.systemType && target.systemType[0] ? target.systemType[0] : 0;
+  return target && target.systemType ? target.systemType : 0;
 }
