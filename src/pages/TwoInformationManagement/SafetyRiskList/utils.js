@@ -116,7 +116,8 @@ const dangerLevelList = [
     value: '蓝',
   },
 ];
-export const SEARCH_FIELDS = [
+
+export const SEARCH_FIELDS_COMPANY = [
   // modify
   {
     id: 'companyName',
@@ -124,6 +125,9 @@ export const SEARCH_FIELDS = [
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
+];
+
+export const SEARCH_FIELDS = [
   {
     id: 'name',
     label: '作业/设备名称：',
@@ -157,7 +161,7 @@ export const SEARCH_FIELDS = [
   },
 ];
 
-export const TABLE_COLUMNS = [
+export const TABLE_COLUMNS_COMPANY = [
   {
     title: '单位名称',
     dataIndex: 'companyName',
@@ -170,6 +174,9 @@ export const TABLE_COLUMNS = [
       </Ellipsis>
     ),
   },
+];
+
+export const TABLE_COLUMNS = [
   {
     title: '作业/设备名称',
     dataIndex: 'name',
