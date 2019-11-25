@@ -5,14 +5,6 @@
     }
   }
 }
-.historyJumper {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  background: no-repeat center;
-  background-size: contain;
-  cursor: pointer;
-}
 .spinContainer {
   display: none;
 }
@@ -37,29 +29,25 @@
 
     .alarmMarker {
       flex: none;
-      display: inline-block;
       margin-left: 1em;
       padding: 0 0.25em;
-      font-size: 14px;
       color: #fff;
       background-color: red;
       border-radius: 2em;
       vertical-align: middle;
     }
+
     .majorHazard {
-      position: absolute;
-      top: 50%;
-      right: 0;
+      flex: none;
+      margin-left: 1em;
       padding-left: 24px;
-      font-size: 14px;
       color: red;
       background: no-repeat left;
       background-size: 20px;
-      transform: translateY(-50%);
     }
   }
   .address {
-    padding-left: 24px;
+    padding-left: 20px;
     background: no-repeat left;
     background-size: 16px;
   }
@@ -79,16 +67,13 @@
       flex: none;
       width: 20%;
 
-      .paramName {
-
-      }
       .paramValueWrapper {
         display: flex;
         align-items: center;
 
         .paramValue {
           flex: none;
-          margin-right: 1em;
+          margin-right: 0.5em;
           font-size: 24px;
         }
         .paramTrendWrapper {
@@ -112,7 +97,7 @@
         }
       }
       .paramAddress {
-        padding-left: 24px;
+        padding-left: 20px;
         color: rgba(0, 0, 0, 0.45);
         background: no-repeat left;
         background-size: 16px;

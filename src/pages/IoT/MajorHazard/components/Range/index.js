@@ -84,12 +84,14 @@ export default class Range extends Component {
             </div>
           ))}
         </div>
-        <DatePicker.RangePicker
-          className={styles.rangePicker}
-          value={value}
-          onChange={this.handleRangeChange}
-          allowClear={false}
-        />
+        <div>
+          <DatePicker.RangePicker
+            className={styles.rangePicker}
+            value={value}
+            onChange={this.handleRangeChange}
+            allowClear={false}
+          />
+        </div>
       </div>
     );
   }

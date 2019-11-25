@@ -5,18 +5,16 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import {
-  TITLE as SUPER_TITLE,
-  URL as SUPER_URL,
-  TANK_AREA_HISTORY_URL,
-} from '../../index';
-import iconHistory from '../../imgs/icon-history.png';
+  MAJOR_HAZARD_URL,
+  TANK_AREA_DETAIL_URL,
+} from '../../URLS';
 import iconTankArea from '../../imgs/icon-tank-area.png';
 import iconAddress from '../../imgs/icon-address.png';
 import iconIsMajorHazard from '../../imgs/icon-is-major-hazard.png';
 import styles from './index.less';
 
-export const TANK_AREA_DETAIL_URL = '/iot/major-hazard/tank-area/real-time/detail';
-export const TITLE = '储罐区实时监测';
+const TITLE = '储罐区实时监测';
+const DELAY = 1 * 60 * 1000;
 const BREADCRUMB_LIST = [
   {
     title: '首页',
@@ -28,9 +26,9 @@ const BREADCRUMB_LIST = [
     name: '物联网监测',
   },
   {
-    title: SUPER_TITLE,
-    name: SUPER_TITLE,
-    href: SUPER_URL,
+    title: '重大危险源监测',
+    name: '重大危险源监测',
+    href: MAJOR_HAZARD_URL,
   },
   {
     title: TITLE,
@@ -53,6 +51,7 @@ const TABS = [
 ];
 const STATUS_MAPPER = [undefined, 1, 0];
 const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+const GET_TANK_AREA_REAL_TIME = 'majorHazardMonitor/getTankAreaRealTime';
 
 @connect(({
   user,
@@ -61,11 +60,16 @@ const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
   user,
   majorHazardMonitor,
 }), dispatch => ({
-  getTankAreaRealTime(payload, callback) {
+  getTankAreaRealTime(payload, callback) { // 获取储罐区实时监测
     dispatch({
-      type: 'majorHazardMonitor/getTankAreaRealTime',
+      type: GET_TANK_AREA_REAL_TIME,
       payload,
-      callback,
+      callback(success, data) {
+        if (!success) {
+          message.error('获取储罐区实时监测数据失败，请稍后重试或联系管理人员！');
+        }
+        callback && callback(success, data);
+      },
     });
   },
 }))
@@ -78,7 +82,7 @@ export default class TankAreaRealTime extends Component {
   realTimer = null;
 
   componentDidMount() {
-    this.onTabChange(TABS[0].key);
+    this.handleTabChange(TABS[0].key);
   }
 
   componentWillUnmount() {
@@ -90,10 +94,7 @@ export default class TankAreaRealTime extends Component {
     const { tabActiveKey } = this.state;
     getTankAreaRealTime({
       status: STATUS_MAPPER[tabActiveKey],
-    }, (success) => {
-      if (!success) {
-        message.error('获取储罐区实时监测数据失败，请稍后重试或联系管理人员！');
-      }
+    }, () => {
       this.setState({
         loading: false,
       });
@@ -104,14 +105,14 @@ export default class TankAreaRealTime extends Component {
     setTimeout(() => {
       this.getTankAreaRealTime();
       this.setRealTimer();
-    }, 1 * 60 * 1000);
+    }, DELAY);
   }
 
   clearRealTimer = () => {
     clearTimeout(this.realTimer);
   }
 
-  onTabChange = (tabActiveKey) => {
+  handleTabChange = (tabActiveKey) => {
     this.setState({
       tabActiveKey,
       loading: true,
@@ -149,12 +150,9 @@ export default class TankAreaRealTime extends Component {
         className={styles.container}
         title={TITLE}
         breadcrumbList={BREADCRUMB_LIST}
-        action={(
-          <div className={styles.historyJumper} style={{ backgroundImage: `url(${iconHistory})` }} onClick={() => router.push(TANK_AREA_HISTORY_URL)} title="储罐区历史统计" />
-        )}
         tabList={TABS}
         tabActiveKey={tabActiveKey}
-        onTabChange={this.onTabChange}
+        onTabChange={this.handleTabChange}
       >
         <List
           grid={{ gutter: 24, column: 1 }}

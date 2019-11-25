@@ -1,17 +1,21 @@
 .container {
-  margin-bottom: -4px;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0 -12px -8px;
+
+  & > div {
+    margin-bottom: 8px;
+    padding: 0 12px;
+  }
 }
 .radioList {
-  display: inline-block;
-  margin-right: 24px;
-  margin-bottom: 4px;
-  vertical-align: top;
+  display: flex;
+  flex-wrap: wrap;
 
   .radioItem {
-    display: inline-block;
     padding: 0 8px;
-    line-height: 32px;
+    line-height: 30px;
     color: rgba(0, 0, 0, 0.65);
     cursor: pointer;
     vertical-align: top;
@@ -22,7 +26,4 @@
       color: #1890ff;
     }
   }
-}
-.rangePicker {
-  margin-bottom: 4px;
 }

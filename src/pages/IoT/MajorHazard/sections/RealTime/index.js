@@ -3,6 +3,9 @@ import { List, Card, Tooltip } from 'antd';
 import router from 'umi/router';
 import moment from 'moment';
 import classNames from 'classnames';
+import {
+  TANK_AREA_REAL_TIME_URL,
+} from '../../URLS';
 import iconTankArea from '../../imgs/icon-tank-area.png';
 import iconTank from '../../imgs/icon-tank.png';
 import iconStorageHouse from '../../imgs/icon-storage-house.png';
@@ -14,11 +17,9 @@ import iconAlarm from '../../imgs/icon-alarm.png';
 import iconNormal from '../../imgs/icon-normal.png';
 import styles from './index.less';
 
-export const TANK_AREA_REAL_TIME_URL = '/iot/major-hazard/tank-area/real-time/index';
-export const TANK_AREA_HISTORY_URL = '/iot/major-hazard/tank-area/history';
-export const DELAY = 1 * 60 * 1000;
+const DELAY = 1 * 60 * 1000;
 const LIST = [
-  { title: '罐区', title2: '储罐区', unit: '个', icon: iconTankArea, realTimeUrl: TANK_AREA_REAL_TIME_URL, historyUrl: TANK_AREA_HISTORY_URL },
+  { title: '罐区', title2: '储罐区', unit: '个', icon: iconTankArea, realTimeUrl: TANK_AREA_REAL_TIME_URL },
   { title: '储罐', unit: '个', icon: iconTank },
   { title: '库区', unit: '个', icon: iconStorageArea },
   { title: '库房', unit: '个', icon: iconStorageHouse },
@@ -75,7 +76,7 @@ export default class RealTime extends Component {
 
   render() {
     // const {
-    //   data,
+    //   data=[],
     // } = this.props;
     const { hoverIndex } = this.state;
 
@@ -123,7 +124,7 @@ export default class RealTime extends Component {
                 actions={[
                   <div
                     className={styles.footer}
-                    onClick={(e) => {e.stopPropagation();}}
+                    // onClick={(e) => {e.stopPropagation();}}
                   >
                     <div className={styles.footerIcon} style={{ backgroundImage: `url(${isNotNormal ? iconAlarm : iconNormal})` }} />
                     {isNotNormal ? (

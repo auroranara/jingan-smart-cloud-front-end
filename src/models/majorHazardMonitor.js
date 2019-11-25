@@ -1,7 +1,10 @@
 import {
   getRealTime,
   getHistory,
+  exportData,
 } from '@/services/majorHazardMonitor';
+import fileDownload from 'js-file-download';
+import moment from 'moment';
 
 const list = [
   { id: '1', name: '乙炔储罐区', address: '东厂区西北角', storage: '甲醛，乙炔，一氧化碳', status: 1, isMajorHazard: 1, tankCount: 5, updateTime: +new Date(), params: [
@@ -142,13 +145,17 @@ export default {
   state: {
     realTime: [],
     history: {},
+    list: {},
+    monitorObjectTypeList: [],
+    monitorObjectList: [],
+    monitorPointList: [],
     tankAreaRealTime: [],
     tankAreaHistoryCount: {},
     tankAreaHistoryList: {},
     tankAreaDetail: {}, // 储罐区详情
     tankAreaList: [], // 储罐区列表
-    tankAreaDetailDataStatistics: {}, // 储罐区数据统计
-    tankAreaParamList: [], // 储罐区详情-监测数据趋势
+    tankAreaDataStatistics: {}, // 储罐区数据统计
+    tankAreaMonitorDataTrend: [], // 储罐区详情-监测数据趋势
   },
 
   effects: {
@@ -239,6 +246,13 @@ export default {
             { id: 5, name: '渠道渠道E', address: '渠道渠道E', warningCount: 50, alarmCount: 5 },
             { id: 6, name: '渠道渠道F', address: '渠道渠道F', warningCount: 30, alarmCount: 3 },
           ],
+          durations: [
+            { name: '≤6min', value: 20 },
+            { name: '6~12min', value: 48 },
+            { name: '12~18min', value: 30 },
+            { name: '18min~1d', value: 15 },
+            { name: '≥1d', value: 24 },
+          ],
         },
       };
       const { code, data, msg } = response || {};
@@ -255,12 +269,137 @@ export default {
         callback && callback(false, msg);
       }
     },
+    // 获取列表
+    *getList({ payload, callback }, { call, put }) {
+      // const response = yield call(getList, payload);
+      const { pageNum, pageSize, field } = payload;
+      const response = {
+        code: 200,
+        data: {
+          list: [
+            { id: 1, monitorObjectType: '储罐区监测', monitorObjectName: '罐区A', normalUpper: 20, largeUpper: 40, value: 30, unit: '%LEL', status: 1 },
+            { id: 2, monitorObjectType: '储罐区监测', monitorObjectName: '罐区B', value: 0, unit: '%LEL', status: 0 },
+            { id: 3 },
+            { id: 4 },
+            { id: 5 },
+            { id: 6 },
+            { id: 7 },
+            { id: 8 },
+            { id: 9 },
+            { id: 10 },
+            { id: 11 },
+          ].slice(pageSize * (pageNum - 1), pageSize * pageNum),
+          pagination: {
+            total: 11,
+            pageNum,
+            pageSize,
+          },
+        },
+      };
+      const { code, data, msg } = response || {};
+      if (code === 200 && data) {
+        const list = data;
+        data.pagination.field = field;
+        yield put({
+          type: 'save',
+          payload: {
+            list,
+          },
+        });
+        callback && callback(true, list);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取监测对象类型列表
+    *getMonitorObjectTypeList({ payload, callback }, { call, put }) {
+      // const response = yield call(getMonitorObjectTypeList, payload);
+      const response = {
+        code: 200,
+        data: {
+          list: [
+            { id: 1, name: '储罐区' },
+            { id: 2, name: '储罐' },
+          ],
+        },
+      };
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const monitorObjectTypeList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            monitorObjectTypeList,
+          },
+        });
+        callback && callback(true, monitorObjectTypeList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取监测对象列表
+    *getMonitorObjectList({ payload, callback }, { call, put }) {
+      // const response = yield call(getMonitorObjectList, payload);
+      const response = {
+        code: 200,
+        data: {
+          list: [
+            { id: 1, name: '储罐区1' },
+            { id: 2, name: '储罐区2' },
+          ],
+        },
+      };
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const monitorObjectList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            monitorObjectList,
+          },
+        });
+        callback && callback(true, monitorObjectList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 获取监测点位列表
+    *getMonitorPointList({ payload, callback }, { call, put }) {
+      // const response = yield call(getMonitorPointList, payload);
+      const response = {
+        code: 200,
+        data: {
+          list: [
+            { id: 1, name: '点位1' },
+            { id: 2, name: '点位2' },
+          ],
+        },
+      };
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const monitorPointList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            monitorPointList,
+          },
+        });
+        callback && callback(true, monitorPointList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
+    // 导出
+    *exportData({ payload }, { call }) {
+      const blob = yield call(exportData, payload);
+      fileDownload(blob, `重大危险源监测明细_${moment().format('YYYYMMDD')}.xlsx`);
+    },
     *getTankAreaRealTime({ payload, callback }, { call, put }) {
       // const response = yield call(getTankAreaRealTime, payload);
       const response = {
         code: 200,
         data: {
-          list: list.filter(({ status }) => !payload.status || status === payload.status),
+          list: list.filter(({ status }) => payload.status === undefined || status === payload.status),
         },
       };
       const { code, data, msg } = response || {};
@@ -405,9 +544,10 @@ export default {
     // 获取储罐区详情
     *getTankAreaDetail({ payload, callback }, { call, put }) {
       // const response = yield call(getTankAreaDetail, payload);
+      const detail = list.find(({ id }) => id === payload.id);
       const response = {
         code: 200,
-        data: list.find(({ id }) => id === payload.id),
+        data: { ...detail, pointList: [...detail.pointList] },
       };
       const { code, data, msg } = response || {};
       if (code === 200 && data) {
@@ -423,8 +563,8 @@ export default {
         callback && callback(false, msg);
       }
     },
-    *getTankAreaDetailDataStatistics({ payload, callback }, { call, put }) {
-      // const response = yield call(getTankAreaDetailDataStatistics, payload);
+    *getTankAreaDataStatistics({ payload, callback }, { call, put }) {
+      // const response = yield call(getTankAreaDataStatistics, payload);
       const response = {
         code: 200,
         data: {
@@ -436,21 +576,21 @@ export default {
       };
       const { code, data, msg } = response || {};
       if (code === 200 && data) {
-        const tankAreaDetailDataStatistics = data;
+        const tankAreaDataStatistics = data;
         yield put({
           type: 'save',
           payload: {
-            tankAreaDetailDataStatistics,
+            tankAreaDataStatistics,
           },
         });
-        callback && callback(true, tankAreaDetailDataStatistics);
+        callback && callback(true, tankAreaDataStatistics);
       } else {
         callback && callback(false, msg);
       }
     },
     // 获取储罐详情-监测数据趋势
-    *getTankAreaParamList({ payload, callback }, { call, put }) {
-      // const response = yield call(getTankAreaParamList, payload);
+    *getTankAreaMonitorDataTrend({ payload, callback }, { call, put }) {
+      // const response = yield call(getTankAreaMonitorDataTrend, payload);
       const response = {
         code: 200,
         data: {
@@ -458,29 +598,34 @@ export default {
             {
               id: '1',
               name: '可燃气体浓度',
+              unit: '%LEL',
+              normalUpper: 20,
+              largeUpper: 40,
+              maxValue: 120,
+              minValue: 0,
               history: [
                 {
-                  time: '00:00',
+                  time: '2019-11-22 00:00',
                   value: 10,
                 },
                 {
-                  time: '02:00',
+                  time: '2019-11-22 02:00',
                   value: 60,
                 },
                 {
-                  time: '04:00',
+                  time: '2019-11-22 04:00',
                   value: 100,
                 },
                 {
-                  time: '06:00',
+                  time: '2019-11-22 06:00',
                   value: 40,
                 },
                 {
-                  time: '08:00',
+                  time: '2019-11-22 08:00',
                   value: 10,
                 },
                 {
-                  time: '10:00',
+                  time: '2019-11-22 10:00',
                   value: 100,
                 },
               ],
@@ -488,29 +633,34 @@ export default {
             {
               id: '2',
               name: '有毒气体浓度',
+              unit: '%LEL',
+              normalUpper: 20,
+              largeUpper: 40,
+              maxValue: 120,
+              minValue: 0,
               history: [
                 {
-                  time: '00:00',
+                  time: '2019-11-22 00:00',
                   value: 10,
                 },
                 {
-                  time: '02:00',
+                  time: '2019-11-22 02:00',
                   value: 60,
                 },
                 {
-                  time: '04:00',
+                  time: '2019-11-22 04:00',
                   value: 100,
                 },
                 {
-                  time: '06:00',
+                  time: '2019-11-22 06:00',
                   value: 40,
                 },
                 {
-                  time: '08:00',
+                  time: '2019-11-22 08:00',
                   value: 10,
                 },
                 {
-                  time: '10:00',
+                  time: '2019-11-22 10:00',
                   value: 100,
                 },
               ],
@@ -520,14 +670,14 @@ export default {
       };
       const { code, data, msg } = response || {};
       if (code === 200 && data && data.list) {
-        const tankAreaParamList = data.list;
+        const tankAreaMonitorDataTrend = data.list;
         yield put({
           type: 'save',
           payload: {
-            tankAreaParamList,
+            tankAreaMonitorDataTrend,
           },
         });
-        callback && callback(true, tankAreaParamList);
+        callback && callback(true, tankAreaMonitorDataTrend);
       } else {
         callback && callback(false, msg);
       }
