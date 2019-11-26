@@ -298,32 +298,6 @@ module.exports = env => {
         },
 
         // 工作台（企业）
-        // {
-        //   path: '/company-workbench',
-        //   code: 'companyWorkbench',
-        //   name: 'companyWorkbench',
-        //   icon: 'bar-chart',
-        //   hideInMenu: true,
-        //   routes: [
-        //     {
-        //       path: '/company-workbench/workbench',
-        //       code: 'companyWorkbench.workbench',
-        //       name: 'workbench',
-        //       hideChildrenInMenu: true,
-        //       routes: [
-        //         {
-        //           path: '/company-workbench/workbench',
-        //           name: 'list',
-        //           redirect: '/company-workbench/workbench/list',
-        //         },
-        //         {
-        //           path: '/company-workbench/workbench/list',
-        //           code: 'companyWorkbench.workbench.listView',
-        //           name: 'list',
-        //           component: './CompanyWorkbench/Workbench/WorkbenchList',
-        //         },
-        //       ],
-        //     },
         {
           path: '/company-workbench',
           code: 'companyWorkbench',
