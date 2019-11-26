@@ -68,6 +68,7 @@ export default class EmergencyDrillHandler extends PureComponent {
       },
       form: { setFieldsValue },
     } = this.props;
+    this.fetchDict({ type: 'emergencyDrill' });
     // 如果编辑
     if (id) {
       // 获取传感器详情
@@ -130,6 +131,11 @@ export default class EmergencyDrillHandler extends PureComponent {
   fetchCompany = ({ payload }) => {
     const { dispatch } = this.props;
     dispatch({ type: 'company/fetchModelList', payload });
+  };
+
+  fetchDict = (payload, success, error) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'emergencyManagement/fetchDicts', payload, success, error });
   };
 
   handleSubmit = () => {
@@ -205,6 +211,7 @@ export default class EmergencyDrillHandler extends PureComponent {
   renderForm = () => {
     const {
       form: { getFieldDecorator, getFieldValue },
+      emergencyManagement: { emergencyDrill = [] },
     } = this.props;
     const { selectedCompany } = this.state;
 
@@ -278,24 +285,22 @@ export default class EmergencyDrillHandler extends PureComponent {
           </FormItem>
           <FormItem label="演练类型" {...formItemLayout}>
             {getFieldDecorator('planType', {
-              // rules: [{ required: true, message: '请选择演练类型' }],
+              rules: [{ required: true, message: '请选择演练类型' }],
             })(
               <Cascader
-                options={[]}
+                options={emergencyDrill}
                 fieldNames={{
                   value: 'id',
-                  label: 'name',
+                  label: 'label',
                   children: 'children',
                   isLeaf: 'isLeaf',
                 }}
-                loadData={selectedOptions => {
-                  this.handleLoadData(['registerAddress'], selectedOptions);
-                }}
+                // loadData={selectedOptions => {
+                //   this.handleLoadData(selectedOptions);
+                // }}
                 changeOnSelect
                 placeholder="请选择演练类型"
                 allowClear
-                getPopupContainer={getRootChild}
-                {...itemStyles}
               />
             )}
           </FormItem>

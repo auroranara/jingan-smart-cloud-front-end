@@ -87,7 +87,7 @@ const fields = [
     transform: v => v.trim(),
   },
 ];
-const trueOrFalseLabel = ['是', '否']
+const trueOrFalseLabel = ['否', '是']
 
 @connect(({ loading, baseInfo }) => ({
   baseInfo,
