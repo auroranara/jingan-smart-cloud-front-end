@@ -1765,7 +1765,7 @@ module.exports = env => {
               ],
             },
             {
-              path: '/data-analysis/hidden-danger-report',
+              path: '/data-analysis/hidden-danger-report', // 隐患排查报表
               code: 'dataAnalysis.hiddenDangerReport',
               name: 'hiddenDangerReport',
               hideChildrenInMenu: true,
