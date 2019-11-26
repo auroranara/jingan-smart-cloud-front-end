@@ -9,7 +9,14 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
-import { BREADCRUMBLIST, ROUTER, SEARCH_FIELDS as FIELDS, TABLE_COLUMNS as COLUMNS } from './utils';
+import {
+  BREADCRUMBLIST,
+  ROUTER,
+  SEARCH_FIELDS as FIELDS,
+  SEARCH_FIELDS_COMPANY as COMPANYFIELDS,
+  TABLE_COLUMNS as COLUMNS,
+  TABLE_COLUMNS_COMPANY as COMPANYCOLUMNS,
+} from './utils';
 
 // 权限
 const {
@@ -117,7 +124,7 @@ export default class TableList extends PureComponent {
         msgDanger,
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
@@ -187,7 +194,7 @@ export default class TableList extends PureComponent {
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
-            fields={FIELDS}
+            fields={unitType === 4 ? [...FIELDS] : [...COMPANYFIELDS, ...FIELDS]}
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
@@ -201,7 +208,11 @@ export default class TableList extends PureComponent {
               bordered
               rowKey="id"
               loading={loading}
-              columns={[...COLUMNS, ...extraColumns]}
+              columns={
+                unitType === 4
+                  ? [...COLUMNS, ...extraColumns]
+                  : [...COMPANYCOLUMNS, ...COLUMNS, ...extraColumns]
+              }
               dataSource={list}
               onChange={this.onTableChange}
               scroll={{ x: 1340 }} // 项目不多时注掉

@@ -14,13 +14,16 @@ export const BREADCRUMBLIST = [
   { title: '危险（有害）因素排查辨识清单', name: '危险（有害）因素排查辨识清单', href: LIST_URL },
 ];
 
-export const SEARCH_FIELDS = [
+export const SEARCH_FIELDS_COMPANY = [
   {
     id: 'companyName',
     label: '单位名称：',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
+];
+
+export const SEARCH_FIELDS = [
   {
     id: 'name',
     label: '风险点（单元）名称：',
@@ -28,7 +31,7 @@ export const SEARCH_FIELDS = [
   },
 ];
 
-export const TABLE_COLUMNS = [
+export const TABLE_COLUMNS_COMPANY = [
   // modify
   {
     title: '单位名称',
@@ -37,6 +40,10 @@ export const TABLE_COLUMNS = [
     align: 'center',
     width: 240,
   },
+];
+
+export const TABLE_COLUMNS = [
+  // modify
   {
     title: '风险点名称',
     dataIndex: 'name',
