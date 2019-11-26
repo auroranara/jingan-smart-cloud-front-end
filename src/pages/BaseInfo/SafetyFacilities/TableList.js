@@ -250,13 +250,15 @@ export default class TableList extends PureComponent {
         width: 200,
         render: (val, record) => {
           const { endDate, paststatus } = record;
-          return (
+          return endDate ? (
             <div>
               {endDate ? <span>{moment(endDate).format('YYYY-MM-DD')}</span> : ''}
               <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
                 {paststatusVal[paststatus]}
               </span>
             </div>
+          ) : (
+            <span>---</span>
           );
         },
       },

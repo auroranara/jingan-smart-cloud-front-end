@@ -36,6 +36,8 @@ import DeviceCountDrawer from './DeviceCountDrawer';
 import HumiturePointListDrawer from './HumiturePointListDrawer';
 // 温湿度监测点详情抽屉
 import HumiturePointDetailDrawer from './HumiturePointDetailDrawer';
+// 隐患记录抽屉
+import HiddenDangerRecordDrawer from './HiddenDangerRecordDrawer';
 
 export {
   // 企业信息
@@ -76,4 +78,6 @@ export {
   HumiturePointListDrawer,
   // 温湿度监测点详情抽屉
   HumiturePointDetailDrawer,
+  // 隐患记录抽屉
+  HiddenDangerRecordDrawer,
 };

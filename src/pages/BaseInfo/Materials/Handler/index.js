@@ -277,7 +277,11 @@ export default class MaterialsHandler extends PureComponent {
 
   fetchMsds = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'materials/fetchMsdsModel', payload });
+    const { selectedCompany } = this.state;
+    dispatch({
+      type: 'materials/fetchMsdsModel',
+      payload: { ...payload, companyId: selectedCompany.id },
+    });
   };
 
   handleSubmit = () => {

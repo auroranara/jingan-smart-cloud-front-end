@@ -329,7 +329,7 @@ export default class ReservoirRegionList extends PureComponent {
       },
       {
         title: '库房个数',
-        dataIndex: 'count',
+        dataIndex: 'warehouseNum',
         align: 'center',
         width: 200,
       },
@@ -339,7 +339,8 @@ export default class ReservoirRegionList extends PureComponent {
         align: 'center',
         width: 200,
         render: val => {
-          return +val === 2 ? '否' : '是';
+          // return +val === 2 ? '否' : '是';
+          return <span>---</span>;
         },
       },
       {
@@ -507,7 +508,7 @@ export default class ReservoirRegionList extends PureComponent {
       model: sensor,
       loading: sensorLoading,
       rowSelection: {
-        selectedSensorKeys,
+        selectedRowKeys: selectedSensorKeys,
         onChange: this.onSensorChange,
       },
       unbindSensorCode,

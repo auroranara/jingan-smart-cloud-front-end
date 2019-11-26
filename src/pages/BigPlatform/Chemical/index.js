@@ -55,7 +55,7 @@ export default class Chemical extends PureComponent {
   };
 
   handleClickMenu = () => {
-    router.push('/company-workbench/workbench/list');
+    router.push('/company-workbench/view');
   };
 
   /**

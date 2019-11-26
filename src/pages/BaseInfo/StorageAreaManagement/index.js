@@ -24,7 +24,7 @@ import styles from './Edit.less';
 const {
   baseInfo: {
     storageAreaManagement: {
-      // detail: detailCode,
+      detail: detailCode,
       edit: editCode,
       add: addCode,
       delete: deleteCode,
@@ -158,6 +158,10 @@ export default class StorageAreaManagement extends PureComponent {
     this.fetchList(1, this.pageSize);
   };
 
+  goDetail = id => {
+    router.push(`/base-info/storage-area-management/detail/${id}`);
+  };
+
   goEdit = id => {
     router.push(`/base-info/storage-area-management/edit/${id}`);
   };
@@ -243,7 +247,7 @@ export default class StorageAreaManagement extends PureComponent {
         dataIndex: 'chineNameList',
         align: 'center',
         width: 300,
-        render: val => val.join(', '),
+        render: val => val && val.join(', '),
       },
       {
         title: '重大危险源',
@@ -280,6 +284,10 @@ export default class StorageAreaManagement extends PureComponent {
               绑定传感器
             </AuthA>
             <Divider type="vertical" /> */}
+            <AuthA code={detailCode} onClick={() => this.goDetail(row.id)}>
+              查看
+            </AuthA>
+            <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.goEdit(row.id)}>
               编辑
             </AuthA>
@@ -302,8 +310,8 @@ export default class StorageAreaManagement extends PureComponent {
           <Table
             rowKey="id"
             // loading={loading}
-            // columns={unitType===4?columns.slice(1, columns.length):columns}
-            columns={columns}
+            columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
+            // columns={columns}
             dataSource={list}
             scroll={{ x: 'max-content' }}
             pagination={false}
@@ -362,11 +370,13 @@ export default class StorageAreaManagement extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <div>
-            <span>
-              单位数量：
-              {companyNum}
-            </span>
-            <span style={{ paddingLeft: 20 }}>
+            {unitType !== 4 && (
+              <span>
+                单位数量：
+                {companyNum}
+              </span>
+            )}
+            <span style={{ paddingLeft: unitType === 4 ? 0 : 20 }}>
               储罐区总数：
               {total}
             </span>

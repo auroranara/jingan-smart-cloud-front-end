@@ -182,8 +182,8 @@ export default class Edit extends PureComponent {
             spaceArea, //储罐区面积
             hasCoffer, //有无围堰
             cofferArea, //围堰所围面积
-            tankCount, //储罐个数
-            storeMaterial, //存储物质
+            // tankCount, //储罐个数
+            // storeMaterial, //存储物质
             areaVolume, //储罐区总容积
             commonStore, //常规存储量
             minSpace, //两罐间最小间距
@@ -208,8 +208,8 @@ export default class Edit extends PureComponent {
         spaceArea, //储罐区面积
         hasCoffer, //有无围堰
         // cofferArea, //围堰所围面积
-        tankCount, //储罐个数
-        storeMaterial, //存储物质
+        // tankCount, //储罐个数
+        // storeMaterial, //存储物质
         areaVolume, //储罐区总容积
         commonStore, //常规存储量
         minSpace, //两罐间最小间距
@@ -222,9 +222,9 @@ export default class Edit extends PureComponent {
       this.setState(
         {
           selectedCompany: { id: companyId, name: companyName },
-          selectedMaterials: storeMaterial
-            .split(',')
-            .map((item, index) => ({ id: item, chineName: chineNameList[index] })),
+          // selectedMaterials: storeMaterial
+          //   .split(',')
+          //   .map((item, index) => ({ id: item, chineName: chineNameList[index] })),
           // selectedDangerSource: dangerUnit
           //   .split(',')
           //   .map((item, index) => ({ id: item, name: chineNameList[index] })),
@@ -545,7 +545,7 @@ export default class Edit extends PureComponent {
               })(<Input {...itemStyles} placeholder="请输入围堰所围面积" />)}
             </FormItem>
           )}
-          <FormItem {...formItemLayout} label="储罐个数">
+          {/* <FormItem {...formItemLayout} label="储罐个数">
             {getFieldDecorator('tankCount', {
               getValueFromEvent: this.handleTrim,
               rules: [
@@ -578,7 +578,7 @@ export default class Edit extends PureComponent {
                 </Button>
               </Fragment>
             )}
-          </FormItem>
+          </FormItem> */}
           <FormItem {...formItemLayout} label="储罐区总容积（m³）">
             {getFieldDecorator('areaVolume', {
               getValueFromEvent: this.handleTrim,

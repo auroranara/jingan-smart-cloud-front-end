@@ -156,9 +156,12 @@ export default class Edit extends PureComponent {
           leaveFactoryDate: leaveFactoryDate ? leaveFactoryDate.format('YYYY-MM-DD') : undefined,
           useYear,
           notes,
-          photo: photoUrl.length>0
-            ? JSON.stringify(photoUrl.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl })))
-            : undefined,
+          photo:
+            photoUrl.length > 0
+              ? JSON.stringify(
+                  photoUrl.map(({ name, url, dbUrl }) => ({ name, webUrl: url, dbUrl }))
+                )
+              : undefined,
         };
 
         const success = () => {

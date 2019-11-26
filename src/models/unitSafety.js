@@ -51,6 +51,8 @@ import {
   getHumiturePointDetail,
   // 获取温湿度监测点监测趋势
   getHumiturePointTrend,
+  // 获取隐患记录
+  getHiddenDangerRecordList,
 } from '../services/unitSafety';
 import moment from 'moment';
 import { message } from 'antd';
@@ -414,6 +416,8 @@ export default {
     humiturePointDetail: {},
     // 温湿度监测点监测趋势
     humiturePointTrend: {},
+    // 隐患记录
+    hiddenDangerRecordList: [],
   },
 
   effects: {
@@ -1052,6 +1056,23 @@ export default {
         callback && callback(humiturePointTrend);
       } else {
         error('获取温湿度监测点监测趋势失败，请稍后重试！');
+      }
+    },
+    // 获取隐患记录
+    *fetchHiddenDangerRecordList({ payload, callback }, { call, put }) {
+      const response = yield call(getHiddenDangerRecordList, payload);
+      const { code, data } = response;
+      if (code === 200 && data && data.list) {
+        const hiddenDangerRecordList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            hiddenDangerRecordList,
+          },
+        });
+        callback && callback(hiddenDangerRecordList);
+      } else {
+        error('获取隐患记录失败，请稍后重试！');
       }
     },
   },

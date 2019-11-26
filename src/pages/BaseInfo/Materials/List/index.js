@@ -337,6 +337,9 @@ export default class MaterialsList extends PureComponent {
   render() {
     const {
       loading = false,
+      user: {
+        currentUser: { unitType },
+      },
       materials: {
         list,
         pagination: { pageNum = 1, pageSize = 10, total = 0 } = {},
@@ -508,7 +511,7 @@ export default class MaterialsList extends PureComponent {
             <Table
               rowKey="id"
               loading={loading}
-              columns={columns}
+              columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
               dataSource={list}
               pagination={false}
               scroll={{ x: 'max-content' }}

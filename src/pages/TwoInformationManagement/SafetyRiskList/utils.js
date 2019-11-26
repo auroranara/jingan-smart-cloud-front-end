@@ -1,13 +1,10 @@
 import React, { Fragment } from 'react';
-import Link from 'umi/link';
 // import moment from 'moment';
-import { Input, message, Popconfirm, Select } from 'antd';
-
-import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
+import { Input, Select } from 'antd';
+import Ellipsis from '@/components/Ellipsis';
 
 const { Option } = Select;
 
-const DATE_FORMAT = 'YYYY-MM-DD';
 export const PAGE_SIZE = 1;
 export const ROUTER = '/two-information-management'; // modify
 export const LIST_URL = `${ROUTER}/safety-risk-list/list`;
@@ -30,175 +27,279 @@ export const BREADCRUMBLIST = [
   { title: '安全风险分级管控清单', name: '安全风险分级管控清单', href: LIST_URL },
 ];
 
-export const SEARCH_FIELDS = [
+const riskClassifyList = [
+  {
+    key: '1',
+    value: '危险化学品',
+  },
+  {
+    key: '2',
+    value: '爆炸性粉尘',
+  },
+  {
+    key: '3',
+    value: '重大危险源',
+  },
+  {
+    key: '4',
+    value: '受限空间',
+  },
+  {
+    key: '5',
+    value: '涉氨场所',
+  },
+  {
+    key: '6',
+    value: '生产系统',
+  },
+  {
+    key: '7',
+    value: '设备设施',
+  },
+  {
+    key: '8',
+    value: '输送管线',
+  },
+  {
+    key: '9',
+    value: '操作行为',
+  },
+  {
+    key: '10',
+    value: '职业健康',
+  },
+  {
+    key: '11',
+    value: '环境条件',
+  },
+  {
+    key: '12',
+    value: '施工场所',
+  },
+  {
+    key: '13',
+    value: '安全管理',
+  },
+  {
+    key: '13',
+    value: '安全管理',
+  },
+  {
+    key: '14',
+    value: '公用工程',
+  },
+  {
+    key: '15',
+    value: '储存场所',
+  },
+  {
+    key: '16',
+    value: '其他',
+  },
+];
+
+const dangerLevelList = [
+  {
+    key: '1',
+    value: '红',
+  },
+  {
+    key: '2',
+    value: '橙',
+  },
+  {
+    key: '3',
+    value: '黄',
+  },
+  {
+    key: '4',
+    value: '蓝',
+  },
+];
+
+export const SEARCH_FIELDS_COMPANY = [
   // modify
   {
-    id: 'id1',
+    id: 'companyName',
     label: '单位名称：',
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
+];
+
+export const SEARCH_FIELDS = [
   {
-    id: 'id2',
+    id: 'name',
     label: '作业/设备名称：',
     render: () => <Input placeholder="请输入" allowClear />,
   },
   {
-    id: 'id3',
+    id: 'riskClassify',
     label: '风险分类：',
     render: () => (
       <Select placeholder="请选择" allowClear>
-        {[
-          '危险化学品',
-          '爆炸性粉尘',
-          '重大危险源',
-          '受限空间',
-          '涉氨场所',
-          '生产系统',
-          '设备设施',
-          '输送管线',
-          '操作行为',
-          '职业健康',
-          '环境条件',
-          '施工场所',
-          '安全管理',
-          '其他',
-        ].map((r, i) => (
-          <Option key={i}>{r}</Option>
+        {riskClassifyList.map(({ key, value }) => (
+          <Option key={key} value={key}>
+            {value}
+          </Option>
         ))}
       </Select>
     ),
   },
   {
-    id: 'id4',
+    id: 'dangerLevel',
     label: '风险等级：',
     render: () => (
       <Select placeholder="请选择" allowClear>
-        {['红', '橙', '黄', '蓝'].map((r, i) => (
-          <Option key={i}>{r}</Option>
+        {dangerLevelList.map(({ key, value }) => (
+          <Option key={key} value={key}>
+            {value}
+          </Option>
         ))}
       </Select>
     ),
   },
 ];
 
-export const TABLE_COLUMNS = [
-  // modify
+export const TABLE_COLUMNS_COMPANY = [
   {
     title: '单位名称',
     dataIndex: 'companyName',
     key: 'companyName',
     align: 'center',
-    width: 240,
+    width: 260,
+    render: val => (
+      <Ellipsis tooltip length={15} style={{ overflow: 'visible' }}>
+        {val}
+      </Ellipsis>
+    ),
   },
+];
+
+export const TABLE_COLUMNS = [
   {
     title: '作业/设备名称',
-    dataIndex: 'riskPointName',
-    key: 'riskPointName',
+    dataIndex: 'name',
+    key: 'name',
     align: 'center',
+    width: 180,
   },
   {
     title: '风险分类',
-    dataIndex: 'area',
-    key: 'area',
+    dataIndex: 'riskClassifyName',
+    key: 'riskClassifyName',
     align: 'center',
+    width: 180,
   },
   {
     title: '主要危险因素',
     dataIndex: 'dangerFactor',
     key: 'dangerFactor',
     align: 'center',
+    width: 300,
+    render: val => (
+      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
+        {val}
+      </Ellipsis>
+    ),
   },
   {
     title: '易导致后果（风险）',
-    dataIndex: 'result',
-    key: 'result',
+    dataIndex: 'consequenceName',
+    key: 'consequenceName',
     align: 'center',
+    width: 180,
+    render: val => (
+      <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
+        {val}
+      </Ellipsis>
+    ),
   },
   {
     title: '作业条件危险性评价',
-    children: [
-      {
-        title: 'L',
-        dataIndex: 'L',
-        key: 'L',
-      },
-      {
-        title: 'E',
-        dataIndex: 'E',
-        key: 'E',
-      },
-      {
-        title: 'C',
-        dataIndex: 'C',
-        key: 'C',
-      },
-      {
-        title: 'D',
-        dataIndex: 'D',
-        key: 'D',
-      },
-    ],
     dataIndex: 'result',
     key: 'result',
     align: 'center',
+    children: [
+      {
+        title: 'L',
+        dataIndex: 'l',
+        key: 'l',
+        width: 90,
+        align: 'center',
+      },
+      {
+        title: 'E',
+        dataIndex: 'e',
+        key: 'e',
+        width: 90,
+        align: 'center',
+      },
+      {
+        title: 'C',
+        dataIndex: 'c',
+        key: 'c',
+        width: 90,
+        align: 'center',
+      },
+      {
+        title: 'D',
+        dataIndex: 'd',
+        key: 'd',
+        width: 90,
+        align: 'center',
+      },
+    ],
   },
   {
     title: '风险等级',
-    dataIndex: 'level',
-    key: 'level',
+    dataIndex: 'dangerLevelName',
+    key: 'dangerLevelName',
     align: 'center',
+    width: 120,
   },
   {
     title: '风险管控措施',
-    dataIndex: 'controlMeasures',
-    key: 'controlMeasures',
+    dataIndex: 'dangerMeasure',
+    key: 'dangerMeasure',
     align: 'center',
+    width: 300,
+    render: val => (
+      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
+        {val}
+      </Ellipsis>
+    ),
   },
   {
     title: '应急处置措施',
-    dataIndex: 'emergencyMeasure',
-    key: 'emergencyMeasure',
+    dataIndex: 'consequenceMeasure',
+    key: 'consequenceMeasure',
     align: 'center',
-  },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    key: 'operation',
-    align: 'center',
-    render: (val, text) => {
-      return (
-        <Fragment>
-          <Link to={`${ROUTER}/safety-risk-list/view/${text.id}`}>查看</Link>
-          <Popconfirm
-            title="确定删除当前项目？"
-            onConfirm={e => message.success('删除成功')}
-            okText="确定"
-            cancelText="取消"
-          >
-            <span className={styles1.delete}>删除</span>
-          </Popconfirm>
-        </Fragment>
-      );
-    },
+    width: 300,
+    render: val => (
+      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
+        {val}
+      </Ellipsis>
+    ),
   },
 ];
 
 export const EDIT_FORMITEMS = [
   // modify
-  { name: 'companyName', label: '单位名称' },
+  { name: 'companyName', label: '单位名称', required: false },
   {
-    name: 'type',
+    name: 'name',
     label: '作业/设备名称',
+    required: false,
   },
-  { name: 'facilitiesName', label: '风险分类' },
-  { name: 'models', label: '主要危险因素', type: 'text' },
-  { name: 'enginFacility', label: '易导致后果（风险）', type: 'text' },
-  { name: 'enginFacility', label: '时间发生的可能性（L)' },
-  { name: 'enginFacility', label: ' 频繁程度（E)' },
-  { name: 'enginFacility', label: '后果（C)' },
-  { name: 'enginFacility', label: '计算风险值（D)', required: false },
-  { name: 'enginFacility', label: '风险等级', required: false },
-  { name: 'enginFacility', label: '风险管控措施', type: 'text' },
-  { name: 'enginFacility', label: '应急处置措施', type: 'text' },
+  { name: 'riskClassifyName', label: '风险分类', required: false },
+  { name: 'dangerFactor', label: '主要危险因素', type: 'text', required: false },
+  { name: 'consequenceName', label: '易导致后果（风险）', type: 'text', required: false },
+  { name: 'l', label: '时间发生的可能性（L)', required: false },
+  { name: 'e', label: ' 频繁程度（E)', required: false },
+  { name: 'c', label: '后果（C)', required: false },
+  { name: 'd', label: '计算风险值（D)', required: false },
+  { name: 'dangerLevelName', label: '风险等级', required: false },
+  { name: 'dangerMeasure', label: '风险管控措施', type: 'text' },
+  { name: 'consequenceMeasure', label: '应急处置措施', type: 'text', required: false },
 ];

@@ -16,6 +16,8 @@ export default {
     list: [],
     currentUser: {},
     grids: [],
+    systemType: 0,
+    menuData: [], // 放在model里是为了防菜单置空闪烁
   },
 
   effects: {
@@ -98,6 +100,12 @@ export default {
     },
     saveGrids(state, action) {
       return { ...state, grids: action.payload };
+    },
+    saveSystemType(state, action) {
+      return { ...state, systemType: action.payload };
+    },
+    saveMenuData(state, action) {
+      return { ...state, menuData: action.payload };
     },
   },
 };
