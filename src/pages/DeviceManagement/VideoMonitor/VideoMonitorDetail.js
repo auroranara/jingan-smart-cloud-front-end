@@ -29,7 +29,7 @@ export default class VideoMonitorDetail extends PureComponent {
   };
 
   /* 生命周期函数 */
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -77,7 +77,7 @@ export default class VideoMonitorDetail extends PureComponent {
   };
 
   // 渲染单位详情
-  renderUnitInfo() {
+  renderUnitInfo () {
     const {
       videoMonitor: {
         detail: {
@@ -102,7 +102,7 @@ export default class VideoMonitorDetail extends PureComponent {
         <DescriptionList col={3}>
           <Description term="设备ID">{deviceId || getEmptyData()}</Description>
           <Description term="摄像头ID">{keyId || getEmptyData()}</Description>
-          <Description term="视频所属区域">{name || getEmptyData()}</Description>
+          {/* <Description term="视频所属区域">{name || getEmptyData()}</Description> */}
           <Description term="所属建筑楼层">
             {buildingName + floorName || getEmptyData()}
           </Description>
@@ -126,7 +126,7 @@ export default class VideoMonitorDetail extends PureComponent {
   }
 
   /* 渲染底部工具栏 */
-  renderFooterToolbar() {
+  renderFooterToolbar () {
     const {
       match: {
         params: { id },
@@ -149,7 +149,7 @@ export default class VideoMonitorDetail extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       videoMonitor: {
         detail: {

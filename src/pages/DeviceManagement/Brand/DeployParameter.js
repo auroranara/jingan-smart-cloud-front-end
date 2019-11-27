@@ -175,8 +175,8 @@ const RenderAlarmStrategyModal = Form.create()(props => {
   }
   const onInputChange = (limitValue, item, i) => {
     let newList = [...alarmStrategy]
-    const { condition, warnLevel } = item
-    newList.splice(i, 1, { condition, warnLevel, limitValue })
+    // const { condition, warnLevel } = item
+    newList.splice(i, 1, { ...item, limitValue })
     saveAlarmStrategy(newList)
   }
   const onSelectChange = (value, item, i) => {
@@ -266,7 +266,7 @@ export default class DeployParameter extends PureComponent {
     historyVisible: false, // 配置报警策略弹窗
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.handleQuery()
     this.fetchAllTags()
     this.fetchParameterGroupTypes()
@@ -344,9 +344,10 @@ export default class DeployParameter extends PureComponent {
     } = this.props
     const { detail } = this.state
     // 筛选掉报警策略中 类型和值只有一项的以及都没有的
-    const paramWarnStrategyList = alarmStrategy.reduce((arr, { condition, warnLevel, limitValue }) => {
+    const paramWarnStrategyList = alarmStrategy.reduce((arr, item) => {
+      const { condition, limitValue } = item;
       if (condition && !isNaN(limitValue)) {
-        return [...arr, { condition, warnLevel, limitValue }]
+        return [...arr, item]
       } else return arr
     }, [])
     dispatch({
@@ -551,7 +552,7 @@ export default class DeployParameter extends PureComponent {
     )
   }
 
-  render() {
+  render () {
     const {
       match: { params: { brandId } },
       device: {
