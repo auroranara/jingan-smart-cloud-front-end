@@ -307,7 +307,11 @@ export default class StorehouseHandler extends PureComponent {
 
   fetchRegion = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'storehouse/fetchRegionModel', payload });
+    const { selectedCompany } = this.state;
+    dispatch({
+      type: 'storehouse/fetchRegionModel',
+      payload: { ...payload, companyId: selectedCompany.id },
+    });
   };
 
   fetchDangerSource = ({ payload }) => {
@@ -317,7 +321,11 @@ export default class StorehouseHandler extends PureComponent {
 
   fetchMaterials = ({ payload }) => {
     const { dispatch } = this.props;
-    dispatch({ type: 'materials/fetchMaterialsList', payload });
+    const { selectedCompany } = this.state;
+    dispatch({
+      type: 'materials/fetchMaterialsList',
+      payload: { ...payload, companyId: selectedCompany.id },
+    });
   };
 
   handleSubmit = () => {
@@ -593,7 +601,7 @@ export default class StorehouseHandler extends PureComponent {
           <FormItem label="贮存物质名称" {...formItemLayout}>
             {getFieldDecorator('materialsName', {
               getValueFromEvent: this.handleTrim,
-              // rules: [{ required: true, message: '请选择贮存物质名称' }],
+              rules: [{ required: true, message: '请选择贮存物质名称' }],
             })(
               <Fragment>
                 <TextArea

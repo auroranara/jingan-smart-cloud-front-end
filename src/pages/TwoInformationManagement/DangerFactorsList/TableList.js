@@ -7,7 +7,23 @@ import Link from 'umi/link';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
-import { BREADCRUMBLIST, ROUTER, SEARCH_FIELDS as FIELDS, TABLE_COLUMNS as COLUMNS } from './utils';
+import { hasAuthority } from '@/utils/customAuth';
+import codes from '@/utils/codes';
+import {
+  BREADCRUMBLIST,
+  ROUTER,
+  SEARCH_FIELDS as FIELDS,
+  SEARCH_FIELDS_COMPANY as COMPANYFIELDS,
+  TABLE_COLUMNS as COLUMNS,
+  TABLE_COLUMNS_COMPANY as COMPANYCOLUMNS,
+} from './utils';
+
+// 权限
+const {
+  twoInformManagement: {
+    dangerFactorsList: { view: viewAuth, delete: deleteAuth, sync: syncAuth },
+  },
+} = codes;
 
 @connect(({ twoInformManagement, user, loading }) => ({
   twoInformManagement,
@@ -105,8 +121,17 @@ export default class TableList extends PureComponent {
           list = [],
           pagination: { pageNum, pageSize, total },
         },
+        msgDanger,
+      },
+      user: {
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
+
+    // 权限
+    const viewCode = hasAuthority(viewAuth, permissionCodes);
+    const deleteCode = hasAuthority(deleteAuth, permissionCodes);
+    const syncCode = hasAuthority(syncAuth, permissionCodes);
 
     const extraColumns = [
       {
@@ -119,16 +144,24 @@ export default class TableList extends PureComponent {
         render: (val, text) => {
           return (
             <Fragment>
-              <Link to={`${ROUTER}/danger-factors-list/view/${text.id}`}>查看</Link>
+              {viewCode ? (
+                <Link to={`${ROUTER}/danger-factors-list/view/${text.id}`}>查看</Link>
+              ) : (
+                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>查看</span>
+              )}
               <Divider type="vertical" />
-              <Popconfirm
-                title="确定删除当前该内容吗？"
-                onConfirm={() => this.handleDeleteClick(text.id)}
-                okText="确定"
-                cancelText="取消"
-              >
-                <span className={styles1.delete}>删除</span>
-              </Popconfirm>
+              {deleteCode ? (
+                <Popconfirm
+                  title="确定删除当前该内容吗？"
+                  onConfirm={() => this.handleDeleteClick(text.id)}
+                  okText="确定"
+                  cancelText="取消"
+                >
+                  <span className={styles1.delete}>删除</span>
+                </Popconfirm>
+              ) : (
+                <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>删除</span>
+              )}
             </Fragment>
           );
         },
@@ -138,7 +171,12 @@ export default class TableList extends PureComponent {
     breadcrumbList.push({ title: '列表', name: '列表' });
 
     const toolBarAction = (
-      <Button type="primary" style={{ marginTop: '8px' }} onClick={this.handleClickSync}>
+      <Button
+        type="primary"
+        style={{ marginTop: '8px' }}
+        disabled={!syncCode}
+        onClick={this.handleClickSync}
+      >
         同步数据
       </Button>
     );
@@ -149,14 +187,14 @@ export default class TableList extends PureComponent {
         breadcrumbList={breadcrumbList}
         content={
           <p className={styles1.total}>
-            共计：
-            {total}
+            单位数量：
+            {msgDanger}
           </p>
         }
       >
         <Card style={{ marginBottom: 15 }}>
           <ToolBar
-            fields={FIELDS}
+            fields={unitType === 4 ? [...FIELDS] : [...COMPANYFIELDS, ...FIELDS]}
             action={toolBarAction}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
@@ -165,27 +203,37 @@ export default class TableList extends PureComponent {
           />
         </Card>
         <div className={styles1.container}>
-          <Table
-            bordered
-            rowKey="id"
-            loading={loading}
-            columns={[...COLUMNS, ...extraColumns]}
-            dataSource={list}
-            onChange={this.onTableChange}
-            scroll={{ x: 1340 }} // 项目不多时注掉
-            pagination={{
-              current: pageNum,
-              pageSize,
-              total,
-              showQuickJumper: true,
-              showSizeChanger: true,
-              pageSizeOptions: ['5', '10', '15', '20'],
-              onChange: this.handlePageChange,
-              onShowSizeChange: (num, size) => {
-                this.handlePageChange(1, size);
-              },
-            }}
-          />
+          {list.length > 0 ? (
+            <Table
+              bordered
+              rowKey="id"
+              loading={loading}
+              columns={
+                unitType === 4
+                  ? [...COLUMNS, ...extraColumns]
+                  : [...COMPANYCOLUMNS, ...COLUMNS, ...extraColumns]
+              }
+              dataSource={list}
+              onChange={this.onTableChange}
+              scroll={{ x: 1340 }} // 项目不多时注掉
+              pagination={{
+                current: pageNum,
+                pageSize,
+                total,
+                showQuickJumper: true,
+                showSizeChanger: true,
+                pageSizeOptions: ['5', '10', '15', '20'],
+                onChange: this.handlePageChange,
+                onShowSizeChange: (num, size) => {
+                  this.handlePageChange(1, size);
+                },
+              }}
+            />
+          ) : (
+            <Card bordered={false} style={{ textAlign: 'center' }}>
+              <span>暂无数据</span>
+            </Card>
+          )}
         </div>
       </PageHeaderLayout>
     );

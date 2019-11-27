@@ -1,12 +1,12 @@
 import { Component } from 'react';
-import { Row, Col, Dropdown, Menu } from 'antd';
+import { Row, Col } from 'antd';
 // import _ from 'lodash';
 import { connect } from 'dva';
 import router from 'umi/router';
 import config from './../../../../config/config';
 // 在zh-CN.js文件中找到对应文案
 import { formatMessage } from 'umi/locale';
-import { filterBigPlatform } from '@/utils/customAuth';
+// import { filterBigPlatform } from '@/utils/customAuth';
 import classNames from 'classnames';
 import styles from './NewMenu.less';
 
@@ -17,7 +17,7 @@ const userLogoUrl = 'http://data.jingan-china.cn/v2/menu/icon-user.png';
 const logoutLogoUrl = 'http://data.jingan-china.cn/v2/menu/icon-logout.png';
 
 // 项目名称、logo
-const { projectShortName, logo } = global.PROJECT_CONFIG;
+const { projectShortName } = global.PROJECT_CONFIG;
 
 // 每个模块标题左侧色块
 const Divider = () => (
@@ -177,10 +177,12 @@ export default class NewMenuReveal extends Component {
 
   // 点击模块分类
   handleSelectBlockClassification = index => {
+    // const { dispatch } = this.props;
     const { menuSysAll } = this.state;
     const blocks = blockClassification[index].blocks;
     const menuSys = menuSysAll.filter(item => blocks.includes(item.name));
     this.setState({ currentBlockClassification: index, menuSys });
+    // dispatch({ type: 'user/saveSystemType', payload: index });
   };
 
   // 输出数据类型

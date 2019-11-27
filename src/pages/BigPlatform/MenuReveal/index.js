@@ -192,6 +192,7 @@ export default class MenuReveal extends Component {
 
   // 点击模块分类
   handleSelectBlockClassification = index => {
+    const { dispatch } = this.props;
     const { menuSysAll } = this.state;
     const blocks = blockClassification[index].blocks;
     const menuSys = menuSysAll.filter(item => blocks.includes(item.name));
@@ -220,7 +221,7 @@ export default class MenuReveal extends Component {
           <div className={styles.menu}>
             <div
               className={styles.menuItem}
-              onClick={() => router.push('/company-workbench/workbench/list')}
+              onClick={() => router.push('/company-workbench/view')}
             >
               <span>工作台</span>
             </div>

@@ -205,3 +205,23 @@ export const armStatusEnum = generateEnum({
   '-24': '正在关闭',
   '-25': '故障',
 })
+
+/*
+* 重大危险源等级
+*/
+export const majorHazardDangerEnum = generateEnum({
+  1: '一级',
+  2: '二级',
+  3: '三级',
+  4: '四级',
+})
+
+/*
+* 存储介质状态
+*/
+export const storageMediumStatusEnum = generateEnum({
+  '1': '固态',
+  '2': '液态',
+  '3': '气态',
+  '4': '等离子态',
+})

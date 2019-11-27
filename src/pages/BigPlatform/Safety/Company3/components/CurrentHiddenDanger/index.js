@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { Select, Tooltip } from 'antd';
 import classNames from 'classnames';
 import Lightbox from 'react-images';
@@ -190,13 +190,19 @@ export default class CurrentHiddenDanger extends PureComponent {
         }={},
       }={},
       loading,
+      onRecordClick,
     } = this.props;
 
     return (
       <Section
         refScroll={this.refScroll}
         title="当前隐患"
-        action={this.renderSelect()}
+        action={(
+          <Fragment>
+            {this.renderSelect()}
+            <span className={styles.jumper} onClick={onRecordClick}>隐患记录</span>
+          </Fragment>
+        )}
         className={styles.sectionContainer}
         contentClassName={styles.sectionContent}
         spinProps={{ loading }}

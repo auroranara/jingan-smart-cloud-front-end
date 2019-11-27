@@ -47,7 +47,10 @@ import {
   HumiturePointListDrawer,
   // 温湿度监测点详情抽屉
   HumiturePointDetailDrawer,
+  // 隐患记录抽屉
+  HiddenDangerRecordDrawer,
 } from './components';
+import debounce from 'lodash/debounce';
 // import IndexDrawer from '../Company2/sections/IndexDrawer';
 // 引入样式文件
 import styles from './index.less';
@@ -63,6 +66,7 @@ const DEFAULT_PAGE_SIZE = 10;
   loadingHiddenDangerList: loading.effects['unitSafety/fetchHiddenDangerList'],
   loadingDangerList: loading.effects['unitSafety/fetchDangerList'],
   loadingStaffRecords: loading.effects['unitSafety/fetchStaffRecords'],
+  loadingHiddenDangerRecordList: loading.effects['unitSafety/fetchHiddenDangerRecordList'],
   monitor,
 }))
 export default class UnitSafety extends PureComponent {
@@ -106,6 +110,8 @@ export default class UnitSafety extends PureComponent {
       setDrawerVisible: false,
       // 设备统计抽屉是否显示
       deviceCountDrawerVisible: false,
+      // 设备统计当前输入的区域位置
+      deviceCountAddress: undefined,
       // 设备统计当前选中的状态
       deviceCountSelectedStatus: '0',
       // 设备统计当前选中的监测类型
@@ -116,6 +122,8 @@ export default class UnitSafety extends PureComponent {
       humiturePointDetailDrawerVisible: false,
       // 温湿度监测点详情抽屉值
       humiturePointDetailDrawerValue: null,
+      // 隐患记录抽屉是否显示
+      hiddenDangerRecordDrawerVisible: false,
     };
     // 添加变异函数
     mapMutations(this, {
@@ -175,8 +183,12 @@ export default class UnitSafety extends PureComponent {
         'savePhoneVisible',
         // 获取设备统计列表
         'fetchDeviceCountList',
+        // 获取隐患记录
+        'fetchHiddenDangerRecordList',
       ],
     });
+
+    this.debouncedFetchDeviceCountList = debounce(this.fetchDeviceCountList, 300);
   }
 
   /**
@@ -490,10 +502,42 @@ export default class UnitSafety extends PureComponent {
     });
     this.setState({
       deviceCountDrawerVisible: true,
+      deviceCountAddress: undefined,
       deviceCountSelectedStatus: '0',
       deviceCountSelectedMonitoringType,
     });
   };
+
+  /**
+   * 显示隐患记录抽屉
+   */
+  showHiddenDangerRecordDrawer = () => {
+    const {
+      match: {
+        params: {
+          companyId,
+        },
+      },
+    } = this.props;
+
+    this.setState({
+      hiddenDangerRecordDrawerVisible: true,
+    });
+    this.fetchHiddenDangerRecordList({
+      company_id: companyId,
+      pageNum: 1,
+      pageSize: 20,
+    });
+  }
+
+  /**
+   * 隐藏隐患记录抽屉
+   */
+  hideHiddenDangerRecordDrawer = () => {
+    this.setState({
+      hiddenDangerRecordDrawerVisible: false,
+    });
+  }
 
   /**
    * 根据月份获取人员列表
@@ -540,6 +584,25 @@ export default class UnitSafety extends PureComponent {
   };
 
   /**
+   * 设备区域位置改变
+   */
+  handleDeviceCountAddressChange = deviceCountAddress => {
+    const {
+      match: {
+        params: { companyId },
+      },
+    } = this.props;
+    const { deviceCountSelectedStatus, deviceCountSelectedMonitoringType } = this.state;
+    this.setState({ deviceCountAddress });
+    this.debouncedFetchDeviceCountList({
+      companyId,
+      areaLocation: deviceCountAddress,
+      status: deviceCountSelectedStatus === '0' ? undefined : deviceCountSelectedStatus,
+      type: deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
+    });
+  }
+
+  /**
    * 设备统计状态改变
    */
   handleDeviceCountStatusChange = deviceCountSelectedStatus => {
@@ -548,13 +611,13 @@ export default class UnitSafety extends PureComponent {
         params: { companyId },
       },
     } = this.props;
-    const { deviceCountSelectedMonitoringType } = this.state;
+    const { deviceCountAddress, deviceCountSelectedMonitoringType } = this.state;
     this.setState({ deviceCountSelectedStatus });
     this.fetchDeviceCountList({
       companyId,
+      areaLocation: deviceCountAddress,
       status: deviceCountSelectedStatus === '0' ? undefined : deviceCountSelectedStatus,
-      type:
-        deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
+      type: deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
     });
   };
 
@@ -567,13 +630,13 @@ export default class UnitSafety extends PureComponent {
         params: { companyId },
       },
     } = this.props;
-    const { deviceCountSelectedStatus } = this.state;
+    const { deviceCountAddress, deviceCountSelectedStatus } = this.state;
     this.setState({ deviceCountSelectedMonitoringType });
     this.fetchDeviceCountList({
       companyId,
+      areaLocation: deviceCountAddress,
       status: deviceCountSelectedStatus === '0' ? undefined : deviceCountSelectedStatus,
-      type:
-        deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
+      type: deviceCountSelectedMonitoringType === '0' ? undefined : deviceCountSelectedMonitoringType,
     });
   };
 
@@ -726,6 +789,7 @@ export default class UnitSafety extends PureComponent {
                 count={hiddenDangerCount}
                 loading={loadingHiddenDangerList}
                 onClick={this.getHiddenDangerList}
+                onRecordClick={this.showHiddenDangerRecordDrawer}
               />
             </div>
             <div className={styles.rightBottom}>
@@ -818,8 +882,10 @@ export default class UnitSafety extends PureComponent {
           onClose={() => {
             this.setDrawerVisible('deviceCount');
           }}
+          address={this.state.deviceCountAddress}
           deviceCountSelectedStatus={deviceCountSelectedStatus}
           deviceCountSelectedMonitoringType={deviceCountSelectedMonitoringType}
+          onAddressChange={this.handleDeviceCountAddressChange}
           onStatusChange={this.handleDeviceCountStatusChange}
           onMonitoringTypeChange={this.handleDeviceCountMonitoringTypeChange}
         />
@@ -837,6 +903,13 @@ export default class UnitSafety extends PureComponent {
           visible={this.state.humiturePointDetailDrawerVisible}
           onClose={this.handleHumiturePointDetailDrawerClose}
           onVideoClick={this.showVideo}
+        />
+        {/* 隐患记录抽屉 */}
+        <HiddenDangerRecordDrawer
+          visible={this.state.hiddenDangerRecordDrawerVisible}
+          onClose={this.hideHiddenDangerRecordDrawer}
+          loading={this.props.loadingHiddenDangerRecordList}
+          list={this.props.unitSafety.hiddenDangerRecordList}
         />
       </BigPlatformLayout>
     );

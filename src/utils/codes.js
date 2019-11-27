@@ -461,6 +461,13 @@ export default {
       detail: 'emergencyManagement.emergencyEstimate.detail',
       delete: 'emergencyManagement.emergencyEstimate.delete',
     },
+    emergencyProcess: {
+      listView: 'emergencyManagement.emergencyProcess.list',
+      add: 'emergencyManagement.emergencyProcess.add',
+      edit: 'emergencyManagement.emergencyProcess.edit',
+      detail: 'emergencyManagement.emergencyProcess.view',
+      delete: 'emergencyManagement.emergencyProcess.delete',
+    },
   },
 
   baseInfo: {
@@ -528,7 +535,7 @@ export default {
       edit: 'baseInfo.registeredEngineerManagement.edit',
       delete: 'baseInfo.registeredEngineerManagement.delete',
     },
-    // 危险化学品企业安全许可证
+    // 危化品企业安全许可证
     dangerChemicalsPermit: {
       list: 'baseInfo.dangerChemicalsPermit.listView',
       add: 'baseInfo.dangerChemicalsPermit.add',
@@ -544,7 +551,6 @@ export default {
       delete: 'baseInfo.storageAreaManagement.delete',
       bindSensor: 'baseInfo.storageAreaManagement.bindSensor',
     },
-
     // 安全设施
     safetyFacilities: {
       list: 'baseInfo.safetyFacilities.list',
@@ -552,6 +558,13 @@ export default {
       add: 'baseInfo.safetyFacilities.add',
       edit: 'baseInfo.safetyFacilities.edit',
       delete: 'baseInfo.safetyFacilities.delete',
+    },
+    // 储罐管理
+    storageManagement: {
+      list: 'baseInfo.storageManagement.listView',
+      add: 'baseInfo.storageManagement.add',
+      edit: 'baseInfo.storageManagement.edit',
+      delete: 'baseInfo.storageManagement.delete',
     },
   },
   safetyKnowledgeBase: {
@@ -561,6 +574,22 @@ export default {
       add: 'safetyKnowledgeBase.typicalAccidentCase.add',
       edit: 'safetyKnowledgeBase.typicalAccidentCase.edit',
       delete: 'safetyKnowledgeBase.typicalAccidentCase.delete',
+    },
+  },
+
+  // 两单信息管理
+  twoInformManagement: {
+    dangerFactorsList: {
+      list: 'twoInformationManagement.dangerFactorsList.list',
+      view: 'twoInformationManagement.dangerFactorsList.view',
+      delete: 'twoInformationManagement.dangerFactorsList.delete',
+      sync: 'twoInformationManagement.dangerFactorsList.sync',
+    },
+    safetyRiskList: {
+      list: 'twoInformationManagement.safetyRiskList.list',
+      view: 'twoInformationManagement.safetyRiskList.view',
+      delete: 'twoInformationManagement.safetyRiskList.delete',
+      sync: 'twoInformationManagement.safetyRiskList.sync',
     },
   },
 };

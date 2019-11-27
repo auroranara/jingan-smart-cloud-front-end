@@ -39,7 +39,7 @@ const defaultConfig = {
   ],
   // projectKey: 'dev',
   projectKey: 'v2_test',
-  projectShortName: '晶安智慧云化工',
+  projectShortName: '五位一体信息化管理平台',
   servicePhone: '400-928-5656',
   serviceSupport: '无锡晶安智慧科技有限公司',
   webscoketHost: '47.99.76.214:10036',

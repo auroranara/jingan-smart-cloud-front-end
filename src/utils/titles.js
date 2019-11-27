@@ -51,7 +51,7 @@ export default {
   },
   dangerChemicalsPermit: {
     menu: '一企一档',
-    list: '危险化学品企业安全许可证',
+    list: '危化品企业安全许可证',
     add: '新增许可证',
     edit: '编辑许可证',
   },

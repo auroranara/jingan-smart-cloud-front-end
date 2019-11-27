@@ -116,7 +116,8 @@ const dangerLevelList = [
     value: '蓝',
   },
 ];
-export const SEARCH_FIELDS = [
+
+export const SEARCH_FIELDS_COMPANY = [
   // modify
   {
     id: 'companyName',
@@ -124,6 +125,9 @@ export const SEARCH_FIELDS = [
     render: () => <Input placeholder="请输入" allowClear />,
     transform: v => v.trim(),
   },
+];
+
+export const SEARCH_FIELDS = [
   {
     id: 'name',
     label: '作业/设备名称：',
@@ -157,14 +161,22 @@ export const SEARCH_FIELDS = [
   },
 ];
 
-export const TABLE_COLUMNS = [
+export const TABLE_COLUMNS_COMPANY = [
   {
     title: '单位名称',
     dataIndex: 'companyName',
     key: 'companyName',
     align: 'center',
-    width: 240,
+    width: 260,
+    render: val => (
+      <Ellipsis tooltip length={15} style={{ overflow: 'visible' }}>
+        {val}
+      </Ellipsis>
+    ),
   },
+];
+
+export const TABLE_COLUMNS = [
   {
     title: '作业/设备名称',
     dataIndex: 'name',
@@ -184,9 +196,9 @@ export const TABLE_COLUMNS = [
     dataIndex: 'dangerFactor',
     key: 'dangerFactor',
     align: 'center',
-    width: 180,
+    width: 300,
     render: val => (
-      <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
+      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
         {val}
       </Ellipsis>
     ),
@@ -208,7 +220,6 @@ export const TABLE_COLUMNS = [
     dataIndex: 'result',
     key: 'result',
     align: 'center',
-    width: 180,
     children: [
       {
         title: 'L',
@@ -252,9 +263,9 @@ export const TABLE_COLUMNS = [
     dataIndex: 'dangerMeasure',
     key: 'dangerMeasure',
     align: 'center',
-    width: 180,
+    width: 300,
     render: val => (
-      <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
+      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
         {val}
       </Ellipsis>
     ),
@@ -264,18 +275,19 @@ export const TABLE_COLUMNS = [
     dataIndex: 'consequenceMeasure',
     key: 'consequenceMeasure',
     align: 'center',
-    width: 180,
+    width: 300,
     render: val => (
-      <Ellipsis tooltip length={40} style={{ overflow: 'visible' }}>
+      <Ellipsis tooltip length={35} style={{ overflow: 'visible' }}>
         {val}
       </Ellipsis>
     ),
   },
 ];
 
+export const EDIT_FORMITEMS_COMPANY = [{ name: 'companyName', label: '单位名称', required: false }];
+
 export const EDIT_FORMITEMS = [
   // modify
-  { name: 'companyName', label: '单位名称', required: false },
   {
     name: 'name',
     label: '作业/设备名称',
