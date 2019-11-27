@@ -55,6 +55,7 @@ export default class EmergencyDrillList extends Component {
   pageSize = 10;
 
   componentDidMount() {
+    this.fetchDict({ type: 'emergencyDrill' });
     this.fetchList(1);
   }
 
@@ -68,6 +69,11 @@ export default class EmergencyDrillList extends Component {
         ...filters,
       },
     });
+  };
+
+  fetchDict = (payload, success, error) => {
+    const { dispatch } = this.props;
+    dispatch({ type: 'emergencyManagement/fetchDicts', payload, success, error });
   };
 
   /**
@@ -239,6 +245,7 @@ export default class EmergencyDrillList extends Component {
           list,
           pagination: { pageNum, pageSize, total },
         },
+        emergencyDrill = [],
       },
       loading = false,
     } = this.props;
@@ -253,7 +260,7 @@ export default class EmergencyDrillList extends Component {
         title: '演练计划',
         key: 'project',
         align: 'center',
-        width: 200,
+        width: 250,
         render: (val, row) => {
           const { projectName, projectCode, draftBy, draftDate } = row;
           return (
@@ -282,6 +289,7 @@ export default class EmergencyDrillList extends Component {
         title: '演练信息',
         key: 'projectInfo',
         align: 'center',
+        width: 250,
         render: (val, row) => {
           const { planName, planCode } = row;
           return (
@@ -303,11 +311,21 @@ export default class EmergencyDrillList extends Component {
         dataIndex: 'typeCode',
         key: 'typeCode',
         align: 'center',
+        width: 250,
         render: (val, row) => {
           const { planType, typeCode } = row;
+          let treeData = emergencyDrill;
+          const string = planType
+            .split(',')
+            .map(id => {
+              const val = treeData.find(item => item.id === id) || {};
+              treeData = val.children;
+              return val.label;
+            })
+            .join('/');
           return (
             <div className={styles.multi}>
-              <div>{planType || ''}</div>
+              <div>{string || ''}</div>
               <div>{typeCode || ''}</div>
             </div>
           );
@@ -338,6 +356,7 @@ export default class EmergencyDrillList extends Component {
         title: '操作',
         key: 'opration',
         align: 'center',
+        fixed: 'right',
         render: (val, row) => (
           <Fragment>
             <AuthA code={detailCode} onClick={() => this.goDetail(row.id)}>
@@ -366,7 +385,7 @@ export default class EmergencyDrillList extends Component {
           columns={columns}
           dataSource={list}
           // bordered
-          // scroll={{ x: 'max-content' }}
+          scroll={{ x: 'max-content' }}
           pagination={{
             current: pageNum,
             pageSize,

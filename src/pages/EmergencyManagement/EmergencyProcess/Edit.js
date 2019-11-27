@@ -23,28 +23,7 @@ const defaultUploadProps = {
 };
 /* root下的div */
 const getRootChild = () => document.querySelector('#root>div');
-const drillColumns = [
-  {
-    title: '演练编号',
-    dataIndex: 'planCode',
-    key: 'planCode',
-  },
-  {
-    title: '演练名称',
-    dataIndex: 'planName',
-    key: 'planName',
-  },
-  {
-    title: '演练类型',
-    dataIndex: 'planType',
-    key: 'planType',
-  },
-  {
-    title: '演练地点',
-    dataIndex: 'planLocation',
-    key: 'planLocation',
-  },
-];
+
 const drillFields = [
   {
     id: 'planCode',
@@ -92,9 +71,14 @@ export default class Edit extends PureComponent {
       match: {
         params: { id },
       },
+      user: {
+        currentUser: { unitType, companyId },
+      },
+      form: { setFieldsValue },
     } = this.props;
-    // this.fetchDict({ type: 'simAccidentType', parentId: '0' });
+    if (unitType === 4) setFieldsValue({ companyId });
     this.fetchDict({ type: 'simAccidentType' });
+    this.fetchDict({ type: 'emergencyDrill' });
     id && this.getDetail();
   }
 
@@ -236,7 +220,7 @@ export default class Edit extends PureComponent {
   handleSubmit = e => {
     const {
       dispatch,
-      form: { validateFields },
+      form: { validateFields, setFields },
       match: {
         params: { id },
       },
@@ -249,6 +233,12 @@ export default class Edit extends PureComponent {
     e.preventDefault();
     validateFields((errors, formData) => {
       if (!errors) {
+        if (!fileList.length) {
+          setFields({
+            treatment: { value: undefined, errors: [new Error('请上传演练过程描述')] },
+          });
+          return;
+        }
         const {
           drillTime: [startTime, endTime],
         } = formData;
@@ -350,7 +340,7 @@ export default class Edit extends PureComponent {
         params: { id },
       },
       form: { getFieldDecorator },
-      emergencyManagement: { drill: drillModal, simAccidentType = [] },
+      emergencyManagement: { drill: drillModal, simAccidentType = [], emergencyDrill = [] },
       user: {
         currentUser: { unitType },
       },
@@ -369,7 +359,52 @@ export default class Edit extends PureComponent {
     breadcrumbList.push({ title, name: title });
     const handleSubmit = isDet ? null : this.handleSubmit;
 
-    console.log('simAccidentType111', simAccidentType);
+    let treeData = emergencyDrill;
+    const planType = selectedDrill.planType
+      ? selectedDrill.planType
+          .split(',')
+          .map(id => {
+            const val = treeData.find(item => item.id === id) || {};
+            treeData = val.children;
+            return val.label;
+          })
+          .join('/')
+      : '';
+
+    const drillColumns = [
+      {
+        title: '演练编号',
+        dataIndex: 'planCode',
+        key: 'planCode',
+      },
+      {
+        title: '演练名称',
+        dataIndex: 'planName',
+        key: 'planName',
+      },
+      {
+        title: '演练类型',
+        dataIndex: 'planType',
+        key: 'planType',
+        render: data => {
+          let treeData = emergencyDrill;
+          const planType = data
+            .split(',')
+            .map(id => {
+              const val = treeData.find(item => item.id === id) || {};
+              treeData = val.children;
+              return val.label;
+            })
+            .join('/');
+          return planType;
+        },
+      },
+      {
+        title: '演练地点',
+        dataIndex: 'planLocation',
+        key: 'planLocation',
+      },
+    ];
 
     const EDIT_FORMITEMS = [
       // modify
@@ -420,7 +455,7 @@ export default class Edit extends PureComponent {
         type: 'component',
         component: getFieldDecorator('treatType', {
           // rules: [{ required: true, message: '请选择单位名称' }],
-        })(<span>{selectedDrill.planType}</span>),
+        })(<span>{planType}</span>),
       },
       { name: 'drillTime', label: '演练起止日期', type: 'rangepicker' },
       { name: 'place', label: '演练地点' },

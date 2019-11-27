@@ -1,10 +1,11 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
+import { hasAuthority, AuthA } from '@/utils/customAuth';
 import Link from 'umi/link';
 import router from 'umi/router';
-import { Button, Card, Table, message, Popconfirm, Divider, Input, Select, Cascader } from 'antd';
+import { Button, Card, Table, message, Popconfirm, Divider, Input, Spin, Cascader } from 'antd';
 import moment from 'moment';
-
+import codes from '@/utils/codes';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import styles1 from '@/pages/SafetyKnowledgeBase/MSDS/MList.less';
@@ -18,6 +19,11 @@ import {
 } from './utils';
 import styles from './styles.less';
 
+const {
+  emergencyManagement: {
+    emergencyProcess: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode },
+  },
+} = codes;
 const getRootChild = () => document.querySelector('#root>div');
 @connect(({ emergencyManagement, user, loading }) => ({
   emergencyManagement,
@@ -32,6 +38,7 @@ export default class TableList extends PureComponent {
   pageSize = 10;
 
   componentDidMount() {
+    this.fetchDict({ type: 'emergencyDrill' });
     this.fetchDict({ type: 'simAccidentType' });
     this.fetchList();
   }
@@ -48,6 +55,10 @@ export default class TableList extends PureComponent {
           filters.accidType && filters.accidType.length > 0
             ? filters.accidType.join(',')
             : undefined,
+        treatType:
+          filters.treatType && filters.treatType.length > 0
+            ? filters.treatType.join(',')
+            : undefined,
       },
     });
   };
@@ -55,6 +66,14 @@ export default class TableList extends PureComponent {
   fetchDict = (payload, success, error) => {
     const { dispatch } = this.props;
     dispatch({ type: 'emergencyManagement/fetchDicts', payload, success, error });
+  };
+
+  goDetail = id => {
+    router.push(`/emergency-management/emergency-process/view/${id}`);
+  };
+
+  goEdit = id => {
+    router.push(`/emergency-management/emergency-process/edit/${id}`);
   };
 
   // 查询
@@ -108,16 +127,23 @@ export default class TableList extends PureComponent {
           a,
         },
         simAccidentType = [],
+        emergencyDrill = [],
       },
       user: {
-        currentUser: { unitType },
+        currentUser: { unitType, permissionCodes },
       },
     } = this.props;
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
+    const hasAddAuthority = hasAuthority(addCode, permissionCodes);
     breadcrumbList.push({ title: '列表', name: '列表' });
     const toolBarAction = (
-      <Button type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
+      <Button
+        type="primary"
+        onClick={this.handleAdd}
+        style={{ marginTop: '8px' }}
+        disabled={!hasAddAuthority}
+      >
         新增
       </Button>
     );
@@ -134,11 +160,19 @@ export default class TableList extends PureComponent {
         id: 'treatType',
         label: '演练类型：',
         render: () => (
-          <Select placeholder="请选择" allowClear>
-            {/* {[].map((r, i) => (
-              <Option key={i}>{r}</Option>
-            ))} */}
-          </Select>
+          <Cascader
+            options={emergencyDrill}
+            fieldNames={{
+              value: 'id',
+              label: 'label',
+              children: 'children',
+              isLeaf: 'isLeaf',
+            }}
+            changeOnSelect
+            placeholder="请选择"
+            allowClear
+            getPopupContainer={getRootChild}
+          />
         ),
       },
       {
@@ -180,18 +214,30 @@ export default class TableList extends PureComponent {
         title: '单位名称',
         dataIndex: 'companyName',
         key: 'companyName',
+        align: 'center',
       },
       {
         title: '方案名称',
         dataIndex: 'planName',
         key: 'planName',
+        align: 'center',
       },
       {
         title: '演练信息',
         dataIndex: 'drillInfo',
         key: 'drillInfo',
+        align: 'center',
         render(_, row) {
           const { projectName, treatType, startTime, endTime, place } = row;
+          let treeData = emergencyDrill;
+          const string = treatType
+            .split(',')
+            .map(id => {
+              const val = treeData.find(item => item.id === id) || {};
+              treeData = val.children;
+              return val.label;
+            })
+            .join('/');
           return (
             <div className={styles.multi}>
               <div>
@@ -200,7 +246,7 @@ export default class TableList extends PureComponent {
               </div>
               <div>
                 演练类型：
-                {treatType}
+                {string}
               </div>
               <div>
                 起止时间：
@@ -220,6 +266,7 @@ export default class TableList extends PureComponent {
         title: '事故信息',
         dataIndex: 'accidentInfo',
         key: 'accidentInfo',
+        align: 'center',
         render(_, row) {
           const { accidName, accidType } = row;
           const types = accidType.split(',');
@@ -249,6 +296,7 @@ export default class TableList extends PureComponent {
         title: '演练过程描述',
         dataIndex: 'treatmentList',
         key: 'treatmentList',
+        align: 'center',
         render(data) {
           return (
             <Fragment>
@@ -276,17 +324,21 @@ export default class TableList extends PureComponent {
         render: id => {
           return (
             <Fragment>
-              <Link to={`${ROUTER}/view/${id}`}>查看</Link>
+              <AuthA code={detailCode} onClick={() => this.goDetail(id)}>
+                查看
+              </AuthA>
               <Divider type="vertical" />
-              <Link to={`${ROUTER}/edit/${id}`}>编辑</Link>
+              <AuthA code={editCode} onClick={() => this.goEdit(id)}>
+                编辑
+              </AuthA>
               <Divider type="vertical" />
               <Popconfirm
-                title="确定要删除改演练过程吗？"
+                title="确定要删除该演练过程吗？"
                 onConfirm={() => this.handleDelete(id)}
                 okText="确定"
                 cancelText="取消"
               >
-                <a>删除</a>
+                <AuthA code={deleteCode}>删除</AuthA>
               </Popconfirm>
             </Fragment>
           );
@@ -325,26 +377,34 @@ export default class TableList extends PureComponent {
             buttonSpan={{ xl: 8, sm: 12, xs: 24 }}
           />
         </Card>
-        <div className={styles1.container}>
-          <Table
-            rowKey="id"
-            loading={loading}
-            columns={unitType === 4 ? COLUMNS.slice(1, COLUMNS.length) : COLUMNS}
-            dataSource={list}
-            onChange={this.onTableChange}
-            scroll={{ x: 1500 }} // 项目不多时注掉
-            pagination={{
-              current: pageNum,
-              pageSize,
-              total,
-              showQuickJumper: true,
-              showSizeChanger: true,
-              pageSizeOptions: ['5', '10', '15', '20'],
-              onChange: this.handleTableChange,
-              onShowSizeChange: this.handleTableChange,
-            }}
-          />
-        </div>
+        {list && list.length ? (
+          <Card style={{ marginTop: '24px' }}>
+            <Table
+              rowKey="id"
+              loading={loading}
+              columns={unitType === 4 ? COLUMNS.slice(1, COLUMNS.length) : COLUMNS}
+              dataSource={list}
+              onChange={this.onTableChange}
+              scroll={{ x: 1500 }} // 项目不多时注掉
+              pagination={{
+                current: pageNum,
+                pageSize,
+                total,
+                showQuickJumper: true,
+                showSizeChanger: true,
+                pageSizeOptions: ['5', '10', '15', '20'],
+                onChange: this.handleTableChange,
+                onShowSizeChange: this.handleTableChange,
+              }}
+            />
+          </Card>
+        ) : (
+          <Spin spinning={loading}>
+            <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+              <span>暂无数据</span>
+            </Card>
+          </Spin>
+        )}
       </PageHeaderLayout>
     );
   }

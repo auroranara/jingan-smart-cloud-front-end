@@ -57,6 +57,7 @@ export default class EmergencyDrillHandler extends PureComponent {
       compayModalVisible: false,
       // 选中的企业
       selectedCompany: {},
+      typeCode: '',
     };
   }
 
@@ -103,10 +104,10 @@ export default class EmergencyDrillHandler extends PureComponent {
             projectCode,
             projectStatus,
             draftBy,
-            draftDate: moment(draftDate),
+            draftDate: draftDate && moment(draftDate),
             reportBy,
             planName,
-            planType,
+            planType: planType && planType.split(','),
             typeCode,
             planBack,
             planCode,
@@ -119,6 +120,7 @@ export default class EmergencyDrillHandler extends PureComponent {
           });
           this.setState({
             selectedCompany: { id: companyId, name: companyName },
+            typeCode,
           });
         },
       });
@@ -146,12 +148,13 @@ export default class EmergencyDrillHandler extends PureComponent {
         params: { id },
       },
     } = this.props;
+    const { typeCode } = this.state;
 
     validateFields((error, formData) => {
       console.log('formData', formData);
 
       if (!error) {
-        const payload = { ...formData };
+        const payload = { ...formData, planType: formData.planType.join(','), typeCode };
         const success = () => {
           message.success(id ? '编辑成功！' : '新增成功！');
           router.push(listUrl);
@@ -205,6 +208,22 @@ export default class EmergencyDrillHandler extends PureComponent {
   /* 去除左右两边空白 */
   handleTrim = e => e.target.value.trim();
 
+  changePlanType = value => {
+    console.log('value', value);
+    const {
+      emergencyManagement: { emergencyDrill = [] },
+    } = this.props;
+    let treeData = emergencyDrill;
+    const typeCode = value
+      .map(id => {
+        const val = treeData.find(item => item.id === id) || {};
+        treeData = val.children;
+        return val.value;
+      })
+      .join('.');
+    this.setState({ typeCode });
+  };
+
   /**
    * 渲染表单
    */
@@ -213,7 +232,7 @@ export default class EmergencyDrillHandler extends PureComponent {
       form: { getFieldDecorator, getFieldValue },
       emergencyManagement: { emergencyDrill = [] },
     } = this.props;
-    const { selectedCompany } = this.state;
+    const { selectedCompany, typeCode } = this.state;
 
     return (
       <Card>
@@ -301,11 +320,13 @@ export default class EmergencyDrillHandler extends PureComponent {
                 changeOnSelect
                 placeholder="请选择演练类型"
                 allowClear
+                onChange={this.changePlanType}
+                {...itemStyles}
               />
             )}
           </FormItem>
           <FormItem label="演练类型代码" {...formItemLayout}>
-            {getFieldDecorator('typeCode')(<span>{}</span>)}
+            {getFieldDecorator('typeCode')(<span>{typeCode}</span>)}
           </FormItem>
           <FormItem label="演练背景" {...formItemLayout}>
             {getFieldDecorator('planBack', { getValueFromEvent: this.handleTrim })(

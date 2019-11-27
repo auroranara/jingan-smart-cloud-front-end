@@ -461,6 +461,13 @@ export default {
       detail: 'emergencyManagement.emergencyEstimate.detail',
       delete: 'emergencyManagement.emergencyEstimate.delete',
     },
+    emergencyProcess: {
+      listView: 'emergencyManagement.emergencyProcess.list',
+      add: 'emergencyManagement.emergencyProcess.add',
+      edit: 'emergencyManagement.emergencyProcess.edit',
+      detail: 'emergencyManagement.emergencyProcess.view',
+      delete: 'emergencyManagement.emergencyProcess.delete',
+    },
   },
 
   baseInfo: {

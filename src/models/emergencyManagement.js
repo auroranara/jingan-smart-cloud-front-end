@@ -472,57 +472,11 @@ export default {
           isLeaf: item.hasChild === '0',
           children: null,
         }));
-        const tree = [
-          {
-            id: '2a7s1n25ffmcf7sa',
-            remarks: '',
-            label: '煤矿顶板事故',
-            type: 'simAccidentType',
-            sort: 2,
-            parentId: '2ccgam1rb5cm8v38',
-            parentIds: '0,2ccgam1rb5cm8v38,',
-            value: '12A02',
-            hasChild: '0',
-          },
-          {
-            id: '2ccgam1rb5cm8v38',
-            remarks: '',
-            label: '煤矿事故',
-            type: 'simAccidentType',
-            sort: 1,
-            parentId: '0',
-            parentIds: '0,',
-            value: '12A00',
-            hasChild: '1',
-          },
-          {
-            id: '3epusa59bgrqf68h',
-            remarks: '',
-            label: '金属与非金属矿山事故',
-            type: 'simAccidentType',
-            sort: 2,
-            parentId: '0',
-            parentIds: '0,',
-            value: '12B00',
-            hasChild: '0',
-          },
-          {
-            id: 'o27q_32gtnwmg5ac',
-            remarks: '',
-            label: '煤矿瓦斯事故',
-            type: 'simAccidentType',
-            sort: 1,
-            parentId: '2ccgam1rb5cm8v38',
-            parentIds: '0,2ccgam1rb5cm8v38,',
-            value: '12A01',
-            hasChild: '0',
-          },
-        ];
         yield put({
           type: 'save',
           payload: {
             type: payload.type,
-            data: toTree(tree),
+            data: toTree(newList),
           },
         });
         if (success) success(data.list);
