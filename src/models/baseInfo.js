@@ -3,11 +3,18 @@ import {
   addStorageTank,
   editStorageTank,
   deleteStorageTank,
-  fetchStorageTankDetail,
+  // fetchStorageTankDetail,
 } from '@/services/baseInfo/storageTank';
 import {
   fetchStorageTankAreaForPage,
 } from '@/services/baseInfo/storageTankArea';
+import {
+  fetchSpecialWorkPerson,
+  addSpecialWorkPerson,
+  editSpecialWorkPerson,
+  deleteSpecialWorkPerson,
+  fetchDict,
+} from '@/services/baseInfo/specialoPerationPermit';
 
 const defaultPagination = { total: 0, pageNum: 1, pageSize: 10 };
 
@@ -16,19 +23,8 @@ export default {
   state: {
     // 特种作业操作证人员
     specialoPerationPermit: {
-      list: [
-        {
-          id: '1',
-          companyName: '利民化工股份有限公司',
-          name: '王进',
-          gender: '男',
-          birthDay: '1995.05.11',
-          phone: '13815264532',
-          type: '电工作业-高压电工作业',
-          operationPermit: {},
-          dannex: {},
-        },
-      ],
+      a: 0,
+      list: [],
       pagination: defaultPagination,
     },
     // 特种设备作业人员
@@ -88,13 +84,14 @@ export default {
   },
   effects: {
     // 获取储罐列表（分页）
-    *fetchStorageTankForPage ({ payload }, { call, put }) {
+    *fetchStorageTankForPage ({ payload, callback }, { call, put }) {
       const response = yield call(fetchStorageTankForPage, payload)
       if (response && response.code === 200) {
         yield put({
           type: 'saveStorageTank',
           payload: response.data,
         })
+        if (callback) callback(response.data)
       }
     },
     // 新增储罐
@@ -129,7 +126,7 @@ export default {
       }
     },
     // 获取储罐详情
-    *fetchStorageTankDetail ({ payload, callback }, { call, put }) {
+    *fetchStorageTankDetail ({ payload }, { call, put }) {
       const response = yield call(fetchStorageTankForPage, payload)
       if (response && response.code === 200) {
         const detail = response.data && response.data.list && response.data.list.length ? response.data.list[0] : {}
@@ -137,7 +134,45 @@ export default {
           type: 'save',
           payload: { storageTankDetail: detail },
         })
-        if (callback) callback(detail)
+      }
+    },
+    // 获取特种作业操作证人员列表（分页）
+    *fetchSpecialWorkPerson ({ payload, callback }, { call, put }) {
+      const res = yield call(fetchSpecialWorkPerson, payload)
+      if (res && res.code === 200) {
+        yield put({
+          type: 'saveSpecialoPerationPermit',
+          payload: res.data,
+        })
+        if (callback) callback(res.data)
+      }
+    },
+    // 新增特种作业操作证人员
+    *addSpecialWorkPerson ({ payload, success, error }, { call }) {
+      const response = yield call(addSpecialWorkPerson, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response)
+    },
+    // 编辑特种作业操作证人员
+    *editSpecialWorkPerson ({ payload, success, error }, { call }) {
+      const response = yield call(editSpecialWorkPerson, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response)
+    },
+    // 删除特种作业操作证人员
+    *deleteSpecialWorkPerson ({ payload, success, error }, { call }) {
+      const response = yield call(deleteSpecialWorkPerson, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response)
+    },
+    // 获取作业类别
+    *fetchOperationCategory ({ payload, callback }, { call, put }) {
+      const res = yield call(fetchDict, payload)
+      if (res && res.code === 200) {
+        if (callback) callback(res.data.list || [])
       }
     },
   },
@@ -159,6 +194,12 @@ export default {
       return {
         ...state,
         storageTankArea: { ...payload },
+      }
+    },
+    saveSpecialoPerationPermit (state, { payload = { a: 0, list: [], pagination: defaultPagination } }) {
+      return {
+        ...state,
+        specialoPerationPermit: { ...payload },
       }
     },
   },
