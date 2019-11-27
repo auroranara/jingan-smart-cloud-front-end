@@ -95,7 +95,7 @@ const fieldLabels = {};
 // 上传文件地址
 const uploadAction = '/acloud_new/v2/uploadFile';
 
-@connect(({ loading, baseInfo, personnelPosition, riskPointManage, device, sensor, materials, reservoirRegion }) => ({
+@connect(({ loading, baseInfo, personnelPosition, riskPointManage, device, sensor, materials, reservoirRegion, user }) => ({
   baseInfo,
   personnelPosition,
   riskPointManage,
@@ -103,6 +103,7 @@ const uploadAction = '/acloud_new/v2/uploadFile';
   sensor,
   materials,
   reservoirRegion,
+  user,
   companyLoading: loading.effects['sensor/fetchModelList'], // 单位列表加载状态
 }))
 @Form.create()
@@ -135,6 +136,7 @@ export default class StorageEdit extends PureComponent {
       dispatch,
       match: { params: { id } },
       form: { setFieldsValue },
+      user: { currentUser },
     } = this.props
     if (id) {
       // 如果编辑
@@ -187,6 +189,12 @@ export default class StorageEdit extends PureComponent {
           buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } })
         },
       })
+    } else if (currentUser && currentUser.unitType === 4) {
+      // 如果是企业用户
+      const { companyId, companyName } = currentUser;
+      setFieldsValue({ companyId, locationType: 0 });
+      this.setState({ selectedCompany: { id: companyId, name: companyName } });
+      companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
     } else {
       setFieldsValue({ locationType: 0 })
     }
@@ -217,23 +225,24 @@ export default class StorageEdit extends PureComponent {
   /**
   * 获取储罐区列表
   */
-  fetchStorageTankAreaForPage = (actions) => {
+  fetchStorageTankAreaForPage = ({ payload, ...resProps }) => {
     const { dispatch } = this.props
+    const { selectedCompany } = this.state;
+    const companyId = selectedCompany.id;
     dispatch({
       type: 'baseInfo/fetchStorageTankAreaForPage',
-      ...actions,
+      payload: { companyId, ...payload },
+      ...resProps,
     })
   }
 
   /**
-  * 获取储罐区列表
+  * 获取存储介质列表
   */
   fetchStorageMedium = ({ payload, ...resProps }) => {
-    const {
-      dispatch,
-      form: { getFieldValue },
-    } = this.props;
-    const companyId = getFieldValue('companyId')
+    const { dispatch } = this.props;
+    const { selectedCompany } = this.state;
+    const companyId = selectedCompany.id;
     dispatch({
       type: 'materials/fetchMaterialsList',
       payload: { companyId, ...payload },
@@ -360,9 +369,10 @@ export default class StorageEdit extends PureComponent {
   */
   handleRefreshBuilding = (weatherFetch = false) => {
     const {
-      form: { setFieldsValue, getFieldValue },
+      form: { setFieldsValue },
     } = this.props
-    const companyId = getFieldValue('companyId');
+    const { selectedCompany } = this.state;
+    const companyId = selectedCompany.id;
     // 清空选择建筑物和楼层
     setFieldsValue({ buildingId: undefined, floorId: undefined });
     // 获取建筑物下拉 清空楼层下拉
@@ -473,8 +483,10 @@ export default class StorageEdit extends PureComponent {
 
   // 点击打开选择存储介质弹窗
   handleToSelectStorageMedium = () => {
-    const { form: { getFieldsValue } } = this.props
-    const { storageMedium, companyId } = getFieldsValue()
+    const { form: { getFieldValue } } = this.props
+    const { selectedCompany } = this.state;
+    const companyId = selectedCompany.id;
+    const storageMedium = getFieldValue('storageMedium')
     if (!companyId) {
       message.warning('请先选择单位')
       return;
@@ -622,6 +634,7 @@ export default class StorageEdit extends PureComponent {
       pointFixInfoList,
       uploadPics,
       uploadFiles,
+      selectedCompany,
     } = this.state;
     if (!isNaN(editingIndex)) {
       message.warning('请先保存平面图信息')
@@ -633,15 +646,16 @@ export default class StorageEdit extends PureComponent {
       const [designReserves, designReservesUnit] = designReservesAndUnit;
       const payload = {
         ...resValues,
+        companyId: selectedCompany.id,
         designReserves,
         designReservesUnit,
         pointFixInfoList, // 平面图标注列表
-        scenePhoto: uploadPics && uploadPics.length ? JSON.stringify(uploadPics) : undefined,
-        otherFile: uploadFiles && uploadFiles.length ? JSON.stringify(uploadFiles) : undefined,
-        area: +values.locationType === 1 ? area : undefined,
-        pressureRate: values.pressureVessel === '1' ? pressureRate : undefined,
-        designPressure: values.pressureVessel === '1' ? designPressure : undefined,
-        cofferdamArea: values.cofferdam === '2' ? cofferdamArea : undefined,
+        scenePhoto: uploadPics && uploadPics.length ? JSON.stringify(uploadPics) : '',
+        otherFile: uploadFiles && uploadFiles.length ? JSON.stringify(uploadFiles) : '',
+        area: +values.locationType === 1 ? area : '',
+        pressureRate: values.pressureVessel === '1' ? pressureRate : '',
+        designPressure: values.pressureVessel === '1' ? designPressure : '',
+        cofferdamArea: values.cofferdam === '2' ? cofferdamArea : '',
       }
       const tag = id ? '编辑' : '新增';
       const success = () => {
@@ -691,6 +705,7 @@ export default class StorageEdit extends PureComponent {
       device: {
         flatGraphic, // 平面图类型选项
       },
+      user: { currentUser: { unitType } },
     } = this.props;
 
     const {
@@ -709,7 +724,8 @@ export default class StorageEdit extends PureComponent {
       fileUploading,
     } = this.state
 
-    const { locationType, companyId, designReservesAndUnit, pressureVessel, cofferdam } = getFieldsValue();
+    const { locationType, designReservesAndUnit, pressureVessel, cofferdam } = getFieldsValue();
+    const companyId = selectedCompany.id;
     const FlatPicProps = {
       visible: picModalVisible,
       onCancel: () => { this.setState({ picModalVisible: false }) },
@@ -731,23 +747,25 @@ export default class StorageEdit extends PureComponent {
     return (
       <Card bordered={false}>
         <Form style={{ marginTop: 8 }}>
-          <FormItem {...formItemLayout} label="单位名称">
-            {getFieldDecorator('companyId', {
-              rules: [{ required: true, message: '请输入单位' }],
-            })(
-              <Fragment>
-                <Input
-                  {...itemStyles}
-                  disabled
-                  value={selectedCompany.name}
-                  placeholder="请选择"
-                />
-                <Button type="primary" onClick={this.handleViewCompanyModal}>
-                  选择单位
+          {unitType !== 4 && (
+            <FormItem {...formItemLayout} label="单位名称">
+              {getFieldDecorator('companyId', {
+                rules: [{ required: true, message: '请输入单位' }],
+              })(
+                <Fragment>
+                  <Input
+                    {...itemStyles}
+                    disabled
+                    value={selectedCompany.name}
+                    placeholder="请选择"
+                  />
+                  <Button type="primary" onClick={this.handleViewCompanyModal}>
+                    选择单位
               </Button>
-              </Fragment>
-            )}
-          </FormItem>
+                </Fragment>
+              )}
+            </FormItem>
+          )}
           <FormItem {...formItemLayout} label="统一编码">
             {getFieldDecorator('unifiedCode', {
               initialValue: id ? detail.unifiedCode : undefined,
