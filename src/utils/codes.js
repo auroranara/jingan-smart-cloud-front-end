@@ -566,6 +566,20 @@ export default {
       edit: 'baseInfo.storageManagement.edit',
       delete: 'baseInfo.storageManagement.delete',
     },
+    // 特种作业操作证人员
+    specialoPerationPermit: {
+      list: 'baseInfo.specialoPerationPermit.listView',
+      add: 'baseInfo.specialoPerationPermit.add',
+      edit: 'baseInfo.specialoPerationPermit.edit',
+      delete: 'baseInfo.specialoPerationPermit.delete',
+    },
+    // 特种设备作业人员
+    specialEquipmentOperators: {
+      list: 'baseInfo.specialEquipmentOperators.listView',
+      add: 'baseInfo.specialEquipmentOperators.add',
+      edit: 'baseInfo.specialEquipmentOperators.edit',
+      delete: 'baseInfo.specialEquipmentOperators.delete',
+    },
   },
   safetyKnowledgeBase: {
     // 典型事故案例
