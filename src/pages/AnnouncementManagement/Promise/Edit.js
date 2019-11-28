@@ -6,16 +6,8 @@ import moment from 'moment';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
 import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
-import { hasAuthority } from '@/utils/customAuth';
-import codes from '@/utils/codes';
-import { BREADCRUMBLIST, EDIT_FORMITEMS, LIST_URL, ROUTER } from './utils';
 
-// 权限
-const {
-  announcementManagement: {
-    promise: { edit: editAuth },
-  },
-} = codes;
+import { BREADCRUMBLIST, EDIT_FORMITEMS, LIST_URL } from './utils';
 
 @connect(({ loading, twoInformManagement, company, user }) => ({
   company,
@@ -93,9 +85,9 @@ export default class Edit extends PureComponent {
           levelOne: arrayData[5],
           levelTwo: arrayData[6],
           limitedSpace: arrayData[7],
-          pilot: arrayData[8],
-          driving: arrayData[9],
-          safe: arrayData[10],
+          pilot: +arrayData[8],
+          driving: +arrayData[9],
+          safe: +arrayData[10],
           submitter: arrayData[11],
         };
         this.setState(
@@ -205,13 +197,6 @@ export default class Edit extends PureComponent {
     });
   };
 
-  isDetail = () => {
-    const {
-      match: { url },
-    } = this.props;
-    return url && url.includes('view');
-  };
-
   render() {
     const {
       companyLoading,
@@ -221,7 +206,7 @@ export default class Edit extends PureComponent {
       form: { getFieldDecorator },
       company: { companyModal },
       user: {
-        currentUser: { permissionCodes, unitType, companyId },
+        currentUser: { unitType, companyId },
       },
     } = this.props;
 
@@ -234,7 +219,7 @@ export default class Edit extends PureComponent {
         type: 'component',
         component: getFieldDecorator('companyId', {
           initialValue: companyId,
-          rules: [{ required: true, message: '请选择单位名称' }],
+          rules: [{ required: true, message: '单位名称不能为空' }],
         })(
           <Fragment>
             <Input
@@ -262,12 +247,10 @@ export default class Edit extends PureComponent {
       },
     ];
 
-    const isDet = this.isDetail();
-    const title = isDet ? '详情' : id ? '编辑' : '新增';
+    const title = id ? '编辑' : '新增';
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title, name: title });
-    const handleSubmit = isDet ? null : this.handleSubmit;
-    const editCode = hasAuthority(editAuth, permissionCodes);
+    const handleSubmit = this.handleSubmit;
 
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
@@ -279,31 +262,6 @@ export default class Edit extends PureComponent {
             getFieldDecorator,
             handleSubmit,
             LIST_URL
-          )}
-          {this.isDetail() && (
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <span>
-                <Button
-                  style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                  type="primary"
-                  size="large"
-                  disabled={!editCode}
-                  href={`#${ROUTER}/edit/${id}`}
-                >
-                  编辑
-                </Button>
-              </span>
-
-              <span style={{ marginLeft: 10 }}>
-                <Button
-                  style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-                  size="large"
-                  href={`#${LIST_URL}`}
-                >
-                  返回
-                </Button>
-              </span>
-            </div>
           )}
         </Card>
         <CompanyModal

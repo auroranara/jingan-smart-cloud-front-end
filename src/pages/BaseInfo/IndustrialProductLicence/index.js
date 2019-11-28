@@ -45,6 +45,12 @@ const certificateState = {
   5: '曾用',
 };
 
+const paststatusVal = {
+  0: '未到期 ',
+  1: '即将到期',
+  2: '已过期',
+};
+
 const spanStyle = { md: 8, sm: 12, xs: 24 };
 
 /* session前缀 */
@@ -83,6 +89,19 @@ export default class IndustriallicenceList extends PureComponent {
       this.form.setFieldsValue({ ...payload });
     }
   }
+
+  getColorVal = status => {
+    switch (+status) {
+      case 0:
+        return '#1890ff';
+      case 1:
+        return '#faad14';
+      case 2:
+        return '#f5222d';
+      default:
+        return;
+    }
+  };
 
   // 获取列表
   fetchList = params => {
@@ -212,7 +231,7 @@ export default class IndustriallicenceList extends PureComponent {
         },
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
     // 权限
@@ -270,13 +289,13 @@ export default class IndustriallicenceList extends PureComponent {
         align: 'center',
         width: 200,
         render: (val, record) => {
-          const { endDate } = record;
+          const { endDate, pastStatus } = record;
           return (
             <div>
               <span>{moment(endDate).format('YYYY-MM-DD')}</span>
-              {/* <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
-                {paststatusVal[paststatus]}
-              </span> */}
+              <span style={{ color: this.getColorVal(pastStatus), paddingLeft: 10 }}>
+                {paststatusVal[pastStatus]}
+              </span>
             </div>
           );
         },
@@ -334,7 +353,7 @@ export default class IndustriallicenceList extends PureComponent {
         <Table
           rowKey="id"
           loading={loading}
-          columns={columns}
+          columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
           dataSource={list}
           bordered
           scroll={{ x: 1300 }}
@@ -364,12 +383,12 @@ export default class IndustriallicenceList extends PureComponent {
           pagination: { total },
         },
         msg,
-        // issuingTypeList,
+        issuingTypeList,
         expirationStatusList,
         certificateStateList,
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
     const { visible, imgUrl, currentImage } = this.state;
@@ -399,13 +418,13 @@ export default class IndustriallicenceList extends PureComponent {
         transform: v => v.trim(),
       },
       {
-        id: 'area',
+        id: 'pastStatus',
         label: '到期状态',
         span: spanStyle,
         render: () => (
           <Select allowClear placeholder="请选择到期状态">
             {expirationStatusList.map(({ key, value }) => (
-              <Option key={key} value={value}>
+              <Option key={key} value={key}>
                 {value}
               </Option>
             ))}
@@ -420,7 +439,7 @@ export default class IndustriallicenceList extends PureComponent {
         render: () => (
           <Select allowClear placeholder="请选择证件状态">
             {certificateStateList.map(({ key, value }) => (
-              <Option key={key} value={value}>
+              <Option key={key} value={key}>
                 {value}
               </Option>
             ))}
@@ -455,7 +474,7 @@ export default class IndustriallicenceList extends PureComponent {
       >
         <Card>
           <ToolBar
-            fields={fields}
+            fields={unitType === 4 ? fields.slice(0, 3) : fields}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             action={

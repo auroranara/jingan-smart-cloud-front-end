@@ -21,9 +21,10 @@ const addTitle = '新增库区';
 // 表单标签
 const fieldLabels = {};
 
-@connect(({ loading, reservoirRegion, videoMonitor }) => ({
+@connect(({ loading, reservoirRegion, user, videoMonitor }) => ({
   reservoirRegion,
   videoMonitor,
+  user,
   loading: loading.models.reservoirRegion,
 }))
 @Form.create()
@@ -82,6 +83,9 @@ export default class ReservoirRegionEdit extends PureComponent {
       match: {
         params: { id },
       },
+      user: {
+        currentUser: { companyId },
+      },
       dispatch,
     } = this.props;
 
@@ -109,7 +113,7 @@ export default class ReservoirRegionEdit extends PureComponent {
         } = values;
 
         const payload = {
-          companyId: this.companyId,
+          companyId: this.companyId || companyId,
           number,
           name,
           position,
@@ -352,6 +356,9 @@ export default class ReservoirRegionEdit extends PureComponent {
     const {
       form: { getFieldDecorator },
       reservoirRegion: { envirTypeList },
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
 
     const { detailList } = this.state;
@@ -367,7 +374,7 @@ export default class ReservoirRegionEdit extends PureComponent {
       area,
       spaceBetween,
       // dangerSourceUnit,
-      unitCode,
+      // unitCode,
     } = detailList;
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -378,29 +385,32 @@ export default class ReservoirRegionEdit extends PureComponent {
     return (
       <Card className={styles.card} bordered={false}>
         <Form style={{ marginTop: 8 }}>
-          <FormItem {...formItemLayout} label="单位名称">
-            {getFieldDecorator('companyId', {
-              initialValue: companyName,
-              rules: [
-                {
-                  required: true,
-                  message: '请选择单位',
-                },
-              ],
-            })(
-              <Input
-                {...itemStyles}
-                ref={input => {
-                  this.CompanyIdInput = input;
-                }}
-                disabled
-                placeholder="请选择单位"
-              />
-            )}
-            <Button type="primary" onClick={this.handleCompanyModal}>
-              选择单位
-            </Button>
-          </FormItem>
+          {unitType !== 4 && (
+            <FormItem {...formItemLayout} label="单位名称">
+              {getFieldDecorator('companyId', {
+                initialValue: companyName,
+                rules: [
+                  {
+                    required: true,
+                    message: '请选择单位',
+                  },
+                ],
+              })(
+                <Input
+                  {...itemStyles}
+                  ref={input => {
+                    this.CompanyIdInput = input;
+                  }}
+                  disabled
+                  placeholder="请选择单位"
+                />
+              )}
+              <Button type="primary" onClick={this.handleCompanyModal}>
+                选择单位
+              </Button>
+            </FormItem>
+          )}
+
           <FormItem {...formItemLayout} label="库区编号">
             {getFieldDecorator('number', {
               initialValue: number,

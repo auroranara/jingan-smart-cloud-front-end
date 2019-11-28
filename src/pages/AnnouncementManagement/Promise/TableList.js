@@ -22,12 +22,12 @@ import debounce from 'lodash/debounce';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 
-import { BREADCRUMBLIST, ROUTER, TABLE_COLUMNS as COLUMNS } from './utils';
+import { BREADCRUMBLIST, ROUTER, TABLE_COLUMNS_COMPANY, TABLE_COLUMNS as COLUMNS } from './utils';
 
 // 权限
 const {
   announcementManagement: {
-    promise: { view: viewAuth, delete: deleteAuth, edit: editAuth },
+    promise: { view: viewAuth, delete: deleteAuth, edit: editAuth, add: addAuth },
   },
 } = codes;
 
@@ -184,11 +184,17 @@ export default class TableList extends PureComponent {
     const viewCode = hasAuthority(viewAuth, permissionCodes);
     const deleteCode = hasAuthority(deleteAuth, permissionCodes);
     const editCode = hasAuthority(editAuth, permissionCodes);
+    const addCode = hasAuthority(addAuth, permissionCodes);
 
     const breadcrumbList = Array.from(BREADCRUMBLIST);
     breadcrumbList.push({ title: '列表', name: '列表' });
     const toolBarAction = (
-      <Button type="primary" onClick={this.handleAdd} style={{ marginTop: '8px' }}>
+      <Button
+        type="primary"
+        onClick={this.handleAdd}
+        disabled={!addCode}
+        style={{ marginTop: '8px' }}
+      >
         新增
       </Button>
     );
@@ -198,7 +204,6 @@ export default class TableList extends PureComponent {
         title: '操作',
         dataIndex: 'operation',
         key: 'operation',
-        fixed: 'right',
         align: 'center',
         width: 180,
         render: (val, text) => {

@@ -35,7 +35,7 @@ export const BREADCRUMBLIST = [
 ];
 
 const DEVICES = ['总：', '运行：', '停产：', '检修：'];
-const SPECIAL = ['特种作业：', '一级动火作业：', '二级动火作业：', '进入受限空间：'];
+const SPECIAL = ['特种作业：', '一级动火作业：', '二级动火作业：', '进入受限空间作业：'];
 const PILOT = ['否', '是'];
 const DRIVING = ['否', '是'];
 
@@ -150,22 +150,23 @@ const PROMISE =
 
 export const EDIT_FORMITEMS = [
   // modify
-  { name: 'total', label: '生产装置', required: true },
-  { name: 'run', label: '其中运行', required: true },
-  { name: 'stop', label: '停产', required: true },
-  { name: 'checking', label: '检修', required: true },
-  { name: 'specialWork', label: '特殊作业', required: true },
-  { name: 'levelOne', label: '一级动火作业', required: true },
-  { name: 'levelTwo', label: '二级动火作业', required: true },
-  { name: 'limitedSpace', label: '进入受限空间', required: true },
-  { name: 'pilot', label: '处于试生产状态', type: 'radio', options: PILOT, required: true },
-  { name: 'driving', label: '处于开停车状态', type: 'radio', options: DRIVING, required: true },
+  { name: 'total', label: '生产装置', placeholder: '请输入数量', required: true },
+  { name: 'run', label: '其中运行', placeholder: '请输入数量', required: true },
+  { name: 'stop', label: '停产', placeholder: '请输入数量', required: true },
+  { name: 'checking', label: '检修', placeholder: '请输入数量', required: true },
+  { name: 'specialWork', label: '特殊动火作业', placeholder: '请输入数量', required: true },
+  { name: 'levelOne', label: '一级动火作业', placeholder: '请输入数量', required: true },
+  { name: 'levelTwo', label: '二级动火作业', placeholder: '请输入数量', required: true },
+  { name: 'limitedSpace', label: '进入受限空间作业', placeholder: '请输入数量', required: true },
+  { name: 'pilot', label: '是否处于试生产', type: 'radio', options: PILOT, required: true },
+  { name: 'driving', label: '是否处于开停车状态', type: 'radio', options: DRIVING, required: true },
   {
     name: 'safe',
-    label: '重大危险源处于安全状态',
+    label: '罐区、仓库等重大危险源是否处于安全状态',
     type: 'radio',
     options: DRIVING,
     required: true,
+    formExtraStyle: 'formExtraStyle',
   },
   { name: 'promise', label: '安全承诺', type: 'component', component: PROMISE },
   { name: 'submitter', label: '主要负责人', required: true },

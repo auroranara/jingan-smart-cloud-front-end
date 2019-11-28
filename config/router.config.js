@@ -4076,7 +4076,7 @@ module.exports = env => {
                   name: 'view',
                   code: 'announcementManagement.promise.view',
                   path: '/announcement-management/promise/view/:id',
-                  component: './AnnouncementManagement/Promise/Edit',
+                  component: './AnnouncementManagement/Promise/detail',
                 },
                 {
                   name: 'add',

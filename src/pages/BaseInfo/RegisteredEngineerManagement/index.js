@@ -244,7 +244,7 @@ export default class RegSafetyEngList extends PureComponent {
         },
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
@@ -405,7 +405,7 @@ export default class RegSafetyEngList extends PureComponent {
         <Table
           rowKey="id"
           loading={loading}
-          columns={columns}
+          columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
           dataSource={list}
           bordered
           scroll={{ x: 1300 }}
@@ -433,6 +433,7 @@ export default class RegSafetyEngList extends PureComponent {
       loading,
       reservoirRegion: {
         safetyEngData: {
+          a,
           pagination: { total },
         },
         expirationStatusList,
@@ -440,7 +441,7 @@ export default class RegSafetyEngList extends PureComponent {
       },
       hiddenDangerReport: { unitIdes },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
@@ -531,7 +532,7 @@ export default class RegSafetyEngList extends PureComponent {
           <div>
             <span>
               单位数量：
-              {total}
+              {a}
             </span>
             <span style={{ paddingLeft: 20 }}>
               安全工程师数量：
@@ -542,7 +543,7 @@ export default class RegSafetyEngList extends PureComponent {
       >
         <Card>
           <ToolBar
-            fields={fields}
+            fields={unitType === 4 ? fields.slice(0, 5) : fields}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             action={

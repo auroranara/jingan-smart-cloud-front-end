@@ -96,6 +96,9 @@ export default class IndustriallicenceEdit extends PureComponent {
       },
       dispatch,
       form: { validateFieldsAndScroll },
+      user: {
+        currentUser: { companyId },
+      },
     } = this.props;
     const { accessoryList } = this.state;
     if (accessoryList.length === 0) {
@@ -113,7 +116,7 @@ export default class IndustriallicenceEdit extends PureComponent {
         } = values;
         const payload = {
           id,
-          companyId: this.companyId,
+          companyId: this.companyId || companyId,
           status,
           licenceOffice,
           licenceDate: licenceDate.format('YYYY-MM-DD'),
@@ -260,6 +263,9 @@ export default class IndustriallicenceEdit extends PureComponent {
     const {
       form: { getFieldDecorator },
       reservoirRegion: { certificateStateList },
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
 
     const { detailList, accessoryList, fileLoading } = this.state;
@@ -284,30 +290,33 @@ export default class IndustriallicenceEdit extends PureComponent {
     return (
       <Card className={styles.card} bordered={false}>
         <Form style={{ marginTop: 8 }}>
-          <FormItem {...formItemLayout} label="单位名称">
-            {getFieldDecorator('companyId', {
-              initialValue: companyName,
-              rules: [
-                {
-                  required: true,
-                  message: '请输入单位',
-                },
-              ],
-            })(
-              <Input
-                {...itemStyles}
-                ref={input => {
-                  this.CompanyIdInput = input;
-                }}
-                disabled
-                placeholder="请选择单位"
-              />
-            )}
-            <Button type="primary" onClick={this.handleCompanyModal}>
-              {' '}
-              选择单位
-            </Button>
-          </FormItem>
+          {unitType !== 4 && (
+            <FormItem {...formItemLayout} label="单位名称">
+              {getFieldDecorator('companyId', {
+                initialValue: companyName,
+                rules: [
+                  {
+                    required: true,
+                    message: '请输入单位',
+                  },
+                ],
+              })(
+                <Input
+                  {...itemStyles}
+                  ref={input => {
+                    this.CompanyIdInput = input;
+                  }}
+                  disabled
+                  placeholder="请选择单位"
+                />
+              )}
+              <Button type="primary" onClick={this.handleCompanyModal}>
+                {' '}
+                选择单位
+              </Button>
+            </FormItem>
+          )}
+
           <FormItem {...formItemLayout} label="证件状态">
             {getFieldDecorator('status', {
               initialValue: status,

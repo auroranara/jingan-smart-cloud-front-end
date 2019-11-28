@@ -287,7 +287,7 @@ export default class ReservoirRegionList extends PureComponent {
         },
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
     } = this.props;
 
@@ -410,7 +410,7 @@ export default class ReservoirRegionList extends PureComponent {
       <Card style={{ marginTop: '24px' }}>
         <Table
           rowKey="id"
-          columns={columns}
+          columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
           dataSource={list}
           bordered
           scroll={{ x: 'max-content' }}
@@ -444,7 +444,7 @@ export default class ReservoirRegionList extends PureComponent {
         areaCount: { companyNum = 0, sensorNum = 0 },
       },
       user: {
-        currentUser: { permissionCodes },
+        currentUser: { permissionCodes, unitType },
       },
       device: { sensor },
     } = this.props;
@@ -549,7 +549,7 @@ export default class ReservoirRegionList extends PureComponent {
       >
         <Card>
           <ToolBar
-            fields={fields}
+            fields={unitType === 4 ? fields.slice(0, 4) : fields}
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             action={

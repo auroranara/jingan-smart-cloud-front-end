@@ -597,6 +597,7 @@ export default {
   announcementManagement: {
     // 安全承诺公告
     promise: {
+      add: 'announcementManagement.promise.add',
       list: 'announcementManagement.promise.list',
       view: 'announcementManagement.promise.view',
       delete: 'announcementManagement.promise.delete',

@@ -42,6 +42,17 @@ export const FORMITEM_LAYOUT = {
   },
 };
 
+export const FORMITEM_LAYOUT_EXTRA = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 7 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 16 },
+  },
+};
+
 // export const FORMITEM_LAYOUT1 = {
 //   labelCol: { span: 4 },
 //   wrapperCol: { span: 18 },
@@ -63,6 +74,7 @@ function genFormItem(field, getFieldDecorator) {
     required = true,
     options,
     component: compt,
+    formExtraStyle,
   } = field;
 
   let child = null;
@@ -115,7 +127,11 @@ function genFormItem(field, getFieldDecorator) {
     child = getFieldDecorator(name, formOptions)(component);
   }
 
-  return (
+  return formExtraStyle ? (
+    <FormItem label={label} key={name} {...FORMITEM_LAYOUT_EXTRA}>
+      {child}
+    </FormItem>
+  ) : (
     <FormItem label={label} key={name} {...FORMITEM_LAYOUT}>
       {child}
     </FormItem>
