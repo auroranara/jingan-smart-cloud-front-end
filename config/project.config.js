@@ -269,7 +269,7 @@ const configs = {
 export default class Config {
   constructor(env) {
     this.config = { ...defaultConfig, ...configs[env] };
-    this.config.projectName = `${this.config.projectShortName}平台`;
+    // this.config.projectName = `${this.config.projectShortName}平台`;
     // switch (env) {
     //   case 'default':
     //     this.config.projectName += '（测试）';
