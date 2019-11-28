@@ -495,6 +495,7 @@ export default {
       add: 'baseInfo.highRiskProcess.add',
       edit: 'baseInfo.highRiskProcess.edit',
       detail: 'baseInfo.highRiskProcess.detail',
+      delete: 'baseInfo.highRiskProcess.delete',
     },
     // 特种设备管理
     specialEquipment: {
@@ -502,6 +503,7 @@ export default {
       add: 'baseInfo.specialEquipment.add',
       edit: 'baseInfo.specialEquipment.edit',
       detail: 'baseInfo.specialEquipment.detail',
+      delete: 'baseInfo.specialEquipment.delete',
     },
 
     // 库区管理
