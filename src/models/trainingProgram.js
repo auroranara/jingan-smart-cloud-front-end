@@ -1,4 +1,6 @@
 import {
+  getDepartmentList,
+  getPersonList,
   getList,
   getDetail,
   add,
@@ -6,6 +8,15 @@ import {
   execute,
   remove,
 } from '@/services/trainingProgram';
+const convertDepartmentList = (list) => {
+  return list ? list.reduce((result, item) => {
+    return {
+      ...result,
+      [item.id]: item,
+      ...convertDepartmentList(item.children),
+    };
+  }, {}) : {};
+}
 
 export default {
   namespace: 'trainingProgram',
@@ -14,22 +25,12 @@ export default {
     list: {},
     detail: {},
     trainingObjectList: [],
+    departmentIds: [],
   },
 
   effects: {
     *fetchList({ payload, callback }, { call, put }) {
-      // const response = yield call(getList, payload);
-      const response = {
-        code: 200,
-        data: {
-          list: [],
-          pagination: {
-            pageSize: 10,
-            pageNum: 1,
-            total: 0,
-          },
-        },
-      };
+      const response = yield call(getList, payload);
       const { code, data } = response || {};
       if (code === 200 && data) {
         yield put({
@@ -42,88 +43,69 @@ export default {
       }
     },
     *fetchDetail({ payload, callback }, { call, put }) {
-      // const response = yield call(getDetail, payload);
-      const response = {
-        code: 200,
-        data: {
-          id: 1,
-          companyId: "cz9p5q57ylqgi217",
-          companyName: "34534",
-          trainingObject: [1,2,3,4],
-        },
-      };
+      const response = yield call(getDetail, payload);
       const { code, data } = response || {};
       if (code === 200 && data) {
+        const { planFileList, resultFileList } = data;
+        const detail = {
+          ...data,
+          planFileList: planFileList && planFileList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1-index, status: 'done' })),
+          resultFileList: resultFileList && resultFileList.map((item, index) => ({ ...item, url: item.webUrl, name: item.fileName, uid: -1-index, status: 'done' })),
+        };
         yield put({
           type: 'save',
           payload: {
-            detail: data,
+            detail,
           },
         });
-        callback && callback(data);
+        callback && callback(detail);
       }
     },
     // 获取培训对象列表
-    *getTrainingObjectList({ payload, callback }, { call, put }) {
-      // const response = yield call(getList, payload);
-      const response = {
-        code: 200,
-        data: {
-          list: [
-            { id: 1, department: '工艺部', name: '张一', phone: '1324567898' },
-            { id: 2, department: '工艺部', name: '张二', phone: '1324567898' },
-            { id: 3, department: '工艺部', name: '张三', phone: '1324567898' },
-            { id: 4, department: '工艺部', name: '张四', phone: '1324567898' },
-            { id: 5, department: '工艺部', name: '张五', phone: '1324567898' },
-            { id: 6, department: '工艺部', name: '张六', phone: '1324567898' },
-            { id: 7, department: '工艺部', name: '张七', phone: '1324567898' },
-            { id: 8, department: '工艺部', name: '张八', phone: '1324567898' },
-            { id: 9, department: '工艺部', name: '张九', phone: '1324567898' },
-            { id: 10, department: '工艺部', name: '张十', phone: '1324567898' },
-            { id: 11, department: '工艺部', name: '张十一', phone: '1324567898' },
-            { id: 12, department: '生产部', name: '张十二', phone: '1324567898' },
-            { id: 13, department: '生产部', name: '张十三', phone: '1324567898' },
-            { id: 14, department: '生产部', name: '张十四', phone: '1324567898' },
-            { id: 15, department: '生产部', name: '张十五', phone: '1324567898' },
-            { id: 16, department: '生产部', name: '张十六', phone: '1324567898' },
-            { id: 17, department: '生产部', name: '张十七', phone: '1324567898' },
-            { id: 18, department: '生产部', name: '张十八', phone: '1324567898' },
-          ],
-        },
-      };
-      const { code, data } = response || {};
-      if (code === 200 && data && data.list) {
-        const trainingObjectList = data.list;
+    *getTrainingObjectList({ payload, callback }, { call, put, all }) {
+      const responseList = yield all([
+        call(getDepartmentList, payload),
+        call(getPersonList, payload),
+      ]);
+      if (responseList && responseList.every(response => response && response.code === 200 && response.data && response.data.list)) {
+        const { companyId, companyName } = payload;
+        const [{ data: { list: departmentList } }, { data: { list: personList } }] = responseList;
+        const trainingObjectList = [{ id: companyId, name: companyName, children: departmentList, allUserCount: personList.length }];
+        const departmentList2 = convertDepartmentList(trainingObjectList);
+        personList.forEach((item) => {
+          const department = departmentList2[item.departmentId] || departmentList2[companyId];
+          department.children = [
+            ...(department.children || []),
+            item,
+          ];
+        });
         yield put({
           type: 'save',
           payload: {
             trainingObjectList,
+            departmentIds: Object.keys(departmentList2),
           },
         });
         callback && callback(trainingObjectList);
       }
     },
     *add({ payload, callback }, { call }) {
-      // const response = yield call(add, payload);
-      const response = { code: 200 };
+      const response = yield call(add, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },
     *edit({ payload, callback }, { call }) {
-      // const response = yield call(edit, payload);
-      const response = { code: 200 };
+      const response = yield call(edit, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },
     *execute({ payload, callback }, { call }) {
-      // const response = yield call(execute, payload);
-      const response = { code: 200 };
+      const response = yield call(execute, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },
     *remove({ payload, callback }, { call }) {
-      // const response = yield call(remove, payload);
-      const response = { code: 200 };
+      const response = yield call(remove, payload);
       const { code, msg } = response || {};
       callback && callback(code === 200, msg);
     },
