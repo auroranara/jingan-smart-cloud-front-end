@@ -7,9 +7,9 @@ import config from './../../../../config/config';
 // 在zh-CN.js文件中找到对应文案
 import { formatMessage } from 'umi/locale';
 import { filterBigPlatform } from '@/utils/customAuth';
+import { setBlocks } from './utils';
 import classNames from 'classnames';
 import styles from './NewMenu.less';
-
 // 每个模块标题左侧图
 import dividerPic from '@/assets/divider.png';
 
@@ -41,37 +41,22 @@ const itemColWrapper = {
 const blockClassification = [
   {
     name: '安全生产全流程管理系统',
-    blocks: [
-      'baseInfo',
-      'fireControl',
-      'roleAuthorization',
-      'dataAnalysis',
-      'systemManagement',
-      'lawEnforcement',
-      'safetyKnowledgeBase',
-      'announcementManagement',
-    ],
+    blocks: [],
     icon: 'http://data.jingan-china.cn/v2/menu/icon-security-production.png',
   },
   {
     name: '安全风险分区管理系统',
-    blocks: ['riskControl', 'twoInformationManagement', 'cardsInfo'],
+    blocks: [],
     icon: 'http://data.jingan-china.cn/v2/menu/icon-security-risk.png',
   },
   {
     name: '重大危险源监测预警系统',
-    blocks: [
-      'deviceManagement',
-      'videoMonitor',
-      'emergencyManagement',
-      'accidentManagement',
-      'iot',
-    ],
+    blocks: [],
     icon: 'http://data.jingan-china.cn/v2/menu/icon-major%20hazard.png',
   },
   {
     name: '人员在岗在位管理系统',
-    blocks: ['training', 'personnelPosition', 'securityManage', 'personnelManagement'],
+    blocks: [],
     icon: 'http://data.jingan-china.cn/v2/menu/icon-Staff.png',
   },
 ];
@@ -90,8 +75,10 @@ export default class NewMenuReveal extends Component {
   }
   componentDidMount () {
     const { dispatch } = this.props;
+    const { routes } = config;
+    setBlocks(blockClassification, routes);
     // 深拷贝，防止污染配置文件
-    const menuAll = JSON.parse(JSON.stringify(config['routes']));
+    const menuAll = JSON.parse(JSON.stringify(routes));
     dispatch({ type: 'user/fetchGrids' });
     // 获取用户信息 包含permissionCodes，
     dispatch({

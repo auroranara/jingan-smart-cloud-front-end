@@ -152,6 +152,7 @@ export function filterMenus(MenuData, codes = [], codeMap, sysType) {
     // if (children) menu.children = filterMenus(children, codes, codeMap);
     // menuData.push(menu);
 
+    // if (path === '/' || path !== '/' && codes.includes(codeMap[path]) && (sysType === -1 || systemType === undefined || systemType !== undefined && systemType === sysType)) {
     if (path === '/' || path !== '/' && codes.includes(codeMap[path]) && (systemType === undefined || systemType !== undefined && systemType === sysType)) {
       if (children) menu.children = filterMenus(children, codes, codeMap, sysType);
       menuData.push(menu);
@@ -191,7 +192,7 @@ export function generateAuthFn(codes, codeMap, pathArray, rootPaths=[]) {
   // console.log('codes', codes);
   // console.log('codeMap', codeMap);
   // console.log('pathArray', pathArray);
-  rootPaths.unshift('exception');
+  rootPaths.unshift('exception'); // rootPaths表示可以绕过权限验证的路径
   return pathname => () => {
     // exception页面无需拦截
     // if (pathname.toLowerCase().includes('exception')) return true;
@@ -352,7 +353,7 @@ export const AuthPopConfirm = connect(({ user }) => ({ user }))(function (props)
 
 export function getSystemType(pathname, route) {
   if (pathname.includes('/company-workbench'))
-    return 0;
+    return -1;
 
   const name = pathname.match(/^\/[^/]*/)[0];
   const { routes } = route;

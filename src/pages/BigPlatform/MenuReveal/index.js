@@ -79,6 +79,7 @@ export default class MenuReveal extends Component {
     super(props);
     this.state = {
       menuSys: [], // 系统菜单列表
+      menuSysAll: [],
       menuBigPlatform: [], // 驾驶舱列表
       currentBlockClassification: 0, // 左侧分类下标（数组blockClassification下标）
     };
@@ -226,7 +227,7 @@ export default class MenuReveal extends Component {
               <span>工作台</span>
             </div>
             <div className={styles.menuItem}>
-              <span style={{ color: 'white' }}>系统</span>
+              <span style={{ color: 'white' }}>系统菜单</span>
             </div>
             <div
               className={styles.menuItem}
