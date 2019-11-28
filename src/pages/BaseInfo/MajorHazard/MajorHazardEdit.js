@@ -2,12 +2,11 @@ import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
 import moment from 'moment';
-import debounce from 'lodash/debounce';
-import { Form, Input, Button, Card, DatePicker, Select, message, Spin } from 'antd';
+import { Form, Modal, Input, Button, Card, DatePicker, Select, message, Spin } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
-
+import TableTransFer from './TabTransfer';
 import styles from './MajorHazardEdit.less';
 
 const { TextArea } = Input;
@@ -30,13 +29,13 @@ const addTitle = '新增重大危险源';
 export default class MajorHazardEdit extends PureComponent {
   constructor(props) {
     super(props);
-    this.onMajorListSearch = debounce(this.onMajorListSearch, 800);
     this.state = {
       companyVisible: false,
       submitting: false,
       detailList: {}, // 详情列表
       resourseVisible: false,
       chemicalList: [], // 危险化学品列表
+      dangerModalVisible: false, // 重大危险源弹框是否可见
     };
   }
 
@@ -48,8 +47,6 @@ export default class MajorHazardEdit extends PureComponent {
         params: { id },
       },
     } = this.props;
-
-    this.fetchReservoirAreaList();
 
     if (id) {
       // 获取列表
@@ -86,18 +83,6 @@ export default class MajorHazardEdit extends PureComponent {
     dispatch({
       type: 'reservoirRegion/fetchAreaList',
       payload: {
-        pageNum: 1,
-        pageSize: 10,
-      },
-    });
-  };
-
-  onMajorListSearch = name => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'reservoirRegion/fetchAreaList',
-      payload: {
-        name: name,
         pageNum: 1,
         pageSize: 10,
       },
@@ -266,9 +251,14 @@ export default class MajorHazardEdit extends PureComponent {
     );
   }
 
+  // 显示危险源弹框
+  handleDangerModal = () => {
+    this.setState({ dangerModalVisible: true });
+    this.fetchReservoirAreaList();
+  };
   renderInfo() {
     const {
-      loading,
+      // loading,
       form: { getFieldDecorator },
       reservoirRegion: {
         dangerTypeList,
@@ -276,7 +266,6 @@ export default class MajorHazardEdit extends PureComponent {
         dangerChemicalsList,
         memoryPlaceList,
         antiStaticList,
-        areaData: { list: areaList = [] },
       },
     } = this.props;
 
@@ -521,22 +510,10 @@ export default class MajorHazardEdit extends PureComponent {
                   message: '请选择重大危险源',
                 },
               ],
-            })(
-              <Select
-                {...itemStyles}
-                placeholder="请选择重大危险源"
-                notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
-                mode="multiple"
-                filterOption={false}
-                onSearch={this.onMajorListSearch}
-              >
-                {areaList.map(({ id, name }) => (
-                  <Option key={id} value={id}>
-                    {name}
-                  </Option>
-                ))}
-              </Select>
-            )}
+            })(<Input {...itemStyles} disabled placeholder="请选择重大危险源" />)}
+            <Button type="primary" onClick={this.handleDangerModal}>
+              选择
+            </Button>
           </FormItem>
           <FormItem {...formItemLayout} label="危险化学品性质">
             {getFieldDecorator('chemiclaNature', {
@@ -652,6 +629,9 @@ export default class MajorHazardEdit extends PureComponent {
       match: {
         params: { id },
       },
+      reservoirRegion: {
+        areaData: { list: areaList = [] },
+      },
     } = this.props;
     const title = id ? editTitle : addTitle;
 
@@ -682,6 +662,17 @@ export default class MajorHazardEdit extends PureComponent {
         {this.renderInfo()}
         {this.renderFooterToolbar()}
         {this.renderModal()}
+        <Modal
+          title="选择重大危险源"
+          width={900}
+          visible={this.state.dangerModalVisible}
+          onOk={this.handleDangerOk}
+          onCancel={() => {
+            this.setState({ dangerModalVisible: false });
+          }}
+        >
+          <TableTransFer areaList={areaList} />
+        </Modal>
       </PageHeaderLayout>
     );
   }
