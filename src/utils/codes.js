@@ -592,4 +592,15 @@ export default {
       sync: 'twoInformationManagement.safetyRiskList.sync',
     },
   },
+
+  // 公告管理
+  announcementManagement: {
+    // 安全承诺公告
+    promise: {
+      list: 'announcementManagement.promise.list',
+      view: 'announcementManagement.promise.view',
+      delete: 'announcementManagement.promise.delete',
+      edit: 'announcementManagement.promise.edit',
+    },
+  },
 };
