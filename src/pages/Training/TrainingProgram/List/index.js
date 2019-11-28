@@ -71,8 +71,7 @@ export default class TrainingProgramList extends Component {
   }
 
   componentDidMount() {
-    const { getList } = this.props;
-    getList();
+    this.getList();
   }
 
   setFormReference = form => {
