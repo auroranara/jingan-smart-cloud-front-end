@@ -7,7 +7,7 @@ import CustomUpload from '@/jingan-components/CustomUpload';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
-import TrainingObjectSelect from './TrainingObjectSelect';
+import TrainingObjectSelect2 from './TrainingObjectSelect2';
 import { connect } from 'dva';
 import moment from 'moment';
 import router from 'umi/router';
@@ -166,13 +166,12 @@ export default class TrainingProgramOther extends Component {
     const { validateFieldsAndScroll } = this.form;
     validateFieldsAndScroll((errors, values) => {
       if (!errors) {
-        const { company, range: [startDate, endDate], trainingObject, ...rest } = values;
+        const { company, range: [trainingStartTime, trainingEndTime], ...rest } = values;
         const payload = {
           id,
           companyId: +unitType !== 4 ? company.key : unitId,
-          startDate: startDate && startDate.format(DEFAULT_FORMAT),
-          endDate: endDate && endDate.format(DEFAULT_FORMAT),
-          trainingObject: trainingObject && trainingObject.join(','),
+          trainingStartTime,
+          trainingEndTime,
           ...rest,
         };
         (id ? edit : add)(payload, (isSuccess) => {
@@ -227,6 +226,7 @@ export default class TrainingProgramOther extends Component {
         currentUser: {
           unitType,
           unitId,
+          unitName,
           permissionCodes,
         },
       },
@@ -234,21 +234,22 @@ export default class TrainingProgramOther extends Component {
         detail: {
           companyId,
           companyName,
-          name,
-          reason,
-          form,
-          operator,
-          phone,
-          descriptor,
-          period,
-          startDate,
-          endDate,
-          location,
-          content,
-          fileList,
-          trainingObject,
-          status,
-          result,
+          trainingPlanName,
+          trainingType,
+          trainingWay,
+          trainingLevel,
+          chargePerson,
+          chargePersonPhone,
+          themeCode,
+          trainingDuration,
+          trainingStartTime,
+          trainingEndTime,
+          trainingAddress,
+          trainingContent,
+          planFileList,
+          userIds,
+          planStatus,
+          resultFileList,
         }={},
       },
     } = this.props;
@@ -257,7 +258,7 @@ export default class TrainingProgramOther extends Component {
     const isNotDetail = type !== 'detail';
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
     const values = this.form && this.form.getFieldsValue() || {};
-    const realCompanyId = isNotCompany ? (values.company && values.company.key !== values.company.label ? values.company.key : companyId) : unitId;
+    const { realCompanyId, realCompanyName } = isNotCompany ? (values.company && values.company.key !== values.company.label ? { realCompanyId: values.company.key, realCompanyName: values.company.label } : { realCompanyId: companyId, realCompanyName: companyName }) : { realCompanyId: unitId, realCompanyName: unitName };
 
     const fields = [
       {
@@ -281,13 +282,13 @@ export default class TrainingProgramOther extends Component {
             },
           }] : []),
           {
-            id: 'name',
+            id: 'trainingPlanName',
             label: '培训计划名称',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <InputOrSpan className={styles.item} placeholder="请输入培训计划名称" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: name,
+              initialValue: trainingPlanName,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -298,13 +299,13 @@ export default class TrainingProgramOther extends Component {
             },
           },
           {
-            id: 'reason',
+            id: 'trainingType',
             label: '培训类型',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <InputOrSpan className={styles.item} placeholder="请输入培训类型" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: reason,
+              initialValue: trainingType,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -315,13 +316,13 @@ export default class TrainingProgramOther extends Component {
             },
           },
           {
-            id: 'form',
+            id: 'trainingWay',
             label: '培训形式',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <SelectOrSpan className={styles.item} placeholder="请选择培训形式" list={FORMS} type={isNotDetail ? 'select' : 'span'} />,
             options: {
-              initialValue: form,
+              initialValue: trainingWay && `${trainingWay}`,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -331,13 +332,13 @@ export default class TrainingProgramOther extends Component {
             },
           },
           {
-            id: 'level',
+            id: 'trainingLevel',
             label: '培训分级',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <SelectOrSpan className={styles.item} placeholder="请选择培训分级" list={LEVELS} type={isNotDetail ? 'Select' : 'span'} />,
             options: {
-              initialValue: form,
+              initialValue: trainingLevel && `${trainingLevel}`,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -347,13 +348,13 @@ export default class TrainingProgramOther extends Component {
             },
           },
           {
-            id: 'operator',
+            id: 'chargePerson',
             label: '经办人',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <InputOrSpan className={styles.item} placeholder="请输入经办人姓名" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: operator,
+              initialValue: chargePerson,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -364,13 +365,13 @@ export default class TrainingProgramOther extends Component {
             },
           },
           {
-            id: 'phone',
+            id: 'chargePersonPhone',
             label: '联系电话',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <InputOrSpan className={styles.item} placeholder="请输入联系电话" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: phone,
+              initialValue: chargePersonPhone,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -381,13 +382,13 @@ export default class TrainingProgramOther extends Component {
             },
           },
           {
-            id: 'descriptor',
+            id: 'themeCode',
             label: '主题词',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <InputOrSpan className={styles.item} placeholder="请输入主题词" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: descriptor,
+              initialValue: themeCode,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -398,13 +399,13 @@ export default class TrainingProgramOther extends Component {
             },
           },
           {
-            id: 'period',
+            id: 'trainingDuration',
             label: '培训学时（h）',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <InputOrSpan className={styles.item} placeholder="请输入培训学时" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: period,
+              initialValue: trainingDuration,
               getValueFromEvent: (e) => e.target.value && e.target.value.replace(/\D*(\d*\.?\d*).*/, '$1'),
               rules: isNotDetail ? [
                 {
@@ -432,7 +433,7 @@ export default class TrainingProgramOther extends Component {
               />
             ),
             options: {
-              initialValue: [startDate && moment(startDate), endDate && moment(endDate)],
+              initialValue: [trainingStartTime && moment(trainingStartTime), trainingEndTime && moment(trainingEndTime)],
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -444,13 +445,13 @@ export default class TrainingProgramOther extends Component {
             },
           },
           {
-            id: 'location',
+            id: 'trainingAddress',
             label: '培训地点',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <InputOrSpan className={styles.item} placeholder="请输入培训地点" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
             options: {
-              initialValue: location,
+              initialValue: trainingAddress,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -461,13 +462,13 @@ export default class TrainingProgramOther extends Component {
             },
           },
           {
-            id: 'content',
+            id: 'trainingContent',
             label: '培训内容',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <InputOrSpan className={styles.item} placeholder="请输入培训内容" type={isNotDetail ? 'TextArea' : 'span'} autosize={{ minRows: 3 }} />,
             options: {
-              initialValue: content,
+              initialValue: trainingContent,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -478,13 +479,13 @@ export default class TrainingProgramOther extends Component {
             },
           },
           {
-            id: 'trainingObject',
+            id: 'userIds',
             label: '培训对象',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <TrainingObjectSelect className={styles.item} companyId={realCompanyId} disabled={!isNotDetail} />,
+            render: () => <TrainingObjectSelect2 className={styles.item} companyId={realCompanyId} companyName={realCompanyName} disabled={!isNotDetail} />,
             options: {
-              initialValue: trainingObject || [],
+              initialValue: userIds || [],
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -495,21 +496,21 @@ export default class TrainingProgramOther extends Component {
             },
           },
           {
-            id: 'fileList',
+            id: 'planFileList',
             label: '计划扫描件',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => isNotDetail ? <CustomUpload folder="trainingProgram" /> : (
-              <div>
-                {fileList && fileList.map(({ webUrl, name }, index) => (
+              <div className={styles.fileList}>
+                {planFileList && planFileList.map(({ webUrl, fileName }, index) => (
                   <div key={index}>
-                    <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>
+                    <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
                   </div>
                 ))}
               </div>
             ),
             options: {
-              initialValue: fileList || [],
+              initialValue: planFileList || [],
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -518,16 +519,16 @@ export default class TrainingProgramOther extends Component {
               ] : undefined,
             },
           },
-          ...(!isNotDetail && +status === 1 ? [{
-            id: 'result',
+          ...(!isNotDetail && +planStatus === 1 ? [{
+            id: 'resultFileList',
             label: '执行结果',
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => (
-              <div>
-                {result && result.map(({ webUrl, name }, index) => (
+              <div className={styles.fileList}>
+                {resultFileList && resultFileList.map(({ webUrl, fileName }, index) => (
                   <div key={index}>
-                    <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{name}</a>
+                    <a className={styles.clickable} href={webUrl} target="_blank" rel="noopener noreferrer">{fileName}</a>
                   </div>
                 ))}
               </div>
@@ -550,7 +551,7 @@ export default class TrainingProgramOther extends Component {
             <Button onClick={this.handleBackButtonClick}>返回</Button>
             {type !== 'detail' ? (
               <Button type="primary" onClick={this.handleSubmitButtonClick}>提交</Button>
-            ) : (
+            ) : +planStatus === 0 && (
               <Button type="primary" onClick={this.handleEditButtonClick} disabled={!hasEditAuthority}>编辑</Button>
             )}
           </Fragment>
