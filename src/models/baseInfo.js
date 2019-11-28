@@ -15,6 +15,12 @@ import {
   deleteSpecialWorkPerson,
   fetchDict,
 } from '@/services/baseInfo/specialoPerationPermit';
+import {
+  fetchSpecialEquipPerson,
+  addSpecialEquipPerson,
+  editSpecialEquipPerson,
+  deleteSpecialEquipPerson,
+} from '@//services/baseInfo/specialEquipmentOperators';
 
 const defaultPagination = { total: 0, pageNum: 1, pageSize: 10 };
 
@@ -29,20 +35,8 @@ export default {
     },
     // 特种设备作业人员
     specialEquipmentOperators: {
-      list: [
-        {
-          id: '1',
-          companyName: '利民化工股份有限公司',
-          name: '李逵',
-          gender: '男',
-          birthDay: '1994.03.21',
-          phone: '13815264532',
-          type: '锅炉作业',
-          project: '工业锅炉司炉',
-          operationPermit: {},
-          dannex: {},
-        },
-      ],
+      a: 0,
+      list: [],
       pagination: defaultPagination,
     },
     // 危化品企业安全许可证
@@ -168,12 +162,44 @@ export default {
         if (success) success()
       } else if (error) error(response)
     },
-    // 获取作业类别
-    *fetchOperationCategory ({ payload, callback }, { call, put }) {
+    // 获取字典
+    *fetchDict ({ payload, callback }, { call, put }) {
       const res = yield call(fetchDict, payload)
       if (res && res.code === 200) {
         if (callback) callback(res.data.list || [])
       }
+    },
+    // 获取特种设备作业人员列表（分页）
+    *fetchSpecialEquipPerson ({ payload, callback }, { call, put }) {
+      const res = yield call(fetchSpecialEquipPerson, payload)
+      if (res && res.code === 200 && res.data) {
+        yield put({
+          type: 'saveSpecialEquipPerson',
+          payload: res.data,
+        })
+        if (callback) callback(res.data)
+      }
+    },
+    // 新增特种设备作业人员
+    *addSpecialEquipPerson ({ payload, success, error }, { call }) {
+      const response = yield call(addSpecialEquipPerson, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response)
+    },
+    // 编辑特种设备作业人员
+    *editSpecialEquipPerson ({ payload, success, error }, { call }) {
+      const response = yield call(editSpecialEquipPerson, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response)
+    },
+    // 删除特种作业操作证人员
+    *deleteSpecialEquipPerson ({ payload, success, error }, { call }) {
+      const response = yield call(deleteSpecialEquipPerson, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response)
     },
   },
   reducers: {
@@ -200,6 +226,12 @@ export default {
       return {
         ...state,
         specialoPerationPermit: { ...payload },
+      }
+    },
+    saveSpecialEquipPerson (state, { payload = { a: 0, list: [], pagination: defaultPagination } }) {
+      return {
+        ...state,
+        specialEquipmentOperators: { ...payload },
       }
     },
   },

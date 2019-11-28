@@ -81,7 +81,7 @@ export default class SpecialoPerationPermitList extends PureComponent {
 
   componentDidMount () {
     // 获取作业类别
-    this.fetchOperationCategory({
+    this.fetchDict({
       payload: { type: 'workType', parentId: 0 },
       callback: list => {
         this.setState({ operationCategory: this.generateOperationCategory(list) })
@@ -91,10 +91,10 @@ export default class SpecialoPerationPermitList extends PureComponent {
   }
 
   // 获取作业类别
-  fetchOperationCategory = actions => {
+  fetchDict = actions => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'baseInfo/fetchOperationCategory',
+      type: 'baseInfo/fetchDict',
       ...actions,
     })
   }
@@ -132,7 +132,7 @@ export default class SpecialoPerationPermitList extends PureComponent {
   loadOperationCategory = selectedOptions => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
-    this.fetchOperationCategory({
+    this.fetchDict({
       payload: { type: 'workType', parentId: targetOption.value },
       callback: list => {
         const children = this.generateOperationCategory(list);
@@ -203,7 +203,6 @@ export default class SpecialoPerationPermitList extends PureComponent {
                     placeholder="作业类别"
                     options={operationCategory}
                     loadData={this.loadOperationCategory}
-                    // onChange={this.onChange}
                     changeOnSelect
                   />
                 )}
@@ -274,8 +273,9 @@ export default class SpecialoPerationPermitList extends PureComponent {
         dataIndex: 'operationPermit',
         align: 'center',
         width: 300,
-        render: (val, { certificateNumber, firstDate, reviewDate, startDate, endDate }) => (
+        render: (val, { paststatus, certificateNumber, firstDate, reviewDate, startDate, endDate }) => (
           <div style={{ textAlign: 'left' }}>
+            {!isNaN(paststatus) && [1, 2].includes(+paststatus) && (<div style={{ color: 'red' }}>{expirationStatusList[+paststatus].label}</div>)}
             <div>证号：{certificateNumber}</div>
             <div>初领日期：{this.formateTime(firstDate)}</div>
             <div>有效日期：{`${this.formateTime(startDate)}~${this.formateTime(endDate)}`}</div>
@@ -290,11 +290,11 @@ export default class SpecialoPerationPermitList extends PureComponent {
         width: 250,
         render: (val, { certificatePositiveFileList, certificateReverseFileList }) => (
           <div style={{ textAlign: 'left' }}>
-            <Row>
+            <Row style={{ marginBottom: '10px' }}>
               正面附件：
               {certificatePositiveFileList.map(({ fileName, webUrl, id }) => (
                 <div
-                  style={{ color: '#1890ff', cursor: 'pointer', marginBottom: '10px' }}
+                  style={{ color: '#1890ff', cursor: 'pointer' }}
                   key={id}
                   onClick={() => { window.open(webUrl, '_blank') }}
                 >
@@ -365,11 +365,19 @@ export default class SpecialoPerationPermitList extends PureComponent {
   }
 
   render () {
+    const {
+      baseInfo: {
+        specialoPerationPermit: {
+          a = 0,
+          pagination: { total = 0 },
+        },
+      },
+    } = this.props;
     return (
       <PageHeaderLayout
         title={title}
         breadcrumbList={breadcrumbList}
-        content={`单位数量：1 人员数量：1`}
+        content={`单位数量：${a} 人员数量：${total}`}
       >
         {this.renderFilter()}
         {this.renderTable()}

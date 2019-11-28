@@ -72,7 +72,7 @@ export default class SpecialoPerationPermitHandle extends PureComponent {
       form: { setFieldsValue },
     } = this.props
     // 获取作业类别
-    this.fetchOperationCategory({
+    this.fetchDict({
       payload: { type: 'workType', parentId: 0 },
       callback: list => {
         this.setState({ operationCategory: this.generateOperationCategory(list) })
@@ -108,11 +108,11 @@ export default class SpecialoPerationPermitHandle extends PureComponent {
     }
   }
 
-  // 获取作业类别
-  fetchOperationCategory = actions => {
+  // 获取字典
+  fetchDict = actions => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'baseInfo/fetchOperationCategory',
+      type: 'baseInfo/fetchDict',
       ...actions,
     })
   }
@@ -299,7 +299,7 @@ export default class SpecialoPerationPermitHandle extends PureComponent {
   loadOperationCategory = selectedOptions => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
-    this.fetchOperationCategory({
+    this.fetchDict({
       payload: { type: 'workType', parentId: targetOption.value },
       callback: list => {
         const children = this.generateOperationCategory(list);
@@ -443,38 +443,42 @@ export default class SpecialoPerationPermitHandle extends PureComponent {
           </FormItem>
           <FormItem label="操作证正面扫描件" {...formItemLayout}>
             {getFieldDecorator('certificatePositiveFile')(
-              <Upload
-                name="files"
-                headers={{ 'JA-Token': getToken() }}
-                accept="image/*" // 接收的文件格式
-                data={{ folder: 'securityManageInfo' }} // 附带的参数
-                action={uploadAction}
-                fileList={frontPhotoList}
-                onChange={this.handleFrontChange}
-              >
-                <Button>
-                  <Icon type={forntLoading ? 'loading' : "upload"} />
-                  点击上传
+              <Fragment>
+                <Upload
+                  name="files"
+                  headers={{ 'JA-Token': getToken() }}
+                  accept="image/*" // 接收的文件格式
+                  data={{ folder: 'securityManageInfo' }} // 附带的参数
+                  action={uploadAction}
+                  fileList={frontPhotoList}
+                  onChange={this.handleFrontChange}
+                >
+                  <Button>
+                    <Icon type={forntLoading ? 'loading' : "upload"} />
+                    点击上传
                 </Button>
-              </Upload>
+                </Upload>
+              </Fragment>
             )}
           </FormItem>
           <FormItem label="操作证反面扫描件" {...formItemLayout}>
             {getFieldDecorator('certificateReverseFile')(
-              <Upload
-                name="files"
-                headers={{ 'JA-Token': getToken() }}
-                accept="image/*" // 接收的文件格式
-                data={{ folder: 'securityManageInfo' }} // 附带的参数
-                action={uploadAction}
-                fileList={backPhotoList}
-                onChange={this.handleBackChange}
-              >
-                <Button>
-                  <Icon type={backLoading ? 'loading' : "upload"} />
-                  点击上传
+              <Fragment>
+                <Upload
+                  name="files"
+                  headers={{ 'JA-Token': getToken() }}
+                  accept="image/*" // 接收的文件格式
+                  data={{ folder: 'securityManageInfo' }} // 附带的参数
+                  action={uploadAction}
+                  fileList={backPhotoList}
+                  onChange={this.handleBackChange}
+                >
+                  <Button>
+                    <Icon type={backLoading ? 'loading' : "upload"} />
+                    点击上传
                 </Button>
-              </Upload>
+                </Upload>
+              </Fragment>
             )}
           </FormItem>
         </Form>
@@ -513,6 +517,13 @@ export default class SpecialoPerationPermitHandle extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderForm()}
+        <Button
+          style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
+          type="primary"
+          onClick={this.handleSubmit}
+        >
+          提交
+        </Button>
         {/* 选择企业弹窗 */}
         <CompanyModal
           title="选择单位"
@@ -525,13 +536,6 @@ export default class SpecialoPerationPermitHandle extends PureComponent {
             this.setState({ companyModalVisible: false });
           }}
         />
-        <Button
-          style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
-          type="primary"
-          onClick={this.handleSubmit}
-        >
-          提交
-        </Button>
       </PageHeaderLayout>
     );
   }

@@ -1,5 +1,5 @@
 import { stringify } from 'qs';
-import request from '../../utils/request';
+import request from '@/utils/request';
 
 // 获取特种作业操作证人员列表（分页）
 export async function fetchSpecialWorkPerson (params) {
