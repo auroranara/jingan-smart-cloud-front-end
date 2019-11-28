@@ -63,6 +63,13 @@ const categoryList = {
   5: '道路运输安全',
   6: '其他安全（不包括消防安全）',
 };
+
+const paststatusVal = {
+  0: '未到期 ',
+  1: '即将到期',
+  2: '已过期',
+};
+
 @connect(({ reservoirRegion, hiddenDangerReport, user, loading }) => ({
   reservoirRegion,
   hiddenDangerReport,
@@ -179,6 +186,19 @@ export default class RegSafetyEngList extends PureComponent {
     });
   };
 
+  getColorVal = status => {
+    switch (+status) {
+      case 0:
+        return '#1890ff';
+      case 1:
+        return '#faad14';
+      case 2:
+        return '#f5222d';
+      default:
+        return;
+    }
+  };
+
   // 分页变动
   handlePageChange = (pageNum, pageSize) => {
     const { dispatch } = this.props;
@@ -278,7 +298,7 @@ export default class RegSafetyEngList extends PureComponent {
               </p>
               <p>
                 出生年月:
-                {moment(birth).format('YYYY-MM-DD')}
+                {moment(+birth).format('YYYY-MM-DD')}
               </p>
               <p>
                 联系电话:
@@ -319,13 +339,13 @@ export default class RegSafetyEngList extends PureComponent {
         align: 'center',
         width: 200,
         render: (val, record) => {
-          const { regDate, regCode, endDate } = record;
+          const { regDate, regCode, endDate, status } = record;
           return (
             <div>
-              <p>即将到期</p>
+              <p style={{ color: this.getColorVal(status) }}> {paststatusVal[status]}</p>
               <p>
                 注册日期:
-                {moment(regDate).format('YYYY-MM-DD')}
+                {moment(+regDate).format('YYYY-MM-DD')}
               </p>
               <p>
                 注册证书编号:
@@ -333,7 +353,7 @@ export default class RegSafetyEngList extends PureComponent {
               </p>
               <p>
                 注册有效日期:
-                {moment(endDate).format('YYYY-MM-DD')}
+                {moment(+endDate).format('YYYY-MM-DD')}
               </p>
             </div>
           );
@@ -463,7 +483,7 @@ export default class RegSafetyEngList extends PureComponent {
         transform: v => v.trim(),
       },
       {
-        id: 'area',
+        id: 'status',
         label: '到期状态',
         span: spanStyle,
         render: () => (
@@ -511,7 +531,6 @@ export default class RegSafetyEngList extends PureComponent {
             notFoundContent={loading ? <Spin size="small" /> : '暂无数据'}
             onSearch={this.handleUnitIdChange}
             filterOption={false}
-            style={{ width: '300px' }}
           >
             {unitIdes.map(({ id, name }) => (
               <Option value={id} key={id}>

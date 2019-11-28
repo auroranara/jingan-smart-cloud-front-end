@@ -5,6 +5,7 @@ import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { hasAuthority } from '@/utils/customAuth';
 import codes from '@/utils/codes';
 import styles from './detail.less';
+import moment from 'moment';
 import { BREADCRUMBLIST, LIST_URL, ROUTER } from './utils';
 
 // 权限
@@ -25,6 +26,7 @@ export default class Detail extends PureComponent {
     super(props);
     this.state = {
       detailList: [],
+      createTime: '',
     };
   }
 
@@ -52,10 +54,11 @@ export default class Detail extends PureComponent {
         pageNum: 1,
       },
       callback: ({ list }) => {
-        const [{ allContent }] = list;
+        const [{ allContent, createTime }] = list;
         const arrayData = allContent.split(',');
         this.setState({
           detailList: arrayData,
+          createTime: createTime,
         });
       },
     });
@@ -72,7 +75,7 @@ export default class Detail extends PureComponent {
       },
     } = this.props;
 
-    const { detailList } = this.state;
+    const { detailList, createTime } = this.state;
     const editCode = hasAuthority(editAuth, permissionCodes);
 
     return (
@@ -127,6 +130,11 @@ export default class Detail extends PureComponent {
               <div className={styles.item}>
                 生产装置处于安全运行状态，罐区、仓库等重大危险源安全风险得到有效管控。
               </div>
+              <div className={styles.personLabel}>
+                主要负责人：
+                <span className={styles.label}>{detailList[11]}</span>
+              </div>
+              <div className={styles.personLabel}>{moment(+createTime).format('YYYY-MM-DD')}</div>
             </div>
           </div>
         </div>
