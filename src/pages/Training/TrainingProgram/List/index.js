@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Input, Select, Spin, Card, Button, Table, Modal, Popconfirm, message } from 'antd'
+import { Input, Select, Spin, Card, Button, Table, Modal, Popconfirm, message, Empty } from 'antd'
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import CustomForm from '@/jingan-components/CustomForm';
 import CustomUpload from '@/jingan-components/CustomUpload';
@@ -8,6 +8,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import moment from 'moment';
 import classNames from 'classnames';
+import { getPageSize, setPageSize } from '@/utils/utils';
 import {
   TITLE,
   BREADCRUMB_LIST,
@@ -44,11 +45,7 @@ const { Option } = Select;
   getList(payload, callback) {
     dispatch({
       type: 'trainingProgram/fetchList',
-      payload: {
-        pageNum: DEFAULT_PAGE_NUM,
-        pageSize: DEFAULT_PAGE_SIZE,
-        ...payload,
-      },
+      payload,
       callback,
     });
   },
@@ -86,41 +83,40 @@ export default class TrainingProgramList extends Component {
     this.form2 = form2;
   }
 
+  getList = (payload) => {
+    const {
+      trainingProgram: {
+        list: {
+          pagination: {
+            pageSize: prevPageSize=getPageSize(),
+          }={},
+        }={},
+      },
+      getList,
+    } = this.props;
+    const { current=1, pageSize=getPageSize() } = payload || {};
+    const values = this.form && this.form.getFieldsValue();
+    getList({
+      pageNum: prevPageSize !== pageSize ? 1 : current,
+      pageSize,
+      ...values,
+      ...payload,
+    });
+    setPageSize(pageSize);
+  }
+
   reload = () => {
     const {
       trainingProgram: {
         list: {
-          pagination,
-        },
+          pagination: {
+            pageNum=1,
+          }={},
+        }={},
       },
-      getList,
     } = this.props;
-    const values = this.form && this.form.getFieldsValue();
-    getList({
-      ...pagination,
-      ...values,
-    });
-  }
-
-  // 查询按钮点击事件
-  handleSearch = (values) => {
-    const { getList } = this.props;
-    getList(values);
-  }
-
-  // 重置按钮点击事件
-  handleReset = (values) => {
-    this.handleSearch(values);
-  }
-
-  // 列表change事件
-  handleListChange = (pageNum, pageSize) => {
-    const { getFieldsValue } = this.form;
-    const values = getFieldsValue();
     this.getList({
-      ...values,
-      pageNum,
-      pageSize,
+      current: pageNum,
     });
   }
 
@@ -167,6 +163,7 @@ export default class TrainingProgramList extends Component {
     this.setState({
       visible: false,
     });
+    this.form2 && this.form2.resetFields();
   }
 
   // 模态框确定事件
@@ -189,6 +186,7 @@ export default class TrainingProgramList extends Component {
           this.setState({
             visible: false,
           });
+          this.form2 && this.form2.resetFields();
         });
       }
     });
@@ -248,8 +246,8 @@ export default class TrainingProgramList extends Component {
       <Card className={styles.card} bordered={false}>
         <CustomForm
           fields={FIELDS}
-          onSearch={this.handleSearch}
-          onReset={this.handleReset}
+          onSearch={this.getList}
+          onReset={this.getList}
           action={<Button type="primary" onClick={this.handleAddClick} disabled={!hasAddAuthority}>新增</Button>}
           ref={this.setFormReference}
         />
@@ -390,28 +388,29 @@ export default class TrainingProgramList extends Component {
     return (
       <Card className={styles.card} bordered={false}>
         <Spin spinning={loading || false}>
-          <Table
-            className={styles.table}
-            dataSource={list}
-            columns={COLUMNS}
-            rowKey="id"
-            scroll={{
-              x: true,
-            }}
-            pagination={{
-              current: pageNum,
-              pageSize,
-              total,
-              pageSizeOptions: ['5', '10', '15', '20'],
-              // showTotal: total => `共 ${total} 条`,
-              showQuickJumper: true,
-              showSizeChanger: true,
-              onChange: this.handleListChange,
-              onShowSizeChange: (num, size) => {
-                this.handleListChange(1, size);
-              },
-            }}
-          />
+          {list && list.length > 0 ? (
+            <Table
+              className={styles.table}
+              dataSource={list}
+              columns={COLUMNS}
+              rowKey="id"
+              scroll={{
+                x: true,
+              }}
+              onChange={this.getList}
+              pagination={{
+                current: pageNum,
+                pageSize,
+                total,
+                pageSizeOptions: ['5', '10', '15', '20'],
+                // showTotal: total => `共 ${total} 条`,
+                showQuickJumper: true,
+                showSizeChanger: true,
+              }}
+            />
+          ) : (
+            <Empty />
+          )}
         </Spin>
       </Card>
     );
