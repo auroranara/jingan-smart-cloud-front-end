@@ -6,7 +6,7 @@ import { Card, Form, Button } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import { renderSections } from '@/pages/SafetyKnowledgeBase/MSDS/utils';
-import { BREADCRUMBLIST, EDIT_FORMITEMS, LIST_URL } from './utils';
+import { BREADCRUMBLIST, EDIT_FORMITEMS, EDIT_FORMITEMS_COMPANY, LIST_URL } from './utils';
 
 @connect(({ twoInformManagement, user, loading }) => ({
   twoInformManagement,
@@ -71,6 +71,9 @@ export default class Edit extends PureComponent {
   render() {
     const {
       form: { getFieldDecorator },
+      user: {
+        currentUser: { unitType },
+      },
     } = this.props;
 
     const title = this.isDetail() ? '详情' : '';
@@ -80,7 +83,10 @@ export default class Edit extends PureComponent {
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         <Card style={{ marginBottom: 15 }}>
-          {renderSections(EDIT_FORMITEMS, getFieldDecorator)}
+          {renderSections(
+            unitType === 4 ? EDIT_FORMITEMS : [...EDIT_FORMITEMS_COMPANY, ...EDIT_FORMITEMS],
+            getFieldDecorator
+          )}
         </Card>
         {this.renderFooterToolbar()}
       </PageHeaderLayout>

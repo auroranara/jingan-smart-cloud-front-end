@@ -461,6 +461,13 @@ export default {
       detail: 'emergencyManagement.emergencyEstimate.detail',
       delete: 'emergencyManagement.emergencyEstimate.delete',
     },
+    emergencyProcess: {
+      listView: 'emergencyManagement.emergencyProcess.list',
+      add: 'emergencyManagement.emergencyProcess.add',
+      edit: 'emergencyManagement.emergencyProcess.edit',
+      detail: 'emergencyManagement.emergencyProcess.view',
+      delete: 'emergencyManagement.emergencyProcess.delete',
+    },
   },
 
   baseInfo: {
@@ -559,6 +566,20 @@ export default {
       edit: 'baseInfo.storageManagement.edit',
       delete: 'baseInfo.storageManagement.delete',
     },
+    // 特种作业操作证人员
+    specialoPerationPermit: {
+      list: 'baseInfo.specialoPerationPermit.listView',
+      add: 'baseInfo.specialoPerationPermit.add',
+      edit: 'baseInfo.specialoPerationPermit.edit',
+      delete: 'baseInfo.specialoPerationPermit.delete',
+    },
+    // 特种设备作业人员
+    specialEquipmentOperators: {
+      list: 'baseInfo.specialEquipmentOperators.listView',
+      add: 'baseInfo.specialEquipmentOperators.add',
+      edit: 'baseInfo.specialEquipmentOperators.edit',
+      delete: 'baseInfo.specialEquipmentOperators.delete',
+    },
   },
   safetyKnowledgeBase: {
     // 典型事故案例
@@ -583,6 +604,18 @@ export default {
       view: 'twoInformationManagement.safetyRiskList.view',
       delete: 'twoInformationManagement.safetyRiskList.delete',
       sync: 'twoInformationManagement.safetyRiskList.sync',
+    },
+  },
+
+  // 公告管理
+  announcementManagement: {
+    // 安全承诺公告
+    promise: {
+      add: 'announcementManagement.promise.add',
+      list: 'announcementManagement.promise.list',
+      view: 'announcementManagement.promise.view',
+      delete: 'announcementManagement.promise.delete',
+      edit: 'announcementManagement.promise.edit',
     },
   },
 };

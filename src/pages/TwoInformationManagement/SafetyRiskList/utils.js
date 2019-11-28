@@ -284,9 +284,10 @@ export const TABLE_COLUMNS = [
   },
 ];
 
+export const EDIT_FORMITEMS_COMPANY = [{ name: 'companyName', label: '单位名称', required: false }];
+
 export const EDIT_FORMITEMS = [
   // modify
-  { name: 'companyName', label: '单位名称', required: false },
   {
     name: 'name',
     label: '作业/设备名称',

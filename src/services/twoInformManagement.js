@@ -38,3 +38,37 @@ export async function querySafeRiskSync(params) {
 export async function querySafeRiskDel({ ids }) {
   return request(`${URL_PREFIX}/safetyControl/${ids}`, { method: 'DELETE' });
 }
+
+/** 公告管理 */
+
+const URL_PREFIX_EXTRA = '/acloud_new/v2/notice';
+
+// 安全承诺公告
+
+// 列表
+export async function querySafetyPromiseList(params) {
+  return request(`${URL_PREFIX_EXTRA}/companyPublicForPage?${stringify(params)}`);
+}
+
+// 新增
+export async function querSafetyPromiseAdd(params) {
+  return request(`${URL_PREFIX_EXTRA}/companyPublic`, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+// 编辑
+export async function querySafetyPromiseEdit(params) {
+  return request(`${URL_PREFIX_EXTRA}/companyPublic`, {
+    method: 'PUT',
+    body: params,
+  });
+}
+
+// 删除
+export async function querySafetyPromiseDelete({ id }) {
+  return request(`${URL_PREFIX_EXTRA}/companyPublic/${id}`, {
+    method: 'DELETE',
+  });
+}

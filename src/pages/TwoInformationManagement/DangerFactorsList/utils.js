@@ -84,9 +84,10 @@ export const TABLE_COLUMNS = [
   },
 ];
 
+export const EDIT_FORMITEMS_COMPANY = [{ name: 'companyName', label: '单位名称', required: false }];
+
 export const EDIT_FORMITEMS = [
   // modify
-  { name: 'companyName', label: '单位名称', required: false },
   { name: 'name', label: '风险点名称', required: false },
   { name: 'space', label: '场所/环节/部位', required: false },
   { name: 'dangerFactor', label: '主要危险因素', type: 'text', required: false },

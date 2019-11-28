@@ -44,53 +44,11 @@ const breadcrumbList = [
 ];
 
 const spanStyle = { md: 8, sm: 12, xs: 24 };
-const fields = [
-  {
-    id: 'tankName',
-    label: '储罐名称',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入储罐名称" />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'number',
-    label: '储罐位号',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入储罐位号" />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'location',
-    label: '区域-位置',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入区域位置" />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'storageMedium',
-    label: '存储介质：',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入存储介质" />,
-    transform: v => v.trim(),
-  },
-  {
-    id: 'casNo',
-    label: 'CAS号',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入CAS号" />,
-  },
-  {
-    id: 'companyName',
-    label: '单位名称：',
-    span: spanStyle,
-    render: () => <Input placeholder="请输入单位名称" />,
-    transform: v => v.trim(),
-  },
-];
-const trueOrFalseLabel = ['是', '否']
+const trueOrFalseLabel = ['否', '是']
 
-@connect(({ loading, baseInfo }) => ({
+@connect(({ loading, baseInfo, user }) => ({
   baseInfo,
+  user,
 }))
 @Form.create()
 export default class StorageList extends PureComponent {
@@ -148,14 +106,17 @@ export default class StorageList extends PureComponent {
           pagination: { total, pageNum, pageSize },
         },
       },
+      user: { currentUser: { unitType } },
     } = this.props
     const columns = [
-      {
-        title: '单位名称',
-        dataIndex: 'companyName',
-        align: 'center',
-        width: 300,
-      },
+      ...unitType === 4 ? [] : [
+        {
+          title: '单位名称',
+          dataIndex: 'companyName',
+          align: 'center',
+          width: 300,
+        },
+      ],
       {
         title: '基本信息',
         key: 'info',
@@ -196,7 +157,7 @@ export default class StorageList extends PureComponent {
         title: '区域位置',
         dataIndex: 'area',
         align: 'center',
-        width: 150,
+        width: 200,
         render: (val, { area, location }) => `${area || ''}${location || ''}`,
       },
       // {
@@ -265,7 +226,53 @@ export default class StorageList extends PureComponent {
           pagination: { total = 0 },
         },
       },
-    } = this.props
+      user: { currentUser: { unitType } },
+    } = this.props;
+    const fields = [
+      {
+        id: 'tankName',
+        label: '储罐名称',
+        span: spanStyle,
+        render: () => <Input placeholder="请输入储罐名称" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'number',
+        label: '储罐位号',
+        span: spanStyle,
+        render: () => <Input placeholder="请输入储罐位号" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'location',
+        label: '区域-位置',
+        span: spanStyle,
+        render: () => <Input placeholder="请输入区域位置" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'storageMedium',
+        label: '存储介质：',
+        span: spanStyle,
+        render: () => <Input placeholder="请输入存储介质" />,
+        transform: v => v.trim(),
+      },
+      {
+        id: 'casNo',
+        label: 'CAS号',
+        span: spanStyle,
+        render: () => <Input placeholder="请输入CAS号" />,
+      },
+      ...unitType === 4 ? [] : [
+        {
+          id: 'companyName',
+          label: '单位名称：',
+          span: spanStyle,
+          render: () => <Input placeholder="请输入单位名称" />,
+          transform: v => v.trim(),
+        },
+      ],
+    ];
     return (
       <PageHeaderLayout
         title={title}

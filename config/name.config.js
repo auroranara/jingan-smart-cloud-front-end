@@ -1,5 +1,5 @@
 const configs = {
-  default: '晶安智慧云化工平台',
+  default: '五位一体信息化管理平台',
   wuxi: '无锡晶安智慧云',
   ehu: '鹅湖智慧云',
   xuzhou: '徐州晶安智慧云',
