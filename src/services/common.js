@@ -5,3 +5,8 @@ import request from '@/utils/request';
 export async function getCompanyList(params) {
   return request(`/acloud_new/v2/baseInfo/getCompanyByUser?${stringify(params)}`);
 }
+
+/* 获取区域列表 */
+export async function getAreaList(params) {
+  return request(`/acloud_new/v2/baseInfo/city/new?${stringify(params)}`);
+}

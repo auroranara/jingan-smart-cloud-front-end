@@ -3,7 +3,7 @@ import { Button, Card, Table, Input, Select, Empty, Popconfirm, Spin, message } 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
-import TypeSelect from '../components/TypeSelect';
+import TypeSelect from '../../components/TypeSelect';
 import { connect } from 'dva';
 import router from 'umi/router';
 import classNames from 'classnames';
@@ -12,13 +12,14 @@ import { getPageSize, setPageSize } from '@/utils/utils';
 import styles from './index.less';
 const { Option } = Select;
 const GET_LIST = 'accidentReport/getList';
-const DETAIL_CODE = 'accidentManagement.quickReport.view';
-const ADD_CODE = 'accidentManagement.quickReport.add';
-const EDIT_CODE = 'accidentManagement.quickReport.edit';
-const DELETE_CODE = 'accidentManagement.quickReport.delete';
-const ADD_PATH = '/accident-management/quick-report/add';
-const EDIT_PATH = '/accident-management/quick-report/edit';
-const DETAIL_PATH = '/accident-management/quick-report/view';
+export const DETAIL_CODE = 'accidentManagement.quickReport.view';
+export const ADD_CODE = 'accidentManagement.quickReport.add';
+export const EDIT_CODE = 'accidentManagement.quickReport.edit';
+export const DELETE_CODE = 'accidentManagement.quickReport.delete';
+export const LIST_PATH = '/accident-management/quick-report/list';
+export const ADD_PATH = '/accident-management/quick-report/add';
+export const EDIT_PATH = '/accident-management/quick-report/edit';
+export const DETAIL_PATH = '/accident-management/quick-report/detail';
 export const LEVELS = [
   { key: '1', value: '特别重大' },
   { key: '2', value: '重大' },
@@ -47,7 +48,7 @@ export const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
     });
   },
 }))
-export default class TableList extends PureComponent {
+export default class ReportList extends PureComponent {
   componentDidMount() {
     this.getList();
   }
