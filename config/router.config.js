@@ -233,8 +233,7 @@ module.exports = env => {
         {
           path: '/',
           // redirect: env === 'nanxiao' ? '/fire-control/maintenance-company' : '/dashboard/view',
-          redirect:
-            env === 'nanxiao' ? '/fire-control/maintenance-company' : '/menu-reveal',
+          redirect: env === 'nanxiao' ? '/fire-control/maintenance-company' : '/menu-reveal',
         }, // '/dashboard/view'
         // 首页
         {
@@ -1642,7 +1641,8 @@ module.exports = env => {
                   component: './DataAnalysis/WorkApprovalReport/WorkApprovalList',
                 },
                 {
-                  path: '/operation-safety/work-approval-report/company/:companyId/:type/detail/:id',
+                  path:
+                    '/operation-safety/work-approval-report/company/:companyId/:type/detail/:id',
                   name: 'detail',
                   code: 'operationSafety.workApprovalReport.detail',
                   component: './DataAnalysis/WorkApprovalReport/WorkApprovalDetail',
@@ -4426,7 +4426,6 @@ module.exports = env => {
             },
           ],
         },
-
       ],
     },
   ];

@@ -5,6 +5,7 @@ import moment from 'moment';
 import { Form, Modal, Input, Button, Card, DatePicker, Select, message, Spin } from 'antd';
 import FooterToolbar from '@/components/FooterToolbar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
+import ToolBar from '@/components/ToolBar';
 import CompanyModal from '../../BaseInfo/Company/CompanyModal';
 import TableTransFer from './TabTransfer';
 import styles from './MajorHazardEdit.less';
@@ -12,6 +13,7 @@ import styles from './MajorHazardEdit.less';
 const { TextArea } = Input;
 const { Option } = Select;
 const FormItem = Form.Item;
+const spanStyle = { md: 8, sm: 12, xs: 24 };
 
 // 编辑页面标题
 const editTitle = '编辑重大危险源';
@@ -36,6 +38,13 @@ export default class MajorHazardEdit extends PureComponent {
       resourseVisible: false,
       chemicalList: [], // 危险化学品列表
       dangerModalVisible: false, // 重大危险源弹框是否可见
+      editCompanyId: '', // 编辑时的companyId
+      dangerType: '1', // 重大危险源弹框选择器默认值
+      targetKeys: [], // 穿梭框右侧数据keys
+      tankIds: '', // 储罐区选中Id
+      areaIds: '', // 库区选中Id
+      productIds: '', // 生产装置选择Id
+      gasometerIds: '', // 气柜选择Id
     };
   }
 
@@ -59,10 +68,11 @@ export default class MajorHazardEdit extends PureComponent {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { unitChemiclaNumDetail } = currentList;
+          const { unitChemiclaNumDetail, companyId } = currentList;
           this.setState({
             detailList: currentList,
             chemicalList: unitChemiclaNumDetail,
+            editCompanyId: companyId,
           });
         },
       });
@@ -77,18 +87,7 @@ export default class MajorHazardEdit extends PureComponent {
     dispatch(routerRedux.push(`/base-info/major-hazard/list`));
   };
 
-  // 获取库区列表
-  fetchReservoirAreaList = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'reservoirRegion/fetchAreaList',
-      payload: {
-        pageNum: 1,
-        pageSize: 10,
-      },
-    });
-  };
-
+  // 提交
   handleClickValidate = () => {
     const {
       form: { validateFieldsAndScroll },
@@ -251,11 +250,85 @@ export default class MajorHazardEdit extends PureComponent {
     );
   }
 
+  // 获取库区列表
+  fetchReservoirAreaList = ({ ...payload }) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'reservoirRegion/fetchAreaList',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        ...payload,
+      },
+    });
+  };
+
+  // 获取储罐区列表
+  fetchStorageAreaList = ({ ...payload }) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'storageAreaManagement/fetchTankAreaList',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        ...payload,
+      },
+    });
+  };
+
   // 显示危险源弹框
   handleDangerModal = () => {
+    const { editCompanyId } = this.state;
+    if (this.companyId || editCompanyId) {
+      this.fetchStorageAreaList({ companyId: this.companyId || editCompanyId });
+    }
     this.setState({ dangerModalVisible: true });
-    this.fetchReservoirAreaList();
   };
+
+  onDangerTypeSelect = i => {
+    const { editCompanyId } = this.state;
+    if (this.companyId || editCompanyId) {
+      if (+i === 1) {
+        this.fetchStorageAreaList({ companyId: this.companyId || editCompanyId });
+      } else if (+i === 2) {
+        this.fetchReservoirAreaList({ companyId: this.companyId || editCompanyId });
+      }
+    }
+    this.setState({ dangerType: i });
+  };
+
+  onTargetKeysClick = i => {
+    this.setState({ targetKeys: i });
+  };
+
+  handleDangerOk = () => {
+    this.setState({ dangerModalVisible: false });
+    const {
+      form: { setFieldsValue },
+      storageAreaManagement: { list: storageList = [] },
+      reservoirRegion: {
+        areaData: { list: areaList = [] },
+      },
+    } = this.props;
+    const { targetKeys } = this.state;
+
+    const storageNameArray = storageList.reduce((arr, { id, areaName }) => {
+      return targetKeys.includes(id) ? [...arr, { id, areaName }] : arr;
+    }, []);
+    const reserviorNameArrray = areaList.reduce((arr, { id, name }) => {
+      return targetKeys.includes(id) ? [...arr, { id, name }] : arr;
+    }, []);
+
+    const storageName = storageNameArray.map(item => item.areaName).join(',');
+    const reserviorName = reserviorNameArrray.map(item => item.name).join(',');
+
+    const storageId = storageNameArray.map(item => item.id).join(',');
+    const reserviorId = reserviorNameArrray.map(item => item.id).join(',');
+
+    setFieldsValue({ unitChemicla: storageName + ',' + reserviorName });
+    this.setState({ tankIds: storageId, areaIds: reserviorId });
+  };
+
   renderInfo() {
     const {
       // loading,
@@ -629,10 +702,15 @@ export default class MajorHazardEdit extends PureComponent {
       match: {
         params: { id },
       },
+      storageAreaManagement: { list: storageList = [] },
       reservoirRegion: {
         areaData: { list: areaList = [] },
+        dangerResourceTypeList,
       },
     } = this.props;
+
+    const { dangerType, targetKeys } = this.state;
+
     const title = id ? editTitle : addTitle;
 
     // 面包屑
@@ -657,6 +735,26 @@ export default class MajorHazardEdit extends PureComponent {
       },
     ];
 
+    const fileds = [
+      {
+        id: 'type',
+        label: '类别',
+        span: spanStyle,
+        options: {
+          initialValue: dangerType,
+        },
+        render: () => (
+          <Select allowClear placeholder="请选择类别" onSelect={this.onDangerTypeSelect}>
+            {dangerResourceTypeList.map(({ key, value }) => (
+              <Option key={key} value={key}>
+                {value}
+              </Option>
+            ))}
+          </Select>
+        ),
+      },
+    ];
+
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
         {this.renderInfo()}
@@ -671,7 +769,15 @@ export default class MajorHazardEdit extends PureComponent {
             this.setState({ dangerModalVisible: false });
           }}
         >
-          <TableTransFer areaList={areaList} />
+          <ToolBar fields={fileds} onSearch={this.handleSearch} onReset={this.handleReset} />
+          <TableTransFer
+            areaList={areaList}
+            storageList={storageList}
+            dangerType={dangerType}
+            targetKeys={targetKeys}
+            onTargetKeysClick={this.onTargetKeysClick}
+            onTargetKeysChange={this.onTargetKeysChange}
+          />
         </Modal>
       </PageHeaderLayout>
     );

@@ -1,15 +1,15 @@
 import React, { PureComponent } from 'react';
-import { Transfer, Table, Tag } from 'antd';
+import { Transfer, Table } from 'antd';
 import difference from 'lodash/difference';
 
 const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
   <Transfer {...restProps} showSelectAll={false}>
     {({
-      direction,
-      filteredItems,
-      onItemSelectAll,
-      onItemSelect,
-      selectedKeys: listSelectedKeys,
+      direction, // 渲染列表的方向
+      filteredItems, // 过滤后的数据
+      onItemSelectAll, // 勾选一组条目
+      onItemSelect, // 勾选条目
+      selectedKeys: listSelectedKeys, // 选中的条目
       //disabled: listDisabled,
     }) => {
       const columns = direction === 'left' ? leftColumns : rightColumns;
@@ -32,6 +32,7 @@ const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
           columns={columns}
           dataSource={filteredItems}
           size="small"
+          pagination={false}
           onRow={({ key }) => ({
             onClick: () => {
               onItemSelect(key, !listSelectedKeys.includes(key));
@@ -42,68 +43,81 @@ const TableTransfer = ({ leftColumns, rightColumns, ...restProps }) => (
     }}
   </Transfer>
 );
-const mockTags = ['cat', 'dog', 'bird'];
 
-const mockData = [];
-for (let i = 0; i < 20; i++) {
-  mockData.push({
-    key: i.toString(),
-    title: `content${i + 1}`,
-    description: `description of content${i + 1}`,
-    tag: mockTags[i % 3],
-  });
-}
-
-const originTargetKeys = mockData.filter(item => +item.key % 3 > 1).map(item => item.key);
-
-const leftTableColumns = [
+const leftStorageColumns = [
   {
-    dataIndex: 'title',
+    dataIndex: 'type',
     title: '类别',
+    render: () => <span>储罐区</span>,
   },
   {
-    dataIndex: 'tag',
+    dataIndex: 'code',
     title: '统一编码',
-    render: tag => <Tag>{tag}</Tag>,
   },
   {
-    dataIndex: 'description',
+    dataIndex: 'areaName',
     title: '名称',
   },
 ];
-
-const rightTableColumns = [
+const rightStorageColumns = [
   {
-    dataIndex: 'title',
+    dataIndex: 'areaName',
     title: '名称',
+  },
+  {
+    dataIndex: 'code',
+    title: '统一编码',
+  },
+];
+
+const leftReserviorColumns = [
+  {
+    dataIndex: 'type',
+    title: '类别',
+    render: () => <span>库区</span>,
+  },
+  {
+    dataIndex: 'unitCode',
+    title: '统一编码',
+  },
+  {
+    dataIndex: 'name',
+    title: '名称',
+  },
+];
+const rightReserviorColumns = [
+  {
+    dataIndex: 'name',
+    title: '名称',
+  },
+  {
+    dataIndex: 'unitCode',
+    title: '统一编码',
   },
 ];
 
 export default class TabTransfer extends PureComponent {
   state = {
-    targetKeys: originTargetKeys,
-    showSearch: true,
-  };
-
-  onChange = nextTargetKeys => {
-    this.setState({ targetKeys: nextTargetKeys });
+    targetKeys: [], // 右侧数据keys
   };
 
   render() {
-    const { areaList } = this.props;
-    const { targetKeys, showSearch } = this.state;
+    const { areaList, storageList, targetKeys, onTargetKeysClick, dangerType } = this.props;
+
+    const allLeftColumds = +dangerType === 1 ? leftStorageColumns : leftReserviorColumns;
+    const allRightColumds = +dangerType === 1 ? rightStorageColumns : rightReserviorColumns;
+
+    const data = +dangerType === 1 ? storageList : areaList;
+
     return (
       <div>
         <TableTransfer
-          dataSource={mockData}
+          dataSource={[...data]} // 数据源(左侧)
           targetKeys={targetKeys}
-          showSearch={showSearch}
-          onChange={this.onChange}
-          filterOption={(inputValue, item) =>
-            item.title.indexOf(inputValue) !== -1 || item.tag.indexOf(inputValue) !== -1
-          }
-          leftColumns={leftTableColumns}
-          rightColumns={rightTableColumns}
+          onChange={i => onTargetKeysClick(i)}
+          leftColumns={allLeftColumds}
+          rightColumns={allRightColumds}
+          rowKey={record => record.id}
         />
       </div>
     );

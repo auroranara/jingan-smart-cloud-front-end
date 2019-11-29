@@ -31,7 +31,7 @@ const breadcrumbList = [
 
 // 权限
 const {
-  baseInfo: {
+  majorHazardInfo: {
     majorHazard: { add: addAuth, edit: editAuth, delete: deleteAuth },
   },
 } = codes;
@@ -168,7 +168,7 @@ export default class MajorHazardList extends PureComponent {
 
     // 权限
     const editCode = hasAuthority(editAuth, permissionCodes);
-    const deleteCode = hasAuthority(deleteAuth, permissionCodes);
+    // const deleteCode = hasAuthority(deleteAuth, permissionCodes);
 
     const columns = [
       {
@@ -243,7 +243,7 @@ export default class MajorHazardList extends PureComponent {
         render: (val, row) => (
           <Fragment>
             {editCode ? (
-              <Link to={`/base-info/major-hazard/edit/${row.id}`}>编辑</Link>
+              <Link to={`/major-hazard-info/major-hazard/edit/${row.id}`}>编辑</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}
@@ -371,7 +371,11 @@ export default class MajorHazardList extends PureComponent {
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             action={
-              <Button type="primary" disabled={!addCode} href={`#/base-info/major-hazard/add`}>
+              <Button
+                type="primary"
+                disabled={!addCode}
+                href={`#/major-hazard-info/major-hazard/add`}
+              >
                 新增重大危险源
               </Button>
             }
