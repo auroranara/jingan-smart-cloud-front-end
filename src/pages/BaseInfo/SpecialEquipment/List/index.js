@@ -28,7 +28,7 @@ const {
     specialEquipment: { detail: detailCode, edit: editCode, add: addCode, delete: deleteCode },
   },
 } = codes;
-const addUrl = '/base-info/special-equipment/add';
+const addUrl = '/facility-management/special-equipment/add';
 
 const { Option } = Select;
 const title = '特种设备管理';
@@ -307,11 +307,11 @@ export default class SpecialEquipmentList extends PureComponent {
   };
 
   goDetail = id => {
-    router.push(`/base-info/special-equipment/detail/${id}`);
+    router.push(`/facility-management/special-equipment/detail/${id}`);
   };
 
   goEdit = id => {
-    router.push(`/base-info/special-equipment/edit/${id}`);
+    router.push(`/facility-management/special-equipment/edit/${id}`);
   };
 
   handleDelete = id => {

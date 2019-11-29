@@ -204,17 +204,17 @@ export default {
     },
     // 建筑物信息
     buildingsInfo: {
-      list: 'baseInfo.buildingsInfo.listView',
-      view: 'baseInfo.buildingsInfo.view',
-      add: 'baseInfo.buildingsInfo.add',
-      edit: 'baseInfo.buildingsInfo.edit',
-      delete: 'baseInfo.buildingsInfo.delete',
+      list: 'baseInfoManagement.buildingsInfo.listView',
+      view: 'baseInfoManagement.buildingsInfo.view',
+      add: 'baseInfoManagement.buildingsInfo.add',
+      edit: 'baseInfoManagement.buildingsInfo.edit',
+      delete: 'baseInfoManagement.buildingsInfo.delete',
       // 楼层
-      floorListView: 'baseInfo.buildingsInfo.floorListView',
-      floorAdd: 'baseInfo.buildingsInfo.floorAdd',
-      floorEdit: 'baseInfo.buildingsInfo.floorEdit',
-      floorView: 'baseInfo.buildingsInfo.floorView',
-      floorDelete: 'baseInfo.buildingsInfo.floorDelete',
+      floorListView: 'baseInfoManagement.buildingsInfo.floorListView',
+      floorAdd: 'baseInfoManagement.buildingsInfo.floorAdd',
+      floorEdit: 'baseInfoManagement.buildingsInfo.floorEdit',
+      floorView: 'baseInfoManagement.buildingsInfo.floorView',
+      floorDelete: 'baseInfoManagement.buildingsInfo.floorDelete',
     },
   },
   // 个人备案
@@ -499,11 +499,11 @@ export default {
     },
     // 特种设备管理
     specialEquipment: {
-      listView: 'baseInfo.specialEquipment.listView',
-      add: 'baseInfo.specialEquipment.add',
-      edit: 'baseInfo.specialEquipment.edit',
-      detail: 'baseInfo.specialEquipment.detail',
-      delete: 'baseInfo.specialEquipment.delete',
+      listView: 'facilityManagement.specialEquipment.listView',
+      add: 'facilityManagement.specialEquipment.add',
+      edit: 'facilityManagement.specialEquipment.edit',
+      detail: 'facilityManagement.specialEquipment.detail',
+      delete: 'facilityManagement.specialEquipment.delete',
     },
 
     // 库区管理

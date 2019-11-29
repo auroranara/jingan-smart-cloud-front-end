@@ -32,7 +32,7 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
-const listUrl = '/base-info/special-equipment/list';
+const listUrl = '/facility-management/special-equipment/list';
 
 const itemStyles = { style: { width: 'calc(70%)', marginRight: '10px' } };
 const brandPayload = { type: '3', epuipmentType: '306' };
@@ -420,7 +420,10 @@ export default class SpecialEquipment extends PureComponent {
    * 跳转到建筑物管理页面
    */
   jumpToBuildingManagement = () => {
-    const win = window.open(`${window.publicPath}#/base-info/buildings-info/list`, '_blank');
+    const win = window.open(
+      `${window.publicPath}#/base-info-management/buildings-info/list`,
+      '_blank'
+    );
     win.focus();
   };
 
