@@ -71,7 +71,7 @@ module.exports = env => {
           path: '/big-platform/chemical/:unitId',
           code: 'dashboard.chemical',
           name: 'chemical',
-          component: './BigPlatform/Chemical',
+          component: './BigPlatform/ChemicalV2',
         },
         {
           path: '/big-platform/safety/government/:gridId',
