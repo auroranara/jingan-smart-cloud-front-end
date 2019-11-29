@@ -20,7 +20,13 @@ import {
   addSpecialEquipPerson,
   editSpecialEquipPerson,
   deleteSpecialEquipPerson,
-} from '@//services/baseInfo/specialEquipmentOperators';
+} from '@/services/baseInfo/specialEquipmentOperators';
+import {
+  fetchThreeSimultaneity,
+  addThreeSimultaneity,
+  editThreeSimultaneity,
+  deleteThreeSimultaneity,
+} from '@/services/baseInfo/threeSimultaneity';
 
 const defaultPagination = { total: 0, pageNum: 1, pageSize: 10 };
 
@@ -41,24 +47,7 @@ export default {
     },
     // 危化品企业安全许可证
     dangerChemicalsPermit: {
-      list: [
-        {
-          id: '1',
-          companyName: '利民化工股份有限公司',
-          name: '李明',
-          permitStatus: '现用',
-          validityPeriod: '2019.8.1',
-          dannex: {},
-        },
-        {
-          id: '2',
-          companyName: '利民化工股份有限公司',
-          name: '王思',
-          permitStatus: '吊销',
-          validityPeriod: '2020.3.1',
-          dannex: {},
-        },
-      ],
+      list: [],
       pagination: defaultPagination,
     },
     // 储罐
@@ -72,6 +61,11 @@ export default {
     storageTankDetail: {},
     // 储罐区
     storageTankArea: {
+      list: [],
+      pagination: defaultPagination,
+    },
+    // 三同时审批
+    threeSimultaneity: {
       list: [],
       pagination: defaultPagination,
     },
@@ -201,6 +195,38 @@ export default {
         if (success) success()
       } else if (error) error(response)
     },
+    // 获取三同时审批列表（分页）
+    *fetchThreeSimultaneity ({ payload, callback }, { call, put }) {
+      const res = yield call(fetchThreeSimultaneity, payload)
+      if (res && res.code === 200 && res.data) {
+        yield put({
+          type: 'saveThreeSimultaneity',
+          payload: res.data,
+        })
+        if (callback) callback(res.data)
+      }
+    },
+    // 新增三同时审批列表
+    *addThreeSimultaneity ({ payload, success, error }, { call }) {
+      const response = yield call(addThreeSimultaneity, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response)
+    },
+    // 编辑三同时审批列表
+    *editThreeSimultaneity ({ payload, success, error }, { call }) {
+      const response = yield call(editThreeSimultaneity, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response)
+    },
+    // 删除三同时审批列表
+    *deleteThreeSimultaneity ({ payload, success, error }, { call }) {
+      const response = yield call(deleteThreeSimultaneity, payload)
+      if (response && response.code === 200) {
+        if (success) success()
+      } else if (error) error(response)
+    },
   },
   reducers: {
     save (state, { payload = {} }) {
@@ -232,6 +258,12 @@ export default {
       return {
         ...state,
         specialEquipmentOperators: { ...payload },
+      }
+    },
+    saveThreeSimultaneity (state, { payload = { list: [], pagination: defaultPagination } }) {
+      return {
+        ...state,
+        threeSimultaneity: { ...payload },
       }
     },
   },
