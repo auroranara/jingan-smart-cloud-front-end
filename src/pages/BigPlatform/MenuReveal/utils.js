@@ -1,3 +1,7 @@
+export const SRC_MAP = {
+  'gasBaseInfo.reservoirRegionManagement': 'reservoir', // code => name
+};
+
 export function setBlocks(setting, routes) {
   const routerList = routes[routes.length - 1].routes;
   // console.log(routerList);

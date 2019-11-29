@@ -7,7 +7,7 @@ import config from './../../../../config/config';
 // 在zh-CN.js文件中找到对应文案
 import { formatMessage } from 'umi/locale';
 import { filterBigPlatform } from '@/utils/customAuth';
-import { setBlocks } from './utils';
+import { SRC_MAP, setBlocks } from './utils';
 import classNames from 'classnames';
 import styles from './NewMenu.less';
 // 每个模块标题左侧图
@@ -40,24 +40,29 @@ const itemColWrapper = {
 // 菜单模块分类配置
 const blockClassification = [
   {
-    name: '安全生产全流程管理系统',
-    blocks: [],
-    icon: 'http://data.jingan-china.cn/v2/menu/icon-security-production.png',
-  },
-  {
-    name: '安全风险分区管理系统',
-    blocks: [],
-    icon: 'http://data.jingan-china.cn/v2/menu/icon-security-risk.png',
-  },
-  {
     name: '重大危险源监测预警系统',
     blocks: [],
     icon: 'http://data.jingan-china.cn/v2/menu/icon-major%20hazard.png',
   },
   {
+    name: '可燃有毒气体监测预警系统',
+    blocks: [],
+    icon: 'http://data.jingan-china.cn/v2/new-menu/icon-gas.png',
+  },
+  {
+    name: '企业安全风险分区管理系统',
+    blocks: [],
+    icon: 'http://data.jingan-china.cn/v2/menu/icon-security-risk.png',
+  },
+  {
     name: '人员在岗在位管理系统',
     blocks: [],
     icon: 'http://data.jingan-china.cn/v2/menu/icon-Staff.png',
+  },
+  {
+    name: '企业安全生产全流程管理系统',
+    blocks: [],
+    icon: 'http://data.jingan-china.cn/v2/menu/icon-security-production.png',
   },
 ];
 
@@ -83,14 +88,17 @@ export default class NewMenuReveal extends Component {
     // 获取用户信息 包含permissionCodes，
     dispatch({
       type: 'user/fetchCurrent',
-      callback: () => {
+      callback: (data, login) => {
+        const { logined } = login;
         // 驾驶舱路由、系统路由
         const configSys = menuAll.find(item => item.path === '/');
         const menuSysAll = this.filterSysMenu(configSys.routes, 2);
         const blocks = blockClassification[0].blocks;
         const menuSys = menuSysAll.filter(item => blocks.includes(item.name));
         this.setState({ menuSys, menuSysAll });
-        // console.log('menuSys', menuSysAll);
+
+        if (logined)
+          dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
       },
     });
   }
@@ -120,8 +128,9 @@ export default class NewMenuReveal extends Component {
       if (
         item.redirect ||
         item.hideInMenu ||
-        ['/dashboard', '/company-workbench'].includes(item.path) ||
-        !permissionCodes.includes(item.code)
+        ['/dashboard', '/company-workbench'].includes(item.path)
+        // ['/dashboard', '/company-workbench'].includes(item.path) ||
+        // !permissionCodes.includes(item.code)
       ) {
         return arr;
       } else if (item.routes && item.routes.length && +depth > 1) {
@@ -151,15 +160,20 @@ export default class NewMenuReveal extends Component {
   clearParam = url => (/\:/.test(url) ? url.split(':').shift() : url);
 
   // 生成系统菜单图标url http://data.jingan-china.cn/v2/menu/+模块名称+菜单名称
-  generateSysUrl = ({ locale, title }) => {
-    const parentLocale = locale
-      .split('.')
-      .slice(0, 2)
-      .join('.');
-    const parentTitle = formatMessage({ id: parentLocale });
-    return `http://data.jingan-china.cn/v2/menu/${encodeURIComponent(
-      parentTitle
-    )}/${encodeURIComponent(title)}.png`;
+  // generateSysUrl = ({ locale, title }) => {
+  //   const parentLocale = locale
+  //     .split('.')
+  //     .slice(0, 2)
+  //     .join('.');
+  //   const parentTitle = formatMessage({ id: parentLocale });
+  //   return `http://data.jingan-china.cn/v2/menu/${encodeURIComponent(
+  //     parentTitle
+  //   )}/${encodeURIComponent(title)}.png`;
+  // };
+
+  generateSysUrl = ({ name, code }) => {
+    const title = SRC_MAP[code] || name;
+    return `http://data.jingan-china.cn/v2/new-menu/${title}.png`;
   };
 
   // 点击模块分类
@@ -207,6 +221,7 @@ export default class NewMenuReveal extends Component {
 
   renderBlockMenus = () => {
     const { menuSys } = this.state;
+    // console.log(menuSys);
     return (
       <div className={styles.innerContent}>
         {menuSys.length
@@ -222,10 +237,11 @@ export default class NewMenuReveal extends Component {
                       <div className={styles.item}>
                         <div
                           className={styles.itemInner}
-                          onClick={() => this.handleOpenMenu(item.path)}
+                          onClick={item.developing ? null : () => this.handleOpenMenu(item.path)}
                         >
                           <img src={this.generateSysUrl(item)} alt="logo" />
                           <div>{item.title}</div>
+                          {item.developing ? <span className={styles.dot} /> : null}
                         </div>
                       </div>
                     </Col>
