@@ -214,22 +214,6 @@ export default class MajorHazardList extends PureComponent {
         ),
       },
       {
-        title: '单元内涉及的危险化学品',
-        dataIndex: 'unitChemiclaNumDetail',
-        align: 'center',
-        width: 200,
-        render: val => {
-          return val
-            .map(item => {
-              const name = item.chineName ? item.chineName : '';
-              const num = item.unitChemiclaNum ? item.unitChemiclaNum : '';
-              const unit = item.unitChemiclaNumUnit ? item.unitChemiclaNumUnit : '';
-              return name + ' ' + num + unit;
-            })
-            .join(',');
-        },
-      },
-      {
         title: '区域位置',
         dataIndex: 'location',
         align: 'center',

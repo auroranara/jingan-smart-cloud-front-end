@@ -36,15 +36,14 @@ export default class MajorHazardEdit extends PureComponent {
       submitting: false,
       detailList: {}, // 详情列表
       resourseVisible: false,
-      chemicalList: [], // 危险化学品列表
       dangerModalVisible: false, // 重大危险源弹框是否可见
       editCompanyId: '', // 编辑时的companyId
       dangerType: '1', // 重大危险源弹框选择器默认值
       targetKeys: [], // 穿梭框右侧数据keys
-      tankIds: '', // 储罐区选中Id
-      areaIds: '', // 库区选中Id
-      productIds: '', // 生产装置选择Id
-      gasometerIds: '', // 气柜选择Id
+      tankIds: '', // 危险源-储罐区选中Id
+      areaIds: '', // 危险源-库区选中Id
+      productIds: '', // 危险源-生产装置选择Id
+      gasometerIds: '', // 危险源-气柜选择Id
     };
   }
 
@@ -68,10 +67,9 @@ export default class MajorHazardEdit extends PureComponent {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { unitChemiclaNumDetail, companyId } = currentList;
+          const { companyId } = currentList;
           this.setState({
             detailList: currentList,
-            chemicalList: unitChemiclaNumDetail,
             editCompanyId: companyId,
           });
         },
@@ -84,7 +82,7 @@ export default class MajorHazardEdit extends PureComponent {
 
   goBack = () => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/base-info/major-hazard/list`));
+    dispatch(routerRedux.push(`/major-hazard-info/major-hazard/list`));
   };
 
   // 提交
@@ -103,7 +101,7 @@ export default class MajorHazardEdit extends PureComponent {
           submitting: true,
         });
 
-        const { chemicalList } = this.state;
+        const { tankIds, areaIds } = this.state;
 
         const {
           companyName,
@@ -143,15 +141,9 @@ export default class MajorHazardEdit extends PureComponent {
           useDate: useDate && useDate.format('YYYY-MM-DD'),
           r,
           dangerLevel,
-          // unitChemicla: chemicalList.map(item => item.id).join(','),
-          unitChemiclaNum: JSON.stringify(
-            chemicalList.map(({ materialId, chineName, unitChemiclaNum, unitChemiclaNumUnit }) => ({
-              materialId,
-              chineName,
-              unitChemiclaNum,
-              unitChemiclaNumUnit,
-            }))
-          ),
+          unitChemiclaNum: '',
+          tankIds,
+          areaIds,
           chemiclaNature,
           industryArea,
           environmentType,
@@ -250,6 +242,19 @@ export default class MajorHazardEdit extends PureComponent {
     );
   }
 
+  // 获取储罐区列表
+  fetchStorageAreaList = ({ ...payload }) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'storageAreaManagement/fetchTankAreaList',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        ...payload,
+      },
+    });
+  };
+
   // 获取库区列表
   fetchReservoirAreaList = ({ ...payload }) => {
     const { dispatch } = this.props;
@@ -263,11 +268,24 @@ export default class MajorHazardEdit extends PureComponent {
     });
   };
 
-  // 获取储罐区列表
-  fetchStorageAreaList = ({ ...payload }) => {
+  // 获取生产装置列表
+  fetchProductList = ({ ...payload }) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'storageAreaManagement/fetchTankAreaList',
+      type: '',
+      payload: {
+        pageNum: 1,
+        pageSize: 10,
+        ...payload,
+      },
+    });
+  };
+
+  // 获取气柜列表
+  fetchGasList = ({ ...payload }) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: '',
       payload: {
         pageNum: 1,
         pageSize: 10,
@@ -289,9 +307,17 @@ export default class MajorHazardEdit extends PureComponent {
     const { editCompanyId } = this.state;
     if (this.companyId || editCompanyId) {
       if (+i === 1) {
+        // 1 储罐区
         this.fetchStorageAreaList({ companyId: this.companyId || editCompanyId });
       } else if (+i === 2) {
+        // 2 库区
         this.fetchReservoirAreaList({ companyId: this.companyId || editCompanyId });
+      } else if (+i === 3) {
+        // 3 生产装置
+        this.fetchProductList({});
+      } else if (+i === 4) {
+        // 4 气柜
+        this.fetchGasList({});
       }
     }
     this.setState({ dangerType: i });
@@ -342,7 +368,7 @@ export default class MajorHazardEdit extends PureComponent {
       },
     } = this.props;
 
-    const { detailList, chemicalList } = this.state;
+    const { detailList } = this.state;
     const {
       companyName,
       code,
@@ -576,7 +602,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="选择重大危险源">
             {getFieldDecorator('unitChemicla', {
-              initialValue: chemicalList,
+              // initialValue: chemicalList,
               rules: [
                 {
                   required: true,
@@ -727,7 +753,7 @@ export default class MajorHazardEdit extends PureComponent {
       {
         title: '重大危险源',
         name: '重大危险源',
-        href: '/base-info/major-hazard/list',
+        href: '/major-hazard-info/major-hazard/list',
       },
       {
         title,

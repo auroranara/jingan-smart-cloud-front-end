@@ -101,22 +101,62 @@ export default class TabTransfer extends PureComponent {
     targetKeys: [], // 右侧数据keys
   };
 
+  getDataList = (i, s, a) => {
+    switch (+i) {
+      case 1:
+        return s;
+      case 2:
+        return a;
+      case 3:
+        return '';
+      case 4:
+        return '';
+      default:
+        return;
+    }
+  };
+
+  getLeftColumns = i => {
+    switch (+i) {
+      case 1:
+        return leftStorageColumns;
+      case 2:
+        return leftReserviorColumns;
+      case 3:
+        return '';
+      case 4:
+        return '';
+      default:
+        return;
+    }
+  };
+
+  getRightColumns = i => {
+    switch (+i) {
+      case 1:
+        return rightStorageColumns;
+      case 2:
+        return rightReserviorColumns;
+      case 3:
+        return '';
+      case 4:
+        return '';
+      default:
+        return;
+    }
+  };
+
   render() {
     const { areaList, storageList, targetKeys, onTargetKeysClick, dangerType } = this.props;
-
-    const allLeftColumds = +dangerType === 1 ? leftStorageColumns : leftReserviorColumns;
-    const allRightColumds = +dangerType === 1 ? rightStorageColumns : rightReserviorColumns;
-
-    const data = +dangerType === 1 ? storageList : areaList;
 
     return (
       <div>
         <TableTransfer
-          dataSource={[...data]} // 数据源(左侧)
+          dataSource={this.getDataList(dangerType, storageList, areaList)} // 数据源(左侧)
           targetKeys={targetKeys}
           onChange={i => onTargetKeysClick(i)}
-          leftColumns={allLeftColumds}
-          rightColumns={allRightColumds}
+          leftColumns={this.getLeftColumns(dangerType)}
+          rightColumns={this.getRightColumns(dangerType)}
           rowKey={record => record.id}
         />
       </div>
