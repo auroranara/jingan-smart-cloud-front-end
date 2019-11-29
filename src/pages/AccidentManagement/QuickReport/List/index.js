@@ -12,6 +12,7 @@ import { getPageSize, setPageSize } from '@/utils/utils';
 import styles from './index.less';
 const { Option } = Select;
 const GET_LIST = 'accidentReport/getList';
+const REMOVE = 'accidentReport/remove';
 export const DETAIL_CODE = 'accidentManagement.quickReport.view';
 export const ADD_CODE = 'accidentManagement.quickReport.add';
 export const EDIT_CODE = 'accidentManagement.quickReport.edit';
@@ -44,6 +45,13 @@ export const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
         type: '0',
         ...payload,
       },
+      callback,
+    });
+  },
+  remove(payload, callback) {
+    dispatch({
+      type: REMOVE,
+      payload,
       callback,
     });
   },
@@ -114,8 +122,8 @@ export default class ReportList extends PureComponent {
   // 删除按钮点击事件
   handleDeleteClick = (id) => {
     const { remove } = this.props;
-    remove({ id }, (isSuccess, msg) => {
-      if (isSuccess) {
+    remove({ id }, (success, msg) => {
+      if (success) {
         message.success('删除成功');
         this.reload();
       } else {

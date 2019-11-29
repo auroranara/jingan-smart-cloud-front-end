@@ -181,7 +181,7 @@ export default class ReportOther extends Component {
         const [longitude, latitude] = (coordinate || '').split(',');
         const payload = {
           id,
-          companyId: +unitType !== 4 ? company.key : unitId,
+          accidentCompanyId: +unitType !== 4 ? company.key : unitId,
           provinceId,
           cityId,
           districtId,
@@ -248,7 +248,7 @@ export default class ReportOther extends Component {
       },
       accidentReport: {
         detail: {
-          companyId,
+          accidentCompanyId,
           companyName,
           provinceId,
           provinceName,
@@ -293,9 +293,8 @@ export default class ReportOther extends Component {
     const isEdit = type === 'edit';
     const isNotDetail = type !== 'detail';
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
-    const values = this.form && this.form.getFieldsValue() || {};
+    // const values = this.form && this.form.getFieldsValue() || {};
     // const realCompanyId = isNotCompany ? (values.company && values.company.key !== values.company.label ? values.company.key : companyId) : unitId;
-    console.log(values);
 
     const fields = [
       {
@@ -308,7 +307,7 @@ export default class ReportOther extends Component {
             labelCol: LABEL_COL,
             render: () => isNotDetail ? <CompanySelect disabled={isEdit} className={styles.item} onChange={this.handleCompanyChange} /> : <span>{companyName}</span>,
             options: {
-              initialValue: companyId && { key: companyId, label: companyName },
+              initialValue: accidentCompanyId ? { key: accidentCompanyId, label: companyName } : undefined,
               rules: isNotDetail ? [
                 {
                   required: true,
@@ -323,7 +322,7 @@ export default class ReportOther extends Component {
             label: '所在区域',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <AreaSelect className={styles.item} /> : <span>{[provinceName, cityName, districtName, townName].filter(v => v).join('/')}</span>,
+            render: () => isNotDetail ? <AreaSelect className={styles.item} /> : <span>{[provinceName, cityName, districtName, townName].filter(v => v).join('')}</span>,
             options: {
               initialValue: [provinceId, cityId, districtId, townId].filter(v => v),
               rules: isNotDetail ? [
