@@ -32,7 +32,7 @@ const { check } = Authorized;
 const { projectShortName, logo } = global.PROJECT_CONFIG;
 
 const INIT_ROUTE = '/menu-reveal';
-const SYSTEMS = ['安全生产全流程管理系统', '安全风险分区管理系统', '重大危险源监测预警系统', '人员在岗在位管理系统'];
+const SYSTEMS = ['重大危险源监测预警系统', '可燃有毒气体监测预警系统', '安全风险分区管理系统', '人员在岗在位管理系统', '安全生产全流程管理系统'];
 SYSTEMS[-1] = '工作台';
 
 // Conversion router to menu.
@@ -117,6 +117,7 @@ class BasicLayout extends React.PureComponent {
         // const grid = gridList && gridList[0] ? gridList[0].value : 'index';
         // const path = code ? getRedirectPath(code, unitType, unitId, grid) : INIT_ROUTE;
         const path = INIT_ROUTE;
+        console.log(logined, path);
         if (logined && path) {
           router.push(path);
           dispatch({ type: 'login/saveLogined', payload: false }); // 跳转过后，重置logined，不然刷新还会跳转
