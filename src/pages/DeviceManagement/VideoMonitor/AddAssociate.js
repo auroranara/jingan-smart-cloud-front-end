@@ -161,14 +161,14 @@ export default class AddAssociate extends Component {
     } = this.props;
     const values = getFieldsValue();
     if (type === 'position') {
-      this.fetchVideoBeaconsAvailable({ payload: { id, companyId, pageNum, pageSize, ...values } });
+      this.fetchVideoBeaconsAvailable({ payload: { ...values, id, companyId, pageNum, pageSize } });
     } else if (type === 'monitor') {
       this.fetchMonitoringDevice({
-        payload: { pageNum: 1, pageSize: defaultPageSize, bindVideoStatus: 0, bindVideoId: id, companyId },
+        payload: { ...values, pageNum: 1, pageSize: defaultPageSize, bindVideoStatus: 0, bindVideoId: id, companyId },
       })
     } else if (type === 'fire') {
       this.fetchUnBindedFireDevice({
-        payload: { videoId: id, companyId, pageNum, pageSize, ...values },
+        payload: { ...values, videoId: id, companyId, pageNum, pageSize },
       });
     }
   };
@@ -315,6 +315,11 @@ export default class AddAssociate extends Component {
         dataIndex: 'equipmentTypeName',
         align: 'center',
       },
+      {
+        title: '区域位置',
+        dataIndex: 'areaLocation',
+        align: 'center',
+      },
     ];
     const fireColumns = [
       {
@@ -402,8 +407,8 @@ export default class AddAssociate extends Component {
                   <Fragment>
                     <Col {...colWrapper}>
                       <FormItem {...formItemStyle}>
-                        {getFieldDecorator('companyName')(
-                          <Input placeholder="单位名称" />
+                        {getFieldDecorator('name')(
+                          <Input placeholder="名称" />
                         )}
                       </FormItem>
                     </Col>
