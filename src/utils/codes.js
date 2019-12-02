@@ -525,12 +525,12 @@ export default {
       unbindSensor: 'majorHazardInfo.reservoirRegionManagement.unbindSensor',
     },
     // 重大危险源
-    majorHazard: {
-      list: 'baseInfo.majorHazard.listView',
-      add: 'baseInfo.majorHazard.add',
-      edit: 'baseInfo.majorHazard.edit',
-      delete: 'baseInfo.majorHazard.delete',
-    },
+    // majorHazard: {
+    //   list: 'baseInfo.majorHazard.listView',
+    //   add: 'baseInfo.majorHazard.add',
+    //   edit: 'baseInfo.majorHazard.edit',
+    //   delete: 'baseInfo.majorHazard.delete',
+    // },
 
     // 工业产品生产许可证
     industrialProductLicence: {
@@ -630,6 +630,16 @@ export default {
       view: 'announcementManagement.promise.view',
       delete: 'announcementManagement.promise.delete',
       edit: 'announcementManagement.promise.edit',
+    },
+  },
+
+  majorHazardInfo: {
+    // 重大危险源
+    majorHazard: {
+      list: 'majorHazardInfo.majorHazard.listView',
+      add: 'majorHazardInfo.majorHazard.add',
+      edit: 'majorHazardInfo.majorHazard.edit',
+      delete: 'majorHazardInfo.majorHazard.delete',
     },
   },
 };

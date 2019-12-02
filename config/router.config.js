@@ -233,8 +233,7 @@ module.exports = env => {
         {
           path: '/',
           // redirect: env === 'nanxiao' ? '/fire-control/maintenance-company' : '/dashboard/view',
-          redirect:
-            env === 'nanxiao' ? '/fire-control/maintenance-company' : '/menu-reveal',
+          redirect: env === 'nanxiao' ? '/fire-control/maintenance-company' : '/menu-reveal',
         }, // '/dashboard/view'
         // 首页
         {

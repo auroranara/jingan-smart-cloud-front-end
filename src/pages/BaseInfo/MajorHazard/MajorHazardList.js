@@ -20,8 +20,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '重大危险源基本信息',
+    name: '重大危险源基本信息',
   },
   {
     title,
@@ -31,7 +31,7 @@ const breadcrumbList = [
 
 // 权限
 const {
-  baseInfo: {
+  majorHazardInfo: {
     majorHazard: { add: addAuth, edit: editAuth, delete: deleteAuth },
   },
 } = codes;
@@ -168,7 +168,7 @@ export default class MajorHazardList extends PureComponent {
 
     // 权限
     const editCode = hasAuthority(editAuth, permissionCodes);
-    const deleteCode = hasAuthority(deleteAuth, permissionCodes);
+    // const deleteCode = hasAuthority(deleteAuth, permissionCodes);
 
     const columns = [
       {
@@ -214,22 +214,6 @@ export default class MajorHazardList extends PureComponent {
         ),
       },
       {
-        title: '单元内涉及的危险化学品',
-        dataIndex: 'unitChemiclaNumDetail',
-        align: 'center',
-        width: 200,
-        render: val => {
-          return val
-            .map(item => {
-              const name = item.chineName ? item.chineName : '';
-              const num = item.unitChemiclaNum ? item.unitChemiclaNum : '';
-              const unit = item.unitChemiclaNumUnit ? item.unitChemiclaNumUnit : '';
-              return name + ' ' + num + unit;
-            })
-            .join(',');
-        },
-      },
-      {
         title: '区域位置',
         dataIndex: 'location',
         align: 'center',
@@ -243,7 +227,7 @@ export default class MajorHazardList extends PureComponent {
         render: (val, row) => (
           <Fragment>
             {editCode ? (
-              <Link to={`/base-info/major-hazard/edit/${row.id}`}>编辑</Link>
+              <Link to={`/major-hazard-info/major-hazard/edit/${row.id}`}>编辑</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}
@@ -371,7 +355,11 @@ export default class MajorHazardList extends PureComponent {
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             action={
-              <Button type="primary" disabled={!addCode} href={`#/base-info/major-hazard/add`}>
+              <Button
+                type="primary"
+                disabled={!addCode}
+                href={`#/major-hazard-info/major-hazard/add`}
+              >
                 新增重大危险源
               </Button>
             }
