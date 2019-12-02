@@ -252,7 +252,7 @@ export default class TableList extends PureComponent {
           const { endDate, paststatus } = record;
           return endDate ? (
             <div>
-              <span>{moment(endDate).format('YYYY-MM-DD')}</span>
+              {endDate ? <span>{moment(endDate).format('YYYY-MM-DD')}</span> : ''}
               <span style={{ color: this.getColorVal(paststatus), paddingLeft: 10 }}>
                 {paststatusVal[paststatus]}
               </span>
@@ -415,7 +415,7 @@ export default class TableList extends PureComponent {
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             action={
-              <Button type="primary" disabled={!addCode} href={`#${ROUTER}/add`}>
+              <Button type="primary" disabled={!addCode}>
                 新增
               </Button>
             }

@@ -41,7 +41,7 @@ export default {
       { key: '3', value: '三类区' },
     ],
     areaCount: {},
-    // 危险源数据源
+    // 重大危险源数据源
     sourceData: {
       list: [],
       pagination: {},
@@ -68,6 +68,19 @@ export default {
     ],
     memoryPlaceList: [{ key: '1', value: '自有' }, { key: '2', value: '租赁' }],
     antiStaticList: [{ key: '1', value: '是' }, { key: '2', value: '否' }],
+    dangerResourceTypeList: [
+      { key: '1', value: '储罐区' },
+      { key: '2', value: '库区' },
+      { key: '3', value: '生产装置' },
+      { key: '4', value: '气柜' },
+    ],
+    dangerResourseList: [
+      { key: '0', value: '全部' },
+      { key: '1', value: '储罐区' },
+      { key: '2', value: '库区' },
+      { key: '3', value: '生产装置' },
+      { key: '4', value: '气柜' },
+    ],
     // 物料数据源
     materialData: {
       list: [],
