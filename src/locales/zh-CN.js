@@ -262,7 +262,7 @@ export default {
   'menu.gasBaseInfo.reservoirRegionManagement.list': '库区管理列表',
   'menu.gasBaseInfo.reservoirRegionManagement.add': '新增库区',
   'menu.gasBaseInfo.reservoirRegionManagement.edit': '编辑库区',
-  'menu.gasDeviceManagement': '监测设备管理',
+  'menu.gasDeviceManagement': '气体监测设备管理',
   'menu.gasDeviceManagement.videoMonitor': '监控摄像头',
   'menu.gasDeviceManagement.videoMonitor.videoMonitor': '监控摄像头',
   'menu.gasDeviceManagement.videoMonitor.listView': '监控摄像头列表',

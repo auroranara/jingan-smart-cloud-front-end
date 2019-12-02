@@ -279,7 +279,7 @@ export default class NewMenuReveal extends Component {
             <div className={styles.menuContainer}>
               {blockClassification.map((item, index) => (
                 <div key={index} className={this.generateMenuItemClass(index)} onClick={() => this.handleSelectBlockClassification(index)}>
-                  <span>{item.name}</span>
+                  <span>{item.name.slice(0, -2)}</span>
                 </div>
               ))}
               <div onClick={() => { this.setState({ currentBlockClassification: null }) }} className={styles.backButton}></div>

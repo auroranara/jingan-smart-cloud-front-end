@@ -1,5 +1,6 @@
 export const SRC_MAP = {
   'gasBaseInfo.reservoirRegionManagement': 'reservoir', // code => name
+  'deviceManagement.monitoringDevice': 'equipment',
 };
 
 export function setBlocks(setting, routes) {
