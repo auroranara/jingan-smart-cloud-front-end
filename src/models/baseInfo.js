@@ -14,7 +14,7 @@ import {
   editSpecialWorkPerson,
   deleteSpecialWorkPerson,
   fetchDict,
-} from '@/services/baseInfo/specialoPerationPermit';
+} from '@/services/baseInfo/specialOperationPermit';
 import {
   fetchSpecialEquipPerson,
   addSpecialEquipPerson,
@@ -34,7 +34,7 @@ export default {
   namespace: 'baseInfo',
   state: {
     // 特种作业操作证人员
-    specialoPerationPermit: {
+    specialOperationPermit: {
       a: 0,
       list: [],
       pagination: defaultPagination,
@@ -129,7 +129,7 @@ export default {
       const res = yield call(fetchSpecialWorkPerson, payload)
       if (res && res.code === 200) {
         yield put({
-          type: 'saveSpecialoPerationPermit',
+          type: 'savespecialOperationPermit',
           payload: res.data,
         })
         if (callback) callback(res.data)
@@ -248,10 +248,10 @@ export default {
         storageTankArea: { ...payload },
       }
     },
-    saveSpecialoPerationPermit (state, { payload = { a: 0, list: [], pagination: defaultPagination } }) {
+    savespecialOperationPermit (state, { payload = { a: 0, list: [], pagination: defaultPagination } }) {
       return {
         ...state,
-        specialoPerationPermit: { ...payload },
+        specialOperationPermit: { ...payload },
       }
     },
     saveSpecialEquipPerson (state, { payload = { a: 0, list: [], pagination: defaultPagination } }) {

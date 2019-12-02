@@ -271,18 +271,18 @@ export default {
       view: 'dataAnalysis.maintenanceRecord.view',
     },
     workApprovalReport: {
-      listView: 'dataAnalysis.workApprovalReport.listView',
-      workApprovalList: 'dataAnalysis.workApprovalReport.workApprovalList',
-      detail: 'dataAnalysis.workApprovalReport.detail',
+      listView: 'operationSafety.workApprovalReport.listView',
+      workApprovalList: 'operationSafety.workApprovalReport.workApprovalList',
+      detail: 'operationSafety.workApprovalReport.detail',
     },
   },
   lawEnforcement: {
     laws: {
-      listView: 'lawEnforcement.laws.listView',
-      add: 'lawEnforcement.laws.add',
-      edit: 'lawEnforcement.laws.edit',
-      detail: 'lawEnforcement.laws.view',
-      delete: 'lawEnforcement.laws.delete',
+      listView: 'safetyProductionRegulation.laws.listView',
+      add: 'safetyProductionRegulation.laws.add',
+      edit: 'safetyProductionRegulation.laws.edit',
+      detail: 'safetyProductionRegulation.laws.view',
+      delete: 'safetyProductionRegulation.laws.delete',
     },
     illegal: {
       listView: 'lawEnforcement.illegal.listView',
@@ -581,18 +581,18 @@ export default {
       unbind: 'majorHazardInfo.storageManagement.unbind',
     },
     // 特种作业操作证人员
-    specialoPerationPermit: {
-      list: 'baseInfo.specialoPerationPermit.listView',
-      add: 'baseInfo.specialoPerationPermit.add',
-      edit: 'baseInfo.specialoPerationPermit.edit',
-      delete: 'baseInfo.specialoPerationPermit.delete',
+    specialOperationPermit: {
+      list: 'operationSafety.specialOperationPermit.listView',
+      add: 'operationSafety.specialOperationPermit.add',
+      edit: 'operationSafety.specialOperationPermit.edit',
+      delete: 'operationSafety.specialOperationPermit.delete',
     },
     // 特种设备作业人员
     specialEquipmentOperators: {
-      list: 'baseInfo.specialEquipmentOperators.listView',
-      add: 'baseInfo.specialEquipmentOperators.add',
-      edit: 'baseInfo.specialEquipmentOperators.edit',
-      delete: 'baseInfo.specialEquipmentOperators.delete',
+      list: 'operationSafety.specialEquipmentOperators.listView',
+      add: 'operationSafety.specialEquipmentOperators.add',
+      edit: 'operationSafety.specialEquipmentOperators.edit',
+      delete: 'operationSafety.specialEquipmentOperators.delete',
     },
   },
   safetyKnowledgeBase: {
@@ -625,11 +625,11 @@ export default {
   announcementManagement: {
     // 安全承诺公告
     promise: {
-      add: 'announcementManagement.promise.add',
-      list: 'announcementManagement.promise.list',
-      view: 'announcementManagement.promise.view',
-      delete: 'announcementManagement.promise.delete',
-      edit: 'announcementManagement.promise.edit',
+      add: 'safetyRiskControl.promise.add',
+      list: 'safetyRiskControl.promise.list',
+      view: 'safetyRiskControl.promise.view',
+      delete: 'safetyRiskControl.promise.delete',
+      edit: 'safetyRiskControl.promise.edit',
     },
   },
 };

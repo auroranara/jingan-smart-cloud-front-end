@@ -39,8 +39,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '设备设施管理',
+    name: '设备设施管理',
   },
   {
     title,

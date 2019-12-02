@@ -29,13 +29,13 @@ const { RangePicker } = DatePicker;
 const {
   home: homeUrl,
   baseInfo: {
-    specialoPerationPermit: { list: listUrl },
+    specialOperationPermit: { list: listUrl },
   },
 } = urls;
 
 const {
   home: homeTitle,
-  specialoPerationPermit: { menu: menuTitle, list: listTitle },
+  specialOperationPermit: { menu: menuTitle, list: listTitle },
 } = titles;
 const formItemLayout = {
   labelCol: { span: 6 },
@@ -53,7 +53,7 @@ const uploadAction = '/acloud_new/v2/uploadFile';
   sensor,
   companyLoading: loading.effects['sensor/fetchModelList'], // 单位列表加载状态
 }))
-export default class SpecialoPerationPermitHandle extends PureComponent {
+export default class specialOperationPermitHandle extends PureComponent {
   state = {
     frontPhotoList: [], // 操作证正面
     backPhotoList: [], // 操作证反面

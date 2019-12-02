@@ -3848,6 +3848,15 @@ module.exports = env => {
                 },
               ],
             },
+            {
+              name: 'operationRecord', // 设备设施运维记录
+              code: 'facilityManagement.operationRecord',
+              path: '/facility-management/operation-record',
+              developing: true,
+              hideChildrenInMenu: true,
+              routes: [
+              ],
+            },
           ],
         },
 
@@ -4426,33 +4435,33 @@ module.exports = env => {
               ],
             },
             {
-              name: 'specialoPerationPermit', // 特种作业操作证人员
-              code: 'operationSafety.specialoPerationPermit',
-              path: '/operation-safety/specialo-peration-permit',
+              name: 'specialOperationPermit', // 特种作业操作证人员
+              code: 'operationSafety.specialOperationPermit',
+              path: '/operation-safety/special-operation-permit',
               hideChildrenInMenu: true,
               routes: [
                 {
-                  path: '/operation-safety/specialo-peration-permit',
-                  name: 'specialoPerationPermit',
-                  redirect: '/operation-safety/specialo-peration-permit/list',
+                  path: '/operation-safety/special-operation-permit',
+                  name: 'specialOperationPermit',
+                  redirect: '/operation-safety/special-operation-permit/list',
                 },
                 {
-                  path: '/operation-safety/specialo-peration-permit/list',
+                  path: '/operation-safety/special-operation-permit/list',
                   name: 'list',
-                  code: 'operationSafety.specialoPerationPermit.listView',
-                  component: './BaseInfo/SpecialoPerationPermit/List',
+                  code: 'operationSafety.specialOperationPermit.listView',
+                  component: './BaseInfo/specialOperationPermit/List',
                 },
                 {
-                  path: '/operation-safety/specialo-peration-permit/add',
+                  path: '/operation-safety/special-operation-permit/add',
                   name: 'add',
-                  code: 'operationSafety.specialoPerationPermit.add',
-                  component: './BaseInfo/SpecialoPerationPermit/Handle',
+                  code: 'operationSafety.specialOperationPermit.add',
+                  component: './BaseInfo/specialOperationPermit/Handle',
                 },
                 {
-                  path: '/operation-safety/specialo-peration-permit/edit/:id',
+                  path: '/operation-safety/special-operation-permit/edit/:id',
                   name: 'edit',
-                  code: 'operationSafety.specialoPerationPermit.edit',
-                  component: './BaseInfo/SpecialoPerationPermit/Handle',
+                  code: 'operationSafety.specialOperationPermit.edit',
+                  component: './BaseInfo/specialOperationPermit/Handle',
                 },
               ],
             },
