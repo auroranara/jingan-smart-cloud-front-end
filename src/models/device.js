@@ -75,6 +75,8 @@ import {
   deleteMonitoringDevice,
   fetchMonitoringDeviceDetail,
   bindMonitoringDevice,
+  bindVideoAndMonitorEquipment,
+  unbindVideoAndMonitorEquipment,
 } from '@/services/device/monitoringDevice';
 
 const defaultPagination = {
@@ -800,6 +802,20 @@ export default {
     // 绑定监测设备到监测对象
     *bindMonitoringDevice ({ payload, success, error }, { call }) {
       const response = yield call(bindMonitoringDevice, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 绑定摄像头(动态监测NEW)
+    *bindVideoAndMonitorEquipment ({ payload, success, error }, { call }) {
+      const response = yield call(bindVideoAndMonitorEquipment, payload)
+      if (response && response.code === 200) {
+        success && success()
+      } else if (error) error(response)
+    },
+    // 解绑摄像头(动态监测NEW)
+    *unbindVideoAndMonitorEquipment ({ payload, success, error }, { call }) {
+      const response = yield call(unbindVideoAndMonitorEquipment, payload)
       if (response && response.code === 200) {
         success && success()
       } else if (error) error(response)

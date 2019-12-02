@@ -41,3 +41,13 @@ export async function bindMonitoringDevice (body) {
     body,
   })
 }
+
+// 绑定摄像头(动态监测NEW)
+export async function bindVideoAndMonitorEquipment (params) {
+  return request(`/acloud_new/v2/video/bind/bindVideoAndMonitorEquipment?${stringify(params)}`)
+}
+
+// 解绑摄像头(动态监测NEW)
+export async function unbindVideoAndMonitorEquipment (params) {
+  return request(`/acloud_new/v2/video/bind/unbindVideoAndMonitorEquipment?${stringify(params)}`)
+}

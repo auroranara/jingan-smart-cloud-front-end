@@ -15,7 +15,7 @@ import {
 } from 'antd';
 import router from 'umi/router';
 import codes from '@/utils/codes';
-import { hasAuthority } from '@/utils/customAuth';
+import { AuthPopConfirm, AuthButton } from '@/utils/customAuth';
 
 const FormItem = Form.Item;
 
@@ -30,48 +30,37 @@ const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
 const defaultPageSize = 10;
 
 @Form.create()
-@connect(({ videoMonitor, sensor, user }) => ({
+@connect(({ videoMonitor, sensor, user, device }) => ({
   videoMonitor,
   sensor,
   user,
+  device,
 }))
 export default class AssociatePersonnelPosition extends Component {
-  componentDidMount() {
-    const {
-      dispatch,
-      data: { id, companyId },
-    } = this.props;
-    // TODO：获取筛选条件数据
-
-    // 获取视屏绑定的信标
-    this.fetchBindedMonitorDevice({
-      payload: { videoId: id, pageNum: 1, pageSize: defaultPageSize },
-    });
-    // 获取品牌列表
-    dispatch({ type: 'videoMonitor/getOptionalList' });
-    // 获取产品型号列表
-    dispatch({ type: 'videoMonitor/getModelDescList' });
-    // 获取监测类型列表
-    dispatch({ type: 'videoMonitor/getClassTypeList' });
+  componentDidMount () {
+    this.handleQuery();
+    this.fetchMonitoringDeviceTypes();
   }
 
-  // 获取视频已绑定设备（动态监测）
-  fetchBindedMonitorDevice = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'videoMonitor/fetchBindedMonitorDevice',
-      ...actions,
-    });
-  };
+  // 获取设备类型--监测设备类型列表
+  fetchMonitoringDeviceTypes = () => {
+    const { dispatch } = this.props
+    dispatch({ type: 'device/fetchMonitoringDeviceTypes' })
+  }
+
 
   // 点击查询
   handleQuery = (pageNum = 1, pageSize = defaultPageSize) => {
     const {
+      dispatch,
       data: { id },
       form: { getFieldsValue },
     } = this.props;
     const values = getFieldsValue();
-    this.fetchBindedMonitorDevice({ payload: { videoId: id, pageNum, pageSize, ...values } });
+    dispatch({
+      type: 'device/fetchMonitoringDevice',
+      payload: { pageNum, pageSize, bindVideoStatus: 1, bindVideoId: id, ...values },
+    })
   };
 
   // 点击重置
@@ -115,10 +104,13 @@ export default class AssociatePersonnelPosition extends Component {
 
   // 点击取消关联
   handleUnBindBeacon = id => {
-    const { dispatch } = this.props;
+    const {
+      dispatch,
+      data: { id: videoId },
+    } = this.props;
     dispatch({
-      type: 'videoMonitor/unbindedMonitorDevice',
-      payload: { id },
+      type: 'device/unbindVideoAndMonitorEquipment',
+      payload: { id, videoId },
       success: () => {
         message.success('取消关联成功！');
         // 获取视屏绑定的信标
@@ -130,76 +122,35 @@ export default class AssociatePersonnelPosition extends Component {
     });
   };
 
-  render() {
+  render () {
     const {
       form: { getFieldDecorator },
-      videoMonitor: {
-        associateDevice: {
+      device: {
+        monitoringDevice: {
           list = [],
           pagination: { pageNum = 1, pageSize = 10, total = 0 },
         },
-        // 品牌列表
-        // optionalList = [],
-        // 产品型号列表
-        // modelDescList = [],
-        // 监测类型列表
-        classTypeList = [],
       },
-      user: {
-        currentUser: { permissionCodes },
-      },
-      sensor: {
-        // 传感器型号字典
-        typeDict = [],
+      device: {
+        monitoringDeviceTypes, // 设备类型
       },
     } = this.props;
 
-    const modelList = typeDict.map(item => item.modelDesc).reduce((pre, cur) => {
-      if (!pre.includes(cur)) {
-        return pre.concat(cur);
-      } else {
-        return pre;
-      }
-    }, []);
-
-    const optionalList = typeDict.map(item => item.optionalDesc).reduce((pre, cur) => {
-      if (!pre.includes(cur)) {
-        return pre.concat(cur);
-      } else {
-        return pre;
-      }
-    }, []);
-
     const columns = [
       {
-        title: '监测类型',
-        dataIndex: 'class_type',
-        align: 'center',
-        render: val => {
-          const item = classTypeList.find(item => +item.class_type === +val) || { type_desc: '' };
-          return <span>{item.type_desc}</span>;
-        },
-      },
-      {
-        title: '品牌',
-        dataIndex: 'model_desc',
+        title: '名称',
+        dataIndex: 'name',
         align: 'center',
       },
       {
-        title: '产品型号',
-        dataIndex: 'optional_desc',
+        title: '编号',
+        dataIndex: 'code',
         align: 'center',
       },
       {
-        title: '设备号',
-        dataIndex: 'relation_device_id',
+        title: '设备类型',
+        dataIndex: 'equipmentTypeName',
         align: 'center',
-      },
-      {
-        title: '所在区域位置',
-        key: 'area',
-        align: 'center',
-        render: (val, row) => <span>{(row.area || '') + (row.location || '')}</span>,
       },
       {
         title: '操作',
@@ -207,23 +158,17 @@ export default class AssociatePersonnelPosition extends Component {
         align: 'center',
         render: (val, row) => (
           <Fragment>
-            {unBindBeaconAuth ? (
-              <Popconfirm
-                title="确认要取消关联吗？"
-                onConfirm={() => this.handleUnBindBeacon(row.id)}
-              >
-                <a>取消关联</a>
-              </Popconfirm>
-            ) : (
-              <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>取消关联</span>
-            )}
+            <AuthPopConfirm
+              code={unBindBeaconCode}
+              title="确认要取消关联吗？"
+              onConfirm={() => this.handleUnBindBeacon(row.id)}
+            >
+              取消关联
+            </AuthPopConfirm>
           </Fragment>
         ),
       },
     ];
-    const unBindBeaconAuth = hasAuthority(unBindBeaconCode, permissionCodes);
-    // 新增关联权限
-    const addAssociateAuth = hasAuthority(addAssociateCode, permissionCodes);
     return (
       <Fragment>
         <Card>
@@ -231,38 +176,17 @@ export default class AssociatePersonnelPosition extends Component {
             <Row gutter={16}>
               <Col {...colWrapper}>
                 <FormItem {...formItemStyle}>
-                  {getFieldDecorator('classType')(
-                    <Select placeholder="监测类型" onChange={this.handlemonitoringTypeChange}>
-                      {classTypeList.map((item, i) => (
-                        <Select.Option key={i} value={item.class_type}>
-                          {item.type_desc}
-                        </Select.Option>
-                      ))}
-                    </Select>
+                  {getFieldDecorator('companyName')(
+                    <Input placeholder="单位名称" />
                   )}
                 </FormItem>
               </Col>
               <Col {...colWrapper}>
                 <FormItem {...formItemStyle}>
-                  {getFieldDecorator('modelDesc')(
-                    <Select placeholder="品牌">
-                      {modelList.map(item => (
-                        <Select.Option key={item} value={item}>
-                          {item}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  )}
-                </FormItem>
-              </Col>
-              <Col {...colWrapper}>
-                <FormItem {...formItemStyle}>
-                  {getFieldDecorator('optionalDesc')(
-                    <Select placeholder="产品型号">
-                      {optionalList.map(item => (
-                        <Select.Option key={item} value={item}>
-                          {item}
-                        </Select.Option>
+                  {getFieldDecorator('equipmentType')(
+                    <Select placeholder="设备类型">
+                      {monitoringDeviceTypes.map(({ id, name }) => (
+                        <Select.Option key={id} value={id}>{name}</Select.Option>
                       ))}
                     </Select>
                   )}
@@ -285,9 +209,9 @@ export default class AssociatePersonnelPosition extends Component {
                   <Button style={{ marginRight: '10px' }} onClick={this.handleReset}>
                     重置
                   </Button>
-                  <Button onClick={this.handleToAdd} type="primary" disabled={!addAssociateAuth}>
+                  <AuthButton onClick={this.handleToAdd} type="primary" code={addAssociateCode}>
                     新增关联
-                  </Button>
+                  </AuthButton>
                 </FormItem>
               </Col>
             </Row>
