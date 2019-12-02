@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Input, InputNumber } from 'antd';
+import classNames from 'classnames';
+import styles from './index.less';
 
 const { TextArea, Search } = Input;
 
@@ -7,6 +9,7 @@ const { TextArea, Search } = Input;
 export default class InputOrSpan extends Component {
   render() {
     const {
+      className,
       type,
       value,
       ...restProps
@@ -14,9 +17,9 @@ export default class InputOrSpan extends Component {
 
     if (type !== 'span') {
       const Item = ({ InputNumber, TextArea, Search })[type] || Input;
-      return <Item {...restProps} value={value} />
+      return <Item className={className} value={value} {...restProps} />
     } else {
-      return <span {...restProps}>{value}</span>
+      return <span className={classNames(styles.span, className)} {...restProps}>{value}</span>
     }
   }
 }
