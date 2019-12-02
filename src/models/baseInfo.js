@@ -114,7 +114,7 @@ export default {
       }
     },
     // 获取储罐详情
-    *fetchStorageTankDetail ({ payload }, { call, put }) {
+    *fetchStorageTankDetail ({ payload, callback }, { call, put }) {
       const response = yield call(fetchStorageTankForPage, payload)
       if (response && response.code === 200) {
         const detail = response.data && response.data.list && response.data.list.length ? response.data.list[0] : {}
@@ -122,6 +122,7 @@ export default {
           type: 'save',
           payload: { storageTankDetail: detail },
         })
+        if (callback) callback(detail);
       }
     },
     // 获取特种作业操作证人员列表（分页）

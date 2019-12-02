@@ -59,7 +59,7 @@ export default class AssociatePersonnelPosition extends Component {
     const values = getFieldsValue();
     dispatch({
       type: 'device/fetchMonitoringDevice',
-      payload: { pageNum, pageSize, bindVideoStatus: 1, bindVideoId: id, ...values },
+      payload: { ...values, pageNum, pageSize, bindVideoStatus: 1, bindVideoId: id },
     })
   };
 
@@ -153,6 +153,11 @@ export default class AssociatePersonnelPosition extends Component {
         align: 'center',
       },
       {
+        title: '区域位置',
+        dataIndex: 'areaLocation',
+        align: 'center',
+      },
+      {
         title: '操作',
         key: '操作',
         align: 'center',
@@ -176,8 +181,8 @@ export default class AssociatePersonnelPosition extends Component {
             <Row gutter={16}>
               <Col {...colWrapper}>
                 <FormItem {...formItemStyle}>
-                  {getFieldDecorator('companyName')(
-                    <Input placeholder="单位名称" />
+                  {getFieldDecorator('name')(
+                    <Input placeholder="名称" />
                   )}
                 </FormItem>
               </Col>
@@ -190,11 +195,6 @@ export default class AssociatePersonnelPosition extends Component {
                       ))}
                     </Select>
                   )}
-                </FormItem>
-              </Col>
-              <Col {...colWrapper}>
-                <FormItem {...formItemStyle}>
-                  {getFieldDecorator('relationDeviceId')(<Input placeholder="请输入设备号" />)}
                 </FormItem>
               </Col>
               <Col {...colWrapper}>

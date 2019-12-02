@@ -274,6 +274,12 @@ export default class MonitoringDevice extends Component {
         ),
       },
       {
+        title: '区域位置',
+        dataIndex: 'areaLocation',
+        align: 'center',
+        width: 300,
+      },
+      {
         title: '已绑定传感器数量',
         dataIndex: 'sensorCount',
         align: 'center',

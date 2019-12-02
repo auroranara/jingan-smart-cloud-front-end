@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { connect } from 'dva';
-import { Card, Spin, Form, Input, Button, Select, Row, Col, Table, Popconfirm, message } from 'antd';
+import { Spin } from 'antd';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import router from 'umi/router';
 import AssociatePersonnelPosition from './AssociatePersonnelPosition.js';
@@ -34,7 +34,7 @@ export default class AssociateDevice extends Component {
     tabActiveKey: null, // 页头上得tab得key
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       match: { params: { type } },
     } = this.props
@@ -56,7 +56,7 @@ export default class AssociateDevice extends Component {
     this.setState({ tabActiveKey })
   }
 
-  render() {
+  render () {
     const {
       loading,
       match: { params: { id, type } },

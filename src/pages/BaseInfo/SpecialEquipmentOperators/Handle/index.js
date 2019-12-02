@@ -358,7 +358,7 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
             )}
           </FormItem>
           <FormItem label="出生年月" {...formItemLayout}>
-            {getFieldDecorator('birthDay', {
+            {getFieldDecorator('birthday', {
               initialValue: id && detail.birthday ? moment(detail.birthday) : undefined,
               rules: [{ required: true, message: '请选择出生年月' }],
             })(
@@ -418,7 +418,7 @@ export default class SpecialEquipmentOperatorsHandle extends PureComponent {
               <TextArea rows={5} placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
-          <FormItem label="操作证证号" {...formItemLayout}>
+          <FormItem label="作业人员证证号" {...formItemLayout}>
             {getFieldDecorator('operapersonNumber', {
               initialValue: id ? detail.mustholdProject : undefined,
               rules: [{ required: true, message: '请输入操作证证号' }],
