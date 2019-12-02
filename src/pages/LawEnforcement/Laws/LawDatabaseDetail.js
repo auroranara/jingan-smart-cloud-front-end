@@ -21,13 +21,13 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '执法检查',
-    name: '执法检查',
+    title: '安全生产制度法规',
+    name: '安全生产制度法规',
   },
   {
     title: '法律法规库',
     name: '法律法规库',
-    href: '/law-enforcement/laws/list',
+    href: '/safety-production-regulation/laws/list',
   },
   {
     title,
@@ -66,7 +66,7 @@ export default class LawDatabaseDetail extends PureComponent {
   // 返回到编辑页面
   goToEdit = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/law-enforcement/laws/edit/${id}`));
+    dispatch(routerRedux.push(`/safety-production-regulation/laws/edit/${id}`));
   };
 
   /* 渲染详情 */

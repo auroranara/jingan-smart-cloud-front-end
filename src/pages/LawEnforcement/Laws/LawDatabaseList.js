@@ -21,8 +21,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '执法检查',
-    name: '执法检查',
+    title: '安全生产制度法规',
+    name: '安全生产制度法规',
   },
   {
     title,
@@ -82,13 +82,13 @@ export default class lawDatabaseList extends PureComponent {
   // 跳转到详情页面
   goLawsDetail = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/law-enforcement/laws/detail/${id}`));
+    dispatch(routerRedux.push(`/safety-production-regulation/laws/detail/${id}`));
   };
 
   // 跳转到编辑页面
   goLawsEdit = id => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/law-enforcement/laws/edit/${id}`));
+    dispatch(routerRedux.push(`/safety-production-regulation/laws/edit/${id}`));
   };
 
   /* 查询按钮点击事件 */
@@ -244,7 +244,7 @@ export default class lawDatabaseList extends PureComponent {
               <AuthButton
                 type="primary"
                 code={codesMap.lawEnforcement.laws.add}
-                href="#/law-enforcement/laws/add"
+                href="#/safety-production-regulation/laws/add"
               >
                 新增
               </AuthButton>

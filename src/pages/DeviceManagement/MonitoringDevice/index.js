@@ -13,7 +13,7 @@ const FormItem = Form.Item;
 const title = '监测设备管理'
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '设备管理', name: '设备管理' },
+  { title: '物联设备管理', name: '物联设备管理' },
   { title, name: title },
 ]
 const defaultPageSize = 10;
