@@ -57,7 +57,7 @@ export default class specialOperationPermitHandle extends PureComponent {
   state = {
     frontPhotoList: [], // 操作证正面
     backPhotoList: [], // 操作证反面
-    forntLoading: false,
+    frontLoading: false,
     backLoading: false,
     operationCategory: [], // 作业类别选项
     selectedCompany: {}, // 选中的单位 { id, name }
@@ -152,7 +152,7 @@ export default class specialOperationPermitHandle extends PureComponent {
 
   handleFrontChange = ({ file, fileList }) => {
     if (file.status === 'uploading') {
-      this.setState({ forntLoading: true, frontPhotoList: fileList })
+      this.setState({ frontLoading: true, frontPhotoList: fileList })
     } else if (file.status === 'done') {
       if (file.response && file.response.code === 200) {
         const result = file.response.data.list[0]
@@ -167,7 +167,7 @@ export default class specialOperationPermitHandle extends PureComponent {
           } else return item
         })
         this.setState({
-          forntLoading: false,
+          frontLoading: false,
           frontPhotoList: list,
         })
       } else {
@@ -179,7 +179,7 @@ export default class specialOperationPermitHandle extends PureComponent {
         });
       }
       this.setState({
-        forntLoading: false,
+        frontLoading: false,
       });
     } else if (file.status === 'removed') {
       // 删除
@@ -187,11 +187,11 @@ export default class specialOperationPermitHandle extends PureComponent {
         frontPhotoList: fileList.filter(item => {
           return item.status !== 'removed';
         }),
-        forntLoading: false,
+        frontLoading: false,
       });
     } else {
       message.error('上传失败')
-      this.setState({ forntLoading: false })
+      this.setState({ frontLoading: false })
     }
   };
 
@@ -322,7 +322,7 @@ export default class specialOperationPermitHandle extends PureComponent {
       frontPhotoList,
       backPhotoList,
       operationCategory,
-      forntLoading,
+      frontLoading,
       backLoading,
       selectedCompany,
       detail,
@@ -454,7 +454,7 @@ export default class specialOperationPermitHandle extends PureComponent {
                   onChange={this.handleFrontChange}
                 >
                   <Button>
-                    <Icon type={forntLoading ? 'loading' : "upload"} />
+                    <Icon type={frontLoading ? 'loading' : "upload"} />
                     点击上传
                 </Button>
                 </Upload>

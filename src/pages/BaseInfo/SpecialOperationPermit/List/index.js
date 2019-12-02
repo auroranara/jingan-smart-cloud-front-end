@@ -77,7 +77,7 @@ export default class specialOperationPermitList extends PureComponent {
 
   state = {
     operationCategory: [], // 作业类别选项
-  }
+  };
 
   componentDidMount () {
     // 获取作业类别
