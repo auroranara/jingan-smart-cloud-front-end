@@ -1,0 +1,99 @@
+.areaContainer {
+  position: relative;
+  line-height: 26px;
+  padding: 0 0 16px 25px;
+  // border-bottom: 1px solid #196092;
+
+  .areaColor {
+    position: absolute;
+    top: 14px;
+    right: 15px;
+    height: 50px;
+    width: 50px;
+    line-height: 50px;
+    text-align: center;
+    border-radius: 50%;
+  }
+}
+
+.wrapper {
+  position: relative;
+  border-top: 1px solid #196092;
+  padding: 16px 10px;
+  padding-left: 25px;
+
+  .title {
+    font-size: 16px;
+    padding-left: 10px;
+    border-left: 4px solid #0ff;
+    margin-left: -11px;
+    line-height: 24px;
+    position: relative;
+
+    .value {
+      display: inline-block;
+      margin-left: 10px;
+    }
+
+    .extra {
+      position: absolute;
+      right: 5px;
+      top: 0;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  }
+
+  .content {
+    position: relative;
+    padding: 12px 0;
+    font-size: 14px;
+    padding-bottom: 0;
+
+    .dotItem {
+      display: inline-block;
+
+      .dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-right: 5px;
+        border-radius: 50%;
+      }
+
+      .dotValue {
+        display: inline-block;
+        margin-left: 10px;
+      }
+
+      &+.dotItem {
+        margin-left: 25px;
+      }
+    }
+
+    .tagItem {
+      position: relative;
+      line-height: 26px;
+      border-top: 1px solid rgba(25, 96, 146, 0.5);
+      padding: 8px 0;
+      cursor: pointer;
+
+      .tagValue {
+        display: inline-block;
+        margin-left: 15px;
+      }
+
+      .rightIcon {
+        color: #4F6F96;
+        font-size: 16px;
+        position: absolute;
+        right: 5px;
+        top: 12px;
+      }
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+    }
+  }
+}
