@@ -19,9 +19,10 @@ import {
   Remind,
   Tips,
   CompanyInfo,
-  Notice,
+  StorageAreaDrawer,
   HiddenDanger,
   Map,
+  DangerAreaDrawer,
 } from './sections/Components';
 
 const HEADER_STYLE = {
@@ -42,6 +43,8 @@ export default class Chemical extends PureComponent {
     this.state = {
       riskPointDrawerVisible: false,
       riskPointType: {},
+      dangerAreaDrawerVisible: false,
+      storageAreaVisible: false,
     };
   }
 
@@ -78,7 +81,12 @@ export default class Chemical extends PureComponent {
    * 渲染
    */
   render() {
-    const { riskPointDrawerVisible, riskPointType } = this.state;
+    const {
+      riskPointDrawerVisible,
+      riskPointType,
+      dangerAreaDrawerVisible,
+      storageAreaVisible,
+    } = this.state;
     return (
       <BigPlatformLayout
         title="五位一体信息化管理平台"
@@ -117,7 +125,7 @@ export default class Chemical extends PureComponent {
 
             <Col span={18} className={styles.height100}>
               <div className={styles.right}>
-                <Map />
+                <Map setDrawerVisible={this.setDrawerVisible} />
               </div>
             </Col>
           </Row>
@@ -136,6 +144,20 @@ export default class Chemical extends PureComponent {
           }}
           data={POINTS}
           riskPointType={riskPointType}
+        />
+
+        <DangerAreaDrawer
+          visible={dangerAreaDrawerVisible}
+          onClose={() => {
+            this.setDrawerVisible('dangerArea');
+          }}
+        />
+
+        <StorageAreaDrawer
+          visible={storageAreaVisible}
+          onClose={() => {
+            this.setDrawerVisible('storageArea');
+          }}
         />
       </BigPlatformLayout>
     );
