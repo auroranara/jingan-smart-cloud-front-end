@@ -35,8 +35,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '数据分析',
-    name: '数据分析',
+    title: '管控措施跟进信息管理',
+    name: '管控措施跟进信息管理',
   },
   {
     title,
@@ -168,14 +168,14 @@ export default class App extends PureComponent {
           } = text;
           return itemTypeName !== '随手拍' ? (
             <Link
-              to={`/data-analysis/company-report/detail/${check_id}?companyName=${company_name}&&object_title=${encodeURIComponent(
+              to={`/control-measures-follow-up/company-report/detail/${check_id}?companyName=${company_name}&&object_title=${encodeURIComponent(
                 object_title
               )}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
             >
               查看
             </Link>
           ) : (
-            <Link to={`/data-analysis/company-report/checkDetail/${_id}?newId=${_id}`}>查看</Link>
+            <Link to={`/control-measures-follow-up/company-report/checkDetail/${_id}?newId=${_id}`}>查看</Link>
           );
         },
       },

@@ -104,7 +104,7 @@ export default class Edit extends PureComponent {
   }
 
   goBack = () => {
-    router.push('/base-info/safety-facilities/list');
+    router.push('/device-management/safety-facilities/list');
   };
 
   isDetail = () => {
@@ -495,13 +495,13 @@ export default class Edit extends PureComponent {
         name: '首页',
       },
       {
-        title: '一企一档',
-        name: '一企一档',
+        title: '物联设备管理',
+        name: '物联设备管理',
       },
       {
         title: '安全设施',
         name: '安全设施',
-        href: '/base-info/safety-facilities/list',
+        href: '/device-management/safety-facilities/list',
       },
       {
         title,
@@ -529,7 +529,7 @@ export default class Edit extends PureComponent {
               <Button
                 style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
                 size="large"
-                href={`#/base-info/safety-facilities/list`}
+                href={`#/device-management/safety-facilities/list`}
               >
                 返回
               </Button>
@@ -545,7 +545,7 @@ export default class Edit extends PureComponent {
                 type="primary"
                 size="large"
                 disabled={!editCode}
-                href={`#/base-info/safety-facilities/edit/${id}`}
+                href={`#/device-management/safety-facilities/edit/${id}`}
               >
                 编辑
               </Button>
@@ -555,7 +555,7 @@ export default class Edit extends PureComponent {
               <Button
                 style={{ marginLeft: '50%', transform: 'translateX(-50%)', marginTop: '24px' }}
                 size="large"
-                href={`#/base-info/safety-facilities/list`}
+                href={`#/device-management/safety-facilities/list`}
               >
                 返回
               </Button>

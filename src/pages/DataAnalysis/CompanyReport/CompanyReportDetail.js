@@ -23,13 +23,13 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '数据分析',
-    name: '数据分析',
+    title: '管控措施跟进信息管理',
+    name: '管控措施跟进信息管理',
   },
   {
     title: '企业自查报表',
     name: '企业自查报表',
-    href: '/data-analysis/company-report/list',
+    href: '/control-measures-follow-up/company-report/list',
   },
   {
     title,
@@ -276,7 +276,7 @@ export default class App extends PureComponent {
           return (
             <div>
               <Link
-                to={`/data-analysis/company-report/checkDetail/${
+                to={`/control-measures-follow-up/company-report/checkDetail/${
                   val._id
                   }?checkId=${id}&&companyName=${companyName}&&object_title=${encodeURIComponent(object_title)}&&itemTypeName=${itemTypeName}&&check_user_names=${check_user_names}&&check_date=${check_date}&&checkResultName=${checkResultName}`}
               >

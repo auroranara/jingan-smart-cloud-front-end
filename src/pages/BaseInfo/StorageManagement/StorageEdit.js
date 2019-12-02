@@ -440,7 +440,7 @@ export default class StorageEdit extends PureComponent {
   * 跳转到建筑物管理页面
   */
   jumpToBuildingManagement = () => {
-    const win = window.open(`${window.publicPath}#/base-info/buildings-info/list`, '_blank');
+    const win = window.open(`${window.publicPath}#/major-hazard-info/buildings-info/list`, '_blank');
     win.focus();
   }
 
@@ -660,7 +660,7 @@ export default class StorageEdit extends PureComponent {
       const tag = id ? '编辑' : '新增';
       const success = () => {
         message.success(`${tag}成功`)
-        router.push('/base-info/storage-management/list')
+        router.push('/major-hazard-info/storage-management/list')
       }
       const error = (res) => { message.error(res ? res.msg : `${tag}失败`) }
       if (id) {
@@ -1424,7 +1424,7 @@ export default class StorageEdit extends PureComponent {
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '一企一档', name: '一企一档' },
-      { title: '储罐管理', name: '储罐管理', href: '/base-info/storage-management/list' },
+      { title: '储罐管理', name: '储罐管理', href: '/major-hazard-info/storage-management/list' },
       { title, name: title },
     ];
     const areaProps = {

@@ -47,8 +47,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '重大危险源基本信息',
+    name: '重大危险源基本信息',
   },
   {
     title,
@@ -127,7 +127,7 @@ export default class StorageAreaManagement extends PureComponent {
       selectedKeys: [],
     };
     this.exportButton = (
-      <Button type="primary" href={`#/base-info/storage-area-management/add`}>
+      <Button type="primary" href={`#/major-hazard-info/storage-area-management/add`}>
         新增
       </Button>
     );
@@ -165,11 +165,11 @@ export default class StorageAreaManagement extends PureComponent {
   };
 
   goDetail = id => {
-    router.push(`/base-info/storage-area-management/detail/${id}`);
+    router.push(`/major-hazard-info/storage-area-management/detail/${id}`);
   };
 
   goEdit = id => {
-    router.push(`/base-info/storage-area-management/edit/${id}`);
+    router.push(`/major-hazard-info/storage-area-management/edit/${id}`);
   };
 
   handleDelete = id => {
@@ -540,7 +540,8 @@ export default class StorageAreaManagement extends PureComponent {
               <AuthButton
                 code={addCode}
                 type="primary"
-                href={`#/base-info/storage-area-management/add`}
+                href={`#/major-hazard-info/storage-area-management/add`}
+                disabled={false}
               >
                 新增
               </AuthButton>

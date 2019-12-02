@@ -471,7 +471,7 @@ export default class DangerChemicalList extends PureComponent {
         render: (val, record) => (
           <Fragment>
             {editCode ? (
-              <Link to={`/base-info/danger-chemicals-permit/edit/${record.id}`}>编辑</Link>
+              <Link to={`/unit-license/danger-chemicals-permit/edit/${record.id}`}>编辑</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}

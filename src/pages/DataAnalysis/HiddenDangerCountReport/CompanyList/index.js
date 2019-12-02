@@ -81,7 +81,7 @@ export default class CompanyList extends PureComponent {
     if (data) {
       sessionStorage.setItem('HIDDEN_DANGER_COUNT_REPORT', JSON.stringify(data));
     }
-    // router.push('/data-analysis/hidden-danger-count-report/detail');
+    // router.push('/control-measures-follow-up/hidden-danger-count-report/detail');
   };
 
   handleSearch = () => {
@@ -175,7 +175,7 @@ export default class CompanyList extends PureComponent {
             return (
               <List.Item key={id}>
                 <Link
-                  to={'/data-analysis/hidden-danger-count-report/detail'}
+                  to={'/control-measures-follow-up/hidden-danger-count-report/detail'}
                   onClick={() => this.handleCardClick(item)}
                   target="_blank"
                 >
@@ -224,7 +224,7 @@ export default class CompanyList extends PureComponent {
     } = this.props;
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '数据分析', name: '数据分析' },
+      { title: '管控措施跟进信息管理', name: '管控措施跟进信息管理' },
       { title: '隐患统计报表', name: '隐患统计报表' },
     ];
 

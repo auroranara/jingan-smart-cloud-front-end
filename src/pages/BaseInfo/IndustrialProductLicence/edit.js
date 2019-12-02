@@ -86,7 +86,7 @@ export default class IndustriallicenceEdit extends PureComponent {
 
   goBack = () => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/base-info/industrial-product-licence/list`));
+    dispatch(routerRedux.push(`/unit-license/industrial-product-licence/list`));
   };
 
   handleClickValidate = () => {
@@ -479,13 +479,13 @@ export default class IndustriallicenceEdit extends PureComponent {
         href: '/',
       },
       {
-        title: '一企一档',
-        name: '一企一档',
+        title: '单位证照管理',
+        name: '单位证照管理',
       },
       {
         title: '工业产品生产许可证',
         name: '工业产品生产许可证',
-        href: '/base-info/industrial-product-licence/list',
+        href: '/unit-license/industrial-product-licence/list',
       },
       {
         title,

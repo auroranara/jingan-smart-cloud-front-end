@@ -126,7 +126,7 @@ export default class EmergencySuppliesHandler extends PureComponent {
   };
 
   handleSubmit = () => {
-    router.push('/base-info/high-risk-process/list');
+    router.push('/major-hazard-info/high-risk-process/list');
     return;
     const {
       dispatch,

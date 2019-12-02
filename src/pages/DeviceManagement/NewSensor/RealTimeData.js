@@ -194,7 +194,7 @@ export default class RealTimeData extends Component {
     } = this.props;
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '设备管理', name: '设备管理' },
+      { title: '物联设备管理', name: '物联设备管理' },
       { title: '传感器管理', name: '传感器管理', href: '/device-management/new-sensor/list' },
       { title, name: title },
     ];

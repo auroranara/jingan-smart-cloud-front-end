@@ -11,7 +11,7 @@ const { Option } = Select;
 // 标题
 const title = '安全设施';
 
-export const ROUTER = '/base-info/safety-facilities'; // modify
+export const ROUTER = '/device-management/safety-facilities'; // modify
 export const LIST_URL = `${ROUTER}/list`;
 
 //面包屑
@@ -22,8 +22,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '物联设备管理',
+    name: '物联设备管理',
   },
   {
     title,

@@ -537,8 +537,8 @@ export default class RegSafetyEngEdit extends PureComponent {
         href: '/',
       },
       {
-        title: '一企一档',
-        name: '一企一档',
+        title: '基础数据管理',
+        name: '基础数据管理',
       },
       {
         title: '注册安全工程师管理',

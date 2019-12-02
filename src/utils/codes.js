@@ -256,16 +256,16 @@ export default {
   },
   dataAnalysis: {
     IOTAbnormalData: {
-      electricity: 'dataAnalysis.IOTAbnormalData.electricity',
-      'toxic-gas': 'dataAnalysis.IOTAbnormalData.toxicGas',
-      'waste-water': 'dataAnalysis.IOTAbnormalData.wasteWater',
-      'waste-gas': 'dataAnalysis.IOTAbnormalData.wasteGas',
-      'storage-tank': 'dataAnalysis.IOTAbnormalData.storageTank',
-      'smoke-detector': 'dataAnalysis.IOTAbnormalData.smokeDetector',
-      humiture: 'dataAnalysis.IOTAbnormalData.humiture',
-      fire: 'dataAnalysis.IOTAbnormalData.fireDetailView',
-      history: 'dataAnalysis.IOTAbnormalData.fireHistoryRecordView',
-      water: 'dataAnalysis.IOTAbnormalData.water',
+      electricity: 'iot.IOTAbnormalData.electricity',
+      'toxic-gas': 'iot.IOTAbnormalData.toxicGas',
+      'waste-water': 'iot.IOTAbnormalData.wasteWater',
+      'waste-gas': 'iot.IOTAbnormalData.wasteGas',
+      'storage-tank': 'iot.IOTAbnormalData.storageTank',
+      'smoke-detector': 'iot.IOTAbnormalData.smokeDetector',
+      humiture: 'iot.IOTAbnormalData.humiture',
+      fire: 'iot.IOTAbnormalData.fireDetailView',
+      history: 'iot.IOTAbnormalData.fireHistoryRecordView',
+      water: 'iot.IOTAbnormalData.water',
     },
     MaintenanceRecord: {
       view: 'dataAnalysis.maintenanceRecord.view',
@@ -482,29 +482,29 @@ export default {
   baseInfo: {
     // 库房管理
     storehouse: {
-      listView: 'baseInfo.storehouse.listView',
-      add: 'baseInfo.storehouse.add',
-      edit: 'baseInfo.storehouse.edit',
-      detail: 'baseInfo.storehouse.detail',
-      delete: 'baseInfo.storehouse.delete',
-      bindSensor: 'baseInfo.storehouse.bindSensor',
-      unbindSensor: 'baseInfo.storehouse.unbindSensor',
+      listView: 'majorHazardInfo.storehouse.listView',
+      add: 'majorHazardInfo.storehouse.add',
+      edit: 'majorHazardInfo.storehouse.edit',
+      detail: 'majorHazardInfo.storehouse.detail',
+      delete: 'majorHazardInfo.storehouse.delete',
+      bindSensor: 'majorHazardInfo.storehouse.bindSensor',
+      unbindSensor: 'majorHazardInfo.storehouse.unbindSensor',
     },
     // 物料信息
     materials: {
-      listView: 'baseInfo.materials.listView',
-      add: 'baseInfo.materials.add',
-      edit: 'baseInfo.materials.edit',
-      detail: 'baseInfo.materials.detail',
-      delete: 'baseInfo.materials.delete',
+      listView: 'majorHazardInfo.materials.listView',
+      add: 'majorHazardInfo.materials.add',
+      edit: 'majorHazardInfo.materials.edit',
+      detail: 'majorHazardInfo.materials.detail',
+      delete: 'majorHazardInfo.materials.delete',
     },
     // 高危工艺流程
     highRiskProcess: {
-      listView: 'baseInfo.highRiskProcess.listView',
-      add: 'baseInfo.highRiskProcess.add',
-      edit: 'baseInfo.highRiskProcess.edit',
-      detail: 'baseInfo.highRiskProcess.detail',
-      delete: 'baseInfo.highRiskProcess.delete',
+      listView: 'majorHazardInfo.highRiskProcess.listView',
+      add: 'majorHazardInfo.highRiskProcess.add',
+      edit: 'majorHazardInfo.highRiskProcess.edit',
+      detail: 'majorHazardInfo.highRiskProcess.detail',
+      delete: 'majorHazardInfo.highRiskProcess.delete',
     },
     // 特种设备管理
     specialEquipment: {
@@ -517,12 +517,12 @@ export default {
 
     // 库区管理
     reservoirRegionManagement: {
-      list: 'baseInfo.reservoirRegionManagement.listView',
-      add: 'baseInfo.reservoirRegionManagement.add',
-      edit: 'baseInfo.reservoirRegionManagement.edit',
-      delete: 'baseInfo.reservoirRegionManagement.delete',
-      bindSensor: 'baseInfo.reservoirRegionManagement.bindSensor',
-      unbindSensor: 'baseInfo.reservoirRegionManagement.unbindSensor',
+      list: 'majorHazardInfo.reservoirRegionManagement.listView',
+      add: 'majorHazardInfo.reservoirRegionManagement.add',
+      edit: 'majorHazardInfo.reservoirRegionManagement.edit',
+      delete: 'majorHazardInfo.reservoirRegionManagement.delete',
+      bindSensor: 'majorHazardInfo.reservoirRegionManagement.bindSensor',
+      unbindSensor: 'majorHazardInfo.reservoirRegionManagement.unbindSensor',
     },
     // 重大危险源
     majorHazard: {
@@ -534,10 +534,10 @@ export default {
 
     // 工业产品生产许可证
     industrialProductLicence: {
-      list: 'baseInfo.industrialProductLicence.listView',
-      add: 'baseInfo.industrialProductLicence.add',
-      edit: 'baseInfo.industrialProductLicence.edit',
-      delete: 'baseInfo.industrialProductLicence.delete',
+      list: 'unitLicense.industrialProductLicence.listView',
+      add: 'unitLicense.industrialProductLicence.add',
+      edit: 'unitLicense.industrialProductLicence.edit',
+      delete: 'unitLicense.industrialProductLicence.delete',
     },
     // 注册安全工程师管理
     registeredEngineerManagement: {
@@ -548,37 +548,37 @@ export default {
     },
     // 危化品企业安全许可证
     dangerChemicalsPermit: {
-      list: 'baseInfo.dangerChemicalsPermit.listView',
-      add: 'baseInfo.dangerChemicalsPermit.add',
-      edit: 'baseInfo.dangerChemicalsPermit.edit',
-      delete: 'baseInfo.dangerChemicalsPermit.delete',
+      list: 'unitLicense.dangerChemicalsPermit.listView',
+      add: 'unitLicense.dangerChemicalsPermit.add',
+      edit: 'unitLicense.dangerChemicalsPermit.edit',
+      delete: 'unitLicense.dangerChemicalsPermit.delete',
     },
-    // 库房管理
+    // 储罐区管理
     storageAreaManagement: {
-      listView: 'baseInfo.storageAreaManagement.listView',
-      add: 'baseInfo.storageAreaManagement.add',
-      edit: 'baseInfo.storageAreaManagement.edit',
-      detail: 'baseInfo.storageAreaManagement.detail',
-      delete: 'baseInfo.storageAreaManagement.delete',
-      bind: 'baseInfo.storageAreaManagement.bind',
-      unbind: 'baseInfo.storageAreaManagement.unbind',
+      listView: 'majorHazardInfo.storageAreaManagement.listView',
+      add: 'majorHazardInfo.storageAreaManagement.add',
+      edit: 'majorHazardInfo.storageAreaManagement.edit',
+      detail: 'majorHazardInfo.storageAreaManagement.detail',
+      delete: 'majorHazardInfo.storageAreaManagement.delete',
+      bind: 'majorHazardInfo.storageAreaManagement.bind',
+      unbind: 'majorHazardInfo.storageAreaManagement.unbind',
     },
     // 安全设施
     safetyFacilities: {
-      list: 'baseInfo.safetyFacilities.list',
-      view: 'baseInfo.safetyFacilities.view',
-      add: 'baseInfo.safetyFacilities.add',
-      edit: 'baseInfo.safetyFacilities.edit',
-      delete: 'baseInfo.safetyFacilities.delete',
+      list: 'deviceManagement.safetyFacilities.list',
+      view: 'deviceManagement.safetyFacilities.view',
+      add: 'deviceManagement.safetyFacilities.add',
+      edit: 'deviceManagement.safetyFacilities.edit',
+      delete: 'deviceManagement.safetyFacilities.delete',
     },
     // 储罐管理
     storageManagement: {
-      list: 'baseInfo.storageManagement.listView',
-      add: 'baseInfo.storageManagement.add',
-      edit: 'baseInfo.storageManagement.edit',
-      delete: 'baseInfo.storageManagement.delete',
-      bind: 'baseInfo.storageManagement.bind',
-      unbind: 'baseInfo.storageManagement.unbind',
+      list: 'majorHazardInfo.storageManagement.listView',
+      add: 'majorHazardInfo.storageManagement.add',
+      edit: 'majorHazardInfo.storageManagement.edit',
+      delete: 'majorHazardInfo.storageManagement.delete',
+      bind: 'majorHazardInfo.storageManagement.bind',
+      unbind: 'majorHazardInfo.storageManagement.unbind',
     },
     // 特种作业操作证人员
     specialoPerationPermit: {
