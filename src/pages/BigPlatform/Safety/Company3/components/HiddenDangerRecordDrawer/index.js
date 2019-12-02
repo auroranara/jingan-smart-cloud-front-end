@@ -51,7 +51,7 @@ export default class HiddenDangerRecordDrawer extends Component {
   }
 
   handleClick = () => {
-    window.open('/#/data-analysis/hidden-danger-report/list');
+    window.open('/#/control-measures-follow-up/hidden-danger-report/list');
   }
 
   render() {
