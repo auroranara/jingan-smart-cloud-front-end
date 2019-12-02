@@ -247,16 +247,16 @@ export default {
   },
   dataAnalysis: {
     IOTAbnormalData: {
-      electricity: 'dataAnalysis.IOTAbnormalData.electricity',
-      'toxic-gas': 'dataAnalysis.IOTAbnormalData.toxicGas',
-      'waste-water': 'dataAnalysis.IOTAbnormalData.wasteWater',
-      'waste-gas': 'dataAnalysis.IOTAbnormalData.wasteGas',
-      'storage-tank': 'dataAnalysis.IOTAbnormalData.storageTank',
-      'smoke-detector': 'dataAnalysis.IOTAbnormalData.smokeDetector',
-      humiture: 'dataAnalysis.IOTAbnormalData.humiture',
-      fire: 'dataAnalysis.IOTAbnormalData.fireDetailView',
-      history: 'dataAnalysis.IOTAbnormalData.fireHistoryRecordView',
-      water: 'dataAnalysis.IOTAbnormalData.water',
+      electricity: 'iot.IOTAbnormalData.electricity',
+      'toxic-gas': 'iot.IOTAbnormalData.toxicGas',
+      'waste-water': 'iot.IOTAbnormalData.wasteWater',
+      'waste-gas': 'iot.IOTAbnormalData.wasteGas',
+      'storage-tank': 'iot.IOTAbnormalData.storageTank',
+      'smoke-detector': 'iot.IOTAbnormalData.smokeDetector',
+      humiture: 'iot.IOTAbnormalData.humiture',
+      fire: 'iot.IOTAbnormalData.fireDetailView',
+      history: 'iot.IOTAbnormalData.fireHistoryRecordView',
+      water: 'iot.IOTAbnormalData.water',
     },
     MaintenanceRecord: {
       view: 'dataAnalysis.maintenanceRecord.view',
@@ -525,10 +525,10 @@ export default {
 
     // 工业产品生产许可证
     industrialProductLicence: {
-      list: 'baseInfo.industrialProductLicence.listView',
-      add: 'baseInfo.industrialProductLicence.add',
-      edit: 'baseInfo.industrialProductLicence.edit',
-      delete: 'baseInfo.industrialProductLicence.delete',
+      list: 'unitLicense.industrialProductLicence.listView',
+      add: 'unitLicense.industrialProductLicence.add',
+      edit: 'unitLicense.industrialProductLicence.edit',
+      delete: 'unitLicense.industrialProductLicence.delete',
     },
     // 注册安全工程师管理
     registeredEngineerManagement: {
@@ -539,10 +539,10 @@ export default {
     },
     // 危化品企业安全许可证
     dangerChemicalsPermit: {
-      list: 'baseInfo.dangerChemicalsPermit.listView',
-      add: 'baseInfo.dangerChemicalsPermit.add',
-      edit: 'baseInfo.dangerChemicalsPermit.edit',
-      delete: 'baseInfo.dangerChemicalsPermit.delete',
+      list: 'unitLicense.dangerChemicalsPermit.listView',
+      add: 'unitLicense.dangerChemicalsPermit.add',
+      edit: 'unitLicense.dangerChemicalsPermit.edit',
+      delete: 'unitLicense.dangerChemicalsPermit.delete',
     },
     // 储罐区管理
     storageAreaManagement: {
@@ -555,11 +555,11 @@ export default {
     },
     // 安全设施
     safetyFacilities: {
-      list: 'baseInfo.safetyFacilities.list',
-      view: 'baseInfo.safetyFacilities.view',
-      add: 'baseInfo.safetyFacilities.add',
-      edit: 'baseInfo.safetyFacilities.edit',
-      delete: 'baseInfo.safetyFacilities.delete',
+      list: 'deviceManagement.safetyFacilities.list',
+      view: 'deviceManagement.safetyFacilities.view',
+      add: 'deviceManagement.safetyFacilities.add',
+      edit: 'deviceManagement.safetyFacilities.edit',
+      delete: 'deviceManagement.safetyFacilities.delete',
     },
     // 储罐管理
     storageManagement: {

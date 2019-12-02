@@ -33,12 +33,12 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '设备管理',
-    name: '设备管理',
+    title: '物联设备管理',
+    name: '物联设备管理',
   },
   {
-    title: '视频监控',
-    name: '视频监控',
+    title: '监控摄像头',
+    name: '监控摄像头',
   },
 ];
 
@@ -271,7 +271,7 @@ export default class VideoMonitorList extends PureComponent {
 
     return (
       <PageHeaderLayout
-        title="视频监控"
+        title="监控摄像头"
         breadcrumbList={breadcrumbList}
         content={
           <div>

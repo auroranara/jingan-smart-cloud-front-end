@@ -17,11 +17,11 @@ import { addAlign, getThisMonth, handleFormVals, handleTableData } from './utils
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '数据分析', name: '数据分析' },
+  { title: '物联网监测', name: '物联网监测' },
   {
     title: 'IOT数据分析',
     name: 'IOT数据分析',
-    href: '/data-analysis/IOT-abnormal-data/list',
+    href: '/iot/IOT-abnormal-data/list',
   },
   { title: TYPE_LABEL, name: TYPE_LABEL },
 ];

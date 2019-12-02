@@ -524,8 +524,8 @@ export default class ModelList extends PureComponent {
     const { detail, modalVisible, currentType } = this.state
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '设备管理', name: '设备管理' },
-      { title: '品牌管理', name: '品牌管理', href: '/device-management/brand/list' },
+      { title: '物联设备管理', name: '物联设备管理' },
+      { title: '型号报警阈值设置', name: '型号报警阈值设置', href: '/device-management/brand/list' },
       { title, name: title },
     ]
     const modalProps = {

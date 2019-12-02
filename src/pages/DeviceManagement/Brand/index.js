@@ -8,10 +8,10 @@ import router from 'umi/router';
 
 const FormItem = Form.Item;
 
-const title = '品牌管理'
+const title = '型号报警阈值设置'
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '设备管理', name: '设备管理' },
+  { title: '物联设备管理', name: '物联设备管理' },
   { title, name: title },
 ]
 const formItemCol = {

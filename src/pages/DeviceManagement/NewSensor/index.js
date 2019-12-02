@@ -10,10 +10,10 @@ import codes from '@/utils/codes';
 const FormItem = Form.Item;
 const { TreeNode } = TreeSelect;
 
-const title = '传感器运行状态'
+const title = '传感器管理'
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '设备管理', name: '设备管理' },
+  { title: '物联设备管理', name: '物联设备管理' },
   { title, name: title },
 ]
 const noAuthStyle = { style: { color: 'rgba(0, 0, 0, 0.25)', cursor: 'not-allowed' } }

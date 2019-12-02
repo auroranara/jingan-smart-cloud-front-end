@@ -171,12 +171,12 @@ export default class GatewayOther extends Component {
         href: '/',
       },
       {
-        title: '设备管理',
-        name: '设备管理',
+        title: '物联设备管理',
+        name: '物联设备管理',
       },
       {
-        title: '单位网关设备管理',
-        name: '单位网关设备管理',
+        title: '网关设备管理',
+        name: '网关设备管理',
         href: LIST_PATH,
       },
       {

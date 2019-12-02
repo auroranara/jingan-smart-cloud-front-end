@@ -21,12 +21,12 @@ export default {
     serviceDetail: '服务单位详情',
   },
   hiddenDangerReport: {
-    menu: '数据分析',
+    menu: '管控措施跟进信息管理',
     list: '隐患排查报表',
     detail: '隐患详情',
   },
   hiddenDangerCountReport: {
-    menu: '数据分析',
+    menu: '管控措施跟进信息管理',
     list: '隐患统计报表',
   },
   examinationPaper: {
@@ -38,19 +38,19 @@ export default {
     edit: '编辑规则',
   },
   specialoPerationPermit: {
-    menu: '一企一档',
+    menu: '作业安全管理',
     list: '特种作业操作证人员',
     add: '新增操作证人员',
     edit: '编辑操作证人员',
   },
   specialEquipmentOperators: {
-    menu: '一企一档',
+    menu: '作业安全管理',
     list: '特种设备作业人员',
     add: '新增作业人员',
     edit: '编辑作业人员',
   },
   dangerChemicalsPermit: {
-    menu: '一企一档',
+    menu: '单位证照管理',
     list: '危化品企业安全许可证',
     add: '新增许可证',
     edit: '编辑许可证',

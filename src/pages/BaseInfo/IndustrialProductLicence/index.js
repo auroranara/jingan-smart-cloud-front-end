@@ -21,8 +21,8 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '单位证照管理',
+    name: '单位证照管理',
   },
   {
     title,
@@ -332,7 +332,7 @@ export default class IndustriallicenceList extends PureComponent {
         render: (val, row) => (
           <Fragment>
             {editCode ? (
-              <Link to={`/base-info/industrial-product-licence/edit/${row.id}`}>编辑</Link>
+              <Link to={`/unit-license/industrial-product-licence/edit/${row.id}`}>编辑</Link>
             ) : (
               <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>编辑</span>
             )}
@@ -481,7 +481,7 @@ export default class IndustriallicenceList extends PureComponent {
               <Button
                 type="primary"
                 disabled={!addCode}
-                href={`#/base-info/industrial-product-licence/add`}
+                href={`#/unit-license/industrial-product-licence/add`}
               >
                 新增许可证
               </Button>
