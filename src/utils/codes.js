@@ -168,6 +168,15 @@ export default {
       delete: 'deviceManagement.gateway.delete',
       detail: 'deviceManagement.gateway.detail',
     },
+    // 监测设备
+    monitoringDevice: {
+      listView: 'deviceManagement.monitoringDevice.listView',
+      add: 'deviceManagement.monitoringDevice.add',
+      edit: 'deviceManagement.monitoringDevice.edit',
+      delete: 'deviceManagement.monitoringDevice.delete',
+      bindSensor: 'deviceManagement.monitoringDevice.bindSensor',
+      unbindSensor: 'deviceManagement.monitoringDevice.unbindSensor',
+    },
   },
   videoSurveillance: {
     hikVideoTree: {
@@ -551,7 +560,8 @@ export default {
       edit: 'baseInfo.storageAreaManagement.edit',
       detail: 'baseInfo.storageAreaManagement.detail',
       delete: 'baseInfo.storageAreaManagement.delete',
-      bindSensor: 'baseInfo.storageAreaManagement.bindSensor',
+      bind: 'baseInfo.storageAreaManagement.bind',
+      unbind: 'baseInfo.storageAreaManagement.unbind',
     },
     // 安全设施
     safetyFacilities: {
@@ -567,6 +577,8 @@ export default {
       add: 'baseInfo.storageManagement.add',
       edit: 'baseInfo.storageManagement.edit',
       delete: 'baseInfo.storageManagement.delete',
+      bind: 'baseInfo.storageManagement.bind',
+      unbind: 'baseInfo.storageManagement.unbind',
     },
     // 特种作业操作证人员
     specialoPerationPermit: {

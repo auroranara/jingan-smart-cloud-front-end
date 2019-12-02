@@ -8,17 +8,17 @@ import {
   Select,
   Table,
   Divider,
-  Popconfirm,
   Pagination,
   Spin,
   message,
 } from 'antd';
 import router from 'umi/router';
-import { hasAuthority, AuthA } from '@/utils/customAuth';
+import { hasAuthority, AuthA, AuthButton, AuthPopConfirm } from '@/utils/customAuth';
 import ToolBar from '@/components/ToolBar';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
-import BindSensorModal from '@/pages/DeviceManagement/Components/BindSensorModal';
+// 选择监测设备弹窗
+import MonitoringDeviceModal from '@/pages/DeviceManagement/Components/MonitoringDeviceModal';
 import styles from './Edit.less';
 
 const {
@@ -28,14 +28,15 @@ const {
       edit: editCode,
       add: addCode,
       delete: deleteCode,
-      bindSensor: bindSensorCode,
+      bind: bindCode,
+      unbind: unbindCode,
     },
   },
 } = codes;
 const { Option } = Select;
 // 标题
 const title = '储罐区管理';
-
+const defaultPageSize = 10;
 const dangerTypeList = [{ key: '1', value: '是' }, { key: '0', value: '否' }];
 
 //面包屑
@@ -108,10 +109,12 @@ const fields = [
   },
 ];
 
-@connect(({ loading, storageAreaManagement, user }) => ({
+@connect(({ loading, storageAreaManagement, user, device }) => ({
   loading: loading.models.storageAreaManagement,
   storageAreaManagement,
   user,
+  device,
+  modalLoading: loading.effects['device/fetchMonitoringDevice'],
 }))
 @Form.create()
 export default class StorageAreaManagement extends PureComponent {
@@ -119,6 +122,9 @@ export default class StorageAreaManagement extends PureComponent {
     super(props);
     this.state = {
       formData: {},
+      bindModalVisible: false,
+      bindedModalVisible: false,
+      selectedKeys: [],
     };
     this.exportButton = (
       <Button type="primary" href={`#/base-info/storage-area-management/add`}>
@@ -130,7 +136,7 @@ export default class StorageAreaManagement extends PureComponent {
   }
 
   // 挂载后
-  componentDidMount() {
+  componentDidMount () {
     this.fetchList();
   }
 
@@ -192,7 +198,119 @@ export default class StorageAreaManagement extends PureComponent {
     this.fetchList(pageNum, pageSize, { ...formData });
   };
 
-  handleViewBind = () => {};
+  /**
+   * 获取可绑定监测设备列表
+   */
+  fetchMonitoringDevice = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
+    const { dispatch } = this.props;
+    const { detail } = this.state;
+    dispatch({
+      type: 'device/fetchMonitoringDevice',
+      ...res,
+      payload: {
+        ...payload,
+        companyId: detail.companyId,
+        bindTargetStatus: 0, // 绑定状态 0 未绑定
+        bindTargetId: detail.id,
+      },
+    });
+  };
+
+  /**
+   * 获取已绑定监测设备列表
+   */
+  fetchBindedMonitoringDevice = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
+    const { dispatch } = this.props;
+    const { detail } = this.state;
+    dispatch({
+      type: 'device/fetchMonitoringDevice',
+      ...res,
+      payload: {
+        ...payload,
+        companyId: detail.companyId,
+        targetId: detail.id,
+      },
+    });
+  };
+
+  /**
+   * 绑定时选择传感器
+   */
+  onModalSelectedChange = selectedKeys => {
+    this.setState({ selectedKeys });
+  };
+
+  /**
+   * 点击打开可绑定传感器弹窗
+   */
+  handleViewBind = detail => {
+    this.setState({ detail, selectedKeys: [] }, () => {
+      this.fetchMonitoringDevice();
+      this.setState({ bindModalVisible: true });
+    });
+  };
+
+  /**
+   * 绑定传感器
+   */
+  handleBind = () => {
+    const { dispatch } = this.props;
+    const { selectedKeys, detail } = this.state;
+    if (!selectedKeys || selectedKeys.length === 0) {
+      message.warning('请勾选监测设备！');
+      return;
+    }
+    dispatch({
+      type: 'device/bindMonitoringDevice',
+      payload: {
+        bindStatus: 1, // 1 绑定
+        targetId: detail.id,
+        equipmentIdList: selectedKeys,
+      },
+      success: () => {
+        message.success('绑定成功');
+        this.setState({ bindModalVisible: false, detail: {} });
+        this.handleSearch();
+      },
+      error: res => {
+        message.error(res ? res.msg : '绑定失败');
+      },
+    });
+  };
+
+  /**
+   * 打开已绑定传感器弹窗
+   */
+  handleViewBindedModal = detail => {
+    this.setState({ detail }, () => {
+      this.fetchBindedMonitoringDevice();
+      this.setState({ bindedModalVisible: true });
+    });
+  };
+
+  /**
+   * 解绑监测设备
+   */
+  handleunBind = id => {
+    const { dispatch } = this.props;
+    const { detail } = this.state;
+    dispatch({
+      type: 'device/bindMonitoringDevice',
+      payload: {
+        targetId: detail.id, // 监测对象id（库房id）
+        bindStatus: 0,// 0 解绑
+        equipmentIdList: [id],
+      },
+      success: () => {
+        message.success('解绑成功');
+        this.fetchBindedMonitoringDevice();
+        this.handleSearch();
+      },
+      error: res => {
+        message.error(res ? res.msg : '解绑失败');
+      },
+    });
+  };
 
   // 渲染表格
   renderTable = () => {
@@ -213,7 +331,7 @@ export default class StorageAreaManagement extends PureComponent {
         key: 'companyName',
         dataIndex: 'companyName',
         align: 'center',
-        width: 200,
+        width: 300,
       },
       {
         title: '基本信息',
@@ -225,18 +343,9 @@ export default class StorageAreaManagement extends PureComponent {
           const { code, areaName, tankCount } = row;
           return (
             <div className={styles.multi}>
-              <div>
-                统一编码：
-                {code}
-              </div>
-              <div>
-                储罐区名称：
-                {areaName}
-              </div>
-              <div>
-                储罐个数：
-                {tankCount}
-              </div>
+              <div>统一编码：{code} </div>
+              <div>储罐区名称： {areaName}</div>
+              <div>储罐个数： {tankCount}</div>
             </div>
           );
         },
@@ -265,25 +374,32 @@ export default class StorageAreaManagement extends PureComponent {
         width: 200,
       },
       {
-        title: '已绑传感器',
-        key: 'sensor',
-        dataIndex: 'sensor',
+        title: '已绑定监测设备',
+        dataIndex: 'monitorEquipmentCount',
+        key: 'monitorEquipmentCount',
         align: 'center',
         width: 120,
-        render: () => 0,
+        render: (val, row) => (
+          <span
+            onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
+            style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
+          >
+            {val}
+          </span>
+        ),
       },
       {
         title: '操作',
         key: '操作',
         align: 'center',
         fixed: 'right',
-        width: 200,
+        width: 270,
         render: (val, row) => (
           <Fragment>
-            {/* <AuthA code={bindSensorCode} onClick={() => this.handleViewBind(row)}>
-              绑定传感器
+            <AuthA code={bindCode} onClick={() => this.handleViewBind(row)}>
+              绑定监测设备
             </AuthA>
-            <Divider type="vertical" /> */}
+            <Divider type="vertical" />
             <AuthA code={detailCode} onClick={() => this.goDetail(row.id)}>
               查看
             </AuthA>
@@ -292,13 +408,13 @@ export default class StorageAreaManagement extends PureComponent {
               编辑
             </AuthA>
             <Divider type="vertical" />
-            <Popconfirm
-              // title="确认要删除该储罐区吗？如继续删除，已绑定传感器将会自动解绑！"
+            <AuthPopConfirm
+              code={deleteCode}
               title="确认要删除该储罐区吗？"
               onConfirm={() => this.handleDelete(row.id)}
             >
-              <AuthA code={deleteCode}>删除</AuthA>
-            </Popconfirm>
+              删除
+            </AuthPopConfirm>
           </Fragment>
         ),
       },
@@ -311,24 +427,22 @@ export default class StorageAreaManagement extends PureComponent {
             rowKey="id"
             // loading={loading}
             columns={unitType === 4 ? columns.slice(1, columns.length) : columns}
-            // columns={columns}
             dataSource={list}
             scroll={{ x: 'max-content' }}
-            pagination={false}
-            // pagination={{
-            //   current: pageNum,
-            //   pageSize,
-            //   total,
-            //   showQuickJumper: true,
-            //   showSizeChanger: true,
-            //   pageSizeOptions: ['5', '10', '15', '20'],
-            //   onChange: this.handleQuery,
-            //   onShowSizeChange: (num, size) => {
-            //     this.handleQuery(1, size);
-            //   },
-            // }}
+            pagination={{
+              current: pageNum,
+              pageSize,
+              total,
+              showQuickJumper: true,
+              showSizeChanger: true,
+              pageSizeOptions: ['5', '10', '15', '20'],
+              onChange: this.handleQuery,
+              onShowSizeChange: (num, size) => {
+                this.handleQuery(1, size);
+              },
+            }}
           />
-          <Pagination
+          {/* <Pagination
             style={{ marginTop: '20px', float: 'right' }}
             // showTotal={false}
             showQuickJumper
@@ -340,30 +454,60 @@ export default class StorageAreaManagement extends PureComponent {
             onChange={this.handleTableChange}
             onShowSizeChange={this.handleTableChange}
             // showTotal={total => `共 ${total} 条`}
-          />
+          /> */}
         </Card>
       </Spin>
     ) : (
-      <Spin spinning={loading}>
-        <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-          <span>暂无数据</span>
-        </Card>
-      </Spin>
-    );
+        <Spin spinning={loading}>
+          <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+            <span>暂无数据</span>
+          </Card>
+        </Spin>
+      );
   };
 
-  render() {
+  render () {
     const {
-      user: {
-        currentUser: { permissionCodes, unitType },
-      },
+      modalLoading,
+      user: { currentUser: { permissionCodes, unitType } },
       storageAreaManagement: {
         a: companyNum,
         pagination: { total },
       },
+      device: { monitoringDevice },
     } = this.props;
-    const hasAddAuthority = hasAuthority(addCode, permissionCodes);
-
+    const { bindModalVisible, bindedModalVisible, selectedKeys } = this.state;
+    // 解绑权限
+    const unbindAuthority = hasAuthority(unbindCode, permissionCodes)
+    const bindModalProps = {
+      type: 'bind',
+      visible: bindModalVisible,
+      fetch: this.fetchMonitoringDevice,
+      onCancel: () => {
+        this.setState({ bindModalVisible: false });
+      },
+      onOk: this.handleBind,
+      model: monitoringDevice,
+      loading: modalLoading,
+      rowSelection: {
+        selectedRowKeys: selectedKeys,
+        onChange: this.onModalSelectedChange,
+      },
+      unbindAuthority,
+    };
+    const bindedModalProps = {
+      type: 'unbind',
+      visible: bindedModalVisible,
+      fetch: this.fetchBindedMonitoringDevice,
+      onCancel: () => {
+        this.setState({ bindedModalVisible: false });
+      },
+      model: monitoringDevice,
+      loading: modalLoading,
+      handleUnbind: this.handleunBind,
+      footer: null,
+      unbindAuthority,
+    };
     return (
       <PageHeaderLayout
         title={title}
@@ -393,18 +537,22 @@ export default class StorageAreaManagement extends PureComponent {
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             action={
-              <Button
+              <AuthButton
+                code={addCode}
                 type="primary"
                 href={`#/base-info/storage-area-management/add`}
-                disabled={!hasAddAuthority}
               >
                 新增
-              </Button>
+              </AuthButton>
             }
           />
         </Card>
 
         {this.renderTable()}
+        {/* 绑定监测设备弹窗 */}
+        <MonitoringDeviceModal {...bindModalProps} />
+        {/* 已绑定监测设备弹窗 */}
+        <MonitoringDeviceModal {...bindedModalProps} />
       </PageHeaderLayout>
     );
   }

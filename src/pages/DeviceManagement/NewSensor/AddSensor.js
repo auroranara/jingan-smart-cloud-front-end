@@ -29,6 +29,8 @@ import moment from 'moment';
 import { phoneReg } from '@/utils/validate';
 // 片面图标注
 import FlatPic from '@/pages/DeviceManagement/Components/FlatPic';
+// 选择企业弹窗
+import CompanyModal from '@/pages/BaseInfo/Company/CompanyModal';
 import styles from './AddSensor.less';
 
 const FormItem = Form.Item;
@@ -83,6 +85,8 @@ export default class AddNewSensor extends Component {
       picModalVisible: false, // 定位弹窗可见
       imgIdCurrent: '',
       isImgSelect: true,
+      selectedCompany: {}, // 当前选择的企业
+      companyModalVisible: false, // 企业弹窗是否可见
     }
   }
 
@@ -90,7 +94,6 @@ export default class AddNewSensor extends Component {
     const {
       dispatch,
       match: { params: { id } },
-      location: { query: { deviceId } },
       form: { setFieldsValue },
     } = this.props
     this.fetchMonitoringTypeDict()
@@ -102,6 +105,7 @@ export default class AddNewSensor extends Component {
         payload: { id },
         callback: ({
           companyId,
+          companyName,
           pointFixInfoList,
           brand,
           brandName,
@@ -111,22 +115,11 @@ export default class AddNewSensor extends Component {
           buildingId,
           floorId,
           installPhotoList = [],
-          dataExecuteEquipmentId, // 绑定的设备id
         }) => {
           setFieldsValue({ companyId })
-          // 获取设备信息
-          dataExecuteEquipmentId ? dispatch({
-            type: 'device/fetchEquipmentDetail',
-            payload: { id: dataExecuteEquipmentId },
-            callback: () => {
-              setFieldsValue({ buildingId, floorId })
-            },
-          }) : dispatch({
-            type: 'device/save',
-            payload: { equipmentDetail: {} },
-          })
           this.setState({
-            pointFixInfoList,
+            selectedCompany: { id: companyId, name: companyName },
+            pointFixInfoList: pointFixInfoList || [],
             brand: { id: brand, name: brandName },
             model: { id: model, name: modelName },
             monitorType,
@@ -137,22 +130,10 @@ export default class AddNewSensor extends Component {
               name: item.fileName,
             })),
           })
-          model && this.fetchParameterList(model, id)
-          this.fetchMonitoringTypeTree()
+          model && this.fetchParameterList(model, id);
+          this.fetchMonitoringTypeTree();
           companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
-          buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } })
-        },
-      })
-    } else {
-      // 新增时根据设备id获取设备信息
-      deviceId && dispatch({
-        type: 'device/fetchEquipmentDetail',
-        payload: { id: deviceId },
-        callback: ({
-          companyId,
-        }) => {
-          setFieldsValue({ companyId })
-          companyId && this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+          buildingId && this.fetchFloors({ payload: { pageNum: 1, pageSize: 0, building_id: buildingId } });
         },
       })
     }
@@ -290,7 +271,6 @@ export default class AddNewSensor extends Component {
     const {
       dispatch,
       match: { params: { id } },
-      location: { query: { deviceId } },
       form: { validateFields },
     } = this.props
     const {
@@ -331,7 +311,7 @@ export default class AddNewSensor extends Component {
         // 如果新增
         dispatch({
           type: 'device/addSensor',
-          payload: { ...payload, dataExecuteEquipmentId: deviceId },
+          payload: { ...payload },
           success,
           error,
         })
@@ -518,6 +498,32 @@ export default class AddNewSensor extends Component {
   }
 
   /**
+   * 选择企业
+   */
+  handleSelectCompany = selectedCompany => {
+    const {
+      form: { setFieldsValue },
+    } = this.props;
+    const companyId = selectedCompany.id;
+    this.setState({ selectedCompany, companyModalVisible: false });
+    setFieldsValue({ companyId });
+    this.fetchBuildings({ payload: { pageNum: 1, pageSize: 0, company_id: companyId } });
+  }
+
+  /**
+   * 打开选择单位弹窗
+   */
+  handleViewCompanyModal = () => {
+    this.setState({ companyModalVisible: true });
+    this.fetchCompany({
+      payload: {
+        pageSize: 10,
+        pageNum: 1,
+      },
+    });
+  }
+
+  /**
      * 渲染表单
      */
   renderForm = () => {
@@ -530,7 +536,6 @@ export default class AddNewSensor extends Component {
         monitoringType, // 监测参数列表树
         sensorDetail: detail = {},
         flatGraphic,
-        equipmentDetail = {}, // 设备详情
       },
       personnelPosition: {
         map: {
@@ -554,6 +559,7 @@ export default class AddNewSensor extends Component {
       picModalVisible,
       isImgSelect,
       imgIdCurrent,
+      selectedCompany,
     } = this.state
     // 地址录入方式
     const { locationType, companyId } = getFieldsValue()
@@ -580,10 +586,28 @@ export default class AddNewSensor extends Component {
       <Card>
         <Form>
           <FormItem label="所属单位" {...formItemLayout}>
-            {getFieldDecorator('companyId')(
+            {getFieldDecorator('companyId', {
+              rules: [{ required: true, message: '请选择单位' }],
+            })(
               <Fragment>
-                {(id ? detail.companyName : equipmentDetail.companyName) || '暂无绑定单位'}
+                <Input
+                  {...itemStyles}
+                  disabled
+                  value={selectedCompany.name}
+                  placeholder="请选择单位"
+                />
+                <Button type="primary" onClick={this.handleViewCompanyModal}>
+                  选择单位
+                  </Button>
               </Fragment>
+            )}
+          </FormItem>
+          <FormItem label="传感器名称" {...formItemLayout}>
+            {getFieldDecorator('name', {
+              initialValue: id ? detail.name : undefined,
+              rules: [{ required: true, message: '请输入传感器名称' }],
+            })(
+              <Input placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="传感器编号" {...formItemLayout}>
@@ -651,7 +675,7 @@ export default class AddNewSensor extends Component {
             )}
           </FormItem>
           {/*  inheritGather 1-是 0 否 集成数据采集--是，则传感器中 入库日期开始不显示 */}
-          {companyId && +equipmentDetail.inheritGather === 0 && (
+          {companyId && (
             <Fragment>
               <FormItem label="入库时间" {...formItemLayout}>
                 {getFieldDecorator('storageDate', {
@@ -660,7 +684,7 @@ export default class AddNewSensor extends Component {
                   <DatePicker />
                 )}
               </FormItem>
-              <FormItem label="安装人" {...formItemLayout}>
+              {/* <FormItem label="安装人" {...formItemLayout}>
                 {getFieldDecorator('installer', {
                   initialValue: id ? detail.installer : undefined,
                 })(
@@ -698,16 +722,6 @@ export default class AddNewSensor extends Component {
                   </Button>
                 </Upload>
               </FormItem>
-              {+equipmentDetail.inheritGather === 0 && (
-                <FormItem label="监测点名称" {...formItemLayout}>
-                  {getFieldDecorator('name', {
-                    initialValue: id ? detail.name : undefined,
-                    rules: [{ required: true, message: '请输入监测点名称' }],
-                  })(
-                    <Input placeholder="请输入" {...itemStyles} />
-                  )}
-                </FormItem>
-              )}
               <FormItem label="区域位置录入方式" {...formItemLayout}>
                 {getFieldDecorator('locationType', {
                   initialValue: id ? detail.locationType : 0,
@@ -791,7 +805,7 @@ export default class AddNewSensor extends Component {
                   新增
               </Button>
                 <FlatPic {...FlatPicProps} />
-              </FormItem>
+              </FormItem> */}
             </Fragment>
           )}
         </Form>
@@ -805,13 +819,13 @@ export default class AddNewSensor extends Component {
 
   render () {
     const {
+      companyLoading,
       match: { params: { id = null } = {} },
-      location: { query: { deviceId } }, // 新增绑定传感器时传递的设备id
-      device: {
-        equipmentDetail = {}, // 设备详情
+      sensor: {
+        companyModal,
       },
     } = this.props
-    const { brandModelModalVisible } = this.state
+    const { brandModelModalVisible, companyModalVisible } = this.state
     const title = id ? '编辑传感器' : '新增传感器'
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
@@ -830,7 +844,19 @@ export default class AddNewSensor extends Component {
           visible={brandModelModalVisible}
           onSelectModel={this.onSelectModel}
           onCancel={() => { this.setState({ brandModelModalVisible: false }) }}
-          equipmentType={deviceId ? equipmentDetail.equipmentType : undefined}
+          equipmentType={undefined}
+        />
+        {/* 选择企业弹窗 */}
+        <CompanyModal
+          title="选择单位"
+          loading={companyLoading}
+          visible={companyModalVisible}
+          modal={companyModal}
+          fetch={this.fetchCompany}
+          onSelect={this.handleSelectCompany}
+          onClose={() => {
+            this.setState({ companyModalVisible: false });
+          }}
         />
       </PageHeaderLayout>
     )

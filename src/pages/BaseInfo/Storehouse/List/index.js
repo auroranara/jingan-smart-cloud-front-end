@@ -1,7 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import {
-  Popconfirm,
   Card,
   Input,
   Pagination,
@@ -12,15 +11,12 @@ import {
   Divider,
   message,
 } from 'antd';
-// import moment from 'moment';
-// import { routerRedux } from 'dva/router';
 import router from 'umi/router';
-
-import { hasAuthority, AuthA } from '@/utils/customAuth';
+import { hasAuthority, AuthA, AuthPopConfirm } from '@/utils/customAuth';
 import InlineForm from '../../../BaseInfo/Company/InlineForm';
 import PageHeaderLayout from '@/layouts/PageHeaderLayout.js';
 import codes from '@/utils/codes';
-import BindSensorModal from '@/pages/DeviceManagement/Components/BindSensorModal';
+import MonitoringDeviceModal from '@/pages/DeviceManagement/Components/MonitoringDeviceModal';
 
 import styles from './index.less';
 
@@ -67,20 +63,20 @@ const getRootChild = () => document.querySelector('#root>div');
   user,
   device,
   loading: loading.models.storehouse,
-  sensorLoading: loading.effects['device/fetchSensors'],
+  modalLoading: loading.effects['device/fetchMonitoringDevice'],
 }))
 export default class StorehouseList extends PureComponent {
   state = {
     formData: {},
-    bindSensorModalVisible: false, // 绑定传感器弹窗
-    bindedSensorModalVisible: false, // 已绑定传感器弹窗
+    bindModalVisible: false, // 绑定弹窗
+    bindedModalVisible: false, // 已绑定弹窗
     detail: {}, // 库房信息
-    selectedSensorKeys: [], // 选择的传感器key数组
+    selectedKeys: [], // 弹窗选择的设备key数组
   };
 
-  componentDidMount() {
+  componentDidMount () {
     this.fetchList(1);
-    this.fetchCompanyNum();
+    // this.fetchCompanyNum();
   }
 
   pageNum = 1;
@@ -117,28 +113,28 @@ export default class StorehouseList extends PureComponent {
     const fields = [
       {
         id: 'name',
-        render() {
+        render () {
           return <Input placeholder="请输入库房名称" />;
         },
         transform,
       },
       {
         id: 'code',
-        render() {
+        render () {
           return <Input placeholder="请输入库房编号" />;
         },
         transform,
       },
       {
         id: 'position',
-        render() {
+        render () {
           return <Input placeholder="请输入区域位置" />;
         },
         transform,
       },
       {
         id: 'dangerSource',
-        render() {
+        render () {
           const options = [{ value: '0', name: '否' }, { value: '1', name: '是' }];
           return (
             <Select
@@ -162,14 +158,14 @@ export default class StorehouseList extends PureComponent {
       },
       {
         id: 'aName',
-        render() {
+        render () {
           return <Input placeholder="请输入库区名称" />;
         },
         transform,
       },
       {
         id: 'companyName',
-        render() {
+        render () {
           return <Input placeholder="请输入单位名称" />;
         },
         transform,
@@ -233,7 +229,7 @@ export default class StorehouseList extends PureComponent {
       success: () => {
         message.success('删除成功！');
         this.fetchList(this.pageNum, this.pageSize, { ...formData });
-        this.fetchCompanyNum();
+        // this.fetchCompanyNum();
       },
       error: msg => {
         message.error(msg);
@@ -242,143 +238,143 @@ export default class StorehouseList extends PureComponent {
   };
 
   /**
-   * 绑定时选择传感器
+   * 绑定时选择监测设备
    */
-  onSensorChange = selectedSensorKeys => {
-    this.setState({ selectedSensorKeys });
+  onModalSelectedChange = selectedKeys => {
+    this.setState({ selectedKeys });
   };
 
   /**
-   * 获取可绑定传感器列表
+   * 获取可绑定监测设备列表
    */
-  querySensors = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
+  fetchMonitoringDevice = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
     const { dispatch } = this.props;
     const { detail } = this.state;
     dispatch({
-      type: 'device/fetchSensors',
+      type: 'device/fetchMonitoringDevice',
       ...res,
       payload: {
         ...payload,
         companyId: detail.companyId,
-        beMonitorTargetBindStatus: 0,
-        bindBeMonitorTargetId: detail.id,
+        bindTargetStatus: 0, // 绑定状态 0 未绑定
+        bindTargetId: detail.id,
       },
     });
   };
 
   /**
-   * 获取已绑定传感器列表
+   * 获取已绑定监测设备列表
    */
-  queryBindedSensors = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
+  fetchBindedMonitoringDevice = ({ payload = { pageNum: 1, pageSize: defaultPageSize }, ...res } = {}) => {
     const { dispatch } = this.props;
     const { detail } = this.state;
     dispatch({
-      type: 'device/fetchSensors',
+      type: 'device/fetchMonitoringDevice',
       ...res,
       payload: {
         ...payload,
         companyId: detail.companyId,
-        beMonitorTargetId: detail.id,
+        targetId: detail.id,
       },
     });
   };
 
   /**
-   * 点击打开可绑定传感器弹窗
+   * 点击打开可绑定监测设备弹窗
    */
   handleViewBind = detail => {
-    this.setState({ detail, selectedSensorKeys: [] }, () => {
-      this.querySensors();
-      this.setState({ bindSensorModalVisible: true });
+    this.setState({ detail, selectedKeys: [] }, () => {
+      this.fetchMonitoringDevice();
+      this.setState({ bindModalVisible: true });
     });
   };
 
   /**
-   * 绑定传感器
+   * 绑定监测设备
    */
-  handleBindSensor = () => {
+  handleBind = () => {
     const { dispatch } = this.props;
-    const { selectedSensorKeys, detail } = this.state;
-    if (!selectedSensorKeys || selectedSensorKeys.length === 0) {
-      message.warning('请勾选传感器！');
+    const { selectedKeys, detail } = this.state;
+    if (!selectedKeys || selectedKeys.length === 0) {
+      message.warning('请勾选监测设备！');
       return;
     }
     dispatch({
-      type: 'device/bindSensor',
+      type: 'device/bindMonitoringDevice',
       payload: {
-        bindBeMonitorTargetId: detail.id,
-        bindSensorIdList: selectedSensorKeys,
+        bindStatus: 1, // 1 绑定
+        targetId: detail.id,
+        equipmentIdList: selectedKeys,
       },
       success: () => {
-        message.success('绑定传感器成功');
-        this.setState({ bindSensorModalVisible: false, detail: {} });
+        message.success('绑定成功');
+        this.setState({ bindModalVisible: false, detail: {} });
         this.fetchList(1);
-        this.fetchCompanyNum();
+        // this.fetchCompanyNum();
       },
       error: res => {
-        message.error(res ? res.msg : '绑定传感器失败');
+        message.error(res ? res.msg : '绑定失败');
       },
     });
   };
 
   /**
-   * 打开已绑定传感器弹窗
+   * 打开已绑定监测设备弹窗
    */
-  handleViewBindedSensorModal = detail => {
+  handleViewBindedModal = detail => {
     this.setState({ detail }, () => {
-      this.queryBindedSensors();
-      this.setState({ bindedSensorModalVisible: true });
+      this.fetchBindedMonitoringDevice();
+      this.setState({ bindedModalVisible: true });
     });
   };
 
   /**
-   * 解绑传感器
+   * 解绑监测设备
    */
-  handleunBindSensor = unbindSensorId => {
+  handleunBind = id => {
     const { dispatch } = this.props;
     const { detail } = this.state;
     dispatch({
-      type: 'device/unbindSensor',
+      type: 'device/bindMonitoringDevice',
       payload: {
-        bindBeMonitorTargetId: detail.id, // 设备id
-        unbindSensorId, // 传感器id
+        targetId: detail.id, // 监测对象id（库房id）
+        bindStatus: 0,// 0 解绑
+        equipmentIdList: [id],
       },
       success: () => {
-        message.success('解绑传感器成功');
-        this.queryBindedSensors();
+        message.success('解绑成功');
+        this.fetchBindedMonitoringDevice();
         this.fetchList(1);
-        this.fetchCompanyNum();
+        // this.fetchCompanyNum();
       },
       error: res => {
-        message.error(res ? res.msg : '解绑传感器失败');
+        message.error(res ? res.msg : '解绑失败');
       },
     });
   };
 
-  render() {
+  render () {
     const {
-      sensorLoading,
-      user: {
-        currentUser: { unitType },
-      },
+      modalLoading,
+      user: { currentUser: { unitType, permissionCodes } },
       loading = false,
       storehouse: {
         list,
         pagination: { pageNum = 1, pageSize = 10, total = 0 } = {},
         countCompanyNum = 0,
-        sensorCount = 0,
       },
-      device: { sensor },
+      device: { monitoringDevice },
     } = this.props;
-    const { bindSensorModalVisible, bindedSensorModalVisible, selectedSensorKeys } = this.state;
-
+    const { bindModalVisible, bindedModalVisible, selectedKeys } = this.state;
+    // 解绑权限
+    const unbindAuthority = hasAuthority(unbindSensorCode, permissionCodes)
     const columns = [
       {
         title: '单位名称',
         dataIndex: 'companyName',
         key: 'companyName',
         align: 'center',
-        width: 180,
+        width: 300,
       },
       {
         title: '基本信息',
@@ -390,26 +386,11 @@ export default class StorehouseList extends PureComponent {
           const { code, number, name, area, dangerSource } = record;
           return (
             <div className={styles.multi}>
-              <div>
-                库房编号：
-                {code}
-              </div>
-              <div>
-                库房序号：
-                {number}
-              </div>
-              <div>
-                库房名称：
-                {name}
-              </div>
-              <div>
-                库房面积（㎡）：
-                {area}
-              </div>
-              <div>
-                重大危险源：
-                {dangerSource === '0' ? '否' : '是'}
-              </div>
+              <div>库房编号：{code}</div>
+              <div>库房序号：{number}</div>
+              <div>库房名称：{name}</div>
+              <div>库房面积（㎡）：{area}</div>
+              <div>重大危险源：{dangerSource === '0' ? '否' : '是'}</div>
             </div>
           );
         },
@@ -424,14 +405,8 @@ export default class StorehouseList extends PureComponent {
           const { anumber, aname } = record;
           return (
             <div className={styles.multi}>
-              <div>
-                库区编号：
-                {anumber}
-              </div>
-              <div>
-                库区名称：
-                {aname}
-              </div>
+              <div>库区编号：{anumber}</div>
+              <div> 库区名称：{aname}</div>
             </div>
           );
         },
@@ -451,9 +426,7 @@ export default class StorehouseList extends PureComponent {
                 </div>
               ))}
             </div>
-          ) : (
-            ''
-          ),
+          ) : (''),
       },
       {
         title: '区域位置',
@@ -463,14 +436,14 @@ export default class StorehouseList extends PureComponent {
         width: 120,
       },
       {
-        title: '已绑定传感器',
-        dataIndex: 'sensorCount',
-        key: 'sensorCount',
+        title: '已绑定监测设备',
+        dataIndex: 'monitorEquipmentCount',
+        key: 'monitorEquipmentCount',
         align: 'center',
-        width: 120,
+        width: 150,
         render: (val, row) => (
           <span
-            onClick={() => (val > 0 ? this.handleViewBindedSensorModal(row) : null)}
+            onClick={() => (val > 0 ? this.handleViewBindedModal(row) : null)}
             style={val > 0 ? { color: '#1890ff', cursor: 'pointer' } : null}
           >
             {val}
@@ -483,56 +456,57 @@ export default class StorehouseList extends PureComponent {
         key: 'operation',
         fixed: 'right',
         align: 'center',
-        width: 200,
+        width: 220,
         render: (data, record) => (
           <span>
-            {/* <AuthA code={bindSensorCode} onClick={() => this.handleViewBind(record)}>
-              绑定传感器
+            <AuthA code={bindSensorCode} onClick={() => this.handleViewBind(record)}>
+              绑定监测设备
             </AuthA>
-            <Divider type="vertical" /> */}
+            <Divider type="vertical" />
             <AuthA code={editCode} onClick={() => this.goEdit(record.id)}>
               编辑
             </AuthA>
             <Divider type="vertical" />
-            <Popconfirm
-              title="确认要删除该库房吗？如继续删除，已绑定传感器将会自动解绑！"
+            <AuthPopConfirm
+              code={deleteCode}
+              title="确认要删除该库房吗？"
               onConfirm={() => this.handleDelete(record.id)}
             >
-              <AuthA code={deleteCode}>删除</AuthA>
-            </Popconfirm>
+              删除
+            </AuthPopConfirm>
           </span>
         ),
       },
     ];
-    const bindSensorProps = {
-      tag: 'bind',
-      visible: bindSensorModalVisible,
-      fetch: this.querySensors,
+    const bindModalProps = {
+      type: 'bind',
+      visible: bindModalVisible,
+      fetch: this.fetchMonitoringDevice,
       onCancel: () => {
-        this.setState({ bindSensorModalVisible: false });
+        this.setState({ bindModalVisible: false });
       },
-      selectedSensorKeys,
-      onOk: this.handleBindSensor,
-      model: sensor,
-      loading: sensorLoading,
+      selectedKeys,
+      onOk: this.handleBind,
+      model: monitoringDevice,
+      loading: modalLoading,
       rowSelection: {
-        selectedRowKeys: selectedSensorKeys,
-        onChange: this.onSensorChange,
+        selectedRowKeys: selectedKeys,
+        onChange: this.onModalSelectedChange,
       },
-      unbindSensorCode,
+      unbindAuthority,
     };
-    const bindedSensorProps = {
-      tag: 'unbind',
-      visible: bindedSensorModalVisible,
-      fetch: this.queryBindedSensors,
+    const bindedModalProps = {
+      type: 'unbind',
+      visible: bindedModalVisible,
+      fetch: this.fetchBindedMonitoringDevice,
       onCancel: () => {
-        this.setState({ bindedSensorModalVisible: false });
+        this.setState({ bindedModalVisible: false });
       },
-      model: sensor,
-      loading: sensorLoading,
-      handleUnbind: this.handleunBindSensor,
+      model: monitoringDevice,
+      loading: modalLoading,
+      handleUnbind: this.handleunBind,
       footer: null,
-      unbindSensorCode,
+      unbindAuthority,
     };
     return (
       <PageHeaderLayout
@@ -545,10 +519,6 @@ export default class StorehouseList extends PureComponent {
             <span style={{ marginLeft: 15 }}>
               库房数量：
               {total}
-            </span>
-            <span style={{ marginLeft: 15 }}>
-              已绑传感器数：
-              {sensorCount}
             </span>
           </div>
         }
@@ -575,20 +545,20 @@ export default class StorehouseList extends PureComponent {
               total={total}
               onChange={this.handleTableChange}
               onShowSizeChange={this.handleTableChange}
-              // showTotal={total => `共 ${total} 条`}
+            // showTotal={total => `共 ${total} 条`}
             />
           </Card>
         ) : (
-          <Spin spinning={loading}>
-            <Card style={{ marginTop: '20px', textAlign: 'center' }}>
-              <span>暂无数据</span>
-            </Card>
-          </Spin>
-        )}
-        {/* 绑定已有传感器弹窗 */}
-        <BindSensorModal {...bindSensorProps} />
-        {/* 已绑定传感器弹窗 */}
-        <BindSensorModal {...bindedSensorProps} />
+            <Spin spinning={loading}>
+              <Card style={{ marginTop: '20px', textAlign: 'center' }}>
+                <span>暂无数据</span>
+              </Card>
+            </Spin>
+          )}
+        {/* 绑定监测设备弹窗 */}
+        <MonitoringDeviceModal {...bindModalProps} />
+        {/* 已绑定监测设备弹窗 */}
+        <MonitoringDeviceModal {...bindedModalProps} />
       </PageHeaderLayout>
     );
   }
