@@ -842,7 +842,7 @@ export default class SpecialEquipment extends PureComponent {
     const title = id ? '编辑' : '新增';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '一企一档', name: '一企一档' },
+      { title: '设备设施管理', name: '设备设施管理' },
       { title: '特种设备管理', name: '特种设备管理', href: listUrl },
       { title, name: title },
     ];

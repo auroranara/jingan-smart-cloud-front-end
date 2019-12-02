@@ -37,7 +37,7 @@ export default {
     add: '新增试卷',
     edit: '编辑规则',
   },
-  specialoPerationPermit: {
+  specialOperationPermit: {
     menu: '作业安全管理',
     list: '特种作业操作证人员',
     add: '新增操作证人员',

@@ -26,7 +26,7 @@ const FormItem = Form.Item;
 // const { Panel } = Collapse;
 const {
   baseInfo: {
-    specialoPerationPermit: {
+    specialOperationPermit: {
       add: addCode,
       edit: editCode,
       delete: deleteCode,
@@ -40,7 +40,7 @@ const {
 
 const {
   home: homeTitle,
-  specialoPerationPermit: { menu: menuTitle },
+  specialOperationPermit: { menu: menuTitle },
 } = titles;
 const title = "特种作业操作证人员"
 const breadcrumbList = [
@@ -73,7 +73,7 @@ const defaultPageSize = 10;
   baseInfo,
   tableLoading: loading.effects['baseInfo/fetchSpecialWorkPerson'],
 }))
-export default class SpecialoPerationPermitList extends PureComponent {
+export default class specialOperationPermitList extends PureComponent {
 
   state = {
     operationCategory: [], // 作业类别选项
@@ -122,7 +122,7 @@ export default class SpecialoPerationPermitList extends PureComponent {
 
   // 点击新增
   handleToAdd = () => {
-    router.push('/base-info/special-operation-permit/add')
+    router.push('/operation-safety/special-operation-permit/add')
   }
 
   // 格式化作业列别选项
@@ -235,7 +235,7 @@ export default class SpecialoPerationPermitList extends PureComponent {
     const {
       tableLoading,
       baseInfo: {
-        specialoPerationPermit: {
+        specialOperationPermit: {
           list = [],
           pagination: { total = 0, pageNum = 1, pageSize = 10 },
         },
@@ -325,7 +325,7 @@ export default class SpecialoPerationPermitList extends PureComponent {
         fixed: 'right',
         render: (val, row) => (
           <Fragment>
-            <AuthA code={editCode} onClick={() => { router.push(`/base-info/special-operation-permit/edit/${row.id}`) }}>编辑</AuthA>
+            <AuthA code={editCode} onClick={() => { router.push(`/operation-safety/special-operation-permit/edit/${row.id}`) }}>编辑</AuthA>
             <Divider type="vertical" />
             <AuthPopConfirm
               code={deleteCode}
@@ -367,7 +367,7 @@ export default class SpecialoPerationPermitList extends PureComponent {
   render () {
     const {
       baseInfo: {
-        specialoPerationPermit: {
+        specialOperationPermit: {
           a = 0,
           pagination: { total = 0 },
         },

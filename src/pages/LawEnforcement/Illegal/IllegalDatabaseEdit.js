@@ -129,7 +129,7 @@ export default class IllegalDatabaseEdit extends PureComponent {
   // 返回到列表页面
   goBack = () => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/law-enforcement/illegal/list`));
+    dispatch(routerRedux.push(`/safety-production-regulation/illegal/list`));
   };
 
   // 挂载后
@@ -909,13 +909,13 @@ export default class IllegalDatabaseEdit extends PureComponent {
         href: '/',
       },
       {
-        title: '执法检查',
-        name: '执法检查',
+        title: '安全生产制度法规',
+        name: '安全生产制度法规',
       },
       {
         title: '违法行为库',
         name: '违法行为库',
-        href: '/law-enforcement/illegal/list',
+        href: '/safety-production-regulation/illegal/list',
       },
       {
         title,

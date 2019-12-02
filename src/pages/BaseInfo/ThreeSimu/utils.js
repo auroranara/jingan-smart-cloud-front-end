@@ -24,7 +24,7 @@ export const formatTime = (time, formatStr = DATE_FORMAT) => time ? moment(time)
 
 export const BREADCRUMBLIST = [ // modify
   { title: '首页', name: '首页', href: '/' },
-  { title: '一企一档', name: '一企一档' },
+  { title: '设备设施管理', name: '设备设施管理' },
   { title: '三同时审批记录', name: '三同时审批记录', href: LIST_URL },
 ];
 

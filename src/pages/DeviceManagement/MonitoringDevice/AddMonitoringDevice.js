@@ -640,7 +640,7 @@ export default class AddMonitoringDevice extends Component {
     const title = id ? '编辑监测设备' : '新增监测设备';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '设备管理', name: '设备管理' },
+      { title: '物联设备管理', name: '物联设备管理' },
       { title: '监测设备管理', name: '监测设备管理', href: '/device-management/monitoring-device/list' },
       { title, name: title },
     ]

@@ -16,10 +16,10 @@ export default {
     },
   },
   baseInfo: {
-    specialoPerationPermit: {
+    specialOperationPermit: {
       list: '/operation-safety/special-operation-permit/list',
-      add: '/operation-safety/specialo-peration-permit/add',
-      edit: '/operation-safety/specialo-peration-permit/edit/',
+      add: '/operation-safety/special-operation-permit/add',
+      edit: '/operation-safety/special-operation-permit/edit/',
     },
     specialEquipmentOperators: {
       list: '/operation-safety/special-equipment-operators/list',
