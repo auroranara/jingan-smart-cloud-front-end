@@ -145,7 +145,7 @@ export const filterBigPlatform = (array, model) => {
 export function filterMenus(MenuData, codes = [], codeMap, sysType) {
   const menuData = [];
   for (let m of MenuData) {
-    const { path, children, systemType } = m;
+    const { path, children, systemType, developing } = m;
     // console.log('m', m, 'code', codeMap[path], menus.includes(codeMap[path]));
     const menu = { ...m };
     // if (path !== '/' && !codes.includes(codeMap[path])) continue;
@@ -153,7 +153,7 @@ export function filterMenus(MenuData, codes = [], codeMap, sysType) {
     // menuData.push(menu);
 
     // if (path === '/' || path !== '/' && codes.includes(codeMap[path]) && (sysType === -1 || systemType === undefined || systemType !== undefined && systemType === sysType)) {
-    if (path === '/' || path !== '/' && codes.includes(codeMap[path]) && (systemType === undefined || systemType !== undefined && systemType === sysType)) {
+    if (path === '/' || path !== '/' && !developing && codes.includes(codeMap[path]) && (systemType === undefined || systemType !== undefined && systemType === sysType)) {
       if (children) menu.children = filterMenus(children, codes, codeMap, sysType);
       menuData.push(menu);
     }

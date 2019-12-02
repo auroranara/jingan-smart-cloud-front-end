@@ -34,7 +34,7 @@ const fieldLabels = {
   videoURL: '视频URL',
   picAddress: '图片地址',
   inspectSentries: '是否用于查岗',
-  status: '视频监控状态',
+  status: '监控摄像头状态',
   fourPictureX: '四色图坐标 -X：',
   fourPictureY: '四色图坐标 -Y：',
   firePictureX: '消防平面图坐标 -X',
@@ -1115,12 +1115,12 @@ export default class VideoMonitorEdit extends PureComponent {
         href: '/',
       },
       {
-        title: '设备管理',
-        name: '设备管理',
+        title: '物联设备管理',
+        name: '物联设备管理',
       },
       {
-        title: '视频监控',
-        name: '视频监控',
+        title: '监控摄像头',
+        name: '监控摄像头',
         href: '/device-management/video-monitor/list',
       },
       {

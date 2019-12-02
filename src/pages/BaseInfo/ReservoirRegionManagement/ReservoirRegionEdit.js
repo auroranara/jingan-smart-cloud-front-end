@@ -74,7 +74,7 @@ export default class ReservoirRegionEdit extends PureComponent {
 
   goBack = () => {
     const { dispatch } = this.props;
-    dispatch(routerRedux.push(`/base-info/reservoir-region-management/list`));
+    dispatch(routerRedux.push(`/major-hazard-info/reservoir-region-management/list`));
   };
 
   handleClickValidate = () => {
@@ -659,13 +659,13 @@ export default class ReservoirRegionEdit extends PureComponent {
         href: '/',
       },
       {
-        title: '一企一档',
-        name: '一企一档',
+        title: '重大危险源基本信息',
+        name: '重大危险源基本信息',
       },
       {
         title: '库区管理',
         name: '库区管理',
-        href: '/base-info/reservoir-region-management/list',
+        href: '/major-hazard-info/reservoir-region-management/list',
       },
       {
         title,

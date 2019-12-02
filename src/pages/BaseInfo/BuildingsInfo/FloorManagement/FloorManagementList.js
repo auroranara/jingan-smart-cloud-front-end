@@ -81,7 +81,7 @@ export default class FloorManagementList extends PureComponent {
     } = this.props;
     dispatch(
       routerRedux.push(
-        `/base-info/buildings-info/floor/detail/${id}?buildingId=${buildingId}&&companyId=${companyId}&&name=${name}`
+        `/base-info-management/buildings-info/floor/detail/${id}?buildingId=${buildingId}&&companyId=${companyId}&&name=${name}`
       )
     );
   };
@@ -99,7 +99,7 @@ export default class FloorManagementList extends PureComponent {
     } = this.props;
     dispatch(
       routerRedux.push(
-        `/base-info/buildings-info/floor/edit/${id}?buildingId=${buildingId}&&name=${name}&&companyId=${companyId}`
+        `/base-info-management/buildings-info/floor/edit/${id}?buildingId=${buildingId}&&name=${name}&&companyId=${companyId}`
       )
     );
   };
@@ -306,7 +306,7 @@ export default class FloorManagementList extends PureComponent {
               <AuthButton
                 type="primary"
                 code={codesMap.company.buildingsInfo.floorAdd}
-                href={`#/base-info/buildings-info/floor/add?id=${id}&&name=${name}&&companyId=${companyId}`}
+                href={`#/base-info-management/buildings-info/floor/add?id=${id}&&name=${name}&&companyId=${companyId}`}
               >
                 新增
               </AuthButton>
@@ -466,7 +466,7 @@ export default class FloorManagementList extends PureComponent {
       {
         title: '建筑物信息列表',
         name: '建筑物信息列表',
-        href: `/base-info/buildings-info/detail/${companyId}?name=${name}`,
+        href: `/base-info-management/buildings-info/detail/${companyId}?name=${name}`,
       },
       {
         title: '楼层管理列表',

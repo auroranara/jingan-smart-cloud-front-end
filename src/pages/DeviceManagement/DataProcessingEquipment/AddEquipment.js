@@ -64,7 +64,7 @@ export default class AddEquipment extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: { params: { id, type } },
@@ -447,7 +447,7 @@ export default class AddEquipment extends Component {
       gatewayEquipment,
     } = this.state
 
-    const { connectGateway, networkingType, locationType, inheritGather } = getFieldsValue()
+    const { connectGateway, networkingType, locationType } = getFieldsValue()
     const FlatPicProps = {
       visible: picModalVisible,
       onCancel: () => { this.setState({ picModalVisible: false }) },
@@ -491,6 +491,14 @@ export default class AddEquipment extends Component {
               <Select className={styles.item} placeholder="请选择型号" {...itemStyles}>
                 {modelList.map((data) => <Option key={data.id} data={data}>{data.name}</Option>)}
               </Select>
+            )}
+          </FormItem>
+          <FormItem label="设备名称" {...formItemLayout}>
+            {getFieldDecorator('name', {
+              initialValue: id ? detail.name : undefined,
+              rules: [{ required: true, message: '请输入设备名称' }],
+            })(
+              <Input placeholder="请输入" {...itemStyles} />
             )}
           </FormItem>
           <FormItem label="设备编号" {...formItemLayout}>
@@ -545,16 +553,6 @@ export default class AddEquipment extends Component {
               </Radio.Group>
             )}
           </FormItem>
-          {inheritGather === 1 && (
-            <FormItem label="监测点名称" {...formItemLayout}>
-              {getFieldDecorator('name', {
-                initialValue: id ? detail.name : undefined,
-                rules: [{ required: true, message: '请输入监测点名称' }],
-              })(
-                <Input placeholder="请输入" {...itemStyles} />
-              )}
-            </FormItem>
-          )}
           <FormItem label="是否接入网关设备" {...formItemLayout}>
             {getFieldDecorator('connectGateway', {
               initialValue: id ? detail.connectGateway : 1,
@@ -770,7 +768,7 @@ export default class AddEquipment extends Component {
     )
   }
 
-  render() {
+  render () {
     const {
       gatewayLoading,
       match: { params: { id, type } },
@@ -780,8 +778,8 @@ export default class AddEquipment extends Component {
     const title = `${id ? '编辑' : '新增'}${dataProcessingType[type]}`
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '设备管理', name: '设备管理' },
-      { title: '单位数据处理设备', name: '单位数据处理设备', href: '/device-management/data-processing/list' },
+      { title: '物联设备管理', name: '物联设备管理' },
+      { title: '数据处理设备', name: '数据处理设备', href: '/device-management/data-processing/list' },
       { title: '设备列表', name: '设备列表', href: `/device-management/data-processing/list/${type}?companyId=${companyId}${gatewayId ? '' : `&companyName=${companyName}`}` },
       { title, name: title },
     ]

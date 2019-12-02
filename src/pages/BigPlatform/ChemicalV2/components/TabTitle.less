@@ -1,0 +1,45 @@
+@cyan: #0FF;
+@grey: #A4ACBC;
+
+.container {
+  display: flex;
+  height: 30px;
+}
+
+.label {
+  font-size: 14px;
+  color: @grey;
+  border: 1px solid @grey;
+  border-left: none;
+  padding: 3px 12px;
+  cursor: pointer;
+}
+
+.prev:extend(.label) {
+  border-right: none;
+}
+
+.first:extend(.label) {
+  border-left: 1px solid @grey;
+  border-radius: 5px 0 0 5px;
+}
+
+.firstSelected:extend(.first) {
+  color: @cyan;
+  border-color: @cyan;
+}
+
+.last:extend(.label) {
+  border-radius: 0 5px 5px 0;
+}
+
+.lastSelected:extend(.last) {
+  color: @cyan;
+  border-color: @cyan;
+}
+
+.selected:extend(.label) {
+  color: @cyan;
+  border-left: 1px solid;
+  border-color: @cyan;
+}

@@ -39,17 +39,17 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '设备管理',
-    name: '设备管理',
+    title: '物联设备管理',
+    name: '物联设备管理',
   },
   {
-    title: '视频监控',
-    name: '视频监控',
+    title: '监控摄像头',
+    name: '监控摄像头',
     href: '/device-management/video-monitor/list',
   },
   {
-    title: '视频监控列表',
-    name: '视频监控列表',
+    title: '监控摄像头列表',
+    name: '监控摄像头列表',
   },
 ];
 
@@ -218,7 +218,7 @@ export default class VideoEquipmentList extends PureComponent {
             })(
               <Select
                 allowClear
-                placeholder="请选择视频监控状态"
+                placeholder="请选择监控摄像头状态"
                 getPopupContainer={() => document.querySelector('#root>div')}
                 style={{ width: '180px' }}
               >

@@ -17,19 +17,19 @@ export default {
   },
   baseInfo: {
     specialoPerationPermit: {
-      list: '/base-info/special-operation-permit/list',
-      add: '/base-info/specialo-peration-permit/add',
-      edit: '/base-info/specialo-peration-permit/edit/',
+      list: '/operation-safety/special-operation-permit/list',
+      add: '/operation-safety/specialo-peration-permit/add',
+      edit: '/operation-safety/specialo-peration-permit/edit/',
     },
     specialEquipmentOperators: {
-      list: '/base-info/special-equipment-operators/list',
-      add: '/base-info/special-equipment-operators/add',
-      edit: '/base-info/special-equipment-operators/edit/',
+      list: '/operation-safety/special-equipment-operators/list',
+      add: '/operation-safety/special-equipment-operators/add',
+      edit: '/operation-safety/special-equipment-operators/edit/',
     },
     dangerChemicalsPermit: {
-      list: '/base-info/danger-chemicals-permit/list',
-      add: '/base-info/danger-chemicals-permit/add',
-      edit: '/base-info/danger-chemicals-permit/edit/',
+      list: '/unit-license/danger-chemicals-permit/list',
+      add: '/unit-license/danger-chemicals-permit/add',
+      edit: '/unit-license/danger-chemicals-permit/edit/',
     },
   },
   familyFile: {
@@ -55,11 +55,11 @@ export default {
     serviceList: '/fire-control/maintenance-company/serviceList/',
   },
   hiddenDangerReport: {
-    list: '/data-analysis/hidden-danger-report/list',
-    detail: '/data-analysis/hidden-danger-report/detail/',
+    list: '/control-measures-follow-up/hidden-danger-report/list',
+    detail: '/control-measures-follow-up/hidden-danger-report/detail/',
   },
   hiddenDangerCountReport: {
-    list: '/data-analysis/hidden-danger-count-report/list',
+    list: '/control-measures-follow-up/hidden-danger-count-report/list',
   },
   examinationPaper: {
     list: '/training/examination-paper/list',

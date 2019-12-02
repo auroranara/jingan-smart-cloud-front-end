@@ -51,37 +51,31 @@
     }
     #content {
       margin: 0 auto;
-      padding: 16px 6px;
+      padding: 6px;
       max-width: 1592px;
       height: 100%;
     }
-    #list {
+    table {
       display: table;
       table-layout: fixed;
       border-collapse: separate;
-      border-spacing: 20px 10px;
+      border-spacing: 20px;
       width: 100%;
       height: 100%;
     }
-    .three-columns-tr {
-      display: table-row;
+    tr {
+      height: 33.333333%;
     }
     .item {
-      display: table-cell;
+      display: block;
       padding: 1.5em 2em;
+      height: 100%;
       font-size: 16px;
       color: inherit;
       text-decoration: none !important;
-      vertical-align: top;
     }
     .item:hover {
       box-shadow: 0px 0px 0.5em #fff;
-    }
-    .safeAndfire, .production, .fire {
-      height: 66.666666%;
-    }
-    .electricity, .gas, .smoke {
-      height: 33.333333%;
     }
 
     .item-title {
@@ -117,26 +111,32 @@
       background: url("http://data.jingan-china.cn/v2/solution-business/smoke.png") no-repeat center / cover;
     }
 
+    .chemical {
+      background: url("http://data.jingan-china.cn/v2/solution-business/chemical.png") no-repeat center / cover;
+    }
+
+    .school {
+      background: url("http://data.jingan-china.cn/v2/solution-business/school.png") no-repeat center / cover;
+    }
+
     @media screen and (max-width: 575px) {
       #title {
         letter-spacing: 0.125em;
       }
-      .three-columns-tr {
+      /* .three-columns-tr {
         display: none;
-      }
-      #list {
+      } */
+      tbody, tr, td {
         display: block;
+      }
+      tr {
         height: auto;
       }
-      .item {
-        display: block;
-        margin: 0 20px 20px;
+      td {
+        margin-bottom: 20px;
       }
-      .item:first-child {
-        margin-top: 10px;
-      }
-      .item:last-child {
-        margin-bottom: 10px;
+      tr:last-child td:last-child {
+        margin-bottom: 0;
       }
     }
   </style>
@@ -148,33 +148,74 @@
     </div>
     <div id="main">
       <div id="content">
-        <div id="list">
+        <!-- <div id="list"> -->
+          <table>
+            <tbody>
+              <tr>
+                <td rowspan="2">
+
           <a href="http://www.jinganyun.net/xshow/#/user/login?type=integration" target="_blank" rel="noopener noreferrer" class="item safeAndfire" id="integration">
             <div class="item-title">安消一体化</div>
             <div class="item-content">依托物联感知技术，结合物联网硬件产品，提供安消一体化平台+IoT终端+APP+安全服务。</div>
           </a>
-          <a href="http://www.jinganyun.net/xshow/#/user/login?type=production" target="_blank" rel="noopener noreferrer" class="item production" id="production">
-            <div class="item-title">智慧安全生产</div>
-            <div class="item-content">电子化安全巡查，闭环化隐患治理，24小时动态监测，大数据分析预警，实现安全管理过程化、信息化、全面化。</div>
+                </td>
+                <td>
+
+                    <a href="http://www.jinganyun.net/xshow/#/user/login?type=production" target="_blank" rel="noopener noreferrer" class="item production" id="production">
+                      <div class="item-title">智慧安全生产</div>
+                      <div class="item-content">电子化安全巡查，闭环化隐患治理，24小时动态监测，大数据分析预警，实现安全管理过程化、信息化、全面化。</div>
+                    </a>
+                </td>
+                <td>
+
+                    <a href="http://www.jinganyun.net/xshow/#/user/login?type=fire" target="_blank" rel="noopener noreferrer" class="item fire" id="fire">
+                      <div class="item-title">智慧消防</div>
+                      <div class="item-content">基于物联传感技术，实时监测消防设施设备状态，预警提醒；整合电子化巡查工具，全面提升消防工作效率。</div>
+                    </a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+
+                    <a href="http://www.jinganyun.net/xshow/#/user/login?type=chemical" target="_blank" rel="noopener noreferrer" class="item chemical" id="chemical">
+                      <div class="item-title">化工企业安全生产云平台</div>
+                      <div class="item-content">根据江苏省化工规范要求，建设集重大危险源监测、企业安全风险分区、人员在岗在位和生产全流程管理系统于一体的综合信息化管理平台。</div>
+                    </a>
+                </td>
+                <td>
+
+          <a href="http://www.jinganyun.net/xshow/#/user/login?type=school" target="_blank" rel="noopener noreferrer" class="item school" id="school">
+            <div class="item-title">校园智慧安全云平台</div>
+            <div class="item-content">通过人防、物防、技防等手段，为校园提供安消一体化解决方案，打造安全智慧化校园环境。</div>
           </a>
-          <a href="http://www.jinganyun.net/xshow/#/user/login?type=fire" target="_blank" rel="noopener noreferrer" class="item fire" id="fire">
-            <div class="item-title">智慧消防</div>
-            <div class="item-content">基于物联传感技术，实时监测消防设施设备状态，预警提醒；整合电子化巡查工具，全面提升消防工作效率。</div>
-          </a>
-          <div class="three-columns-tr"></div>
-          <a href="http://www.jinganyun.net/xshow/#/user/login?type=gas" target="_blank" rel="noopener noreferrer" class="item gas" id="gas">
-            <div class="item-title">智慧燃气</div>
-            <div class="item-content">对生产设施、环境参数等信息实时采集与监测预警，防患于未然。</div>
-          </a>
-          <a href="http://www.jinganyun.net/xshow/#/user/login?type=electricity" target="_blank" rel="noopener noreferrer" class="item electricity" id="electricity">
-            <div class="item-title">智慧用电</div>
-            <div class="item-content">通过独立IoT设备或物联网网关设备，实时采集设备的状态参数，并进行可视化呈现。</div>
-          </a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+
+                    <a href="http://www.jinganyun.net/xshow/#/user/login?type=gas" target="_blank" rel="noopener noreferrer" class="item gas" id="gas">
+                      <div class="item-title">智慧燃气</div>
+                      <div class="item-content">对生产设施、环境参数等信息实时采集与监测预警，防患于未然。</div>
+                    </a>
+                </td>
+                <td>
+
+                    <a href="http://www.jinganyun.net/xshow/#/user/login?type=electricity" target="_blank" rel="noopener noreferrer" class="item electricity" id="electricity">
+                      <div class="item-title">智慧用电</div>
+                      <div class="item-content">通过独立IoT设备或物联网网关设备，实时采集设备的状态参数，并进行可视化呈现。</div>
+                    </a>
+                </td>
+                <td>
+
           <a href="http://www.jinganyun.net/xshow/#/user/login?type=smoke" target="_blank" rel="noopener noreferrer" class="item smoke" id="smoke">
             <div class="item-title">智能烟感</div>
             <div class="item-content">基于NB-IoT的智慧烟感可实时上报火灾状况，及时通知火警状态；可接入大数据平台。</div>
           </a>
-        </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        <!-- </div> -->
       </div>
     </div>
   </div>

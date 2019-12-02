@@ -8,7 +8,7 @@ import moment from 'moment';
 
 import styles from './index.less';
 
-const listUrl = '/base-info/storehouse/list';
+const listUrl = '/major-hazard-info/storehouse/list';
 const HEADER = '库房管理';
 const TITLE = HEADER + '详情';
 const BREADCRUMB = [
@@ -18,8 +18,8 @@ const BREADCRUMB = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '重大危险源基本信息',
+    name: '重大危险源基本信息',
   },
   {
     title: HEADER,

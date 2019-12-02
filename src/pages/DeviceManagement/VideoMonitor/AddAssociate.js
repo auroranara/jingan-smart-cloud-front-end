@@ -12,16 +12,17 @@ const formItemStyle = { style: { margin: '0', padding: '4px 0' } };
 const defaultPageSize = 10;
 
 @Form.create()
-@connect(({ videoMonitor, sensor }) => ({
+@connect(({ videoMonitor, sensor, device }) => ({
   videoMonitor,
   sensor,
+  device,
 }))
 export default class AddAssociate extends Component {
   state = {
     selectedRowKeys: [], // 表格中选中的信标
   };
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       dispatch,
       match: {
@@ -42,16 +43,10 @@ export default class AddAssociate extends Component {
         payload: { id, companyId, pageNum: 1, pageSize: defaultPageSize },
       });
     } else if (type === 'monitor') {
-      // 获取品牌列表
-      // dispatch({ type: 'videoMonitor/getOptionalList' });
-      // 获取产品型号列表
-      // dispatch({ type: 'videoMonitor/getModelDescList' });
-      // 获取监测类型列表
-      dispatch({ type: 'videoMonitor/getClassTypeList' });
-      // 如果是动态监测
-      this.fetchUnBindedMonitorDevice({
-        payload: { videoId: id, companyId, pageNum: 1, pageSize: defaultPageSize },
-      });
+      this.fetchMonitoringDeviceTypes();
+      this.fetchMonitoringDevice({
+        payload: { pageNum: 1, pageSize: defaultPageSize, bindVideoStatus: 0, bindVideoId: id, companyId },
+      })
     } else if (type === 'fire') {
       // 如果是火灾报警
       // 获取筛选栏数据
@@ -80,15 +75,6 @@ export default class AddAssociate extends Component {
     });
   };
 
-  // 获取未绑定设备（动态监测）
-  fetchUnBindedMonitorDevice = actions => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'videoMonitor/fetchUnBindedMonitorDevice',
-      ...actions,
-    });
-  };
-
   // 获取当前摄像头未绑定的报警点位(火灾报警系统)
   fetchUnBindedFireDevice = actions => {
     const { dispatch } = this.props;
@@ -98,6 +84,21 @@ export default class AddAssociate extends Component {
     });
   };
 
+  // 获取设备类型--监测设备类型列表
+  fetchMonitoringDeviceTypes = () => {
+    const { dispatch } = this.props
+    dispatch({ type: 'device/fetchMonitoringDeviceTypes' })
+  }
+
+  // 获取监测设备列表
+  fetchMonitoringDevice = actions => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'device/fetchMonitoringDevice',
+      ...actions,
+    })
+  }
+
   // 点击保存
   handleSave = () => {
     const {
@@ -106,7 +107,7 @@ export default class AddAssociate extends Component {
         params: { id, type },
       },
       location: {
-        query: { companyId },
+        query: { companyId, name },
       },
     } = this.props;
     const { selectedRowKeys } = this.state;
@@ -132,7 +133,7 @@ export default class AddAssociate extends Component {
       });
     } else if (type === 'monitor') {
       dispatch({
-        type: 'videoMonitor/bindedMonitorDevice',
+        type: 'device/bindVideoAndMonitorEquipment',
         payload: { videoId: id, deviceIds: selectedRowKeys.join(',') },
         success,
         error,
@@ -162,9 +163,9 @@ export default class AddAssociate extends Component {
     if (type === 'position') {
       this.fetchVideoBeaconsAvailable({ payload: { id, companyId, pageNum, pageSize, ...values } });
     } else if (type === 'monitor') {
-      this.fetchUnBindedMonitorDevice({
-        payload: { videoId: id, companyId, pageNum, pageSize, ...values },
-      });
+      this.fetchMonitoringDevice({
+        payload: { pageNum: 1, pageSize: defaultPageSize, bindVideoStatus: 0, bindVideoId: id, companyId },
+      })
     } else if (type === 'fire') {
       this.fetchUnBindedFireDevice({
         payload: { videoId: id, companyId, pageNum, pageSize, ...values },
@@ -175,12 +176,6 @@ export default class AddAssociate extends Component {
   handleReset = () => {
     const {
       form: { resetFields },
-      // match: {
-      //   params: { id, type },
-      // },
-      // location: {
-      //   query: { companyId },
-      // },
     } = this.props;
     resetFields();
     this.handleQuery();
@@ -221,7 +216,7 @@ export default class AddAssociate extends Component {
     this.fetchSensorTypeDict({ payload: { monitoringTypeId: id } });
   };
 
-  render() {
+  render () {
     const {
       match: {
         params: { id, type },
@@ -233,13 +228,9 @@ export default class AddAssociate extends Component {
       videoMonitor: {
         associateDevice: {
           availableList = [],
-          availablePagination: { pageNum = 1, pageSize = 10, total = 0 },
+          availablePagination,
         },
         systemList = [],
-        // 品牌列表
-        // optionalList = [],
-        // 产品型号列表
-        // modelDescList = [],
         // 监测类型列表
         classTypeList = [],
         // 消控主机
@@ -249,27 +240,11 @@ export default class AddAssociate extends Component {
         // 设施系统类型
         facilitySystemList = [],
       },
-      sensor: {
-        // 传感器型号字典
-        typeDict = [],
+      device: {
+        monitoringDeviceTypes,
+        monitoringDevice,
       },
     } = this.props;
-
-    const modelList = typeDict.map(item => item.modelDesc).reduce((pre, cur) => {
-      if (!pre.includes(cur)) {
-        return pre.concat(cur);
-      } else {
-        return pre;
-      }
-    }, []);
-
-    const optionalList = typeDict.map(item => item.optionalDesc).reduce((pre, cur) => {
-      if (!pre.includes(cur)) {
-        return pre.concat(cur);
-      } else {
-        return pre;
-      }
-    }, []);
 
     const breadcrumbList = [
       {
@@ -278,17 +253,17 @@ export default class AddAssociate extends Component {
         href: '/',
       },
       {
-        title: '设备管理',
-        name: '设备管理',
+        title: '物联设备管理',
+        name: '物联设备管理',
       },
       {
-        title: '视频监控',
-        name: '视频监控',
+        title: '监控摄像头',
+        name: '监控摄像头',
         href: '/device-management/video-monitor/list',
       },
       {
-        title: '视频监控列表',
-        name: '视频监控列表',
+        title: '监控摄像头列表',
+        name: '监控摄像头列表',
         href: `/device-management/video-monitor/video-equipment/${companyId}?name=${name}`,
       },
       {
@@ -326,34 +301,19 @@ export default class AddAssociate extends Component {
     ];
     const monitorColumns = [
       {
-        title: '监测类型',
-        dataIndex: 'class_type',
-        align: 'center',
-        render: val => {
-          const item = classTypeList.find(item => +item.class_type === +val) || { type_desc: '' };
-          return <span>{item.type_desc}</span>;
-        },
-      },
-      {
-        title: '品牌',
-        dataIndex: 'model_desc',
+        title: '名称',
+        dataIndex: 'name',
         align: 'center',
       },
       {
-        title: '产品型号',
-        dataIndex: 'optional_desc',
+        title: '编号',
+        dataIndex: 'code',
         align: 'center',
       },
       {
-        title: '设备号',
-        dataIndex: 'relation_device_id',
+        title: '设备类型',
+        dataIndex: 'equipmentTypeName',
         align: 'center',
-      },
-      {
-        title: '所在区域位置',
-        dataIndex: 'location',
-        align: 'center',
-        render: (val, row) => <span>{(row.area || '') + (row.location || '')}</span>,
       },
     ];
     const fireColumns = [
@@ -402,15 +362,13 @@ export default class AddAssociate extends Component {
       (type === 'fire' && fireColumns);
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
-        // console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
         this.setState({
           selectedRowKeys,
         });
       },
-      // getCheckboxProps: record => ({
-      //   name: record.id,
-      // }),
     };
+    const list = type === 'monitor' ? monitoringDevice.list : availableList;
+    const pagination = type === 'monitor' ? monitoringDevice.pagination : availablePagination;
 
     return (
       <PageHeaderLayout title={title} breadcrumbList={breadcrumbList}>
@@ -444,47 +402,19 @@ export default class AddAssociate extends Component {
                   <Fragment>
                     <Col {...colWrapper}>
                       <FormItem {...formItemStyle}>
-                        {getFieldDecorator('classType')(
-                          <Select placeholder="监测类型" onChange={this.handlemonitoringTypeChange}>
-                            {classTypeList.map((item, i) => (
-                              <Select.Option key={i} value={item.class_type}>
-                                {item.type_desc}
-                              </Select.Option>
-                            ))}
-                          </Select>
+                        {getFieldDecorator('companyName')(
+                          <Input placeholder="单位名称" />
                         )}
                       </FormItem>
                     </Col>
                     <Col {...colWrapper}>
                       <FormItem {...formItemStyle}>
-                        {getFieldDecorator('modelDesc')(
-                          <Select placeholder="品牌">
-                            {modelList.map(item => (
-                              <Select.Option key={item} value={item}>
-                                {item}
-                              </Select.Option>
+                        {getFieldDecorator('equipmentType')(
+                          <Select placeholder="设备类型">
+                            {monitoringDeviceTypes.map(({ id, name }) => (
+                              <Select.Option key={id} value={id}>{name}</Select.Option>
                             ))}
                           </Select>
-                        )}
-                      </FormItem>
-                    </Col>
-                    <Col {...colWrapper}>
-                      <FormItem {...formItemStyle}>
-                        {getFieldDecorator('optionalDesc')(
-                          <Select placeholder="产品型号">
-                            {optionalList.map(item => (
-                              <Select.Option key={item} value={item}>
-                                {item}
-                              </Select.Option>
-                            ))}
-                          </Select>
-                        )}
-                      </FormItem>
-                    </Col>
-                    <Col {...colWrapper}>
-                      <FormItem {...formItemStyle}>
-                        {getFieldDecorator('relationDeviceId')(
-                          <Input placeholder="请输入设备号" />
                         )}
                       </FormItem>
                     </Col>
@@ -565,13 +495,13 @@ export default class AddAssociate extends Component {
           </Card>
           <Card style={{ marginTop: '24px' }}>
             <Table
-              rowKey={type === 'monitor' ? 'device_id' : 'id'}
-              dataSource={availableList}
+              rowKey="id"
+              dataSource={list}
               columns={columns}
               pagination={{
-                current: pageNum,
-                pageSize,
-                total,
+                current: pagination.pageNum,
+                pageSize: pagination.pageSize,
+                total: pagination.total,
                 showQuickJumper: true,
                 showSizeChanger: true,
                 onChange: this.handleQuery,

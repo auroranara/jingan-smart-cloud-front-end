@@ -27,6 +27,10 @@ const tabList = [
     key: '3',
     tab: '监测对象',
   },
+  {
+    key: '4',
+    tab: '监测设备',
+  },
 ]
 const noAuth = (content) => <span style={{ cursor: 'not-allowed', color: 'rgba(0, 0, 0, 0.25)' }}>{content}</span>
 const formItemCol = {
@@ -64,6 +68,8 @@ const RenderModal = Form.create()(props => {
     onOk,
     onCancel,
     tagList,
+    activeTabKey,
+    monitoringDeviceTypes,
   } = props
   const handleConfirm = () => {
     validateFields((err, values) => {
@@ -78,26 +84,40 @@ const RenderModal = Form.create()(props => {
           {getFieldDecorator('name', {
             initialValue: detail ? detail.name : undefined,
           })(
-            <Input disabled />
+            <Input />
           )}
         </FormItem>
-        <FormItem {...formItemCol} label="监测类型">
-          {getFieldDecorator('monitorTypeList', {
-            initialValue: detail ? detail.monitorTypeList : undefined,
-          })(
-            <TreeSelect
-              showSearch
-              style={{ width: 300 }}
-              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-              placeholder="请选择"
-              allowClear
-              treeCheckable={true}
-              showCheckedStrategy={SHOW_PARENT}
-            >
-              {renderTreeNodes(monitoringType)}
-            </TreeSelect>
+        {+activeTabKey === 3 ? (
+          <FormItem {...formItemCol} label="监测设备">
+            {getFieldDecorator('equipmentTypeList', {
+              initialValue: detail && detail.equipmentTypeList ? [...detail.equipmentTypeList] : [],
+            })(
+              <Select mode="multiple" placeholder="请选择" style={{ width: 300 }}>
+                {monitoringDeviceTypes.map(({ id, name }) => (
+                  <Select.Option key={id} value={id}>{name}</Select.Option>
+                ))}
+              </Select>
+            )}
+          </FormItem>
+        ) : (
+            <FormItem {...formItemCol} label="监测类型">
+              {getFieldDecorator('monitorTypeList', {
+                initialValue: detail && detail.monitorTypeList ? [...detail.monitorTypeList] : undefined,
+              })(
+                <TreeSelect
+                  showSearch
+                  style={{ width: 300 }}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  placeholder="请选择"
+                  allowClear
+                  treeCheckable={true}
+                  showCheckedStrategy={SHOW_PARENT}
+                >
+                  {renderTreeNodes(monitoringType)}
+                </TreeSelect>
+              )}
+            </FormItem>
           )}
-        </FormItem>
         <FormItem {...formItemCol} label="图标选择：">
           {getFieldDecorator('logoId', {
             initialValue: detail ? detail.logoId : undefined,
@@ -133,7 +153,7 @@ export default class DeviceType extends PureComponent {
     detail: null,
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { dispatch } = this.props
     this.handleQuery()
     // 获取监测类型树
@@ -167,6 +187,14 @@ export default class DeviceType extends PureComponent {
     })
   }
 
+  fetchMonitoringDeviceTypes = actions => {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'device/fetchMonitoringDeviceTypes',
+      ...actions,
+    })
+  }
+
 
   /**
    * 页头tab变化
@@ -188,11 +216,11 @@ export default class DeviceType extends PureComponent {
       type: 'device/deployMonitoringType',
       payload: { ...values, type: activeTabKey, id: detail.id },
       success: () => {
-        message.success('配置监测类型成功')
+        message.success('操作成功')
         this.setState({ modalVisible: false })
         this.handleQuery()
       },
-      error: (response) => { message.error(response.msg) },
+      error: (res) => { message.error(res ? res.msg : '操作失败') },
     })
   }
 
@@ -201,6 +229,9 @@ export default class DeviceType extends PureComponent {
   }
 
   handleViewDeploy = (detail) => {
+    const { activeTabKey } = this.state
+    // 如果当前tab为监测对象，获取 监测全部设备
+    if (+activeTabKey === 3) { this.fetchMonitoringDeviceTypes() }
     this.setState({ detail, modalVisible: true })
   }
 
@@ -231,7 +262,7 @@ export default class DeviceType extends PureComponent {
         key: '操作',
         align: 'center',
         render: (val, row) => +activeTabKey !== 2 && editAuth ? (
-          <a onClick={() => this.handleViewDeploy(row)}>配置监测类型</a>
+          <a onClick={() => this.handleViewDeploy(row)}>{+activeTabKey === 3 ? '配置监测设备' : '配置监测类型'}</a>
         ) : noAuth('配置监测类型'),
       },
     ]
@@ -264,7 +295,7 @@ export default class DeviceType extends PureComponent {
     );
   }
 
-  render() {
+  render () {
     const {
       device: {
         // 监测类型树
@@ -274,6 +305,8 @@ export default class DeviceType extends PureComponent {
           pagination: { total = 0 },
         },
         tagLibrary: { list: tagList },
+        // 监测设备类型（全部）
+        monitoringDeviceTypes,
       },
     } = this.props
     const { activeTabKey, modalVisible, detail } = this.state
@@ -290,6 +323,8 @@ export default class DeviceType extends PureComponent {
       onOk: this.handleEdit,
       onCancel: this.handleClose,
       tagList,
+      activeTabKey, // tabs中key
+      monitoringDeviceTypes,
     }
     return (
       <PageHeaderLayout

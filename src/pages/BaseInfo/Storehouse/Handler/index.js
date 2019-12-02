@@ -32,7 +32,7 @@ const formItemLayout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 };
-const listUrl = '/base-info/storehouse/list';
+const listUrl = '/major-hazard-info/storehouse/list';
 
 const itemStyles = { style: { width: '70%', marginRight: '10px' } };
 
@@ -739,7 +739,7 @@ export default class StorehouseHandler extends PureComponent {
     const title = id ? '编辑库房' : '新增库房';
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
-      { title: '一企一档', name: '一企一档' },
+      { title: '重大危险源基本信息', name: '重大危险源基本信息' },
       { title: '库房管理', name: '库房管理', href: listUrl },
       { title, name: title },
     ];

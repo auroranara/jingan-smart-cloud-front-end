@@ -37,7 +37,7 @@ const { Option } = Select;
 
 const breadcrumbList = [
   { title: '首页', name: '首页', href: '/' },
-  { title: '数据分析', name: '数据分析' },
+  { title: '物联网监测', name: '物联网监测' },
   { title: 'IOT数据分析', name: 'IOT数据分析' },
 ];
 
@@ -308,10 +308,10 @@ export default class DataAnalysisList extends PureComponent {
                         darkUrl={ICONS_URL[`${icon}-d`]}
                         code={CODES.dataAnalysis.IOTAbnormalData[icon]}
                         // to={{
-                        //   pathname: `/data-analysis/IOT-abnormal-data/${icon}/${id}`,
+                        //   pathname: `/iot/IOT-abnormal-data/${icon}/${id}`,
                         //   num: iconNums[icon],
                         // }}
-                        to={`/data-analysis/IOT-abnormal-data/${
+                        to={`/iot/IOT-abnormal-data/${
                           icon === 'fire'
                             ? `fire-alarm/company/${id}`
                             : `${icon}/${id}/count/${iconNums[icon]}`

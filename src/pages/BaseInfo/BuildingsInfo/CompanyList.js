@@ -34,12 +34,12 @@ const breadcrumbList = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '基本信息管理',
+    name: '基本信息管理',
   },
   {
-    title: '建筑物信息',
-    name: '建筑物信息',
+    title: '建筑物管理',
+    name: '建筑物管理',
   },
 ];
 
@@ -79,7 +79,7 @@ export default class CompanyList extends PureComponent {
   // 跳转到建筑物信息列表
   // handleBuildingList = (id, name) => {
   //   const { dispatch } = this.props;
-  //   dispatch(routerRedux.push(`/base-info/buildings-info/detail/${id}?name=${name}`));
+  //   dispatch(routerRedux.push(`/base-info-management/buildings-info/detail/${id}?name=${name}`));
   // };
 
   /* 查询 */
@@ -197,7 +197,7 @@ export default class CompanyList extends PureComponent {
             <AuthButton
               code={codesMap.company.buildingsInfo.add}
               type="primary"
-              href="#/base-info/buildings-info/add"
+              href="#/base-info-management/buildings-info/add"
             >
               新增
             </AuthButton>
@@ -255,7 +255,7 @@ export default class CompanyList extends PureComponent {
                     {hasAuthority(codesMap.company.buildingsInfo.view, codes) ? (
                       <Col span={8} style={{ cursor: 'pointer' }}>
                         <Link
-                          to={`/base-info/buildings-info/detail/${company_id}?name=${company_name}`}
+                          to={`/base-info-management/buildings-info/detail/${company_id}?name=${company_name}`}
                           target="_blank"
                         >
                           <span className={styles.quantity}>{buildingNum}</span>

@@ -1,0 +1,49 @@
+.container {
+  height: calc(~'36.14% - 15px');
+  position: relative;
+  margin-top: 15px;
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    padding: 0 15px;
+    font-size: 14px;
+    height: 100%;
+
+    .wrapper {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+
+      &+.wrapper {
+        border-top: 1px solid #04397a;
+      }
+
+      .title {
+        width: 55%;
+        white-space: nowrap;
+      }
+
+      .time {
+        width: 30%;
+        text-align: center;
+      }
+
+      .status {
+        width: 14%;
+        text-align: right;
+      }
+    }
+  }
+
+  .extra {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import {
   getCompanyList,
+  getAreaList,
 } from '@/services/common';
 
 export default {
@@ -14,6 +15,7 @@ export default {
         total: 0,
       },
     },
+    areaList: [],
   },
 
   effects: {
@@ -32,6 +34,23 @@ export default {
         if (callback) {
           callback(companyList);
         }
+      }
+    },
+    // 获取区域列表
+    *getAreaList({ payload, callback }, { call, put }) {
+      const response = yield call(getAreaList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.list) {
+        const areaList = data.list;
+        yield put({
+          type: 'save',
+          payload: {
+            areaList,
+          },
+        });
+        callback && callback(true, areaList);
+      } else {
+        callback && callback(false, msg);
       }
     },
   },

@@ -157,12 +157,12 @@ export const dataProcessingType = generateEnum({
 /*
 * 网关设备类型
 */
-export const gatewayDeviceType = generateEnum({
-  '201': '用户传输装置',
-  '202': 'DTU设备',
-  '203': '推流主机',
-  '204': 'OPC客户端',
-})
+// export const gatewayDeviceType = generateEnum({
+//   '201': '用户传输装置',
+//   '202': 'DTU设备',
+//   '203': '推流主机',
+//   '204': 'OPC客户端',
+// })
 
 /*
 * 监测对象类型

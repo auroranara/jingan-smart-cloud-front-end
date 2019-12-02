@@ -10,15 +10,15 @@ import router from 'umi/router';
 import styles from './index.less';
 
 export const TITLE = '气柜管理';
-export const LIST_PATH = '/base-info/gasometer/list';
-export const ADD_PATH = '/base-info/gasometer/add';
-export const EDIT_PATH = '/base-info/gasometer/edit';
-export const DETAIL_PATH = '/base-info/gasometer/detail';
-export const ADD_CODE = 'baseInfo.gasometer.add';
-export const EDIT_CODE = 'baseInfo.gasometer.edit';
-export const DETAIL_CODE = 'baseInfo.gasometer.detail';
-export const DELETE_CODE = 'baseInfo.gasometer.delete';
-export const BIND_CODE = 'baseInfo.gasometer.bind';
+export const LIST_PATH = '/major-hazard-info/gasometer/list';
+export const ADD_PATH = '/major-hazard-info/gasometer/add';
+export const EDIT_PATH = '/major-hazard-info/gasometer/edit';
+export const DETAIL_PATH = '/major-hazard-info/gasometer/detail';
+export const ADD_CODE = 'majorHazardInfo.gasometer.add';
+export const EDIT_CODE = 'majorHazardInfo.gasometer.edit';
+export const DETAIL_CODE = 'majorHazardInfo.gasometer.detail';
+export const DELETE_CODE = 'majorHazardInfo.gasometer.delete';
+export const BIND_CODE = 'majorHazardInfo.gasometer.bind';
 export const TYPES = [
   {
     key: '0',
@@ -46,8 +46,8 @@ const BREADCRUMB_LIST = [
     href: '/',
   },
   {
-    title: '一企一档',
-    name: '一企一档',
+    title: '重大危险源基本信息',
+    name: '重大危险源基本信息',
   },
   {
     title: TITLE,
