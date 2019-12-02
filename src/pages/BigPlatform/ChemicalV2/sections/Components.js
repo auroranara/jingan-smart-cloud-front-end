@@ -5,9 +5,10 @@ import Emergency from './Emergency';
 import Remind from './Remind';
 import Tips from './Tips';
 import CompanyInfo from './CompanyInfo';
-import Notice from './Notice';
+import StorageAreaDrawer from './StorageAreaDrawer';
 import HiddenDanger from './HiddenDanger';
 import Map from './Map';
+import DangerAreaDrawer from './DangerAreaDrawer';
 
 export {
   Risk,
@@ -17,7 +18,8 @@ export {
   Remind,
   Tips,
   CompanyInfo,
-  Notice,
+  StorageAreaDrawer,
   HiddenDanger,
   Map,
+  DangerAreaDrawer,
 };

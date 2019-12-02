@@ -14,6 +14,9 @@ import iconStorageArea from '../imgs/icon-storageArea.png';
 import iconStoreArea from '../imgs/icon-storeArea.png';
 import iconStorehouse from '../imgs/icon-storehouse.png';
 
+import iconChemical from '../imgs/icon-chemical.png';
+import iconDangerSource from '../imgs/icon-dangerSource.png';
+
 const LABELS = ['实时监测', '两重点一重大'];
 const TITLE_STYLE = { marginLeft: 10, marginTop: 10 };
 
@@ -53,9 +56,9 @@ const monitorData = [
   { icon: iconGas, label: '气柜监测', value: 2, total: 20 },
 ];
 const keyPointsData = [
-  { icon: iconStorehouse, label: '重大危险源', value: 2 },
-  { icon: iconStorageArea, label: '危险化学品', value: 2 },
-  { icon: iconGas, label: '高危工艺', value: 2 },
+  { icon: iconDangerSource, label: '重大危险源', value: 2 },
+  { icon: iconChemical, label: '危险化学品', value: 2 },
+  { icon: iconHigh, label: '高危工艺', value: 2 },
 ];
 
 export default class KeyPoints extends PureComponent {
@@ -87,9 +90,8 @@ export default class KeyPoints extends PureComponent {
               {[monitorData, keyPointsData][active].map((item, index) => {
                 const { icon, label, value, total, url } = item;
                 return (
-                  <Col span={12}>
+                  <Col span={12} key={index}>
                     <div
-                      key={index}
                       className={styles.item}
                       style={{
                         background: `url(${icon}) 3em center / 3em 3em no-repeat`,
