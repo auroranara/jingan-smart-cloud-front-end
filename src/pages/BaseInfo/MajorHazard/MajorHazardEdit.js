@@ -44,6 +44,7 @@ export default class MajorHazardEdit extends PureComponent {
       areaIds: '', // 危险源-库区选中Id
       productIds: '', // 危险源-生产装置选择Id
       gasometerIds: '', // 危险源-气柜选择Id
+      dangerSourceList: {}, // 重大危险源弹框列表
     };
   }
 
@@ -67,10 +68,19 @@ export default class MajorHazardEdit extends PureComponent {
         callback: res => {
           const { list } = res;
           const currentList = list.find(item => item.id === id) || {};
-          const { companyId } = currentList;
+          const { companyId, dangerSourceList } = currentList;
+          const { tankArea, wareHouseArea } = dangerSourceList || {};
+
+          const tankAreaIds = tankArea.length > 0 && tankArea.map(item => item.id);
+          const wareHouseAreaIds = wareHouseArea.length > 0 && wareHouseArea.map(item => item.id);
+          const allSelectedKeys =
+            tankAreaIds || wareHouseAreaIds ? tankAreaIds.concat(wareHouseAreaIds) : [];
+
           this.setState({
             detailList: currentList,
             editCompanyId: companyId,
+            dangerSourceList: dangerSourceList,
+            targetKeys: allSelectedKeys,
           });
         },
       });
@@ -299,8 +309,10 @@ export default class MajorHazardEdit extends PureComponent {
     const { editCompanyId } = this.state;
     if (this.companyId || editCompanyId) {
       this.fetchStorageAreaList({ companyId: this.companyId || editCompanyId });
+      this.setState({ dangerModalVisible: true });
+    } else {
+      message.warning('请先选择单位！');
     }
-    this.setState({ dangerModalVisible: true });
   };
 
   onDangerTypeSelect = i => {
@@ -312,13 +324,14 @@ export default class MajorHazardEdit extends PureComponent {
       } else if (+i === 2) {
         // 2 库区
         this.fetchReservoirAreaList({ companyId: this.companyId || editCompanyId });
-      } else if (+i === 3) {
-        // 3 生产装置
-        this.fetchProductList({});
-      } else if (+i === 4) {
-        // 4 气柜
-        this.fetchGasList({});
       }
+      // else if (+i === 3) {
+      //   // 3 生产装置
+      //   this.fetchProductList({});
+      // } else if (+i === 4) {
+      //   // 4 气柜
+      //   this.fetchGasList({});
+      // }
     }
     this.setState({ dangerType: i });
   };
@@ -347,17 +360,17 @@ export default class MajorHazardEdit extends PureComponent {
 
     const storageName = storageNameArray.map(item => item.areaName).join(',');
     const reserviorName = reserviorNameArrray.map(item => item.name).join(',');
+    const unitChemicla = storageName + ',' + reserviorName;
 
     const storageId = storageNameArray.map(item => item.id).join(',');
     const reserviorId = reserviorNameArrray.map(item => item.id).join(',');
 
-    setFieldsValue({ unitChemicla: storageName + ',' + reserviorName });
+    setFieldsValue({ unitChemicla: unitChemicla.substr(0, unitChemicla.length - 1) });
     this.setState({ tankIds: storageId, areaIds: reserviorId });
   };
 
   renderInfo() {
     const {
-      // loading,
       form: { getFieldDecorator },
       reservoirRegion: {
         dangerTypeList,
@@ -368,7 +381,7 @@ export default class MajorHazardEdit extends PureComponent {
       },
     } = this.props;
 
-    const { detailList } = this.state;
+    const { detailList, dangerSourceList } = this.state;
     const {
       companyName,
       code,
@@ -382,7 +395,6 @@ export default class MajorHazardEdit extends PureComponent {
       useDate,
       r,
       dangerLevel,
-      // unitChemiclaNum,
       chemiclaNature,
       industryArea,
       environmentType,
@@ -393,6 +405,13 @@ export default class MajorHazardEdit extends PureComponent {
       linkman,
       linkmanTel,
     } = detailList;
+
+    const { tankArea, wareHouseArea } = dangerSourceList || {};
+    const tankAreaNames = tankArea && tankArea.map(item => item.areaName).join(',');
+    const wareHouseAreaNames = wareHouseArea && wareHouseArea.map(item => item.name).join(',');
+
+    const unitChemicla =
+      tankAreaNames || wareHouseAreaNames ? tankAreaNames + ',' + wareHouseAreaNames : '';
 
     const formItemLayout = {
       labelCol: { span: 6 },
@@ -602,7 +621,7 @@ export default class MajorHazardEdit extends PureComponent {
           </FormItem>
           <FormItem {...formItemLayout} label="选择重大危险源">
             {getFieldDecorator('unitChemicla', {
-              // initialValue: chemicalList,
+              initialValue: unitChemicla.substr(0, unitChemicla.length - 1),
               rules: [
                 {
                   required: true,
@@ -736,7 +755,6 @@ export default class MajorHazardEdit extends PureComponent {
     } = this.props;
 
     const { dangerType, targetKeys } = this.state;
-
     const title = id ? editTitle : addTitle;
 
     // 面包屑
@@ -795,7 +813,7 @@ export default class MajorHazardEdit extends PureComponent {
             this.setState({ dangerModalVisible: false });
           }}
         >
-          <ToolBar fields={fileds} onSearch={this.handleSearch} onReset={this.handleReset} />
+          <ToolBar fields={fileds} searchable={false} resetable={false} />
           <TableTransFer
             areaList={areaList}
             storageList={storageList}

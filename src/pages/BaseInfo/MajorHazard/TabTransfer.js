@@ -97,20 +97,16 @@ const rightReserviorColumns = [
 ];
 
 export default class TabTransfer extends PureComponent {
-  state = {
-    targetKeys: [], // 右侧数据keys
-  };
-
   getDataList = (i, s, a) => {
     switch (+i) {
       case 1:
         return s;
       case 2:
         return a;
-      case 3:
-        return '';
-      case 4:
-        return '';
+      // case 3:
+      //   return '';
+      // case 4:
+      //   return '';
       default:
         return;
     }
@@ -122,10 +118,10 @@ export default class TabTransfer extends PureComponent {
         return leftStorageColumns;
       case 2:
         return leftReserviorColumns;
-      case 3:
-        return '';
-      case 4:
-        return '';
+      // case 3:
+      //   return '';
+      // case 4:
+      //   return '';
       default:
         return;
     }
@@ -137,12 +133,29 @@ export default class TabTransfer extends PureComponent {
         return rightStorageColumns;
       case 2:
         return rightReserviorColumns;
-      case 3:
-        return '';
-      case 4:
-        return '';
+      // case 3:
+      //   return '';
+      // case 4:
+      //   return '';
       default:
         return;
+    }
+  };
+
+  // handleSearch = i => {
+  //   console.log('iiiii', i);
+  // };
+
+  filterOption = (inputValue, option) => {
+    const { dangerType } = this.props;
+    if (+dangerType === 1) {
+      return option.areaName.indexOf(inputValue) > -1 || option.code.indexOf(inputValue) > -1;
+    } else if (+dangerType === 2) {
+      return option.name.indexOf(inputValue) > -1 || option.unitCode.indexOf(inputValue) > -1;
+    } else if (+dangerType === 3) {
+      return option.indexOf(inputValue) > -1;
+    } else {
+      return option.name.indexOf(inputValue) > -1;
     }
   };
 
@@ -152,8 +165,11 @@ export default class TabTransfer extends PureComponent {
     return (
       <div>
         <TableTransfer
+          showSearch
           dataSource={this.getDataList(dangerType, storageList, areaList)} // 数据源(左侧)
           targetKeys={targetKeys}
+          onSearch={this.handleSearch}
+          filterOption={this.filterOption}
           onChange={i => onTargetKeysClick(i)}
           leftColumns={this.getLeftColumns(dangerType)}
           rightColumns={this.getRightColumns(dangerType)}
