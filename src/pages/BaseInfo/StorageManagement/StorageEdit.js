@@ -440,7 +440,7 @@ export default class StorageEdit extends PureComponent {
   * 跳转到建筑物管理页面
   */
   jumpToBuildingManagement = () => {
-    const win = window.open(`${window.publicPath}#/major-hazard-info/buildings-info/list`, '_blank');
+    const win = window.open(`${window.publicPath}#/base-info-management/buildings-info/list`, '_blank');
     win.focus();
   }
 
