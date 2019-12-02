@@ -137,7 +137,7 @@ export default class TrainingProgramOther extends Component {
 
   @bind()
   @debounce(300)
-  refresh = () => {
+  refresh() {
     this.forceUpdate();
   }
 
