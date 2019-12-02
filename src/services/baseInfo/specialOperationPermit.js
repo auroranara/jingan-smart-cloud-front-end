@@ -31,5 +31,5 @@ export async function deleteSpecialWorkPerson (params) {
 
 // 查询字典
 export async function fetchDict (params) {
-  return request(`/acloud_new/v2/sys/dict/listOld?${stringify(params)}`)
+  return request(`/acloud_new/v2/sys/dict/listOld?${stringify(params)}`);
 }
