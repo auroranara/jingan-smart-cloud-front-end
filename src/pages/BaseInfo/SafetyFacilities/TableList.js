@@ -415,7 +415,7 @@ export default class TableList extends PureComponent {
             onSearch={this.handleSearch}
             onReset={this.handleReset}
             action={
-              <Button type="primary" disabled={!addCode}>
+              <Button type="primary" disabled={!addCode} href={`#${ROUTER}/add`}>
                 新增
               </Button>
             }
