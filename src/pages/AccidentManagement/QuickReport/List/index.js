@@ -22,10 +22,10 @@ export const ADD_PATH = '/accident-management/quick-report/add';
 export const EDIT_PATH = '/accident-management/quick-report/edit';
 export const DETAIL_PATH = '/accident-management/quick-report/detail';
 export const LEVELS = [
-  { key: '1', value: '特别重大' },
-  { key: '2', value: '重大' },
-  { key: '3', value: '较大' },
-  { key: '4', value: '一般' },
+  { key: '0', value: '特别重大' },
+  { key: '1', value: '重大' },
+  { key: '2', value: '较大' },
+  { key: '3', value: '一般' },
 ];
 export const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
@@ -79,12 +79,12 @@ export default class ReportList extends PureComponent {
     const { current=1, pageSize=getPageSize() } = payload || {};
     const values = this.form && this.form.getFieldsValue();
     getList({
-      pageNum: prevPageSize !== pageSize ? 1 : current,
-      pageSize,
       ...values,
       ...payload,
+      pageNum: prevPageSize !== pageSize ? 1 : current,
+      pageSize,
     });
-    setPageSize(pageSize);
+    prevPageSize !== pageSize && setPageSize(pageSize);
   }
 
   reload = () => {
@@ -141,16 +141,16 @@ export default class ReportList extends PureComponent {
         },
       },
     } = this.props;
-    const isNotCompany = +unitType !== 4;
+    // const isNotCompany = +unitType !== 4;
     const hasAddAuthority = permissionCodes.includes(ADD_CODE);
 
     const FIELDS = [
-      ...(isNotCompany ? [{
+      {
         id: 'companyName',
         label: '事故单位名称',
         transform: value => value.trim(),
         render: _this => <Input placeholder="请输入事故单位名称" onPressEnter={_this.handleSearch} maxLength={50} />,
-      }] : []),
+      },
       {
         id: 'accidentTitle',
         label: '事故信息标题',
@@ -208,18 +208,17 @@ export default class ReportList extends PureComponent {
       },
       loading,
     } = this.props;
-    const isNotCompany = unitType !== 4;
+    // const isNotCompany = unitType !== 4;
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
     const hasDetailAuthority = permissionCodes.includes(DETAIL_CODE);
     const hasDeleteAuthority = permissionCodes.includes(DELETE_CODE);
 
-    const COLUMNS = (isNotCompany ? [
+    const COLUMNS = [
       {
-        title: '单位名称',
+        title: '事故单位',
         dataIndex: 'companyName',
         align: 'center',
       },
-    ] : []).concat([
       {
         title: '事故信息标题',
         dataIndex: 'accidentTitle',
@@ -269,7 +268,7 @@ export default class ReportList extends PureComponent {
         },
         align: 'center',
       },
-    ]);
+    ];
 
     return (
       <Card className={styles.card} bordered={false}>

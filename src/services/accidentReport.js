@@ -5,8 +5,16 @@ export async function getCompany({ id }) {
   return request(`/acloud_new/v2/baseInfo/company/${id}`);
 }
 
+export async function getCompanySafety({ id }) {
+  return request(`/acloud_new/v2/baseInfo/company/${id}/safetyInfo`);
+}
+
 export async function getTypeList(params) {
   return request(`/acloud_new/v2/sys/dict/listOld?${stringify(params)}`);
+}
+
+export async function getCompanyTypeList() {
+  return request(`/acloud_new/v2/baseInfo/safetySelectInfo`);
 }
 
 export async function getList(params) {

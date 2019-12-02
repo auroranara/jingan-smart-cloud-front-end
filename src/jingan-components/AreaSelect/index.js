@@ -35,7 +35,7 @@ export default class AreaSelect extends Component {
 
   componentDidUpdate({ value: prevValue }) {
     const { value, getAreaList } = this.props;
-    if (prevValue !== value) {
+    if (prevValue !== value && (!prevValue || !value || prevValue.length !== value.length)) {
       getAreaList({
         cityIds: value && value.join(','),
       });

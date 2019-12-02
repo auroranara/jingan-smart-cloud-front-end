@@ -3,29 +3,53 @@ import { Button, Card, Table, Input, Select, Empty, Popconfirm, Spin, message } 
 import PageHeaderLayout from '@/layouts/PageHeaderLayout';
 import CustomForm from '@/jingan-components/CustomForm';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
-import TypeSelect from '../components/TypeSelect';
+import TypeSelect from '../../components/TypeSelect';
 import { connect } from 'dva';
 import router from 'umi/router';
 import classNames from 'classnames';
 import moment from 'moment';
 import { getPageSize, setPageSize } from '@/utils/utils';
+import {
+  LEVELS,
+  DEFAULT_FORMAT,
+} from '../../QuickReport/List';
 import styles from './index.less';
 const { Option } = Select;
 const GET_LIST = 'accidentReport/getList';
-const DETAIL_CODE = 'accidentManagement.quickReport.view';
-const ADD_CODE = 'accidentManagement.quickReport.add';
-const EDIT_CODE = 'accidentManagement.quickReport.edit';
-const DELETE_CODE = 'accidentManagement.quickReport.delete';
-const ADD_PATH = '/accident-management/quick-report/add';
-const EDIT_PATH = '/accident-management/quick-report/edit';
-const DETAIL_PATH = '/accident-management/quick-report/view';
-export const LEVELS = [
-  { key: '1', value: '特别重大' },
-  { key: '2', value: '重大' },
-  { key: '3', value: '较大' },
-  { key: '4', value: '一般' },
+const GET_COMPANY_TYPE_LIST = 'accidentReport/getCompanyTypeList';
+const REMOVE = 'accidentReport/remove';
+export const DETAIL_CODE = 'accidentManagement.accidentReport.view';
+export const ADD_CODE = 'accidentManagement.accidentReport.add';
+export const EDIT_CODE = 'accidentManagement.accidentReport.edit';
+export const DELETE_CODE = 'accidentManagement.accidentReport.delete';
+export const LIST_PATH = '/accident-management/accident-report/list';
+export const ADD_PATH = '/accident-management/accident-report/add';
+export const EDIT_PATH = '/accident-management/accident-report/edit';
+export const DETAIL_PATH = '/accident-management/accident-report/detail';
+export { LEVELS, DEFAULT_FORMAT };
+export const PROCESS_TYPES = [
+  { key: '0', value: '国务院领导做出批示' },
+  { key: '1', value: '中央办公厅或国务院办公厅要求上报' },
+  { key: '2', value: '总局领导明确要求' },
+  { key: '3', value: '省级领导作示' },
+  { key: '4', value: '省政府要求上报' },
+  { key: '5', value: '省安监局领导明确要求' },
+  { key: '6', value: '市级领导作出批示' },
+  { key: '7', value: '市政府要求上报' },
+  { key: '8', value: '市安监局领导明确要求' },
+  { key: '9', value: '其它' },
 ];
-export const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+export const REPORT_TYPES = [
+  { key: '0', value: '首报' },
+  { key: '1', value: '续报' },
+  { key: '2', value: '重报' },
+  { key: '3', value: '核报' },
+  { key: '4', value: '反馈' },
+];
+export const REPORT_STATUSES = [
+  { key: '0', value: '保存' },
+  { key: '1', value: '上报' },
+];
 
 @connect(({
   user,
@@ -40,16 +64,34 @@ export const DEFAULT_FORMAT = 'YYYY-MM-DD HH:mm:ss';
     dispatch({
       type: GET_LIST,
       payload: {
-        type: '0',
+        type: '1',
         ...payload,
       },
       callback,
     });
   },
+  getCompanyTypeList(payload, callback) {
+    dispatch({
+      type: GET_COMPANY_TYPE_LIST,
+      payload,
+      callback,
+    });
+  },
+  remove(payload, callback) {
+    dispatch({
+      type: REMOVE,
+      payload,
+      callback,
+    });
+  },
 }))
-export default class TableList extends PureComponent {
+export default class ReportList extends PureComponent {
   componentDidMount() {
+    const {
+      getCompanyTypeList,
+    } = this.props;
     this.getList();
+    getCompanyTypeList();
   }
 
   setFormReference = form => {
@@ -70,12 +112,12 @@ export default class TableList extends PureComponent {
     const { current=1, pageSize=getPageSize() } = payload || {};
     const values = this.form && this.form.getFieldsValue();
     getList({
-      pageNum: prevPageSize !== pageSize ? 1 : current,
-      pageSize,
       ...values,
       ...payload,
+      pageNum: prevPageSize !== pageSize ? 1 : current,
+      pageSize,
     });
-    setPageSize(pageSize);
+    prevPageSize !== pageSize && setPageSize(pageSize);
   }
 
   reload = () => {
@@ -113,8 +155,8 @@ export default class TableList extends PureComponent {
   // 删除按钮点击事件
   handleDeleteClick = (id) => {
     const { remove } = this.props;
-    remove({ id }, (isSuccess, msg) => {
-      if (isSuccess) {
+    remove({ id }, (success, msg) => {
+      if (success) {
         message.success('删除成功');
         this.reload();
       } else {
@@ -131,22 +173,58 @@ export default class TableList extends PureComponent {
           permissionCodes,
         },
       },
+      accidentReport: {
+        companyTypeList=[],
+      },
     } = this.props;
-    const isNotCompany = +unitType !== 4;
+    // const isNotCompany = +unitType !== 4;
     const hasAddAuthority = permissionCodes.includes(ADD_CODE);
 
     const FIELDS = [
-      ...(isNotCompany ? [{
+      {
         id: 'companyName',
         label: '事故单位名称',
         transform: value => value.trim(),
         render: _this => <Input placeholder="请输入事故单位名称" onPressEnter={_this.handleSearch} maxLength={50} />,
-      }] : []),
+      },
+      {
+        id: 'regulatoryClassification',
+        label: '事故单位类型',
+        render: () => (
+          <Select placeholder="请选择事故单位类型" allowClear>
+            {companyTypeList.map(({ key, value }) => <Option key={key}>{value}</Option>)}
+          </Select>
+        ),
+      },
       {
         id: 'accidentTitle',
         label: '事故信息标题',
         transform: value => value.trim(),
         render: _this => <Input placeholder="请输入事故信息标题" onPressEnter={_this.handleSearch} maxLength={50} />,
+      },
+      {
+        id: 'reportCompany',
+        label: '报送单位',
+        transform: value => value.trim(),
+        render: _this => <Input placeholder="请输入报送单位" onPressEnter={_this.handleSearch} maxLength={50} />,
+      },
+      {
+        id: 'reportType',
+        label: '报送类型',
+        render: () => (
+          <Select placeholder="请选择报送类型" allowClear>
+            {REPORT_TYPES.map(({ key, value }) => <Option key={key}>{value}</Option>)}
+          </Select>
+        ),
+      },
+      {
+        id: 'reportStatus',
+        label: '报送状态',
+        render: () => (
+          <Select placeholder="请选择报送状态" allowClear>
+            {REPORT_STATUSES.map(({ key, value }) => <Option key={key}>{value}</Option>)}
+          </Select>
+        ),
       },
       {
         id: 'accidentType',
@@ -190,6 +268,7 @@ export default class TableList extends PureComponent {
             total=0,
           }={},
         }={},
+        companyTypeList=[],
       },
       user: {
         currentUser: {
@@ -199,18 +278,23 @@ export default class TableList extends PureComponent {
       },
       loading,
     } = this.props;
-    const isNotCompany = unitType !== 4;
+    // const isNotCompany = unitType !== 4;
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
     const hasDetailAuthority = permissionCodes.includes(DETAIL_CODE);
     const hasDeleteAuthority = permissionCodes.includes(DELETE_CODE);
 
-    const COLUMNS = (isNotCompany ? [
+    const COLUMNS = [
       {
-        title: '单位名称',
+        title: '事故单位',
         dataIndex: 'companyName',
         align: 'center',
       },
-    ] : []).concat([
+      {
+        title: '事故企业类型',
+        dataIndex: 'regulatoryClassification',
+        render: (value) => <SelectOrSpan list={companyTypeList} value={`${value}`} type="span" />,
+        align: 'center',
+      },
       {
         title: '事故信息标题',
         dataIndex: 'accidentTitle',
@@ -223,9 +307,9 @@ export default class TableList extends PureComponent {
         align: 'center',
       },
       {
-        title: '事故发生地址',
-        dataIndex: 'address',
-        render: (_, { provinceName, cityNamem, districtName, townName, address }) => [provinceName, cityNamem, districtName, townName, address].filter(v => v).join(''),
+        title: '事故处理类型',
+        dataIndex: 'handleType',
+        render: (value) => <SelectOrSpan list={PROCESS_TYPES} value={`${value}`} type="span" />,
         align: 'center',
       },
       {
@@ -237,6 +321,23 @@ export default class TableList extends PureComponent {
         title: '事故级别',
         dataIndex: 'accidentLevel',
         render: (value) => <SelectOrSpan list={LEVELS} value={`${value}`} type="span" />,
+        align: 'center',
+      },
+      {
+        title: '报送单位',
+        dataIndex: 'reportCompany',
+        align: 'center',
+      },
+      {
+        title: '报送类型',
+        dataIndex: 'reportType',
+        render: (value) => <SelectOrSpan list={REPORT_TYPES} value={`${value}`} type="span" />,
+        align: 'center',
+      },
+      {
+        title: '报送状态',
+        dataIndex: 'reportStatus',
+        render: (value) => <SelectOrSpan list={REPORT_STATUSES} value={`${value}`} type="span" />,
         align: 'center',
       },
       {
@@ -260,7 +361,7 @@ export default class TableList extends PureComponent {
         },
         align: 'center',
       },
-    ]);
+    ];
 
     return (
       <Card className={styles.card} bordered={false}>
@@ -294,11 +395,11 @@ export default class TableList extends PureComponent {
   }
 
   render() {
-    const title = "事故快报";
+    const title = "事故报告";
     const breadcrumbList = [
       { title: '首页', name: '首页', href: '/' },
       { title: '事故管理', name: '事故管理' },
-      { title: '事故快报', name: '事故快报' },
+      { title: '事故报告', name: '事故报告' },
     ];
 
     return (

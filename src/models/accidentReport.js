@@ -1,6 +1,8 @@
 import {
   getCompany,
+  getCompanySafety,
   getTypeList,
+  getCompanyTypeList,
   getList,
   getDetail,
   add,
@@ -15,6 +17,7 @@ export default {
     list: {},
     detail: {},
     typeList: [],
+    companyTypeList: [],
   },
 
   effects: {
@@ -47,9 +50,26 @@ export default {
         callback && callback(typeList);
       }
     },
+    // 获取企业类型列表
+    *getCompanyTypeList({ payload, callback }, { call, put }) {
+      const response = yield call(getCompanyTypeList, payload);
+      const { code, data, msg } = response || {};
+      if (code === 200 && data && data.regulatoryClassification) {
+        const companyTypeList = data.regulatoryClassification.map(({ value, label }) => ({ key: value, value: label }));
+        yield put({
+          type: 'save',
+          payload: {
+            companyTypeList,
+          },
+        });
+        callback && callback(true, companyTypeList);
+      } else {
+        callback && callback(false, msg);
+      }
+    },
     *getDetail({ payload, callback }, { call, put }) {
       const response = yield call(getDetail, payload);
-      const { code, data } = response || {};
+      const { code, data, msg } = response || {};
       if (code === 200 && data) {
         const detail = data;
         yield put({
@@ -58,13 +78,21 @@ export default {
             detail,
           },
         });
-        callback && callback(detail);
+        callback && callback(true, detail);
+      } else {
+        callback && callback(false, msg);
       }
     },
-    *getCompany({ payload, callback }, { call, put }) {
-      const response = yield call(getCompany, payload);
-      const { code, data, msg } = response || {};
-      callback && callback(code === 200, data || msg);
+    *getCompany({ payload, callback }, { call, all }) {
+      const responseList = yield all([
+        call(getCompany, payload),
+        call(getCompanySafety, payload),
+      ]);
+      const [
+        { code: code1, data: data1, msg: msg1 }={},
+        { code: code2, data: data2, msg: msg2 }={},
+      ] = responseList || [];
+      callback && callback(true, { ...data1, ...data2 });
     },
     *add({ payload, callback }, { call }) {
       const response = yield call(add, payload);

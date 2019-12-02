@@ -6,9 +6,11 @@ import CompanySelect from '@/jingan-components/CompanySelect';
 import SelectOrSpan from '@/jingan-components/SelectOrSpan';
 import DatePickerOrSpan from '@/jingan-components/DatePickerOrSpan';
 import InputOrSpan from '@/jingan-components/InputOrSpan';
+import RadioOrSpan from '@/jingan-components/RadioOrSpan';
 import AreaSelect from '@/jingan-components/AreaSelect';
 import MapCoordinate from '@/jingan-components/MapCoordinate';
 import TypeSelect from '../../components/TypeSelect';
+import AccidentInfo from '../components/AccidentInfo';
 import { connect } from 'dva';
 import moment from 'moment';
 import router from 'umi/router';
@@ -23,6 +25,9 @@ import {
   EDIT_PATH,
   DEFAULT_FORMAT,
   LEVELS,
+  PROCESS_TYPES,
+  REPORT_TYPES,
+  REPORT_STATUSES,
 } from '../List';
 import styles from './index.less';
 
@@ -32,6 +37,7 @@ const GET_DETAIL = 'accidentReport/getDetail';
 const ADD = 'accidentReport/add';
 const EDIT = 'accidentReport/edit';
 const GET_COMPANY = 'accidentReport/getCompany';
+const GET_COMPANY_TYPE_LIST = 'accidentReport/getCompanyTypeList';
 
 @connect(({
   accidentReport,
@@ -61,7 +67,7 @@ const GET_COMPANY = 'accidentReport/getCompany';
     dispatch({
       type: ADD,
       payload: {
-        type: '0',
+        type: '1',
         ...payload,
       },
       callback,
@@ -77,6 +83,13 @@ const GET_COMPANY = 'accidentReport/getCompany';
   getCompany(payload, callback) {
     dispatch({
       type: GET_COMPANY,
+      payload,
+      callback,
+    });
+  },
+  getCompanyTypeList(payload, callback) {
+    dispatch({
+      type: GET_COMPANY_TYPE_LIST,
       payload,
       callback,
     });
@@ -99,6 +112,7 @@ export default class ReportOther extends Component {
           permissionCodes,
         },
       },
+      getCompanyTypeList,
       getDetail,
       setDetail,
     } = this.props;
@@ -108,12 +122,18 @@ export default class ReportOther extends Component {
     const hasDetailAuthority = permissionCodes.includes(DETAIL_CODE);
     if ((type === 'add' && hasAddAuthority) || (type === 'edit' && hasEditAuthority) || (type === 'detail' && hasDetailAuthority)) {
       setDetail();
+      getCompanyTypeList();
       if (type !== 'add') { // 不考虑id不存在的情况，由request来跳转到500
         getDetail && getDetail({ id }, (success, data) => {
           if (success) {
             const {
               accidentCompanyId,
               companyName,
+              regulatoryClassification,
+              handleType,
+              reportCompany,
+              reportType,
+              reportStatus,
               provinceId,
               cityId,
               districtId,
@@ -142,11 +162,13 @@ export default class ReportOther extends Component {
               chargePersonPhone,
               sitePerson,
               sitePersonPhone,
-              issuer,
-              lastUpdateTime,
             } = data || {};
             this.form && this.form.setFieldsValue({
               company: accidentCompanyId ? { key: accidentCompanyId, label: companyName } : undefined,
+              regulatoryClassification: isNumber(regulatoryClassification) ? `${regulatoryClassification}` : undefined,
+              handleType: isNumber(handleType) ? `${handleType}` : undefined,
+              reportCompany: reportCompany || undefined,
+              reportType: isNumber(reportType) ? `${reportType}` : undefined,
               accidentTitle: accidentTitle || undefined,
               happenTime: happenTime ? moment(happenTime) : undefined,
               area: [provinceId, cityId, districtId, townId].filter(v => v),
@@ -154,13 +176,13 @@ export default class ReportOther extends Component {
               coordinate: [longitude, latitude].filter(v => isNumber(v)).join(','),
               accidentType: accidentType || undefined,
               accidentLevel: isNumber(accidentLevel) ? `${accidentLevel}` : undefined,
-              economicLoss: economicLoss || undefined,
-              involvedDangerNum: involvedDangerNum || undefined,
-              deathNum: deathNum || undefined,
-              severeWoundNum: severeWoundNum || undefined,
-              minorWoundNum: minorWoundNum || undefined,
-              trappedNum: trappedNum || undefined,
-              missingNum: missingNum || undefined,
+              economicLoss: isNumber(economicLoss) ? `${economicLoss}` : undefined,
+              involvedDangerNum: isNumber(involvedDangerNum) ? `${involvedDangerNum}` : undefined,
+              deathNum: isNumber(deathNum) ? `${deathNum}` : undefined,
+              severeWoundNum: isNumber(severeWoundNum) ? `${severeWoundNum}` : undefined,
+              minorWoundNum: isNumber(minorWoundNum) ? `${minorWoundNum}` : undefined,
+              trappedNum: isNumber(trappedNum) ? `${trappedNum}` : undefined,
+              missingNum: isNumber(missingNum) ? `${missingNum}` : undefined,
               accidentReason: accidentReason || undefined,
               siteConditions: siteConditions || undefined,
               accidentDescription: accidentDescription || undefined,
@@ -171,9 +193,12 @@ export default class ReportOther extends Component {
               chargePersonPhone: chargePersonPhone || undefined,
               sitePerson: sitePerson || undefined,
               sitePersonPhone: sitePersonPhone || undefined,
-              issuer: issuer || undefined,
-              lastUpdateTime: lastUpdateTime ? moment(lastUpdateTime) : undefined,
             });
+            setTimeout(() => { // 使用异步解决关联问题
+              this.form && this.form.setFieldsValue({
+                reportStatus: isNumber(reportStatus) ? `${reportStatus}` : undefined,
+              });
+            }, 0);
           } else {
             message.error('获取详情失败，请稍后重试或联系管理人员');
           }
@@ -200,14 +225,14 @@ export default class ReportOther extends Component {
   }
 
   getTitle = (type) => {
-    return ({ add: '新增事故快报', detail: '事故快报详情', edit: '编辑事故快报' })[type];
+    return ({ add: '新增事故报告', detail: '事故报告详情', edit: '编辑事故报告' })[type];
   }
 
   getBreadcrumbList = (title) => {
     return [
       { title: '首页', name: '首页', href: '/' },
       { title: '事故管理', name: '事故管理' },
-      { title: '事故快报', name: '事故快报', href: LIST_PATH },
+      { title: '事故报告', name: '事故报告', href: LIST_PATH },
       { title, name: title },
     ];
   }
@@ -302,16 +327,85 @@ export default class ReportOther extends Component {
             practicalAddress: address,
             longitude,
             latitude,
+            regulatoryClassification,
           } = data || {};
           this.form && this.form.setFieldsValue({
             area: [provinceId, cityId, districtId, townId].filter(v => v),
             address,
             coordinate: [longitude, latitude].filter(v => isNumber(v)).join(','),
+            regulatoryClassification: isNumber(regulatoryClassification) ? `${regulatoryClassification}` : undefined,
           });
         }
         // 如果失败怎么办，还没有想好
       });
     }
+  }
+
+  handleQuickReportSelect = (id) => {
+    const {
+      accidentReport: {
+        list: {
+          list=[],
+        }={},
+      },
+    } = this.props;
+    const data = list.find((item) => item.id === id);
+    const {
+      provinceId,
+      cityId,
+      districtId,
+      townId,
+      address,
+      longitude,
+      latitude,
+      accidentTitle,
+      happenTime,
+      accidentType,
+      accidentLevel,
+      economicLoss,
+      involvedDangerNum,
+      deathNum,
+      severeWoundNum,
+      minorWoundNum,
+      trappedNum,
+      missingNum,
+      accidentReason,
+      siteConditions,
+      accidentDescription,
+      measures,
+      remarks,
+      videoUrl,
+      chargePerson,
+      chargePersonPhone,
+      sitePerson,
+      sitePersonPhone,
+    } = data || {};
+    this.form && this.form.setFieldsValue({
+      accidentTitle: accidentTitle || undefined,
+      happenTime: happenTime ? moment(happenTime) : undefined,
+      area: [provinceId, cityId, districtId, townId].filter(v => v),
+      address: address || undefined,
+      coordinate: [longitude, latitude].filter(v => isNumber(v)).join(','),
+      accidentType: accidentType || undefined,
+      accidentLevel: isNumber(accidentLevel) ? `${accidentLevel}` : undefined,
+      economicLoss: economicLoss || undefined,
+      involvedDangerNum: involvedDangerNum || undefined,
+      deathNum: deathNum || undefined,
+      severeWoundNum: severeWoundNum || undefined,
+      minorWoundNum: minorWoundNum || undefined,
+      trappedNum: trappedNum || undefined,
+      missingNum: missingNum || undefined,
+      accidentReason: accidentReason || undefined,
+      siteConditions: siteConditions || undefined,
+      accidentDescription: accidentDescription || undefined,
+      measures: measures || undefined,
+      remarks: remarks || undefined,
+      videoUrl: videoUrl || undefined,
+      chargePerson: chargePerson || undefined,
+      chargePersonPhone: chargePersonPhone || undefined,
+      sitePerson: sitePerson || undefined,
+      sitePersonPhone: sitePersonPhone || undefined,
+    });
   }
 
   renderForm() {
@@ -326,12 +420,14 @@ export default class ReportOther extends Component {
       accidentReport: {
         detail: {
           companyName,
+          reportType,
           provinceName,
           cityName,
           districtName,
           townName,
           accidentTypeDesc,
         }={},
+        companyTypeList=[],
       },
     } = this.props;
     const type = this.getType();
@@ -339,8 +435,9 @@ export default class ReportOther extends Component {
     const isEdit = type === 'edit';
     const isNotDetail = type !== 'detail';
     const hasEditAuthority = permissionCodes.includes(EDIT_CODE);
-    // const values = this.form && this.form.getFieldsValue() || {};
+    const values = this.form && this.form.getFieldsValue() || {};
     // const realCompanyId = isNotCompany ? (values.company && values.company.key !== values.company.label ? values.company.key : companyId) : unitId;
+    const realReportType = values.reportType || reportType;
 
     const fields = [
       {
@@ -363,45 +460,84 @@ export default class ReportOther extends Component {
             },
           },
           {
-            id: 'area',
-            label: '所在区域',
+            id: 'regulatoryClassification',
+            label: '事故企业类型',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => isNotDetail ? <AreaSelect className={styles.item} /> : <span>{[provinceName, cityName, districtName, townName].filter(v => v).join('')}</span>,
+            render: () => <SelectOrSpan className={styles.item} placeholder="请选择事故企业类型" list={companyTypeList} type={isNotDetail ? 'Select' : 'span'} disabled />,
+          },
+          {
+            id: 'handleType',
+            label: '事故处理类型',
+            span: SPAN,
+            labelCol: LABEL_COL,
+            render: () => <SelectOrSpan className={styles.item} placeholder="请选择事故处理类型" list={PROCESS_TYPES} type={isNotDetail ? 'Select' : 'span'} />,
             options: {
               rules: isNotDetail ? [
                 {
-                  type: 'array',
                   required: true,
-                  min: 1,
-                  message: '所在区域不能为空',
+                  message: '事故处理类型不能为空',
                 },
               ] : undefined,
             },
           },
           {
-            id: 'address',
-            label: '事故发生详细地址',
+            id: 'reportCompany',
+            label: '报送单位',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入事故发生详细地址" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
+            render: () => <InputOrSpan className={styles.item} placeholder="请输入报送单位" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
             options: {
               rules: isNotDetail ? [
                 {
                   required: true,
                   whitespace: true,
-                  message: '事故发生详细地址不能为空',
+                  message: '报送单位不能为空',
                 },
               ] : undefined,
             },
           },
           {
-            id: 'coordinate',
-            label: '经纬度',
+            id: 'reportType',
+            label: '报送类型',
             span: SPAN,
             labelCol: LABEL_COL,
-            render: () => <MapCoordinate className={styles.item} disabled={!isNotDetail} />,
+            render: () => <RadioOrSpan list={REPORT_TYPES} type={isNotDetail ? 'Input' : 'span'} />,
+            options: {
+              rules: isNotDetail ? [
+                {
+                  required: true,
+                  message: '报送类型不能为空',
+                },
+              ] : undefined,
+            },
           },
+          ...(realReportType === '1' ? [
+            {
+              id: 'reportStatus',
+              label: '报送状态',
+              span: SPAN,
+              labelCol: LABEL_COL,
+              render: () => <SelectOrSpan className={styles.item} placeholder="请选择报送状态" list={REPORT_STATUSES} type={isNotDetail ? 'Select' : 'span'} />,
+              options: {
+                rules: isNotDetail ? [
+                  {
+                    required: true,
+                    message: '报送状态不能为空',
+                  },
+                ] : undefined,
+              },
+            },
+          ] : []),
+          ...(isNotDetail ? [
+            {
+              id: 'accidentInfo',
+              label: '事故信息',
+              span: SPAN,
+              labelCol: LABEL_COL,
+              render: () => <AccidentInfo onChange={this.handleQuickReportSelect} />,
+            },
+          ] : []),
           {
             id: 'accidentTitle',
             label: '事故信息标题',
@@ -442,6 +578,47 @@ export default class ReportOther extends Component {
                 },
               ] : undefined,
             },
+          },
+
+          {
+            id: 'area',
+            label: '所在区域',
+            span: SPAN,
+            labelCol: LABEL_COL,
+            render: () => isNotDetail ? <AreaSelect className={styles.item} /> : <span>{[provinceName, cityName, districtName, townName].filter(v => v).join('')}</span>,
+            options: {
+              rules: isNotDetail ? [
+                {
+                  type: 'array',
+                  required: true,
+                  min: 1,
+                  message: '所在区域不能为空',
+                },
+              ] : undefined,
+            },
+          },
+          {
+            id: 'address',
+            label: '事故发生详细地址',
+            span: SPAN,
+            labelCol: LABEL_COL,
+            render: () => <InputOrSpan className={styles.item} placeholder="请输入事故发生详细地址" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
+            options: {
+              rules: isNotDetail ? [
+                {
+                  required: true,
+                  whitespace: true,
+                  message: '事故发生详细地址不能为空',
+                },
+              ] : undefined,
+            },
+          },
+          {
+            id: 'coordinate',
+            label: '经纬度',
+            span: SPAN,
+            labelCol: LABEL_COL,
+            render: () => <MapCoordinate className={styles.item} disabled={!isNotDetail} />,
           },
           {
             id: 'accidentType',
@@ -612,29 +789,6 @@ export default class ReportOther extends Component {
             span: SPAN,
             labelCol: LABEL_COL,
             render: () => <InputOrSpan className={styles.item} placeholder="请输入现场联络员电话" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
-          },
-          {
-            id: 'issuer',
-            label: '签发人',
-            span: SPAN,
-            labelCol: LABEL_COL,
-            render: () => <InputOrSpan className={styles.item} placeholder="请输入签发人姓名" maxLength={50} type={isNotDetail ? 'Input' : 'span'} />,
-          },
-          {
-            id: 'lastUpdateTime',
-            label: '最近更新时间',
-            span: SPAN,
-            labelCol: LABEL_COL,
-            render: () => (
-              <DatePickerOrSpan
-                className={styles.item}
-                type={isNotDetail ? 'DatePicker' : 'span'}
-                format={DEFAULT_FORMAT}
-                placeholder="请选择最近更新时间"
-                showTime
-                allowClear={false}
-              />
-            ),
           },
         ],
       },
